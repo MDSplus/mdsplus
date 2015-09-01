@@ -5,11 +5,14 @@ import gov.aps.jca.dbr.*;
 import gov.aps.jca.event.*;
 import java.io.*;
 import MDSplus.*;
-
+// javac -cp caj-1.1.5b.jar:jca-2.3.2.jar:/usr/local/mdsplus/java/classes/mdsobjects.jar ChannelArchiver.java
+// java -cp .:caj-1.1.5b.jar:jca-2.3.2.jar:/usr/local/mdsplus/java/classes/mdsobjects.jar  ChannelArchiver xmltest 1
 
 public class ChannelArchiver 
 {
-    static int SEGMENT_SIZE = 300;
+    static final long EPICS_BASE = 631152000000L;
+
+    static int SEGMENT_SIZE = 100;
     static int MAX_QUEUE_LEN  = 10000;
     static boolean debug = false;
     static Hashtable monitorInfo = new Hashtable();
@@ -195,8 +198,12 @@ public class ChannelArchiver
 	    this.nodeName = nodeName;
     	}
 	java.lang.String getNodeName(){return nodeName;}
-    	boolean addRow(Data val, long time)
+    	boolean addRow(Data val, long inTime)
     	{
+
+             long time =  inTime/1000000L + EPICS_BASE;
+
+System.out.println("TreeDataDescriptor idx " + idx);
  	    if(idx < SEGMENT_SIZE)
 	    {
                
@@ -308,16 +315,16 @@ public class ChannelArchiver
             }
             public void run()
             {
-		long prevSize = 0;
-                //while(!terminated)
+		        long prevSize = 0;
+                while(!terminated)
                 {
                     try {
-                        currSize = tree.getDatafileSize();
-			System.out.println("QUEUE SIZE: " + queue.size());
-			System.out.println("FILE SIZE: " + currSize);
-			if(currSize > 1000000000 && currSize == prevSize)
-			    ChannelArchiver.debug = true;
-			prevSize = currSize;
+                        //currSize = tree.getDatafileSize();
+			 System.out.println("QUEUE SIZE: " + queue.size());
+			 //System.out.println("FILE SIZE: " + currSize);
+			 //if(currSize > 1000000000 && currSize == prevSize)
+			 //           ChannelArchiver.debug = true;
+			 //prevSize = currSize;
 
                     }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); 
                     //System.exit(0);
@@ -336,7 +343,7 @@ public class ChannelArchiver
         int currShot;
         Tree model;
         Tree tree;
-	Hashtable treeNodeHash = new Hashtable();
+	    Hashtable treeNodeHash = new Hashtable();
         java.lang.String expName;
         LinkedBlockingQueue<TreeDataDescriptor> queue;
         TreeHandler(java.lang.String expName, Tree model, int shot, long switchSize, LinkedBlockingQueue<TreeDataDescriptor> queue) throws Exception
@@ -354,14 +361,17 @@ public class ChannelArchiver
         
         public void run()
         {
+System.out.println("SALVATAGGIO variabile");
             while(true)
             {
-		TreeDataDescriptor descr = null;
+		        TreeDataDescriptor descr = null;
                 try {
+System.out.println("Waiting....");
                     descr = queue.take();
-		} catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
-		java.lang.String nodeName = descr.getNodeName();
-		TreeNode node = (TreeNode)treeNodeHash.get(nodeName);
+System.out.println("Receivd....");
+		        } catch(Exception exc){System.err.println("Error dequeuing request: "+exc); System.exit(0);}
+		     java.lang.String nodeName = descr.getNodeName();
+		     TreeNode node = (TreeNode)treeNodeHash.get(nodeName);
 		if(node == null)
 		{
 		    try {
@@ -373,6 +383,8 @@ public class ChannelArchiver
 		    }
 		}
 	    	try {
+System.out.println("SALVATAGGIO variabile " + node);
+ 
 		    if(descr.getDim() >1)
 	   	    	node.makeTimestampedSegment(descr.getVals(), descr.getTimes());
 		    else
@@ -402,16 +414,17 @@ public class ChannelArchiver
         TreeHandler treeH;
         Hashtable nodeHash = new Hashtable();
         LinkedBlockingQueue<TreeDataDescriptor> queue;
-	Tree model;
+	    Tree model;
         TreeManager(java.lang.String expName, Tree model, int shot, long switchSize) throws Exception
         {
             queue = new LinkedBlockingQueue<TreeDataDescriptor>(MAX_QUEUE_LEN);
             treeH = new TreeHandler(expName, model, shot, switchSize, queue);
-	    this.model = model;
+	        this.model = model;
             (new Thread(treeH)).start();
         }
         synchronized void putRow(java.lang.String treeNodeName, Data data, long time)
         {
+System.err.println("put for node "+treeNodeName );
 	    TreeDataDescriptor descr = (TreeDataDescriptor)nodeHash.get(treeNodeName);
             if(descr == null)
             {
@@ -424,11 +437,14 @@ public class ChannelArchiver
                 }
             }
             try {
-              	if(descr.addRow(data, time))
+System.err.println("put for node "+treeNodeName+" data "+data+" time " +time );
+                if(descr.addRow(data, time))
 	    	{
+System.err.println("queue remain capacity " + queue.remainingCapacity());
                     nodeHash.put(descr.getNodeName(), new TreeDataDescriptor(descr.getNodeName()));
                     if(queue.remainingCapacity() > 0)
                     {
+System.err.println("queue ");
                         queue.put(descr);
                     }
                     else
@@ -694,6 +710,8 @@ public class ChannelArchiver
             {
                 getThreshold = 1;
             }
+	System.out.println("GET_TRESH: " + getThreshold);
+
             try {
              TreeNode node = tree.getNode(":IGN_FUTURE");
              ignFuture = node.getInt()*3600;
@@ -701,6 +719,8 @@ public class ChannelArchiver
             {
                 ignFuture = 6*3600;
             }
+	System.out.println("IGN_FUTURE: " + ignFuture);
+
             try {
              TreeNode node = tree.getNode(":FILE_SIZE");
              fileSize = node.getLong()* 1000000;
@@ -709,15 +729,20 @@ public class ChannelArchiver
             {
                 fileSize = 1000000000;
             }
+	System.out.println("FILE_SIZE: " + fileSize);
             
-
             TreeManager treeManager = new TreeManager(experiment, tree, shot, fileSize);
+
+
             TreeNodeArray treeNodeArr = tree.getNodeWild("***");
+
+
             java.lang.String []nodeNames = treeNodeArr.getPath();
             int[] nids = treeNodeArr.getNid();
-	    System.out.println("Ci sono " + nodeNames.length + " PVs");
+	        System.out.println("Ci sono " + nodeNames.length + " PVs");
             for(int i = 0; i < nodeNames.length; i++)
             {
+				System.out.println(""+i+" Node name "+nodeNames[i]);
                 if(nodeNames[i].endsWith(":REC_NAME"))
                 {
                     java.lang.String nodeName = nodeNames[i].substring(0, nodeNames[i].length() - 9);
@@ -726,14 +751,14 @@ public class ChannelArchiver
                     
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
-			recName = recName.trim();
-                        System.out.println("Adesso mi smazzolo "+recName);
+			            recName = recName.trim();
+                        System.out.println(" PV name "+recName);
                         //Get VAL channel. It will remain open thorough the whole program execution
                         Channel valChan = ctxt.createChannel(recName+".VAL");
                         ctxt.pendIO(5.);
                         DBR valDbr = valChan.get();
                         ctxt.pendIO(5.);
-			System.out.println("Canale creato...");
+			            //System.out.println("Canale creato...");
                         //valDbr.printInfo(System.out);
                         if(!valDbr.isENUM() && !valDbr.isCTRL()&&! valDbr.isINT())
                         {
@@ -814,7 +839,7 @@ public class ChannelArchiver
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
                         TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
-System.out.println("Configuazione letta, adesso collego....");
+//System.out.println("Configuazione letta, adesso collego....");
                         if(scanMode.equals("MONITOR"))
                         {
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
@@ -849,16 +874,22 @@ System.out.println("Configuazione letta, adesso collego....");
                         System.err.println("Error handling record "+ recName + ": " + exc);
                     }
                 }
+
             }
         }catch(Exception exc)
         {
             System.err.println("Generic error: "+ exc);
-	    System.exit(0);
+	         System.exit(0);
         }
+        System.err.println("Collegate tutte le variabili");
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	while(true)
 	{
 	    try {
+
+        //ChannelArchiver.SEGMENT_SIZE = 1;
+
+		System.out.print("Quit (q) PV list (i) ");
 	    	java.lang.String cmd = br.readLine();
 	    	if(cmd.equals("q"))
 		    System.exit(0);

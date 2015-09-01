@@ -873,7 +873,7 @@ object ad_radioBox1 : XmRadioBox widget {
     arguments {
         XmNresizeWidth = true;
         XmNresizeHeight = true;
-        XmNnumColumns = 4;
+        XmNnumColumns = 6;
         XmNx = 55;
         XmNy = 85;
  !       XmNwidth = 297;

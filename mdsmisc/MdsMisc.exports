@@ -8,3 +8,6 @@ GetNidArray
 GetReferenceCount
 GetReferences
 whoami
+getXYSignal
+getXYWave
+

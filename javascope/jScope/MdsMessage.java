@@ -107,7 +107,8 @@ public class MdsMessage extends Object
          status = (use_cmp ? SUPPORTS_COMPRESSION | 5 : 0);
     }
 
-    protected synchronized byte[] ReadCompressedBuf(DataInputStream dis) throws IOException
+    protected synchronized byte[] ReadCompressedBuf(InputStream dis) throws IOException
+//    protected synchronized byte[] ReadCompressedBuf(DataInputStream dis) throws IOException
     {
         int bytes_to_read , read_bytes = 0, curr_offset = 0;
         byte out[], b4[] = new byte[4];
@@ -134,24 +135,25 @@ public class MdsMessage extends Object
         return out;
     }
 
-    protected synchronized void ReadBuf(byte buf[], DataInputStream dis) throws IOException
+//    protected /*synchronized */void ReadBuf(byte buf[], DataInputStream dis) throws IOException
+    protected synchronized void ReadBuf(byte buf[], InputStream dis) throws IOException
     {
+        
         ConnectionEvent e;
         int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
         boolean send = false;
-
         if(bytes_to_read > 2000)
         {
             send = true;
 	        e = new ConnectionEvent(this, buf.length, curr_offset);
 	        dispatchConnectionEvent(e);
         }
+        
         while(bytes_to_read > 0)
-        {
+        {                
 	        read_bytes     = dis.read(buf, curr_offset, bytes_to_read);
 	        curr_offset   += read_bytes;
 	        bytes_to_read -= read_bytes;
-
 	        if(send)
 	        {
 	            e = new ConnectionEvent(this, buf.length, curr_offset);
@@ -173,7 +175,7 @@ public class MdsMessage extends Object
         dos.writeByte(ndims);
         for(int i = 0; i < Descriptor.MAX_DIM; i++)
 	        dos.writeInt(dims[i]);
-        dos.write(body, 0, body.length);
+        dos.write(body, 0, body.length);        
         dos.flush();
 
         if(descr_idx == (nargs - 1)) msgid++;
@@ -216,7 +218,8 @@ public class MdsMessage extends Object
         return (short)((ch1) + (ch2));
     }
 
-    public synchronized void Receive(DataInputStream dis)throws IOException
+//    public /*synchronized */ void Receive(DataInputStream dis)throws IOException
+    public synchronized void Receive(InputStream dis)throws IOException
     {
         byte header_b[] = new byte[16 + Descriptor.MAX_DIM*4];
         byte b4[] = new byte[4];
@@ -230,8 +233,10 @@ public class MdsMessage extends Object
         if(dis.read(header_b) == -1)
             throw(new IOException("Broken connection with mdsip server"));
 */
-        dis.readFully(header_b);
+//        dis.readFully(header_b);
+//        dis.read(header_b);
 
+	ReadBuf(header_b, dis);
         c_type = header_b[14];
         swap = ((c_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
         compressed = ((c_type & COMPRESSED) == COMPRESSED);
@@ -252,26 +257,12 @@ public class MdsMessage extends Object
             length = ByteToShort(header_b, idx);;
             idx += 2;
         }
-
         nargs = header_b[idx++];
         descr_idx = header_b[idx++];
         message_id = header_b[idx++];
         dtype = header_b[idx++];
         c_type = header_b[idx++];
         ndims = header_b[idx++];
-
-/*
-        System.out.println("msglen " + msglen);
-        System.out.println("status " + status);
-        System.out.println("length " + length);
-        System.out.println("nargs " + nargs);
-        System.out.println("descr_idx " + descr_idx);
-        System.out.println("message_id " + message_id);
-        System.out.println("dtype " + dtype);
-        System.out.println("c_type " + c_type);
-        System.out.println("ndims " + ndims);
-*/
-
         if(swap)
         {
             for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
@@ -455,6 +446,26 @@ public class MdsMessage extends Object
         return out;
     }
 
+        public int[] ToUShortArray() throws IOException
+    {
+        int ch1, ch2;
+        int out[] = new int[body.length / 2];
+        if(swap)
+            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
+            {
+                ch1 = (int)((body[j+1] & 0xff) << 8);
+                ch2 = (int)((body[j+0] & 0xff) << 0);
+                out[i] = (int)((ch1) + (ch2));
+            }
+	    else
+            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
+            {
+                ch1 = (int)((body[j+0] & 0xff) << 8);
+                ch2 = (int)((body[j+1] & 0xff) << 0);
+                out[i] = (int)((ch1) + (ch2));
+            }
+        return out;
+    }
 
     public float[] ToFloatArray() throws IOException
     {

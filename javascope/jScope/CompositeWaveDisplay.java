@@ -320,7 +320,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                case (CompositeWaveDisplay.CMND_CLEAR):
                    s.resetSignalData();
                case (CompositeWaveDisplay.CMND_ADD):
-                   s.appendValues(x, y, numPoints, time);
+                   double d[] = new double[x.length];
+                   for(int i = 0; i < x.length; i++)
+                       d[i] = x[i];
+                   s.appendValues(d, y, numPoints, time);
                break;
            }
        }

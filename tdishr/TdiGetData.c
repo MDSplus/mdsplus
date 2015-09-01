@@ -30,6 +30,7 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <string.h>
+#include <strings.h>
 #include "tdithreadsafe.h"
 
 
@@ -50,6 +51,34 @@ extern int TdiUnits();
 extern int Tdi2Add();
 
 int TdiImpose();
+
+static void FixupDollarNodes(int nid, struct descriptor *out_ptr) {
+  if (out_ptr) {
+    switch (out_ptr->class) {
+      case CLASS_S:
+      case CLASS_D:
+        if ((out_ptr->dtype == DTYPE_IDENT) &&
+            (out_ptr->length == 5) &&
+            (strncasecmp((const char *)out_ptr->pointer,"$node",5) == 0)) {
+          out_ptr->dtype=DTYPE_NID;
+          out_ptr->length=4;
+          *(int *)out_ptr->pointer=nid;
+        }
+        break;
+      case CLASS_XS:
+      case CLASS_XD:
+        FixupDollarNodes(nid, (struct descriptor *)out_ptr->pointer);
+        break;
+      case CLASS_R: {
+        struct descriptor_r *ptr = (struct descriptor_r *)out_ptr;
+        unsigned char i;
+        for (i=0;i<ptr->ndesc; i++)
+          FixupDollarNodes(nid, (struct descriptor *)ptr->dscptrs[i]);
+        break;
+      }
+    }
+  }
+}
 
 int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -695,6 +724,8 @@ int TdiGetRecord(int nid, struct descriptor_xd *out)
   if (!use_get_record_fun) {
     status = TreeGetRecord(nid, (struct descriptor_xd *)out);
   }
+  if (status & 1)
+    FixupDollarNodes(nid,(struct descriptor *)out);
   return status;
 }
 

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+
 int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 	    int *dims, char *bytes)
 {
@@ -10,10 +12,16 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short le
   int i;
   int nbytes = length;
   Message *m;
-  int msgid = (idx == 0
-	       || nargs == 0) ? IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
+  
+  // MESSAGE ID //
+  // * if this is the first argument sent, increments connection message id   //
+  // * get the connection message_id and store it inside message              //
+  
+  int msgid = (idx == 0 || nargs == 0) ?
+              IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
   if (msgid < 1)
     return 0;
+  
   if (idx > nargs) {
     /**** Special I/O message ****/
     nbytes = dims[0];
@@ -21,6 +29,7 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short le
     for (i = 0; i < ndims; i++)
       nbytes *= dims[i];
   }
+  
   msglen = sizeof(MsgHdr) + nbytes;
   m = memset(malloc(msglen), 0, msglen);
   m->h.client_type = 0;

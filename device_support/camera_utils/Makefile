@@ -1,10 +1,12 @@
+# Note: Install MDSplus first so that $(MDSPLUS_DIR) exists.
+
 CC=g++
 #TO ENABLE DEBUG MESSAGES ADD OPTION -DDEBUG
-CFLAGSmdsutils=  -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I. -I{MDSPLUS_DIR}/include
+CFLAGSmdsutils=  -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I. -I$(MDSPLUS_DIR)/include
 CFLAGSstreamutils= -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I.
 ##############
 LDFLAGSstreamutils = -shared -lrt -pthread
-LDFLAGSmdsutils = -shared -lrt -pthread -L/usr/local/mdsplus/lib -lMdsObjectsCppShr -lMdsIpShr
+LDFLAGSmdsutils = -shared -lrt -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr
 
 SOURCESstreamutils=camstreamutils.cpp 
 SOURCESmdsutils=cammdsutils.cpp 

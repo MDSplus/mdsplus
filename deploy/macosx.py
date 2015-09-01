@@ -62,7 +62,7 @@ make
         shell("""
 
 set -e
-export MDSPLUS_VERSION="%(pyflavor)s%(major)d.%(minor)d_%(release)d"
+export MDSPLUS_VERSION="%(pyflavor)s-%(major)d.%(minor)d_%(release)d"
 make install
 chmod -R o-w,g-w $(pwd)/build/mdsplus
 
@@ -71,7 +71,7 @@ chmod -R o-w,g-w $(pwd)/build/mdsplus
 
 set -e
 cd build/mdsplus/mdsobjects/python
-python setup.py bdist_egg version=%(pyflavor)s%(major)d.%(minor)d_%(release)d
+python setup.py bdist_egg version=%(pyflavor)s%(major)d.%(minor)d.%(release)d
 
         """ % self.info,'python bdist_egg failed')
         shell("""
@@ -97,7 +97,6 @@ sudo chown -R $(id -un):$(id -gn) $(pwd)/build
         shell("""
 
 set -e
-rsync -a ./build/mdsplus/mdsobjects/python/dist/*.egg /mdsplus/dist/EGGS/
 rsync -a  MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg /mdsplus/dist/macosx/%(flavor)s/
 
         """ % self.info,'Failed to copy to destination')

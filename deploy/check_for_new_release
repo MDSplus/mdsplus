@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# See if changes were made since last release. If so, try some builds to make sure the
+# new code will build successfully on some platforms. If builds ok, create a new changelog,
+# commit the new changelog and tag a new release.
+#
+# Format:   check_for_new_release num-successful-required builddocker-1 builddocker-2 ...
+#
+# Each listed build will be run until at least num-successful-required builds succeed.
+#
+set -e
+export GIT_BRANCH="$1"
+shift
+if ( ! git branch | grep $GIT_BRANCH > /dev/null )
+then
+    git checkout -b ${GIT_BRANCH} --track origin/${GIT_BRANCH}
+else
+    git checkout ${GIT_BRANCH}
+fi
+git pull
+release_tag=$(wget -O - -q https://github.com/MDSplus/mdsplus/releases | grep ${GIT_BRANCH}_release| awk '{print $0; exit;}' | awk -F/ '{print $NF}' | awk -F\" '{print $1}')
+if [ $(git log --oneline ${release_tag}..${GIT_BRANCH} | wc -l) == 0 ]
+then
+  echo "The $release_tag is up to date. No new release necessary."
+  exit 0
+fi
+set +e
+let succeeded=0
+let must_succeed=$1
+shift
+for test_build in "$@"
+do
+  if ( sudo docker run --rm -v $(pwd):/source mdsplus/docker:${test_build} build > /dev/null 2>&1 )
+  then
+    echo "${test_build} succeeded."
+    let succeeded=$succeeded+1
+    if [ "$succeeded" = "$must_succeed" ]
+    then
+      break
+    fi
+  else
+    echo "${test_build} failed."
+  fi
+done
+set -e
+if [ "$succeeded" = "$must_succeed" ]
+then
+  release_tag=$(echo $release_tag | awk -F- '{print $1"-"$2"-"$3"-"($4+1);}')
+  git log --decorate=full > ChangeLog
+  git commit -m "New release ---- $release_tag" ChangeLog
+  git tag ${release_tag}
+  git push origin ${release_tag}
+  git push origin ${GIT_BRANCH}
+  echo "Created new release --- $release_tag"
+else
+  echo "Insufficient number of successful builds so no release tag created."
+  exit 1
+fi 

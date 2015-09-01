@@ -2481,7 +2481,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
 			 (segment_header.dimct - 1) * sizeof(int)) != 0) {
       status = TreeINVSHAPE;
     } else if (a_coeff->dimct == 1 && a_coeff->arsize / a_coeff->length != 1
-	       && (unsigned int)segment_header.dims[0] != a_coeff->arsize / a_coeff->length) {
+	       && (unsigned int)segment_header.dims[0] < a_coeff->arsize / a_coeff->length) {
       status = TreeINVSHAPE;
     }
     if (!(status & 1)) {
@@ -3116,6 +3116,9 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
 	  MdsFree1Dx((struct descriptor_xd *)apd.pointer[idx], 0);
 	  free(apd.pointer[idx]);
 	}
+      }
+      if (apd.pointer) {
+	free(apd.pointer);
       }
     }
   }

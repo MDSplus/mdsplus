@@ -710,7 +710,8 @@ int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_
 /*********************************************************/
 int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  int status = 0;
+/*
   ARGLIST user_args = { 0 };
   int rows = 0;
   struct descriptor dtext = { 0, DTYPE_T, CLASS_D, 0 };
@@ -741,11 +742,11 @@ int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_
     status = TdiData(list[0], &dtext MDS_END_ARG);
   if (status & 1) {
     USERSQL_SET(gets, printf, printf, printf, width, head);
-    status = SQL_DYNAMIC(USERSQL_GETS,	/*routine to fill markers       */
-			 USERSQL_PUTS,	/*routine to store selections   */
-			 &dtext,	/*text string descriptor        */
-			 &width,	/*value passed to GETS and PUTS */
-			 &rows);	/*output, number of rows        */
+    status = SQL_DYNAMIC(USERSQL_GETS,
+			 USERSQL_PUTS,
+			 &dtext,
+			 &width,
+			 &rows);
     if (!(status & 1))
       USERSQL_ERRORS();
   }
@@ -753,7 +754,7 @@ int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_
   if (status & 1)
     status = MdsCopyDxXd(&drows, out_ptr);
   FreeBuffers();
-
+*/
   return status;
 }
 

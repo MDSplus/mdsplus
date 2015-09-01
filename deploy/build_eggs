@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Run during builds if /EGGS is found
+#
+
+set -o verbose
+
+cd /buildroot/usr/local/mdsplus/mdsobjects/python
+python setup.py bdist_egg --dist-dir=/EGGS
+if [ -r /usr/bin/python3 ]
+then
+  python3 setup.py bdist_egg --dist-dir=/EGGS
+fi
+

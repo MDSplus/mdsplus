@@ -319,8 +319,8 @@ def TreeDoMethod(n,method,arg=None):
 
 def TreeStartConglomerate(tree,num):
     """Start a conglomerate in a tree."""
+    tree.lock()
     try:
-        tree.lock()
         status=__TreeStartConglomerate(tree.ctx,num)
     finally:
         tree.unlock()
@@ -330,8 +330,8 @@ def TreeStartConglomerate(tree,num):
 
 def TreeEndConglomerate(tree):
     """End a conglomerate in a tree."""
+    tree.lock()
     try:
-        tree.lock()
         status=__TreeEndConglomerate(tree.ctx)
     finally:
         tree.unlock()
@@ -341,8 +341,8 @@ def TreeEndConglomerate(tree):
 
 def TreeTurnOn(n):
     """Turn on a tree node."""
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreeTurnOn(n.tree.ctx,n.nid)
     finally:
         n.tree.unlock()
@@ -354,8 +354,8 @@ def TreeTurnOn(n):
 
 def TreeTurnOff(n):
     """Turn off a tree node."""
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreeTurnOff(n.tree.ctx,n.nid)
     finally:
         n.tree.unlock()
@@ -422,8 +422,8 @@ def TreeAddNode(tree,name,usage):
     return nid.value
 
 def TreeSetSubtree(node,flag):
+    node.tree.lock()
     try:
-        node.tree.lock()
         if flag:
             status=__TreeSetSubtree(node.tree.ctx,node.nid)
         else:
@@ -434,8 +434,8 @@ def TreeSetSubtree(node,flag):
         node.tree.unlock()
 
 def TreeRenameNode(node,name):
+    node.tree.lock()
     try:
-        node.tree.lock()
         status = __TreeRenameNode(node.tree.ctx,node.nid,str.encode(str(name)))
         if not (status & 1):
             raise TreeException(_mdsshr.MdsGetMsg(status))
@@ -443,8 +443,8 @@ def TreeRenameNode(node,name):
         node.tree.unlock()
 
 def TreeAddTag(tree,nid,tag):
+    tree.lock()
     try:
-        tree.lock()
         status = __TreeAddTag(tree.ctx,nid,str.encode(str(tag)))
         if not (status & 1):
             raise TreeException(_mdsshr.MdsGetMsg(status))
@@ -452,8 +452,8 @@ def TreeAddTag(tree,nid,tag):
         tree.unlock()
 
 def TreeRemoveTag(tree,tag):
+    tree.lock()
     try:
-        tree.lock()
         status = __TreeRemoveTag(tree.ctx,str.encode(str(tag)))
         if not (status & 1):
             raise TreeException(_mdsshr.MdsGetMsg(status))
@@ -530,8 +530,8 @@ def TreeGetVersionDate():
 
 def TreeGetNumSegments(n):
     """Get number of segments in a node."""
+    n.tree.lock()
     try:
-        n.tree.lock()
         num=_C.c_int32(0)
         status=__TreeGetNumSegments(n.tree.ctx,n.nid,_C.pointer(num))
     finally:
@@ -547,8 +547,8 @@ def TreePutTimestampedSegment(n,timestampArray,value):
     
     timestampArray=_mimport('mdsarray',1).Int64Array(timestampArray)
     value=_mimport('mdsarray',1).makeArray(value)
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreePutTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestampArray).pointer,_C.pointer(descriptor_a(value)))
     finally:
         n.tree.unlock()
@@ -560,8 +560,8 @@ def TreePutTimestampedSegment(n,timestampArray,value):
 def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
     """Put a segment"""
     timestamps=_mimport('mdsarray',1).Int64Array(timestamps)
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreeMakeTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestamps).pointer,_C.pointer(descriptor_a(value)),idx,rows_filled)
     finally:
         n.tree.unlock()
@@ -572,8 +572,8 @@ def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
 
 def TreePutSegment(n,value,idx):
     """Put a segment"""
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreePutSegment(n.tree.ctx,n.nid,idx,_C.pointer(descriptor(value)))
     finally:
         n.tree.unlock()
@@ -584,8 +584,8 @@ def TreePutSegment(n,value,idx):
 
 def TreePutRow(n,bufsize,array,timestamp):
     """Begin a segment."""
+    n.tree.lock()
     try:
-        n.tree.lock()
         array=_mimport('mdsarray',1).makeArray(array)
         status=__TreePutRow(n.tree.ctx,n.nid,bufsize,_C.pointer(_C.c_int64(int(timestamp))),
                              _C.pointer(descriptor_a(array)))
@@ -599,8 +599,8 @@ def TreePutRow(n,bufsize,array,timestamp):
 
 def TreeBeginTimestampedSegment(n,value,idx):
     """Begin a segment"""
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreeBeginTimestampedSegment(n.tree.ctx,n.nid,_C.pointer(descriptor_a(value)),idx)
     finally:
         n.tree.unlock()
@@ -610,20 +610,18 @@ def TreeBeginTimestampedSegment(n,value,idx):
         raise TreeException(_mdsshr.MdsGetMsg(status))
 
 def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
+    n.tree.lock()
     try:
-        n.tree.lock()
         if isinstance(initialValue,_mimport('compound',1).Compound):
             __TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
                             _C.POINTER(descriptor),_C.c_int32,_C.c_int32]
             status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                     _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),idx,
-                                     1)
+                                     _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),idx,1)
         else:
             __TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
                             _C.POINTER(descriptor_a),_C.c_int32,_C.c_int32]
             status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                     _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx,
-                                     initialValue.shape[0])
+                                     _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx,initialValue.shape[0])
     finally:
         n.tree.unlock()
     if (status & 1):
@@ -634,11 +632,10 @@ def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
 
 def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
     """Begin a segment."""
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreeBeginSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),
-                                   idx)
+                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx)
     finally:
         n.tree.unlock()
     if (status & 1):
@@ -649,8 +646,8 @@ def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
 
 def TreeUpdateSegment(n,start,end,dimension,idx):
     """Update a segment."""
+    n.tree.lock()
     try:
-        n.tree.lock()
         status=__TreeUpdateSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
                                     _C.pointer(descriptor(dimension)),idx)
     finally:
@@ -709,8 +706,8 @@ def TreeGetDbi(tree,itemname):
     else:
         ans=_C.c_int32(0)
         itmlst=DBI_ITM_INT(item[0],ans)
+    tree.lock()
     try:
-        tree.lock()
         status=__TreeGetDbi(tree.ctx,_C.cast(
             _C.pointer(itmlst),_C.c_void_p))
     finally:
@@ -718,10 +715,10 @@ def TreeGetDbi(tree,itemname):
     if not (status & 1):
         raise TreeException(_mdsshr.MdsGetMsg(status))
     if item[1]==str:
-        if isinstance(ans.value,str):
-          return ans.value
-        else:
+        try:
           return ans.value.decode()
+        except:
+          return ans.value
     else:
         return item[1](ans.value)
 
@@ -735,10 +732,9 @@ def TreeSetDbi(tree,itemname,value):
         retlen=_C.c_int32(0)
         itmlst=DBI_ITM_CHAR(item[0],len(str(value)),_C.c_char_p(str(value)),retlen)
     else:
-        ans=_C.c_int32(0)
         itmlst=DBI_ITM_INT(item[0],_C.c_int32(int(value)))
+    tree.lock()
     try:
-        tree.lock()
         status=__TreeSetDbi(tree.ctx,_C.cast(
             _C.pointer(itmlst),_C.c_void_p))
     finally:

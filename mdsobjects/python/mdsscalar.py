@@ -26,17 +26,17 @@ def makeScalar(value):
         if isinstance(value,numpy.bool_):
             return makeScalar(int(value))
         return globals()[value.__class__.__name__.capitalize()](value)
-    try:
-        if isinstance(value,long):
-            return Int64(value)
-        if isinstance(value,int):
-            return Int32(value)
-    except:
-        if isinstance(value,int):
-            return Int64(value)
+    import sys
+    if sys.version_info.major==3:
+        long=int
+        basestring=str
+    if isinstance(value,long):
+        return Int64(value)
+    if isinstance(value,int):
+        return Int32(value)
     if isinstance(value,float):
         return Float32(value)
-    if isinstance(value,str):
+    if isinstance(value,basestring):
         return String(value)
     if isinstance(value,bytes):
         return String(value.decode())
@@ -127,11 +127,11 @@ class Scalar(_data.Data):
         return _data.makeData(getattr(self.value,op)(y,z))
 
     def _getMdsDtypeNum(self):
-        return {'Uint8':DTYPE_BU,'Uint16':DTYPE_WU,'Uint32':DTYPE_LU,'Uint64':DTYPE_QU,
-                'Int8':DTYPE_B,'Int16':DTYPE_W,'Int32':DTYPE_L,'Int64':DTYPE_Q,
-                'String':DTYPE_T,
-                'Float32':DTYPE_FS,
-                'Float64':DTYPE_FT,'Complex64':DTYPE_FSC,'Complex128':DTYPE_FTC}[self.__class__.__name__]
+        return {'Uint8':_dtypes.DTYPE_BU,'Uint16':_dtypes.DTYPE_WU,'Uint32':_dtypes.DTYPE_LU,'Uint64':_dtypes.DTYPE_QU,
+                'Int8':_dtypes.DTYPE_B,'Int16':_dtypes.DTYPE_W,'Int32':_dtypes.DTYPE_L,'Int64':_dtypes.DTYPE_Q,
+                'String':_dtypes.DTYPE_T,
+                'Float32':_dtypes.DTYPE_FS,
+                'Float64':_dtypes.DTYPE_FT,'Complex64':_dtypes.DTYPE_FSC,'Complex128':_dtypes.DTYPE_FTC}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
 
 
@@ -226,7 +226,11 @@ class String(Scalar):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
         if len(self._value) > 0:
-            return str(self.value.tostring().decode())
+            valstr = self.value.tostring()
+            try:
+                return valstr.decode()
+            except:
+                return valstr
         else:
             return ''
     def __len__(self):

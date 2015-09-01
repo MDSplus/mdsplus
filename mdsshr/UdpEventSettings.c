@@ -174,7 +174,7 @@ void InitializeEventSettings()
 #endif
     if (home_dir != NULL) {
       xmlDocPtr doc=NULL;
-      static const char *home_xml_dir = "/.mdsplus/";
+      static const char *home_xml_dir = "/.mdsplus.conf/";
       char *xmlfname = malloc(strlen(home_dir) + strlen(home_xml_dir) + strlen(fname) + 10);
       sprintf(xmlfname, "%s%s%s", home_dir, home_xml_dir, fname);
       if (access(xmlfname,R_OK) == 0)

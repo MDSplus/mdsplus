@@ -1,0 +1,65 @@
+#!/bin/bash
+set -o verbose
+set -e 
+wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+mkdir -p /buildroot
+cd /buildsrc
+./configure --prefix=/buildroot/usr/local/mdsplus \
+            --exec_prefix=/buildroot/usr/local/mdsplus \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=/3rd-party-apis-master/idl \
+            --with-gsi=/usr:gcc64 \
+            --bindir=/buildroot/usr/local/mdsplus/bin64 \
+            --libdir=/buildroot/usr/local/mdsplus/lib64 \
+            --host=x86-64-linux \
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
+make clean > /dev/null
+env LANG=en_US.UTF-8 make
+make install
+make clean >/dev/null;
+./configure --prefix=/buildroot/usr/local/mdsplus \
+            --exec_prefix=/buildroot/usr/local/mdsplus \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=/3rd-party-apis-master/idl \
+            --with-gsi=/usr:gcc32 \
+            --bindir=/buildroot/usr/local/mdsplus/bin32 \
+            --libdir=/buildroot/usr/local/mdsplus/lib32 \
+            --host=i686-linux \
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
+env LANG=en_US.UTF-8 make;
+if [ -z "$BNAME" ]
+then
+  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+else
+  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
+fi
+make install
+make clean >/dev/null;
+if [ -d /installer ]
+then
+    echo "Building rpms"
+    mkdir -p /buildroot/etc/yum.repos.d
+    mkdir -p /buildroot/etc/pki/rpm-gpg/
+    mkdir -p /installer/BUILD /installer/BUILDROOT /installer/SPECS /installer/RPMS /installer/SRPMS
+    cp deploy/RPM-GPG-KEY-MDSplus /buildroot/etc/pki/rpm-gpg/
+    outfile=/buildroot/etc/yum.repos.d/mdsplus${BNAME}.repo
+    echo [MDSplus${BNAME}] > $outfile
+    echo "name=MDSplus${BNAME}" >> $outfile
+    echo "baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS" >> $outfile
+    echo "enabled=1" >> $outfile
+    cat - >> $outfile <<EOF
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+metadata_expire=300
+EOF
+    build_rpms_mdsplus
+    touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+fi
+if [ -d /EGGS ]
+then
+    build_eggs
+fi
+
+    

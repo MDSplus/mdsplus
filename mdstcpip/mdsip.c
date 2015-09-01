@@ -1,6 +1,7 @@
-#include "mdsip_connections.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "mdsip_connections.h"
 
 int main(int argc, char **argv)
 {

@@ -334,7 +334,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
       strcat(filename, tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file, 0, sizeof(NCI_FILE));
       info->nci_file->get =
-	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
+	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY, 0664);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
 	info->nci_file->get = 0;
@@ -349,12 +349,13 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
   } else {
   /*******************************************
     Else the file was open for read access so
-    close it and re-open it for write access.
+    open it for write access.
   *******************************************/
     size_t len = strlen(info->filespec) - 4;
     char *filename = strncpy(malloc(len + 20), info->filespec, len);
     filename[len] = '\0';
     strcat(filename, tmpfile ? "characteristics#" : "characteristics");
+    /********* this will never happen ***********/
     if (info->nci_file->put)
       MDS_IO_CLOSE(info->nci_file->put);
     info->nci_file->put =
@@ -368,16 +369,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
     if (info->edit) {
       info->edit->first_in_mem = (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
     }
-  /**********************************************
-   Set up the RABs for buffered reads and writes
-   and CONNECT it.
-   If there is a problem then close it, free the
-   memory and return.
-  **********************************************/
-  } else {
-    free(info->nci_file);
-    info->nci_file = NULL;
-  }
+  } 
   if (status & 1)
     TreeCallHook(OpenNCIFileWrite, info, 0);
   return status;

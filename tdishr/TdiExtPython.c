@@ -1,4 +1,3 @@
-#include <Python.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -8,11 +7,18 @@
 #include <dlfcn.h>
 #include <signal.h>
 #include <config.h>
+#include <stdlib.h>
 
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
 
+typedef void* PyObject,PyThreadState;
+typedef ssize_t Py_ssize_t;
+
+
+static void (*DynPy_DecRef)() = 0;
+#define Py_DECREF (*DynPy_DecRef)
 static PyObject *(*DynPyTuple_New) () = 0;
 #define PyTuple_New (*DynPyTuple_New)
 static PyObject *(*DynPyString_FromString) () = 0;
@@ -50,7 +56,7 @@ static PyObject *(*DynPyObject_CallFunction) () = 0;
 #define PyObject_CallFunction (*DynPyObject_CallFunction)
 static PyObject *(*DynPySys_GetObject) () = 0;
 #define PySys_GetObject (*DynPySys_GetObject)
-static long (*DynPyLong_AsLong) () = 0;
+static int64_t (*DynPyLong_AsLong) () = 0;
 #define PyLong_AsLong (*DynPyLong_AsLong)
 static char *(*DynPyString_AsString) () = 0;
 #define PyString_AsString (*DynPyString_AsString)
@@ -60,6 +66,8 @@ static int (*DynPyCallable_Check) () = 0;
 #define PyCallable_Check (*DynPyCallable_Check)
 static PyObject *(*DynPyList_GetItem) () = 0;
 #define PyList_GetItem (*DynPyList_GetItem)
+static PyObject *(*DynPyObject_Str) () = 0;
+#define PyObject_Str (*DynPyObject_Str)
 
 #define loadrtn(prefix,name,check) prefix ## name=dlsym(handle,#name);	\
   if (check && !prefix ## name) { \
@@ -81,7 +89,7 @@ static int Initialize()
       return 0;
     }
 #ifdef _WIN32
-    lib = strcpy((char *)malloc(strlen(envsym) + 4), envsym);
+    lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
     strcat(lib, ".dll");
 #else
     if (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0) {
@@ -109,6 +117,7 @@ static int Initialize()
       loadrtn(tmp, Py_Initialize, 1);
       (*tmpPy_Initialize) ();
     }
+    loadrtn(Dyn, Py_DecRef, 1);
     loadrtn(Dyn, PyTuple_New, 1);
     loadrtn(Dyn, PyString_FromString, 1);
     loadrtn(Dyn, PyTuple_SetItem, 1);
@@ -133,6 +142,7 @@ static int Initialize()
     loadrtn(Dyn, PyList_Size, 1);
     loadrtn(Dyn, PyCallable_Check, 1);
     loadrtn(Dyn, PyList_GetItem, 1);
+    loadrtn(Dyn, PyObject_Str,1);
   }
   return 1;
 }
@@ -185,10 +195,8 @@ static void addToPath(char *dirspec)
   for (idx = 0; idx < listlen; idx++) {
     PyObject *pathPart;
     pathPart = PyList_GetItem(sys_path, idx);
-    if (PyString_Check(pathPart)) {
-      if (strcmp(PyString_AsString(pathPart), dirspec) == 0) {
-	break;
-      }
+    if (strcmp(PyString_AsString(PyObject_Str(pathPart)), dirspec) == 0) {
+      break;
     }
   }
   if (idx == listlen) {

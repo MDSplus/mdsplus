@@ -17,7 +17,20 @@ def restoreContext():
     t=_mimport('tree',1).Tree.getActiveTree()
     if t is not None:
       t.restoreContext()
-        
+
+def _parseArguments(args):
+    _descriptor=_mimport('_descriptor',1)
+    descriptor=_descriptor.descriptor
+    if args is None:
+        return list()
+    if isinstance(args,tuple):
+        if args:
+            if isinstance(args[0],tuple):
+                return(_parseArguments(args[0]))
+        argin = [_C.pointer(descriptor(arg)) for arg in args]
+        return argin
+    raise TypeError('Arguments must be passed as a tuple')
+       
 def TdiCompile(expression,args=None):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
     _descriptor=_mimport('_descriptor',1)
@@ -25,30 +38,13 @@ def TdiCompile(expression,args=None):
     descriptor=_descriptor.descriptor
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
-    done=False
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
-        if args is None:
-            status=TdiShr.TdiCompile(_C.pointer(descriptor(expression)),_C.pointer(xd),_C.c_void_p(-1))
-        else:
-            if isinstance(args,tuple):
-                if len(args) > 0:
-                    if isinstance(args[0],tuple):
-                        ans = TdiCompile(expression,args[0])
-                        done=True
-                if not done:
-                    exp='TdiShr.TdiCompile(_C.pointer(descriptor(expression))'
-                    for i in range(len(args)):
-                        exp=exp+',_C.pointer(descriptor(args[%d]))' % i
-                    exp=exp+',_C.pointer(xd),_C.c_void_p(-1))'
-                    status=eval(exp)
-            else:
-                raise TypeError('Arguments must be passed as a tuple')
+        argin = [_C.pointer(descriptor(expression))]+_parseArguments(args)+[_C.pointer(xd),_C.c_void_p(-1)]
+        status = TdiShr.TdiCompile(*argin)
     finally:
         Tree.unlock()
-    if done:
-        return ans
     if (status & 1 != 0):
             return xd.value
     else:
@@ -61,30 +57,13 @@ def TdiExecute(expression,args=None):
     descriptor_xd=_descriptor.descriptor_xd
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
-    done=False
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
-        if args is None:
-            status=TdiShr.TdiExecute(_C.pointer(descriptor(expression)),_C.pointer(xd),_C.c_void_p(-1))
-        else:
-            if isinstance(args,tuple):
-                if len(args) > 0:
-                    if isinstance(args[0],tuple):
-                        ans = TdiExecute(expression,args[0])
-                        done=True
-                if not done:
-                    exp='TdiShr.TdiExecute(_C.pointer(descriptor(expression))'
-                    for i in range(len(args)):
-                        exp=exp+',_C.pointer(descriptor(args[%d]))' % i
-                    exp=exp+',_C.pointer(xd),_C.c_void_p(-1))'
-                    status=eval(exp)
-            else:
-                raise TypeError('Arguments must be passed as a tuple')
+        argin = [_C.pointer(descriptor(expression))]+_parseArguments(args)+[_C.pointer(xd),_C.c_void_p(-1)]
+        status = TdiShr.TdiExecute(*argin)
     finally:
         Tree.unlock()
-    if done:
-        return ans
     if (status & 1 != 0):
             return xd.value
     else:
@@ -97,8 +76,8 @@ def TdiDecompile(value):
     descriptor=_descriptor.descriptor
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         status=TdiShr.TdiDecompile(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
@@ -118,8 +97,8 @@ def TdiEvaluate(value):
     descriptor_xd=_descriptor.descriptor_xd
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         status=TdiShr.TdiEvaluate(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
@@ -136,8 +115,8 @@ def TdiData(value):
     descriptor_xd=_descriptor.descriptor_xd
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         status=TdiShr.TdiData(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:

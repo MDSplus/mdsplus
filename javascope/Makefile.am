@@ -31,7 +31,7 @@ $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 jScope.jar: colors1.tbl
-	mkdir docs
+	$(MKDIR_P) docs
 	cp $(SUBDOCS) ./docs
 	$(JAR) c0f $@ $(TOPDOCS) $(JSCOPE_CLASS) docs $<
 	rm -Rf docs

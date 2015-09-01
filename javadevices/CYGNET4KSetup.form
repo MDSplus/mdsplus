@@ -3,7 +3,7 @@
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
-    <Property name="deviceTitle" type="java.lang.String" value="Gygnet4K sCMOS Camera"/>
+    <Property name="deviceTitle" type="java.lang.String" value="Cygnet4K sCMOS Camera"/>
     <Property name="deviceType" type="java.lang.String" value="CYGNET4K"/>
     <Property name="height" type="int" value="300"/>
     <Property name="width" type="int" value="600"/>

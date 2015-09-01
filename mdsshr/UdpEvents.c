@@ -20,7 +20,7 @@
 #include <libroutines.h>
 #include "mdsshrthreadsafe.h"
 extern int UdpEventGetPort(unsigned short *port);
-extern int UdpEventGetAddress(const char **addr_format, unsigned char *arange);
+extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
 extern int UdpEventGetTtl(unsigned char *ttl);
 extern int UdpEventGetLoop(unsigned char *loop);
 extern int UdpEventGetInterface(struct in_addr **interface_addr);
@@ -204,7 +204,7 @@ static int getSocket()
 
 static void getMulticastAddr(char const *eventName, char *retIp)
 {
-  const char *addr_format;
+  char *addr_format;
   int i;
   int len = strlen(eventName);
   unsigned char arange[2];
@@ -216,6 +216,7 @@ static void getMulticastAddr(char const *eventName, char *retIp)
       (unsigned int)((float)arange[0] +
 		     ((float)(hash % 256) / 256.) * ((float)arange[1] - (float)arange[0] + 1.));
   sprintf(retIp, addr_format, hashnew);
+  free(addr_format);
 }
 
 int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), void *astprm,

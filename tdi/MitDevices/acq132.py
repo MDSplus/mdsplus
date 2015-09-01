@@ -114,7 +114,7 @@ class ACQ132(acq.ACQ):
                     fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                     fd.write(setDIOcmd)         
             else:
-                fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_freq/1000, clock_freq/1000*clock_div, clock_out,))
+                fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_freq/1000, clock_freq/1000*clock_div, clock_src,))
 
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             
@@ -216,6 +216,8 @@ class ACQ132(acq.ACQ):
             print "clock_src = %s\n" % (clock_src,)
         if clock_src == 'INT_CLOCK' :
             intClock = float(settings['getInternalClock'].split()[1])
+            if intClock > 16000000:
+                intClock = 2000000
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:

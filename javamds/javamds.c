@@ -10,6 +10,8 @@
 //#include "LocalDataProvider.h"
 #include "jScope_LocalDataProvider.h"
 #include "MdsHelper.h"
+#include "jScope_MdsIpProtocolWrapper.h"
+#include "../mdstcpip/mdsip_connections.h"
 
 extern int TdiCompile(), TdiData(), TdiFloat();
 
@@ -705,12 +707,12 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
       break;
     case 4:
       for (i = 0; i < nSamples; i++) {
-	tmp = buf[2 * i];
-	buf[2 * i] = buf[2 * i + 3];
-	buf[2 * i + 3] = tmp;
-	tmp = buf[2 * i + 1];
-	buf[2 * i + 1] = buf[2 * i + 2];
-	buf[2 * i + 2] = tmp;
+	tmp = buf[4 * i];
+	buf[4 * i] = buf[4 * i + 3];
+	buf[4 * i + 3] = tmp;
+	tmp = buf[4 * i + 1];
+	buf[4 * i + 1] = buf[4 * i + 2];
+	buf[4 * i + 2] = tmp;
       }
       break;
     }
@@ -781,12 +783,12 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
       break;
     case 4:
       for (i = 0; i < nSamples; i++) {
-	tmp = buf[2 * i];
-	buf[2 * i] = buf[2 * i + 3];
-	buf[2 * i + 3] = tmp;
-	tmp = buf[2 * i + 1];
-	buf[2 * i + 1] = buf[2 * i + 2];
-	buf[2 * i + 2] = tmp;
+	tmp = buf[4 * i];
+	buf[4 * i] = buf[4 * i + 3];
+	buf[4 * i + 3] = tmp;
+	tmp = buf[4 * i + 1];
+	buf[4 * i + 1] = buf[2 * i + 2];
+	buf[4 * i + 2] = tmp;
       }
       break;
     }
@@ -1492,3 +1494,93 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 
   (*env)->CallStaticVoidMethodA(env, cls, mid, args);
 }
+
+//////////////////////////////////////////////////////
+// MdsProtocol Plugin stuff
+//////////////////////////////////////////////////////
+static void throwMdsExceptionStr(JNIEnv * env, char *errorMsg)
+{
+  jclass exc;
+
+  exc = (*env)->FindClass(env, "Exception");
+  (*env)->ThrowNew(env, exc, errorMsg);
+}
+
+/*
+ * Class:     jScope_MdsIpProtocolWrapper
+ * Method:    connectToMds
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_connectToMds
+  (JNIEnv *env, jobject jobj, jstring jurl)
+{
+    const char *url = (*env)->GetStringUTFChars(env, jurl, 0);
+    int connectionId = ConnectToMds((char *)url);
+   (*env)->ReleaseStringUTFChars(env, jurl, url);
+    return connectionId;
+}
+
+/*
+ * Class:     jScope_MdsIpProtocolWrapper
+ * Method:    send
+ * Signature: (I[BZ)I
+ */
+JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_send
+  (JNIEnv *env, jobject jobj, jint connectionId, jbyteArray jbuf, jboolean noWait)
+{
+    int size = (*env)->GetArrayLength(env, jbuf);
+    char *buf = (char *)(*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
+    IoRoutines *ior = GetConnectionIo(connectionId);
+    return ior->send(connectionId, (const char *)buf, size, noWait);
+}
+
+
+/*
+ * Class:     jScope_MdsIpProtocolWrapper
+ * Method:    recv
+ * Signature: (II)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
+  (JNIEnv *env, jobject jobj, jint connectionId, jint size)
+{
+    char *readBuf = malloc(size);
+    int retSize;
+    jbyteArray jarr;
+    IoRoutines *ior = GetConnectionIo(connectionId);
+    retSize = ior->recv(connectionId, readBuf, size);
+    if(retSize == -1)
+    {
+	free(readBuf);
+	return 0;
+    }
+    jarr = (*env)->NewByteArray(env, retSize);
+    (*env)->SetByteArrayRegion(env, jarr, 0, retSize, readBuf);
+    free(readBuf);
+    return jarr;
+}
+
+/*
+ * Class:     jScope_MdsIpProtocolWrapper
+ * Method:    flush
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_flush
+  (JNIEnv *env, jobject jobj, jint connectionId)
+{
+    IoRoutines *ior = GetConnectionIo(connectionId);
+    ior->flush(connectionId);
+}
+
+/*
+ * Class:     jScope_MdsIpProtocolWrapper
+ * Method:    disconnect
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_disconnect
+  (JNIEnv *env, jobject jobj, jint connectionId)
+{
+    DisconnectConnection(connectionId);
+    //IoRoutines *ior = GetConnectionIo(connectionId);
+    //ior->disconnect(connectionId);
+}
+

@@ -170,7 +170,7 @@ public class RFXVConfigSetup extends DeviceSetup {
         deviceChoice1.setUpdateIdentifier("");
         jPanel5.add(deviceChoice1);
 
-        deviceChoice2.setChoiceItems(new String[] {"H2", "He", "Not used"});
+        deviceChoice2.setChoiceItems(new String[] {"H2", "He", "Ne", "Ar", "Not used"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Bottle Gas");
         deviceChoice2.setOffsetNid(9);

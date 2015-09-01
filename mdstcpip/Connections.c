@@ -1,14 +1,20 @@
 #include <stdlib.h>
-#include <string.h>
-#include <treeshr.h>
-#include "mdsip_connections.h"
 #include <stdio.h>
+#include <string.h>
+
+#include <treeshr.h>
 #include <mdsshr.h>
+
+#include "mdsip_connections.h"
 
 static Connection *ConnectionList = 0;
 static int connection_mutex_initialized = 0;
 static pthread_mutex_t connection_mutex;
 
+///
+/// Locks the connection list for safe multithreading access to ConnectionList
+/// static variable.
+///
 static void lock_connection_list()
 {
   if (!connection_mutex_initialized) {
@@ -18,6 +24,9 @@ static void lock_connection_list()
   pthread_mutex_lock(&connection_mutex);
 }
 
+///
+/// Unlocks the connection list for safe multithreading access to ConnectionList
+/// static variable.
 static void unlock_connection_list()
 {
 
@@ -39,6 +48,7 @@ Connection *FindConnection(int id, Connection ** prev)
   unlock_connection_list();
   return c;
 }
+
 
 int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
 {
@@ -89,35 +99,55 @@ static void exitHandler(void)
 }
 #endif
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  NewConnection  /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 int NewConnection(char *protocol)
 {
-  Connection *oldhead, *new;
+  Connection *oldhead, *connection;
   IoRoutines *io = LoadIo(protocol);
   static int id = 1;
   static int registerExitHandler = 1;
   if (io) {
     registerExitHandler = registerExitHandler ? atexit(exitHandler) : 0;
-    new = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
-    new->io = io;
-    new->readfd = -1;
+    connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
+    connection->io = io;
+    connection->readfd = -1;
     lock_connection_list();
     oldhead = ConnectionList;
-    ConnectionList = new;
-    new->id = id++;
-    new->message_id = -1;
-    new->next = oldhead;
-    new->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    ConnectionList = connection;
+    connection->id = id++;
+    connection->message_id = -1;
+    connection->next = oldhead;
+    connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
     unlock_connection_list();
-    return new->id;
+    return connection->id;
   } else
     return -1;
 }
 
+
+///
+/// Authorize client by username calling protocol IoRoutine.
+/// 
+/// \param id of the connection to use
+/// \param username of the user to be authorized for access
+/// \return true if authorized user found, false otherwise
+///
 static int AuthorizeClient(int id, char *username)
 {
   Connection *c = FindConnection(id, 0);
   return c && c->io ? (c->io->authorize ? c->io->authorize(id, username) : 1) : 0;
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  AcceptConnection  //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len,
 		     int *id, char **usr)
@@ -130,6 +160,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     char *user = 0;
     char *user_p = 0;
     int status;
+    
+    // SET INFO //
     SetConnectionInfo(*id, info_name, readfd, info, info_len);
     m_user = GetMdsMsg(*id, &status);
     if (m_user == 0 || !(status & 1)) {
@@ -138,6 +170,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       return 0;
     }
     m.h.msglen = sizeof(MsgHdr);
+    
+    // AUTHORIZE //
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING)) {
       user = malloc(m_user->h.length + 1);
       memcpy(user, m_user->bytes, m_user->h.length);
@@ -145,6 +179,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     }
     user_p = user ? user : "?";
     ok = AuthorizeClient(*id, user_p);
+    
+    // SET COMPRESSION //
     if (ok & 1) {
       SetConnectionCompression(*id, m_user->h.status & 0xf);
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
@@ -152,9 +188,13 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       *usr = 0;
     m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
+    
     if (m_user)
       MdsIpFree(m_user);
+    
+    // reply to client //
     SendMdsMsg(*id, &m, 0);
+    
     if (!(ok & 1)) {
       fprintf(stderr, "Access denied\n");
       DisconnectConnection(*id);
@@ -165,11 +205,16 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
   return ok;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  FreeDescriptors  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 void FreeDescriptors(Connection * c)
 {
   int i;
   if (c) {
-    for (i = 0; i < MAX_ARGS; i++) {
+    for (i = 0; i < MDSIP_MAX_ARGS; i++) {
       if (c->descrip[i]) {
 	if (c->descrip[i] != MdsEND_ARG) {
 	  if (c->descrip[i]->pointer)
@@ -181,6 +226,12 @@ void FreeDescriptors(Connection * c)
     }
   }
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  DisconnectConnection  //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 int DisconnectConnection(int conid)
 {
@@ -208,11 +259,21 @@ int DisconnectConnection(int conid)
   return status;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  GetConnectionIo  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 IoRoutines *GetConnectionIo(int conid)
 {
   Connection *c = FindConnection(conid, 0);
   return (c != 0) ? c->io : 0;
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  GetConnectionInfo  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len)
 {
@@ -230,6 +291,10 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len)
   return ans;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  SetConnectionInfo  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len)
 {
   Connection *c = FindConnection(conid, 0);
@@ -245,6 +310,11 @@ void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_
     c->readfd = readfd;
   }
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  ConnectionCompression  /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 void SetConnectionCompression(int conid, int compression)
 {
@@ -263,6 +333,10 @@ int GetConnectionCompression(int conid)
     return 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  IncrementConnectionMessageId  //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 unsigned char IncrementConnectionMessageId(int conid)
 {
   unsigned char ans = 0;
@@ -276,6 +350,12 @@ unsigned char IncrementConnectionMessageId(int conid)
   return ans;
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  GetConnectionMessageId  ////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 unsigned char GetConnectionMessageId(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -285,6 +365,13 @@ unsigned char GetConnectionMessageId(int conid)
     return 0;
 }
 
+///
+/// Finds connection by id and sets the client_type field of the connection structure.
+/// \note see ClientType() function.
+///
+/// \param conid the connection id
+/// \param client_type the type of connection to be set
+///
 void SetConnectionClientType(int conid, int client_type)
 {
   Connection *c = FindConnection(conid, 0);
@@ -293,6 +380,13 @@ void SetConnectionClientType(int conid, int client_type)
   }
 }
 
+///
+/// Finds connection by id and gets the client_type field of the connection structure
+/// \note see ClientType() function.
+///
+/// \param conid the connection id
+/// \return client_type value stored in connection structure
+///
 int GetConnectionClientType(int conid)
 {
   Connection *c = FindConnection(conid, 0);

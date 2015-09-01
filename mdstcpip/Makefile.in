@@ -6,8 +6,18 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ WIN=.win
 @MINGW_TRUE@ DEF=mdsipshr.def
 
-COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
-inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
+COMPRESSION_SOURCES = zlib/adler32.c \
+                      zlib/compress.c \
+                      zlib/deflate.c \
+                      zlib/infblock.c \
+                      zlib/infcodes.c \
+                      zlib/inffast.c \
+                      zlib/inflate.c \
+                      zlib/inftrees.c \
+                      zlib/infutil.c \
+                      zlib/trees.c \
+                      zlib/uncompr.c \
+                      zlib/zutil.c
 COMPRESSION_OBJECTS = $(COMPRESSION_SOURCES:.c=.o)
 
 COMPRESSION_SWITCH=
@@ -37,9 +47,10 @@ endif #MINGW
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else #SHARETYPE
-	modules = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ 
+        modules = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@
 endif #SHARETYPE
 
+## MdsIpShr sources ##
 LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventAst.c\
 	  MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
 	  IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c\
@@ -49,10 +60,13 @@ LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventA
 
 LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
 
+## MdsIpSrvShr sources ##
 SERVER_LIB_SOURCES = ProcessMessage.c RemoveConnection.c 
 SERVER_LIB_OBJECTS = $(SERVER_LIB_SOURCES:.c=.o)
+
 SERVER_SOURCES = mdsip.c 
 SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
+
 TCP_SOURCES = IoRoutinesTcp.c
 TCP_OBJECTS = $(TCP_SOURCES:.c=.o)
 TCPV6_SOURCES = IoRoutinesTcpv6.c
@@ -158,7 +172,12 @@ install: $(bindir) $(libdir) $(sysconfdir)
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
         endif
 
-@MAKEBINDIR@mdsiptest$(EXE): t.c $(MdsIpShr)
+.PHONY: docs
+docs:
+	doxygen docs/doxy.conf
+
+
+@MAKEBINDIR@mdsiptest$(EXE): testing/mdsiptest.c $(MdsIpShr)
 	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 @MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)
@@ -173,7 +192,7 @@ MDSIP_EXTRALIB = -lMdsIpSrvShr
 
 MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr
 
-@MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS) $(COMPRESS_OBJECTS)
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
@@ -219,15 +238,16 @@ $(MdsIpSSH) $(MdsIpHTTP):
 $(bin_SCRIPTS): @MAKEBINDIR@%: %
 	cp $< $@
 
-#makefile-header:  
-#	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header
 
 ifdef MdsIpGSI
+
+#makefile-header:  
+#	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-eader
 
 #include makefile-header
 
 $(MdsIpGSI):  IoRoutinesGsi.c
-	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LINK_MDSIPSHR)
+	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LIBS) $(LINK_MDSIPSHR) $$(pkg-config --libs globus-xio globus-xio-gsi-driver globus-gssapi-gsi globus-gss-assist)
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp $< $@

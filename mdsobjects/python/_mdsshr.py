@@ -128,9 +128,6 @@ def MdsDecompress(value):
     else:
         raise MdsException(MdsGetMsg(status))
 
-def MdsCompareXd(value1,value2):
-    return MdsShr.MdsCompareXd(_C.pointer(descriptor(value1)),_C.pointer(descriptor(value2)))
-
 
 def MdsCopyDxXd(desc):
     _desc=_mimport('_descriptor',1)
@@ -142,6 +139,9 @@ def MdsCopyDxXd(desc):
         return xd
     else:
         raise MdsException(MdsGetMsg(status))
+
+#def MdsCompareXd(value1,value2):
+#    return MdsShr.MdsCompareXd(_C.pointer(descriptor(value1)),_C.pointer(descriptor(value2)))
 
 def MdsCompareXd(value1,value2):
     _desc=_mimport('_descriptor',1)

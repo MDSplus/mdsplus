@@ -338,10 +338,15 @@ char *TranslateLogical(char *pathname)
   if (tpath)
     path = strcpy((char *)malloc(strlen(tpath) + 1), tpath);
 #ifdef _WIN32
-  if (!path)
+  if (!path) {
     path = GetRegistry(HKEY_CURRENT_USER, pathname);
-  if (!path)
-    path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+    if (!path)
+      path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+    if (path) {
+      tpath = strcpy((char *)malloc(strlen(path) + 1), path);
+      path = tpath;
+    }
+  }
 #endif
   return path;
 }

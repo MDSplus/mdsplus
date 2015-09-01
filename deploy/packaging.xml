@@ -302,6 +302,7 @@ fi
     <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>
+    <exclude dir="/usr/local/mdsplus/tdi/W7xDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/camac"/>
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
@@ -514,6 +515,29 @@ fi
     </prerm>
 
   </package>
+  <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
+    <requires package="python"/>
+    <include dir="/usr/local/mdsplus/tdi/W7xDevices"/>
+    <postinst>
+
+pushd __INSTALL_PREFIX__/mdsplus/tdi/W7xDevices
+rm -Rf %{python_sitelib}/W7xDevices*
+rm -Rf build dist
+python setup.py -q install
+rm -Rf build dist W7xDevices.egg-info
+popd
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf %{python_sitearch}/W7xDevices*
+fi
+
+    </prerm>
+
+  </package>
 
   <package name="kbsidevices" arch="noarch" summary="Support for KBSI data acquisition devices" description="Support for KBSI data acquisition devices">
     <include dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
@@ -631,7 +655,7 @@ Name: mdsplus%(rflavor)s%(packagename)s
 Version: %(major)d.%(minor)d
 Release: %(release)s.%(dist)s
 License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
-Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)s.tgz
+Source: https://github.com/MDSplus/mdsplus/archive/%(BRANCH)s_release-%(major)d-%(minor)d-%(release)d.tar.gz
 URL: http://www.mdsplus.org
 Vendor: Massachusetts Institute of Technology
 Packager: Plasma Science and Fusion Center &lt;mdsplus@www.mdsplus.org&gt;
@@ -693,6 +717,58 @@ make clean &gt;/dev/null
 
    </install_script>
  </ubuntu>
+ <raspberrypi>
+   <install_script>#!/bin/bash
+set -e
+if [ ! -r ~/.gnupg ]
+then
+  tar zxfC /mdsplus/certs/rpm-signing-keys.tgz ~/
+fi
+sudo rm -Rf /tmp/%(flavor)s/apt
+rm -Rf /tmp/%(flavor)s
+export BUILDROOT="/tmp/%(flavor)s/BUILDROOT"
+mkdir -p /tmp/%(flavor)s/{BUILDROOT,REPO,DEBS}
+mkdir -p /tmp/%(flavor)s/REPO/{conf,pool,dists,db}
+cat - &lt;&lt;EOF &gt; /tmp/%(flavor)s/REPO/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: %(major)d.%(minor)d.%(release)d
+Architectures: armhf source
+Components: alpha stable feature_raspberrypi
+Description: MDSplus packages
+SignWith: MDSplus
+EOF
+
+export CROSSBUILDER=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian
+export PATH=${CROSSBUILDER}/bin:$PATH
+export EXTRAS=/mdsplus/extras
+export RFS=$EXTRAS/raspberrypi/rootfs
+export LABVIEW_DIR=$EXTRAS/Labview-x86
+export IDL_DIR=$EXTRAS/idl-x86
+export PYTHON_INCLUDE_DIR=${RFS}/usr/include/python2.7
+cd ..
+#mkdir -p lib
+#ln -sf /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf/* lib/
+./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
+            --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
+            --with-jdk=$JDK_DIR \
+            --with-labview=$LABVIEW_DIR \
+            --with-jdk=$JDK_DIR \
+            --with-idl=$IDL_DIR \
+            --with-gsi=/usr:gcc${bits} \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+            --host=arm-linux-gnueabihf \
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${EXTRAS}/raspberrypi/include"\
+             FFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
+             LIBS="-L ${RFS}/usr/lib/arm-linux-gnueabihf -L ${RFS}/lib/arm-linux-gnueabihf"
+make clean &gt;/dev/null
+env LANG=en_US.UTF-8 make
+env MDSPLUS_VERSION=%(mdsplus_version)s make install
+make clean &gt;/dev/null
+
+   </install_script>
+ </raspberrypi>
  <external_packages platforms="rhel,fc">
    <python-devel/>
    <setuptools package="python-setuptools"/>
@@ -700,7 +776,7 @@ make clean &gt;/dev/null
    <xinetd/>
    <java/>
  </external_packages>
- <external_packages platforms="ubuntu,debian">
+ <external_packages platforms="ubuntu,debian,rasp">
    <python-devel package="python-dev"/>
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>

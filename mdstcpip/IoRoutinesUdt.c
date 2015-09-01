@@ -49,8 +49,8 @@ static int UDT_authorize(int conid, char *username);
 static int UDT_connect(int conid, char *protocol, char *host);
 static int UDT_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines UDT_routines =
-    { UDT_connect, UDT_send, UDT_recv, UDT_flush, UDT_listen, UDT_authorize, UDT_reuseCheck,
-UDT_disconnect };
+{ UDT_connect, UDT_send, UDT_recv, UDT_flush, UDT_listen, UDT_authorize, UDT_reuseCheck,
+  UDT_disconnect };
 
 typedef struct _client {
   UDTSOCKET sock;
@@ -82,12 +82,12 @@ static void InitializeSockets()
 #ifdef _WIN32
   static int initialized = 0;
   if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = 1;
-  }
+      WSADATA wsaData;
+      WORD wVersionRequested;
+      wVersionRequested = MAKEWORD(1, 1);
+      WSAStartup(wVersionRequested, &wsaData);
+      initialized = 1;
+    }
 #endif
 }
 
@@ -106,18 +106,18 @@ static pthread_mutex_t socket_mutex;
 static void lock_socket_list()
 {
   if (!socket_mutex_initialized) {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, 0);
-  }
+      socket_mutex_initialized = 1;
+      pthread_mutex_init(&socket_mutex, 0);
+    }
   pthread_mutex_lock(&socket_mutex);
 }
 
 static void unlock_socket_list()
 {
   if (!socket_mutex_initialized) {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, 0);
-  }
+      socket_mutex_initialized = 1;
+      pthread_mutex_init(&socket_mutex, 0);
+    }
   pthread_mutex_unlock(&socket_mutex);
 }
 
@@ -138,12 +138,12 @@ static void PopSocket(UDTSOCKET socket)
   lock_socket_list();
   for (s = Sockets, p = 0; s && s->socket != socket; p = s, s = s->next) ;
   if (s != NULL) {
-    if (p)
-      p->next = s->next;
-    else
-      Sockets = s->next;
-    free(s);
-  }
+      if (p)
+        p->next = s->next;
+      else
+        Sockets = s->next;
+      free(s);
+    }
   unlock_socket_list();
 }
 
@@ -152,9 +152,9 @@ static void ABORT(int sigval)
   SocketList *s;
   lock_socket_list();
   for (s = Sockets; s; s = s->next) {
-    //    shutdown(s->socket,2);
-    udt_close(s->socket);
-  }
+      //    shutdown(s->socket,2);
+      udt_close(s->socket);
+    }
   unlock_socket_list();
 }
 
@@ -162,7 +162,7 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
 {
   char *ans = NULL;
   struct sockaddr_in sin;
-  int n = sizeof(sin);
+  socklen_t n = sizeof(sin);
   if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
     struct hostent *hp = 0;
     char *iphost = inet_ntoa(sin.sin_addr);
@@ -200,26 +200,26 @@ static int UDT_authorize(int conid, char *username)
   char *iphost = 0;
   char *info = getHostInfo(s, &iphost, &hoststr);
   if (info) {
-    char *matchString[2] = { 0, 0 };
-    int num = 1;
-    timestr[strlen(timestr) - 1] = 0;
-    printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, s, getpid(), username,
-	   info);
-    matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
-    strcat(matchString[0], "@");
-    strcat(matchString[0], iphost);
-    if (hoststr) {
-      matchString[1] = strcpy(malloc(strlen(username) + strlen(hoststr) + 3), username);
-      strcat(matchString[1], "@");
-      strcat(matchString[1], hoststr);
-      num = 2;
+      char *matchString[2] = { 0, 0 };
+      int num = 1;
+      timestr[strlen(timestr) - 1] = 0;
+      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, s, getpid(), username,
+             info);
+      matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
+      strcat(matchString[0], "@");
+      strcat(matchString[0], iphost);
+      if (hoststr) {
+          matchString[1] = strcpy(malloc(strlen(username) + strlen(hoststr) + 3), username);
+          strcat(matchString[1], "@");
+          strcat(matchString[1], hoststr);
+          num = 2;
+        }
+      ans = CheckClient(username, num, matchString);
+      if (matchString[0])
+        free(matchString[0]);
+      if (matchString[1])
+        free(matchString[1]);
     }
-    ans = CheckClient(username, num, matchString);
-    if (matchString[0])
-      free(matchString[0]);
-    if (matchString[1])
-      free(matchString[1]);
-  }
   if (info)
     free(info);
   if (iphost)
@@ -237,8 +237,8 @@ static ssize_t UDT_send(int conid, const void *bptr, size_t num, int nowait)
   int options = nowait ? MSG_DONTWAIT : 0;
   ssize_t sent = -1;
   if (s != -1) {
-    sent = udt_send(s, bptr, num, options | MSG_NOSIGNAL);
-  }
+      sent = udt_send(s, bptr, num, options | MSG_NOSIGNAL);
+    }
   return sent;
 }
 
@@ -323,13 +323,13 @@ static short GetPort(char *name)
   struct servent *sp;
   port = htons((short)atoi(name));
   if (port == 0) {
-    sp = getservbyname(name, "tcp");
-    if (sp == NULL) {
-      fprintf(stderr, "unknown service: %s/tcp\n\n", name);
-      exit(0);
+      sp = getservbyname(name, "tcp");
+      if (sp == NULL) {
+          fprintf(stderr, "unknown service: %s/tcp\n\n", name);
+          exit(0);
+        }
+      port = sp->s_port;
     }
-    port = sp->s_port;
-  }
   return port;
 }
 
@@ -345,37 +345,37 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
   InitializeSockets();
   for (i = 0; i < strlen(host) && host[i] != ':'; i++) ;
   if (i < strlen(host)) {
-    host[i] = '\0';
-    service = &host[i + 1];
-  } else {
-    service = mdsip;
-  }
+      host[i] = '\0';
+      service = &host[i + 1];
+    } else {
+      service = mdsip;
+    }
   hp = gethostbyname(host);
   if (hp == NULL) {
-    addr = inet_addr(host);
-    if (addr != 0xffffffff)
-      hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
-  }
-  if (hp == 0) {
-    free(host);
-    return 0;
-  }
-  if (atoi(service) == 0) {
-    struct servent *sp;
-    sp = getservbyname(service, "tcp");
-    if (sp != NULL)
-      portnum = sp->s_port;
-    else {
-      char *port = getenv(service);
-      port = (port == NULL) ? "8000" : port;
-      portnum = htons(atoi(port));
+      addr = inet_addr(host);
+      if (addr != 0xffffffff)
+        hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
     }
-  } else
+  if (hp == 0) {
+      free(host);
+      return 0;
+    }
+  if (atoi(service) == 0) {
+      struct servent *sp;
+      sp = getservbyname(service, "tcp");
+      if (sp != NULL)
+        portnum = sp->s_port;
+      else {
+          char *port = getenv(service);
+          port = (port == NULL) ? "8000" : port;
+          portnum = htons(atoi(port));
+        }
+    } else
     portnum = htons(atoi(service));
   if (portnum == 0) {
-    free(host);
-    return 2;
-  }
+      free(host);
+      return 2;
+    }
   sin->sin_port = portnum;
   sin->sin_family = AF_INET;
 #if defined(ANET)
@@ -392,14 +392,14 @@ static int UDT_reuseCheck(char *host, char *unique, size_t buflen)
   struct sockaddr_in sin;
   int status = getHostAndPort(host, &sin);
   if (status == 1) {
-    char *addr = (char *)&sin.sin_addr;
-    snprintf(unique, buflen, "tcp://%d.%d.%d.%d:%d", addr[0], addr[1], addr[2], addr[3],
-	     ntohs(sin.sin_port));
-    return 0;
-  } else {
-    *unique = 0;
-    return -1;
-  }
+      char *addr = (char *)&sin.sin_addr;
+      snprintf(unique, buflen, "tcp://%d.%d.%d.%d:%d", addr[0], addr[1], addr[2], addr[3],
+          ntohs(sin.sin_port));
+      return 0;
+    } else {
+      *unique = 0;
+      return -1;
+    }
 }
 
 static int UDT_connect(int conid, char *protocol, char *host)
@@ -450,19 +450,19 @@ static int getSocketHandle(char *name)
   char shutdownEventName[120];
   HANDLE shutdownEvent, waitHandle;
   if (name == 0 || sscanf(name, "%d:%d", &ppid, &psock) != 2) {
-    fprintf(stderr, "Mdsip single connection server can only be started from windows service\n");
-    exit(1);
-  }
+      fprintf(stderr, "Mdsip single connection server can only be started from windows service\n");
+      exit(1);
+    }
   sprintf(logfile, "C:\\MDSIP_%s_%d.log", GetPortname(), _getpid());
   freopen(logfile, "a", stdout);
   freopen(logfile, "a", stderr);
   if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS, TRUE, ppid),
-		       (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
-		       PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
-    fprintf(stderr, "Attempting to duplicate socket from pid %d socket %d\n", ppid, psock);
-    perror("Error duplicating socket from parent");
-    exit(1);
-  }
+                       (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
+                       PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
+      fprintf(stderr, "Attempting to duplicate socket from pid %d socket %d\n", ppid, psock);
+      perror("Error duplicating socket from parent");
+      exit(1);
+    }
   sprintf(shutdownEventName, "MDSIP_%s_SHUTDOWN", GetPortname());
   shutdownEvent = CreateEvent(NULL, FALSE, FALSE, (LPCWSTR) shutdownEventName);
   if (!RegisterWaitForSingleObject(&waitHandle, shutdownEvent, ShutdownEvent, NULL, INFINITE, 0))
@@ -481,13 +481,13 @@ static void ChildSignalHandler(int num)
   sigprocmask(SIG_BLOCK, &set, &oldset);
   /* wait for child */
   while ((pid = waitpid((pid_t) - 1, &status, WNOHANG)) > 0) {
-    /* re-install the signal handler (some systems need this) */
-    signal(SIGCHLD, ChildSignalHandler);
-    /* and unblock it */
-    sigemptyset(&set);
-    sigaddset(&set, SIGCHLD);
-    sigprocmask(SIG_UNBLOCK, &set, &oldset);
-  }
+      /* re-install the signal handler (some systems need this) */
+      signal(SIGCHLD, ChildSignalHandler);
+      /* and unblock it */
+      sigemptyset(&set);
+      sigaddset(&set, SIGCHLD);
+      sigprocmask(SIG_UNBLOCK, &set, &oldset);
+    }
 }
 #endif
 
@@ -509,6 +509,7 @@ static int UDT_listen(int argc, char **argv)
     SetPortname("mdsip");
   InitializeSockets();
   server_epoll = udt_epoll_create();
+  
   if (GetMulti()) {
     unsigned short port = GetPort(GetPortname());
     char *matchString[] = { "multi" };
@@ -634,6 +635,11 @@ static int UDT_listen(int argc, char **argv)
       }
     }
   } else {
+
+      //////////////////////////////////////////////////////////////////////////
+      // SERVER MODE                                ////////////////////////////
+      // multiple connections with the same context ////////////////////////////
+
 #ifdef _WIN32
     int sock = getSocketHandle(options[1].value);
 #else
