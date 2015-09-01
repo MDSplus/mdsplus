@@ -696,20 +696,23 @@ class descriptor_a(_C.Structure):
 
     def __init__(self,*value):
         if len(value) == 1:
+            value = value[0]
+            if not value.flags.f_contiguous:
+                value=value.copy('F')
             self.dclass=_mdsclasses.CLASS_A
             self.scale=0
             self.digits=0
             self.aflags=0
-            self.dtype=_dtypes.mdsdtypes.fromNumpy(value[0])
-            self.length=value[0].itemsize
-            self.pointer=_C.c_void_p(value[0].ctypes.data)
-            self.dimct=_N.shape(_N.shape(value[0]))[0]
-            self.arsize=value[0].nbytes
+            self.dtype=_dtypes.mdsdtypes.fromNumpy(value)
+            self.length=value.itemsize
+            self.pointer=_C.c_void_p(value.ctypes.data)
+            self.dimct=_N.shape(_N.shape(value))[0]
+            self.arsize=value.nbytes
             self.a0=self.pointer
             if self.dimct > 1:
                 self.coeff=1
                 for i in range(self.dimct):
-                    self.coeff_and_bounds[i]=_N.shape(value[0])[i]
+                    self.coeff_and_bounds[i]=_N.shape(value)[i]
         return
 
     def __getattr__(self,name):
