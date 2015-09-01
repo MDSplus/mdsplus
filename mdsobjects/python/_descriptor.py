@@ -98,12 +98,10 @@ class descriptor(_C.Structure):
             value=_data.makeData(value)
 
         if isinstance(value,_N.ndarray):
-            if not value.flags.c_contiguous:
-                value=value.copy()
             if str(value.dtype)[1:2]=='S':
                 for i in range(len(value.flat)):
                     value.flat[i]=value.flat[i].ljust(value.itemsize)
-            a=descriptor_a(value.T)
+            a=descriptor_a(value)
             self.length=10000
             self.dtype=_dtypes.DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(a),type(self.pointer))
@@ -696,7 +694,7 @@ class descriptor_a(_C.Structure):
 
     def __init__(self,*value):
         if len(value) == 1:
-            value = value[0]
+            value = value[0].T
             if not value.flags.f_contiguous:
                 value=value.copy('F')
             self.dclass=_mdsclasses.CLASS_A
