@@ -228,14 +228,20 @@ class SaveFrameList
 		bool threadCreated;
 		SaveFrame *saveHead, *saveTail;
 		bool stopReq;
+        bool deferredSave;
 		pthread_mutex_t mutex;
 	public:
+    void setDeferredSave(bool deferredSave)
+    {
+        this->deferredSave = deferredSave;
+    }
     SaveFrameList()
     {
 		int status = pthread_mutex_init(&mutex, NULL);
 		pthread_cond_init(&itemAvailable, NULL);
 		saveHead = saveTail = NULL;
 		stopReq = false;
+        deferredSave = false;
 		threadCreated = false;
     }
 
@@ -283,6 +289,36 @@ class SaveFrameList
 			    pthread_mutex_unlock(&mutex);
 			    pthread_exit(NULL);
 			}
+            if(deferredSave)
+            {
+			    pthread_cond_wait(&itemAvailable, &mutex);
+                if(!stopReq)
+                {
+				    pthread_mutex_unlock(&mutex);
+                    continue;
+                }
+                else
+                {
+                //Empty pending queue
+                    while(saveHead)
+                    {
+			            SaveFrame *currItem = saveHead;
+			            saveHead = saveHead->getNext();
+	
+#ifdef DEBUG
+			            int nItems = 0;
+			            for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
+			            if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
+#endif	
+			            currItem->save();
+			            delete currItem;
+                    }
+			        pthread_mutex_unlock(&mutex);
+			        pthread_exit(NULL);
+                }
+            }
+                    
+
 
 			while(saveHead == NULL)
 			{
@@ -296,9 +332,9 @@ class SaveFrameList
 			SaveFrame *currItem = saveHead;
 			saveHead = saveHead->getNext();
 	
+#ifdef DEBUG
 			int nItems = 0;
 			for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
-#ifdef DEBUG
 			if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
 #endif	
 			pthread_mutex_unlock(&mutex);
@@ -336,6 +372,14 @@ static void *handleSave(void *listPtr)
 void camStartSave(void **retList)
 {
     SaveFrameList *saveFrameList = new SaveFrameList;
+    saveFrameList->start();
+    *retList = (void *)saveFrameList;
+}
+
+void camStartSaveDeferred(void **retList)
+{
+    SaveFrameList *saveFrameList = new SaveFrameList;
+    saveFrameList->setDeferredSave(true);
     saveFrameList->start();
     *retList = (void *)saveFrameList;
 }

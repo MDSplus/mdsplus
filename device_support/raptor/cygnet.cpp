@@ -204,13 +204,9 @@ void epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPix
 	            return;
             }
 #ifdef DEBUG
-            printf("FRAME %d READ AT TIME %f (BUF: %d)\n", frameIdx, currTime, lastCaptured);
+            printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
 #endif
-//            timeval t1, t2;
-//            gettimeofday(&t1, NULL);
-            camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
-//            gettimeofday(&t2, NULL);
-//            printf("camSaveFrameDirect() took %0.3f seconds\n", t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec)/1e6);
+	        camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
             *retFrameIdx = frameIdx + 1;
             if(frameIdx == 0)
                 *retBaseTicks = currTicks;
@@ -406,6 +402,7 @@ static double getExposure(int id)
 static void setExposure(int id, float exposureMs)
 {
     long exposure = fabs(1E6 * exposureMs/16.66);
+//    long exposure = fabs(1E9 * exposureMs/16.66);
 
     char queryBuf1[] = {0x53, 0xE0, 0x02, 0xED, (exposure & 0x000000FF00000000L) >> 32, 0x50};
     char queryBuf2[] = {0x53, 0xE0, 0x02, 0xEE, (exposure & 0xFF000000) >> 24, 0x50};
@@ -575,6 +572,8 @@ void epixSetConfiguration(int id, float frameRate, float exposure, char trigMode
 //    if(exposure > 0)
 //        setExposure(id, exposure); // set definitively via config file
     setTrigMode(id, (char)trigMode);
+
+    printf("READ EXPOSURE: %f\n", getExposure(id));
 }
   
 void epixGetConfiguration(int id, float *PCBTemperature, float *CMOSTemperature, int *binning, int *roiXSize, int *roiXOffset, int *roiYSize, int *roiYOffset)
