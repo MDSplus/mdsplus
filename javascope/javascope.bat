@@ -126,9 +126,9 @@ POPD
 :cleanup
 ECHO cleaning up
 PUSHD %JARDIR%
-RMDIR /S /Q docs>nul
-DEL colors1.tbl jScope.properties *.class>nul
-RMDIR /S /Q jScope>nul
+RMDIR /S /Q docs 2>NUL
+DEL colors1.tbl jScope.properties *.class 2>NUL
+RMDIR /S /Q jScope 2>nul
 POPD
 
 :jscope

@@ -218,8 +218,8 @@ POPD
 :cleanup
 ECHO cleaning up
 PUSHD %JARDIR%
-DEL /Q *.gif
-DEL /Q *.class
+DEL /Q *.gif 2>NUL
+DEL /Q *.class 2>NUL
 POPD
 
 :jtraveser
