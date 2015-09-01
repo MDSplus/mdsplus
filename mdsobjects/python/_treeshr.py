@@ -637,8 +637,7 @@ def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
     try:
         n.tree.lock()
         status=__TreeBeginSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),
-                                   idx)
+                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx)
     finally:
         n.tree.unlock()
     if (status & 1):
