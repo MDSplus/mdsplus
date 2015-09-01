@@ -1,15 +1,21 @@
-@echo off
-echo preparing
-call ..\setJDK_DIR
-if not defined JDK_DIR (
-echo . . .
-echo You need to set the JDK_DIR environment variable.
-echo Run setJDK_DIR.bat and restart your cmd.
-echo . . .
-pause
-goto end
-)
-set SOURCES_DATA=ActionData.java ^
+@ECHO OFF
+ECHO preparing
+if defined JDK_DIR GOTO:compile
+rem This script located the current version of
+rem "Java Development Kit" and sets the
+rem %JDK_PATH% environment variable
+setlocal ENABLEEXTENSIONS
+set KEY=HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Development Kit
+FOR /F "usebackq tokens=2,* skip=2" %%L IN (`reg query "%KEY%" /v CurrentVersion`) DO SET JDKVER=%%M
+FOR /F "usebackq tokens=2,* skip=2" %%L IN (`reg query "%KEY%\%JDKVER%" /v JavaHome`) DO SET JDK_DIR="%%M"
+SET JDK_DIR=%JDK_DIR:"=%
+IF EXIST "%JDK_DIR%" GOTO:start
+ECHO JDK not found. Please set %%JDK_DIR%% to the root path of your jdk.
+SET /A ERROR=1
+GOTO:end
+
+:start
+SET SOURCES_DATA=ActionData.java ^
 ApdData.java ^
 ArrayData.java ^
 AtomicData.java ^
@@ -46,7 +52,7 @@ WindowData.java ^
 WithErrorData.java ^
 WithUnitsData.java
 
-set SOURCES_ARRAY=ByteArray.java ^
+SET SOURCES_ARRAY=ByteArray.java ^
 DoubleArray.java ^
 FloatArray.java ^
 IntArray.java ^
@@ -55,7 +61,7 @@ QuadArray.java ^
 ShortArray.java ^
 StringArray.java
 
-set SOURCES_TRAV=ActionEditor.java ^
+SET SOURCES_TRAV=ActionEditor.java ^
 ArgEditor.java ^
 AxisEditor.java ^
 ByteArray.java ^
@@ -163,7 +169,7 @@ UnsupportedDataException.java ^
 WindowEditor.java ^
 Convert.java
 
-set GIFS=DeviceApply.gif ^
+SET GIFS=DeviceApply.gif ^
 DeviceChoice.gif ^
 DeviceReset.gif ^
 compound.gif ^
@@ -187,27 +193,42 @@ axis.gif ^
 numeric.gif ^
 task.gif
 
-set JARDIR=..\java\classes
-set CLASSPATH=-classpath .;%JARDIR%;"C:\Program Files\MDSplus\java\classes\jScope.jar"
-set JAVAC="%JDK_DIR%\bin\javac.exe"
-set JAR="%JDK_DIR%\bin\jar.exe"
-set MANIFEST=%CD%\DeviceBeansManifest.mf
-mkdir %JARDIR%
+SET CLASSPATH=-classpath ".;%MDSPLUS_DIR%\java\classes\jScope.jar"
+SET JAVAC="%JDK_DIR%\bin\javac.exe" ||rem -Xlint -deprecation
+SET JCFLAGS= ||rem -Xlint -deprecation
+SET JAR="%JDK_DIR%\bin\jar.exe"
+SET MANIFEST=%CD%\DeviceBeansManifest.mf
+SET JARDIR=..\java\classes
+MKDIR %JARDIR% 2>NUL
 
-echo compiling *.java to *.class . . .
-%JAVAC% -d %JARDIR% %CLASSPATH% %SOURCES_DATA% %SOURCES_ARRAY% %SOURCES_TRAV%
+ECHO compiling *.java to *.class . . .
+%JAVAC% %JCFLAGS% -d %JARDIR% %CLASSPATH% %SOURCES_DATA% %SOURCES_ARRAY% %SOURCES_TRAV%
+SET /A ERROR=%ERRORLEVEL%
+IF %ERROR% NEQ 0 GOTO:cleanup
 
-echo gathering data
-copy /Y *.gif %JARDIR% >nul
+ECHO gathering data
+COPY /Y *.gif %JARDIR% >NUL
 
-echo creating jar packages
+ECHO creating jar packages
 PUSHD %JARDIR%
 %JAR% -cmf %MANIFEST% DeviceBeans.jar *.class *.gif
 %JAR% -cf jTraverser.jar *.class *.gif
-
-echo cleaning up
-del /Q *.gif
-del /Q *.class
 POPD
+
+:cleanup
+ECHO cleaning up
+PUSHD %JARDIR%
+DEL /Q *.gif
+DEL /Q *.class
+POPD
+
+:jtraveser
+IF %ERROR% NEQ 0 GOTO:end
+ECHO start jTraverser?
+PAUSE
+CLS
+java -cp "%JARDIR%\jTraverser.jar" jTraverser
+
 :end
-pause
+PAUSE
+EXIT /B ERROR
