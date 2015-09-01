@@ -223,6 +223,7 @@ void epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPix
             printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
 #endif
 	        camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
+	        camSaveFrameDirectDeferred(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
             *retFrameIdx = frameIdx + 1;
             if(frameIdx == 0)
                 *retBaseTicks = currTicks;
@@ -404,20 +405,20 @@ static double getExposure(int id)
     char queryBuf9[] = {0x53, 0xE0, 0x01, 0xF1, 0x50};
     char queryBuf10[] = {0x53, 0xE1, 0x01, 0x50};
  
-    doTransaction(id, queryBuf1, 5, retBuf, 2);
-    doTransaction(id, queryBuf2, 4, retBuf, 3);
+    doTransaction(id, queryBuf1, 5, retBuf, 1);
+    doTransaction(id, queryBuf2, 4, retBuf, 2);
     exposure |= ((retBuf[0] & 0x00000000000000FFL) << 32);
-    doTransaction(id, queryBuf3, 5, retBuf, 2);
-    doTransaction(id, queryBuf4, 4, retBuf, 3);
+    doTransaction(id, queryBuf3, 5, retBuf, 1);
+    doTransaction(id, queryBuf4, 4, retBuf, 2);
     exposure |= ((retBuf[0] & 0x000000FF) << 24);
-    doTransaction(id, queryBuf5, 5, retBuf, 2);
-    doTransaction(id, queryBuf6, 4, retBuf, 3);
+    doTransaction(id, queryBuf5, 5, retBuf, 1);
+    doTransaction(id, queryBuf6, 4, retBuf, 2);
     exposure |= ((retBuf[0] & 0x000000FF) << 16);
-    doTransaction(id, queryBuf7, 5, retBuf, 2);
-    doTransaction(id, queryBuf8, 4, retBuf, 3);
+    doTransaction(id, queryBuf7, 5, retBuf, 1);
+    doTransaction(id, queryBuf8, 4, retBuf, 2);
     exposure |= ((retBuf[0] & 0x000000FF) << 8);
-    doTransaction(id, queryBuf9, 5, retBuf, 2);
-    doTransaction(id, queryBuf10, 4, retBuf, 3);
+    doTransaction(id, queryBuf9, 5, retBuf, 1);
+    doTransaction(id, queryBuf10, 4, retBuf, 2);
     exposure |= (retBuf[0] & 0x000000FF);
     return exposure * 16.66/1000000.;
 }
@@ -425,6 +426,7 @@ static double getExposure(int id)
 static void setExposure(int id, float exposureMs)
 {
     long exposure = fabs(1E6 * exposureMs/16.66);
+//    long exposure = fabs(1E9 * exposureMs/16.66);
 
     char queryBuf1[] = {0x53, 0xE0, 0x02, 0xED, (exposure & 0x000000FF00000000L) >> 32, 0x50};
     char queryBuf2[] = {0x53, 0xE0, 0x02, 0xEE, (exposure & 0xFF000000) >> 24, 0x50};
@@ -598,6 +600,8 @@ void epixSetConfiguration(int id, float frameRate, float exposure, char trigMode
     if(exposure > 0)
         setExposure(id, exposure);
     setTrigMode(id, (char)trigMode);
+
+    printf("READ EXPOSURE: %f\n", getExposure(id));
 }
   
 void epixGetConfiguration(int id, float *PCBTemperature, float *CMOSTemperature, int *binning, int *roiXSize, int *roiXOffset, int *roiYSize, int *roiYOffset)

@@ -97,7 +97,8 @@ class CYGNET4K(Device):
           return 0
                 
         listPtr = c_void_p(0);
-        self.mdsLib.camStartSave(byref(listPtr))
+#        self.mdsLib.camStartSave(byref(listPtr))
+        self.mdsLib.camStartSaveDeferred(byref(listPtr))
 
 
         currTime = c_float(0)
@@ -248,6 +249,8 @@ class CYGNET4K(Device):
       if(trigMode == 'FIXED FRAME RATE'): 
         codedTrigMode = 0x0E
     
+      print "EXPOSURE: ", exposure
+
       raptorLib.epixSetConfiguration(c_int(idx), c_float(frameRate), c_float(exposure), c_int(codedTrigMode))
       PCBTemperature = c_float(0)
       CMOSTemperature = c_float(0)
@@ -291,6 +294,7 @@ class CYGNET4K(Device):
     def stop_store(self,arg):
       self.restoreWorker()
       self.worker.stop()
+      self.worker.join()
       return 1
 
 ##########start store############################################################################   

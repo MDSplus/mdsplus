@@ -10,6 +10,7 @@ void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int
         int frameIdx, void *saveListPtr);
 
 static void *handleSave(void *listPtr);
+void camStartSaveDeferred(void **retList);
 void camStartSave(void **retList);
 void camStopSave(void *listPtr);
 
