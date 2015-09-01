@@ -1,6 +1,6 @@
 @ECHO OFF
 ECHO preparing
-if defined JDK_DIR GOTO:compile
+if defined JDK_DIR GOTO:start
 rem This script located the current version of
 rem "Java Development Kit" and sets the
 rem %JDK_PATH% environment variable
