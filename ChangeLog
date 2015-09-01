@@ -1,4 +1,19 @@
-commit fd7a1b8061b063389dea7eadc992be41b320eea7 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 284a5934c7323e4f5b3e89dc8276fe1e821867ec (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 61329af 6300070
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Aug 31 11:35:52 2015 +0200
+
+    Merge pull request #35 from zack-vii/alpha_javamds
+    
+    javamds.c: Fix 32 bit swap for getAllFrames
+
+commit 61329af40ed03aaa8d8c88edc15ef7596458b76f (tag: refs/tags/alpha_release-7-0-141)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Aug 26 23:05:23 2015 -0400
+
+    New release ---- alpha_release-7-0-141
+
+commit fd7a1b8061b063389dea7eadc992be41b320eea7
 Merge: 96ade28 8c51533
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Aug 26 09:42:53 2015 -0400
@@ -28,6 +43,14 @@ Date:   Tue Aug 25 16:19:48 2015 +0200
     
     make use of MdsShr->MdsGetMsgDsc
     from getmsg.fun
+
+commit 6300070434a310b5a6dbbc5f20dc40f521c6d864
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Aug 25 01:18:10 2015 +0200
+
+    javamds.c: Fix 32 bit swap for getAllFrames
+    
+    same as for getIntegerArray
 
 commit 02312b19d0c7d92cb5a2bd58515169504b0d6ea9 (tag: refs/tags/alpha_release-7-0-140)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
