@@ -127,11 +127,11 @@ class Scalar(_data.Data):
         return _data.makeData(getattr(self.value,op)(y,z))
 
     def _getMdsDtypeNum(self):
-        return {'Uint8':DTYPE_BU,'Uint16':DTYPE_WU,'Uint32':DTYPE_LU,'Uint64':DTYPE_QU,
-                'Int8':DTYPE_B,'Int16':DTYPE_W,'Int32':DTYPE_L,'Int64':DTYPE_Q,
-                'String':DTYPE_T,
-                'Float32':DTYPE_FS,
-                'Float64':DTYPE_FT,'Complex64':DTYPE_FSC,'Complex128':DTYPE_FTC}[self.__class__.__name__]
+        return {'Uint8':_dtypes.DTYPE_BU,'Uint16':_dtypes.DTYPE_WU,'Uint32':_dtypes.DTYPE_LU,'Uint64':_dtypes.DTYPE_QU,
+                'Int8':_dtypes.DTYPE_B,'Int16':_dtypes.DTYPE_W,'Int32':_dtypes.DTYPE_L,'Int64':_dtypes.DTYPE_Q,
+                'String':_dtypes.DTYPE_T,
+                'Float32':_dtypes.DTYPE_FS,
+                'Float64':_dtypes.DTYPE_FT,'Complex64':_dtypes.DTYPE_FSC,'Complex128':_dtypes.DTYPE_FTC}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
 
 
