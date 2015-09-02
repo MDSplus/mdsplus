@@ -1,41 +1,97 @@
-commit 284a5934c7323e4f5b3e89dc8276fe1e821867ec (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
-Merge: 61329af 6300070
+commit ff931cd81a3b57453c381fbe2166a491c7d6d61f (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
-Date:   Mon Aug 31 11:35:52 2015 +0200
+Date:   Tue Sep 1 14:54:23 2015 +0200
 
-    Merge pull request #35 from zack-vii/alpha_javamds
+    Store frames in memory
+
+commit e0213824be1e6c430627870f6582555154914af0
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 14:23:25 2015 +0200
+
+    fix and change to updater
     
-    javamds.c: Fix 32 bit swap for getAllFrames
+    if construction is unstable with setlocal
+    updating is better even e.g. when java has been updated
 
-commit 61329af40ed03aaa8d8c88edc15ef7596458b76f (tag: refs/tags/alpha_release-7-0-141)
+commit d8ccfc863bedeefca9b80918f349a81cc3cf27c9
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 14:18:21 2015 +0200
+
+    improved the java compile batch scripts
+    
+    Error handling included 'get JDK path from registry'
+    abort on compiling error - jump to clean up
+    launch program in console for grabbing output and debug
+
+commit 52a186bfb237eb5d9cbe8dcc2b7b2e2447da955d
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Aug 15 17:51:18 2015 +0200
+
+    javascope.bat: added compiling error handling
+    
+    made use of the %ERRORLEVEL% of compiling process to conditionally abort
+
+commit 2847eb272cbf6ec513fc3af73f370499e710f4c4
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Aug 31 23:07:37 2015 -0400
+
+    New release ---- alpha_release-7-0-142
+
+commit 8366853ccaf33d2b19851f7531c30faa54e96bf0
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 03:44:02 2015 +0200
+
+    descriptor_a fix
+    
+    if ndarray, tdi fortran contignous is required - so we better check as
+    late as possible sinche descriptor_a is directly called by the segmented
+    stuff e.g. makeSegment.
+    -no need to check in the descriptor.__init__
+    -also we want to transpose in descriptor_a
+    - value.T swaps between c and fortran contignous
+
+commit 7f90b76650d21182823981e60cf8b2ea4082878d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 02:43:56 2015 +0200
+
+    mdsscalar fixed undefined dtypes
+    
+    dtypes not defined
+    testcase:
+    import MDSplus;MDSplus.Int32(1).mdsdtype
+
+commit 4087516a609221b59cb2130c5de479aa406f4c5e
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 02:07:46 2015 +0200
+
+    copy array fotran style
+
+commit 8d8c1e458840444c3cf2093a6334ba20f96b5993
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 00:44:50 2015 +0200
+
+    tree.lock() - try: - finally: tree.unlock()
+    
+    fixed order of tree.lock()  and try
+    tree must be locked or finally will have nothing to unlock if locking
+    fails.
+    the lock would fit for a  'with' structure
+
+commit 009809248f17029564a6f6836552a7cf83368209
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Aug 31 19:42:00 2015 +0200
+
+    mdsscalar: handle basestring and long
+    
+    substitute long with int and basestring with str
+
+commit e518544fc73490d107a5fd5dfd408199ffd0638c
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Aug 26 23:05:23 2015 -0400
 
     New release ---- alpha_release-7-0-141
 
-commit fd7a1b8061b063389dea7eadc992be41b320eea7
-Merge: 96ade28 8c51533
-Author: Josh Stillerman <jas@psfc.mit.edu>
-Date:   Wed Aug 26 09:42:53 2015 -0400
-
-    Merge pull request #36 from zack-vii/alpha_matlab_mdsgetmsg
-    
-    mdsgetmsg.m: use MdsShr->MdsGetMsgDsc
-
-commit 96ade28c38e34c81a668ea34ed87f297563154a3
-Merge: abf2ab1 02312b1
-Author: Josh Stillerman <jas@psfc.mit.edu>
-Date:   Wed Aug 26 09:38:52 2015 -0400
-
-    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
-
-commit abf2ab17f7265a1dd15073392312b0d5dbd78f47
-Author: Josh Stillerman <jas@psfc.mit.edu>
-Date:   Wed Aug 26 09:38:42 2015 -0400
-
-    fix external clock command string, Fix special clock answer for board level oversampling
-
-commit 8c515333c4f819240e71147f3ce05e267ca5dd60
+commit 4daf410b3af0e9cbbd17403f1bc56e5005381b38
 Author: zack-vii <zack.vii@live.com>
 Date:   Tue Aug 25 16:19:48 2015 +0200
 
@@ -44,7 +100,7 @@ Date:   Tue Aug 25 16:19:48 2015 +0200
     make use of MdsShr->MdsGetMsgDsc
     from getmsg.fun
 
-commit 6300070434a310b5a6dbbc5f20dc40f521c6d864
+commit 3bcbd395c54d8fd3f9f7b96dd7fddd8c970dfe6d
 Author: zack-vii <zack.vii@live.com>
 Date:   Tue Aug 25 01:18:10 2015 +0200
 
@@ -52,68 +108,31 @@ Date:   Tue Aug 25 01:18:10 2015 +0200
     
     same as for getIntegerArray
 
-commit 02312b19d0c7d92cb5a2bd58515169504b0d6ea9 (tag: refs/tags/alpha_release-7-0-140)
+commit 83c794dd2be814ef42bd0d3854b38a17cf718d02
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Aug 18 23:12:57 2015 -0400
 
     New release ---- alpha_release-7-0-140
 
-commit 062ae62770c4be886322295f20e9698c647e8362
-Merge: b6044ff 802aaf4
-Author: gabriele.manduchi <gabriele.manduchi@igi.cnr.it>
-Date:   Tue Aug 18 09:35:36 2015 +0200
+commit 784cb31fd2df64b24656cd83a792daca833f021b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Apr 21 19:11:24 2015 +0200
 
-    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus into alpha
+    Fix exception
 
-commit b6044ff6b7eebac5411240064c915b5ebcfe2cc6
+commit 9213fd58868592f77ebce60afcc13ce2c731da1a
 Author: root <root@gabriele-VirtualBox.(none)>
 Date:   Tue Aug 18 09:33:25 2015 +0200
 
     Fix 32 bit swap
 
-commit 802aaf47098f2143ef1917d5a457f2a6eb34f598 (tag: refs/tags/alpha_release-7-0-139)
+commit 395d8f2d3e325d7930d19bc9ffa92ac148497b5f
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Aug 14 23:05:31 2015 -0400
 
     New release ---- alpha_release-7-0-139
 
-commit 6bca5dbbe9b5b9e6243113df2ed659ade54c4872
-Merge: ba3a52d b5efa13
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Fri Aug 14 14:58:23 2015 -0400
-
-    Merge pull request #26 from zack-vii/alpha_copy_ans
-    
-    unused stuff
-
-commit ba3a52d35041a86b9f058628c8d98070b423ef10
-Merge: 3da33d8 f52e601
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Fri Aug 14 14:57:19 2015 -0400
-
-    Merge pull request #25 from zack-vii/alpha__mdsshr
-    
-    _mdsshr removed duplicated declaration
-
-commit 3da33d88629991ba6b557b9dedf6239f82024f1c
-Merge: 3aec63d bddcc6d
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Fri Aug 14 09:10:23 2015 -0400
-
-    Merge pull request #31 from zack-vii/alpha__descriptor_unicode
-    
-    Rearraged _descriptors (specific>generic)
-
-commit 3aec63d7243bb25b0098610399fd86d7f438dd4a
-Merge: 290d2a1 9e4cd1a
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Fri Aug 14 09:05:14 2015 -0400
-
-    Merge pull request #30 from zack-vii/alpha__tdishr_avoid_eval
-    
-    replace eval with *argin
-
-commit bddcc6db9a56c937bef18649709c089cab69b4b6
+commit 8d421f26c3876a6042f814532ea290ea436578f7
 Author: zack-vii <zack.vii@live.com>
 Date:   Fri Aug 14 14:53:01 2015 +0200
 
@@ -123,7 +142,7 @@ Date:   Fri Aug 14 14:53:01 2015 +0200
     checked last as e.g. a Nid is a subclass of int. therefore int should be
     checked for after Nid in order to preserve the Nid properties.
 
-commit 9e4cd1a0d860849cee49d92d01dc69bcd64ac9ec
+commit 3e4a74d5f0fa1c9f75c0b0aea5ce0280403492d3
 Author: zack-vii <zack.vii@live.com>
 Date:   Fri Aug 14 14:43:27 2015 +0200
 
@@ -135,22 +154,13 @@ Date:   Fri Aug 14 14:43:27 2015 +0200
     the tuple of arguments into a list of pointers. The *argin expands the
     list into individual input arguments
 
-commit 290d2a142078bd929b63b7f853c7f12645c6427f (tag: refs/tags/alpha_release-7-0-138)
+commit 7c920bc0ad7d8cb8e53a05a5efd363ab0533c791
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Thu Aug 13 23:06:58 2015 -0400
 
     New release ---- alpha_release-7-0-138
 
-commit 8bddcae469f58548679b49236103aaa868ca742c
-Merge: b6f82bf 923f9c9
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Thu Aug 13 21:33:22 2015 -0400
-
-    Merge pull request #28 from zack-vii/alpha__descriptor_unicode
-    
-    _descriptor: fix unicode and tree attribute
-
-commit 923f9c9b7153fb30733e7aae2cf3254a18daf3b2
+commit ba35f5336eace2731e70000e33e6d8a3eb360c3b
 Author: zack-vii <zack.vii@live.com>
 Date:   Fri Aug 14 02:05:24 2015 +0200
 
@@ -161,16 +171,7 @@ Date:   Fri Aug 14 02:05:24 2015 +0200
     051603d)
     -merged str and unicode
 
-commit b6f82bf4e049f0fc3c2944a560b77082e5bf0699
-Merge: 73857ab 7fc656f
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Thu Aug 13 14:42:29 2015 -0400
-
-    Merge pull request #27 from zack-vii/alpha__descriptor_unicode
-    
-    new treat for unicode
-
-commit 7fc656f2e5dca80e2df5fcb164f8f3748daa4d5c
+commit b5eb58f1ca523bab0871fd997fef0793f8cc381e
 Author: zack-vii <zack.vii@live.com>
 Date:   Thu Aug 13 20:34:51 2015 +0200
 
@@ -179,13 +180,13 @@ Date:   Thu Aug 13 20:34:51 2015 +0200
     does not fail on isinstance(value,unicode) as enclosed by try-except
     but will throw errors within the block
 
-commit 73857abbd633c42ac8c722fd1ef35e0f24ea189e
+commit 99e5d8291f8c05403b5c014b84c8049c0a8e4e64
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Aug 13 14:30:04 2015 -0400
 
     Remove CachedTreeNode class, threading import and fixed the Tree() constructor
 
-commit b5efa130ed14779f0d66ea0d5db487e05796f460
+commit 844f663858117a5942231a18c22d814f63d0c721
 Author: zack-vii <zack.vii@live.com>
 Date:   Thu Aug 13 20:25:02 2015 +0200
 
@@ -194,7 +195,7 @@ Date:   Thu Aug 13 20:25:02 2015 +0200
     mdsdata,2: copy is never used
     _tresshr,738:  ans is never used
 
-commit f52e601b4979c2058c02e12d2a02e181aa9daee9
+commit 109e65a11c65dc0f5fc4fecb70323891d55dc81f
 Author: zack-vii <zack.vii@live.com>
 Date:   Thu Aug 13 20:00:58 2015 +0200
 
@@ -203,90 +204,67 @@ Date:   Thu Aug 13 20:00:58 2015 +0200
     MdsCompareXd has been declared twice. first one is overwritten by second
     one
 
-commit 7dbec189f53dafbeb665bdb3c6b7df1b21d45b61 (tag: refs/tags/alpha_release-7-0-137)
+commit e093a70076604645f78350952db93257bc231693
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Aug 12 17:17:44 2015 -0400
 
     New release ---- alpha_release-7-0-137
 
-commit 5e146f7b6c5b52e06247bbee41a0d2296413a534
+commit 4e40341f9963efdaecf906501008fa2b87d10864
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 16:38:59 2015 -0400
 
     Fix git tracking
 
-commit 799e378d68bee7749c95661c512541fb7310ad36
+commit f70da714a45db4c7e34eacda4220a51cdaee75e7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 13:48:11 2015 -0400
 
     Fix python package versions again
 
-commit 51b68fe98e3ee1b5932b3b781e737050cf31d691 (tag: refs/tags/alpha_release-7-0-136)
+commit 2c61e428754a174515f7c45e3fd22e03bc7556e4
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Aug 12 12:18:56 2015 -0400
 
     New release ---- alpha_release-7-0-136
 
-commit 3c7f129e34952513ebd29ca734bfc39b5ca34514
-Merge: 7397e9f c166507
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Wed Aug 12 09:11:10 2015 -0400
-
-    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
-
-commit 7397e9f78b1d3b0788073db1767dac003c57fd0f
+commit 97b289cbdf70b1955bbe54f22c4c3b07059ee944
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 09:10:59 2015 -0400
 
     Fix import level on tree
 
-commit c166507b31c6b67f6a40474055d2edcd18cc686b (tag: refs/tags/alpha_release-7-0-135)
+commit eb4e9de612b0b61c641ab8508fe2ebb8108804d4
 Author: Jenkins Continuous Build server <jenkins@mdsplus-jenkins.psfc.mit.edu>
 Date:   Tue Aug 11 14:49:21 2015 -0400
 
     New release ---- alpha_release-7-0-135
 
-commit f4356e2928d8682a14c0f8935827f3b0318b4782
+commit 835878f7f464d15e033caf217f3b0162454e2a0a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Aug 11 14:38:20 2015 -0400
 
     Change for migration to Jenkins
 
-commit b260ff79aa365dd7de985eeaf93a6364facfe7bc
+commit f6499c13675647a642e8b891ed6766342f2fc3aa
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Aug 11 14:34:46 2015 -0400
 
     Change for migration to Jenkins
 
-commit 0375ac9ea3b8a54b716b996b35483b202d80dd33
-Merge: b74c427 91f2a20
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Tue Aug 11 14:33:24 2015 -0400
-
-    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
-
-commit b74c427455997e33a326ac9c8b4a43d5f2e68693
+commit 28d5f49568fe1a2399514124eec75985a9054f52
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Aug 11 14:33:14 2015 -0400
 
     Change for migration to Jenkins
 
-commit 91f2a2098359fa38d9220b284614c7aaef585ec2
-Merge: 030f6c5 da5aad6
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Tue Aug 11 12:32:40 2015 -0400
-
-    Merge pull request #22 from zack-vii/alpha
-    
-    set Tree to current tree if not assigned
-
-commit 030f6c56bbae9d6b5252b2160706452b306fb123
+commit 5b3d16a091decffd4d35d97dd4461ea9fde693d5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Aug 11 12:26:17 2015 -0400
 
     Fix test for unicode
 
-commit da5aad6de66a7d2808a1ae6c67e9bcb8339df742
+commit d0bf2b7f3e278c35f449ffae4055516b849d4841
 Author: zack-vii <zack.vii@live.com>
 Date:   Tue Aug 11 17:53:58 2015 +0200
 
@@ -298,16 +276,7 @@ Date:   Tue Aug 11 17:53:58 2015 +0200
     arglist is never used
     x / _C_value can be reused in expression
 
-commit 06cbe5d3a0156816ed9c3bfd18b0215daa2893ab
-Merge: 92e6ce4 97e43c3
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Tue Aug 11 07:51:32 2015 -0400
-
-    Merge pull request #21 from zack-vii/putData_lock
-    
-    fixed RuntimeError: cannot release un-acquired lock
-
-commit 97e43c3b9c3458995d36ad446a9f1f20e23af80e
+commit 55ef2adaf1f77059309a51098ac2c553b28b47eb
 Author: zack-vii <zack.vii@live.com>
 Date:   Tue Aug 11 10:50:52 2015 +0200
 
@@ -316,137 +285,109 @@ Date:   Tue Aug 11 10:50:52 2015 +0200
     lock tree before try-finally-structure so unlock will always have
     something to unlock, even is the first statement throws an error.
 
-commit 92e6ce4d8009fa5d3fb03dbc894a310029db077c (tag: refs/tags/alpha_release-7-0-134)
+commit f9fe542ce1ab7ee9aa675ed248719455871a84a6
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Aug 10 18:38:54 2015 -0400
 
     New release ---- alpha_release-7-0-134
 
-commit 6d76dca643e0db290a54e2a5a1669aa38a994d5c
+commit 632b9ca0f7d0d3a16f290f04ba9cda0dc755c9d6
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 20:38:07 2015 -0400
 
     Fix python version specification MDSplus module
 
-commit d88cae0a1f3202fbe1d57ad6c732742e2832c948 (tag: refs/tags/alpha_release-7-0-133)
+commit 79087df5e1edb59ab3bc412b0c12b7bbce2d14c4
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Sun Aug 9 14:06:46 2015 -0400
 
     New release ---- alpha_release-7-0-133
 
-commit 5a401f0e92fd5f4f7ed5697b0e0d10f40398baf5
+commit 218622d484bb9dc30e04adc9ad8b6327c8e1fca9
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 13:44:00 2015 -0400
 
     build in /buildroot to get versioning correct
 
-commit e1f176a523c91f1c5329791a0834fc70c22d5d92
+commit 68ac6bad1079741bcd8b0b5a74991d5b5860a558
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 12:21:49 2015 -0400
 
     Fix TreeExpandNodes. Was not allocating sufficient memory for ncis
 
-commit 8b04db3f9c19e21e12c8854065c9e3bbc6999756 (tag: refs/tags/alpha_release-7-0-132)
+commit 508f675d9788d6289b5dba5d6b6aba05edd993fb
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Aug 7 18:21:39 2015 -0400
 
     New release ---- alpha_release-7-0-132
 
-commit 20b0b1a9c8a3263800522d14dc7ab6acd15bf6d2
+commit 837a4d1f1fa657f5f90719001ce3d367bd2ec052
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 16:38:21 2015 -0400
 
     Add support for building python eggs for easy_install
 
-commit 48c407887afed2c153ef03de0321c4299de06e1c
+commit f2b3518f8ff22ebb609af2dcb5c1488b7a2833ba
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 16:38:06 2015 -0400
 
     Add support for building python eggs for easy_install
 
-commit 96bb101802de53af04f953e1d24608c9ea99a6e2
+commit 5e9af3c5857e0b5c816655e5e55c7a6bf56dbb00
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 14:56:42 2015 -0400
 
     Add option to Abort on failure to MdsConnect and use it in Devices that use MdsConnect to avoid local execution following the failed MdsConnect
 
-commit a6ba3f89cd4033af433eb4a6db44251966b1d68d
-Merge: a8ae986 e824b60
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Fri Aug 7 14:50:45 2015 -0400
-
-    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
-
-commit a8ae986c970403a7ba808088dc073447ae1d491c
+commit 2cb5fc145bf14693962396fb5d053f3fe3112e43
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 14:45:57 2015 -0400
 
     Add getnci(node,usage_str) to thich client
 
-commit e824b601faab58786e759568927e76ce2f792c34
-Merge: e9e4a7b bffb9ac
-Author: taliercio <cesare.taliercio@igi.cnr.it>
-Date:   Fri Aug 7 18:08:25 2015 +0200
-
-    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
-
-commit e9e4a7b137bda279cec19516601cbd9a2bb1e475
+commit 85794f0c646547958a74acf7289878f90d21a35e
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Fri Aug 7 18:06:18 2015 +0200
 
     Set NoTcpDelay flag on socket.
 
-commit bffb9ac3569aa0a6f933903e7bc1b8bd3c5000e4
-Merge: 69fc184 be40125
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Fri Aug 7 12:04:43 2015 -0400
-
-    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
-
-commit 69fc18437579a45e94179233c18c258e8010f1e8
+commit 5199eea3047b83363ea1deaf22a6e08653761834
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 12:04:20 2015 -0400
 
     Fix tab indentation for python3
 
-commit 0cba8ee17f94e46b87a8253240755abe3241c40b
+commit 2678bab2216079dcddaf1021d5a9555bbf5c66a7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 12:03:54 2015 -0400
 
     Fix 32-bit python interface for windows due to different structure alignment
 
-commit be401256eb513826dffe28a04318bcaec12ab389 (tag: refs/tags/alpha_release-7-0-131)
+commit 935315fd20cb8e1eaa60ca6a6e6c005ea531af0c
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Thu Aug 6 18:21:03 2015 -0400
 
     New release ---- alpha_release-7-0-131
 
-commit 0439b63ec4c83a4425d580350a2263f3dec6e8e6
+commit cba9b815007abcf1de8c8f749443347e2c0942ff
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Aug 6 14:49:36 2015 -0400
 
     fix external clock input routing.  Fix saved dt for decimated/filtered sampling.
 
-commit c577988eab5e18e52e08bf9384217a1473b6e5f0
-Merge: b68412b 04aedee
-Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
-Date:   Thu Aug 6 09:25:20 2015 +0200
-
-    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
-
-commit b68412b39684d4f259d8cffc65d0a3ef30fd8720
+commit ea7d0bda4ee2a4adfc394ede93c662bfb24305b6
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Aug 6 09:25:06 2015 +0200
 
     Added fotgotten TDI variable support
 
-commit 04aedeeb9b950b1281b1657f0c595ab1c2ae759e (tag: refs/tags/alpha_release-7-0-130)
+commit 590588c58a42480473d7402a7f4ad6d53acb2f39
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Aug 5 18:11:08 2015 -0400
 
     New release ---- alpha_release-7-0-130
 
-commit 2c456696dbfd31dc13db4ed2b5c806a1fb5b63c0
+commit 20de84ef0b3d1c11dbdb4c684cb3996b255e2a88
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Aug 5 14:26:32 2015 -0400
 
@@ -461,186 +402,165 @@ Date:   Wed Aug 5 14:26:32 2015 -0400
     These changes also fix the reopen behavior when the trees have been opened for write
     and are then moved.  This code was broken in the current alpha and stable.
 
-commit db5cd14ac4a4bf65a709234695e394480ee5c275
+commit 0a5daf7dde92bd4e363152f501e5ca472cc6297d
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Wed Aug 5 11:55:52 2015 +0200
 
     Fix vertical and horizontal flip operation on image.
     Remove info print mssages.
 
-commit 39eb34be8cffdf36a4fc2a40e512ec90ad158457 (tag: refs/tags/alpha_release-7-0-129)
+commit cfb7caf31a9baf313a1dc6ce0f1488c7d0b0da7b
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Aug 3 18:29:15 2015 -0400
 
     New release ---- alpha_release-7-0-129
 
-commit 5d211ed45c443793f4480577b511e3b83cf829f7
+commit 6d6f61f6999cf1dbc4a9fadf83ffcc5aace1bba3
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 16:43:19 2015 -0400
 
     Rename uid32 directory fix
 
-commit 48a57b5da3560a56b857199126f1b40676eee581 (tag: refs/tags/alpha_release-7-0-128)
+commit dd552dec66f8b379f7ec5d208671ba060147fc92
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Aug 3 16:23:53 2015 -0400
 
     New release ---- alpha_release-7-0-128
 
-commit 48ecce2bcfe8f573ae1b42e423abe8866b4ae32f
+commit 9b3bffb2552c67e5c7af02a96bde5a88c9c2175f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 15:46:29 2015 -0400
 
     Fix uils for 32-bit
 
-commit 16a945fe5fbecfa0c9ad7d2513ab1481e743f348
+commit 2573cfdd73fc7944641aef4af730198188f887eb
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 15:42:43 2015 -0400
 
     Fix uils for 32-bit
 
-commit 3a24c92741c566e49f4d80f679cb3ad543dc7d62
-Merge: a06b0f0 4a1e0bc
-Author: Tom Fredian <twf@psfc.mit.edu>
-Date:   Mon Aug 3 14:50:17 2015 -0400
-
-    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
-
-commit a06b0f0c4aa3dfe91be79b9c5ff9ec6d1393beb4
+commit e8834a9abfe21abdbaac0fd2f8d0f3dad90c3760
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 14:48:28 2015 -0400
 
     Fix debian configure for builds
 
-commit 4a1e0bccb86cbcf21c0fc926cf341a5053fc13e3
+commit 0aae95458d7ff604033554dc95c299d4cac6a1c0
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Mon Aug 3 16:12:53 2015 +0200
 
     Fix null tree in MDSplus::compile()
 
-commit 48d64fee52ac8c047c1687d4fc556a81840b503f
+commit e773e53a100861d1c3722bbb5eb12ea8bc436211
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Aug 3 14:10:43 2015 +0200
 
     Make geDescAt(int) public, add public getNumDescs()
 
-commit 6eaa5459a4846e02be0be763aca5c0daae13d59d (tag: refs/tags/alpha_release-7-0-127)
+commit 5725bf13922236b26b24b71707ff398200b2dd70
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 30 11:46:11 2015 -0400
 
     New release ---- alpha_release-7-0-127
 
-commit 5a18ee184b5432fead27c3904aa14a7f92cd489d
+commit 3aa9e411b325c123256130a408796cd6c4331159
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 30 11:07:44 2015 -0400
 
     Allow host to be overriden by environment variables
 
-commit b7ebb9521f95514d64770069e376f3345ab6a858 (tag: refs/tags/alpha_release-7-0-126)
+commit b63788a2fddd9391f7a4ab5f82958babde00bb83
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 09:50:01 2015 -0400
 
     New release ---- alpha_release-7-0-126
 
-commit 671b4004046d6dabbc0bb58c4fe29078e26ad44f
+commit 6a28d7c28864997f8cf9b1b8add92b33b7d53374
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 07:59:07 2015 -0400
 
     Put back objects definition
 
-commit c74ead100f650cc28835e52201f2d2a18dd0fb0c
+commit 85ac2847ae78e0274abf658a07380d41dbb5a59e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 16:58:53 2015 -0400
 
     No need for python includes
 
-commit 8018a0d12c11bc555f111e3e92b38ac720a233cf
+commit facb4aa9409831b24d66ec5cdff05720cd5e459a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 16:53:33 2015 -0400
 
     New python interface without needing python dev headers
 
-commit 2a3e4c50b87665dce9fd12846e5ab58dddf79e7f (tag: refs/tags/alpha_release-7-0-125)
+commit 12c791e15b1b06cc85b0d636bfa8e987d1e414f1
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 18:28:02 2015 -0400
 
     New release ---- alpha_release-7-0-125
 
-commit 4827dbf8e7f39361bfc9cbf4520e6f4be9b90584
+commit b18c29becd1b0f279354cc3ffc220c3295e998e4
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 14:33:33 2015 -0400
 
     Fix buffer overrun in Windows
 
-commit c092d53e92b4853e43d8b4c8a1368cb250ce2f49
+commit 382d0ae728bb3cd35b54aaaac64b61dc531dc1ab
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Tue Jul 28 15:18:08 2015 +0200
 
     Fix null pointer exception in Autoscale method.
 
-commit 08df2a1698b6d079b2d442b228b0d5e2a13a3253
+commit 3c9c76bfab1c30972b350e7d5330b3b7ac1e4472
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Tue Jul 28 15:15:59 2015 +0200
 
     Fix InitializeFrames method when data frames are null.
 
-commit fc084e0c6dd5545f5e0de0aa31b981547f60f4b9
+commit 5426d0ce6294054a70c5fe4867bf2931c13a4566
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Tue Jul 28 15:09:39 2015 +0200
 
     Fix null pointer exception in GetSignal method.
 
-commit 8b7711bfc27a9dbef33bb80711442a8abd8efe2d
+commit f9412b194f965b40bc2f62c11a75fb0f26d3df89
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Tue Jul 28 15:02:04 2015 +0200
 
     Move UpdateWorker activation from constructor to CheckConnction and CheckOpen method.
     Add method to stop UpdateWorker Thread.
 
-commit c93e860428e8b4c4ac509f5a9322b2a5f16fb31c
+commit 792b5ec7bd6f52538c289c3bef3ca10d5ca774ce
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Tue Jul 28 14:50:35 2015 +0200
 
     data_provider_list ComboBox listener change from ActionListener to ItemListener
 
-commit 626c8d385210ac0bc0055ccab77a2607ba6718be
-Merge: 336140a 7a23dec
-Author: taliercio <cesare.taliercio@igi.cnr.it>
-Date:   Mon Jul 27 12:32:20 2015 +0200
-
-    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
-
-commit 336140a524f21b7e628d147e9e401171f2d707bc
+commit df138220f5489cc5e4c347778ee818bf69099aac
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Mon Jul 27 12:31:46 2015 +0200
 
     Unsigned short data type management added
 
-commit 7a23dec4503e208e02d4e505c63d21ce6dc4c063 (tag: refs/tags/alpha_release-7-0-124)
+commit 45dc401cde53f2eea4e1e4b60556572aaf54781a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sat Jul 25 18:13:55 2015 -0400
 
     New release ---- alpha_release-7-0-124
 
-commit b2fbfe35d6cd069fa790e03f2ffdb83b04743985
-Merge: 4b7d3e1 e24a93c
-Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
-Date:   Sat Jul 25 09:50:39 2015 +0200
-
-    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
-
-commit 4b7d3e1b596bfd30e1983b975a3fbef605b4128d
+commit 5f6f668c98ccb24a210ce186ea3cbdcac2b615c6
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Sat Jul 25 09:50:21 2015 +0200
 
     adds missing header for UDT support
 
-commit e24a93c2ab3c9171ad6bea3e909a1d347b548ff0
+commit 607e6ae9449256b365a21fe839cfe30dbad4b58e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 16:09:55 2015 -0400
 
     Fix symbol substitution
 
-commit f96112a135af3c307885906abc3bb0cf5400dc93
+commit 235bd83eabc477ee8d4f879a175ee359edf715d9
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 10:47:28 2015 -0400
 
