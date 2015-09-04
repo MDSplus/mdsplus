@@ -1,4 +1,31 @@
-commit ff931cd81a3b57453c381fbe2166a491c7d6d61f (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit c1d79bcf19ffecabf2fccf8e9893df7b801e3e1c (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 8532d03 7db8009
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Sep 3 09:25:49 2015 -0400
+
+    Merge pull request #50 from MDSplus/fix-sys.version
+    
+    In python version < 2.7 sys.version_info is a tuple so you can not say sys.version_info.major
+
+commit 7db8009e6fbe0c876f5f19fa73a04e7e32d2e60a (refs/remotes/origin/fix-sys.version)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 2 17:21:40 2015 -0400
+
+    In python version < 2.7 sys.version_info is a tuple so you can not say
+       sys.version_info.major
+    use
+       sys.version_info[0] instead
+    (works with newer python also)
+    
+    Can not assign to keywords long and basestr
+
+commit 8532d03aaf8ecd12c3de0686d54d378c3bca5292 (tag: refs/tags/alpha_release-7-0-143)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Sep 2 08:50:12 2015 -0400
+
+    New release ---- alpha_release-7-0-143
+
+commit ff931cd81a3b57453c381fbe2166a491c7d6d61f
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Sep 1 14:54:23 2015 +0200
 
