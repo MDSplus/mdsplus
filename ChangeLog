@@ -1,4 +1,40 @@
-commit c1d79bcf19ffecabf2fccf8e9893df7b801e3e1c (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 7d15047663d973b4a7d2bb71168f2b4aaa373518 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 18:00:49 2015 +0200
+
+    Density control
+
+commit 1ca286ebd50b5d93afc8dc3b7615ce714c284a00
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 17:18:43 2015 +0200
+
+    Minor fixes
+
+commit 1232d0880e8ea42f3ab6787d25cbffdcbe94aa29
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 17:09:59 2015 +0200
+
+    Added interface for density control
+
+commit 56e58c2142e4748dafb909d672c974fa4ae4e56b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 16:02:04 2015 +0200
+
+    Interface for Density control
+
+commit d0c1fd9dc8ad2ebc483076136774e741387379e5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 15:58:32 2015 +0200
+
+    Interface for density control
+
+commit 286a05d76aac9feb02f3e580d5a50620e300fb0d (tag: refs/tags/alpha_release-7-0-144)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Sep 3 23:05:49 2015 -0400
+
+    New release ---- alpha_release-7-0-144
+
+commit c1d79bcf19ffecabf2fccf8e9893df7b801e3e1c
 Merge: 8532d03 7db8009
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Sep 3 09:25:49 2015 -0400
