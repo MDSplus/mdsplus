@@ -33,13 +33,9 @@ ccl_commands.c_disabled:	ccl_commands.ocld
 @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
-ifneq "@MINGW@" "yes"
 @MAKEBINDIR@mdsccl: ccl
+@MAKEBINDIR@$(MDSCCL): @MINGW_TRUE@$(MDSCCL)
+@MAKEBINDIR@$(MDSCCL): @MINGW_FALSE@ccl
 	cp $< $@
 	chmod +x $@
-else
-@MAKEBINDIR@mdsccl.bat: mdsccl.bat
-	cp $< $@
-	chmod +x $@
-endif
 
