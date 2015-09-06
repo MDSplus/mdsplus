@@ -932,7 +932,6 @@ enable_shared
 enable_perf
 enable_java
 with_jdk
-with_python_include
 with_java_target
 with_java_bootclasspath
 with_gsi
@@ -940,6 +939,7 @@ with_srb
 with_labview
 enable_gcc_profiling
 with_idl
+with_python_include
 with_visual_studio
 enable_valgrind
 enable_d3d
@@ -1638,8 +1638,6 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-jdk=JDKDIR       specify location of java jdk
-  --with-python_include=python-include-directory
-                          specify location of Python.h
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
   --with-java_bootclasspath=bootclasspath
@@ -1654,6 +1652,8 @@ Optional Packages:
                           specify location of labview such as
                           /usr/local/natinst/Labview
   --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
+  --with-python_include=python-include-directory
+                          specify location of Python.h
   --with-visual-studio    directory tree containing visual studio compiler,
                           includes and libs
   --with-readline=READLINE_DIR
@@ -6747,29 +6747,6 @@ fi
 
 
 
-# Check whether --with-python_include was given.
-if test "${with_python_include+set}" = set; then :
-  withval=$with_python_include;
-else
-  if ${PYTHON_INCLUDE_DIR+:} false; then :
-  with_python_include=$PYTHON_INCLUDE_DIR
-fi
-fi
-
-PYTHON_INCLUDE_DIR=$with_python_include
-OLD_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
-ac_fn_c_check_header_mongrel "$LINENO" "Python.h" "ac_cv_header_Python_h" "$ac_includes_default"
-if test "x$ac_cv_header_Python_h" = xyes; then :
-
-else
-  PYTHON_INCLUDE_DIR=""
-fi
-
-
-CPPFLAGS="$OLD_CPPFLAGS"
-
-
 # Check whether --with-java_target was given.
 if test "${with_java_target+set}" = set; then :
   withval=$with_java_target; JAVACFLAGS="$JAVACFLAGS -source $withval -target $withval"
@@ -7091,6 +7068,29 @@ if test "x$with_idl" = xno; then :
 else
   IDL_DIR=$with_idl
 fi
+
+
+# Check whether --with-python_include was given.
+if test "${with_python_include+set}" = set; then :
+  withval=$with_python_include;
+else
+  if ${PYTHON_INCLUDE_DIR+:} false; then :
+  with_python_include=$PYTHON_INCLUDE_DIR
+fi
+fi
+
+PYTHON_INCLUDE_DIR=$with_python_include
+OLD_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
+ac_fn_c_check_header_mongrel "$LINENO" "Python.h" "ac_cv_header_Python_h" "$ac_includes_default"
+if test "x$ac_cv_header_Python_h" = xyes; then :
+
+else
+  PYTHON_INCLUDE_DIR=""
+fi
+
+
+CPPFLAGS="$OLD_CPPFLAGS"
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mingw" >&5

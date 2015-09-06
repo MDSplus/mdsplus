@@ -104,19 +104,6 @@ AC_ARG_WITH([jdk],
                            [AS_VAR_SET([with_jdk], [$JDK_DIR])],
                            [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
 
-AC_ARG_WITH([python_include],
-            [AS_HELP_STRING([--with-python_include=python-include-directory],
-                            [specify location of Python.h])],
-            [],
-            [AS_VAR_SET_IF([PYTHON_INCLUDE_DIR],
-                           [AS_VAR_SET([with_python_include], [$PYTHON_INCLUDE_DIR])],
-                           [])])
-PYTHON_INCLUDE_DIR=$with_python_include
-OLD_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
-AC_CHECK_HEADER(Python.h,,PYTHON_INCLUDE_DIR="")
-CPPFLAGS="$OLD_CPPFLAGS"
-
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
                             [specify version of compiled classes (i.e. 6)])],
@@ -229,6 +216,19 @@ AC_MSG_RESULT([$with_idl])
 
 dnl FIXME: Remove this hack
 AS_VAR_IF([with_idl], [no], [IDL_DIR=""], [IDL_DIR=$with_idl])
+
+AC_ARG_WITH([python_include],
+            [AS_HELP_STRING([--with-python_include=python-include-directory],
+                            [specify location of Python.h])],
+            [],
+            [AS_VAR_SET_IF([PYTHON_INCLUDE_DIR],
+                           [AS_VAR_SET([with_python_include], [$PYTHON_INCLUDE_DIR])],
+                           [])])
+PYTHON_INCLUDE_DIR=$with_python_include
+OLD_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
+AC_CHECK_HEADER(Python.h,,PYTHON_INCLUDE_DIR="")
+CPPFLAGS="$OLD_CPPFLAGS"
 
 
 AC_MSG_CHECKING([for mingw])
