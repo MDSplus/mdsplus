@@ -301,7 +301,6 @@ HUP_TO_XINETD=""
 HUP_TO_INETD=""
 UILCMD="uil"
 FOR_LDFLAGS=""
-MINGW="no"
 SHARETYPE=".so"
 
 THREAD="-pthread"
@@ -364,7 +363,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        AC_PROG_F77
        ICONS=icons
        IDLMDSEVENT=""
-       MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
