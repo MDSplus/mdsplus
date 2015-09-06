@@ -789,15 +789,6 @@ MAKEETCDIR
 SED
 RANLIB
 THREAD
-MINGW_FALSE
-MINGW_TRUE
-GLOBUSLICENSE_FALSE
-GLOBUSLICENSE_TRUE
-RMIC
-JAR
-JAVAC
-VS_FALSE
-VS_TRUE
 USE_VALGRIND_FALSE
 USE_VALGRIND_TRUE
 HAVE_VALGRIND
@@ -808,6 +799,15 @@ CHECK_CFLAGS
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
 PKG_CONFIG
+MINGW_FALSE
+MINGW_TRUE
+GLOBUSLICENSE_FALSE
+GLOBUSLICENSE_TRUE
+RMIC
+JAR
+JAVAC
+VS_FALSE
+VS_TRUE
 RPATHLINK
 RPATHLINK_FALSE
 RPATHLINK_TRUE
@@ -931,7 +931,6 @@ enable_largefile
 enable_shared
 enable_perf
 enable_java
-enable_valgrind
 with_jdk
 with_visual_studio
 with_python_include
@@ -942,6 +941,7 @@ with_srb
 with_labview
 enable_gcc_profiling
 with_idl
+enable_valgrind
 enable_d3d
 with_readline
 with_xml_prefix
@@ -1618,8 +1618,8 @@ Optional Features:
   --disable-shared        Prevent building shared libraries
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
-  --enable-valgrind       Use valgrind when running unit tests
   --enable-gcc_profiling  enable gcc profiling
+  --enable-valgrind       Use valgrind when running unit tests
   --enable-d3d            build d3d ptdata access library
   --disable-xmltest       Do not try to compile and run a test LIBXML program
   --disable-doxygen-doc   don't generate any doxygen documentation
@@ -6734,267 +6734,6 @@ fi
 
 
 
-
-
-
-
-
-
-
-if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
-	if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_PKG_CONFIG+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $PKG_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-PKG_CONFIG=$ac_cv_path_PKG_CONFIG
-if test -n "$PKG_CONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
-$as_echo "$PKG_CONFIG" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_path_PKG_CONFIG"; then
-  ac_pt_PKG_CONFIG=$PKG_CONFIG
-  # Extract the first word of "pkg-config", so it can be a program name with args.
-set dummy pkg-config; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $ac_pt_PKG_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
-if test -n "$ac_pt_PKG_CONFIG"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
-$as_echo "$ac_pt_PKG_CONFIG" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_pt_PKG_CONFIG" = x; then
-    PKG_CONFIG=""
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    PKG_CONFIG=$ac_pt_PKG_CONFIG
-  fi
-else
-  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
-fi
-
-fi
-if test -n "$PKG_CONFIG"; then
-	_pkg_min_version=0.9.0
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
-$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
-	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-		PKG_CONFIG=""
-	fi
-fi
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CHECK" >&5
-$as_echo_n "checking for CHECK... " >&6; }
-
-if test -n "$CHECK_CFLAGS"; then
-    pkg_cv_CHECK_CFLAGS="$CHECK_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "check") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_CHECK_CFLAGS=`$PKG_CONFIG --cflags "check" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$CHECK_LIBS"; then
-    pkg_cv_CHECK_LIBS="$CHECK_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "check") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_CHECK_LIBS=`$PKG_CONFIG --libs "check" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        CHECK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "check" 2>&1`
-        else
-	        CHECK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "check" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$CHECK_PKG_ERRORS" >&5
-
-	have_check=no
-elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	have_check=no
-else
-	CHECK_CFLAGS=$pkg_cv_CHECK_CFLAGS
-	CHECK_LIBS=$pkg_cv_CHECK_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	have_check=yes
-fi
- if test x"$have_check" = "xyes"; then
-  HAVE_CHECK_TRUE=
-  HAVE_CHECK_FALSE='#'
-else
-  HAVE_CHECK_TRUE='#'
-  HAVE_CHECK_FALSE=
-fi
-
-
-# Check whether --enable-valgrind was given.
-if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind; use_valgrind=yes
-fi
-
-
-if [ "$use_valgrind" = "yes" ]; then
- # Extract the first word of "valgrind", so it can be a program name with args.
-set dummy valgrind; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_VALGRIND+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_VALGRIND"; then
-  ac_cv_prog_HAVE_VALGRIND="$HAVE_VALGRIND" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_VALGRIND="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_VALGRIND" && ac_cv_prog_HAVE_VALGRIND="no"
-fi
-fi
-HAVE_VALGRIND=$ac_cv_prog_HAVE_VALGRIND
-if test -n "$HAVE_VALGRIND"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_VALGRIND" >&5
-$as_echo "$HAVE_VALGRIND" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
- if [ "$HAVE_VALGRIND" = "no" ]; then
-  as_fn_error $? "Valgrind not found in PATH. " "$LINENO" 5
- fi
-fi
- if test x"$use_valgrind" = "xyes"; then
-  USE_VALGRIND_TRUE=
-  USE_VALGRIND_FALSE='#'
-else
-  USE_VALGRIND_TRUE='#'
-  USE_VALGRIND_FALSE=
-fi
-
-
-
-
-
 # Check whether --with-jdk was given.
 if test "${with_jdk+set}" = set; then :
   withval=$with_jdk;
@@ -7398,6 +7137,267 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
+
+
+
+
+
+
+
+
+
+
+if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
+	if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_PKG_CONFIG"; then
+  ac_pt_PKG_CONFIG=$PKG_CONFIG
+  # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+if test -n "$ac_pt_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_PKG_CONFIG" >&5
+$as_echo "$ac_pt_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_pt_PKG_CONFIG
+  fi
+else
+  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
+fi
+
+fi
+if test -n "$PKG_CONFIG"; then
+	_pkg_min_version=0.9.0
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking pkg-config is at least version $_pkg_min_version" >&5
+$as_echo_n "checking pkg-config is at least version $_pkg_min_version... " >&6; }
+	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		PKG_CONFIG=""
+	fi
+fi
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CHECK" >&5
+$as_echo_n "checking for CHECK... " >&6; }
+
+if test -n "$CHECK_CFLAGS"; then
+    pkg_cv_CHECK_CFLAGS="$CHECK_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "check") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_CHECK_CFLAGS=`$PKG_CONFIG --cflags "check" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$CHECK_LIBS"; then
+    pkg_cv_CHECK_LIBS="$CHECK_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "check") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_CHECK_LIBS=`$PKG_CONFIG --libs "check" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        CHECK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "check" 2>&1`
+        else
+	        CHECK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "check" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$CHECK_PKG_ERRORS" >&5
+
+	have_check=no
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	have_check=no
+else
+	CHECK_CFLAGS=$pkg_cv_CHECK_CFLAGS
+	CHECK_LIBS=$pkg_cv_CHECK_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	have_check=yes
+fi
+ if test x"$have_check" = "xyes"; then
+  HAVE_CHECK_TRUE=
+  HAVE_CHECK_FALSE='#'
+else
+  HAVE_CHECK_TRUE='#'
+  HAVE_CHECK_FALSE=
+fi
+
+
+# Check whether --enable-valgrind was given.
+if test "${enable_valgrind+set}" = set; then :
+  enableval=$enable_valgrind; use_valgrind=yes
+fi
+
+
+if [ "$use_valgrind" = "yes" ]; then
+ # Extract the first word of "valgrind", so it can be a program name with args.
+set dummy valgrind; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_VALGRIND+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_VALGRIND"; then
+  ac_cv_prog_HAVE_VALGRIND="$HAVE_VALGRIND" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_VALGRIND="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_VALGRIND" && ac_cv_prog_HAVE_VALGRIND="no"
+fi
+fi
+HAVE_VALGRIND=$ac_cv_prog_HAVE_VALGRIND
+if test -n "$HAVE_VALGRIND"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_VALGRIND" >&5
+$as_echo "$HAVE_VALGRIND" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if [ "$HAVE_VALGRIND" = "no" ]; then
+  as_fn_error $? "Valgrind not found in PATH. " "$LINENO" 5
+ fi
+fi
+ if test x"$use_valgrind" = "xyes"; then
+  USE_VALGRIND_TRUE=
+  USE_VALGRIND_FALSE='#'
+else
+  USE_VALGRIND_TRUE='#'
+  USE_VALGRIND_FALSE=
+fi
+
+
 
 FORLD=ld
 LD=ld
@@ -13825,14 +13825,6 @@ if test -z "${RPATHLINK_TRUE}" && test -z "${RPATHLINK_FALSE}"; then
   as_fn_error $? "conditional \"RPATHLINK\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${HAVE_CHECK_TRUE}" && test -z "${HAVE_CHECK_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_CHECK\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${USE_VALGRIND_TRUE}" && test -z "${USE_VALGRIND_FALSE}"; then
-  as_fn_error $? "conditional \"USE_VALGRIND\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${VS_TRUE}" && test -z "${VS_FALSE}"; then
   as_fn_error $? "conditional \"VS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -13843,6 +13835,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
   as_fn_error $? "conditional \"MINGW\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_CHECK_TRUE}" && test -z "${HAVE_CHECK_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_CHECK\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${USE_VALGRIND_TRUE}" && test -z "${USE_VALGRIND_FALSE}"; then
+  as_fn_error $? "conditional \"USE_VALGRIND\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${READLINE_TRUE}" && test -z "${READLINE_FALSE}"; then
