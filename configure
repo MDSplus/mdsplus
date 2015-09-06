@@ -10163,32 +10163,6 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $mdsplus_ok" >&5
 $as_echo "$mdsplus_ok" >&6; }
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we need to type shmat" >&5
-$as_echo_n "checking whether we need to type shmat... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/shm.h>
-int
-main ()
-{
-char *shmat();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  mdsplus_ok=yes
-else
-  mdsplus_ok=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-if test $mdsplus_ok = yes; then
-		 $as_echo "#define TYPE_SHMAT 1" >>confdefs.h
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $mdsplus_ok" >&5
-$as_echo "$mdsplus_ok" >&6; }
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for two byte fd in *FILE" >&5
 $as_echo_n "checking for two byte fd in *FILE... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext

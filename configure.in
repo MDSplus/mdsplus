@@ -863,14 +863,6 @@ if test $mdsplus_ok = no; then
 fi
 AC_MSG_RESULT($mdsplus_ok)
 
-AC_MSG_CHECKING(whether we need to type shmat)
-AC_TRY_COMPILE([#include <sys/shm.h>],[char *shmat();],
-							 mdsplus_ok=yes,mdsplus_ok=no)
-if test $mdsplus_ok = yes; then
-		 AC_DEFINE(TYPE_SHMAT)
-fi
-AC_MSG_RESULT($mdsplus_ok)
-
 AC_MSG_CHECKING(for two byte fd in *FILE)
 AC_EGREP_HEADER(_fileL,stdio.h,mdsplus_ok=yes,mdsplus_ok=no)
 if test $mdsplus_ok = yes; then
