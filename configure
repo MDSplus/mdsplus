@@ -799,6 +799,8 @@ CHECK_CFLAGS
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
 PKG_CONFIG
+VS_FALSE
+VS_TRUE
 MINGW_FALSE
 MINGW_TRUE
 GLOBUSLICENSE_FALSE
@@ -806,8 +808,6 @@ GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
-VS_FALSE
-VS_TRUE
 RPATHLINK
 RPATHLINK_FALSE
 RPATHLINK_TRUE
@@ -932,7 +932,6 @@ enable_shared
 enable_perf
 enable_java
 with_jdk
-with_visual_studio
 with_python_include
 with_java_target
 with_java_bootclasspath
@@ -941,6 +940,7 @@ with_srb
 with_labview
 enable_gcc_profiling
 with_idl
+with_visual_studio
 enable_valgrind
 enable_d3d
 with_readline
@@ -1638,8 +1638,6 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-jdk=JDKDIR       specify location of java jdk
-  --with-visual-studio    directory tree containing visual studio compiler,
-                          includes and libs
   --with-python_include=python-include-directory
                           specify location of Python.h
   --with-java_target=version
@@ -1656,6 +1654,8 @@ Optional Packages:
                           specify location of labview such as
                           /usr/local/natinst/Labview
   --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
+  --with-visual-studio    directory tree containing visual studio compiler,
+                          includes and libs
   --with-readline=READLINE_DIR
                           look for the readline library in READLINE_DIR
   --with-xml-prefix=PFX   Prefix where libxml is installed (optional)
@@ -6747,27 +6747,6 @@ fi
 
 
 
-# Check whether --with-visual_studio was given.
-if test "${with_visual_studio+set}" = set; then :
-  withval=$with_visual_studio;
-else
-  if ${VS_DIR+:} false; then :
-  with_visual_studio=$VS_DIR
-fi
-fi
-
-VS_DIR=$with_visual_studio
-
- if ${with_visual_studio+:} false; then
-  VS_TRUE=
-  VS_FALSE='#'
-else
-  VS_TRUE='#'
-  VS_FALSE=
-fi
-
-
-
 # Check whether --with-python_include was given.
 if test "${with_python_include+set}" = set; then :
   withval=$with_python_include;
@@ -7137,6 +7116,27 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
+
+
+# Check whether --with-visual_studio was given.
+if test "${with_visual_studio+set}" = set; then :
+  withval=$with_visual_studio;
+else
+  if ${VS_DIR+:} false; then :
+  with_visual_studio=$VS_DIR
+fi
+fi
+
+VS_DIR=$with_visual_studio
+
+ if ${with_visual_studio+:} false; then
+  VS_TRUE=
+  VS_FALSE='#'
+else
+  VS_TRUE='#'
+  VS_FALSE=
+fi
+
 
 
 
@@ -13825,16 +13825,16 @@ if test -z "${RPATHLINK_TRUE}" && test -z "${RPATHLINK_FALSE}"; then
   as_fn_error $? "conditional \"RPATHLINK\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${VS_TRUE}" && test -z "${VS_FALSE}"; then
-  as_fn_error $? "conditional \"VS\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${GLOBUSLICENSE_TRUE}" && test -z "${GLOBUSLICENSE_FALSE}"; then
   as_fn_error $? "conditional \"GLOBUSLICENSE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
   as_fn_error $? "conditional \"MINGW\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${VS_TRUE}" && test -z "${VS_FALSE}"; then
+  as_fn_error $? "conditional \"VS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_CHECK_TRUE}" && test -z "${HAVE_CHECK_FALSE}"; then

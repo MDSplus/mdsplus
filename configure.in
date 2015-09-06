@@ -104,17 +104,6 @@ AC_ARG_WITH([jdk],
                            [AS_VAR_SET([with_jdk], [$JDK_DIR])],
                            [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
 
-AC_ARG_WITH([visual_studio],
-            [AS_HELP_STRING([--with-visual-studio],
-                            [directory tree containing visual studio compiler, includes and libs])],
-            [],
-            [AS_VAR_SET_IF([VS_DIR],
-                           [AS_VAR_SET([with_visual_studio], [$VS_DIR])],
-                           [])])
-VS_DIR=$with_visual_studio
-
-AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([with_visual_studio])])
-
 AC_ARG_WITH([python_include],
             [AS_HELP_STRING([--with-python_include=python-include-directory],
                             [specify location of Python.h])],
@@ -247,6 +236,17 @@ AS_CASE([$host],
         [*mingw*],[AS_VAR_SET([MINGW])])
 AM_CONDITIONAL([MINGW], [AS_VAR_TEST_SET([MINGW])])
 AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
+
+AC_ARG_WITH([visual_studio],
+            [AS_HELP_STRING([--with-visual-studio],
+                            [directory tree containing visual studio compiler, includes and libs])],
+            [],
+            [AS_VAR_SET_IF([VS_DIR],
+                           [AS_VAR_SET([with_visual_studio], [$VS_DIR])],
+                           [])])
+VS_DIR=$with_visual_studio
+
+AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([with_visual_studio])])
 
 
 dnl ////////////////////////////////////////////////////////////////////////////
