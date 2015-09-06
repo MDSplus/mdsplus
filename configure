@@ -7117,19 +7117,21 @@ else
 $as_echo "no" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for visual studio" >&5
+$as_echo_n "checking for visual studio... " >&6; }
 
 # Check whether --with-visual_studio was given.
 if test "${with_visual_studio+set}" = set; then :
-  withval=$with_visual_studio;
+  withval=$with_visual_studio; VS_DIR=$with_visual_studio
 else
   if ${VS_DIR+:} false; then :
   with_visual_studio=$VS_DIR
+else
+  with_visual_studio=no
 fi
 fi
 
-VS_DIR=$with_visual_studio
-
- if ${with_visual_studio+:} false; then
+ if ${VS_DIR+:} false; then
   VS_TRUE=
   VS_FALSE='#'
 else
@@ -7137,7 +7139,8 @@ else
   VS_FALSE=
 fi
 
-
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_visual_studio" >&5
+$as_echo "$with_visual_studio" >&6; }
 
 
 
