@@ -823,16 +823,6 @@ AC_STRUCT_TM
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
-dnl Check if we are missing <sys/sem.h> but can use <semaphore.h> API instead
-AC_MSG_CHECKING([if we should use named semaphores])
-AC_TRY_CPP([ #include <sys/sem.h> ] , namedsem=no, namedsem=yes )
-if test "$namedsem" = yes; then
-AC_TRY_CPP([ #include <semaphore.h> ], 
-  [AC_DEFINE(USE_SEMAPHORE_H) namedsem=yes], 
-   namedsem=no)
-fi
-AC_MSG_RESULT([ $namedsem])
-
 dnl Check if we want to try Named Pipes instead of <sys/msg.h> API
 AC_CHECK_HEADERS(sys/msg.h,mdsplus_ok=no,mdsplus_ok=yes)
 if test "$mdsplus_ok" = yes; then
@@ -1135,7 +1125,6 @@ AC_SUBST(TDIC)
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)
-AC_SUBST(USE_SEMAPHORE_H)
 AC_SUBST(USE_PIPED_MESSAGING)
 AC_SUBST(USE_TM_GMTOFF)
 AC_SUBST(DC1394_SUPPORT)

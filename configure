@@ -633,7 +633,6 @@ DC1394_SUPPORT2
 DC1394_SUPPORT
 USE_TM_GMTOFF
 USE_PIPED_MESSAGING
-USE_SEMAPHORE_H
 uiddir
 XM_LIBS
 TDIC
@@ -10054,34 +10053,6 @@ _ACEOF
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if we should use named semaphores" >&5
-$as_echo_n "checking if we should use named semaphores... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
- #include <sys/sem.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  namedsem=no
-else
-  namedsem=yes
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-if test "$namedsem" = yes; then
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
- #include <semaphore.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  $as_echo "#define USE_SEMAPHORE_H 1" >>confdefs.h
- namedsem=yes
-else
-  namedsem=no
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  $namedsem" >&5
-$as_echo " $namedsem" >&6; }
-
 for ac_header in sys/msg.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "sys/msg.h" "ac_cv_header_sys_msg_h" "$ac_includes_default"
@@ -13630,7 +13601,6 @@ else
   NOT_MINGW_TRUE='#'
   NOT_MINGW_FALSE=
 fi
-
 
 
 
