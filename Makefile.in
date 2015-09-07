@@ -54,8 +54,8 @@ PARTS = \
 	@HDF5_APS@ \
 	@LV@ \
 	LabView \
-	@MACOSX@ \
-	@ICONS@
+	@MACOSX@
+@MINGW_TRUE@ PARTS += icons
 
 
 .PHONY: all $(PARTS)

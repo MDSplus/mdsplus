@@ -694,7 +694,6 @@ IDLMDSWIDGETS
 IDLMDSEVENT
 IDL_LIB
 IDL_INC
-ICONS
 HUP_TO_XINETD
 HUP_TO_INETD
 HDF5_APS
@@ -7436,7 +7435,6 @@ SHARETYPE=".so"
 
 THREAD="-pthread"
 
-ICONS=""
 MITDEVICESIO_TARGETS=""
 case "$host" in
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
@@ -7702,7 +7700,6 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-       ICONS=icons
        IDLMDSEVENT=""
        LIBPRE=""
        SOCKETLIB="-lws2_32"
@@ -13575,7 +13572,6 @@ else
   NOT_MINGW_TRUE='#'
   NOT_MINGW_FALSE=
 fi
-
 
 
 
