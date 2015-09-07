@@ -31,6 +31,7 @@ dnl Check out the compiler
 AC_PROG_CC
 AC_PROG_CXX
 AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
+AC_CHECK_TOOL([WINDRES], [windres], [:])
 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
@@ -373,13 +374,11 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          BINDIR=bin_x86
          VS_ARCH=x86
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64"
-	 WINDRES=/usr/bin/i686-w64-mingw32-windres
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
          VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
-	 WINDRES=/usr/bin/x86_64-w64-mingw32-windres
        fi
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
@@ -1117,7 +1116,6 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
-AC_SUBST(WINDRES)
 AC_CONFIG_HEADER(include/config.h)
 
 
