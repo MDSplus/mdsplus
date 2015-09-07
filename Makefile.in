@@ -15,7 +15,7 @@ MOTIF_APS = xmdsshr \
 	    actions \
 	    dwscope \
 	    @IDLMDSWIDGETS@ \
-            @MITDEVICES@ \
+            mitdevices \
             traverser
 
 HDF5_APS = hdf5

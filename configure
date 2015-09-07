@@ -656,7 +656,6 @@ MOTIF_LDARC
 MOTIF_LDSHARE
 MOTIF_APS
 MITDEVICESIO_TARGETS
-MITDEVICES
 MDSTCPIP
 MDSSQL
 MAKEUIDDIR
@@ -9807,7 +9806,6 @@ done
 
 
 REMCAM="remcam"
-MITDEVICES="mitdevices"
 for ac_header in scsi/sg.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "scsi/sg.h" "ac_cv_header_scsi_sg_h" "$ac_includes_default"
@@ -13662,7 +13660,6 @@ else
   NOT_MINGW_TRUE='#'
   NOT_MINGW_FALSE=
 fi
-
 
 
 
