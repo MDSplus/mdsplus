@@ -26,12 +26,14 @@ def makeScalar(value):
         if isinstance(value,numpy.bool_):
             return makeScalar(int(value))
         return globals()[value.__class__.__name__.capitalize()](value)
-    long_typ=long
-    basestring_typ=basestring
     import sys
     if sys.version_info[0]==3:
         long_typ=int
         basestring_typ=str
+    else:
+        long_typ=long
+        basestring_typ=basestring
+
     if isinstance(value,long_typ):
         return Int64(value)
     if isinstance(value,int):
