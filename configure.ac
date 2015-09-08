@@ -1,36 +1,42 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl @(#)$RCSfile$ $Revision$
-AC_PREREQ([2.63])
+AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 
 AC_CANONICAL_TARGET
-AC_CANONICAL_HOST
 
-
-AM_INIT_AUTOMAKE([1.13.1 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
-#AC_CONFIG_HEADER(include/config.h)
-#AC_CANONICAL_TARGET
-#AC_CANONICAL_HOST
-AC_CHECK_SIZEOF(int *)
-AC_SYS_LARGEFILE
-AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
-AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
+# Checks for programs.
+AC_PROG_AWK
+AC_PROG_CXX
+AC_PROG_CC
+AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
+AC_PROG_RANLIB
+AC_PROG_MKDIR_P
+AC_PROG_INSTALL
+AC_PROG_SED
+AC_CHECK_TOOL([WINDRES], [windres], [:])
+
+#FIXME: Remove this when Makefile.inc goes away
+AS_CASE(["$MKDIR_P"],
+        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
+
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
         [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
         [sparc-sun-solaris2*], [${CC=cc}])
 
+#AC_CONFIG_HEADER(include/config.h)
+AC_CHECK_SIZEOF(int *)
+AC_SYS_LARGEFILE
+AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
+AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
-
-dnl Check out the compiler
-AC_PROG_CC
-AC_PROG_CXX
-AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
@@ -79,29 +85,6 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])])
 
-
-dnl ////////////////////////////////////////////////////////////////////////////
-dnl ///  TEST TOOLS  ///////////////////////////////////////////////////////////
-dnl ////////////////////////////////////////////////////////////////////////////
-
-PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
-AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
-
-AC_ARG_ENABLE([valgrind],
-              [AS_HELP_STRING([--enable-valgrind],
-                              [Use valgrind when running unit tests])],
-              [AS_VAR_SET([use_valgrind], [yes])],
-              [])
-
-if [[ "$use_valgrind" = "yes" ]]; then
- AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
- if [[ "$HAVE_VALGRIND" = "no" ]]; then
-  AC_MSG_ERROR([Valgrind not found in PATH. ])
- fi
-fi
-AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
-
-
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
 dnl                              [Build MacOSX Universal Binary])],
@@ -126,30 +109,6 @@ AC_ARG_WITH([jdk],
             [AS_VAR_SET_IF([JDK_DIR],
                            [AS_VAR_SET([with_jdk], [$JDK_DIR])],
                            [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
-
-AC_ARG_WITH([visual_studio],
-            [AS_HELP_STRING([--with-visual-studio],
-                            [directory tree containing visual studio compiler, includes and libs])],
-            [],
-            [AS_VAR_SET_IF([VS_DIR],
-                           [AS_VAR_SET([with_visual_studio], [$VS_DIR])],
-                           [])])
-VS_DIR=$with_visual_studio
-
-AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([with_visual_studio])])
-
-AC_ARG_WITH([python_include],
-            [AS_HELP_STRING([--with-python_include=python-include-directory],
-                            [specify location of Python.h])],
-            [],
-            [AS_VAR_SET_IF([PYTHON_INCLUDE_DIR],
-                           [AS_VAR_SET([with_python_include], [$PYTHON_INCLUDE_DIR])],
-                           [])])
-PYTHON_INCLUDE_DIR=$with_python_include
-OLD_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
-AC_CHECK_HEADER(Python.h,,PYTHON_INCLUDE_DIR="")
-CPPFLAGS="$OLD_CPPFLAGS"
 
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
@@ -264,12 +223,58 @@ AC_MSG_RESULT([$with_idl])
 dnl FIXME: Remove this hack
 AS_VAR_IF([with_idl], [no], [IDL_DIR=""], [IDL_DIR=$with_idl])
 
+AC_ARG_WITH([python_include],
+            [AS_HELP_STRING([--with-python_include=python-include-directory],
+                            [specify location of Python.h])],
+            [],
+            [AS_VAR_SET_IF([PYTHON_INCLUDE_DIR],
+                           [AS_VAR_SET([with_python_include], [$PYTHON_INCLUDE_DIR])],
+                           [])])
+PYTHON_INCLUDE_DIR=$with_python_include
+OLD_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
+AC_CHECK_HEADER(Python.h,,PYTHON_INCLUDE_DIR="")
+CPPFLAGS="$OLD_CPPFLAGS"
+
 
 AC_MSG_CHECKING([for mingw])
 AS_CASE([$host],
         [*mingw*],[AS_VAR_SET([MINGW])])
 AM_CONDITIONAL([MINGW], [AS_VAR_TEST_SET([MINGW])])
 AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
+
+AC_MSG_CHECKING([for visual studio])
+AC_ARG_WITH([visual_studio],
+            [AS_HELP_STRING([--with-visual-studio],
+                            [directory tree containing visual studio compiler, includes and libs])],
+            [AS_VAR_SET([VS_DIR], [$with_visual_studio])],
+            [AS_VAR_SET_IF([VS_DIR],
+                           [AS_VAR_SET([with_visual_studio], [$VS_DIR])],
+                           [AS_VAR_SET([with_visual_studio], [no])])])
+AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
+AC_MSG_RESULT([$with_visual_studio])
+
+dnl ////////////////////////////////////////////////////////////////////////////
+dnl ///  TEST TOOLS  ///////////////////////////////////////////////////////////
+dnl ////////////////////////////////////////////////////////////////////////////
+
+PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
+AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
+
+AC_ARG_ENABLE([valgrind],
+              [AS_HELP_STRING([--enable-valgrind],
+                              [Use valgrind when running unit tests])],
+              [AS_VAR_SET([use_valgrind], [yes])],
+              [])
+
+if [[ "$use_valgrind" = "yes" ]]; then
+ AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
+ if [[ "$HAVE_VALGRIND" = "no" ]]; then
+  AC_MSG_ERROR([Valgrind not found in PATH. ])
+ fi
+fi
+AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
+
 
 FORLD=ld
 LD=ld
@@ -302,12 +307,10 @@ HUP_TO_XINETD=""
 HUP_TO_INETD=""
 UILCMD="uil"
 FOR_LDFLAGS=""
-MINGW="no"
 SHARETYPE=".so"
 
 THREAD="-pthread"
 AC_SUBST([THREAD])
-ICONS=""
 MITDEVICESIO_TARGETS=""
 case "$host" in
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
@@ -363,9 +366,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *mingw*)
        AC_PROG_F77
-       ICONS=icons
        IDLMDSEVENT=""
-       MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
@@ -378,13 +379,11 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          BINDIR=bin_x86
          VS_ARCH=x86
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64"
-	 WINDRES=/usr/bin/i686-w64-mingw32-windres
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
          VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
-	 WINDRES=/usr/bin/x86_64-w64-mingw32-windres
        fi
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
@@ -603,19 +602,6 @@ AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
 
-
-dnl Checks for programs.
-AC_PROG_RANLIB
-AC_PROG_MKDIR_P
-AC_PROG_INSTALL
-AC_PROG_SED
-
-#FIXME: Remove this when Makefile.inc goes away
-AS_CASE(["$MKDIR_P"],
-        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
-
-dnl Define build directories
-
 # Stuff that only non-automake dirs need
 AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
 
@@ -773,7 +759,6 @@ AC_CHECK_HEADERS(malloc.h pthread.h alloca.h)
 
 
 REMCAM="remcam"
-MITDEVICES="mitdevices"
 AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
 if test "$DO_CAMSHR" = yes
 then
@@ -823,16 +808,6 @@ AC_STRUCT_TM
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
-dnl Check if we are missing <sys/sem.h> but can use <semaphore.h> API instead
-AC_MSG_CHECKING([if we should use named semaphores])
-AC_TRY_CPP([ #include <sys/sem.h> ] , namedsem=no, namedsem=yes )
-if test "$namedsem" = yes; then
-AC_TRY_CPP([ #include <semaphore.h> ], 
-  [AC_DEFINE(USE_SEMAPHORE_H) namedsem=yes], 
-   namedsem=no)
-fi
-AC_MSG_RESULT([ $namedsem])
-
 dnl Check if we want to try Named Pipes instead of <sys/msg.h> API
 AC_CHECK_HEADERS(sys/msg.h,mdsplus_ok=no,mdsplus_ok=yes)
 if test "$mdsplus_ok" = yes; then
@@ -870,14 +845,6 @@ AC_TRY_COMPILE([#include <sys/types.h>
 							 mdsplus_ok=yes,mdsplus_ok=no)
 if test $mdsplus_ok = no; then
 		 AC_DEFINE(NEED_SEMUN)
-fi
-AC_MSG_RESULT($mdsplus_ok)
-
-AC_MSG_CHECKING(whether we need to type shmat)
-AC_TRY_COMPILE([#include <sys/shm.h>],[char *shmat();],
-							 mdsplus_ok=yes,mdsplus_ok=no)
-if test $mdsplus_ok = yes; then
-		 AC_DEFINE(TYPE_SHMAT)
 fi
 AC_MSG_RESULT($mdsplus_ok)
 
@@ -1048,8 +1015,6 @@ XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
-AM_CONDITIONAL([NOT_MINGW], [test "$MINGW" != "yes"])
-
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
@@ -1071,7 +1036,6 @@ AC_SUBST(HDF5_LIBS)
 AC_SUBST(HDF5_APS)
 AC_SUBST(HUP_TO_INETD)
 AC_SUBST(HUP_TO_XINETD)
-AC_SUBST(ICONS)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
@@ -1108,8 +1072,6 @@ AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
-AC_SUBST(MINGW)
-AC_SUBST(MITDEVICES)
 AC_SUBST(MITDEVICESIO_TARGETS)
 AC_SUBST(MOTIF_APS)
 AC_SUBST(MOTIF_LDSHARE)
@@ -1135,7 +1097,6 @@ AC_SUBST(TDIC)
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)
-AC_SUBST(USE_SEMAPHORE_H)
 AC_SUBST(USE_PIPED_MESSAGING)
 AC_SUBST(USE_TM_GMTOFF)
 AC_SUBST(DC1394_SUPPORT)
@@ -1143,7 +1104,6 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
-AC_SUBST(WINDRES)
 AC_CONFIG_HEADER(include/config.h)
 
 

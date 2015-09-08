@@ -93,7 +93,7 @@ subdir = javadevices
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/configure.in
+	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -247,7 +247,6 @@ HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
 HUP_TO_INETD = @HUP_TO_INETD@
 HUP_TO_XINETD = @HUP_TO_XINETD@
-ICONS = @ICONS@
 IDLMDSEVENT = @IDLMDSEVENT@
 IDLMDSWIDGETS = @IDLMDSWIDGETS@
 IDL_INC = @IDL_INC@
@@ -299,8 +298,6 @@ MAKESHLIBDIR = @MAKESHLIBDIR@
 MAKEUIDDIR = @MAKEUIDDIR@
 MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
-MINGW = @MINGW@
-MITDEVICES = @MITDEVICES@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@
 MKDIR_P = @MKDIR_P@
 MOTIF_APS = @MOTIF_APS@
@@ -349,7 +346,6 @@ TDIC = @TDIC@
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
-USE_SEMAPHORE_H = @USE_SEMAPHORE_H@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VERSION = @VERSION@
 VS = @VS@
@@ -565,8 +561,8 @@ MARTE_CONFIGSetup.java\
 MARTE_WAVEGENSetup.java\
 MARTE_BREAKDOWNSetup.java\
 MARTE_RTSMSetup.java\
-MARTE_NESetup.java\
 MARTE_XRAYSetup.java\
+MARTE_NESetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
 SPIDERSetup.java\

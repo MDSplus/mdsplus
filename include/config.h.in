@@ -72,9 +72,6 @@
 /* Define if you have the getrusage routine */
 #undef HAVE_GETRUSAGE
 
-/* Define if you prefer to use POSIX semaphores over SysV sem */
-#undef USE_SEMAPHORE_H
-
 /* Define if you are using SRB */
 #undef SRB
 

@@ -1,4 +1,4 @@
-if NOT_MINGW
+if !MINGW
 dist_bin_SCRIPTS = job_finish
 dist_bin_SCRIPTS += job_functions
 dist_bin_SCRIPTS += job_output

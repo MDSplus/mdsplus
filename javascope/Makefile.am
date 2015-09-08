@@ -6,7 +6,9 @@ MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 
 # Create the shell script that runs the program
-if NOT_MINGW
+if MINGW
+bin_SCRIPTS = jScope.bat
+else
 bin_SCRIPTS = scripts/jScope
 EXTRA_DIST += jScope.template
 CLEANFILES += $(bin_SCRIPTS)
@@ -14,8 +16,6 @@ CLEANFILES += $(bin_SCRIPTS)
 $(bin_SCRIPTS): jScope.template
 	$(INSTALL) -d scripts
 	$(INSTALL) $< $@
-else
-bin_SCRIPTS = jScope.bat
 endif
 
 
