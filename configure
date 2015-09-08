@@ -2921,8 +2921,6 @@ test -n "$target_alias" &&
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
 
-
-
 am__api_version='1.15'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -3527,8 +3525,6 @@ fi
 
 
 #AC_CONFIG_HEADER(include/config.h)
-#AC_CANONICAL_TARGET
-#AC_CANONICAL_HOST
 DEPDIR="${am__leading_dot}deps"
 
 ac_config_commands="$ac_config_commands depfiles"
