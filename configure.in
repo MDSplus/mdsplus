@@ -9,25 +9,33 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.13.1 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
-#AC_CONFIG_HEADER(include/config.h)
-AC_CHECK_SIZEOF(int *)
-AC_SYS_LARGEFILE
-AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
-AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
+AC_PROG_RANLIB
+AC_PROG_MKDIR_P
+AC_PROG_INSTALL
+AC_PROG_SED
+AC_CHECK_TOOL([WINDRES], [windres], [:])
+
+#FIXME: Remove this when Makefile.inc goes away
+AS_CASE(["$MKDIR_P"],
+        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
+
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
         [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
         [sparc-sun-solaris2*], [${CC=cc}])
 
+#AC_CONFIG_HEADER(include/config.h)
+AC_CHECK_SIZEOF(int *)
+AC_SYS_LARGEFILE
+AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
+AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
-
-dnl Check out the compiler
-AC_PROG_CC
-AC_PROG_CXX
-AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
-AC_CHECK_TOOL([WINDRES], [windres], [:])
 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
@@ -592,19 +600,6 @@ fi
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
-
-
-dnl Checks for programs.
-AC_PROG_RANLIB
-AC_PROG_MKDIR_P
-AC_PROG_INSTALL
-AC_PROG_SED
-
-#FIXME: Remove this when Makefile.inc goes away
-AS_CASE(["$MKDIR_P"],
-        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
-
-dnl Define build directories
 
 # Stuff that only non-automake dirs need
 AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
