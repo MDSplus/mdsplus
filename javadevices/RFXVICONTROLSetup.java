@@ -52,7 +52,7 @@ public class RFXVICONTROLSetup extends DeviceSetup {
         setDeviceTitle("RFX VI CONTROL Setup");
         setDeviceType("RFXVICONTROL");
         setHeight(500);
-        setWidth(500);
+        setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel2.setLayout(new java.awt.GridLayout(3, 0));
@@ -76,7 +76,7 @@ public class RFXVICONTROLSetup extends DeviceSetup {
         jPanel4.add(deviceChoice1);
 
         deviceChoice2.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice2.setChoiceItems(new String[] {"Enabled", "Disabled"});
+        deviceChoice2.setChoiceItems(new String[] {"Disabled", "Enabled"});
         deviceChoice2.setConvert(true);
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Control:");
