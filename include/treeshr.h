@@ -1,4 +1,6 @@
-#ifndef __TREESHR
+#pragma once
+
+/********** define this in case user code is checking it ************/
 #define __TREESHR
 
 #include <treeshr_messages.h>
@@ -417,6 +419,4 @@ extern int TREE_BLOCKID;
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
