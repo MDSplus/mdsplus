@@ -405,10 +405,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-@NOT_MINGW_TRUE@dist_bin_SCRIPTS = job_finish job_functions job_output \
-@NOT_MINGW_TRUE@	job_que job_start job_wait MonitorCpciData.py \
-@NOT_MINGW_TRUE@	remote_submit SetMdsplusFileProtection \
-@NOT_MINGW_TRUE@	synchronize_unix unix_submit
+@MINGW_FALSE@dist_bin_SCRIPTS = job_finish job_functions job_output \
+@MINGW_FALSE@	job_que job_start job_wait MonitorCpciData.py \
+@MINGW_FALSE@	remote_submit SetMdsplusFileProtection \
+@MINGW_FALSE@	synchronize_unix unix_submit
 all: all-am
 
 .SUFFIXES:

@@ -452,9 +452,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-@NOT_MINGW_FALSE@EXE = .exe
-@NOT_MINGW_FALSE@WIN = .win
-@NOT_MINGW_FALSE@DEF = mdsipshr.def
+@MINGW_TRUE@EXE = .exe
+@MINGW_TRUE@WIN = .win
+@MINGW_TRUE@DEF = mdsipshr.def
 lib = @LIBPRE@
 _SOURCES = adler32.c \
            compress.c \

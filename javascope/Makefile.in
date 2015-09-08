@@ -90,8 +90,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@NOT_MINGW_TRUE@am__append_1 = jScope.template
-@NOT_MINGW_TRUE@am__append_2 = $(bin_SCRIPTS)
+@MINGW_FALSE@am__append_1 = jScope.template
+@MINGW_FALSE@am__append_2 = $(bin_SCRIPTS)
 subdir = javascope
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
@@ -415,10 +415,10 @@ CLEANFILES = $(java_DATA) $(am__append_2) $(JSCOPE_CLASS) \
 	$(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
 MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
-@NOT_MINGW_FALSE@bin_SCRIPTS = jScope.bat
+@MINGW_FALSE@bin_SCRIPTS = scripts/jScope
 
 # Create the shell script that runs the program
-@NOT_MINGW_TRUE@bin_SCRIPTS = scripts/jScope
+@MINGW_TRUE@bin_SCRIPTS = jScope.bat
 
 # Documentation
 dist_docs_DATA = $(DOCS)
@@ -838,9 +838,9 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 .PRECIOUS: Makefile
 
 
-@NOT_MINGW_TRUE@$(bin_SCRIPTS): jScope.template
-@NOT_MINGW_TRUE@	$(INSTALL) -d scripts
-@NOT_MINGW_TRUE@	$(INSTALL) $< $@
+@MINGW_FALSE@$(bin_SCRIPTS): jScope.template
+@MINGW_FALSE@	$(INSTALL) -d scripts
+@MINGW_FALSE@	$(INSTALL) $< $@
 $(java_DATA): classjava.stamp
 jScope.jar: colors1.tbl
 	$(MKDIR_P) docs

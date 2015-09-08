@@ -425,9 +425,9 @@ java_JAVA = Action.java ActionServer.java Balancer.java \
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
 CLEANFILES = $(CLASSES) jDispatcher.jar
-@NOT_MINGW_FALSE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
-@NOT_MINGW_TRUE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
-@NOT_MINGW_TRUE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
+@MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
+@MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
+@MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
 all: all-am
 
 .SUFFIXES:
