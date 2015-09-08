@@ -33,9 +33,7 @@ ccl_commands.c_disabled:	ccl_commands.ocld
 @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
-@MAKEBINDIR@mdsccl: ccl
-@MAKEBINDIR@$(MDSCCL): @MINGW_TRUE@$(MDSCCL)
-@MAKEBINDIR@$(MDSCCL): @MINGW_FALSE@ccl
+@MAKEBINDIR@$(MDSCCL): $(MDSCCL)
 	cp $< $@
 	chmod +x $@
 
