@@ -681,7 +681,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			            if(idx < node_methods.length)
 			            {
 				            try {
-				                node_methods[idx].getMethod().invoke(curr_node, null);
+				                node_methods[idx].getMethod().invoke(curr_node);
 				            }catch(Exception exc) {System.out.println("Error executing " + exc); }
 				            curr_tree.expandPath(new TreePath(curr_tree_node.getPath()));
 				            curr_tree.treeDidChange();
