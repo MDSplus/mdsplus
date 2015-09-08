@@ -1,4 +1,25 @@
-commit 7d15047663d973b4a7d2bb71168f2b4aaa373518 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 340da15b8ba6bc833fc3ead4e1da880c52549126 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 5b1c3a4 1a7835d
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Mon Sep 7 18:55:43 2015 +0200
+
+    Merge pull request #54 from MDSplus/feature-w7x-devices
+    
+    Add burst mode to QC9200 delay generator support
+
+commit 1a7835d8e69e5249ba0a79194cad7884df6153c4 (refs/remotes/origin/feature-w7x-devices)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Mon Sep 7 18:52:10 2015 +0200
+
+    Add burst mode to QC9200 delay generator support
+
+commit 5b1c3a4119c8165bd0e41937fb3d23ba5aa0e5ef (tag: refs/tags/alpha_release-7-0-145)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Sep 4 23:06:06 2015 -0400
+
+    New release ---- alpha_release-7-0-145
+
+commit 7d15047663d973b4a7d2bb71168f2b4aaa373518
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Sep 4 18:00:49 2015 +0200
 
@@ -719,7 +740,7 @@ Date:   Thu Jul 23 14:12:48 2015 +0200
     Fix objects libraries names
     Adds pdf refs to index
 
-commit 7c82abb7d991d2181b6e0b281ed1c211bda83031 (refs/remotes/origin/feature-mdsobjects-testing)
+commit 7c82abb7d991d2181b6e0b281ed1c211bda83031
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Thu Jul 23 12:15:44 2015 +0200
 
