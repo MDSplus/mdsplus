@@ -70,7 +70,7 @@ def TdiExecute(expression,args=None):
         raise TdiException(_mdsshr.MdsGetMsg(status,"Error compiling expression"))
 
 def TdiDecompile(value):
-    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
+    """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
     _descriptor=_mimport('_descriptor',1)
     descriptor_xd=_descriptor.descriptor_xd
     descriptor=_descriptor.descriptor
