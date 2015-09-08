@@ -10,6 +10,7 @@ AM_INIT_AUTOMAKE([1.13.1 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 # Checks for programs.
+AC_PROG_AWK
 AC_PROG_CXX
 AC_PROG_CC
 AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])

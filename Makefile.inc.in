@@ -1,6 +1,8 @@
 # @configure_input@
 
 DEFAULT_CFLAGS=-g -O2
+
+AWK = @AWK@
 CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
