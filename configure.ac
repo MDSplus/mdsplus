@@ -6,7 +6,7 @@ AC_CONFIG_AUX_DIR([conf])
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.13.1 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 # Checks for programs.
