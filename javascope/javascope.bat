@@ -1,6 +1,6 @@
 @ECHO OFF
 ECHO preparing
-if defined JDK_DIR GOTO:compile
+if defined JDK_DIR GOTO:start
 rem This script located the current version of
 rem "Java Development Kit" and sets the
 rem %JDK_PATH% environment variable
@@ -119,16 +119,16 @@ FOR %%F IN (%DOCS%) DO COPY /Y %%F %JARDIR%\docs>NUL
 :packjar
 ECHO creating jar packages
 PUSHD %JARDIR%
-%JAR% -cf "jScope.jar" jScope.class colors1.tbl jScope docs
+%JAR% -cf "jScope.jar" jScope.class colors1.tbl jScope.properties jScope docs
 %JAR% -cf "WaveDisplay.jar" %COMMON_SRC:.java=.class%
 POPD
 
 :cleanup
 ECHO cleaning up
 PUSHD %JARDIR%
-RMDIR /S /Q docs>nul
-DEL colors1.tbl *.class>nul
-RMDIR /S /Q jScope>nul
+RMDIR /S /Q docs 2>NUL
+DEL colors1.tbl jScope.properties *.class 2>NUL
+RMDIR /S /Q jScope 2>nul
 POPD
 
 :jscope

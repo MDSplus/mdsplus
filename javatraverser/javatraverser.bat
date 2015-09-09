@@ -1,6 +1,6 @@
 @ECHO OFF
 ECHO preparing
-if defined JDK_DIR GOTO:compile
+if defined JDK_DIR GOTO:start
 rem This script located the current version of
 rem "Java Development Kit" and sets the
 rem %JDK_PATH% environment variable
@@ -218,8 +218,8 @@ POPD
 :cleanup
 ECHO cleaning up
 PUSHD %JARDIR%
-DEL /Q *.gif
-DEL /Q *.class
+DEL /Q *.gif 2>NUL
+DEL /Q *.class 2>NUL
 POPD
 
 :jtraveser
