@@ -74,7 +74,7 @@ OPC (	Any,	ANY ,		Trans,	Mask1,		Any,		BU,O,	VV,VV,	1,2,	OK	)/*;f9	(mask,[dim])	
 OPC (	Arg,	ARG ,		Same,	None,		Arg,		FC,HC,	F,H,	1,1,	OK	)/*;	(z) atan2(imag,real)	*/
 OPC (	Argd,	ARGD ,		Same,	None,		Argd,		FC,HC,	F,H,	1,1,	OK	)/*;	(z) atan2d(imag,real)	*/
 OPC (	ArgOf,	ARG_OF ,		ArgOf,	undef,		undef, FUNCTION,CONDITION,XX,YY,1,2,	OK+I	)/*;mds	(ext_fun other ,[n])	*/
-OPC (	Array,	ARRAY ,		Array,	undef,		Array,		XX,YY,	FLOAT,F,	0,2,	OK+U	)/*;	([size],[kind])		*/
+OPC (	Array,	ARRAY ,		Array,	undef,		Zero,		XX,YY,	FLOAT,F,	0,2,	OK+U	)/*;	([size],[kind])		*/
 OPC (	Asin,	ASIN ,		Same,	None,		Asin,		F,HC,	F,HC,	1,1,	OK	)/*;f9	(x)			*/
 OPC (	Asind,	ASIND ,		Same,	None,		Asind,		F,HC,	F,HC,	1,1,	OK	)/*;vax	(x)			*/
 OPC (	AsIs,	AS_IS ,		AsIs,	undef,		undef,		XX,YY,	XX,YY,	1,1,	MODIF+N	)/*;mds	(any) unevaluated	*/
