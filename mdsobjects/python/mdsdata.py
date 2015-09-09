@@ -8,6 +8,7 @@ else:
     return __import__(name,globals(),{},[],level)
 
 _dtypes=_mimport('_mdsdtypes',1)
+_ver=_mimport('version',1)
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -76,14 +77,9 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    try:
-        if isinstance(value,long):
-           return _scalar.makeScalar(value)
-    except:
-        pass
-    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,float) or isinstance(value,str) or isinstance(value,complex):
+    if isinstance(value,(numpy.generic,int,float,complex,_ver.basestring,_ver.bytes,_ver.long)):
         return _scalar.makeScalar(value)
-    if isinstance(value,tuple) or isinstance(value,list):
+    if isinstance(value,(tuple,list)):
         apd = _apd.Apd(tuple(value),_dtypes.DTYPE_LIST)
         return _apd.List(apd)
     if isinstance(value,numpy.ndarray):
@@ -336,7 +332,7 @@ class Data(object):
     def __long__(self):
         """Convert this object to python long
         @rtype: long"""
-        return long(self.getLong()._value)
+        return _ver.long(self.getLong()._value)
 
     def __lshift__(self,y):
         """Lrft binary shift: x.__lshift__(y) <==> x<<y
@@ -827,6 +823,3 @@ class EmptyData(Data):
        return None
 
     value=property(_getValue)
-
-    pass
-
