@@ -1,4 +1,4 @@
-import numpy,copy,ctypes
+import numpy,ctypes#,copy
 
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
@@ -10,6 +10,7 @@ else:
 _data=_mimport('mdsdata',1)
 _dtypes=_mimport('_mdsdtypes',1)
 _scalar=_mimport('mdsscalar',1)
+_ver=_mimport('version',1)
 
 def makeArray(value):
     if isinstance(value,Array):
@@ -40,7 +41,7 @@ def makeArray(value):
         if str(value.dtype) == 'object':
             raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
         return globals()[str(value.dtype).capitalize()+'Array'](value)
-    if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
+    if isinstance(value,(numpy.generic, int, _ver.long, float, str, bool)):
         return makeArray(numpy.array(value).reshape(1))
     raise TypeError('Cannot make Array out of '+str(type(value)))
                         
