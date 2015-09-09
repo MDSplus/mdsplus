@@ -1,7 +1,5 @@
 #pragma once
 
-#define MDSDESCRIP_H_DEFINED 1
-
 #include <config.h>
 
 #ifdef _WIN32
