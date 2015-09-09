@@ -35,6 +35,7 @@ __version__    = "3.4"
 __tabversion__ = "3.2"       # Version of table file used
 
 import re, sys, types, copy, os
+import MDSplus.version as _ver
 
 # This tuple contains known string types
 try:
@@ -43,16 +44,6 @@ try:
 except AttributeError:
     # Python 3.0
     StringTypes = (str, bytes)
-
-# Extract the code attribute of a function. Different implementations
-# are for Python 2/3 compatibility.
-
-if sys.version_info[0] < 3:
-    def func_code(f):
-        return f.func_code
-else:
-    def func_code(f):
-        return f.__code__
 
 # This regular expression is used to match valid token names
 _is_identifier = re.compile(r'^[a-zA-Z0-9_]+$')
@@ -357,7 +348,7 @@ class Lexer:
                 if not self.lexoptimize:
                     if not newtok.type in self.lextokens:
                         raise LexError("%s:%d: Rule '%s' returned an unknown token type '%s'" % (
-                            func_code(func).co_filename, func_code(func).co_firstlineno,
+                            _ver.func_code(func).co_filename, _ver.func_code(func).co_firstlineno,
                             func.__name__, newtok.type),lexdata[lexpos:])
 
                 return newtok
@@ -519,7 +510,6 @@ def _form_master_re(relist,reflags,ldict,toknames):
 # -----------------------------------------------------------------------------
 
 def _statetoken(s,names):
-    nonstate = 1
     parts = s.split("_")
     for i in range(1,len(parts)):
          if not parts[i] in names and parts[i] != 'ANY': break
@@ -679,8 +669,8 @@ class LexerReflect(object):
                     for s in states:
                         self.errorf[s] = t
                 elif tokname == 'ignore':
-                    line = func_code(t).co_firstlineno
-                    file = func_code(t).co_filename
+                    line = _ver.func_code(t).co_firstlineno
+                    file = _ver.func_code(t).co_filename
                     self.log.error("%s:%d: Rule '%s' must be defined as a string",file,line,t.__name__)
                     self.error = 1
                 else:
@@ -705,11 +695,11 @@ class LexerReflect(object):
 
         # Sort the functions by line number
         for f in self.funcsym.values():
-            if sys.version_info[0] < 3:
-                f.sort(lambda x,y: cmp(func_code(x[1]).co_firstlineno,func_code(y[1]).co_firstlineno))
+            if _ver.ispy2:
+                f.sort(lambda x,y: cmp(_ver.func_code(x[1]).co_firstlineno,_ver.func_code(y[1]).co_firstlineno))
             else:
                 # Python 3.0
-                f.sort(key=lambda x: func_code(x[1]).co_firstlineno)
+                f.sort(key=lambda x: _ver.func_code(x[1]).co_firstlineno)
 
         # Sort the strings by regular expression length
         for s in self.strsym.values():
@@ -727,8 +717,8 @@ class LexerReflect(object):
             
 
             for fname, f in self.funcsym[state]:
-                line = func_code(f).co_firstlineno
-                file = func_code(f).co_filename
+                line = _ver.func_code(f).co_firstlineno
+                file = _ver.func_code(f).co_filename
                 self.files[file] = 1
 
                 tokname = self.toknames[fname]
@@ -736,7 +726,7 @@ class LexerReflect(object):
                     reqargs = 2
                 else:
                     reqargs = 1
-                nargs = func_code(f).co_argcount
+                nargs = _ver.func_code(f).co_argcount
                 if nargs > reqargs:
                     self.log.error("%s:%d: Rule '%s' has too many arguments",file,line,f.__name__)
                     self.error = 1
@@ -797,15 +787,15 @@ class LexerReflect(object):
             efunc = self.errorf.get(state,None)
             if efunc:
                 f = efunc
-                line = func_code(f).co_firstlineno
-                file = func_code(f).co_filename
+                line = _ver.func_code(f).co_firstlineno
+                file = _ver.func_code(f).co_filename
                 self.files[file] = 1
 
                 if isinstance(f, types.MethodType):
                     reqargs = 2
                 else:
                     reqargs = 1
-                nargs = func_code(f).co_argcount
+                nargs = _ver.func_code(f).co_argcount
                 if nargs > reqargs:
                     self.log.error("%s:%d: Rule '%s' has too many arguments",file,line,f.__name__)
                     self.error = 1
@@ -931,8 +921,8 @@ def lex(module=None,object=None,debug=0,optimize=0,lextab="lextab",reflags=0,now
 
         # Add rules defined by functions first
         for fname, f in linfo.funcsym[state]:
-            line = func_code(f).co_firstlineno
-            file = func_code(f).co_filename
+#            line = func_code(f).co_firstlineno
+#            file = func_code(f).co_filename
             regex_list.append("(?P<%s>%s)" % (fname,f.__doc__))
             if debug:
                 debuglog.info("lex: Adding rule %s -> '%s' (state '%s')",fname,f.__doc__, state)
