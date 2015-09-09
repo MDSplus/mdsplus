@@ -1,7 +1,6 @@
 #pragma once
 
 /********** define this in case user code is checking it ************/
-#define __TREESHR
 
 #include <treeshr_messages.h>
 
