@@ -2,7 +2,6 @@ import ctypes as _C
 from ctypes.util import find_library as _find_library
 import numpy as _N
 import os as _os
-import sys as _sys
 
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
@@ -10,31 +9,31 @@ if '__package__' not in globals() or __package__ is None or len(__package__)==0:
 else:
   def _mimport(name,level):
     return __import__(name,globals(),{},[],level)
+_ver=_mimport('version',1)
 
 def _load_library(name):
-    if _sys.version_info[0]==2 and _sys.version_info[1]<5 and _os.name=='posix' and _sys.platform.startswith('linux'):
-      return _C.CDLL('lib'+name+'.so')
-    libnam=_find_library(name)
+    libnam = None
+    if _ver.pyver>(2,5,):
+        libnam = _find_library(name)        
     if libnam is None:
         try:
-            lib=_C.CDLL('lib'+name+'.so')
+            return _C.CDLL('lib'+name+'.so')
         except:
             try:
-                lib=_C.CDLL('lib'+name+'.dylib')
+                return _C.CDLL(name+'.dll')
             except:
                 try:
-                    lib=_C.CDLL(name+'.dll')
+                    return _C.CDLL('lib'+name+'.dylib')
                 except:
                     raise Exception("Error finding library: "+name)
     else:
         try:
-            lib=_C.CDLL(libnam)
+            return _C.CDLL(libnam)
         except:
             try:
-                lib=_C.CDLL(name)
+                return _C.CDLL(name)
             except:
-                lib=_C.CDLL(_os.path.basename(libnam))
-    return lib
+                return _C.CDLL(_os.path.basename(libnam))
 
 MdsShr=_load_library('MdsShr')
 __MdsGetMsg=MdsShr.MdsGetMsg
@@ -200,7 +199,7 @@ try:
         status=__MDSGetEventQueue(eventid,timeout,dlen,bptr)
         if status==1:
             if dlen.value>0:
-                ans = _array.Uint8Array(_N.ndarray(shape=[dlen.value],buffer=buffer(_C.cast(bptr,_C.POINTER((_C.c_byte * dlen.value))).contents),dtype=_N.uint8))
+                ans = _array.Uint8Array(_N.ndarray(shape=[dlen.value],buffer=_ver.buffer(_C.cast(bptr,_C.POINTER((_C.c_byte * dlen.value))).contents),dtype=_N.uint8))
                 MdsShr.MdsFree(bptr)
                 return ans
             else:
