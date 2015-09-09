@@ -28,6 +28,8 @@ SED = @SED@
 TARGET_ARCH = @TARGET_ARCH@
 THREAD = @THREAD@
 
+EXE = @EXEEXT@
+
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@

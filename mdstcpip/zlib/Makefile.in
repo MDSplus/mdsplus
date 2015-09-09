@@ -452,7 +452,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-@MINGW_TRUE@EXE = .exe
 @MINGW_TRUE@WIN = .win
 @MINGW_TRUE@DEF = mdsipshr.def
 lib = @LIBPRE@

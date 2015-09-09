@@ -3,7 +3,6 @@
 include ${top_srcdir}/Makefile.inc
 
 if MINGW
-EXE=.exe
 WIN=.win
 DEF=mdsipshr.def
 endif
