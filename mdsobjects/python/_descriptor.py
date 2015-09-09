@@ -17,16 +17,14 @@ _apd=_mimport('apd',1)
 _compound=_mimport('compound',1)
 _mdsshr=_mimport('_mdsshr',1)
 _tdi=_mimport('tdibuiltins',1)
+_ver=_mimport('version',1)
 
 
 import numpy as _N
 import struct as _struct
 
 import ctypes as _C
-import os as _os,sys as _sys
-
-if _sys.version > '3':
-    buffer = memoryview
+import os as _os
 
 def pointerToObject(pointer):
     if pointer == 0:
@@ -272,33 +270,24 @@ class descriptor(_C.Structure):
             self.addToCache(apd_a)
             self.addToCache(apd)
             return
-
-        try:
-            if isinstance(value,long):
-                self.length=8
-                self.dtype=_dtypes.DTYPE_Q
-                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-
-            if isinstance(value,int):
-                self.length=4
-                self.dtype=_dtypes.DTYPE_L
-                self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-        except:
-            if isinstance(value,int):
-                self.length=8
-                self.dtype=_dtypes.DTYPE_Q
-                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-        try:
-            isunicode = isinstance(value,unicode)
-        except:
-            isunicode = False
-        if isunicode or isinstance(value,str):
+        if isinstance(value,_ver.long):#must be before int: treat int as long in py3
+            self.length=8
+            self.dtype=_dtypes.DTYPE_Q
+            self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
+            self.addToCache(value)
+            return
+        if isinstance(value,int):
+            self.length=4
+            self.dtype=_dtypes.DTYPE_L
+            self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),type(self.pointer))
+            self.addToCache(value)
+            return
+        if isinstance(value,(str,_ver.varstr)):
+            if isinstance(value,(_ver.unicode,)):
+                value = value.encode()
+            elif isinstance(value,(_ver.bytes,)):
+                value = value.decode()
+            #value is now of type str
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
             self.length=d.length
@@ -487,12 +476,12 @@ class descriptor(_C.Structure):
             else:
                 shape=[int(descr.arsize/descr.length),]
             if self.dtype == _dtypes.DTYPE_T:
-                return _array.StringArray(_N.ndarray(shape=shape,dtype=_N.dtype(('S',descr.length)),buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_byte*descr.arsize)).contents)))
+                return _array.StringArray(_N.ndarray(shape=shape,dtype=_N.dtype(('S',descr.length)),buffer=_ver.buffer(_C.cast(self.pointer,_C.POINTER(_C.c_byte*descr.arsize)).contents)))
 #                return StringArray(_N.chararray(shape,itemsize=descr.length,buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_char*descr.arsize)).contents.value)))
             if self.dtype == _dtypes.DTYPE_NID:
                 self.dtype=_dtypes.DTYPE_L
                 nids=_array.makeArray(_N.ndarray(shape=shape,dtype=_dtypes.mdsdtypes(self.dtype).toCtype(),
-                                          buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents)))
+                                          buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents)))
                 return _treenode.TreeNodeArray(nids)
             if self.dtype == _dtypes.DTYPE_F:
                 return _array.makeArray(_data.Data.execute("float($)",(descr,)))
@@ -501,17 +490,18 @@ class descriptor(_C.Structure):
             if self.dtype == _dtypes.DTYPE_FSC:
                 return _array.makeArray(_N.ndarray(shape=shape,
                                             dtype=_N.complex64,
-                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_float * int(descr.arsize*2/descr.length))).contents)))
+                                            buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_float * int(descr.arsize*2/descr.length))).contents)))
             if self.dtype == _dtypes.DTYPE_FTC:
                 return _array.makeArray(_N.ndarray(shape=shape,
                                             dtype=_N.complex128,
-                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_double * int(descr.arsize*2/descr.length))).contents)))
+                                            buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_double * int(descr.arsize*2/descr.length))).contents)))
             try:
                 a=_N.ndarray(shape=shape,dtype=_dtypes.mdsdtypes(self.dtype).toCtype(),
-                                  buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents))
+                                  buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents))
                 return _array.makeArray(a)
             except TypeError:
-                e=_sys.exc_info()[1]
+                import sys
+                e = sys.exc_info()[1]
                 raise TypeError('Arrays of type %s are unsupported. Error message was: %s' % (str(_dtypes.mdsdtypes(self.dtype)),str(e)))
             raise Exception('Unsupported array type')
         if self.dclass == _mdsclasses.CLASS_APD:
