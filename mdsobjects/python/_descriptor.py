@@ -285,7 +285,7 @@ class descriptor(_C.Structure):
         if isinstance(value,(str,_ver.varstr)):
             if isinstance(value,(_ver.unicode,)):
                 value = value.encode()
-            elif isinstance(value,(_ver.bytes,)):
+            elif not isinstance(value,(str,)):#is bytes (py2: str==bytes)
                 value = value.decode()
             #value is now of type str
             str_d=descriptor_string(value)
