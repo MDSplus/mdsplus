@@ -41,9 +41,9 @@ public class MARTE_NESetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
         jPanel6 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
         deviceField7 = new DeviceField();
         deviceField8 = new DeviceField();
+        deviceField20 = new DeviceField();
         jPanel7 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
@@ -124,15 +124,6 @@ public class MARTE_NESetup extends DeviceSetup {
 
         jPanel1.add(jPanel5);
 
-        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
-        deviceChoice2.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice2.setConvert(true);
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Control: ");
-        deviceChoice2.setOffsetNid(1339);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel6.add(deviceChoice2);
-
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Gas type");
         deviceField7.setNumCols(4);
@@ -144,6 +135,12 @@ public class MARTE_NESetup extends DeviceSetup {
         deviceField8.setNumCols(8);
         deviceField8.setOffsetNid(1351);
         jPanel6.add(deviceField8);
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("Control");
+        deviceField20.setNumCols(20);
+        deviceField20.setOffsetNid(1339);
+        jPanel6.add(deviceField20);
 
         jPanel1.add(jPanel6);
 
@@ -242,7 +239,6 @@ public class MARTE_NESetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice2;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -256,6 +252,7 @@ public class MARTE_NESetup extends DeviceSetup {
     private DeviceField deviceField18;
     private DeviceField deviceField19;
     private DeviceField deviceField2;
+    private DeviceField deviceField20;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;

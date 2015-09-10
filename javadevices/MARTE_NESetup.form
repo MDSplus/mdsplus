@@ -138,24 +138,6 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
-            <Component class="DeviceChoice" name="deviceChoice2">
-              <Properties>
-                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                  <PropertyValue value="[1, 0]"/>
-                </Property>
-                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="ENABLED"/>
-                    <StringItem index="1" value="DISABLED"/>
-                  </StringArray>
-                </Property>
-                <Property name="convert" type="boolean" value="true"/>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Control: "/>
-                <Property name="offsetNid" type="int" value="1339"/>
-                <Property name="updateIdentifier" type="java.lang.String" value=""/>
-              </Properties>
-            </Component>
             <Component class="DeviceField" name="deviceField7">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -170,6 +152,14 @@
                 <Property name="labelString" type="java.lang.String" value="vGVmin:"/>
                 <Property name="numCols" type="int" value="8"/>
                 <Property name="offsetNid" type="int" value="1351"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField20">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Control"/>
+                <Property name="numCols" type="int" value="20"/>
+                <Property name="offsetNid" type="int" value="1339"/>
               </Properties>
             </Component>
           </SubComponents>
