@@ -1,0 +1,118 @@
+#!/bin/bash
+#
+# build_mdsplus script
+#
+# Format: build_mdsplus build|build_latest_release options
+#
+# This script first sources a build.conf script in the dockerfile to get
+# platform specific settings.
+#
+# If the first argument is build then:
+#
+#   The script first determines what sources to use for a build. It does
+# this by determining whether the user specified a /source directory using
+# the -v option when running the docker image. If a /source directory is
+# provided that directory will be copyed to a /buildsrc directory to use
+# for building MDSplus. If no /source directory was specified then the
+# script examines the argument after the build argument (if any) to determine
+# what sources to build. If that argument is empty or missing the build will
+# use the head of the stable branch. If that argument is specified then it
+# will use the branch or tag specified in that argument. The script uses
+# wget to fetch an archive from github to use for building and expands it
+# into /buildsrc to use for building MDSplus.
+# The script then executes the build_it command which is defined by the
+# build.conf settings in the docker image.
+#
+# If the first argument is build_latest_release then:
+#
+#   The script will expect the next argument to be a release branch name
+# and it will find the latest release tag for that branch. The release tags
+# look like alpha_release_6_1_42 where the alpha is the release branch and
+# the 6 is the major release number, the 1 the minor and the 42 is the
+# release number. The script then checks to see if an installer already
+# exists in the /installer directory for this release. If so, the script
+# justs prints out a message and returns. Otherwise the sources for that
+# release tag will be fetched and expanded into /buildsrc and builds it using
+# the build_it command defined by the build.conf script for that docker
+# image.
+
+source build.conf
+set -e
+case "$1" in
+    build)
+	shift 1
+	if [ -z "$1" ]
+	then tag=stable;
+	else tag=$1;
+	fi
+	if [ "$#" -ge 1 ]
+	then
+	  shift 1
+	fi
+	if [ -d /source ]
+	then
+	    tag="local"
+	    export BRANCH=local_release 
+	    rsync -a /source/ /buildsrc/
+	else
+	    mkdir -p /buildsrc
+	    cd /buildsrc
+	    wget -q -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -
+	    mv mdsplus-${tag}/* ./
+	fi
+	export $(echo $tag | awk -F- '{print "BRANCH="$1" MAJOR="$2" MINOR="$3" RELEASE="$4" NF="NF;}')
+	if [ -z "${RELEASE}" ]
+	then
+	    export RELEASE=0
+	fi
+	if [ -z "${MINOR}" ]
+	then
+	    export MINOR=0
+	fi
+	if [ -z "${MAJOR}" ]
+	then
+	    export MAJOR=0
+	fi
+	if [ "${BRANCH:${#BRANCH}-8}" = "_release" ]
+	then
+	    export BRANCH=${BRANCH:0:${#BRANCH}-8}
+	fi
+	export PATH=/buildsrc/deploy:$PATH
+	build_it $@
+	;;
+    build_latest_release)
+	shift 1
+	export BRANCH="$1"
+	if [ "$#" -ge 1 ]
+	then
+	  shift 1
+	fi
+	if [ "${BRANCH}" = "stable" ]
+	then
+	    export BNAME=""
+	else
+	    export BNAME="-${BRANCH}"
+	fi
+	wget https://github.com/MDSplus/mdsplus/raw/alpha/deploy/get_latest_release
+	chmod a+x get_latest_release
+	tag=$(./get_latest_release ${BRANCH})	
+	export $(echo $tag | awk -F- '{print "MAJOR="$2" MINOR="$3" RELEASE="$4" NF="NF;}')
+	mkdir -p /installer
+	if ( release_available )
+	then
+	    echo "Installer for release $tag already exists so nothing to do."
+	else
+	    mkdir -p /buildsrc;
+	    cd /buildsrc
+	    wget -q -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -;
+	    mv mdsplus-${tag}/* ./
+	    export PATH=/buildsrc/deploy:$PATH
+	    build_it $@
+	fi
+	;;
+    *)
+	echo Unknown option. Valid options are '"build","build_latest_release"'
+	exit 1
+	;;
+esac
+
