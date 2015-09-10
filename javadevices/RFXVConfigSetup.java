@@ -58,6 +58,8 @@ public class RFXVConfigSetup extends DeviceSetup {
         deviceField4 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
         deviceChoice2 = new DeviceChoice();
+        deviceChoice3 = new DeviceChoice();
+
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
@@ -107,7 +109,7 @@ public class RFXVConfigSetup extends DeviceSetup {
         setDeviceProvider("localhost");
         setDeviceTitle("RFX Vessel Configuration");
         setDeviceType("RFXVConfig");
-        setHeight(400);
+        setHeight(500);
         setWidth(1080);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
@@ -147,7 +149,7 @@ public class RFXVConfigSetup extends DeviceSetup {
         jPanel4.add(jPanel33, java.awt.BorderLayout.SOUTH);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("  VI  "));
-        jPanel5.setLayout(new java.awt.GridLayout(2, 0, 2, 0));
+        jPanel5.setLayout(new java.awt.GridLayout(3, 0, 2, 0));
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("N. Group Filling Valves :");
@@ -176,6 +178,16 @@ public class RFXVConfigSetup extends DeviceSetup {
         deviceChoice2.setOffsetNid(9);
         deviceChoice2.setUpdateIdentifier("");
         jPanel5.add(deviceChoice2);
+
+        deviceChoice3.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice3.setChoiceItems(new String[] {"Disabled", "Enabled"});
+        deviceChoice3.setConvert(true);
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("NE Control : ");
+        deviceChoice3.setOffsetNid(64);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel5.add(deviceChoice3);
+
 
         jPanel4.add(jPanel5, java.awt.BorderLayout.NORTH);
 
@@ -427,6 +439,7 @@ public class RFXVConfigSetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField2;

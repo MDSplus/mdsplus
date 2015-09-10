@@ -1,6 +1,6 @@
 public fun RFXVConfig__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXVConfig',64, _nidout);
+    DevAddStart(_path, 'RFXVConfig',65, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':NCRIO_ON', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':NTURBO_ON', 'NUMERIC', *, *, _nid);
@@ -38,6 +38,9 @@ public fun RFXVConfig__add(in _path, out _nidout)
 
 
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
+
+    DevAddNode(_path // ':NE_CONTROL', 'NUMERIC', *, *, _nid);
+
     DevAddEnd();
 }
 

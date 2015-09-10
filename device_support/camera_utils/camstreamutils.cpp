@@ -186,14 +186,14 @@ void *handleStreaming(void *listPtr)
     return NULL;
 }
 
-void startStreaming(void **retList)
+void camStartStreaming(void **retList)
 {
     StreamingFrameList *streamingFrameList = new StreamingFrameList;
     streamingFrameList->start();
     *retList = (void *)streamingFrameList;
 }
 
-void stopStreaming(void *listPtr)
+void camStopStreaming(void *listPtr)
 {
     if(listPtr) 
     {
