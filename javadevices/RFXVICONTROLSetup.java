@@ -75,7 +75,7 @@ public class RFXVICONTROLSetup extends DeviceSetup {
         deviceChoice1.setUpdateIdentifier("");
         jPanel4.add(deviceChoice1);
 
-        deviceChoice2.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
         deviceChoice2.setChoiceItems(new String[] {"Enabled", "Disabled"});
         deviceChoice2.setConvert(true);
         deviceChoice2.setIdentifier("");
