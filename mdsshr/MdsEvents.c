@@ -740,11 +740,6 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
 #include "../servershr/servershrp.h"
 #else
 #include <sys/types.h>
-#if USE_SEMAPHORE_H
-#include <semaphore.h>
-#else
-#include <sys/sem.h>
-#endif
 //#include <sys/msg.h>
 #include <sys/time.h>
 #include <sys/socket.h>

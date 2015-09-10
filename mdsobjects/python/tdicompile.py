@@ -6,8 +6,8 @@ from ident import *
 from treenode import *
 from event import *
 from builtins import Builtin
-from _tdishr import TdiDecompile
-import sys,os
+#from _tdishr import TdiDecompile
+#import sys,os
 optimized=1
 
 class _replacementArgs(object):
@@ -46,7 +46,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 
 ### ignore comments denoted by /* ..... */  NOTE: Nested comments allowed which required the states trick
 
-    states = (('nestcomment','exclusive'),)
+#    states = (('nestcomment','exclusive'),)
 
     def t_nestcomment_comment(t):
         r'(.|\n)*?(\*/|/\*)'
@@ -218,6 +218,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         return t
 
 ### Various operators
+    ''' unused
     t_PLUS    = r'\+'
     t_MINUS   = r'-'
     t_TIMES   = r'\*'
@@ -253,6 +254,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
     t_INOT = r'~'
     t_EQUALSFIRST = r'\+=|-=|\*=|/=|\^=|\*\*=|<==|>==|>>=|<<=|&=|&&=|!==|\|=|\|\|=|//='
     t_BACKQUOTE = r'`'
+    '''
 
 
     def t_COLON(t):
@@ -281,13 +283,14 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 #        t.lexer.skip(1)
 
 # A string containing ignored characters (spaces and tabs)
-    t_ANY_ignore  = ' \t\r\0'
+#    t_ANY_ignore  = ' \t\r\0'
 
 
 # Build the lexer
 
     lex.lex(debug=0,optimize=optimized,lextab='tdilextab')
 
+    ''' unused
     precedence = (
         ('right','EQUAL'),
         ('right','COMMA'),
@@ -302,6 +305,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         ('right','RSHIFT','LSHIFT','UNOP'),
         ('left','LBRACKET','LPAREN','IDENTTYPE'),
         )
+    '''
 
     def p_compilation(t):
         """compilation : statements\n| operand\n | operand SEMICOLON

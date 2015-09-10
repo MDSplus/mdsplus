@@ -1,4 +1,273 @@
-commit c1d79bcf19ffecabf2fccf8e9893df7b801e3e1c (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 44473ef993e5213a2aaed24d7021d7bec9612f32 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Tue Sep 8 18:16:05 2015 -0400
+
+    Combine two install lines into one
+    
+    $MDSCCL already contains the MINGW_TRUE/FALSE selected filename, so there is no need to repeat the same logic.  Use the result directly instead.
+
+commit 3f9e97ab8f96ea4d20f0b1e67b8183bcc55452d8
+Merge: b934fdd 1055cef
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 8 14:25:03 2015 -0400
+
+    Merge pull request #56 from zack-vii/alpha_matlab_mdsgetmsg
+    
+    updated the help text (rebased)
+
+commit b934fdd7b53027364e4703cf1c14b80bfe4f45b2
+Merge: 00789a7 7068f66
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 8 13:53:42 2015 -0400
+
+    Merge pull request #52 from MDSplus/dev-kge
+    
+    Configure updates
+
+commit 7068f661f092851bd595499bc8662ad7e2751038
+Author: Keith <kerickso@pppl.gov>
+Date:   Tue Sep 8 12:44:52 2015 -0400
+
+    Rename ccl to mdsccl and simplify Makefile
+
+commit fa2e441e85dfa98237462e44c6cf7eb0f5c15016
+Author: Keith <kerickso@pppl.gov>
+Date:   Mon Sep 7 22:57:17 2015 -0400
+
+    Update automake to 1.15, including all of the build-aux helper scripts
+
+commit 0d8b51e52a2321e79ffaab9cb6cf795f6d465f72
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 22:46:45 2015 -0400
+
+    Find a safe awk for makefile use
+
+commit 27b860ef6758dc22a7e5c18c50f2b75cb2a258ff
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 22:08:17 2015 -0400
+
+    Rename configure.in to configure.ac
+    
+    New versions of autotools require that old name of configure.in is dropped in deference to configure.ac, as files with the .in extension tend to be outputs of autotools.  CVS could not track renames, so this change was delayed until now.
+
+commit bdd91552ad666c2958ba274c3bb57e8db8762a12
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 22:29:02 2015 -0400
+
+    Move program checks closer to the start of configure
+
+commit 1055cef65224fda5d1d6f1a379d6c017a45f697c
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Aug 27 11:22:53 2015 +0200
+
+    updated the help text
+    
+    explained how the error handling works
+
+commit 00789a746e0b9097369ff20ac9fe0f40e19565b1
+Merge: 1c9346a 014cb94
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 8 12:36:54 2015 -0400
+
+    Merge pull request #55 from zack-vii/python_minorfixes
+    
+    Python minorfixes
+
+commit 014cb9492d363551b92e27a002928dccc0b82370
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 8 17:17:49 2015 +0200
+
+    wrong description
+
+commit 472c13a8082be2e0a88cd43577080b8b5e501365
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 8 17:17:14 2015 +0200
+
+    unused stuff
+    
+    commented out unused stuff
+
+commit 1c9346a753ff5a85052f5651169bcea9574bf872
+Merge: c495bf2 e62b202
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Sep 8 09:37:53 2015 -0400
+
+    Merge pull request #53 from zack-vii/alpha_python3
+    
+    fix: long, basestring
+
+commit c495bf2cd669bb650e611c2c534c720a9faf478e
+Merge: cec39fa e95b36f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 8 09:18:19 2015 -0400
+
+    Merge pull request #51 from MDSplus/treeshr.h-edits
+    
+    pragma once
+
+commit cec39fa884cb914a0e89316a2053fc6769c613b1 (tag: refs/tags/alpha_release-7-0-146)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Sep 7 23:05:24 2015 -0400
+
+    New release ---- alpha_release-7-0-146
+
+commit e0363ca91083480b4342823efbbecddb9f3c4dff
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 22:10:22 2015 -0400
+
+    Remove redundant calls to canonicalizing macros
+
+commit c6812111da8c4dc218f81c7f56fc7c62748aafd5
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 21:58:03 2015 -0400
+
+    Remove the redundant NOT_MINGW conditional. Instead, just use MINGW or !MINGW as appropriate.
+
+commit 2498f2f9ee0371e333af5b9f53f1197a521e464d
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 16:00:47 2015 -0400
+
+    Remove ac_subst'd var MITDEVICES, as it is always set
+
+commit 2b20d449ac46dea38389dbb4a6c2aadbb6417f96
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 15:43:30 2015 -0400
+
+    Remove hardcoded path for windres in favor of AC_CHECK_TOOL, which always does the right thing
+
+commit 2f80bfee1a74c253a0c3d01ae0c044208e4dc337
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Mon Sep 7 15:33:37 2015 -0400
+
+    Remove ac_subst'd var ICONS in favor of existing automake conditional
+
+commit 340da15b8ba6bc833fc3ead4e1da880c52549126
+Merge: 5b1c3a4 1a7835d
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Mon Sep 7 18:55:43 2015 +0200
+
+    Merge pull request #54 from MDSplus/feature-w7x-devices
+    
+    Add burst mode to QC9200 delay generator support
+
+commit 1a7835d8e69e5249ba0a79194cad7884df6153c4 (refs/remotes/origin/feature-w7x-devices)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Mon Sep 7 18:52:10 2015 +0200
+
+    Add burst mode to QC9200 delay generator support
+
+commit e62b202c894e497501d8814fbff42b244bd3cba8
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Sep 7 17:08:19 2015 +0200
+
+    fix: long, basestring
+    
+    you need to redefine long and basestring conditional. as long and
+    basestring does not exist in python 3
+
+commit dbeb57491d2055cf50d049aeee599da3dce16e95
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 17:12:44 2015 -0400
+
+    Remove the need for both AC_SUBST MINGW and AM_CONDITIONAL MINGW
+
+commit 1c65b59872765320e65dad3f10bd127e347f9803
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 16:48:00 2015 -0400
+
+    Remove redundant MINGW variable initializations
+
+commit b9ba41ad0d510eadf925b291e6346c80e5fafc22
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 16:06:13 2015 -0400
+
+    Make the visual studio configure tests more robust, and add checking/result messages to show the eventual values
+
+commit da7af9beafe0deaff48e65bdb9251d29bb2977cd
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 15:40:48 2015 -0400
+
+    Move the python tests out of the java section and into its own area
+
+commit dcc1c4a2671ae532bf9490b1781e1b48368f9e64
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 15:38:41 2015 -0400
+
+    Move the tests for visual studio out of the java section and into the mingw section
+
+commit f3a062853f6ea5c5238e34429d9ed3d481c3acb6
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 15:37:20 2015 -0400
+
+    Move the valgrind tests into their own section instead of being in the middle of the java tests
+
+commit cf7418ddb3a79ee7e9492424e6bee11d1cb75b3b
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 14:51:52 2015 -0400
+
+    Update autoconf to 2.69
+
+commit 687aeeda9b4bdc1d8d785bda18de92c760010525
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 14:19:18 2015 -0400
+
+    Remove unused test for the shmat function
+
+commit bbba5905e046ac11f835a12386a0c6af657ec6af
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 13:37:56 2015 -0400
+
+    Remove unused configure option to choose the semaphore header, along with all instances of USE_SEMAPHORE_H
+
+commit 0686261aac032b36d6cc7bc595e258017b2d1106
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Sun Sep 6 13:35:37 2015 -0400
+
+    Regenerate Makefile.in
+
+commit 5b1c3a4119c8165bd0e41937fb3d23ba5aa0e5ef (tag: refs/tags/alpha_release-7-0-145)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Sep 4 23:06:06 2015 -0400
+
+    New release ---- alpha_release-7-0-145
+
+commit 7d15047663d973b4a7d2bb71168f2b4aaa373518
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 18:00:49 2015 +0200
+
+    Density control
+
+commit 1ca286ebd50b5d93afc8dc3b7615ce714c284a00
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 17:18:43 2015 +0200
+
+    Minor fixes
+
+commit 1232d0880e8ea42f3ab6787d25cbffdcbe94aa29
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 17:09:59 2015 +0200
+
+    Added interface for density control
+
+commit 56e58c2142e4748dafb909d672c974fa4ae4e56b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 16:02:04 2015 +0200
+
+    Interface for Density control
+
+commit d0c1fd9dc8ad2ebc483076136774e741387379e5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 4 15:58:32 2015 +0200
+
+    Interface for density control
+
+commit 286a05d76aac9feb02f3e580d5a50620e300fb0d (tag: refs/tags/alpha_release-7-0-144)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Sep 3 23:05:49 2015 -0400
+
+    New release ---- alpha_release-7-0-144
+
+commit c1d79bcf19ffecabf2fccf8e9893df7b801e3e1c
 Merge: 8532d03 7db8009
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Sep 3 09:25:49 2015 -0400
@@ -18,6 +287,15 @@ Date:   Wed Sep 2 17:21:40 2015 -0400
     (works with newer python also)
     
     Can not assign to keywords long and basestr
+
+commit e95b36f2c24259e77a619302486e5a810306cdf7 (refs/remotes/origin/treeshr.h-edits)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 2 16:57:34 2015 -0400
+
+    use #pragma once instead of #define FILENAME_H
+    
+    However
+      Still define FILENAME_H for legacy references to these files
 
 commit 8532d03aaf8ecd12c3de0686d54d378c3bca5292 (tag: refs/tags/alpha_release-7-0-143)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -683,7 +961,7 @@ Date:   Thu Jul 23 14:12:48 2015 +0200
     Fix objects libraries names
     Adds pdf refs to index
 
-commit 7c82abb7d991d2181b6e0b281ed1c211bda83031 (refs/remotes/origin/feature-mdsobjects-testing)
+commit 7c82abb7d991d2181b6e0b281ed1c211bda83031
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Thu Jul 23 12:15:44 2015 +0200
 

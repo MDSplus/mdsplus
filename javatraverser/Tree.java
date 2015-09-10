@@ -246,10 +246,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     	if(open_dialog == null)
 	{
 	    if(curr_origin == null)
-		curr_origin = new Point(100, 100);
 	    open_dialog = new JDialog(frame);
 	    open_dialog.setTitle("Open new tree");
-	    //open_dialog.setLocation(curr_origin);
 	    JPanel mjp = new JPanel();
 	    mjp.setLayout(new BorderLayout());
 	    JPanel jp1 = new JPanel();
@@ -283,16 +281,23 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_shot.addKeyListener(this);
 	    open_exp.addKeyListener(this);
 	    open_dialog.pack();
+	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 	    open_dialog.setLocation(curr_origin);
+	    if (curr_experiment != null)
+	        try {
+		       open_exp.setText(curr_experiment.getName());
+	           open_shot.setText(new Integer(curr_experiment.getShot()).toString());
+	        }catch(Exception exc){}
 	    open_dialog.setVisible(true);
 	}
 	else
 	{
 	    open_exp.setText("");
 	    open_shot.setText("");
+	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
-        open_edit.setSelected(false);
+            open_edit.setSelected(false);
 	    open_readonly.setSelected(false);
 	}
     }
@@ -681,7 +686,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			            if(idx < node_methods.length)
 			            {
 				            try {
-				                node_methods[idx].getMethod().invoke(curr_node, null);
+				                node_methods[idx].getMethod().invoke(curr_node);
 				            }catch(Exception exc) {System.out.println("Error executing " + exc); }
 				            curr_tree.expandPath(new TreePath(curr_tree_node.getPath()));
 				            curr_tree.treeDidChange();

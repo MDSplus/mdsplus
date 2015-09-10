@@ -2,9 +2,7 @@
 
 include ${top_srcdir}/Makefile.inc
 
-if NOT_MINGW
-else
-EXE=.exe
+if MINGW
 WIN=.win
 DEF=mdsipshr.def
 endif

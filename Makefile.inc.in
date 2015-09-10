@@ -1,6 +1,8 @@
 # @configure_input@
 
 DEFAULT_CFLAGS=-g -O2
+
+AWK = @AWK@
 CC = @CC@
 CFLAGS = @CFLAGS@
 CPPFLAGS = @CPPFLAGS@
@@ -25,6 +27,8 @@ RANLIB = @RANLIB@
 SED = @SED@
 TARGET_ARCH = @TARGET_ARCH@
 THREAD = @THREAD@
+
+EXE = @EXEEXT@
 
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@

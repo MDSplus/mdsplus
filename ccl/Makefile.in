@@ -19,8 +19,7 @@ depend:
 
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@ $(libdir)
-	@MINGW_FALSE@ $(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(bindir)
-	@MINGW_TRUE@ $(INSTALL) -m 755 @MAKEBINDIR@mdsccl.bat $(bindir)
+	$(INSTALL) -m 755  @MAKEBINDIR@$(MDSCCL) $(bindir)
 
 cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu
@@ -33,13 +32,7 @@ ccl_commands.c_disabled:	ccl_commands.ocld
 @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
-ifneq "@MINGW@" "yes"
-@MAKEBINDIR@mdsccl: ccl
+@MAKEBINDIR@$(MDSCCL): $(MDSCCL)
 	cp $< $@
 	chmod +x $@
-else
-@MAKEBINDIR@mdsccl.bat: mdsccl.bat
-	cp $< $@
-	chmod +x $@
-endif
 

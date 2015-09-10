@@ -2,7 +2,6 @@ include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
-@MINGW_TRUE@ EXE=.exe
 @MINGW_TRUE@ WIN=.win
 @MINGW_TRUE@ DEF=mdsipshr.def
 
@@ -39,11 +38,9 @@ MdsIpUDT    = @MAKESHLIBDIR@@LIBPRE@MdsIpUDT@SHARETYPE@
 MdsIpUDTV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
 
 # fix this
-ifneq "@MINGW@" "yes"
-        IPV6_UDT = $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6)
-else #MINGW
-	MDSIP_SERVICE = @MAKEBINDIR@mdsip_service.exe
-endif #MINGW
+@MINGW_FALSE@ IPV6_UDT = $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6)
+@MINGW_TRUE@ MDSIP_SERVICE = @MAKEBINDIR@mdsip_service.exe
+
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else #SHARETYPE
@@ -84,19 +81,17 @@ TUNNEL_OBJECTS = $(TUNNEL_SOURCES:.c=.o)
 CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(TCPV6_OBJECTS) $(UDT_OBJECTS) $(UDTV6_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS)
 ALL_SOURCES = $(LIB_SOURCES) $(TUNNEL_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURCES) $(SERVER_SOURCES)
 
-ifneq "@MINGW@" "yes"
-bin_SCRIPTS = \
-      @MAKEBINDIR@mdsipd \
-      @MAKEBINDIR@mdsip_server
-else #MINGW
-bin_SCRIPTS = \
-      @MAKEBINDIR@mdsip_service.exe.manifest \
-      @MAKEBINDIR@mdsip-client-ssh.bat
-endif #MINGW
+bin_SCRIPTS =
+@MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip_service.exe.manifest
+@MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh.bat
 
-ifneq "@MINGW@" "yes"
-bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh @MAKEBINDIR@mdsip-client-http @MAKEBINDIR@mdsip-server-ssh @MAKEBINDIR@mdsip-server-http
-endif #MINGW
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsipd
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip_server
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-http
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-server-ssh
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-server-http
+
 
 ifneq "@GLOBUS_FLAVOR@" ""
 

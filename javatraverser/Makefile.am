@@ -1,21 +1,19 @@
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 CLEANFILES = $(java_DATA)
-if NOT_MINGW
-CLEANFILES += $(bin_SCRIPTS)
-endif
 
 JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 
 # Create the shell script that runs the program
-if NOT_MINGW
+if MINGW
+bin_SCRIPTS = traverser.bat
+else
 bin_SCRIPTS = jTraverser
+CLEANFILES += $(bin_SCRIPTS)
 EXTRA_DIST += jTraverser.template
 $(bin_SCRIPTS): $(srcdir)/jTraverser.template
 	cp $< $@
-else
-bin_SCRIPTS = traverser.bat
 endif
 
 #$(INSTALL) -D $< $@

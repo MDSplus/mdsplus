@@ -1,5 +1,4 @@
-#ifndef MDSDESCRIP_H_DEFINED
-#define MDSDESCRIP_H_DEFINED 1
+#pragma once
 
 #include <config.h>
 
@@ -285,7 +284,7 @@ struct descriptor_r {
 
 #define DTYPE_IDENT	191
 
-#define DTYPE_NID		192
+#define DTYPE_NID	192
 
 #define DTYPE_PATH	193
 
@@ -744,28 +743,10 @@ typedef ARRAY(int) array_int;
 typedef ARRAY(struct descriptor *) array_desc;
 typedef SIGNAL(MAXDIM) signal_maxdim;
 
-#ifdef __VMS
-#pragma member_alignment restore
-#endif				/* __VMS */
-
-#ifdef __VMS
-#define DTYPE_NATIVE_FLOAT DTYPE_F
-#define DTYPE_FLOAT_COMPLEX DTYPE_FC
-
-#if __G_FLOAT
-#define DTYPE_NATIVE_DOUBLE DTYPE_G
-#define DTYPE_DOUBLE_COMPLEX DTYPE_GC
-#else				/* __G_FLOAT */
-#define DTYPE_NATIVE_DOUBLE DTYPE_D
-#define DTYPE_DOUBLE_COMPLEX DTYPE_DC
-#endif				/* __G_FLOAT */
-
-#else				/* __VMS */
 #define DTYPE_NATIVE_FLOAT DTYPE_FS
 #define DTYPE_NATIVE_DOUBLE DTYPE_FT
 #define DTYPE_FLOAT_COMPLEX DTYPE_FSC
 #define DTYPE_DOUBLE_COMPLEX DTYPE_FTC
-#endif				/* __VMS */
 
 #ifndef DTYPE_FLOAT
 #define DTYPE_FLOAT DTYPE_NATIVE_FLOAT
@@ -773,6 +754,4 @@ typedef SIGNAL(MAXDIM) signal_maxdim;
 
 #ifndef DTYPE_DOUBLE
 #define DTYPE_DOUBLE DTYPE_NATIVE_DOUBLE
-#endif
-
 #endif
