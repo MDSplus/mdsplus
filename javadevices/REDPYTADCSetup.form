@@ -73,7 +73,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="IP Address:"/>
-                <Property name="numCols" type="int" value="20"/>
+                <Property name="numCols" type="int" value="25"/>
                 <Property name="offsetNid" type="int" value="1"/>
               </Properties>
             </Component>
@@ -83,15 +83,11 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
-            <Component class="DeviceField" name="deviceField2">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Acq. Duration (ms):"/>
-                <Property name="offsetNid" type="int" value="3"/>
-              </Properties>
-            </Component>
             <Component class="DeviceChoice" name="deviceChoice1">
               <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0, 1, 2]"/>
+                </Property>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                   <StringArray count="3">
                     <StringItem index="0" value="CHAN_A"/>
@@ -99,23 +95,46 @@
                     <StringItem index="2" value="EXTERNAL"/>
                   </StringArray>
                 </Property>
+                <Property name="convert" type="boolean" value="true"/>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Trig Mode: "/>
-                <Property name="offsetNid" type="int" value="4"/>
+                <Property name="labelString" type="java.lang.String" value="Trig. Origin: "/>
+                <Property name="offsetNid" type="int" value="3"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
             <Component class="DeviceChoice" name="deviceChoice2">
               <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[1, 0]"/>
+                </Property>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                   <StringArray count="2">
                     <StringItem index="0" value="12V"/>
                     <StringItem index="1" value="5V"/>
                   </StringArray>
                 </Property>
+                <Property name="convert" type="boolean" value="true"/>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Full Scale: "/>
+                <Property name="labelString" type="java.lang.String" value="Full Scale Ch1: "/>
                 <Property name="offsetNid" type="int" value="5"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice3">
+              <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[1, 0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="12V"/>
+                    <StringItem index="1" value="5V"/>
+                  </StringArray>
+                </Property>
+                <Property name="convert" type="boolean" value="true"/>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Full Scale Ch2: "/>
+                <Property name="offsetNid" type="int" value="6"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -125,19 +144,30 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
-            <Component class="DeviceField" name="deviceField3">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Frequency (Hz):"/>
-                <Property name="offsetNid" type="int" value="6"/>
-              </Properties>
-            </Component>
             <Component class="DeviceField" name="deviceField4">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trig. Time: "/>
                 <Property name="numCols" type="int" value="25"/>
                 <Property name="offsetNid" type="int" value="7"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice4">
+              <Properties>
+                <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0, 1]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="RISING"/>
+                    <StringItem index="1" value="FALLING"/>
+                  </StringArray>
+                </Property>
+                <Property name="convert" type="boolean" value="true"/>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Trig. Edge"/>
+                <Property name="offsetNid" type="int" value="4"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
           </SubComponents>
