@@ -7,7 +7,8 @@ else:
     return __import__(name,globals(),{},[],level)
 
 _data=_mimport('mdsdata',1)
-from threading import RLock,Thread,local
+_scalar=_mimport('mdsscalar',1)
+from threading import RLock,local#,Thread
 thread_data=local()
 
 class Tree(object):
@@ -531,9 +532,9 @@ class Tree(object):
         @type delta: Data
         @rtype: None
         """
-        if isinstance(begin,(str,String)):
+        if isinstance(begin,(str,_scalar.String)):
           begin = _mimport('_mdsshr',1).DateToQuad(str.encode(str(begin))).data()
-        if isinstance(end,(str,String)):
+        if isinstance(end,(str,_scalar.String)):
           end = _mimport('_mdsshr',1).DateToQuad(str.encode(str(begin))).data()
         _mimport('_treeshr',1).TreeSetTimeContext(begin,end,delta)
     setTimeContext=staticmethod(setTimeContext)

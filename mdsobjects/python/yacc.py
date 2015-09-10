@@ -1120,8 +1120,6 @@ class LRParser:
 # manipulate the rules that make up a grammar. 
 # -----------------------------------------------------------------------------
 
-import re
-
 # regex matching identifiers
 _is_identifier = re.compile(r'^[a-zA-Z0-9_-]+$')
 
@@ -2138,7 +2136,6 @@ class LRGeneratedTable(LRTable):
     # -----------------------------------------------------------------------------
 
     def dr_relation(self,C,trans,nullable):
-        dr_set = { }
         state,N = trans
         terms = []
 
