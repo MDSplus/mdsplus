@@ -183,7 +183,7 @@ class Compound(_data.Data):
         """Set descriptors
         @type args: tuple
         """
-        self.args=value
+        self.args=args
 
         
 class MetaClass(type):
