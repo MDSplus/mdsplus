@@ -20,7 +20,9 @@ else:
     long = int
 if has_basestring:
     basestring = basestring
-else: 
+elif has_bytes: 
+    basestring = (str,bytes)
+else:
     basestring = str
 if has_unicode:
     unicode = unicode
