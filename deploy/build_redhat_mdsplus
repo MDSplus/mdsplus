@@ -1,8 +1,17 @@
 #!/bin/bash
 set -o verbose
 set -e 
+#
+# Get the 3rd party software headers etc from github
+#
 wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+#
+# make the root to build into
+#
 mkdir -p /buildroot
+#
+# In the source directory build and install both 64-bit and 32-bit applications.
+#
 cd /buildsrc
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \
@@ -29,6 +38,10 @@ make clean >/dev/null;
             --host=i686-linux \
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
 env LANG=en_US.UTF-8 make;
+#
+# Define MDSPLUS_VERSION environment variable which is used for the python
+# setup.py
+#
 if [ -z "$BNAME" ]
 then
   export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
@@ -37,6 +50,99 @@ else
 fi
 make install
 make clean >/dev/null;
+#
+# Define a "subroutine" for building the debug version of code for testing
+# with valgrind. Currently the testing is done with python tests so
+# only need 64-bit since the default python is 64-bit. If when we add
+# other tests we may want to test both 64-bit and 32-bit.
+#
+
+build_debug() {
+mkdir /dbgbuildroot
+  ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
+              --exec_prefix=/dbgbuildroot/usr/local/mdsplus \
+              --with-labview=/3rd-party-apis-master/labview \
+              --with-jdk=$JDK_DIR \
+              --with-idl=/3rd-party-apis-master/idl \
+              --with-gsi=/usr:gcc64 \
+              --bindir=/dbgbuildroot/usr/local/mdsplus/bin64 \
+              --libdir=/dbgbuildroot/usr/local/mdsplus/lib64 \
+              --host=x86-64-linux \
+              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FFLAGS="-g -O0"
+  make clean > /dev/null
+  env LANG=en_US.UTF-8 make
+  make install
+}
+
+#
+# If there are other arguments to the docker run command after the verb and optional flavor/tag
+# then they are passed to this script as arguments and right now those arguments are used to
+# specify tests to run.
+#
+# While there are test name arguments:
+#
+
+while (( "$#" ))
+do
+    test="$1"
+    echo "Selected test: $test"
+    shift
+    case "$test" in
+
+        stdtests)
+	    #
+	    # Standard tests are defined in the platforms build.conf in the dockerfile.
+	    # Not all tests are appropriate for every platform. If stdtests is specified
+	    # then prepend the list of tests defined in the stdtests environment variable.
+	    # Note the shift removes the stdtests from the arguments so we need to put
+	    # an argument back on the front since it gets shifted again later.
+	    #
+	    echo stdtests: Inserting \"$stdtests\" into the test list.
+            set -- $stdtests $@;;
+	
+	pytest)
+	    #
+	    # Set up environment variables to run the pytest
+	    #
+	    export MDSPLUS_DIR=/buildroot/usr/local/mdsplus
+	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/lib64
+	    export MDS_PATH=${MDSPLUS_DIR}/tdi
+	    #
+	    # pushd to the python directory, run the test,
+	    # and popd back again.
+	    #
+	    pushd ${MDSPLUS_DIR}/mdsobjects/python
+	    python setup.py test
+	    popd;;
+
+	vgpytest)
+	    #
+	    # Run the python tests under valgrind
+	    # Basically the same as pytest except
+	    # it builds a debug root if necessary and
+	    # runs the tests with valgrind.
+	    #
+	    if [ ! -d /dbgbuildroot ]
+            then
+		build_debug
+	    fi
+	    export MDSPLUS_DIR=/dbgbuildroot/usr/local/mdsplus
+	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/lib64
+	    export MDS_PATH=${MDSPLUS_DIR}/tdi
+	    pushd ${MDSPLUS_DIR}/mdsobjects/python
+	    valgrind --error-exitcode=1 python setup.py test
+	    popd;;
+
+        *)
+	    echo "Unknown test '$test' specified. Skipping.";;
+
+    esac
+done
+
+#
+# IF the /installer directory is found then build a repository with the new rpm's in it.
+#
+
 if [ -d /installer ]
 then
     echo "Building rpms"
@@ -55,10 +161,19 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
     build_rpms_mdsplus
+    #
+    # If everything went successfully then make a marker file indicating
+    # that an installer has been built for this release.
+    #
     touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
 fi
+
 if [ -d /EGGS ]
 then
+    #
+    # If an /EGGS directory is available build python distribution eggs
+    # which will be used by easy_install.
+    #
     build_eggs
 fi
 
