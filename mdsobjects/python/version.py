@@ -26,12 +26,12 @@ else:
     basestring = str
 if has_unicode:
     unicode = unicode
-else:
-    unicode = type(None)
+else:#py3 str is unicode
+    unicode = str
 if has_bytes:
     bytes = bytes
-else:
-    bytes      = type(None)
+else:#py2 str is bytes
+    bytes = str
 if has_buffer:
     buffer = buffer
 else:
@@ -42,6 +42,40 @@ if has_unicode:
     varstr = unicode
 else:
     varstr = bytes
+
+def tostr(string):
+    if isinstance(string,basestring):
+        if isinstance(string,str):
+            return string
+        elif isinstance(string, unicode):
+            return string.encode('utf-8','backslashreplace')
+        else:
+            try:
+                return string.decode('utf-8','backslashreplace')
+            except:
+                return string.decode('CP1252','backslashreplace')
+    else:
+        return str(string)
+
+def tobytes(string):
+    if isinstance(string,basestring):
+        if isinstance(string,bytes):
+            return string
+        else:
+            try:
+                return string.decode('utf-8','backslashreplace')
+            except:
+                return string.decode('CP1252','backslashreplace')
+    else:
+        return bytes(string)
+def tounicode(string):
+    if isinstance(string,basestring):
+        if isinstance(string,unicode):
+            return string
+        else:
+            return string.decode('utf-8','backslashreplace')
+    else:
+        return unicode(string)
 
 # Extract the code attribute of a function. Different implementations
 # are for Python 2/3 compatibility.
