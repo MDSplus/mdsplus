@@ -432,9 +432,9 @@ class TreeNode(_data.Data):
         @rtype: TreeNodeArray
         """
         try:
-          return self.children_nids
+            return self.children_nids
         except:
-          return None
+            return TreeNodeArray(_array.Int32Array([]))
 
     def getClass(self):
         """Return MDSplus class name of this node
@@ -483,26 +483,23 @@ class TreeNode(_data.Data):
         @return: First level descendants of this node
         @rtype: TreeNodeArray
         """
-        ans=None
         try:
-          members=self.member_nids
+            members = self.member_nids
         except:
-          members=None
+            members = None
         try:
-          children=self.children_nids
+            children = self.children_nids
         except:
-          children=None
-        if members is None:
-          ans=children
+            children = None
+        if members is None and children is None:
+            ans = TreeNodeArray(_array.Int32Array([]))
+        elif members is None:
+            ans = children
         elif children is None:
-          ans=members
+            ans = members
         else:
-          nids=list()
-          for node in members:
-            nids.append(node.nid)
-          for node in children:
-            nids.append(node.nid)
-          ans=TreeNodeArray(_array.Int32Array(nids))
+            nids = members.data().tolist()+children.data().tolist()
+            ans  = TreeNodeArray(_array.Int32Array(nids))
         return ans
             
     def getDtype(self):
@@ -568,9 +565,9 @@ class TreeNode(_data.Data):
         @rtype: TreeNodeArray
         """
         try:
-          return self.member_nids
+            return self.member_nids
         except:
-          return None
+            return TreeNodeArray(_array.Int32Array([]))
 
     def getMinPath(self):
         """Return shortest path string for this node
