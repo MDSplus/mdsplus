@@ -17,11 +17,7 @@ def getLatestRelease(flavor):
   """Get latest releases for specified branch"""
   info=dict()
   info['flavor']=flavor
-  p=subprocess.Popen("""
-
- wget -O - -q https://github.com/MDSplus/mdsplus/releases | grep %(flavor)s_release| awk '{print $0; exit;}' | awk -F/ '{print $NF}' | awk -F\\" '{print $1}'
-
-  """ % info ,shell=True,stdout=subprocess.PIPE)
+  p=subprocess.Popen("\tmp\mdsplus\deploy\get_latest_release %(flavor)" % info ,shell=True,stdout=subprocess.PIPE)
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:
     info['branch']=flavor
