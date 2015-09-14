@@ -62,10 +62,7 @@ def tobytes(string):
         if isinstance(string,bytes):
             return string
         else:
-            try:
-                return string.decode('utf-8','backslashreplace')
-            except:
-                return string.decode('CP1252','backslashreplace')
+            return string.encode('utf-8','backslashreplace')
     else:
         return bytes(string)
 def tounicode(string):
