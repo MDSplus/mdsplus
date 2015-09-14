@@ -1,4 +1,5 @@
 #!/bin/bash
+echo build_redhat_mdsplus invoked with args=$@
 set -o verbose
 set -e 
 #
