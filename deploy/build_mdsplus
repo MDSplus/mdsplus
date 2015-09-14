@@ -35,7 +35,7 @@
 # release tag will be fetched and expanded into /buildsrc and builds it using
 # the build_it command defined by the build.conf script for that docker
 # image.
-
+echo build_mdsplus called with args: $@
 source build.conf
 set -e
 case "$1" in
