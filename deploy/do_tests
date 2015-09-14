@@ -6,6 +6,8 @@
 #
 # While there are test name arguments:
 #
+set -e
+set -o verbose
 
 while (( "$#" ))
 do
@@ -34,7 +36,7 @@ do
 	    # and popd back again.
 	    #
 	    export MDSPLUS_DIR=/buildroot/usr/local/mdsplus
-	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${libdir}
+	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
     	    export MDS_PATH=${MDSPLUS_DIR}/tdi
 	    pushd ${MDSPLUS_DIR}/mdsobjects/python
 	    python setup.py test
