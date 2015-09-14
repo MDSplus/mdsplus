@@ -17,7 +17,7 @@ def getLatestRelease(flavor):
   """Get latest releases for specified branch"""
   info=dict()
   info['flavor']=flavor
-  p=subprocess.Popen("\tmp\mdsplus\deploy\get_latest_release %(flavor)" % info ,shell=True,stdout=subprocess.PIPE)
+  p=subprocess.Popen("\tmp\mdsplus\deploy\get_latest_release %(flavor)s" % info ,shell=True,stdout=subprocess.PIPE)
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:
     info['branch']=flavor
