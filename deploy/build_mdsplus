@@ -93,7 +93,7 @@ case "$1" in
 	else
 	    export BNAME="-${BRANCH}"
 	fi
-	wget https://github.com/MDSplus/mdsplus/raw/alpha/deploy/get_latest_release
+	wget -q --no-check-certificate https://github.com/MDSplus/mdsplus/raw/alpha/deploy/get_latest_release
 	chmod a+x get_latest_release
 	tag=$(./get_latest_release ${BRANCH})	
 	export $(echo $tag | awk -F- '{print "MAJOR="$2" MINOR="$3" RELEASE="$4" NF="NF;}')
