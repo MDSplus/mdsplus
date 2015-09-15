@@ -94,7 +94,7 @@ def MdsGetMsg(status,default=None):
     status=int(status)
     if status==0 and not default is None:
         return default
-    _ver.tostr(__MdsGetMsg(status))
+    return _ver.tostr(__MdsGetMsg(status))
 
 def MdsSerializeDscOut(desc):
     xd=_desc.descriptor_xd()
