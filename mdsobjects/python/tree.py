@@ -157,12 +157,12 @@ class Tree(object):
             except KeyError:
                 self.__dict__[name]=value
 
-    def __str__(self):
-        """Return string
-        @return: String of tree name
-        @rtype: str
-        """
-        return str(self.tree)
+#    def __str__(self):
+#        """Return string
+#        @return: String of tree name
+#        @rtype: str
+#        """
+#        return str(self.tree)
 
     def __repr__(self):
         """Return representation
@@ -177,6 +177,7 @@ class Tree(object):
             mode="Normal"
         return self.__class__.__name__+'("%s",%d,"%s")' % (self.tree,self.shot,mode)
 
+    __str__=__repr__
     def addDevice(self,nodename,model):
         """Add a device to the tree of the specified device model type.
         @param nodename: Absolute or relative path specification of the head node of the device. All ancestors of node must exist.
