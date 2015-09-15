@@ -10,9 +10,7 @@ _ver=_mimport('version',1)
 class Ident(_data.Data):
     """Reference to MDSplus Ken Variable"""
     def __init__(self,name):
-        if _ver.has_bytes and isinstance(name,_ver.bytes):
-            name = name.decode()
-        self.name=str(name)
+        self.name=_ver.tostr(name)
     def __str__(self):
         return self.name
 
