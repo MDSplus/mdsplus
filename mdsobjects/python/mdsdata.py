@@ -17,7 +17,7 @@ def getUnits(item):
         return item.units
     except:
         return ""
-    
+
 def getError(item):
     """Return the data of the error of an object
     @rtype: Data"""
@@ -77,7 +77,7 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,(numpy.generic,int,float,complex,_ver.basestring,_ver.bytes,_ver.long)):
+    if isinstance(value,(numpy.generic,int,float,complex,_ver.basestring,_ver.long)):
         return _scalar.makeScalar(value)
     if isinstance(value,(tuple,list)):
         apd = _apd.Apd(tuple(value),_dtypes.DTYPE_LIST)
@@ -93,7 +93,7 @@ class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
     __array_priority__ = 100. ##### Needed to force things like numpy-array * mdsplus-data to use our __rmul__
-    
+
     def __init__(self,*value):
         """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
         @raise TypeError: Raised if attempting to create an instance of Data
@@ -110,7 +110,7 @@ class Data(object):
         if not found:
             return default
         return ans
-    
+
     def value_of(self):
         """Return value part of object
         @rtype: Data"""
@@ -120,16 +120,16 @@ class Data(object):
         """Return raw part of object
         @rtype: Data"""
         return Data.execute('raw_of($)',self)
-    
+
     def getDimensionAt(self,idx=0):
         """Return dimension of object
         @param idx: Index of dimension
         @type idx: int
         @rtype: Data"""
         return Data.execute('dim_of($,$)',(self,idx))
-    
+
     dim_of=getDimensionAt
-    
+
     def _getUnits(self):
         return Data.execute('units($)',self)
 
@@ -146,7 +146,7 @@ class Data(object):
     The units of the Data instance.
     @type: String
     """
-    
+
     def _getError(self):
         return Data.execute('error_of($)',self)
 
@@ -203,8 +203,8 @@ class Data(object):
     One could envision storing an expression which tests the data and returns
     a result.
     @type: Data
-    """                       
-            
+    """
+
     def units_of(self):
         """Return units part of the object
         @rtype: Data"""
@@ -302,7 +302,7 @@ class Data(object):
             if ans.shape[0]==0:
                 raise IndexError
         return ans
-    
+
     def __gt__(self,y):
         """Greater than: x.__gt__(y) <==> x>y
         @rtype: Bool"""
@@ -343,12 +343,12 @@ class Data(object):
         """Less than: x.__lt__(y) <==> x<y
         @rtype: Bool"""
         return Data.execute('$<$',self,y).bool()
-    
+
     def __mod__(self,y):
         """Modulus: x.__mod__(y) <==> x%y
         @rtype: Data"""
         return Data.execute('$ mod $',self,y)
-    
+
     def __mul__(self,y):
         """Multiply: x.__mul__(y) <==> x*y
         @rtype: Data"""
@@ -461,7 +461,7 @@ class Data(object):
     """Descriptor of data.
     @type: descriptor
     """
-    
+
     def compare(self,value):
         """Compare this data with argument
         @param value: data to compare to
@@ -510,7 +510,7 @@ class Data(object):
         except:
             return None
     getTdiVar=staticmethod(getTdiVar)
-    
+
     def decompile(self):
         """Return string representation
         @rtype: string
@@ -552,7 +552,7 @@ class Data(object):
         _scalar=_mimport('mdsscalar',1)
         return isinstance(x,_scalar.Scalar)
     _isScalar=staticmethod(_isScalar)
-    
+
     def getByte(self):
         """Convert this data into a byte. Implemented at this class level by returning TDI
         data(BYTE(this)). If data() fails or the returned class is not scalar,
@@ -576,7 +576,7 @@ class Data(object):
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
-    
+
     def getInt(self):
         """Convert this data into a int. Implemented at this class level by returning TDI
         data(LONG(this)).If data() fails or the returned class is not scalar, generate
@@ -815,7 +815,7 @@ class EmptyData(Data):
     """No Value"""
     def __init__(self):
         pass
-    
+
     def __str__(self):
         return "<no-data>"
 
