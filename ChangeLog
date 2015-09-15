@@ -1,4 +1,46 @@
-commit ebbc8612b03a302e7ad041818a4783048c6b23d4 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 79c396fb2be4a37947028ed5402863e3ce5a31e5 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:05:00 2015 -0400
+
+    Use new get_latest_release script
+
+commit ed63b647dd9e7f874378dff1b9a2732a0176bf98
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 15:00:36 2015 -0400
+
+    Use zero to avoid uninitialized memory
+
+commit 9efc8c294e1f404408e29371a8cb0646faf52871
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 14:33:59 2015 -0400
+
+    more testing changes. Added debian testing
+
+commit f12442fa5ea2a67b5c6d16f614e1b54904e8a6c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 14:04:52 2015 -0400
+
+    exit on error and fix pytest lib definition
+
+commit f0cf134f288eb41221fb359f59ebe808d23b0d5f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 14:06:36 2015 -0400
+
+    Add release.py script
+
+commit ec9fa9a426c406b13e3c22fa03df07cef2111b9c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 13:10:25 2015 -0400
+
+    New build scripts including testing
+
+commit 94e64001556a12039d8a7d7b9d5fb617566e5862 (tag: refs/tags/stable_release-7-0-51)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Aug 12 21:47:21 2015 -0400
+
+    New release ---- stable_release-7-0-51
+
+commit ebbc8612b03a302e7ad041818a4783048c6b23d4
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 16:38:59 2015 -0400
 
@@ -170,7 +212,7 @@ Date:   Wed Jul 29 09:19:57 2015 -0400
     Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
     Add new python interface without need of python headers
 
-commit 3ed1408ba216fd31334de181ee6b3bf5e5227191 (refs/remotes/origin/feature-no-header-python-interface)
+commit 3ed1408ba216fd31334de181ee6b3bf5e5227191
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 08:14:15 2015 -0400
 
@@ -3335,7 +3377,7 @@ Date:   Thu Feb 26 18:27:50 2015 -0500
 
     New ChangeLog
 
-commit 751d164684a7b4b5c585a4e55610f3deac27606c (refs/remotes/origin/mdsdcl)
+commit 751d164684a7b4b5c585a4e55610f3deac27606c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 26 17:28:44 2015 -0500
 
@@ -3685,7 +3727,7 @@ Date:   Wed Feb 18 14:57:30 2015 -0500
 
     No install for xml here
 
-commit 7c24a29f004ed0cb511d9362e0d60a3a48c3d339 (tag: refs/tags/mdsdcl_release-7-0-0, tag: refs/tags/feature-replace-mdsdcl_release-7-0-0, refs/remotes/origin/feature-replace-mdsdcl)
+commit 7c24a29f004ed0cb511d9362e0d60a3a48c3d339 (tag: refs/tags/mdsdcl_release-7-0-0, tag: refs/tags/feature-replace-mdsdcl_release-7-0-0)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 18 13:39:18 2015 -0500
 
