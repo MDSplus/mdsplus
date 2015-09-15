@@ -1,4 +1,165 @@
-commit e5918a11c3651deaaed54e8c67c419db2e2f88f8 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 10838de4dfc8571dd6956a662b969bb12c4804b3 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 14:04:52 2015 -0400
+
+    exit on error and fix pytest lib definition
+
+commit 6db519b61c83fb88ea54cf945697e25ec4dd9621
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 13:19:38 2015 -0400
+
+    add execute permission on do_tests script
+
+commit c5ebf93653a8f2adcd5abd4aff178abd046e9b89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 12:59:58 2015 -0400
+
+    Split the tests into separate script
+
+commit d4ffefd7db1466d3bffffea7e41f70e9688d1741
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 11:18:13 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit 6d4f1525c488695ac19b0581540ec8be0c95b22c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 11:13:26 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit afd06de85f998bd01797047fa77bb4152c663a86
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 11:09:38 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit 2f7c5bee19a332c9721592ee6884804adfdc4291
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 09:48:04 2015 -0400
+
+    Add debug output to build_mdsplus
+
+commit b22470fef3def95158730549bd72d181d8fb56be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 09:31:45 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit 8ee0ad61a8bd545818d38e05fd92c0e8de4a9577
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 09:16:36 2015 -0400
+
+    Add debug printout
+
+commit b777f6426d75243385044b023a4f7d5b898f5837
+Merge: 8277a96 18c939f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:54:36 2015 -0400
+
+    Merge pull request #82 from zack-vii/python_tree__treeshr
+    
+    Python tree treeshr.TreeFreeDbid ?
+
+commit 8277a964f5fd3f2b5f0dc273d2dbf8537c2a4e4a
+Merge: 5937085 0aeb3bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:48:12 2015 -0400
+
+    Merge pull request #79 from zack-vii/alpha_python3
+    
+    added bytes to basestring substitute
+
+commit 59370857488f086126cceb3ea0ec40b9b82cfa02
+Merge: 3b53cdc 186b67c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:41:04 2015 -0400
+
+    Merge pull request #81 from zack-vii/_tdishr_TdishrArguments
+    
+    _tdishr: unite TdiFunctions
+
+commit 3b53cdcb15e8e0994ca94ea01fa831cff3a04407
+Merge: 7bb6596 4d68988
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:35:50 2015 -0400
+
+    Merge pull request #83 from zack-vii/python_Member_and_Children
+    
+    return empty TreeNodeArray instead of None
+
+commit 7bb6596005b0cb1befe7fd285d68ba82ed402b35
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:22:02 2015 -0400
+
+    Use --no-check-certificate on raw fetches from git
+
+commit 0aeb3bb45adb8f533196be23510832bf1235c3d3
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Sep 14 11:20:02 2015 +0200
+
+    tobytes str encodes to bytes
+    
+    must be encode, not decode
+
+commit fcb36c011871ed2a7ab966dc93af8dd7f27e05f7
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Sep 12 16:21:05 2015 +0200
+
+    version bytes<>str<>unicode
+    
+    -bytes and str are identical in py2
+    -unicode corresponds to str in py3
+    added helper functions tostr, tobytes, and tounicode to for a secure
+    de/encoding
+
+commit d72b68917f6e6af94e12bd4e99559f06e27d964c
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 11 15:56:07 2015 +0200
+
+    added bytes to basestring substitute
+    
+    bytes should be part of basestring as bytes was the same as string in
+    py2
+
+commit 4d68988c6a312595db47b1832a9efa322341e737
+Author: zack-vii <zack.vii@live.com>
+Date:   Sun Sep 13 01:43:18 2015 +0200
+
+    return empty TreeNodeArray instead of None
+    
+    -Descendants,Members,Children return empty array if None
+    This allows for for-loops
+    > for desc in node.getDescendants:
+    >   do stuff with desc
+
+commit 18c939f9836a241da95a2c7327bdbd8a1d1b34fe
+Author: zack-vii <zack.vii@live.com>
+Date:   Sun Sep 13 00:32:34 2015 +0200
+
+    fix missing _treeshr and self
+    
+    not sure what is is supposed to do but it never did anything.
+    -TreeFreeDbid is defined in _treeshr and need its prefix
+    -ctx is private and needs its self. prefix
+    -replaced mimport('_treeshr',1) with on shared _treeshr
+
+commit 186b67c62beefd474439e7e9ed764045d3725005
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 11 23:10:34 2015 +0200
+
+    _tdishr: unite TdiFunctions
+    
+    since all tdi functions have the same structure the arguments can be
+    united in one shared helper function
+
+commit 0c7daa08e3a42786974ca47cf820dd7458c147b7 (tag: refs/tags/alpha_release-7-0-148)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Sep 11 16:22:04 2015 -0400
+
+    New release ---- alpha_release-7-0-148
+
+commit e5918a11c3651deaaed54e8c67c419db2e2f88f8
 Merge: 20db998 62a2da4
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri Sep 11 14:13:08 2015 -0400
