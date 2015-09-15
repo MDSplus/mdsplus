@@ -11,6 +11,8 @@ _scalar=_mimport('mdsscalar',1)
 _array=_mimport('mdsarray',1)
 _tree=_mimport('tree',1)
 _compound=_mimport('compound',1)
+_ver=_mimport('version',1)
+
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
@@ -51,11 +53,11 @@ class TreeNode(_data.Data):
             except:
                 ans=TreePath(path,tree)
             return ans
-    
+
     def __getattr__(self,name):
         """
         Implements value=node.attribute
-        
+
         Attributes defined:
 
          - brother               - TreeNode,Next node in tree
@@ -186,7 +188,7 @@ class TreeNode(_data.Data):
                 self.tree=_tree.Tree()
         else:
             self.tree=tree
-    
+
     def __setattr__(self,name,value):
         """
         Implements node.attribute=value
@@ -274,7 +276,7 @@ class TreeNode(_data.Data):
             ans="NODEREF(*)"
         else:
             ans=_mimport('_treeshr',1).TreeGetPath(self)
-        return ans
+        return _ver.tostr(ans)
 
     def addDevice(self,name,model):
         """Add device descendant.
@@ -456,7 +458,7 @@ class TreeNode(_data.Data):
         @rtype: Int32
         """
         return self.conglomerate_elt
-    
+
     def getConglomerateNodes(self):
         """Return TreeNodeArray of conglomerate elements
         @return: Nodes in this conglomerate.
@@ -501,14 +503,14 @@ class TreeNode(_data.Data):
             nids = members.data().tolist()+children.data().tolist()
             ans  = TreeNodeArray(_array.Int32Array(nids))
         return ans
-            
+
     def getDtype(self):
         """Return the name of the data type stored in this node
         @return: MDSplus data type name of data stored in this node.
         @rtype: String
         """
         return self.dtype_str
-    
+
     def getFullPath(self):
         """Return full path of this node
         @return: full path specification of this node.
@@ -575,7 +577,7 @@ class TreeNode(_data.Data):
         @rtype: String
         """
         return self.minpath
-    
+
     def getNid(self):
         """Return node index
         @return: Internal node index of this node
@@ -603,7 +605,7 @@ class TreeNode(_data.Data):
         @rtype: String
         """
         return self.node_name
-    
+
     def getNodeWild(self,path):
         """Return tree nodes where path is relative to this node
         @param path: Path relative to this node
@@ -665,7 +667,7 @@ class TreeNode(_data.Data):
         @rtype: int
         """
         return self.owner_id
-    
+
     def getParent(self):
         """Return parent of this node
         @return: Parent of this node
@@ -744,7 +746,7 @@ class TreeNode(_data.Data):
         @rtype: int
         """
         return self.status
-    
+
     def getTimeInserted(self):
         """Return time data was written
         @return: time data was written to this node as Uint64. Use answer.date to retrieve date/time string
@@ -854,7 +856,7 @@ class TreeNode(_data.Data):
         @rtype: bool
         """
         return self.segmented
-    
+
     def isSetup(self):
         """Return true if data is setup information.
         @return: True if data is setup information (originally written in the model)
@@ -897,7 +899,7 @@ class TreeNode(_data.Data):
             _mimport('_treeshr',1).TreeRenameNode(self,str(parent.fullpath)+"."+newname)
         else:
             _mimport('_treeshr',1).TreeRenameNode(self,str(parent.fullpath)+":"+newname)
-        
+
     def putData(self,data):
         """Store data
         @param data: Data to store in this node.
@@ -924,7 +926,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         _mimport('_treeshr',1).TreePutRow(self,bufsize,array,timestamp)
-                
+
     def putSegment(self,data,idx):
         """Load a segment in a node
         @param data: data to load into segment
@@ -966,17 +968,18 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         try:
-            n=self.tree.getNode('\\'+str(tag))
+            tag = _ver.tostr(tag)
+            n=self.tree.getNode('\\'+tag)
             if n.nid != self.nid:
-                raise _mimport('_treeshr',1).TreeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),str(tag),str(n)))
+                raise _mimport('_treeshr',1).TreeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),tag,str(n)))
         except _mimport('_treeshr',1).TreeException:
             e=sys.exc_info()[1]
             if str(e).find('TreeNNF') > 0:
-                raise _mimport('_treeshr',1).TreeException("Tag %s is not defined" % (str(tag),))
+                raise _mimport('_treeshr',1).TreeException("Tag %s is not defined" % (tag,))
             else:
                 raise
         self.tree.removeTag(tag)
-    
+
     def rename(self,newname):
         """Rename node this node
         @param newname: new name of this node. 1-12 characters, no path delimiters.
@@ -989,8 +992,8 @@ class TreeNode(_data.Data):
             olddefault=self.tree.default
             self.tree.setDefault(self.parent)
             if self.isChild():
-                newname="."+str(newname)
-            _mimport('_treeshr',1).TreeRenameNode(self,str(newname))
+                newname="."+_ver.tostr(newname)
+            _mimport('_treeshr',1).TreeRenameNode(self,newname)
         finally:
             self.tree.setDefault(olddefault)
 
@@ -1090,7 +1093,7 @@ class TreeNode(_data.Data):
         except KeyError:
             raise KeyError('Invalid usage specified. Use one of %s' % (str(usage_table.keys()),))
         _mimport('_treeshr',1).TreeSetUsage(self.tree.ctx,self.nid,usagenum)
-    
+
     def setTree(self,tree):
         """Set Tree associated with this node
         @param tree: Tree instance to associated with this node
@@ -1107,7 +1110,7 @@ class TreeNode(_data.Data):
         """
         self.__setNode('write_once',flag)
         return
-    
+
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
         @param start: index of first row of segment
@@ -1125,7 +1128,7 @@ class TreeNode(_data.Data):
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
     def __init__(self,path,tree=None):
-        self.tree_path=_data.makeData(path);
+        self.tree_path=_data.makeData(str(path));
         if tree is None:
             self.tree=_tree.Tree.getActiveTree()
         else:
@@ -1221,7 +1224,7 @@ class TreeNodeArray(_data.Data):
         @rtype: Uint8Array
         """
         return self.write_once
-    
+
 
     def setWriteOnce(self,flag):
         """Set nodes write once
@@ -1285,7 +1288,7 @@ class TreeNodeArray(_data.Data):
             a.append(str(nid.usage))
         return _array.makeArray(a)
 
-    
+
 
     def __getattr__(self,name):
         _tree.Tree.lock()
