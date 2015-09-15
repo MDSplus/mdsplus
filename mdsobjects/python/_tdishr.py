@@ -6,6 +6,7 @@ else:
     return __import__(name,globals(),{},[],level)
 
 _mdsshr=_mimport('_mdsshr',1)
+_ver=_mimport('version',1)
 
 TdiShr=_mdsshr._load_library('TdiShr')
 class TdiException(Exception):
@@ -50,11 +51,7 @@ def TdiExecute(expression,args=None):
 
 def TdiDecompile(expression):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    value = _TdiShrFun(TdiShr.TdiDecompile,"Error decompiling",expression)
-    try:
-        return str(value)
-    except Exception:
-        return str(value.value)
+    return _ver.tostr(_TdiShrFun(TdiShr.TdiDecompile,"Error decompiling",expression))
 
 def TdiEvaluate(expression):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
