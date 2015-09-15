@@ -198,7 +198,7 @@ def TreeFindNodeTags(n):
             TreeFree(tag_ptr)
         except:
             done=True
-    tags = _mimport('mdsarray',1).makeArray(tags).astype(_ver.npstr)
+    tags = _mimport('mdsarray',1).makeArray(tags)
     return tags
 
 
