@@ -10,6 +10,7 @@ else:
   def _mimport(name,level):
     return __import__(name,globals(),{},[],level)
 _ver=_mimport('version',1)
+_desc=_mimport('_descriptor',1)
 
 def _load_library(name):
     libnam = None
@@ -96,7 +97,6 @@ def MdsGetMsg(status,default=None):
     _ver.tostr(__MdsGetMsg(status))
 
 def MdsSerializeDscOut(desc):
-    _desc=_mimport('_descriptor',1)
     xd=_desc.descriptor_xd()
     if not isinstance(desc,_desc.descriptor):
         desc=_desc.descriptor(desc)
@@ -107,7 +107,8 @@ def MdsSerializeDscOut(desc):
       raise MdsException(MdsGetMsg(status))
 
 def MdsSerializeDscIn(bytes):
-    _desc=_mimport('_descriptor',1)
+    if len(bytes) == 0:  # short cut if setevent did not send array
+        return _mimport('apd',1).List([])
     xd=_desc.descriptor_xd()
     status=_mdsshr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.pointer(xd))
     if (status & 1) == 1:
@@ -116,7 +117,6 @@ def MdsSerializeDscIn(bytes):
       raise MdsException(MdsGetMsg(status))
 
 def MdsDecompress(value):
-    _desc=_mimport('_descriptor',1)
     xd=_desc.descriptor_xd()
     status = _mdsshr.MdsDecompress(_C.pointer(value),_C.pointer(xd))
     if (status & 1) == 1:
@@ -126,7 +126,6 @@ def MdsDecompress(value):
 
 
 def MdsCopyDxXd(desc):
-    _desc=_mimport('_descriptor',1)
     xd=_desc.descriptor_xd()
     if not isinstance(desc,_desc.descriptor):
         desc=_desc.descriptor(desc)
