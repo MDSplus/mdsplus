@@ -98,7 +98,8 @@ class descriptor(_C.Structure):
             value=_data.makeData(value)
 
         if isinstance(value,_N.ndarray):
-            if str(value.dtype)[1:2]=='S':
+            if str(value.dtype)[1] in 'SU':
+                value = value.astype('S')
                 for i in range(len(value.flat)):
                     value.flat[i]=value.flat[i].ljust(value.itemsize)
             a=descriptor_a(value)
