@@ -1,4 +1,16 @@
-commit 79c396fb2be4a37947028ed5402863e3ce5a31e5 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit c3f8a9fdbed3b2949ec968b7ee2300262979e244 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 16 08:15:12 2015 -0400
+
+    Fix segfault in Deassign. Create descriptor struct after getting the module name not before.
+
+commit 651d6b2e6fa0e4639fda7e0f57808d9966fc0e57 (tag: refs/tags/stable_release-7-0-52)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Sep 15 19:05:04 2015 -0400
+
+    New release ---- stable_release-7-0-52
+
+commit 79c396fb2be4a37947028ed5402863e3ce5a31e5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Sep 15 08:05:00 2015 -0400
 
