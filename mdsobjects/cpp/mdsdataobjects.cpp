@@ -627,8 +627,16 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	va_end(v);
 
 	int status;
-	AutoPointer<Tree> actTree(getActiveTree());
-	Data * res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+    	Data * res;
+    	try {
+        	AutoPointer<Tree> actTree(getActiveTree());
+        	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+    	} catch(MdsException &exc)
+    	{
+        	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], 0, &status);
+    	}
+//	AutoPointer<Tree> actTree(getActiveTree());
+//	Data * res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
 	if(!(status & 1))
 		throw MdsException(status);
 	return res;
