@@ -1,4 +1,38 @@
-commit c3f8a9fdbed3b2949ec968b7ee2300262979e244 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit aa93eeafb59384526c17a0f07644dfe1fc44951d (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 2853fa0 2aec003
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 16 13:24:25 2015 -0400
+
+    Merge pull request #102 from MDSplus/fix_windows_event_handler_stable
+    
+    Fix windows runaway threads after wfevent receives an event
+
+commit 2aec003691e35ea965e0aab9f42d92400211537b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 16 13:08:17 2015 -0400
+
+    Fix windows runaway threads after wfevent receives an event
+
+commit 2853fa07c9ddb4a1e466a7d6cebd1b5184afecd6
+Merge: 4034a34 888cd89
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 16 15:07:11 2015 +0200
+
+    Merge branch 'stable' of github.com:MDSplus/MDSplus into stable
+
+commit 4034a347d0077088d73d1786c0aae3f6328193dd
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 16 15:03:36 2015 +0200
+
+    Handle missing Tree Context
+
+commit 888cd8918b1216bee421ce8ab1fdef3404d3e511 (tag: refs/tags/stable_release-7-0-53)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Sep 16 08:26:55 2015 -0400
+
+    New release ---- stable_release-7-0-53
+
+commit c3f8a9fdbed3b2949ec968b7ee2300262979e244
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Sep 16 08:15:12 2015 -0400
 
