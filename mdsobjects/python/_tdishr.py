@@ -6,6 +6,7 @@ else:
     return __import__(name,globals(),{},[],level)
 
 _mdsshr=_mimport('_mdsshr',1)
+_mdsExceptions=_mimport('mdsExceptions',1)
 _ver=_mimport('version',1)
 
 TdiShr=_mdsshr._load_library('TdiShr')
@@ -39,7 +40,7 @@ def _TdiShrFun(function,errormessage,expression,args=None):
     if (status & 1 != 0):
         return xd.value
     else:
-        raise TdiException(_mdsshr.MdsGetMsg(status,errormessage))
+        raise _mdsExceptions.statusToException(status)
        
 def TdiCompile(expression,args=None):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""

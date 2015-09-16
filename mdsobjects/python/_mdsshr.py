@@ -68,7 +68,7 @@ def MDSEventCan(eventid):
     """
     status=__MDSEventCan(eventid)
     if ((status & 1)==0):
-        raise MdsException(MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def MDSWfeventTimed(event,timeout):
     _array=_mimport('mdsarray',1)
@@ -83,12 +83,12 @@ def MDSWfeventTimed(event,timeout):
     elif (status == 0):
         raise MdsTimeout("Event %s timed out." % (_ver.tostr(event),))
     else:
-        raise MdsException(MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def MDSEvent(event,buffer):
     status=__MDSEvent(_ver.tobytes(event),len(buffer),buffer.ctypes.data)
     if not ((status & 1) == 1):
-        raise MdsException(MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def MdsGetMsg(status,default=None):
     status=int(status)
@@ -104,7 +104,7 @@ def MdsSerializeDscOut(desc):
     if (status & 1) == 1:
       return xd.value
     else:
-      raise MdsException(MdsGetMsg(status))
+      raise _mdsExceptions.statusToException(status)
 
 def MdsSerializeDscIn(bytes):
     if len(bytes) == 0:  # short cut if setevent did not send array
@@ -114,7 +114,7 @@ def MdsSerializeDscIn(bytes):
     if (status & 1) == 1:
       return xd.value
     else:
-      raise MdsException(MdsGetMsg(status))
+      raise _mdsExceptions.statusToException(status)
 
 def MdsDecompress(value):
     xd=_desc.descriptor_xd()
@@ -122,7 +122,7 @@ def MdsDecompress(value):
     if (status & 1) == 1:
         return xd.value
     else:
-        raise MdsException(MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 
 def MdsCopyDxXd(desc):
@@ -133,7 +133,7 @@ def MdsCopyDxXd(desc):
     if (status & 1) == 1:
         return xd
     else:
-        raise MdsException(MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 #def MdsCompareXd(value1,value2):
 #    return MdsShr.MdsCompareXd(_C.pointer(descriptor(value1)),_C.pointer(descriptor(value2)))

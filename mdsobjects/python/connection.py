@@ -9,6 +9,7 @@ else:
     return __import__(name,globals(),{},[],level)
 
 _descriptor=_mimport('_descriptor',1)
+_mdsExceptions=_mimport('mdsExceptions',1)
 descriptor=_descriptor.descriptor
 descriptor_a=_descriptor.descriptor_a
 
@@ -131,7 +132,7 @@ class Connection(object):
             if isinstance(ans,_scalar.String):
                 raise MdsException(str(ans))
             else:
-                raise MdsException(MdsGetMsg(status))
+                raise _mdsExceptions.statusToException(status)
         if mem.value is not None:
             MdsIpFree(mem)
         return ans
@@ -174,7 +175,7 @@ class Connection(object):
         valInfo=self.__inspect__(val)
         status=SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
 
     def closeAllTrees(self):
         """Close all open MDSplus trees
@@ -182,7 +183,7 @@ class Connection(object):
         """
         status=self.get("TreeClose()")
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
 
     def closeTree(self,tree,shot):
         """Close an MDSplus tree on the remote server
@@ -194,7 +195,7 @@ class Connection(object):
         """
         status=self.get("TreeClose($,$)",arglist=(tree,shot))
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
 
     def getMany(self):
         """Return instance of a Connection.GetMany class. See the Connection.GetMany documentation for further information."""
@@ -210,7 +211,7 @@ class Connection(object):
         """
         status=self.get("TreeOpen($,$)",tree,shot)
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
 
     def put(self,node,exp,*args):
         """Put data into a node in an MDSplus tree
@@ -230,7 +231,7 @@ class Connection(object):
         putexp=putexp+")"
         status=self.get(putexp,arglist=pargs)
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
 
     def putMany(self):
         """Return an instance of a Connection.PutMany class. See the Connection.PutMany documentation for further information."""
@@ -252,7 +253,7 @@ class Connection(object):
         idx=0
         status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp.encode()))
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
         #self.__sendArg__(exp,idx,num)
         for arg in args:
             idx=idx+1
@@ -268,7 +269,7 @@ class Connection(object):
         """
         status=self.get("TreeSetDefault($)",path)
         if not ((status & 1)==1):
-            raise MdsException(MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
 
 
     class GetMany(List):

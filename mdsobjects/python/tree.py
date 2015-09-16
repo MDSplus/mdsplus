@@ -34,15 +34,16 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
+        
         try:
-            if self.close:
-                status=_treeshr.TreeCloseAll(self.ctx)
-                if (status & 1):
-                    _treeshr.TreeFreeDbid(self.ctx)
-                if Tree.getActiveTree() == self:
-                    Tree.setActiveTree(None)
+          if self.close:
+            status=_treeshr.TreeCloseAll(self.ctx)
+            if (status & 1):
+              _treeshr.TreeFreeDbid(self.ctx)
+              if Tree.getActiveTree() == self:
+                Tree.setActiveTree(None)
         except:
-            print('error in tree.py line 44')
+          pass
         return
 
     def __getattr__(self,name):

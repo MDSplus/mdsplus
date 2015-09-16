@@ -1,1575 +1,4211 @@
 
-class ServerNOT_DISPATCHED(Exception):
-    msgnum=0xfe18008
+_severity=["W", "S", "E", "I", "F", "?", "?", "?"]
+
+
+class ServerException(Exception):
+      pass
+
+class DEVException(Exception):
+      pass
+
+class RETICONException(Exception):
+      pass
+
+class J221Exception(Exception):
+      pass
+
+class TIMINGException(Exception):
+      pass
+
+class B2408Exception(Exception):
+      pass
+
+class FERAException(Exception):
+      pass
+
+class HM650Exception(Exception):
+      pass
+
+class HV4032Exception(Exception):
+      pass
+
+class HV1440Exception(Exception):
+      pass
+
+class JOERGERException(Exception):
+      pass
+
+class U_OF_MException(Exception):
+      pass
+
+class IDLException(Exception):
+      pass
+
+class B5910AException(Exception):
+      pass
+
+class J412Exception(Exception):
+      pass
+
+class TR16Exception(Exception):
+      pass
+
+class A14Exception(Exception):
+      pass
+
+class L6810Exception(Exception):
+      pass
+
+class J_DACException(Exception):
+      pass
+
+class INCAAException(Exception):
+      pass
+
+class L8212Exception(Exception):
+      pass
+
+class MPBException(Exception):
+      pass
+
+class L8828Exception(Exception):
+      pass
+
+class L8818Exception(Exception):
+      pass
+
+class J_TR612Exception(Exception):
+      pass
+
+class L8206Exception(Exception):
+      pass
+
+class H912Exception(Exception):
+      pass
+
+class H908Exception(Exception):
+      pass
+
+class DSP2904Exception(Exception):
+      pass
+
+class PYException(Exception):
+      pass
+
+class DT196BException(Exception):
+      pass
+
+class ACQException(Exception):
+      pass
+
+class LibException(Exception):
+      pass
+
+class StrException(Exception):
+      pass
+
+class SsException(Exception):
+      pass
+
+class CamException(Exception):
+      pass
+
+class TclException(Exception):
+      pass
+
+class MdsdclException(Exception):
+      pass
+
+class TreeException(Exception):
+      pass
+
+class TdiException(Exception):
+      pass
+
+class ServerNOT_DISPATCHED(ServerException):
+    status=0xfe18008
+    facility="Server"
+    message="action not dispatched, depended on failed action"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SERVER-%s-NOT_DISPATCHED, action not dispatched, depended on failed action" % self.severity
+
+class ServerINVALID_DEPENDENCY(ServerException):
+    status=0xfe18010
+    facility="Server"
+    message="action dependency cannot be evaluated"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SERVER-%s-INVALID_DEPENDENCY, action dependency cannot be evaluated" % self.severity
+
+class ServerCANT_HAPPEN(ServerException):
+    status=0xfe18018
+    facility="Server"
+    message="action contains circular dependency or depends on action which was not dispatched"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SERVER-%s-CANT_HAPPEN, action contains circular dependency or depends on action which was not dispatched" % self.severity
+
+class ServerINVSHOT(ServerException):
+    status=0xfe18020
+    facility="Server"
+    message="invalid shot number, cannot dispatch actions in model"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SERVER-%s-INVSHOT, invalid shot number, cannot dispatch actions in model" % self.severity
+
+class ServerABORT(ServerException):
+    status=0xfe18030
+    facility="Server"
+    message="Server action was aborted"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SERVER-%s-ABORT, Server action was aborted" % self.severity
+
+class ServerPATH_DOWN(ServerException):
+    status=0xfe18040
+    facility="Server"
+    message="Path to server lost"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SERVER-%s-PATH_DOWN, Path to server lost" % self.severity
+
+class DEVBAD_ENDIDX(DEVException):
+    status=0x277c8008
+    facility="DEV"
+    message="unable to read end index for channel"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_ENDIDX, unable to read end index for channel" % self.severity
+
+class DEVBAD_FILTER(DEVException):
+    status=0x277c8010
+    facility="DEV"
+    message="illegal filter selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_FILTER, illegal filter selected" % self.severity
+
+class DEVBAD_FREQ(DEVException):
+    status=0x277c8018
+    facility="DEV"
+    message="illegal digitization frequency selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_FREQ, illegal digitization frequency selected" % self.severity
+
+class DEVBAD_GAIN(DEVException):
+    status=0x277c8020
+    facility="DEV"
+    message="illegal gain selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_GAIN, illegal gain selected" % self.severity
+
+class DEVBAD_HEADER(DEVException):
+    status=0x277c8028
+    facility="DEV"
+    message="unable to read header selection"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_HEADER, unable to read header selection" % self.severity
+
+class DEVBAD_HEADER_IDX(DEVException):
+    status=0x277c8030
+    facility="DEV"
+    message="unknown header configuration index"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_HEADER_IDX, unknown header configuration index" % self.severity
+
+class DEVBAD_MEMORIES(DEVException):
+    status=0x277c8038
+    facility="DEV"
+    message="unable to read number of memory modules"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_MEMORIES, unable to read number of memory modules" % self.severity
+
+class DEVBAD_MODE(DEVException):
+    status=0x277c8040
+    facility="DEV"
+    message="illegal mode selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_MODE, illegal mode selected" % self.severity
+
+class DEVBAD_NAME(DEVException):
+    status=0x277c8048
+    facility="DEV"
+    message="unable to read module name"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_NAME, unable to read module name" % self.severity
+
+class DEVBAD_OFFSET(DEVException):
+    status=0x277c8050
+    facility="DEV"
+    message="illegal offset selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_OFFSET, illegal offset selected" % self.severity
+
+class DEVBAD_STARTIDX(DEVException):
+    status=0x277c8058
+    facility="DEV"
+    message="unable to read start index for channel"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_STARTIDX, unable to read start index for channel" % self.severity
+
+class DEVNOT_TRIGGERED(DEVException):
+    status=0x277c8060
+    facility="DEV"
+    message="device was not triggered,  check wires and triggering device"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-NOT_TRIGGERED, device was not triggered,  check wires and triggering device" % self.severity
+
+class DEVFREQ_TO_HIGH(DEVException):
+    status=0x277c8068
+    facility="DEV"
+    message="the frequency is set to high for the requested number of channels"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-FREQ_TO_HIGH, the frequency is set to high for the requested number of channels" % self.severity
+
+class DEVINVALID_NOC(DEVException):
+    status=0x277c8070
+    facility="DEV"
+    message="the NOC (number of channels) requested is greater than the physical number of channels"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-INVALID_NOC, the NOC (number of channels) requested is greater than the physical number of channels" % self.severity
+
+class DEVRANGE_MISMATCH(DEVException):
+    status=0x277c8078
+    facility="DEV"
+    message="the range specified on the menu doesn't match the range setting on the device"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-RANGE_MISMATCH, the range specified on the menu doesn't match the range setting on the device" % self.severity
+
+class DEVCAMACERR(DEVException):
+    status=0x277c8080
+    facility="DEV"
+    message="Error doing CAMAC IO"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAMACERR, Error doing CAMAC IO" % self.severity
+
+class DEVBAD_VERBS(DEVException):
+    status=0x277c8088
+    facility="DEV"
+    message="Error reading interpreter list (:VERBS)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_VERBS, Error reading interpreter list (:VERBS)" % self.severity
+
+class DEVBAD_COMMANDS(DEVException):
+    status=0x277c8090
+    facility="DEV"
+    message="Error reading command list"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-BAD_COMMANDS, Error reading command list" % self.severity
+
+class DEVCAM_ADNR(DEVException):
+    status=0x277c8098
+    facility="DEV"
+    message="CAMAC: Address not recognized (2160)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_ADNR, CAMAC: Address not recognized (2160)" % self.severity
+
+class DEVCAM_ERR(DEVException):
+    status=0x277c80a0
+    facility="DEV"
+    message="CAMAC: Error reported by crate controler"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_ERR, CAMAC: Error reported by crate controler" % self.severity
+
+class DEVCAM_LOSYNC(DEVException):
+    status=0x277c80a8
+    facility="DEV"
+    message="CAMAC: Lost Syncronization error"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_LOSYNC, CAMAC: Lost Syncronization error" % self.severity
+
+class DEVCAM_LPE(DEVException):
+    status=0x277c80b0
+    facility="DEV"
+    message="CAMAC: Longitudinal Parity error"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_LPE, CAMAC: Longitudinal Parity error" % self.severity
+
+class DEVCAM_TMO(DEVException):
+    status=0x277c80b8
+    facility="DEV"
+    message="CAMAC: Highway time out error"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_TMO, CAMAC: Highway time out error" % self.severity
+
+class DEVCAM_TPE(DEVException):
+    status=0x277c80c0
+    facility="DEV"
+    message="CAMAC: Transverse Parity error"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_TPE, CAMAC: Transverse Parity error" % self.severity
+
+class DEVCAM_STE(DEVException):
+    status=0x277c80c8
+    facility="DEV"
+    message="CAMAC: Serial Transmission error"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_STE, CAMAC: Serial Transmission error" % self.severity
+
+class DEVCAM_DERR(DEVException):
+    status=0x277c80d0
+    facility="DEV"
+    message="CAMAC: Delayed error from SCC"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_DERR, CAMAC: Delayed error from SCC" % self.severity
+
+class DEVCAM_SQ(DEVException):
+    status=0x277c80d8
+    facility="DEV"
+    message="CAMAC: I/O completion with Q = 1"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_SQ, CAMAC: I/O completion with Q = 1" % self.severity
+
+class DEVCAM_NOSQ(DEVException):
+    status=0x277c80e0
+    facility="DEV"
+    message="CAMAC: I/O completion with Q = 0"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_NOSQ, CAMAC: I/O completion with Q = 0" % self.severity
+
+class DEVCAM_SX(DEVException):
+    status=0x277c80e8
+    facility="DEV"
+    message="CAMAC: I/O completion with X = 1"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_SX, CAMAC: I/O completion with X = 1" % self.severity
+
+class DEVCAM_NOSX(DEVException):
+    status=0x277c80f0
+    facility="DEV"
+    message="CAMAC: I/O completion with X = 0"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-CAM_NOSX, CAMAC: I/O completion with X = 0" % self.severity
+
+class DEVINV_SETUP(DEVException):
+    status=0x277c80f8
+    facility="DEV"
+    message="device was not properly set up"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DEV-%s-INV_SETUP, device was not properly set up" % self.severity
+
+class RETICONNORMAL(RETICONException):
+    status=0x277c8198
+    facility="RETICON"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-NORMAL, successful completion" % self.severity
+
+class RETICONBAD_FRAMES(RETICONException):
+    status=0x277c81a0
+    facility="RETICON"
+    message="frame count must be less than or equal to 2048"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-BAD_FRAMES, frame count must be less than or equal to 2048" % self.severity
+
+class RETICONBAD_FRAME_SELECT(RETICONException):
+    status=0x277c81a8
+    facility="RETICON"
+    message="frame interval must be 1,2,4,8,16,32 or 64"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-BAD_FRAME_SELECT, frame interval must be 1,2,4,8,16,32 or 64" % self.severity
+
+class RETICONBAD_NUM_STATES(RETICONException):
+    status=0x277c81b0
+    facility="RETICON"
+    message="number of states must be between 1 and 4"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-BAD_NUM_STATES, number of states must be between 1 and 4" % self.severity
+
+class RETICONBAD_PERIOD(RETICONException):
+    status=0x277c81b8
+    facility="RETICON"
+    message="period must be .5,1,2,4,8,16,32,64,128,256,512,1024,2048,4096 or 8192 msec"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-BAD_PERIOD, period must be .5,1,2,4,8,16,32,64,128,256,512,1024,2048,4096 or 8192 msec" % self.severity
+
+class RETICONBAD_PIXEL_SELECT(RETICONException):
+    status=0x277c81c0
+    facility="RETICON"
+    message="pixel selection must be an array of 256 boolean values"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-BAD_PIXEL_SELECT, pixel selection must be an array of 256 boolean values" % self.severity
+
+class RETICONDATA_CORRUPTED(RETICONException):
+    status=0x277c81c8
+    facility="RETICON"
+    message="data in memory is corrupted or framing error detected, no data stored"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-DATA_CORRUPTED, data in memory is corrupted or framing error detected, no data stored" % self.severity
+
+class RETICONTOO_MANY_FRAMES(RETICONException):
+    status=0x277c81d0
+    facility="RETICON"
+    message="over 8192 frame start indicators in data read from memory"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%RETICON-%s-TOO_MANY_FRAMES, over 8192 frame start indicators in data read from memory" % self.severity
+
+class J221NORMAL(J221Exception):
+    status=0x277c8328
+    facility="J221"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J221-%s-NORMAL, successful completion" % self.severity
+
+class J221INVALID_DATA(J221Exception):
+    status=0x277c8330
+    facility="J221"
+    message="ignoring invalid data in channel !SL"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J221-%s-INVALID_DATA, ignoring invalid data in channel !SL" % self.severity
+
+class J221NO_DATA(J221Exception):
+    status=0x277c8338
+    facility="J221"
+    message="no valid data was found for any channel"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J221-%s-NO_DATA, no valid data was found for any channel" % self.severity
+
+class TIMINGINVCLKFRQ(TIMINGException):
+    status=0x277c84b8
+    facility="TIMING"
+    message="Invalid clock frequency"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-INVCLKFRQ, Invalid clock frequency" % self.severity
+
+class TIMINGINVDELDUR(TIMINGException):
+    status=0x277c84c0
+    facility="TIMING"
+    message="Invalid pulse delay or duration, must be less than 655 seconds"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-INVDELDUR, Invalid pulse delay or duration, must be less than 655 seconds" % self.severity
+
+class TIMINGINVOUTCTR(TIMINGException):
+    status=0x277c84c8
+    facility="TIMING"
+    message="Invalid output mode selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-INVOUTCTR, Invalid output mode selected" % self.severity
+
+class TIMINGINVPSEUDODEV(TIMINGException):
+    status=0x277c84d0
+    facility="TIMING"
+    message="Invalid pseudo device attached to this decoder channel"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-INVPSEUDODEV, Invalid pseudo device attached to this decoder channel" % self.severity
+
+class TIMINGINVTRGMOD(TIMINGException):
+    status=0x277c84d8
+    facility="TIMING"
+    message="Invalid trigger mode selected"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-INVTRGMOD, Invalid trigger mode selected" % self.severity
+
+class TIMINGNOPSEUDODEV(TIMINGException):
+    status=0x277c84e0
+    facility="TIMING"
+    message="No Pseudo device attached to this channel ... disabling"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-NOPSEUDODEV, No Pseudo device attached to this channel ... disabling" % self.severity
+
+class TIMINGTOO_MANY_EVENTS(TIMINGException):
+    status=0x277c84e8
+    facility="TIMING"
+    message="More than 16 events used by this decoder"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TIMING-%s-TOO_MANY_EVENTS, More than 16 events used by this decoder" % self.severity
+
+class B2408NORMAL(B2408Exception):
+    status=0x277c8648
+    facility="B2408"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B2408-%s-NORMAL, successful completion" % self.severity
+
+class B2408OVERFLOW(B2408Exception):
+    status=0x277c8650
+    facility="B2408"
+    message="Triggers received after overflow"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B2408-%s-OVERFLOW, Triggers received after overflow" % self.severity
+
+class B2408TRIG_LIM(B2408Exception):
+    status=0x277c8658
+    facility="B2408"
+    message="Trigger limit possibly exceeded"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B2408-%s-TRIG_LIM, Trigger limit possibly exceeded" % self.severity
+
+class FERANORMAL(FERAException):
+    status=0x277c87d8
+    facility="FERA"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-NORMAL, successful completion" % self.severity
+
+class FERADIGNOTSTRARRAY(FERAException):
+    status=0x277c87e0
+    facility="FERA"
+    message="The digitizer names must be an array of strings"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-DIGNOTSTRARRAY, The digitizer names must be an array of strings" % self.severity
+
+class FERANODIG(FERAException):
+    status=0x277c87e8
+    facility="FERA"
+    message="The digitizer names must be specified"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-NODIG, The digitizer names must be specified" % self.severity
+
+class FERAMEMNOTSTRARRAY(FERAException):
+    status=0x277c87f0
+    facility="FERA"
+    message="The memory names must be an array of strings"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-MEMNOTSTRARRAY, The memory names must be an array of strings" % self.severity
+
+class FERANOMEM(FERAException):
+    status=0x277c87f8
+    facility="FERA"
+    message="The memory names must be specified"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-NOMEM, The memory names must be specified" % self.severity
+
+class FERAPHASE_LOST(FERAException):
+    status=0x277c8800
+    facility="FERA"
+    message="Data phase lost No FERA data stored"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-PHASE_LOST, Data phase lost No FERA data stored" % self.severity
+
+class FERACONFUSED(FERAException):
+    status=0x277c8808
+    facility="FERA"
+    message="Fera Data inconsitant.  Data for this point zered."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-CONFUSED, Fera Data inconsitant.  Data for this point zered." % self.severity
+
+class FERAOVER_RUN(FERAException):
+    status=0x277c8810
+    facility="FERA"
+    message="Possible FERA memory overrun, too many triggers."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-OVER_RUN, Possible FERA memory overrun, too many triggers." % self.severity
+
+class FERAOVERFLOW(FERAException):
+    status=0x277c8818
+    facility="FERA"
+    message="Possible FERA data saturated.  Data point zeroed"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%FERA-%s-OVERFLOW, Possible FERA data saturated.  Data point zeroed" % self.severity
+
+class HM650NORMAL(HM650Exception):
+    status=0x277c8968
+    facility="HM650"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HM650-%s-NORMAL, successful completion" % self.severity
+
+class HM650DLYCHNG(HM650Exception):
+    status=0x277c8970
+    facility="HM650"
+    message="HM650 requested delay can not be processed by hardware."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HM650-%s-DLYCHNG, HM650 requested delay can not be processed by hardware." % self.severity
+
+class HV4032NORMAL(HV4032Exception):
+    status=0x277c8af8
+    facility="HV4032"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV4032-%s-NORMAL, successful completion" % self.severity
+
+class HV4032WRONG_POD_TYPE(HV4032Exception):
+    status=0x277c8b00
+    facility="HV4032"
+    message="HV40321A n and p can only be used with the HV4032 device"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV4032-%s-WRONG_POD_TYPE, HV40321A n and p can only be used with the HV4032 device" % self.severity
+
+class HV1440NORMAL(HV1440Exception):
+    status=0x277c8c88
+    facility="HV1440"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV1440-%s-NORMAL, successful completion" % self.severity
+
+class HV1440WRONG_POD_TYPE(HV1440Exception):
+    status=0x277c8c90
+    facility="HV1440"
+    message="HV1443 can only be used with the HV1440 device"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV1440-%s-WRONG_POD_TYPE, HV1443 can only be used with the HV1440 device" % self.severity
+
+class HV1440BAD_FRAME(HV1440Exception):
+    status=0x277c8c98
+    facility="HV1440"
+    message="HV1440 could not read the frame"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV1440-%s-BAD_FRAME, HV1440 could not read the frame" % self.severity
+
+class HV1440BAD_RANGE(HV1440Exception):
+    status=0x277c8ca0
+    facility="HV1440"
+    message="HV1440 could not read the range"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV1440-%s-BAD_RANGE, HV1440 could not read the range" % self.severity
+
+class HV1440OUTRNG(HV1440Exception):
+    status=0x277c8ca8
+    facility="HV1440"
+    message="HV1440 out of range"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV1440-%s-OUTRNG, HV1440 out of range" % self.severity
+
+class HV1440STUCK(HV1440Exception):
+    status=0x277c8cb0
+    facility="HV1440"
+    message="HV1440 not responding with Q"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%HV1440-%s-STUCK, HV1440 not responding with Q" % self.severity
+
+class JOERGERBAD_PRE_TRIGGER(JOERGERException):
+    status=0x277c8e18
+    facility="JOERGER"
+    message="bad pretrigger specified, specify a value of 0,1,2,3,4,5,6 or 7"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%JOERGER-%s-BAD_PRE_TRIGGER, bad pretrigger specified, specify a value of 0,1,2,3,4,5,6 or 7" % self.severity
+
+class JOERGERBAD_ACT_MEMORY(JOERGERException):
+    status=0x277c8e20
+    facility="JOERGER"
+    message="bad active memory specified, specify a value of 1,2,3,4,5,6,7 or 8"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%JOERGER-%s-BAD_ACT_MEMORY, bad active memory specified, specify a value of 1,2,3,4,5,6,7 or 8" % self.severity
+
+class JOERGERBAD_GAIN(JOERGERException):
+    status=0x277c8e28
+    facility="JOERGER"
+    message="bad gain specified, specify a value of 1,2,4 or 8"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%JOERGER-%s-BAD_GAIN, bad gain specified, specify a value of 1,2,4 or 8" % self.severity
+
+class U_OF_MBAD_WAVE_LENGTH(U_OF_MException):
+    status=0x277c8fa8
+    facility="U_OF_M"
+    message="bad wave length specified, specify value between 0 and 13000"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-BAD_WAVE_LENGTH, bad wave length specified, specify value between 0 and 13000" % self.severity
+
+class U_OF_MBAD_SLIT_WIDTH(U_OF_MException):
+    status=0x277c8fb0
+    facility="U_OF_M"
+    message="bad slit width specified, specify value between 0 and 500"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-BAD_SLIT_WIDTH, bad slit width specified, specify value between 0 and 500" % self.severity
+
+class U_OF_MBAD_NUM_SPECTRA(U_OF_MException):
+    status=0x277c8fb8
+    facility="U_OF_M"
+    message="bad number of spectra specified, specify value between 1 and 100"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-BAD_NUM_SPECTRA, bad number of spectra specified, specify value between 1 and 100" % self.severity
+
+class U_OF_MBAD_GRATING(U_OF_MException):
+    status=0x277c8fc0
+    facility="U_OF_M"
+    message="bad grating type specified, specify value between 1 and 5"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-BAD_GRATING, bad grating type specified, specify value between 1 and 5" % self.severity
+
+class U_OF_MBAD_EXPOSURE(U_OF_MException):
+    status=0x277c8fc8
+    facility="U_OF_M"
+    message="bad exposure time specified, specify value between 30 and 3000"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-BAD_EXPOSURE, bad exposure time specified, specify value between 30 and 3000" % self.severity
+
+class U_OF_MBAD_FILTER(U_OF_MException):
+    status=0x277c8fd0
+    facility="U_OF_M"
+    message="bad neutral density filter specified, specify value between 0 and 5"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-BAD_FILTER, bad neutral density filter specified, specify value between 0 and 5" % self.severity
+
+class U_OF_MGO_FILE_ERROR(U_OF_MException):
+    status=0x277c8fd8
+    facility="U_OF_M"
+    message="error creating new go file"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-GO_FILE_ERROR, error creating new go file" % self.severity
+
+class U_OF_MDATA_FILE_ERROR(U_OF_MException):
+    status=0x277c8fe0
+    facility="U_OF_M"
+    message="error opening datafile"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%U_OF_M-%s-DATA_FILE_ERROR, error opening datafile" % self.severity
+
+class IDLNORMAL(IDLException):
+    status=0x277c9138
+    facility="IDL"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%IDL-%s-NORMAL, successful completion" % self.severity
+
+class IDLERROR(IDLException):
+    status=0x277c9140
+    facility="IDL"
+    message="IDL returned a non zero error code"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%IDL-%s-ERROR, IDL returned a non zero error code" % self.severity
+
+class B5910ABAD_CHAN(B5910AException):
+    status=0x277c92c8
+    facility="B5910A"
+    message="error evaluating data for channel !SL"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B5910A-%s-BAD_CHAN, error evaluating data for channel !SL" % self.severity
+
+class B5910ABAD_CLOCK(B5910AException):
+    status=0x277c92d0
+    facility="B5910A"
+    message="invalid internal clock range specified"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B5910A-%s-BAD_CLOCK, invalid internal clock range specified" % self.severity
+
+class B5910ABAD_ITERATIONS(B5910AException):
+    status=0x277c92d8
+    facility="B5910A"
+    message="invalid number of iterations specified"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B5910A-%s-BAD_ITERATIONS, invalid number of iterations specified" % self.severity
+
+class B5910ABAD_NOC(B5910AException):
+    status=0x277c92e0
+    facility="B5910A"
+    message="invalid number of active channels specified"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B5910A-%s-BAD_NOC, invalid number of active channels specified" % self.severity
+
+class B5910ABAD_SAMPS(B5910AException):
+    status=0x277c92e8
+    facility="B5910A"
+    message="number of samples specificed invalid"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%B5910A-%s-BAD_SAMPS, number of samples specificed invalid" % self.severity
+
+class J412NOT_SORTED(J412Exception):
+    status=0x277c9458
+    facility="J412"
+    message="times specified for J412 module were not sorted"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J412-%s-NOT_SORTED, times specified for J412 module were not sorted" % self.severity
+
+class J412NO_DATA(J412Exception):
+    status=0x277c9460
+    facility="J412"
+    message="there were no times specifed for J412 module"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J412-%s-NO_DATA, there were no times specifed for J412 module" % self.severity
+
+class J412BADCYCLES(J412Exception):
+    status=0x277c9468
+    facility="J412"
+    message="The number of cycles must be 1 .. 255"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J412-%s-BADCYCLES, The number of cycles must be 1 .. 255" % self.severity
+
+class TR16NORMAL(TR16Exception):
+    status=0x277c95e8
+    facility="TR16"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-NORMAL, successful completion" % self.severity
+
+class TR16BAD_MEMSIZE(TR16Exception):
+    status=0x277c95f0
+    facility="TR16"
+    message="Memory size must be in 128K, 256K, 512k, 1024K"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_MEMSIZE, Memory size must be in 128K, 256K, 512k, 1024K" % self.severity
+
+class TR16BAD_ACTIVEMEM(TR16Exception):
+    status=0x277c95f8
+    facility="TR16"
+    message="Active Mem must be power of 2 8K to 1024K"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_ACTIVEMEM, Active Mem must be power of 2 8K to 1024K" % self.severity
+
+class TR16BAD_ACTIVECHAN(TR16Exception):
+    status=0x277c9600
+    facility="TR16"
+    message="Active channels must be in 1,2,4,8,16"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_ACTIVECHAN, Active channels must be in 1,2,4,8,16" % self.severity
+
+class TR16BAD_PTS(TR16Exception):
+    status=0x277c9608
+    facility="TR16"
+    message="PTS must be power of 2 32 to 1024K"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_PTS, PTS must be power of 2 32 to 1024K" % self.severity
+
+class TR16BAD_FREQUENCY(TR16Exception):
+    status=0x277c9610
+    facility="TR16"
+    message="Invalid clock frequency"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_FREQUENCY, Invalid clock frequency" % self.severity
+
+class TR16BAD_MASTER(TR16Exception):
+    status=0x277c9618
+    facility="TR16"
+    message="Master must be 0 or 1"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_MASTER, Master must be 0 or 1" % self.severity
+
+class TR16BAD_GAIN(TR16Exception):
+    status=0x277c9620
+    facility="TR16"
+    message="Gain must be 1, 2, 4, or 8"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TR16-%s-BAD_GAIN, Gain must be 1, 2, 4, or 8" % self.severity
+
+class A14NORMAL(A14Exception):
+    status=0x277c9778
+    facility="A14"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-NORMAL, successful completion" % self.severity
+
+class A14BAD_CLK_DIVIDE(A14Exception):
+    status=0x277c9780
+    facility="A14"
+    message="Clock divide must be one of 1,2,4,10,20,40, or 100"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-BAD_CLK_DIVIDE, Clock divide must be one of 1,2,4,10,20,40, or 100" % self.severity
+
+class A14BAD_MODE(A14Exception):
+    status=0x277c9788
+    facility="A14"
+    message="Mode must be in the range of 0 to 4"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-BAD_MODE, Mode must be in the range of 0 to 4" % self.severity
+
+class A14BAD_CLK_POLARITY(A14Exception):
+    status=0x277c9790
+    facility="A14"
+    message="Clock polarity must be either 0 (rising) or 1 (falling)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-BAD_CLK_POLARITY, Clock polarity must be either 0 (rising) or 1 (falling)" % self.severity
+
+class A14BAD_STR_POLARITY(A14Exception):
+    status=0x277c9798
+    facility="A14"
+    message="Start polarity must be either 0 (rising) or 1 (falling)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-BAD_STR_POLARITY, Start polarity must be either 0 (rising) or 1 (falling)" % self.severity
+
+class A14BAD_STP_POLARITY(A14Exception):
+    status=0x277c97a0
+    facility="A14"
+    message="Stop polarity must be either 0 (rising) or 1 (falling)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-BAD_STP_POLARITY, Stop polarity must be either 0 (rising) or 1 (falling)" % self.severity
+
+class A14BAD_GATED(A14Exception):
+    status=0x277c97a8
+    facility="A14"
+    message="Gated clock must be either 0 (not gated) or 1 (gated)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%A14-%s-BAD_GATED, Gated clock must be either 0 (not gated) or 1 (gated)" % self.severity
+
+class L6810NORMAL(L6810Exception):
+    status=0x277c9908
+    facility="L6810"
+    message="successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-NORMAL, successful completion" % self.severity
+
+class L6810BAD_ACTIVECHAN(L6810Exception):
+    status=0x277c9910
+    facility="L6810"
+    message="Active chans must be 1, 2, or 4"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_ACTIVECHAN, Active chans must be 1, 2, or 4" % self.severity
+
+class L6810BAD_ACTIVEMEM(L6810Exception):
+    status=0x277c9918
+    facility="L6810"
+    message="Active memory must be power of 2 LE 8192"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_ACTIVEMEM, Active memory must be power of 2 LE 8192" % self.severity
+
+class L6810BAD_FREQUENCY(L6810Exception):
+    status=0x277c9920
+    facility="L6810"
+    message="Frequency must be in [0, .02, .05, .1, .2, .5, 1, 2, 5, 10, 20, 50, 100,  200, 500, 1000, 2000, 5000]"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_FREQUENCY, Frequency must be in [0, .02, .05, .1, .2, .5, 1, 2, 5, 10, 20, 50, 100,  200, 500, 1000, 2000, 5000]" % self.severity
+
+class L6810BAD_FULL_SCALE(L6810Exception):
+    status=0x277c9928
+    facility="L6810"
+    message="Full Scale must be in [.4096, 1.024, 2.048, 4.096, 10.24, 25.6, 51.2, 102.4]"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_FULL_SCALE, Full Scale must be in [.4096, 1.024, 2.048, 4.096, 10.24, 25.6, 51.2, 102.4]" % self.severity
+
+class L6810BAD_MEMORIES(L6810Exception):
+    status=0x277c9930
+    facility="L6810"
+    message="Memories must 1 .. 16"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_MEMORIES, Memories must 1 .. 16" % self.severity
+
+class L6810BAD_COUPLING(L6810Exception):
+    status=0x277c9938
+    facility="L6810"
+    message="Channel source / coupling must be one of 0 .. 7"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_COUPLING, Channel source / coupling must be one of 0 .. 7" % self.severity
+
+class L6810BAD_OFFSET(L6810Exception):
+    status=0x277c9940
+    facility="L6810"
+    message="Offset must be between 0 and 255"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_OFFSET, Offset must be between 0 and 255" % self.severity
+
+class L6810BAD_SEGMENTS(L6810Exception):
+    status=0x277c9948
+    facility="L6810"
+    message="Number of segments must be 1 .. 1024"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_SEGMENTS, Number of segments must be 1 .. 1024" % self.severity
+
+class L6810BAD_TRIG_DELAY(L6810Exception):
+    status=0x277c9950
+    facility="L6810"
+    message="Trigger delay must be between -8 and 247 in units of 8ths of segment size"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L6810-%s-BAD_TRIG_DELAY, Trigger delay must be between -8 and 247 in units of 8ths of segment size" % self.severity
+
+class J_DACOUTRNG(J_DACException):
+    status=0x277c9a98
+    facility="J_DAC"
+    message="Joerger DAC Channels out of range.  Bad chans code !XW"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J_DAC-%s-OUTRNG, Joerger DAC Channels out of range.  Bad chans code !XW" % self.severity
+
+class INCAABAD_ACTIVE_CHANS(INCAAException):
+    status=0x277c9c28
+    facility="INCAA"
+    message="bad active channels selection"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%INCAA-%s-BAD_ACTIVE_CHANS, bad active channels selection" % self.severity
+
+class INCAABAD_MASTER(INCAAException):
+    status=0x277c9c30
+    facility="INCAA"
+    message="bad master selection, must be 0 or 1"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%INCAA-%s-BAD_MASTER, bad master selection, must be 0 or 1" % self.severity
+
+class INCAABAD_EXT_1MHZ(INCAAException):
+    status=0x277c9c38
+    facility="INCAA"
+    message="bad ext 1mhz selection, must be 0 or 1"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%INCAA-%s-BAD_EXT_1MHZ, bad ext 1mhz selection, must be 0 or 1" % self.severity
+
+class INCAABAD_PTSC(INCAAException):
+    status=0x277c9c40
+    facility="INCAA"
+    message="bad PTSC setting"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%INCAA-%s-BAD_PTSC, bad PTSC setting" % self.severity
+
+class L8212BAD_HEADER(L8212Exception):
+    status=0x277c9db8
+    facility="L8212"
+    message="Invalid header jumper information (e.g. 49414944432)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-BAD_HEADER, Invalid header jumper information (e.g. 49414944432)" % self.severity
+
+class L8212BAD_MEMORIES(L8212Exception):
+    status=0x277c9dc0
+    facility="L8212"
+    message="Invalid number of memories, must be 1 .. 16"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-BAD_MEMORIES, Invalid number of memories, must be 1 .. 16" % self.severity
+
+class L8212BAD_NOC(L8212Exception):
+    status=0x277c9dc8
+    facility="L8212"
+    message="Invalid number of active channels"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-BAD_NOC, Invalid number of active channels" % self.severity
+
+class L8212BAD_OFFSET(L8212Exception):
+    status=0x277c9dd0
+    facility="L8212"
+    message="Invalid offset must be one of (0, -2048, -4096)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-BAD_OFFSET, Invalid offset must be one of (0, -2048, -4096)" % self.severity
+
+class L8212BAD_PTS(L8212Exception):
+    status=0x277c9dd8
+    facility="L8212"
+    message="Invalid pts code, must be 0 .. 7"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-BAD_PTS, Invalid pts code, must be 0 .. 7" % self.severity
+
+class L8212FREQ_TO_HIGH(L8212Exception):
+    status=0x277c9de0
+    facility="L8212"
+    message="Frequency to high for selected number of channels"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-FREQ_TO_HIGH, Frequency to high for selected number of channels" % self.severity
+
+class L8212INVALID_NOC(L8212Exception):
+    status=0x277c9de8
+    facility="L8212"
+    message="Invalid number of active channels"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8212-%s-INVALID_NOC, Invalid number of active channels" % self.severity
+
+class MPBBADTIME(MPBException):
+    status=0x277c9f48
+    facility="MPB"
+    message="Could not read time"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%MPB-%s-BADTIME, Could not read time" % self.severity
+
+class MPBBADFREQ(MPBException):
+    status=0x277c9f50
+    facility="MPB"
+    message="Could not read frequency"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%MPB-%s-BADFREQ, Could not read frequency" % self.severity
+
+class L8828BAD_OFFSET(L8828Exception):
+    status=0x277ca0d8
+    facility="L8828"
+    message="Offset for L8828 must be between 0 and 255"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8828-%s-BAD_OFFSET, Offset for L8828 must be between 0 and 255" % self.severity
+
+class L8828BAD_PRETRIG(L8828Exception):
+    status=0x277ca0e0
+    facility="L8828"
+    message="Pre trigger samples for L8828 must be betwwen 0 and 7 eighths"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8828-%s-BAD_PRETRIG, Pre trigger samples for L8828 must be betwwen 0 and 7 eighths" % self.severity
+
+class L8828BAD_ACTIVEMEM(L8828Exception):
+    status=0x277ca0e8
+    facility="L8828"
+    message="ACTIVEMEM must be beteen 16K and 2M"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8828-%s-BAD_ACTIVEMEM, ACTIVEMEM must be beteen 16K and 2M" % self.severity
+
+class L8828BAD_CLOCK(L8828Exception):
+    status=0x277ca0f0
+    facility="L8828"
+    message="Invalid clock frequency specified."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8828-%s-BAD_CLOCK, Invalid clock frequency specified." % self.severity
+
+class L8818BAD_OFFSET(L8818Exception):
+    status=0x277ca268
+    facility="L8818"
+    message="Offset for L8828 must be between 0 and 255"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8818-%s-BAD_OFFSET, Offset for L8828 must be between 0 and 255" % self.severity
+
+class L8818BAD_PRETRIG(L8818Exception):
+    status=0x277ca270
+    facility="L8818"
+    message="Pre trigger samples for L8828 must be betwwen 0 and 7 eighths"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8818-%s-BAD_PRETRIG, Pre trigger samples for L8828 must be betwwen 0 and 7 eighths" % self.severity
+
+class L8818BAD_ACTIVEMEM(L8818Exception):
+    status=0x277ca278
+    facility="L8818"
+    message="ACTIVEMEM must be beteen 16K and 2M"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8818-%s-BAD_ACTIVEMEM, ACTIVEMEM must be beteen 16K and 2M" % self.severity
+
+class L8818BAD_CLOCK(L8818Exception):
+    status=0x277ca280
+    facility="L8818"
+    message="Invalid clock frequency specified."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8818-%s-BAD_CLOCK, Invalid clock frequency specified." % self.severity
+
+class J_TR612BAD_ACTMEM(J_TR612Exception):
+    status=0x277ca2b8
+    facility="J_TR612"
+    message="ACTMEM value out of range, must be 0-7 where 0=1/8th and 7 = all"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J_TR612-%s-BAD_ACTMEM, ACTMEM value out of range, must be 0-7 where 0=1/8th and 7 = all" % self.severity
+
+class J_TR612BAD_PRETRIG(J_TR612Exception):
+    status=0x277ca2c0
+    facility="J_TR612"
+    message="PRETRIG value out of range, must be 0-7 where 0 = none and 7 = 7/8 pretrigger samples"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J_TR612-%s-BAD_PRETRIG, PRETRIG value out of range, must be 0-7 where 0 = none and 7 = 7/8 pretrigger samples" % self.severity
+
+class J_TR612BAD_MODE(J_TR612Exception):
+    status=0x277ca2c8
+    facility="J_TR612"
+    message="MODE value out of range, must be 0 (for normal) or 1 (for burst mode)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J_TR612-%s-BAD_MODE, MODE value out of range, must be 0 (for normal) or 1 (for burst mode)" % self.severity
+
+class J_TR612BAD_FREQUENCY(J_TR612Exception):
+    status=0x277ca2d0
+    facility="J_TR612"
+    message="FREQUENCY value out of range, must be 0-4 where 0=3MHz,1=2MHz,2=1MHz,3=100KHz,4=external"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%J_TR612-%s-BAD_FREQUENCY, FREQUENCY value out of range, must be 0-4 where 0=3MHz,1=2MHz,2=1MHz,3=100KHz,4=external" % self.severity
+
+class L8206NODATA(L8206Exception):
+    status=0x277ca3f8
+    facility="L8206"
+    message="no data has been written to memory"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%L8206-%s-NODATA, no data has been written to memory" % self.severity
+
+class H912BAD_CLOCK(H912Exception):
+    status=0x277ca448
+    facility="H912"
+    message="Bad value specified in INT_CLOCK node, use Setup device to correct"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%H912-%s-BAD_CLOCK, Bad value specified in INT_CLOCK node, use Setup device to correct" % self.severity
+
+class H912BAD_BLOCKS(H912Exception):
+    status=0x277ca450
+    facility="H912"
+    message="Bad value specified in BLOCKS node, use Setup device to correct"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%H912-%s-BAD_BLOCKS, Bad value specified in BLOCKS node, use Setup device to correct" % self.severity
+
+class H912BAD_PTS(H912Exception):
+    status=0x277ca458
+    facility="H912"
+    message="Bad value specfiied in PTS node, must be an integer value between 1 and 131071"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%H912-%s-BAD_PTS, Bad value specfiied in PTS node, must be an integer value between 1 and 131071" % self.severity
+
+class H908BAD_CLOCK(H908Exception):
+    status=0x277ca498
+    facility="H908"
+    message="Bad value specified in INT_CLOCK node, use Setup device to correct"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%H908-%s-BAD_CLOCK, Bad value specified in INT_CLOCK node, use Setup device to correct" % self.severity
+
+class H908BAD_ACTIVE_CHANS(H908Exception):
+    status=0x277ca4a0
+    facility="H908"
+    message="Bad value specified in ACTIVE_CHANS node, use Setup device to correct"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%H908-%s-BAD_ACTIVE_CHANS, Bad value specified in ACTIVE_CHANS node, use Setup device to correct" % self.severity
+
+class H908BAD_PTS(H908Exception):
+    status=0x277ca4a8
+    facility="H908"
+    message="Bad value specfiied in PTS node, must be an integer value between 1 and 131071"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%H908-%s-BAD_PTS, Bad value specfiied in PTS node, must be an integer value between 1 and 131071" % self.severity
+
+class DSP2904CHANNEL_READ_ERROR(DSP2904Exception):
+    status=0x277ca4e8
+    facility="DSP2904"
+    message="Error reading channel"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DSP2904-%s-CHANNEL_READ_ERROR, Error reading channel" % self.severity
+
+class PYUNHANDLED_EXCEPTION(PYException):
+    status=0x277ca538
+    facility="PY"
+    message="Python device raised and exception, see log files for more details"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%PY-%s-UNHANDLED_EXCEPTION, Python device raised and exception, see log files for more details" % self.severity
+
+class DT196BNO_SAMPLES(DT196BException):
+    status=0x277ca588
+    facility="DT196B"
+    message="Module did not acquire any samples"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%DT196B-%s-NO_SAMPLES, Module did not acquire any samples" % self.severity
+
+class ACQINITIALIZATION_ERROR(ACQException):
+    status=0x277ca590
+    facility="ACQ"
+    message="Error during module initialization"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%ACQ-%s-INITIALIZATION_ERROR, Error during module initialization" % self.severity
+
+class ACQSETTINGS_NOT_LOADED(ACQException):
+    status=0x277ca598
+    facility="ACQ"
+    message="settings not loaded"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%ACQ-%s-SETTINGS_NOT_LOADED, settings not loaded" % self.severity
+
+class ACQWRONG_TREE(ACQException):
+    status=0x277ca5a0
+    facility="ACQ"
+    message="Attempt to store ACQ module into different tree than it was armed with"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%ACQ-%s-WRONG_TREE, Attempt to store ACQ module into different tree than it was armed with" % self.severity
+
+class ACQWRONG_PATH(ACQException):
+    status=0x277ca5a8
+    facility="ACQ"
+    message="Attempt to store ACQ module into different path than it was armed with"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%ACQ-%s-WRONG_PATH, Attempt to store ACQ module into different path than it was armed with" % self.severity
+
+class ACQWRONG_SHOT(ACQException):
+    status=0x277ca5b0
+    facility="ACQ"
+    message="Attempt to store ACQ module into different shot than it was armed with"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%ACQ-%s-WRONG_SHOT, Attempt to store ACQ module into different shot than it was armed with" % self.severity
+
+class LibINSVIRMEM(LibException):
+    status=0x158210
+    facility="Lib"
+    message="Insufficient virtual memory"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-INSVIRMEM, Insufficient virtual memory" % self.severity
+
+class LibINVARG(LibException):
+    status=0x158230
+    facility="Lib"
+    message="Invalid argument"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-INVARG, Invalid argument" % self.severity
+
+class LibINVSTRDES(LibException):
+    status=0x158220
+    facility="Lib"
+    message="Invalid string descriptor"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-INVSTRDES, Invalid string descriptor" % self.severity
+
+class LibKEYNOTFOU(LibException):
+    status=0x1582f8
+    facility="Lib"
+    message="Key not found"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-KEYNOTFOU, Key not found" % self.severity
+
+class LibNOTFOU(LibException):
+    status=0x158270
+    facility="Lib"
+    message="Entity not found"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-NOTFOU, Entity not found" % self.severity
+
+class LibQUEWASEMP(LibException):
+    status=0x1582e8
+    facility="Lib"
+    message="Queue was empty"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-QUEWASEMP, Queue was empty" % self.severity
+
+class LibSTRTRU(LibException):
+    status=0x158010
+    facility="Lib"
+    message="String truncated"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%LIB-%s-STRTRU, String truncated" % self.severity
+
+class StrMATCH(StrException):
+    status=0x248418
+    facility="Str"
+    message="Strings match"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%STR-%s-MATCH, Strings match" % self.severity
+
+class StrNOMATCH(StrException):
+    status=0x248208
+    facility="Str"
+    message="Strings do not match"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%STR-%s-NOMATCH, Strings do not match" % self.severity
+
+class StrNOELEM(StrException):
+    status=0x248218
+    facility="Str"
+    message="Not enough delimited characters"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%STR-%s-NOELEM, Not enough delimited characters" % self.severity
+
+class StrINVDELIM(StrException):
+    status=0x248210
+    facility="Str"
+    message="Not enough delimited characters"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%STR-%s-INVDELIM, Not enough delimited characters" % self.severity
+
+class StrSTRTOOLON(StrException):
+    status=0x248070
+    facility="Str"
+    message="String too long"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%STR-%s-STRTOOLON, String too long" % self.severity
+
+class SsINTOVF(SsException):
+    status=0x478
+    facility="Ss"
+    message="Integer overflow"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%SS-%s-INTOVF, Integer overflow" % self.severity
+
+class CamDONE_Q(CamException):
+    status=0x8018008
+    facility="Cam"
+    message="I/O completed with X=1, Q=1"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%CAM-%s-DONE_Q, I/O completed with X=1, Q=1" % self.severity
+
+class CamDONE_NOQ(CamException):
+    status=0x8018010
+    facility="Cam"
+    message="I/O completed with X=1, Q=0"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%CAM-%s-DONE_NOQ, I/O completed with X=1, Q=0" % self.severity
+
+class CamDONE_NOX(CamException):
+    status=0x8019000
+    facility="Cam"
+    message="I/O completed with X=0 - probable failure"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%CAM-%s-DONE_NOX, I/O completed with X=0 - probable failure" % self.severity
+
+class CamSERTRAERR(CamException):
+    status=0x8019800
+    facility="Cam"
+    message="serial transmission error on highway"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%CAM-%s-SERTRAERR, serial transmission error on highway" % self.severity
+
+class CamSCCFAIL(CamException):
+    status=0x8019840
+    facility="Cam"
+    message="serial crate controller failure"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%CAM-%s-SCCFAIL, serial crate controller failure" % self.severity
+
+class CamOFFLINE(CamException):
+    status=0x8019868
+    facility="Cam"
+    message="crate is offline"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%CAM-%s-OFFLINE, crate is offline" % self.severity
+
+class TclNORMAL(TclException):
+    status=0x2a0008
+    facility="Tcl"
+    message="Normal successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
+    def __str__(self):
+        return "%%TCL-%s-NORMAL, Normal successful completion" % self.severity
+
+class TclFAILED_ESSENTIAL(TclException):
+    status=0x2a0010
+    facility="Tcl"
+    message="Essential action failed"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "action not dispatched, depended on failed action"
+        return "%%TCL-%s-FAILED_ESSENTIAL, Essential action failed" % self.severity
+
+class MdsdclSUCCESS(MdsdclException):
+    status=0x8020008
+    facility="Mdsdcl"
+    message="Normal successful completion"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class ServerINVALID_DEPENDENCY(Exception):
-    msgnum=0xfe18010
     def __str__(self):
-        return "action dependency cannot be evaluated"
+        return "%%MDSDCL-%s-SUCCESS, Normal successful completion" % self.severity
 
-class ServerCANT_HAPPEN(Exception):
-    msgnum=0xfe18018
-    def __str__(self):
-        return "action contains circular dependency or depends on action which was not dispatched"
+class MdsdclEXIT(MdsdclException):
+    status=0x8020010
+    facility="Mdsdcl"
+    message="Normal exit"
 
-class ServerINVSHOT(Exception):
-    msgnum=0xfe18020
-    def __str__(self):
-        return "invalid shot number, cannot dispatch actions in model"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class ServerABORT(Exception):
-    msgnum=0xfe18030
     def __str__(self):
-        return "Server action was aborted"
+        return "%%MDSDCL-%s-EXIT, Normal exit" % self.severity
 
-class ServerPATH_DOWN(Exception):
-    msgnum=0xfe18040
-    def __str__(self):
-        return "Path to server lost"
+class MdsdclERROR(MdsdclException):
+    status=0x8020018
+    facility="Mdsdcl"
+    message="Unsuccessful execution of command"
 
-class DEVBAD_ENDIDX(Exception):
-    msgnum=0x277c8008
-    def __str__(self):
-        return "unable to read end index for channel"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVBAD_FILTER(Exception):
-    msgnum=0x277c8010
     def __str__(self):
-        return "illegal filter selected"
+        return "%%MDSDCL-%s-ERROR, Unsuccessful execution of command" % self.severity
 
-class DEVBAD_FREQ(Exception):
-    msgnum=0x277c8018
-    def __str__(self):
-        return "illegal digitization frequency selected"
+class MdsdclNORMAL(MdsdclException):
+    status=0x8020328
+    facility="Mdsdcl"
+    message="Normal successful completion"
 
-class DEVBAD_GAIN(Exception):
-    msgnum=0x277c8020
-    def __str__(self):
-        return "illegal gain selected"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVBAD_HEADER(Exception):
-    msgnum=0x277c8028
     def __str__(self):
-        return "unable to read header selection"
+        return "%%MDSDCL-%s-NORMAL, Normal successful completion" % self.severity
 
-class DEVBAD_HEADER_IDX(Exception):
-    msgnum=0x277c8030
-    def __str__(self):
-        return "unknown header configuration index"
+class MdsdclPRESENT(MdsdclException):
+    status=0x8020330
+    facility="Mdsdcl"
+    message="Entity is present"
 
-class DEVBAD_MEMORIES(Exception):
-    msgnum=0x277c8038
-    def __str__(self):
-        return "unable to read number of memory modules"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVBAD_MODE(Exception):
-    msgnum=0x277c8040
     def __str__(self):
-        return "illegal mode selected"
+        return "%%MDSDCL-%s-PRESENT, Entity is present" % self.severity
 
-class DEVBAD_NAME(Exception):
-    msgnum=0x277c8048
-    def __str__(self):
-        return "unable to read module name"
+class MdsdclIVVERB(MdsdclException):
+    status=0x8020338
+    facility="Mdsdcl"
+    message="No such command"
 
-class DEVBAD_OFFSET(Exception):
-    msgnum=0x277c8050
-    def __str__(self):
-        return "illegal offset selected"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVBAD_STARTIDX(Exception):
-    msgnum=0x277c8058
     def __str__(self):
-        return "unable to read start index for channel"
+        return "%%MDSDCL-%s-IVVERB, No such command" % self.severity
 
-class DEVNOT_TRIGGERED(Exception):
-    msgnum=0x277c8060
-    def __str__(self):
-        return "device was not triggered,  check wires and triggering device"
+class MdsdclABSENT(MdsdclException):
+    status=0x8020340
+    facility="Mdsdcl"
+    message="Entity is absent"
 
-class DEVFREQ_TO_HIGH(Exception):
-    msgnum=0x277c8068
-    def __str__(self):
-        return "the frequency is set to high for the requested number of channels"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVINVALID_NOC(Exception):
-    msgnum=0x277c8070
     def __str__(self):
-        return "the NOC (number of channels) requested is greater than the physical number of channels"
+        return "%%MDSDCL-%s-ABSENT, Entity is absent" % self.severity
 
-class DEVRANGE_MISMATCH(Exception):
-    msgnum=0x277c8078
-    def __str__(self):
-        return "the range specified on the menu doesn't match the range setting on the device"
+class MdsdclNEGATED(MdsdclException):
+    status=0x8020348
+    facility="Mdsdcl"
+    message="Entity is present but negated"
 
-class DEVCAMACERR(Exception):
-    msgnum=0x277c8080
-    def __str__(self):
-        return "Error doing CAMAC IO"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVBAD_VERBS(Exception):
-    msgnum=0x277c8088
     def __str__(self):
-        return "Error reading interpreter list (:VERBS)"
+        return "%%MDSDCL-%s-NEGATED, Entity is present but negated" % self.severity
 
-class DEVBAD_COMMANDS(Exception):
-    msgnum=0x277c8090
-    def __str__(self):
-        return "Error reading command list"
+class MdsdclNOTNEGATABLE(MdsdclException):
+    status=0x8020350
+    facility="Mdsdcl"
+    message="Entity cannot be negated"
 
-class DEVCAM_ADNR(Exception):
-    msgnum=0x277c8098
-    def __str__(self):
-        return "CAMAC: Address not recognized (2160)"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVCAM_ERR(Exception):
-    msgnum=0x277c80a0
     def __str__(self):
-        return "CAMAC: Error reported by crate controler"
+        return "%%MDSDCL-%s-NOTNEGATABLE, Entity cannot be negated" % self.severity
 
-class DEVCAM_LOSYNC(Exception):
-    msgnum=0x277c80a8
-    def __str__(self):
-        return "CAMAC: Lost Syncronization error"
+class MdsdclIVQUAL(MdsdclException):
+    status=0x8020358
+    facility="Mdsdcl"
+    message="Invalid qualifier"
 
-class DEVCAM_LPE(Exception):
-    msgnum=0x277c80b0
-    def __str__(self):
-        return "CAMAC: Longitudinal Parity error"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVCAM_TMO(Exception):
-    msgnum=0x277c80b8
     def __str__(self):
-        return "CAMAC: Highway time out error"
+        return "%%MDSDCL-%s-IVQUAL, Invalid qualifier" % self.severity
 
-class DEVCAM_TPE(Exception):
-    msgnum=0x277c80c0
-    def __str__(self):
-        return "CAMAC: Transverse Parity error"
+class MdsdclPROMPT_MORE(MdsdclException):
+    status=0x8020360
+    facility="Mdsdcl"
+    message="More input required for command"
 
-class DEVCAM_STE(Exception):
-    msgnum=0x277c80c8
-    def __str__(self):
-        return "CAMAC: Serial Transmission error"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVCAM_DERR(Exception):
-    msgnum=0x277c80d0
     def __str__(self):
-        return "CAMAC: Delayed error from SCC"
+        return "%%MDSDCL-%s-PROMPT_MORE, More input required for command" % self.severity
 
-class DEVCAM_SQ(Exception):
-    msgnum=0x277c80d8
-    def __str__(self):
-        return "CAMAC: I/O completion with Q = 1"
+class MdsdclTOO_MANY_PRMS(MdsdclException):
+    status=0x8020368
+    facility="Mdsdcl"
+    message="Too many parameters specified"
 
-class DEVCAM_NOSQ(Exception):
-    msgnum=0x277c80e0
-    def __str__(self):
-        return "CAMAC: I/O completion with Q = 0"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class DEVCAM_SX(Exception):
-    msgnum=0x277c80e8
     def __str__(self):
-        return "CAMAC: I/O completion with X = 1"
+        return "%%MDSDCL-%s-TOO_MANY_PRMS, Too many parameters specified" % self.severity
 
-class DEVCAM_NOSX(Exception):
-    msgnum=0x277c80f0
-    def __str__(self):
-        return "CAMAC: I/O completion with X = 0"
+class MdsdclTOO_MANY_VALS(MdsdclException):
+    status=0x8020370
+    facility="Mdsdcl"
+    message="Too many values"
 
-class DEVINV_SETUP(Exception):
-    msgnum=0x277c80f8
-    def __str__(self):
-        return "device was not properly set up"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class RETICONNORMAL(Exception):
-    msgnum=0x277c8198
     def __str__(self):
-        return "successful completion"
+        return "%%MDSDCL-%s-TOO_MANY_VALS, Too many values" % self.severity
 
-class RETICONBAD_FRAMES(Exception):
-    msgnum=0x277c81a0
-    def __str__(self):
-        return "frame count must be less than or equal to 2048"
+class MdsdclMISSING_VALUE(MdsdclException):
+    status=0x8020378
+    facility="Mdsdcl"
+    message="Qualifier value needed"
 
-class RETICONBAD_FRAME_SELECT(Exception):
-    msgnum=0x277c81a8
-    def __str__(self):
-        return "frame interval must be 1,2,4,8,16,32 or 64"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class RETICONBAD_NUM_STATES(Exception):
-    msgnum=0x277c81b0
     def __str__(self):
-        return "number of states must be between 1 and 4"
+        return "%%MDSDCL-%s-MISSING_VALUE, Qualifier value needed" % self.severity
 
-class RETICONBAD_PERIOD(Exception):
-    msgnum=0x277c81b8
-    def __str__(self):
-        return "period must be .5,1,2,4,8,16,32,64,128,256,512,1024,2048,4096 or 8192 msec"
+class TreeALREADY_OFF(TreeException):
+    status=0xfd18028
+    facility="Tree"
+    message="Node is already OFF"
 
-class RETICONBAD_PIXEL_SELECT(Exception):
-    msgnum=0x277c81c0
-    def __str__(self):
-        return "pixel selection must be an array of 256 boolean values"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class RETICONDATA_CORRUPTED(Exception):
-    msgnum=0x277c81c8
     def __str__(self):
-        return "data in memory is corrupted or framing error detected, no data stored"
+        return "%%TREE-%s-ALREADY_OFF, Node is already OFF" % self.severity
 
-class RETICONTOO_MANY_FRAMES(Exception):
-    msgnum=0x277c81d0
-    def __str__(self):
-        return "over 8192 frame start indicators in data read from memory"
+class TreeALREADY_ON(TreeException):
+    status=0xfd18030
+    facility="Tree"
+    message="Node is already ON"
 
-class J221NORMAL(Exception):
-    msgnum=0x277c8328
-    def __str__(self):
-        return "successful completion"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class J221INVALID_DATA(Exception):
-    msgnum=0x277c8330
     def __str__(self):
-        return "ignoring invalid data in channel !SL"
+        return "%%TREE-%s-ALREADY_ON, Node is already ON" % self.severity
 
-class J221NO_DATA(Exception):
-    msgnum=0x277c8338
-    def __str__(self):
-        return "no valid data was found for any channel"
+class TreeALREADY_OPEN(TreeException):
+    status=0xfd18038
+    facility="Tree"
+    message="Tree is already OPEN"
 
-class TIMINGINVCLKFRQ(Exception):
-    msgnum=0x277c84b8
-    def __str__(self):
-        return "Invalid clock frequency"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TIMINGINVDELDUR(Exception):
-    msgnum=0x277c84c0
     def __str__(self):
-        return "Invalid pulse delay or duration, must be less than 655 seconds"
+        return "%%TREE-%s-ALREADY_OPEN, Tree is already OPEN" % self.severity
 
-class TIMINGINVOUTCTR(Exception):
-    msgnum=0x277c84c8
-    def __str__(self):
-        return "Invalid output mode selected"
+class TreeALREADY_THERE(TreeException):
+    status=0xfd18088
+    facility="Tree"
+    message="Node is already in the tree"
 
-class TIMINGINVPSEUDODEV(Exception):
-    msgnum=0x277c84d0
-    def __str__(self):
-        return "Invalid pseudo device attached to this decoder channel"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TIMINGINVTRGMOD(Exception):
-    msgnum=0x277c84d8
     def __str__(self):
-        return "Invalid trigger mode selected"
+        return "%%TREE-%s-ALREADY_THERE, Node is already in the tree" % self.severity
 
-class TIMINGNOPSEUDODEV(Exception):
-    msgnum=0x277c84e0
-    def __str__(self):
-        return "No Pseudo device attached to this channel ... disabling"
+class TreeBADRECORD(TreeException):
+    status=0xfd180b8
+    facility="Tree"
+    message="Data corrupted: cannot read record"
 
-class TIMINGTOO_MANY_EVENTS(Exception):
-    msgnum=0x277c84e8
-    def __str__(self):
-        return "More than 16 events used by this decoder"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class B2408NORMAL(Exception):
-    msgnum=0x277c8648
     def __str__(self):
-        return "successful completion"
+        return "%%TREE-%s-BADRECORD, Data corrupted: cannot read record" % self.severity
 
-class B2408OVERFLOW(Exception):
-    msgnum=0x277c8650
-    def __str__(self):
-        return "Triggers received after overflow"
+class TreeBOTH_OFF(TreeException):
+    status=0xfd18098
+    facility="Tree"
+    message="Both this node and its parent are off"
 
-class B2408TRIG_LIM(Exception):
-    msgnum=0x277c8658
-    def __str__(self):
-        return "Trigger limit possibly exceeded"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class FERANORMAL(Exception):
-    msgnum=0x277c87d8
     def __str__(self):
-        return "successful completion"
+        return "%%TREE-%s-BOTH_OFF, Both this node and its parent are off" % self.severity
 
-class FERADIGNOTSTRARRAY(Exception):
-    msgnum=0x277c87e0
-    def __str__(self):
-        return "The digitizer names must be an array of strings"
+class TreeBUFFEROVF(TreeException):
+    status=0xfd18110
+    facility="Tree"
+    message="Output buffer overflow"
 
-class FERANODIG(Exception):
-    msgnum=0x277c87e8
-    def __str__(self):
-        return "The digitizer names must be specified"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class FERAMEMNOTSTRARRAY(Exception):
-    msgnum=0x277c87f0
     def __str__(self):
-        return "The memory names must be an array of strings"
+        return "%%TREE-%s-BUFFEROVF, Output buffer overflow" % self.severity
 
-class FERANOMEM(Exception):
-    msgnum=0x277c87f8
-    def __str__(self):
-        return "The memory names must be specified"
+class TreeCONGLOMFULL(TreeException):
+    status=0xfd18120
+    facility="Tree"
+    message="Current conglomerate is full"
 
-class FERAPHASE_LOST(Exception):
-    msgnum=0x277c8800
-    def __str__(self):
-        return "Data phase lost No FERA data stored"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class FERACONFUSED(Exception):
-    msgnum=0x277c8808
     def __str__(self):
-        return "Fera Data inconsitant.  Data for this point zered."
+        return "%%TREE-%s-CONGLOMFULL, Current conglomerate is full" % self.severity
 
-class FERAOVER_RUN(Exception):
-    msgnum=0x277c8810
-    def __str__(self):
-        return "Possible FERA memory overrun, too many triggers."
+class TreeCONGLOM_NOT_FULL(TreeException):
+    status=0xfd18128
+    facility="Tree"
+    message="Current conglomerate is not yet full"
 
-class FERAOVERFLOW(Exception):
-    msgnum=0x277c8818
-    def __str__(self):
-        return "Possible FERA data saturated.  Data point zeroed"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class HM650NORMAL(Exception):
-    msgnum=0x277c8968
     def __str__(self):
-        return "successful completion"
+        return "%%TREE-%s-CONGLOM_NOT_FULL, Current conglomerate is not yet full" % self.severity
 
-class HM650DLYCHNG(Exception):
-    msgnum=0x277c8970
-    def __str__(self):
-        return "HM650 requested delay can not be processed by hardware."
+class TreeCONTINUING(TreeException):
+    status=0xfd18960
+    facility="Tree"
+    message="Operation continuing: note following error"
 
-class HV4032NORMAL(Exception):
-    msgnum=0x277c8af8
-    def __str__(self):
-        return "successful completion"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class HV4032WRONG_POD_TYPE(Exception):
-    msgnum=0x277c8b00
     def __str__(self):
-        return "HV40321A n and p can only be used with the HV4032 device"
+        return "%%TREE-%s-CONTINUING, Operation continuing: note following error" % self.severity
 
-class HV1440NORMAL(Exception):
-    msgnum=0x277c8c88
-    def __str__(self):
-        return "successful completion"
+class TreeDUPTAG(TreeException):
+    status=0xfd180c8
+    facility="Tree"
+    message="Tag name already in use"
 
-class HV1440WRONG_POD_TYPE(Exception):
-    msgnum=0x277c8c90
-    def __str__(self):
-        return "HV1443 can only be used with the HV1440 device"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class HV1440BAD_FRAME(Exception):
-    msgnum=0x277c8c98
     def __str__(self):
-        return "HV1440 could not read the frame"
+        return "%%TREE-%s-DUPTAG, Tag name already in use" % self.severity
 
-class HV1440BAD_RANGE(Exception):
-    msgnum=0x277c8ca0
-    def __str__(self):
-        return "HV1440 could not read the range"
+class TreeEDITTING(TreeException):
+    status=0xfd18190
+    facility="Tree"
+    message="Tree file open for edit: operation not permitted"
 
-class HV1440OUTRNG(Exception):
-    msgnum=0x277c8ca8
-    def __str__(self):
-        return "HV1440 out of range"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class HV1440STUCK(Exception):
-    msgnum=0x277c8cb0
     def __str__(self):
-        return "HV1440 not responding with Q"
+        return "%%TREE-%s-EDITTING, Tree file open for edit: operation not permitted" % self.severity
 
-class JOERGERBAD_PRE_TRIGGER(Exception):
-    msgnum=0x277c8e18
-    def __str__(self):
-        return "bad pretrigger specified, specify a value of 0,1,2,3,4,5,6 or 7"
+class TreeILLEGAL_ITEM(TreeException):
+    status=0xfd18108
+    facility="Tree"
+    message="Invalid item code or part number specified"
 
-class JOERGERBAD_ACT_MEMORY(Exception):
-    msgnum=0x277c8e20
-    def __str__(self):
-        return "bad active memory specified, specify a value of 1,2,3,4,5,6,7 or 8"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class JOERGERBAD_GAIN(Exception):
-    msgnum=0x277c8e28
     def __str__(self):
-        return "bad gain specified, specify a value of 1,2,4 or 8"
+        return "%%TREE-%s-ILLEGAL_ITEM, Invalid item code or part number specified" % self.severity
 
-class U_OF_MBAD_WAVE_LENGTH(Exception):
-    msgnum=0x277c8fa8
-    def __str__(self):
-        return "bad wave length specified, specify value between 0 and 13000"
+class TreeILLPAGCNT(TreeException):
+    status=0xfd180d0
+    facility="Tree"
+    message="Illegal page count, error mapping tree file"
 
-class U_OF_MBAD_SLIT_WIDTH(Exception):
-    msgnum=0x277c8fb0
-    def __str__(self):
-        return "bad slit width specified, specify value between 0 and 500"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class U_OF_MBAD_NUM_SPECTRA(Exception):
-    msgnum=0x277c8fb8
     def __str__(self):
-        return "bad number of spectra specified, specify value between 1 and 100"
+        return "%%TREE-%s-ILLPAGCNT, Illegal page count, error mapping tree file" % self.severity
 
-class U_OF_MBAD_GRATING(Exception):
-    msgnum=0x277c8fc0
-    def __str__(self):
-        return "bad grating type specified, specify value between 1 and 5"
+class TreeINVDFFCLASS(TreeException):
+    status=0xfd18138
+    facility="Tree"
+    message="Invalid data fmt: only CLASS_S can have data in NCI"
 
-class U_OF_MBAD_EXPOSURE(Exception):
-    msgnum=0x277c8fc8
-    def __str__(self):
-        return "bad exposure time specified, specify value between 30 and 3000"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class U_OF_MBAD_FILTER(Exception):
-    msgnum=0x277c8fd0
     def __str__(self):
-        return "bad neutral density filter specified, specify value between 0 and 5"
+        return "%%TREE-%s-INVDFFCLASS, Invalid data fmt: only CLASS_S can have data in NCI" % self.severity
 
-class U_OF_MGO_FILE_ERROR(Exception):
-    msgnum=0x277c8fd8
-    def __str__(self):
-        return "error creating new go file"
+class TreeINVDTPUSG(TreeException):
+    status=0xfd18188
+    facility="Tree"
+    message="Attempt to store datatype which conflicts with the designated usage of this node"
 
-class U_OF_MDATA_FILE_ERROR(Exception):
-    msgnum=0x277c8fe0
-    def __str__(self):
-        return "error opening datafile"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class IDLNORMAL(Exception):
-    msgnum=0x277c9138
     def __str__(self):
-        return "successful completion"
+        return "%%TREE-%s-INVDTPUSG, Attempt to store datatype which conflicts with the designated usage of this node" % self.severity
 
-class IDLERROR(Exception):
-    msgnum=0x277c9140
-    def __str__(self):
-        return "IDL returned a non zero error code"
+class TreeINVPATH(TreeException):
+    status=0xfd18100
+    facility="Tree"
+    message="Invalid tree pathname specified"
 
-class B5910ABAD_CHAN(Exception):
-    msgnum=0x277c92c8
-    def __str__(self):
-        return "error evaluating data for channel !SL"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class B5910ABAD_CLOCK(Exception):
-    msgnum=0x277c92d0
     def __str__(self):
-        return "invalid internal clock range specified"
+        return "%%TREE-%s-INVPATH, Invalid tree pathname specified" % self.severity
 
-class B5910ABAD_ITERATIONS(Exception):
-    msgnum=0x277c92d8
-    def __str__(self):
-        return "invalid number of iterations specified"
+class TreeINVRECTYP(TreeException):
+    status=0xfd18140
+    facility="Tree"
+    message="Record type invalid for requested operation"
 
-class B5910ABAD_NOC(Exception):
-    msgnum=0x277c92e0
-    def __str__(self):
-        return "invalid number of active channels specified"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class B5910ABAD_SAMPS(Exception):
-    msgnum=0x277c92e8
     def __str__(self):
-        return "number of samples specificed invalid"
+        return "%%TREE-%s-INVRECTYP, Record type invalid for requested operation" % self.severity
 
-class J412NOT_SORTED(Exception):
-    msgnum=0x277c9458
-    def __str__(self):
-        return "times specified for J412 module were not sorted"
+class TreeINVTREE(TreeException):
+    status=0xfd180c0
+    facility="Tree"
+    message="Invalid tree identification structure"
 
-class J412NO_DATA(Exception):
-    msgnum=0x277c9460
-    def __str__(self):
-        return "there were no times specifed for J412 module"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class J412BADCYCLES(Exception):
-    msgnum=0x277c9468
     def __str__(self):
-        return "The number of cycles must be 1 .. 255"
+        return "%%TREE-%s-INVTREE, Invalid tree identification structure" % self.severity
 
-class TR16NORMAL(Exception):
-    msgnum=0x277c95e8
-    def __str__(self):
-        return "successful completion"
+class TreeMAXOPENEDIT(TreeException):
+    status=0xfd180d8
+    facility="Tree"
+    message="Too many files open for edit"
 
-class TR16BAD_MEMSIZE(Exception):
-    msgnum=0x277c95f0
-    def __str__(self):
-        return "Memory size must be in 128K, 256K, 512k, 1024K"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TR16BAD_ACTIVEMEM(Exception):
-    msgnum=0x277c95f8
     def __str__(self):
-        return "Active Mem must be power of 2 8K to 1024K"
+        return "%%TREE-%s-MAXOPENEDIT, Too many files open for edit" % self.severity
 
-class TR16BAD_ACTIVECHAN(Exception):
-    msgnum=0x277c9600
-    def __str__(self):
-        return "Active channels must be in 1,2,4,8,16"
+class TreeNEW(TreeException):
+    status=0xfd18018
+    facility="Tree"
+    message="New tree created"
 
-class TR16BAD_PTS(Exception):
-    msgnum=0x277c9608
-    def __str__(self):
-        return "PTS must be power of 2 32 to 1024K"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TR16BAD_FREQUENCY(Exception):
-    msgnum=0x277c9610
     def __str__(self):
-        return "Invalid clock frequency"
+        return "%%TREE-%s-NEW, New tree created" % self.severity
 
-class TR16BAD_MASTER(Exception):
-    msgnum=0x277c9618
-    def __str__(self):
-        return "Master must be 0 or 1"
+class TreeNMN(TreeException):
+    status=0xfd18060
+    facility="Tree"
+    message="No More Nodes"
 
-class TR16BAD_GAIN(Exception):
-    msgnum=0x277c9620
-    def __str__(self):
-        return "Gain must be 1, 2, 4, or 8"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class A14NORMAL(Exception):
-    msgnum=0x277c9778
     def __str__(self):
-        return "successful completion"
+        return "%%TREE-%s-NMN, No More Nodes" % self.severity
 
-class A14BAD_CLK_DIVIDE(Exception):
-    msgnum=0x277c9780
-    def __str__(self):
-        return "Clock divide must be one of 1,2,4,10,20,40, or 100"
+class TreeNMT(TreeException):
+    status=0xfd18068
+    facility="Tree"
+    message="No More Tags"
 
-class A14BAD_MODE(Exception):
-    msgnum=0x277c9788
-    def __str__(self):
-        return "Mode must be in the range of 0 to 4"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class A14BAD_CLK_POLARITY(Exception):
-    msgnum=0x277c9790
     def __str__(self):
-        return "Clock polarity must be either 0 (rising) or 1 (falling)"
+        return "%%TREE-%s-NMT, No More Tags" % self.severity
 
-class A14BAD_STR_POLARITY(Exception):
-    msgnum=0x277c9798
-    def __str__(self):
-        return "Start polarity must be either 0 (rising) or 1 (falling)"
+class TreeNNF(TreeException):
+    status=0xfd18070
+    facility="Tree"
+    message="Node Not Found"
 
-class A14BAD_STP_POLARITY(Exception):
-    msgnum=0x277c97a0
-    def __str__(self):
-        return "Stop polarity must be either 0 (rising) or 1 (falling)"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class A14BAD_GATED(Exception):
-    msgnum=0x277c97a8
     def __str__(self):
-        return "Gated clock must be either 0 (not gated) or 1 (gated)"
+        return "%%TREE-%s-NNF, Node Not Found" % self.severity
 
-class L6810NORMAL(Exception):
-    msgnum=0x277c9908
-    def __str__(self):
-        return "successful completion"
+class TreeNODATA(TreeException):
+    status=0xfd180e0
+    facility="Tree"
+    message="No data available for this node"
 
-class L6810BAD_ACTIVECHAN(Exception):
-    msgnum=0x277c9910
-    def __str__(self):
-        return "Active chans must be 1, 2, or 4"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L6810BAD_ACTIVEMEM(Exception):
-    msgnum=0x277c9918
     def __str__(self):
-        return "Active memory must be power of 2 LE 8192"
+        return "%%TREE-%s-NODATA, No data available for this node" % self.severity
 
-class L6810BAD_FREQUENCY(Exception):
-    msgnum=0x277c9920
-    def __str__(self):
-        return "Frequency must be in [0, .02, .05, .1, .2, .5, 1, 2, 5, 10, 20, 50, 100,  200, 500, 1000, 2000, 5000]"
+class TreeNODNAMLEN(TreeException):
+    status=0xfd18148
+    facility="Tree"
+    message="Node name too long (12 chars max)"
 
-class L6810BAD_FULL_SCALE(Exception):
-    msgnum=0x277c9928
-    def __str__(self):
-        return "Full Scale must be in [.4096, 1.024, 2.048, 4.096, 10.24, 25.6, 51.2, 102.4]"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L6810BAD_MEMORIES(Exception):
-    msgnum=0x277c9930
     def __str__(self):
-        return "Memories must 1 .. 16"
+        return "%%TREE-%s-NODNAMLEN, Node name too long (12 chars max)" % self.severity
 
-class L6810BAD_COUPLING(Exception):
-    msgnum=0x277c9938
-    def __str__(self):
-        return "Channel source / coupling must be one of 0 .. 7"
+class TreeNOEDIT(TreeException):
+    status=0xfd180f0
+    facility="Tree"
+    message="Tree file is not open for edit"
 
-class L6810BAD_OFFSET(Exception):
-    msgnum=0x277c9940
-    def __str__(self):
-        return "Offset must be between 0 and 255"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L6810BAD_SEGMENTS(Exception):
-    msgnum=0x277c9948
     def __str__(self):
-        return "Number of segments must be 1 .. 1024"
+        return "%%TREE-%s-NOEDIT, Tree file is not open for edit" % self.severity
 
-class L6810BAD_TRIG_DELAY(Exception):
-    msgnum=0x277c9950
-    def __str__(self):
-        return "Trigger delay must be between -8 and 247 in units of 8ths of segment size"
+class TreeNOLOG(TreeException):
+    status=0xfd181a8
+    facility="Tree"
+    message="Experiment pathname (xxx_path) not defined"
 
-class J_DACOUTRNG(Exception):
-    msgnum=0x277c9a98
-    def __str__(self):
-        return "Joerger DAC Channels out of range.  Bad chans code !XW"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class INCAABAD_ACTIVE_CHANS(Exception):
-    msgnum=0x277c9c28
     def __str__(self):
-        return "bad active channels selection"
+        return "%%TREE-%s-NOLOG, Experiment pathname (xxx_path) not defined" % self.severity
 
-class INCAABAD_MASTER(Exception):
-    msgnum=0x277c9c30
-    def __str__(self):
-        return "bad master selection, must be 0 or 1"
+class TreeNOMETHOD(TreeException):
+    status=0xfd180b0
+    facility="Tree"
+    message="Method not available for this object"
 
-class INCAABAD_EXT_1MHZ(Exception):
-    msgnum=0x277c9c38
-    def __str__(self):
-        return "bad ext 1mhz selection, must be 0 or 1"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class INCAABAD_PTSC(Exception):
-    msgnum=0x277c9c40
     def __str__(self):
-        return "bad PTSC setting"
+        return "%%TREE-%s-NOMETHOD, Method not available for this object" % self.severity
 
-class L8212BAD_HEADER(Exception):
-    msgnum=0x277c9db8
-    def __str__(self):
-        return "Invalid header jumper information (e.g. 49414944432)"
+class TreeNOOVERWRITE(TreeException):
+    status=0xfd18180
+    facility="Tree"
+    message="Write-once node: overwrite not permitted"
 
-class L8212BAD_MEMORIES(Exception):
-    msgnum=0x277c9dc0
-    def __str__(self):
-        return "Invalid number of memories, must be 1 .. 16"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L8212BAD_NOC(Exception):
-    msgnum=0x277c9dc8
     def __str__(self):
-        return "Invalid number of active channels"
+        return "%%TREE-%s-NOOVERWRITE, Write-once node: overwrite not permitted" % self.severity
 
-class L8212BAD_OFFSET(Exception):
-    msgnum=0x277c9dd0
-    def __str__(self):
-        return "Invalid offset must be one of (0, -2048, -4096)"
+class TreeNORMAL(TreeException):
+    status=0xfd18008
+    facility="Tree"
+    message="Normal successful completion"
 
-class L8212BAD_PTS(Exception):
-    msgnum=0x277c9dd8
-    def __str__(self):
-        return "Invalid pts code, must be 0 .. 7"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L8212FREQ_TO_HIGH(Exception):
-    msgnum=0x277c9de0
     def __str__(self):
-        return "Frequency to high for selected number of channels"
+        return "%%TREE-%s-NORMAL, Normal successful completion" % self.severity
 
-class L8212INVALID_NOC(Exception):
-    msgnum=0x277c9de8
-    def __str__(self):
-        return "Invalid number of active channels"
+class TreeNOTALLSUBS(TreeException):
+    status=0xfd18020
+    facility="Tree"
+    message="Main tree opened but not all subtrees found/or connected"
 
-class MPBBADTIME(Exception):
-    msgnum=0x277c9f48
-    def __str__(self):
-        return "Could not read time"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class MPBBADFREQ(Exception):
-    msgnum=0x277c9f50
     def __str__(self):
-        return "Could not read frequency"
+        return "%%TREE-%s-NOTALLSUBS, Main tree opened but not all subtrees found/or connected" % self.severity
 
-class L8828BAD_OFFSET(Exception):
-    msgnum=0x277ca0d8
-    def __str__(self):
-        return "Offset for L8828 must be between 0 and 255"
+class TreeNOTCHILDLESS(TreeException):
+    status=0xfd180f8
+    facility="Tree"
+    message="Node must be childless to become subtree reference"
 
-class L8828BAD_PRETRIG(Exception):
-    msgnum=0x277ca0e0
-    def __str__(self):
-        return "Pre trigger samples for L8828 must be betwwen 0 and 7 eighths"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L8828BAD_ACTIVEMEM(Exception):
-    msgnum=0x277ca0e8
     def __str__(self):
-        return "ACTIVEMEM must be beteen 16K and 2M"
+        return "%%TREE-%s-NOTCHILDLESS, Node must be childless to become subtree reference" % self.severity
 
-class L8828BAD_CLOCK(Exception):
-    msgnum=0x277ca0f0
-    def __str__(self):
-        return "Invalid clock frequency specified."
+class TreeNOT_IN_LIST(TreeException):
+    status=0xfd181c0
+    facility="Tree"
+    message="Tree being opened was not in the list"
 
-class L8818BAD_OFFSET(Exception):
-    msgnum=0x277ca268
-    def __str__(self):
-        return "Offset for L8828 must be between 0 and 255"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class L8818BAD_PRETRIG(Exception):
-    msgnum=0x277ca270
     def __str__(self):
-        return "Pre trigger samples for L8828 must be betwwen 0 and 7 eighths"
+        return "%%TREE-%s-NOT_IN_LIST, Tree being opened was not in the list" % self.severity
 
-class L8818BAD_ACTIVEMEM(Exception):
-    msgnum=0x277ca278
-    def __str__(self):
-        return "ACTIVEMEM must be beteen 16K and 2M"
+class TreeNOTMEMBERLESS(TreeException):
+    status=0xfd18170
+    facility="Tree"
+    message="Subtree reference can not have members"
 
-class L8818BAD_CLOCK(Exception):
-    msgnum=0x277ca280
-    def __str__(self):
-        return "Invalid clock frequency specified."
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class J_TR612BAD_ACTMEM(Exception):
-    msgnum=0x277ca2b8
     def __str__(self):
-        return "ACTMEM value out of range, must be 0-7 where 0=1/8th and 7 = all"
+        return "%%TREE-%s-NOTMEMBERLESS, Subtree reference can not have members" % self.severity
 
-class J_TR612BAD_PRETRIG(Exception):
-    msgnum=0x277ca2c0
-    def __str__(self):
-        return "PRETRIG value out of range, must be 0-7 where 0 = none and 7 = 7/8 pretrigger samples"
+class TreeNOTOPEN(TreeException):
+    status=0xfd180e8
+    facility="Tree"
+    message="No tree file currently open"
 
-class J_TR612BAD_MODE(Exception):
-    msgnum=0x277ca2c8
-    def __str__(self):
-        return "MODE value out of range, must be 0 (for normal) or 1 (for burst mode)"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class J_TR612BAD_FREQUENCY(Exception):
-    msgnum=0x277ca2d0
     def __str__(self):
-        return "FREQUENCY value out of range, must be 0-4 where 0=3MHz,1=2MHz,2=1MHz,3=100KHz,4=external"
+        return "%%TREE-%s-NOTOPEN, No tree file currently open" % self.severity
 
-class L8206NODATA(Exception):
-    msgnum=0x277ca3f8
-    def __str__(self):
-        return "no data has been written to memory"
+class TreeNOTSON(TreeException):
+    status=0xfd18178
+    facility="Tree"
+    message="Subtree reference cannot be a member"
 
-class H912BAD_CLOCK(Exception):
-    msgnum=0x277ca448
-    def __str__(self):
-        return "Bad value specified in INT_CLOCK node, use Setup device to correct"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class H912BAD_BLOCKS(Exception):
-    msgnum=0x277ca450
     def __str__(self):
-        return "Bad value specified in BLOCKS node, use Setup device to correct"
+        return "%%TREE-%s-NOTSON, Subtree reference cannot be a member" % self.severity
 
-class H912BAD_PTS(Exception):
-    msgnum=0x277ca458
-    def __str__(self):
-        return "Bad value specfiied in PTS node, must be an integer value between 1 and 131071"
+class TreeNOT_CONGLOM(TreeException):
+    status=0xfd18160
+    facility="Tree"
+    message="Head node of conglomerate does not contain a DTYPE_CONGLOM record"
 
-class H908BAD_CLOCK(Exception):
-    msgnum=0x277ca498
-    def __str__(self):
-        return "Bad value specified in INT_CLOCK node, use Setup device to correct"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class H908BAD_ACTIVE_CHANS(Exception):
-    msgnum=0x277ca4a0
     def __str__(self):
-        return "Bad value specified in ACTIVE_CHANS node, use Setup device to correct"
+        return "%%TREE-%s-NOT_CONGLOM, Head node of conglomerate does not contain a DTYPE_CONGLOM record" % self.severity
 
-class H908BAD_PTS(Exception):
-    msgnum=0x277ca4a8
-    def __str__(self):
-        return "Bad value specfiied in PTS node, must be an integer value between 1 and 131071"
+class TreeNOT_OPEN(TreeException):
+    status=0xfd180a8
+    facility="Tree"
+    message="Tree not currently open"
 
-class DSP2904CHANNEL_READ_ERROR(Exception):
-    msgnum=0x277ca4e8
-    def __str__(self):
-        return "Error reading channel"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class PYUNHANDLED_EXCEPTION(Exception):
-    msgnum=0x277ca538
     def __str__(self):
-        return "Python device raised and exception, see log files for more details"
+        return "%%TREE-%s-NOT_OPEN, Tree not currently open" % self.severity
 
-class DT196BNO_SAMPLES(Exception):
-    msgnum=0x277ca588
-    def __str__(self):
-        return "Module did not acquire any samples"
+class TreeNOWRITEMODEL(TreeException):
+    status=0xfd18198
+    facility="Tree"
+    message="Data for this node can not be written into the MODEL file"
 
-class ACQINITIALIZATION_ERROR(Exception):
-    msgnum=0x277ca590
-    def __str__(self):
-        return "Error during module initialization"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class ACQSETTINGS_NOT_LOADED(Exception):
-    msgnum=0x277ca598
     def __str__(self):
-        return "settings not loaded"
+        return "%%TREE-%s-NOWRITEMODEL, Data for this node can not be written into the MODEL file" % self.severity
 
-class ACQWRONG_TREE(Exception):
-    msgnum=0x277ca5a0
-    def __str__(self):
-        return "Attempt to store ACQ module into different tree than it was armed with"
+class TreeNOWRITESHOT(TreeException):
+    status=0xfd181a0
+    facility="Tree"
+    message="Data for this node can not be written into the SHOT file"
 
-class ACQWRONG_PATH(Exception):
-    msgnum=0x277ca5a8
-    def __str__(self):
-        return "Attempt to store ACQ module into different path than it was armed with"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class ACQWRONG_SHOT(Exception):
-    msgnum=0x277ca5b0
     def __str__(self):
-        return "Attempt to store ACQ module into different shot than it was armed with"
+        return "%%TREE-%s-NOWRITESHOT, Data for this node can not be written into the SHOT file" % self.severity
 
-class LibINSVIRMEM(Exception):
-    msgnum=0x158210
-    def __str__(self):
-        return "Insufficient virtual memory"
+class TreeNO_CONTEXT(TreeException):
+    status=0xfd18040
+    facility="Tree"
+    message="There is no active search to end"
 
-class LibINVARG(Exception):
-    msgnum=0x158230
-    def __str__(self):
-        return "Invalid argument"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class LibINVSTRDES(Exception):
-    msgnum=0x158220
     def __str__(self):
-        return "Invalid string descriptor"
+        return "%%TREE-%s-NO_CONTEXT, There is no active search to end" % self.severity
 
-class LibKEYNOTFOU(Exception):
-    msgnum=0x1582f8
-    def __str__(self):
-        return "Key not found"
+class TreeOFF(TreeException):
+    status=0xfd180a0
+    facility="Tree"
+    message="Node is OFF"
 
-class LibNOTFOU(Exception):
-    msgnum=0x158270
-    def __str__(self):
-        return "Entity not found"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class LibQUEWASEMP(Exception):
-    msgnum=0x1582e8
     def __str__(self):
-        return "Queue was empty"
+        return "%%TREE-%s-OFF, Node is OFF" % self.severity
 
-class LibSTRTRU(Exception):
-    msgnum=0x158010
-    def __str__(self):
-        return "String truncated"
+class TreeON(TreeException):
+    status=0xfd18048
+    facility="Tree"
+    message="Node is ON"
 
-class StrMATCH(Exception):
-    msgnum=0x248418
-    def __str__(self):
-        return "Strings match"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class StrNOMATCH(Exception):
-    msgnum=0x248208
     def __str__(self):
-        return "Strings do not match"
+        return "%%TREE-%s-ON, Node is ON" % self.severity
 
-class StrNOELEM(Exception):
-    msgnum=0x248218
-    def __str__(self):
-        return "Not enough delimited characters"
+class TreeOPEN(TreeException):
+    status=0xfd18050
+    facility="Tree"
+    message="Tree is OPEN (no edit)"
 
-class StrINVDELIM(Exception):
-    msgnum=0x248210
-    def __str__(self):
-        return "Not enough delimited characters"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class StrSTRTOOLON(Exception):
-    msgnum=0x248070
     def __str__(self):
-        return "String too long"
+        return "%%TREE-%s-OPEN, Tree is OPEN (no edit)" % self.severity
 
-class SsINTOVF(Exception):
-    msgnum=0x478
-    def __str__(self):
-        return "Integer overflow"
+class TreeOPEN_EDIT(TreeException):
+    status=0xfd18058
+    facility="Tree"
+    message="Tree is OPEN for edit"
 
-class CamDONE_Q(Exception):
-    msgnum=0x8018008
-    def __str__(self):
-        return "I/O completed with X=1, Q=1"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class CamDONE_NOQ(Exception):
-    msgnum=0x8018010
     def __str__(self):
-        return "I/O completed with X=1, Q=0"
+        return "%%TREE-%s-OPEN_EDIT, Tree is OPEN for edit" % self.severity
 
-class CamDONE_NOX(Exception):
-    msgnum=0x8019000
-    def __str__(self):
-        return "I/O completed with X=0 - probable failure"
+class TreePARENT_OFF(TreeException):
+    status=0xfd18090
+    facility="Tree"
+    message="Parent of this node is OFF"
 
-class CamSERTRAERR(Exception):
-    msgnum=0x8019800
-    def __str__(self):
-        return "serial transmission error on highway"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class CamSCCFAIL(Exception):
-    msgnum=0x8019840
     def __str__(self):
-        return "serial crate controller failure"
+        return "%%TREE-%s-PARENT_OFF, Parent of this node is OFF" % self.severity
 
-class CamOFFLINE(Exception):
-    msgnum=0x8019868
-    def __str__(self):
-        return "crate is offline"
+class TreeREADERR(TreeException):
+    status=0xfd181b8
+    facility="Tree"
+    message="Error reading record for node"
 
-class TclNORMAL(Exception):
-    msgnum=0x2a0008
-    def __str__(self):
-        return "Normal successful completion"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TclFAILED_ESSENTIAL(Exception):
-    msgnum=0x2a0010
     def __str__(self):
-        return "Essential action failed"
+        return "%%TREE-%s-READERR, Error reading record for node" % self.severity
 
-class MdsdclSUCCESS(Exception):
-    msgnum=0x8020008
-    def __str__(self):
-        return "Normal successful completion"
+class TreeREADONLY(TreeException):
+    status=0xfd181b0
+    facility="Tree"
+    message="Tree was opened with readonly access"
 
-class MdsdclEXIT(Exception):
-    msgnum=0x8020010
-    def __str__(self):
-        return "Normal exit"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class MdsdclERROR(Exception):
-    msgnum=0x8020018
     def __str__(self):
-        return "Unsuccessful execution of command"
+        return "%%TREE-%s-READONLY, Tree was opened with readonly access" % self.severity
 
-class MdsdclNORMAL(Exception):
-    msgnum=0x8020328
-    def __str__(self):
-        return "Normal successful completion"
+class TreeRESOLVED(TreeException):
+    status=0xfd18010
+    facility="Tree"
+    message="Indirect reference successfully resolved"
 
-class MdsdclPRESENT(Exception):
-    msgnum=0x8020330
-    def __str__(self):
-        return "Entity is present"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class MdsdclIVVERB(Exception):
-    msgnum=0x8020338
     def __str__(self):
-        return "No such command"
+        return "%%TREE-%s-RESOLVED, Indirect reference successfully resolved" % self.severity
 
-class MdsdclABSENT(Exception):
-    msgnum=0x8020340
-    def __str__(self):
-        return "Entity is absent"
+class TreeSUCCESS(TreeException):
+    status=0xfd18640
+    facility="Tree"
+    message="Operation successful"
 
-class MdsdclNEGATED(Exception):
-    msgnum=0x8020348
-    def __str__(self):
-        return "Entity is present but negated"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class MdsdclNOTNEGATABLE(Exception):
-    msgnum=0x8020350
     def __str__(self):
-        return "Entity cannot be negated"
+        return "%%TREE-%s-SUCCESS, Operation successful" % self.severity
 
-class MdsdclIVQUAL(Exception):
-    msgnum=0x8020358
-    def __str__(self):
-        return "Invalid qualifier"
+class TreeTAGNAMLEN(TreeException):
+    status=0xfd18150
+    facility="Tree"
+    message="Tagname too long (max 24 chars)"
 
-class MdsdclPROMPT_MORE(Exception):
-    msgnum=0x8020360
-    def __str__(self):
-        return "More input required for command"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class MdsdclTOO_MANY_PRMS(Exception):
-    msgnum=0x8020368
     def __str__(self):
-        return "Too many parameters specified"
+        return "%%TREE-%s-TAGNAMLEN, Tagname too long (max 24 chars)" % self.severity
 
-class MdsdclTOO_MANY_VALS(Exception):
-    msgnum=0x8020370
-    def __str__(self):
-        return "Too many values"
+class TreeTNF(TreeException):
+    status=0xfd18078
+    facility="Tree"
+    message="Tag Not Found"
 
-class MdsdclMISSING_VALUE(Exception):
-    msgnum=0x8020378
-    def __str__(self):
-        return "Qualifier value needed"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeALREADY_OFF(Exception):
-    msgnum=0xfd18028
     def __str__(self):
-        return "Node is already OFF"
+        return "%%TREE-%s-TNF, Tag Not Found" % self.severity
 
-class TreeALREADY_ON(Exception):
-    msgnum=0xfd18030
-    def __str__(self):
-        return "Node is already ON"
+class TreeTREENF(TreeException):
+    status=0xfd18080
+    facility="Tree"
+    message="Tree Not Found"
 
-class TreeALREADY_OPEN(Exception):
-    msgnum=0xfd18038
-    def __str__(self):
-        return "Tree is already OPEN"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeALREADY_THERE(Exception):
-    msgnum=0xfd18088
     def __str__(self):
-        return "Node is already in the tree"
+        return "%%TREE-%s-TREENF, Tree Not Found" % self.severity
 
-class TreeBADRECORD(Exception):
-    msgnum=0xfd180b8
-    def __str__(self):
-        return "Data corrupted: cannot read record"
+class TreeUNRESOLVED(TreeException):
+    status=0xfd18130
+    facility="Tree"
+    message="Not an indirect node reference: No action taken"
 
-class TreeBOTH_OFF(Exception):
-    msgnum=0xfd18098
-    def __str__(self):
-        return "Both this node and its parent are off"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeBUFFEROVF(Exception):
-    msgnum=0xfd18110
     def __str__(self):
-        return "Output buffer overflow"
+        return "%%TREE-%s-UNRESOLVED, Not an indirect node reference: No action taken" % self.severity
 
-class TreeCONGLOMFULL(Exception):
-    msgnum=0xfd18120
-    def __str__(self):
-        return "Current conglomerate is full"
+class TreeUNSPRTCLASS(TreeException):
+    status=0xfd18118
+    facility="Tree"
+    message="Unsupported descriptor class"
 
-class TreeCONGLOM_NOT_FULL(Exception):
-    msgnum=0xfd18128
-    def __str__(self):
-        return "Current conglomerate is not yet full"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeCONTINUING(Exception):
-    msgnum=0xfd18960
     def __str__(self):
-        return "Operation continuing: note following error"
+        return "%%TREE-%s-UNSPRTCLASS, Unsupported descriptor class" % self.severity
 
-class TreeDUPTAG(Exception):
-    msgnum=0xfd180c8
-    def __str__(self):
-        return "Tag name already in use"
+class TreeUNSUPARRDTYPE(TreeException):
+    status=0xfd18168
+    facility="Tree"
+    message="Complex data types not supported as members of arrays"
 
-class TreeEDITTING(Exception):
-    msgnum=0xfd18190
-    def __str__(self):
-        return "Tree file open for edit: operation not permitted"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeILLEGAL_ITEM(Exception):
-    msgnum=0xfd18108
     def __str__(self):
-        return "Invalid item code or part number specified"
+        return "%%TREE-%s-UNSUPARRDTYPE, Complex data types not supported as members of arrays" % self.severity
 
-class TreeILLPAGCNT(Exception):
-    msgnum=0xfd180d0
-    def __str__(self):
-        return "Illegal page count, error mapping tree file"
+class TreeWRITEFIRST(TreeException):
+    status=0xfd18158
+    facility="Tree"
+    message="Tree has been modified:  write or quit first"
 
-class TreeINVDFFCLASS(Exception):
-    msgnum=0xfd18138
-    def __str__(self):
-        return "Invalid data fmt: only CLASS_S can have data in NCI"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeINVDTPUSG(Exception):
-    msgnum=0xfd18188
     def __str__(self):
-        return "Attempt to store datatype which conflicts with the designated usage of this node"
+        return "%%TREE-%s-WRITEFIRST, Tree has been modified:  write or quit first" % self.severity
 
-class TreeINVPATH(Exception):
-    msgnum=0xfd18100
-    def __str__(self):
-        return "Invalid tree pathname specified"
+class TreeFAILURE(TreeException):
+    status=0xfd18fa0
+    facility="Tree"
+    message="Operation NOT successful"
 
-class TreeINVRECTYP(Exception):
-    msgnum=0xfd18140
-    def __str__(self):
-        return "Record type invalid for requested operation"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeINVTREE(Exception):
-    msgnum=0xfd180c0
     def __str__(self):
-        return "Invalid tree identification structure"
+        return "%%TREE-%s-FAILURE, Operation NOT successful" % self.severity
 
-class TreeMAXOPENEDIT(Exception):
-    msgnum=0xfd180d8
-    def __str__(self):
-        return "Too many files open for edit"
+class TreeLOCK_FAILURE(TreeException):
+    status=0xfd18fb0
+    facility="Tree"
+    message="Error locking file, perhaps NFSLOCKING not enabled on this system"
 
-class TreeNEW(Exception):
-    msgnum=0xfd18018
-    def __str__(self):
-        return "New tree created"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNMN(Exception):
-    msgnum=0xfd18060
     def __str__(self):
-        return "No More Nodes"
+        return "%%TREE-%s-LOCK_FAILURE, Error locking file, perhaps NFSLOCKING not enabled on this system" % self.severity
 
-class TreeNMT(Exception):
-    msgnum=0xfd18068
-    def __str__(self):
-        return "No More Tags"
+class TreeFILE_NOT_FOUND(TreeException):
+    status=0xfd18fa8
+    facility="Tree"
+    message="File or Directory Not Found"
 
-class TreeNNF(Exception):
-    msgnum=0xfd18070
-    def __str__(self):
-        return "Node Not Found"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNODATA(Exception):
-    msgnum=0xfd180e0
     def __str__(self):
-        return "No data available for this node"
+        return "%%TREE-%s-FILE_NOT_FOUND, File or Directory Not Found" % self.severity
 
-class TreeNODNAMLEN(Exception):
-    msgnum=0xfd18148
-    def __str__(self):
-        return "Node name too long (12 chars max)"
+class TreeCANCEL(TreeException):
+    status=0xfd18c80
+    facility="Tree"
+    message="User canceled operation"
 
-class TreeNOEDIT(Exception):
-    msgnum=0xfd180f0
-    def __str__(self):
-        return "Tree file is not open for edit"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNOLOG(Exception):
-    msgnum=0xfd181a8
     def __str__(self):
-        return "Experiment pathname (xxx_path) not defined"
+        return "%%TREE-%s-CANCEL, User canceled operation" % self.severity
 
-class TreeNOMETHOD(Exception):
-    msgnum=0xfd180b0
-    def __str__(self):
-        return "Method not available for this object"
+class TreeNOSEGMENTS(TreeException):
+    status=0xfd18fb8
+    facility="Tree"
+    message="No segments exist in this node"
 
-class TreeNOOVERWRITE(Exception):
-    msgnum=0xfd18180
-    def __str__(self):
-        return "Write-once node: overwrite not permitted"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNORMAL(Exception):
-    msgnum=0xfd18008
     def __str__(self):
-        return "Normal successful completion"
+        return "%%TREE-%s-NOSEGMENTS, No segments exist in this node" % self.severity
 
-class TreeNOTALLSUBS(Exception):
-    msgnum=0xfd18020
-    def __str__(self):
-        return "Main tree opened but not all subtrees found/or connected"
+class TreeINVDTYPE(TreeException):
+    status=0xfd18fc0
+    facility="Tree"
+    message="Invalid datatype for data segment"
 
-class TreeNOTCHILDLESS(Exception):
-    msgnum=0xfd180f8
-    def __str__(self):
-        return "Node must be childless to become subtree reference"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNOT_IN_LIST(Exception):
-    msgnum=0xfd181c0
     def __str__(self):
-        return "Tree being opened was not in the list"
+        return "%%TREE-%s-INVDTYPE, Invalid datatype for data segment" % self.severity
 
-class TreeNOTMEMBERLESS(Exception):
-    msgnum=0xfd18170
-    def __str__(self):
-        return "Subtree reference can not have members"
+class TreeINVSHAPE(TreeException):
+    status=0xfd18fc8
+    facility="Tree"
+    message="Invalid shape for this data segment"
 
-class TreeNOTOPEN(Exception):
-    msgnum=0xfd180e8
-    def __str__(self):
-        return "No tree file currently open"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNOTSON(Exception):
-    msgnum=0xfd18178
     def __str__(self):
-        return "Subtree reference cannot be a member"
+        return "%%TREE-%s-INVSHAPE, Invalid shape for this data segment" % self.severity
 
-class TreeNOT_CONGLOM(Exception):
-    msgnum=0xfd18160
-    def __str__(self):
-        return "Head node of conglomerate does not contain a DTYPE_CONGLOM record"
+class TreeINVSHOT(TreeException):
+    status=0xfd18fd8
+    facility="Tree"
+    message="Invalid shot number - must be -1 (model), 0 (current), or Positive"
 
-class TreeNOT_OPEN(Exception):
-    msgnum=0xfd180a8
-    def __str__(self):
-        return "Tree not currently open"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNOWRITEMODEL(Exception):
-    msgnum=0xfd18198
     def __str__(self):
-        return "Data for this node can not be written into the MODEL file"
+        return "%%TREE-%s-INVSHOT, Invalid shot number - must be -1 (model), 0 (current), or Positive" % self.severity
 
-class TreeNOWRITESHOT(Exception):
-    msgnum=0xfd181a0
-    def __str__(self):
-        return "Data for this node can not be written into the SHOT file"
+class TreeINVTAG(TreeException):
+    status=0xfd18fe8
+    facility="Tree"
+    message="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"
 
-class TreeNO_CONTEXT(Exception):
-    msgnum=0xfd18040
-    def __str__(self):
-        return "There is no active search to end"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeOFF(Exception):
-    msgnum=0xfd180a0
     def __str__(self):
-        return "Node is OFF"
+        return "%%TREE-%s-INVTAG, Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores" % self.severity
 
-class TreeON(Exception):
-    msgnum=0xfd18048
-    def __str__(self):
-        return "Node is ON"
+class TreeNOPATH(TreeException):
+    status=0xfd18ff0
+    facility="Tree"
+    message="No 'treename'_path environment variable defined. Cannot locate tree files."
 
-class TreeOPEN(Exception):
-    msgnum=0xfd18050
-    def __str__(self):
-        return "Tree is OPEN (no edit)"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeOPEN_EDIT(Exception):
-    msgnum=0xfd18058
     def __str__(self):
-        return "Tree is OPEN for edit"
+        return "%%TREE-%s-NOPATH, No 'treename'_path environment variable defined. Cannot locate tree files." % self.severity
 
-class TreePARENT_OFF(Exception):
-    msgnum=0xfd18090
-    def __str__(self):
-        return "Parent of this node is OFF"
+class TreeTREEFILEREADERR(TreeException):
+    status=0xfd18ff8
+    facility="Tree"
+    message="Error reading in tree file contents."
 
-class TreeREADERR(Exception):
-    msgnum=0xfd181b8
-    def __str__(self):
-        return "Error reading record for node"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeREADONLY(Exception):
-    msgnum=0xfd181b0
     def __str__(self):
-        return "Tree was opened with readonly access"
+        return "%%TREE-%s-TREEFILEREADERR, Error reading in tree file contents." % self.severity
 
-class TreeRESOLVED(Exception):
-    msgnum=0xfd18010
-    def __str__(self):
-        return "Indirect reference successfully resolved"
+class TreeMEMERR(TreeException):
+    status=0xfd19000
+    facility="Tree"
+    message="Memory allocation error."
 
-class TreeSUCCESS(Exception):
-    msgnum=0xfd18640
-    def __str__(self):
-        return "Operation successful"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeTAGNAMLEN(Exception):
-    msgnum=0xfd18150
     def __str__(self):
-        return "Tagname too long (max 24 chars)"
+        return "%%TREE-%s-MEMERR, Memory allocation error." % self.severity
 
-class TreeTNF(Exception):
-    msgnum=0xfd18078
-    def __str__(self):
-        return "Tag Not Found"
+class TreeNOCURRENT(TreeException):
+    status=0xfd19008
+    facility="Tree"
+    message="No current shot number set for this tree."
 
-class TreeTREENF(Exception):
-    msgnum=0xfd18080
-    def __str__(self):
-        return "Tree Not Found"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeUNRESOLVED(Exception):
-    msgnum=0xfd18130
     def __str__(self):
-        return "Not an indirect node reference: No action taken"
+        return "%%TREE-%s-NOCURRENT, No current shot number set for this tree." % self.severity
 
-class TreeUNSPRTCLASS(Exception):
-    msgnum=0xfd18118
-    def __str__(self):
-        return "Unsupported descriptor class"
+class TreeFOPENW(TreeException):
+    status=0xfd19010
+    facility="Tree"
+    message="Error opening file for read-write."
 
-class TreeUNSUPARRDTYPE(Exception):
-    msgnum=0xfd18168
-    def __str__(self):
-        return "Complex data types not supported as members of arrays"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeWRITEFIRST(Exception):
-    msgnum=0xfd18158
     def __str__(self):
-        return "Tree has been modified:  write or quit first"
+        return "%%TREE-%s-FOPENW, Error opening file for read-write." % self.severity
 
-class TreeFAILURE(Exception):
-    msgnum=0xfd18fa0
-    def __str__(self):
-        return "Operation NOT successful"
+class TreeFOPENR(TreeException):
+    status=0xfd19018
+    facility="Tree"
+    message="Error opening file read-only."
 
-class TreeLOCK_FAILURE(Exception):
-    msgnum=0xfd18fb0
-    def __str__(self):
-        return "Error locking file, perhaps NFSLOCKING not enabled on this system"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeFILE_NOT_FOUND(Exception):
-    msgnum=0xfd18fa8
     def __str__(self):
-        return "File or Directory Not Found"
+        return "%%TREE-%s-FOPENR, Error opening file read-only." % self.severity
 
-class TreeCANCEL(Exception):
-    msgnum=0xfd18c80
-    def __str__(self):
-        return "User canceled operation"
+class TreeFCREATE(TreeException):
+    status=0xfd19020
+    facility="Tree"
+    message="Error creating new file."
 
-class TreeNOSEGMENTS(Exception):
-    msgnum=0xfd18fb8
-    def __str__(self):
-        return "No segments exist in this node"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeINVDTYPE(Exception):
-    msgnum=0xfd18fc0
     def __str__(self):
-        return "Invalid datatype for data segment"
+        return "%%TREE-%s-FCREATE, Error creating new file." % self.severity
 
-class TreeINVSHAPE(Exception):
-    msgnum=0xfd18fc8
-    def __str__(self):
-        return "Invalid shape for this data segment"
+class TreeCONNECTFAIL(TreeException):
+    status=0xfd19028
+    facility="Tree"
+    message="Error connecting to remote server."
 
-class TreeINVSHOT(Exception):
-    msgnum=0xfd18fd8
-    def __str__(self):
-        return "Invalid shot number - must be -1 (model), 0 (current), or Positive"
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeINVTAG(Exception):
-    msgnum=0xfd18fe8
     def __str__(self):
-        return "Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"
+        return "%%TREE-%s-CONNECTFAIL, Error connecting to remote server." % self.severity
 
-class TreeNOPATH(Exception):
-    msgnum=0xfd18ff0
-    def __str__(self):
-        return "No 'treename'_path environment variable defined. Cannot locate tree files."
+class TreeNCIWRITE(TreeException):
+    status=0xfd19030
+    facility="Tree"
+    message="Error writing node characterisitics to file."
 
-class TreeTREEFILEREADERR(Exception):
-    msgnum=0xfd18ff8
-    def __str__(self):
-        return "Error reading in tree file contents."
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeMEMERR(Exception):
-    msgnum=0xfd19000
     def __str__(self):
-        return "Memory allocation error."
+        return "%%TREE-%s-NCIWRITE, Error writing node characterisitics to file." % self.severity
 
-class TreeNOCURRENT(Exception):
-    msgnum=0xfd19008
-    def __str__(self):
-        return "No current shot number set for this tree."
+class TreeDELFAIL(TreeException):
+    status=0xfd19038
+    facility="Tree"
+    message="Error deleting file."
 
-class TreeFOPENW(Exception):
-    msgnum=0xfd19010
-    def __str__(self):
-        return "Error opening file for read-write."
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeFOPENR(Exception):
-    msgnum=0xfd19018
     def __str__(self):
-        return "Error opening file read-only."
+        return "%%TREE-%s-DELFAIL, Error deleting file." % self.severity
 
-class TreeFCREATE(Exception):
-    msgnum=0xfd19020
-    def __str__(self):
-        return "Error creating new file."
+class TreeRENFAIL(TreeException):
+    status=0xfd19040
+    facility="Tree"
+    message="Error renaming file."
 
-class TreeCONNECTFAIL(Exception):
-    msgnum=0xfd19028
-    def __str__(self):
-        return "Error connecting to remote server."
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNCIWRITE(Exception):
-    msgnum=0xfd19030
     def __str__(self):
-        return "Error writing node characterisitics to file."
+        return "%%TREE-%s-RENFAIL, Error renaming file." % self.severity
 
-class TreeDELFAIL(Exception):
-    msgnum=0xfd19038
-    def __str__(self):
-        return "Error deleting file."
+class TreeEMPTY(TreeException):
+    status=0xfd19048
+    facility="Tree"
+    message="Empty string provided."
 
-class TreeRENFAIL(Exception):
-    msgnum=0xfd19040
-    def __str__(self):
-        return "Error renaming file."
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeEMPTY(Exception):
-    msgnum=0xfd19048
     def __str__(self):
-        return "Empty string provided."
+        return "%%TREE-%s-EMPTY, Empty string provided." % self.severity
 
-class TreePARSEERR(Exception):
-    msgnum=0xfd19050
+class TreePARSEERR(TreeException):
+    status=0xfd19050
+    facility="Tree"
+    message="Invalid node search string."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Invalid node search string."
+        return "%%TREE-%s-PARSEERR, Invalid node search string." % self.severity
+
+class TreeNCIREAD(TreeException):
+    status=0xfd19058
+    facility="Tree"
+    message="Error reading node characteristics from file."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeNCIREAD(Exception):
-    msgnum=0xfd19058
     def __str__(self):
-        return "Error reading node characteristics from file."
+        return "%%TREE-%s-NCIREAD, Error reading node characteristics from file." % self.severity
 
-class TreeNOVERSION(Exception):
-    msgnum=0xfd19060
+class TreeNOVERSION(TreeException):
+    status=0xfd19060
+    facility="Tree"
+    message="No version available."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "No version available."
+        return "%%TREE-%s-NOVERSION, No version available." % self.severity
+
+class TreeDFREAD(TreeException):
+    status=0xfd19068
+    facility="Tree"
+    message="Error reading from datafile."
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TreeDFREAD(Exception):
-    msgnum=0xfd19068
     def __str__(self):
-        return "Error reading from datafile."
+        return "%%TREE-%s-DFREAD, Error reading from datafile." % self.severity
 
-class TdiBREAK(Exception):
-    msgnum=0xfd38008
+class TdiBREAK(TdiException):
+    status=0xfd38008
+    facility="Tdi"
+    message="BREAK was not in DO FOR SWITCH or WHILE"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "BREAK was not in DO FOR SWITCH or WHILE"
+        return "%%TDI-%s-BREAK, BREAK was not in DO FOR SWITCH or WHILE" % self.severity
+
+class TdiCASE(TdiException):
+    status=0xfd38010
+    facility="Tdi"
+    message="CASE was not in SWITCH statement"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiCASE(Exception):
-    msgnum=0xfd38010
     def __str__(self):
-        return "CASE was not in SWITCH statement"
+        return "%%TDI-%s-CASE, CASE was not in SWITCH statement" % self.severity
 
-class TdiCONTINUE(Exception):
-    msgnum=0xfd38018
+class TdiCONTINUE(TdiException):
+    status=0xfd38018
+    facility="Tdi"
+    message="CONTINUE was not in DO FOR or WHILE"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "CONTINUE was not in DO FOR or WHILE"
+        return "%%TDI-%s-CONTINUE, CONTINUE was not in DO FOR or WHILE" % self.severity
+
+class TdiEXTRANEOUS(TdiException):
+    status=0xfd38020
+    facility="Tdi"
+    message="Some characters were unused, bad number maybe"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiEXTRANEOUS(Exception):
-    msgnum=0xfd38020
     def __str__(self):
-        return "Some characters were unused, bad number maybe"
+        return "%%TDI-%s-EXTRANEOUS, Some characters were unused, bad number maybe" % self.severity
 
-class TdiRETURN(Exception):
-    msgnum=0xfd38028
+class TdiRETURN(TdiException):
+    status=0xfd38028
+    facility="Tdi"
+    message="Extraneous RETURN statement, not from a FUN"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Extraneous RETURN statement, not from a FUN"
+        return "%%TDI-%s-RETURN, Extraneous RETURN statement, not from a FUN" % self.severity
+
+class TdiABORT(TdiException):
+    status=0xfd38030
+    facility="Tdi"
+    message="Program requested abort"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiABORT(Exception):
-    msgnum=0xfd38030
     def __str__(self):
-        return "Program requested abort"
+        return "%%TDI-%s-ABORT, Program requested abort" % self.severity
 
-class TdiBAD_INDEX(Exception):
-    msgnum=0xfd38038
+class TdiBAD_INDEX(TdiException):
+    status=0xfd38038
+    facility="Tdi"
+    message="Index or subscript is too small or too big"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Index or subscript is too small or too big"
+        return "%%TDI-%s-BAD_INDEX, Index or subscript is too small or too big" % self.severity
+
+class TdiBOMB(TdiException):
+    status=0xfd38040
+    facility="Tdi"
+    message="Bad punctuation, could not compile the text"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiBOMB(Exception):
-    msgnum=0xfd38040
     def __str__(self):
-        return "Bad punctuation, could not compile the text"
+        return "%%TDI-%s-BOMB, Bad punctuation, could not compile the text" % self.severity
 
-class TdiEXTRA_ARG(Exception):
-    msgnum=0xfd38048
+class TdiEXTRA_ARG(TdiException):
+    status=0xfd38048
+    facility="Tdi"
+    message="Too many arguments for function, watch commas"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Too many arguments for function, watch commas"
+        return "%%TDI-%s-EXTRA_ARG, Too many arguments for function, watch commas" % self.severity
+
+class TdiGOTO(TdiException):
+    status=0xfd38050
+    facility="Tdi"
+    message="GOTO target label not found"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiGOTO(Exception):
-    msgnum=0xfd38050
     def __str__(self):
-        return "GOTO target label not found"
+        return "%%TDI-%s-GOTO, GOTO target label not found" % self.severity
 
-class TdiINVCLADSC(Exception):
-    msgnum=0xfd38058
+class TdiINVCLADSC(TdiException):
+    status=0xfd38058
+    facility="Tdi"
+    message="Storage class not valid, must be scalar or array"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Storage class not valid, must be scalar or array"
+        return "%%TDI-%s-INVCLADSC, Storage class not valid, must be scalar or array" % self.severity
+
+class TdiINVCLADTY(TdiException):
+    status=0xfd38060
+    facility="Tdi"
+    message="Invalid mixture of storage class and data type"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiINVCLADTY(Exception):
-    msgnum=0xfd38060
     def __str__(self):
-        return "Invalid mixture of storage class and data type"
+        return "%%TDI-%s-INVCLADTY, Invalid mixture of storage class and data type" % self.severity
 
-class TdiINVDTYDSC(Exception):
-    msgnum=0xfd38068
+class TdiINVDTYDSC(TdiException):
+    status=0xfd38068
+    facility="Tdi"
+    message="Storage data type is not valid"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Storage data type is not valid"
+        return "%%TDI-%s-INVDTYDSC, Storage data type is not valid" % self.severity
+
+class TdiINV_OPC(TdiException):
+    status=0xfd38070
+    facility="Tdi"
+    message="Invalid operator code in a function"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiINV_OPC(Exception):
-    msgnum=0xfd38070
     def __str__(self):
-        return "Invalid operator code in a function"
+        return "%%TDI-%s-INV_OPC, Invalid operator code in a function" % self.severity
 
-class TdiINV_SIZE(Exception):
-    msgnum=0xfd38078
+class TdiINV_SIZE(TdiException):
+    status=0xfd38078
+    facility="Tdi"
+    message="Number of elements does not match declaration"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Number of elements does not match declaration"
+        return "%%TDI-%s-INV_SIZE, Number of elements does not match declaration" % self.severity
+
+class TdiMISMATCH(TdiException):
+    status=0xfd38080
+    facility="Tdi"
+    message="Shape of arguments does not match"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiMISMATCH(Exception):
-    msgnum=0xfd38080
     def __str__(self):
-        return "Shape of arguments does not match"
+        return "%%TDI-%s-MISMATCH, Shape of arguments does not match" % self.severity
 
-class TdiMISS_ARG(Exception):
-    msgnum=0xfd38088
+class TdiMISS_ARG(TdiException):
+    status=0xfd38088
+    facility="Tdi"
+    message="Missing argument is required for function"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Missing argument is required for function"
+        return "%%TDI-%s-MISS_ARG, Missing argument is required for function" % self.severity
+
+class TdiNDIM_OVER(TdiException):
+    status=0xfd38090
+    facility="Tdi"
+    message="Number of dimensions is over the allowed 8"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiNDIM_OVER(Exception):
-    msgnum=0xfd38090
     def __str__(self):
-        return "Number of dimensions is over the allowed 8"
+        return "%%TDI-%s-NDIM_OVER, Number of dimensions is over the allowed 8" % self.severity
 
-class TdiNO_CMPLX(Exception):
-    msgnum=0xfd38098
+class TdiNO_CMPLX(TdiException):
+    status=0xfd38098
+    facility="Tdi"
+    message="There are no complex forms of this function"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "There are no complex forms of this function"
+        return "%%TDI-%s-NO_CMPLX, There are no complex forms of this function" % self.severity
+
+class TdiNO_OPC(TdiException):
+    status=0xfd380a0
+    facility="Tdi"
+    message="No support for this function, today"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiNO_OPC(Exception):
-    msgnum=0xfd380a0
     def __str__(self):
-        return "No support for this function, today"
+        return "%%TDI-%s-NO_OPC, No support for this function, today" % self.severity
 
-class TdiNO_OUTPTR(Exception):
-    msgnum=0xfd380a8
+class TdiNO_OUTPTR(TdiException):
+    status=0xfd380a8
+    facility="Tdi"
+    message="An output pointer is required"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "An output pointer is required"
+        return "%%TDI-%s-NO_OUTPTR, An output pointer is required" % self.severity
+
+class TdiNO_SELF_PTR(TdiException):
+    status=0xfd380b0
+    facility="Tdi"
+    message="No $VALUE is defined for signal or validation"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiNO_SELF_PTR(Exception):
-    msgnum=0xfd380b0
     def __str__(self):
-        return "No $VALUE is defined for signal or validation"
+        return "%%TDI-%s-NO_SELF_PTR, No $VALUE is defined for signal or validation" % self.severity
 
-class TdiNOT_NUMBER(Exception):
-    msgnum=0xfd380b8
+class TdiNOT_NUMBER(TdiException):
+    status=0xfd380b8
+    facility="Tdi"
+    message="Value is not a scalar number and must be"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Value is not a scalar number and must be"
+        return "%%TDI-%s-NOT_NUMBER, Value is not a scalar number and must be" % self.severity
+
+class TdiNULL_PTR(TdiException):
+    status=0xfd380c0
+    facility="Tdi"
+    message="Null pointer where value needed"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiNULL_PTR(Exception):
-    msgnum=0xfd380c0
     def __str__(self):
-        return "Null pointer where value needed"
+        return "%%TDI-%s-NULL_PTR, Null pointer where value needed" % self.severity
 
-class TdiRECURSIVE(Exception):
-    msgnum=0xfd380c8
+class TdiRECURSIVE(TdiException):
+    status=0xfd380c8
+    facility="Tdi"
+    message="Overly recursive function, calls itself maybe"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Overly recursive function, calls itself maybe"
+        return "%%TDI-%s-RECURSIVE, Overly recursive function, calls itself maybe" % self.severity
+
+class TdiSIG_DIM(TdiException):
+    status=0xfd380d0
+    facility="Tdi"
+    message="Signal dimension does not match data shape"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiSIG_DIM(Exception):
-    msgnum=0xfd380d0
     def __str__(self):
-        return "Signal dimension does not match data shape"
+        return "%%TDI-%s-SIG_DIM, Signal dimension does not match data shape" % self.severity
 
-class TdiSYNTAX(Exception):
-    msgnum=0xfd380d8
+class TdiSYNTAX(TdiException):
+    status=0xfd380d8
+    facility="Tdi"
+    message="Bad punctuation or misspelled word or number"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Bad punctuation or misspelled word or number"
+        return "%%TDI-%s-SYNTAX, Bad punctuation or misspelled word or number" % self.severity
+
+class TdiTOO_BIG(TdiException):
+    status=0xfd380e0
+    facility="Tdi"
+    message="Conversion of number lost significant digits"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiTOO_BIG(Exception):
-    msgnum=0xfd380e0
     def __str__(self):
-        return "Conversion of number lost significant digits"
+        return "%%TDI-%s-TOO_BIG, Conversion of number lost significant digits" % self.severity
 
-class TdiUNBALANCE(Exception):
-    msgnum=0xfd380e8
+class TdiUNBALANCE(TdiException):
+    status=0xfd380e8
+    facility="Tdi"
+    message="Unbalanced () [] {} '' " " or /**/"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "Unbalanced () [] {} '' " " or /**/"
+        return "%%TDI-%s-UNBALANCE, Unbalanced () [] {} '' " " or /**/" % self.severity
+
+class TdiUNKNOWN_VAR(TdiException):
+    status=0xfd380f0
+    facility="Tdi"
+    message="Unknown/undefined variable name"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
 
-class TdiUNKNOWN_VAR(Exception):
-    msgnum=0xfd380f0
     def __str__(self):
-        return "Unknown/undefined variable name"
+        return "%%TDI-%s-UNKNOWN_VAR, Unknown/undefined variable name" % self.severity
 
-class TdiSTRTOOLON(Exception):
-    msgnum=0xfd380f8
+class TdiSTRTOOLON(TdiException):
+    status=0xfd380f8
+    facility="Tdi"
+    message="string is too long (greater than 65535)"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "string is too long (greater than 65535)"
+        return "%%TDI-%s-STRTOOLON, string is too long (greater than 65535)" % self.severity
 
-class TdiTIMEOUT(Exception):
-    msgnum=0xfd38100
+class TdiTIMEOUT(TdiException):
+    status=0xfd38100
+    facility="Tdi"
+    message="task did not complete in alotted time"
+
+    def __init__(self,status=None):
+      if status is not None:
+        self.status=status
+      self.severity=_severity[self.status & 7]
+
     def __str__(self):
-        return "task did not complete in alotted time"
+        return "%%TDI-%s-TIMEOUT, task did not complete in alotted time" % self.severity
+
 
-def MDSplusException(msgnum):
+def statusToException(msgnum):
     edict={
 0xfe18008:"ServerNOT_DISPATCHED",
 0xfe18010:"ServerINVALID_DEPENDENCY",
@@ -1887,6 +4523,6 @@ def MDSplusException(msgnum):
 0xfd38100:"TdiTIMEOUT",
 }
     try:
-      return globals()[edict[msgnum]]()
+      return globals()[edict[msgnum & -8]](msgnum)
     except:
-      return Exception("Unknown status return - %s" % hex(msgnum))
+      return Exception("?-%s-?: Unknown status return - %s" % (_severity[msgnum & 7],hex(msgnum)))
