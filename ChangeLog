@@ -1,4 +1,254 @@
-commit 10838de4dfc8571dd6956a662b969bb12c4804b3 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit e10fb9213c6e8d0a5e15ae94ab964ca5e14e1883 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 6c0e42a 4616a94
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Sep 15 16:33:26 2015 -0400
+
+    Merge pull request #96 from MDSplus/fix_TreeFindNodeTags
+    
+    Indentation error in TreeFindNodeTags caused tags to only return one …
+
+commit 4616a94ec1b321199f7d44e84496518764408289 (refs/remotes/origin/fix_TreeFindNodeTags)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 16:28:35 2015 -0400
+
+    Indentation error in TreeFindNodeTags caused tags to only return one tags when node actually has multiple tags
+
+commit 6c0e42a680bd0d869288fe3ac22c812608ff8829
+Merge: a45ad7d 3b9c383
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Sep 15 13:50:24 2015 -0400
+
+    Merge pull request #95 from MDSplus/fix_bugs_introduced_by_recent_pull_requests
+    
+    Fix bugs introduced by recent pull requests
+
+commit 3b9c383ef8134fa32839cf6ddbab089b0d1d2c38 (refs/remotes/origin/fix_bugs_introduced_by_recent_pull_requests)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 09:53:39 2015 -0400
+
+    Restore original behavior of __str__ method of tree. If someone wants just the tree name they can use the tree property of the tree object directly.
+
+commit 0e3aae01d34ef3477bfc95d47f7d6fdfd1197302
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 09:51:55 2015 -0400
+
+    Fix MdsGetMsg. It was not returning the error string.
+
+commit a45ad7d633fdaa609570499626e8562138c841bd
+Merge: c70b69e 21ab4cc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:27:53 2015 -0400
+
+    Merge pull request #92 from zack-vii/a_python_bytes_in_basestring
+    
+    bytes is included in basestring
+
+commit c70b69ec0fe95745496fb31da49df1f4629b3301
+Merge: a7367bb 9f71356
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:27:11 2015 -0400
+
+    Merge pull request #94 from zack-vii/a_pyver__mdsshr
+    
+    8. new version on _mdsshr
+
+commit a7367bb7a3d38f34ec72e32c3633d48fa394fc28
+Merge: feb8473 7a737d5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:26:29 2015 -0400
+
+    Merge pull request #93 from zack-vii/a_pyver_tree_treenode
+    
+    7. new version on tree treenode
+
+commit feb84739875825f42d2d837001993ff3e0f751a6
+Merge: cf65289 a46c949
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:24:46 2015 -0400
+
+    Merge pull request #87 from zack-vii/a_pyver_ident
+    
+    6. new version on ident
+
+commit cf6528977be7871d8221e3ec3ce1b22609e6968e
+Merge: 39a77b0 10f2331
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:23:57 2015 -0400
+
+    Merge pull request #90 from zack-vii/a_pyver_mdsarray
+    
+    5. new version on mdsarray
+
+commit 39a77b0303f2538165e0087a9ef249aaa85cbb83
+Merge: 5962546 e4f22b1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:22:15 2015 -0400
+
+    Merge pull request #89 from zack-vii/a_pyver_mdsscalar
+    
+    4. new version mdsscalar
+
+commit 59625464cfb79b18a08b5670a94abe8caec9379d
+Merge: dda3198 179c270
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:19:18 2015 -0400
+
+    Merge pull request #88 from zack-vii/a_pyver__treeshr
+    
+    3. new version on _treeshr
+
+commit dda3198b1531382df3d595046faaeb6dce87efed
+Merge: 2c05591 94b5518
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:17:12 2015 -0400
+
+    Merge pull request #85 from zack-vii/a_python3_tdishr_TdiDecompile
+    
+    2. new version on _tdishr
+
+commit 2c055919d04e6886e95bebac575d61f5354a6d2c
+Merge: 24f0fbb fe32146
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:13:20 2015 -0400
+
+    Merge pull request #91 from zack-vii/a_pyver_descriptor
+    
+    1. new version on descriptor
+
+commit 7a737d56415117184f9a3df2ce5ff212848f6ac8
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:41:35 2015 +0200
+
+    version tostring tree treenode
+    
+    -since tree is higher level than treeshr no need to type case already,
+    typecast in treeshr
+
+commit 24f0fbbe9c0cc332b292d49b79b7a5b27e18506d
+Merge: c317883 dee33ee
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:11:36 2015 -0400
+
+    Merge pull request #84 from zack-vii/alpha_python3
+    
+    0. extended version for future use
+
+commit 179c270e5cba5bdbf5f2d909442d50faa53aafe5
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:00:15 2015 +0200
+
+    version tostring on _treeshr
+    
+    -str.encode to _ver.tobytes()
+    -"==str" to "is str"
+    -_mdsarray shared _mimport
+    - simpler error string cast
+
+commit c3178837146ef87ebcc4a85fa352116f98e2c965
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:05:30 2015 -0400
+
+    Add debian tests
+
+commit eedbf90f2668385eca7d307d0f45547769d74787
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:05:00 2015 -0400
+
+    Use new get_latest_release script
+
+commit 9f7135665b800631bf1ef4b05aa434ddd3d753f1
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 09:04:53 2015 +0200
+
+    fix wfevent error on empty bytes array
+    
+    -MdsSerializeDscIn shortcut to fix error if no array is send (i.e. b
+    ```python
+    bytes = Uint8Array([])
+    ```
+    -replace _desc : shared _mimport
+
+commit 539a0b7272d6b8a9d93c861e924f4ea16b82ad8b
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 07:44:41 2015 +0200
+
+    version tostring _mdsshr
+    
+    replaced _mdsshr
+    replaced str.encode with _ver.tobytes
+
+commit e4f22b1667f32ff64893fca52c45c2cfaf522916
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:24:31 2015 +0200
+
+    version tostring mdsscalar
+    
+    -decompile and __str__ type is str
+    -numpy _np
+    -ensure String is str (55)
+    -numpy.bytes_ is subset of numpy.string_ (22)
+
+commit 10f2331360a3380fd1d7b83007c2449c9efe8d5c
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:27:59 2015 +0200
+
+    version tostring mdsarray
+    
+    -numpy _np; ctypes _C
+    -numpy dtype '|S' vs. '<U' according to str by pyver
+
+commit a46c9498f5da4fbd0674286568a198f613690ebf
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 03:28:55 2015 +0200
+
+    version tostring ident
+    
+    ident self.name should be str -> __str__ returns str
+
+commit fe321466d03319239f765f7a7fd84ab80d62db0d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 06:34:18 2015 +0200
+
+    version tostring on descriptor
+    
+    input string as bytes
+    __str__ as str
+
+commit 94b55189fa431fcb3bb84c07405be8581ce200ba
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 02:16:52 2015 +0200
+
+    using new version on _tdishr
+    
+    replace str() with _ver.tostr() to ensure proper conversion from bytes
+    to str in py3
+
+commit dee33ee91ab3383e08fdc808253c4e6269a8fa2a
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 02:01:01 2015 +0200
+
+    version numpy support better casts
+    
+    -using helper _tostring to manage typecast
+    -direct typecast of numpy types using numpy build-in astype
+    -type casting list and tuple iteratively
+    => will be used for subsequent pull requests
+
+commit 21ab4cc57620b23e2f33e5b63ca2874844ad924d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 07:01:35 2015 +0200
+
+    bytes is included in basestring
+    
+    no need to check for bytes explicitly
+
+commit da10dde0a4b83a4d599df1e2e78937a013aa3ec5 (tag: refs/tags/alpha_release-7-0-149)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Sep 14 23:05:36 2015 -0400
+
+    New release ---- alpha_release-7-0-149
+
+commit 10838de4dfc8571dd6956a662b969bb12c4804b3
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Sep 14 14:04:52 2015 -0400
 
