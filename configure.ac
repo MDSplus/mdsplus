@@ -1200,6 +1200,8 @@ AC_OUTPUT(Makefile.inc
           tdishr/Makefile 
           tdic/Makefile
           tditest/Makefile 
+          testing/Makefile
+          testing/backends/check/Makefile          
           traverser/Makefile 
           treeshr/Makefile 
           wfevent/Makefile 

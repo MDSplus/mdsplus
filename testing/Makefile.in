@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -88,28 +90,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_CHECK_TRUE@TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericConversion$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsSignalTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDimensionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsWindowTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExpressionCompileTest$(EXEEXT)
+TESTS = example$(EXEEXT) example2$(EXEEXT)
+bin_PROGRAMS = example3$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
-subdir = mdsobjects/cpp/testing
+subdir = testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
@@ -121,152 +105,39 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_CHECK_TRUE@am__EXEEXT_1 = buildtest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExceptionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericConversion$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsSignalTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDimensionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsWindowTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExpressionCompileTest$(EXEEXT)
-MdsActionTest_SOURCES = MdsActionTest.cpp
-MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
-MdsActionTest_LDADD = $(LDADD)
+LIBRARIES = $(noinst_LIBRARIES)
+AR = ar
+ARFLAGS = cru
+AM_V_AR = $(am__v_AR_@AM_V@)
+am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
+am__v_AR_0 = @echo "  AR      " $@;
+am__v_AR_1 = 
+libMdsTest_a_AR = $(AR) $(ARFLAGS)
+libMdsTest_a_LIBADD =
+am_libMdsTest_a_OBJECTS = testing.$(OBJEXT)
+libMdsTest_a_OBJECTS = $(am_libMdsTest_a_OBJECTS)
+am__installdirs = "$(DESTDIR)$(bindir)"
+am__EXEEXT_1 = example$(EXEEXT) example2$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
+example_SOURCES = example.c
+example_OBJECTS = example.$(OBJEXT)
+example_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsApdTest_SOURCES = MdsApdTest.cpp
-MdsApdTest_OBJECTS = MdsApdTest.$(OBJEXT)
-MdsApdTest_LDADD = $(LDADD)
-MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsCallTest_SOURCES = MdsCallTest.cpp
-MdsCallTest_OBJECTS = MdsCallTest.$(OBJEXT)
-MdsCallTest_LDADD = $(LDADD)
-MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
-MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
-MdsCompoundTest_LDADD = $(LDADD)
-MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsConglomTest_SOURCES = MdsConglomTest.cpp
-MdsConglomTest_OBJECTS = MdsConglomTest.$(OBJEXT)
-MdsConglomTest_LDADD = $(LDADD)
-MdsConglomTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsConnectionTest_SOURCES = MdsConnectionTest.cpp
-MdsConnectionTest_OBJECTS = MdsConnectionTest.$(OBJEXT)
-MdsConnectionTest_LDADD = $(LDADD)
-MdsConnectionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsDataTest_SOURCES = MdsDataTest.cpp
-MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
-MdsDataTest_LDADD = $(LDADD)
-MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsDimensionTest_SOURCES = MdsDimensionTest.cpp
-MdsDimensionTest_OBJECTS = MdsDimensionTest.$(OBJEXT)
-MdsDimensionTest_LDADD = $(LDADD)
-MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsEventSuppression_SOURCES = MdsEventSuppression.cpp
-MdsEventSuppression_OBJECTS = MdsEventSuppression.$(OBJEXT)
-MdsEventSuppression_LDADD = $(LDADD)
-MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsEventTest_SOURCES = MdsEventTest.cpp
-MdsEventTest_OBJECTS = MdsEventTest.$(OBJEXT)
-MdsEventTest_LDADD = $(LDADD)
-MdsEventTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
-MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
-MdsExceptionTest_LDADD = $(LDADD)
-MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsExpressionCompileTest_SOURCES = MdsExpressionCompileTest.cpp
-MdsExpressionCompileTest_OBJECTS = MdsExpressionCompileTest.$(OBJEXT)
-MdsExpressionCompileTest_LDADD = $(LDADD)
-MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsFunctionTest_SOURCES = MdsFunctionTest.cpp
-MdsFunctionTest_OBJECTS = MdsFunctionTest.$(OBJEXT)
-MdsFunctionTest_LDADD = $(LDADD)
-MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsRangeTest_SOURCES = MdsRangeTest.cpp
-MdsRangeTest_OBJECTS = MdsRangeTest.$(OBJEXT)
-MdsRangeTest_LDADD = $(LDADD)
-MdsRangeTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsScalarTest_NumericConversion_SOURCES =  \
-	MdsScalarTest_NumericConversion.cpp
-MdsScalarTest_NumericConversion_OBJECTS =  \
-	MdsScalarTest_NumericConversion.$(OBJEXT)
-MdsScalarTest_NumericConversion_LDADD = $(LDADD)
-MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsScalarTest_NumericLimits_SOURCES = MdsScalarTest_NumericLimits.cpp
-MdsScalarTest_NumericLimits_OBJECTS =  \
-	MdsScalarTest_NumericLimits.$(OBJEXT)
-MdsScalarTest_NumericLimits_LDADD = $(LDADD)
-MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsScalarTest_ScalarCast_SOURCES = MdsScalarTest_ScalarCast.cpp
-MdsScalarTest_ScalarCast_OBJECTS = MdsScalarTest_ScalarCast.$(OBJEXT)
-MdsScalarTest_ScalarCast_LDADD = $(LDADD)
-MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsSignalTest_SOURCES = MdsSignalTest.cpp
-MdsSignalTest_OBJECTS = MdsSignalTest.$(OBJEXT)
-MdsSignalTest_LDADD = $(LDADD)
-MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsStringTest_SOURCES = MdsStringTest.cpp
-MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
-MdsStringTest_LDADD = $(LDADD)
-MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsTreeNodeTest_SOURCES = MdsTreeNodeTest.cpp
-MdsTreeNodeTest_OBJECTS = MdsTreeNodeTest.$(OBJEXT)
-MdsTreeNodeTest_LDADD = $(LDADD)
-MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsTreeSuppression_SOURCES = MdsTreeSuppression.cpp
-MdsTreeSuppression_OBJECTS = MdsTreeSuppression.$(OBJEXT)
-MdsTreeSuppression_LDADD = $(LDADD)
-MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsTreeTest_SOURCES = MdsTreeTest.cpp
-MdsTreeTest_OBJECTS = MdsTreeTest.$(OBJEXT)
-MdsTreeTest_LDADD = $(LDADD)
-MdsTreeTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-MdsWindowTest_SOURCES = MdsWindowTest.cpp
-MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
-MdsWindowTest_LDADD = $(LDADD)
-MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
-buildtest_SOURCES = buildtest.cpp
-buildtest_OBJECTS = buildtest.$(OBJEXT)
-buildtest_LDADD = $(LDADD)
-buildtest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
-	testutils/libMdsTestUtils.a
+example_DEPENDENCIES =  \
+	${top_srcdir}/testing/backends/check/libCheck.a \
+	$(am__DEPENDENCIES_1)
+example2_SOURCES = example2.c
+example2_OBJECTS = example2.$(OBJEXT)
+example2_LDADD = $(LDADD)
+example2_DEPENDENCIES =  \
+	${top_srcdir}/testing/backends/check/libCheck.a \
+	$(am__DEPENDENCIES_1)
+am_example3_OBJECTS = example3.$(OBJEXT)
+example3_OBJECTS = $(am_example3_OBJECTS)
+example3_LDADD = $(LDADD)
+example3_DEPENDENCIES =  \
+	${top_srcdir}/testing/backends/check/libCheck.a \
+	$(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -283,6 +154,18 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -296,26 +179,10 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
-	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
-	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
-	MdsEventTest.cpp MdsExceptionTest.cpp \
-	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
-	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
-	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
-	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
-	MdsTreeSuppression.cpp MdsTreeTest.cpp MdsWindowTest.cpp \
-	buildtest.cpp
-DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
-	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
-	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
-	MdsEventTest.cpp MdsExceptionTest.cpp \
-	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
-	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
-	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
-	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
-	MdsTreeSuppression.cpp MdsTreeTest.cpp MdsWindowTest.cpp \
-	buildtest.cpp
+SOURCES = $(libMdsTest_a_SOURCES) example.c example2.c \
+	$(example3_SOURCES)
+DIST_SOURCES = $(libMdsTest_a_SOURCES) example.c example2.c \
+	$(example3_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -837,16 +704,21 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-SUBDIRS = testutils .
-AM_DEFAULT_SOURCE_EXT = .cpp
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}/testing
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}/testing
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
-AM_TESTS_ENVIRONMENT = \
-      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
+SUBDIRS = backends/check .
+AM_DEFAULT_SOURCE_EXT = .c
+AM_CFLAGS = -I${top_srcdir}/include -Ibackends
+AM_CXXFLAGS = 
+AM_LIBS = 
 
-LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
+#
+# NOTE: all Suppression suffixed test are not propely tests but programs that
+# may rise false positives in valgrind memory check so they may be usefull to
+# generate suppressions codes.
+#
+
+#AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@      
+LDADD = ${top_srcdir}/testing/backends/check/libCheck.a -lm -lrt -lpthread $(AM_LIBS)
+# LDADD = libMdsTest.a 
 
 #
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
@@ -855,37 +727,24 @@ LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 #
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-@USE_VALGRIND_TRUE@               --suppressions=valgrind-stdlib.supp      \
-@USE_VALGRIND_TRUE@               --suppressions=valgrind-dlerr.supp       \
-@USE_VALGRIND_TRUE@               --suppressions=valgrind-connection.supp  \
-@USE_VALGRIND_TRUE@               --suppressions=valgrind-treenode.supp    \
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
+example3_SOURCES = example3.cpp
 
 #
-# Files produced by tests that must be purged
+# Static Test library
 #
-MOSTLYCLEANFILES = \
-                   test_tree_001.characteristics \
-                   test_tree_001.datafile \
-                   test_tree_001.tree \
-                   test_tree_002.characteristics \
-                   test_tree_002.datafile \
-                   test_tree_002.tree \
-                   test_tree2_model.characteristics \
-                   test_tree2_model.datafile \
-                   test_tree2_model.tree \
-                   test_tree_model.characteristics \
-                   test_tree_model.datafile \
-                   test_tree_model.tree \
-                   leaktest_model.characteristics \
-                   leaktest_model.datafile \
-                   leaktest_model.tree
+noinst_LIBRARIES = libMdsTest.a
+libMdsTest_a_SOURCES = testing.c
 
+#
+# Shared library
+#
+MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .log .o .obj .test .test$(EXEEXT) .trs
+.SUFFIXES: .c .cpp .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -895,9 +754,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign mdsobjects/cpp/testing/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign testing/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign mdsobjects/cpp/testing/Makefile
+	  $(AUTOMAKE) --foreign testing/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -916,104 +775,70 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+
+libMdsTest.a: $(libMdsTest_a_OBJECTS) $(libMdsTest_a_DEPENDENCIES) $(EXTRA_libMdsTest_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libMdsTest.a
+	$(AM_V_AR)$(libMdsTest_a_AR) libMdsTest.a $(libMdsTest_a_OBJECTS) $(libMdsTest_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libMdsTest.a
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
-MdsActionTest$(EXEEXT): $(MdsActionTest_OBJECTS) $(MdsActionTest_DEPENDENCIES) $(EXTRA_MdsActionTest_DEPENDENCIES) 
-	@rm -f MdsActionTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsActionTest_OBJECTS) $(MdsActionTest_LDADD) $(LIBS)
+example$(EXEEXT): $(example_OBJECTS) $(example_DEPENDENCIES) $(EXTRA_example_DEPENDENCIES) 
+	@rm -f example$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(example_OBJECTS) $(example_LDADD) $(LIBS)
 
-MdsApdTest$(EXEEXT): $(MdsApdTest_OBJECTS) $(MdsApdTest_DEPENDENCIES) $(EXTRA_MdsApdTest_DEPENDENCIES) 
-	@rm -f MdsApdTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsApdTest_OBJECTS) $(MdsApdTest_LDADD) $(LIBS)
+example2$(EXEEXT): $(example2_OBJECTS) $(example2_DEPENDENCIES) $(EXTRA_example2_DEPENDENCIES) 
+	@rm -f example2$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(example2_OBJECTS) $(example2_LDADD) $(LIBS)
 
-MdsCallTest$(EXEEXT): $(MdsCallTest_OBJECTS) $(MdsCallTest_DEPENDENCIES) $(EXTRA_MdsCallTest_DEPENDENCIES) 
-	@rm -f MdsCallTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsCallTest_OBJECTS) $(MdsCallTest_LDADD) $(LIBS)
-
-MdsCompoundTest$(EXEEXT): $(MdsCompoundTest_OBJECTS) $(MdsCompoundTest_DEPENDENCIES) $(EXTRA_MdsCompoundTest_DEPENDENCIES) 
-	@rm -f MdsCompoundTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsCompoundTest_OBJECTS) $(MdsCompoundTest_LDADD) $(LIBS)
-
-MdsConglomTest$(EXEEXT): $(MdsConglomTest_OBJECTS) $(MdsConglomTest_DEPENDENCIES) $(EXTRA_MdsConglomTest_DEPENDENCIES) 
-	@rm -f MdsConglomTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsConglomTest_OBJECTS) $(MdsConglomTest_LDADD) $(LIBS)
-
-MdsConnectionTest$(EXEEXT): $(MdsConnectionTest_OBJECTS) $(MdsConnectionTest_DEPENDENCIES) $(EXTRA_MdsConnectionTest_DEPENDENCIES) 
-	@rm -f MdsConnectionTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsConnectionTest_OBJECTS) $(MdsConnectionTest_LDADD) $(LIBS)
-
-MdsDataTest$(EXEEXT): $(MdsDataTest_OBJECTS) $(MdsDataTest_DEPENDENCIES) $(EXTRA_MdsDataTest_DEPENDENCIES) 
-	@rm -f MdsDataTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_OBJECTS) $(MdsDataTest_LDADD) $(LIBS)
-
-MdsDimensionTest$(EXEEXT): $(MdsDimensionTest_OBJECTS) $(MdsDimensionTest_DEPENDENCIES) $(EXTRA_MdsDimensionTest_DEPENDENCIES) 
-	@rm -f MdsDimensionTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsDimensionTest_OBJECTS) $(MdsDimensionTest_LDADD) $(LIBS)
-
-MdsEventSuppression$(EXEEXT): $(MdsEventSuppression_OBJECTS) $(MdsEventSuppression_DEPENDENCIES) $(EXTRA_MdsEventSuppression_DEPENDENCIES) 
-	@rm -f MdsEventSuppression$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsEventSuppression_OBJECTS) $(MdsEventSuppression_LDADD) $(LIBS)
-
-MdsEventTest$(EXEEXT): $(MdsEventTest_OBJECTS) $(MdsEventTest_DEPENDENCIES) $(EXTRA_MdsEventTest_DEPENDENCIES) 
-	@rm -f MdsEventTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsEventTest_OBJECTS) $(MdsEventTest_LDADD) $(LIBS)
-
-MdsExceptionTest$(EXEEXT): $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_DEPENDENCIES) $(EXTRA_MdsExceptionTest_DEPENDENCIES) 
-	@rm -f MdsExceptionTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_LDADD) $(LIBS)
-
-MdsExpressionCompileTest$(EXEEXT): $(MdsExpressionCompileTest_OBJECTS) $(MdsExpressionCompileTest_DEPENDENCIES) $(EXTRA_MdsExpressionCompileTest_DEPENDENCIES) 
-	@rm -f MdsExpressionCompileTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsExpressionCompileTest_OBJECTS) $(MdsExpressionCompileTest_LDADD) $(LIBS)
-
-MdsFunctionTest$(EXEEXT): $(MdsFunctionTest_OBJECTS) $(MdsFunctionTest_DEPENDENCIES) $(EXTRA_MdsFunctionTest_DEPENDENCIES) 
-	@rm -f MdsFunctionTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsFunctionTest_OBJECTS) $(MdsFunctionTest_LDADD) $(LIBS)
-
-MdsRangeTest$(EXEEXT): $(MdsRangeTest_OBJECTS) $(MdsRangeTest_DEPENDENCIES) $(EXTRA_MdsRangeTest_DEPENDENCIES) 
-	@rm -f MdsRangeTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsRangeTest_OBJECTS) $(MdsRangeTest_LDADD) $(LIBS)
-
-MdsScalarTest_NumericConversion$(EXEEXT): $(MdsScalarTest_NumericConversion_OBJECTS) $(MdsScalarTest_NumericConversion_DEPENDENCIES) $(EXTRA_MdsScalarTest_NumericConversion_DEPENDENCIES) 
-	@rm -f MdsScalarTest_NumericConversion$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_NumericConversion_OBJECTS) $(MdsScalarTest_NumericConversion_LDADD) $(LIBS)
-
-MdsScalarTest_NumericLimits$(EXEEXT): $(MdsScalarTest_NumericLimits_OBJECTS) $(MdsScalarTest_NumericLimits_DEPENDENCIES) $(EXTRA_MdsScalarTest_NumericLimits_DEPENDENCIES) 
-	@rm -f MdsScalarTest_NumericLimits$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_NumericLimits_OBJECTS) $(MdsScalarTest_NumericLimits_LDADD) $(LIBS)
-
-MdsScalarTest_ScalarCast$(EXEEXT): $(MdsScalarTest_ScalarCast_OBJECTS) $(MdsScalarTest_ScalarCast_DEPENDENCIES) $(EXTRA_MdsScalarTest_ScalarCast_DEPENDENCIES) 
-	@rm -f MdsScalarTest_ScalarCast$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_ScalarCast_OBJECTS) $(MdsScalarTest_ScalarCast_LDADD) $(LIBS)
-
-MdsSignalTest$(EXEEXT): $(MdsSignalTest_OBJECTS) $(MdsSignalTest_DEPENDENCIES) $(EXTRA_MdsSignalTest_DEPENDENCIES) 
-	@rm -f MdsSignalTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsSignalTest_OBJECTS) $(MdsSignalTest_LDADD) $(LIBS)
-
-MdsStringTest$(EXEEXT): $(MdsStringTest_OBJECTS) $(MdsStringTest_DEPENDENCIES) $(EXTRA_MdsStringTest_DEPENDENCIES) 
-	@rm -f MdsStringTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsStringTest_OBJECTS) $(MdsStringTest_LDADD) $(LIBS)
-
-MdsTreeNodeTest$(EXEEXT): $(MdsTreeNodeTest_OBJECTS) $(MdsTreeNodeTest_DEPENDENCIES) $(EXTRA_MdsTreeNodeTest_DEPENDENCIES) 
-	@rm -f MdsTreeNodeTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeNodeTest_OBJECTS) $(MdsTreeNodeTest_LDADD) $(LIBS)
-
-MdsTreeSuppression$(EXEEXT): $(MdsTreeSuppression_OBJECTS) $(MdsTreeSuppression_DEPENDENCIES) $(EXTRA_MdsTreeSuppression_DEPENDENCIES) 
-	@rm -f MdsTreeSuppression$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeSuppression_OBJECTS) $(MdsTreeSuppression_LDADD) $(LIBS)
-
-MdsTreeTest$(EXEEXT): $(MdsTreeTest_OBJECTS) $(MdsTreeTest_DEPENDENCIES) $(EXTRA_MdsTreeTest_DEPENDENCIES) 
-	@rm -f MdsTreeTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeTest_OBJECTS) $(MdsTreeTest_LDADD) $(LIBS)
-
-MdsWindowTest$(EXEEXT): $(MdsWindowTest_OBJECTS) $(MdsWindowTest_DEPENDENCIES) $(EXTRA_MdsWindowTest_DEPENDENCIES) 
-	@rm -f MdsWindowTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsWindowTest_OBJECTS) $(MdsWindowTest_LDADD) $(LIBS)
-
-buildtest$(EXEEXT): $(buildtest_OBJECTS) $(buildtest_DEPENDENCIES) $(EXTRA_buildtest_DEPENDENCIES) 
-	@rm -f buildtest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(buildtest_OBJECTS) $(buildtest_LDADD) $(LIBS)
+example3$(EXEEXT): $(example3_OBJECTS) $(example3_DEPENDENCIES) $(EXTRA_example3_DEPENDENCIES) 
+	@rm -f example3$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(example3_OBJECTS) $(example3_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1021,30 +846,26 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsActionTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsApdTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCallTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCompoundTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConglomTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConnectionTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDimensionTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsEventSuppression.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsEventTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExceptionTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExpressionCompileTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsFunctionTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsRangeTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericConversion.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericLimits.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_ScalarCast.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsSignalTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsStringTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeNodeTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeSuppression.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsWindowTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildtest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testing.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1302,170 +1123,16 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-buildtest.log: buildtest$(EXEEXT)
-	@p='buildtest$(EXEEXT)'; \
-	b='buildtest'; \
+example.log: example$(EXEEXT)
+	@p='example$(EXEEXT)'; \
+	b='example'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsExceptionTest.log: MdsExceptionTest$(EXEEXT)
-	@p='MdsExceptionTest$(EXEEXT)'; \
-	b='MdsExceptionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsDataTest.log: MdsDataTest$(EXEEXT)
-	@p='MdsDataTest$(EXEEXT)'; \
-	b='MdsDataTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsScalarTest_NumericConversion.log: MdsScalarTest_NumericConversion$(EXEEXT)
-	@p='MdsScalarTest_NumericConversion$(EXEEXT)'; \
-	b='MdsScalarTest_NumericConversion'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsScalarTest_NumericLimits.log: MdsScalarTest_NumericLimits$(EXEEXT)
-	@p='MdsScalarTest_NumericLimits$(EXEEXT)'; \
-	b='MdsScalarTest_NumericLimits'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsScalarTest_ScalarCast.log: MdsScalarTest_ScalarCast$(EXEEXT)
-	@p='MdsScalarTest_ScalarCast$(EXEEXT)'; \
-	b='MdsScalarTest_ScalarCast'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsStringTest.log: MdsStringTest$(EXEEXT)
-	@p='MdsStringTest$(EXEEXT)'; \
-	b='MdsStringTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsCompoundTest.log: MdsCompoundTest$(EXEEXT)
-	@p='MdsCompoundTest$(EXEEXT)'; \
-	b='MdsCompoundTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsSignalTest.log: MdsSignalTest$(EXEEXT)
-	@p='MdsSignalTest$(EXEEXT)'; \
-	b='MdsSignalTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsDimensionTest.log: MdsDimensionTest$(EXEEXT)
-	@p='MdsDimensionTest$(EXEEXT)'; \
-	b='MdsDimensionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsWindowTest.log: MdsWindowTest$(EXEEXT)
-	@p='MdsWindowTest$(EXEEXT)'; \
-	b='MdsWindowTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsFunctionTest.log: MdsFunctionTest$(EXEEXT)
-	@p='MdsFunctionTest$(EXEEXT)'; \
-	b='MdsFunctionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsConglomTest.log: MdsConglomTest$(EXEEXT)
-	@p='MdsConglomTest$(EXEEXT)'; \
-	b='MdsConglomTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsRangeTest.log: MdsRangeTest$(EXEEXT)
-	@p='MdsRangeTest$(EXEEXT)'; \
-	b='MdsRangeTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsCallTest.log: MdsCallTest$(EXEEXT)
-	@p='MdsCallTest$(EXEEXT)'; \
-	b='MdsCallTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsActionTest.log: MdsActionTest$(EXEEXT)
-	@p='MdsActionTest$(EXEEXT)'; \
-	b='MdsActionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsApdTest.log: MdsApdTest$(EXEEXT)
-	@p='MdsApdTest$(EXEEXT)'; \
-	b='MdsApdTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsTreeSuppression.log: MdsTreeSuppression$(EXEEXT)
-	@p='MdsTreeSuppression$(EXEEXT)'; \
-	b='MdsTreeSuppression'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsTreeTest.log: MdsTreeTest$(EXEEXT)
-	@p='MdsTreeTest$(EXEEXT)'; \
-	b='MdsTreeTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsTreeNodeTest.log: MdsTreeNodeTest$(EXEEXT)
-	@p='MdsTreeNodeTest$(EXEEXT)'; \
-	b='MdsTreeNodeTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsEventSuppression.log: MdsEventSuppression$(EXEEXT)
-	@p='MdsEventSuppression$(EXEEXT)'; \
-	b='MdsEventSuppression'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsEventTest.log: MdsEventTest$(EXEEXT)
-	@p='MdsEventTest$(EXEEXT)'; \
-	b='MdsEventTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsConnectionTest.log: MdsConnectionTest$(EXEEXT)
-	@p='MdsConnectionTest$(EXEEXT)'; \
-	b='MdsConnectionTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsExpressionCompileTest.log: MdsExpressionCompileTest$(EXEEXT)
-	@p='MdsExpressionCompileTest$(EXEEXT)'; \
-	b='MdsExpressionCompileTest'; \
+example2.log: example2$(EXEEXT)
+	@p='example2$(EXEEXT)'; \
+	b='example2'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1544,9 +1211,12 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-recursive
-all-am: Makefile all-local
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) all-local
 installdirs: installdirs-recursive
 installdirs-am:
+	for dir in "$(DESTDIR)$(bindir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -1567,7 +1237,6 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
-	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
@@ -1583,7 +1252,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
+	clean-local clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
@@ -1609,7 +1279,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binPROGRAMS
 
 install-html: install-html-recursive
 
@@ -1648,33 +1318,40 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-binPROGRAMS
 
 .MAKE: $(am__recursive_targets) check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
-	check check-TESTS check-am clean clean-checkPROGRAMS \
-	clean-generic cscopelist-am ctags ctags-am distclean \
+	check check-TESTS check-am clean clean-binPROGRAMS \
+	clean-checkPROGRAMS clean-generic clean-local \
+	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
 	distclean-compile distclean-generic distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am recheck tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
 
 include ${top_srcdir}/Makefile.inc
+$(MdsTestShr): backends/check/libCheck.a
+	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
 .PHONY: tests
-tests: $(TESTS)
+tests: $(TESTS) 
 
-all-local: tests
+all-local: $(MdsTestShr) tests
+
+clean-local:
+	$(RM) $(MdsTestShr)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

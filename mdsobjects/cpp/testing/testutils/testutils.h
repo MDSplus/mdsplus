@@ -7,7 +7,15 @@
 #include <limits>
 #include <stdio.h>
 
+namespace testing {
 
+
+template < typename T >
+bool areSame(T a, T b) {
+    return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
+}
+
+} // testing
 
 // dummy linked symbol that is called by tests //
 extern "C" int get_ghostbusters_phone();
