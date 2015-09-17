@@ -4,6 +4,9 @@
 #include <mdsobjects.h>
 
 #include "testing.h"
+#include "testutils/testutils.h"
+#include "testutils/Singleton.h"
+
 #include "MdsDataTest.h"
 
 using namespace MDSplus;
@@ -176,12 +179,6 @@ int main(int argc, char *argv[])
     testing::TestLimits::test_conversion_limits<Float32>("-340.282E36","119.209E-9","340.282E36");
     testing::TestLimits::test_conversion_limits<Float64>("-179.7693134862316D306","222.0446049250313D-18","179.7693134862316D306");
 
-
-    std::cout << "\n";
-    if(Singleton<TestResults>::get_instance().fails() == 0)
-        std::cout << " SUCCESS !! \n";
-    else
-        std::cout << " SOME FAILS OCCURRED !! \n";
 
 
     END_TESTING;
