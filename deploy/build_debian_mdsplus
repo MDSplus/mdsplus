@@ -1,8 +1,17 @@
 #!/bin/bash
 set -o verbose
 set -e 
+#
+# Get the 3rd party software headers etc from github
+#
 wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+#
+# make the root to build into
+#
 mkdir -p /buildroot
+#
+# In the source directory build and install the libraries and applications of specified arch.
+#
 cd /buildsrc
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
@@ -28,6 +37,10 @@ fi
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
+#
+# Define MDSPLUS_VERSION environment variable which is used for the python
+# setup.py
+#
 if [ -z "$BNAME" ]
 then
   export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
@@ -39,7 +52,37 @@ if [ -d /buildroot/usr/local/mdsplus/uid32 ]
 then
     mv /buildroot/usr/local/mdsplus/uid32 /buildroot/usr/local/mdsplus/uid
 fi
+#
+# Build the debug version of code for testing
+# with valgrind. Currently the testing is done with python tests so
+# only need 64-bit since the default python is 64-bit. If when we add
+# other tests we may want to test both 64-bit and 32-bit.
+#
+
+if ( echo "$@" | grep vg > /dev/null )
+then
+    mkdir /dbgbuildroot
+    ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
+            --exec_prefix=/dbgbuildroot/usr/local/mdsplus \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=/3rd-party-apis-master/idl \
+            --with-gsi=/usr:gcc${bits} \
+            --host=$host \
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FFLAGS="-g -O0"
+    make clean > /dev/null
+    env LANG=en_US.UTF-8 make
+    make install
+fi
     
+if (( "$#" ))
+then
+    echo Doing tests: $@
+    export LIBDIR=lib
+    chmod a+x ./deploy/do_tests
+    ./deploy/do_tests $@
+fi
+
 if [ -d /installer ]
 then
     echo "Building debian packages"

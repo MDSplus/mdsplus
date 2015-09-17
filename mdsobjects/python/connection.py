@@ -222,8 +222,6 @@ class Connection(object):
         @type args: Data
         @rtype: None
         """
-        num=len(args)+3
-        idx=0
         pargs=[node,exp]
         putexp="TreePut($,$"
         for i in range(len(args)):

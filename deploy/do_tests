@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# If there are other arguments to the docker run command after the verb and optional flavor/tag
+# then they are passed to this script as arguments and right now those arguments are used to
+# specify tests to run.
+#
+# While there are test name arguments:
+#
+set -e
+set -o verbose
+
+while (( "$#" ))
+do
+    test="$1"
+    echo "Selected test: $test"
+    shift
+    case "$test" in
+
+        stdtests)
+	    #
+	    # Standard tests are defined in the platforms build.conf in the dockerfile.
+	    # Not all tests are appropriate for every platform. If stdtests is specified
+	    # then prepend the list of tests defined in the stdtests environment variable.
+	    # Note the shift removes the stdtests from the arguments so we need to put
+	    # an argument back on the front since it gets shifted again later.
+	    #
+	    echo stdtests: Inserting \"$stdtests\" into the test list.
+            set -- $stdtests $@;;
+	
+	pytest)
+	    #
+	    # Set up environment variables to run the pytest
+	    #
+	    #
+	    # pushd to the python directory, run the test,
+	    # and popd back again.
+	    #
+	    export MDSPLUS_DIR=/buildroot/usr/local/mdsplus
+	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
+    	    export MDS_PATH=${MDSPLUS_DIR}/tdi
+	    pushd ${MDSPLUS_DIR}/mdsobjects/python
+	    python setup.py test
+	    popd;;
+
+	vgpytest)
+	    #
+	    # Run the python tests under valgrind
+	    # Basically the same as pytest except
+	    # it builds a debug root if necessary and
+	    # runs the tests with valgrind.
+	    #
+	    export MDSPLUS_DIR=/dbgbuildroot/usr/local/mdsplus
+	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
+	    export MDS_PATH=${MDSPLUS_DIR}/tdi
+	    pushd ${MDSPLUS_DIR}/mdsobjects/python
+	    valgrind --error-exitcode=1 python setup.py test
+	    popd;;
+
+        *)
+	    echo "Unknown test '$test' specified. Skipping.";;
+
+    esac
+done
+

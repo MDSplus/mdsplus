@@ -1,4 +1,954 @@
-commit 44473ef993e5213a2aaed24d7021d7bec9612f32 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit e990b5ab0cef706bc3d7d86b257aa46301ed603d (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: d89c27c 40e8568
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 16 13:28:54 2015 -0400
+
+    Merge pull request #101 from MDSplus/fix_windows_event_handler
+    
+    Fix windows runaway threads after wfevent receives an event
+
+commit 40e8568f5d538dce90b3724268692a9ba493fd9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 16 13:08:17 2015 -0400
+
+    Fix windows runaway threads after wfevent receives an event
+
+commit d89c27cee8789607c6a51f3672e202fbef4236fb
+Merge: e1e73f6 35f1685
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 16 11:41:57 2015 -0400
+
+    Merge pull request #100 from zack-vii/a_pyver_fix_StringArray
+    
+    Fix for python3 StringArray
+
+commit 35f1685261bc04b5edd9827b5e62e54e8478aa5c
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 16 16:00:08 2015 +0200
+
+    typecast numpy array of string to bytes for descriptor
+    
+    prevents strings to be passed to libraries as unicode
+
+commit e1e73f6b783711477bfde1cf484135b878e79d5c
+Merge: 696974c cce4aea
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 16 09:25:47 2015 +0200
+
+    Merge pull request #86 from zack-vii/traverser.bat
+    
+    Traverser bat
+
+commit 696974ceaeaa1dba909ae364b5f8dde673d80589 (tag: refs/tags/alpha_release-7-0-150)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Sep 15 23:06:54 2015 -0400
+
+    New release ---- alpha_release-7-0-150
+
+commit e10fb9213c6e8d0a5e15ae94ab964ca5e14e1883
+Merge: 6c0e42a 4616a94
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Sep 15 16:33:26 2015 -0400
+
+    Merge pull request #96 from MDSplus/fix_TreeFindNodeTags
+    
+    Indentation error in TreeFindNodeTags caused tags to only return one …
+
+commit 4616a94ec1b321199f7d44e84496518764408289 (refs/remotes/origin/fix_TreeFindNodeTags)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 16:28:35 2015 -0400
+
+    Indentation error in TreeFindNodeTags caused tags to only return one tags when node actually has multiple tags
+
+commit 6c0e42a680bd0d869288fe3ac22c812608ff8829
+Merge: a45ad7d 3b9c383
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Sep 15 13:50:24 2015 -0400
+
+    Merge pull request #95 from MDSplus/fix_bugs_introduced_by_recent_pull_requests
+    
+    Fix bugs introduced by recent pull requests
+
+commit 3b9c383ef8134fa32839cf6ddbab089b0d1d2c38 (refs/remotes/origin/fix_bugs_introduced_by_recent_pull_requests)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 09:53:39 2015 -0400
+
+    Restore original behavior of __str__ method of tree. If someone wants just the tree name they can use the tree property of the tree object directly.
+
+commit 0e3aae01d34ef3477bfc95d47f7d6fdfd1197302
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 09:51:55 2015 -0400
+
+    Fix MdsGetMsg. It was not returning the error string.
+
+commit a45ad7d633fdaa609570499626e8562138c841bd
+Merge: c70b69e 21ab4cc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:27:53 2015 -0400
+
+    Merge pull request #92 from zack-vii/a_python_bytes_in_basestring
+    
+    bytes is included in basestring
+
+commit c70b69ec0fe95745496fb31da49df1f4629b3301
+Merge: a7367bb 9f71356
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:27:11 2015 -0400
+
+    Merge pull request #94 from zack-vii/a_pyver__mdsshr
+    
+    8. new version on _mdsshr
+
+commit a7367bb7a3d38f34ec72e32c3633d48fa394fc28
+Merge: feb8473 7a737d5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:26:29 2015 -0400
+
+    Merge pull request #93 from zack-vii/a_pyver_tree_treenode
+    
+    7. new version on tree treenode
+
+commit feb84739875825f42d2d837001993ff3e0f751a6
+Merge: cf65289 a46c949
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:24:46 2015 -0400
+
+    Merge pull request #87 from zack-vii/a_pyver_ident
+    
+    6. new version on ident
+
+commit cf6528977be7871d8221e3ec3ce1b22609e6968e
+Merge: 39a77b0 10f2331
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:23:57 2015 -0400
+
+    Merge pull request #90 from zack-vii/a_pyver_mdsarray
+    
+    5. new version on mdsarray
+
+commit 39a77b0303f2538165e0087a9ef249aaa85cbb83
+Merge: 5962546 e4f22b1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:22:15 2015 -0400
+
+    Merge pull request #89 from zack-vii/a_pyver_mdsscalar
+    
+    4. new version mdsscalar
+
+commit 59625464cfb79b18a08b5670a94abe8caec9379d
+Merge: dda3198 179c270
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:19:18 2015 -0400
+
+    Merge pull request #88 from zack-vii/a_pyver__treeshr
+    
+    3. new version on _treeshr
+
+commit dda3198b1531382df3d595046faaeb6dce87efed
+Merge: 2c05591 94b5518
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:17:12 2015 -0400
+
+    Merge pull request #85 from zack-vii/a_python3_tdishr_TdiDecompile
+    
+    2. new version on _tdishr
+
+commit 2c055919d04e6886e95bebac575d61f5354a6d2c
+Merge: 24f0fbb fe32146
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:13:20 2015 -0400
+
+    Merge pull request #91 from zack-vii/a_pyver_descriptor
+    
+    1. new version on descriptor
+
+commit 7a737d56415117184f9a3df2ce5ff212848f6ac8
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:41:35 2015 +0200
+
+    version tostring tree treenode
+    
+    -since tree is higher level than treeshr no need to type case already,
+    typecast in treeshr
+
+commit 24f0fbbe9c0cc332b292d49b79b7a5b27e18506d
+Merge: c317883 dee33ee
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:11:36 2015 -0400
+
+    Merge pull request #84 from zack-vii/alpha_python3
+    
+    0. extended version for future use
+
+commit 179c270e5cba5bdbf5f2d909442d50faa53aafe5
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:00:15 2015 +0200
+
+    version tostring on _treeshr
+    
+    -str.encode to _ver.tobytes()
+    -"==str" to "is str"
+    -_mdsarray shared _mimport
+    - simpler error string cast
+
+commit c3178837146ef87ebcc4a85fa352116f98e2c965
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:05:30 2015 -0400
+
+    Add debian tests
+
+commit eedbf90f2668385eca7d307d0f45547769d74787
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 15 08:05:00 2015 -0400
+
+    Use new get_latest_release script
+
+commit 9f7135665b800631bf1ef4b05aa434ddd3d753f1
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 09:04:53 2015 +0200
+
+    fix wfevent error on empty bytes array
+    
+    -MdsSerializeDscIn shortcut to fix error if no array is send (i.e. b
+    ```python
+    bytes = Uint8Array([])
+    ```
+    -replace _desc : shared _mimport
+
+commit 539a0b7272d6b8a9d93c861e924f4ea16b82ad8b
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 07:44:41 2015 +0200
+
+    version tostring _mdsshr
+    
+    replaced _mdsshr
+    replaced str.encode with _ver.tobytes
+
+commit e4f22b1667f32ff64893fca52c45c2cfaf522916
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:24:31 2015 +0200
+
+    version tostring mdsscalar
+    
+    -decompile and __str__ type is str
+    -numpy _np
+    -ensure String is str (55)
+    -numpy.bytes_ is subset of numpy.string_ (22)
+
+commit 10f2331360a3380fd1d7b83007c2449c9efe8d5c
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 04:27:59 2015 +0200
+
+    version tostring mdsarray
+    
+    -numpy _np; ctypes _C
+    -numpy dtype '|S' vs. '<U' according to str by pyver
+
+commit a46c9498f5da4fbd0674286568a198f613690ebf
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 03:28:55 2015 +0200
+
+    version tostring ident
+    
+    ident self.name should be str -> __str__ returns str
+
+commit fe321466d03319239f765f7a7fd84ab80d62db0d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 06:34:18 2015 +0200
+
+    version tostring on descriptor
+    
+    input string as bytes
+    __str__ as str
+
+commit 94b55189fa431fcb3bb84c07405be8581ce200ba
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 02:16:52 2015 +0200
+
+    using new version on _tdishr
+    
+    replace str() with _ver.tostr() to ensure proper conversion from bytes
+    to str in py3
+
+commit dee33ee91ab3383e08fdc808253c4e6269a8fa2a
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 02:01:01 2015 +0200
+
+    version numpy support better casts
+    
+    -using helper _tostring to manage typecast
+    -direct typecast of numpy types using numpy build-in astype
+    -type casting list and tuple iteratively
+    => will be used for subsequent pull requests
+
+commit 21ab4cc57620b23e2f33e5b63ca2874844ad924d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 07:01:35 2015 +0200
+
+    bytes is included in basestring
+    
+    no need to check for bytes explicitly
+
+commit da10dde0a4b83a4d599df1e2e78937a013aa3ec5 (tag: refs/tags/alpha_release-7-0-149)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Sep 14 23:05:36 2015 -0400
+
+    New release ---- alpha_release-7-0-149
+
+commit cce4aeaa90605ce107eecb2cfdc64e954524fb08
+Merge: fd39554 4e1dab7
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 15 02:33:36 2015 +0200
+
+    Merge remote-tracking branch 'origin/traverser.bat' into traverser.bat
+
+commit fd39554a6f9f74351e9b1b5b76801878ce105e30
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 23 13:26:39 2015 +0200
+
+    added %* for allowing parameters to be passed down to java
+    
+    otherwise one cannot use treename and shotnumber as parameters using the
+    batch script shortcut
+
+commit 10838de4dfc8571dd6956a662b969bb12c4804b3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 14:04:52 2015 -0400
+
+    exit on error and fix pytest lib definition
+
+commit 6db519b61c83fb88ea54cf945697e25ec4dd9621
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 13:19:38 2015 -0400
+
+    add execute permission on do_tests script
+
+commit c5ebf93653a8f2adcd5abd4aff178abd046e9b89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 12:59:58 2015 -0400
+
+    Split the tests into separate script
+
+commit d4ffefd7db1466d3bffffea7e41f70e9688d1741
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 11:18:13 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit 6d4f1525c488695ac19b0581540ec8be0c95b22c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 11:13:26 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit afd06de85f998bd01797047fa77bb4152c663a86
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 11:09:38 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit 2f7c5bee19a332c9721592ee6884804adfdc4291
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 09:48:04 2015 -0400
+
+    Add debug output to build_mdsplus
+
+commit b22470fef3def95158730549bd72d181d8fb56be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 09:31:45 2015 -0400
+
+    Use get_latest_release in release.py
+
+commit 8ee0ad61a8bd545818d38e05fd92c0e8de4a9577
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 09:16:36 2015 -0400
+
+    Add debug printout
+
+commit b777f6426d75243385044b023a4f7d5b898f5837
+Merge: 8277a96 18c939f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:54:36 2015 -0400
+
+    Merge pull request #82 from zack-vii/python_tree__treeshr
+    
+    Python tree treeshr.TreeFreeDbid ?
+
+commit 8277a964f5fd3f2b5f0dc273d2dbf8537c2a4e4a
+Merge: 5937085 0aeb3bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:48:12 2015 -0400
+
+    Merge pull request #79 from zack-vii/alpha_python3
+    
+    added bytes to basestring substitute
+
+commit 59370857488f086126cceb3ea0ec40b9b82cfa02
+Merge: 3b53cdc 186b67c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:41:04 2015 -0400
+
+    Merge pull request #81 from zack-vii/_tdishr_TdishrArguments
+    
+    _tdishr: unite TdiFunctions
+
+commit 3b53cdcb15e8e0994ca94ea01fa831cff3a04407
+Merge: 7bb6596 4d68988
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:35:50 2015 -0400
+
+    Merge pull request #83 from zack-vii/python_Member_and_Children
+    
+    return empty TreeNodeArray instead of None
+
+commit 7bb6596005b0cb1befe7fd285d68ba82ed402b35
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 14 08:22:02 2015 -0400
+
+    Use --no-check-certificate on raw fetches from git
+
+commit 0aeb3bb45adb8f533196be23510832bf1235c3d3
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Sep 14 11:20:02 2015 +0200
+
+    tobytes str encodes to bytes
+    
+    must be encode, not decode
+
+commit fcb36c011871ed2a7ab966dc93af8dd7f27e05f7
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Sep 12 16:21:05 2015 +0200
+
+    version bytes<>str<>unicode
+    
+    -bytes and str are identical in py2
+    -unicode corresponds to str in py3
+    added helper functions tostr, tobytes, and tounicode to for a secure
+    de/encoding
+
+commit d72b68917f6e6af94e12bd4e99559f06e27d964c
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 11 15:56:07 2015 +0200
+
+    added bytes to basestring substitute
+    
+    bytes should be part of basestring as bytes was the same as string in
+    py2
+
+commit 4d68988c6a312595db47b1832a9efa322341e737
+Author: zack-vii <zack.vii@live.com>
+Date:   Sun Sep 13 01:43:18 2015 +0200
+
+    return empty TreeNodeArray instead of None
+    
+    -Descendants,Members,Children return empty array if None
+    This allows for for-loops
+    > for desc in node.getDescendants:
+    >   do stuff with desc
+
+commit 18c939f9836a241da95a2c7327bdbd8a1d1b34fe
+Author: zack-vii <zack.vii@live.com>
+Date:   Sun Sep 13 00:32:34 2015 +0200
+
+    fix missing _treeshr and self
+    
+    not sure what is is supposed to do but it never did anything.
+    -TreeFreeDbid is defined in _treeshr and need its prefix
+    -ctx is private and needs its self. prefix
+    -replaced mimport('_treeshr',1) with on shared _treeshr
+
+commit 186b67c62beefd474439e7e9ed764045d3725005
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 11 23:10:34 2015 +0200
+
+    _tdishr: unite TdiFunctions
+    
+    since all tdi functions have the same structure the arguments can be
+    united in one shared helper function
+
+commit 0c7daa08e3a42786974ca47cf820dd7458c147b7 (tag: refs/tags/alpha_release-7-0-148)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Sep 11 16:22:04 2015 -0400
+
+    New release ---- alpha_release-7-0-148
+
+commit e5918a11c3651deaaed54e8c67c419db2e2f88f8
+Merge: 20db998 62a2da4
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Sep 11 14:13:08 2015 -0400
+
+    Merge pull request #80 from MDSplus/fix_wfevent_fun
+    
+    Fix call to MDSWfeventTimed in wfevent.fun. The buffer lenth is an in…
+
+commit 62a2da4e3f23a1df3dde6c94d310b6c47ed3e5e6 (refs/remotes/origin/fix_wfevent_fun)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 11 14:04:10 2015 -0400
+
+    Fix call to MDSWfeventTimed in wfevent.fun. The buffer lenth is an integer passed by value not address
+
+commit 20db998f2d6e191301731afa9fc2825568f11941
+Merge: 1cc6287 27d3472
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 11 08:16:30 2015 -0400
+
+    Merge pull request #73 from MDSplus/convert_data_to_bytes_in_setevent_fun
+    
+    If the array is not type-cast to Byte, the event system messes up:
+
+commit 1cc62877e901c37dbe92b6e0752511806d42901a
+Merge: 09ba0f5 71da66d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 11 08:15:35 2015 -0400
+
+    Merge pull request #75 from MDSplus/new_build_bootstrap
+    
+    move initial build script, build_mdsplus, into mdsplus/deploy and fix…
+
+commit 09ba0f56b74da2fe8848daa9dd106bce77ecc2be
+Merge: b2cc79f 7a9837c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 11 08:14:44 2015 -0400
+
+    Merge pull request #68 from MDSplus/add_redhat_build_testing
+    
+    Add testing to the build script used by the automated builds. Test na…
+
+commit b2cc79fa95939023a824bdde34434af6d968a051
+Merge: b56a30f d4b48f5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 10 16:14:49 2015 -0400
+
+    Merge pull request #76 from MDSplus/fix-macintosh-hang-on-connect
+    
+    Fix mac problem with hang trying to exit after connect
+
+commit d4b48f5b8f0bc43899af8c8271d94d8a02e64b10 (refs/remotes/origin/fix-macintosh-hang-on-connect)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Sep 10 16:00:44 2015 -0400
+
+    Fix mac problem with hang trying to exit after connect
+    
+    On macintosh when a process (python) makes a connection object using ssh
+    and then creates a subprocess which completes, when the system tries
+    to delete the connection object the waitpid call hangs.
+    
+    Added WNOHANG flag to the waitpid call
+    
+    Before pulling this we should verify it compiles on windoz.
+
+commit 71da66d45e76572a3a7c2aac72bcde29923fdad8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 10 14:32:28 2015 -0400
+
+    move initial build script, build_mdsplus, into mdsplus/deploy and fix the mechanism for getting the latest release tag
+
+commit b56a30f7a1ddae0cd2733c31a73561cb3c0b790e
+Merge: 708b5c5 a7c59f2
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 16:52:33 2015 +0200
+
+    Merge pull request #74 from MDSplus/fix-MdsConnection.java
+    
+    Revert "Unsigned short data type management added"
+
+commit a7c59f2d88e1fe3da7f238f767f128cc898b044c (refs/remotes/origin/fix-MdsConnection.java)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Sep 10 09:29:59 2015 -0400
+
+    Revert "Unsigned short data type management added"
+    
+    This reverts commit ce08e861c806cf2fb92b84fc9ba7b7425de3b3ef.
+    
+    This change introduced a compile error and made the indent of the code wrong
+
+commit 708b5c5aeacf2f756d6cc8dca580c185e84f2a99
+Merge: f4f062c c83ddb7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 10 08:46:57 2015 -0400
+
+    Merge pull request #64 from zack-vii/python_cleanup
+    
+    Python cleanup
+
+commit f4f062c9b95b8815a8c01e2a5fd31584a5fbcf9a
+Merge: 6b9c3be 1221132
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 10 08:39:23 2015 -0400
+
+    Merge pull request #66 from zack-vii/python_compound_setDescs
+    
+    fix wrong variable name
+
+commit 6b9c3be6355d447a11bceca1f6cc986010fb7814
+Merge: a2f4f47 d4d40a5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 10 08:38:43 2015 -0400
+
+    Merge pull request #69 from zack-vii/alpha_python3
+    
+    fix for issue #59 in ident.py
+
+commit 27d3472bf7bb461d9c746f12ed4a75a68eeda85b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 10 08:23:10 2015 -0400
+
+    If the array is not type-cast to Byte, the event system messes up:
+    Length of original vector but byte sequence of flattened vector.
+    e.g.:
+    an event is triggered using
+    
+        setevent('e',Int32[1,2,3,4,5])
+    
+        wfevent('e')
+    
+    returns
+    
+        [1,0,0,0 , 2]
+    
+    but should return
+    
+        [1,2,3,4,5]
+
+commit a2f4f472aa7d2239881bb2f66896870ac745db15 (refs/remotes/origin/dev-ct, refs/remotes/origin/dev-arg)
+Merge: d5319b7 ab32212
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 09:24:06 2015 +0200
+
+    Aligned
+
+commit d5319b7caa1f22696e2c8e597aea1b7ed139bf86
+Merge: 0810719 0865fb1
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 09:10:20 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit ab32212895c74b7669f5e8a36e96dab4920c78a4
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 09:06:47 2015 +0200
+
+    First working version
+
+commit 9128f6bd0a771141c543a4b5300f7f98f4c3f51f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 08:58:49 2015 +0200
+
+    Change view mode of control field
+
+commit d4d40a50a8a8e526de5a69b1bab52f5e7ce1505f
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Sep 10 02:35:15 2015 +0200
+
+    _descriptor: check for py3 bytes with "not str"
+    
+    in py2 bytes and str are identical.
+    we only want to decode bytes in py3
+    using not str will skip in py2 and run in py3
+
+commit 4e1dab721a96f1e3494aa5d7c8f0e67ef65409f9
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 23 13:26:39 2015 +0200
+
+    added %* for allowing parameters to be passed down to java
+    
+    otherwise one cannot use treename and shotnumber as parameters using the
+    batch script shortcut
+
+commit be9028b133f785bbae47d0d9e9e4940d07a42eb3
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 22:34:44 2015 +0200
+
+    version fix for ident
+    
+    the bytes type when displayed shows as   b'abc'
+    this is given by the __str__ method which is also called on str(b'abc')
+    It will therefore return "b'abc'" and corrupt the tdi interface
+    -> name must be decoded properly if it is of bytes type
+    > import MDSplus;MDSplus.TdiCompile('tdifun(_tdivar)')
+    returned (on python 3x)
+    > tdifun(b'_tdivar')
+    instead of
+    > tdifun(_tdivar)
+    resulting in tdi errors on execution or wrong record data when writing
+    to nodes
+
+commit 0865fb1281574b8328a64a4662184750ab476abc
+Merge: 3c67818 afb3c49
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 9 16:35:24 2015 -0400
+
+    Merge pull request #67 from MDSplus/change_tdi_array_function
+    
+    Zero memory with tdi ARRAY() function. Doubt if anyone uses it but AR…
+
+commit 7a9837ce389bd97391a8d4d33eca27a5cf690e7e (refs/remotes/origin/add_redhat_build_testing)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 9 16:09:56 2015 -0400
+
+    Add testing to the build script used by the automated builds. Test names can be listed as arguments to the docker run mdsplus/docker:build_xxx commands to specify which tests to do. A special stdtests environment variable can be used to specify a standard list of tests for the platform and then use the special stdtests test name to do the tests specified by the environment variable. Not all tests may be possible on some platforms so the stdtests environment variable is specifed in the docker image for each platform being built.
+
+commit 3c67818ce40cd62988f192d4c5d8f84ed564959d
+Merge: d3bcd85 f52721b
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 9 16:23:55 2015 -0400
+
+    Merge pull request #63 from zack-vii/alpha_python3
+    
+    alpha python3 version module (continue)
+
+commit afb3c4911d3fbfcbb482b87033c9b75f39cc2c28 (refs/remotes/origin/change_tdi_array_function)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 9 15:55:00 2015 -0400
+
+    Zero memory with tdi ARRAY() function. Doubt if anyone uses it but ARRAY() did not initialized allocated memory for speed but that is unlikely to be of any use these days. The uninitialized memory plays havoc with valgrind because the ARRAY() function is used in the python regression tests.
+
+commit 12211323a8ed4ba4035351b29689ed4da381fdbf
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 22:08:13 2015 +0200
+
+    fix wrong variable name
+    
+    code expected value but input is args
+    substituted value with args
+
+commit c83ddb70b4f4dc855bd689b6f577ff68ae5d3133
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:31:36 2015 +0200
+
+    clean up connection
+    
+    -num and idx are unused: removed
+
+commit f896030a4d4f09771664f2219cccdc7dbc5cd2cf
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:30:56 2015 +0200
+
+    clean up event
+    
+    unused imports: removed
+
+commit 20803c247753ac7c589e8091285185ae89978c25
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:30:24 2015 +0200
+
+    clean up mdsdevice
+    
+    -gobject is unused: commented out
+    -import TreeNode from treenode (safer?)
+    -import Conglom from compound (safer?)
+
+commit 180a41152e25cd1520d86f7c25634c5d33937f6f
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:26:47 2015 +0200
+
+    clean up tree
+    
+    -Thread is unused: commented
+    -import String from mdsscalar for safety
+
+commit 784d061e92a38f250412d92d7654bf152e59f8bc
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:24:08 2015 +0200
+
+    clean up yacc
+    
+    -reimport of re: removed
+    -unused dr_set dict: removed
+
+commit 23ffc5cef146cbf557a0d8452a532529ffcd7800
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:22:53 2015 +0200
+
+    cleanup __init__
+    
+    no need to have os and sys as part of the MDSplus module
+    -_pkgdir does not exist -> packagedir
+
+commit f52721befe95be83ea8a67500911ad984e4fd742
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:18:19 2015 +0200
+
+    injected version in mdsdata
+    
+    -handle long with _ver.long
+    -combined isinstance-or
+    -added unicode (str -> _ver.basestring) and _ver.bytes
+    -no need for pass
+
+commit 5b3d76194333ca6daa0c4bc330f427a51f78c614
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 21:08:13 2015 +0200
+
+    inject version in mdsscalar
+    
+    -proper encoding of numpy.bytes_ to String
+    -handle bytes as strings String does the decoding
+    test:
+    import MDSplus;MDSplus.makeScalar(b'abc')
+    -nested numpy and copy cleaner
+
+commit f4d90732e8e4bb9b030f9a5b56e03a34e82c275c
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 20:57:02 2015 +0200
+
+    injected version in _mdsshr
+    
+    -check python version version when looking for library
+    -cycle thru lib types even on python24 by reusing code (if is None)
+    -return library no use for lib
+    -handle buffer (_ver.buffer)
+
+commit 88fba97f384e7ecf9fd94bc56e2f3cb3e6117647
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 18:48:49 2015 +0200
+
+    inject version in mdsarray
+    
+    used version on long type
+    -combined isinstance with or
+    -copy is unused
+
+commit 01c84dfd0f8754cc8d70df93f2a98c0b5fe3e96e
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 18:40:29 2015 +0200
+
+    injected version in lex
+    
+    import version and handle func_code
+    used ispy2 as condition to handle missing cmd() in python3
+
+commit dc3b1bf2ac1e03e35a835ec30e0b8ceae1142556
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 18:37:29 2015 +0200
+
+    extended version
+    
+    added func_code used by lex
+
+commit 584a24d9d6e1ac8bd6b33e546f1b94e4467bce08
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 20:22:46 2015 +0200
+
+    replaced ternary with if-else for python24
+    
+    python24 does not support ternary operation
+    replaced with classic if-else-structure
+
+commit d3bcd8539167ffbe460922c9f228d1c8e77a5928
+Merge: b956395 2aca566
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 9 12:41:19 2015 -0400
+
+    Merge pull request #61 from MDSplus/more-treeshr.h-edits
+    
+    as per Keith and Tom, remove the defines that used to guard these inc…
+
+commit 2aca5668e17518ee97d8888794eb787cf4137c7d (refs/remotes/origin/more-treeshr.h-edits)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 9 11:00:36 2015 -0400
+
+    as per Keith and Tom, remove the defines that used to guard these includes, users should not rely on them.
+
+commit b95639553c241b434c826d2bb1bc0b2dd92a8df6
+Merge: 7193475 5f1b9a3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 9 09:02:48 2015 -0400
+
+    Merge pull request #58 from MDSplus/dev-kge
+    
+    Remove manual setting of executable extension, defer to EXEEXT
+
+commit 7193475b0bc3e43ee490e5886b1adc798fda780e
+Merge: 6fb1eca 2577c9f
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 9 14:42:50 2015 +0200
+
+    Merge pull request #49 from zack-vii/alpha_java_batch_compile
+    
+    Alpha java batch compile
+
+commit 6fb1eca7cc46ed070ce5fcfd4ba0ad0dc16ea91f
+Merge: 90dd10b 8ea86e3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 9 14:42:00 2015 +0200
+
+    Merge pull request #19 from zack-vii/jtraverser_java_warning
+    
+    fixed argument to encounter a java compiler warning
+
+commit 90dd10b19e7d361e9e54d453f54322e6c9c9235e
+Merge: ce08e86 29a4d35
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 9 14:41:13 2015 +0200
+
+    Merge branch 'zack-vii-jtraverser_open_location' into alpha
+
+commit 29a4d3557e8fe4cbcce83cd3de703a0120daa0ea
+Merge: ce08e86 250c5ba
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 9 14:40:29 2015 +0200
+
+    Merge
+
+commit ce08e861c806cf2fb92b84fc9ba7b7425de3b3ef
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Mon Jul 27 12:31:46 2015 +0200
+
+    Unsigned short data type management added
+
+commit 6879a08b3e98cedcd17ebe763587732aa82b0d39
+Merge: 5d7e4ef d49583b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 9 08:21:13 2015 -0400
+
+    Merge pull request #60 from zack-vii/alpha_python3
+    
+    alpha python3 version module
+
+commit d49583b833c0010d7c8a67a445d30003de43996f
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 12:38:50 2015 +0200
+
+    using the version module on _descriptor
+    
+    imports the version module in order to handle buffer, long, and the
+    string types
+
+commit e50bac17678e7750fbd1429b6fa6b325569e1c47
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 9 12:32:53 2015 +0200
+
+    version module: a better way of checking python version
+    
+    The purpose of this helper module is to supply tools and type
+    substitutes that are used to generate version specific code.
+    Goal is to generate code that work on both python2x and python3x.
+    
+    PS:  what is the range of python versions that are meant to be supported
+
+commit 5d7e4ef0fb26d55b8290205d83d6556c78dcd7d7
+Merge: c0c8de4 c7a3179
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 9 11:16:38 2015 +0200
+
+    Merge pull request #17 from zack-vii/jtraverser_open_text
+    
+    preserve the tree name and shot at tree-open (clean pull-request)
+
+commit c0c8de41ed90659dc183b2b67ff712db38ab8cbf (tag: refs/tags/alpha_release-7-0-147)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Sep 8 23:05:17 2015 -0400
+
+    New release ---- alpha_release-7-0-147
+
+commit 5f1b9a3bf3dfc609bac7495b830a25276b4593b7 (refs/remotes/origin/dev-kge)
+Author: kgerickson <kerickso@pppl.gov>
+Date:   Tue Sep 8 18:33:49 2015 -0400
+
+    Remove manual setting of executable extension, defer to EXEEXT from autoconf
+
+commit 44473ef993e5213a2aaed24d7021d7bec9612f32
 Author: kgerickson <kerickso@pppl.gov>
 Date:   Tue Sep 8 18:16:05 2015 -0400
 
@@ -23,6 +973,84 @@ Date:   Tue Sep 8 13:53:42 2015 -0400
     Merge pull request #52 from MDSplus/dev-kge
     
     Configure updates
+
+commit 2577c9f7094a991f80bcdaffe0f5306475c997b9
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Sep 2 00:34:07 2015 +0200
+
+    NUL cleanup errors
+    
+    happen when compiling failed
+
+commit 11a44d85c68032000f5a3e4cafb561e3e047cbb7
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 20:14:41 2015 +0200
+
+    reduce font settings to template
+    
+    as it might fail if font is not available
+    seems to default to system font
+
+commit e46ec701e641036bff26f9c5573dc005e1b6d5fa
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 20:09:04 2015 +0200
+
+    cleanup jScope.properties
+    
+    and include it in the jar
+
+commit 9f7cbb8162c04030713c64c3a0d347fa5fdb148a
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 20:02:00 2015 +0200
+
+    fixed wrong GOTO mark
+    
+    its :start not :compile
+
+commit c7a3179ad6483974364dba5f704b34d69fa47e5b
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 23 13:39:35 2015 +0200
+
+    preserve the tree name and shot at tree-open (clean pull-request)
+    
+    the open tree dialog now tries to get tree name and shot number
+    if they have been passed as command line parameters on first call.  It
+    does not clear the fields anymore allowing for a fast switching between
+    edit mode, normal mode or shot numbers
+    (try..catch structure may be omissible)
+
+commit 250c5ba7727f91d3440ebbdcf74ed043c89dc48d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 1 13:27:03 2015 +0200
+
+    better style of doing it
+    
+    initialize Point with final x and y values
+
+commit 1f3806cb5dfb11bedeee2fed2a36582b0b8a9004
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 23 13:49:43 2015 +0200
+
+    set the location of the open dialog relative to it parent
+    
+    Prevents, that the tree-open dialog is at a fixed position (100,100 from
+    the upper left corner). It now opens at a fixed relative position to the
+    main window's upper left corner. This way, it is much more convenient,
+    especially if you use large or multiple screens.
+
+commit 8ea86e33a5ad16848658a4dc0235bcd5c88994aa
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 8 19:18:13 2015 +0200
+
+    fixed argument to encounter a java compiler warning
+    
+    prevents warning during compilation:
+    Tree.java:684: warning: non-varargs call of varargs method with inexact
+    argument type for last parameter;
+    node_methods[idx].getMethod().invoke(curr_node, null);
+    ^
+    cast to Object for a varargs call
+    cast to Object[] for a non-varargs call and to suppress this warning
 
 commit 7068f661f092851bd595499bc8662ad7e2751038
 Author: Keith <kerickso@pppl.gov>
@@ -104,6 +1132,12 @@ Date:   Tue Sep 8 09:18:19 2015 -0400
     Merge pull request #51 from MDSplus/treeshr.h-edits
     
     pragma once
+
+commit 0810719bfd55d2f4494d0f8c9a6a603659085098
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Sep 8 15:14:56 2015 +0200
+
+    Urgent fixes
 
 commit cec39fa884cb914a0e89316a2053fc6769c613b1 (tag: refs/tags/alpha_release-7-0-146)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
