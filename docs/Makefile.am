@@ -44,6 +44,7 @@ DX_PAGES = \
 DX_EXCLUDE_PAGES = 
 
 DX_TAGFILES = mdsip.tag \
+              mdsshr.tag \
               mdsobjects/cpp/docs \
               mdsobjects/python/docs \
               mdsobjects/java/docs
@@ -68,6 +69,7 @@ pdf:  doxygen-pdf
 # Add here all subdirectories that contain a doxygen documentation Makefile
 # 
 DX_SUBDIRS = \
+          ../mdsshr/docs/ \
           ../mdstcpip/docs/ \
           ../mdsobjects/cpp/docs/ \
           ../mdsobjects/python/docs/ \

@@ -1180,7 +1180,8 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
-          mdsshr/Makefile 
+          mdsshr/Makefile
+	  mdsshr/docs/Makefile
           mdssql/Makefile
           mdstcpip/Makefile 
           mdstcpip/zlib/Makefile
