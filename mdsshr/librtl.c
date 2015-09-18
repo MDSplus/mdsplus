@@ -35,18 +35,27 @@
 
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
-
-int LibWait(float *secs)
+///
+/// Waits for the specified time in seconds. Supports fractions of seconds.
+///
+/// \param secs the address of a constant floating point number representing the time to wait
+/// \return 1 if successful, 0 if failed or interrupted.
+///
+int LibWait(float const *secs)
 {
   struct timespec ts;
   ts.tv_sec = (unsigned int)*secs;
   ts.tv_nsec = (unsigned int)((*secs - (unsigned int)*secs) * 1E9);
-  nanosleep(&ts, 0);
-
-  return 1;
+  return nanosleep(&ts, 0) == 0;
 }
 
-
+///
+/// Call a routine in a shared library passing zero or more arguments.
+///
+/// \param arglist array of void pointers whose length is specified by the first element interpreted as a long integer. A maximum of 32 arguments to the routine are supported.
+/// \param routine address of the routine to call
+/// \return the value returned by the routine as a void *
+///
 void *LibCallg(void **arglist, void *(*routine) ())
 {
   switch (*(long *)arglist & 0xff) {
@@ -245,7 +254,7 @@ int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
 #else				/* WIN32 */
 
 
-STATIC_ROUTINE char *nonblank(char *p)
+STATIC_ROUTINE char const *nonblank(char *p)
 {
   if (!p)
     return (0);
@@ -283,7 +292,7 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
   pid = fork();
   if (!pid) {
   /*-------------> child process: execute cmd	*/
-    char *arglist[4];
+    char const *arglist[4];
     int i = 0;
     if (!waitflag) {
       pid = fork();
@@ -331,21 +340,19 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 #endif
 
-char *TranslateLogical(char *pathname)
+char *TranslateLogical(char const *pathname)
 {
   char *path = NULL;
   char *tpath = getenv(pathname);
   if (tpath)
-    path = strcpy((char *)malloc(strlen(tpath) + 1), tpath);
+    path = strdup(tpath);
 #ifdef _WIN32
   if (!path) {
     path = GetRegistry(HKEY_CURRENT_USER, pathname);
     if (!path)
       path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
-    if (path) {
-      tpath = strcpy((char *)malloc(strlen(path) + 1), path);
-      path = tpath;
-    }
+    if (path)
+      path = strdup(path);
   }
 #endif
   return path;
@@ -368,7 +375,7 @@ typedef struct _ZoneList {
 
 ZoneList *MdsZones = NULL;
 
-int TranslateLogicalXd(struct descriptor *in, struct descriptor_xd *out)
+int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out)
 {
   struct descriptor out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int status = 0;
@@ -391,7 +398,7 @@ void MdsFree(void *ptr)
   free(ptr);
 }
 
-char *MdsDescrToCstring(struct descriptor *in)
+char *MdsDescrToCstring(struct descriptor const *in)
 {
   char *out = malloc(in->length + 1);
   memcpy(out, in->pointer, in->length);
@@ -1728,7 +1735,7 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
   return cword;
 }
 
-int MdsPutEnv(char *cmd)
+int MdsPutEnv(char const *cmd)
 {
   int status;
   if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))

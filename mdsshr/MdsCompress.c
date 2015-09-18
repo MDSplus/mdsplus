@@ -54,6 +54,7 @@ The expansion routine "xentry":
 #include <strroutines.h>
 #include <mdsshr_messages.h>
 #include <STATICdef.h>
+#include "mdsshrp.h"
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
@@ -72,8 +73,8 @@ STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 	The inner routine scans some classes and tries to compress arrays.
 	If successful returns 1, if unsuccessful returns NORMAL.
 */
-STATIC_ROUTINE int compress(struct descriptor *pcimage,
-			    struct descriptor *pcentry, int64_t delta, struct descriptor *pwork)
+STATIC_ROUTINE int compress(struct descriptor const *pcimage,
+			    struct descriptor const *pcentry, int64_t delta, struct descriptor *pwork)
 {
   int j, stat1, status = 1;
   int bit = 0, asize, nitems, (*symbol) ();
@@ -227,9 +228,9 @@ STATIC_ROUTINE int compress(struct descriptor *pcimage,
 /*--------------------------------------------------------------------------
 	The outside routine.
 */
-int MdsCompress(struct descriptor *cimage_ptr,
-		struct descriptor *centry_ptr,
-		struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
+int MdsCompress(struct descriptor const *cimage_ptr,
+		struct descriptor const *centry_ptr,
+		struct descriptor const *in_ptr, struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd work;
