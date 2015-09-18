@@ -90,7 +90,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-TESTS = example$(EXEEXT) example2$(EXEEXT)
+TESTS = example$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT)
 bin_PROGRAMS = example3$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = testing
@@ -117,7 +117,7 @@ libMdsTest_a_LIBADD =
 am_libMdsTest_a_OBJECTS = testing.$(OBJEXT)
 libMdsTest_a_OBJECTS = $(am_libMdsTest_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
-am__EXEEXT_1 = example$(EXEEXT) example2$(EXEEXT)
+am__EXEEXT_1 = example$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 example_SOURCES = example.c
 example_OBJECTS = example.$(OBJEXT)
@@ -1133,6 +1133,13 @@ example.log: example$(EXEEXT)
 example2.log: example2$(EXEEXT)
 	@p='example2$(EXEEXT)'; \
 	b='example2'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+example3.log: example3$(EXEEXT)
+	@p='example3$(EXEEXT)'; \
+	b='example3'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

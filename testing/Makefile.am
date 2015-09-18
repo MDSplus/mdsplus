@@ -16,7 +16,8 @@ AM_LIBS =
 #
 TESTS = \
         example \
-        example2
+        example2 \
+        example3
 
 
 
