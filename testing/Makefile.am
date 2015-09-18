@@ -27,12 +27,9 @@ TESTS = \
 #
 
 
-
 #AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@      
 LDADD = ${top_srcdir}/testing/backends/check/libCheck.a -lm -lrt -lpthread $(AM_LIBS)
 # LDADD = libMdsTest.a 
-
-
 
 
 
@@ -66,6 +63,7 @@ libMdsTest_a_SOURCES = testing.c
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 $(MdsTestShr): backends/check/libCheck.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
+
 
 
 .PHONY: tests

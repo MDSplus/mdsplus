@@ -88,26 +88,19 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_CHECK_TRUE@TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericConversion$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsSignalTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDimensionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsWindowTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExpressionCompileTest$(EXEEXT)
+TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
+	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
+	MdsScalarTest_NumericLimits$(EXEEXT) \
+	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
+	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
+	MdsDimensionTest$(EXEEXT) MdsWindowTest$(EXEEXT) \
+	MdsFunctionTest$(EXEEXT) MdsConglomTest$(EXEEXT) \
+	MdsRangeTest$(EXEEXT) MdsCallTest$(EXEEXT) \
+	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
+	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
+	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
+	MdsExpressionCompileTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -121,27 +114,19 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_CHECK_TRUE@am__EXEEXT_1 = buildtest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExceptionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericConversion$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsSignalTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDimensionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsWindowTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExpressionCompileTest$(EXEEXT)
+am__EXEEXT_1 = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
+	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
+	MdsScalarTest_NumericLimits$(EXEEXT) \
+	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
+	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
+	MdsDimensionTest$(EXEEXT) MdsWindowTest$(EXEEXT) \
+	MdsFunctionTest$(EXEEXT) MdsConglomTest$(EXEEXT) \
+	MdsRangeTest$(EXEEXT) MdsCallTest$(EXEEXT) \
+	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
+	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
+	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
+	MdsExpressionCompileTest$(EXEEXT)
 MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
@@ -838,11 +823,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 SUBDIRS = testutils .
-AM_DEFAULT_SOURCE_EXT = .cpp
+TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}/testing
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}/testing
+AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
+AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
+AM_DEFAULT_SOURCE_EXT = .cpp
+
+#    this code must be launched with mdsip server active ..
+#    MdsConnectionSuppression
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 
@@ -852,6 +841,10 @@ LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
 # tests will be performed using the valgrind command below. Insert suppressions
 # files there.
+#
+# NOTE: all Suppression suffixed test are not propely tests but programs that
+# may rise false positives in valgrind memory check so they may be usefull to
+# generate suppressions codes.
 #
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \

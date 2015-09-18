@@ -54,6 +54,7 @@ PARTS = \
 	@HDF5_APS@ \
 	@LV@ \
 	LabView \
+	testing \
 	@MACOSX@
 @MINGW_TRUE@ PARTS += icons
 

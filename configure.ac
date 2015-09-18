@@ -765,6 +765,10 @@ AC_CHECK_HEADERS(pthread.h)
 AC_CHECK_FUNCS(pthread_lock_global_np)
 
 
+## CHECK related ##
+AC_CHECK_FUNCS(mkstemp)
+
+
 
 REMCAM="remcam"
 AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
@@ -1170,6 +1174,7 @@ AC_OUTPUT(Makefile.inc
           math/Makefile 
           mdsdcl/Makefile 
           mdslib/Makefile 
+          mdslib/testing/Makefile 
           mdslibidl/Makefile 
           mdsobjects/cpp/Makefile
           mdsobjects/cpp/docs/Makefile

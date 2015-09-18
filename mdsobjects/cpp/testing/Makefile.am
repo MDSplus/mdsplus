@@ -2,21 +2,25 @@ SUBDIRS = testutils .
 
 include ${top_srcdir}/Makefile.inc
 
-AM_DEFAULT_SOURCE_EXT = .cpp
 
+TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
 
-AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}/testing
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}/testing
+AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
+AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## // TESTS  //////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+AM_DEFAULT_SOURCE_EXT = .cpp
+
+
 #
-# NOTE: Gnu check must be present in the system and must be found by configure
-# process. If gnu check framework is not installed of not found the tests are
-# left undefined.
+# This is the list of tests to be compiled and executed
 #
-if HAVE_CHECK
 TESTS = \
         buildtest \
         MdsExceptionTest \
@@ -46,15 +50,6 @@ TESTS = \
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
 
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-else
-TESTS =
-endif
 
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
@@ -67,6 +62,10 @@ LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
 # tests will be performed using the valgrind command below. Insert suppressions
 # files there.
+#
+# NOTE: all Suppression suffixed test are not propely tests but programs that
+# may rise false positives in valgrind memory check so they may be usefull to
+# generate suppressions codes.
 #
 
 if USE_VALGRIND

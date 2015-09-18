@@ -30,11 +30,20 @@
 #include "check_impl.h"
 #include "check_pack.h"
 
-#ifndef HAVE_PTHREAD
+#include <pthread.h>
+
+#ifndef HAVE_PTHREAD_H
 #define pthread_mutex_lock(arg)
 #define pthread_mutex_unlock(arg)
-#define pthread_cleanup_push(f,a) {
-#define pthread_cleanup_pop(e) }
+
+#ifndef pthread_cleanup_push
+# define pthread_cleanup_push(f,a) {
+#endif
+
+#ifndef pthread_cleanup_pop
+# define pthread_cleanup_pop(e) }
+#endif
+
 #endif
 
 /* Maximum size for one message in the message stream. */
@@ -288,7 +297,7 @@ static void check_type(int type, const char *file, int line)
         eprintf("Bad message type arg %d", file, line, type);
 }
 
-#ifdef HAVE_PTHREAD
+#ifdef HAVE_PTHREAD_H
 static pthread_mutex_t ck_mutex_lock = PTHREAD_MUTEX_INITIALIZER;
 static void ppack_cleanup(void *mutex)
 {
