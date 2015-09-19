@@ -1,4 +1,16 @@
-commit 5a1871c71e0f8a71de96bc4f01380df22a3541dd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit c7c398699e7e57040f984e5216277310566f7aca (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 16 08:15:12 2015 -0400
+
+    Fix segfault in Deassign. Create descriptor struct after getting the module name not before.
+
+commit 4f295d96a714a85db601dc05a8bf3ce6d64872b2 (tag: refs/tags/alpha_release-7-0-152)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Sep 17 23:06:29 2015 -0400
+
+    New release ---- alpha_release-7-0-152
+
+commit 5a1871c71e0f8a71de96bc4f01380df22a3541dd
 Merge: 31815fa 5beef5d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Sep 17 14:23:54 2015 -0400
