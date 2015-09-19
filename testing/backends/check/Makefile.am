@@ -1,4 +1,4 @@
-SUBDIRS = lib .
+SUBDIRS = .
 
 include ${top_srcdir}/Makefile.inc
 
