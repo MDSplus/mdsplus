@@ -755,7 +755,7 @@ STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigne
   return status;
 }
 
-STATIC_ROUTINE int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr,
+STATIC_ROUTINE int Dsc2Rec(struct descriptor const *inp, struct descriptor_xd *out_dsc_ptr,
 			   unsigned int *reclen)
 {
   unsigned int size_out;
@@ -873,7 +873,7 @@ STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *le
   return status;
 }
 
-int MdsSerializeDscOutZ(struct descriptor *in,
+int MdsSerializeDscOutZ(struct descriptor const *in,
 			struct descriptor_xd *out,
 			int (*fixupNid) (),
 			void *fixupNidArg,
@@ -973,7 +973,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
   return status;
 }
 
-int MdsSerializeDscOut(struct descriptor *in, struct descriptor_xd *out)
+int MdsSerializeDscOut(struct descriptor const *in, struct descriptor_xd *out)
 {
   return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }

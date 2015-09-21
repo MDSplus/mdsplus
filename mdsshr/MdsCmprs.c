@@ -66,6 +66,7 @@
 #include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include "mdsshrp.h"
 #include <mdsshr_messages.h>
 #include <STATICdef.h>
 #include <mdstypes.h>
@@ -95,8 +96,8 @@ struct HEADER {
 STATIC_CONSTANT char FIELDSY = BITSY + BITSX;
 STATIC_CONSTANT int FIELDSX = 2;
 
-int MdsCmprs(int *nitems_ptr,
-	     struct descriptor_a *items_dsc_ptr, struct descriptor_a *pack_dsc_ptr, int *bit_ptr)
+int MdsCmprs(int const *nitems_ptr,
+	     struct descriptor_a const *items_dsc_ptr, struct descriptor_a *pack_dsc_ptr, int *bit_ptr)
 {
   int nitems = *nitems_ptr;
   int step = items_dsc_ptr->length;
