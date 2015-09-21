@@ -67,10 +67,10 @@ class Scalar(_data.Data):
     value=property(_getValue)
 
     def __str__(self):
-        formats={'Int8':'%dB','Int16':'%dW','Int32':'%d','Int64':'0X%0xQ',
-                 'Uint8':'%uBU','Uint16':'%uWU','Uint32':'%uLU','Uint64':'0X%0xQU',
-                 'Float32':'%g'}
-        ans=formats[self.__class__.__name__] % (self._value,)
+        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'0X%0uQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'0X%0xQU',
+                 Float32:'%g'}
+        ans=formats[self.__class__] % (self._value,)
         if ans=='nan':
             ans="$ROPRAND"
         elif isinstance(self,Float32) and ans.find('.')==-1:
