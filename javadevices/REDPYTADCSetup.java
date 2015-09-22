@@ -34,12 +34,12 @@ public class REDPYTADCSetup extends DeviceSetup {
         deviceDispatch1 = new DeviceDispatch();
         deviceField5 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
         deviceChoice2 = new DeviceChoice();
+        deviceChoice3 = new DeviceChoice();
         jPanel4 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
+        deviceChoice4 = new DeviceChoice();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Red Pitaya ADC");
@@ -63,43 +63,55 @@ public class REDPYTADCSetup extends DeviceSetup {
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("IP Address:");
-        deviceField5.setNumCols(20);
+        deviceField5.setNumCols(25);
         deviceField5.setOffsetNid(1);
         jPanel5.add(deviceField5);
 
         jPanel1.add(jPanel5);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Acq. Duration (ms):");
-        deviceField2.setOffsetNid(3);
-        jPanel3.add(deviceField2);
-
+        deviceChoice1.setChoiceIntValues(new int[] {0, 1, 2});
         deviceChoice1.setChoiceItems(new String[] {"CHAN_A", "CHAN_B", "EXTERNAL"});
+        deviceChoice1.setConvert(true);
         deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Trig Mode: ");
-        deviceChoice1.setOffsetNid(4);
+        deviceChoice1.setLabelString("Trig. Origin: ");
+        deviceChoice1.setOffsetNid(3);
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);
 
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
         deviceChoice2.setChoiceItems(new String[] {"12V", "5V"});
+        deviceChoice2.setConvert(true);
         deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Full Scale: ");
+        deviceChoice2.setLabelString("Full Scale Ch1: ");
         deviceChoice2.setOffsetNid(5);
         deviceChoice2.setUpdateIdentifier("");
         jPanel3.add(deviceChoice2);
 
-        jPanel1.add(jPanel3);
+        deviceChoice3.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice3.setChoiceItems(new String[] {"12V", "5V"});
+        deviceChoice3.setConvert(true);
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("Full Scale Ch2: ");
+        deviceChoice3.setOffsetNid(6);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel3.add(deviceChoice3);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Frequency (Hz):");
-        deviceField3.setOffsetNid(6);
-        jPanel4.add(deviceField3);
+        jPanel1.add(jPanel3);
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Trig. Time: ");
         deviceField4.setNumCols(25);
         deviceField4.setOffsetNid(7);
         jPanel4.add(deviceField4);
+
+        deviceChoice4.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice4.setChoiceItems(new String[] {"RISING", "FALLING"});
+        deviceChoice4.setConvert(true);
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("Trig. Edge");
+        deviceChoice4.setOffsetNid(4);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel4.add(deviceChoice4);
 
         jPanel1.add(jPanel4);
 
@@ -113,10 +125,10 @@ public class REDPYTADCSetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
+    private DeviceChoice deviceChoice4;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
-    private DeviceField deviceField2;
-    private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private javax.swing.JPanel jPanel1;
