@@ -47,7 +47,8 @@ DX_TAGFILES = mdsip.tag \
               mdsshr.tag \
               mdsobjects/cpp/docs \
               mdsobjects/python/docs \
-              mdsobjects/java/docs
+              mdsobjects/java/docs \
+              javascope/docs
 
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES) \
@@ -74,6 +75,7 @@ DX_SUBDIRS = \
           ../mdsobjects/cpp/docs/ \
           ../mdsobjects/python/docs/ \
           ../mdsobjects/java/docs/ \
+          ../javascope/docs \
           .
 	
 build_all:
