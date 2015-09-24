@@ -1,4 +1,14 @@
+
 #pragma once
+#
+########################################################
+# This header was generated using mdsshr/gen_device.py
+# To add new status messages modify: 
+#     mdsdcl_messages.xml
+# and then in mdsshr do:
+#     python gen_devices.py
+########################################################
+
 #define MdsdclSUCCESS              0x8020009
 #define MdsdclEXIT                 0x8020011
 #define MdsdclERROR                0x8020018

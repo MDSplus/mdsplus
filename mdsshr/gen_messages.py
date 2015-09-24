@@ -13,8 +13,27 @@ def gen_include(root,file,faclist,msglistm,f_test):
     
     f_inc=open("../include/%sh" % file.lower()[0:-3],'w')
     f_py=open("../mdsobjects/python/mdsExceptions/%sExceptions.py" % file.lower()[0:-len("_messages.xml")],'w')
-    f_inc.write("#pragma once\n")
+    f_inc.write("""
+#pragma once
+#
+########################################################
+# This header was generated using mdsshr/gen_device.py
+# To add new status messages modify: 
+#     %s
+# and then in mdsshr do:
+#     python gen_devices.py
+########################################################
+
+""" % file)
     f_py.write("""
+########################################################
+# This module was generated using mdsshr/gen_device.py
+# To add new status messages modify:
+#     %s
+# and then in mdsshr do:
+#     python gen_devices.py
+########################################################
+
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
     return __import__(name,globals())
@@ -24,7 +43,7 @@ else:
 
 MDSplusException=_mimport('__init__',1).MDSplusException
 
-""")
+""" % file)
     for f in root.getiterator('facility'):
         facnam = f.get('name')
         facnum = int(f.get('value'))

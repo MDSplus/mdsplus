@@ -1,4 +1,12 @@
 
+########################################################
+# This module was generated using mdsshr/gen_device.py
+# To add new status messages modify:
+#     mdsshr_messages.xml
+# and then in mdsshr do:
+#     python gen_devices.py
+########################################################
+
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
     return __import__(name,globals())
