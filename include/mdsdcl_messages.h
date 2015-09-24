@@ -1,8 +1,4 @@
-
-
-#ifndef MDSDCL_MESSAGES
-#define MDSDCL_MESSAGES
-
+#pragma once
 #define MdsdclSUCCESS              0x8020009
 #define MdsdclEXIT                 0x8020011
 #define MdsdclERROR                0x8020018
@@ -17,6 +13,3 @@
 #define MdsdclTOO_MANY_PRMS        0x802036a
 #define MdsdclTOO_MANY_VALS        0x8020372
 #define MdsdclMISSING_VALUE        0x802037a
-
-
-#endif

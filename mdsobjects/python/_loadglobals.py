@@ -12,7 +12,7 @@ def load(gbls):
       if not key.startswith('_'):
         gbls[key]=mod.__dict__[key]
 
-  for mod in ('apd','mdsarray','mdsExceptions','compound','mdsdata','ident','treenode','mdsscalar',
+  for mod in ('apd','mdsarray','compound','mdsdata','ident','treenode','mdsscalar',
               'tree','mdsdevice','event','_tdishr','scope','_mdsshr','_tdishr',
-              '_treeshr','tdipy','_descriptor','connection'):
+              '_treeshr','tdipy','_descriptor','connection','mdsExceptions'):
     loadmod(mod,1,gbls)

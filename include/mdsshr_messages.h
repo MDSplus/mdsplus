@@ -1,8 +1,4 @@
-
-
-#ifndef MDSSHR_MESSAGES
-#define MDSSHR_MESSAGES
-
+#pragma once
 #define LibINSVIRMEM            0x158214
 #define LibINVARG               0x158234
 #define LibINVSTRDES            0x158224
@@ -16,6 +12,3 @@
 #define StrINVDELIM             0x248210
 #define StrSTRTOOLON            0x248074
 #define SsINTOVF               0x47c
-
-
-#endif

@@ -1,8 +1,4 @@
-
-
-#ifndef TREESHR_MESSAGES
-#define TREESHR_MESSAGES
-
+#pragma once
 #define TreeALREADY_OFF          0xfd1802b
 #define TreeALREADY_ON           0xfd18033
 #define TreeALREADY_OPEN         0xfd1803b
@@ -86,6 +82,3 @@
 #define TreeNCIREAD              0xfd1905a
 #define TreeNOVERSION            0xfd19062
 #define TreeDFREAD               0xfd1906a
-
-
-#endif

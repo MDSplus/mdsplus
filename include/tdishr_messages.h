@@ -1,8 +1,4 @@
-
-
-#ifndef TDISHR_MESSAGES
-#define TDISHR_MESSAGES
-
+#pragma once
 #define TdiBREAK                0xfd38008
 #define TdiCASE                 0xfd38010
 #define TdiCONTINUE             0xfd38018
@@ -35,6 +31,3 @@
 #define TdiUNKNOWN_VAR          0xfd380f2
 #define TdiSTRTOOLON            0xfd380fc
 #define TdiTIMEOUT              0xfd38104
-
-
-#endif
