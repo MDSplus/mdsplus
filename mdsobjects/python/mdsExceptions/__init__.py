@@ -15,6 +15,29 @@ class MDSplusException(Exception):
                                self.msgnam,
                                self.message)
 
+class MDSplusError(MDSplusException):
+  fac="MDSplus"
+  severity="E"
+  msgnam="Error"
+  message="Failure to complete operation"
+  def __init__(self,status=None):
+    pass
+
+class MDSplusSuccess(MDSplusException):
+  fac="MDSplus"
+  severity="S"
+  msgnam="Success"
+  message="Successful execution"
+  def __init__(self,status=None):
+    pass
+
+class MDSplusUnknown(MDSplusException):
+  fac="MDSplus"
+  msgnam="Unknown"
+  def __init__(self,status):
+    self.status=status
+    self.severity=self.severities[self.status & 7]
+    self.message="Operation returned unknown status value: %s" % str(status)
 
 _modules=_g.glob(_dirname(__file__)+"/*.py")
 
@@ -44,4 +67,10 @@ for exception in _all:
 
 def statusToException(status):
   if (status & -8) in _statusDict:
-    return _statusDict[status & -8]
+    return _statusDict[status & -8](status)
+  elif status == 0:
+    return MDSplusError()
+  elif status == 1:
+    return MDSplusSuccess()
+  else:
+    return MDSplusUnknown(status)
