@@ -28,6 +28,11 @@ class CYGNET4K(Device):
       {'path':':DURATION', 'type':'numeric', 'value':1.},
       {'path':':CMOS_TEMP', 'type':'numeric'},
       {'path':':PCB_TEMP', 'type':'numeric'},
+      {'path':':USE_TREND', 'type':'numeric', 'value':0},
+      {'path':':TREND_NAME', 'type':'text'},
+      {'path':':TREND_SHOT', 'type':'numeric'},
+      {'path':':TREND_PCB', 'type':'text'},
+      {'path':':TREND_CMOS', 'type':'text'},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
@@ -50,24 +55,31 @@ class CYGNET4K(Device):
 ####Asynchronous temp readout internal class
     class AsynchTemp(Thread):
       
-      def configure(self, device, id, mdsLib, raptorLib):
+      def configure(self, device, id, mdsLib, raptorLib, hasTrend, trendPcbNode, trendCmosNode):
         self.device = device
         self.id = id
         self.mdsLib = mdsLib
         self.raptorLib = raptorLib
+        self.hasTrend = hasTrend
+        self.trendPcbNode = trendPcbNode
+        self.trendCmosNode = trendCmosNode
         self.stopReq = False
  
       def run(self):
         pcbTemp = c_float(0)
         cmosTemp = c_float(0)
         currTime = c_long(0)
+        currTime = 0
         tempIdx = 0;
+        startTime = time.time() * 1000
         while (not self.stopReq):
           self.raptorLib.epixGetTemp(c_int(1), c_int(tempIdx), byref(pcbTemp), byref(cmosTemp), byref(currTime))
           self.device.pcb_temp.putRow(1024, Float32(pcbTemp), Uint64(currTime))
           self.device.cmos_temp.putRow(1024, Float32(cmosTemp), Uint64(currTime))
+          if (self.hasTrend):
+            self.trendPcbNode.putRow(1024, Float32(pcbTemp), Uint64(currTime + startTime))
+            self.trendCmosNode.putRow(1024, Float32(cmosTemp), Uint64(currTime + startTime))
           time.sleep(0.5)
-
         return 0
 
       def stop(self):
@@ -330,7 +342,22 @@ class CYGNET4K(Device):
       self.tempWorker = self.AsynchTemp()        
       self.tempWorker.daemon = True 
       self.tempWorker.stopReq = False
-      self.tempWorker.configure(self, self.id.data(), mdsLib, raptorLib)
+      useTrend = self.use_trend.data()
+      if (useTrend == 1):
+        trendName = self.trend_name.data()
+        trendShot = self.trend_shot.data()
+        trendPcbName = self.trend_pcb.data()
+        trendCmosName = self.trend_cmos.data()
+        try:
+          trendTree = Tree(trendName, trendShot)
+          trendPcbNode = trendTree.getNode(trendPcbName)
+          trendCmosNode = trendTree.getNode(trendCmosName)
+        except:
+          print 'Cannot access nodes of temperature trend tree'
+          useTrend = 0
+          trendPcbNode = 0
+          trendCmosNode = 0
+      self.tempWorker.configure(self, self.id.data(), mdsLib, raptorLib, useTrend, trendPcbNode, trendCmosNode)
       self.saveTempWorker()
       self.tempWorker.start()
 
