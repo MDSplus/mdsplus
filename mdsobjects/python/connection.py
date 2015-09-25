@@ -28,7 +28,7 @@ Dictionary=_apd.Dictionary
 _scalar=_mimport('mdsscalar',1)
 _array=_mimport('mdsarray',1)
 _dtypes=_mimport('_mdsdtypes',1)
-
+_ver=_mimport('version',1)
 
 __MdsIpShr=_load_library('MdsIpShr')
 ConnectToMds=__MdsIpShr.ConnectToMds
@@ -49,6 +49,7 @@ class Connection(object):
                      _dtypes.DTYPE_QU:_scalar.Uint64,_dtypes.DTYPE_B:_scalar.Int8,_dtypes.DTYPE_W:_scalar.Int16,
                      _dtypes.DTYPE_L:_scalar.Int32,_dtypes.DTYPE_Q:_scalar.Int64,_dtypes.DTYPE_FLOAT:_scalar.Float32,
                      _dtypes.DTYPE_DOUBLE:_scalar.Float64,_dtypes.DTYPE_T:_scalar.String}
+
 
     def __inspect__(self,value):
         """Internal routine used in determining characteristics of the value"""
@@ -135,9 +136,9 @@ class Connection(object):
         if mem.value is not None:
             MdsIpFree(mem)
         return ans
-        
+
     def __init__(self,hostspec):
-      self.socket=ConnectToMds(hostspec.encode())
+      self.socket=ConnectToMds(_ver.tobytes(hostspec))
       if self.socket == -1:
         raise Exception("Error connecting to %s" % (hostspec,))
       self.hostspec=hostspec
@@ -165,7 +166,7 @@ class Connection(object):
             raise
     __processPutMany__=classmethod(__processPutMany__)
 
-                
+
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
         val=makeData(value)
@@ -250,7 +251,7 @@ class Connection(object):
             args=kwargs['arglist']
         num=len(args)+1
         idx=0
-        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp.encode()))
+        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp)))
         if not ((status & 1)==1):
             raise MdsException(MdsGetMsg(status))
         #self.__sendArg__(exp,idx,num)
@@ -258,7 +259,7 @@ class Connection(object):
             idx=idx+1
             self.__sendArg__(arg,idx,num)
         return self.__getAnswer__()
-    
+
 
     def setDefault(self,path):
         """Change the current default tree location on the remote server
@@ -371,7 +372,7 @@ class Connection(object):
                 else:
                     n=n+1
             raise Exception("Item %s not found in list" % (beforename,))
-                
+
         def remove(self,name):
             """Remove first occurrence of expression identified by its name from the list.
             @param name: Name of expression to be removed.
@@ -419,7 +420,7 @@ class Connection(object):
                 raise MdsException(self.result[node])
             else:
                 return self.result[node]
-            
+
         def execute(self):
             """Execute the PutMany by sending the instructions to the remote server. The remote server will attempt to
             put the data in each of the nodes listed and after completion return a dict instance of the status of each put.
@@ -453,7 +454,7 @@ class Connection(object):
 #            self.result=ans.deserialize()
             self.result=ans.deserialize(ans)
             return self.result
-        
+
         def insert(self,beforenode, node,exp,*args):
             """Insert put data before node in list specified by beforenode
             @param beforenode: Name of node in list to insert this put data information.
@@ -475,7 +476,7 @@ class Connection(object):
                 else:
                     n=n+1
             raise Exception("Node %s not found in list" % (str(beforenode),))
-                
+
         def remove(self,node):
             """Remove the node from the list.
             @param node: node name to remove from list. Must match exactly the node name used in the append() or insert() methods.

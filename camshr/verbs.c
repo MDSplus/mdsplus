@@ -277,9 +277,9 @@ int Deassign(void *ctx, char **error, char **output)
 
   // get user data
   cli_get_value(ctx, "MODULE", &wild);
-  StrUpcase(&wild, &wild);
   wild_d.pointer = wild;
   wild_d.length = strlen(wild);
+  StrUpcase(&wild_d, &wild_d);
 
   physical_name = cli_present(ctx, "PHYSICAL") & 1;
 

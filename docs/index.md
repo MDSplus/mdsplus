@@ -47,7 +47,7 @@ of the MDSplus tools and of the components not shown here please refer to the
 
 | Brief description page     | Link to component reference manual        |
 |:---------------------------|-------------------------------------------|
-| \ref lib_mdsshr            |     not written yet, ref to Mdsplus site  |
+| \ref lib_mdsshr            | \subpage mdsshr_manual                    |
 | \ref lib_tdishr            |     not written yet, ref to Mdsplus site  |
 | \ref lib_treeshr           |     not written yet, ref to Mdsplus site  |
 | \ref lib_mdsip             | \subpage mdsip_manual                     |

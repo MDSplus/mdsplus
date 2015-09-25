@@ -345,7 +345,7 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            shot=_treeshr.TreeGetCurrentShotId(str.encode(treename))
+            shot=_treeshr.TreeGetCurrentShotId(_ver.tobytes(treename))
         finally:
             Tree.unlock()
         if shot==0:
@@ -542,9 +542,9 @@ class Tree(object):
         """
         _scalar=_mimport('mdsscalar',1)
         if isinstance(begin,(str,_scalar.String)):
-          begin = _mdsshr.DateToQuad(str.encode(str(begin))).data()
+          begin = _mdsshr.DateToQuad(begin).data()
         if isinstance(end,(str,_scalar.String)):
-          end = _mdsshr.DateToQuad(str.encode(str(begin))).data()
+          end = _mdsshr.DateToQuad(begin).data()
         _treeshr.TreeSetTimeContext(begin,end,delta)
     setTimeContext=staticmethod(setTimeContext)
 

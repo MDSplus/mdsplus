@@ -69,8 +69,6 @@ int ServerSendMessage();
 
 extern short ArgLen();
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
 extern int GetAnswerInfoTS();
 
 typedef struct _Job {

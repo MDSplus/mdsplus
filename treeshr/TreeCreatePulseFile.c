@@ -39,8 +39,6 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #include <ctype.h>
 #include <usagedef.h>
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
 extern char *MaskReplace();
 
 STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it);
