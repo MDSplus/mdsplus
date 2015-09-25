@@ -391,6 +391,18 @@ blockquote {
 
 /* @end */
 
+#MSearchBox {
+    white-space: nowrap;
+    position: absolute;
+    float: none;
+    display: inline;
+    margin-top: 5px;
+    right: 0px;
+    width: 170px;
+    z-index: 102;
+    background-color: #FFF;
+}
+
 /*
 .search {
 	color: #003399;

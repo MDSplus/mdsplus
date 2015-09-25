@@ -1,4 +1,4 @@
-SUBDIRS = img .
+SUBDIRS = .
 
 include ../../docs/config/doxygen.am
 

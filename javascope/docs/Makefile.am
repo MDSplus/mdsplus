@@ -17,9 +17,12 @@ DX_PAGES = .. \
            jscope_dataprovider.md \
            jscope_udt.md
 
+
 DX_EXCLUDE_PAGES = 
                    
 DX_TAGFILES = docs.tag
+
+# DX_PARENT_TAG = docs.tag
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
 

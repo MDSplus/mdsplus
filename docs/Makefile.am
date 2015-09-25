@@ -98,6 +98,13 @@ install_all:
 	done;	
 
 
+clean_all:
+	list='$(DX_SUBDIRS)'
+	for subdir in $$list; do echo "Making $$target in $$subdir"; \
+	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) clean) \
+	done;
+
+
 # This is a html main page that resides into the root directory of the web
 # server and provides a redirection to the docs directory
 #
