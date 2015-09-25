@@ -5,8 +5,8 @@
     <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
     <Property name="deviceTitle" type="java.lang.String" value="Cygnet4K sCMOS Camera"/>
     <Property name="deviceType" type="java.lang.String" value="CYGNET4K"/>
-    <Property name="height" type="int" value="300"/>
-    <Property name="width" type="int" value="600"/>
+    <Property name="height" type="int" value="400"/>
+    <Property name="width" type="int" value="700"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
@@ -167,6 +167,98 @@
                     <Property name="labelString" type="java.lang.String" value="Duration (s): "/>
                     <Property name="numCols" type="int" value="6"/>
                     <Property name="offsetNid" type="int" value="14"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel6">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Temp. Trend"/>
+              </Border>
+            </Property>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+              <BorderConstraints direction="South"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel9">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="North"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice2">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="YES"/>
+                        <StringItem index="1" value="NO"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Temp. Trend:"/>
+                    <Property name="offsetNid" type="int" value="17"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField8">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Trend Name:"/>
+                    <Property name="offsetNid" type="int" value="18"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField9">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Trend shot:"/>
+                    <Property name="numCols" type="int" value="2"/>
+                    <Property name="offsetNid" type="int" value="19"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel10">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="South"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField10">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="PCB Node"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="20"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField11">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="CMOS Name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="21"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
