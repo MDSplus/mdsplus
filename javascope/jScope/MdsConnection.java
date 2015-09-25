@@ -132,7 +132,8 @@ public class MdsConnection
 	                }
         	    }
 	        }
-	        catch(IOException e)
+	        //catch(IOException e) CESARE 14/9/2015
+	        catch(Exception e)
 	        {
                    synchronized(this)
                     {		    
@@ -268,45 +269,48 @@ public class MdsConnection
 
         MdsMessage message = receiveThread.GetMessage();
 
-	            out.error = "Null response from server" ;
-	            return out;
-	        }
-	        out.status = message.status;
-	        switch ((out.dtype = message.dtype))
-	        {
-                    case Descriptor.DTYPE_UBYTE:
-	            case Descriptor.DTYPE_BYTE:
-		            out.byte_data = message.body;
-		        break;
-	            case Descriptor.DTYPE_USHORT:
-		            out.int_data = message.ToUShortArray();
-		            out.dtype = Descriptor.DTYPE_LONG;                      
-                        break;
-	            case Descriptor.DTYPE_SHORT:
-                           out.short_data = message.ToShortArray();
-                       break;
-	            case Descriptor.DTYPE_LONG:
-                    case Descriptor.DTYPE_ULONG:
-		            out.int_data = message.ToIntArray();
-		        break;
-                    case Descriptor.DTYPE_ULONGLONG:
-	            case Descriptor.DTYPE_LONGLONG:
-		            out.long_data = message.ToLongArray();
-		        break;
+        if(message == null || message.length == 0)
+        {
 
-	            case Descriptor.DTYPE_CSTRING:
-	                if((message.status & 1) == 1)
-	                    out.strdata = new String(message.body);
-	                else
-                            out.error = new String(message.body);
-		        break;
-	            case Descriptor.DTYPE_FLOAT:
-		            out.float_data = message.ToFloatArray();
-		        break;
-	            case Descriptor.DTYPE_DOUBLE:
-		            out.double_data = message.ToDoubleArray();
-		        break;
-	    }
+            out.error = "Null response from server" ;
+            return out;
+        }
+        out.status = message.status;
+        switch ((out.dtype = message.dtype))
+        {
+            case Descriptor.DTYPE_UBYTE:
+            case Descriptor.DTYPE_BYTE:
+                    out.byte_data = message.body;
+                break;
+            case Descriptor.DTYPE_USHORT:
+                    out.int_data = message.ToUShortArray();
+                    out.dtype = Descriptor.DTYPE_LONG;                      
+                break;
+            case Descriptor.DTYPE_SHORT:
+                   out.short_data = message.ToShortArray();
+               break;
+            case Descriptor.DTYPE_LONG:
+            case Descriptor.DTYPE_ULONG:
+                    out.int_data = message.ToIntArray();
+                break;
+            case Descriptor.DTYPE_ULONGLONG:
+            case Descriptor.DTYPE_LONGLONG:
+                    out.long_data = message.ToLongArray();
+                break;
+
+            case Descriptor.DTYPE_CSTRING:
+                if((message.status & 1) == 1)
+                    out.strdata = new String(message.body);
+                else
+                    out.error = new String(message.body);
+                break;
+            case Descriptor.DTYPE_FLOAT:
+                    out.float_data = message.ToFloatArray();
+                break;
+            case Descriptor.DTYPE_DOUBLE:
+                    out.double_data = message.ToDoubleArray();
+                break;
+        }
         return out;
     }
 

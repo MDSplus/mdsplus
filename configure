@@ -2308,60 +2308,6 @@ fi
 
 } # ac_fn_c_check_header_mongrel
 
-# ac_fn_c_check_type LINENO TYPE VAR INCLUDES
-# -------------------------------------------
-# Tests whether TYPE exists after having included INCLUDES, setting cache
-# variable VAR accordingly.
-ac_fn_c_check_type ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
-$as_echo_n "checking for $2... " >&6; }
-if eval \${$3+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  eval "$3=no"
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$4
-int
-main ()
-{
-if (sizeof ($2))
-	 return 0;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$4
-int
-main ()
-{
-if (sizeof (($2)))
-	    return 0;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-
-else
-  eval "$3=yes"
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-eval ac_res=\$$3
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-
-} # ac_fn_c_check_type
-
 # ac_fn_c_check_func LINENO FUNC VAR
 # ----------------------------------
 # Tests whether FUNC exists, setting the cache variable VAR accordingly
@@ -2428,6 +2374,60 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_check_func
+
+# ac_fn_c_check_type LINENO TYPE VAR INCLUDES
+# -------------------------------------------
+# Tests whether TYPE exists after having included INCLUDES, setting cache
+# variable VAR accordingly.
+ac_fn_c_check_type ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+$as_echo_n "checking for $2... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  eval "$3=no"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+if (sizeof ($2))
+	 return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+if (sizeof (($2)))
+	    return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+else
+  eval "$3=yes"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_type
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -6545,7 +6545,8 @@ $as_echo "$as_me: WARNING: Example:  --with-srb=/scratch/slocal/testc/SRB3_2clie
   *) :
     SRBLIB="-L${with_srb} -lsrbUio"
          SRBINCLUDE="-I${with_srb}"
-         $as_echo "#define SRB 1" >>confdefs.h
+
+$as_echo "#define SRB /**/" >>confdefs.h
  ;;
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_srb" >&5
@@ -7735,12 +7736,15 @@ int
 main ()
 {
 int gub(){return((int)0x1ll);}
+
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
-  $as_echo "#define HAVE_LL_CONSTANTS 1" >>confdefs.h
+
+$as_echo "#define HAVE_LL_CONSTANTS
+   /**/" >>confdefs.h
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
@@ -8149,7 +8153,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_getgrgid" >&5
 $as_echo "$ac_cv_lib_c_getgrgid" >&6; }
 if test "x$ac_cv_lib_c_getgrgid" = xyes; then :
-  $as_echo "#define HAVE_GETGRGID 1" >>confdefs.h
+
+$as_echo "#define HAVE_GETGRGID /**/" >>confdefs.h
 
 fi
 
@@ -8190,7 +8195,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_getpwuid" >&5
 $as_echo "$ac_cv_lib_c_getpwuid" >&6; }
 if test "x$ac_cv_lib_c_getpwuid" = xyes; then :
-  $as_echo "#define HAVE_GETPWUID 1" >>confdefs.h
+
+$as_echo "#define HAVE_GETPWUID /**/" >>confdefs.h
 
 fi
 
@@ -8301,7 +8307,8 @@ then
   then
     CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
   fi
-  $as_echo "#define HAVE_CLOCK_GETTIME 1" >>confdefs.h
+
+$as_echo "#define HAVE_CLOCK_GETTIME /**/" >>confdefs.h
 
 fi
 
@@ -8345,7 +8352,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_gettimeofday" >&5
 $as_echo "$ac_cv_lib_c_gettimeofday" >&6; }
 if test "x$ac_cv_lib_c_gettimeofday" = xyes; then :
-  $as_echo "#define HAVE_GETTIMEOFDAY 1" >>confdefs.h
+
+$as_echo "#define HAVE_GETTIMEOFDAY /**/" >>confdefs.h
 
 fi
 
@@ -8386,7 +8394,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_getaddrinfo" >&5
 $as_echo "$ac_cv_lib_c_getaddrinfo" >&6; }
 if test "x$ac_cv_lib_c_getaddrinfo" = xyes; then :
-  $as_echo "#define HAVE_GETADDRINFO 1" >>confdefs.h
+
+$as_echo "#define HAVE_GETADDRINFO /**/" >>confdefs.h
 
 fi
 
@@ -8427,7 +8436,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_strsep" >&5
 $as_echo "$ac_cv_lib_c_strsep" >&6; }
 if test "x$ac_cv_lib_c_strsep" = xyes; then :
-  $as_echo "#define HAVE_STRSEP 1" >>confdefs.h
+
+$as_echo "#define HAVE_STRSEP /**/" >>confdefs.h
 
 fi
 
@@ -8468,7 +8478,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_getrusage" >&5
 $as_echo "$ac_cv_lib_c_getrusage" >&6; }
 if test "x$ac_cv_lib_c_getrusage" = xyes; then :
-  $as_echo "#define HAVE_GETRUSAGE 1" >>confdefs.h
+
+$as_echo "#define HAVE_GETRUSAGE /**/" >>confdefs.h
 
 fi
 
@@ -8680,6 +8691,17 @@ else
   as_fn_error $? "\"libreadline headers was not found\"" "$LINENO" 5
 fi
 
+done
+
+    for ac_func in rl_set_signals
+do :
+  ac_fn_c_check_func "$LINENO" "rl_set_signals" "ac_cv_func_rl_set_signals"
+if test "x$ac_cv_func_rl_set_signals" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_RL_SET_SIGNALS 1
+_ACEOF
+
+fi
 done
 
   CPPFLAGS=$CPPFLAGS_save
@@ -9096,7 +9118,7 @@ fi
 
 done
 
-for ac_header in malloc.h pthread.h alloca.h
+for ac_header in malloc.h alloca.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -9109,6 +9131,31 @@ fi
 
 done
 
+
+
+## PTHREADS ##
+for ac_header in pthread.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "pthread.h" "ac_cv_header_pthread_h" "$ac_includes_default"
+if test "x$ac_cv_header_pthread_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PTHREAD_H 1
+_ACEOF
+
+fi
+
+done
+
+for ac_func in pthread_lock_global_np
+do :
+  ac_fn_c_check_func "$LINENO" "pthread_lock_global_np" "ac_cv_func_pthread_lock_global_np"
+if test "x$ac_cv_func_pthread_lock_global_np" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PTHREAD_LOCK_GLOBAL_NP 1
+_ACEOF
+
+fi
+done
 
 
 
@@ -9478,7 +9525,8 @@ done
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we should use pipes for messaging" >&5
 $as_echo_n "checking if we should use pipes for messaging... " >&6; }
    if test "$mdsplus_ok" = yes; then
-        $as_echo "#define USE_PIPED_MESSAGING 1" >>confdefs.h
+
+$as_echo "#define USE_PIPED_MESSAGING /**/" >>confdefs.h
 
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: $mdsplus_ok" >&5
 $as_echo "$mdsplus_ok" >&6; }
@@ -9489,14 +9537,14 @@ fi
 #    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;],
 #        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
 #    if test "$mdsplus_cv_have_timezone" = yes; then
-#        AC_DEFINE(HAVE_TIMEZONE)
+#        AC_DEFINE(HAVE_TIMEZONE,[],["define HAVE_TIMEZONE"])
 #    else
 #        AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
 #            AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
 #            mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
 #    fi
 #    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
-#        AC_DEFINE(USE_TM_GMTOFF)
+#        AC_DEFINE(USE_TM_GMTOFF,[],["define USE_TM_GMTOFF"])
 #    fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tm_gmtoff in struct tm" >&5
 $as_echo_n "checking for tm_gmtoff in struct tm... " >&6; }
@@ -9525,7 +9573,9 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $mdsplus_cv_tm_gmtoff_in_tm" >&5
 $as_echo "$mdsplus_cv_tm_gmtoff_in_tm" >&6; }
      if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
-        $as_echo "#define USE_TM_GMTOFF 1" >>confdefs.h
+
+$as_echo "#define USE_TM_GMTOFF
+          /**/" >>confdefs.h
 
      fi
 
@@ -9550,7 +9600,8 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 if test $mdsplus_ok = no; then
-		 $as_echo "#define NEED_SEMUN 1" >>confdefs.h
+
+$as_echo "#define NEED_SEMUN /**/" >>confdefs.h
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $mdsplus_ok" >&5
@@ -9572,7 +9623,8 @@ fi
 rm -f conftest*
 
 if test $mdsplus_ok = yes; then
-		 $as_echo "#define FILE_PTR_HL 1" >>confdefs.h
+
+$as_echo "#define FILE_PTR_HL /**/" >>confdefs.h
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $mdsplus_ok" >&5
@@ -9886,13 +9938,15 @@ then
         MDSSQL="mdssql"
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: have sql so yes." >&5
 $as_echo "have sql so yes." >&6; }
-        $as_echo "#define HAVE_SYBASE 1" >>confdefs.h
+
+$as_echo "#define HAVE_SYBASE /**/" >>confdefs.h
 
 else
         MDSSQL=""
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: missing sql so no." >&5
 $as_echo "missing sql so no." >&6; }
 fi
+
 
 cat >>confdefs.h <<_ACEOF
 #define SHARELIB_TYPE "${SHARETYPE}"
@@ -10885,6 +10939,91 @@ then
   MOTIF_APS=""
 fi
 
+
+XM_LIBS="-lMrm -lXm"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XextAddDisplay in -lXext" >&5
+$as_echo_n "checking for XextAddDisplay in -lXext... " >&6; }
+if ${ac_cv_lib_Xext_XextAddDisplay+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lXext  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char XextAddDisplay ();
+int
+main ()
+{
+return XextAddDisplay ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_Xext_XextAddDisplay=yes
+else
+  ac_cv_lib_Xext_XextAddDisplay=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_Xext_XextAddDisplay" >&5
+$as_echo "$ac_cv_lib_Xext_XextAddDisplay" >&6; }
+if test "x$ac_cv_lib_Xext_XextAddDisplay" = xyes; then :
+  LIBXEXT="-lXext"
+else
+  LIBXEXT=""
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XpGetDocumentData in -lXp" >&5
+$as_echo_n "checking for XpGetDocumentData in -lXp... " >&6; }
+if ${ac_cv_lib_Xp_XpGetDocumentData+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lXp  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char XpGetDocumentData ();
+int
+main ()
+{
+return XpGetDocumentData ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_Xp_XpGetDocumentData=yes
+else
+  ac_cv_lib_Xp_XpGetDocumentData=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_Xp_XpGetDocumentData" >&5
+$as_echo "$ac_cv_lib_Xp_XpGetDocumentData" >&6; }
+if test "x$ac_cv_lib_Xp_XpGetDocumentData" = xyes; then :
+  LIBXP="-lXp"
+else
+  LIBXP=""
+fi
 
 
 
@@ -12871,94 +13010,23 @@ esac
 
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
 
 
 
 
-XM_LIBS="-lMrm -lXm"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XextAddDisplay in -lXext" >&5
-$as_echo_n "checking for XextAddDisplay in -lXext... " >&6; }
-if ${ac_cv_lib_Xext_XextAddDisplay+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lXext  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char XextAddDisplay ();
-int
-main ()
-{
-return XextAddDisplay ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_Xext_XextAddDisplay=yes
-else
-  ac_cv_lib_Xext_XextAddDisplay=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_Xext_XextAddDisplay" >&5
-$as_echo "$ac_cv_lib_Xext_XextAddDisplay" >&6; }
-if test "x$ac_cv_lib_Xext_XextAddDisplay" = xyes; then :
-  LIBXEXT="-lXext"
-else
-  LIBXEXT=""
-fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XpGetDocumentData in -lXp" >&5
-$as_echo_n "checking for XpGetDocumentData in -lXp... " >&6; }
-if ${ac_cv_lib_Xp_XpGetDocumentData+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lXp  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char XpGetDocumentData ();
-int
-main ()
-{
-return XpGetDocumentData ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_Xp_XpGetDocumentData=yes
-else
-  ac_cv_lib_Xp_XpGetDocumentData=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_Xp_XpGetDocumentData" >&5
-$as_echo "$ac_cv_lib_Xp_XpGetDocumentData" >&6; }
-if test "x$ac_cv_lib_Xp_XpGetDocumentData" = xyes; then :
-  LIBXP="-lXp"
-else
-  LIBXP=""
-fi
+
+
+
+
+
+
+
 
 
 
@@ -13054,7 +13122,7 @@ ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -13911,6 +13979,7 @@ do
     "mdsobjects/labview/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/labview/Makefile" ;;
     "mdsmisc/Makefile") CONFIG_FILES="$CONFIG_FILES mdsmisc/Makefile" ;;
     "mdsshr/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/Makefile" ;;
+    "mdsshr/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/docs/Makefile" ;;
     "mdssql/Makefile") CONFIG_FILES="$CONFIG_FILES mdssql/Makefile" ;;
     "mdstcpip/Makefile") CONFIG_FILES="$CONFIG_FILES mdstcpip/Makefile" ;;
     "mdstcpip/zlib/Makefile") CONFIG_FILES="$CONFIG_FILES mdstcpip/zlib/Makefile" ;;
@@ -13930,6 +13999,8 @@ do
     "tdishr/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
+    "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;
+    "testing/backends/check/Makefile") CONFIG_FILES="$CONFIG_FILES testing/backends/check/Makefile" ;;
     "traverser/Makefile") CONFIG_FILES="$CONFIG_FILES traverser/Makefile" ;;
     "treeshr/Makefile") CONFIG_FILES="$CONFIG_FILES treeshr/Makefile" ;;
     "wfevent/Makefile") CONFIG_FILES="$CONFIG_FILES wfevent/Makefile" ;;

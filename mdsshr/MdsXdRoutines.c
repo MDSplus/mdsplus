@@ -33,7 +33,7 @@ void MdsFixDscLength(struct descriptor *in);
 
 STATIC_CONSTANT void *MdsVM_ZONE = 0;
 
-int MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descriptor_xd *dsc_ptr,
+int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_ptr, struct descriptor_xd *dsc_ptr,
 	      void **zone)
 {
   int status;
@@ -94,7 +94,7 @@ STATIC_ROUTINE struct descriptor *FixedArray();
 	NIDs converted to PATHs for TREE$COPY_TO_RECORD.
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
-STATIC_ROUTINE int copy_dx(struct descriptor_xd *in_dsc_ptr,
+STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			   struct descriptor_xd *out_dsc_ptr,
 			   unsigned int *bytes_used_ptr,
 			   int (*fixup_nid) (),
@@ -324,7 +324,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd *in_dsc_ptr,
 	Compressible flag is set for big arrays.
 */
 
-int MdsCopyDxXdZ(struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_ptr, void **zone,
+int MdsCopyDxXdZ(struct descriptor const *in_dsc_ptr, struct descriptor_xd *out_dsc_ptr, void **zone,
 		 int (*fixup_nid) (), void *fixup_nid_arg, int (*fixup_path) (),
 		 void *fixup_path_arg)
 {
@@ -371,7 +371,7 @@ STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
   return (struct descriptor *)answer;
 }
 
-int MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out)
+int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out)
 {
   return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
 }

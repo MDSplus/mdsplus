@@ -172,7 +172,7 @@ AS_CASE([$with_srb],
                 AS_EXIT],
         [SRBLIB="-L${with_srb} -lsrbUio"
          SRBINCLUDE="-I${with_srb}"
-         AC_DEFINE(SRB)])
+         AC_DEFINE(SRB,[],["Define if you are using SRB"])])
 AC_MSG_RESULT([$with_srb])
 
 dnl Look for labview include file
@@ -608,7 +608,9 @@ AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
 dnl Check for 0xnnnnll (long long constants)
 AC_LANG_SAVE
 AC_LANG_C
-AC_TRY_COMPILE(,int gub(){return((int)0x1ll);},AC_DEFINE(HAVE_LL_CONSTANTS))
+AC_TRY_COMPILE(,int gub(){return((int)0x1ll);}
+ ,AC_DEFINE(HAVE_LL_CONSTANTS
+  ,,"Define if you compiler likes 0xnnnnll long long constants"))
 AC_LANG_RESTORE
 
 AC_MSG_CHECKING(if JNI libraries are different)
@@ -639,8 +641,8 @@ AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
 AC_CHECK_LIB(c,gethostbyname,LIBNSL="",AC_CHECK_LIB(socket,gethostbyname,LIBNSL="-lsocket",AC_CHECK_LIB(nsl,gethostbyname,LIBNSL="-lnsl",LIBNSL="")))
 AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET=""))
-AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID))
-AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID))
+AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
+AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 OLDLIBS="$LIBS"
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
@@ -652,16 +654,16 @@ then
   then
     CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
   fi
-  AC_DEFINE(HAVE_CLOCK_GETTIME)
+  AC_DEFINE(HAVE_CLOCK_GETTIME,[],"Define if you have the clock_gettime function.")
 fi
 
 
 
 
-AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
-AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO))
-AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP))
-AC_CHECK_LIB(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE))
+AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY,,"Define if you have the gettimeofday function."))
+AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO,,"Define if you have the getaddrinfo routine"))
+AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP,,"Define if you have the strsep routine"))
+AC_CHECK_LIB(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine"))
 AC_ARG_ENABLE(d3d,
 	[  --enable-d3d            build d3d ptdata access library ],
 	if test "$enableval" = yes; then
@@ -696,7 +698,9 @@ if test x"$have_readline" = x"yes"; then
   CPPFLAGS_save="${CPPFLAGS}"
   CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
   AC_CHECK_HEADERS(readline/readline.h readline/history.h
-     ,,AC_MSG_ERROR("libreadline headers was not found"))
+     ,,AC_MSG_ERROR("libreadline headers was not found"))     
+  dnl this appears to be used so I add it here also.
+  AC_CHECK_FUNCS(rl_set_signals)
   CPPFLAGS=$CPPFLAGS_save
 else
   AC_MSG_ERROR(readline library was not found and must be installed.)
@@ -715,7 +719,7 @@ dnl else
 dnl   LIBREADLINE="$ac_cv_search_readline"
 dnl   TDIC="tdic"
 dnl fi
-dnl AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS))
+dnl AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS,,"define variable in code"))
 dnl AC_CHECK_HEADERS(readline/readline.h readline/history.h)
 
 
@@ -753,8 +757,12 @@ fi
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h)
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
-AC_CHECK_HEADERS(malloc.h pthread.h alloca.h)
+AC_CHECK_HEADERS(malloc.h alloca.h)
 
+
+## PTHREADS ##
+AC_CHECK_HEADERS(pthread.h)
+AC_CHECK_FUNCS(pthread_lock_global_np)
 
 
 
@@ -814,7 +822,7 @@ if test "$mdsplus_ok" = yes; then
    AC_CHECK_HEADERS(sys/stat.h, mdsplus_ok=yes, mdsplus_ok=no)
    AC_MSG_CHECKING(if we should use pipes for messaging)
    if test "$mdsplus_ok" = yes; then
-        AC_DEFINE(USE_PIPED_MESSAGING)
+        AC_DEFINE(USE_PIPED_MESSAGING,,"Define if use piped messaging")
         AC_MSG_RESULT($mdsplus_ok)
     fi
 fi
@@ -823,20 +831,21 @@ fi
 #    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
 #        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
 #    if test "$mdsplus_cv_have_timezone" = yes; then
-#        AC_DEFINE(HAVE_TIMEZONE)
+#        AC_DEFINE(HAVE_TIMEZONE,[],["define HAVE_TIMEZONE"])
 #    else
 #        AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
 #            AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
 #            mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
 #    fi
 #    if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
-#        AC_DEFINE(USE_TM_GMTOFF)
+#        AC_DEFINE(USE_TM_GMTOFF,[],["define USE_TM_GMTOFF"])
 #    fi
 AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
      AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
          mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
      if test "$mdsplus_cv_tm_gmtoff_in_tm" = yes; then
-        AC_DEFINE(USE_TM_GMTOFF)
+        AC_DEFINE(USE_TM_GMTOFF
+         ,,"Define if use need to use localtime instead of timezone and daylight")
      fi
 
 AC_MSG_CHECKING(for semun union declaration)
@@ -844,14 +853,14 @@ AC_TRY_COMPILE([#include <sys/types.h>
 #include <sys/sem.h>],[union semun arg;],
 							 mdsplus_ok=yes,mdsplus_ok=no)
 if test $mdsplus_ok = no; then
-		 AC_DEFINE(NEED_SEMUN)
+		 AC_DEFINE(NEED_SEMUN,,"Define NEED_SEMUN")
 fi
 AC_MSG_RESULT($mdsplus_ok)
 
 AC_MSG_CHECKING(for two byte fd in *FILE)
 AC_EGREP_HEADER(_fileL,stdio.h,mdsplus_ok=yes,mdsplus_ok=no)
 if test $mdsplus_ok = yes; then
-		 AC_DEFINE(FILE_PTR_HL)
+		 AC_DEFINE(FILE_PTR_HL,,"define FILE_PTR_HL")
 fi
 AC_MSG_RESULT($mdsplus_ok)
 
@@ -923,13 +932,14 @@ if test -n "$SYBASE_INC"
 then
         MDSSQL="mdssql"
         AC_MSG_RESULT(have sql so yes.)
-        AC_DEFINE(HAVE_SYBASE)
+        AC_DEFINE(HAVE_SYBASE,,"Define if you have the sybase includes (freetds)")
 else
         MDSSQL=""
         AC_MSG_RESULT(missing sql so no.)
 fi
 
-AC_DEFINE_UNQUOTED(SHARELIB_TYPE,"${SHARETYPE}")
+AC_DEFINE_UNQUOTED(SHARELIB_TYPE,"${SHARETYPE}",
+                   [Set SHARELIB_TYPE to ".so",".sl",".a" etc...])
 AC_C_BIGENDIAN
 
 AC_PATH_XTRA
@@ -960,6 +970,9 @@ then
 fi
 
 
+XM_LIBS="-lMrm -lXm"
+AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
+AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
 
 
@@ -1007,13 +1020,39 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+dnl Here we define all custom autoheader adds to config.h.in 
+
+dnl add here what goes on tom of config.h
+AH_TOP()
+
+AH_VERBATIM([_LL_CONSTANTS], [
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+])
+
+
+AH_VERBATIM([_WIN32], [
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+])
+
+dnl add here what goes on bottom of config.h
+AH_BOTTOM()
 
 
 
 
-XM_LIBS="-lMrm -lXm"
-AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
-AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+
 
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
@@ -1141,7 +1180,8 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
-          mdsshr/Makefile 
+          mdsshr/Makefile
+	  mdsshr/docs/Makefile
           mdssql/Makefile
           mdstcpip/Makefile 
           mdstcpip/zlib/Makefile
@@ -1161,6 +1201,8 @@ AC_OUTPUT(Makefile.inc
           tdishr/Makefile 
           tdic/Makefile
           tditest/Makefile 
+          testing/Makefile
+          testing/backends/check/Makefile          
           traverser/Makefile 
           treeshr/Makefile 
           wfevent/Makefile 

@@ -105,10 +105,12 @@ int main(int argc, char *argv[])
         tree = new Tree("test_tree",-1,"NORMAL"); delete tree;
         
         tree = new Tree("test_tree",-1,"READONLY"); 
-        TEST1( tree->isReadOnly() ) delete tree;        
+        TEST1( tree->isReadOnly() );
+        delete tree;        
         
         tree = new Tree("test_tree",-1,"EDIT");
-        TEST1( tree->isOpenForEdit() ) delete tree;
+        TEST1( tree->isOpenForEdit() );
+        delete tree;
         
         tree = new Tree("test_tree",-1);          delete tree;
         

@@ -4,6 +4,7 @@
 #include <mdsobjects.h>
 
 #include "testing.h"
+#include "testutils/testutils.h"
 #include "testutils/unique_ptr.h"
 #include "mdsplus/AutoPointer.hpp"
 

@@ -45,6 +45,14 @@ public class RFXAxiControlSetup extends DeviceSetup
     DeviceWave deviceWave21 = new DeviceWave();
     DeviceWave deviceWave22 = new DeviceWave();
     DeviceWave deviceWave23 = new DeviceWave();
+    DeviceWave deviceWave24 = new DeviceWave();
+    DeviceWave deviceWave25 = new DeviceWave();
+    DeviceWave deviceWave26 = new DeviceWave();
+    DeviceWave deviceWave27 = new DeviceWave();
+    DeviceWave deviceWave28 = new DeviceWave();
+    DeviceWave deviceWave29 = new DeviceWave();
+    DeviceWave deviceWave30 = new DeviceWave();
+    DeviceWave deviceWave31 = new DeviceWave();
     DeviceField deviceField3 = new DeviceField();
     public RFXAxiControlSetup()
     {
@@ -126,8 +134,8 @@ public class RFXAxiControlSetup extends DeviceSetup
         jPanel1.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
         gridLayout1.setRows(2);
-        deviceField2.setOffsetNid(116+12);
-        deviceField2.setOffsetNid(138+1+1);
+//        deviceField2.setOffsetNid(116+12);
+        deviceField2.setOffsetNid(111+77);
         deviceField2.setLabelString("Bv_Gain");
         deviceField2.setIdentifier("");
         deviceWave12.setUpdateExpression("");
@@ -183,8 +191,49 @@ public class RFXAxiControlSetup extends DeviceSetup
         deviceWave23.setMinYVisible(true);
         deviceWave23.setOffsetNid(111+24);
         
+        deviceWave24.setUpdateExpression("");
+        deviceWave24.setIdentifier("");
+        deviceWave24.setMinYVisible(true);
+        deviceWave24.setOffsetNid(111+30);
+        
+        deviceWave25.setUpdateExpression("");
+        deviceWave25.setIdentifier("");
+        deviceWave25.setMinYVisible(true);
+        deviceWave25.setOffsetNid(111+36);
+        
+        deviceWave26.setUpdateExpression("");
+        deviceWave26.setIdentifier("");
+        deviceWave26.setMinYVisible(true);
+        deviceWave26.setOffsetNid(111+42);
+        
+        deviceWave27.setUpdateExpression("");
+        deviceWave27.setIdentifier("");
+        deviceWave27.setMinYVisible(true);
+        deviceWave27.setOffsetNid(111+48);
+        
+        deviceWave28.setUpdateExpression("");
+        deviceWave28.setIdentifier("");
+        deviceWave28.setMinYVisible(true);
+        deviceWave28.setOffsetNid(111+54);
+        
+        deviceWave29.setUpdateExpression("");
+        deviceWave29.setIdentifier("");
+        deviceWave29.setMinYVisible(true);
+        deviceWave29.setOffsetNid(111+60);
+        
+        deviceWave30.setUpdateExpression("");
+        deviceWave30.setIdentifier("");
+        deviceWave30.setMinYVisible(true);
+        deviceWave30.setOffsetNid(111+66);
+        
+        deviceWave31.setUpdateExpression("");
+        deviceWave31.setIdentifier("");
+        deviceWave31.setMinYVisible(true);
+        deviceWave31.setOffsetNid(111+72);
+        
         //deviceField3.setOffsetNid(117+12+12);
-        deviceField3.setOffsetNid(1+138+2);
+        //deviceField3.setOffsetNid(1+138+2);
+        deviceField3.setOffsetNid(111+78);
         deviceField3.setLabelString("T Start Int. Action");
         deviceField3.setIdentifier("");
         this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
@@ -212,6 +261,16 @@ public class RFXAxiControlSetup extends DeviceSetup
         jTabbedPane1.add(deviceWave21,   "RplaCos3Ref");
         jTabbedPane1.add(deviceWave22,   "avgRplasmaRef");
         jTabbedPane1.add(deviceWave23,   "REF_DELTA_V");
+        jTabbedPane1.add(deviceWave23,   "REF_DELTA_V");
+        jTabbedPane1.add(deviceWave23,   "REF_DELTA_V");
+        jTabbedPane1.add(deviceWave24,   "gapRef_1");
+        jTabbedPane1.add(deviceWave25,   "gapRef_2");
+        jTabbedPane1.add(deviceWave26,   "gapRef_3");
+        jTabbedPane1.add(deviceWave27,   "gapRef_4");
+        jTabbedPane1.add(deviceWave28,   "gapRef_5");
+        jTabbedPane1.add(deviceWave29,   "gapRef_6");
+        jTabbedPane1.add(deviceWave30,   "gapRef_7");
+        jTabbedPane1.add(deviceWave31,   "gapRef_8");
         this.getContentPane().add(jPanel1, BorderLayout.NORTH);
         jPanel1.add(jPanel2, null);
         jPanel2.add(deviceField1, null);

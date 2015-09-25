@@ -82,6 +82,7 @@ static void *handleMessage(void *arg)
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
       int error = WSAGetLastError();
       if (error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK) {
+	break;
       } else {
 	fprintf(stderr,"Error getting data - %d\n", error);
 

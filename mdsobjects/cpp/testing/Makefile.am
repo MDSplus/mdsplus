@@ -4,9 +4,11 @@ include ${top_srcdir}/Makefile.inc
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
-AM_CFLAGS = @SRBINCLUDE@
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
+
+AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}/testing
+AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}/testing
+AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
 
 
 #
@@ -78,6 +80,34 @@ AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
 endif
 
 
+#
+# Files produced by tests that must be purged
+#
+
+MOSTLYCLEANFILES = \
+                   test_tree_001.characteristics \
+                   test_tree_001.datafile \
+                   test_tree_001.tree \
+                   test_tree_002.characteristics \
+                   test_tree_002.datafile \
+                   test_tree_002.tree \
+                   test_tree2_model.characteristics \
+                   test_tree2_model.datafile \
+                   test_tree2_model.tree \
+                   test_tree_model.characteristics \
+                   test_tree_model.datafile \
+                   test_tree_model.tree \
+                   leaktest_model.characteristics \
+                   leaktest_model.datafile \
+                   leaktest_model.tree
+
+
+                   
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## // TARGETS  ////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
 
 .PHONY: tests
 tests: $(TESTS)
