@@ -144,7 +144,7 @@ DX_DESTENV = ${DX_ENV} \
 
 
 .PHONY: doxygen-run doxygen-doc build_tag install_tag test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
-.INTERMEDIATE: doxygen-run test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
+.INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 .ONESHELL:
 
 test_nav:
@@ -161,7 +161,13 @@ test_nav:
 	  ##
 	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/|'`; \
 	  nav_dir=`echo $${line} | sed 's|.*=||'`; \
-	  cat $${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
+	  cat ${DX_DESTDIR}/$${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
+	  echo ""; \
+	  echo "****************************"; \
+	  echo " nav_dir = $${nav_dir}"; \
+	  echo "${DX_DESTDIR}/$${nav_dir}/nav.html"; \
+	  echo "****************************"; \
+	  echo ""; \
 	  tags="$${tags} $${line}"; \
 	 done \
 	else \
@@ -209,7 +215,7 @@ ${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG}
 	
 build_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
-install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@ 
+install_tag: DX_INSTALLDIR=${DESTDIR}${datadir}/doc/@PACKAGE@
 install_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
 
@@ -255,7 +261,7 @@ doxygen-doc: DX_INSTALLDIR = $(abs_top_builddir)
 doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 doxygen-install: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav 
+doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 
 

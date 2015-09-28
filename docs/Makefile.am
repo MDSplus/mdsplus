@@ -95,8 +95,7 @@ install_all:
 	done; \
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) doxygen-install) \
-	done;	
-
+	done;
 
 clean_all:
 	list='$(DX_SUBDIRS)'

@@ -855,7 +855,7 @@ uninstall-am:
 ### TARGETS: ###################################################################
 
 @DX_COND_doc_TRUE@.PHONY: doxygen-run doxygen-doc build_tag install_tag test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
-@DX_COND_doc_TRUE@.INTERMEDIATE: doxygen-run test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
+@DX_COND_doc_TRUE@.INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 @DX_COND_doc_TRUE@.ONESHELL:
 
 @DX_COND_doc_TRUE@test_nav:
@@ -866,7 +866,13 @@ uninstall-am:
 @DX_COND_doc_TRUE@	 for i in ${DX_PARENT_TAG}; do \
 @DX_COND_doc_TRUE@	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/|'`; \
 @DX_COND_doc_TRUE@	  nav_dir=`echo $${line} | sed 's|.*=||'`; \
-@DX_COND_doc_TRUE@	  cat $${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
+@DX_COND_doc_TRUE@	  cat ${DX_DESTDIR}/$${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
+@DX_COND_doc_TRUE@	  echo ""; \
+@DX_COND_doc_TRUE@	  echo "****************************"; \
+@DX_COND_doc_TRUE@	  echo " nav_dir = $${nav_dir}"; \
+@DX_COND_doc_TRUE@	  echo "${DX_DESTDIR}/$${nav_dir}/nav.html"; \
+@DX_COND_doc_TRUE@	  echo "****************************"; \
+@DX_COND_doc_TRUE@	  echo ""; \
 @DX_COND_doc_TRUE@	  tags="$${tags} $${line}"; \
 @DX_COND_doc_TRUE@	 done \
 @DX_COND_doc_TRUE@	else \
@@ -907,7 +913,7 @@ uninstall-am:
 
 @DX_COND_doc_TRUE@build_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
-@DX_COND_doc_TRUE@install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@ 
+@DX_COND_doc_TRUE@install_tag: DX_INSTALLDIR=${DESTDIR}${datadir}/doc/@PACKAGE@
 @DX_COND_doc_TRUE@install_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
 @DX_COND_doc_TRUE@.ONESHELL:
@@ -937,7 +943,7 @@ uninstall-am:
 @DX_COND_doc_TRUE@doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 @DX_COND_doc_TRUE@doxygen-install: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-@DX_COND_doc_TRUE@doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav 
+@DX_COND_doc_TRUE@doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 # //////////////////////////////////////////////////////////////////////////// #
 # TARGETS #
