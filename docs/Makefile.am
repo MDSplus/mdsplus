@@ -79,6 +79,7 @@ DX_SUBDIRS = \
           ../mdslib/docs/ \
           ../javascope/docs \
           .
+          
 	
 build_all:
 	list='$(DX_SUBDIRS)'

@@ -869,12 +869,6 @@ uninstall-am:
 @DX_COND_doc_TRUE@	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/|'`; \
 @DX_COND_doc_TRUE@	  nav_dir=`echo $${line} | sed 's|.*=||'`; \
 @DX_COND_doc_TRUE@	  cat ${DX_DESTDIR}/$${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
-@DX_COND_doc_TRUE@	  echo ""; \
-@DX_COND_doc_TRUE@	  echo "****************************"; \
-@DX_COND_doc_TRUE@	  echo " nav_dir = $${nav_dir}"; \
-@DX_COND_doc_TRUE@	  echo "${DX_DESTDIR}/$${nav_dir}/nav.html"; \
-@DX_COND_doc_TRUE@	  echo "****************************"; \
-@DX_COND_doc_TRUE@	  echo ""; \
 @DX_COND_doc_TRUE@	  tags="$${tags} $${line}"; \
 @DX_COND_doc_TRUE@	 done \
 @DX_COND_doc_TRUE@	else \

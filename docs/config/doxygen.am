@@ -162,12 +162,6 @@ test_nav:
 	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/|'`; \
 	  nav_dir=`echo $${line} | sed 's|.*=||'`; \
 	  cat ${DX_DESTDIR}/$${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
-	  echo ""; \
-	  echo "****************************"; \
-	  echo " nav_dir = $${nav_dir}"; \
-	  echo "${DX_DESTDIR}/$${nav_dir}/nav.html"; \
-	  echo "****************************"; \
-	  echo ""; \
 	  tags="$${tags} $${line}"; \
 	 done \
 	else \
