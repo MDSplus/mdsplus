@@ -5,6 +5,9 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen $doxygenversion"/>
+
+<script type="text/javascript" src="Navigation.js"></script>
+
 <!--BEGIN PROJECT_NAME--><title>$projectname: $title</title><!--END PROJECT_NAME-->
 <!--BEGIN !PROJECT_NAME--><title>$title</title><!--END !PROJECT_NAME-->
 <link href="$relpath^tabs.css" rel="stylesheet" type="text/css"/>
@@ -58,47 +61,11 @@ $extrastylesheet
  </tbody>
 </table>
 
-<div id="nav-path" class="navpath"> <!-- id is needed for treeview function! -->
-  <ul id="nav-list">    
-  <div margin-top="5px">$searchbox</div>
-  </ul>  
-</div>
 
-<script>  
-// load xml file
-if (window.XMLHttpRequest) {
-    xhttp = new XMLHttpRequest();
-} else {    // IE 5/6
-    xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-}
 
-xhttp.overrideMimeType('text/xml');
-xhttp.open("GET", "nav.xml", true);
-xhttp.send();
-xhttp.onreadystatechange = function () {
-        if ( xhttp.readyState == 4 && xhttp.status==200 ) {                      
-          var dir = xhttp.responseXML.getElementsByTagName("topdir")[0].childNodes[0].nodeValue;          
-          var prj = xhttp.responseXML.getElementsByTagName("dxproject");
-          for (var i = 0; i < prj.length; i++) {
-              y = prj[i];
-              var name = y.getAttribute("name");
-              var url  = y.getAttribute("url");
-              
-              var ul = document.getElementById("nav-list");
-              var li = document.createElement("li");        
-              li.setAttribute("class", "navelem");
-               var a = document.createElement("a");
-               a.setAttribute("class", "el");
-               a.setAttribute("href", dir+url+"/index.html");
-               a.appendChild(document.createTextNode( name ));
-               li.appendChild(a);
-              ul.appendChild(li);                        
-              
-              y = y.nextSibling;
-          }    
-        }
-};
-</script>
+
+
+
 </div>
 <!--END TITLEAREA-->
 <!-- end header part -->

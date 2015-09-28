@@ -432,7 +432,8 @@ uiddir = @uiddir@
 @DX_COND_doc_TRUE@               DX_BRIEF='${DX_BRIEF}' \
 @DX_COND_doc_TRUE@               DX_HTML_HEADER='${DX_HTML_HEADER}' \
 @DX_COND_doc_TRUE@               DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
-@DX_COND_doc_TRUE@               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' 
+@DX_COND_doc_TRUE@               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' \
+@DX_COND_doc_TRUE@               DX_LAYOUT='${DX_LAYOUT}'
 
 @DX_COND_doc_TRUE@DX_DESTENV = ${DX_ENV} \
 @DX_COND_doc_TRUE@             ${DX_ENVCOMMON} \

@@ -127,7 +127,8 @@ DX_ENVCOMMON = \
                DX_BRIEF='${DX_BRIEF}' \
                DX_HTML_HEADER='${DX_HTML_HEADER}' \
                DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
-               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' 
+               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' \
+               DX_LAYOUT='${DX_LAYOUT}'
 
 
 DX_DESTENV = ${DX_ENV} \
