@@ -79,7 +79,10 @@ class Array(_data.Data):
                 value=_np.ctypeslib.as_array(value)
             except Exception:
                 pass
-        self._value=_np.array(value).__array__(_np.__dict__[self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()])
+        value = _np.array(value)
+        if len(value.shape) == 0:  # happens if value has been a scalar, e.g. int
+            value = value.reshape(1)
+        self._value = value.__array__(_np.__dict__[self.__class__.__name__[0:-5].lower()])
         return
 
     def __getattr__(self,name):
