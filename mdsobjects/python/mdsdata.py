@@ -52,7 +52,6 @@ def decompile(item):
     @rtype: string"""
 
     return _mimport('_tdishr',1).TdiDecompile(item)
-    return makeData(item).decompile()
 
 def evaluate(item,):
     """Return evaluation of mdsplus object"""
