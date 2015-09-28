@@ -54,7 +54,7 @@ of the MDSplus tools and of the components not shown here please refer to the
 | \ref lib_mdsobjects C++    | \subpage mdsobjects_cpp_manual            |
 | \ref lib_mdsobjects Python | \subpage mdsobjects_py_manual             |
 | \ref lib_mdsobjects Java   | \subpage mdsobjects_java_manual           |
-
+| MDSlib manual              | \subpage mdslib_manual                    |
 
 
 

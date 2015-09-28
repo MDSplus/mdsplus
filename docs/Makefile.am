@@ -48,6 +48,7 @@ DX_TAGFILES = mdsip.tag \
               mdsobjects/cpp/docs \
               mdsobjects/python/docs \
               mdsobjects/java/docs \
+              mdslib/docs \
               javascope/docs
 
 
@@ -75,6 +76,7 @@ DX_SUBDIRS = \
           ../mdsobjects/cpp/docs/ \
           ../mdsobjects/python/docs/ \
           ../mdsobjects/java/docs/ \
+          ../mdslib/docs/ \
           ../javascope/docs \
           .
 	
