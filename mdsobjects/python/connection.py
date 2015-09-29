@@ -146,27 +146,6 @@ class Connection(object):
     def __del__(self):
         DisconnectFromMds(self.socket)
 
-    def __processGetMany__(cls):
-        try:
-            cls.GetMany(value=Data.getTdiVar("__getManyIn__").deserialize()).execute().serialize().setTdiVar("__getManyOut__")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            print(e)
-            raise
-    __processGetMany__=classmethod(__processGetMany__)
-
-    def __processPutMany__(cls):
-        try:
-            cls.PutMany(value=Data.getTdiVar("__putManyIn__").deserialize()).execute().serialize().setTdiVar("__putManyOut__")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            print(e)
-            raise
-    __processPutMany__=classmethod(__processPutMany__)
-
-
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
         val=makeData(value)
@@ -197,9 +176,9 @@ class Connection(object):
         if not ((status & 1)==1):
             raise MdsException(MdsGetMsg(status))
 
-    def getMany(self):
-        """Return instance of a Connection.GetMany class. See the Connection.GetMany documentation for further information."""
-        return Connection.GetMany(connection=self)
+    def getMany(self, value=None):
+        """Return instance of a connection.GetMany class. See the connection.GetMany documentation for further information."""
+        return GetMany(value, self)
 
     def openTree(self,tree,shot):
         """Open an MDSplus tree on a remote server
@@ -233,9 +212,9 @@ class Connection(object):
         if not ((status & 1)==1):
             raise MdsException(MdsGetMsg(status))
 
-    def putMany(self):
-        """Return an instance of a Connection.PutMany class. See the Connection.PutMany documentation for further information."""
-        return Connection.PutMany(connection=self)
+    def putMany(self, value=None):
+        """Return an instance of a connection.PutMany class. See the connection.PutMany documentation for further information."""
+        return PutMany(value, connection=self)
 
     def get(self,exp,*args,**kwargs):
         """Evaluate and expression on the remote server
@@ -271,220 +250,224 @@ class Connection(object):
         if not ((status & 1)==1):
             raise MdsException(MdsGetMsg(status))
 
+    # depreciated
+    def GetMany(self,*arg):
+        raise(Exception('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
+    def PutMany(self,*arg):
+        raise(Exception('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
 
-    class GetMany(List):
-        """Build a list of expressions to evaluate
+class GetMany(List):
+    """Build a list of expressions to evaluate
 
-        To reduce the number of network transactions between you and the remote system you can
-        use the GetMany class to specify a list of expressions to be evaluated and then
-        send that list to the remote system in one network transation. The remote system will
-        then evaluate all of the expressions and return the answer in one response.
+    To reduce the number of network transactions between you and the remote system you can
+    use the GetMany class to specify a list of expressions to be evaluated and then
+    send that list to the remote system in one network transation. The remote system will
+    then evaluate all of the expressions and return the answer in one response.
 
-        To use the GetMany class you can create an instance using the getMany() method of a
-        Connection instance. You then use the GetMany.append(name,expression[,args]) method
-        to add expressions to the list. Once the list is complete you then use the GetMany.execute()
-        method to execute the expressions on the remote host and retrieve the answers. This will
-        return a dictionary instance with the names assigned to the expressions as the key. Each
-        name will have a dictionary instance containing the result of the execution of the expression.
-        If this dictionary has an 'error' key then its value will be an error string, otherwise
-        the dictionary should have a 'value' key containing the result.
+    To use the GetMany class you can create an instance using the getMany() method of a
+    Connection instance. You then use the GetMany.append(name,expression[,args]) method
+    to add expressions to the list. Once the list is complete you then use the GetMany.execute()
+    method to execute the expressions on the remote host and retrieve the answers. This will
+    return a dictionary instance with the names assigned to the expressions as the key. Each
+    name will have a dictionary instance containing the result of the execution of the expression.
+    If this dictionary has an 'error' key then its value will be an error string, otherwise
+    the dictionary should have a 'value' key containing the result.
 
-        The GetMany instance can be executed multiple times. For instance, if you want to get the
-        same information from many different trees you could use the Connection.openTeee(tree,shot)
-        method between executions of the same GetMany instance.
+    The GetMany instance can be executed multiple times. For instance, if you want to get the
+    same information from many different trees you could use the Connection.openTeee(tree,shot)
+    method between executions of the same GetMany instance.
 
-        NOTE: MDSplus can currently only address objects less than 4 gigabytes. Therefore the
-        maximum size of the expression list with arguments and the result dictionary is approximately 4 gigatypes.
+    NOTE: MDSplus can currently only address objects less than 4 gigabytes. Therefore the
+    maximum size of the expression list with arguments and the result dictionary is approximately 4 gigatypes.
+    """
+
+    def __init__(self,value=None,connection=None):
+        """GetMany instance initialization."""
+        if value is not None:
+            List.__init__(self,value)
+        self.connection=connection
+        self.result=None
+
+    def append(self,name,exp,*args):
+        """Append expression to the list.
+        @param name: name to assign to the expression for identifying it in the result dictionary.
+        @type name: str
+        @param exp: expression to be evaluated with placeholders for optional arguments
+        @type exp: str
+        @param args: optional arguments to replace placeholders in the expression
+        @type args: Data
+        @rtype: None
         """
+        super(GetMany,self).append(Dictionary({'name':str(name),'exp':str(exp),'args':args}))
 
-        def __init__(self,value=None,connection=None):
-            """GetMany instance initialization."""
-            if value is not None:
-                List.__init__(self,value)
-            self.connection=connection
-            self.result=None
-
-        def append(self,name,exp,*args):
-            """Append expression to the list.
-            @param name: name to assign to the expression for identifying it in the result dictionary.
-            @type name: str
-            @param exp: expression to be evaluated with placeholders for optional arguments
-            @type exp: str
-            @param args: optional arguments to replace placeholders in the expression
-            @type args: Data
-            @rtype: None
-            """
-            super(Connection.GetMany,self).append(Dictionary({'name':str(name),'exp':str(exp),'args':args}))
-
-        def execute(self):
-            """Execute the list. Send the list to the remote server for evaluation and return the answer as a dict instance."""
-            if self.connection is None:
-                self.result=Dictionary()
-                for val in self:
-                    name=val['name']
-                    try:
-                        self.result[name]=Dictionary({'value':Data.execute('data('+val['exp']+')',tuple(val['args']))})
-                    except Exception:
-                        import sys
-                        e=sys.exc_info()[1]
-                        self.result[name]=Dictionary({'error':str(e)})
-                return self.result
-            else:
-                ans=self.connection.get("GetManyExecute($)",self.serialize())
-            if isinstance(ans,str):
-                raise Exception("Error fetching data: "+ans)
-            self.result=ans.deserialize(ans)
-#            self.result=ans.deserialize()
+    def execute(self):
+        """Execute the list. Send the list to the remote server for evaluation and return the answer as a dict instance."""
+        if self.connection is None:
+            self.result=Dictionary()
+            for val in self:
+                name=val['name']
+                try:
+                    self.result[name]=Dictionary({'value':Data.execute('data('+val['exp']+')',tuple(val['args']))})
+                except Exception:
+                    import sys
+                    e=sys.exc_info()[1]
+                    self.result[name]=Dictionary({'error':str(e)})
             return self.result
+        else:
+            ans=self.connection.get("GetManyExecute($)",self.serialize())
+        if isinstance(ans,str):
+            raise Exception("Error fetching data: "+ans)
+        self.result=ans.deserialize()
+        return self.result
 
-        def get(self,name):
-            """Get the result of an expression identified by name from the last invokation of the execute() method.
-            @param name: name associated with an expression.
-            @type name: str
-            @return: result of the expression evaluation.
-            @rtype: Scalar or Array
-            """
-            if self.result is None:
-                raise Exception("GetMany has not yet been executed. Use the execute() method on this object first.")
-            if 'value' in self.result[name]:
-                return self.result[name]['value']
+    def get(self,name):
+        """Get the result of an expression identified by name from the last invokation of the execute() method.
+        @param name: name associated with an expression.
+        @type name: str
+        @return: result of the expression evaluation.
+        @rtype: Scalar or Array
+        """
+        if self.result is None:
+            raise Exception("GetMany has not yet been executed. Use the execute() method on this object first.")
+        if 'value' in self.result[name]:
+            return self.result[name]['value']
+        else:
+            raise Exception(self.result[name]['error'])
+
+    def insert(self,beforename, name,exp,*args):
+        """Insert an expression in the list before the one named in the beforename argument.
+        @param beforename: Insert the expression before this one
+        @type beforename: str
+        @param name: Name to associate with the result of this expression
+        @type name: str
+        @param exp: TDI expression to be evaluated with optional placeholders for the arguments
+        @type expression: str
+        @param args: Optional arguments to replace placeholders in the expression
+        @type args: Data
+        @rtype: None
+        """
+        d=Dictionary({'name':name,'exp':str(exp),'args':args})
+        n = 0
+        for item in self:
+            if item['name'] == beforename:
+                super(GetMany,self).insert(n,d)
+                return
             else:
-                raise Exception(self.result[name]['error'])
+                n=n+1
+        raise Exception("Item %s not found in list" % (beforename,))
 
-        def insert(self,beforename, name,exp,*args):
-            """Insert an expression in the list before the one named in the beforename argument.
-            @param beforename: Insert the expression before this one
-            @type beforename: str
-            @param name: Name to associate with the result of this expression
-            @type name: str
-            @param exp: TDI expression to be evaluated with optional placeholders for the arguments
-            @type expression: str
-            @param args: Optional arguments to replace placeholders in the expression
-            @type args: Data
-            @rtype: None
-            """
-            d=Dictionary({'name':name,'exp':str(exp),'args':args})
-            n = 0
-            for item in self:
-                if item['name'] == beforename:
-                    super(Connection.GetMany,self).insert(n,d)
-                    return
-                else:
-                    n=n+1
-            raise Exception("Item %s not found in list" % (beforename,))
+    def remove(self,name):
+        """Remove first occurrence of expression identified by its name from the list.
+        @param name: Name of expression to be removed.
+        @type name: str
+        @rtype: None
+        """
+        for item in self:
+            if item['name'] == name:
+                super(GetMany,self).remove(item)
+                return
+        raise Exception("Item %s not found in list" % (name,))
 
-        def remove(self,name):
-            """Remove first occurrence of expression identified by its name from the list.
-            @param name: Name of expression to be removed.
-            @type name: str
-            @rtype: None
-            """
-            for item in self:
-                if item['name'] == name:
-                    super(Connection.GetMany,self).remove(item)
-                    return
-            raise Exception("Item %s not found in list" % (name,))
 
-    class PutMany(List):
-        """Build list of put instructions."""
+class PutMany(List):
+    """Build list of put instructions."""
 
-        def __init__(self,value=None,connection=None):
-            """Instance initialization"""
-            if value is not None:
-                List.__init__(self,value)
-            self.connection=connection
-            self.result=None
+    def __init__(self,value=None,connection=None):
+        """Instance initialization"""
+        if value is not None:
+            List.__init__(self,value)
+        self.connection=connection
+        self.result=None
 
-        def append(self,node,exp,*args):
-            """Append node data information
-            @param node: Node name where to store the data
-            @type node: str
-            @param exp: TDI expression to be stored in node with optional placeholders for arguments
-            @type exp: str
-            @param args: optional arguments to replace placeholders in expression
-            @type args: Data
-            @rtype: None
-            """
-            super(Connection.PutMany,self).append(Dictionary({'node':str(node),'exp':str(exp),'args':args}))
+    def append(self,node,exp,*args):
+        """Append node data information
+        @param node: Node name where to store the data
+        @type node: str
+        @param exp: TDI expression to be stored in node with optional placeholders for arguments
+        @type exp: str
+        @param args: optional arguments to replace placeholders in expression
+        @type args: Data
+        @rtype: None
+        """
+        super(PutMany,self).append(Dictionary({'node':str(node),'exp':str(exp),'args':args}))
 
-        def checkStatus(self,node):
-            """Return the status of the put for this node. Anything other than 'Success' will raise an exception.
-            @param node: Node name. Must match exactly the node name used in the append() or insert() methods.
-            @type node: str
-            @result: The string 'Success' otherwise an exception is raised.
-            @rtype: str
-            """
-            if self.result is None:
-                raise Exception("PutMany has not yet been executed. Use the execute() method on this object first.")
-            if self.result[node] != "Success":
-                raise MdsException(self.result[node])
-            else:
-                return self.result[node]
+    def checkStatus(self,node):
+        """Return the status of the put for this node. Anything other than 'Success' will raise an exception.
+        @param node: Node name. Must match exactly the node name used in the append() or insert() methods.
+        @type node: str
+        @result: The string 'Success' otherwise an exception is raised.
+        @rtype: str
+        """
+        if self.result is None:
+            raise Exception("PutMany has not yet been executed. Use the execute() method on this object first.")
+        if self.result[node] != "Success":
+            raise MdsException(self.result[node])
+        else:
+            return self.result[node]
 
-        def execute(self):
-            """Execute the PutMany by sending the instructions to the remote server. The remote server will attempt to
-            put the data in each of the nodes listed and after completion return a dict instance of the status of each put.
-            @return: dict instance with status of each put. The key of the result will be the node name.
-            """
-            if self.connection is None:
-                self.result=Dictionary()
-                for val in self:
-                    node=val['node']
-                    try:
-                        exp='TreePut($,$'
-                        args=[node,val['exp']]
-                        for i in range(len(val['args'])):
-                            exp=exp+',$'
-                            args.append(val['args'][i])
-                        exp=exp+')'
-                        status=Data.execute(exp,tuple(args))
-                        if (status & 1) == 1:
-                            self.result[node]='Success'
-                        else:
-                            self.result[node]=MdsGetMsg(status)
-                    except Exception:
-                        import sys
-                        e=sys.exc_info()[1]
-                        self.result[node]=str(e)
-                return self.result
-            else:
-                ans=self.connection.get("PutManyExecute($)",self.serialize())
-            if isinstance(ans,str):
-                raise Exception("Error putting any data: "+ans)
-#            self.result=ans.deserialize()
-            self.result=ans.deserialize(ans)
+    def execute(self):
+        """Execute the PutMany by sending the instructions to the remote server. The remote server will attempt to
+        put the data in each of the nodes listed and after completion return a dict instance of the status of each put.
+        @return: dict instance with status of each put. The key of the result will be the node name.
+        """
+        if self.connection is None:
+            self.result=Dictionary()
+            for val in self:
+                node=val['node']
+                try:
+                    exp='TreePut($,$'
+                    args=[node,val['exp']]
+                    for i in range(len(val['args'])):
+                        exp=exp+',$'
+                        args.append(val['args'][i])
+                    exp=exp+')'
+                    status=Data.execute(exp,tuple(args))
+                    if (status & 1) == 1:
+                        self.result[node]='Success'
+                    else:
+                        self.result[node]=MdsGetMsg(status)
+                except Exception:
+                    import sys
+                    e=sys.exc_info()[1]
+                    self.result[node]=str(e)
             return self.result
+        else:
+            ans=self.connection.get("PutManyExecute($)",self.serialize())
+        if isinstance(ans,str):
+            raise Exception("Error putting any data: "+ans)
+        self.result=ans.deserialize()
+        return self.result
 
-        def insert(self,beforenode, node,exp,*args):
-            """Insert put data before node in list specified by beforenode
-            @param beforenode: Name of node in list to insert this put data information.
-            @type beforenode: str
-            @param node: Node name to put data into
-            @type node: str
-            @param exp: TDI expression to store in node with optional placeholders for arguments
-            @type exp: str
-            @param args: Optional arguments to replace placeholders in expression
-            @type args: Data
-            @rtype: None
-            """
-            d=Dictionary({'node':str(node),'exp':str(exp),'args':args})
-            n = 0
-            for item in self:
-                if item['node'] == beforenode:
-                    super(Connection.PutMany,self).insert(n,d)
-                    return
-                else:
-                    n=n+1
-            raise Exception("Node %s not found in list" % (str(beforenode),))
+    def insert(self,beforenode, node,exp,*args):
+        """Insert put data before node in list specified by beforenode
+        @param beforenode: Name of node in list to insert this put data information.
+        @type beforenode: str
+        @param node: Node name to put data into
+        @type node: str
+        @param exp: TDI expression to store in node with optional placeholders for arguments
+        @type exp: str
+        @param args: Optional arguments to replace placeholders in expression
+        @type args: Data
+        @rtype: None
+        """
+        d=Dictionary({'node':str(node),'exp':str(exp),'args':args})
+        n = 0
+        for item in self:
+            if item['node'] == beforenode:
+                super(PutMany,self).insert(n,d)
+                return
+            else:
+                n=n+1
+        raise Exception("Node %s not found in list" % (str(beforenode),))
 
-        def remove(self,node):
-            """Remove the node from the list.
-            @param node: node name to remove from list. Must match exactly the node name used in the append() or insert() methods.
-            @type node: str
-            @rtype: None
-            """
-            for item in self:
-                if item['node'] == node:
-                    super(Connection.PutMany,self).remove(item)
-                    return
-            raise Exception("Node %s not found in list" % (node,))
+    def remove(self,node):
+        """Remove the node from the list.
+        @param node: node name to remove from list. Must match exactly the node name used in the append() or insert() methods.
+        @type node: str
+        @rtype: None
+        """
+        for item in self:
+            if item['node'] == node:
+                super(PutMany,self).remove(item)
+                return
+        raise Exception("Node %s not found in list" % (node,))
