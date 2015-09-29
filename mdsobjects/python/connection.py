@@ -146,27 +146,6 @@ class Connection(object):
     def __del__(self):
         DisconnectFromMds(self.socket)
 
-    def __processGetMany__(cls):
-        try:
-            GetMany(value=Data.getTdiVar("__getManyIn__").deserialize()).execute().serialize().setTdiVar("__getManyOut__")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            print(e)
-            raise
-    __processGetMany__=classmethod(__processGetMany__)
-
-    def __processPutMany__(cls):
-        try:
-            PutMany(value=Data.getTdiVar("__putManyIn__").deserialize()).execute().serialize().setTdiVar("__putManyOut__")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            print(e)
-            raise
-    __processPutMany__=classmethod(__processPutMany__)
-
-
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
         val=makeData(value)
