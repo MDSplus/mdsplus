@@ -20,8 +20,11 @@
       <tab type="filelist" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="examples" visible="yes" title="" intro=""/>      
+    <tab type="examples" visible="yes" title="" intro=""/>
+        
     <tab type="user" visible="no" url="http://www.mdsplus.org" title="MDSplus site"/>    
+    <tab type="user" visible="no" url="https://github.com/MDSplus/mdsplus" title="MDSplus on GitHub"/>    
+    
   </navindex>
 
   <!-- Layout definition for a class page -->
