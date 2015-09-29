@@ -20,7 +20,16 @@ $generatedby &#160;<a href="http://www.doxygen.org/index.html">
 
 <script> 
 addNavPathUl(document.getElementById('navrow1'));
-addToggleButton(document.getElementById('navrow1')) ;
+addToggleButton(document.getElementById('navrow1'));
+
+initResizable();
+if( !readCookie("toggle") )
+{   
+   writeCookie("toggle",'none',null);
+   hideNavTree();
+}
+else if( readCookie("toggle") !== 'none' )
+   showNavTree();
 </script>
 
 </body>

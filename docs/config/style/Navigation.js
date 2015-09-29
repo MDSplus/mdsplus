@@ -1,5 +1,6 @@
-// load xml file
 
+
+// load xml file
 function addNavPathLi(ul) {
     if (window.XMLHttpRequest) {
         xhttp = new XMLHttpRequest();
@@ -38,11 +39,6 @@ function addNavPathLi(ul) {
 }
 
 
-//<ul id="nav-list">    
-//  <div margin-top="5px">$searchbox</div>
-//  </ul>  
-//</div>
-
 
 function addNavPathUl(div) {
     // var nav_div = document.getElementById(div);
@@ -60,6 +56,36 @@ function addNavPathUl(div) {
 }
 
 
+
+
+
+
+
+function hideNavTree() {    
+    $("#navrow2").css({display: 'block'});
+    $("#navrow3").css({display: 'block'});
+    $("#navrow4").css({display: 'block'});
+    $("#navrow5").css({display: 'block'});
+    writeCookie("width",0,null);
+    restoreWidth(0);
+    resizeHeight();
+}
+
+function showNavTree() {
+    $("#navrow2").css({display: 'none'});
+    $("#navrow3").css({display: 'none'});
+    $("#navrow4").css({display: 'none'});
+    $("#navrow5").css({display: 'none'});
+    var width = readCookie("width");
+    if(width == 0) { 
+        width = 250; 
+        writeCookie("width",width,null);
+    }
+    restoreWidth(width);
+    resizeHeight();
+}
+
+
 // add toggle button //
 function addToggleButton(div) {
     var navrow = div;
@@ -73,23 +99,24 @@ function addToggleButton(div) {
     toggle_button.appendChild(toggle_button_img);
     
     navrow.insertBefore(toggle_button, navrow.childNodes[0]);
+        
     
     // var button = document.getElementById('nav-toggle');
     toggle_button.onclick = function() {
         var nav = document.getElementById('side-nav');
-        var dct = document.getElementById('doc-content');
-        var width = 200;
-        if (nav.style.display !== 'none') {
-            nav.style.display = 'none';
-            width = nav.style.width.value; // fix this ...
-            nav.style.width = '0px';
-            dct.style.marginLeft = '0px';
+        var dct = document.getElementById('doc-content');        
+        
+        var toggle = readCookie("toggle");
+        
+        if (toggle !== 'none') {
+            toggle = 'none';
+            hideNavTree();
         }
         else {
-            nav.style.display = 'block';        
-            nav.style.width = width + 'px';
-            dct.style.marginLeft = width + 'px';
-        }
+            toggle = 'block';
+            showNavTree();
+        }            
+        writeCookie("toggle",toggle,null);        
     };
     return toggle_button;
 }
