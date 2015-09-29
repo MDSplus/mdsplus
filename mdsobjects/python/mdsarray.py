@@ -175,6 +175,11 @@ class Array(_data.Data):
 
 class Int8Array(Array):
     """8-bit signed number"""
+    def deserialize(self):
+        """Return data item if this array was returned from serialize.
+        @rtype: Data
+        """
+        return _data.Data.deserialize(self)
 
 class Int16Array(Array):
     """16-bit signed number"""
