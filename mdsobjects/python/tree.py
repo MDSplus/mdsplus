@@ -35,15 +35,12 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
-        try:
-            if self.close:
-                status=_treeshr.TreeCloseAll(self.ctx)
-                if (status & 1):
-                    _treeshr.TreeFreeDbid(self.ctx)
-                if Tree.getActiveTree() == self:
-                    Tree.setActiveTree(None)
-        except:
-            print('error in tree.py line 44')
+        if self.close:
+            status = _treeshr.TreeCloseAll(self.ctx)
+            if (status & 1):
+                _treeshr.TreeFreeDbid(self.ctx)
+            if Tree.getActiveTree() == self:
+                Tree.setActiveTree(None)
         return
 
     def __getattr__(self,name):
@@ -104,8 +101,8 @@ class Tree(object):
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @type mode: str
         """
+        self.close=False
         if tree is None:
-            self.close=False
             try:
                 self.ctx=_treeshr.TreeGetContext()
             except:
@@ -114,7 +111,6 @@ class Tree(object):
                 except:
                     raise _treeshr.TreeException('tree not open')
         else:
-            self.close=True
             if mode.upper() == 'NORMAL':
                 self.ctx=_treeshr.TreeOpen(tree,shot)
             elif mode.upper() == 'EDIT':
@@ -126,6 +122,7 @@ class Tree(object):
                 self.ctx=_treeshr.TreeOpenReadOnly(tree,shot)
             else:
                 raise _treeshr.TreeException('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
+            self.close=True
         Tree.setActiveTree(self)
         return
 
