@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <treeshr.h>
+#include <treeshr_messages.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <ncidef.h>
@@ -714,17 +715,17 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 MDS_IO_REMOVE(info_ptr->filespec);
                 status = MDS_IO_CLOSE(ntreefd);
                 if (status == -1) {
-                    status = 4;
+                    status = TreeCLOSEERR;
                     goto error_exit;
                 }
                 status = MDS_IO_RENAME(nfilenam, info_ptr->filespec);
                 if (status == -1) {
-                    status = 6;
+                    status = TreeMOVEERROR;
                     goto error_exit;
                 }
                 info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec, O_RDWR, 0);
                 if (info_ptr->channel == -1) {
-                    status = 8;
+                    status = TreeOPENEDITERR;
                     goto error_exit;
                 }
                 status = MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);

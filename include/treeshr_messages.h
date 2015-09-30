@@ -86,6 +86,9 @@
 #define TreeNCIREAD              0xfd1905a
 #define TreeNOVERSION            0xfd19062
 #define TreeDFREAD               0xfd1906a
+#define TreeCLOSEERR             0xfd19072
+#define TreeMOVEERROR            0xfd1907a
+#define TreeOPENEDITERR          0xfd19082
 
 
 #endif
