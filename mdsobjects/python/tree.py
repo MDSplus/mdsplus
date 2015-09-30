@@ -35,12 +35,16 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
-        if self.close:
-            status = _treeshr.TreeCloseAll(self.ctx)
+       
+        try:
+          if self.close:
+            status=_treeshr.TreeCloseAll(self.ctx)
             if (status & 1):
-                _treeshr.TreeFreeDbid(self.ctx)
-            if Tree.getActiveTree() == self:
+              _treeshr.TreeFreeDbid(self.ctx)
+              if Tree.getActiveTree() == self:
                 Tree.setActiveTree(None)
+        except:
+          pass
         return
 
     def __getattr__(self,name):
