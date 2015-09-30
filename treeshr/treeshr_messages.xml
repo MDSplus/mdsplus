@@ -84,6 +84,9 @@
     <status name="NCIREAD" value="4619" severity="Error" text="Error reading node characteristics from file."/>
     <status name="NOVERSION" value="4620" severity="Error" text="No version available."/>
     <status name="DFREAD" value="4621" severity="Error" text="Error reading from datafile."/>
+    <status name="CLOSEERR" value="4622" severity="Error" text="Error closing temporary tree file."/>
+    <status name="MOVEERROR" value="4623" severity="Error" text="Error replacing original treefile with new one."/>
+    <status name="OPENEDITERR" value="4624" severity="Error" text="Error reopening new treefile for write access."/>
     
   </facility>
 </messages>
