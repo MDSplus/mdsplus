@@ -2864,6 +2864,36 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* TreeCLOSEERR */
+      case 0xfd19070:
+        {static const char *text="Error closing temporary tree file.";
+        static const char *msgnam="CLOSEERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeMOVEERROR */
+      case 0xfd19078:
+        {static const char *text="Error replacing original treefile with new one.";
+        static const char *msgnam="MOVEERROR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeOPENEDITERR */
+      case 0xfd19080:
+        {static const char *text="Error reopening new treefile for write access.";
+        static const char *msgnam="OPENEDITERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* TdiBREAK */
       case 0xfd38008:
         {static const char *text="BREAK was not in DO FOR SWITCH or WHILE";
