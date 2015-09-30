@@ -35,12 +35,16 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
-        if self.close:
-            status = _treeshr.TreeCloseAll(self.ctx)
+       
+        try:
+          if self.close:
+            status=_treeshr.TreeCloseAll(self.ctx)
             if (status & 1):
-                _treeshr.TreeFreeDbid(self.ctx)
-            if Tree.getActiveTree() == self:
+              _treeshr.TreeFreeDbid(self.ctx)
+              if Tree.getActiveTree() == self:
                 Tree.setActiveTree(None)
+        except:
+          pass
         return
 
     def __getattr__(self,name):
@@ -602,3 +606,29 @@ class Tree(object):
             _treeshr.TreeWriteTree(self,self.tree,self.shot)
         finally:
             Tree.unlock()
+
+    def cleanDatafile(self):
+        """Clean up data file.
+        @rtype: None
+        """
+        Tree.lock()
+        try:
+            #ctx = _treeshr.TreeGetContext()
+            status = _treeshr.TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+        finally:
+            Tree.unlock()
+        if not (status & 1):
+            raise _treeshr.TreeException("Error cleaning up data file: %s" % (_mdsshr.MdsGetMsg(status),))
+
+    def compressDatafile(self):
+        """Compress data file.
+        @rtype: None
+        """
+        Tree.lock()
+        try:
+            #ctx = _treeshr.TreeGetContext()
+            status = _treeshr.TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+        finally:
+            Tree.unlock()
+        if not (status & 1):
+            raise _treeshr.TreeException("Error compressing data file: %s" % (_mdsshr.MdsGetMsg(status),))

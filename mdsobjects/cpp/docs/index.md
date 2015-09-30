@@ -15,8 +15,8 @@
 \endhtmlonly
 
 
-The C++ Inteface
-================
+The C++ Interface
+=================
 
 MDSplus provides API's (application programming interface) to several object 
 oriented languages. A common set of classes and methods are provided in all of 

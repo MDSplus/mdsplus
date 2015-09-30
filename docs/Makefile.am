@@ -47,7 +47,9 @@ DX_TAGFILES = mdsip.tag \
               mdsshr.tag \
               mdsobjects/cpp/docs \
               mdsobjects/python/docs \
-              mdsobjects/java/docs
+              mdsobjects/java/docs \
+              mdslib/docs \
+              javascope/docs
 
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES) \
@@ -74,7 +76,10 @@ DX_SUBDIRS = \
           ../mdsobjects/cpp/docs/ \
           ../mdsobjects/python/docs/ \
           ../mdsobjects/java/docs/ \
+          ../mdslib/docs/ \
+          ../javascope/docs \
           .
+          
 	
 build_all:
 	list='$(DX_SUBDIRS)'
@@ -93,7 +98,13 @@ install_all:
 	done; \
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) doxygen-install) \
-	done;	
+	done;
+
+clean_all:
+	list='$(DX_SUBDIRS)'
+	for subdir in $$list; do echo "Making $$target in $$subdir"; \
+	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) clean) \
+	done;
 
 
 # This is a html main page that resides into the root directory of the web

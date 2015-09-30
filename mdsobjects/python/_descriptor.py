@@ -764,4 +764,3 @@ class descriptor_a(_C.Structure):
                     ans=ans+", l["+str(i)+"]="+str(self.coeff_and_bounds[i*2+self.dimct])
                     ans=ans+", u["+str(i)+"]="+str(self.coeff_and_bounds[i*2+self.dimct+1])
         return ans
-

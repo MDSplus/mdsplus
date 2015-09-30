@@ -13,6 +13,6 @@ def load(gbls):
         gbls[key]=mod.__dict__[key]
 
   for mod in ('apd','mdsarray','compound','mdsdata','ident','treenode','mdsscalar',
-              'tree','mdsdevice','event','_tdishr','scope','_mdsshr','_tdishr', 'mdsdcl',
-              '_treeshr','tdipy','_descriptor','connection'):
+              'tree','mdsdevice','event','_tdishr','scope','_mdsshr','_tdishr',
+              '_treeshr','tdipy','_descriptor','connection','mdsExceptions','mdsdcl'):
     loadmod(mod,1,gbls)

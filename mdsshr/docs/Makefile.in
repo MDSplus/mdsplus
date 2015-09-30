@@ -465,7 +465,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-SUBDIRS = img .
+SUBDIRS = .
 @DX_COND_doc_TRUE@@DX_COND_html_TRUE@DX_CLEAN_HTML = ${DX_DESTDIR}/html
 @DX_COND_doc_TRUE@@DX_COND_man_TRUE@DX_CLEAN_MAN = ${DX_DESTDIR}/man
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@DX_CLEAN_PDF = ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
@@ -476,6 +476,8 @@ SUBDIRS = img .
 @DX_COND_doc_TRUE@DX_TAGDIR = ${DX_INSTALLDIR}/docs/dtags
 @DX_COND_doc_TRUE@DX_DESTTAG = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
 @DX_COND_doc_TRUE@DX_SEARCHFILE = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.xml
+@DX_COND_doc_TRUE@DX_LAYOUT = ${top_srcdir}/docs/config/general_layout.xml
+@DX_COND_doc_TRUE@DX_PARENT_TAG = docs.tag
 @DX_COND_doc_TRUE@@HAVE_CUTE_DOXYGEN_TRUE@DX_HTML_HEADER = ${top_srcdir}/docs/config/style/header.html
 @DX_COND_doc_TRUE@@HAVE_CUTE_DOXYGEN_TRUE@DX_HTML_FOOTER = ${top_srcdir}/docs/config/style/footer.html
 @DX_COND_doc_TRUE@@HAVE_CUTE_DOXYGEN_TRUE@DX_HTML_STYLESHEET = ${top_srcdir}/docs/config/style/mds_style.css
@@ -492,7 +494,8 @@ SUBDIRS = img .
 @DX_COND_doc_TRUE@               DX_BRIEF='${DX_BRIEF}' \
 @DX_COND_doc_TRUE@               DX_HTML_HEADER='${DX_HTML_HEADER}' \
 @DX_COND_doc_TRUE@               DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
-@DX_COND_doc_TRUE@               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}'
+@DX_COND_doc_TRUE@               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' \
+@DX_COND_doc_TRUE@               DX_LAYOUT='${DX_LAYOUT}'
 
 @DX_COND_doc_TRUE@DX_DESTENV = ${DX_ENV} \
 @DX_COND_doc_TRUE@             ${DX_ENVCOMMON} \
@@ -850,10 +853,35 @@ uninstall-am:
 
 ### TARGETS: ###################################################################
 
-@DX_COND_doc_TRUE@.PHONY: doxygen-run doxygen-doc build_tag install_tag $(DX_PS_GOAL) $(DX_PDF_GOAL)
+@DX_COND_doc_TRUE@.PHONY: doxygen-run doxygen-doc build_tag install_tag test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
 @DX_COND_doc_TRUE@.INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 @DX_COND_doc_TRUE@.ONESHELL:
 
+@DX_COND_doc_TRUE@test_nav:
+@DX_COND_doc_TRUE@	if [ -a ${DX_DESTDIR}/html/nav.html ] ; then rm ${DX_DESTDIR}/html/nav.html; fi
+@DX_COND_doc_TRUE@	if [ -a ${DX_DESTDIR}/html/nav.xml ] ; then rm ${DX_DESTDIR}/html/nav.xml; fi	
+
+@DX_COND_doc_TRUE@	if test '${DX_PARENT_TAG}'; then \
+@DX_COND_doc_TRUE@	 for i in ${DX_PARENT_TAG}; do \
+@DX_COND_doc_TRUE@	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/|'`; \
+@DX_COND_doc_TRUE@	  nav_dir=`echo $${line} | sed 's|.*=||'`; \
+@DX_COND_doc_TRUE@	  cat ${DX_DESTDIR}/$${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
+@DX_COND_doc_TRUE@	  tags="$${tags} $${line}"; \
+@DX_COND_doc_TRUE@	 done \
+@DX_COND_doc_TRUE@	else \
+@DX_COND_doc_TRUE@	 echo "No tag list found!"; \
+@DX_COND_doc_TRUE@	fi;
+
+@DX_COND_doc_TRUE@	_url=${DX_DOCDIR}/html; \
+@DX_COND_doc_TRUE@	echo "<dxproject name=\"${DX_TITLE}\" url=\"$${_url}\"></dxproject>" >> ${DX_DESTDIR}/html/nav.html
+
+@DX_COND_doc_TRUE@	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> ${DX_DESTDIR}/html/nav.xml; \
+@DX_COND_doc_TRUE@	echo "<project_nav>" >> ${DX_DESTDIR}/html/nav.xml; \
+@DX_COND_doc_TRUE@	echo "<topdir>${top_builddir}/../</topdir>"  >> ${DX_DESTDIR}/html/nav.xml; \
+@DX_COND_doc_TRUE@	cat ${DX_DESTDIR}/html/nav.html >> ${DX_DESTDIR}/html/nav.xml; \
+@DX_COND_doc_TRUE@	echo "</project_nav>" >> ${DX_DESTDIR}/html/nav.xml;
+
+@DX_COND_doc_TRUE@.ONESHELL:
 @DX_COND_doc_TRUE@${DX_DESTTAG}: ${DX_PAGES}
 @DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR}
 @DX_COND_doc_TRUE@	${MKDIR_P} ${DX_TAGDIR}
@@ -866,7 +894,8 @@ uninstall-am:
 @DX_COND_doc_TRUE@	DX_TAGFILES= \
 @DX_COND_doc_TRUE@	$(DX_DOXYGEN) $(DX_CONFIG) 2>&1 > /dev/null;
 
-@DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
+@DX_COND_doc_TRUE@.ONESHELL:
+@DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
 @DX_COND_doc_TRUE@	touch $@; \
 @DX_COND_doc_TRUE@	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
 @DX_COND_doc_TRUE@	echo "Name Found list not updated ..."; \
@@ -875,12 +904,13 @@ uninstall-am:
 @DX_COND_doc_TRUE@	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" >> ${DX_TAGDIR}/taglist.txt; \
 @DX_COND_doc_TRUE@	fi;
 
-@DX_COND_doc_TRUE@build_tag: ${DX_TAGDIR}/taglist.txt
+@DX_COND_doc_TRUE@build_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
-@DX_COND_doc_TRUE@install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-@DX_COND_doc_TRUE@install_tag: ${DX_TAGDIR}/taglist.txt
+@DX_COND_doc_TRUE@install_tag: DX_INSTALLDIR=${DESTDIR}${datadir}/doc/@PACKAGE@
+@DX_COND_doc_TRUE@install_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
-@DX_COND_doc_TRUE@${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
+@DX_COND_doc_TRUE@.ONESHELL:
+@DX_COND_doc_TRUE@${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES} 
 @DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR} 
 
 @DX_COND_doc_TRUE@	if test '${DX_TAGFILES}'; then \
@@ -903,10 +933,10 @@ uninstall-am:
 @DX_COND_doc_TRUE@doxygen-run: build_tag ${DX_DESTDIR}/doxygen.stamp
 
 @DX_COND_doc_TRUE@doxygen-doc: DX_INSTALLDIR = $(abs_top_builddir)
-@DX_COND_doc_TRUE@doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+@DX_COND_doc_TRUE@doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 @DX_COND_doc_TRUE@doxygen-install: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-@DX_COND_doc_TRUE@doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+@DX_COND_doc_TRUE@doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 # //////////////////////////////////////////////////////////////////////////// #
 # TARGETS #

@@ -1409,6 +1409,21 @@ class TreeDFREAD(Exception):
     def __str__(self):
         return "Error reading from datafile."
 
+class TreeCLOSEERR(Exception):
+    msgnum=0xfd19070
+    def __str__(self):
+        return "Error closing temporary tree file."
+
+class TreeMOVEERROR(Exception):
+    msgnum=0xfd19078
+    def __str__(self):
+        return "Error replacing original treefile with new one."
+
+class TreeOPENEDITERR(Exception):
+    msgnum=0xfd19080
+    def __str__(self):
+        return "Error reopening new treefile for write access."
+
 class TdiBREAK(Exception):
     msgnum=0xfd38008
     def __str__(self):
@@ -1853,6 +1868,9 @@ def MDSplusException(msgnum):
 0xfd19058:"TreeNCIREAD",
 0xfd19060:"TreeNOVERSION",
 0xfd19068:"TreeDFREAD",
+0xfd19070:"TreeCLOSEERR",
+0xfd19078:"TreeMOVEERROR",
+0xfd19080:"TreeOPENEDITERR",
 0xfd38008:"TdiBREAK",
 0xfd38010:"TdiCASE",
 0xfd38018:"TdiCONTINUE",

@@ -1162,6 +1162,7 @@ AC_OUTPUT(Makefile.inc
           javadispatcher/Makefile
           javamds/Makefile 
           javascope/Makefile
+          javascope/docs/Makefile
           javatraverser/Makefile
           javadevices/Makefile
           LabView/Makefile
@@ -1169,7 +1170,8 @@ AC_OUTPUT(Makefile.inc
           macosx/Makefile
           math/Makefile 
           mdsdcl/Makefile 
-          mdslib/Makefile 
+          mdslib/Makefile
+          mdslib/docs/Makefile
           mdslibidl/Makefile 
           mdsobjects/cpp/Makefile
           mdsobjects/cpp/docs/Makefile
@@ -1177,7 +1179,7 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/testing/testutils/Makefile
           mdsobjects/python/docs/Makefile
           mdsobjects/java/Makefile
-          mdsobjects/java/docs/Makefile
+          mdsobjects/java/docs/Makefile          
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile

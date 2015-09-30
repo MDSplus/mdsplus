@@ -104,7 +104,8 @@ DX_DESTDIR    = ${DX_INSTALLDIR}/${DX_DOCDIR}
 DX_TAGDIR     = ${DX_INSTALLDIR}/docs/dtags
 DX_DESTTAG    = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
 DX_SEARCHFILE = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.xml
-
+DX_LAYOUT     = ${top_srcdir}/docs/config/general_layout.xml
+DX_PARENT_TAG = docs.tag
 
 if HAVE_CUTE_DOXYGEN
  DX_HTML_HEADER     = ${top_srcdir}/docs/config/style/header.html
@@ -117,7 +118,6 @@ DX_STYLE_FILES = ${DX_HTML_HEADER} \
                  ${DX_HTML_STYLESHEET}
 
 
-
 DX_ENVCOMMON = \
                DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
                DX_PAGES='${DX_PAGES}' \
@@ -127,7 +127,8 @@ DX_ENVCOMMON = \
                DX_BRIEF='${DX_BRIEF}' \
                DX_HTML_HEADER='${DX_HTML_HEADER}' \
                DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
-               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}'
+               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' \
+               DX_LAYOUT='${DX_LAYOUT}'
 
 
 DX_DESTENV = ${DX_ENV} \
@@ -143,11 +144,42 @@ DX_DESTENV = ${DX_ENV} \
 
 
 
-.PHONY: doxygen-run doxygen-doc build_tag install_tag $(DX_PS_GOAL) $(DX_PDF_GOAL)
+.PHONY: doxygen-run doxygen-doc build_tag install_tag test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
 .INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 .ONESHELL:
 
+test_nav:
+	if [ -a ${DX_DESTDIR}/html/nav.html ] ; then rm ${DX_DESTDIR}/html/nav.html; fi
+	if [ -a ${DX_DESTDIR}/html/nav.xml ] ; then rm ${DX_DESTDIR}/html/nav.xml; fi	
+	
+	##
+	## Write navigation file
+	##
+	if test '${DX_PARENT_TAG}'; then \
+	 for i in ${DX_PARENT_TAG}; do \
+	  ##
+	  ## extract correct html target relative path 
+	  ##
+	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/|'`; \
+	  nav_dir=`echo $${line} | sed 's|.*=||'`; \
+	  cat ${DX_DESTDIR}/$${nav_dir}/nav.html >> ${DX_DESTDIR}/html/nav.html; \
+	  tags="$${tags} $${line}"; \
+	 done \
+	else \
+	 echo "No tag list found!"; \
+	fi;
+	
+	_url=${DX_DOCDIR}/html; \
+	echo "<dxproject name=\"${DX_TITLE}\" url=\"$${_url}\"></dxproject>" >> ${DX_DESTDIR}/html/nav.html
+	
+	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> ${DX_DESTDIR}/html/nav.xml; \
+	echo "<project_nav>" >> ${DX_DESTDIR}/html/nav.xml; \
+	echo "<topdir>${top_builddir}/../</topdir>"  >> ${DX_DESTDIR}/html/nav.xml; \
+	cat ${DX_DESTDIR}/html/nav.html >> ${DX_DESTDIR}/html/nav.xml; \
+	echo "</project_nav>" >> ${DX_DESTDIR}/html/nav.xml;
 
+
+.ONESHELL:
 ${DX_DESTTAG}: ${DX_PAGES}
 	$(MKDIR_P) ${DX_DESTDIR}
 	${MKDIR_P} ${DX_TAGDIR}
@@ -163,8 +195,8 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	DX_TAGFILES= \
 	$(DX_DOXYGEN) $(DX_CONFIG) 2>&1 > /dev/null;
 
-
-${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
+.ONESHELL:
+${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
 	##
 	## generate taglist to keep track of geenerated symbols.
 	##
@@ -176,13 +208,17 @@ ${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG}
 	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" >> ${DX_TAGDIR}/taglist.txt; \
 	fi;
 	
-build_tag: ${DX_TAGDIR}/taglist.txt
+build_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
-install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-install_tag: ${DX_TAGDIR}/taglist.txt
+install_tag: DX_INSTALLDIR=${DESTDIR}${datadir}/doc/@PACKAGE@
+install_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
 
-${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
+
+
+
+.ONESHELL:
+${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES} 
 	$(MKDIR_P) ${DX_DESTDIR} 
 	
 	##
@@ -212,13 +248,15 @@ ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FIL
 	touch $@
 
 
+
+
 doxygen-run: build_tag ${DX_DESTDIR}/doxygen.stamp
 
 doxygen-doc: DX_INSTALLDIR = $(abs_top_builddir)
-doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 doxygen-install: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL) test_nav
 
 
 

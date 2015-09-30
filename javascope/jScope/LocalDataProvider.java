@@ -9,7 +9,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 
-public class LocalDataProvider extends MdsDataProvider implements DataProvider
+public class LocalDataProvider extends MdsDataProvider /* implements DataProvider */
 {
     Vector listeners = new Vector();
     Vector eventNames = new Vector();
