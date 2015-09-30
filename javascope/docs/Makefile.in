@@ -118,7 +118,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = mdstcpip/docs
+subdir = javascope/docs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
@@ -246,8 +246,10 @@ DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
 
 # //////////////////////////////////////////////////////////////////////////// #
 # DOXYGEN CONFIG #
-DX_CONFIG = "${top_srcdir}/docs/config/doxygen.cfg"
-DX_DOCDIR = mdstcpip/docs
+
+# DX_DOCDIR = mdsobjects/cpp/docs
+DX_CONFIG = ${top_srcdir}/docs/config/doxygen_cpp.cfg
+DX_DOCDIR = javascope/docs
 DX_DOT = @DX_DOT@
 DX_DOXYGEN = @DX_DOXYGEN@
 DX_DVIPS = @DX_DVIPS@
@@ -465,7 +467,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-SUBDIRS = img .
+SUBDIRS = .
 @DX_COND_doc_TRUE@@DX_COND_html_TRUE@DX_CLEAN_HTML = ${DX_DESTDIR}/html
 @DX_COND_doc_TRUE@@DX_COND_man_TRUE@DX_CLEAN_MAN = ${DX_DESTDIR}/man
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@DX_CLEAN_PDF = ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
@@ -516,33 +518,19 @@ SUBDIRS = img .
 @DX_COND_doc_TRUE@    $(DX_CLEAN_PDF) \
 @DX_COND_doc_TRUE@    $(DX_CLEAN_LATEX)
 
-DX_PACKAGE_NAME = mdsip
-DX_TITLE = MDSip
-DX_BRIEF = "MDSplus remote data access library"
+DX_PACKAGE_NAME = javascope
+DX_TITLE = jScope
+DX_BRIEF = "MDSplus java signal viewer"
 DX_PAGES = .. \
+           ../jScope \
            index.md \
-           Clients_connection.md \
-           Objects_bindings.md \
-           Protocols_plugins.md          
+           jscope_dataprovider.md \
+           jscope_udt.md
 
-DX_EXCLUDE_PAGES = \
-                   ../b_order.h \
-                   ../mdsip_u.h \
-                   ../mdsip_u.c \
-                   ../vmshpwd.c \
-                   ../cvtdef.h \
-                   ../IoRoutinesGsi.c \
-                   ../IoRoutinesTcp.c \
-                   ../IoRoutinesTcpv6.c \
-                   ../IoRoutinesUdt.c \
-                   ../IoRoutinesUdtV6.c \
-                   ../IoRoutinesTunnel.c \
-                   ../mdsip.c \
-                   ../mdsip.h \
-                   ../mdsipshr.c \
-                   ../mdsip_service.c
-
+DX_EXCLUDE_PAGES = 
 DX_TAGFILES = docs.tag
+
+# DX_PARENT_TAG = docs.tag
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
 all: all-recursive
 
@@ -556,9 +544,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign mdstcpip/docs/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign javascope/docs/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign mdstcpip/docs/Makefile
+	  $(AUTOMAKE) --foreign javascope/docs/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
