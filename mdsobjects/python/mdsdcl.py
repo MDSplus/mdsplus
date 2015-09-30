@@ -67,7 +67,7 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False):
       out_p=_C.pointer(xd_output)
     else:
       out_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
-    status = _mdsdcl_do_command_dsc(command, error_p, out_p)
+    status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     if (status & 1) == 0 and raise_exception:
       raise _mdsExceptions.statusToException(status)
     if return_out and return_error:
