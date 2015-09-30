@@ -132,7 +132,8 @@ public class MdsConnection
 	                }
         	    }
 	        }
-	        catch(IOException e)
+	        //catch(IOException e) CESARE 14/9/2015
+	        catch(Exception e)
 	        {
                    synchronized(this)
                     {		    

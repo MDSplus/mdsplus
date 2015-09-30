@@ -806,7 +806,91 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
  * Method:    getInfo
  * Signature: (Ljava/lang/String;)[I
  */
-JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfo
+JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
+    (JNIEnv * env, jclass cls, jstring jNodeName, jboolean isSegmented) {
+  const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+  EMPTYXD(xd);
+  ARRAY_COEFF(char *, 3) * arrPtr;
+  int status, nid;
+  jintArray jarr;
+  char dtype, dimct;
+  int dims[64];
+  int nextRow;
+  int retNumDims;
+  int retDims[64];
+  int retDtype, i, retPixelSize;
+
+  jclass clazz;
+  jmethodID mid;
+  jobject retObj;
+  jvalue args[3];
+
+  struct descriptor nodeNameD = { strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName };
+//Returned array: [width, height, bytesPerPixel]        
+  if (isSegmented) {
+    status = TreeFindNode((char *)nodeName, &nid);
+    (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+    if (!(status & 1)) {
+      strncpy(error_message, MdsGetMsg(status), 512);
+      return NULL;
+    }
+    status = TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
+    if (!(status & 1)) {
+      strncpy(error_message, MdsGetMsg(status), 512);
+      return NULL;
+    }
+    retNumDims = dimct;
+    memcpy(retDims, dims, dimct * sizeof(int));
+    retDtype = dtype;
+
+  } else {
+    status = TdiCompile(&nodeNameD, &xd MDS_END_ARG);
+    (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+    if (status & 1)
+      status = TdiData(&xd, &xd MDS_END_ARG);
+    if (!(status & 1)) {
+      strncpy(error_message, MdsGetMsg(status), 512);
+      return NULL;
+    }
+    arrPtr = (void *)xd.pointer;
+    retDtype = arrPtr->dtype;
+    retNumDims = arrPtr->dimct;
+    for(i = 0; i < retNumDims; i++)
+      retDims[i] = arrPtr->m[i];
+    retPixelSize = arrPtr->length;
+    MdsFree1Dx(&xd, 0);
+  }
+
+//Build resulting object
+  clazz = (*env)->FindClass(env, "jScope/LocalDataProviderInfo");
+  if(clazz == NULL)
+  {
+    printf("Error finding class jScope.LocalDataProviderInfo\n");
+    return NULL;
+  }
+  mid  = (*env)->GetMethodID(env, clazz, "<init>", "(II[I)V");
+  if(mid == NULL)
+  {
+    printf("Error finding constructor for Scope.LocalDataProviderInfo\n");
+    return NULL;
+  }
+  jarr = (*env)->NewIntArray(env, retNumDims);
+  (*env)->SetIntArrayRegion(env, jarr, 0, retNumDims, (const jint *)retDims);
+
+  args[0].i = retDtype;
+  args[1].i = retPixelSize;
+  args[2].l = jarr;
+  //va_arg(args, jarr);
+  retObj = (*env)->NewObjectA(env, clazz,  mid, args);
+  (*env)->ReleaseIntArrayElements(env, jarr, retDims, JNI_COMMIT);
+  return retObj;
+}
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getInfo
+ * Signature: (Ljava/lang/String;)[I
+ */
+JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfoXXX
     (JNIEnv * env, jclass cls, jstring jNodeName, jboolean isSegmented) {
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   EMPTYXD(xd);
@@ -872,7 +956,6 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfo
   }
   jarr = (*env)->NewIntArray(env, 3);
   (*env)->SetIntArrayRegion(env, jarr, 0, 3, (const jint *)retInfo);
-  return jarr;
 }
 
 static int getStartEndIdx(int nid, float startTime, float endTime, int *retStartIdx, int *retEndIdx)

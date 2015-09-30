@@ -46,7 +46,7 @@
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-int MdsGet1DxS(unsigned short *length_ptr, unsigned char *dtype_ptr,
+int MdsGet1DxS(unsigned short const *length_ptr, unsigned char const *dtype_ptr,
 	       struct descriptor_xd *out_dsc_ptr)
 {
 

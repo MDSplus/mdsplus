@@ -146,125 +146,126 @@ MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsApdTest_SOURCES = MdsApdTest.cpp
 MdsApdTest_OBJECTS = MdsApdTest.$(OBJEXT)
 MdsApdTest_LDADD = $(LDADD)
-MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsCallTest_SOURCES = MdsCallTest.cpp
 MdsCallTest_OBJECTS = MdsCallTest.$(OBJEXT)
 MdsCallTest_LDADD = $(LDADD)
-MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
 MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
 MdsCompoundTest_LDADD = $(LDADD)
-MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsConglomTest_SOURCES = MdsConglomTest.cpp
 MdsConglomTest_OBJECTS = MdsConglomTest.$(OBJEXT)
 MdsConglomTest_LDADD = $(LDADD)
-MdsConglomTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsConglomTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsConnectionTest_SOURCES = MdsConnectionTest.cpp
 MdsConnectionTest_OBJECTS = MdsConnectionTest.$(OBJEXT)
 MdsConnectionTest_LDADD = $(LDADD)
-MdsConnectionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsConnectionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsDataTest_SOURCES = MdsDataTest.cpp
 MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
 MdsDataTest_LDADD = $(LDADD)
-MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsDimensionTest_SOURCES = MdsDimensionTest.cpp
 MdsDimensionTest_OBJECTS = MdsDimensionTest.$(OBJEXT)
 MdsDimensionTest_LDADD = $(LDADD)
-MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsEventSuppression_SOURCES = MdsEventSuppression.cpp
 MdsEventSuppression_OBJECTS = MdsEventSuppression.$(OBJEXT)
 MdsEventSuppression_LDADD = $(LDADD)
-MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsEventTest_SOURCES = MdsEventTest.cpp
 MdsEventTest_OBJECTS = MdsEventTest.$(OBJEXT)
 MdsEventTest_LDADD = $(LDADD)
-MdsEventTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsEventTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
-MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsExpressionCompileTest_SOURCES = MdsExpressionCompileTest.cpp
 MdsExpressionCompileTest_OBJECTS = MdsExpressionCompileTest.$(OBJEXT)
 MdsExpressionCompileTest_LDADD = $(LDADD)
-MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsFunctionTest_SOURCES = MdsFunctionTest.cpp
 MdsFunctionTest_OBJECTS = MdsFunctionTest.$(OBJEXT)
 MdsFunctionTest_LDADD = $(LDADD)
-MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsRangeTest_SOURCES = MdsRangeTest.cpp
 MdsRangeTest_OBJECTS = MdsRangeTest.$(OBJEXT)
 MdsRangeTest_LDADD = $(LDADD)
-MdsRangeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsRangeTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsScalarTest_NumericConversion_SOURCES =  \
 	MdsScalarTest_NumericConversion.cpp
 MdsScalarTest_NumericConversion_OBJECTS =  \
 	MdsScalarTest_NumericConversion.$(OBJEXT)
 MdsScalarTest_NumericConversion_LDADD = $(LDADD)
-MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsScalarTest_NumericLimits_SOURCES = MdsScalarTest_NumericLimits.cpp
 MdsScalarTest_NumericLimits_OBJECTS =  \
 	MdsScalarTest_NumericLimits.$(OBJEXT)
 MdsScalarTest_NumericLimits_LDADD = $(LDADD)
-MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsScalarTest_ScalarCast_SOURCES = MdsScalarTest_ScalarCast.cpp
 MdsScalarTest_ScalarCast_OBJECTS = MdsScalarTest_ScalarCast.$(OBJEXT)
 MdsScalarTest_ScalarCast_LDADD = $(LDADD)
-MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsSignalTest_SOURCES = MdsSignalTest.cpp
 MdsSignalTest_OBJECTS = MdsSignalTest.$(OBJEXT)
 MdsSignalTest_LDADD = $(LDADD)
-MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsStringTest_SOURCES = MdsStringTest.cpp
 MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
 MdsStringTest_LDADD = $(LDADD)
-MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsTreeNodeTest_SOURCES = MdsTreeNodeTest.cpp
 MdsTreeNodeTest_OBJECTS = MdsTreeNodeTest.$(OBJEXT)
 MdsTreeNodeTest_LDADD = $(LDADD)
-MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsTreeSuppression_SOURCES = MdsTreeSuppression.cpp
 MdsTreeSuppression_OBJECTS = MdsTreeSuppression.$(OBJEXT)
 MdsTreeSuppression_LDADD = $(LDADD)
-MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsTreeTest_SOURCES = MdsTreeTest.cpp
 MdsTreeTest_OBJECTS = MdsTreeTest.$(OBJEXT)
 MdsTreeTest_LDADD = $(LDADD)
-MdsTreeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsTreeTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 MdsWindowTest_SOURCES = MdsWindowTest.cpp
 MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
 MdsWindowTest_LDADD = $(LDADD)
-MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
 buildtest_LDADD = $(LDADD)
-buildtest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+buildtest_DEPENDENCIES = $(am__DEPENDENCIES_2) \
 	testutils/libMdsTestUtils.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -838,9 +839,10 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 SUBDIRS = testutils .
 AM_DEFAULT_SOURCE_EXT = .cpp
-AM_CFLAGS = @SRBINCLUDE@
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
+AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}/testing
+AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}/testing
+AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 
@@ -858,6 +860,27 @@ LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 @USE_VALGRIND_TRUE@               --suppressions=valgrind-connection.supp  \
 @USE_VALGRIND_TRUE@               --suppressions=valgrind-treenode.supp    \
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
+
+
+#
+# Files produced by tests that must be purged
+#
+MOSTLYCLEANFILES = \
+                   test_tree_001.characteristics \
+                   test_tree_001.datafile \
+                   test_tree_001.tree \
+                   test_tree_002.characteristics \
+                   test_tree_002.datafile \
+                   test_tree_002.tree \
+                   test_tree2_model.characteristics \
+                   test_tree2_model.datafile \
+                   test_tree2_model.tree \
+                   test_tree_model.characteristics \
+                   test_tree_model.datafile \
+                   test_tree_model.tree \
+                   leaktest_model.characteristics \
+                   leaktest_model.datafile \
+                   leaktest_model.tree
 
 all: all-recursive
 
@@ -1544,6 +1567,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)

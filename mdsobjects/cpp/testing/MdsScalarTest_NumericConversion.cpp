@@ -343,11 +343,6 @@ int main(int argc, char *argv[])
     test_Complex32();
     test_Complex32Array();
 
-    std::cout << "\n";
-    if(Singleton<TestResults>::get_instance().fails() == 0)
-        std::cout << " SUCCESS !! \n";
-    else
-        std::cout << " SOME FAILS OCCURRED !! \n";
-    
+
     END_TESTING;
 }

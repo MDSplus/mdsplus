@@ -502,6 +502,7 @@ JSCOPE_SRC = \
 	jScope.java \
 	jScope/CompositeWaveDisplay.java \
 	jScope/LocalDataProvider.java    \
+	jScope/LocalDataProviderInfo.java    \
 	jScope/MdsDataClient.java        \
 	jScope/MdsIOException.java       \
 	jScope/MdsPlusBrowseSignals.java \

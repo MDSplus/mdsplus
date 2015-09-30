@@ -42,13 +42,21 @@ public class CYGNET4KSetup extends DeviceSetup {
         jPanel8 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
         deviceField2 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
+        deviceField8 = new DeviceField();
+        deviceField9 = new DeviceField();
+        jPanel10 = new javax.swing.JPanel();
+        deviceField10 = new DeviceField();
+        deviceField11 = new DeviceField();
         deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Cygnet4K sCMOS Camera");
         setDeviceType("CYGNET4K");
-        setHeight(300);
-        setWidth(600);
+        setHeight(400);
+        setWidth(700);
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 2));
 
@@ -121,6 +129,50 @@ public class CYGNET4KSetup extends DeviceSetup {
 
         jPanel2.add(jPanel5, java.awt.BorderLayout.CENTER);
 
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Temp. Trend"));
+        jPanel6.setLayout(new java.awt.BorderLayout());
+
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice2.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Temp. Trend:");
+        deviceChoice2.setOffsetNid(17);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel9.add(deviceChoice2);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("Trend Name:");
+        deviceField8.setOffsetNid(18);
+        deviceField8.setTextOnly(true);
+        jPanel9.add(deviceField8);
+
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Trend shot:");
+        deviceField9.setNumCols(2);
+        deviceField9.setOffsetNid(19);
+        jPanel9.add(deviceField9);
+
+        jPanel6.add(jPanel9, java.awt.BorderLayout.NORTH);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("PCB Node");
+        deviceField10.setNumCols(20);
+        deviceField10.setOffsetNid(20);
+        deviceField10.setTextOnly(true);
+        jPanel10.add(deviceField10);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("CMOS Name:");
+        deviceField11.setNumCols(20);
+        deviceField11.setOffsetNid(21);
+        deviceField11.setTextOnly(true);
+        jPanel10.add(deviceField11);
+
+        jPanel6.add(jPanel10, java.awt.BorderLayout.SOUTH);
+
+        jPanel2.add(jPanel6, java.awt.BorderLayout.SOUTH);
+
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
@@ -131,20 +183,28 @@ public class CYGNET4KSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
 }

@@ -161,4 +161,5 @@ NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
 MARTE_DEVICESetup.java \
-RFXVICONTROLSetup.java
+RFXVICONTROLSetup.java \
+REDPYTADCSetup.java

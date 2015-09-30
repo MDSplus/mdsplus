@@ -35,7 +35,7 @@ EXPORT extern int LibSpawn();
 EXPORT extern int LibSubx();
 EXPORT extern int LibSysAscTim();
 EXPORT extern int LibTraverseTree();
-EXPORT extern int LibWait();
+EXPORT extern int LibWait(float const *);
 EXPORT extern int LibTimeToVMSTime();
 EXPORT extern int libffs(int *position, int *size, char *base, int *find_position);
 EXPORT extern int LibFindImageSymbol_C(const char *image, const char *routine, void **rtn);

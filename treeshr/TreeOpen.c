@@ -36,9 +36,6 @@
 #endif
 #include "treeshrp.h"
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
-
 int treeshr_errno = 0;
 extern int MDSEventCan();
 static void RemoveBlanksAndUpcase(char *out, char const *in);
