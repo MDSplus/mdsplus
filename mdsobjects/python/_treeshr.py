@@ -58,6 +58,12 @@ __TreeSwitchDbid.argtypes=[_C.c_void_p]
 __TreeSwitchDbid.restype=_C.c_void_p
 TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
 TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
+
+TreeCleanDatafile=__TreeShr._TreeCleanDatafile
+TreeCleanDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+TreeCompressDatafile=__TreeShr._TreeCompressDatafile
+TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+
 __TreeDeletePulseFile=__TreeShr._TreeDeletePulseFile
 __TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32]
 __TreeDoMethod=__TreeShr._TreeDoMethod
