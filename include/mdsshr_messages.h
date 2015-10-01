@@ -1,13 +1,13 @@
 
 #pragma once
-#
-########################################################
-# This header was generated using mdsshr/gen_device.py
-# To add new status messages modify: 
-#     mdsshr_messages.xml
-# and then in mdsshr do:
-#     python gen_devices.py
-########################################################
+/*
+
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     mdsshr_messages.xml
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 #define LibINSVIRMEM            0x158214
 #define LibINVARG               0x158234

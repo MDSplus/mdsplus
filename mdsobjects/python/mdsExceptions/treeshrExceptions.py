@@ -518,3 +518,21 @@ class TreeDFREAD(TreeException):
   status=265392234
   message="Error reading from datafile."
   msgnam="DFREAD"
+
+
+class TreeCLOSEERR(TreeException):
+  status=265392242
+  message="Error closing temporary tree file."
+  msgnam="CLOSEERR"
+
+
+class TreeMOVEERROR(TreeException):
+  status=265392250
+  message="Error replacing original treefile with new one."
+  msgnam="MOVEERROR"
+
+
+class TreeOPENEDITERR(TreeException):
+  status=265392258
+  message="Error reopening new treefile for write access."
+  msgnam="OPENEDITERR"

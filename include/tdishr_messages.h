@@ -1,13 +1,13 @@
 
 #pragma once
-#
-########################################################
-# This header was generated using mdsshr/gen_device.py
-# To add new status messages modify: 
-#     tdishr_messages.xml
-# and then in mdsshr do:
-#     python gen_devices.py
-########################################################
+/*
+
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     tdishr_messages.xml
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 #define TdiBREAK                0xfd38008
 #define TdiCASE                 0xfd38010

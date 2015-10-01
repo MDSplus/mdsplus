@@ -1,13 +1,13 @@
 
 #pragma once
-#
-########################################################
-# This header was generated using mdsshr/gen_device.py
-# To add new status messages modify: 
-#     camshr_messages.xml
-# and then in mdsshr do:
-#     python gen_devices.py
-########################################################
+/*
+
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     camshr_messages.xml
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 #define CamDONE_Q               0x8018009
 #define CamDONE_NOQ             0x8018011

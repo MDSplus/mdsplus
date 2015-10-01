@@ -15,14 +15,14 @@ def gen_include(root,file,faclist,msglistm,f_test):
     f_py=open("../mdsobjects/python/mdsExceptions/%sExceptions.py" % file.lower()[0:-len("_messages.xml")],'w')
     f_inc.write("""
 #pragma once
-#
-########################################################
-# This header was generated using mdsshr/gen_device.py
-# To add new status messages modify: 
-#     %s
-# and then in mdsshr do:
-#     python gen_devices.py
-########################################################
+/*
+
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     %s
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 """ % file)
     f_py.write("""
