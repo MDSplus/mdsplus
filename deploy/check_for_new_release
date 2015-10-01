@@ -24,13 +24,15 @@ then
   echo "The $release_tag is up to date. No new release necessary."
   exit 0
 fi
+echo "Testing the $(GIT_BRANCH) HEAD to make sure it builds"
 set +e
 let succeeded=0
 let must_succeed=$1
 shift
 for test_build in "$@"
 do
-  if ( sudo docker run --rm -v $(pwd):/source mdsplus/docker:${test_build} build > /dev/null 2>&1 )
+  echo "Attempting to build using mdsplus/docker:$(test_build)"
+  if ( sudo docker run --rm -v $(pwd):/source mdsplus/docker:${test_build} build > /dev/null )
   then
     echo "${test_build} succeeded."
     let succeeded=$succeeded+1
