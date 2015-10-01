@@ -1,4 +1,16 @@
-commit 206e6bcc8eb331f9c9454a60fff01818343acb1a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit edd2c1ee787b32379a56a91820c43c277e03b2d7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 1 14:20:30 2015 -0400
+
+    Upcase facility in message text to preserve original behavior
+
+commit 2f6f67fe76d817544d46d109e166ef74bb941831 (tag: refs/tags/alpha_release-7-0-154)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 1 13:13:17 2015 -0400
+
+    New release ---- alpha_release-7-0-154
+
+commit 206e6bcc8eb331f9c9454a60fff01818343acb1a
 Merge: c03e4a2 f00ff60
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 1 13:02:58 2015 -0400
