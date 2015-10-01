@@ -281,7 +281,6 @@ public class Signal implements WaveDataListener
     //reduce net load
     private boolean full_load = false;
 
-
     ContourSignal cs;
     private double contourLevels[];
     Vector<Vector> contourSignals = new Vector<Vector>();
@@ -516,9 +515,17 @@ public class Signal implements WaveDataListener
      * @param _n_points the total number of points in the Signal
      */
 
-    
-    public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal)
+   public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal)
    {
+       this(data, x_data, xminVal, xmaxVal, null, null);
+   }
+    
+   public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal, WaveData lowErrData, WaveData upErrData)
+   {
+        error = (lowErrData != null || upErrData != null);
+        asym_error = (lowErrData != null && upErrData != null);
+        up_errorData = upErrData;
+        low_errorData = lowErrData;
         if(xminVal != -Double.MAX_VALUE)
         {
             saved_xmin = this.xmin = curr_xmin = xminVal;
@@ -567,8 +574,7 @@ public class Signal implements WaveDataListener
     public Signal(double _x[], float _y[], int _n_points)
     {
         error = asym_error = false;
-        error = asym_error = false;
-        data = new XYWaveData(_x, _y, _n_points);
+         data = new XYWaveData(_x, _y, _n_points);
         setAxis();
         saved_xmin = curr_xmin = xmin;
         saved_xmax = curr_xmax = xmax;
@@ -578,7 +584,6 @@ public class Signal implements WaveDataListener
     }
     public Signal(double _x[], float _y[])
     {
-        error = asym_error = false;
         error = asym_error = false;
         data = new XYWaveData(_x, _y, (_x.length <_y.length)?_x.length:_y.length);
         setAxis();
@@ -2001,7 +2006,11 @@ public class Signal implements WaveDataListener
             type = TYPE_1D;
             if(x == null)//Only if data not present 
             {
-                XYData xyData = data.getData(xMin, xMax, NUM_POINTS);
+                XYData xyData;
+                if(!error)
+                    xyData = data.getData(xMin, xMax, NUM_POINTS);
+                else
+                    xyData = data.getData(xMin, xMax, Integer.MAX_VALUE);
                 if(xyData == null) return; //empty signal
                 x = xyData.x;
                 y = xyData.y;
@@ -2034,12 +2043,14 @@ public class Signal implements WaveDataListener
             }
             if(up_errorData != null && upError == null)
             {
-                XYData xyData = up_errorData.getData(xMin, xMax, NUM_POINTS);
+               // XYData xyData = up_errorData.getData(xMin, xMax, NUM_POINTS);
+                XYData xyData = up_errorData.getData(xMin, xMax, Integer.MAX_VALUE);
                 upError = xyData.y;
             }
             if(low_errorData != null && lowError == null)
             {
-                XYData xyData = low_errorData.getData(xMin, xMax, NUM_POINTS);
+               // XYData xyData = low_errorData.getData(xMin, xMax, NUM_POINTS);
+                XYData xyData = low_errorData.getData(xMin, xMax, Integer.MAX_VALUE);
                 lowError = xyData.y;
             }
 
@@ -2456,6 +2467,9 @@ public class Signal implements WaveDataListener
         double actResolution = NUM_POINTS/(actXMax - actXMin);
         if(!increasing_x)
             return; //Dynamic resampling only for "classical" signas
+        if(up_errorData != null || low_errorData != null)
+            return; //Dynamic resampling only without error bars
+        
         Vector<RegionDescriptor> lowResRegions = resolutionManager.getLowerResRegions(actXMin, actXMax, actResolution);
         for(int i = 0; i < lowResRegions.size(); i++)
         {
@@ -2463,10 +2477,11 @@ public class Signal implements WaveDataListener
             double currLower = currReg.lowerBound;
             double currUpper = currReg.upperBound;
             //Error bars are assumed to be used only for small signals and should not arrive here. In case make it not asynchronous
-            if(up_errorData != null)
+/*            if(up_errorData != null)
             {
                 try {
-                    XYData currError = up_errorData.getData(currLower, currUpper, NUM_POINTS);
+//                    XYData currError = up_errorData.getData(currLower, currUpper, NUM_POINTS);
+                    XYData currError = up_errorData.getData(xmin, xmax, Integer.MAX_VALUE);
                     upError = currError.y;
                 }catch(Exception exc)
                 {
@@ -2476,13 +2491,14 @@ public class Signal implements WaveDataListener
             if(low_errorData != null)
             {
                 try {
-                    XYData currError = low_errorData.getData(currLower, currUpper, NUM_POINTS);
+//                    XYData currError = low_errorData.getData(currLower, currUpper, NUM_POINTS);
+                    XYData currError = low_errorData.getData(xmin, xmax, Integer.MAX_VALUE);
                     lowError = currError.y;
                 }catch(Exception exc)
                 {
                     System.out.println("Cannot evaluate error: "+ exc);
                 }
-            }
+            } */
 //            if ((mode & AT_CREATION) == 0)
             if (((mode & DO_NOT_UPDATE) == 0)&&(currLower != saved_xmin  || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
                 data.getDataAsync(currLower, currUpper, NUM_POINTS);
