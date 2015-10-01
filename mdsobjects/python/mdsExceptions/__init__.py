@@ -10,7 +10,7 @@ class MDSplusException(Exception):
     self.severity=self.severities[self.status & 7]
 
   def __str__(self):
-    return "%%%s-%s-%s, %s" % (self.fac,
+    return "%%%s-%s-%s, %s" % (self.fac.upper(),
                                self.severity,
                                self.msgnam,
                                self.message)
