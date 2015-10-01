@@ -1,8 +1,526 @@
-commit c7c398699e7e57040f984e5216277310566f7aca (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 206e6bcc8eb331f9c9454a60fff01818343acb1a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: c03e4a2 f00ff60
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 1 13:02:58 2015 -0400
+
+    Merge pull request #127 from MDSplus/feature-doxygen-docs
+    
+    fix docs removal during javascope build
+
+commit f00ff60b0788206531b9bfb5255794edb165d771 (refs/remotes/origin/feature-doxygen-docs)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 1 18:51:39 2015 +0200
+
+    fix docs removal during javascope build
+
+commit c03e4a2a1476aed9693802a7ed74eba29a200cb4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 1 11:42:11 2015 -0400
+
+    fix comment section in auto generated message header files
+
+commit 7e5791b6fdb1ebc99c519b7a92ffd43610cb66ed
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 1 11:36:47 2015 -0400
+
+    Add output during test builds when testing new releases
+
+commit 9595b166a16ba670588757800f9f6a22e3a49f51
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 1 11:33:46 2015 -0400
+
+    Add output during test builds when testing new releases
+
+commit f0845a6f2342a8698edf7ccb7efe1d399d25099b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Oct 1 17:29:13 2015 +0200
+
+    Fix error Bars
+
+commit 60f24dc342f8d20f6742fb342ad94b082f2c4ddd
+Merge: 296ccb3 cbbfc08
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 14:29:57 2015 -0400
+
+    Merge pull request #117 from zack-vii/aab_python_array
+    
+    fix empty shape on Arrays
+
+commit 296ccb3d4ec518e08528acab17fcb9726810b296
+Merge: b4bdd64 2e372e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 14:24:36 2015 -0400
+
+    Merge pull request #110 from zack-vii/a_python_clean+compress
+    
+    added cleanDatafile and compressDatafile to tree
+
+commit b4bdd64e272bbb4b67a8d41fc04582993ade6ddb
+Merge: ea167d2 66c4399
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 30 14:11:09 2015 -0400
+
+    Merge pull request #103 from MDSplus/add-statusToException
+    
+    Add the use of statusToException to raise appropriate MDSplus excepti…
+
+commit 66c439900e2a91664ccf5a55ba290cc5502241be (refs/remotes/origin/add-statusToException)
+Merge: 14a7e12 c2281ec
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 30 14:10:07 2015 -0400
+
+    fix merge confilicts
+
+commit ea167d25bc1a1d14afbc9b67e64d8edbdd209f8b
+Merge: d44e63d c164ab7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 13:56:20 2015 -0400
+
+    Merge pull request #124 from MDSplus/feature-doxygen-docs
+    
+    Feature doxygen docs
+
+commit d44e63d568680e2484598eab323b4311cc834517
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Wed Sep 30 18:41:39 2015 +0200
+
+    Yet another urgent fix
+
+commit a53d769bc2521d7077f28ca12a347defc810e54f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 30 18:19:13 2015 +0200
+
+    Urgent fix
+
+commit c164ab7aec1fcd7534a6d253156718f931c5e2bd
+Merge: 5ec3158 c2281ec
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Sep 30 17:57:46 2015 +0200
+
+    Merge branch 'alpha' into feature-doxygen-docs
+
+commit c2281ece3e5b9f754474df061e51f38ec3481784
+Merge: 5813935 d0a0c60
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Sep 30 11:45:24 2015 -0400
+
+    Merge pull request #122 from MDSplus/twf-new-treeaddnode-status-messages
+    
+    Add new status messages to replace undefined status values used (i.e.…
+
+commit d0a0c600d27d9b9c1bee11c8816193ddb43e4e77 (refs/remotes/origin/twf-new-treeaddnode-status-messages)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 11:06:45 2015 -0400
+
+    Add new status messages to replace undefined status values used (i.e. 4,6 and 8)
+
+commit 5813935e3a23f293eb1db30bb282b6101e4c345a
+Merge: 81452f8 984428e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 10:44:04 2015 -0400
+
+    Merge pull request #121 from MDSplus/dev-bstandley
+    
+    Question about TreeUSAGE_SUBTREE_TOP when querying USAGE_STR NCI
+
+commit 984428e05c7c8d633fad7f246be92c22181a1338 (refs/remotes/origin/dev-bstandley)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Wed Sep 30 15:57:29 2015 +0200
+
+    Cover TreeUSAGE_SUBTREE_TOP when returning USAGE_STR NCI
+
+commit 81452f86aaf638cc8b0c2d30279585ffb4043c35
+Merge: a99560f a11f5e2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 29 15:45:29 2015 -0400
+
+    Merge pull request #111 from zack-vii/a_python_connection_XxxMany
+    
+    make PutMany and GetMany individual classes
+
+commit a11f5e25568f5b306ca8f1d40610cd6a862cbdf4
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 29 21:26:46 2015 +0200
+
+    removed processGetMany and processPutMany
+    
+    It became obsolete since PutMany and GetMany classes
+
+commit c4cad63bcf987fb9cc8ff20f30338fc6e5953c35
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 29 21:22:58 2015 +0200
+
+    added deserialize to Int8Array
+
+commit 9b62f61d603fe33e181548685ef0bcac2b51521d
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 18 18:07:26 2015 +0200
+
+    make PutMany and GetMany individual classes
+    
+    in order to avoid confusion between getMany and GetMany outsource
+    GetMany as a class of its own.
+
+commit cbbfc0804fc29a5811e2a540f0fd4cb366d5078a
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Sep 28 19:02:17 2015 +0200
+
+    mdsarray fix empty shape
+    
+    reshape(1) if shape of input is empty
+    otherwise
+    
+    Int32Array(0)[0]
+    
+    throws an error while
+    
+    makeArray(0)[0]
+    
+    does not.
+
+commit ed500078855411dffd9af8cea47bb1bcb663e1a8
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Sep 28 18:57:27 2015 +0200
+
+    mdsdata.py unreachable line
+    
+    deleted unreachable line
+
+commit a99560f649562ed1221be05361ba42c1adee5088
+Merge: 307653f c1dba55
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 29 13:02:30 2015 -0400
+
+    Merge pull request #109 from zack-vii/aaa_python
+    
+    tree error in line 44
+
+commit 307653f480b511859379f971df8212715cfd277d
+Merge: e54995e fb99a1e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 29 13:00:04 2015 -0400
+
+    Merge pull request #108 from zack-vii/aa_python
+    
+    missing _ver in tree.py
+
+commit c1dba5508d58d6c29f9172104e5000e68e40399a
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 22 10:41:10 2015 +0200
+
+    tree error in line 44
+    
+    reason is a missing ctx attribute.
+    it happens if you open a non-existing tree without 'new'.
+    solution: keep the close flag false until opening succeeded
+
+commit fb99a1e5cd874ee39754c8146d229bb9175c1a27
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Sep 21 22:27:18 2015 +0200
+
+    tree.py missing _ver mimport
+    
+    added mimport for _ver
+
+commit e54995e61127e0b229f781562178748aa335a617
+Merge: 0420d5b 364e40b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Sep 29 15:01:59 2015 +0200
+
+    Merge pull request #120 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca (refs/remotes/origin/dev-gm)
+Merge: 356f704 6641aab
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Sep 29 14:56:14 2015 +0200
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 0420d5b7290aad7cb6e34cb2c6fc7ea46192a29e
+Merge: 11f07cb 6641aab
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Sep 29 14:54:12 2015 +0200
+
+    Merge pull request #119 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit 5ec31582f8754ae503f0b48294fb8416482c3009
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Sep 29 11:56:11 2015 +0200
+
+    adds github to links
+
+commit a16edcc1cf9d54e9030136c2df2a125f93f8126c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Sep 29 11:32:52 2015 +0200
+
+    fix toggle navbar
+
+commit 356f70475779c3f888b8377bc5271d12bdcac913
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Sep 28 19:04:55 2015 +0200
+
+    Added methods
+
+commit fd43d9e8e54fd69a50983ce832712a8a5aa965b9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Sep 28 18:17:11 2015 +0200
+
+    Return Image Info in a more flexible way
+
+commit 6641aabc8e185aca22eae824d9ccf5961f17d5e2
+Merge: ca665a5 a0afdff
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Sep 28 18:17:43 2015 +0200
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit ca665a585a0e96228eb2d7ae47b5d32b9a0488e5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Sep 28 18:17:11 2015 +0200
+
+    Return Image Info in a more flexible way
+
+commit 2ffa1c4bf8b83ef4432c73e3abc10103a9fd8eed
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Sep 28 17:47:36 2015 +0200
+
+    adds pretty presentation of navigation index and toggle button
+
+commit 9d62d87eac2e29fa6b22c3e7bde7da8adef925e5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Sep 28 13:41:18 2015 +0200
+
+    adds javascope link in main docs
+
+commit 5635cc09cf939d4320287654d841d321485ed8b9
+Merge: 00129d8 386e2df
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Sep 28 12:06:28 2015 +0200
+
+    merge
+
+commit 00129d894cc9b2307eef57d788e5d35f540086a3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Sep 28 10:37:19 2015 +0200
+
+    fixes docs nav in install target
+
+commit 11f07cbdbf977dfde51118421619e956eac6aeac
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 18:42:11 2015 +0200
+
+    Support for temperature trend
+
+commit c7315f1c85e9d871c439b33f45dec5666b3f5b31
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Sep 25 18:22:26 2015 +0200
+
+    add docs navigation among components EPISODE1
+
+commit cd6947d1d0ff55ef92ed027e67b43c7598074e4d
+Merge: 49f64d6 09fc85a
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 18:19:48 2015 +0200
+
+    Merge pull request #116 from MDSplus/revert-115-experiments-rfx
+    
+    Revert "Experiments rfx"
+
+commit 09fc85a6d4072eb1460f962ea4aa41d84a765f30 (refs/remotes/origin/revert-115-experiments-rfx)
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 18:16:09 2015 +0200
+
+    Revert "Experiments rfx"
+
+commit 14a7e12011d33d6c06307b24e3aeb645a993a8b3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 25 09:21:22 2015 -0400
+
+    Add Error, Success and Unknown exceptions and have statusToExceptionreturn a exception instance not the class
+
+commit 49f64d673af59c9556ede6782564b91acc9b78b0
+Merge: 9be98e4 cde14c3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 13:47:04 2015 +0200
+
+    Merge pull request #115 from MDSplus/experiments-rfx
+    
+    Experiments rfx
+
+commit cde14c3bf166a0459167bb20209f92201c86148c
+Merge: bf6ff31 3d30279
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 13:45:16 2015 +0200
+
+    Merge branch 'experiments-rfx' of github.com:MDSplus/MDSplus into experiments-rfx
+
+commit bf6ff3171d494cf4aed75081598fe47a53eab0f1
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 13:44:40 2015 +0200
+
+    Added temperature trend support
+
+commit 9078316b140183158ab0a3beeb5e9dc9fd293d38
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 12:38:50 2015 +0200
+
+    Trend support
+
+commit 3d30279d4ef899410db9ca6297300ccf7354fc62
+Merge: 6af043c 9be98e4
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 25 12:34:03 2015 +0200
+
+    Merge pull request #114 from MDSplus/alpha
+    
+    New Camera device for W7X
+
+commit 0113ff05ac9fcbe926b77bd9e8167ba4f6504ddc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 24 15:51:58 2015 -0400
+
+    Add note to not edit the generated files.
+
+commit eb169b3b087b2a45a877d69b9f0f1881e88d70f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Sep 24 15:37:44 2015 -0400
+
+    Put exceptions in separate modules
+
+commit 5546c7705b5a31b2f55de89c4cbddc04135a1d0c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Sep 24 14:07:38 2015 +0200
+
+    adds more in javascope docs
+
+commit 81fcbd9cfa6c88b97341475626cc9fcd1e816990
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Sep 22 09:08:39 2015 +0200
+
+    adds docs dir to javascope
+
+commit d85c8b32735aaff38828cf289ed05da8d2805c3f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 24 17:45:50 2015 +0200
+
+    typo
+
+commit 2e372e8d8bcad08f4d5c9ef3a04c9c24c2dbe25e
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 22 12:07:43 2015 +0200
+
+    added cleanDatafile and compressDatafile to tree
+    
+    -added cleanDatafile and compressDatafile to tree
+
+commit 9be98e4a6d829bd7567025ba23288cfa5c9d107b
+Merge: 24ba618 6af043c
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Tue Sep 22 09:16:16 2015 +0200
+
+    Merge pull request #98 from MDSplus/experiments-rfx
+    
+    Experiments rfx
+
+commit 24ba618eda24a345264f086df04686442ca0f765
+Merge: 55e11c7 e05f959
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Sep 21 11:50:19 2015 -0400
+
+    Merge pull request #107 from MDSplus/twf_mdsshr_improvements
+    
+    Add mdsshr improvemnts.
+
+commit e05f95911e4a3592b09be5bb15d83c94022ed1f8 (refs/remotes/origin/twf_mdsshr_improvements)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 21 11:40:03 2015 -0400
+
+    Add private mdsshr header
+
+commit 55e11c7c75da932e95dddaaee579c01b46b4d5c9
+Merge: 6b63a71 e9a36fa
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Mon Sep 21 16:13:35 2015 +0200
+
+    Merge pull request #106 from MDSplus/mdsshr-docs
+    
+    Mdsshr docs
+
+commit 6b63a71cf8ff0b75214dbbf384de8ce45c6009a5
+Merge: 31ecd99 7c915b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 21 10:06:05 2015 -0400
+
+    Merge pull request #105 from zack-vii/aa_python
+    
+    version tobytes on connection and tree
+
+commit 31ecd99d6ff3acbb834d75a0233894a0cb48359c (tag: refs/tags/alpha_release-7-0-153)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Sep 18 23:05:47 2015 -0400
+
+    New release ---- alpha_release-7-0-153
+
+commit c7c398699e7e57040f984e5216277310566f7aca
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Sep 16 08:15:12 2015 -0400
 
     Fix segfault in Deassign. Create descriptor struct after getting the module name not before.
+
+commit 81210dd90083678df4e7797b1558b4a397cb9292
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 18 15:28:38 2015 -0400
+
+    Add mdsshr improvemnts.
+    Add const declarations where appropriate.
+    Add some doxygen documentation.
+    Remove obsolete DSC macros from mdsdescrip.h.
+
+commit e9a36fae679e88f06968e77e140a3aefadbf1a56 (refs/remotes/origin/mdsshr-docs)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 18 13:28:19 2015 -0400
+
+    Remove unused files for mdsshr docs
+
+commit 2a18bdef238353f6cca02fdebeaf039172915778
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 18 13:20:32 2015 -0400
+
+    Add mdsshr docs
+
+commit 7c915b853aee0cd3edc93d171cd4eea38ca59b74
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 18 18:53:15 2015 +0200
+
+    use type instead of type name for dict
+    
+    its faster since you only compare refs
+
+commit 61f5c009aeaa97b3e1800fdb0dd346f97e8a3500
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 18 12:32:19 2015 -0400
+
+    Add mdsshr docs
+
+commit bb239d2290e5f52dd7e854b1b67b1527e5bd30b6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 18 12:02:28 2015 -0400
+
+    add mdsshr to doxygen docs
+
+commit dec751fc92df4f8eef1acd9881fbe1d07e47f905
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Sep 18 17:39:49 2015 +0200
+
+    version tobytes on connection and tree
+    
+    version safer
+    -replace str.encode with _ver.tobytes
+    -move conversion to lower level function
 
 commit 4f295d96a714a85db601dc05a8bf3ce6d64872b2 (tag: refs/tags/alpha_release-7-0-152)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -31,11 +549,34 @@ Date:   Thu Sep 17 15:00:11 2015 +0200
 
     Fix configure.h.in to be generated by autoheader
 
+commit 6af043c934704e4dd27cfcf9e254bb0e806e668f
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 17 09:23:25 2015 +0200
+
+    Merge identation
+
+commit b91dc05fb0a5b85a515becd82a05743134ef0dc4
+Merge: 86cac7f 31815fa
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 17 09:19:21 2015 +0200
+
+    Merge branch 'alpha' into experiments-rfx
+    
+    Conflicts:
+    	javadevices/RFXVICONTROLSetup.java
+    	javascope/jScope/MdsConnection.java
+
 commit 31815fa132b5076267095a737c6136531e858830 (tag: refs/tags/alpha_release-7-0-151)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Sep 16 23:06:48 2015 -0400
 
     New release ---- alpha_release-7-0-151
+
+commit a108d8263f1056d1d2b7f4531a7b0b132458295e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 16 16:34:52 2015 -0400
+
+    Add the use of statusToException to raise appropriate MDSplus exceptions based on status values returned from MDSplus library routines
 
 commit e990b5ab0cef706bc3d7d86b257aa46301ed603d
 Merge: d89c27c 40e8568
@@ -68,6 +609,26 @@ Date:   Wed Sep 16 16:00:08 2015 +0200
     typecast numpy array of string to bytes for descriptor
     
     prevents strings to be passed to libraries as unicode
+
+commit a0afdff362dcec8e50eeaf6073786613f0a2a9ed
+Merge: 369750b a52c1e1
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 16 15:05:17 2015 +0200
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 369750bbe2167eebf5f209f77fa78d262b28e7ac
+Merge: 035d253 a2f4f47
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 16 10:29:59 2015 +0200
+
+    Merge branch 'alpha' into dev-gm
+
+commit 86cac7fbe885d2ee11b72d7b77b9b0c046f18d19
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Sep 16 10:14:14 2015 +0200
+
+    Minor fixes
 
 commit e1e73f6b783711477bfde1cf484135b878e79d5c
 Merge: 696974c cce4aea
@@ -648,6 +1209,24 @@ Date:   Thu Sep 10 08:23:10 2015 -0400
     but should return
     
         [1,2,3,4,5]
+
+commit 763fc74b995dcf616ef5966e126139822314b949
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 11:48:54 2015 +0200
+
+    Fixed inverted codes control
+
+commit a52c1e1267f2cac695cf5cdb160506119b9dd45c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 11:33:21 2015 +0200
+
+    RedPitaya
+
+commit 035d2534b76bf965ea17433fde1257fc3df2a5fb
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Sep 10 11:11:25 2015 +0200
+
+    Updated interface for RED PITAYA
 
 commit a2f4f472aa7d2239881bb2f66896870ac745db15 (refs/remotes/origin/dev-ct, refs/remotes/origin/dev-arg)
 Merge: d5319b7 ab32212
@@ -1939,6 +2518,30 @@ Date:   Fri Jul 24 16:09:55 2015 -0400
     Fix symbol substitution
 
 commit 235bd83eabc477ee8d4f879a175ee359edf715d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 24 10:47:28 2015 -0400
+
+    Add NOT_DONE env so second build (64-bit) will be done after 32-bit build
+
+commit 386e2df9b10b5b05a491be93ef72e42921c39d7a
+Author: Andrea Rigoni Garola <andrea.rigoni@pd.infn.it>
+Date:   Tue Sep 1 21:10:32 2015 +0200
+
+    adds missing mdslib/docs directory
+
+commit 69cd031fd5749fbf168a442f48915440de1b307c
+Author: Andrea Rigoni Garola <andrea.rigoni@pd.infn.it>
+Date:   Tue Aug 18 15:49:54 2015 +0200
+
+    added mdslib
+
+commit 6ba80755fb1c71b55534da68d5a9e36cc46484ed
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 24 17:45:50 2015 +0200
+
+    typo
+
+commit f96112a135af3c307885906abc3bb0cf5400dc93
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 10:47:28 2015 -0400
 
