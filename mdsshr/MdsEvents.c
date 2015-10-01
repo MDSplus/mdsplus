@@ -178,10 +178,9 @@ int MDSEvent(char const *evname)
 #elif (defined(_WIN32))
 #define NO_WINDOWS_H
 #include <process.h>
-extern char *TranslateLogical(char *);
 STATIC_ROUTINE void newRemoteId(int *id);
 STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid);
-STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data);
+STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data);
 STATIC_ROUTINE int getRemoteId(int id, int ofs);
 STATIC_THREADSAFE HANDLE external_thread = 0;
 STATIC_THREADSAFE HANDLE external_event = 0;
@@ -607,7 +606,7 @@ STATIC_ROUTINE void initializeRemote(int receive_events)
   UnlockMdsShrMutex(&initMutex);
 }
 
-STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr) (), void *astprm, int *eventid)
+STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   int status = 1, i;
   int curr_eventid;
