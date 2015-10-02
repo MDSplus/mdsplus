@@ -1,4 +1,16 @@
-commit edd2c1ee787b32379a56a91820c43c277e03b2d7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit e6a8e3d69f74d2c45e2055c0efd2b0412fbf47e7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 1 14:52:58 2015 -0400
+
+    Fix compile errors due to inconsistent use of the const keyword
+
+commit abaeb9a1341dce6224e254f9ef3dfc24d4fee4de (tag: refs/tags/alpha_release-7-0-155)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 1 14:30:50 2015 -0400
+
+    New release ---- alpha_release-7-0-155
+
+commit edd2c1ee787b32379a56a91820c43c277e03b2d7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 1 14:20:30 2015 -0400
 
