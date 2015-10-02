@@ -81,11 +81,23 @@ char *SetHostfile(char *newhostfile)
   return old;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //  CONTEXT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+char *GetLogDir() {
+  char *logdir=getenv("MDSIP_SERVICE_LOGDIR");
+  if (logdir && (strlen(logdir) > 0)) {
+    logdir=strdup(logdir);
+    size_t len = strlen(logdir);
+    if ((logdir[len-1]=='\\') || (logdir[len-1]=='/')) {
+      logdir[len-1]='\000';
+    }
+  } else {
+    logdir=strdup("C:\\");
+  }
+  return logdir;
+}
 
 unsigned char GetMulti()
 {

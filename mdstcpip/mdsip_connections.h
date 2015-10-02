@@ -392,7 +392,7 @@ EXPORT int GetContextSwitching();
 EXPORT int GetFlags();
 
 EXPORT char *GetHostfile();
-
+EXPORT char *GetLogDir();
 EXPORT int GetMaxCompressionLevel();
 
 ////////////////////////////////////////////////////////////////////////////////
