@@ -202,6 +202,7 @@ EXPORT IoRoutines *GetConnectionIo(int id);
 EXPORT int GetContextSwitching();
 EXPORT int GetFlags();
 EXPORT char *GetHostfile();
+EXPORT char *GetLogDir();
 EXPORT int GetMaxCompressionLevel();
 EXPORT unsigned char GetConnectionMessageId(int);
 EXPORT int GetMdsConnectTimeout();
