@@ -208,10 +208,14 @@ static short GetPort()
 
 static void RedirectOutput()
 {
-  char file[120];
-  sprintf(file, "C:\\MDSIP_%s.log", GetPortname());
+  char *logdir = GetLogDir();
+  char *portname = GetPortname();
+  char *file = malloc(strlen(logdir)+strlen(portname)+20);
+  sprintf(file, "%s\\MDSIP_%s.log", logdir,GetPortname());
   freopen(file, "w", stdout);
   freopen(file, "a", stderr);
+  free(logdir);
+  free(file);
 }
 
 static int ServiceMain(int argc, char **argv)
