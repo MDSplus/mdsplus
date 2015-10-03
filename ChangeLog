@@ -1,4 +1,31 @@
-commit aa93eeafb59384526c17a0f07644dfe1fc44951d (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit d9dce65c16b1616c00e40accde7b07e6897788ce (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 21:00:24 2015 -0400
+
+    fix parsing of release info due to change in github response
+
+commit 37e6f60587c817f7cfa36ddbfb6f9c2d905d0e0d
+Merge: df6597b f395337
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 16:54:55 2015 -0400
+
+    Merge pull request #128 from MDSplus/twf-stable-mdsip-logdir
+    
+    Add an environment variable to change the log directory of the mdsip …
+
+commit f3953372c72d99174edaba851fa089d268fcbaee
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 14:54:46 2015 -0400
+
+    Add an environment variable to change the log directory of the mdsip services on Windows. New environment variable: MDSIP_SERVICE_LOGDIR can be used to override the default location of C:\
+
+commit df6597b7951446b90f33068d97e20428a8b6d990 (tag: refs/tags/stable_release-7-0-54)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Sep 16 19:06:03 2015 -0400
+
+    New release ---- stable_release-7-0-54
+
+commit aa93eeafb59384526c17a0f07644dfe1fc44951d
 Merge: 2853fa0 2aec003
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Sep 16 13:24:25 2015 -0400
