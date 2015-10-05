@@ -676,7 +676,7 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
   if (status & 1) {
     bitassign(state, nci->flags, NciM_PARENT_STATE);
     status = TreePutNci(info, node_num, nci, 0);
-    TreeUnlockNci(info, 0, node_num);
+    TreeUnLockNci(info, 0, node_num);
   }
   return status;
 }
