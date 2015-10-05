@@ -23,7 +23,7 @@
 // Check for HAVE_CHECK and HAVE_FORK //
 #include <config.h>
 
-
+#include <string.h>
 
 #define MSG_LEN 100
 
@@ -48,6 +48,31 @@ extern void eprintf(const char *fmt, const char *file, int line,
                     ...) CK_ATTRIBUTE_NORETURN;
 extern void *emalloc(size_t n);
 extern void *erealloc(void *, size_t n);
+
+
+
+
+static int out_fd;
+static fpos_t out_pos;
+
+static FILE *switchStdout(const char *newStream)
+{
+  fflush(stdout);
+  fgetpos(stdout, &out_pos);
+  out_fd = dup(fileno(stdout));    
+  freopen(newStream, "a", stdout);
+  return fdopen(out_fd, "w");
+}
+
+static void revertStdout()
+{
+  fflush(stdout);
+  fclose(stdout);
+  dup2(out_fd, fileno(stdout));
+  close(out_fd);
+  clearerr(stdout);
+  fsetpos(stdout, &out_pos);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +160,8 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     if( cur_fork_status() == CK_FORK )
     {
 #     if defined(HAVE_FORK) && HAVE_FORK==1
-       _exit(1);
+        revertStdout();
+        _exit(1);
 #     endif /* HAVE_FORK */
     }
     else
@@ -484,6 +510,11 @@ static void srunner_send_evt(SRunner * sr, void *obj, enum cl_event evt)
 ///
 
 
+static char log_fname[200];
+static char tap_fname[200];
+static char xml_fname[200];
+
+
 void __test_init(const char *test_name, const char *file, const int line) {
             
 //    if(group_pid) {
@@ -495,8 +526,29 @@ void __test_init(const char *test_name, const char *file, const int line) {
         suite = suite_create(file);            
         runner = srunner_create(suite);
 
-        // init logger normal for now //
+        strcpy(log_fname,test_name);
+        strcat(log_fname,"_out.log");
+        strcpy(tap_fname,test_name);
+        strcat(tap_fname,"_out.tap");
+        strcpy(xml_fname,test_name);
+        strcat(xml_fname,"_out.xml");        
+        
+//        srunner_set_log(runner,log_fname);
+//        srunner_set_xml(runner,xml_fname);        
+//        srunner_set_tap(runner,"-"); //tap_fname);
+//        srunner_set_xml(runner,"-"); //tap_fname);
+        
+        FILE *newout = switchStdout(log_fname);
+                        
+        // init logger TAP by default //
         srunner_init_logging(runner, CK_NORMAL);
+        srunner_register_lfun(runner, newout, 0, tap_lfun, CK_NORMAL);
+        
+        
+        enum fork_status f = cur_fork_status();
+        srunner_set_fork_status(runner, cur_fork_status());           
+        
+        
         
         // send runner start event //
         log_srunner_start(runner);    
@@ -511,12 +563,12 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // set exit function //
         atexit(__test_exit);
     }
-    
+        
     tcase  = tcase_create(test_name);
-    suite_add_tcase(suite,tcase);
-
+    suite_add_tcase(suite,tcase);    
     
-    if(cur_fork_status() == CK_FORK ) {                
+    if(cur_fork_status() == CK_FORK ) {
+        
         // SIGALRM //
         memset(&sigalarm_new_action, 0, sizeof(sigalarm_new_action));
         sigalarm_new_action.sa_handler = sig_handler;
@@ -546,8 +598,11 @@ void __test_init(const char *test_name, const char *file, const int line) {
 //  START TEST  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
+
 int __setup_parent() {
-        
+    
+    
     // FORK //
     if( cur_fork_status() == CK_FORK )                        
     {
@@ -557,6 +612,7 @@ int __setup_parent() {
             eprintf("Error forking to a new process:", __FILE__, __LINE__);     
         else if(pid == 0) {
             // child process //
+//            switchStdout(log_fname);            
             return 0;
         }        
         group_pid = pid;
@@ -568,10 +624,10 @@ int __setup_parent() {
     TestResult *tr = NULL;
     
     timer_t timerid;
-    struct itimerspec timer_spec;        
-    int status = 0;            
-    alarm_received = 0;        
-    
+    struct itimerspec timer_spec;
+    int status = 0;
+    alarm_received = 0;
+
     if(timer_create(check_get_clockid(), NULL, &timerid) == 0)
     {
         /* Set the timer to fire once */
@@ -579,46 +635,47 @@ int __setup_parent() {
         timer_spec.it_interval.tv_sec = 0;
         timer_spec.it_interval.tv_nsec = 0;
         if(timer_settime(timerid, 0, &timer_spec, NULL) == 0)
-        {   
+        {
             pid_t   pid_w;
-            do pid_w = waitpid(group_pid, &status, 0);               
+            do pid_w = waitpid(group_pid, &status, 0);
             while (pid_w == -1 );
         }
-        else 
+        else
             // settime failed //
             eprintf("Error in call to timer_settime:", __FILE__, __LINE__);
-        
+
         /* If the timer has not fired, disable it */
         timer_delete(timerid);
     }
     else
         // create timer failed //
         eprintf("Error in call to timer_create:", __FILE__, __LINE__);
-    
+
     // kill child group and reset parent status to group_pid = 0 //
-    killpg(group_pid, SIGKILL);   /* Kill remaining processes. */                
+    killpg(group_pid, SIGKILL);   /* Kill remaining processes. */
     group_pid = 0;
-    
-    srunner_send_evt(runner, tcase, CLSTART_T);        
+
+
+    srunner_send_evt(runner, tcase, CLSTART_T);
     send_ctx_info(CK_CTX_SETUP); // FIXX ///
-    tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);              
-    if(tr) srunner_add_failure(runner, tr);  
-    srunner_send_evt(runner, tcase, CLEND_T);        
-    
+    tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);
+    if(tr) srunner_add_failure(runner, tr);
+    srunner_send_evt(runner, tr, CLEND_T);
+
     return 1;
 }
 
 
 
 int __setup_child() {
-    
+
     if(cur_fork_status() == CK_FORK ) {
         setpgid(0, 0);
-        group_pid = getpgrp();       
+        group_pid = getpgrp();
         return 1;
     }
     else {
-        srunner_send_evt(runner, tcase, CLSTART_T);                    
+        srunner_send_evt(runner, tcase, CLSTART_T);
         return 0 == setjmp(error_jmp_buffer);
     }
 }
@@ -633,16 +690,19 @@ int __setup_child() {
 void __test_end()
 {
     // if forked //
-    if(cur_fork_status() == CK_FORK ) {
-        if(group_pid) _exit(0);
+    if(cur_fork_status() == CK_FORK ) {        
+        if(group_pid) {            
+            revertStdout();
+            _exit(0);
+        }        
     }
     // if not forked //
     else {
         TestResult *tr;
         send_ctx_info(CK_CTX_SETUP); // FIXX ///
         tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
-        if(tr) srunner_add_failure(runner, tr); 
-        srunner_send_evt(runner, tcase, CLEND_T);                        
+        if(tr) srunner_add_failure(runner, tr);
+        srunner_send_evt(runner, tr, CLEND_T);
     }
 }
 
@@ -657,15 +717,18 @@ void __test_end()
 
 
 void __test_exit()
-{   
-    // if we are on child yet silently exit //
-    if(group_pid) _exit(0);
-        
-    log_suite_end(runner, suite);     
-    srunner_run_end(runner,CK_VERBOSE);        
-    int _nerr = srunner_ntests_failed(runner);    
+{
+    // if we are on child silently exit //
+    if(group_pid) {         
+        revertStdout();
+        _exit(0);
+    }
+
+    log_suite_end(runner, suite);
+    srunner_run_end(runner,CK_VERBOSE);
+    int _nerr = srunner_ntests_failed(runner);
     srunner_free(runner);
-        
+
     _exit(_nerr);
 }
 
@@ -676,11 +739,11 @@ void __test_exit()
 
 
 void __test_setfork(int value)
-{    
+{
     if(value) {
         set_fork_status(CK_FORK);
     }
-    else { 
+    else {
         set_fork_status(CK_NOFORK);
     }
 }

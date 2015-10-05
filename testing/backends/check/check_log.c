@@ -34,6 +34,8 @@
 #include "check_print.h"
 #include "check_str.h"
 
+#include <sys/time.h> // gettimeofday
+
 /*
  * If a log file is specified to be "-", then instead of
  * opening a file the log output is printed to stdout.
@@ -383,7 +385,7 @@ void tap_lfun(SRunner * sr CK_ATTRIBUTE_UNUSED, FILE * file,
         case CLEND_T:
             /* Print the test result to the tap file */
             num_tests_run += 1;
-            tr = (TestResult *)obj;
+            tr = (TestResult *)obj;            
             fprintf(file, "%s %d - %s:%s:%s: %s\n",
                     tr->rtype == CK_PASS ? "ok" : "not ok", num_tests_run,
                     tr->file, tr->tcname, tr->tname, tr->msg);
@@ -518,10 +520,11 @@ void srunner_init_logging(SRunner * sr, enum print_output print_mode)
     FILE *f;
 
     sr->loglst = check_list_create();
+    
 #if ENABLE_SUBUNIT
     if(print_mode != CK_SUBUNIT)
 #endif
-        srunner_register_lfun(sr, stdout, 0, stdout_lfun, print_mode);
+//        srunner_register_lfun(sr, stdout, 0, stdout_lfun, print_mode);
 #if ENABLE_SUBUNIT
     else
         srunner_register_lfun(sr, stdout, 0, subunit_lfun, print_mode);

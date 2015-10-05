@@ -80,21 +80,21 @@ __THROW __attribute__ ((__noreturn__));
 extern "C" {
 #endif
 
-extern void __test_setfork(int value);
+void __test_setfork(int value);
 
-extern void __test_init(const char *test_name, const char *file, const int line);
+void __test_init(const char *test_name, const char *file, const int line);
 
-extern void __test_end();
+void __test_end();
 
-extern int  __setup_parent();
+int  __setup_parent();
 
-extern int  __setup_child();
+int  __setup_child();
 
-extern void __test_assert_fail(const char *file, int line, const char *expr, ...);
+void __test_assert_fail(const char *file, int line, const char *expr, ...);
 
-extern void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
+void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
 
-extern void __test_exit() __attribute__ ((__noreturn__));
+void __test_exit() __attribute__ ((__noreturn__));
 
 
 #if defined __cplusplus 

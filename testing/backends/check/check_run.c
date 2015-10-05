@@ -36,6 +36,10 @@
 #include "check_msg.h"
 #include "check_log.h"
 
+#include "config.h"
+
+#include <sys/wait.h> // waitpid
+
 enum rinfo
 {
     CK_R_SIG,
