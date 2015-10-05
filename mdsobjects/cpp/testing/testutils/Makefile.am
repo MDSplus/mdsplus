@@ -20,7 +20,7 @@ library_include_HEADERS = \
            type_traits.h \
            unique_ptr.h \
            vector_test.h \
-           threads.h \
+           Threads.h \
            MdsIpInstancer.h
 
 _SOURCES = \

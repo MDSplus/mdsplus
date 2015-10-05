@@ -767,7 +767,7 @@ AC_CHECK_FUNCS(pthread_lock_global_np)
 
 ## CHECK related ##
 AC_CHECK_FUNCS(mkstemp)
-
+AC_CHECK_FUNCS(fork)
 
 
 REMCAM="remcam"

@@ -3,9 +3,9 @@
 
 #include <assert.h>
 #include <cmath>
-#include <string.h>
 #include <limits>
 #include <stdio.h>
+
 
 namespace testing {
 

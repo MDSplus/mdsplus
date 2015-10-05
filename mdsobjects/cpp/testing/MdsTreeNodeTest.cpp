@@ -6,7 +6,7 @@
 
 #include "testing.h"
 #include "testutils/unique_ptr.h"
-#include "testutils/string.h"
+#include "testutils/String.h"
 #include "mdsplus/AutoPointer.hpp"
 
 using namespace MDSplus;
