@@ -1,4 +1,55 @@
-commit e6a8e3d69f74d2c45e2055c0efd2b0412fbf47e7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 207fafec62ab3dad6d86252aebd19c3c842fdef2 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Oct 4 21:08:49 2015 -0400
+
+    Fix typo in TreeUnLockNci call
+
+commit 32495d90898f33d479f767476b9d19b783b85cdd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 21:00:24 2015 -0400
+
+    fix parsing of release info due to change in github response
+
+commit 457c1082330e662f4c6f55da2ce4fc08f29e815d
+Merge: e8d5027 05f3152
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 16:54:28 2015 -0400
+
+    Merge pull request #129 from MDSplus/twf-alpha-mdsip-logdir
+    
+    Add an environment variable to change the log directory of the mdsip …
+
+commit e8d5027e42cecb9f437b103dac8d4a26cd08a172
+Merge: cdec512 d58cd28
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 16:54:06 2015 -0400
+
+    Merge pull request #125 from MDSplus/zack-vii-a_python_mdsdcl
+    
+    Zack vii a python mdsdcl
+
+commit cdec51262c74b158b62195e2abee18555d0b5403
+Merge: 220b819 520e123
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 16:53:35 2015 -0400
+
+    Merge pull request #126 from MDSplus/twf-fix-nci-locking-problem
+    
+    Add needed unlocking to nci records to prevent hangs in threaded appl…
+
+commit 05f3152f3bc446bae5751684c8ee5ebc83440cc8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 2 14:54:46 2015 -0400
+
+    Add an environment variable to change the log directory of the mdsip services on Windows. New environment variable: MDSIP_SERVICE_LOGDIR can be used to override the default location of C:\
+
+commit 220b8192a6a309f3fa665d2184bed81853677b0c (tag: refs/tags/alpha_release-7-0-156)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 1 23:34:45 2015 -0400
+
+    New release ---- alpha_release-7-0-156
+
+commit e6a8e3d69f74d2c45e2055c0efd2b0412fbf47e7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 1 14:52:58 2015 -0400
 
@@ -61,6 +112,31 @@ Date:   Thu Oct 1 17:29:13 2015 +0200
 
     Fix error Bars
 
+commit 520e1236af6fbfca82e6a44a27b104f81da67525 (refs/remotes/origin/twf-fix-nci-locking-problem)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 17:21:29 2015 -0400
+
+    Add needed unlocking to nci records to prevent hangs in threaded applications
+
+commit d58cd28bc8583da74e4e76c356e946bd6ececa4c (refs/remotes/origin/zack-vii-a_python_mdsdcl)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 16:26:06 2015 -0400
+
+    python3 compatibility
+
+commit 315544d8543f31ac3adbbd9e27269c4a9c992914
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 16:04:35 2015 -0400
+
+    Change name of library to Mdsdcl and add options to dcl functions
+
+commit 041b5d0f5b38291f30876f4bee299d66143b1e05
+Merge: cf38f45 296ccb3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 15:10:16 2015 -0400
+
+    add exceptions
+
 commit 60f24dc342f8d20f6742fb342ad94b082f2c4ddd
 Merge: 296ccb3 cbbfc08
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -94,6 +170,13 @@ Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Sep 30 14:10:07 2015 -0400
 
     fix merge confilicts
+
+commit cf38f4507072f49ec86606bb9920d58a41204282
+Merge: 5813935 f2fc613
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 30 13:57:56 2015 -0400
+
+    Merge branch 'a_python_mdsdcl' of git://github.com/zack-vii/mdsplus into zack-vii-a_python_mdsdcl
 
 commit ea167d25bc1a1d14afbc9b67e64d8edbdd209f8b
 Merge: d44e63d c164ab7
@@ -184,6 +267,14 @@ Date:   Fri Sep 18 18:07:26 2015 +0200
     
     in order to avoid confusion between getMany and GetMany outsource
     GetMany as a class of its own.
+
+commit f2fc61372734321d02d906ff1800e74dae79da31
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Sep 22 13:25:18 2015 +0200
+
+    added dcl interface
+    
+    added python interface for dcl, ccl, tcl, and cts
 
 commit cbbfc0804fc29a5811e2a540f0fd4cb366d5078a
 Author: zack-vii <zack.vii@live.com>
