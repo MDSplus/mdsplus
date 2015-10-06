@@ -45,17 +45,17 @@ of the MDSplus tools and of the components not shown here please refer to the
 [Mdsplus site](http://www.mdsplus.org).
 
 
-| Brief description page     | Link to component reference manual        |
+| Brief description          |  Reference manual                         |
 |:---------------------------|-------------------------------------------|
-| \ref lib_mdsshr            |     not written yet, ref to Mdsplus site  |
+| \ref lib_mdsshr            | \subpage mdsshr_manual                    |
 | \ref lib_tdishr            |     not written yet, ref to Mdsplus site  |
 | \ref lib_treeshr           |     not written yet, ref to Mdsplus site  |
 | \ref lib_mdsip             | \subpage mdsip_manual                     |
 | \ref lib_mdsobjects C++    | \subpage mdsobjects_cpp_manual            |
 | \ref lib_mdsobjects Python | \subpage mdsobjects_py_manual             |
 | \ref lib_mdsobjects Java   | \subpage mdsobjects_java_manual           |
-
-
+| MDSlib manual              | \subpage mdslib_manual                    |
+| Java Scope signal viewer   | \subpage javascope_manual                 |
 
 
 <!-- ---------------------------------- -->

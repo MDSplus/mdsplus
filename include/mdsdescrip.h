@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MDSDESCRIP_H_DEFINED
+#define MDSDESCRIP_H_DEFINED 1
 
 #include <config.h>
 
@@ -12,20 +13,6 @@
 #define __fill_value__
 #endif				/* _WINDOWS */
 
-#ifdef _DESCRIPTOR_PREFIXES
-#define _DSCA_(field) dscA_##field
-#define _DSCB_(field) dscB_##field
-#define _DSCL_(field) dscL_##field
-#define _DSCW_(field) dscW_##field
-#define _DSCV_(field) dscV_##field
-#else
-#define _DSCA_(field) field
-#define _DSCB_(field) field
-#define _DSCL_(field) field
-#define _DSCW_(field) field
-#define _DSCV_(field) field
-#endif
-
 #define DTYPE_LIST 214
 #define DTYPE_TUPLE 215
 #define DTYPE_DICTIONARY 216
@@ -34,34 +21,34 @@
  *	Descriptor Prototype - each class of descriptor consists of at least the following fields:
  */
 struct descriptor {
-  unsigned short _DSCW_(length);	/* specific to descriptor class;  typically a 16-bit (unsigned) length */
-  unsigned char _DSCB_(dtype);	/* data type code */
-  unsigned char _DSCB_(class);	/* descriptor class code */
-  char *_DSCA_(pointer);	/* address of first byte of data element */
+  unsigned short length;	/* specific to descriptor class;  typically a 16-bit (unsigned) length */
+  unsigned char dtype;	/* data type code */
+  unsigned char class;	/* descriptor class code */
+  char *pointer;	/* address of first byte of data element */
 };
 
 /*
  *	Fixed-Length Descriptor:
  */
 struct descriptor_s {
-  unsigned short _DSCW_(length);	/* length of data item in bytes,
+  unsigned short length;	/* length of data item in bytes,
 					   or if dtype is K_DTYPE_V, bits,
 					   or if dtype is K_DTYPE_P, digits (4 bits each) */
-  unsigned char _DSCB_(dtype);	/* data type code */
-  unsigned char _DSCB_(class);	/* descriptor class code = K_CLASS_S */
-  char *_DSCA_(pointer);	/* address of first byte of data storage */
+  unsigned char dtype;	/* data type code */
+  unsigned char class;	/* descriptor class code = K_CLASS_S */
+  char *pointer;	/* address of first byte of data storage */
 };
 
 /*
  *	Dynamic String Descriptor:
  */
 struct descriptor_d {
-  unsigned short _DSCW_(length);	/* length of data item in bytes,
+  unsigned short length;	/* length of data item in bytes,
 					   or if dtype is K_DTYPE_V, bits,
 					   or if dtype is K_DTYPE_P, digits (4 bits each) */
-  unsigned char _DSCB_(dtype);	/* data type code */
-  unsigned char _DSCB_(class);	/* descriptor class code = K_CLASS_D */
-  char *_DSCA_(pointer);	/* address of first byte of data storage */
+  unsigned char dtype;	/* data type code */
+  unsigned char class;	/* descriptor class code = K_CLASS_D */
+  char *pointer;	/* address of first byte of data storage */
 };
 
 /*
@@ -70,26 +57,26 @@ struct descriptor_d {
 
 typedef struct _aflags {
   unsigned __char_align__:3;	/* reserved;  must be zero */
-  unsigned __char_align__ _DSCV_(binscale):1;	/* if set, scale is a power-of-two, otherwise, -ten */
-  unsigned __char_align__ _DSCV_(redim):1;	/* if set, indicates the array can be redimensioned */
-  unsigned __char_align__ _DSCV_(column):1;	/* if set, indicates column-major order (FORTRAN) */
-  unsigned __char_align__ _DSCV_(coeff):1;	/* if set, indicates the multipliers block is present */
-  unsigned __char_align__ _DSCV_(bounds):1;	/* if set, indicates the bounds block is present */
+  unsigned __char_align__ binscale:1;	/* if set, scale is a power-of-two, otherwise, -ten */
+  unsigned __char_align__ redim:1;	/* if set, indicates the array can be redimensioned */
+  unsigned __char_align__ column:1;	/* if set, indicates column-major order (FORTRAN) */
+  unsigned __char_align__ coeff:1;	/* if set, indicates the multipliers block is present */
+  unsigned __char_align__ bounds:1;	/* if set, indicates the bounds block is present */
 } aflags;			/* array flag bits */
 
 struct descriptor_a {
-  unsigned short _DSCW_(length);	/* length of an array element in bytes,
+  unsigned short length;	/* length of an array element in bytes,
 					   or if dtype is K_DTYPE_V, bits,
 					   or if dtype is K_DTYPE_P, digits (4 bits each) */
-  unsigned char _DSCB_(dtype);	/* data type code */
-  unsigned char _DSCB_(class);	/* descriptor class code = K_CLASS_A */
-  char *_DSCA_(pointer);	/* address of first actual byte of data storage */
-  char _DSCB_(scale);		/* signed power-of-two or -ten multiplier, as specified by
+  unsigned char dtype;	/* data type code */
+  unsigned char class;	/* descriptor class code = K_CLASS_A */
+  char *pointer;	/* address of first actual byte of data storage */
+  char scale;		/* signed power-of-two or -ten multiplier, as specified by
 				   binscale, to convert from internal to external form */
-  unsigned char _DSCB_(digits);	/* if nonzero, number of decimal digits in internal representation */
+  unsigned char digits;	/* if nonzero, number of decimal digits in internal representation */
   aflags aflags;
-  unsigned char _DSCB_(dimct);	/* number of dimensions */
-  unsigned int _DSCL_(arsize);	/* total size of array in bytes,
+  unsigned char dimct;	/* number of dimensions */
+  unsigned int arsize;	/* total size of array in bytes,
 				   or if dtype is K_DTYPE_P, digits (4 bits each) */
   /*
    * One or two optional blocks of information may follow contiguously at this point;
@@ -99,14 +86,14 @@ struct descriptor_a {
    * bounds information is present, the multipliers information must also be present.
    *
    * The multipliers block has the following format:
-   *      char    *_DSCA_(a0);            Address of the element whose subscripts are all zero
-   *      int     _DSCL_(m) [DIMCT];      Addressing coefficients (multipliers)
+   *      char    *a0;            Address of the element whose subscripts are all zero
+   *      int     m [DIMCT];      Addressing coefficients (multipliers)
    *
    * The bounds block has the following format:
    *      struct
    *      {
-   *              unsigned int    _DSCL_(l);      Lower bound
-   *              unsigned int    _DSCL_(u);      Upper bound
+   *              unsigned int    l;      Lower bound
+   *              unsigned int    u;      Upper bound
    *      } bounds [DIMCT];
    *
    * (DIMCT represents the value contained in dimct.)
@@ -119,29 +106,29 @@ struct descriptor_a {
 *************************************************/
 
 #define ARRAY_HEAD(ptr_type)		\
-		unsigned short	_DSCW_(length);	\
-		unsigned char	_DSCB_(dtype);	\
-		unsigned char	_DSCB_(class);	\
-		ptr_type	*_DSCA_(pointer);	\
-		char		_DSCB_(scale);	\
-		unsigned char	_DSCB_(digits);	\
+		unsigned short	length;	\
+		unsigned char	dtype;	\
+		unsigned char	class;	\
+		ptr_type	*pointer;	\
+		char		scale;	\
+		unsigned char	digits;	\
 		aflags    aflags;   \
-		unsigned char	_DSCB_(dimct);	\
-		unsigned int	_DSCL_(arsize);
+		unsigned char	dimct;	\
+		unsigned int	arsize;
 
 #define ARRAY(ptr_type)		struct {	ARRAY_HEAD(ptr_type)}
 
 #define ARRAY_COEFF(ptr_type, dimct)	struct {	ARRAY_HEAD(ptr_type)	\
-							ptr_type	*_DSCA_(a0);	\
-							unsigned int		_DSCL_(m)[dimct];	\
+							ptr_type	*a0;	\
+							unsigned int		m[dimct];	\
 					}
 
 #define ARRAY_BOUNDS(ptr_type, dimct)	struct {	ARRAY_HEAD(ptr_type)	\
-							ptr_type	*_DSCA_(a0);	\
-							unsigned int		_DSCL_(m)[dimct];	\
+							ptr_type	*a0;	\
+							unsigned int		m[dimct];	\
 							struct {			\
-								int	_DSCL_(l);	\
-								int	_DSCL_(u);	\
+								int	l;	\
+								int	u;	\
 							} bounds[dimct];		\
 						}
 
@@ -168,11 +155,11 @@ struct descriptor_a {
 #define CLASS_XD 192
 
 struct descriptor_xd {
-  unsigned short _DSCW_(length);
-  unsigned char _DSCB_(dtype);
-  unsigned char _DSCB_(class);
-  struct descriptor *_DSCA_(pointer);
-  unsigned int _DSCL_(l_length);
+  unsigned short length;
+  unsigned char dtype;
+  unsigned char class;
+  struct descriptor *pointer;
+  unsigned int l_length;
 };
 
 #define EMPTYXD(name) struct descriptor_xd name = {0, DTYPE_DSC, CLASS_XD, 0, 0}
@@ -184,11 +171,11 @@ struct descriptor_xd {
 #define CLASS_XS 193
 
 struct descriptor_xs {
-  unsigned short _DSCW_(length);
-  unsigned char _DSCB_(dtype);
-  unsigned char _DSCB_(class);
-  struct descriptor *_DSCA_(pointer);
-  unsigned int _DSCL_(l_length);
+  unsigned short length;
+  unsigned char dtype;
+  unsigned char class;
+  struct descriptor *pointer;
+  unsigned int l_length;
 };
 
 /************************************************
@@ -198,19 +185,19 @@ struct descriptor_xs {
 #define CLASS_R 194
 
 #define RECORD_HEAD				\
-		unsigned short	_DSCW_(length);	\
-		unsigned char	_DSCB_(dtype);	\
-		unsigned char	_DSCB_(class);	\
-		unsigned char	*_DSCA_(pointer);	\
-		unsigned char	_DSCB_(ndesc);	\
+		unsigned short	length;	\
+		unsigned char	dtype;	\
+		unsigned char	class;	\
+		unsigned char	*pointer;	\
+		unsigned char	ndesc;	\
 		unsigned __fill_name__ : 24;
 
 struct descriptor_r {
-  RECORD_HEAD struct descriptor *_DSCA_(dscptrs)[1];
+  RECORD_HEAD struct descriptor *dscptrs[1];
 };
 
 #define RECORD(ndesc)	struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(dscptrs)[ndesc];	\
+					struct descriptor *dscptrs[ndesc];	\
 				}
 
 #define DESCRIPTOR_R(name, type, ndesc) \
@@ -284,16 +271,16 @@ struct descriptor_r {
 
 #define DTYPE_IDENT	191
 
-#define DTYPE_NID	192
+#define DTYPE_NID		192
 
 #define DTYPE_PATH	193
 
 #define DTYPE_PARAM	194
 
 struct descriptor_param {
-  RECORD_HEAD struct descriptor *_DSCA_(value);
-  struct descriptor *_DSCA_(help);
-  struct descriptor *_DSCA_(validation);
+  RECORD_HEAD struct descriptor *value;
+  struct descriptor *help;
+  struct descriptor *validation;
 };
 
 #define DESCRIPTOR_PARAM(name, value, help, validation) \
@@ -303,15 +290,15 @@ struct descriptor_param {
 #define DTYPE_SIGNAL	195
 
 struct descriptor_signal {
-  RECORD_HEAD struct descriptor *_DSCA_(data);
-  struct descriptor *_DSCA_(raw);
-  struct descriptor *_DSCA_(dimensions)[1];
+  RECORD_HEAD struct descriptor *data;
+  struct descriptor *raw;
+  struct descriptor *dimensions[1];
 };
 
 #define SIGNAL(ndims)	struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(data);		\
-					struct descriptor *_DSCA_(raw);		\
-					struct descriptor *_DSCA_(dimensions)[ndims];	\
+					struct descriptor *data;		\
+					struct descriptor *raw;		\
+					struct descriptor *dimensions[ndims];	\
 				}
 
 #define DESCRIPTOR_SIGNAL(name, ndims, data, raw) \
@@ -329,8 +316,8 @@ struct descriptor_signal {
 #define DTYPE_DIMENSION	196
 
 struct descriptor_dimension {
-  RECORD_HEAD struct descriptor *_DSCA_(window);
-  struct descriptor *_DSCA_(axis);
+  RECORD_HEAD struct descriptor *window;
+  struct descriptor *axis;
 };
 
 #define DESCRIPTOR_DIMENSION(name, window, axis) \
@@ -340,9 +327,9 @@ struct descriptor_dimension {
 #define DTYPE_WINDOW	197
 
 struct descriptor_window {
-  RECORD_HEAD struct descriptor *_DSCA_(startidx);
-  struct descriptor *_DSCA_(endingidx);
-  struct descriptor *_DSCA_(value_at_idx0);
+  RECORD_HEAD struct descriptor *startidx;
+  struct descriptor *endingidx;
+  struct descriptor *value_at_idx0;
 };
 
 #define DESCRIPTOR_WINDOW(name, start, iend, xref) \
@@ -350,7 +337,7 @@ struct descriptor_window {
 	(struct descriptor *)start, (struct descriptor *)iend, (struct descriptor *)xref}
 
 struct descriptor_axis {
-  RECORD_HEAD struct descriptor *_DSCA_(dscptrs)[3];
+  RECORD_HEAD struct descriptor *dscptrs[3];
 };
 
 #define DTYPE_SLOPE	198	/* Do not use this deprecated type */
@@ -358,28 +345,28 @@ struct descriptor_axis {
 
 struct descriptor_slope {
   RECORD_HEAD struct {
-    struct descriptor *_DSCA_(slope);
-    struct descriptor *_DSCA_(begin);
-    struct descriptor *_DSCA_(ending);
+    struct descriptor *slope;
+    struct descriptor *begin;
+    struct descriptor *ending;
   } segment[1];
 };
 
 #define SLOPE(nsegs)	struct	{	RECORD_HEAD \
 					struct {\
-						struct descriptor *_DSCA_(slope);	\
-						struct descriptor *_DSCA_(begin);	\
-						struct descriptor *_DSCA_(ending);	\
+						struct descriptor *slope;	\
+						struct descriptor *begin;	\
+						struct descriptor *ending;	\
 					} segment[nsegs];\
 				}
 
 #define DTYPE_FUNCTION	199
 
 struct descriptor_function {
-  RECORD_HEAD struct descriptor *_DSCA_(arguments)[1];
+  RECORD_HEAD struct descriptor *arguments[1];
 };
 
 #define FUNCTION(nargs) struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(arguments)[nargs];	\
+					struct descriptor *arguments[nargs];	\
 				}
 
 #define DESCRIPTOR_FUNCTION(name, op_code_ptr, nargs) \
@@ -400,10 +387,10 @@ struct descriptor_function {
 #define DTYPE_CONGLOM	200
 
 struct descriptor_conglom {
-  RECORD_HEAD struct descriptor *_DSCA_(image);
-  struct descriptor *_DSCA_(model);
-  struct descriptor *_DSCA_(name);
-  struct descriptor *_DSCA_(qualifiers);
+  RECORD_HEAD struct descriptor *image;
+  struct descriptor *model;
+  struct descriptor *name;
+  struct descriptor *qualifiers;
 };
 
 #define DESCRIPTOR_CONGLOM(sname, image, model, name, qualifiers) \
@@ -414,9 +401,9 @@ struct descriptor_conglom {
 #define DTYPE_RANGE	201
 
 struct descriptor_range {
-  RECORD_HEAD struct descriptor *_DSCA_(begin);
-  struct descriptor *_DSCA_(ending);
-  struct descriptor *_DSCA_(deltaval);
+  RECORD_HEAD struct descriptor *begin;
+  struct descriptor *ending;
+  struct descriptor *deltaval;
 };
 
 #define DESCRIPTOR_RANGE(name, begin, ending, delta) \
@@ -426,11 +413,11 @@ struct descriptor_range {
 #define DTYPE_ACTION	202
 
 struct descriptor_action {
-  RECORD_HEAD struct descriptor *_DSCA_(dispatch);
-  struct descriptor *_DSCA_(task);
-  struct descriptor *_DSCA_(errorlogs);
-  struct descriptor *_DSCA_(completion_message);
-  struct descriptor_a *_DSCA_(performance);
+  RECORD_HEAD struct descriptor *dispatch;
+  struct descriptor *task;
+  struct descriptor *errorlogs;
+  struct descriptor *completion_message;
+  struct descriptor_a *performance;
 };
 
 #define DESCRIPTOR_ACTION(name, dispatch, task, errorlogs) \
@@ -440,10 +427,10 @@ struct descriptor_action {
 #define DTYPE_DISPATCH	203
 
 struct descriptor_dispatch {
-  RECORD_HEAD struct descriptor *_DSCA_(ident);
-  struct descriptor *_DSCA_(phase);
-  struct descriptor *_DSCA_(when);
-  struct descriptor *_DSCA_(completion);
+  RECORD_HEAD struct descriptor *ident;
+  struct descriptor *phase;
+  struct descriptor *when;
+  struct descriptor *completion;
 };
 
 /*****************************************************
@@ -462,8 +449,8 @@ struct descriptor_dispatch {
 #define DTYPE_PROGRAM	204
 
 struct descriptor_program {
-  RECORD_HEAD struct descriptor *_DSCA_(time_out);
-  struct descriptor *_DSCA_(program);
+  RECORD_HEAD struct descriptor *time_out;
+  struct descriptor *program;
 };
 
 #define DESCRIPTOR_PROGRAM(name, program, timeout) \
@@ -473,17 +460,17 @@ struct descriptor_program {
 #define DTYPE_ROUTINE	205
 
 struct descriptor_routine {
-  RECORD_HEAD struct descriptor *_DSCA_(time_out);
-  struct descriptor *_DSCA_(image);
-  struct descriptor *_DSCA_(routine);
-  struct descriptor *_DSCA_(arguments)[1];
+  RECORD_HEAD struct descriptor *time_out;
+  struct descriptor *image;
+  struct descriptor *routine;
+  struct descriptor *arguments[1];
 };
 
 #define ROUTINE(nargs)	struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(time_out);		\
-					struct descriptor *_DSCA_(image);		\
-					struct descriptor *_DSCA_(routine);		\
-					struct descriptor *_DSCA_(arguments)[nargs];	\
+					struct descriptor *time_out;		\
+					struct descriptor *image;		\
+					struct descriptor *routine;		\
+					struct descriptor *arguments[nargs];	\
 				}
 
 #define DESCRIPTOR_ROUTINE(name, image, routine, timeout, nargs) \
@@ -493,17 +480,17 @@ struct descriptor_routine {
 #define DTYPE_PROCEDURE	206
 
 struct descriptor_procedure {
-  RECORD_HEAD struct descriptor *_DSCA_(time_out);
-  struct descriptor *_DSCA_(language);
-  struct descriptor *_DSCA_(procedure);
-  struct descriptor *_DSCA_(arguments)[1];
+  RECORD_HEAD struct descriptor *time_out;
+  struct descriptor *language;
+  struct descriptor *procedure;
+  struct descriptor *arguments[1];
 };
 
 #define PROCEDURE(nargs) struct {	RECORD_HEAD \
-					struct descriptor *_DSCA_(time_out);		\
-					struct descriptor *_DSCA_(language);		\
-					struct descriptor *_DSCA_(procedure);		\
-					struct descriptor *_DSCA_(arguments)[nargs];	\
+					struct descriptor *time_out;		\
+					struct descriptor *language;		\
+					struct descriptor *procedure;		\
+					struct descriptor *arguments[nargs];	\
 				}
 
 #define DESCRIPTOR_PROCEDURE(name, language, procedure, timeout, nargs) \
@@ -513,23 +500,23 @@ struct descriptor_procedure {
 #define DTYPE_METHOD	207
 
 struct descriptor_method {
-  RECORD_HEAD struct descriptor *_DSCA_(time_out);
-  struct descriptor *_DSCA_(method);
-  struct descriptor *_DSCA_(object);
-  struct descriptor *_DSCA_(arguments)[1];
+  RECORD_HEAD struct descriptor *time_out;
+  struct descriptor *method;
+  struct descriptor *object;
+  struct descriptor *arguments[1];
 };
 
 #define METHOD(nargs)	struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(time_out);		\
-					struct descriptor *_DSCA_(method);		\
-					struct descriptor *_DSCA_(object);		\
-					struct descriptor *_DSCA_(arguments)[nargs];	\
+					struct descriptor *time_out;		\
+					struct descriptor *method;		\
+					struct descriptor *object;		\
+					struct descriptor *arguments[nargs];	\
 				}
 
 #define METHOD_0	struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(time_out);		\
-					struct descriptor *_DSCA_(method);		\
-					struct descriptor *_DSCA_(object);		\
+					struct descriptor *time_out;		\
+					struct descriptor *method;		\
+					struct descriptor *object;		\
 				}
 
 #define DESCRIPTOR_METHOD(name, method, object, timeout, nargs) \
@@ -543,7 +530,7 @@ struct descriptor_method {
 #define DTYPE_DEPENDENCY	208
 
 struct descriptor_dependency {
-  RECORD_HEAD struct descriptor *_DSCA_(arguments)[2];
+  RECORD_HEAD struct descriptor *arguments[2];
 };
 
 #define DESCRIPTOR_DEPENDENCY(name, op_code_ptr, arg_1, arg_2) \
@@ -553,7 +540,7 @@ struct descriptor_dependency {
 #define DTYPE_CONDITION	209
 
 struct descriptor_condition {
-  RECORD_HEAD struct descriptor *_DSCA_(condition);
+  RECORD_HEAD struct descriptor *condition;
 };
 
 #define DESCRIPTOR_CONDITION(name, modifier, condition) \
@@ -574,8 +561,8 @@ struct descriptor_condition {
 #define DTYPE_WITH_UNITS	211
 
 struct descriptor_with_units {
-  RECORD_HEAD struct descriptor *_DSCA_(data);
-  struct descriptor *_DSCA_(units);
+  RECORD_HEAD struct descriptor *data;
+  struct descriptor *units;
 };
 
 #define DESCRIPTOR_WITH_UNITS(name, value, units) \
@@ -591,15 +578,15 @@ struct descriptor_with_units {
 #define DTYPE_CALL	212
 
 struct descriptor_call {
-  RECORD_HEAD struct descriptor *_DSCA_(image);
-  struct descriptor *_DSCA_(routine);
-  struct descriptor *_DSCA_(arguments)[1];
+  RECORD_HEAD struct descriptor *image;
+  struct descriptor *routine;
+  struct descriptor *arguments[1];
 };
 
 #define CALL(nargs) struct	{	RECORD_HEAD \
-					struct descriptor *_DSCA_(image);		\
-					struct descriptor *_DSCA_(routine);		\
-					struct descriptor *_DSCA_(arguments)[nargs];	\
+					struct descriptor *image;		\
+					struct descriptor *routine;		\
+					struct descriptor *arguments[nargs];	\
 				}
 
 #define DESCRIPTOR_CALL(name, dtype_ptr, nargs, image, routine) \
@@ -609,8 +596,8 @@ struct descriptor_call {
 #define DTYPE_WITH_ERROR	213
 
 struct descriptor_with_error {
-  RECORD_HEAD struct descriptor *_DSCA_(data);
-  struct descriptor *_DSCA_(error);
+  RECORD_HEAD struct descriptor *data;
+  struct descriptor *error;
 };
 
 #define DESCRIPTOR_WITH_ERROR(name, data, error) \
@@ -620,8 +607,8 @@ struct descriptor_with_error {
 #define DTYPE_OPAQUE 217
 
 struct descriptor_opaque {
-  RECORD_HEAD struct descriptor *_DSCA_(data);
-  struct descriptor *_DSCA_(opaque_type);
+  RECORD_HEAD struct descriptor *data;
+  struct descriptor *opaque_type;
 };
 
 #define DESCRIPTOR_OPAQUE(name, data, opaque_type) \
@@ -743,10 +730,28 @@ typedef ARRAY(int) array_int;
 typedef ARRAY(struct descriptor *) array_desc;
 typedef SIGNAL(MAXDIM) signal_maxdim;
 
+#ifdef __VMS
+#pragma member_alignment restore
+#endif				/* __VMS */
+
+#ifdef __VMS
+#define DTYPE_NATIVE_FLOAT DTYPE_F
+#define DTYPE_FLOAT_COMPLEX DTYPE_FC
+
+#if __G_FLOAT
+#define DTYPE_NATIVE_DOUBLE DTYPE_G
+#define DTYPE_DOUBLE_COMPLEX DTYPE_GC
+#else				/* __G_FLOAT */
+#define DTYPE_NATIVE_DOUBLE DTYPE_D
+#define DTYPE_DOUBLE_COMPLEX DTYPE_DC
+#endif				/* __G_FLOAT */
+
+#else				/* __VMS */
 #define DTYPE_NATIVE_FLOAT DTYPE_FS
 #define DTYPE_NATIVE_DOUBLE DTYPE_FT
 #define DTYPE_FLOAT_COMPLEX DTYPE_FSC
 #define DTYPE_DOUBLE_COMPLEX DTYPE_FTC
+#endif				/* __VMS */
 
 #ifndef DTYPE_FLOAT
 #define DTYPE_FLOAT DTYPE_NATIVE_FLOAT
@@ -754,4 +759,6 @@ typedef SIGNAL(MAXDIM) signal_maxdim;
 
 #ifndef DTYPE_DOUBLE
 #define DTYPE_DOUBLE DTYPE_NATIVE_DOUBLE
+#endif
+
 #endif

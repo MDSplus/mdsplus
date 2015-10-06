@@ -1426,9 +1426,9 @@ public class WaveInterface
             return null;
         }
         wd.setContinuousUpdate(isContinuousUpdate);
-        
+        boolean hasErrors = up_err != null || low_err != null;
         if( xDimension == 1)
-            out_signal = new Signal(wd, xmin, xmax);
+            out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
         else
             out_signal = new Signal(wd, xwd, xmin, xmax);
             

@@ -6,9 +6,12 @@ else:
   def _mimport(name,level):
     return __import__(name,globals(),{},[],level)
 
-_data=_mimport('mdsdata',1)
-from threading import RLock,Thread,local
+from threading import RLock,local#,Thread
 thread_data=local()
+
+_mdsshr=_mimport('_mdsshr',1)
+_treeshr=_mimport('_treeshr',1)
+_ver=_mimport('version',1)
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -25,22 +28,23 @@ class Tree(object):
           if type is not None:
             self.quit()
           else:
-            self.write()	
+            self.write()
         self.__del__()
 
     def __del__(self):
         """Delete Tree instance
         @rtype: None
         """
+       
         try:
-            if self.close:
-                status=_mimport('_treeshr',1).TreeCloseAll(self.ctx)
-                if (status & 1):
-                    TreeFreeDbid(ctx)
-                if Tree.getActiveTree() == self:
-                    Tree.setActiveTree(None)
+          if self.close:
+            status=_treeshr.TreeCloseAll(self.ctx)
+            if (status & 1):
+              _treeshr.TreeFreeDbid(self.ctx)
+              if Tree.getActiveTree() == self:
+                Tree.setActiveTree(None)
         except:
-            pass
+          pass
         return
 
     def __getattr__(self,name):
@@ -73,7 +77,7 @@ class Tree(object):
             elif name.lower() == 'tree':
                 name='name'
             try:
-                ans = _mimport('_treeshr',1).TreeGetDbi(self,name)
+                ans = _treeshr.TreeGetDbi(self,name)
             except KeyError:
                 try:
                     ans = self.__dict__[name]
@@ -86,7 +90,7 @@ class Tree(object):
         if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
         thread_data.private=on
-        _mimport('_treeshr',1).TreeUsePrivateCtx(on)
+        _treeshr.TreeUsePrivateCtx(on)
     usePrivateCtx=classmethod(usePrivateCtx)
 
     def __init__(self, tree=None, shot=-1, mode='NORMAL'):
@@ -101,9 +105,8 @@ class Tree(object):
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @type mode: str
         """
-        _treeshr=_mimport('_treeshr',1)
+        self.close=False
         if tree is None:
-            self.close=False
             try:
                 self.ctx=_treeshr.TreeGetContext()
             except:
@@ -112,7 +115,6 @@ class Tree(object):
                 except:
                     raise _treeshr.TreeException('tree not open')
         else:
-            self.close=True
             if mode.upper() == 'NORMAL':
                 self.ctx=_treeshr.TreeOpen(tree,shot)
             elif mode.upper() == 'EDIT':
@@ -124,6 +126,7 @@ class Tree(object):
                 self.ctx=_treeshr.TreeOpenReadOnly(tree,shot)
             else:
                 raise _treeshr.TreeException('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
+            self.close=True
         Tree.setActiveTree(self)
         return
 
@@ -152,12 +155,19 @@ class Tree(object):
             self.setDefault(value)
         else:
             try:
-                _mimport('_treeshr',1).TreeSetDbi(self,name,value)
+                _treeshr.TreeSetDbi(self,name,value)
             except KeyError:
                 self.__dict__[name]=value
 
-    def __str__(self):
-        """Return string representation
+#    def __str__(self):
+#        """Return string
+#        @return: String of tree name
+#        @rtype: str
+#        """
+#        return str(self.tree)
+
+    def __repr__(self):
+        """Return representation
         @return: String representation of open tree
         @rtype: str
         """
@@ -169,6 +179,7 @@ class Tree(object):
             mode="Normal"
         return self.__class__.__name__+'("%s",%d,"%s")' % (self.tree,self.shot,mode)
 
+    __str__=__repr__
     def addDevice(self,nodename,model):
         """Add a device to the tree of the specified device model type.
         @param nodename: Absolute or relative path specification of the head node of the device. All ancestors of node must exist.
@@ -180,7 +191,7 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            nid=_mimport('_treeshr',1).TreeAddConglom(self,str(nodename),str(model))
+            nid=_treeshr.TreeAddConglom(self,nodename,model)
         finally:
             Tree.unlock()
         return _mimport('treenode',1).TreeNode(nid,self)
@@ -196,7 +207,7 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            nid = _mimport('_treeshr',1).TreeAddNode(self,str(nodename),str(usage))
+            nid = _treeshr.TreeAddNode(self,nodename,usage)
         finally:
             Tree.unlock()
         return _mimport('treenode',1).TreeNode(nid,self)
@@ -207,7 +218,6 @@ class Tree(object):
         @type shot: int
         @rtype: None
         """
-        _treeshr=_mimport('_treeshr',1)
         import ctypes as _C
         from numpy import array
         Tree.lock()
@@ -224,7 +234,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _treeshr.TreeException("Error creating pulse: %s" % (_mimport('_mdsshr',1).MdsGetMsg(status),))
+            raise _treeshr.TreeException("Error creating pulse: %s" % (_mdsshr.MdsGetMsg(status),))
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -233,7 +243,6 @@ class Tree(object):
         @type wild: str
         @rtype: None
         """
-        _treeshr=_mimport('_treeshr',1)
         Tree.lock()
         try:
             first=True
@@ -253,12 +262,13 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            _mimport('_treeshr',1).TreeDeletePulse(self,shot)
+            _treeshr.TreeDeletePulse(self,shot)
         finally:
             Tree.unlock()
 
     def doMethod(self,nid,method):
         """For internal use only. Support for PyDoMethod.fun used for python device support"""
+        _data=_mimport('mdsdata',1)
         n=_mimport('treenode',1).TreeNode(nid,self)
         top=n.conglomerate_nids[0]
         c=top.record
@@ -268,12 +278,13 @@ class Tree(object):
         for i in range(len(q)):
             exec( str(q[0]))
         try:
+            status = None
             exec( str('status=_data.makeData('+model+'(n).'+method+'(_data.Data.getTdiVar("__do_method_arg__")))'))
             status.setTdiVar('_result')
-            if isinstance(status,_mimport('mdsscalar',1).Int32):        
+            if isinstance(status,_mimport('mdsscalar',1).Int32):
                 status.setTdiVar("_method_status")
             else:
-                _data.makeData(1).setTdiVar("_method_status")            
+                _data.makeData(1).setTdiVar("_method_status")
         except AttributeError:
             _data.makeData(0xfd180b0).setTdiVar("_method_status")
         except Exception:
@@ -288,7 +299,7 @@ class Tree(object):
         @rtype: None"""
         Tree.lock()
         try:
-            _mimport('_treeshr',1).TreeOpenEdit(self)
+            _treeshr.TreeOpenEdit(self)
         finally:
             Tree.unlock()
 
@@ -300,7 +311,7 @@ class Tree(object):
         @rtype: iterator
         """
 
-        for n in _mimport('_treeshr',1).TreeFindTagWild(self.ctx, wild):
+        for n in _treeshr.TreeFindTagWild(self.ctx, wild):
             yield n
 
     def findTags(self,wild):
@@ -326,7 +337,7 @@ class Tree(object):
         else:
           return Tree._activeTree
     getActiveTree=staticmethod(getActiveTree)
-    
+
     def getCurrent(treename):
         """Return current shot for specificed treename
         @param treename: Name of tree
@@ -336,11 +347,11 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            shot=_mimport('_treeshr',1).TreeGetCurrentShotId(str.encode(treename))
+            shot=_treeshr.TreeGetCurrentShotId(_ver.tobytes(treename))
         finally:
             Tree.unlock()
         if shot==0:
-            raise _mimport('_treeshr',1).TreeException("Error obtaining current shot of %s" % (treename,))
+            raise _treeshr.TreeException("Error obtaining current shot of %s" % (treename,))
         return shot
     getCurrent=staticmethod(getCurrent)
 
@@ -351,11 +362,11 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            ans = _mimport('treenode',1).TreeNode(_mimport('_treeshr',1).TreeGetDefault(self.ctx),self)
+            ans = _mimport('treenode',1).TreeNode(_treeshr.TreeGetDefault(self.ctx),self)
         finally:
             Tree.unlock()
         return ans
-            
+
     def getNode(self,name):
         """Locate node in tree. Returns TreeNode if found. Use double backslashes in node names.
         @param name: Name of node. Absolute or relative path. No wildcards.
@@ -368,11 +379,11 @@ class Tree(object):
         else:
             Tree.lock()
             try:
-                ans=_mimport('treenode',1).TreeNode(_mimport('_treeshr',1).TreeFindNode(self.ctx,str(name)),self)
+                ans=_mimport('treenode',1).TreeNode(_treeshr.TreeFindNode(self.ctx,str(name)),self)
             finally:
                 Tree.unlock()
             return ans
-        
+
     def getNodeWildIter(self, name, *usage):
         """An iterator for the nodes in a tree given a wildcard specification.
         @param name: Node name. May include wildcards.
@@ -382,7 +393,7 @@ class Tree(object):
         @return: iterator of TreeNodes that match the wildcard and usage specifications
         @rtype: iterator
         """
-        for n in _mimport('_treeshr',1).TreeFindNodeWild(self.ctx, name, *usage):
+        for n in _treeshr.TreeFindNodeWild(self.ctx, name, *usage):
             yield _mimport('treenode',1).TreeNode(n,self)
 
     def getNodeWild(self,name,*usage):
@@ -404,7 +415,7 @@ class Tree(object):
         @return: Reference date for retrieving data is versions enabled
         @rtype: str
         """
-        return _mimport('_treeshr',1).TreeGetVersionDate()
+        return _treeshr.TreeGetVersionDate()
     getVersionDate=staticmethod(getVersionDate)
 
     def isModified(self):
@@ -431,7 +442,7 @@ class Tree(object):
     def lock(cls):
         """Internal use only. Thread synchronization locking.
         """
-        if not _mimport('_treeshr',1).TreeUsingPrivateCtx():
+        if not _treeshr.TreeUsingPrivateCtx():
             cls._lock.acquire()
     lock=classmethod(lock)
 
@@ -442,7 +453,7 @@ class Tree(object):
         if self.open_for_edit:
             Tree.lock()
             try:
-                _mimport('_treeshr',1).TreeQuitTree(self)
+                _treeshr.TreeQuitTree(self)
             finally:
                 Tree.unlock()
 
@@ -452,7 +463,7 @@ class Tree(object):
         @type tag: str
         @rtype: None
         """
-        _mimport('_treeshr',1).TreeRemoveTag(self,tag)
+        _treeshr.TreeRemoveTag(self,tag)
 
 
     def _setActiveTree(tree):
@@ -472,7 +483,7 @@ class Tree(object):
     def restoreContext(self):
         """Internal use only. Use internal context associated with this tree."""
         Tree._setActiveTree(self)
-        return _mimport('_treeshr',1).TreeRestoreContext(self.ctx)
+        return _treeshr.TreeRestoreContext(self.ctx)
 
     def setActiveTree(cls,tree):
         """Set active tree. Use supplied tree context when performing tree operations in tdi expressions.
@@ -497,11 +508,11 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            status=_mimport('_treeshr',1).TreeSetCurrentShotId(str.encode(treename),shot)
+            status=_treeshr.TreeSetCurrentShotId(_ver.tobytes(treename), shot)
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport('_treeshr',1).TreeException('Error setting current shot of %s: %s' % (treename,_mimport('_mdsshr',1).MdsGetMsg(status)))
+            raise _treeshr.TreeException('Error setting current shot of %s: %s' % (treename,_mdsshr.MdsGetMsg(status)))
     setCurrent=staticmethod(setCurrent)
 
     def setDefault(self,node):
@@ -514,13 +525,13 @@ class Tree(object):
         old=self.default
         if isinstance(node,_mimport('treenode',1).TreeNode):
             if node.tree is self:
-                _mimport('_treeshr',1).TreeSetDefault(self.ctx,node.nid)
+                _treeshr.TreeSetDefault(self.ctx,node.nid)
             else:
                 raise TypeError('TreeNode must be in same tree')
         else:
             raise TypeError('default node must be a TreeNode')
         return old
-    
+
     def setTimeContext(begin,end,delta):
         """Set time context for retrieving segmented records
         @param begin: Time value for beginning of segment.
@@ -531,11 +542,12 @@ class Tree(object):
         @type delta: Data
         @rtype: None
         """
-        if isinstance(begin,(str,String)):
-          begin = _mimport('_mdsshr',1).DateToQuad(str.encode(str(begin))).data()
-        if isinstance(end,(str,String)):
-          end = _mimport('_mdsshr',1).DateToQuad(str.encode(str(begin))).data()
-        _mimport('_treeshr',1).TreeSetTimeContext(begin,end,delta)
+        _scalar=_mimport('mdsscalar',1)
+        if isinstance(begin,(str,_scalar.String)):
+          begin = _mdsshr.DateToQuad(begin).data()
+        if isinstance(end,(str,_scalar.String)):
+          end = _mdsshr.DateToQuad(begin).data()
+        _treeshr.TreeSetTimeContext(begin,end,delta)
     setTimeContext=staticmethod(setTimeContext)
 
     def setVersionDate(date):
@@ -545,7 +557,7 @@ class Tree(object):
         @type date: str
         @rtype: None
         """
-        _mimport('_treeshr',1).TreeSetVersionDate(date)
+        _treeshr.TreeSetVersionDate(date)
     setVersionDate=staticmethod(setVersionDate)
 
     def setVersionsInModel(self,flag):
@@ -567,7 +579,7 @@ class Tree(object):
     def unlock(cls):
         """Internal use only. Thread synchronization locking.
         """
-        if not _mimport('_treeshr',1).TreeUsingPrivateCtx():
+        if not _treeshr.TreeUsingPrivateCtx():
             cls._lock.release()
     unlock=classmethod(unlock)
 
@@ -589,11 +601,34 @@ class Tree(object):
         """Write out edited tree.
         @rtype: None
         """
-        name=self.tree
-        shot=self.shot
         Tree.lock()
         try:
-            _mimport('_treeshr',1).TreeWriteTree(self,name,shot)
+            _treeshr.TreeWriteTree(self,self.tree,self.shot)
         finally:
             Tree.unlock()
 
+    def cleanDatafile(self):
+        """Clean up data file.
+        @rtype: None
+        """
+        Tree.lock()
+        try:
+            #ctx = _treeshr.TreeGetContext()
+            status = _treeshr.TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+        finally:
+            Tree.unlock()
+        if not (status & 1):
+            raise _treeshr.TreeException("Error cleaning up data file: %s" % (_mdsshr.MdsGetMsg(status),))
+
+    def compressDatafile(self):
+        """Compress data file.
+        @rtype: None
+        """
+        Tree.lock()
+        try:
+            #ctx = _treeshr.TreeGetContext()
+            status = _treeshr.TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+        finally:
+            Tree.unlock()
+        if not (status & 1):
+            raise _treeshr.TreeException("Error compressing data file: %s" % (_mdsshr.MdsGetMsg(status),))

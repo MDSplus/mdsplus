@@ -1173,7 +1173,8 @@ AC_OUTPUT(Makefile.inc
           macosx/Makefile
           math/Makefile 
           mdsdcl/Makefile 
-          mdslib/Makefile 
+          mdslib/Makefile
+          mdslib/docs/Makefile
           mdslib/testing/Makefile 
           mdslibidl/Makefile 
           mdsobjects/cpp/Makefile
@@ -1185,7 +1186,8 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
-          mdsshr/Makefile 
+          mdsshr/Makefile
+	  mdsshr/docs/Makefile
           mdssql/Makefile
           mdstcpip/Makefile 
           mdstcpip/zlib/Makefile

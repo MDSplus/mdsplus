@@ -61,9 +61,6 @@ struct descrip {
 
 STATIC_CONSTANT struct descrip empty_ans;
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
-extern int LibFindImageSymbol();
 
 #if !defined(HAVE_PTHREAD_H)
 #define pthread_mutex_t int

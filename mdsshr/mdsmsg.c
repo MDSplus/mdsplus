@@ -9,6 +9,7 @@
 #include        <sys/time.h>
 #include        <unistd.h>
 #include <libroutines.h>
+#include <strroutines.h>
 
 		/*========================================================
 		 * "Define"s and structure definitions ...
@@ -26,12 +27,6 @@
 *
 ************************************************************************/
 
-		/*========================================================
-		 * Function prototypes ...
-		 *=======================================================*/
-extern void StrCopyDx();
-extern int MDSprintf(char *fmt, ...);
-extern int MDSfprintf(FILE * fp, char *fmt, ...);
 
 	/*****************************************************************
 	 * MdsGetMsg:
@@ -89,7 +84,7 @@ void MdsGetMsgDsc(int status, struct descriptor *out)
 	 *****************************************************************/
 int MdsMsg(			/* Return: sts provided by user         */
 	    int sts		/* <r> status code                      */
-	    , char fmt[]	/* <r> format statement                     */
+	    , char const fmt[]	/* <r> format statement                     */
 	    , ...		/* <r:opt> arguments to fmt[]               */
     )
 {

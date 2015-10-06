@@ -9,7 +9,7 @@ import java.io.IOException;
  *
  * @see DataProvider
  */
-interface WaveData
+public interface WaveData
 {
     /**
      * Returns the number of dimensions of the corresponding signal. Currently only unidimensional signals

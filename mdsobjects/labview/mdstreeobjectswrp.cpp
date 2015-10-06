@@ -2617,6 +2617,83 @@ DLLEXPORT void mdsplus_treenodearray_destructor(void **lvTreeNodeArrayPtr)
 	*lvTreeNodeArrayPtr = NULL;
 }
 
+DLLEXPORT TreeNode *mdsplus_treenodearray_getItem(void **lvTreeNodeArrayPtr, int n)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return (*treeNodeArrayPtr)[n];
+}
+
+DLLEXPORT Int32Array *mdsplus_treenodearray_getCompressedLength(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->getCompressedLength();
+}
+
+DLLEXPORT StringArray *mdsplus_treenodearray_getFullPath(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->getFullPath();
+}
+
+DLLEXPORT Int32Array *mdsplus_treenodearray_getLength(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->getLength();
+}
+
+DLLEXPORT Int32Array *mdsplus_treenodearray_getNid(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->getNid();
+}
+
+DLLEXPORT StringArray *mdsplus_treenodearray_getPath(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->getPath();
+}
+
+DLLEXPORT StringArray *mdsplus_treenodearray_getUsage(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->getUsage();
+}
+
+DLLEXPORT Int8Array *mdsplus_treenodearray_isCompressOnPut(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->isCompressOnPut();
+}
+DLLEXPORT Int8Array *mdsplus_treenodearray_isNoWriteModel(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->isNoWriteModel();
+}
+DLLEXPORT Int8Array *mdsplus_treenodearray_isNoWriteShot(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->isNoWriteShot();
+}
+DLLEXPORT Int8Array *mdsplus_treenodearray_isOn(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->isOn();
+}
+DLLEXPORT Int8Array *mdsplus_treenodearray_isSetup(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->isSetup();
+}
+DLLEXPORT Int8Array *mdsplus_treenodearray_isWriteOnce(void **lvTreeNodeArrayPtr)
+{
+	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
+	return treeNodeArrayPtr->isWriteOnce();
+}
+
+
+
+
+
 /********************************************************************************************************
 												TREEPATH
  ********************************************************************************************************/

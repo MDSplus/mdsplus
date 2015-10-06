@@ -7,10 +7,12 @@ else:
 
 import ctypes as _C
 _descriptor=_mimport('_descriptor',1)
+_mdsExceptions=_mimport('mdsExceptions',1)
+_mdsarray=_mimport('mdsarray',1)
 descriptor_xd=_descriptor.descriptor_xd
 descriptor_a=_descriptor.descriptor_a
 descriptor=_descriptor.descriptor
-
+_ver=_mimport('version',1)
 _mdsshr=_mimport('_mdsshr',1)
 __TreeShr=_mdsshr._load_library('TreeShr')
 __TreeOpen=__TreeShr._TreeOpen
@@ -56,6 +58,12 @@ __TreeSwitchDbid.argtypes=[_C.c_void_p]
 __TreeSwitchDbid.restype=_C.c_void_p
 TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
 TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
+
+TreeCleanDatafile=__TreeShr._TreeCleanDatafile
+TreeCleanDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+TreeCompressDatafile=__TreeShr._TreeCompressDatafile
+TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+
 __TreeDeletePulseFile=__TreeShr._TreeDeletePulseFile
 __TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32]
 __TreeDoMethod=__TreeShr._TreeDoMethod
@@ -93,8 +101,8 @@ __TreeDeleteNodeExecute=__TreeShr._TreeDeleteNodeExecute
 __TreeDeleteNodeExecute.argtypes=[_C.c_void_p]
 TreeGetCurrentShotId=__TreeShr.TreeGetCurrentShotId
 TreeGetCurrentShotId.argtypes=[_C.c_char_p]
-TreeSetCurrentShotId=__TreeShr.TreeSetCurrentShotId
-TreeSetCurrentShotId.argtypes=[_C.c_char_p,_C.c_int32]
+__TreeSetCurrentShotId=__TreeShr.TreeSetCurrentShotId
+__TreeSetCurrentShotId.argtypes=[_C.c_char_p,_C.c_int32]
 __TreeSetViewDate=__TreeShr.TreeSetViewDate
 __TreeSetViewDate.argtypes=[_C.POINTER(_C.c_ulonglong)]
 __TreeGetViewDate=__TreeShr.TreeGetViewDate
@@ -136,19 +144,16 @@ except Exception:
     def TreeUsingPrivateCtx():
         return False
 
-class TreeException(Exception):
-    pass
-
-class TreeNoDataException(TreeException):
-    pass
+def TreeSetCurrentShotId(tree,shot):
+  return __TreeSetCurrentShotId(_ver.tobytes(tree),shot)
 
 def TreeFindNode(ctx,path):
     n=_C.c_int32()
-    status=__TreeFindNode(ctx,str.encode(str(path)),n)
+    status=__TreeFindNode(ctx,_ver.tobytes(path),n)
     if (status & 1):
         return n.value
     else:
-        raise TreeException('Error finding node '+str(path)+': '+_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeGetDefault(ctx):
     """Get default node"""
@@ -157,55 +162,49 @@ def TreeGetDefault(ctx):
     if (status & 1):
         return ans.value
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    
+        raise _mdsExceptions.statusToException(status)
+
 def TreeSetDefault(ctx,n):
     """Set default node"""
     status = __TreeShr._TreeSetDefaultNid(ctx,_C.c_int32(n))
     if (status & 1):
         return
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    
+        raise _mdsExceptions.statusToException(status)
+
 def TreeSetUsage(ctx,n,usage):
     """Set node usage"""
     try:
         status = __TreeShr._TreeSetUsage(ctx,_C.c_int32(n),_C.c_byte(usage))
     except:
-        raise TreeException("Feature not present in current MDSplus installation. Upgrade to newer version of MDSplus.")
+        raise _mdsExceptions.TreeException("Feature not present in current MDSplus installation. Upgrade to newer version of MDSplus.")
     if (status & 1):
         return
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    
+        raise _mdsExceptions.statusToException(status)
+
 def TreeGetPath(n):
     p=__TreeGetPath(n.tree.ctx,n.nid)
     ans=_C.cast(p,_C.c_char_p).value
-    try:
-        ans = ans.decode()
-    except:
-        pass
+    ans = _ver.tostr(ans)
     if not p is None:
         TreeFree(p)
     return ans
 
 def TreeFindNodeTags(n):
-    
     ctx=_C.c_void_p(0)
     tags=list()
     done=False
     while not done:
         tag_ptr=__TreeFindNodeTags(n.tree.ctx,n.nid,_C.pointer(ctx))
         try:
-            tags.append(_C.cast(tag_ptr,_C.c_char_p).value.rstrip())
+            tags.append(_ver.tostr(_C.cast(tag_ptr,_C.c_char_p).value.rstrip()))
             TreeFree(tag_ptr)
         except:
             done=True
-    if len(tags) > 0:
-        tags=_mimport('mdsarray',1).makeArray(tags).value
-    else:
-        tags=None
+    tags = _mimport('mdsarray',1).makeArray(tags).astype(_ver.npstr)
     return tags
+
 
 def TreeFindNodeWild(tree, wild, *usage):
     usage_table=_mimport('treenode',1).usage_table
@@ -217,12 +216,12 @@ def TreeFindNodeWild(tree, wild, *usage):
             for u in usage:
                 usage_mask |= 1 << usage_table[u.upper()]
         except KeyError:
-            raise TreeException('Invalid usage must be one of: %s' % (str(usage_table.keys()),))
+            raise _mdsExceptions.TreeException('Invalid usage must be one of: %s' % list(usage_table.keys()))
 
     nid=_C.c_int32()
     ctx=_C.c_void_p(0)
     try:
-        while __TreeFindNodeWild(tree, str.encode(str(wild)), _C.pointer(nid), _C.pointer(ctx), _C.c_int32(usage_mask)) & 1 != 0:
+        while __TreeFindNodeWild(tree, _ver.tobytes(wild), _C.pointer(nid), _C.pointer(ctx), _C.c_int32(usage_mask)) & 1 != 0:
             yield nid.value
     except GeneratorExit:
         pass
@@ -233,7 +232,7 @@ def TreeFindTagWild(tree,wild):
     ctx=_C.c_void_p(0)
     try:
         while True:
-            tag_ptr = __TreeFindTagWild(tree,str.encode(str(wild)),_C.pointer(nid),_C.pointer(ctx))
+            tag_ptr = __TreeFindTagWild(tree,_ver.tobytes(wild),_C.pointer(nid),_C.pointer(ctx))
             if  not tag_ptr:
                 break
             ans = _C.cast(tag_ptr,_C.c_char_p).value.rstrip()
@@ -252,11 +251,8 @@ def TreeGetRecord(n):
         ans = value.value
         descriptor.tree=None
         return ans
-    elif status == 265388258:
-        raise TreeNoDataException("No data stored in node %s" % (str(n),))
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeGetSegment(n,idx):
     """Get segment from MDSplus node."""
@@ -266,8 +262,7 @@ def TreeGetSegment(n,idx):
     if (status & 1):
         return _mimport('compound',1).Signal(value.value,None,dim.value)
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeGetSegmentLimits(n,idx):
     """Get segment from MDSplus node."""
@@ -288,8 +283,7 @@ def TreeGetSegmentLimits(n,idx):
         else:
             return None
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreePutRecord(n,value):
     """Put record into MDSplus tree. Accepts path, TreeNode or integer and the value"""
@@ -297,8 +291,7 @@ def TreePutRecord(n,value):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeSetTimeContext(begin,end,delta):
     """Set begin, end and delta for segmented record retrieval"""
@@ -306,7 +299,7 @@ def TreeSetTimeContext(begin,end,delta):
                                   _C.pointer(descriptor(end)),
                                   _C.pointer(descriptor(delta)))
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeDoMethod(n,method,arg=None):
     """Do a method of an MDSplus device. Accepts path, TreeNode or integer and the value"""
@@ -314,8 +307,7 @@ def TreeDoMethod(n,method,arg=None):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeStartConglomerate(tree,num):
     """Start a conglomerate in a tree."""
@@ -325,8 +317,7 @@ def TreeStartConglomerate(tree,num):
     finally:
         tree.unlock()
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeEndConglomerate(tree):
     """End a conglomerate in a tree."""
@@ -336,8 +327,7 @@ def TreeEndConglomerate(tree):
     finally:
         tree.unlock()
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeTurnOn(n):
     """Turn on a tree node."""
@@ -349,8 +339,7 @@ def TreeTurnOn(n):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeTurnOff(n):
     """Turn off a tree node."""
@@ -362,47 +351,46 @@ def TreeTurnOff(n):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeOpen(tree,shot):
     ctx=_C.c_void_p(0)
-    status = __TreeOpen(_C.pointer(ctx),str.encode(str(tree)),shot,0)
+    status = __TreeOpen(_C.pointer(ctx),_ver.tobytes(tree),shot,0)
     if (status & 1):
         return ctx
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeOpenReadOnly(tree,shot):
     ctx=_C.c_void_p(0)
-    status = __TreeOpen(_C.pointer(ctx),str.encode(str(tree)),shot,1)
+    status = __TreeOpen(_C.pointer(ctx),_ver.tobytes(tree),shot,1)
     if (status & 1):
         return ctx
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeOpenNew(tree,shot):
     ctx=_C.c_void_p(0)
-    status = __TreeOpenNew(_C.pointer(ctx),str.encode(str(tree)),shot)
+    status = __TreeOpenNew(_C.pointer(ctx),_ver.tobytes(tree),shot)
     if (status & 1):
         return ctx
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeOpenEdit(tree):
-    status = __TreeOpenEdit(_C.pointer(tree.ctx),str.encode(str(tree.tree)),tree.shot)
+    status = __TreeOpenEdit(_C.pointer(tree.ctx),_ver.tobytes(tree.tree),tree.shot)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeQuitTree(tree):
-    status = __TreeQuitTree(_C.pointer(tree.ctx),str.encode(str(tree.tree)),tree.shot)
+    status = __TreeQuitTree(_C.pointer(tree.ctx),_ver.tobytes(tree.tree),tree.shot)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeWriteTree(tree,name,shot):
-    status = __TreeWriteTree(_C.pointer(tree.ctx),str.encode(str(name)),shot)
+    status = __TreeWriteTree(_C.pointer(tree.ctx),_ver.tobytes(name),shot)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeAddNode(tree,name,usage):
     usage_table=_mimport('treenode',1).usage_table
@@ -410,15 +398,15 @@ def TreeAddNode(tree,name,usage):
     try:
         usagenum=usage_table[usage.upper()]
         if usagenum==-1:
-            status = __TreeAddNode(tree.ctx,str.encode(str(name)),nid,1)
+            status = __TreeAddNode(tree.ctx,_ver.tobytes(name),nid,1)
             if status & 1:
                 status = __TreeSetSubtree(tree.ctx,nid)
         else:
-            status = __TreeAddNode(tree.ctx,str.encode(str(name)),nid,usagenum)
+            status = __TreeAddNode(tree.ctx,_ver.tobytes(name),nid,usagenum)
         if not (status & 1):
-            raise TreeException(_mdsshr.MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
     except KeyError:
-        raise TreeException('Invalid usage must be one of: %s' % (str(usage_table.keys()),))
+        raise _mdsExceptions.TreeException('Invalid usage must be one of: %s' % list(usage_table.keys()))
     return nid.value
 
 def TreeSetSubtree(node,flag):
@@ -429,44 +417,44 @@ def TreeSetSubtree(node,flag):
         else:
             status=__TreeSetNoSubtree(node.tree.ctx,node.nid)
         if not (status & 1):
-            raise TreeException(_mdsshr.MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
     finally:
         node.tree.unlock()
 
 def TreeRenameNode(node,name):
     node.tree.lock()
     try:
-        status = __TreeRenameNode(node.tree.ctx,node.nid,str.encode(str(name)))
+        status = __TreeRenameNode(node.tree.ctx,node.nid,_ver.tobytes(name))
         if not (status & 1):
-            raise TreeException(_mdsshr.MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
     finally:
         node.tree.unlock()
 
 def TreeAddTag(tree,nid,tag):
     tree.lock()
     try:
-        status = __TreeAddTag(tree.ctx,nid,str.encode(str(tag)))
+        status = __TreeAddTag(tree.ctx,nid,_ver.tobytes(tag))
         if not (status & 1):
-            raise TreeException(_mdsshr.MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
     finally:
         tree.unlock()
 
 def TreeRemoveTag(tree,tag):
     tree.lock()
     try:
-        status = __TreeRemoveTag(tree.ctx,str.encode(str(tag)))
+        status = __TreeRemoveTag(tree.ctx,_ver.tobytes(tag))
         if not (status & 1):
-            raise TreeException(_mdsshr.MdsGetMsg(status))
+            raise _mdsExceptions.statusToException(status)
     finally:
         tree.unlock()
 
 def TreeAddConglom(tree,name,devname):
     nid=_C.c_int32(0)
-    status = __TreeAddConglom(tree.ctx,str.encode(str(name)),str.encode(str(devname)),nid)
+    status = __TreeAddConglom(tree.ctx,_ver.tobytes(name),_ver.tobytes(devname),nid)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
     return nid.value
-    
+
 def TreeDeleteNode(tree,nid,reset):
     count=_C.c_int32(0)
     reset_flag=0
@@ -474,16 +462,16 @@ def TreeDeleteNode(tree,nid,reset):
       reset_flag=1
     status = __TreeDeleteNodeInitialize(tree.ctx,nid,count,reset_flag)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeDeleteNodeExecute(tree):
     __TreeDeleteNodeExecute(tree.ctx)
-    
+
 def TreeDeletePulse(tree,shot):
     status = __TreeDeletePulseFile(tree.ctx,shot,1)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    
+        raise _mdsExceptions.statusToException(status)
+
 def TreeRestoreContext(ctx):
     try:
         return __TreeSwitchDbid(ctx)
@@ -493,17 +481,17 @@ def TreeRestoreContext(ctx):
 def TreeGetContext():
         ctx=__TreeSwitchDbid(_C.c_void_p(0))
         if ctx is None:
-            raise TreeException('Tree not open')
+            raise _mdsExceptions.TreeException('Tree not open')
         else:
             __TreeSwitchDbid(ctx)
         return ctx
 
 def TreeClose(ctx,tree,shot):
-    status = __TreeClose(_C.pointer(ctx),str.encode(str(tree)),shot)
+    status = __TreeClose(_C.pointer(ctx),_ver.tobytes(tree),shot)
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 
 def TreeCloseAll(ctx):
@@ -517,15 +505,15 @@ def TreeCloseAll(ctx):
         return status1
 
 def TreeSetVersionDate(date):
-    status = __TreeSetViewDate(_mdsshr.DateToQuad(str.encode(str(date))).data())
+    status = __TreeSetViewDate(_mdsshr.DateToQuad(_ver.tobytes(date)).data())
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeGetVersionDate():
     dt=_C.c_ulonglong(0)
     status = __TreeGetViewDate(dt)
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
     return _mimport('mdsscalar',1).Uint64(dt.value).date
 
 def TreeGetNumSegments(n):
@@ -539,14 +527,13 @@ def TreeGetNumSegments(n):
     if (status & 1):
         return num.value
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreePutTimestampedSegment(n,timestampArray,value):
     """Put a timestampedsegment"""
-    
-    timestampArray=_mimport('mdsarray',1).Int64Array(timestampArray)
-    value=_mimport('mdsarray',1).makeArray(value)
+
+    timestampArray=_mdsarray.Int64Array(timestampArray)
+    value=_mdsarray.makeArray(value)
     n.tree.lock()
     try:
         status=__TreePutTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestampArray).pointer,_C.pointer(descriptor_a(value)))
@@ -555,11 +542,11 @@ def TreePutTimestampedSegment(n,timestampArray,value):
     if (status & 1):
         return status;
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
     """Put a segment"""
-    timestamps=_mimport('mdsarray',1).Int64Array(timestamps)
+    timestamps=_mdsarray.Int64Array(timestamps)
     n.tree.lock()
     try:
         status=__TreeMakeTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestamps).pointer,_C.pointer(descriptor_a(value)),idx,rows_filled)
@@ -568,7 +555,7 @@ def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
     if (status & 1):
         return status;
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreePutSegment(n,value,idx):
     """Put a segment"""
@@ -580,13 +567,13 @@ def TreePutSegment(n,value,idx):
     if (status & 1):
         return status;
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreePutRow(n,bufsize,array,timestamp):
     """Begin a segment."""
     n.tree.lock()
     try:
-        array=_mimport('mdsarray',1).makeArray(array)
+        array=_mdsarray.makeArray(array)
         status=__TreePutRow(n.tree.ctx,n.nid,bufsize,_C.pointer(_C.c_int64(int(timestamp))),
                              _C.pointer(descriptor_a(array)))
     finally:
@@ -594,8 +581,7 @@ def TreePutRow(n,bufsize,array,timestamp):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeBeginTimestampedSegment(n,value,idx):
     """Begin a segment"""
@@ -607,7 +593,7 @@ def TreeBeginTimestampedSegment(n,value,idx):
     if (status & 1):
         return status;
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)
 
 def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
     n.tree.lock()
@@ -627,8 +613,7 @@ def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
     """Begin a segment."""
@@ -641,8 +626,7 @@ def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
+        raise _mdsExceptions.statusToException(status)
 
 def TreeUpdateSegment(n,start,end,dimension,idx):
     """Update a segment."""
@@ -655,15 +639,14 @@ def TreeUpdateSegment(n,start,end,dimension,idx):
     if (status & 1):
         return status
     else:
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    return None
-    
+        raise _mdsExceptions.statusToException(status)
+
 class DBI_ITM_INT(_C.Structure):
     _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.POINTER(_C.c_int32)),
               ("retlen",_C.c_void_p),
               ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
               ("retlen2",_C.c_void_p),]
-    
+
     def __init__(self,code,value):
         self.buffer_length=_C.c_ushort(4)
         self.code=_C.c_ushort(code)
@@ -679,7 +662,7 @@ class DBI_ITM_CHAR(_C.Structure):
               ("retlen",_C.POINTER(_C.c_int32)),
               ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
               ("retlen2",_C.c_void_p),]
-    
+
     def __init__(self,code,buflen,string_p,retlen_p):
         self.buffer_length=_C.c_ushort(buflen)
         self.code=_C.c_ushort(code)
@@ -698,9 +681,9 @@ def TreeGetDbi(tree,itemname):
     try:
         item=itemlist[itemname.upper()]
     except KeyError:
-        raise KeyError('Item name must be one of %s' % (str(itemlist.keys()),))
-    if item[1]==str:
-        ans=_C.c_char_p(str.encode('x'.rjust(item[2])))
+        raise KeyError('Item name must be one of %s' % list(itemlist.keys()))
+    if item[1] is str:
+        ans=_C.c_char_p(_ver.tobytes('x'.rjust(item[2])))
         retlen=_C.c_int32(0)
         itmlst=DBI_ITM_CHAR(item[0],item[2],ans,retlen)
     else:
@@ -713,12 +696,9 @@ def TreeGetDbi(tree,itemname):
     finally:
         tree.unlock()
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
-    if item[1]==str:
-        try:
-          return ans.value.decode()
-        except:
-          return ans.value
+        raise _mdsExceptions.statusToException(status)
+    if item[1] is str:
+        return _ver.tostr(ans.value)
     else:
         return item[1](ans.value)
 
@@ -727,12 +707,15 @@ def TreeSetDbi(tree,itemname,value):
     try:
         item=itemlist[itemname.upper()]
     except KeyError:
-        raise KeyError('Item name must be one of %s' % (str(itemlist.keys()),))
-    if item[1]==str:
+        raise KeyError('Item name must be one of %s' % list(itemlist.keys()))
+    """  itemlist does not contain str type
+    if item[1] is str: tuple(
         retlen=_C.c_int32(0)
-        itmlst=DBI_ITM_CHAR(item[0],len(str(value)),_C.c_char_p(str(value)),retlen)
+        value = _ver.tobytes(value)
+        itmlst = DBI_ITM_CHAR(item[0], len(value), _C.c_char_p(value), retlen)
     else:
-        itmlst=DBI_ITM_INT(item[0],_C.c_int32(int(value)))
+    """
+    itmlst=DBI_ITM_INT(item[0],_C.c_int32(int(value)))
     tree.lock()
     try:
         status=__TreeSetDbi(tree.ctx,_C.cast(
@@ -740,4 +723,4 @@ def TreeSetDbi(tree,itemname,value):
     finally:
         tree.unlock()
     if not (status & 1):
-        raise TreeException(_mdsshr.MdsGetMsg(status))
+        raise _mdsExceptions.statusToException(status)

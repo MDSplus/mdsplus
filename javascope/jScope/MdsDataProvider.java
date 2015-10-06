@@ -736,6 +736,8 @@ public class MdsDataProvider
                          setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
                }
  */                
+            
+            
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
                 args.addElement(new Descriptor(null, xExpr));
@@ -754,6 +756,9 @@ public class MdsDataProvider
                 byte[] retData;
                 int nSamples;
                 try {
+           //If the requeated number of mounts is Integer.MAX_VALUE, force the old way of getting data
+                    if(numPoints == Integer.MAX_VALUE)
+                        throw new Exception("Use Old Method for getting data");
                     if(isLong)
 //                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
                         retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);

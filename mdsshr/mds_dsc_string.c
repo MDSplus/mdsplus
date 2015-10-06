@@ -5,6 +5,7 @@
 #include		<mdsshr.h>
 
 #define checkString(S)  if (id==S)  return #S ;
+#define checkAltStr(A, S)  if (id==A)  return #S ;
 
 char *MdsDtypeString(int id)
 {
@@ -125,7 +126,8 @@ char *MdsUsageString(int id)
       checkString(TreeUSAGE_WINDOW)
       checkString(TreeUSAGE_AXIS)
       checkString(TreeUSAGE_SUBTREE)
+      checkAltStr(TreeUSAGE_SUBTREE_TOP, TreeUSAGE_SUBTREE)
       checkString(TreeUSAGE_COMPOUND_DATA)
-      sprintf(usageString, "USAGE_?_0x%02X", id);
+      sprintf(usageString, "TreeUSAGE_?_0x%02X", id);
   return (usageString);
 }

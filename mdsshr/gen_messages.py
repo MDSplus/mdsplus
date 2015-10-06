@@ -8,14 +8,42 @@ msglist = []
 
 
 def gen_include(root,file,faclist,msglistm,f_test):
+    pfaclist = []
     print file
-    f_inc=open('../include/'+file.lower()[0:-3]+'h','w')
+    
+    f_inc=open("../include/%sh" % file.lower()[0:-3],'w')
+    f_py=open("../mdsobjects/python/mdsExceptions/%sExceptions.py" % file.lower()[0:-len("_messages.xml")],'w')
     f_inc.write("""
+#pragma once
+/*
 
-#ifndef %(filenam)s
-#define %(filenam)s
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     %s
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
-""" % {'filenam':file[0:-4].upper()})
+""" % file)
+    f_py.write("""
+########################################################
+# This module was generated using mdsshr/gen_device.py
+# To add new status messages modify:
+#     %s
+# and then in mdsshr do:
+#     python gen_devices.py
+########################################################
+
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+MDSplusException=_mimport('__init__',1).MDSplusException
+
+""" % file)
     for f in root.getiterator('facility'):
         facnam = f.get('name')
         facnum = int(f.get('value'))
@@ -43,17 +71,31 @@ def gen_include(root,file,faclist,msglistm,f_test):
                 facnam=facabb
             if (sfacnam or facabb) and facnam not in faclist:
                     faclist.append(facnam)
+            if not facnam in pfaclist:
+                pfaclist.append(facnam)
+                f_py.write("""
+
+class %(fac)sException(MDSplusException):
+  fac="%(fac)s"
+""" % {'fac':facnam.capitalize()})
+            f_py.write("""
+
+class %(fac)s%(msgnam)s(%(fac)sException):
+  status=%(status)d
+  message="%(message)s"
+  msgnam="%(msgnam)s"
+""" % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text})
             msglist.append({'msgnum':hex(msgn_nosev),'text':text,
                             'fac':facnam,'msgnam':msgnam,
                             'facabb':facabb})
-    f_inc.write("\n\n#endif\n")
     f_inc.close()
+    f_py.close()
 
 f_test=None
 if len(sys.argv) > 1:
     f_test=open('testmsg.h','w');
 f_getmsg=open('MdsGetStdMsg.c','w')
-f_pyexcept=open('../mdsobjects/python/mdsExceptions.py','w')
+
 for root,dirs,files in os.walk('../'):
     for file in files:
         if file.endswith('messages.xml'):
@@ -72,7 +114,13 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
     switch (status & (-8)) {
 """)
 exceptionDict=[]
+facList=[]
 for msg in msglist:
+        facList.append(msg['fac'])
+
+
+for msg in msglist:
+    msg['facu']=msg['fac'].upper()
     f_getmsg.write("""
 /* %(fac)s%(msgnam)s */
       case %(msgnum)s:
@@ -83,12 +131,6 @@ for msg in msglist:
         *text_out = text;
         sts = 1;}
         break;
-""" % msg)
-    f_pyexcept.write("""
-class %(fac)s%(msgnam)s(Exception):
-    msgnum=%(msgnum)s
-    def __str__(self):
-        return "%(text)s"
 """ % msg)
     exceptionDict.append("%(msgnum)s:\"%(fac)s%(msgnam)s\"," % msg)
 f_getmsg.write("""
@@ -101,17 +143,6 @@ f_getmsg.write("""
   }
   return sts;
 }""")
-f_pyexcept.write("""
-def MDSplusException(msgnum):
-    edict={
-%s
-}
-    try:
-      return globals()[edict[msgnum]]()
-    except:
-      return Exception("Unknown status return - %%s" %% hex(msgnum))
-"""% "\n".join(exceptionDict))
-f_pyexcept.close()
 f_getmsg.close()
 if f_test:
     f_test.close()

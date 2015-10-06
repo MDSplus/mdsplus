@@ -1,6 +1,3 @@
-import numpy as _N
-import ctypes as _C
-import os
 import time
 from threading import Thread
 

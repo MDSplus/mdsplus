@@ -1,7 +1,13 @@
 
+#pragma once
+/*
 
-#ifndef MITDEVICES_MESSAGES
-#define MITDEVICES_MESSAGES
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     mitdevices_messages.xml
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 #define DEVBAD_ENDIDX           0x277c800a
 #define DEVBAD_FILTER           0x277c8012
@@ -161,6 +167,3 @@
 #define ACQ$_WRONG_TREE           0x277ca5a2
 #define ACQ$_WRONG_PATH           0x277ca5aa
 #define ACQ$_WRONG_SHOT           0x277ca5b2
-
-
-#endif

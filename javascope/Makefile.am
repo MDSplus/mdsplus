@@ -21,7 +21,7 @@ endif
 
 # Documentation
 dist_docs_DATA = $(DOCS)
-docsdir = $(exec_prefix)/java/classes/docs
+docsdir = $(exec_prefix)/java/classes/jdocs
 
 dist_java_DATA = jScope.properties MindTerm.jar
 
@@ -31,10 +31,10 @@ $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 jScope.jar: colors1.tbl
-	$(MKDIR_P) docs
-	cp $(SUBDOCS) ./docs
-	$(JAR) c0f $@ $(TOPDOCS) $(JSCOPE_CLASS) docs $<
-	rm -Rf docs
+	$(MKDIR_P) jdocs
+	cp $(SUBDOCS) ./jdocs
+	$(JAR) c0f $@ $(TOPDOCS) $(JSCOPE_CLASS) jdocs $<
+	rm -Rf jdocs
 
 WaveDisplay.jar:
 	$(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
