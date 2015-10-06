@@ -6,7 +6,6 @@
 
 		Author:	Josh Stillerman
 			MIT Plasma Fusion Center
-
 		Date:   19-MAY-1988
 
 		Purpose: Set the Characteristics of a Node.
@@ -509,10 +508,9 @@ int _TreeTurnOn(void *dbid, int nid_in)
     } else
       status = TreePARENT_OFF;
   } else {
-    status = TreeUnLockNci(info, 0, node_num);
-    if (status & 1)
-      status = TreeALREADY_ON;
+    status = TreeALREADY_ON;
   }
+  status = TreeUnLockNci(info, 0, node_num);
   return status;
 }
 
@@ -579,10 +577,9 @@ int _TreeTurnOff(void *dbid, int nid_in)
 	status = SetParentState(dblist, member_of(node), 1);
     }
   } else {
-    status = TreeUnLockNci(info, 0, node_num);
-    if (status & 1)
-      status = TreeALREADY_OFF;
+    status = TreeALREADY_OFF;
   }
+  status = TreeUnLockNci(info, 0, node_num);
   return status;
 }
 
@@ -679,6 +676,7 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
   if (status & 1) {
     bitassign(state, nci->flags, NciM_PARENT_STATE);
     status = TreePutNci(info, node_num, nci, 0);
+    TreeUnLockNci(info, 0, node_num);
   }
   return status;
 }

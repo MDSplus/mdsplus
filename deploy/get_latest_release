@@ -15,7 +15,7 @@ while [ $? ]
 do
   if ( grep ${branch}_release /tmp/release_info > /dev/null )
   then
-    release="$(grep ${branch}_release /tmp/release_info | grep "\-\-\-\-" | awk '{print $4; exit}')"
+    release="$(grep ${branch}_release /tmp/release_info | grep "\-\-\-\-" | awk '{print $NF; exit}')"
     echo $release
     break
   else

@@ -443,19 +443,23 @@ VOID CALLBACK ShutdownEvent(PVOID arg, BOOLEAN fired)
 
 static int getSocketHandle(char *name)
 {
-  char logfile[1024];
+  char *logdir = GetLogDir();
+  char *portnam = GetPortname();
+  char *logfile = malloc(strlen(logdir)+strlen(portnam)+50);
   HANDLE h;
   int ppid;
   int psock;
   char shutdownEventName[120];
   HANDLE shutdownEvent, waitHandle;
   if (name == 0 || sscanf(name, "%d:%d", &ppid, &psock) != 2) {
-      fprintf(stderr, "Mdsip single connection server can only be started from windows service\n");
-      exit(1);
-    }
-  sprintf(logfile, "C:\\MDSIP_%s_%d.log", GetPortname(), _getpid());
+   fprintf(stderr, "Mdsip single connection server can only be started from windows service\n");
+    exit(1);
+  }
+  sprintf(logfile, "%s\\MDSIP_%s_%d.log", logdir, portnam, _getpid());
   freopen(logfile, "a", stdout);
   freopen(logfile, "a", stderr);
+  free(logdir);
+  free(logfile);
   if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS, TRUE, ppid),
                        (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
                        PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
