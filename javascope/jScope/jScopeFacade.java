@@ -1106,7 +1106,9 @@ public class jScopeFacade
         {
             public void actionPerformed(ActionEvent e)
             {
-                help_dialog.setVisible(true);
+//                help_dialog.setVisible(true);
+                 JOptionPane.showMessageDialog(jScopeFacade.this, "The jScope tutorial is available at www.mdsplus.org in \"Documentation/The MDSplus tutorial\" section",
+                        "", JOptionPane.INFORMATION_MESSAGE);
             }
         }
         );
