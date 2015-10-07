@@ -94,7 +94,7 @@ static int CreateShotIdFile(char *experiment)
   char *ctx = 0;
   char *filename;
   while ((fd == -1) && (filename = GetFileName(experiment, &ctx)))
-    fd = MDS_IO_OPEN(filename, O_RDWR | O_CREAT | O_TRUNC, 0777);
+    fd = MDS_IO_OPEN(filename, O_RDWR | O_CREAT | O_TRUNC, 0664);
   return fd;
 }
 

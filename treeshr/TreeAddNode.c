@@ -686,7 +686,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             external_pages = (info_ptr->header->externals * 4 + 511) / 512;
             
             strcat(nfilenam, "#");
-            ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+            ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
             if (ntreefd != -1) {
                 ssize_t num;
                 TREE_HEADER *header = HeaderOut(info_ptr->header);
