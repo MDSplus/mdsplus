@@ -13,6 +13,9 @@ _tree=_mimport('tree',1)
 _compound=_mimport('compound',1)
 _ver=_mimport('version',1)
 
+class TreeNodeException(Exception):
+  pass
+
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
@@ -160,12 +163,8 @@ class TreeNode(_data.Data):
                     if isinstance(ans,_scalar.Uint8):
                         if name not in ('class','dtype'):
                             ans = bool(ans)
-                except _mimport('_tdishr',1).TdiException:
-                    e=sys.exc_info()[1]
-                    if 'TreeNNF' in str(e):
-                        ans=None
-                    else:
-                        raise
+                except _mimport('mdsExceptions').TreeNNF:
+                  ans = None
             finally:
                 _tree.Tree.unlock()
             if isinstance(ans,_scalar.String):
@@ -261,11 +260,7 @@ class TreeNode(_data.Data):
             cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
             status = _data.Data.compile(cmd).evaluate()
             if not (status & 1):
-                msg="Error executing command: %s, returned error: %s" % (cmd,str(_mimport('_mdsshr',1).MdsGetMsg(int(status))))
-                if 'TreeFAILURE' in msg:
-                    raise _mimport('_treeshr',1).TreeException('Error writing to tree, possibly file protection problem')
-                else:
-                    raise _mimport('_treeshr',1).TreeException(msg)
+              raise _mimport('mdsExceptions').statusToException(status)
         finally:
             _tree.Tree.unlock()
         return
@@ -288,7 +283,7 @@ class TreeNode(_data.Data):
         @rtype: TreeNode
         """
         if name.find(':') >=0 or name.find('.') >= 0:
-            raise _mimport('_treeshr',1).TreeException("Invalid node name, do not include path delimiters in nodename")
+            raise TreeNodeException("Invalid node name, do not include path delimiters in nodename")
         return self.tree.addDevice(self.fullpath+":"+name.upper(),model)
 
     def addNode(self,name,usage='ANY'):
@@ -389,14 +384,14 @@ class TreeNode(_data.Data):
         """
         a=self.record
         if not isinstance(a,_compound.Action):
-            raise Exception("Node does not contain an action description")
+            raise TreeNodeException("Node does not contain an action description")
         else:
             if wait:
                 status=_data.Data.execute("tcl('dispatch/wait "+str(self.fullpath).replace('\\','\\\\')+"')")
             else:
                 status=_data.Data.execute("tcl('dispatch/nowait "+str(self.fullpath).replace('\\','\\\\')+"')")
             if not (status & 1):
-                raise Exception(_mimport('_mdsshr',1).MdsGetMsg(status,"Error dispatching node"))
+                raise TreeNodeException(_mimport('_mdsshr',1).MdsGetMsg(status,"Error dispatching node"))
 
     def doMethod(self,method,arg=None):
         """Execute method on conglomerate element
@@ -971,13 +966,9 @@ class TreeNode(_data.Data):
             tag = _ver.tostr(tag)
             n=self.tree.getNode('\\'+tag)
             if n.nid != self.nid:
-                raise _mimport('_treeshr',1).TreeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),tag,str(n)))
-        except _mimport('_treeshr',1).TreeException:
-            e=sys.exc_info()[1]
-            if str(e).find('TreeNNF') > 0:
-                raise _mimport('_treeshr',1).TreeException("Tag %s is not defined" % (tag,))
-            else:
-                raise
+                raise TreeNodeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),tag,str(n)))
+        except _mimport('mdsExceptions',1).TreeNNF:
+            raise TreeNodeException("Tag %s is not defined" % (tag,))
         self.tree.removeTag(tag)
 
     def rename(self,newname):
@@ -987,7 +978,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         if newname.find(':') >=0 or newname.find('.') >= 0:
-            raise _mimport('_treeshr',1).TreeException("Invalid node name, do not include path delimiters in nodename")
+            raise TreeNodeException("Invalid node name, do not include path delimiters in nodename")
         try:
             olddefault=self.tree.default
             self.tree.setDefault(self.parent)

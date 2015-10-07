@@ -113,7 +113,7 @@ class Tree(object):
                 try:
                     self.ctx=Tree.getActiveTree().ctx
                 except:
-                    raise _treeshr.TreeException('tree not open')
+                    raise _mimport('mdsExceptions',1).TreeNOT_OPEN()
         else:
             if mode.upper() == 'NORMAL':
                 self.ctx=_treeshr.TreeOpen(tree,shot)
@@ -125,7 +125,7 @@ class Tree(object):
             elif mode.upper() == 'READONLY':
                 self.ctx=_treeshr.TreeOpenReadOnly(tree,shot)
             else:
-                raise _treeshr.TreeException('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
+                raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             self.close=True
         Tree.setActiveTree(self)
         return
@@ -234,7 +234,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _treeshr.TreeException("Error creating pulse: %s" % (_mdsshr.MdsGetMsg(status),))
+            raise _mimport('mdsExceptions').statusToException(status)
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -351,7 +351,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if shot==0:
-            raise _treeshr.TreeException("Error obtaining current shot of %s" % (treename,))
+            raise _mimport("mdsExceptions").TreeNOCURRENT()
         return shot
     getCurrent=staticmethod(getCurrent)
 
@@ -512,7 +512,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _treeshr.TreeException('Error setting current shot of %s: %s' % (treename,_mdsshr.MdsGetMsg(status)))
+            raise _mimport("mdsExceptions").statusToException(status)
     setCurrent=staticmethod(setCurrent)
 
     def setDefault(self,node):
@@ -618,7 +618,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _treeshr.TreeException("Error cleaning up data file: %s" % (_mdsshr.MdsGetMsg(status),))
+            raise _mimport("mdsExceptions").statusToException(status)
 
     def compressDatafile(self):
         """Compress data file.
@@ -631,4 +631,4 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _treeshr.TreeException("Error compressing data file: %s" % (_mdsshr.MdsGetMsg(status),))
+            raise _mimport("mdsExceptions").statusToException(status)

@@ -3,7 +3,6 @@ from mdsdata import *
 from mdsscalar import *
 from mdsarray import *
 from compound import *
-from _tdishr import TdiException
 from treenode import TreeNode
 import numpy
 

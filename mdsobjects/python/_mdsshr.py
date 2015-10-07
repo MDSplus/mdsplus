@@ -12,6 +12,9 @@ else:
 _ver=_mimport('version',1)
 _desc=_mimport('_descriptor',1)
 
+class MdsshrException(Exception):
+    pass
+
 def _load_library(name):
     libnam = None
     if _ver.pyver>(2,5,):
@@ -26,7 +29,7 @@ def _load_library(name):
                 try:
                     return _C.CDLL('lib'+name+'.dylib')
                 except:
-                    raise Exception("Error finding library: "+name)
+                    raise MdsshrException("Error finding library: "+name)
     else:
         try:
             return _C.CDLL(libnam)
@@ -49,16 +52,13 @@ __MDSEventCan.argtypes=[_C.c_int32,]
 __MDSEvent=_mdsshr.MDSEvent
 __MDSEvent.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p]
 
-class MdsException(Exception):
+class MdsInvalidEvent(MdsshrException):
     pass
 
-class MdsInvalidEvent(MdsException):
+class MdsTimeout(MdsshrException):
     pass
 
-class MdsTimeout(MdsException):
-    pass
-
-class MdsNoMoreEvents(MdsException):
+class MdsNoMoreEvents(MdsshrException):
     pass
 
 def MDSEventCan(eventid):
@@ -154,7 +154,7 @@ def DateToQuad(date):
     ans=_C.c_ulonglong(0)
     status = __LibConvertDateString(_ver.bytes(date),ans)
     if not (status & 1):
-        raise MdsException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
+        raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
     return _data.makeData(_N.uint64(ans.value))
 
 try:  # should not be done
@@ -175,7 +175,7 @@ try:  # should not be done
         if status&1 == 1:
             return eventid.value
         else:
-            raise MdsException("Error queuing the event %s, status=%d" % (event,status))
+            raise MdsshrException("Error queuing the event %s, status=%d" % (event,status))
 
     def MDSGetEventQueue(eventid,timeout=0):
         """Retrieve event occurrence.
@@ -208,6 +208,6 @@ try:  # should not be done
         elif status==2:
             raise MdsInvalidEvent("Invalid eventid")
         else:
-            raise MdsException("Unknown error - status=%d" % (status,))
+            raise MdsshrException("Unknown error - status=%d" % (status,))
 except:
     print('error: _mdsshr.py,l.214')
