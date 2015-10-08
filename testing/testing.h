@@ -35,10 +35,7 @@ __THROW __attribute__ ((__noreturn__));
 //  TEST  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
-#define TEST_FORK(value) __test_setfork(value);
-
+#define TEST_FORK(value)    __test_setfork(value);
 
 #define TEST_ASSERT(expr) \
     ((expr)								\
@@ -59,13 +56,12 @@ __THROW __attribute__ ((__noreturn__));
 #define BEGIN_TESTING(description) \
     __test_init(__STRING(description),__FILE__,__LINE__); \
     if( __setup_parent() ) { /* do something more after parent */ ;} \
-    else { if(__setup_child())
+    else { if(__setup_child()) { /* do something more after child */ ;}
     
 #define END_TESTING } __test_end();
 
 
 #if defined __cplusplus
-
 
 #define TEST_STD_EXCEPTION(val, string) try { val; } catch (std::exception &e) { TEST0( strcmp(e.what(), string) ); }
 #define TEST_MDS_EXCEPTION(val, string) try { val; } catch (std::exception &e) { TEST0( strcmp(e.what(), string) ); }
@@ -80,7 +76,8 @@ __THROW __attribute__ ((__noreturn__));
 extern "C" {
 #endif
 
-void __test_setfork(int value);
+
+void __test_setfork(const int value);
 
 void __test_init(const char *test_name, const char *file, const int line);
 

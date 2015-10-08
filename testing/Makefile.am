@@ -2,83 +2,60 @@
 SUBDIRS = backends/check .
 
 include ${top_srcdir}/Makefile.inc
+include testing.am
 
-AM_DEFAULT_SOURCE_EXT = .c
 
-AM_CFLAGS = -I${top_srcdir}/include -Ibackends
+AM_CFLAGS = -I${top_srcdir}/include
 AM_CXXFLAGS = 
 AM_LIBS = 
 
-#
-# NOTE: Gnu check must be present in the system and must be found by configure
-# process. If gnu check framework is not installed of not found the tests are
-# left undefined.
-#
-TESTS = \
-        example \
-        example2 \
-        example3
-
-
-
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-
-#AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@      
-LDADD = ${top_srcdir}/testing/backends/check/libCheck.a -lm -lrt -lpthread $(AM_LIBS)
-# LDADD = libMdsTest.a 
-
-
-
-#
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
-#
-
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --dsymutil=yes --leak-check=yes
-endif
-
-
-
-bin_PROGRAMS = example3
-example3_SOURCES = example3.cpp
            
-
 #
-# Static Test library
+# Static Base library
 #
 noinst_LIBRARIES = libMdsTest.a
-libMdsTest_a_SOURCES = testing.c
+libMdsTest_a_SOURCES = base_backend.c
+
+#
+# only check backend for now
+#
+noinst_LIBRARIES += libMdsTestBackend.a
+libMdsTestBackend_a_CFLAGS = -Ibackends/check
+libMdsTestBackend_a_SOURCES = check_backend.c
+
 
 #
 # Shared library
 #
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
-$(MdsTestShr): backends/check/libCheck.a
+$(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
 
+TEST_SUBDIRS = \
+               testing/selftest \
+               mdslib/testing \
+               mdsobjects/cpp/testing
 
-.PHONY: tests
-tests: $(TESTS) 
+.ONESHELL:
+build_tests: $(MdsTestShr)
+	list='$(TEST_SUBDIRS)';
+	for subdir in $$list; do echo "Making $$target in $$subdir"; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
+	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
+	done;
+	echo $${taps};
+
+taps: build_tests
 
 
-all-local: $(MdsTestShr) tests
+
+all-local: $(MdsTestShr)
 
 clean-local:
 	$(RM) $(MdsTestShr)
 
 
-
-check_PROGRAMS = $(TESTS)
 
 
 

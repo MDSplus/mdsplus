@@ -1,0 +1,55 @@
+
+TEST_CFLAGS = -I${top_srcdir}/testing
+TEST_LIBS = -lm -lrt -lpthread
+TEST_SUITE_TAP = test-suite.tap
+
+
+LOG_PY_LOG_COMPILER = python
+LOG_PY_LOG_FLAGS = -v
+TAP_PY_LOG_COMPILER = nosetests
+TAP_PY_LOG_FLAGS = --with-tap --tap-stream
+XML_PY_LOG_COMPILER = nosetests
+XML_PY_LOG_FLAGS = --with-xml --tap-stream
+
+PL_LOG_COMPILER = $(PERL)
+AM_PL_LOG_FLAGS = -w
+
+
+
+# not used #
+_tap_py_execute = \
+ import unittest; \
+ import tap; \
+ import os; \
+ import sys; \
+ pt = os.path.dirname(os.path.curdir); \
+ loader = unittest.TestLoader(); \
+ tests = loader.loadTestsFromName(sys.argv[1]); \
+ tr = tap.TAPTestRunner(); \
+ tr.set_stream(1); \
+ tr.run(tests); 
+
+#prova:
+#	echo $(TEST_LOGS);
+#	python -c "${_tap_py_execute}" pyex1;
+
+
+$(TEST_SUITE_TAP):
+	export TEST_FORMAT="tap"; \
+	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)"; \
+	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)"; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_LOGS); \
+	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_LOGS) > $@;
+
+
+.PHONY: tap
+tap: $(TESTS) $(TEST_SUITE_TAP)
+
+
+# MOSTLYCLEANFILES += $(TEST_SUITE_TAP)
+
+
+
+
+
+

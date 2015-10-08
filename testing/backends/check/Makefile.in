@@ -115,7 +115,7 @@ libCheck_a_LIBADD =
 am__objects_1 = check_error.$(OBJEXT) check_list.$(OBJEXT) \
 	check_log.$(OBJEXT) check_msg.$(OBJEXT) check_pack.$(OBJEXT) \
 	check_print.$(OBJEXT) check_run.$(OBJEXT) check_str.$(OBJEXT) \
-	check.$(OBJEXT) test_backend.$(OBJEXT)
+	check.$(OBJEXT)
 am_libCheck_a_OBJECTS = $(am__objects_1)
 libCheck_a_OBJECTS = $(am_libCheck_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
@@ -292,6 +292,7 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
+HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
@@ -484,9 +485,11 @@ _SOURCES = \
 	check_print.c	\
 	check_run.c	\
 	check_str.c \
-	check.c \
-	test_backend.c
+	check.c 
 
+
+#\
+#	test_backend.c
 
 #
 # Static Test library
@@ -598,7 +601,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_print.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_run.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_str.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

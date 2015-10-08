@@ -18,8 +18,10 @@ _SOURCES = \
 	check_print.c	\
 	check_run.c	\
 	check_str.c \
-	check.c \
-	test_backend.c
+	check.c 
+	
+#\
+#	test_backend.c
 
 
 #

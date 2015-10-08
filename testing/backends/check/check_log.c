@@ -216,10 +216,9 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
                    come after printing a string, not before.  it's better to add
                    the newline above in CLSTART_S.
                  */
-            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n"
-                         "\n");
+            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n\n");
             srunner_fprint(file, sr, printmode);
-            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n");
+            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n\n");
                          
         }
         break;
@@ -385,10 +384,10 @@ void tap_lfun(SRunner * sr CK_ATTRIBUTE_UNUSED, FILE * file,
         case CLEND_T:
             /* Print the test result to the tap file */
             num_tests_run += 1;
-            tr = (TestResult *)obj;            
-            fprintf(file, "%s %d - %s:%s:%s: %s\n",
+            tr = (TestResult *)obj;
+            fprintf(file, "%s %d - %s:%s:%d: %s\n",
                     tr->rtype == CK_PASS ? "ok" : "not ok", num_tests_run,
-                    tr->file, tr->tcname, tr->tname, tr->msg);
+                    tr->tcname, tr->file, tr->line, tr->msg);
             fflush(file);
             break;
         default:

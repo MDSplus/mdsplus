@@ -275,6 +275,10 @@ if [[ "$use_valgrind" = "yes" ]]; then
 fi
 AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
 
+# python nodetests executable is available #
+AC_CHECK_PROG(HAVE_NOSETESTS, nosetests, yes, no)
+AM_CONDITIONAL(HAVE_NOSETESTS, test x"$HAVE_NOSETESTS" = "xyes")
+
 
 FORLD=ld
 LD=ld
@@ -770,6 +774,8 @@ AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
 
 
+
+
 REMCAM="remcam"
 AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
 if test "$DO_CAMSHR" = yes
@@ -1208,7 +1214,8 @@ AC_OUTPUT(Makefile.inc
           tdic/Makefile
           tditest/Makefile 
           testing/Makefile
-          testing/backends/check/Makefile          
+          testing/backends/check/Makefile
+          testing/selftest/Makefile
           traverser/Makefile 
           treeshr/Makefile 
           wfevent/Makefile 

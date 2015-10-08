@@ -781,6 +781,9 @@ READLINE_LDFLAGS
 READLINE_CPPFLAGS
 MAKEETCDIR
 THREAD
+HAVE_NOSETESTS_FALSE
+HAVE_NOSETESTS_TRUE
+HAVE_NOSETESTS
 USE_VALGRIND_FALSE
 USE_VALGRIND_TRUE
 HAVE_VALGRIND
@@ -6973,6 +6976,54 @@ else
 fi
 
 
+# python nodetests executable is available #
+# Extract the first word of "nosetests", so it can be a program name with args.
+set dummy nosetests; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_NOSETESTS+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_NOSETESTS"; then
+  ac_cv_prog_HAVE_NOSETESTS="$HAVE_NOSETESTS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_NOSETESTS="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_NOSETESTS" && ac_cv_prog_HAVE_NOSETESTS="no"
+fi
+fi
+HAVE_NOSETESTS=$ac_cv_prog_HAVE_NOSETESTS
+if test -n "$HAVE_NOSETESTS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_NOSETESTS" >&5
+$as_echo "$HAVE_NOSETESTS" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test x"$HAVE_NOSETESTS" = "xyes"; then
+  HAVE_NOSETESTS_TRUE=
+  HAVE_NOSETESTS_FALSE='#'
+else
+  HAVE_NOSETESTS_TRUE='#'
+  HAVE_NOSETESTS_FALSE=
+fi
+
+
 
 FORLD=ld
 LD=ld
@@ -9158,7 +9209,6 @@ fi
 done
 
 
-<<<<<<< HEAD
 
 ## CHECK related ##
 for ac_func in mkstemp
@@ -9183,8 +9233,8 @@ _ACEOF
 fi
 done
 
-=======
->>>>>>> 220b8192a6a309f3fa665d2184bed81853677b0c
+
+
 
 
 REMCAM="remcam"
@@ -13149,11 +13199,7 @@ ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-<<<<<<< HEAD
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
-=======
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javascope/docs/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
->>>>>>> 220b8192a6a309f3fa665d2184bed81853677b0c
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -13318,6 +13364,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${USE_VALGRIND_TRUE}" && test -z "${USE_VALGRIND_FALSE}"; then
   as_fn_error $? "conditional \"USE_VALGRIND\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_NOSETESTS_TRUE}" && test -z "${HAVE_NOSETESTS_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_NOSETESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${READLINE_TRUE}" && test -z "${READLINE_FALSE}"; then
@@ -13991,7 +14041,6 @@ do
     "javadispatcher/Makefile") CONFIG_FILES="$CONFIG_FILES javadispatcher/Makefile" ;;
     "javamds/Makefile") CONFIG_FILES="$CONFIG_FILES javamds/Makefile" ;;
     "javascope/Makefile") CONFIG_FILES="$CONFIG_FILES javascope/Makefile" ;;
-    "javascope/docs/Makefile") CONFIG_FILES="$CONFIG_FILES javascope/docs/Makefile" ;;
     "javatraverser/Makefile") CONFIG_FILES="$CONFIG_FILES javatraverser/Makefile" ;;
     "javadevices/Makefile") CONFIG_FILES="$CONFIG_FILES javadevices/Makefile" ;;
     "LabView/Makefile") CONFIG_FILES="$CONFIG_FILES LabView/Makefile" ;;
@@ -14000,11 +14049,8 @@ do
     "math/Makefile") CONFIG_FILES="$CONFIG_FILES math/Makefile" ;;
     "mdsdcl/Makefile") CONFIG_FILES="$CONFIG_FILES mdsdcl/Makefile" ;;
     "mdslib/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/Makefile" ;;
-<<<<<<< HEAD
-    "mdslib/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/testing/Makefile" ;;
-=======
     "mdslib/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/docs/Makefile" ;;
->>>>>>> 220b8192a6a309f3fa665d2184bed81853677b0c
+    "mdslib/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/testing/Makefile" ;;
     "mdslibidl/Makefile") CONFIG_FILES="$CONFIG_FILES mdslibidl/Makefile" ;;
     "mdsobjects/cpp/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/Makefile" ;;
     "mdsobjects/cpp/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/docs/Makefile" ;;
@@ -14038,6 +14084,7 @@ do
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
     "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;
     "testing/backends/check/Makefile") CONFIG_FILES="$CONFIG_FILES testing/backends/check/Makefile" ;;
+    "testing/selftest/Makefile") CONFIG_FILES="$CONFIG_FILES testing/selftest/Makefile" ;;
     "traverser/Makefile") CONFIG_FILES="$CONFIG_FILES traverser/Makefile" ;;
     "treeshr/Makefile") CONFIG_FILES="$CONFIG_FILES treeshr/Makefile" ;;
     "wfevent/Makefile") CONFIG_FILES="$CONFIG_FILES wfevent/Makefile" ;;

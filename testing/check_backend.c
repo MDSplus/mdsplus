@@ -14,11 +14,10 @@
 #include <check_impl.h>
 #include <check_msg.h>
 #include <check_log.h>
+#include <check_print.h>
 
 
-
-#include "test_backend.h"
-
+#include "testing.h"
 
 // Check for HAVE_CHECK and HAVE_FORK //
 #include <config.h>
@@ -52,26 +51,27 @@ extern void *erealloc(void *, size_t n);
 
 
 
-static int out_fd;
+static int out_fd = 0;
 static fpos_t out_pos;
 
 static FILE *switchStdout(const char *newStream)
 {
-  fflush(stdout);
-  fgetpos(stdout, &out_pos);
-  out_fd = dup(fileno(stdout));    
-  freopen(newStream, "a", stdout);
-  return fdopen(out_fd, "w");
+    fflush(stdout);
+    fgetpos(stdout, &out_pos);
+    out_fd = dup(fileno(stdout));    
+    freopen(newStream, "w", stdout);
+    return fdopen(out_fd, "w");
 }
 
 static void revertStdout()
 {
-  fflush(stdout);
-  fclose(stdout);
-  dup2(out_fd, fileno(stdout));
-  close(out_fd);
-  clearerr(stdout);
-  fsetpos(stdout, &out_pos);
+    if(out_fd < 1) return;
+    fflush(stdout);
+    //fclose(stdout);
+    dup2(out_fd, fileno(stdout));
+    close(out_fd);
+    clearerr(stdout);
+    fsetpos(stdout, &out_pos);    
 }
 
 
@@ -513,7 +513,9 @@ static void srunner_send_evt(SRunner * sr, void *obj, enum cl_event evt)
 static char log_fname[200];
 static char tap_fname[200];
 static char xml_fname[200];
+static char out_fname[200];
 
+static enum print_output print_mode = CK_NORMAL;
 
 void __test_init(const char *test_name, const char *file, const int line) {
             
@@ -526,26 +528,53 @@ void __test_init(const char *test_name, const char *file, const int line) {
         suite = suite_create(file);            
         runner = srunner_create(suite);
 
-        strcpy(log_fname,test_name);
-        strcat(log_fname,"_out.log");
-        strcpy(tap_fname,test_name);
-        strcat(tap_fname,"_out.tap");
-        strcpy(xml_fname,test_name);
-        strcat(xml_fname,"_out.xml");        
+        strcpy(log_fname,file);
+        strcat(log_fname,".out.log");
+        strcpy(tap_fname,file);
+        strcat(tap_fname,".out.tap");
+        strcpy(xml_fname,file);
+        strcat(xml_fname,".out.xml");
+        strcpy(out_fname,file);
+        strcat(out_fname,".out");
         
-//        srunner_set_log(runner,log_fname);
-//        srunner_set_xml(runner,xml_fname);        
-//        srunner_set_tap(runner,"-"); //tap_fname);
-//        srunner_set_xml(runner,"-"); //tap_fname);
+        //        srunner_set_log(runner,log_fname);
+        //        srunner_set_xml(runner,xml_fname);        
+        //        srunner_set_tap(runner,tap_fname);
+        //        srunner_set_tap(runner,"-"); //tap_fname);
+        //        srunner_set_xml(runner,"-"); //tap_fname);        
+                                
+        // print mode normal by default //
+        char *env = getenv("TEST_MODE");                
+        if(env) {
+            if(strcmp(env, "silent") == 0)
+                print_mode = CK_SILENT;
+            if(strcmp(env, "minimal") == 0)
+                print_mode = CK_MINIMAL;
+            if(strcmp(env, "verbose") == 0)
+                print_mode = CK_VERBOSE;                       
+        }
         
-        FILE *newout = switchStdout(log_fname);
-                        
-        // init logger TAP by default //
-        srunner_init_logging(runner, CK_NORMAL);
-        srunner_register_lfun(runner, newout, 0, tap_lfun, CK_NORMAL);
+        // init logger NORMAL by default //
+        srunner_init_logging(runner, print_mode);        
         
+        char *format = getenv("TEST_FORMAT");
+        if(format) { 
+            
+            // stdout redirected to file //
+            FILE *newout = switchStdout(out_fname);
+            
+            if( !strcmp(format,"log") || !strcmp(format,"LOG"))            
+                srunner_register_lfun(runner, newout, 0, lfile_lfun, print_mode);
+            else if( !strcmp(format,"tap") || !strcmp(format,"TAP"))            
+                srunner_register_lfun(runner, newout, 0, tap_lfun, print_mode);
+            else if( !strcmp(format,"xml") || !strcmp(format,"XML"))            
+                srunner_register_lfun(runner, newout, 0, xml_lfun, print_mode);
+        }
+        else {
+            srunner_register_lfun(runner, stdout, 0, stdout_lfun, print_mode);            
+        }
         
-        enum fork_status f = cur_fork_status();
+        // set fork status //
         srunner_set_fork_status(runner, cur_fork_status());           
         
         
@@ -586,8 +615,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
     }
     
     // mark point in case signal is received before any test //
-    send_loc_info(file,line);
-    
+    send_loc_info(file,line);    
     
 }
 
@@ -612,7 +640,6 @@ int __setup_parent() {
             eprintf("Error forking to a new process:", __FILE__, __LINE__);     
         else if(pid == 0) {
             // child process //
-//            switchStdout(log_fname);            
             return 0;
         }        
         group_pid = pid;
