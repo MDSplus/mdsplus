@@ -1,4 +1,16 @@
-commit 6028e638270c5a93308f81a0c742d68b500b3ccd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit bffdad62aabf2595d8a1131fed67d0a753343051 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Oct 7 16:11:55 2015 +0200
+
+    Added short help string
+
+commit 359b90895721c207d9e4b1e6fea8a341fd4effc2 (tag: refs/tags/alpha_release-7-0-158)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 6 23:35:09 2015 -0400
+
+    New release ---- alpha_release-7-0-158
+
+commit 6028e638270c5a93308f81a0c742d68b500b3ccd
 Merge: e3a830d 2e34fd7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Oct 6 11:59:57 2015 -0400
