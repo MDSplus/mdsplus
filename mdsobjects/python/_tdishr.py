@@ -10,8 +10,6 @@ _mdsExceptions=_mimport('mdsExceptions',1)
 _ver=_mimport('version',1)
 
 TdiShr=_mdsshr._load_library('TdiShr')
-class TdiException(Exception):
-    pass
 
 def _TdiShrFun(function,errormessage,expression,args=None):
     import ctypes as C

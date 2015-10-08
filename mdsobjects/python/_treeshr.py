@@ -177,7 +177,7 @@ def TreeSetUsage(ctx,n,usage):
     try:
         status = __TreeShr._TreeSetUsage(ctx,_C.c_int32(n),_C.c_byte(usage))
     except:
-        raise _mdsExceptions.TreeException("Feature not present in current MDSplus installation. Upgrade to newer version of MDSplus.")
+        raise Exception("Feature not present in current MDSplus installation. Upgrade to newer version of MDSplus.")
     if (status & 1):
         return
     else:
@@ -216,7 +216,7 @@ def TreeFindNodeWild(tree, wild, *usage):
             for u in usage:
                 usage_mask |= 1 << usage_table[u.upper()]
         except KeyError:
-            raise _mdsExceptions.TreeException('Invalid usage must be one of: %s' % list(usage_table.keys()))
+            raise KeyError('Invalid usage must be one of: %s' % list(usage_table.keys()))
 
     nid=_C.c_int32()
     ctx=_C.c_void_p(0)
@@ -406,7 +406,7 @@ def TreeAddNode(tree,name,usage):
         if not (status & 1):
             raise _mdsExceptions.statusToException(status)
     except KeyError:
-        raise _mdsExceptions.TreeException('Invalid usage must be one of: %s' % list(usage_table.keys()))
+        raise KeyError('Invalid usage must be one of: %s' % list(usage_table.keys()))
     return nid.value
 
 def TreeSetSubtree(node,flag):
@@ -481,7 +481,7 @@ def TreeRestoreContext(ctx):
 def TreeGetContext():
         ctx=__TreeSwitchDbid(_C.c_void_p(0))
         if ctx is None:
-            raise _mdsExceptions.TreeException('Tree not open')
+            raise _mdsExceptions.TreeNOT_OPEN()
         else:
             __TreeSwitchDbid(ctx)
         return ctx

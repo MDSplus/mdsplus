@@ -41,9 +41,6 @@ _mdsdcl=_load_library('Mdsdcl')
 _mdsdcl_do_command_dsc=_mdsdcl.mdsdcl_do_command_dsc
 _mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _C.POINTER(_desc.descriptor_xd), _C.POINTER(_desc.descriptor_xd)]
 
-class DclException(Exception):
-    pass
-
 
 def dcl(command,return_out=False,return_error=False,raise_exception=False):
     """Execute a dcl command
