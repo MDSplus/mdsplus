@@ -858,7 +858,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	  }
 	  status = TreeNORMAL;
 	  if (new) {
-	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0777);
+	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0664);
 	    if (fd == -1)
 	      status = TreeFCREATE;
 	  } else {
