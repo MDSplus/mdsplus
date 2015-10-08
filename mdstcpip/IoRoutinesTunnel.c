@@ -12,8 +12,6 @@
 #ifdef _WIN32
 #include <process.h>
 #include <winuser.h>
-#else
-#include <sys/wait.h>
 #endif
 
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
@@ -47,6 +45,7 @@ static struct TUNNEL_PIPES *getTunnelPipes(id)
   size_t len;
   char *info_name;
   struct TUNNEL_PIPES *p = (struct TUNNEL_PIPES *)GetConnectionInfo(id, &info_name, 0, &len);
+
   return (info_name && strcmp("tunnel", info_name) == 0
 	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
 }
@@ -67,10 +66,13 @@ static int tunnel_disconnect(int id)
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
   if (p) {
     int status;
-    kill(p->pid, 6);
-    waitpid(p->pid, &status, 0);
-    close(p->stdin_pipe);
-    close(p->stdout_pipe);
+    status = kill(p->pid, 6);
+    if (status == 0) 
+    {
+      waitpid(p->pid, &status, WNOHANG);
+      close(p->stdin_pipe);
+      close(p->stdout_pipe);
+    }
   }
   return 0;
 }
