@@ -18,8 +18,8 @@ class cleanup(TestCase):
     dir=None
 
     def cleanup(self):
-        if cleanup.dir is not None:
-            dir=cleanup.dir
+        if 'TMPDIR' in os.environ:
+            dir=os.environ['TMPDIR']
             for i in os.walk(dir,False):
                 for f in i[2]:
                     try:
@@ -46,17 +46,17 @@ class cleanup(TestCase):
         self.cleanup()
 
 def test_all(*arg):
-    import tempfile
-    dir=tempfile.mkdtemp()
-    print ("Creating trees in %s" % (dir,))
-    cleanup.dir=dir
-    if (str(Data.execute('getenv("TEST_DISTRIBUTED_TREES")')) == ""):
-        hostpart=""
-    else:
-        hostpart="localhost::" 
-    Data.execute('setenv("pytree_path='+hostpart+dir.replace('\\','\\\\')+'")')
-    Data.execute('setenv("pytreesub_path='+hostpart+dir.replace('\\','\\\\')+'")')
-    print (Data.execute('getenv("pytree_path")'))
+#    import tempfile
+#    dir=tempfile.mkdtemp()
+#    print ("Creating trees in %s" % (dir,))
+#    cleanup.dir=dir
+#    if (str(Data.execute('getenv("TEST_DISTRIBUTED_TREES")')) == ""):
+#        hostpart=""
+#    else:
+#        hostpart="localhost::" 
+#    Data.execute('setenv("pytree_path='+hostpart+dir.replace('\\','\\\\')+'")')
+#    Data.execute('setenv("pytreesub_path='+hostpart+dir.replace('\\','\\\\')+'")')
+#    print (Data.execute('getenv("pytree_path")'))
     tests=list()
     tests.append(treeTests())
     if os.getenv('TEST_THREADS') is not None:
