@@ -10,8 +10,6 @@ _array=_mimport('mdsarray',1)
 _dtypes=_mimport('_mdsdtypes',1)
 _mdsclasses=_mimport('_mdsclasses',1)
 _data=_mimport('mdsdata',1)
-_treenode=_mimport('treenode',1)
-_tree=_mimport('tree',1)
 _ident=_mimport('ident',1)
 _apd=_mimport('apd',1)
 _compound=_mimport('compound',1)
@@ -204,7 +202,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_treenode.TreePath)):
+        if (isinstance(value,_mimport('treenode',1).TreePath)):
             value.restoreContext()
             str_d=descriptor_string(str(value))
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
@@ -214,7 +212,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_treenode.TreeNode)):
+        if (isinstance(value,_mimport('treenode',1).TreeNode)):
             value.restoreContext()
             self.length=4
             self.dtype=_dtypes.DTYPE_NID
@@ -222,7 +220,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_treenode.TreeNodeArray)):
+        if (isinstance(value,_mimport('treenode',1).TreeNodeArray)):
             value.restoreContext()
             self.__init__(value.nids)
             return
@@ -386,14 +384,14 @@ class descriptor(_C.Structure):
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
                     if descriptor.tree is None:
-                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
+                      return _mimport('treenode',1).TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_mimport('tree',1).Tree())
                     else:
-                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
+                      return _mimport('treenode',1).TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
-                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                      return _mimport('treenode',1).TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_mimport('tree',1).Tree())
                     else:
-                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                       return _mimport('treenode',1).TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):
@@ -480,7 +478,7 @@ class descriptor(_C.Structure):
                 self.dtype=_dtypes.DTYPE_L
                 nids=_array.makeArray(_N.ndarray(shape=shape,dtype=_dtypes.mdsdtypes(self.dtype).toCtype(),
                                           buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents)))
-                return _treenode.TreeNodeArray(nids)
+                return _mimport('treenode',1).TreeNodeArray(nids)
             if self.dtype == _dtypes.DTYPE_F:
                 return _array.makeArray(_data.Data.execute("float($)",(descr,)))
             if self.dtype == _dtypes.DTYPE_D or self.dtype == _dtypes.DTYPE_G:

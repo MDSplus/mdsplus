@@ -8,23 +8,23 @@ else:
   def _mimport(name,level):
     return __import__(name,globals(),{},[],level)
 
-_descriptor=_mimport('_descriptor',1)
+_descriptor=_mimport('_descriptor',1).descriptor
+_descriptor_a=_mimport('_descriptor',1).descriptor_a
 _mdsExceptions=_mimport('mdsExceptions',1)
-descriptor=_descriptor.descriptor
-descriptor_a=_descriptor.descriptor_a
 
 _mdsshr=_mimport('_mdsshr',1)
 _load_library=_mdsshr._load_library
-MdsException=_mdsshr.MdsException
-MdsGetMsg=_mdsshr.MdsGetMsg
 
-_data=_mimport('mdsdata',1)
-makeData=_data.makeData
-Data=_data.Data
+class MdsIpException(Exception):
+  pass
 
-_apd=_mimport('apd',1)
-List=_apd.List
-Dictionary=_apd.Dictionary
+_MdsGetMsg=_mdsshr.MdsGetMsg
+
+_makeData=_mimport('mdsdata',1).makeData
+_Data=_mimport('mdsdata',1).Data
+
+_List=_mimport('apd',1).List
+_Dictionary=_mimport('apd',1).Dictionary
 
 _scalar=_mimport('mdsscalar',1)
 _array=_mimport('mdsarray',1)
@@ -32,16 +32,15 @@ _dtypes=_mimport('_mdsdtypes',1)
 _ver=_mimport('version',1)
 
 __MdsIpShr=_load_library('MdsIpShr')
-ConnectToMds=__MdsIpShr.ConnectToMds
-DisconnectFromMds=__MdsIpShr.DisconnectFromMds
-#ConnectToMds.argtypes=[_C.c_char_p]
-GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
-GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
+_ConnectToMds=__MdsIpShr.ConnectToMds
+_DisconnectFromMds=__MdsIpShr.DisconnectFromMds
+_GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
+_GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
                             _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
-MdsIpFree=__MdsIpShr.MdsIpFree
-MdsIpFree.argtypes=[_C.c_void_p]
-SendArg=__MdsIpShr.SendArg
-SendArg.argtypes=[_C.c_int32,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_ubyte,_C.c_void_p, _C.c_void_p]
+_MdsIpFree=__MdsIpShr.MdsIpFree
+_MdsIpFree.argtypes=[_C.c_void_p]
+_SendArg=__MdsIpShr.SendArg
+_SendArg.argtypes=[_C.c_int32,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_ubyte,_C.c_void_p, _C.c_void_p]
 
 class Connection(object):
     """Implements an MDSip connection to an MDSplus server"""
@@ -54,10 +53,10 @@ class Connection(object):
 
     def __inspect__(self,value):
         """Internal routine used in determining characteristics of the value"""
-        d=descriptor(value)
+        d=_descriptor(value)
         if d.dtype==_dtypes.DTYPE_DSC:
             if d.pointer.contents.dclass == 4:
-                a=_C.cast(d.pointer,_C.POINTER(descriptor_a)).contents
+                a=_C.cast(d.pointer,_C.POINTER(_descriptor_a)).contents
                 dims=list()
                 if a.dimct == 1:
                     dims.append(a.arsize/a.length)
@@ -70,7 +69,7 @@ class Connection(object):
                 dimct=a.dimct
                 pointer=a.pointer
             else:
-                raise MdsException("Error handling argument of type %s" % (type(value),))
+                raise MdsIpException("Error handling argument of type %s" % (type(value),))
         else:
             length=d.length
             dtype=d.dtype
@@ -95,7 +94,7 @@ class Connection(object):
         numbytes=_C.c_ulong(0)
         ans=_C.c_void_p(0)
         mem=_C.c_void_p(0)
-        status=GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.pointer(ans),_C.pointer(mem))
+        status=_GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.pointer(ans),_C.pointer(mem))
         dtype=dtype.value
         if dtype == _dtypes.DTYPE_F:
             dtype = _dtypes.DTYPE_FLOAT
@@ -111,7 +110,7 @@ class Connection(object):
             else:
                 ans=Connection.dtype_to_scalar[dtype](_C.cast(ans,_C.POINTER(_dtypes.mdsdtypes.ctypes[dtype])).contents.value)
         else:
-            val=descriptor_a()
+            val=_descriptor_a()
             val.dtype=dtype
             val.dclass=4
             val.length=length.value
@@ -129,31 +128,31 @@ class Connection(object):
             ans=val.value
         if not ((status & 1) == 1):
             if mem.value is not None:
-                MdsIpFree(mem)
+                _MdsIpFree(mem)
             if isinstance(ans,_scalar.String):
-                raise MdsException(str(ans))
+                raise MdsIpException(str(ans))
             else:
                 raise _mdsExceptions.statusToException(status)
         if mem.value is not None:
-            MdsIpFree(mem)
+            _MdsIpFree(mem)
         return ans
 
     def __init__(self,hostspec):
-      self.socket=ConnectToMds(_ver.tobytes(hostspec))
+      self.socket=_ConnectToMds(_ver.tobytes(hostspec))
       if self.socket == -1:
-        raise Exception("Error connecting to %s" % (hostspec,))
+        raise MdsIpException("Error connecting to %s" % (hostspec,))
       self.hostspec=hostspec
 
     def __del__(self):
-        DisconnectFromMds(self.socket)
+        _DisconnectFromMds(self.socket)
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
-        val=makeData(value)
+        val=_makeData(value)
         if not isinstance(val,_scalar.Scalar) and not isinstance(val,_array.Array):
-            val=makeData(val.data())
+            val=_makeData(val.data())
         valInfo=self.__inspect__(val)
-        status=SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
+        status=_SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
         if not ((status & 1)==1):
             raise _mdsExceptions.statusToException(status)
 
@@ -231,7 +230,7 @@ class Connection(object):
             args=kwargs['arglist']
         num=len(args)+1
         idx=0
-        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp)))
+        status=_SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp)))
         if not ((status & 1)==1):
             raise _mdsExceptions.statusToException(status)
         #self.__sendArg__(exp,idx,num)
@@ -253,11 +252,11 @@ class Connection(object):
 
     # depreciated
     def GetMany(self,*arg):
-        raise(Exception('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
+        raise(MdsIpException('\nThe subclass "Connection.GetMany" is now a class of it own.\nUse "GetMany" instead.'))
     def PutMany(self,*arg):
-        raise(Exception('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
+        raise(MdsIpException('\nThe subclass "Connection.PutMany" is now a class of it own.\nUse "PutMany" instead.'))
 
-class GetMany(List):
+class GetMany(_List):
     """Build a list of expressions to evaluate
 
     To reduce the number of network transactions between you and the remote system you can
@@ -285,7 +284,7 @@ class GetMany(List):
     def __init__(self,value=None,connection=None):
         """GetMany instance initialization."""
         if value is not None:
-            List.__init__(self,value)
+            _List.__init__(self,value)
         self.connection=connection
         self.result=None
 
@@ -299,25 +298,25 @@ class GetMany(List):
         @type args: Data
         @rtype: None
         """
-        super(GetMany,self).append(Dictionary({'name':str(name),'exp':str(exp),'args':args}))
+        super(GetMany,self).append(_Dictionary({'name':str(name),'exp':str(exp),'args':args}))
 
     def execute(self):
         """Execute the list. Send the list to the remote server for evaluation and return the answer as a dict instance."""
         if self.connection is None:
-            self.result=Dictionary()
+            self.result=_Dictionary()
             for val in self:
                 name=val['name']
                 try:
-                    self.result[name]=Dictionary({'value':Data.execute('data('+val['exp']+')',tuple(val['args']))})
+                    self.result[name]=_Dictionary({'value':_Data.execute('data('+val['exp']+')',tuple(val['args']))})
                 except Exception:
                     import sys
                     e=sys.exc_info()[1]
-                    self.result[name]=Dictionary({'error':str(e)})
+                    self.result[name]=_Dictionary({'error':str(e)})
             return self.result
         else:
             ans=self.connection.get("GetManyExecute($)",self.serialize())
         if isinstance(ans,str):
-            raise Exception("Error fetching data: "+ans)
+            raise MdsIpException("Error fetching data: "+ans)
         self.result=ans.deserialize()
         return self.result
 
@@ -329,11 +328,11 @@ class GetMany(List):
         @rtype: Scalar or Array
         """
         if self.result is None:
-            raise Exception("GetMany has not yet been executed. Use the execute() method on this object first.")
+            raise MdsIpException("GetMany has not yet been executed. Use the execute() method on this object first.")
         if 'value' in self.result[name]:
             return self.result[name]['value']
         else:
-            raise Exception(self.result[name]['error'])
+            raise MdsIpException(self.result[name]['error'])
 
     def insert(self,beforename, name,exp,*args):
         """Insert an expression in the list before the one named in the beforename argument.
@@ -347,7 +346,7 @@ class GetMany(List):
         @type args: Data
         @rtype: None
         """
-        d=Dictionary({'name':name,'exp':str(exp),'args':args})
+        d=_Dictionary({'name':name,'exp':str(exp),'args':args})
         n = 0
         for item in self:
             if item['name'] == beforename:
@@ -355,7 +354,7 @@ class GetMany(List):
                 return
             else:
                 n=n+1
-        raise Exception("Item %s not found in list" % (beforename,))
+        raise MdsIpException("Item %s not found in list" % (beforename,))
 
     def remove(self,name):
         """Remove first occurrence of expression identified by its name from the list.
@@ -367,16 +366,16 @@ class GetMany(List):
             if item['name'] == name:
                 super(GetMany,self).remove(item)
                 return
-        raise Exception("Item %s not found in list" % (name,))
+        raise MdsIpException("Item %s not found in list" % (name,))
 
 
-class PutMany(List):
+class PutMany(_List):
     """Build list of put instructions."""
 
     def __init__(self,value=None,connection=None):
         """Instance initialization"""
         if value is not None:
-            List.__init__(self,value)
+            _List.__init__(self,value)
         self.connection=connection
         self.result=None
 
@@ -390,7 +389,7 @@ class PutMany(List):
         @type args: Data
         @rtype: None
         """
-        super(PutMany,self).append(Dictionary({'node':str(node),'exp':str(exp),'args':args}))
+        super(PutMany,self).append(_Dictionary({'node':str(node),'exp':str(exp),'args':args}))
 
     def checkStatus(self,node):
         """Return the status of the put for this node. Anything other than 'Success' will raise an exception.
@@ -400,9 +399,9 @@ class PutMany(List):
         @rtype: str
         """
         if self.result is None:
-            raise Exception("PutMany has not yet been executed. Use the execute() method on this object first.")
+            raise MdsIpException("PutMany has not yet been executed. Use the execute() method on this object first.")
         if self.result[node] != "Success":
-            raise MdsException(self.result[node])
+            raise MdsIpException(self.result[node])
         else:
             return self.result[node]
 
@@ -412,7 +411,7 @@ class PutMany(List):
         @return: dict instance with status of each put. The key of the result will be the node name.
         """
         if self.connection is None:
-            self.result=Dictionary()
+            self.result=_Dictionary()
             for val in self:
                 node=val['node']
                 try:
@@ -422,11 +421,11 @@ class PutMany(List):
                         exp=exp+',$'
                         args.append(val['args'][i])
                     exp=exp+')'
-                    status=Data.execute(exp,tuple(args))
+                    status=_Data.execute(exp,tuple(args))
                     if (status & 1) == 1:
                         self.result[node]='Success'
                     else:
-                        self.result[node]=MdsGetMsg(status)
+                        self.result[node]=_MdsGetMsg(status)
                 except Exception:
                     import sys
                     e=sys.exc_info()[1]
@@ -435,7 +434,7 @@ class PutMany(List):
         else:
             ans=self.connection.get("PutManyExecute($)",self.serialize())
         if isinstance(ans,str):
-            raise Exception("Error putting any data: "+ans)
+            raise MdsIpException("Error putting any data: "+ans)
         self.result=ans.deserialize()
         return self.result
 
@@ -451,7 +450,7 @@ class PutMany(List):
         @type args: Data
         @rtype: None
         """
-        d=Dictionary({'node':str(node),'exp':str(exp),'args':args})
+        d=_Dictionary({'node':str(node),'exp':str(exp),'args':args})
         n = 0
         for item in self:
             if item['node'] == beforenode:
@@ -459,7 +458,7 @@ class PutMany(List):
                 return
             else:
                 n=n+1
-        raise Exception("Node %s not found in list" % (str(beforenode),))
+        raise MdsIpException("Node %s not found in list" % (str(beforenode),))
 
     def remove(self,node):
         """Remove the node from the list.
@@ -471,4 +470,4 @@ class PutMany(List):
             if item['node'] == node:
                 super(PutMany,self).remove(item)
                 return
-        raise Exception("Node %s not found in list" % (node,))
+        raise MdsIpException("Node %s not found in list" % (node,))
