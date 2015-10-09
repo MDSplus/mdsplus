@@ -1,4 +1,61 @@
-commit bffdad62aabf2595d8a1131fed67d0a753343051 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit adf261bac203a4c20cd570f6a5bc8d1413247e05 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 6ba268a 4841a45
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 8 15:17:59 2015 -0400
+
+    Merge pull request #134 from MDSplus/twf-fix-mdsExceptions
+    
+    Fix handling of new mdsExceptions feature
+
+commit 6ba268ad13b5dc1715307e9fefcece3de1068690
+Merge: b517bc5 9e676f7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 8 11:53:30 2015 -0400
+
+    Merge pull request #136 from MDSplus/make-sure-to-use-nohang-on-wait
+    
+    Trying to make sure WNOHANG is in alpha
+
+commit 9e676f74e20bf6e09d4485f4974c375fc1326d58
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 8 11:51:44 2015 -0400
+
+    Don't need status argument to wait, since it is never looked at.
+
+commit 55d7561d6c76a8752bcbc4f4e373b872de3554ba
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 8 10:56:33 2015 -0400
+
+    Trying to make sure WNOHANG is in alpha
+
+commit b517bc51fb8ade00cef4554d31efc108054f6cd8
+Merge: 5714083 b00343c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 8 10:19:01 2015 -0400
+
+    Merge pull request #133 from MDSplus/twf-fix-mode-mds_io_open
+    
+    Fix mode used in calls to MDS_IO_OPEN to set the file protection on n…
+
+commit 5714083ae280200cdb0cef89a2e0832c8ec21766 (tag: refs/tags/alpha_release-7-0-159)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 7 23:34:50 2015 -0400
+
+    New release ---- alpha_release-7-0-159
+
+commit 4841a45de73e2401c99e1ba2d03c6a8ac87a20c7 (refs/remotes/origin/twf-fix-mdsExceptions)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 7 13:51:21 2015 -0400
+
+    Fix handling of new mdsExceptions feature
+
+commit b00343c75ee17b7fc35eb35e04b512a09e1605b6 (refs/remotes/origin/twf-fix-mode-mds_io_open)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 7 11:10:49 2015 -0400
+
+    Fix mode used in calls to MDS_IO_OPEN to set the file protection on new files to be u+rw,g+rw,o+r unless restricted by the current umask setting of the process.
+
+commit bffdad62aabf2595d8a1131fed67d0a753343051
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Oct 7 16:11:55 2015 +0200
 
