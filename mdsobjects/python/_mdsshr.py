@@ -2,6 +2,7 @@ import ctypes as _C
 from ctypes.util import find_library as _find_library
 import numpy as _N
 import os as _os
+import platform as _platform
 
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
@@ -14,6 +15,14 @@ _desc=_mimport('_descriptor',1)
 
 class MdsshrException(Exception):
     pass
+
+if _platform.system() == 'Darwin':
+    if not _os.getenv('DYLD_LIBRARY_PATH'):
+        if _os.getenv('MDSPLUS_DIR'):
+            _os.environ['DYLD_LIBRARY_PATH'] = _os.path.join(
+                _os.getenv('MDSPLUS_DIR'),'lib)
+        else:
+            _os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
 
 def _load_library(name):
     libnam = None
