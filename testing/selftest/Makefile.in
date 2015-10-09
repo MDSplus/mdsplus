@@ -653,7 +653,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsTestShr -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr
+AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 C_TESTS = \
@@ -693,8 +693,7 @@ example3_SOURCES = example3.cpp
 # Files produced by tests that must be purged
 #
 MOSTLYCLEANFILES = test-suite.tap \
-                   *.out \
-                   __pycache__
+                   *.out
 
 check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
 all: all-am

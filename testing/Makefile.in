@@ -472,7 +472,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 SUBDIRS = backends/check .
 TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lm -lrt -lpthread
+TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
 TEST_SUITE_TAP = test-suite.tap
 LOG_PY_LOG_COMPILER = python
 LOG_PY_LOG_FLAGS = -v
@@ -910,7 +910,7 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) all tap; \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done;
 	echo $${taps};

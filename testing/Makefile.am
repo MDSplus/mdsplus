@@ -41,7 +41,7 @@ TEST_SUBDIRS = \
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) all tap; \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done;
 	echo $${taps};

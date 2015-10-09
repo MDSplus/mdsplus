@@ -5,7 +5,7 @@ include ${top_srcdir}/testing/testing.am
 
 AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsTestShr -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr
+AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##

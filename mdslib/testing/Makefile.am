@@ -1,14 +1,12 @@
 #SUBDIRS = .
 
 include ${top_srcdir}/Makefile.inc
+include ${top_srcdir}/testing/testing.am
 
-
-TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
 
 AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr
+AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr
 
 
 
@@ -16,20 +14,25 @@ AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lM
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
+TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
-TESTS = \
+C_TESTS = \
         dtype_test 
         
 #        mdslib_ctest
 
-#    this code must be launched with mdsip server active ..
-#    MdsConnectionSuppression
+PY_TESTS = 
+
+PL_TESTS =
+
+
+TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
+
 
 
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
-
 LDADD = $(AM_LIBS)      
 
 #
@@ -57,7 +60,8 @@ endif
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = 
+MOSTLYCLEANFILES = test-suite.tap \
+                   *.out
 
 
                    
@@ -73,6 +77,6 @@ tests: $(TESTS)
 all-local: tests
 
 check_PROGRAMS = $(TESTS)
-
+check_SCRIPTS  = $(PY_TESTS) $(PL_TESTS)
 
 

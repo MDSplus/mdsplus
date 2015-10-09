@@ -1,6 +1,6 @@
 
 TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lm -lrt -lpthread
+TEST_LIBS =  -lMdsTestShr -lm -lrt -lpthread
 TEST_SUITE_TAP = test-suite.tap
 
 
