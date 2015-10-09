@@ -7,6 +7,19 @@ from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
 import random
+import tempfile
+import os
+
+if "pytree_path" not in os.environ:
+  dir=tempfile.mkdtemp()
+  print ("Creating trees in %s" % (dir,))
+  if "TEST_DISTRIBUTED_TREES" in os.environ:
+    hostpart="localhost::"
+  else:
+    hostpart=""
+  os.environ["pytree_path"]=hostpart+dir
+  os.environ["pytreesub_path"]=os.environ["pytree_path"]
+  os.environ["TMPDIR"]=dir
 
 class treeTests(TestCase):
 

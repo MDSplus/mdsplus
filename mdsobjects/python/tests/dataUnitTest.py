@@ -502,11 +502,11 @@ def suite():
     tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
     return TestSuite(map(dataTests,tests))
 
-def test():
+def broken_t_ests():
     """Exercise data operations"""
     print (abs(makeData(-10)))
-    x=makeDataArray([29,30,31])
-    y=makeDataArray([2,4,8])
+    x=makeArray([29,30,31])
+    y=makeArray([2,4,8])
     print (x+y)
     print (x-y)
     print (x&y)
