@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include <testing.h>
-#include <check.h>
 
 
 int main(int argc, char *argv[])

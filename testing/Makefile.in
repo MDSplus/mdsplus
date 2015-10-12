@@ -904,16 +904,16 @@ $(TEST_SUITE_TAP):
 
 	file=$(TEST_BUILD_TAP);
 	echo "TAP version 13" > $$file;
-	count=0;
+	count=0;  result=0;
 	for i in $(check_PROGRAMS); do \
-	 ((count++)); \
-	 $(MAKE) $(AM_MAKEFLAGS) $$i \
-	  && echo "ok $${count} - Build of $${i} succeded." >> $$file    \
-	  || echo "not ok $${count} - Build of $${i} failed." >> $$file; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	   { ((count++)); \
+	     echo "not ok $${count} - Build of $${i} failed." >> $$file; \
+	   }; \
 	done; \
 	echo "1..$${count}" >> $$file;
 
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_LOGS); 
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS); 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@;
 
 .PHONY: tap
