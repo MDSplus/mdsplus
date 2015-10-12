@@ -692,7 +692,7 @@ example3_SOURCES = example3.cpp
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-suite.tap \
+MOSTLYCLEANFILES = test-build.tap test-suite.tap \
                    *.out
 
 check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)

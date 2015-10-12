@@ -2,7 +2,7 @@
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS =  -lMdsTestShr -lm -lrt -lpthread
 TEST_SUITE_TAP = test-suite.tap
-
+TEST_BUILD_TAP = test-build.tap
 
 LOG_PY_LOG_COMPILER = python
 LOG_PY_LOG_FLAGS = -v
@@ -34,20 +34,41 @@ _tap_py_execute = \
 #	python -c "${_tap_py_execute}" pyex1;
 
 
+
+
 .ONESHELL:
-$(TEST_SUITE_TAP): $(TESTS)
+$(TEST_SUITE_TAP):
 	export TEST_FORMAT="tap";
 	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)";
 	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_LOGS); 
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_LOGS) > $@;
+	
+	## Make all recursive targets here
+	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	
+	## Try to build each targets one by one
+	file=$(TEST_BUILD_TAP);
+	echo "TAP version 13" > $$file;
+	count=0;  result=0;
+	for i in $(check_PROGRAMS); do \
+	 $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	   { ((count++)); \
+	     echo "not ok $${count} - Build of $${i} failed." >> $$file; \
+	   }; \	 
+	done; \
+	echo "1..$${count}" >> $$file;
+	
+	## Build results
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS); 
+	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@;
+
+
 
 
 .PHONY: tap
 tap: $(TEST_SUITE_TAP)
 
 
-# MOSTLYCLEANFILES += $(TEST_SUITE_TAP)
+# MOSTLYCLEANFILES += $(TEST_SUITE_TAP) $(TEST_BUILD_TAP)
 
 
 

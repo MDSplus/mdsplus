@@ -42,9 +42,11 @@ TEST_SUBDIRS = \
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
 	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) all tap; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done;
+	echo;
+	echo;
 	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	
 	for i in $${taps}; do \
 	 echo "$$i, "; \

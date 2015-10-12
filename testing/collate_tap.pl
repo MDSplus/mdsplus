@@ -6,22 +6,23 @@ use TAP::Parser::Aggregator qw/all/;
 
 my @files = @ARGV;
 my $aggregate = TAP::Parser::Aggregator->new;
-my $test_count = 1;
+my $test_count = 0;
 
 foreach my $file (@files) { 
+   if( -f $file ) {
       my $parser = TAP::Parser->new( { 
           source => $file,
           sources => { File => { extensions => [ '.tap', '.log', '.t' ] } }
           });
+      
       while ( my $result = $parser->next ) {
         if( $result->is_test ) {
-          printf "%s %d %s \n", $result->ok, $test_count, $result->description;
           $test_count += 1;
+          printf "%s %d %s \n", $result->ok, $test_count, $result->description;
         }
-      }
-            
-
+      }            
       $aggregate->add($file, $parser);
+    }  
 }
 
 printf "1..%d\n", $aggregate->total;

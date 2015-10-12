@@ -63,10 +63,12 @@ endif
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-suite.tap \
+MOSTLYCLEANFILES = test-build.tap test-suite.tap \
                    *.out
+                    
 
-
+	
+	
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##

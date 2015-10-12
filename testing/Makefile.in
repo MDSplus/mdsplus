@@ -474,6 +474,7 @@ SUBDIRS = backends/check .
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
 TEST_SUITE_TAP = test-suite.tap
+TEST_BUILD_TAP = test-build.tap
 LOG_PY_LOG_COMPILER = python
 LOG_PY_LOG_FLAGS = -v
 TAP_PY_LOG_COMPILER = nosetests
@@ -894,17 +895,31 @@ include ${top_srcdir}/Makefile.inc
 #	python -c "${_tap_py_execute}" pyex1;
 
 .ONESHELL:
-$(TEST_SUITE_TAP): $(TESTS)
+$(TEST_SUITE_TAP):
 	export TEST_FORMAT="tap";
 	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)";
 	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+
+	$(MAKE) -k $(AM_MAKEFLAGS) all;
+
+	file=$(TEST_BUILD_TAP);
+	echo "TAP version 13" > $$file;
+	count=0;
+	for i in $(check_PROGRAMS); do \
+	 ((count++)); \
+	 $(MAKE) $(AM_MAKEFLAGS) $$i \
+	  && echo "ok $${count} - Build of $${i} succeded." >> $$file    \
+	  || echo "not ok $${count} - Build of $${i} failed." >> $$file; \
+	done; \
+	echo "1..$${count}" >> $$file;
+
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_LOGS); 
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_LOGS) > $@;
+	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@;
 
 .PHONY: tap
 tap: $(TEST_SUITE_TAP)
 
-# MOSTLYCLEANFILES += $(TEST_SUITE_TAP)
+# MOSTLYCLEANFILES += $(TEST_SUITE_TAP) $(TEST_BUILD_TAP)
 $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
@@ -912,9 +927,11 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
 	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) all tap; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done;
+	echo;
+	echo;
 	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	
 	for i in $${taps}; do \
 	 echo "$$i, "; \
@@ -928,7 +945,7 @@ clean_tests:
 	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
 	done;
 
-taps: clean_tests build_tests
+taps: all clean_tests build_tests
 
 all-local: $(MdsTestShr)
 
