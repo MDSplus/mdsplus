@@ -1,15 +1,13 @@
 from unittest import TestCase,TestSuite
-from mdsdata import *
-from mdsscalar import *
-from mdsarray import *
-from compound import *
-from treenode import TreeNode
 import numpy
 
 class dataTests(TestCase):
 
     def setUp(self):
-        pass
+        import os,sys
+        sys.path.insert(0,os.path.dirname(__file__)+os.path.sep+os.path.pardir)
+        import _loadglobals
+        _loadglobals.load(globals())
 
     def basicBinaryOperators(self):
         def doit(operator,x,y,ans):
@@ -501,89 +499,4 @@ class dataTests(TestCase):
 def suite():
     tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
     return TestSuite(map(dataTests,tests))
-
-def broken_t_ests():
-    """Exercise data operations"""
-    print (abs(makeData(-10)))
-    x=makeArray([29,30,31])
-    y=makeArray([2,4,8])
-    print (x+y)
-    print (x-y)
-    print (x&y)
-    print (x==y)
-    print (x>y)
-    print (x>=y)
-    print (x<y)
-    print (x<=y)
-    print (x%y)
-    print (x!=y)
-    print (-x)
-    print (x!=0)
-    print (x|y)
-    print (+x)
-    print (x*y)
-    print (x/y)
-    print (x//y)
-    print (x<<y)
-    print (x>>y)
-    print (abs(makeData(-10)))
-    print (float(x))
-    print (int(x))
-    print (x.getDouble())
-    print (x.decompile())
-    print (x)
-    print (x.evaluate())
-    print (x.getByte())
-    print (x.getInt())
-    print (x.getShape())
-    print (x.getByteArray())
-    print (x.getShortArray())
-    print (x.getIntArray())
-    print (x.getLongArray())
-    print (x.getString())
-    print (x.getUnits())
-    x.setUnits('amps')
-    print (x.getUnits())
-    x.setError(42)
-    print (x.getError())
-    x.setHelp('This is help')
-    print (x.getHelp())
-    x=Data.execute('data(1:100.)')
-    print (x+y)
-    print (x-y)
-    print (x&y)
-    print (x==y)
-    print (x>y)
-    print (x>=y)
-    print (x<y)
-    print (x<=y)
-    print (x%y)
-    print (x!=y)
-    print (-x)
-    print (x!=0)
-    print (x|y)
-    print (+x)
-    print (x*y)
-    print (x/y)
-    print (x//y)
-    print (x<<y)
-    print (x>>y)
-    print (abs(makeData(-10)))
-    print (float(x))
-    print (x.decompile())
-    print (x)
-    print (x.evaluate())
-    print (x.getShape())
-    print (x.getByteArray())
-    print (x.getShortArray())
-    print (x.getIntArray())
-    print (x.getLongArray())
-    print (x.getString())
-    print (x.getUnits())
-    x.setUnits('amps')
-    print (x.getUnits())
-    x.setError(42)
-    print (x.getError())
-    x.setHelp('This is help')
-    print (x.getHelp())
 

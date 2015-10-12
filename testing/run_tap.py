@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import unittest
-import tap;
-import os
+import unittest, tap, os, sys;
 
 #import pyex1
 
@@ -13,10 +11,14 @@ import os
 #tr.run(s);
 
 
-pt = os.path.dirname(os.path.curdir)
 loader = unittest.TestLoader();
-tests = loader.discover(pt,"*.py")
+
+#pt = os.path.dirname(os.path.curdir)
+#tests = loader.discover(pt,"*.py")
 
 tr = tap.TAPTestRunner()
 tr.set_stream(1)
+
+
+tests = loader.discover(sys.argv[1],sys.argv[2])
 tr.run(tests)

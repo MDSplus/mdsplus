@@ -65,7 +65,7 @@ try:
       keywords = ('physics','mdsplus',),
 #       install_requires=['numpy','ctypes'],
 #      include_package_data = True,
-      test_suite='tests.test_all',
+      test_suite='tests',
       zip_safe = False,
      )
 except Exception:

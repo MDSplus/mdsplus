@@ -1,40 +1,33 @@
-from unittest import TestCase,TestSuite
-from tree import Tree
-from treenode import TreeNode
-from mdsdata import makeData,Data
-from mdsscalar import Uint32
-from mdsarray import makeArray
-from numpy import array,int32
-from compound import Signal,Range
-import random
-import tempfile
-import os
+import unittest,tempfile,os,sys,shutil,numpy
 
-if "pytree_path" not in os.environ:
-  dir=tempfile.mkdtemp()
-  print ("Creating trees in %s" % (dir,))
-  if "TEST_DISTRIBUTED_TREES" in os.environ:
-    hostpart="localhost::"
-  else:
-    hostpart=""
-  os.environ["pytree_path"]=hostpart+dir
-  os.environ["pytreesub_path"]=os.environ["pytree_path"]
-  os.environ["TMPDIR"]=dir
-
-class treeTests(TestCase):
+class test_trees(unittest.TestCase):
 
     shot=0
 
     def setUp(self):
+        sys.path.insert(0,os.path.dirname(__file__)+os.path.sep+os.path.pardir)
+        import _loadglobals
+        _loadglobals.load(globals())
         from threading import Lock
         l=Lock()
         l.acquire()
         try:
-            if self.shot == treeTests.shot:
-                self.shot=treeTests.shot+1
-                treeTests.shot=treeTests.shot+2
+            if self.shot == test_trees.shot:
+                self.shot=test_trees.shot+1
+                test_trees.shot=test_trees.shot+2
         finally:
             l.release()
+        self.tmpdir=tempfile.mkdtemp()
+        print ("Creating trees in %s" % (self.tmpdir,))
+        if "TEST_DISTRIBUTED_TREES" in os.environ:
+          hostpart="localhost::"
+        else:
+          hostpart=""
+        os.environ["pytree_path"]=hostpart+self.tmpdir
+        os.environ["pytreesub_path"]=os.environ["pytree_path"]
+
+    def tearDown(self):
+      shutil.rmtree(self.tmpdir)
 
     def editTrees(self):
         pytree=Tree('pytree',self.shot,'new')
@@ -92,7 +85,7 @@ class treeTests(TestCase):
         ip=self.pytree.getNode('\\ip')
         self.assertEqual(str(ip),'\\PYTREESUB::IP')
         return
-
+      
     def setDefault(self):
         ip=self.pytree2.getNode('\\ip')
         self.pytree2.setDefault(ip)
@@ -120,7 +113,7 @@ class treeTests(TestCase):
             child=child.brother
         self.assertEqual(top.child.nid_number,self.pytree.getNode(str(top.child)).nid_number)
         self.assertEqual(top.child.child.parent.nid_number,top.child.nid_number)
-        x=array(int32(0)).repeat(len(members)+len(children))
+        x=numpy.array(numpy.int32(0)).repeat(len(members)+len(children))
         x[0:len(members)]=members.nid_number.data()
         x[len(members):]=children.nid_number.data()
         self.assertEqual((makeArray(x)==top.descendants.nid_number).all(),True)
@@ -135,7 +128,7 @@ class treeTests(TestCase):
         devs=self.pytree2.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
         dev=devs[0].conglomerate_nids
         self.assertEqual((dev.nid_number==devs[0].getConglomerateNodes().nid_number).all(),True)
-        self.assertEqual((dev.conglomerate_elt==makeArray(array(range(len(dev)))+1)).all(),True)
+        self.assertEqual((dev.conglomerate_elt==makeArray(numpy.array(range(len(dev)))+1)).all(),True)
         for idx in range(len(dev)):
             self.assertEqual(dev[idx].conglomerate_elt,idx+1)
             self.assertEqual(dev[idx].getConglomerateElt(),idx+1)
@@ -228,8 +221,6 @@ class treeTests(TestCase):
         self.pytree.deletePulse(self.shot)
 
     def runTest(self):
-        from time import sleep
-        sleep(20)
         self.editTrees()
         self.openTrees()
         self.getNode()
@@ -239,5 +230,3 @@ class treeTests(TestCase):
         self.getData()
         self.finish()
 
-def suite():
-    return treeTests()

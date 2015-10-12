@@ -35,20 +35,30 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 TEST_SUBDIRS = \
                testing/selftest \
                mdslib/testing \
-               mdsobjects/cpp/testing
+               mdsobjects/cpp/testing \
+               mdsobjects/python/tests
 
 .ONESHELL:
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
-	for subdir in $$list; do echo "Making $$target in $$subdir"; \
+	for subdir in $$list; do echo "Making in $$subdir"; \
 	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) all tap; \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done;
-	echo $${taps};
+	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	
+	for i in $${taps}; do \
+	 echo "$$i, "; \
+	done;
+	echo " ----------------------------------------------------- ";
 
-taps: build_tests
-
-
+.ONESHELL:
+clean_tests: 
+	list='$(TEST_SUBDIRS)';
+	for subdir in $$list; do echo "Cleaning in $$subdir"; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \	 
+	done;
+	
+taps: all clean_tests build_tests
 
 all-local: $(MdsTestShr)
 

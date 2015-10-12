@@ -9,7 +9,7 @@ LOG_PY_LOG_FLAGS = -v
 TAP_PY_LOG_COMPILER = nosetests
 TAP_PY_LOG_FLAGS = --with-tap --tap-stream
 XML_PY_LOG_COMPILER = nosetests
-XML_PY_LOG_FLAGS = --with-xml --tap-stream
+XML_PY_LOG_FLAGS = --with-xml
 
 PL_LOG_COMPILER = $(PERL)
 AM_PL_LOG_FLAGS = -w
@@ -34,16 +34,17 @@ _tap_py_execute = \
 #	python -c "${_tap_py_execute}" pyex1;
 
 
-$(TEST_SUITE_TAP):
-	export TEST_FORMAT="tap"; \
-	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)"; \
-	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)"; \
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_LOGS); \
+.ONESHELL:
+$(TEST_SUITE_TAP): $(TESTS)
+	export TEST_FORMAT="tap";
+	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)";
+	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_LOGS); 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_LOGS) > $@;
 
 
 .PHONY: tap
-tap: $(TESTS) $(TEST_SUITE_TAP)
+tap: $(TEST_SUITE_TAP)
 
 
 # MOSTLYCLEANFILES += $(TEST_SUITE_TAP)

@@ -1188,6 +1188,7 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
           mdsobjects/python/docs/Makefile
+          mdsobjects/python/tests/Makefile
           mdsobjects/java/Makefile
           mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
