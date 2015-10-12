@@ -41,6 +41,7 @@ do
     	    export MDS_PATH=${MDSPLUS_DIR}/tdi
 	    pushd ${MDSPLUS_DIR}/testing
 	    make -C taps
+	    popd;;
 	
 	
 	pytest)
