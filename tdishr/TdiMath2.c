@@ -123,10 +123,10 @@ STATIC_ROUTINE double mod_d(double in1, double in2)
 
 STATIC_ROUTINE void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
 {
-  double in1_d = WideIntToDouble(in1, size, is_signed);
-  double in2_d = WideIntToDouble(in2, size, is_signed);
+  double in1_d = WideIntToDouble(in1, size/sizeof(int), is_signed);
+  double in2_d = WideIntToDouble(in2, size/sizeof(int), is_signed);
   double ans = mod_d(in1_d, in2_d);
-  DoubleToWideInt(&ans, size, out);
+  DoubleToWideInt(&ans, size/sizeof(int), out);
 }
 
 #define OperateBin(size,is_signed,routine) \
