@@ -1,4 +1,40 @@
-commit d9dce65c16b1616c00e40accde7b07e6897788ce (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 8cf603aeaedf02ae47ed172375b769a3af4a2aa8 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 5d7e979 53f2afe
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 13:48:31 2015 -0400
+
+    Merge pull request #144 from MDSplus/twf-fix-tdiconvert-bug-stable
+    
+    Fix erroneous calls to WideIntToDouble and DoubleToWideInt to pass si…
+
+commit 5d7e9791cc6e941e58079b910310b7bfe00411c0
+Merge: 292c21d 8108124
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 13:41:37 2015 -0400
+
+    Merge pull request #142 from MDSplus/twf-add-version-to-python-package-stable
+    
+    Add version information to the MDSplus python package
+
+commit 53f2afef9e948414f1d773e86fc9610bc092b86b (refs/remotes/origin/twf-fix-tdiconvert-bug-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 12:00:40 2015 -0400
+
+    Fix erroneous calls to WideIntToDouble and DoubleToWideInt to pass size argument as number of ints not as number of bytes
+
+commit 810812477960b6509663f321193f8086935fe8f7 (refs/remotes/origin/twf-add-version-to-python-package-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 10:40:36 2015 -0400
+
+    Add version information to the MDSplus python package
+
+commit 292c21d862517339bd64c351a4b7aabf1b0dd9da (tag: refs/tags/stable_release-7-0-55)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Oct 2 21:15:41 2015 -0400
+
+    New release ---- stable_release-7-0-55
+
+commit d9dce65c16b1616c00e40accde7b07e6897788ce
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Oct 2 21:00:24 2015 -0400
 
