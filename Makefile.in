@@ -67,14 +67,29 @@ DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 $(PARTS): $(DIRECTORIES)
 	$(MAKE) -C $@
 
+.PHONY: docs
+docs:
+	$(MAKE) -C docs install
+
+.PHONE: tests
+tests:
+	$(MAKE) -C testing all build_tests
+
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
 .PHONY: clean
-clean: $(clean_DIRS)
+clean: $(clean_DIRS) clean_TESTS clean_DOCS
 
 .PHONY: $(clean_DIRS)
 $(clean_DIRS):
 	$(MAKE) -C $(@:clean_%=%) clean
+
+.PHONE: $(clean_TESTS)
+clean_TESTS:
+	$(MAKE) -C testing clean_tests
+
+clean_DOCS:
+	$(MAKE) -C docs clean
 
 .PHONY: full_clean
 full_clean: ./devscripts/rm_if clean
