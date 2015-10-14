@@ -9,27 +9,22 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 @copyright: 2008
 @license: GNU GPL
 
-
-
 """
+import sys as _sys
 try:
+    if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+        def _mimport(name):
+            return __import__(name,globals())
+    else:
+        def _mimport(name):
+            return __import__(name,globals(),{},[],1)
 
-  if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-    def _mimport(name,level):
-      return __import__(name,globals())
-  else:
-    def _mimport(name,level):
-      return __import__(name,globals(),{},[],level)
-
-  _mimport('_loadglobals',1).load(globals())
-
-except:
-  import sys as _sys
-  print("Error importing MDSplus package: %s" % (_sys.exc_info()[1]))
-
+    _mimport('_loadglobals').load(globals())
+except Exception:
+    print('Error importing MDSplus package: %s' % (_sys.exc_info()[1],))
 
 def remove():
-  import sys,os
+  import os
   "Remove installed MDSplus package"
   _f=__file__.split(os.sep)
   while len(_f) > 1 and 'egg' not in _f[-1]:
@@ -39,5 +34,5 @@ def remove():
     try:
       import shutil
       shutil.rmtree(packagedir)
-    except:
-      print("Error removing %s: %s" % (packagedir,sys.error_sys()[1]))
+    except Exception:
+      print("Error removing %s: %s" % (packagedir,_sys.exc_info()[1]))

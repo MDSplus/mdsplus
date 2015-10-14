@@ -1,28 +1,27 @@
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
+    def _mimport(name):
+        return __import__(name,globals())
 else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
-
-_scalar=_mimport('mdsscalar',1)
-_array=_mimport('mdsarray',1)
-_dtypes=_mimport('_mdsdtypes',1)
-_mdsclasses=_mimport('_mdsclasses',1)
-_data=_mimport('mdsdata',1)
-_ident=_mimport('ident',1)
-_apd=_mimport('apd',1)
-_compound=_mimport('compound',1)
-_mdsshr=_mimport('_mdsshr',1)
-_tdi=_mimport('tdibuiltins',1)
-_ver=_mimport('version',1)
-
-
-import numpy as _N
-import struct as _struct
+    def _mimport(name):
+        return __import__(name,globals(),{},[],1)
 
 import ctypes as _C
+import numpy as _N
+import struct as _struct
 import os as _os
+import sys as _sys
+
+_dtypes=_mimport('_mdsdtypes')
+_mdsclasses=_mimport('_mdsclasses')
+_data=_mimport('mdsdata')
+_ident=_mimport('ident')
+_apd=_mimport('apd')
+_compound=_mimport('compound')
+_mdsshr=_mimport('_mdsshr')
+_tdi=_mimport('tdibuiltins')
+_ver=_mimport('version')
+_array=_mimport('mdsarray')
+_scalar=_mimport('mdsscalar')
 
 def pointerToObject(pointer):
     if pointer == 0:
@@ -202,7 +201,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_mimport('treenode',1).TreePath)):
+        if (isinstance(value,_treenode.TreePath)):
             value.restoreContext()
             str_d=descriptor_string(str(value))
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
@@ -212,7 +211,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_mimport('treenode',1).TreeNode)):
+        if (isinstance(value,_treenode.TreeNode)):
             value.restoreContext()
             self.length=4
             self.dtype=_dtypes.DTYPE_NID
@@ -220,7 +219,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_mimport('treenode',1).TreeNodeArray)):
+        if (isinstance(value,_treenode.TreeNodeArray)):
             value.restoreContext()
             self.__init__(value.nids)
             return
@@ -309,7 +308,6 @@ class descriptor(_C.Structure):
 
     def __str__(self):
         if (self.length == 4):
-            _tdishr=_mimport('_tdishr',1)
             if (self.dtype == _dtypes.DTYPE_F):
                 _tdishr.CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                 val=_C.c_float(0)
@@ -356,7 +354,6 @@ class descriptor(_C.Structure):
             try:
                 return _scalar.makeScalar(_dtypes.mdsdtypes(self.dtype).toNumpy()(_C.cast(self.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype())).contents.value))
             except TypeError:
-                _tdishr=_mimport('_tdishr',1)
                 CvtConvertFloat=_tdishr.CvtConvertFloat
                 if (self.dtype == _dtypes.DTYPE_F):
                     CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
@@ -384,14 +381,14 @@ class descriptor(_C.Structure):
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
                     if descriptor.tree is None:
-                      return _mimport('treenode',1).TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_mimport('tree',1).Tree())
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
                     else:
-                      return _mimport('treenode',1).TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
-                      return _mimport('treenode',1).TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_mimport('tree',1).Tree())
+                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
                     else:
-                       return _mimport('treenode',1).TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):
@@ -478,7 +475,7 @@ class descriptor(_C.Structure):
                 self.dtype=_dtypes.DTYPE_L
                 nids=_array.makeArray(_N.ndarray(shape=shape,dtype=_dtypes.mdsdtypes(self.dtype).toCtype(),
                                           buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents)))
-                return _mimport('treenode',1).TreeNodeArray(nids)
+                return _treenode.TreeNodeArray(nids)
             if self.dtype == _dtypes.DTYPE_F:
                 return _array.makeArray(_data.Data.execute("float($)",(descr,)))
             if self.dtype == _dtypes.DTYPE_D or self.dtype == _dtypes.DTYPE_G:
@@ -496,9 +493,7 @@ class descriptor(_C.Structure):
                                   buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents))
                 return _array.makeArray(a)
             except TypeError:
-                import sys
-                e = sys.exc_info()[1]
-                raise TypeError('Arrays of type %s are unsupported. Error message was: %s' % (str(_dtypes.mdsdtypes(self.dtype)),str(e)))
+                raise TypeError('Arrays of type %s are unsupported. Error message was: %s' % (str(_dtypes.mdsdtypes(self.dtype)),str(_sys.exc_info()[1])))
             raise Exception('Unsupported array type')
         if self.dclass == _mdsclasses.CLASS_APD:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_apd)).contents
@@ -532,8 +527,7 @@ class descriptor(_C.Structure):
         return ans
 
     def _addressof(self):
-      from ctypes import addressof
-      return addressof(self)
+        return _C.addressof(self)
     addressof=property(_addressof)
 
 
@@ -762,3 +756,7 @@ class descriptor_a(_C.Structure):
                     ans=ans+", l["+str(i)+"]="+str(self.coeff_and_bounds[i*2+self.dimct])
                     ans=ans+", u["+str(i)+"]="+str(self.coeff_and_bounds[i*2+self.dimct+1])
         return ans
+
+_tdishr=_mimport('_tdishr')
+_treenode=_mimport('treenode')
+_tree=_mimport('tree')
