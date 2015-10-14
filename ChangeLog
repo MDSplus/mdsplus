@@ -1,4 +1,76 @@
-commit adf261bac203a4c20cd570f6a5bc8d1413247e05 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 75765f73c649f0e17de720943ac43c73c1a2ad22 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 0cbf4e2 557469b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 15:20:59 2015 -0400
+
+    Merge pull request #145 from MDSplus/add-configure-to-darens-update
+    
+    Add the output from autoconf incorporating Darren's configure.ac changes
+
+commit 557469b243fc5109ae8c1a7dac674c28bada9ac5 (refs/remotes/origin/add-configure-to-darens-update)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 15:15:02 2015 -0400
+
+    Add the output from autoconf incorporating Darren's configure.ac changes
+
+commit 0cbf4e2f08319ee204eef0fd7575469258d22ed8
+Merge: fc8af71 5b5f3a0
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 15:05:19 2015 -0400
+
+    Merge pull request #138 from dgarnier/macosx_elcapitan
+    
+    MacOSX 10.11 support
+
+commit fc8af71b0618264d953c448be5cff3ec3dc751af
+Merge: 3dd6016 1ec1c96
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 13:48:01 2015 -0400
+
+    Merge pull request #143 from MDSplus/twf-fix-tdiconvert-bug
+    
+    Fix erroneous calls to WideIntToDouble and DoubleToWideInt to pass si…
+
+commit 3dd6016ea6d43185cfde0d27331add565a18717e
+Merge: 182fe6a 3e0c201
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 13:38:28 2015 -0400
+
+    Merge pull request #141 from MDSplus/twf-add-version-to-python-package
+    
+    Add version information to the MDSplus python package
+
+commit 1ec1c9622ba0d248e80e20d02d6941e3a4bbef1f (refs/remotes/origin/twf-fix-tdiconvert-bug)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 12:00:40 2015 -0400
+
+    Fix erroneous calls to WideIntToDouble and DoubleToWideInt to pass size argument as number of ints not as number of bytes
+
+commit 3e0c201ce97a6a627d3bbf48188d22876e13da8d (refs/remotes/origin/twf-add-version-to-python-package)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 10:38:24 2015 -0400
+
+    Add version information to the MDSplus python package
+
+commit 5b5f3a0f12cf47217526ea2a5aa2c73803059ed7
+Author: Darren Garnier <dgarnier@reinrag.net>
+Date:   Mon Oct 12 20:39:05 2015 -0400
+
+    using @loader_path in library install names so that libraries can find each other on MacOSX 10.11
+
+commit fdb7182cb0a6ad4b8d5ef4e879eec86bf912ce1a
+Author: Darren Garnier <dgarnier@newtonscientificinc.com>
+Date:   Fri Oct 9 16:06:34 2015 -0400
+
+    allow python to load MDSplus libraries without DYLD_LIBRARY_PATH
+
+commit 182fe6a4403f0045d692221aa650ef9e9c234247 (tag: refs/tags/alpha_release-7-0-160)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 8 23:38:45 2015 -0400
+
+    New release ---- alpha_release-7-0-160
+
+commit adf261bac203a4c20cd570f6a5bc8d1413247e05
 Merge: 6ba268a 4841a45
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Oct 8 15:17:59 2015 -0400
