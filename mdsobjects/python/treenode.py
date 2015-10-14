@@ -163,7 +163,7 @@ class TreeNode(_data.Data):
                     if isinstance(ans,_scalar.Uint8):
                         if name not in ('class','dtype'):
                             ans = bool(ans)
-                except _mimport('mdsExceptions').TreeNNF:
+                except _mimport('mdsExceptions',1).TreeNNF:
                   ans = None
             finally:
                 _tree.Tree.unlock()
@@ -260,7 +260,7 @@ class TreeNode(_data.Data):
             cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
             status = _data.Data.compile(cmd).evaluate()
             if not (status & 1):
-              raise _mimport('mdsExceptions').statusToException(status)
+              raise _mimport('mdsExceptions',1).statusToException(status)
         finally:
             _tree.Tree.unlock()
         return

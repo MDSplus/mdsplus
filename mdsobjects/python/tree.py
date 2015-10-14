@@ -35,7 +35,7 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
-       
+
         try:
           if self.close:
             status=_treeshr.TreeCloseAll(self.ctx)
@@ -234,7 +234,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport('mdsExceptions').statusToException(status)
+            raise _mimport('mdsExceptions',1).statusToException(status)
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -512,7 +512,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport("mdsExceptions").statusToException(status)
+            raise _mimport("mdsExceptions",1).statusToException(status)
     setCurrent=staticmethod(setCurrent)
 
     def setDefault(self,node):
@@ -618,7 +618,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport("mdsExceptions").statusToException(status)
+            raise _mimport("mdsExceptions",1).statusToException(status)
 
     def compressDatafile(self):
         """Compress data file.
@@ -631,4 +631,4 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport("mdsExceptions").statusToException(status)
+            raise _mimport("mdsExceptions", 1).statusToException(status)
