@@ -3,24 +3,23 @@ SUBDIRS = testutils .
 include ${top_srcdir}/Makefile.inc
 include ${top_srcdir}/testing/testing.am
 
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
 
-AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
-
+AM_LIBS = @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .cpp
 
 
 #
 # This is the list of tests to be compiled and executed
 #
-C_TESTS = \
+TESTS = \
         buildtest \
         MdsExceptionTest \
         MdsDataTest \
@@ -49,19 +48,12 @@ C_TESTS = \
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
 
-PY_TESTS = 
-
-PL_TESTS =
-
-
-TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
-
 
 
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
       
-LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
+LDADD = testutils/libMdsTestUtils.a
 
 
 
@@ -110,18 +102,14 @@ MOSTLYCLEANFILES = \
                    *.out
                    
                    
-
-
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-.PHONY: tests
-tests: $(TESTS)
 
-all-local: tests
+all-local: $(TESTS)
 
 check_PROGRAMS = $(TESTS)
-check_SCRIPTS  = $(PY_TESTS) $(PL_TESTS)
+check_SCRIPTS  = 
 
 

@@ -88,8 +88,20 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-TESTS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_2)
-check_PROGRAMS = $(am__EXEEXT_3)
+TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
+	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
+	MdsScalarTest_NumericLimits$(EXEEXT) \
+	MdsScalarTest_ScalarCast$(EXEEXT) MdsStringTest$(EXEEXT) \
+	MdsCompoundTest$(EXEEXT) MdsSignalTest$(EXEEXT) \
+	MdsDimensionTest$(EXEEXT) MdsWindowTest$(EXEEXT) \
+	MdsFunctionTest$(EXEEXT) MdsConglomTest$(EXEEXT) \
+	MdsRangeTest$(EXEEXT) MdsCallTest$(EXEEXT) \
+	MdsActionTest$(EXEEXT) MdsApdTest$(EXEEXT) \
+	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
+	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
+	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
+	MdsExpressionCompileTest$(EXEEXT)
+check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
@@ -115,132 +127,107 @@ am__EXEEXT_1 = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
 	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
 	MdsExpressionCompileTest$(EXEEXT)
-am__EXEEXT_2 =
-am__EXEEXT_3 = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_2)
 MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsActionTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsApdTest_SOURCES = MdsApdTest.cpp
 MdsApdTest_OBJECTS = MdsApdTest.$(OBJEXT)
 MdsApdTest_LDADD = $(LDADD)
-MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsApdTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsCallTest_SOURCES = MdsCallTest.cpp
 MdsCallTest_OBJECTS = MdsCallTest.$(OBJEXT)
 MdsCallTest_LDADD = $(LDADD)
-MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsCallTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
 MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
 MdsCompoundTest_LDADD = $(LDADD)
-MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsCompoundTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsConglomTest_SOURCES = MdsConglomTest.cpp
 MdsConglomTest_OBJECTS = MdsConglomTest.$(OBJEXT)
 MdsConglomTest_LDADD = $(LDADD)
-MdsConglomTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsConglomTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsConnectionTest_SOURCES = MdsConnectionTest.cpp
 MdsConnectionTest_OBJECTS = MdsConnectionTest.$(OBJEXT)
 MdsConnectionTest_LDADD = $(LDADD)
-MdsConnectionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsConnectionTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsDataTest_SOURCES = MdsDataTest.cpp
 MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
 MdsDataTest_LDADD = $(LDADD)
-MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsDataTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsDimensionTest_SOURCES = MdsDimensionTest.cpp
 MdsDimensionTest_OBJECTS = MdsDimensionTest.$(OBJEXT)
 MdsDimensionTest_LDADD = $(LDADD)
-MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsDimensionTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsEventSuppression_SOURCES = MdsEventSuppression.cpp
 MdsEventSuppression_OBJECTS = MdsEventSuppression.$(OBJEXT)
 MdsEventSuppression_LDADD = $(LDADD)
-MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsEventSuppression_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsEventTest_SOURCES = MdsEventTest.cpp
 MdsEventTest_OBJECTS = MdsEventTest.$(OBJEXT)
 MdsEventTest_LDADD = $(LDADD)
-MdsEventTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsEventTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
-MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsExceptionTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsExpressionCompileTest_SOURCES = MdsExpressionCompileTest.cpp
 MdsExpressionCompileTest_OBJECTS = MdsExpressionCompileTest.$(OBJEXT)
 MdsExpressionCompileTest_LDADD = $(LDADD)
-MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsExpressionCompileTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsFunctionTest_SOURCES = MdsFunctionTest.cpp
 MdsFunctionTest_OBJECTS = MdsFunctionTest.$(OBJEXT)
 MdsFunctionTest_LDADD = $(LDADD)
-MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsFunctionTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsRangeTest_SOURCES = MdsRangeTest.cpp
 MdsRangeTest_OBJECTS = MdsRangeTest.$(OBJEXT)
 MdsRangeTest_LDADD = $(LDADD)
-MdsRangeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsRangeTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsScalarTest_NumericConversion_SOURCES =  \
 	MdsScalarTest_NumericConversion.cpp
 MdsScalarTest_NumericConversion_OBJECTS =  \
 	MdsScalarTest_NumericConversion.$(OBJEXT)
 MdsScalarTest_NumericConversion_LDADD = $(LDADD)
-MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsScalarTest_NumericConversion_DEPENDENCIES =  \
 	testutils/libMdsTestUtils.a
 MdsScalarTest_NumericLimits_SOURCES = MdsScalarTest_NumericLimits.cpp
 MdsScalarTest_NumericLimits_OBJECTS =  \
 	MdsScalarTest_NumericLimits.$(OBJEXT)
 MdsScalarTest_NumericLimits_LDADD = $(LDADD)
-MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+MdsScalarTest_NumericLimits_DEPENDENCIES =  \
 	testutils/libMdsTestUtils.a
 MdsScalarTest_ScalarCast_SOURCES = MdsScalarTest_ScalarCast.cpp
 MdsScalarTest_ScalarCast_OBJECTS = MdsScalarTest_ScalarCast.$(OBJEXT)
 MdsScalarTest_ScalarCast_LDADD = $(LDADD)
-MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsScalarTest_ScalarCast_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsSignalTest_SOURCES = MdsSignalTest.cpp
 MdsSignalTest_OBJECTS = MdsSignalTest.$(OBJEXT)
 MdsSignalTest_LDADD = $(LDADD)
-MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsSignalTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsStringTest_SOURCES = MdsStringTest.cpp
 MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
 MdsStringTest_LDADD = $(LDADD)
-MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsStringTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsTreeNodeTest_SOURCES = MdsTreeNodeTest.cpp
 MdsTreeNodeTest_OBJECTS = MdsTreeNodeTest.$(OBJEXT)
 MdsTreeNodeTest_LDADD = $(LDADD)
-MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsTreeNodeTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsTreeSuppression_SOURCES = MdsTreeSuppression.cpp
 MdsTreeSuppression_OBJECTS = MdsTreeSuppression.$(OBJEXT)
 MdsTreeSuppression_LDADD = $(LDADD)
-MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsTreeSuppression_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsTreeTest_SOURCES = MdsTreeTest.cpp
 MdsTreeTest_OBJECTS = MdsTreeTest.$(OBJEXT)
 MdsTreeTest_LDADD = $(LDADD)
-MdsTreeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsTreeTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 MdsWindowTest_SOURCES = MdsWindowTest.cpp
 MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
 MdsWindowTest_LDADD = $(LDADD)
-MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+MdsWindowTest_DEPENDENCIES = testutils/libMdsTestUtils.a
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
 buildtest_LDADD = $(LDADD)
-buildtest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
+buildtest_DEPENDENCIES = testutils/libMdsTestUtils.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -514,6 +501,7 @@ am__set_TESTS_bases = \
   bases=`echo $$bases`
 RECHECK_LOGS = $(TEST_LOGS)
 TEST_SUITE_LOG = test-suite.log
+TEST_EXTENSIONS = @EXEEXT@ .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
 LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
@@ -528,12 +516,10 @@ am__set_b = \
   esac
 am__test_logs1 = $(TESTS:=.log)
 am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
-am__test_logs3 = $(am__test_logs2:.py.log=.log)
-PY_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
-PY_LOG_COMPILE = $(PY_LOG_COMPILER) $(AM_PY_LOG_FLAGS) $(PY_LOG_FLAGS)
-TEST_LOGS = $(am__test_logs3:.pl.log=.log)
-PL_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
-PL_LOG_COMPILE = $(PL_LOG_COMPILER) $(AM_PL_LOG_FLAGS) $(PL_LOG_FLAGS)
+TEST_LOGS = $(am__test_logs2:.test.log=.log)
+TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
+	$(TEST_LOG_FLAGS)
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp \
 	$(top_srcdir)/conf/test-driver
@@ -814,50 +800,18 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 SUBDIRS = testutils .
-AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
-TEST_EXTENSIONS = .py .pl
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
+AM_LIBS = @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
 AM_DEFAULT_SOURCE_EXT = .cpp
-
-#
-# This is the list of tests to be compiled and executed
-#
-C_TESTS = \
-        buildtest \
-        MdsExceptionTest \
-        MdsDataTest \
-        MdsScalarTest_NumericConversion \
-        MdsScalarTest_NumericLimits \
-        MdsScalarTest_ScalarCast \
-        MdsStringTest \
-        MdsCompoundTest \
-        MdsSignalTest \
-        MdsDimensionTest \
-        MdsWindowTest \
-        MdsFunctionTest \
-        MdsConglomTest \
-        MdsRangeTest \
-        MdsCallTest \
-        MdsActionTest \
-        MdsApdTest \
-        MdsTreeSuppression \
-        MdsTreeTest \
-        MdsTreeNodeTest \
-        MdsEventSuppression \
-        MdsEventTest \
-        MdsConnectionTest \
-        MdsExpressionCompileTest
-
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
-PY_TESTS = 
-PL_TESTS = 
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 
-LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
+LDADD = testutils/libMdsTestUtils.a
 
 #
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
@@ -899,11 +853,11 @@ MOSTLYCLEANFILES = \
                    test-suite.tap \
                    *.out
 
-check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
+check_SCRIPTS = 
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .log .o .obj .pl .pl$(EXEEXT) .py .py$(EXEEXT) .trs
+.SUFFIXES: .cpp .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1488,33 +1442,19 @@ MdsExpressionCompileTest.log: MdsExpressionCompileTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-.py.log:
+.test.log:
 	@p='$<'; \
 	$(am__set_b); \
-	$(am__check_pre) $(PY_LOG_DRIVER) --test-name "$$f" \
+	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_PY_LOG_DRIVER_FLAGS) $(PY_LOG_DRIVER_FLAGS) -- $(PY_LOG_COMPILE) \
+	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-@am__EXEEXT_TRUE@.py$(EXEEXT).log:
+@am__EXEEXT_TRUE@.test$(EXEEXT).log:
 @am__EXEEXT_TRUE@	@p='$<'; \
 @am__EXEEXT_TRUE@	$(am__set_b); \
-@am__EXEEXT_TRUE@	$(am__check_pre) $(PY_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(TEST_LOG_DRIVER) --test-name "$$f" \
 @am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
-@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_PY_LOG_DRIVER_FLAGS) $(PY_LOG_DRIVER_FLAGS) -- $(PY_LOG_COMPILE) \
-@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
-.pl.log:
-	@p='$<'; \
-	$(am__set_b); \
-	$(am__check_pre) $(PL_LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_PL_LOG_DRIVER_FLAGS) $(PL_LOG_DRIVER_FLAGS) -- $(PL_LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-@am__EXEEXT_TRUE@.pl$(EXEEXT).log:
-@am__EXEEXT_TRUE@	@p='$<'; \
-@am__EXEEXT_TRUE@	$(am__set_b); \
-@am__EXEEXT_TRUE@	$(am__check_pre) $(PL_LOG_DRIVER) --test-name "$$f" \
-@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
-@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_PL_LOG_DRIVER_FLAGS) $(PL_LOG_DRIVER_FLAGS) -- $(PL_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_TEST_LOG_DRIVER_FLAGS) $(TEST_LOG_DRIVER_FLAGS) -- $(TEST_LOG_COMPILE) \
 @am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
 
 distdir: $(DISTFILES)
@@ -1704,10 +1644,7 @@ uninstall-am:
 include ${top_srcdir}/Makefile.inc
 include ${top_srcdir}/testing/testing.am
 
-.PHONY: tests
-tests: $(TESTS)
-
-all-local: tests
+all-local: $(TESTS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

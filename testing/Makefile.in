@@ -497,9 +497,8 @@ _tap_py_execute = \
  tr.set_stream(1); \
  tr.run(tests); 
 
-AM_CFLAGS = -I${top_srcdir}/include
-AM_CXXFLAGS = 
-AM_LIBS = 
+AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
+AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 
 #
 # Static Base library
@@ -510,7 +509,7 @@ AM_LIBS =
 #
 noinst_LIBRARIES = libMdsTest.a libMdsTestBackend.a
 libMdsTest_a_SOURCES = base_backend.c
-libMdsTestBackend_a_CFLAGS = -Ibackends/check
+libMdsTestBackend_a_CFLAGS = -Ibackends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 
 #
@@ -929,13 +928,13 @@ build_tests: $(MdsTestShr)
 	for subdir in $$list; do echo "Making in $$subdir"; \
 	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
-	done;
-	echo;
-	echo;
-	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	
+	done; \
+	echo; \
+	echo; \
+	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	\
 	for i in $${taps}; do \
 	 echo "$$i, "; \
-	done;
+	done; \
 	echo " ----------------------------------------------------- ";
 
 .ONESHELL:
@@ -951,6 +950,13 @@ all-local: $(MdsTestShr)
 
 clean-local:
 	$(RM) $(MdsTestShr)
+
+print:
+	echo "CFLAGS: $(CFLAGS)"; \
+	echo "TARGET_ARCH: $(TARGET_ARCH)"; \
+	echo "LIBS: $(LIBS)"; \
+	echo "LINK.c: $(LINK.c)"; \
+	echo "MAKESHLIBDIR: @MAKESHLIBDIR@";
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -5,11 +5,12 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 # NOTE: please note that also ${top_srcdir} is added to be able to access the
 # mdstcpip includes .. needed by mdsipmain.c
 #
-AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -I${top_srcdir}
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ -I${top_srcdir}
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(AM_LIBS)
 
-# LDADD = $(AM_LIBS)
+AM_LIBS = @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+
 
 library_includedir = $(includedir)/mdsplus/testutils
 library_include_HEADERS = \
@@ -30,7 +31,6 @@ _SOURCES = \
 
 #
 # libtool version:
-# sadly libtool is not to be included
 #
 # noinst_LTLIBRARIES = libMdsTestUtils.la
 # libMdsTestUtils_la_SOURCES = ${_SOURCES}
@@ -52,3 +52,4 @@ libMdsTestDummy.so: testutils.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 	
 all-local: libMdsTestDummy.so
+

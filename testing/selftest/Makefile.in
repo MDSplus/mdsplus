@@ -111,20 +111,15 @@ PROGRAMS = $(bin_PROGRAMS)
 example_SOURCES = example.c
 example_OBJECTS = example.$(OBJEXT)
 example_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-example_DEPENDENCIES = $(am__DEPENDENCIES_1)
 example2_SOURCES = example2.c
 example2_OBJECTS = example2.$(OBJEXT)
 example2_LDADD = $(LDADD)
-example2_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_example3_OBJECTS = example3.$(OBJEXT)
 example3_OBJECTS = $(am_example3_OBJECTS)
 example3_LDADD = $(LDADD)
-example3_DEPENDENCIES = $(am__DEPENDENCIES_1)
 example4_SOURCES = example4.c
 example4_OBJECTS = example4.$(OBJEXT)
 example4_LDADD = $(LDADD)
-example4_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -651,9 +646,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 C_TESTS = \
@@ -667,7 +662,6 @@ PY_TESTS = \
 
 PL_TESTS = 
 AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
-LDADD = $(AM_LIBS) 
 example3_SOURCES = example3.cpp
 
 #
@@ -683,11 +677,6 @@ example3_SOURCES = example3.cpp
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
-
-#               --suppressions=valgrind-stdlib.supp      \
-#               --suppressions=valgrind-dlerr.supp       \
-#               --suppressions=valgrind-connection.supp  \
-#               --suppressions=valgrind-treenode.supp    
 
 #
 # Files produced by tests that must be purged
@@ -1250,10 +1239,7 @@ uninstall-am: uninstall-binPROGRAMS
 include ${top_srcdir}/Makefile.inc
 include ${top_srcdir}/testing/testing.am
 
-.PHONY: tests
-tests: $(C_TESTS)
-
-all-local: tests
+all-local: $(TESTS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

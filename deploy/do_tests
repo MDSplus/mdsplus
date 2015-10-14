@@ -38,10 +38,9 @@ do
 	    echo ""
 	    export MDSPLUS_DIR=/buildroot/usr/local/mdsplus
 	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
-    	    export MDS_PATH=${MDSPLUS_DIR}/tdi
-	    pushd ${MDSPLUS_DIR}/testing
-	    make -C taps
-	    popd;;
+    	    export MDS_PATH=${MDSPLUS_DIR}/tdi	    
+	    make -C testing taps
+	    ;;
 	
 	
 	pytest)

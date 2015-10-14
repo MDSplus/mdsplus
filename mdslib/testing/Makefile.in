@@ -13,8 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
-#SUBDIRS = .
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -90,8 +88,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-TESTS = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_2)
-check_PROGRAMS = $(am__EXEEXT_3)
+TESTS = dtype_test$(EXEEXT)
+check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdslib/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
@@ -105,13 +103,9 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = dtype_test$(EXEEXT)
-am__EXEEXT_2 =
-am__EXEEXT_3 = $(am__EXEEXT_1) $(am__EXEEXT_2) $(am__EXEEXT_2)
 dtype_test_SOURCES = dtype_test.c
 dtype_test_OBJECTS = dtype_test.$(OBJEXT)
 dtype_test_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-dtype_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -624,22 +618,17 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-AM_CFLAGS = @SRBINCLUDE@ $(TEST_CFLAGS)
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsLib -lMdsShr -lTreeShr
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS) 
+AM_LIBS = @LIBS@ -lMdsLib -lMdsShr -lTreeShr
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
-C_TESTS = \
-        dtype_test 
-
 
 #        mdslib_ctest
-PY_TESTS = 
-PL_TESTS = 
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 
-LDADD = $(AM_LIBS)      
 
 #
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
@@ -655,18 +644,14 @@ LDADD = $(AM_LIBS)
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
 
-#               --suppressions=valgrind-stdlib.supp      \
-#               --suppressions=valgrind-dlerr.supp       \
-#               --suppressions=valgrind-connection.supp  \
-#               --suppressions=valgrind-treenode.supp    
-
 #
 # Files produced by tests that must be purged
 #
 MOSTLYCLEANFILES = test-suite.tap \
+                   test-build.tap \
                    *.out
 
-check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
+check_SCRIPTS = 
 all: all-am
 
 .SUFFIXES:
@@ -1121,10 +1106,7 @@ uninstall-am:
 include ${top_srcdir}/Makefile.inc
 include ${top_srcdir}/testing/testing.am
 
-.PHONY: tests
-tests: $(TESTS)
-
-all-local: tests
+all-local: $(TESTS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
