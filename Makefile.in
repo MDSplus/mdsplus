@@ -71,7 +71,7 @@ $(PARTS): $(DIRECTORIES)
 docs:
 	$(MAKE) -C docs install
 
-.PHONE: tests
+.PHONY: tests
 tests:
 	$(MAKE) -C testing all build_tests
 
@@ -84,7 +84,7 @@ clean: $(clean_DIRS) clean_TESTS clean_DOCS
 $(clean_DIRS):
 	$(MAKE) -C $(@:clean_%=%) clean
 
-.PHONE: $(clean_TESTS)
+.PHONY: $(clean_TESTS)
 clean_TESTS:
 	$(MAKE) -C testing clean_tests
 
