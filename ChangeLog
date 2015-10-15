@@ -1,4 +1,55 @@
-commit 8cf603aeaedf02ae47ed172375b769a3af4a2aa8 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 61b69dea236e1f0aa044bd23d212cdf7924cdc9e (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 5b303a8 2ddb24b
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:37:16 2015 -0400
+
+    Merge pull request #159 from MDSplus/twf-fix-test-for-windows
+    
+    Do not try deletePulse on shots already open for write access. Ok on …
+
+commit 5b303a8f1443a6be2a586fb92424604a6597a660
+Merge: 3304de1 230d431
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:28:40 2015 -0400
+
+    Merge pull request #157 from MDSplus/twf-add-version-to-python-package-stable
+    
+    Fix to inclusion of version info in package. Must restore __init__.py…
+
+commit 3304de1b4fe6713d9079876d011b344e3a347635
+Merge: 1481adb 2584edf
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:26:54 2015 -0400
+
+    Merge pull request #154 from MDSplus/twf-use-weakref-for-active-tree-stable
+    
+    Use a weak reference for Tree._activeTree to enable proper cleanup of…
+
+commit 2ddb24b5cc1eeae21ee5af03d24b3461590419ee
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 13:18:56 2015 -0400
+
+    Do not try deletePulse on shots already open for write access. Ok on linux but not on Windows
+
+commit 230d43135c25c82933e57fb01f7f76e2feed0855
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 12:26:48 2015 -0400
+
+    Fix to inclusion of version info in package. Must restore __init__.py even if exception occurs during setup
+
+commit 2584edf059ee1317eea0684017ef51ef6fb70b2b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 12:07:13 2015 -0400
+
+    Use a weak reference for Tree._activeTree to enable proper cleanup of Tree instances
+
+commit 1481adb0db64376ed120a984c80d1029255af47f (tag: refs/tags/stable_release-7-0-56)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 13 19:04:59 2015 -0400
+
+    New release ---- stable_release-7-0-56
+
+commit 8cf603aeaedf02ae47ed172375b769a3af4a2aa8
 Merge: 5d7e979 53f2afe
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Tue Oct 13 13:48:31 2015 -0400
