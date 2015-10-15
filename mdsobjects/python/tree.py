@@ -35,14 +35,11 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
-
         try:
           if self.close:
             status=_treeshr.TreeCloseAll(self.ctx)
             if (status & 1):
               _treeshr.TreeFreeDbid(self.ctx)
-              if Tree.getActiveTree() == self:
-                Tree.setActiveTree(None)
         except:
           pass
         return
@@ -328,13 +325,14 @@ class Tree(object):
         @return: Current active tree
         @rtype: Tree
         """
+        import weakref
         global thread_data
         if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
-        if thread_data.private:
+        if thread_data.private and isinstance(thread_data.activeTree,Tree):
           return thread_data.activeTree
-        else:
+        elif isinstance(Tree._activeTree,Tree):
           return Tree._activeTree
     getActiveTree=staticmethod(getActiveTree)
 
@@ -467,7 +465,10 @@ class Tree(object):
 
 
     def _setActiveTree(tree):
+        import weakref
         global thread_data
+        if isinstance(tree,Tree):
+          tree=weakref.proxy(tree)
         if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
