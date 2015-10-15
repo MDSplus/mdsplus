@@ -583,7 +583,7 @@ AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-suite.tap
+MOSTLYCLEANFILES = 
 check_SCRIPTS = $(TESTS)
 all: all-am
 
@@ -856,7 +856,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -923,21 +923,23 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic cscopelist-am ctags-am \
-	distclean distclean-generic distdir dvi dvi-am html html-am \
-	info info-am install install-am install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am recheck \
-	tags-am uninstall uninstall-am
+	clean-checkPROGRAMS clean-generic clean-local cscopelist-am \
+	ctags-am distclean distclean-generic distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am recheck tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 include ${top_srcdir}/Makefile.inc
 include ${top_srcdir}/testing/testing.am
+
+clean-local: clean-local-tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

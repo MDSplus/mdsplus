@@ -26,5 +26,4 @@ foreach my $file (@files) {
 }
 
 printf "1..%d\n", $aggregate->total;
-
-
+exit($aggregate->failed);

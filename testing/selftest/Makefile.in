@@ -105,12 +105,8 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
-am__EXEEXT_1 = example$(EXEEXT) example2$(EXEEXT) example3$(EXEEXT) \
-	example4$(EXEEXT)
+am__EXEEXT_1 = example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
-example_SOURCES = example.c
-example_OBJECTS = example.$(OBJEXT)
-example_LDADD = $(LDADD)
 example2_SOURCES = example2.c
 example2_OBJECTS = example2.$(OBJEXT)
 example2_LDADD = $(LDADD)
@@ -161,8 +157,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = example.c example2.c $(example3_SOURCES) example4.c
-DIST_SOURCES = example.c example2.c $(example3_SOURCES) example4.c
+SOURCES = example2.c $(example3_SOURCES) example4.c
+DIST_SOURCES = example2.c $(example3_SOURCES) example4.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -651,8 +647,9 @@ AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
+
+#          example  
 C_TESTS = \
-          example  \
           example2 \
           example3 \
           example4
@@ -681,9 +678,7 @@ example3_SOURCES = example3.cpp
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-build.tap test-suite.tap \
-                   *.out
-
+MOSTLYCLEANFILES = *.out
 check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
 all: all-am
 
@@ -764,10 +759,6 @@ clean-binPROGRAMS:
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
-example$(EXEEXT): $(example_OBJECTS) $(example_DEPENDENCIES) $(EXTRA_example_DEPENDENCIES) 
-	@rm -f example$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(example_OBJECTS) $(example_LDADD) $(LIBS)
-
 example2$(EXEEXT): $(example2_OBJECTS) $(example2_DEPENDENCIES) $(EXTRA_example2_DEPENDENCIES) 
 	@rm -f example2$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(example2_OBJECTS) $(example2_LDADD) $(LIBS)
@@ -786,7 +777,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example4.Po@am__quote@
@@ -1016,13 +1006,6 @@ recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-example.log: example$(EXEEXT)
-	@p='example$(EXEEXT)'; \
-	b='example'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 example2.log: example2$(EXEEXT)
 	@p='example2$(EXEEXT)'; \
 	b='example2'; \
@@ -1149,7 +1132,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
-	mostlyclean-am
+	clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1220,17 +1203,17 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PHONY: CTAGS GTAGS TAGS all all-am all-local check check-TESTS \
 	check-am clean clean-binPROGRAMS clean-checkPROGRAMS \
-	clean-generic cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am \
+	clean-generic clean-local cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am recheck tags tags-am uninstall uninstall-am \
 	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
@@ -1240,6 +1223,7 @@ include ${top_srcdir}/Makefile.inc
 include ${top_srcdir}/testing/testing.am
 
 all-local: $(TESTS)
+clean-local: clean-local-tests                    
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

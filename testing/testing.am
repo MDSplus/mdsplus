@@ -34,41 +34,48 @@ _tap_py_execute = \
 #	python -c "${_tap_py_execute}" pyex1;
 
 
-
-
-.ONESHELL:
-$(TEST_SUITE_TAP):
-	export TEST_FORMAT="tap";
-	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)";
-	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-	
-	## Make all recursive targets here
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
-	
-	## Try to build each targets one by one
-	file=$(TEST_BUILD_TAP);
-	echo "TAP version 13" > $$file;
-	count=0;  result=0;
-	for i in $(check_PROGRAMS); do \
-	 $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
-	   { ((count++)); \
-	     echo "not ok $${count} - Build of $${i} failed." >> $$file; \
-	   }; \	 
-	done; \
-	echo "1..$${count}" >> $$file;
-	
-	## Build results
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS); 
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@;
-
-
-
-
 .PHONY: tap
 tap: $(TEST_SUITE_TAP)
 
 
-# MOSTLYCLEANFILES += $(TEST_SUITE_TAP) $(TEST_BUILD_TAP)
+.ONESHELL:
+$(TEST_BUILD_TAP):
+	## Make all recursive targets here without dying.
+	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	
+	## Try to build failed targets one by one
+	echo "TAP version 13" > $@;
+	count=0;
+	for i in $(check_PROGRAMS); do \
+	  if ! $(MAKE) -q $$i; then \
+	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	    { ((count++)); \
+	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
+	    }; \
+	  fi; \
+	done; \
+	echo "1..$${count}" >> $@;
+
+
+.ONESHELL:
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+	export TEST_FORMAT="tap";
+	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)";
+	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+	
+	## run tests
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS);
+	
+	## collate test-build.tap and 
+	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
+	 || exit 1;
+
+
+.PHONY: clean-local-tests
+clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+
+
 
 
 

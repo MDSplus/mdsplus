@@ -15,8 +15,9 @@ TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
 
+#          example  
+
 C_TESTS = \
-          example  \
           example2 \
           example3 \
           example4
@@ -58,9 +59,7 @@ endif
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-build.tap test-suite.tap \
-                   *.out
-                    
+MOSTLYCLEANFILES = *.out
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -69,6 +68,7 @@ MOSTLYCLEANFILES = test-build.tap test-suite.tap \
 
 
 all-local: $(TESTS)
+clean-local: clean-local-tests                    
 
 check_PROGRAMS = $(C_TESTS)
 check_SCRIPTS  = $(PY_TESTS) $(PL_TESTS)

@@ -46,9 +46,7 @@ endif
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-suite.tap \
-                   test-build.tap \
-                   *.out
+MOSTLYCLEANFILES = *.out
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -57,6 +55,7 @@ MOSTLYCLEANFILES = test-suite.tap \
 
 
 all-local: $(TESTS)
+clean-local: clean-local-tests
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS  = 
