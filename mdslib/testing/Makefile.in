@@ -365,7 +365,8 @@ PY_LOG_COMPILE = $(PY_LOG_COMPILER) $(AM_PY_LOG_FLAGS) $(PY_LOG_FLAGS)
 TEST_LOGS = $(am__test_logs3:.pl.log=.log)
 PL_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
 PL_LOG_COMPILE = $(PL_LOG_COMPILER) $(AM_PL_LOG_FLAGS) $(PL_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp \
+am__DIST_COMMON = $(srcdir)/../../testing/testing.am \
+	$(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp \
 	$(top_srcdir)/conf/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -518,7 +519,12 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PYTHON = @PYTHON@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
+PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -602,9 +608,13 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
+pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -618,6 +628,30 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+TEST_CFLAGS = -I${top_srcdir}/testing
+TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
+PY_LOG_COMPILER = python
+PY_LOG_FLAGS = -v
+
+# not used #
+_tap_py_execute = \
+ import unittest; \
+ import tap; \
+ import os; \
+ import sys; \
+ pt = os.path.dirname(os.path.curdir); \
+ loader = unittest.TestLoader(); \
+ tests = loader.loadTestsFromName(sys.argv[1]); \
+ tr = tap.TAPTestRunner(); \
+ tr.set_stream(1); \
+ tr.run(tests); 
+
+TEST_SUITE_TAP = test-suite.tap
+TEST_BUILD_TAP = test-build.tap
+@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = :
+@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
+@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
+@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS) 
@@ -647,16 +681,13 @@ AM_TESTS_ENVIRONMENT = \
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = test-suite.tap \
-                   test-build.tap \
-                   *.out
-
+MOSTLYCLEANFILES = *.out
 check_SCRIPTS = 
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .log .o .obj .pl .pl$(EXEEXT) .py .py$(EXEEXT) .trs
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -676,6 +707,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../../testing/testing.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -1018,7 +1050,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1088,25 +1120,74 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am all-local check check-TESTS \
-	check-am clean clean-checkPROGRAMS clean-generic cscopelist-am \
-	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	recheck tags tags-am uninstall uninstall-am
+	check-am clean clean-checkPROGRAMS clean-generic clean-local \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
+	distclean-generic distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am recheck tags tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
 include ${top_srcdir}/Makefile.inc
-include ${top_srcdir}/testing/testing.am
+
+#prova:
+#	echo $(TEST_LOGS);
+#	python -c "${_tap_py_execute}" pyex1;
+
+.PHONY: tap xml log
+tap: $(TEST_SUITE_TAP)
+xml: $(TEST_SUITE_XML)
+log: $(TEST_SUITE_LOG)
+
+tests:
+	echo "Making tests ... "
+	if [ -z ${TEST_FORMAT} ] ; then
+	 $(MAKE) $(AM_MAKEFLAGS) log;
+	else
+	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
+	fi
+
+.ONESHELL:
+$(TEST_BUILD_TAP):
+	$(MAKE) -k $(AM_MAKEFLAGS) all;
+
+	echo "TAP version 13" > $@;
+	count=0;
+	for i in $(check_PROGRAMS); do \
+	  if ! $(MAKE) -q $$i; then \
+	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	    { ((count++)); \
+	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
+	    }; \
+	  fi; \
+	done; \
+	echo "1..$${count}" >> $@;
+
+.ONESHELL:
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+	export TEST_FORMAT="tap";
+
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
+	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+
+	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
+	 || exit 1;
+
+.PHONY: clean-local-tests
+clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
 
 all-local: $(TESTS)
+clean-local: clean-local-tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

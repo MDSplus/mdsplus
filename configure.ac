@@ -275,9 +275,6 @@ if [[ "$use_valgrind" = "yes" ]]; then
 fi
 AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
 
-# python nodetests executable is available #
-AC_CHECK_PROG(HAVE_NOSETESTS, nosetests, yes, no)
-AM_CONDITIONAL(HAVE_NOSETESTS, test x"$HAVE_NOSETESTS" = "xyes")
 
 
 FORLD=ld
@@ -769,9 +766,6 @@ AC_CHECK_HEADERS(pthread.h)
 AC_CHECK_FUNCS(pthread_lock_global_np)
 
 
-## CHECK related ##
-AC_CHECK_FUNCS(mkstemp)
-AC_CHECK_FUNCS(fork)
 
 
 
@@ -983,6 +977,62 @@ fi
 XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  TESTS    ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## CHECK related ##
+AC_CHECK_FUNCS(mkstemp)
+AC_CHECK_FUNCS(fork)
+
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  PYTHON   ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+# TODO: Add version here
+AM_PATH_PYTHON(,, [:])
+AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+
+dnl AC_PYTHON_CLASS(module,[action-if-true],[action-if-false])
+AC_DEFUN([AC_PYTHON_MODULE],[
+        AC_MSG_CHECKING(python module: $1)
+        AS_IF([ test "$PYTHON" == : ],
+              [AC_MSG_ERROR(no python executable was found); AS_EXIT],)
+              
+        $PYTHON -c "import $1" 2>/dev/null
+        AS_IF([test $? -eq 0],        
+              [AC_MSG_RESULT(yes);
+               eval AS_TR_CPP(HAVE_PYMOD_$1)=yes;
+               eval $2; ],
+              [AC_MSG_RESULT(no);
+               eval AS_TR_CPP(HAVE_PYMOD_$1)=no;
+               eval $3; ])
+])
+
+dnl AC_PYTHON_CLASS(module,class,[action-if-true],[action-if-false])
+AC_DEFUN([AC_PYTHON_CLASS],[
+        AC_MSG_CHECKING(python class $1.$2)        
+        AS_IF([ test "$PYTHON" == : ],
+              [AC_MSG_ERROR(no python executable was found); AS_EXIT],)
+
+        $PYTHON -c "import inspect,$1; exit(inspect.isclass($1.$2) != True);" 2>/dev/null
+        AS_IF([test $? -eq 0],
+              [AC_MSG_RESULT(yes); eval $3],
+              [AC_MSG_RESULT(no);  eval $4])
+])
+
+
+AC_PYTHON_MODULE(tap)
+AC_PYTHON_CLASS(tap, TAPTestRunner, [have_tappy="yes"],)
+AM_CONDITIONAL([PY_TAP_SUPPORT], test x"$have_tappy" = x"yes")
+
+# python nodetests executable is available #
+AC_CHECK_PROG(HAVE_NOSETESTS, nosetests, yes, no)
+AM_CONDITIONAL([HAVE_NOSETESTS], test x"$HAVE_NOSETESTS" = "xyes")
 
 
 
