@@ -274,7 +274,7 @@ class descriptor(_C.Structure):
         if isinstance(value,_ver.long):#must be before int: treat int as long in py3
             self.length=8
             self.dtype=_dtypes.DTYPE_Q
-            self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
+            self.pointer=_C.cast(_C.pointer(_C.c_int64(value)),type(self.pointer))
             self.addToCache(value)
             return
         if isinstance(value,int):
