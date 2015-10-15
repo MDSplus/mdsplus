@@ -42,7 +42,8 @@ try:
 __version__="%s%s"
 """ % (version,branch))
   f_init.close()
-  setup(name=name,
+  try:
+    setup(name=name,
       version=version,
       description='MDSplus Python Objects',
       long_description = """
@@ -79,9 +80,10 @@ __version__="%s%s"
 #      include_package_data = True,
       test_suite='tests.test_all',
       zip_safe = False,
-  )
-  f_init=open('__init__.py','w')
-  f_init.write(original)
-  f_init.close()
+    )
+  finally:
+      f_init=open('__init__.py','w')
+      f_init.write(original)
+      f_init.close()
 except Exception:
    print("Error installing MDSplus: %s" % (sys.exc_info()[1]))
