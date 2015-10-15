@@ -98,18 +98,18 @@ MOSTLYCLEANFILES = \
                    leaktest_model.characteristics \
                    leaktest_model.datafile \
                    leaktest_model.tree \
-                   test-suite.tap \
                    *.out
-                   
-                   
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 
 all-local: $(TESTS)
+clean-local: clean-local-tests
 
 check_PROGRAMS = $(TESTS)
-check_SCRIPTS  = 
+check_SCRIPTS  =
 
 

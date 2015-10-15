@@ -192,8 +192,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/testing.am \
-	$(top_srcdir)/conf/depcomp
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -471,32 +470,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 SUBDIRS = backends/check .
-TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-TEST_SUITE_TAP = test-suite.tap
-TEST_BUILD_TAP = test-build.tap
-LOG_PY_LOG_COMPILER = python
-LOG_PY_LOG_FLAGS = -v
-TAP_PY_LOG_COMPILER = nosetests
-TAP_PY_LOG_FLAGS = --with-tap --tap-stream
-XML_PY_LOG_COMPILER = nosetests
-XML_PY_LOG_FLAGS = --with-xml
-PL_LOG_COMPILER = $(PERL)
-AM_PL_LOG_FLAGS = -w
-
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 
@@ -517,16 +490,15 @@ libMdsTestBackend_a_SOURCES = check_backend.c
 #
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 TEST_SUBDIRS = \
-               testing/selftest \
+               mdsobjects/python/tests \
                mdslib/testing \
-               mdsobjects/cpp/testing \
-               mdsobjects/python/tests
+               mdsobjects/cpp/testing
 
 all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/testing.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -546,7 +518,6 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/testing.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -888,54 +859,28 @@ uninstall-am:
 
 
 include ${top_srcdir}/Makefile.inc
-
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-.ONESHELL:
-$(TEST_SUITE_TAP):
-	export TEST_FORMAT="tap";
-	export PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)";
-	export AM_PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
-
-	file=$(TEST_BUILD_TAP);
-	echo "TAP version 13" > $$file;
-	count=0;  result=0;
-	for i in $(check_PROGRAMS); do \
-	 $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
-	   { ((count++)); \
-	     echo "not ok $${count} - Build of $${i} failed." >> $$file; \
-	   }; \
-	done; \
-	echo "1..$${count}" >> $$file;
-
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS); 
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@;
-
-.PHONY: tap
-tap: $(TEST_SUITE_TAP)
-
-# MOSTLYCLEANFILES += $(TEST_SUITE_TAP) $(TEST_BUILD_TAP)
 $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
+
+#               testing/selftest
 
 .ONESHELL:
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
+	status=0;
 	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done; \
 	echo; \
+	echo " COMPONENTS WITH ERRORS FOUND: $${status} "; \
 	echo; \
 	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	\
 	for i in $${taps}; do \
-	 echo "$$i, "; \
+	 echo "$$i"; \
 	done; \
 	echo " ----------------------------------------------------- ";
+	exit $${status}
 
 .ONESHELL:
 clean_tests: 
@@ -950,13 +895,6 @@ all-local: $(MdsTestShr)
 
 clean-local:
 	$(RM) $(MdsTestShr)
-
-print:
-	echo "CFLAGS: $(CFLAGS)"; \
-	echo "TARGET_ARCH: $(TARGET_ARCH)"; \
-	echo "LIBS: $(LIBS)"; \
-	echo "LINK.c: $(LINK.c)"; \
-	echo "MAKESHLIBDIR: @MAKESHLIBDIR@";
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

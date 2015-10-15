@@ -1,12 +1,9 @@
-
 SUBDIRS = backends/check .
 
 include ${top_srcdir}/Makefile.inc
-include testing.am
 
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
-
            
 #
 # Static Base library
@@ -31,25 +28,30 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 
 
 TEST_SUBDIRS = \
-               testing/selftest \
+               mdsobjects/python/tests \
                mdslib/testing \
-               mdsobjects/cpp/testing \
-               mdsobjects/python/tests
+               mdsobjects/cpp/testing
+               
+#               testing/selftest
+
 
 .ONESHELL:
 build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
+	status=0;
 	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap; \
+	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done; \
 	echo; \
+	echo " COMPONENTS WITH ERRORS FOUND: $${status} "; \
 	echo; \
 	echo " -------- CUT HERE for Jenkins inclusion ------------- ";	\
 	for i in $${taps}; do \
-	 echo "$$i, "; \
+	 echo "$$i"; \
 	done; \
 	echo " ----------------------------------------------------- ";
+	exit $${status}
 
 .ONESHELL:
 clean_tests: 
@@ -67,11 +69,5 @@ clean-local:
 	$(RM) $(MdsTestShr)
 
 
-print:
-	echo "CFLAGS: $(CFLAGS)"; \
-	echo "TARGET_ARCH: $(TARGET_ARCH)"; \
-	echo "LIBS: $(LIBS)"; \
-	echo "LINK.c: $(LINK.c)"; \
-	echo "MAKESHLIBDIR: @MAKESHLIBDIR@";
 
 
