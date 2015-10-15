@@ -1,13 +1,10 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-    def _mimport(name):
-        return __import__(name,globals())
+from sys import version_info as pyver
+if pyver<(2,5):
+    def _mimport(name, level=1):
+        return __import__(name, globals())
 else:
-    def _mimport(name):
-        return __import__(name,globals(),{},[],1)
-
-
-class MdsshrException(Exception):
-    pass
+    def _mimport(name, level=1):
+        return __import__(name, globals(), level=level)
 
 import numpy as _N
 import ctypes as _C
@@ -32,6 +29,9 @@ __MDSEventCan=_mdsshr.MDSEventCan
 __MDSEventCan.argtypes=[_C.c_int32,]
 __MDSEvent=_mdsshr.MDSEvent
 __MDSEvent.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p]
+
+class MdsshrException(Exception):
+    pass
 
 class MdsInvalidEvent(MdsshrException):
     pass

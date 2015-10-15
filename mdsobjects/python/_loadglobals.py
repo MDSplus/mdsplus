@@ -1,11 +1,12 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name):
-    return __import__(name,globals())
+from sys import version_info as pyver
+if pyver<(2,5):
+    def _mimport(name, level=1):
+        return __import__(name, globals())
 else:
-  def _mimport(name):
-    return __import__(name,globals(),{},[],1)  # 1:absolute
+    def _mimport(name, level=1):
+        return __import__(name, globals(), level=level)
 
-def load(gbls):                                                                                             
+def load(gbls):
   def loadmod(name,gbls):
     mod=_mimport(name)
     for key in mod.__dict__:

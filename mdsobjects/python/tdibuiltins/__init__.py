@@ -1,9 +1,10 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
+from sys import version_info as pyver
+if pyver<(2,5):
+    def _mimport(name, level=1):
+        return __import__(name, globals())
 else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+    def _mimport(name, level=1):
+        return __import__(name, globals(), level=level)
 
 def loadBuiltins(module):
     for item in dict(module.__dict__).values():
@@ -13,10 +14,10 @@ def loadBuiltins(module):
         except:
             pass
 
-_builtin=_mimport('builtin',1)
+_builtin=_mimport('builtin')
 Builtin=_builtin.Builtin
 
-loadBuiltins(_mimport('constants',1))
-loadBuiltins(_mimport('mathops',1))
-loadBuiltins(_mimport('builtins_other',1))
+loadBuiltins(_mimport('constants'))
+loadBuiltins(_mimport('mathops'))
+loadBuiltins(_mimport('builtins_other'))
 Builtin.loadBuiltins(globals())
