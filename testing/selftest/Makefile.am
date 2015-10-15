@@ -1,6 +1,6 @@
 
 include ${top_srcdir}/Makefile.inc
-include ${top_srcdir}/testing/testing.am
+include ../../testing/testing.am
 
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)

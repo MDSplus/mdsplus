@@ -1,5 +1,5 @@
 include ${top_srcdir}/Makefile.inc
-include ${top_srcdir}/testing/testing.am
+include ../../../testing/testing.am
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -7,6 +7,7 @@ include ${top_srcdir}/testing/testing.am
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 TEST_EXTENSIONS = .py
+
 
 
 TESTS = \
