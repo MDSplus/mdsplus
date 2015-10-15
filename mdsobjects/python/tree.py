@@ -327,13 +327,16 @@ class Tree(object):
         """
         import weakref
         global thread_data
-        if not hasattr(thread_data,"activeTree"):
+        try:
+          if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
-        if thread_data.private and isinstance(thread_data.activeTree,Tree):
-          return thread_data.activeTree
-        elif isinstance(Tree._activeTree,Tree):
-          return Tree._activeTree
+          if thread_data.private and isinstance(thread_data.activeTree,Tree):
+            return thread_data.activeTree
+          elif isinstance(Tree._activeTree,Tree):
+            return Tree._activeTree
+        except:
+          pass
     getActiveTree=staticmethod(getActiveTree)
 
     def getCurrent(treename):
