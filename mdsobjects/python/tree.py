@@ -24,8 +24,6 @@ class Tree(object):
                 status=_mimport('_treeshr',1).TreeCloseAll(self.ctx)
                 if (status & 1):
                     TreeFreeDbid(ctx)
-                if Tree.getActiveTree() == self:
-                    Tree.setActiveTree(None)
         except:
             pass
         return
@@ -305,14 +303,18 @@ class Tree(object):
         @return: Current active tree
         @rtype: Tree
         """
+        import weakref
         global thread_data
-        if not hasattr(thread_data,"activeTree"):
+        try:
+          if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
-        if thread_data.private:
-          return thread_data.activeTree
-        else:
-          return Tree._activeTree
+          if thread_data.private and isinstance(thread_data.activeTree,Tree):
+            return thread_data.activeTree
+          elif isinstance(Tree._activeTree,Tree):
+            return Tree._activeTree
+        except:
+          pass
     getActiveTree=staticmethod(getActiveTree)
     
     def getCurrent(treename):
@@ -443,7 +445,10 @@ class Tree(object):
 
 
     def _setActiveTree(tree):
+        import weakref
         global thread_data
+        if isinstance(tree,Tree):
+          tree=weakref.proxy(tree)
         if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
