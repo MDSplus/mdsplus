@@ -35,14 +35,11 @@ class Tree(object):
         """Delete Tree instance
         @rtype: None
         """
-       
         try:
           if self.close:
             status=_treeshr.TreeCloseAll(self.ctx)
             if (status & 1):
               _treeshr.TreeFreeDbid(self.ctx)
-              if Tree.getActiveTree() == self:
-                Tree.setActiveTree(None)
         except:
           pass
         return
@@ -234,7 +231,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport('mdsExceptions').statusToException(status)
+            raise _mimport('mdsExceptions',1).statusToException(status)
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -328,14 +325,18 @@ class Tree(object):
         @return: Current active tree
         @rtype: Tree
         """
+        import weakref
         global thread_data
-        if not hasattr(thread_data,"activeTree"):
+        try:
+          if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
-        if thread_data.private:
-          return thread_data.activeTree
-        else:
-          return Tree._activeTree
+          if thread_data.private and isinstance(thread_data.activeTree,Tree):
+            return thread_data.activeTree
+          elif isinstance(Tree._activeTree,Tree):
+            return Tree._activeTree
+        except:
+          pass
     getActiveTree=staticmethod(getActiveTree)
 
     def getCurrent(treename):
@@ -467,7 +468,10 @@ class Tree(object):
 
 
     def _setActiveTree(tree):
+        import weakref
         global thread_data
+        if isinstance(tree,Tree):
+          tree=weakref.proxy(tree)
         if not hasattr(thread_data,"activeTree"):
             thread_data.activeTree=None
             thread_data.private=False
@@ -512,7 +516,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport("mdsExceptions").statusToException(status)
+            raise _mimport("mdsExceptions",1).statusToException(status)
     setCurrent=staticmethod(setCurrent)
 
     def setDefault(self,node):
@@ -618,7 +622,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport("mdsExceptions").statusToException(status)
+            raise _mimport("mdsExceptions",1).statusToException(status)
 
     def compressDatafile(self):
         """Compress data file.
@@ -631,4 +635,4 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mimport("mdsExceptions").statusToException(status)
+            raise _mimport("mdsExceptions", 1).statusToException(status)

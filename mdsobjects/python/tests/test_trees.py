@@ -217,10 +217,12 @@ class test_trees(unittest.TestCase):
         return
 
     def finish(self):
-        self.pytree.deletePulse(self.shot+1)
-        self.pytree.deletePulse(self.shot)
+        del(self.pytree)
+        del(self.pytree2)
 
     def runTest(self):
+#        from time import sleep
+#        sleep(20)
         self.editTrees()
         self.openTrees()
         self.getNode()

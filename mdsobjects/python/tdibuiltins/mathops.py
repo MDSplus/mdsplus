@@ -15,6 +15,7 @@ else:
 _builtin=_mimport('builtin',1)
 Builtin=_builtin.Builtin
 
+_data=_mimport('mdsdata',2)
 _scalar=_mimport('mdsscalar',2)
 _array=_mimport('mdsarray',2)
 _compound=_mimport('compound',2)
@@ -82,9 +83,9 @@ class ABSSQ(Builtin):
         if isinstance(args[0],_scalar.Scalar) or isinstance(args[0],_array.Array):
             ans=_data.makeData(abs(args[0].real)**2+abs(args[0].imag)**2)
             if isinstance(args[0],_scalar.Complex64):
-                ans=_Float32(ans)
+                ans=_scalar.Float32(ans)
             elif isinstance(args[0],_scalar.Complex128):
-                ans=_Float64(ans)
+                ans=_scalar.Float64(ans)
             elif isinstance(args[0],_array.Complex64Array):
                 ans=_array.Float32Array(ans)
             elif isinstance(args[0],_array.Complex64Array):
