@@ -1,4 +1,68 @@
-commit 75765f73c649f0e17de720943ac43c73c1a2ad22 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit aab091443276833768e45b5ebfcf4e8ee354326f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 7008337 8b58cec
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 13:58:42 2015 -0400
+
+    Merge pull request #147 from zack-vii/aaa_python
+    
+    missing level on _mimport
+
+commit 700833703b98de773cef97eb75ec081adf5198fb
+Merge: a57c5a5 1d4e178
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 13:58:18 2015 -0400
+
+    Merge pull request #146 from zack-vii/aa_python
+    
+    _descriptor c_long vs. c_int64
+
+commit a57c5a56750f8ad0bdc5251a778d17e4226949ae
+Merge: 9aab8b6 62a074e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 13:52:38 2015 -0400
+
+    Merge pull request #149 from zack-vii/a_python_mdstypes
+    
+    replace values with symboles
+
+commit 62a074ebcefdee736938f8a5731e2f0912ad7e26
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 19:24:08 2015 +0200
+
+    mdsclasses
+
+commit 8b58cec626b8df92a2440253afd45ac169707233
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 15:54:11 2015 +0200
+
+    missing level on _mimport
+    
+    >is it ever not 1?<
+
+commit 9aab8b6aa7d91089366717e9481f91a6997ceba1 (tag: refs/tags/alpha_release-7-0-161)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 13 23:39:35 2015 -0400
+
+    New release ---- alpha_release-7-0-161
+
+commit 29efb867bfe8554e1166d82086b074b5546caf38
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 01:35:16 2015 +0200
+
+    substitute values with symbols
+    
+    TODO: dtypenames could be created automatically
+
+commit 1d4e178af7fdf4e93bd7d6f9d05be16ddb260f17
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 01:32:39 2015 +0200
+
+    _descriptor c_long vs. c_int64
+    
+    we need c_int64 since c_long does not seem to represent pythons long,
+    accurately.
+
+commit 75765f73c649f0e17de720943ac43c73c1a2ad22
 Merge: 0cbf4e2 557469b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Oct 13 15:20:59 2015 -0400
