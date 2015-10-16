@@ -116,7 +116,7 @@ class Tree(object):
                 try:
                     self.ctx=Tree.getActiveTree().ctx
                 except:
-                    raise _mdsExceptions.TreeNOT_OPEN()
+                    raise _Exceptions.TreeNOT_OPEN()
         else:
             if mode.upper() == 'NORMAL':
                 self.ctx=_treeshr.TreeOpen(tree,shot)
@@ -235,7 +235,7 @@ class Tree(object):
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _mdsExceptions.statusToException(status)
+            raise _Exceptions.statusToException(status)
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -328,7 +328,6 @@ class Tree(object):
         @return: Current active tree
         @rtype: Tree
         """
-        import weakref
         global thread_data
         try:
           if not hasattr(thread_data,"activeTree"):
