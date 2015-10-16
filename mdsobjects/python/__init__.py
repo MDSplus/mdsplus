@@ -10,19 +10,17 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 @license: GNU GPL
 
 """
-from sys import version_info as pyver
-if pyver<(2,5):
-    def _mimport(name, level=1):
-        return __import__(name, globals())
-else:
-    def _mimport(name, level=1):
+def _mimport(name, level=1):
+    try:
         return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-try:
-    _mimport('_loadglobals').load(globals())
-except Exception:
-    import sys
-    print('Error importing MDSplus package: %s' % (sys.exc_info()[1],))
+#try:
+_mimport('_loadglobals').load(globals())
+#except Exception:
+#    import sys
+#    print('Error importing MDSplus package: %s' % (sys.exc_info()[1],))
 
 def remove():
     import os

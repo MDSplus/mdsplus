@@ -1,10 +1,11 @@
-from sys import version_info as pyver
-if pyver<(2,5):
-    def _mimport(name, level=1):
-        return __import__(name, globals())
-else:
-    def _mimport(name, level=1):
+def _mimport(name, level=1):
+    try:
         return __import__(name, globals(), level=level)
+    except:
+        try:
+            return __import__(name, globals())
+        except:
+            return __import__('MDSplus.'+name,globals())
 
 _builtin=_mimport('builtin')
 Builtin=_builtin.Builtin
