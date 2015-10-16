@@ -1,12 +1,15 @@
-try:
-    exec("from ..compound import Function as _Function")
-except:
+def _mimport(name, level=1):
     try:
-        from compound import Function as _Function
+        return __import__(name, globals(), level=level)
     except:
-        from MDSplus.compound import Function as _Function
+        try:
+            return __import__(name, globals())
+        except:
+            return __import__('MDSplus.'+name,globals())
 
-class Builtin(_Function):
+_compound=_mimport('compound',2)
+
+class Builtin(_compound.Function):
     _dtype=199
     min_args = None
     max_args = None

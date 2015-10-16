@@ -15,6 +15,40 @@ has_basestring= 'basestring' in __builtins__
 has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
 
+def load_library(name):
+    import ctypes as C
+    import os
+    import platform
+    if platform.system() == 'Darwin':
+        if not os.getenv('DYLD_LIBRARY_PATH'):
+            if os.getenv('MDSPLUS_DIR'):
+                os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
+            else:
+                os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
+    libnam = None
+    if pyver>(2,5,):
+        from ctypes.util import find_library
+        libnam = find_library(name)
+    if libnam is None:
+        try:
+            return C.CDLL('lib'+name+'.so')
+        except:
+            try:
+                return C.CDLL(name+'.dll')
+            except:
+                try:
+                    return C.CDLL('lib'+name+'.dylib')
+                except:
+                    raise Exception("Error finding library: "+name)
+    else:
+        try:
+            return C.CDLL(libnam)
+        except:
+            try:
+                return C.CDLL(name)
+            except:
+                return C.CDLL(os.path.basename(libnam))
+
 # substitute missing builtins
 if has_long:
     long = long

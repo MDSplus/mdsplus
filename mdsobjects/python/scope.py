@@ -1,11 +1,10 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_data=_mimport('mdsdata',1)
+_data=_mimport('mdsdata')
 
 class Scope(object):
     """The Scope class utilizes the jScope java implementation to generate plots of MDSplus data"""
@@ -75,5 +74,5 @@ class Scope(object):
         if x is None:
             x=_data.Data.dim_of(y)
         _data.Data.execute("JavaAddSignal($,$,$,$,$,$,$)",self.idx,y,x,row,col,color,label)
-    
-    
+
+

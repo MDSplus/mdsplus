@@ -1,12 +1,11 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_data=_mimport('mdsdata',1)
-_dtypes=_mimport('_mdsdtypes',1)
+_data=_mimport('mdsdata')
+_dtypes=_mimport('_mdsdtypes')
 
 class Compound(_data.Data):
     def __init__(self,*args, **params):
@@ -50,7 +49,7 @@ class Compound(_data.Data):
                 newargs[idx]=newargs[idx].__fixTreeReferences__(tree)
         ans.args=tuple(newargs)
         return ans
-        
+
     def __getattr__(self,name,*args):
         if name in self.__dict__:
             return self.__dict__[name]
@@ -137,7 +136,7 @@ class Compound(_data.Data):
         @rtype: Data,None
         """
         return Compound.__getitem__(self,idx+self._argOffset)
-    
+
     def getArguments(self):
         """Return arguments
         @rtype: Data,None
@@ -185,7 +184,7 @@ class Compound(_data.Data):
         """
         self.args=args
 
-        
+
 class MetaClass(type):
 
     def __new__(meta,classname,bases,classDict):
@@ -214,12 +213,12 @@ class MetaClass(type):
 class _Action(Compound):
     """
     An Action is used for describing an operation to be performed by an
-    MDSplus action server. Actions are typically dispatched using the 
+    MDSplus action server. Actions are typically dispatched using the
     mdstcl DISPATCH command
     """
     fields=('dispatch','task','errorLog','completionMessage','performance')
 Action=MetaClass('Action',(_Action,),{})
-    
+
 class _Call(Compound):
     """
     A Call is used to call routines in shared libraries.
@@ -227,7 +226,7 @@ class _Call(Compound):
     fields=('image','routine')
     _opcode_name='retType'
 Call=MetaClass('Call',(_Call,),{})
-    
+
 class _Conglom(Compound):
     """A Conglom is used at the head of an MDSplus conglomerate. A conglomerate is a set of tree nodes used
     to define a device such as a piece of data acquisition hardware. A conglomerate is associated with some
@@ -243,7 +242,7 @@ class _Dependency(Compound):
     """
     fields=('arg1','arg2')
 Dependency=MetaClass('Dependency',(_Dependency,),{})
-    
+
 class _Dimension(Compound):
     """A dimension object is used to describe a signal dimension, typically a time axis. It provides a compact description
     of the timing information of measurements recorded by devices such as transient recorders. It associates a Window
@@ -266,13 +265,13 @@ class _Dispatch(Compound):
         if self.completion is None:
            self.completion = None
 Dispatch=MetaClass('Dispatch',(_Dispatch,),{})
-    
+
 class _Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
     """
     fields=tuple()
-    
+
     def __init__(self,opcode,args):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
@@ -298,7 +297,7 @@ class _Function(Compound):
 #            raise Exception("Invalid opcode - "+str(opcode))
 #        self.opcode=opcode
 #        self.__dict__['opc']=opc
-        
+
 #
 # The following code can be used if we want to implement TDI opcodes in python code using the opcodes.py module.
 # If it is commened out, it will default to using TdiEvaluate to perform the evaluation.
@@ -315,9 +314,9 @@ class _Function(Compound):
 #        return self.opc.str(self.args)
 #
 #def compile_function(name,*args):
-#    
+#
 #    opcode=find_opcode(name)
-#    if opcode:    
+#    if opcode:
 #        if opcode.class_of:
 #            return opcode.class_of(*args)
 #        else:
@@ -331,18 +330,18 @@ class _Method(Compound):
     """
     fields=('timeout','method','object')
 Method=MetaClass('Method',(_Method,),{})
-    
+
 class _Procedure(Compound):
     """A Procedure is a deprecated object
     """
     fields=('timeout','language','procedure')
 Procedure=MetaClass('Procedure',(_Procedure,),{})
-    
+
 class _Program(Compound):
     """A Program is a deprecated object"""
     fields=('timeout','program')
 Program=MetaClass('Program',(_Program,),{})
-    
+
 class _Range(Compound):
     """A Range describes a ramp. When used as an axis in a Dimension object along with a Window object it can be
     used to describe a clock. In this context it is possible to have missing begin and ending values or even have the
@@ -356,24 +355,24 @@ class _Range(Compound):
             parts.append(_data.makeData(arg).decompile())
         return ' : '.join(parts)
 Range=MetaClass('Range',(_Range,),{})
-    
+
 class _Routine(Compound):
     """A Routine is a deprecated object"""
     fields=('timeout','image','routine')
 Routine=MetaClass('Routine',(_Routine,),{})
-    
+
 class _Signal(Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent
     axis (Dimensions). When Signals are indexed using s[idx], the index is resolved using the dimension of the signal
     """
     fields=('value','raw')
-    
+
     def _getDims(self):
         return self.getArguments()
 
     dims=property(_getDims)
     """The dimensions of the signal"""
-        
+
 #    def decompile(self):
 #        arglist=list()
 #        for arg in self.args:
@@ -398,7 +397,7 @@ class _Signal(Compound):
         if isinstance(idx,slice):
           idx = Range(idx.start,idx.stop,idx.step)
         return _data.Data.execute('$[$]',self,idx)
-    
+
     def getDimensionAt(self,idx=0):
         """Return the dimension of the signal
         @param idx: The index of the desired dimension. Indexes start at 0. 0=default
@@ -449,7 +448,7 @@ class _Opaque(Compound):
 
 #    def decompile(self):
 #        return 'Build_Opaque('+makeData(self.data).decompile()+','+makeData(self.otype).decompile()+')'
-   
+
     def getImage(self):
       import Image
       from StringIO import StringIO

@@ -1,25 +1,18 @@
-import time
-from threading import Thread
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+import time as _time
+import threading as _threading
+import sys as _sys
 
-_data=_mimport('mdsdata',1)
-makeData=_data.makeData
+_data=_mimport('mdsdata')
+_array=_mimport('mdsarray')
+_mdsshr=_mimport('_mdsshr')
 
-_scalar=_mimport('mdsscalar',1)
-Uint64=_scalar.Uint64
-
-_mdsshr=_mimport('_mdsshr',1)
-DateToQuad=_mdsshr.DateToQuad
-MDSWfeventTimed=_mdsshr.MDSWfeventTimed
-MDSEvent=_mdsshr.MDSEvent
-
-class Event(Thread):
+class Event(_threading.Thread):
     """Thread to wait for event"""
 
     def getData(self):
@@ -28,7 +21,7 @@ class Event(Thread):
         """
         if len(self.raw) == 0:
             return None
-        return _mimport('mdsarray',1).makeArray(self.getRaw()).deserialize()
+        return _array.makeArray(self.getRaw()).deserialize()
 
     def getRaw(self):
         """Return raw data transfered with the event.
@@ -49,7 +42,7 @@ class Event(Thread):
         rtype: Uint64
         """
         return self.qtime
-        
+
     def getName(self):
         """Return the name of the event
         rtype: str
@@ -66,7 +59,7 @@ class Event(Thread):
         if data is None:
             Event.seteventRaw(event,None)
         else:
-            Event.seteventRaw(event,makeData(data).serialize())
+            Event.seteventRaw(event,_data.makeData(data).serialize())
     setevent=staticmethod(setevent)
 
     def seteventRaw(event,buffer=None):
@@ -79,7 +72,7 @@ class Event(Thread):
         if buffer is None:
             from numpy import array
             buffer=array([])
-        MDSEvent(event,buffer)
+        _mdsshr.MDSEvent(event,buffer)
     seteventRaw=staticmethod(seteventRaw)
 
     def wfevent(event,timeout=0):
@@ -87,7 +80,7 @@ class Event(Thread):
         @param event: event name
         @rtype: Data
         """
-        return MDSWfeventTimed(event,timeout).deserialize()
+        return _mdsshr.MDSWfeventTimed(event,timeout).deserialize()
     wfevent=staticmethod(wfevent)
 
 
@@ -96,7 +89,7 @@ class Event(Thread):
         @param event: event name
         @rtype: Data
         """
-        return MDSWfeventTimed(event,timeout)
+        return _mdsshr.MDSWfeventTimed(event,timeout)
     wfeventRaw=staticmethod(wfeventRaw)
 
 try:
@@ -111,13 +104,12 @@ try:
                 self.exception=None
             except MDSInvalidEvent:
                 return
-            except Exception:
-                import sys
-                self.exception=sys.exc_info()[1]
-            self.time=time.time()
-            self.qtime=DateToQuad("now")
+            except:
+                self.exception=_sys.exc_info()[1]
+            self.time=_time.time()
+            self.qtime=_mdsshr.DateToQuad("now")
             self.subclass_run()
-            time.sleep(.01)
+            _time.sleep(.01)
     Event._event_run=_event_run
 
     def cancel(self):
@@ -141,25 +133,25 @@ try:
         self.setDaemon(True)
         self.start()
     Event.__init__=__init__
-    
+
     Event.eventCan=staticmethod(MDSEventCan)
     Event.queueEvent=staticmethod(MDSQueueEvent)
     Event.getQueue=staticmethod(MDSGetEventQueue)
- 
+
 except:
     def _event_run(self):
         while self.__active__:
             self.exception=None
             try:
-                self.raw=MDSWfeventTimed(self.event,self.timeout)
+                self.raw=_mdsshr.MDSWfeventTimed(self.event,self.timeout)
             except Exception:
                 import sys
                 self.exception=sys.exc_info()[1]
             if self.__active__:
-                self.time=time.time()
-                self.qtime=DateToQuad("now")
+                self.time=_time.time()
+                self.qtime=_mdsshr.DateToQuad("now")
                 self.subclass_run()
-                time.sleep(.01)
+                _time.sleep(.01)
     Event._event_run=_event_run
 
     def cancel(self):

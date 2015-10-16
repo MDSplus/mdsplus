@@ -1,13 +1,26 @@
-from compound import *
-from mdsarray import *
-from mdsscalar import *
-from tree import *
-from ident import *
-from treenode import *
-from event import *
+from sys import version_info as pyver
+if pyver<(2,5):
+    def _mimport(name, level=1):
+        return __import__(name, globals())
+else:
+    def _mimport(name, level=1):
+        return __import__(name, globals(), level=level)
+
+import numpy as _N
+import re as _re
+import lex as _lex
+import yacc as _yacc
 from builtins import Builtin
-#from _tdishr import TdiDecompile
-#import sys,os
+
+_compound=_mimport('compount')
+_array=_mimport('mdsarray')
+_ident=_mimport('ident')
+_scalar=_mimport('mdsscalar')
+_tree=_mimport('tree')
+_event=_mimport('event')
+_treenode=_mimport('treenode')
+_data=_mimport('mdsdata')
+
 optimized=1
 
 class _replacementArgs(object):
@@ -16,7 +29,6 @@ class _replacementArgs(object):
         self.idx=1
 
 def tdiCompile(text,replacementArgs=_replacementArgs(())):
-    import lex
     if isinstance(replacementArgs,tuple):
         return tdiCompile(text,_replacementArgs(replacementArgs))
     elif not isinstance(replacementArgs,_replacementArgs):
@@ -65,7 +77,6 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
     integer=r'0[Xx][0-9A-Fa-f]+|0[Bb][01]+|0[0-7]+|[1-9]+[0-9]*|0'
 
     def fix_backquotes(in_str):
-        import re
         def replace_backquote_string(match):
             mstr=match.group(0)
             if len(mstr)>4:
@@ -77,106 +88,105 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
             else:
                 ans = chr(int(mstr[1:],8))
             return ans
-        ans = re.sub(r'\\[0-7]+|\\[\\mntr]',replace_backquote_string,in_str)
+        ans = _re.sub(r'\\[0-7]+|\\[\\mntr]',replace_backquote_string,in_str)
         return ans
 
 ### string token with double quotes converted to String() instance
-    @lex.TOKEN(r'"(?:[^"\\]|\\.)*"')
+    @_lex.TOKEN(r'"(?:[^"\\]|\\.)*"')
     def t_T(t):
-        t.value=String(fix_backquotes(t.value).replace('\\"','"').replace("\\'","'").replace('\\\\','\\')[1:-1])
+        t.value=_scalar.String(fix_backquotes(t.value).replace('\\"','"').replace("\\'","'").replace('\\\\','\\')[1:-1])
         return t
 
 ### string token with single quotes converted to String() instance
-    @lex.TOKEN(r"'(?:[^'\\]|\\.)*'")
+    @_lex.TOKEN(r"'(?:[^'\\]|\\.)*'")
     def t_T2(t):
-        t.value=String(fix_backquotes(t.value).replace("\\'","'").replace('\\"','"').replace('\\\\','\\')[1:-1])
+        t.value=_scalar.String(fix_backquotes(t.value).replace("\\'","'").replace('\\"','"').replace('\\\\','\\')[1:-1])
         return t
 
 ### unsigned byte token converted to Uint8() instance
-    @lex.TOKEN(r'(?i)(byte_unsigned|unsigned_byte)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(bu|ub)')
-    def t_BU(t):        
-        t.value=Uint8(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+    @_lex.TOKEN(r'(?i)(byte_unsigned|unsigned_byte)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(bu|ub)')
+    def t_BU(t):
+        t.value=_scalar.Uint8(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### unsigned word converted to Uint16() instance
-    @lex.TOKEN(r'(?i)(word_unsigned|unsigned_word)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(wu|uw)')
+    @_lex.TOKEN(r'(?i)(word_unsigned|unsigned_word)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(wu|uw)')
     def t_WU(t):
-        t.value=Uint16(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Uint16(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### signed word converted to Int16() instance
-    @lex.TOKEN(r'(?i)word\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))w')
+    @_lex.TOKEN(r'(?i)word\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))w')
     def t_W(t):
-        t.value=Int16(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Int16(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### unsigned quadword converted to Uint64() instance
-    @lex.TOKEN(r'(?i)(quadword_unsigned|unsigned_quadword)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(uq|qu)')
+    @_lex.TOKEN(r'(?i)(quadword_unsigned|unsigned_quadword)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(uq|qu)')
     def t_QU(t):
-        t.value=Uint64(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Uint64(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### unsigned int converted to Uint32() instance
-    @lex.TOKEN(r'(?i)(long_unsigned|unsigned_long)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(lu|ul|u)')
+    @_lex.TOKEN(r'(?i)(long_unsigned|unsigned_long)\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))(lu|ul|u)')
     def t_LU(t):
-        t.value=Uint32(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Uint32(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### signed quadword converted to Int64() instance
-    @lex.TOKEN(r'(?i)quadword\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))q')
+    @_lex.TOKEN(r'(?i)quadword\((?P<number1>('+integer+r'))\)|(?P<number2>('+integer+r'))q')
     def t_Q(t):
-        t.value=Int64(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Int64(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### Float instance converted to either Float32() or Float64() instance
-    @lex.TOKEN(r'(?i)([0-9]+\.(?!\.)[0-9]*|[0-9]*\.[0-9]+|[0-9]+)(?P<exp>([dgef]))[-+]?[0-9]+|[0-9]+\.(?!\.)[0-9]*|[0-9]*\.[0-9]+')
+    @_lex.TOKEN(r'(?i)([0-9]+\.(?!\.)[0-9]*|[0-9]*\.[0-9]+|[0-9]+)(?P<exp>([dgef]))[-+]?[0-9]+|[0-9]+\.(?!\.)[0-9]*|[0-9]*\.[0-9]+')
     def t_FloatNum(t):
         exp=t.lexer.lexmatch.group('exp')
         if exp is not None:
             exp=exp.lower()
         val=t.value.lower().replace('d','e').replace('g','e').replace('f','e')
         if exp is None or exp == 'e' or exp == 'f':
-            t.value=Float32(val)
+            t.value=_scalar.Float32(val)
         else:
-            t.value=Float64(val)
+            t.value=_scalar.Float64(val)
             if 'inf' in repr(t.value.data()):
-                t.value=Float32(val)
+                t.value=_scalar.Float32(val)
         return t
 
 ### signed byte converted to Int8() instance
-    @lex.TOKEN(r'(?i)byte\((?P<number1>('+integer+'))\)|(?P<number2>('+integer+'))b')
+    @_lex.TOKEN(r'(?i)byte\((?P<number1>('+integer+'))\)|(?P<number2>('+integer+'))b')
     def t_B(t):
-        t.value=Int8(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Int8(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### signed int converted to Int32() instances. NOTE must be end of the scalar tokens to work for some reason.
-    @lex.TOKEN(r'(?i)long\((?P<number1>('+integer+'))\)|(?P<number2>('+integer+'))l?')
+    @_lex.TOKEN(r'(?i)long\((?P<number1>('+integer+'))\)|(?P<number2>('+integer+'))l?')
     def t_L(t):
-        t.value=Int32(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
+        t.value=_scalar.Int32(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
 ### Ident or builtin constant converted to either Ident() instance or a Builtin() instance for constants such as $PI
-    @lex.TOKEN(r'(?i)(\$([a-z]+[a-z0-9_\$]*)|([0-9]+[a-z_\$]+[a-z0-9_\$]*))|(_[a-z0-9_\$]*)')
+    @_lex.TOKEN(r'(?i)(\$([a-z]+[a-z0-9_\$]*)|([0-9]+[a-z_\$]+[a-z0-9_\$]*))|(_[a-z0-9_\$]*)')
     def t_IDENT(t):
         if t.value.lower()=="$roprand":
-            import numpy as np
-            t.value=np.frombuffer(np.getbuffer(np.int32(2147483647)),dtype=np.float32)[0]
+            t.value=_N.frombuffer(_N.getbuffer(_N.int32(2147483647)),dtype=_N.float32)[0]
         else:
             try:
                 t.value=Builtin(t.value,())
             except Exception:
-                t.value=Ident(t.value)
+                t.value=_ident.Ident(t.value)
         return t
 
 ### Placeholders
-    @lex.TOKEN(r'\$[1-9]*[0-9]*')
+    @_lex.TOKEN(r'\$[1-9]*[0-9]*')
     def t_PLACEHOLDER(t):
         if len(t.value)==1:
             idx=replacementArgs.idx
         else:
             idx=int(t.value[1:])
         if idx <= len(replacementArgs.args):
-            t.value=makeData(replacementArgs.args[idx-1])
+            t.value=_data.makeData(replacementArgs.args[idx-1])
         else:
             raise Exception('%TDI-E-TdiMISS_ARG, Missing argument is required for function')
         replacementArgs.idx=idx+1
@@ -184,14 +194,13 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 
 ### Tree path \[treename::]tagname[.|:]node[.|:]node...
     pname=r'[a-z][a-z0-9$_]*'
-    @lex.TOKEN(r'(?i)(((\\('+pname+r'::)?|[\.:])?'+pname+r')|(\.-(\.?-)*))([\.:]'+pname+r')*')
+    @_lex.TOKEN(r'(?i)(((\\('+pname+r'::)?|[\.:])?'+pname+r')|(\.-(\.?-)*))([\.:]'+pname+r')*')
     def t_TREEPATH(t):
         if t.value.lower() in reserved:
             t.type=reserved[t.value.lower()]
         else:
-            import re
             original_value=t.value
-            if re.match(r'[\s]*(\(|->)',t.lexer.lexdata[t.lexer.lexpos:]) is not None:
+            if _re.match(r'[\s]*(\(|->)',t.lexer.lexdata[t.lexer.lexpos:]) is not None:
                 skip=t.value.find(':')
                 if skip == 0:
                     t.lexer.lexpos=t.lexer.lexpos-len(t.value)+1
@@ -204,16 +213,16 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                     t.type='NAME'
             else:
                 try:
-                    t.value=Tree().getNode(t.value)
+                    t.value=_tree.Tree().getNode(t.value)
                 except:
                     if t.value[0] in '.:':
-                        t.value='\\'+Tree().tree+'::TOP'+t.value
+                        t.value='\\'+_tree.Tree().tree+'::TOP'+t.value
                     elif t.value[0] == '\\':
                         if t.value.find('::') == -1:
-                            t.value='\\'+Tree().tree+'::'+t.value[1:]
+                            t.value='\\'+_tree.Tree().tree+'::'+t.value[1:]
                     else:
-                        t.value='\\'+Tree().tree+'::TOP:'+t.value
-                    t.value=TreePath(t.value.upper())
+                        t.value='\\'+_tree.Tree().tree+'::TOP:'+t.value
+                    t.value=_treenode.TreePath(t.value.upper())
                 t.value.original_value=original_value
         return t
 
@@ -261,7 +270,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         r'\.\.|:'
         t.value=':'
         return t
-        
+
 
 ### Name token which begins with an alpha followed by zero or more of aphanumeric or underscore
 ### or a reserved word token such as if, while, switch, for ...
@@ -288,7 +297,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 
 # Build the lexer
 
-    lex.lex(debug=0,optimize=optimized,lextab='tdilextab')
+    _lex.lex(debug=0,optimize=optimized,lextab='tdilextab')
 
     ''' unused
     precedence = (
@@ -311,8 +320,8 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         """compilation : statements\n| operand\n | operand SEMICOLON
         """
         t[0]=t[1]
-        if isinstance(t[0],Builtin) and len(t[0].args)==2 and isinstance(t[0].args[0],String) and isinstance(t[0].args[1],String):
-            t[0]=String(str(t[0].args[0])+str(t[0].args[1]))
+        if isinstance(t[0],Builtin) and len(t[0].args)==2 and isinstance(t[0].args[0],_scalar.String) and isinstance(t[0].args[1],_scalar.String):
+            t[0]=_scalar.String(str(t[0].args[0])+str(t[0].args[1]))
 
 ### operands can be arguments to operators
     def p_operand(t):
@@ -355,7 +364,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 ### Missing value specified by asterisk
     def p_missing(t):
         'missing : TIMES'
-        t[0]=makeData(None)
+        t[0]=_data.makeData(None)
 
 ### Range constructor (a : b [:c])
     def p_range(t):
@@ -368,7 +377,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 
     def p_op_range(t):
         """operation : range"""
-        t[0]=Range(tuple(t[1]))
+        t[0]=_compound.Range(tuple(t[1]))
 
 ### Loop control operations (i.e. break, continue)
     def p_loop_control(t):
@@ -380,9 +389,9 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         """operation : NOT operand %prec UNOP\n| INOT operand %prec UNOP\n| MINUS operand %prec UNOP\n| PLUS operand %prec UNOP
         | NOT_S operand %prec UNOP"""
         ops = {'!':'NOT','~':'INOT','-':'UNARY_MINUS','not':'NOT','+':'UNARY_PLUS'}
-        if t[1]=='-' and isinstance(t[2],Scalar):
-            t[0]=makeData(-t[2].data())
-        elif t[1]=='+' and isinstance(t[2],Scalar):
+        if t[1]=='-' and isinstance(t[2],_scalar.Scalar):
+            t[0]=_data.makeData(-t[2].data())
+        elif t[1]=='+' and isinstance(t[2],_scalar.Scalar):
             t[0]=t[2]
         else:
             t[0]=Builtin(ops[t[1].lower()],(t[2],))
@@ -420,7 +429,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         def get(self):
             compile_time_concat=True
             for arg in self:
-                if not isinstance(arg,(str,String)):
+                if not isinstance(arg,(str,_scalar.String)):
                     compile_time_concat=False
                     break
             if compile_time_concat:
@@ -432,7 +441,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                     c.append(self[-1])
                 else:
                     for arg in self[1:]:
-                        c[-1]=String(str(c[-1])+str(arg))
+                        c[-1]=_scalar.String(str(c[-1])+str(arg))
                 if len(c)>1:
                     return Builtin('concat',tuple(c))
                 else:
@@ -450,7 +459,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                 t[0]=Concat([t[1],t[3]])
         else:
             t[0]=t[1].get()
-            if isinstance(t[0],String):
+            if isinstance(t[0],_scalar.String):
                 t.type='scalar'
 
 ### Conditional operation (i.e. a ? b : c)
@@ -487,7 +496,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                     t[1].append(None)
                 t[1].append(None)
             else:
-                if len(t[1]) > 0 and (t[1][-1] is None or isinstance(t[1][-1],EmptyData)):
+                if len(t[1]) > 0 and (t[1][-1] is None or isinstance(t[1][-1],_data.EmptyData)):
                     t[1][-1]=t[2]
                 else:
                     t[1].append(t[2])
@@ -526,34 +535,34 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                 else:
                     new_args.append(None)
                 new_args.append(args[0])
-                return Range(tuple(new_args))
+                return _compound.Range(tuple(new_args))
 
             def buildPath(args):
-                if isinstance(args[0],(str,String)):
+                if isinstance(args[0],(str,_scalar.String)):
                     name=str(args[0])
                     if len(name) > 1 and name[0:2]=='\\\\':
                         name=name[1:]
-                    ans = TreePath(name)
+                    ans = _tree.TreePath(name)
                 else:
                     ans = Builtin('build_path',args)
                 return ans
-            
+
             def buildCall(args):
-                ans=Call(args[1:])
+                ans=_compound.Call(args[1:])
                 ans.retType=args[0]
                 return ans
 
 ### retain original node specifiers when building a using function
             def buildUsing(args_in):
                 def restoreTreePaths(arg):
-                    if isinstance(arg,Compound):
+                    if isinstance(arg,_compound.Compound):
                         args=list()
                         for a in arg.args:
                             args.append(restoreTreePaths(a))
                         arg.args=tuple(args)
                         ans = arg
-                    elif isinstance(arg,(TreePath,TreeNode)) and hasattr(arg,'original_value'):
-                        ans = TreePath(arg.original_value)
+                    elif isinstance(arg,(_tree.TreePath,_treenode.TreeNode)) and hasattr(arg,'original_value'):
+                        ans = _tree.TreePath(arg.original_value)
                     else:
                         ans = arg
                     return ans
@@ -564,34 +573,34 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                 ans = Builtin('using',tuple(args))
                 return ans
 
-            known_builds={'BUILD_ACTION':Action,
+            known_builds={'BUILD_ACTION':_compound.Action,
                           #BUILD_CONDITION':Condition,
-                          'BUILD_CONGLOM':Conglom,
-                          'BUILD_DEPENDENCY':Dependency,
-                          'BUILD_DIM':Dimension,
-                          'BUILD_DISPATCH':Dispatch,
-                          'BUILD_EVENT':Event,
+                          'BUILD_CONGLOM':_compound.Conglom,
+                          'BUILD_DEPENDENCY':_compound.Dependency,
+                          'BUILD_DIM':_compound.Dimension,
+                          'BUILD_DISPATCH':_compound.Dispatch,
+                          'BUILD_EVENT':_event.Event,
                           'BUILD_FUNCTION':Builtin,
-                          'BUILD_METHOD':Method,
+                          'BUILD_METHOD':_compound.Method,
                           'BUILD_PARAM':build_param,
-                          'BUILD_PROCEDURE':Procedure,
-                          'BUILD_PROGRAM':Program,
-                          'BUILD_RANGE':Range,
-                          'BUILD_ROUTINE':Routine,
-                          'BUILD_SIGNAL':Signal,
+                          'BUILD_PROCEDURE':_compound.Procedure,
+                          'BUILD_PROGRAM':_compound.Program,
+                          'BUILD_RANGE':_compound.Range,
+                          'BUILD_ROUTINE':_compound.Routine,
+                          'BUILD_SIGNAL':_compound.Signal,
                           'BUILD_SLOPE':build_slope,
-                          'BUILD_WINDOW':Window,
+                          'BUILD_WINDOW':_compound.Window,
                           'BUILD_WITH_UNITS':build_with_units,
                           'BUILD_CALL':buildCall,
                           'BUILD_WITH_ERROR':build_with_error,
-                          'BUILD_OPAQUE':Opaque,
+                          'BUILD_OPAQUE':_compound.Opaque,
                           'BUILD_PATH':buildPath,
                           'USING':buildUsing,}
             return known_builds[name.upper()](args)
 
         def doMake(name,args):
             for arg in args:
-                if not isinstance(arg,(Array,Scalar,EmptyData)) and arg is not None:
+                if not isinstance(arg,(_array.Array,_scalar.Scalar,_data.EmptyData)) and arg is not None:
                     raise Exception('use make opcode')
             name=name.upper().replace('MAKE_','BUILD_')
             if 'BUILD_' in name:
@@ -609,8 +618,8 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                     numbers=['byte','byte_unsigned','unsigned_byte','word','word_unsigned','unsigned_word',
                              'long','long_unsigned','unsigned_long','quadword','quadword_unsigned','unsigned_quadword',
                              'float','double','f_float','g_float','d_float','fs_float','ft_float']
-                    if t[1].lower() in numbers and (isinstance(t[2][0],Scalar) or isinstance(t[2][0],Array)):
-                        t[0]=Data.evaluate(Builtin(t[1],tuple(t[2])))
+                    if t[1].lower() in numbers and (isinstance(t[2][0],_scalar.Scalar) or isinstance(t[2][0],_array.Array)):
+                        t[0]=_data.Data.evaluate(Builtin(t[1],tuple(t[2])))
                     else:
                         t[0]=Builtin(t[1],tuple(t[2]))
                 except Exception:
@@ -627,9 +636,9 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
     def p_call(t):
         """operation : NAME ARROW NAME arglist\n| NAME ARROW NAME rettype arglist"""
         if len(t)==5:
-            t[0]=Call(tuple([t[1],t[3]]+t[4]))
+            t[0]=_compound.Call(tuple([t[1],t[3]]+t[4]))
         else:
-            t[0]=Call(tuple([t[1],t[3]]+t[5]),opcode=t[4])
+            t[0]=_compound.Call(tuple([t[1],t[3]]+t[5]),opcode=t[4])
 
 ### Loop and fun statements found inside braces and sometimes in parens
     def p_optional_semicolon(t):
@@ -768,7 +777,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         else:
             t[1].append(t[2])
             t[0]=t[1]
-                              
+
     def p_fun(t):
         """operation : IDENTTYPE FUN NAME fun_args braced_statements
         | FUN IDENTTYPE NAME fun_args braced_statements
@@ -802,7 +811,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                 t[0].isarray=True
             else:
                 t[0]=Builtin('vector',(t[2],))
-                t[0].isarray = isinstance(t[2],Scalar) or isinstance(t[2],Array)
+                t[0].isarray = isinstance(t[2],_scalar.Scalar) or isinstance(t[2],_array.Array)
         elif t[2] == ',':
             args=list(t[1].args)
             if len(args) > 250:
@@ -811,10 +820,10 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                 args.append(t[3])
             t[1].args=tuple(args)
             t[0]=t[1]
-            t[0].isarray = t[1].isarray and (isinstance(t[3],Scalar) or isinstance(t[3],Array))
+            t[0].isarray = t[1].isarray and (isinstance(t[3],_scalar.Scalar) or isinstance(t[3],_array.Array))
         else:
             if t[1].isarray:
-                t[0]=Data.evaluate(t[1])
+                t[0]=_data.Data.evaluate(t[1])
             else:
                 t[0]=Builtin('vector',t[1].args)
 
@@ -892,7 +901,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 ### BACKQUOTED expression (i.e. `getnci(gub,"RECORD")
     def p_operand_backquote(t):
         """operand : BACKQUOTE operand"""
-        t[0]=Data.evaluate(t[2])
+        t[0]=_data.Data.evaluate(t[2])
 
 ### Handle syntax errors
     def p_error(t):
@@ -901,9 +910,8 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         else:
             print("Syntax error")
 
-    import yacc
-    yacc.yacc(write_tables=optimized,debug=0,optimize=optimized,tabmodule='tdiparsetab')
-    return yacc.parse(text)
+    _yacc.yacc(write_tables=optimized,debug=0,optimize=optimized,tabmodule='tdiparsetab')
+    return _yacc.parse(text)
 
 def compileFile(filename):
     return tdiCompile('\n'.join(open(filename,'r').readlines()).replace('\r\n','\n'))

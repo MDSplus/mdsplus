@@ -1,15 +1,14 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_mimport('_loadglobals',1).load(globals())
+_mimport('_loadglobals').load(globals())
 
-_treeshr=_mimport('_treeshr',1)
-_treenode=_mimport('treenode',1)
-_compound=_mimport('compound',1)
+_treeshr=_mimport('_treeshr')
+_treenode=_mimport('treenode')
+_compound=_mimport('compound')
 
 class Device(_treenode.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
@@ -23,7 +22,7 @@ class Device(_treenode.TreeNode):
     when you need to include references to other nodes in the device. Lastly the dict instance may contain an 'options' key whose values are
     node options specified as a tuple of strings. Note if you only specify one option include a trailing comma in the tuple.The "parts" attribute
     is used to implement the Add and PART_NAME and ORIGNAL_PART_NAME methods of the subclass.
-    
+
     You can also include a part_dict class attribute consisting of a dict() instance whose keys are attribute names and whose values are nid
     offsets. If you do not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
     to lowercase and the colons and periods are replaced with underscores. Referencing a part name will return another instance of the same
@@ -31,7 +30,7 @@ class Device(_treenode.TreeNode):
     attributes which is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass names MUST BE UPPERCASE!
 
     Sample usage1::
-    
+
        from MDSplus import Device
 
        class MYDEV(Device):
@@ -80,15 +79,15 @@ class Device(_treenode.TreeNode):
            def store(self,arg):
                from MDSplus import Signal
                self.chan1=Signal(32,None,42)
-               
+
     If you need to reference attributes using computed names you can do something like::
 
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    
+
     gtkThread = None
-    
+
     def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):
@@ -235,7 +234,7 @@ class Device(_treenode.TreeNode):
                     self.content=[]
                 def write(self,string):
                     self.content.append(string)
-                        
+
             gtk.gdk.threads_init()
             out=MyOut()
             sys.stdout = out
@@ -268,7 +267,7 @@ class Device(_treenode.TreeNode):
                  if toplevel.get_property('type') == gtk.WINDOW_TOPLEVEL]
         if len(windows) == 1:
             gtk.main_quit()
-            
+
     def waitForSetups(cls):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)

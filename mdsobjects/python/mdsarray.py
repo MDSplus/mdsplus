@@ -1,17 +1,16 @@
-import numpy as _np
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
+import numpy as _N
 import ctypes as _C
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
-
-_data=_mimport('mdsdata',1)
-_dtypes=_mimport('_mdsdtypes',1)
-_scalar=_mimport('mdsscalar',1)
-_ver=_mimport('version',1)
+_data=_mimport('mdsdata')
+_dtypes=_mimport('_mdsdtypes')
+_scalar=_mimport('mdsscalar')
+_ver=_mimport('version')
 
 def makeArray(value):
     if isinstance(value,Array):
@@ -20,12 +19,12 @@ def makeArray(value):
         return makeArray((value._value,))
     if isinstance(value,_C.Array):
         try:
-            return makeArray(_np.ctypeslib.as_array(value))
+            return makeArray(_N.ctypeslib.as_array(value))
         except Exception:
             pass
     if isinstance(value,tuple) | isinstance(value,list):
         try:
-            ans=_np.array(value)
+            ans=_N.array(value)
             if str(ans.dtype)[1:2] in 'SU':
                 ans = ans.astype(_ver.npstr)
             return makeArray(ans)
@@ -33,17 +32,17 @@ def makeArray(value):
             newlist=list()
             for i in value:
                 newlist.append(_data.makeData(i).data())
-            return makeArray(_np.array(newlist))
-    if isinstance(value,_np.ndarray):
+            return makeArray(_N.array(newlist))
+    if isinstance(value,_N.ndarray):
         if str(value.dtype)[0:2] in ['|S', '<U']:
             return StringArray(value)
         if str(value.dtype) == 'bool':
-            return makeArray(value.__array__(_np.uint8))
+            return makeArray(value.__array__(_N.uint8))
         if str(value.dtype) == 'object':
             raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
         return globals()[str(value.dtype).capitalize()+'Array'](value)
-    if isinstance(value,(_np.generic, int, _ver.long, float, str, bool)):
-        return makeArray(_np.array(value).reshape(1))
+    if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
+        return makeArray(_N.array(value).reshape(1))
     raise TypeError('Cannot make Array out of '+str(type(value)))
 
 def arrayDecompile(a,cl):
@@ -72,17 +71,17 @@ class Array(_data.Data):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
         if self.__class__.__name__ == 'StringArray':
-            self._value=_np.array(value).__array__(_np.str_)
+            self._value=_N.array(value).__array__(_N.str_)
             return
         if isinstance(value,_C.Array):
             try:
-                value=_np.ctypeslib.as_array(value)
+                value=_N.ctypeslib.as_array(value)
             except Exception:
                 pass
-        value = _np.array(value)
+        value = _N.array(value)
         if len(value.shape) == 0:  # happens if value has been a scalar, e.g. int
             value = value.reshape(1)
-        self._value = value.__array__(_np.__dict__[self.__class__.__name__[0:-5].lower()])
+        self._value = value.__array__(_N.__dict__[self.__class__.__name__[0:-5].lower()])
         return
 
     def __getattr__(self,name):
