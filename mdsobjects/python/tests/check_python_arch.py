@@ -10,6 +10,8 @@
 import ctypes,sys,os
 if sys.platform.startswith('win'):
     lib='MdsShr.dll'
+elif sys.platform.startswith('darwin'):
+    lib='libMdsShr.dylib'
 else:
     lib='libMdsShr.so'
     
