@@ -1,4 +1,96 @@
-commit aab091443276833768e45b5ebfcf4e8ee354326f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 0212353836e9281ad81f61bcb5e2a4b02f1fe012 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 7633e29 a1257ad
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 15:56:43 2015 -0400
+
+    Merge pull request #163 from zack-vii/aa_python
+    
+    builin.py   newargs vs. args[1]
+
+commit a1257addb1178a38daa61477b622250f43ed1c0f
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 15 21:37:05 2015 +0200
+
+    builin.py   newargs vs. args[1]
+    
+    either use newargs or assume tuple
+    but il len(args)==1 the old form errors
+
+commit 7633e29014f522f68e5a28f314731b8a0ccf43b6
+Merge: 7200077 b86d43a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 14:42:13 2015 -0400
+
+    Merge pull request #161 from zack-vii/a_python_mathops
+    
+    added _scalar for Float32 and import of mdsdata
+
+commit b86d43a1220237cf151aecb0b1fce77351aef150
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 15 19:51:36 2015 +0200
+
+    added _scalar for Float32 and import of mdsdata
+    
+    coz they were missing
+
+commit 72000774be1ed0a0190af5f9ad3a71732008cada
+Merge: da2b86b 01bb934
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:36:34 2015 -0400
+
+    Merge pull request #160 from MDSplus/twf-fix-test-for-windows-alpha
+    
+    Do not try deletePulse on shots already open for write access. Ok on …
+
+commit da2b86bfb6bba7b494339459b236970e04c2b150
+Merge: 1568774 d152cec
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:28:05 2015 -0400
+
+    Merge pull request #156 from MDSplus/twf-include-version-info-in-package
+    
+    Fix to inclusion of version info in package. Must restore __init__.py…
+
+commit 15687743d76b879035d7b0d0e74e071020ea8e26
+Merge: e538274 2d9699c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:27:15 2015 -0400
+
+    Merge pull request #155 from MDSplus/twf-use-weakref-for-active-tree
+    
+    Twf use weakref for active tree
+
+commit 01bb934f1fc9ca1ed82f7e3413e390c85ef56a1b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 13:18:56 2015 -0400
+
+    Do not try deletePulse on shots already open for write access. Ok on linux but not on Windows
+
+commit d152cecf268f716b7d52fbe7738551e7b52e4b86
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 12:21:51 2015 -0400
+
+    Fix to inclusion of version info in package. Must restore __init__.py even if exception occurs during setup
+
+commit 2d9699c779dc75ab7223544f80b7974b309a0289
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 12:11:19 2015 -0400
+
+    Python3 raises an exception in ininstance check if weak reference points to deleted instance
+
+commit 78158ccf866a7600c53b88d42d4268e1ae5a63be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 11:33:40 2015 -0400
+
+    Use a weakref proxy for the Tree._activeTree property to enable proper cleanup of Tree instances
+
+commit e538274c567532a86504fc8a26c16bc6e8ae3883 (tag: refs/tags/alpha_release-7-0-162)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 14 23:40:56 2015 -0400
+
+    New release ---- alpha_release-7-0-162
+
+commit aab091443276833768e45b5ebfcf4e8ee354326f
 Merge: 7008337 8b58cec
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 14 13:58:42 2015 -0400
