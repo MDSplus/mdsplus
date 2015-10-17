@@ -1,4 +1,25 @@
-commit 0212353836e9281ad81f61bcb5e2a4b02f1fe012 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 484be3fb5f2ff65a410aa4e8a25c7526c8aa73e5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: ff9ffd3 a1b2cda
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 16 10:26:04 2015 -0400
+
+    Merge pull request #150 from zack-vii/a_python
+    
+    rearraged import and _mimport
+
+commit ff9ffd3eb82b61e7f2441063a4d3fa2afe36ea1b (tag: refs/tags/alpha_release-7-0-163)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 15 23:37:47 2015 -0400
+
+    New release ---- alpha_release-7-0-163
+
+commit a1b2cda71044ec9d50a8ffb050f6bfea7851c219
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 16 02:26:36 2015 +0200
+
+    try-except-mimport
+
+commit 0212353836e9281ad81f61bcb5e2a4b02f1fe012
 Merge: 7633e29 a1257ad
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 15 15:56:43 2015 -0400
@@ -16,6 +37,14 @@ Date:   Thu Oct 15 21:37:05 2015 +0200
     either use newargs or assume tuple
     but il len(args)==1 the old form errors
 
+commit e98773a11c4c2bcf239e7c832c85246d67e25fa6
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 15 20:15:19 2015 +0200
+
+    new _mimport functions
+    
+    all alike and at the topmost position
+
 commit 7633e29014f522f68e5a28f314731b8a0ccf43b6
 Merge: 7200077 b86d43a
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -24,6 +53,15 @@ Date:   Thu Oct 15 14:42:13 2015 -0400
     Merge pull request #161 from zack-vii/a_python_mathops
     
     added _scalar for Float32 and import of mdsdata
+
+commit e31c2647498628d2edba60fa8c2780a84570877d
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 20:28:27 2015 +0200
+
+    rearraged import and _mimport
+    
+    -more straight forward way of importing modules.
+    -maybe not much faster but more consistent ; w/o level
 
 commit b86d43a1220237cf151aecb0b1fce77351aef150
 Author: zack-vii <zack.vii@live.com>
