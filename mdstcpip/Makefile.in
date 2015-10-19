@@ -7,7 +7,7 @@ VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 @MINGW_TRUE@ WIN=.win
-@MINGW_TRUE@ DEF=mdsipshr.def
+@MINGW_TRUE@ DEF=${srcdir}/mdsipshr.def
 
 COMPRESSION_SOURCES = zlib/adler32.c \
                       zlib/compress.c \

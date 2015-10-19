@@ -1,7 +1,9 @@
 include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
 VPATH = @srcdir@
-@MINGW_TRUE@ DEF=MdsSql.def
+@MINGW_TRUE@ DEF=${srcdir}/MdsSql.def
 
 CFLAGS=@CFLAGS@ @SYBASE_INC@ @TARGET_ARCH@
 LD_FLAGS=$(LDFLAGS) @TARGET_ARCH@

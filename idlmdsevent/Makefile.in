@@ -1,5 +1,7 @@
 include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
 VPATH = @srcdir@
 CFLAGS=@CFLAGS@ @IDL_INC@ @X_CFLAGS@ @TARGET_ARCH@
 LDFLAGS=@LDFLAGS@ @IDL_LIB@ @TARGET_ARCH@
@@ -8,7 +10,7 @@ X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
 
 @MINGW_FALSE@ XLIBS = $(X_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS)
-@MINGW_TRUE@ DEF=idlmdsevent.def
+@MINGW_TRUE@ DEF=${srcdir}/idlmdsevent.def
 
 LIBS=$(XLIBS) @LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr
 

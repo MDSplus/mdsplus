@@ -1,7 +1,9 @@
 include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
 VPATH = @srcdir@
-@MINGW_TRUE@ DEF=remcam.def
+@MINGW_TRUE@ DEF=${srcdir}/remcam.def
 
 LIBS=@LIBS@
 
