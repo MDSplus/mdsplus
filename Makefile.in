@@ -3,6 +3,10 @@
 
 include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH=@srcdir@
+
 JAVA_APS = javamds \
 	   javascope \
            javatraverser \
@@ -122,9 +126,9 @@ $(install_DIRS):
 install: $(install_DIRS)
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
-	tar cf - $(MISC_PARTS) | (cd $(exec_prefix); tar xf -)
+	tar -C ${top_srcdir} -cf - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
-	$(INSTALL) MDSplus-License.txt MDSplus-License.rtf $(exec_prefix)
+	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 # Interdependent directories:
