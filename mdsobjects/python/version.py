@@ -103,7 +103,10 @@ def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
         return targ(string)
     if isinstance(string, npscalar):
-        return targ(conv(string.astype(nptarg)))
+        try:
+            return targ(string.astype(nptarg))
+        except:  # might happen on non ansii chars
+            return targ(conv(str(string)))
     if isinstance(string, basestring):
         return targ(conv(string))
     if isinstance(string, nparray):

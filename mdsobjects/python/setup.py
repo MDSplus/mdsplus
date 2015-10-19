@@ -77,7 +77,6 @@ __version__="%s%s"
       ],
       keywords = ('physics','mdsplus',),
 #       install_requires=['numpy','ctypes'],
-#      include_package_data = True,
       test_suite='tests.test_all',
       zip_safe = False,
     )
