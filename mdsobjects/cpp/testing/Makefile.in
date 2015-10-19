@@ -1675,7 +1675,7 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
 #prova:
 #	echo $(TEST_LOGS);
@@ -1689,7 +1689,7 @@ log: $(TEST_SUITE_LOG)
 tests:
 	echo "Making tests ... "
 	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) log;
+	 $(MAKE) $(AM_MAKEFLAGS) tap;
 	else
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi

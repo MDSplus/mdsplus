@@ -1,5 +1,6 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TdiShr.dll.a
 @MINGW_TRUE@ DEF=TdiShr.def
 

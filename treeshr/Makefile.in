@@ -1,5 +1,6 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 CFLAGS=@CFLAGS@ @SRBINCLUDE@ $(THREAD)
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@ @SOCKETLIB@ $(THREAD)
 

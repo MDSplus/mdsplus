@@ -1,5 +1,6 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 @MINGW_TRUE@ DEF=javamds.def
 
 CFLAGS += -I /media/sf_FedoraShared/include/ -I /media/sf_FedoraShared/include/win32 $(THREAD) @JDK_CFLAGS@

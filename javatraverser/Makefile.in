@@ -246,6 +246,7 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
+HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
@@ -324,7 +325,12 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PYTHON = @PYTHON@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
+PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -408,9 +414,13 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
+pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -438,6 +448,7 @@ docsdir = $(exec_prefix)/java/classes/docs
 # Build the class files
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 java_JAVA = $(SOURCES)
+GIFS = $(addprefix ${srcdir}/,$(_GIFS))
 
 # Build the final jar
 java_DATA = jTraverser.jar DeviceBeans.jar TreeServer_Stub.class
@@ -595,7 +606,7 @@ SOURCES = \
 	LoadFile.java \
 	StoreFile.java
 
-GIFS = \
+_GIFS = \
 	DeviceApply.gif    \
 	DeviceButtons.gif  \
 	DeviceCancel.gif   \
@@ -952,7 +963,7 @@ jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
 	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(GIFS)
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	$(JAR) c0fm $@ DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
+	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

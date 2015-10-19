@@ -369,7 +369,12 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PYTHON = @PYTHON@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
+PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -453,9 +458,13 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
+pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -482,7 +491,7 @@ AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 #
 noinst_LIBRARIES = libMdsTest.a libMdsTestBackend.a
 libMdsTest_a_SOURCES = base_backend.c
-libMdsTestBackend_a_CFLAGS = -Ibackends/check $(AM_CFLAGS)
+libMdsTestBackend_a_CFLAGS = -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 
 #
@@ -858,7 +867,7 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
@@ -869,7 +878,7 @@ build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
 	status=0;
 	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
+	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done; \
 	echo; \
@@ -886,7 +895,7 @@ build_tests: $(MdsTestShr)
 clean_tests: 
 	list='$(TEST_SUBDIRS)';
 	for subdir in $$list; do echo "Cleaning in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
+	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
 	done;
 
 taps: all clean_tests build_tests

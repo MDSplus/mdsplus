@@ -1,6 +1,6 @@
 SUBDIRS = backends/check .
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
@@ -15,7 +15,7 @@ libMdsTest_a_SOURCES = base_backend.c
 # only check backend for now
 #
 noinst_LIBRARIES += libMdsTestBackend.a
-libMdsTestBackend_a_CFLAGS = -Ibackends/check $(AM_CFLAGS)
+libMdsTestBackend_a_CFLAGS = -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 
 
@@ -40,7 +40,7 @@ build_tests: $(MdsTestShr)
 	list='$(TEST_SUBDIRS)';
 	status=0;
 	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
+	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
 	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
 	done; \
 	echo; \
@@ -57,7 +57,7 @@ build_tests: $(MdsTestShr)
 clean_tests: 
 	list='$(TEST_SUBDIRS)';
 	for subdir in $$list; do echo "Cleaning in $$subdir"; \
-	 $(am__cd) ${top_srcdir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
+	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
 	done;
 	
 

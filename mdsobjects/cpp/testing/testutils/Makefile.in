@@ -821,7 +821,8 @@ uninstall-am: uninstall-library_includeHEADERS
 
 .PRECIOUS: Makefile
 
-include ${top_srcdir}/Makefile.inc
+
+include @top_builddir@/Makefile.inc
 
 #
 # This library aims to provide the test symbols for the MdsCall object check

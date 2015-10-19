@@ -30,10 +30,7 @@ THREAD = @THREAD@
 
 EXE = @EXEEXT@
 
-abs_builddir = @abs_builddir@
-abs_srcdir = @abs_srcdir@
-abs_top_builddir = @abs_top_builddir@
-abs_top_srcdir = @abs_top_srcdir@
+
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -68,13 +65,17 @@ program_transform_name = @program_transform_name@
 psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
-srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 top_build_prefix = @top_build_prefix@
+tooldir = $(exec_prefix)/$(target_alias)
+
+
+abs_top_builddir = @abs_top_builddir@
+abs_top_srcdir = @abs_top_srcdir@
+
 #FIXME: Hack because this isn't really automake
 top_builddir = @abs_top_builddir@
 top_srcdir = @abs_top_srcdir@
-tooldir = $(exec_prefix)/$(target_alias)
 
 
 $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddir@ $(bindir) $(libdir) $(sysconfdir)):

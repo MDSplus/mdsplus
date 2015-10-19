@@ -1,5 +1,6 @@
 #ifndef FORTRAN_ENTRY_POINTS
 
+
 /*************************************************************************
 Note: This file gets loaded twice during compilation. Once to compile
 the C entry points and a second time to generate the Fortran specific
@@ -1876,5 +1877,9 @@ int FortranMdsOpen(char *tree, int *shot)
 }
 #endif
 
-#include __FILE__
+// #include __FILE__
+#define _STRINGIZE(s) __STRINGIZE(s)
+#define __STRINGIZE(s) #s
+#include _STRINGIZE(FILENAME)
+
 #endif

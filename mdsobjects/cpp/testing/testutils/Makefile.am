@@ -1,4 +1,5 @@
-include ${top_srcdir}/Makefile.inc
+
+include @top_builddir@/Makefile.inc
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 

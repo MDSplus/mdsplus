@@ -7013,10 +7013,10 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-MAKEUIDDIR="\$(top_srcdir)/uid/"
-MAKESHLIBDIR="\$(top_srcdir)/lib/"
-MAKEBINDIR="\$(top_srcdir)/bin/"
-MAKELIBDIR="\$(top_srcdir)/lib/"
+MAKEUIDDIR="\$(top_builddir)/uid/"
+MAKESHLIBDIR="\$(top_builddir)/lib/"
+MAKEBINDIR="\$(top_builddir)/bin/"
+MAKELIBDIR="\$(top_builddir)/lib/"
 EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
@@ -7347,18 +7347,18 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
            TARGET_ARCH="-m64"
            UILCMD=uil
            uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
+	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
          else
            TARGET_ARCH="-m32"
            UILCMD=uil32
            uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_srcdir)/lib32/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
-           MAKEUIDDIR="\$(top_srcdir)/uid32/"
-           MAKEBINDIR="\$(top_srcdir)/bin32/"
+           MAKELIBDIR="\$(top_builddir)/lib32/"
+           MAKESHLIBDIR="\$(top_builddir)/lib32/"
+           MAKEUIDDIR="\$(top_builddir)/uid32/"
+           MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
        FFLAGS="$FFLAGS -fno-range-check"
@@ -7488,7 +7488,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
+       MAKESHLIBDIR="\$(top_builddir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
@@ -9177,29 +9177,6 @@ fi
 done
 
 
-
-## CHECK related ##
-for ac_func in mkstemp
-do :
-  ac_fn_c_check_func "$LINENO" "mkstemp" "ac_cv_func_mkstemp"
-if test "x$ac_cv_func_mkstemp" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_MKSTEMP 1
-_ACEOF
-
-fi
-done
-
-for ac_func in fork
-do :
-  ac_fn_c_check_func "$LINENO" "fork" "ac_cv_func_fork"
-if test "x$ac_cv_func_fork" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_FORK 1
-_ACEOF
-
-fi
-done
 
 
 
@@ -11069,6 +11046,35 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = xyes; then :
 else
   LIBXP=""
 fi
+
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  TESTS    ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## CHECK related ##
+for ac_func in mkstemp
+do :
+  ac_fn_c_check_func "$LINENO" "mkstemp" "ac_cv_func_mkstemp"
+if test "x$ac_cv_func_mkstemp" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MKSTEMP 1
+_ACEOF
+
+fi
+done
+
+for ac_func in fork
+do :
+  ac_fn_c_check_func "$LINENO" "fork" "ac_cv_func_fork"
+if test "x$ac_cv_func_fork" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_FORK 1
+_ACEOF
+
+fi
+done
 
 
 
@@ -13379,9 +13385,6 @@ esac
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
-
-
-
 
 
 

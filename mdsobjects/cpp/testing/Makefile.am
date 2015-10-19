@@ -1,6 +1,6 @@
 SUBDIRS = testutils .
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 include ../../../testing/testing.am
 
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)

@@ -1,4 +1,8 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
+
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
 
 CFLAGS += $(THREAD) @GLOBUS_CFLAGS@ -I/usr/include/libxml2
 LDFLAGS += $(THREAD)
@@ -35,9 +39,16 @@ SOURCES = \
 	UdpEvents.c \
 	UdpEventSettings.c
 
-OBJECTS = $(SOURCES:.c=.o)
+OBJECTS = $(SOURCES:.c=.o) 
+           
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@ $(libs)
+
+
+printsrc:
+	for i in $(OBJECTS); do \
+	 echo $$i; \
+	done
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)

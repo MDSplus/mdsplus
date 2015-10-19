@@ -389,8 +389,7 @@ PY_LOG_COMPILE = $(PY_LOG_COMPILER) $(AM_PY_LOG_FLAGS) $(PY_LOG_FLAGS)
 TEST_LOGS = $(am__test_logs3:.pl.log=.log)
 PL_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
 PL_LOG_COMPILE = $(PL_LOG_COMPILER) $(AM_PL_LOG_FLAGS) $(PL_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/../../testing/testing.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp \
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp \
 	$(top_srcdir)/conf/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -652,30 +651,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-PY_LOG_COMPILER = python
-PY_LOG_FLAGS = -v
-
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
-TEST_SUITE_TAP = test-suite.tap
-TEST_BUILD_TAP = test-build.tap
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = :
-@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
-@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
@@ -718,7 +693,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .cpp .log .o .obj .pl .pl$(EXEEXT) .py .py$(EXEEXT) .trs
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -738,7 +713,6 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/../../testing/testing.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -1254,55 +1228,8 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
-include ${top_srcdir}/Makefile.inc
-
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-.PHONY: tap xml log
-tap: $(TEST_SUITE_TAP)
-xml: $(TEST_SUITE_XML)
-log: $(TEST_SUITE_LOG)
-
-tests:
-	echo "Making tests ... "
-	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) log;
-	else
-	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
-	fi
-
-.ONESHELL:
-$(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
-
-	echo "TAP version 13" > $@;
-	count=0;
-	for i in $(check_PROGRAMS); do \
-	  if ! $(MAKE) -q $$i; then \
-	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
-	    { ((count++)); \
-	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
-	    }; \
-	  fi; \
-	done; \
-	echo "1..$${count}" >> $@;
-
-.ONESHELL:
-$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-	export TEST_FORMAT="tap";
-
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
-	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
-	 || exit 1;
-
-.PHONY: clean-local-tests
-clean-local-tests:
-	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+include @top_builddir@/Makefile.inc
+include @top_srcdir@/testing/testing.am
 
 all-local: $(TESTS)
 clean-local: clean-local-tests                    

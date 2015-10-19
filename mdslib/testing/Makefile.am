@@ -1,5 +1,5 @@
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 include ../../testing/testing.am
 
 

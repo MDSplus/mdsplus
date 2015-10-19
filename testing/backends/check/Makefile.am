@@ -1,6 +1,4 @@
-SUBDIRS = .
-
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
 LIBS = -L@MAKESHLIBDIR@ @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD) @LIBDL@
 

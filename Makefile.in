@@ -1,7 +1,7 @@
 #@(#)$RCSfile$ $Revision$
 # @configure_input@
 
-include Makefile.inc
+include @top_builddir@/Makefile.inc
 
 JAVA_APS = javamds \
 	   javascope \

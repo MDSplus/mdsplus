@@ -297,10 +297,10 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-MAKEUIDDIR="\$(top_srcdir)/uid/"
-MAKESHLIBDIR="\$(top_srcdir)/lib/"
-MAKEBINDIR="\$(top_srcdir)/bin/"
-MAKELIBDIR="\$(top_srcdir)/lib/"
+MAKEUIDDIR="\$(top_builddir)/uid/"
+MAKESHLIBDIR="\$(top_builddir)/lib/"
+MAKEBINDIR="\$(top_builddir)/bin/"
+MAKELIBDIR="\$(top_builddir)/lib/"
 EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
@@ -421,18 +421,18 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            TARGET_ARCH="-m64"
            UILCMD=uil
            uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
+	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
          else
            TARGET_ARCH="-m32"
            UILCMD=uil32
            uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_srcdir)/lib32/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
-           MAKEUIDDIR="\$(top_srcdir)/uid32/"
-           MAKEBINDIR="\$(top_srcdir)/bin32/"
+           MAKELIBDIR="\$(top_builddir)/lib32/"
+           MAKESHLIBDIR="\$(top_builddir)/lib32/"
+           MAKEUIDDIR="\$(top_builddir)/uid32/"
+           MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
        FFLAGS="$FFLAGS -fno-range-check"
@@ -566,7 +566,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
+       MAKESHLIBDIR="\$(top_builddir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
@@ -1108,9 +1108,6 @@ AH_VERBATIM([_WIN32], [
 
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
-
-
-
 
 
 
