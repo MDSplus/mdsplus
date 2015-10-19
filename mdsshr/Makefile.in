@@ -44,12 +44,6 @@ OBJECTS = $(SOURCES:.c=.o)
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@ $(libs)
 
-
-printsrc:
-	for i in $(OBJECTS); do \
-	 echo $$i; \
-	done
-
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 

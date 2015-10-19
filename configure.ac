@@ -386,9 +386,9 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
        fi
-       MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
+       MAKELIBDIR="\$(top_builddir)/$BINDIR/"
+       MAKESHLIBDIR="\$(top_builddir)/$BINDIR/"
+       MAKEBINDIR="\$(top_builddir)/$BINDIR/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
