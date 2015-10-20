@@ -65,6 +65,7 @@ for exception in _all:
     _statusDict[_all[exception].status & -8]=_all[exception]
 
 def statusToException(status):
+  status = int(status)
   if (status & -8) in _statusDict:
     return _statusDict[status & -8](status)
   elif status == 0:
