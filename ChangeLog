@@ -1,4 +1,42 @@
-commit 484be3fb5f2ff65a410aa4e8a25c7526c8aa73e5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8f72558e92b533175f7a047a1ecfd4cb74aef877 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: b02ac1d a54a51d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 19 08:14:25 2015 -0400
+
+    Merge pull request #165 from zack-vii/a_python
+    
+    A python
+
+commit b02ac1d562bba692adf2c788cbe7fe99c13d05bd
+Merge: 81fa1db e8e31e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 19 08:10:38 2015 -0400
+
+    Merge pull request #166 from zack-vii/aa_python
+    
+    version numpy to bytes fix
+
+commit e8e31e8c461369493bf5c7be187e23b6fbd23555
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Oct 19 11:29:19 2015 +0200
+
+    version numpy to bytes fix
+    
+    +minor change at setup
+
+commit 81fa1db7e8c1d467606715d0fe7d23182d5ed26e (tag: refs/tags/alpha_release-7-0-164)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Oct 16 23:34:42 2015 -0400
+
+    New release ---- alpha_release-7-0-164
+
+commit a54a51d58322d30f4aa8e218d8d13adee12bf083
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 16 19:55:39 2015 +0200
+
+    weakref unused, mds from _Exceptions
+
+commit 484be3fb5f2ff65a410aa4e8a25c7526c8aa73e5
 Merge: ff9ffd3 a1b2cda
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Oct 16 10:26:04 2015 -0400
