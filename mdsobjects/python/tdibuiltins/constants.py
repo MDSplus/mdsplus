@@ -2,7 +2,10 @@ def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
-        return __import__(name, globals())
+        try:
+            return __import__(name, globals())
+        except:
+            return __import__('MDSplus.'+name,globals())
 
 _builtin=_mimport('builtin')
 Builtin=_builtin.Builtin
