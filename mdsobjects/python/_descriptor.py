@@ -17,10 +17,11 @@ _ident=_mimport('ident')
 _apd=_mimport('apd')
 _compound=_mimport('compound')
 _mdsshr=_mimport('_mdsshr')
-_tdi=_mimport('tdibuiltins')
 _ver=_mimport('version')
 _array=_mimport('mdsarray')
 _scalar=_mimport('mdsscalar')
+# _tdi=_mimport('tdibuiltins') <- import in _getValue: prevents circle dependency in builtin due to import in python 2.4
+
 
 def pointerToObject(pointer):
     if pointer == 0:
@@ -324,6 +325,7 @@ class descriptor(_C.Structure):
         return str().rjust(descriptor.indentation*4)+"length="+_ver.tostr(self.length)+", dtype="+_ver.tostr(_dtypes.mdsdtypes(self.dtype))+", dclass="+_ver.tostr(_mdsclasses.mdsclasses(self.dclass))+ptrstr
 
     def _getValue(self):
+        _tdi=_mimport('tdibuiltins')
         def d_contents(dsc):
             try:
                 return dsc.contents.value
