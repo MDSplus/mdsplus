@@ -1,4 +1,47 @@
-commit 8f72558e92b533175f7a047a1ecfd4cb74aef877 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit e6a5f09d7ace4e99fc2826852205261f0624cbdf (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 31fe619 a682e1c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 20 16:23:30 2015 -0400
+
+    Merge pull request #170 from zack-vii/aa_python
+    
+    mimport: fix for python 2.4
+
+commit a682e1c726058957f2a100ec0f89629842944409
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 20 21:57:59 2015 +0200
+
+    mimport: fix for python 2.4
+    
+    - added missing second stage in tdibuiltins.constants
+    - relocate tdibuiltins import in _descriptors to prevent circle
+    dependency in tdibuiltins.builtin
+
+commit 31fe6195d6ab8a69e2944d89185389caeb86732b
+Merge: 8f02a8e 2a39095
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 20 14:19:30 2015 -0400
+
+    Merge pull request #168 from zack-vii/aa_python
+    
+    mdsExceptions.statusToException: status to int
+
+commit 2a390951f2ac69b96366a0765f57ac4080dde676
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 20 18:32:10 2015 +0200
+
+    mdsExceptions.statusToException: status to int
+    
+    status cannot be Uint32 as returned by C calls or it will not be found
+    in _statusDict
+
+commit 8f02a8ea0aaf122bb879f6b29f382e11db3c63c4 (tag: refs/tags/alpha_release-7-0-165)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Oct 19 23:35:00 2015 -0400
+
+    New release ---- alpha_release-7-0-165
+
+commit 8f72558e92b533175f7a047a1ecfd4cb74aef877
 Merge: b02ac1d a54a51d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Oct 19 08:14:25 2015 -0400
