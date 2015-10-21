@@ -186,10 +186,7 @@ class TreeNode(_data.Data):
         """
         self.__dict__['nid']=int(n);
         if tree is None:
-            try:
-                self.tree=_tree.Tree.getActiveTree()
-            except:
-                self.tree=_tree.Tree()
+            self.tree=_tree.Tree()
         else:
             self.tree=tree
 
@@ -1125,7 +1122,7 @@ class TreePath(TreeNode):
     def __init__(self,path,tree=None):
         self.tree_path=_data.makeData(str(path));
         if tree is None:
-            self.tree=_tree.Tree.getActiveTree()
+            self.tree=_tree.Tree()
         else:
             self.tree=tree
         return
@@ -1138,7 +1135,7 @@ class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):
         self.nids=_array.Int32Array(nids)
         if tree is None:
-            self.tree=_tree.Tree.getActiveTree()
+            self.tree=_tree.Tree()
         else:
             self.tree=tree
 

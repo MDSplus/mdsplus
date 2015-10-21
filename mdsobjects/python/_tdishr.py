@@ -30,7 +30,7 @@ def _TdiShrFun(function,errormessage,expression,args=None):
     Tree = _tree.Tree
     Tree.lock()
     try:
-        tree = Tree.getActiveTree()
+        tree = Tree()
         if tree is not None:
             tree.restoreContext()
         status = function(*arguments)
