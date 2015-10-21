@@ -885,7 +885,7 @@ then
 elif ( echo $host | grep "mingw" >/dev/null )
 then
     SYBASE_INC="-DSYBASE"
-    SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
+    SYBASE_LIB="-L\${srcdir} -lntwdblib${SQL_ARCH}"
     SYBASE="SYBASE"
     AC_MSG_RESULT(using Windows mssql)
 elif test "$(echo $SYBASE_LIB | grep '\-L')" = ""

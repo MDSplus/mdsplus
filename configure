@@ -9845,7 +9845,7 @@ $as_echo "no sybase open/client" >&6; }
 elif ( echo $host | grep "mingw" >/dev/null )
 then
     SYBASE_INC="-DSYBASE"
-    SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
+    SYBASE_LIB="-L\${srcdir} -lntwdblib${SQL_ARCH}"
     SYBASE="SYBASE"
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: using Windows mssql" >&5
 $as_echo "using Windows mssql" >&6; }
