@@ -5,10 +5,8 @@ include ../../testing/testing.am
 
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS) 
-
-AM_LIBS = @LIBS@ -lMdsLib -lMdsShr -lTreeShr
-
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+LDADD = $(TEST_LIBS) @LIBS@ -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
@@ -18,7 +16,7 @@ TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
 TESTS = \
-        dtype_test 
+        dtype_test
         
 #        mdslib_ctest
 

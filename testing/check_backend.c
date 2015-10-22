@@ -6,8 +6,12 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/unistd.h>
-#include <sys/wait.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/wait.h>
+#endif
 
 #include <check.h>
 #include <check_list.h>
@@ -81,7 +85,7 @@ static void revertStdout()
 
 ///  Signal handler for the proces created by test fork
 ///
-
+#if defined(HAVE_FORK)
 static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr)
 {
     
@@ -121,7 +125,7 @@ static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr)
         break;
     }
 }
-
+#endif
 
 
 
@@ -596,6 +600,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
     tcase  = tcase_create(test_name);
     suite_add_tcase(suite,tcase);    
     
+    #if defined(HAVE_FORK)
     if(cur_fork_status() == CK_FORK ) {
         
         // SIGALRM //
@@ -613,6 +618,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
         sigterm_new_action.sa_handler = sig_handler;
         sigaction(SIGTERM, &sigterm_new_action, &sigterm_old_action);
     }
+    #endif
     
     // mark point in case signal is received before any test //
     send_loc_info(file,line);    
@@ -632,6 +638,7 @@ int __setup_parent() {
     
     
     // FORK //
+    #if defined(HAVE_FORK)
     if( cur_fork_status() == CK_FORK )                        
     {
         pid_t pid = fork();        
@@ -688,23 +695,25 @@ int __setup_parent() {
     tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);
     if(tr) srunner_add_failure(runner, tr);
     srunner_send_evt(runner, tr, CLEND_T);
-
     return 1;
+#else 
+    return 0;
+#endif
 }
 
 
 
 int __setup_child() {
 
+#if defined(HAVE_FORK)
     if(cur_fork_status() == CK_FORK ) {
         setpgid(0, 0);
         group_pid = getpgrp();
         return 1;
     }
-    else {
-        srunner_send_evt(runner, tcase, CLSTART_T);
-        return 0 == setjmp(error_jmp_buffer);
-    }
+#endif
+    srunner_send_evt(runner, tcase, CLSTART_T);
+    return 0 == setjmp(error_jmp_buffer);
 }
 
 

@@ -986,7 +986,10 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
 
+AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+             [LIBRT="-lrt"],[LIBRT=""])
 
+# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
@@ -1155,6 +1158,7 @@ AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
+AC_SUBST(LIBRT)
 AC_SUBST(LINKSHARED)
 AC_SUBST(LINKJNI)
 AC_SUBST(LINKMODULE)

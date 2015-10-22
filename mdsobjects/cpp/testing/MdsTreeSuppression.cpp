@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <mdsobjects.h>
 
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include <dbidef.h>
 #include <ncidef.h>
@@ -24,7 +26,12 @@ using namespace testing;
 
 int main(int argc, char *argv[])
 {
+
+#ifdef _WIN32
+    _putenv_s("leaktest_path",".");
+#else
     setenv("leaktest_path",".",1);
+#endif
     
     Tree * tree = new Tree("leaktest",-1,"NEW");    
     Tree * tree2 = new Tree("leaktest",-1,"EDIT");

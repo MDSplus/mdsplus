@@ -77,15 +77,25 @@ void print_segment_info(TreeNode *node, int segment = -1)
 } // testing
 
 
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 
 int main(int argc, char *argv[])
 {
     BEGIN_TESTING(TreeNode);
     
+    
+#ifdef _WIN32    
+    _putenv_s("test_tree_path",".");
+    _putenv_s("test_tree2_path",".");
+#else
     setenv("test_tree_path",".",1);
     setenv("test_tree2_path",".",1);
+#endif    
+    
+    
     unique_ptr<Tree> tree = new Tree("test_tree",-1,"NEW");
     unique_ptr<Tree> tree2 = new Tree("test_tree2",-1,"NEW");
     

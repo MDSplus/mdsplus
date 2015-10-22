@@ -171,6 +171,12 @@ struct itimerspec
  */
 struct sigevent;
 
+#ifdef _WIN32
+struct __timer_t {};
+typedef struct __timer_t timer_t;
+#endif
+
+
 CK_DLL_EXP int clock_gettime(clockid_t clk_id, struct timespec *ts);
 CK_DLL_EXP int timer_create(clockid_t clockid, struct sigevent *sevp,
                             timer_t * timerid);

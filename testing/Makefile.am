@@ -22,9 +22,11 @@ libMdsTestBackend_a_SOURCES = check_backend.c
 #
 # Shared library
 #
+# @MINGW_TRUE@ DEF=${srcdir}/MdsTestShr.def
+# @MINGW_TRUE@ MAKE_IMPLIB_MdsTestShr=-Wl,--out-implib,@MAKELIBDIR@MdsTestShr.dll.a
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
-	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
+	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
 
 TEST_SUBDIRS = \

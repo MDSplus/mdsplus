@@ -2,6 +2,20 @@
 #include <assert.h>
 #include <string.h>
 
+#ifdef _WIN32
+#define __THROW
+#else
+#include <sys/cdefs.h>
+#endif
+
+#ifdef _WIN32
+#define __STRING(x)	#x
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //  ASSERT  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,10 +38,14 @@
 //     __assert_fail(expr, __FILE__, __LINE__, __ASSERT_FUNCTION)
 
 
-// Assertion fail declaration as found in assert.h //
-extern void __assert_fail (const char *__assertion, const char *__file,
-                           unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
+
+#ifdef _WIN32
+#  if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+#   define __ASSERT_FUNCTION	__func__
+#  else
+#   define __ASSERT_FUNCTION	((const char *) 0)
+#  endif
+#endif
 
 
 
@@ -72,26 +90,31 @@ __THROW __attribute__ ((__noreturn__));
 #endif
 
 
+
 #if defined __cplusplus 
 extern "C" {
 #endif
 
+// Assertion fail declaration as found in assert.h //
+EXPORT void __assert_fail (const char *__assertion, const char *__file,
+                           unsigned int __line, const char *__function)
+__THROW __attribute__ ((__noreturn__));
 
-void __test_setfork(const int value);
+EXPORT void __test_setfork(const int value);
 
-void __test_init(const char *test_name, const char *file, const int line);
+EXPORT void __test_init(const char *test_name, const char *file, const int line);
 
-void __test_end();
+EXPORT void __test_end();
 
-int  __setup_parent();
+EXPORT int  __setup_parent();
 
-int  __setup_child();
+EXPORT int  __setup_child();
 
-void __test_assert_fail(const char *file, int line, const char *expr, ...);
+EXPORT void __test_assert_fail(const char *file, int line, const char *expr, ...);
 
-void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
+EXPORT void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
 
-void __test_exit() __attribute__ ((__noreturn__));
+EXPORT void __test_exit() __attribute__ ((__noreturn__));
 
 
 #if defined __cplusplus 

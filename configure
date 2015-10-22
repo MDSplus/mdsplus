@@ -668,6 +668,7 @@ LV
 LINKMODULE
 LINKJNI
 LINKSHARED
+LIBRT
 LIBXEXT
 LIBXP
 LIBSOCKET
@@ -8673,6 +8674,7 @@ $as_echo "$have_readline" >&6; }
         fi
      done
 
+
      unset _termcap
      unset LIBS_save
      unset CPPFLAGS_save
@@ -11076,7 +11078,50 @@ fi
 done
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for clock_gettime, timer_create, timer_settime, timer_delete in -lrt" >&5
+$as_echo_n "checking for clock_gettime, timer_create, timer_settime, timer_delete in -lrt... " >&6; }
+if ${ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lrt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
 
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char clock_gettime, timer_create, timer_settime, timer_delete ();
+int
+main ()
+{
+return clock_gettime, timer_create, timer_settime, timer_delete ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete=yes
+else
+  ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" >&5
+$as_echo "$ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" >&6; }
+if test "x$ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" = xyes; then :
+  LIBRT="-lrt"
+else
+  LIBRT=""
+fi
+
+
+# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
@@ -13384,6 +13429,7 @@ esac
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
+
 
 
 

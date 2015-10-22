@@ -1,8 +1,15 @@
+#ifdef _WIN32
+// if windows skip this test .. TODO: return skip code
+int main(int argc, char *argv[]) {return 0;}
+#else 
+
 #include <unistd.h>
 #include <fstream>
 #include <sys/types.h>
 #include <signal.h>
-#include <sys/wait.h>
+
+
+# include <sys/wait.h>
 
 #include <mdsobjects.h>
 
@@ -116,3 +123,5 @@ int main(int argc, char *argv[])
     
     END_TESTING;
 }
+
+#endif

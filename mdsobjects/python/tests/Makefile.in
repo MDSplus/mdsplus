@@ -432,6 +432,7 @@ LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
+LIBRT = @LIBRT@
 LIBS = @LIBS@
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
@@ -584,7 +585,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
+TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 PY_LOG_COMPILER = python
 PY_LOG_FLAGS = -v
 
