@@ -494,12 +494,6 @@ noinst_LIBRARIES = libMdsTest.a libMdsTestBackend.a
 libMdsTest_a_SOURCES = base_backend.c
 libMdsTestBackend_a_CFLAGS = -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
-
-#
-# Shared library
-#
-# @MINGW_TRUE@ DEF=${srcdir}/MdsTestShr.def
-# @MINGW_TRUE@ MAKE_IMPLIB_MdsTestShr=-Wl,--out-implib,@MAKELIBDIR@MdsTestShr.dll.a
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 TEST_SUBDIRS = \
                mdsobjects/python/tests \
@@ -871,6 +865,12 @@ uninstall-am:
 
 
 include @top_builddir@/Makefile.inc
+
+#
+# Shared library
+#
+# @MINGW_TRUE@ DEF=${srcdir}/MdsTestShr.def
+@MINGW_TRUE@ MAKE_IMPLIB_MdsTestShr=-Wl,--out-implib,@MAKELIBDIR@MdsTestShr.dll.a
 $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
