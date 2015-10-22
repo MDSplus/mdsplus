@@ -28,12 +28,23 @@
 
 #include <string.h>
 
+#ifdef _WIN32
+// TODO: should we use Fibers here 
+// (see https://msdn.microsoft.com/en-us/library/windows/desktop/ms686919%28v=vs.85%29.aspx )
+// without context switching will be not possible to run all tests if one fails.
+#else
+#include <ucontext.h>
+static ucontext_t error_jmp_context;
+static volatile int error_jmp_state = 0;
+#endif
+
 #define MSG_LEN 100
 
 
 static int alarm_received = 0;
 static pid_t group_pid = 0;
 extern jmp_buf error_jmp_buffer;
+
 
 static struct sigaction sigint_old_action;
 static struct sigaction sigterm_old_action;
@@ -170,7 +181,13 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     }
     else
     {
-        longjmp(error_jmp_buffer, 1);
+        // this is not supported here
+        //longjmp(error_jmp_buffer, 1);
+        
+#      ifndef _WIN32
+        error_jmp_state = 1;
+        setcontext(&error_jmp_context);
+#      endif
     }
 }
 
@@ -195,7 +212,8 @@ void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
 {    
     __test_assert_fail(__file,__line,__assertion,NULL);    
-    _exit(1);
+    __test_end();   
+    exit(1);
 }
 
 
@@ -638,73 +656,75 @@ int __setup_parent() {
     
     
     // FORK //
-    #if defined(HAVE_FORK)
+#if defined(HAVE_FORK)
     if( cur_fork_status() == CK_FORK )                        
     {
         pid_t pid = fork();        
         if(pid == -1) 
             // error forking //
             eprintf("Error forking to a new process:", __FILE__, __LINE__);     
-        else if(pid == 0) {
-            // child process //
+        else if(pid == 0) {            
             return 0;
-        }        
-        group_pid = pid;
-    }
-    else {
-        return 0;
-    }
-    
-    TestResult *tr = NULL;
-    
-    timer_t timerid;
-    struct itimerspec timer_spec;
-    int status = 0;
-    alarm_received = 0;
-
-    if(timer_create(check_get_clockid(), NULL, &timerid) == 0)
-    {
-        /* Set the timer to fire once */
-        timer_spec.it_value = tcase->timeout;
-        timer_spec.it_interval.tv_sec = 0;
-        timer_spec.it_interval.tv_nsec = 0;
-        if(timer_settime(timerid, 0, &timer_spec, NULL) == 0)
-        {
-            pid_t   pid_w;
-            do pid_w = waitpid(group_pid, &status, 0);
-            while (pid_w == -1 );
         }
-        else
-            // settime failed //
-            eprintf("Error in call to timer_settime:", __FILE__, __LINE__);
-
-        /* If the timer has not fired, disable it */
-        timer_delete(timerid);
+        else {           
+            group_pid = pid;
+            
+            TestResult *tr = NULL;
+            
+            timer_t timerid;
+            struct itimerspec timer_spec;
+            int status = 0;
+            alarm_received = 0;
+            
+            if(timer_create(check_get_clockid(), NULL, &timerid) == 0)
+            {
+                /* Set the timer to fire once */
+                timer_spec.it_value = tcase->timeout;
+                timer_spec.it_interval.tv_sec = 0;
+                timer_spec.it_interval.tv_nsec = 0;
+                if(timer_settime(timerid, 0, &timer_spec, NULL) == 0)
+                {
+                    pid_t   pid_w;
+                    do pid_w = waitpid(group_pid, &status, 0);
+                    while (pid_w == -1 );
+                }
+                else
+                    // settime failed //
+                    eprintf("Error in call to timer_settime:", __FILE__, __LINE__);
+                
+                /* If the timer has not fired, disable it */
+                timer_delete(timerid);
+            }
+            else
+                // create timer failed //
+                eprintf("Error in call to timer_create:", __FILE__, __LINE__);
+            
+            // kill child group and reset parent status to group_pid = 0 //
+            killpg(group_pid, SIGKILL);   /* Kill remaining processes. */
+            group_pid = 0;
+            
+            
+            srunner_send_evt(runner, tcase, CLSTART_T);
+            send_ctx_info(CK_CTX_SETUP); // FIXX ///
+            tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);
+            if(tr) srunner_add_failure(runner, tr);
+            srunner_send_evt(runner, tr, CLEND_T);
+            return 1;
+        }
     }
-    else
-        // create timer failed //
-        eprintf("Error in call to timer_create:", __FILE__, __LINE__);
-
-    // kill child group and reset parent status to group_pid = 0 //
-    killpg(group_pid, SIGKILL);   /* Kill remaining processes. */
-    group_pid = 0;
-
-
-    srunner_send_evt(runner, tcase, CLSTART_T);
-    send_ctx_info(CK_CTX_SETUP); // FIXX ///
-    tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);
-    if(tr) srunner_add_failure(runner, tr);
-    srunner_send_evt(runner, tr, CLEND_T);
-    return 1;
-#else 
-    return 0;
 #endif
+    // child here or no fork available
+    
+#ifndef _WIN32
+    // save current context ... ( add Fibers here for windows )
+    if( !getcontext(&error_jmp_context) ) error_jmp_state = -1;    
+    if( error_jmp_state > 0 ) return 1;
+#endif        
+    return 0;
 }
 
 
-
 int __setup_child() {
-
 #if defined(HAVE_FORK)
     if(cur_fork_status() == CK_FORK ) {
         setpgid(0, 0);
@@ -713,7 +733,7 @@ int __setup_child() {
     }
 #endif
     srunner_send_evt(runner, tcase, CLSTART_T);
-    return 0 == setjmp(error_jmp_buffer);
+    return 1;
 }
 
 
@@ -726,20 +746,20 @@ int __setup_child() {
 void __test_end()
 {
     // if forked //
+#if defined(HAVE_FORK)
     if(cur_fork_status() == CK_FORK ) {        
         if(group_pid) {            
             revertStdout();
             _exit(0);
-        }        
+        }
+        return;
     }
-    // if not forked //
-    else {
-        TestResult *tr;
-        send_ctx_info(CK_CTX_SETUP); // FIXX ///
-        tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
-        if(tr) srunner_add_failure(runner, tr);
-        srunner_send_evt(runner, tr, CLEND_T);
-    }
+#endif
+    TestResult *tr;
+    send_ctx_info(CK_CTX_SETUP); // FIXX ///
+    tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
+    if(tr) srunner_add_failure(runner, tr);
+    srunner_send_evt(runner, tr, CLEND_T);
 }
 
 
