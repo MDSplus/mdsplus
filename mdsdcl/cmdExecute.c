@@ -12,6 +12,7 @@
 #include <mdsshr.h>
 #include <dcl.h>
 #include <mdsdcl_messages.h>
+#include <pthread.h>
 #include "dcl_p.h"
 
 static dclDocListPtr dclDocs = 0;
@@ -1361,3 +1362,27 @@ void mdsdclFlushError(char *error)
     MDSDCL_ERROR_RTN(error);
   }
 }
+
+static pthread_mutex_t lock;
+
+void dclLock()
+{
+  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
+  static int initialized=0;
+  pthread_mutex_lock(&initMutex);
+  if (!initialized) {
+    pthread_mutexattr_t m_attr;
+    pthread_mutexattr_init(&m_attr);
+    pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&lock, &m_attr);
+    initialized=1;
+  }
+  pthread_mutex_unlock(&initMutex);
+  pthread_mutex_lock(&lock);
+}
+
+void dclUnlock()
+{
+  pthread_mutex_unlock(&lock);
+}
+

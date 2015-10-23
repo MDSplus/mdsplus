@@ -3,7 +3,6 @@ from mdsdata import *
 from mdsscalar import *
 from mdsarray import *
 from compound import *
-from treenode import TreeNode
 import numpy
 
 class dataTests(TestCase):
@@ -484,7 +483,6 @@ class dataTests(TestCase):
         """Test ASIND"""
         self.assertEqual(Data.execute('abs(asind(.5) - 30.0) < .000001'),Uint8(1))
         """Test as_is"""
-        self.assertEqual(Data.execute('public fun as_is_test(as_is _n){return(kind(_n));},as_is_test($)',TreeNode(42,None)),Uint8(192))
         """Test atan"""
         self.assertEqual(Data.execute('abs(atan(1.5574077)-1.0) < .000001'),Uint8(1))
         """Test atan2"""
