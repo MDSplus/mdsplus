@@ -35,7 +35,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     static DefaultMutableTreeNode curr_tree_node;
     JDialog open_dialog = null, add_node_dialog = null, add_subtree_dialog = null;
     JTextField open_exp, open_shot;
-    JCheckBox open_readonly, open_edit, open_realtime;
+    JRadioButton open_readonly, open_edit, open_normal;
+    JCheckBox open_realtime;
     JTextField add_node_name, add_node_tag, add_subtree_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
@@ -243,9 +244,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
     void open()
     {
+	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
     	if(open_dialog == null)
 	{
-	    if(curr_origin == null)
 	    open_dialog = new JDialog(frame);
 	    open_dialog.setTitle("Open new tree");
 	    JPanel mjp = new JPanel();
@@ -254,52 +255,47 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    jp1.setLayout(new GridLayout(3,1));
 	    jp1.add(new JLabel("Tree: "));
 	    jp1.add(new JLabel("Shot: "));
-        open_edit = new JCheckBox("edit");
-        jp1.add(open_edit);
+        jp1.add(open_normal = new JRadioButton("normal"));
 	    mjp.add(jp1, "West");
+	    JPanel jp2 = new JPanel();
+	    jp2.setLayout(new GridLayout(1,2));
+        jp2.add(open_readonly = new JRadioButton("readonly"));
+        jp2.add(open_edit = new JRadioButton("edit/new"));
 	    jp1 = new JPanel();
 	    jp1.setLayout(new GridLayout(3,1));
-	    open_exp = new JTextField(20);
-	    jp1.add(open_exp);
+	    jp1.add(open_exp = new JTextField(20));
 	    jp1.add(open_shot = new JTextField(10));
-	    jp1.add(open_readonly = new JCheckBox("readonly"));
+	    jp1.add(jp2);
 	    mjp.add(jp1, "East");
+        ButtonGroup bgMode = new ButtonGroup();
+        bgMode.add(open_readonly);
+        bgMode.add(open_normal);
+        bgMode.add(open_edit);
 	    jp1 = new JPanel();
-	    ok_cb = new JButton("Ok");
+	    jp1.add(ok_cb = new JButton("Ok"));
 	    ok_cb.addActionListener(this);//(new ActionListener() {
 		//public void actionPerformed(ActionEvent e)  {
 		  //  open_ok(); }});
 		ok_cb.setSelected(true);
-	    jp1.add(ok_cb);
-	    JButton cancel = new JButton("Cancel");
+        JButton cancel = new JButton("Cancel");
+	    jp1.add(cancel);
 	    cancel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e)  {
 		    open_dialog.setVisible(false);  }});
-	    jp1.add(cancel);
 	    mjp.add(jp1, "South");
 	    open_dialog.getContentPane().add(mjp);
 	    open_shot.addKeyListener(this);
 	    open_exp.addKeyListener(this);
 	    open_dialog.pack();
-	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
-	    open_dialog.setLocation(curr_origin);
 	    if (curr_experiment != null)
 	        try {
 		       open_exp.setText(curr_experiment.getName());
 	           open_shot.setText(new Integer(curr_experiment.getShot()).toString());
 	        }catch(Exception exc){}
-	    open_dialog.setVisible(true);
 	}
-	else
-	{
-	    open_exp.setText("");
-	    open_shot.setText("");
-	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 	    open_dialog.setLocation(curr_origin);
+        open_normal.setSelected(true);
 	    open_dialog.setVisible(true);
-            open_edit.setSelected(false);
-	    open_readonly.setSelected(false);
-	}
     }
 
     private void open_ok()
@@ -412,8 +408,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    }
 
 
-
-
 	    try {
             curr_experiment.setTree(exp, shot);
             curr_experiment.setEditable(editable);
@@ -424,9 +418,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             System.err.println("Error in RMI communication: "+ exc);
         }
 
-	    //curr_experiment = new Database(exp, shot);
-	    //curr_experiment.is_editable = editable;
-	    //curr_experiment.is_readonly = readonly;
 	    try {
 	        Tree.context = curr_experiment.open();
 	        top_node = new Node(curr_experiment, this);
@@ -496,10 +487,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 	    // GAB curr_tree.setEditable(false);
 	    try {
-	        if(curr_experiment.isEditable())
-	            curr_tree.setEditable(true);
-	        else
-	            curr_tree.setEditable(false);
+	        curr_tree.setEditable(curr_experiment.isEditable());
 	    }catch(Exception exc){curr_tree.setEditable(false);}
 	    curr_tree.setCellRenderer(new TreeCellRenderer()
 	    {
