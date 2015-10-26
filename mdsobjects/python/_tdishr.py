@@ -11,6 +11,7 @@ _mdsshr=_mimport('_mdsshr')
 _Exceptions=_mimport('mdsExceptions')
 _tree=_mimport('tree')
 _ver=_mimport('version')
+_treeshr=_mimport('_treeshr')
 
 TdiShr=_ver.load_library('TdiShr')
 
@@ -27,15 +28,7 @@ def _TdiShrFun(function,errormessage,expression,args=None):
         raise TypeError('Arguments must be passed as a tuple')
     xd = _descriptor.descriptor_xd()
     arguments = [_C.pointer(descriptor(expression))]+parseArguments(args)+[_C.pointer(xd),_C.c_void_p(-1)]
-    Tree = _tree.Tree
-    Tree.lock()
-    try:
-        tree = Tree.getActiveTree()
-        if tree is not None:
-            tree.restoreContext()
-        status = function(*arguments)
-    finally:
-        Tree.unlock()
+    status = function(*arguments)
     if (status & 1 != 0):
         return xd.value
     else:

@@ -8,6 +8,7 @@ import threading as _threading
 import traceback as _traceback
 import ctypes as _C
 import numpy as _N
+import copy as _copy
 
 _mdsshr=_mimport('_mdsshr')
 _treeshr=_mimport('_treeshr')
@@ -18,12 +19,78 @@ _treenode=_mimport('treenode')
 _ver=_mimport('version')
 
 thread_data=_threading.local()
+thread_data._activeTree=0
+thread_data.private=False
+
+_hard_lock=_threading.Lock()
+
+_openTrees={}
+_activeTree={}
+
+def _getThreadName(thread=None):
+    if isinstance(thread,str):
+        threadName=thread
+    elif thread_data.private:
+        if thread is None:
+            threadName = _threading.current_thread().getName()
+        else:
+            threadName = thread.getName()
+    else:
+        threadName = 'main'
+    return threadName
+    
+def _addOpenTree(ctx,thread=None):
+    if isinstance(ctx,Tree):
+        ctx = ctx.ctx
+    if isinstance(ctx,_C.c_void_p):
+        ctx = ctx.value
+    if ctx == 0:
+        return
+    if ctx in _openTrees:
+        _openTrees[ctx]['refcount']+=1
+    else:
+        _openTrees[ctx]={'thread':_getThreadName(thread),'refcount':1}
+
+def _removeOpenTree(ctx):
+    if ctx in _openTrees:
+        _openTrees[ctx]['refcount']-=1
+        if _openTrees[ctx]['refcount']<1:
+            threadName=_openTrees[ctx]['thread']
+            if threadName in _activeTree and _activeTree[threadName]==ctx:
+                _setActiveTree(0,threadName)
+            activeCtx = _treeshr.TreeRestoreContext(_C.c_void_p(0))
+            if isinstance(activeCtx,_C.c_void_p) and activeCtx.value != ctx:
+                _treeshr.TreeRestoreContext(activeCtx)
+            status=_treeshr.TreeCloseAll(_C.c_void_p(ctx))
+            if (status & 1):
+                _treeshr.TreeFreeDbid(_C.c_void_p(ctx))
+            del _openTrees[ctx]
+
+def _setActiveTree(ctx,thread=None):
+    _activeTree[_getThreadName(thread)]=ctx
+
+def _getActiveTree(thread=None):
+    threadName=_getThreadName(thread)
+    if threadName in _activeTree:
+        ctx = _activeTree[threadName]
+    else:
+        ctx = 0
+    return ctx
+
+class _treeDeleter(_threading.Thread):
+    def run(self):
+      _hard_lock.acquire()
+      try:
+          if hasattr(self,'ctx') and isinstance(self.ctx,_C.c_void_p):
+              _removeOpenTree(self.ctx.value)
+      finally:
+          _hard_lock.release()
+        
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
-    _activeTree=None
 
 	# support for the with-structure
     def __enter__(self):
@@ -35,20 +102,15 @@ class Tree(object):
             self.quit()
           else:
             self.write()
-        self.__del__()
 
     def __del__(self):
-        """Delete Tree instance
-        @rtype: None
-        """
-        try:
-          if self.close:
-            status=_treeshr.TreeCloseAll(self.ctx)
-            if (status & 1):
-              _treeshr.TreeFreeDbid(self.ctx)
-        except:
-          pass
-        return
+      """Delete Tree instance
+      @rtype: None
+      """
+      if hasattr(self,'ctx'):
+          t=_treeDeleter()
+          t.ctx=self.ctx
+          t.start()
 
     def __getattr__(self,name):
         """
@@ -90,8 +152,6 @@ class Tree(object):
 
     def usePrivateCtx(cls,on=True):
         global thread_data
-        if not hasattr(thread_data,"activeTree"):
-            thread_data.activeTree=None
         thread_data.private=on
         _treeshr.TreeUsePrivateCtx(on)
     usePrivateCtx=classmethod(usePrivateCtx)
@@ -108,33 +168,46 @@ class Tree(object):
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @type mode: str
         """
-        self.close=False
-        if tree is None:
-            try:
-                self.ctx=_treeshr.TreeGetContext()
-            except:
+        _hard_lock.acquire()
+        try:
+            if tree is None:
                 try:
-                    self.ctx=Tree.getActiveTree().ctx
+                    ctx=_treeshr.TreeGetContext()
                 except:
+                    ctx=_getActiveTree()
+                if ctx == 0:
                     raise _Exceptions.TreeNOT_OPEN()
-        else:
-            if mode.upper() == 'NORMAL':
-                self.ctx=_treeshr.TreeOpen(tree,shot)
-            elif mode.upper() == 'EDIT':
-                self.ctx=_treeshr.TreeOpen(tree,shot)
-                self.edit()
-            elif mode.upper() == 'NEW':
-                self.ctx=_treeshr.TreeOpenNew(tree,shot)
-            elif mode.upper() == 'READONLY':
-                self.ctx=_treeshr.TreeOpenReadOnly(tree,shot)
+                else:
+                    self.ctx=_C.c_void_p(ctx)
             else:
-                raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
-            self.close=True
-        Tree.setActiveTree(self)
-        return
+                if mode.upper() == 'NORMAL':
+                    self.ctx=_treeshr.TreeOpen(tree,shot)
+                elif mode.upper() == 'EDIT':
+                    self.ctx=_treeshr.TreeOpen(tree,shot)
+                    self.edit()
+                elif mode.upper() == 'NEW':
+                    self.ctx=_treeshr.TreeOpenNew(tree,shot)
+                elif mode.upper() == 'READONLY':
+                    self.ctx=_treeshr.TreeOpenReadOnly(tree,shot)
+                else:
+                    raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
+            if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
+                _addOpenTree(self.ctx.value)
+                _setActiveTree(self.ctx.value)
+                _treeshr.TreeRestoreContext(self.ctx)
+        finally:
+            _hard_lock.release()
 
     def __deepcopy__(self,memo):
         return self
+
+    def copy(self):
+        _hard_lock.acquire()
+        try:
+            _addOpenTree(self)
+        finally:
+            _hard_lock.release()
+        return _copy.copy(self)
 
     def __setattr__(self,name,value):
         """
@@ -323,24 +396,6 @@ class Tree(object):
         """
         return tuple(self.findTagsIter(wild))
 
-    def getActiveTree():
-        """Get active tree.
-        @return: Current active tree
-        @rtype: Tree
-        """
-        global thread_data
-        try:
-          if not hasattr(thread_data,"activeTree"):
-            thread_data.activeTree=None
-            thread_data.private=False
-          if thread_data.private and isinstance(thread_data.activeTree,Tree):
-            return thread_data.activeTree
-          elif isinstance(Tree._activeTree,Tree):
-            return Tree._activeTree
-        except:
-          pass
-    getActiveTree=staticmethod(getActiveTree)
-
     def getCurrent(treename):
         """Return current shot for specificed treename
         @param treename: Name of tree
@@ -468,41 +523,17 @@ class Tree(object):
         """
         _treeshr.TreeRemoveTag(self,tag)
 
-
-    def _setActiveTree(tree):
-        import weakref
-        global thread_data
-        if isinstance(tree,Tree):
-          tree=weakref.proxy(tree)
-        if not hasattr(thread_data,"activeTree"):
-            thread_data.activeTree=None
-            thread_data.private=False
-        if thread_data.private:
-            old = thread_data.activeTree
-            thread_data.activeTree=tree
-        else:
-            old=Tree._activeTree
-            Tree._activeTree=tree
-        return old
-    _setActiveTree=staticmethod(_setActiveTree)
-
     def restoreContext(self):
         """Internal use only. Use internal context associated with this tree."""
-        Tree._setActiveTree(self)
-        return _treeshr.TreeRestoreContext(self.ctx)
-
-    def setActiveTree(cls,tree):
-        """Set active tree. Use supplied tree context when performing tree operations in tdi expressions.
-        @param tree: Tree to use as active tree
-        @type tree: Tree
-        @return: Previous active tree
-        @rtype: Tree
-        """
-        old = cls._setActiveTree(tree)
-        if tree is not None:
-          tree.restoreContext()
-        return old
-    setActiveTree=classmethod(setActiveTree)
+        _hard_lock.acquire()
+        try:
+            if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
+                _treeshr.TreeRestoreContext(self.ctx)
+                _setActiveTree(self.ctx.value)
+            else:
+                _setActiveTree(0)
+        finally:
+            _hard_lock.release()
 
     def setCurrent(treename,shot):
         """Set current shot for specified treename
@@ -530,7 +561,7 @@ class Tree(object):
         """
         old=self.default
         if isinstance(node,_treenode.TreeNode):
-            if node.tree is self:
+            if node.tree.ctx == self.ctx:
                 _treeshr.TreeSetDefault(self.ctx,node.nid)
             else:
                 raise TypeError('TreeNode must be in same tree')

@@ -18,6 +18,7 @@ _treeshr=_mimport('_treeshr')
 _ver=_mimport('version')
 
 
+
 class TreeNodeException(Exception):
   pass
 
@@ -186,12 +187,9 @@ class TreeNode(_data.Data):
         """
         self.__dict__['nid']=int(n);
         if tree is None:
-            try:
-                self.tree=_tree.Tree.getActiveTree()
-            except:
-                self.tree=_tree.Tree()
+            self.tree=_tree.Tree()
         else:
-            self.tree=tree
+            self.tree=tree.copy()
 
     def __setattr__(self,name,value):
         """
@@ -1095,7 +1093,7 @@ class TreeNode(_data.Data):
         @type tree: Tree
         @rtype: None
         """
-        self.tree=tree
+        self.tree=tree.copy()
 
     def setWriteOnce(self,flag):
         """Set write once state of node
@@ -1125,9 +1123,9 @@ class TreePath(TreeNode):
     def __init__(self,path,tree=None):
         self.tree_path=_data.makeData(str(path));
         if tree is None:
-            self.tree=_tree.Tree.getActiveTree()
+            self.tree=_tree.Tree()
         else:
-            self.tree=tree
+            self.tree=tree.copy()
         return
 
     def __str__(self):
@@ -1138,9 +1136,9 @@ class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):
         self.nids=_array.Int32Array(nids)
         if tree is None:
-            self.tree=_tree.Tree.getActiveTree()
+            self.tree=_tree.Tree()
         else:
-            self.tree=tree
+            self.tree=tree.copy()
 
     def __getitem__(self,n):
         """Return TreeNode from mdsarray. array[n]

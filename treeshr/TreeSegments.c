@@ -2239,6 +2239,7 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
       TreeUnLockNci(info_ptr, 0, nidx);
       return TreeBUFFEROVF;
     } else {
+      TreeUnLockNci(info_ptr, 0, nidx);
       printf("this is not yet supported\n");
       return TreeFAILURE;
        /***************
@@ -2943,6 +2944,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	status = TreeFAILURE;
       }
     }
+    TreeUnLockNci(info_ptr, 0, nidx);
   }
   return status;
 }
