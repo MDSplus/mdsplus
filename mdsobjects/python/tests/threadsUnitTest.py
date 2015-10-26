@@ -34,7 +34,7 @@ class threadTest(TestCase):
             if t.result.wasSuccessful():
                 numsuccessful=numsuccessful+1
             else:
-                print t.result
+                print( t.result )
         self.assertEqual(numsuccessful,len(threads))
         return
 
