@@ -1,4 +1,31 @@
-commit e6a5f09d7ace4e99fc2826852205261f0624cbdf (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 7e35c3813bc6228ce7f0f4446f0afbe7655fa5fd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: c6ace2d a09e186
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 21 08:10:59 2015 -0400
+
+    Merge pull request #172 from zack-vii/aa_python
+    
+    rewrote _loadglobals
+
+commit c6ace2d695f2bf4727e8f9ddb3315be3d94d627d (tag: refs/tags/alpha_release-7-0-166)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 20 23:35:45 2015 -0400
+
+    New release ---- alpha_release-7-0-166
+
+commit a09e186b6058b990cc66aed70b2a17d477db7f9f
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 20 23:11:11 2015 +0200
+
+    rewrote _loadglobals
+    
+    devides modules into two groups:
+    - normal modules (require MDSplus.module.method)
+    - recursive modules (allow MDSplus.method)
+    
+    reduces the number of toplevel methods
+
+commit e6a5f09d7ace4e99fc2826852205261f0624cbdf
 Merge: 31fe619 a682e1c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Oct 20 16:23:30 2015 -0400

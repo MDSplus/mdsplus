@@ -11,6 +11,7 @@ import java.util.*;
 public class Grid
     implements Serializable
 {
+    static final long dayMilliSeconds = 86400000; // 24 * 60 * 60 * 1000;
     WaveformMetrics wm;
     boolean reversed = false;
     int x_dim, y_dim;
@@ -99,9 +100,9 @@ public class Grid
         Float f;
         
         if (xrange <= 0)
-            xrange = (double) 1E-3;
+            xrange = 1E-3;
         if (yrange <= 0)
-            yrange = (double) 1E-3;
+            yrange = 1E-3;
 
         if (mode == IS_X)
         {
@@ -117,8 +118,8 @@ public class Grid
         else
         {
             grid_step = grid_step_y;
-            curr_max = ymax + (double) 0.1 * yrange;
-            curr_min = ymin - (double) 0.1 * yrange;
+            curr_max = ymax + 0.1 * yrange;
+            curr_min = ymin - 0.1 * yrange;
             step = (ymax - ymin) / grid_step;
             is_log = ylog;
         }
@@ -170,12 +171,12 @@ public class Grid
         }
         if (mode == IS_X)
         {
-            x_step = (double) step / num_steps;
+            x_step = step / num_steps;
             num_x_steps = num_steps;
         }
         else
         {
-            y_step = (double) step / num_steps;
+            y_step = step / num_steps;
             num_y_steps = num_steps;
         }
 
@@ -211,9 +212,9 @@ public class Grid
         Float f;
         
         if (xrange <= 0)
-            xrange = (double) 1E-3;
+            xrange = 1E-3;
         if (yrange <= 0)
-            yrange = (double) 1E-3;
+            yrange = 1E-3;
 
         if (mode == IS_X)
         {
@@ -226,8 +227,8 @@ public class Grid
         else
         {
             grid_step = grid_step_y;
-            curr_max = ymax + (double) 0.1 * yrange;
-            curr_min = ymin - (double) 0.1 * yrange;
+            curr_max = ymax + 0.1 * yrange;
+            curr_min = ymin - 0.1 * yrange;
 
             step = (ymax - ymin) / grid_step;
 //	    if(step < 10e-10)
@@ -280,12 +281,12 @@ public class Grid
         }
         if (mode == IS_X)
         {
-            x_step = (double) step / num_steps;
+            x_step = step / num_steps;
             num_x_steps = num_steps;
         }
         else
         {
-            y_step = (double) step / num_steps;
+            y_step = step / num_steps;
             num_y_steps = num_steps;
         }
 
@@ -348,9 +349,16 @@ public class Grid
         this.int_ylabels = int_ylabels;
     }
 
+    private long toMillis(double xin)
+    /*converts ns into ms if necessary*/
+    {
+        if ( xin > 2E13)
+            xin = xin/1E6;
+        return (long)xin;
+    }
+
     public void paint(Graphics g, Dimension d, Waveform w, WaveformMetrics wm)
     {
-        long dayMilliSeconds = 24 * 60 * 60 * 1000;
         int i, j, dim, num_steps, curr_dim;
         Color prev_col;
         FontMetrics fm;
@@ -517,7 +525,7 @@ public class Grid
                 {
                     try
                     {
-                        long datel = (long) x_values[i];
+                        long datel = toMillis(x_values[i]);
                         DateFormat df = new SimpleDateFormat("HH:mm:ss");
                         //GABdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         //df.setTimeZone(TimeZone.getDefault());
@@ -526,7 +534,7 @@ public class Grid
                         //--dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         //GABdfSubSec.setTimeZone(TimeZone.getDefault());
 
-                        if( datel <= 86400000 )
+                        if( datel <= dayMilliSeconds)
                         {
                            // if the date to convert is in the date 1 Jan 1970
                            // is whown only the huor and the time xone must be set
@@ -558,18 +566,18 @@ public class Grid
 
                         if( i < x_dim - 1 )
                         {
-                            long num_day  = calculateDifference(new Date((long)x_values[i]), new Date((long)x_values[i+1]));
+                            long num_day  = calculateDifference(new Date(toMillis(x_values[i])), new Date(toMillis(x_values[i+1])));
                             if(num_day != 0)
                             {
 
                                 Calendar ca = Calendar.getInstance();
                                 //ca.setTimeZone(TimeZone.getTimeZone("GMT+00"));
 
-                                ca.setTimeInMillis((long)x_values[i]);
+                                ca.setTimeInMillis(toMillis(x_values[i]));
                                 ca.set(ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DAY_OF_MONTH)+1, 0, 0);
                                 for(int dd = 0; dd < num_day; dd++)
                                 {
-                                   long timeMillis = ca.getTimeInMillis();
+                                    long timeMillis = ca.getTimeInMillis();
                                     if (timeMillis < xmax)
                                     {
                                         Color c = g.getColor();
@@ -605,7 +613,7 @@ public class Grid
                 if (curr_dim >= label_width &&
                     dim + fm.stringWidth(curr_string) / 2 < d.width)
                 {
-                    if(xAxisHMS && i > 0 && x_values[i] - x_values[prevIdx] < 1000)
+                    if(xAxisHMS && i > 0 && toMillis(x_values[i] - x_values[prevIdx]) < 1000)
                         g.drawString(currStringSubSec, curr_dim,
                                  d.height - fm.getHeight() / 10 - label_descent);
                     else
@@ -682,7 +690,7 @@ public class Grid
         cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
         long diffMillis = cal2.getTimeInMillis() - cal1.getTimeInMillis();
         if(diffMillis < 0) return 0;
-        return 1 + diffMillis/(1000*3600*24);
+        return 1 + diffMillis/dayMilliSeconds;
     }
 
     public static void main(String args[])
