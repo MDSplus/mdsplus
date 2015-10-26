@@ -4,6 +4,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
+import weakref as _weakref
 import threading as _threading
 import traceback as _traceback
 import ctypes as _C
@@ -23,8 +24,15 @@ class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
-    _activeTree=None
-
+    def _activeTree_set(self,tree):
+        if tree is None:
+            self._activeTreeRef = lambda:None
+        else:
+            self._activeTreeRef = _weakref.ref(tree)
+    def _activeTree_get(self):
+        return self._activeTreeRef()
+    _activeTree = property(_activeTree_get,_activeTree_set)
+    _activeTreeRef = lambda:None
 	# support for the with-structure
     def __enter__(self):
     	return self
@@ -470,12 +478,9 @@ class Tree(object):
 
 
     def _setActiveTree(tree):
-        import weakref
         global thread_data
-        if isinstance(tree,Tree):
-          tree=weakref.proxy(tree)
         if not hasattr(thread_data,"activeTree"):
-            thread_data.activeTree=None
+            thread_data.activeTree=tree
             thread_data.private=False
         if thread_data.private:
             old = thread_data.activeTree
