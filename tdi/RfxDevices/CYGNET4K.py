@@ -32,20 +32,23 @@ class CYGNET4K(Device):
       {'path':':TREND_PCB', 'type':'text'},
       {'path':':TREND_CMOS', 'type':'text'},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
+    parts.append({'path':':ACT_IDENT', 'type':'text',
+      'value':'CAMERA_SERVER',
+      'options':('no_write_shot')})
     parts.append({'path':':INIT_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
+  	  'valueExpr':"Action(Dispatch(head.ACT_IDENT,'PULSE_PREP',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
     parts.append({'path':':START_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_store',head))",
+	  'valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_store',head))",
 	  'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+	  'valueExpr':"Action(Dispatch(head.ACT_IDENT,'STORE',50,None),Method(None,'stop_store',head))",
 	  'options':('no_write_shot')})
     parts.append({'path':':START_MON_T','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_temp_monitor',head))",
+	  'valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_temp_monitor',head))",
 	  'options':('no_write_shot',)})
     parts.append({'path':':STOP_MON_T','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_temp_monitor',head))",
+	  'valueExpr':"Action(Dispatch(head.ACT_IDENT,'STORE',50,None),Method(None,'stop_temp_monitor',head))",
 	  'options':('no_write_shot')})
     raptorLib = None
     mdsLib = None
