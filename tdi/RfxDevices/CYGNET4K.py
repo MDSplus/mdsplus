@@ -120,35 +120,25 @@ class CYGNET4K(Device):
         baseTicks = c_int(-1)
         timeoutMs = c_int(500)
         bufIdx = c_int(-1)
+        prevBufIdx = -1
         timebaseNid = self.device.frame_clock.getNid()
         framesNid = self.device.frames.getNid()
         measuredTimes = []
         currDuration = c_float(0)
-        prevTime = self.device.trig_time.data()
-        stopped = False
 
         self.raptorLib.epixStartVideoCapture(c_int(self.id))
-#        print('  capture started')
-#        ts = time.time()
         while not self.stopReq:
-          if(self.duration <= 0 or currDuration < self.duration):
+          if(self.duration < 0 or currDuration < self.duration):
             self.raptorLib.epixCaptureFrame(c_int(self.id), frameIdx, bufIdx, baseTicks, c_int(self.xPixels), c_int(self.yPixels), c_int(framesNid), c_int(timebaseNid), treePtr, listPtr, timeoutMs, byref(frameIdx), byref(bufIdx), byref(baseTicks), byref(currDuration))
-            currTime = self.device.trig_time.data() + currDuration.value
-            if currTime > prevTime:
-#              print('  %0.3f since start of capture' % (time.time() - ts))
-              measuredTimes.append(currTime)
-              prevTime = currTime
-              if(self.duration > 0 and currDuration >= self.duration):
-                self.raptorLib.epixStopVideoCapture(c_int(self.id));
-                self.device.frame_clock.putData(Float32Array(measuredTimes))
-                stopped = True
-            else: 
-              time.sleep(0.005) # I think it should be a relatively short sleep so we do not miss any frames. --Brian
+            if bufIdx.value != prevBufIdx: # detect new frame
+              prevBufIdx = bufIdx.value
+              measuredTimes.append(self.device.trig_time.data() + currDuration.value)
+          else:
+            break
 
 #Finished storing frames, stop camera integration and store measured frame times
-        if (not stopped):
-          self.raptorLib.epixStopVideoCapture(c_int(self.id));
-          self.device.frame_clock.putData(Float32Array(measuredTimes))
+        self.raptorLib.epixStopVideoCapture(c_int(self.id));
+        self.device.frame_clock.putData(Float32Array(measuredTimes))
         self.mdsLib.camStopSave(listPtr)        
         return 0
 
