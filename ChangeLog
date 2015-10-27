@@ -1,4 +1,84 @@
-commit 7e35c3813bc6228ce7f0f4446f0afbe7655fa5fd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 4363f2ec68b6a6d11927a639f66e4c9b71fa6f33 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: a2a9654 865c76a
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Oct 26 16:50:33 2015 -0400
+
+    Merge pull request #173 from MDSplus/twf-fix-tree-cleanup-again
+    
+    Different approach to tree deletion handling. Using weakref failed to…
+
+commit 865c76a7f6b94de02b0dc93bae1a3628c5102a7c (refs/remotes/origin/twf-fix-tree-cleanup-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 26 16:42:19 2015 -0400
+
+    fix print in threadUnitTest.py for python3
+
+commit 33cee7571fd9a1f66cfde0068fe7ded438976fb3
+Merge: 0b8df90 a2a9654
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 26 16:23:21 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into twf-fix-tree-cleanup-again
+
+commit a2a9654062bd063f2665ad15ba471fa79a84f18e
+Merge: fdcbb71 3bdadde
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Oct 26 14:32:05 2015 +0100
+
+    Merge pull request #175 from zack-vii/a_jscope_ns
+    
+    jScope nanoseconds support
+
+commit fdcbb712caeb1c63843430194071ff78224390e9
+Merge: b97a61c 07c04a7
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Oct 26 14:31:44 2015 +0100
+
+    Merge pull request #176 from zack-vii/jtraverser
+    
+    tree open Dialog improvement
+
+commit 0b8df908abb57ff5af86a7f132aa95824d0bad64
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 23 14:12:33 2015 -0400
+
+    Fix race condition problems with threaded applications
+
+commit 07c04a7c49f8fc884ef2e0470ec9b3c0f1c02f94
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 23 16:36:23 2015 +0200
+
+    tree open Dialog improvement
+    
+    - combined common comands of if and else case
+    - removed if(curr_origin == null) which prevented Dialog to open
+    occasionally
+    - turned open mode into radio buttons (no edit+readonly)
+    - edit -> edit/new hint on edit is new if shot does not exist
+
+commit 3bdadde1ea9890deb90a8d6c29a91346f44adf6f
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 23 12:31:29 2015 +0200
+
+    jScope nanoseconds support
+    
+    convert to ms if timebase is most likely in ns x>2E13
+    (double) is unnecessary
+    make use of dayMilliSeconds as const
+
+commit b97a61c4da8fb9d1167bb1c258a7bc201e27b9c6 (tag: refs/tags/alpha_release-7-0-167)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 21 23:37:39 2015 -0400
+
+    New release ---- alpha_release-7-0-167
+
+commit e867baf8d6fcefc85b79428740f1dbf56cdc227c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 21 16:33:17 2015 -0400
+
+    Different approach to tree deletion handling. Using weakref failed to work for all cases.
+
+commit 7e35c3813bc6228ce7f0f4446f0afbe7655fa5fd
 Merge: c6ace2d a09e186
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 21 08:10:59 2015 -0400
