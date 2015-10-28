@@ -13,6 +13,9 @@
 #include <dcl.h>
 #include <mdsdcl_messages.h>
 #include <pthread.h>
+#ifndef PTHREAD_MUTEX_RECURSIVE
+#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+#endif
 #include "dcl_p.h"
 
 static dclDocListPtr dclDocs = 0;
