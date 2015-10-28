@@ -273,9 +273,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         bgMode.add(open_edit);
 	    jp1 = new JPanel();
 	    jp1.add(ok_cb = new JButton("Ok"));
-	    ok_cb.addActionListener(this);//(new ActionListener() {
-		//public void actionPerformed(ActionEvent e)  {
-		  //  open_ok(); }});
+	    ok_cb.addActionListener(this);
 		ok_cb.setSelected(true);
         JButton cancel = new JButton("Cancel");
 	    jp1.add(cancel);
@@ -569,8 +567,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     }
 
 
-    public void mouseClicked(MouseEvent e)
-    {}
+    public void mouseClicked(MouseEvent e){}
     public void mouseEntered(MouseEvent e){}
     public void mouseExited(MouseEvent e){}
     public void mouseReleased(MouseEvent e){}
@@ -585,12 +582,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    //if(e.isPopupTrigger())
 	    if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 	    {
-	        Point screen_origin = getLocationOnScreen();
-	        //curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);
-            curr_origin = screen_origin;
-            curr_origin.x += 20;
-            curr_origin.y += 20;
-
+	        curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 
 	        NodeBeanInfo nbi = curr_node.getBeanInfo();
 	        final PropertyDescriptor [] node_properties = nbi.getPropertyDescriptors();
@@ -1301,7 +1293,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         return curr_origin;
     }
     public boolean isEditable() {return is_editable; }
-    
     //Inner class FromTranferHandler managed drag operation
     class FromTransferHandler extends TransferHandler
     {

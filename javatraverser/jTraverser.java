@@ -165,7 +165,6 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)open) tree.open();
     if(source == (Object)close) tree.close();
     if(source == (Object)quit) tree.quit();
-
     if(source == (Object)tree_b)tree.setAngled(true);
     if(source == (Object)outline_b) tree.setAngled(false);
     if(source == (Object)add_action_b) tree.addNode(NodeInfo.USAGE_ACTION);
@@ -185,85 +184,78 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)copy_b) TreeNode.copy();
     if(source == (Object)paste_b) TreeNode.paste();
 
+    // Node related
+	Node curr_node = tree.getCurrentNode();
+	if(curr_node == null) return;
     if(source == (Object)turn_on_b)
     {
-	    Node curr_node = tree.getCurrentNode();
-	    if(curr_node == null) return;
 	    curr_node.turnOn();
 	    tree.reportChange();
     }
     if(source == (Object)turn_off_b)
     {
-	    Node curr_node = tree.getCurrentNode();
-	    if(curr_node == null) return;
 	    curr_node.turnOff();
 	    tree.reportChange();
     }
+
+    Point curr_origin = new Point(getLocation().x+32,getLocation().y+32);
     if(source == (Object)display_data_b)
     {
-	    if(tree.getCurrentNode() == null) return;
 	    if(display_data_d == null)
 	    {
 	        display_data_d = new TreeDialog(display_data = new DisplayData());
 	        display_data.setFrame(display_data_d);
 	    }
-	    display_data.setNode(tree.getCurrentNode());
+	    display_data.setNode(curr_node);
 	    display_data_d.pack();
-	    //display_data_d.setLocation(new Point(50,50));
+	    display_data_d.setLocation(curr_origin);
 	    display_data_d.setVisible(true);
     }
     if(source == (Object)display_nci_b)
     {
-        if(tree.getCurrentNode() == null) return;
         if(display_nci_d == null)
         {
             display_nci_d = new TreeDialog(display_nci = new DisplayNci());
             display_nci.setFrame(display_nci_d);
         }
-        display_nci.setNode(tree.getCurrentNode());
+        display_nci.setNode(curr_node);
         display_nci_d.pack();
-        display_nci_d.setLocation(new Point(50,50));
+        display_nci_d.setLocation(curr_origin);
         display_nci_d.setVisible(true);
     }
     if(source == (Object)display_tags_b)
     {
-        if(tree.getCurrentNode() == null) return;
         if(display_tags_d == null)
         {
             display_tags_d = new TreeDialog(display_tags = new DisplayTags());
             display_tags.setFrame(display_tags_d);
         }
-        display_tags.setNode(tree.getCurrentNode());
+        display_tags.setNode(curr_node);
         display_tags_d.pack();
-        display_tags_d.setLocation(new Point(50,50));
+        display_tags_d.setLocation(curr_origin);
         display_tags_d.setVisible(true);
     }
     if(source == (Object)modify_data_b)
     {
-	    if(tree.getCurrentNode() == null) return;
 	    if(modify_data_d == null)
 	    {
 	        modify_data_d = new TreeDialog(modify_data = new ModifyData());
 	        modify_data.setFrame(modify_data_d);
 	    }
-	    modify_data.setNode(tree.getCurrentNode());
+	    modify_data.setNode(curr_node);
 	    modify_data_d.pack();
-	    modify_data_d.setLocation(new Point(50,50));
+	    modify_data_d.setLocation(curr_origin);
 	    modify_data_d.setVisible(true);
     }
     if(source == (Object)set_default_b)
     {
-	    if(tree.getCurrentNode() == null) return;
 	    try {
-	        tree.getCurrentNode().setDefault();
+	        curr_node.setDefault();
 	    }catch(Exception exc) {System.out.println("Error setting default "+exc.getMessage());}
 	    tree.reportChange();
     }
     if(source == (Object)setup_device_b)
-    {
-	    if(tree.getCurrentNode() == null) return;
-	    tree.getCurrentNode().setupDevice();
-	}
+        curr_node.setupDevice();
 }
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
@@ -310,12 +302,10 @@ void reportChange(String exp, int shot, boolean editable, boolean readonly)
 	turn_on_b.setEnabled(true);
 	turn_off_b.setEnabled(true);
     }
-
 }
 
 public Component add(Component component)
 {
     return getContentPane().add(component);
 }
-
 }
