@@ -1,4 +1,16 @@
-commit 4363f2ec68b6a6d11927a639f66e4c9b71fa6f33 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8c20d6bde292d38869ba4259e30b117942b424d2 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 27 15:37:20 2015 -0400
+
+    Quick fix for rhel5 which does not have PTHREAD_MUTEX_RECURSIVE defined.
+
+commit 88391d01e5deb6f34f521be60e24aaaab1c3e5d1 (tag: refs/tags/alpha_release-7-0-168)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Oct 26 23:35:35 2015 -0400
+
+    New release ---- alpha_release-7-0-168
+
+commit 4363f2ec68b6a6d11927a639f66e4c9b71fa6f33
 Merge: a2a9654 865c76a
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Mon Oct 26 16:50:33 2015 -0400
@@ -777,7 +789,7 @@ Date:   Wed Sep 30 10:44:04 2015 -0400
     
     Question about TreeUSAGE_SUBTREE_TOP when querying USAGE_STR NCI
 
-commit 984428e05c7c8d633fad7f246be92c22181a1338 (refs/remotes/origin/dev-bstandley)
+commit 984428e05c7c8d633fad7f246be92c22181a1338
 Author: Brian Standley <brian@brianstandley.com>
 Date:   Wed Sep 30 15:57:29 2015 +0200
 
