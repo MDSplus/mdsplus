@@ -480,7 +480,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		                else
 		                {
 		                    try {
-		                        node.renameLast(newName);
+		                        node.rename(newName);
 		                    }catch(Exception exc)
 		                    {
                                 JOptionPane.showMessageDialog(frame, "Error renaming node: "+ exc,

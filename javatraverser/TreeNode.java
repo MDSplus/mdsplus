@@ -49,39 +49,33 @@ public class TreeNode extends JLabel
         Tree.deleteNode(selected);
     }
 
-    public TreeNode(Node _node, String name, Icon icon)
+    public TreeNode(Node node, String name, Icon icon)
     {
-	super(name+"                ", icon, JLabel.LEFT);
-	node = _node;
-	if(node.isOn())
-	    setFont(bold_f);
-	else
-	    setFont(plain_f);
-	setForeground(Color.black);
-	if(node.isDefault())
-	    //setText(node.getName().trim() + "                                   ");
-	    //setForeground(Color.red);
-	    setBorder(BorderFactory.createLineBorder(Color.black, 1));
-	else
-	    setBorder(BorderFactory.createLineBorder(Color.white, 1));
-	    //setText(node.getName().trim() + "                                   ");
-	    //setForeground(Color.black);
+	    super("MMMMMMMMMMMMMMMM", icon, JLabel.LEFT);
+	    this.node = node;
+        setText(node.getName());
+	    if(node.isOn())
+	        setFont(bold_f);
+	    else
+	        setFont(plain_f);
+	    setForeground(Color.black);
+	    if(node.isDefault())
+	        setBorder(BorderFactory.createLineBorder(Color.black, 1));
+	    else
+	        setBorder(BorderFactory.createLineBorder(Color.white, 1));
 
-    String tags[] = node.getTags();
-    if(tags.length > 0)
-    {
-        String tagsStr = "";
-        for(int i = 0; i < tags.length; i++)
+        String tags[] = node.getTags();
+        if(tags.length > 0)
         {
-            tagsStr += tags[i];
-            if(i < tags.length - 1)
-                tagsStr += "\n";
+            String tagsStr = "";
+            for(int i = 0; i < tags.length; i++)
+            {
+                tagsStr += tags[i];
+                if(i < tags.length - 1)
+                    tagsStr += "\n";
+            }
+            setToolTipText(tagsStr);
         }
-        setToolTipText(tagsStr);
-    }
-
-
-
     }
 
     public void paint(Graphics g)
