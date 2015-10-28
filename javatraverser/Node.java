@@ -168,7 +168,6 @@ public class Node
                                           "Error executing message",
                                           JOptionPane.WARNING_MESSAGE);
         }
-
     }
 
     public void setData(Data data) throws DatabaseException, RemoteException
@@ -368,7 +367,7 @@ public class Node
             {
                 System.out.println("Error getting NCI " + e);
             }
-        return info.getName();
+        return info.getName().trim();
     }
 
     public Node[] getSons()
@@ -499,21 +498,37 @@ public class Node
         }
     }
 
-    void rename(String new_name) throws DatabaseException, RemoteException
+    boolean changePath(String newFullPath)
     {
-        experiment.renameNode(nid, new_name, Tree.context);
-        info = experiment.getInfo(nid, Tree.context);
+	    try
+        {
+            experiment.renameNode(nid, newFullPath, Tree.context);
+            info = experiment.getInfo(nid, Tree.context);
+            return true;
+        }
+        catch(Exception exc)
+		{
+            JOptionPane.showMessageDialog(FrameRepository.frame, "Error changing node path: "+ exc,
+		    "Error changing node path", JOptionPane.WARNING_MESSAGE);
+		}
+        return false;
     }
 
-    void renameLast(String newName) throws Exception
+    boolean rename(String newName)
     {
-        String prevName = getFullPath();
+        if(newName.length() > 12 || newName.length() == 0)
+	    {
+	        JOptionPane.showMessageDialog(FrameRepository.frame, "Node name lengh must be between 1 and 12 characters",
+		    "Error renaming node", JOptionPane.WARNING_MESSAGE);
+            return false;
+	    }
+        String prevPath = getFullPath();
         int curr;
-        for (curr = prevName.length() - 1;
-             curr > 0 && prevName.charAt(curr) != ':' &&
-             prevName.charAt(curr) != '.'; curr--);
-        String newFullName = prevName.substring(0, curr + 1) + newName;
-        rename(newFullName);
+        for (curr = prevPath.length() - 1;
+                curr > 0 && prevPath.charAt(curr) != ':' &&
+                prevPath.charAt(curr) != '.'; curr--);
+        String newFullPath = prevPath.substring(0, curr + 1) + newName;
+        return changePath(newFullPath);
     }
 
     private ImageIcon loadIcon(String gifname)
@@ -596,16 +611,15 @@ public class Node
             //collect names used so far
             int idx = 0;
             for (int i = 0; i < toNode.sons.length; i++)
-                usedNames[idx++] = toNode.sons[i].getName().trim();
+                usedNames[idx++] = toNode.sons[i].getName();
             for (int i = 0; i < toNode.members.length; i++)
-                usedNames[idx++] = toNode.members[i].getName().trim();
+                usedNames[idx++] = toNode.members[i].getName();
 
             if (fromNode.getUsage() == NodeInfo.USAGE_DEVICE)
             {
                 ConglomData conglom = (ConglomData) fromNode.getData();
                 Node newNode = Tree.addDevice( (isMember ? ":" : ".") +
-                                              getUniqueName(fromNode.getName().
-                    trim(), usedNames),
+                                              getUniqueName(fromNode.getName(), usedNames),
                                               conglom.getModel().getString(),
                                               toNode);
                 newNode.expand();
@@ -615,8 +629,7 @@ public class Node
             {
                 Node newNode = Tree.addNode(fromNode.getUsage(),
                                             (isMember ? ":" : ".") +
-                                            getUniqueName(fromNode.getName().
-                    trim(), usedNames), toNode);
+                                            getUniqueName(fromNode.getName(), usedNames), toNode);
                 if (newNode == null)return;
                 newNode.expand();
                 try
