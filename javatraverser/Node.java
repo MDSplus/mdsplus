@@ -45,8 +45,9 @@ public class Node
     {
         this.experiment = experiment;
         this.hierarchy = hierarchy;
-        this.nid = nid;
+        this.is_member = is_member;
         this.parent = parent;
+        this.nid = nid;
         try
         {
             info = experiment.getInfo(nid, Tree.context);
