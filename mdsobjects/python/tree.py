@@ -38,7 +38,7 @@ def _getThreadName(thread=None):
     else:
         threadName = 'main'
     return threadName
-    
+
 def _addOpenTree(ctx,thread=None):
     if isinstance(ctx,Tree):
         ctx = ctx.ctx
@@ -85,7 +85,7 @@ class _treeDeleter(_threading.Thread):
               _removeOpenTree(self.ctx.value)
       finally:
           _hard_lock.release()
-        
+
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -96,12 +96,10 @@ class Tree(object):
     def __enter__(self):
     	return self
     def __exit__(self, type, value, traceback):
-        """ Cleanup for with statement. If tree is open for edit and no errors then write tree. """
+        """ Cleanup for with statement. If tree is open for edit close it. """
         if self.open_for_edit:
-          if type is not None:
             self.quit()
-          else:
-            self.write()
+        self.__del__()
 
     def __del__(self):
       """Delete Tree instance
