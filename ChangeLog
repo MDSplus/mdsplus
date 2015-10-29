@@ -1,8 +1,53 @@
-commit 8c20d6bde292d38869ba4259e30b117942b424d2 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit ad8df2c7d8abdf68e465fa5cf7acd8e7ca89fbd8 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 3c1bc1f f9f018c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Oct 28 10:58:37 2015 +0100
+
+    Merge pull request #179 from zack-vii/aa_cygnetak
+    
+    little cleanup and fixes (ctypes, python3)
+
+commit f9f018cec2a74ee870ffd2adbfff10a68d7f62f2
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 27 18:18:56 2015 +0100
+
+    little cleanup and fixes (ctypes, python3)
+    
+    - removed line 5 ('datetime' is unused)
+    - removed line 72 (inconsequent re-init of 'currTime', c.f. line 71)
+    - ctype.value + int ('currTime' is now ctype)
+    - removed line 118 (currTime is unused)
+    - removed trailing spaces
+    - removed terminating semicolon ';'
+    - removed 'tempIdx' (it is constant and only used in one place)
+    - 'print string' must become 'print(string)' for python3
+
+commit 3c1bc1f9dcb3eb34930dfbb84824d57c1cfda3d3
+Merge: 52ca33e db9c356
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Oct 28 09:39:06 2015 +0100
+
+    Merge pull request #177 from MDSplus/dev-bstandley
+    
+    Simplify new frame detection, upload automatically
+
+commit 52ca33ed2d61cb60349f2a5bb964319c120efd2e (tag: refs/tags/alpha_release-7-0-169)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 27 23:35:17 2015 -0400
+
+    New release ---- alpha_release-7-0-169
+
+commit 8c20d6bde292d38869ba4259e30b117942b424d2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Oct 27 15:37:20 2015 -0400
 
     Quick fix for rhel5 which does not have PTHREAD_MUTEX_RECURSIVE defined.
+
+commit db9c3564be25c2d94db23a9d723311f8fd10afdd (refs/remotes/origin/dev-bstandley)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Tue Oct 27 13:17:06 2015 +0100
+
+    Simplify new frame detection, upload automatically
 
 commit 88391d01e5deb6f34f521be60e24aaaab1c3e5d1 (tag: refs/tags/alpha_release-7-0-168)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
