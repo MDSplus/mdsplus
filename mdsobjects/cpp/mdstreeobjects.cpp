@@ -36,7 +36,7 @@ extern "C" {
 	void * evaluateData(void *dscPtr, int isEvaluate);
 	void * deserializeData(char *serialized, int size);
 	char * decompileDsc(void *dscPtr);
-	void * convertFromDsc(void *dscPtr);
+	void * convertFromDsc(void *dscPtr, Tree *tree);
 
 	void * convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
 	void * convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
@@ -1025,9 +1025,9 @@ void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw MdsException(status);
-	*start = (Data*)convertFromDsc(startDsc);
+	*start = (Data*)convertFromDsc(startDsc, tree);
 	freeDsc(startDsc);
-	*end = (Data*)convertFromDsc(endDsc);
+	*end = (Data*)convertFromDsc(endDsc, tree);
 	freeDsc(endDsc);
 }
 	
@@ -1046,7 +1046,7 @@ Array *TreeNode::getSegment(int segIdx)
 		freeDsc(timeDsc);
 		throw MdsException(status);
 	}
-	Array *retData = (Array *)convertFromDsc(dataDsc);
+	Array *retData = (Array *)convertFromDsc(dataDsc, tree);
 	freeDsc(dataDsc);
 	freeDsc(timeDsc);
 	return retData;
@@ -1067,7 +1067,7 @@ Data *TreeNode::getSegmentDim(int segIdx)
 		freeDsc(timeDsc);
 		throw MdsException(status);
 	}
-	Data *retDim = (Data *)convertFromDsc(timeDsc);
+	Data *retDim = (Data *)convertFromDsc(timeDsc, tree);
 	freeDsc(dataDsc);
 	freeDsc(timeDsc);
     return retDim;

@@ -2833,7 +2833,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv * env, jobject o
   }
   event = (*env)->GetStringUTFChars(env, jevent, 0);
   //make sure this Event instance will not be released by the garbage collector
-  status = MDSUdpEventAst((char *)event, handleEvent, (void *)eventObj, &eventId);
+  status = MDSEventAst((char *)event, handleEvent, (void *)eventObj, &eventId);
   addEventDescr(eventObj, (int64_t) eventId);
   (*env)->ReleaseStringUTFChars(env, jevent, event);
   if (!(status & 1))
@@ -2848,7 +2848,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv * env, jobject o
  */
 JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent(JNIEnv * env, jobject obj, jlong eventId) {
   jobject delObj = releaseEventDescr(eventId);
-  MDSUdpEventCan(eventId);
+  MDSEventCan(eventId);
   //Allow Garbage Collector reclaim the Event object
   (*env)->DeleteGlobalRef(env, delObj);
 }
@@ -2863,7 +2863,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw
   int dim = (*env)->GetArrayLength(env, jbuf);
   char *buf = (char *)(*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
   const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
-  MDSUdpEvent((char *)event, dim, buf);
+  MDSEvent((char *)event, dim, buf);
   (*env)->ReleaseStringUTFChars(env, jevent, event);
 }
 
