@@ -1,4 +1,48 @@
-commit ad8df2c7d8abdf68e465fa5cf7acd8e7ca89fbd8 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8b5df966386d388fbeacc5bd8d4c21ac98ecade5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 799a5d8 1529773
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 29 14:55:19 2015 -0400
+
+    Merge pull request #183 from zack-vii/aa_python
+    
+    fixed with structure exit
+
+commit 1529773b6133ddbe9a933a7434adb4b08a9f5e9a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 29 19:43:27 2015 +0100
+
+    fixed with structure exit
+    
+    - quit() in any case if edit, write does not close edit session
+    if you want to write you should do it intentionally (manually)
+    just make sure the tree is released.
+
+commit 799a5d8975a54d3be69667c3b935deff7ef9f0f2
+Merge: 078cd6b 334f957
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Oct 29 10:44:58 2015 +0100
+
+    Merge pull request #181 from zack-vii/aa_traverser_dialog_position
+    
+    unified origin for dialogs
+
+commit 078cd6b869942defcc9e1450910cdf97623969cb (tag: refs/tags/alpha_release-7-0-170)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 28 23:38:16 2015 -0400
+
+    New release ---- alpha_release-7-0-170
+
+commit 334f9577fa40b532179a06e628d7966f7d076dd3
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 28 22:35:39 2015 +0100
+
+    unified origin for dialogs
+    
+    - locate all dialogs relative to jTraverser
+    this is for dialogs opened by via menu as well as context menu
+    - save node check and curr_origin by ordering
+
+commit ad8df2c7d8abdf68e465fa5cf7acd8e7ca89fbd8
 Merge: 3c1bc1f f9f018c
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Oct 28 10:58:37 2015 +0100
