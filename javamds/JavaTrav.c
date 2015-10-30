@@ -404,6 +404,27 @@ JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj, jobject
     RaiseException(env, MdsGetMsg(status), status);
 }
 
+JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj, jobject jnid) {
+  int nid, status;
+  jfieldID nid_fid;
+  jclass cls = (*env)->GetObjectClass(env, jnid);
+  static int nci_flags;
+  static int nci_flags_len = sizeof(int);
+  struct nci_itm nci_list[] = { {4, NciGET_FLAGS, &nci_flags, &nci_flags_len},
+  {NciEND_OF_LIST, 0, 0, 0}
+  };
+
+  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+  nid = (*env)->GetIntField(env, jnid, nid_fid);
+
+  status = TreeGetNci(nid, nci_list);
+  if (!(status & 1)) {
+    RaiseException(env, MdsGetMsg(status), status);
+    return 0xFFFF;
+  }
+  return nci_flags;
+}
+
 JNIEXPORT jobject JNICALL Java_Database_getInfo
     (JNIEnv * env, jobject obj, jobject jnid, jint context) {
   int nid, status;
