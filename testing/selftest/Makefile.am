@@ -20,7 +20,9 @@ AM_DEFAULT_SOURCE_EXT = .c
 C_TESTS = \
           example2 \
           example3 \
-          example4
+          example4 
+          
+#test_context
           
 PY_TESTS = \
            pyex1.py
@@ -30,8 +32,42 @@ PL_TESTS =
 
 TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
 
+# TESTS_ENVIRONMENT =
+# LOG_COMPILER =
 
-AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
+# if MINGW
+# if HAVE_WINECONSOLE
+# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
+# LOG_COMPILER += wine
+# else
+# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
+# LOG_COMPILER += sh -c 'exit 77'
+# endif
+
+# else
+# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
+# endif
+
+.ONESHELL:
+define aaa = 
+case ${build_os}:${host} in
+*linux*:*mingw*)
+set WINEPATH="'$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'";
+set CIAO="ciao";
+echo ${CIAO};
+;;
+esac
+endef
+
+.ONESHELL:
+print_env:
+	${aaa}; \
+	echo ${WINEPATH}
+
+
+
+# $(eval $(call ${srcdir}/prova.sh))
+
 
 
 bin_PROGRAMS = example3
@@ -48,12 +84,12 @@ example3_SOURCES = example3.cpp
 # generate suppressions codes.
 #
 
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --dsymutil=yes --leak-check=yes
+#if USE_VALGRIND
+#LOG_COMPILER = valgrind
+#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+#               --dsymutil=yes --leak-check=yes
 
-endif
+#endif
 
 
 #
@@ -65,6 +101,12 @@ MOSTLYCLEANFILES = *.out
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
+
+
+print:
+	@echo "ENV = ${TESTS_ENVIRONMENT}";
+	@echo "host = ${host}";
+
 
 
 all-local: $(TESTS)

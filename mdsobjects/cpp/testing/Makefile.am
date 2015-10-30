@@ -68,15 +68,15 @@ LDADD += testutils/libMdsTestUtils.a
 # generate suppressions codes.
 #
 
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --suppressions=valgrind-stdlib.supp      \
-               --suppressions=valgrind-dlerr.supp       \
-               --suppressions=valgrind-connection.supp  \
-               --suppressions=valgrind-treenode.supp    \
-               --dsymutil=yes --leak-check=yes
-endif
+#if USE_VALGRIND
+#LOG_COMPILER = valgrind
+#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+#               --suppressions=valgrind-stdlib.supp      \
+#               --suppressions=valgrind-dlerr.supp       \
+#               --suppressions=valgrind-connection.supp  \
+#               --suppressions=valgrind-treenode.supp    \
+#               --dsymutil=yes --leak-check=yes
+#endif
 
 
 #

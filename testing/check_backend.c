@@ -20,7 +20,6 @@
 #include <check_log.h>
 #include <check_print.h>
 
-
 #include "testing.h"
 
 // Check for HAVE_CHECK and HAVE_FORK //
@@ -35,7 +34,7 @@
 #else
 #include <ucontext.h>
 static ucontext_t error_jmp_context;
-static volatile int error_jmp_state = 0;
+volatile int error_jmp_state;
 #endif
 
 #define MSG_LEN 100
@@ -180,14 +179,18 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 #     endif /* HAVE_FORK */
     }
     else
-    {
-        // this is not supported here
-        //longjmp(error_jmp_buffer, 1);
-        
-#      ifndef _WIN32
-        error_jmp_state = 1;
-        setcontext(&error_jmp_context);
-#      endif
+    {        
+//#      ifndef _WIN32
+//        printf("sending status ... \n");
+//        error_jmp_state = 1;
+//        if( setcontext(&error_jmp_context) != 0 )
+//        {
+//            printf("ERROR SETCONTEXT\n");
+//            exit(1);
+//        }
+//#      endif
+        __test_end();
+        exit(1);
     }
 }
 
@@ -715,11 +718,20 @@ int __setup_parent() {
 #endif
     // child here or no fork available
     
-#ifndef _WIN32
-    // save current context ... ( add Fibers here for windows )
-    if( !getcontext(&error_jmp_context) ) error_jmp_state = -1;    
-    if( error_jmp_state > 0 ) return 1;
-#endif        
+//#ifndef _WIN32
+//    // save current context ... ( add Fibers here for windows )    
+//    if (getcontext(&error_jmp_context) < 0)
+//        exit(1);    
+//    if( error_jmp_state == 1 ) {
+//        printf("ret 1\n");
+//        return 1;
+//    }
+//    else {
+//        printf("ret 0\n");
+//        return 0;
+//    }
+//#endif            
+
     return 0;
 }
 
@@ -755,11 +767,14 @@ void __test_end()
         return;
     }
 #endif
+    printf("Exiting from handler...\n");
+    
     TestResult *tr;
     send_ctx_info(CK_CTX_SETUP); // FIXX ///
     tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
     if(tr) srunner_add_failure(runner, tr);
     srunner_send_evt(runner, tr, CLEND_T);
+    
 }
 
 
@@ -775,17 +790,18 @@ void __test_end()
 void __test_exit()
 {
     // if we are on child silently exit //
-    if(group_pid) {         
+#if defined(HAVE_FORK)
+    if(cur_fork_status() == CK_FORK && group_pid) {         
         revertStdout();
         _exit(0);
     }
-
+#endif
     log_suite_end(runner, suite);
     srunner_run_end(runner,CK_VERBOSE);
     int _nerr = srunner_ntests_failed(runner);
     srunner_free(runner);
-
-    _exit(_nerr);
+    
+    _exit(_nerr > 0);
 }
 
 

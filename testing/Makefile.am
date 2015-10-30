@@ -1,6 +1,7 @@
 SUBDIRS = backends/check .
 
 include @top_builddir@/Makefile.inc
+include testing.am
 
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
@@ -18,7 +19,6 @@ noinst_LIBRARIES += libMdsTestBackend.a
 libMdsTestBackend_a_CFLAGS = -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 
-
 #
 # Shared library
 #
@@ -29,11 +29,16 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
 
+bin_PROGRAMS = faketest
+faketest_SOURCES = faketest.c
+faketest_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+faketest_LDADD = -L@MAKESHLIBDIR@ $(TEST_LIBS)
+
+
 TEST_SUBDIRS = \
                mdsobjects/python/tests \
                mdslib/testing \
                mdsobjects/cpp/testing
-               
 #               testing/selftest
 
 

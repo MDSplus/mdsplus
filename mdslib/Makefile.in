@@ -44,7 +44,7 @@ MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 $(MdsLib): $(OBJECTS) $(DEF)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsIpShr -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
 
-@MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS) 
+@MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
@@ -64,7 +64,7 @@ MdsLib_client.o : MdsLib.c
 
 @MAKEBINDIR@dtype_test : dtype_test.c $(MdsLib)
 	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
-
+	
 @MAKEBINDIR@mdslib_ctest : mdslib_ctest.c $(MdsLib)
 	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
 

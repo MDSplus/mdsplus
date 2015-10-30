@@ -34,11 +34,11 @@ AM_TESTS_ENVIRONMENT = \
 # generate suppressions codes.
 #
 
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --dsymutil=yes --leak-check=yes
-endif
+#if USE_VALGRIND
+#LOG_COMPILER = valgrind
+#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+#               --dsymutil=yes --leak-check=yes
+#endif
 
 
 #

@@ -4,7 +4,8 @@
 
 #include "testing.h"
 
-
+#include <stdlib.h>
+#include <pthread.h>
 
 
 void __assert_fail (const char *__assertion, const char *__file,
@@ -16,7 +17,9 @@ void __assert_fail (const char *__assertion, const char *__file,
            " > file: %s ,  function: %s, line: %d \n"
            "   assertion:  (%s) \n\n", 
            __file,__function,__line,__assertion);
-    _exit(1);
+    
+    __test_end();
+    exit(1);
 }
 
 
@@ -36,7 +39,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 
 void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function) {}
 
-void __test_exit() { _exit(0); }
+void __test_exit() { exit(0); }
 
 
 

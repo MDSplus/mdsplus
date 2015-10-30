@@ -88,6 +88,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@HAVE_WINECONSOLE_TRUE@@MINGW_TRUE@am__append_1 = WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
+@HAVE_WINECONSOLE_TRUE@@MINGW_TRUE@am__append_2 = wine
+@HAVE_WINECONSOLE_FALSE@@MINGW_TRUE@am__append_3 = @LIBPATH@="@MAKESHLIBDIR@"
+@HAVE_WINECONSOLE_FALSE@@MINGW_TRUE@am__append_4 = sh -c 'exit 77'
+@MINGW_FALSE@am__append_5 = @LIBPATH@="@MAKESHLIBDIR@"
 TESTS = dtype_test$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdslib/testing
@@ -382,8 +387,6 @@ CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CHECK_CFLAGS = @CHECK_CFLAGS@
-CHECK_LIBS = @CHECK_LIBS@
 CLOCK_GETTIME_LIB = @CLOCK_GETTIME_LIB@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -444,6 +447,8 @@ GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
+HAVE_WINE = @HAVE_WINE@
+HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
@@ -633,7 +638,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-PY_LOG_COMPILER = python
+PY_LOG_COMPILER = $(PYTHON)
 PY_LOG_FLAGS = -v
 
 # not used #
@@ -649,9 +654,11 @@ _tap_py_execute = \
  tr.set_stream(1); \
  tr.run(tests); 
 
+TESTS_ENVIRONMENT = $(am__append_1) $(am__append_3) $(am__append_5)
+LOG_COMPILER = $(am__append_2) $(am__append_4)
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = :
+@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
 @PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
 @PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
@@ -676,10 +683,12 @@ AM_TESTS_ENVIRONMENT = \
 # may rise false positives in valgrind memory check so they may be usefull to
 # generate suppressions codes.
 #
-@USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
-@USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-@USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
+#if USE_VALGRIND
+#LOG_COMPILER = valgrind
+#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+#               --dsymutil=yes --leak-check=yes
+#endif
 
 #
 # Files produced by tests that must be purged
