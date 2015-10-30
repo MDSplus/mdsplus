@@ -189,9 +189,21 @@ public class Node
         return info;
     }
 
-    public void setInfo(NodeInfo info) throws DatabaseException,
-        RemoteException
+    public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
+    public void setFlags(NodeInfo info) throws DatabaseException, RemoteException
     {
+        int flags = 0;
+        if (!info.on)              flags+= 0x00001;
+        if (info.essential)        flags+= 0x00004;
+        if (info.setup)            flags+= 0x00040;
+        if (info.write_once)       flags+= 0x00080;
+        if (info.compressible)     flags+= 0x00100;
+        if (info.compress_on_put)  flags+= 0x00400;
+        if (info.no_write_model)   flags+= 0x00800;
+        if (info.no_write_shot)    flags+= 0x01000;
+//        if (info.include_in_pulse) flags+= 0x08000;
+//        if (info.compress_segments)flags+= 0x10000;
+        experiment.setFlags(nid, flags);
     }
 
     public boolean isOn()

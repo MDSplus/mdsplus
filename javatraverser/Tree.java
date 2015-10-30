@@ -17,7 +17,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     static boolean is_remote;
     boolean is_angled_style;
     DefaultMutableTreeNode top;
-    //Node top_node, curr_node;
     JMenuItem menu_items[];
     boolean is_editable;
     JPopupMenu pop = null;
@@ -40,6 +39,16 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     JTextField add_node_name, add_node_tag, add_subtree_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
+    JDialog modify_flags_dialog;
+    JCheckBox flagBoxes[] = {new JCheckBox("On"),
+                             new JCheckBox("ParentOn"),
+                             new JCheckBox("Essential"),null,null,null,
+                             new JCheckBox("Setup"),
+                             new JCheckBox("WriteOnce"),
+                             new JCheckBox("Compressible"),null,
+                             new JCheckBox("CompressOnPut"),
+                             new JCheckBox("NoWriteModel"),
+                             new JCheckBox("NoWriteShot")};
     JDialog add_device_dialog;
     JList modify_tags_list;
     JTextField curr_tag_selection;
@@ -54,10 +63,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
     String topExperiment;
         
-// Temporary, to vercome Java's bugs on inner classes
+// Temporary, to overcome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
 	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
+    modify_flags_b,
 	rename_node_b;
     JButton ok_cb, add_node_ok;
 
@@ -75,7 +85,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    setBackground(Color.white);
 	    curr_tree = null;
 	    curr_experiment = null;
-	    String def_tree = System.getProperty("tree");
+	    String def_tree = System.getenv("tree");
 	    if(def_tree != null)
 	    {
 	        String def_shot = System.getProperty("shot");
@@ -626,6 +636,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            delete_node_b.addActionListener(this);
 		            pop.add(modify_tags_b = new JMenuItem("Modify tags"));
 		            modify_tags_b.addActionListener(this);
+		            pop.add(modify_flags_b = new JMenuItem("Modify flags"));
+		            modify_flags_b.addActionListener(this);
 		            pop.add(rename_node_b = new JMenuItem("Rename node"));
 		            rename_node_b.addActionListener(this);
 		            pop.addSeparator();
@@ -722,7 +734,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    if(add_node_dialog == null)
 	    {
 	        add_node_dialog = new JDialog(frame);
-	        add_node_dialog.setLocation(curr_origin);
 	        JPanel jp = new JPanel();
 	        jp.setLayout(new BorderLayout());
 	        JPanel jp1 = new JPanel();
@@ -766,7 +777,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    if(add_subtree_dialog == null)
 	    {
 	        add_subtree_dialog = new JDialog(frame);
-	        add_subtree_dialog.setLocation(curr_origin);
 	        JPanel jp = new JPanel();
 	        jp.setLayout(new BorderLayout());
 	        JPanel jp1 = new JPanel();
@@ -811,7 +821,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    if(add_device_dialog == null)
 	    {
 	        add_device_dialog = new JDialog(frame);
-	        add_device_dialog.setLocation(curr_origin);
 	        JPanel jp = new JPanel();
 	        jp.setLayout(new BorderLayout());
 	        JPanel jp1 = new JPanel();
@@ -1068,30 +1077,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    JPanel jp3 = new JPanel();
 	    JButton ok_b = new JButton("Ok");
 	    ok_b.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e)
-		    {
-		        String []out_tags = new String[curr_taglist_model.getSize()];
-		        for(int i = 0; i < curr_taglist_model.getSize(); i++)
-		        {
-			        out_tags[i] = (String)curr_taglist_model.getElementAt(i);
-		        }
-		        try {
-			        curr_node.setTags(out_tags);
-		        } catch(Exception exc)
-		        {
-			        JOptionPane.showMessageDialog(frame, exc.getMessage(),
-			            "Error adding tags", JOptionPane.WARNING_MESSAGE);
-		        }
-		        modify_tags_dialog.setVisible(false);
-		}});
+		public void actionPerformed(ActionEvent e){addTag();}
+        });
 	    jp3.add(ok_b);
-	    JButton apply_b = new JButton("Apply");
-	    apply_b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e)
-		{
-            addTag();
-		}});
-	    jp3.add(apply_b);
 	    JButton reset_b = new JButton("Reset");
 	    reset_b.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -1142,6 +1130,95 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		modify_tags_dialog.setVisible(false);
 	}
 
+    public void modifyFlags()
+	{
+	    if(curr_node == null) return;
+	    try {
+	        curr_node.getInfo();
+	    } catch(Exception e)
+	    {
+	        System.out.println("Error getting flags: "+e.getMessage());
+	        return;
+	    }
+        if (modify_flags_dialog == null)
+	    {
+	        modify_flags_dialog = new JDialog(frame);
+	        JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+	        JPanel jp1 = new JPanel();
+            jp1.setLayout(new GridLayout(4,2));
+            jp1.add(flagBoxes[0]);
+            jp1.add(flagBoxes[2]);
+            jp1.add(flagBoxes[6]);
+            jp1.add(flagBoxes[7]);
+            jp1.add(flagBoxes[8]);
+            jp1.add(flagBoxes[10]);
+            jp1.add(flagBoxes[11]);
+            jp1.add(flagBoxes[12]);
+            jp.add(jp1);
+	        JPanel jp3 = new JPanel();
+	        JButton ok_b = new JButton("Ok");
+	        ok_b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){setFlags();}
+            });
+	        jp3.add(ok_b);
+	        JButton reset_b = new JButton("Reset");
+	        reset_b.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		    }});
+	        jp3.add(reset_b);
+	        JButton cancel_b = new JButton("Cancel");
+	        cancel_b.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        modify_flags_dialog.setVisible(false);
+            }});
+	        jp3.add(cancel_b);
+	        jp.add(jp3, "South");
+	        modify_flags_dialog.getContentPane().add(jp);
+	        modify_flags_dialog.addKeyListener(new KeyAdapter() {
+	            public void keyTyped(KeyEvent e)
+	            {
+	                if(e.getKeyCode() == KeyEvent.VK_ENTER)
+	                    setFlags();
+	            }
+	        });
+    	    modify_flags_dialog.pack();
+        }
+        flagBoxes[0].setSelected(curr_node.info.on);
+        flagBoxes[2].setSelected(curr_node.info.essential);
+        flagBoxes[6].setSelected(curr_node.info.setup);
+        flagBoxes[7].setSelected(curr_node.info.write_once);
+        flagBoxes[8].setSelected(curr_node.info.compressible);
+        flagBoxes[10].setSelected(curr_node.info.compress_on_put);
+        flagBoxes[11].setSelected(curr_node.info.no_write_model);
+        flagBoxes[12].setSelected(curr_node.info.no_write_shot);
+	    modify_flags_dialog.setTitle("Modify flags of " + curr_node.getFullPath());
+	    if (!modify_flags_dialog.isVisible())
+            modify_flags_dialog.setLocation(curr_origin);
+	    modify_flags_dialog.setVisible(true);
+	}
+
+    public void setFlags()
+	{
+        NodeInfo out_info = null;
+        curr_node.info.on =              flagBoxes[0].isSelected();
+        curr_node.info.essential =       flagBoxes[2].isSelected();
+        curr_node.info.setup =           flagBoxes[6].isSelected();
+        curr_node.info.write_once =      flagBoxes[7].isSelected();
+        curr_node.info.compressible =    flagBoxes[8].isSelected();
+        curr_node.info.compress_on_put = flagBoxes[10].isSelected();
+        curr_node.info.no_write_model =  flagBoxes[11].isSelected();
+        curr_node.info.no_write_shot =   flagBoxes[12].isSelected();
+		try {
+			curr_node.setFlags(out_info);
+		} catch(Exception exc)
+		{
+			JOptionPane.showMessageDialog(frame, exc.getMessage(),
+			    "Error setting flags", JOptionPane.WARNING_MESSAGE);
+		}
+		modify_flags_dialog.setVisible(false);
+	}
+
     void renameNode()
     {
 	if(curr_node == null) return;
@@ -1157,9 +1234,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    jp1 = new JPanel();
 	    JButton ok_b = new JButton("Ok");
 	    ok_b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-            rename();
-		}});
+		public void actionPerformed(ActionEvent e) {rename();}
+        });
 	    jp1.add(ok_b);
 	    JButton cancel_b = new JButton("Cancel");
 	    cancel_b.addActionListener(new ActionListener() {
@@ -1230,6 +1306,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(jb == (Object)add_device_b) addDevice();
 	if(jb == (Object)delete_node_b) deleteNode();
 	if(jb == (Object)modify_tags_b) modifyTags();
+	if(jb == (Object)modify_flags_b) modifyFlags();
 	if(jb == (Object)rename_node_b) renameNode();
     }
 
