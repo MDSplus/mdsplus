@@ -1,4 +1,34 @@
-commit 8b5df966386d388fbeacc5bd8d4c21ac98ecade5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit cbd04237096016f19860c75b776e2d2b92a9c583 (HEAD -> refs/heads/alpha, refs/remotes/origin/test-gab, refs/remotes/origin/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Oct 30 18:41:00 2015 +0100
+
+    Urgent fixes to cpp TreeNode
+
+commit a18bd65c7ec3c0dd8b4c7f2478e99dbf1e827fb5
+Merge: c4c9468 b06963e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 30 08:01:54 2015 -0400
+
+    Merge pull request #185 from zack-vii/aa_python
+    
+    fixed getMembers and getChildren if empty
+
+commit b06963eb2cb74edec8fc471b2eb162ff648ff3ce
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 30 11:09:26 2015 +0100
+
+    fixed getMembers and getChildren if empty
+    
+    just like getDescendent they should return empty arrays in order to
+    support "for m in getMembers():" constructions
+
+commit c4c946896a11d3e0066f34f029812118f5a9f9ec (tag: refs/tags/alpha_release-7-0-171)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 29 23:36:13 2015 -0400
+
+    New release ---- alpha_release-7-0-171
+
+commit 8b5df966386d388fbeacc5bd8d4c21ac98ecade5
 Merge: 799a5d8 1529773
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 29 14:55:19 2015 -0400
