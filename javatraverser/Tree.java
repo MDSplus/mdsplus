@@ -18,7 +18,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     boolean is_angled_style;
     DefaultMutableTreeNode top;
     JMenuItem menu_items[];
-    boolean is_editable;
+    static boolean is_editable;
     JPopupMenu pop = null;
     MethodDescriptor curr_method_descr;
     PropertyDescriptor curr_property_descr;
@@ -30,7 +30,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     static JTree curr_tree;
     static RemoteTree curr_experiment;
     public static int context;
-    Node curr_node = null;
+    static Node curr_node = null;
     static DefaultMutableTreeNode curr_tree_node;
     JDialog open_dialog = null, add_node_dialog = null, add_subtree_dialog = null;
     JTextField open_exp, open_shot;
@@ -39,23 +39,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     JTextField add_node_name, add_node_tag, add_subtree_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
-    JDialog modify_flags_dialog;
-    JCheckBox flagBoxes[] = {new JCheckBox("On"),
-                             new JCheckBox("ParentOn"),
-                             new JCheckBox("Essential"),null,null,null,
-                             new JCheckBox("Setup"),
-                             new JCheckBox("WriteOnce"),
-                             new JCheckBox("Compressible"),null,
-                             new JCheckBox("CompressOnPut"),
-                             new JCheckBox("NoWriteModel"),
-                             new JCheckBox("NoWriteShot")};
     JDialog add_device_dialog;
     JList modify_tags_list;
     JTextField curr_tag_selection;
     DefaultListModel curr_taglist_model;
-    String [] tags;
-    JDialog rename_dialog;
-    JTextField new_node_name;
+    String[] tags;
 	JTextField add_device_type, add_device_name;
 	static Hashtable nodeHash = new Hashtable();
 	String lastName;
@@ -67,7 +55,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     JMenuItem open_b, close_b, quit_b;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
 	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
-    modify_flags_b,
+    flags_b,
 	rename_node_b;
     JButton ok_cb, add_node_ok;
 
@@ -234,7 +222,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    pop = null;
 	        is_editable = curr_experiment.isEditable();
 	    }catch(Exception exc) {System.err.println("Error in RMI communication: "+exc);}
-
 	}
 	else
 	{
@@ -245,8 +232,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    frame.reportChange(null, 0, false, false);
 
 	}
-
     DeviceSetup.closeOpenDevices();
+    dialogs.update();
 	frame.pack();
 	repaint();
     }
@@ -261,36 +248,37 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_dialog.setTitle("Open new tree");
 	    JPanel mjp = new JPanel();
 	    mjp.setLayout(new BorderLayout());
-	    JPanel jp1 = new JPanel();
-	    jp1.setLayout(new GridLayout(3,1));
-	    jp1.add(new JLabel("Tree: "));
-	    jp1.add(new JLabel("Shot: "));
-        jp1.add(open_normal = new JRadioButton("normal"));
-	    mjp.add(jp1, "West");
-	    JPanel jp2 = new JPanel();
-	    jp2.setLayout(new GridLayout(1,2));
-        jp2.add(open_readonly = new JRadioButton("readonly"));
-        jp2.add(open_edit = new JRadioButton("edit/new"));
-	    jp1 = new JPanel();
-	    jp1.setLayout(new GridLayout(3,1));
-	    jp1.add(open_exp = new JTextField(20));
-	    jp1.add(open_shot = new JTextField(10));
-	    jp1.add(jp2);
-	    mjp.add(jp1, "East");
+	    JPanel jp = new JPanel();
+	    jp.setLayout(new GridLayout(2,1));
+	    JPanel jpi = new JPanel();
+	    jpi.add(new JLabel("Tree: "));
+	    jpi.add(open_exp = new JTextField(16));
+        jp.add(jpi,"East");
+        jpi = new JPanel();
+	    jpi.add(new JLabel("Shot: "));
+	    jpi.add(open_shot = new JTextField(16));
+        jp.add(jpi,"East");
+	    mjp.add(jp, "North");
+	    jp = new JPanel();
+	    jp.setLayout(new GridLayout(1,3));
+        jp.add(open_normal = new JRadioButton("normal"));
+        jp.add(open_readonly = new JRadioButton("readonly"));
+        jp.add(open_edit = new JRadioButton("edit/new"));
         ButtonGroup bgMode = new ButtonGroup();
         bgMode.add(open_readonly);
         bgMode.add(open_normal);
         bgMode.add(open_edit);
-	    jp1 = new JPanel();
-	    jp1.add(ok_cb = new JButton("Ok"));
+	    mjp.add(jp, "Center");
+	    jp = new JPanel();
+	    jp.add(ok_cb = new JButton("Ok"));
 	    ok_cb.addActionListener(this);
 		ok_cb.setSelected(true);
         JButton cancel = new JButton("Cancel");
-	    jp1.add(cancel);
+	    jp.add(cancel);
 	    cancel.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e)  {
 		    open_dialog.setVisible(false);  }});
-	    mjp.add(jp1, "South");
+	    mjp.add(jp, "South");
 	    open_dialog.getContentPane().add(mjp);
 	    open_shot.addKeyListener(this);
 	    open_exp.addKeyListener(this);
@@ -344,9 +332,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        pop = null;
 	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected(), false);
 	    open_dialog.setVisible(false);
+        dialogs.update();
 	    frame.pack();
 	    repaint();
-
     }
 
 
@@ -636,8 +624,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            delete_node_b.addActionListener(this);
 		            pop.add(modify_tags_b = new JMenuItem("Modify tags"));
 		            modify_tags_b.addActionListener(this);
-		            pop.add(modify_flags_b = new JMenuItem("Modify flags"));
-		            modify_flags_b.addActionListener(this);
 		            pop.add(rename_node_b = new JMenuItem("Rename node"));
 		            rename_node_b.addActionListener(this);
 		            pop.addSeparator();
@@ -687,6 +673,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            });
 		            item_idx++;
 	            }
+		        pop.add(flags_b = new JMenuItem("Flags"));
+		        flags_b.addActionListener(this);
 	            pop.addSeparator();
 	            pop.add(open_b = new JMenuItem("Open"));
 	            open_b.addActionListener(this);//) {
@@ -724,6 +712,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        TreeNode.setSelectedNode(curr_node);
 	        curr_tree.treeDidChange();
 	    }
+        dialogs.update();
     }
 
     public void addNode(int usage)
@@ -1130,159 +1119,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		modify_tags_dialog.setVisible(false);
 	}
 
-    public void modifyFlags()
-	{
-	    if(curr_node == null) return;
-	    try {
-	        curr_node.getInfo();
-	    } catch(Exception e)
-	    {
-	        System.out.println("Error getting flags: "+e.getMessage());
-	        return;
-	    }
-        if (modify_flags_dialog == null)
-	    {
-	        modify_flags_dialog = new JDialog(frame);
-	        JPanel jp = new JPanel();
-            jp.setLayout(new BorderLayout());
-	        JPanel jp1 = new JPanel();
-            jp1.setLayout(new GridLayout(4,2));
-            jp1.add(flagBoxes[0]);
-            jp1.add(flagBoxes[2]);
-            jp1.add(flagBoxes[6]);
-            jp1.add(flagBoxes[7]);
-            jp1.add(flagBoxes[8]);
-            jp1.add(flagBoxes[10]);
-            jp1.add(flagBoxes[11]);
-            jp1.add(flagBoxes[12]);
-            jp.add(jp1);
-	        JPanel jp3 = new JPanel();
-	        JButton ok_b = new JButton("Ok");
-	        ok_b.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){setFlags();}
-            });
-	        jp3.add(ok_b);
-	        JButton reset_b = new JButton("Reset");
-	        reset_b.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		    }});
-	        jp3.add(reset_b);
-	        JButton cancel_b = new JButton("Cancel");
-	        cancel_b.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        modify_flags_dialog.setVisible(false);
-            }});
-	        jp3.add(cancel_b);
-	        jp.add(jp3, "South");
-	        modify_flags_dialog.getContentPane().add(jp);
-	        modify_flags_dialog.addKeyListener(new KeyAdapter() {
-	            public void keyTyped(KeyEvent e)
-	            {
-	                if(e.getKeyCode() == KeyEvent.VK_ENTER)
-	                    setFlags();
-	            }
-	        });
-    	    modify_flags_dialog.pack();
-        }
-        flagBoxes[0].setSelected(curr_node.info.on);
-        flagBoxes[2].setSelected(curr_node.info.essential);
-        flagBoxes[6].setSelected(curr_node.info.setup);
-        flagBoxes[7].setSelected(curr_node.info.write_once);
-        flagBoxes[8].setSelected(curr_node.info.compressible);
-        flagBoxes[10].setSelected(curr_node.info.compress_on_put);
-        flagBoxes[11].setSelected(curr_node.info.no_write_model);
-        flagBoxes[12].setSelected(curr_node.info.no_write_shot);
-	    modify_flags_dialog.setTitle("Modify flags of " + curr_node.getFullPath());
-	    if (!modify_flags_dialog.isVisible())
-            modify_flags_dialog.setLocation(curr_origin);
-	    modify_flags_dialog.setVisible(true);
-	}
-
-    public void setFlags()
-	{
-        NodeInfo out_info = null;
-        curr_node.info.on =              flagBoxes[0].isSelected();
-        curr_node.info.essential =       flagBoxes[2].isSelected();
-        curr_node.info.setup =           flagBoxes[6].isSelected();
-        curr_node.info.write_once =      flagBoxes[7].isSelected();
-        curr_node.info.compressible =    flagBoxes[8].isSelected();
-        curr_node.info.compress_on_put = flagBoxes[10].isSelected();
-        curr_node.info.no_write_model =  flagBoxes[11].isSelected();
-        curr_node.info.no_write_shot =   flagBoxes[12].isSelected();
-		try {
-			curr_node.setFlags(out_info);
-		} catch(Exception exc)
-		{
-			JOptionPane.showMessageDialog(frame, exc.getMessage(),
-			    "Error setting flags", JOptionPane.WARNING_MESSAGE);
-		}
-		modify_flags_dialog.setVisible(false);
-	}
-
-    void renameNode()
-    {
-	if(curr_node == null) return;
-	if(rename_dialog == null)
-	{
-	    rename_dialog = new JDialog();
-	    JPanel jp = new JPanel();
-	    jp.setLayout(new BorderLayout());
-	    JPanel jp1 = new JPanel();
-	    jp1.add(new JLabel("New Name: "));
-	    jp1.add(new_node_name = new JTextField(12));
-	    jp.add(jp1, "North");
-	    jp1 = new JPanel();
-	    JButton ok_b = new JButton("Ok");
-	    ok_b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {rename();}
-        });
-	    jp1.add(ok_b);
-	    JButton cancel_b = new JButton("Cancel");
-	    cancel_b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    rename_dialog.setVisible(false);
-		}});
-	    jp1.add(cancel_b);
-	    jp.add(jp1, "South");
-	    rename_dialog.getContentPane().add(jp);
-	    rename_dialog.addKeyListener(new KeyAdapter() {
-	        public void keyTyped(KeyEvent e)
-	        {
-	            if(e.getKeyCode() == KeyEvent.VK_ENTER)
-	                rename();
-	        }
-	    });
-	    rename_dialog.pack();
-	    rename_dialog.setVisible(true);
-	}
-	rename_dialog.setTitle("Rename node " + curr_node.getFullPath());
-	rename_dialog.setLocation(curr_origin);
-	new_node_name.setText("");
-	rename_dialog.setVisible(true);
-    }
-
-
-    public void rename()
-    {
-		String name = new_node_name.getText();
-		if(name == null || name.length() == 0)
-		return;
-		try {
-		curr_node.rename(name);
-		}catch(Exception exc) {
-		    	JOptionPane.showMessageDialog(frame, exc.getMessage(),
-		"Error renaming Node", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
-		curr_tree.treeDidChange();
-		rename_dialog.setVisible(false);
-
-    }
-
     public void reportChange()
     {
-	if(curr_tree != null)
-	    curr_tree.treeDidChange();
+	    if(curr_tree != null)
+	        curr_tree.treeDidChange();
+        dialogs.update();
     }
  //temporary: to overcome java's bugs for inner classes
     public void actionPerformed(ActionEvent e)
@@ -1306,8 +1147,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(jb == (Object)add_device_b) addDevice();
 	if(jb == (Object)delete_node_b) deleteNode();
 	if(jb == (Object)modify_tags_b) modifyTags();
-	if(jb == (Object)modify_flags_b) modifyFlags();
-	if(jb == (Object)rename_node_b) renameNode();
+	if(jb == (Object)rename_node_b) dialogs.rename.show();
+	if(jb == (Object)flags_b) dialogs.flags.show();
     }
 
     public void addNode()
@@ -1323,8 +1164,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	}
 
 
-    public void keyPressed(KeyEvent ke) {
-	if(ke.getKeyText(ke.getKeyCode()).equals("Enter"))
+    public void keyPressed(KeyEvent e) {
+	if(e.getKeyCode() == KeyEvent.VK_ENTER)
 	    open_ok();
     }
     public void keyReleased(KeyEvent e){}
@@ -1389,5 +1230,228 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             
     }
     
-    
+    static class dialogs
+    {
+        static void update()
+        {
+            flags.update();
+            rename.update();
+        }
+        static class flags
+        {
+            private static JDialog dialog;
+            private static JCheckBox[] flag;
+            private static boolean[] editable_flag;
+            private static JButton ok_b; 
+            private static JButton apply_b; 
+            private static JButton update_b; 
+            private static JButton cancel_b;
+        
+            protected static void construct()
+	        {
+	            dialog = new JDialog(frame);
+	            JPanel jp = new JPanel();
+                jp.setLayout(new BorderLayout());
+	            JPanel jp1 = new JPanel();
+                jp1.setLayout(new GridLayout(9,2));
+                flag = new JCheckBox[17];
+                jp1.add(flag[ 2] = new JCheckBox("Essential"));
+                jp1.add(flag[15] = new JCheckBox("IncludeInPulse"));
+                jp1.add(flag[ 6] = new JCheckBox("Setup"));
+                jp1.add(flag[ 7] = new JCheckBox("WriteOnce"));
+                jp1.add(flag[11] = new JCheckBox("NoWriteModel"));
+                jp1.add(flag[12] = new JCheckBox("NoWriteShot"));
+                jp1.add(flag[ 8] = new JCheckBox("Compressible"));
+                jp1.add(flag[16] = new JCheckBox("CompressSegments"));
+                jp1.add(flag[10] = new JCheckBox("CompressOnPut"));
+                jp1.add(flag[ 9] = new JCheckBox("DoNotCompress"));
+                jp1.add(flag[ 0] = new JCheckBox("Off"));
+                jp1.add(flag[ 1] = new JCheckBox("ParentOff"));
+                jp1.add(flag[13] = new JCheckBox("PathReference"));
+                jp1.add(flag[14] = new JCheckBox("NidReference"));
+                jp1.add(flag[ 3] = new JCheckBox("Cached"));
+                jp1.add(flag[ 4] = new JCheckBox("Versions"));
+                jp1.add(flag[ 5] = new JCheckBox("Segmented"));
+                editable_flag = new boolean[]{true,false,true,false,false,false,true,true,true,true,true,true,true,false,false,true,true};
+                jp.add(jp1);
+	            JPanel jp3 = new JPanel();
+                jp3.setLayout(new GridLayout(2,2));
+	            jp3.add(ok_b = new JButton("OK"));
+	            ok_b.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    setFlags();
+                    close();
+                }});
+	            jp3.add(apply_b = new JButton("Apply"));
+	            apply_b.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+                    setFlags();
+                    show();
+		        }});
+	            jp3.add(update_b = new JButton("Refresh"));
+	            update_b.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+                    show();
+		        }});
+	            jp3.add(cancel_b = new JButton("Cancel"));
+	            cancel_b.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+                    dialog.setVisible(false);
+		        }});
+	            jp.add(jp3, "South");
+	            dialog.getContentPane().add(jp);
+	            dialog.addKeyListener(new KeyAdapter() {
+	                public void keyTyped(KeyEvent e)
+	                {
+	                    if(e.getKeyCode() == KeyEvent.VK_ENTER)
+                        {
+                            if (is_editable)
+                                setFlags();
+                            show();
+                        }
+	                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                            dialog.setVisible(false);
+	                }
+	            });
+    	        dialog.pack();
+            }
+
+            public static void show()
+	        {
+                if(Tree.curr_node == null) return;
+                boolean[] flags;
+	            try {
+	                flags = Tree.curr_node.getFlags();
+	            } catch(Exception e)
+	            {
+	                System.err.println("Error getting flags: "+e.getMessage());
+	                close();
+                    return;
+	            }
+                if (dialog == null)
+                    construct();
+                for (int i = 0 ; i< flag.length ; i++)
+                {
+                    flag[i].setSelected(flags[i]);
+                    flag[i].setEnabled(Tree.is_editable && editable_flag[i]);
+                }
+                ok_b.setEnabled(Tree.is_editable);
+                apply_b.setEnabled(Tree.is_editable);
+	            dialog.setTitle("Flags of " + Tree.curr_node.getFullPath());
+	            if (!dialog.isVisible())
+                {
+                    dialog.setLocation(Tree.frame.dialogLocation());
+	                dialog.setVisible(true);
+                }
+	        }
+            public static void close()
+            {
+                if (dialog != null)
+	                dialog.setVisible(false);
+            }
+            public static void update()
+            {
+                if (dialog == null) return;
+                if (!dialog.isVisible()) return;
+                show();
+            }
+            private static void setFlags()
+	        {
+	            if((Tree.curr_node != null) && Tree.is_editable)
+                {
+	                boolean[] flags;
+                    try {
+	                    flags = Tree.curr_node.getFlags();
+	                } catch(Exception e)
+	                {
+	                    System.err.println("Error getting flags: "+e.getMessage());
+	                    return;
+	                }
+                    for (int i = 0 ; i< flag.length ; i++)
+                        if (flag[i] != null)
+                            flags[i] = flag[i].isSelected();
+		            try {
+			            Tree.curr_node.setFlags(flags);
+		            } catch(Exception exc)
+		            {
+			            JOptionPane.showMessageDialog(frame, exc.getMessage(),
+			                "Error setting flags", JOptionPane.WARNING_MESSAGE);
+		            }
+                }
+	        }
+        }
+ 
+        static class rename
+        {
+            private static JDialog dialog;
+            private static JTextField new_name;
+
+            private static void construct()
+            {
+	            dialog = new JDialog();
+	            JPanel mjp = new JPanel();
+	            mjp.setLayout(new BorderLayout());
+	            JPanel jp = new JPanel();
+	            jp.add(new JLabel("New Name: "));
+	            jp.add(new_name = new JTextField(12));
+	            mjp.add(jp, "North");
+	            jp = new JPanel();
+	            JButton ok_b = new JButton("Ok");
+	            ok_b.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+                    rename();
+                }});
+	            jp.add(ok_b);
+	            JButton cancel_b = new JButton("Cancel");
+	            cancel_b.addActionListener(new ActionListener() {
+		        public void actionPerformed(ActionEvent e) {
+		            dialog.setVisible(false);
+		        }});
+	            jp.add(cancel_b);
+	            mjp.add(jp, "South");
+	            dialog.getContentPane().add(mjp);
+	            dialog.addKeyListener(new KeyAdapter() {
+	                public void keyTyped(KeyEvent e)
+	                {
+	                    if(e.getKeyCode() == KeyEvent.VK_ENTER)
+	                        rename();
+	                }
+	            });
+	            dialog.pack();
+	        }
+            public static void show()
+            {
+	            if(Tree.curr_node == null) return;
+	            if(dialog == null)
+                    construct();
+	            dialog.setTitle("Rename node " + Tree.curr_node.getFullPath());
+	            dialog.setLocation(Tree.frame.dialogLocation());
+	            new_name.setText("");
+	            dialog.setVisible(true);
+            }
+            public static void close()
+            {
+                if (dialog != null)
+	                dialog.setVisible(false);
+            }
+            public static void update()
+            {// don't update; close instead
+                close();
+            }
+            private static void rename()
+            {
+		        String name = new_name.getText();
+		        if(name == null || name.length() == 0) return;
+		        try {
+		            Tree.curr_node.rename(name);
+		        }catch(Exception exc) {
+		    	        JOptionPane.showMessageDialog(frame, exc.getMessage(),
+		        "Error renaming Node", JOptionPane.WARNING_MESSAGE);
+			        return;
+		        }
+		        Tree.curr_tree.treeDidChange();
+		        dialog.setVisible(false);
+            }
+        }
+    }
 }

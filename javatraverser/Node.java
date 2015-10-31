@@ -6,6 +6,7 @@ import java.rmi.RemoteException.*;
 import javax.swing.tree.*;
 import java.awt.*;
 
+
 public class Node
 {
     RemoteTree experiment;
@@ -190,21 +191,38 @@ public class Node
     }
 
     public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
-    public void setFlags(NodeInfo info) throws DatabaseException, RemoteException
+
+    public boolean[] getFlags() throws Exception
+    {   /*
+        0x00001 off
+        0x00004 essential
+        0x00040 setup
+        0x00080 write_once
+        0x00100 compressible        
+        0x00400 compress_on_put     
+        0x00800 no_write_model      
+        0x01000 no_write_shot       
+        0x08000 include_in_pulse    
+        0x10000 compress_segments    
+        */
+	    int flags = experiment.getFlags(nid);
+        if (flags<0)
+            throw new Exception("MdsJava returned -1."); 
+        boolean[] bits = new boolean[32];
+        for (int i = 0; i < 32; i++)
+            bits[i] = (flags & (1 << i)) != 0;
+        return bits;
+    }
+
+    public void setFlags(boolean[] bits) throws DatabaseException, RemoteException
     {
         int flags = 0;
-        if (!info.on)              flags+= 0x00001;
-        if (info.essential)        flags+= 0x00004;
-        if (info.setup)            flags+= 0x00040;
-        if (info.write_once)       flags+= 0x00080;
-        if (info.compressible)     flags+= 0x00100;
-        if (info.compress_on_put)  flags+= 0x00400;
-        if (info.no_write_model)   flags+= 0x00800;
-        if (info.no_write_shot)    flags+= 0x01000;
-//        if (info.include_in_pulse) flags+= 0x08000;
-//        if (info.compress_segments)flags+= 0x10000;
+        for (int i = 0; i < bits.length; i++)
+            if (bits[i])
+                flags+= (1 >> i);
         experiment.setFlags(nid, flags);
     }
+
 
     public boolean isOn()
     {

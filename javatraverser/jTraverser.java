@@ -9,7 +9,6 @@ import javax.swing.plaf.*;
 import java.util.*;
 public class jTraverser extends JFrame implements ActionListener
 {
-
     static String exp_name, shot_name;
     static boolean editable;
     Tree tree;
@@ -19,7 +18,6 @@ public class jTraverser extends JFrame implements ActionListener
 	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
 	rename_node_b, turn_on_b, turn_off_b, display_data_b, display_nci_b, display_tags_b, modify_data_b,
 	set_default_b, setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
-
     TreeDialog display_data_d = null, modify_data_d = null, display_nci_d = null, display_tags_d = null;
     DisplayData display_data;
     DisplayNci display_nci;
@@ -139,7 +137,6 @@ public class jTraverser extends JFrame implements ActionListener
 	jm.add(tree_b = new JMenuItem("Tree"));
 	tree_b.addActionListener(this);
 	curr_menu.add(jm);
-
 	tree = new Tree(this);
 	if(exp_name != null)
 	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), edit, readonly, false);
@@ -159,6 +156,11 @@ public class jTraverser extends JFrame implements ActionListener
 
     public static String getExperimentName(){return exp_name;}
     public static boolean isEditable(){return editable;}
+    public Point dialogLocation()
+    {
+        return new Point(getLocation().x+32,getLocation().y+32);
+    }
+
 public void actionPerformed(ActionEvent e)
 {
     Object source = e.getSource();
@@ -179,7 +181,7 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)add_subtree_b) tree.addSubtree();
     if(source == (Object)delete_node_b) tree.deleteNode();
     if(source == (Object)modify_tags_b) tree.modifyTags();
-    if(source == (Object)rename_node_b) tree.renameNode();
+    if(source == (Object)rename_node_b) Tree.dialogs.rename.show();
     if(source == (Object)add_device_b) tree.addDevice();
     if(source == (Object)copy_b) TreeNode.copy();
     if(source == (Object)paste_b) TreeNode.paste();
@@ -198,7 +200,6 @@ public void actionPerformed(ActionEvent e)
 	    tree.reportChange();
     }
 
-    Point curr_origin = new Point(getLocation().x+32,getLocation().y+32);
     if(source == (Object)display_data_b)
     {
 	    if(display_data_d == null)
@@ -208,7 +209,7 @@ public void actionPerformed(ActionEvent e)
 	    }
 	    display_data.setNode(curr_node);
 	    display_data_d.pack();
-	    display_data_d.setLocation(curr_origin);
+	    display_data_d.setLocation(dialogLocation());
 	    display_data_d.setVisible(true);
     }
     if(source == (Object)display_nci_b)
@@ -220,7 +221,7 @@ public void actionPerformed(ActionEvent e)
         }
         display_nci.setNode(curr_node);
         display_nci_d.pack();
-        display_nci_d.setLocation(curr_origin);
+        display_nci_d.setLocation(dialogLocation());
         display_nci_d.setVisible(true);
     }
     if(source == (Object)display_tags_b)
@@ -232,7 +233,7 @@ public void actionPerformed(ActionEvent e)
         }
         display_tags.setNode(curr_node);
         display_tags_d.pack();
-        display_tags_d.setLocation(curr_origin);
+        display_tags_d.setLocation(dialogLocation());
         display_tags_d.setVisible(true);
     }
     if(source == (Object)modify_data_b)
@@ -244,7 +245,7 @@ public void actionPerformed(ActionEvent e)
 	    }
 	    modify_data.setNode(curr_node);
 	    modify_data_d.pack();
-	    modify_data_d.setLocation(curr_origin);
+	    modify_data_d.setLocation(dialogLocation());
 	    modify_data_d.setVisible(true);
     }
     if(source == (Object)set_default_b)
