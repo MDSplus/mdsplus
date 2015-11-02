@@ -98,6 +98,7 @@ public class Database implements RemoteTree{
     public void setCurrentShot(int shot) {setCurrentShot(name, shot);}
     public native void setCurrentShot(String experiment, int shot);
     public native String getOriginalPartName(NidData nid) throws DatabaseException;
+    public native void clearFlags(NidData nid, int flags) throws DatabaseException;
     public native void setFlags(NidData nid, int flags) throws DatabaseException;
     public native int getFlags(NidData nid) throws DatabaseException;
     public native void setEvent(String event)throws DatabaseException;

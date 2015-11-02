@@ -15,39 +15,38 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     MouseListener, ActionListener, KeyListener, DataChangeListener
 {
     static boolean is_remote;
-    boolean is_angled_style;
-    DefaultMutableTreeNode top;
-    JMenuItem menu_items[];
-    static boolean is_editable;
-    JPopupMenu pop = null;
-    MethodDescriptor curr_method_descr;
-    PropertyDescriptor curr_property_descr;
+	static Hashtable nodeHash = new Hashtable();
     static jTraverser frame;
-    private Point curr_origin;
     static int curr_dialog_idx;
-    DialogSet dialog_sets[];
-    java.util.Stack trees, experiments;
+    static Node curr_node;
+    static DefaultMutableTreeNode curr_tree_node;
     static JTree curr_tree;
     static RemoteTree curr_experiment;
+    boolean is_angled_style;
+    private DefaultMutableTreeNode top;
+    private JMenuItem menu_items[];
+    private JPopupMenu pop;
+    private MethodDescriptor curr_method_descr;
+    private PropertyDescriptor curr_property_descr;
+    private DialogSet dialog_sets[];
+    private java.util.Stack trees, experiments;
     public static int context;
-    static Node curr_node = null;
-    static DefaultMutableTreeNode curr_tree_node;
-    JDialog open_dialog = null, add_node_dialog = null, add_subtree_dialog = null;
-    JTextField open_exp, open_shot;
-    JRadioButton open_readonly, open_edit, open_normal;
-    JCheckBox open_realtime;
-    JTextField add_node_name, add_node_tag, add_subtree_name;
-    int add_node_usage;
-    JDialog modify_tags_dialog;
-    JDialog add_device_dialog;
-    JList modify_tags_list;
-    JTextField curr_tag_selection;
-    DefaultListModel curr_taglist_model;
-    String[] tags;
-	JTextField add_device_type, add_device_name;
-	static Hashtable nodeHash = new Hashtable();
-	String lastName;
+    private JDialog open_dialog, add_node_dialog, add_subtree_dialog;
+    private JTextField open_exp, open_shot;
+    private JRadioButton open_readonly, open_edit, open_normal;
+    private JCheckBox open_realtime;
+    private JTextField add_node_name, add_node_tag, add_subtree_name;
+    private int add_node_usage;
+    private JDialog modify_tags_dialog;
+    private JDialog add_device_dialog;
+    private JList modify_tags_list;
+    private JTextField curr_tag_selection;
+    private DefaultListModel curr_taglist_model;
+    private String[] tags;
+	private JTextField add_device_type, add_device_name;
+	private String lastName;
 	public static boolean isRemote(){return is_remote;}
+    public static Node getCurrentNode() {return curr_node;}
 
     String topExperiment;
         
@@ -124,7 +123,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     }
 
 
-    Node getCurrentNode() {return curr_node;}
     void quit()
     {
 	while(!experiments.empty())
@@ -198,7 +196,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			    curr_experiment.quit(Tree.context);
 		        } catch(Exception exce) {
 			    JOptionPane.showMessageDialog(frame, "Error quitting tree", exce.getMessage(),JOptionPane.WARNING_MESSAGE);
-			    return;
+			    //return;
 		        }
 		    }
 	    }
@@ -216,11 +214,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    curr_experiment = (RemoteTree)experiments.peek();
 	    setViewportView(curr_tree);
 	    try {
-	        frame.reportChange(curr_experiment.getName(), curr_experiment.getShot(),
-		    curr_experiment.isEditable(), curr_experiment.isReadonly());
-	        if(is_editable != curr_experiment.isEditable())
-		    pop = null;
-	        is_editable = curr_experiment.isEditable();
+	        frame.reportChange(curr_experiment.getName(), curr_experiment.getShot(), curr_experiment.isEditable(), curr_experiment.isReadonly());
+	        if(jTraverser.editable != curr_experiment.isEditable())
+		        pop = null;
+	        jTraverser.editable = curr_experiment.isEditable();
 	    }catch(Exception exc) {System.err.println("Error in RMI communication: "+exc);}
 	}
 	else
@@ -233,6 +230,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 	}
     DeviceSetup.closeOpenDevices();
+    curr_node = null;
     dialogs.update();
 	frame.pack();
 	repaint();
@@ -241,55 +239,54 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
     void open()
     {
-	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
     	if(open_dialog == null)
-	{
-	    open_dialog = new JDialog(frame);
-	    open_dialog.setTitle("Open new tree");
-	    JPanel mjp = new JPanel();
-	    mjp.setLayout(new BorderLayout());
-	    JPanel jp = new JPanel();
-	    jp.setLayout(new GridLayout(2,1));
-	    JPanel jpi = new JPanel();
-	    jpi.add(new JLabel("Tree: "));
-	    jpi.add(open_exp = new JTextField(16));
-        jp.add(jpi,"East");
-        jpi = new JPanel();
-	    jpi.add(new JLabel("Shot: "));
-	    jpi.add(open_shot = new JTextField(16));
-        jp.add(jpi,"East");
-	    mjp.add(jp, "North");
-	    jp = new JPanel();
-	    jp.setLayout(new GridLayout(1,3));
-        jp.add(open_normal = new JRadioButton("normal"));
-        jp.add(open_readonly = new JRadioButton("readonly"));
-        jp.add(open_edit = new JRadioButton("edit/new"));
-        ButtonGroup bgMode = new ButtonGroup();
-        bgMode.add(open_readonly);
-        bgMode.add(open_normal);
-        bgMode.add(open_edit);
-	    mjp.add(jp, "Center");
-	    jp = new JPanel();
-	    jp.add(ok_cb = new JButton("Ok"));
-	    ok_cb.addActionListener(this);
-		ok_cb.setSelected(true);
-        JButton cancel = new JButton("Cancel");
-	    jp.add(cancel);
-	    cancel.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e)  {
-		    open_dialog.setVisible(false);  }});
-	    mjp.add(jp, "South");
-	    open_dialog.getContentPane().add(mjp);
-	    open_shot.addKeyListener(this);
-	    open_exp.addKeyListener(this);
-	    open_dialog.pack();
-	    if (curr_experiment != null)
-	        try {
-		       open_exp.setText(curr_experiment.getName());
-	           open_shot.setText(new Integer(curr_experiment.getShot()).toString());
-	        }catch(Exception exc){}
-	}
-	    open_dialog.setLocation(curr_origin);
+	    {
+	        open_dialog = new JDialog(frame);
+	        open_dialog.setTitle("Open new tree");
+	        JPanel mjp = new JPanel();
+	        mjp.setLayout(new BorderLayout());
+	        JPanel jp = new JPanel();
+	        jp.setLayout(new GridLayout(2,1));
+	        JPanel jpi = new JPanel();
+	        jpi.add(new JLabel("Tree: "));
+	        jpi.add(open_exp = new JTextField(16));
+            jp.add(jpi,"East");
+            jpi = new JPanel();
+	        jpi.add(new JLabel("Shot: "));
+	        jpi.add(open_shot = new JTextField(16));
+            jp.add(jpi,"East");
+	        mjp.add(jp, "North");
+	        jp = new JPanel();
+	        jp.setLayout(new GridLayout(1,3));
+            jp.add(open_normal = new JRadioButton("normal"));
+            jp.add(open_readonly = new JRadioButton("readonly"));
+            jp.add(open_edit = new JRadioButton("edit/new"));
+            ButtonGroup bgMode = new ButtonGroup();
+            bgMode.add(open_readonly);
+            bgMode.add(open_normal);
+            bgMode.add(open_edit);
+	        mjp.add(jp, "Center");
+	        jp = new JPanel();
+	        jp.add(ok_cb = new JButton("Ok"));
+	        ok_cb.addActionListener(this);
+		    ok_cb.setSelected(true);
+            JButton cancel = new JButton("Cancel");
+	        jp.add(cancel);
+	        cancel.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e)  {
+		        open_dialog.setVisible(false);  }});
+	        mjp.add(jp, "South");
+	        open_dialog.getContentPane().add(mjp);
+	        open_shot.addKeyListener(this);
+	        open_exp.addKeyListener(this);
+	        open_dialog.pack();
+	        if (curr_experiment != null)
+	            try {
+		           open_exp.setText(curr_experiment.getName());
+	               open_shot.setText(new Integer(curr_experiment.getShot()).toString());
+	            }catch(Exception exc){}
+	    }
+	    open_dialog.setLocation(frame.dialogLocation());
         open_normal.setSelected(true);
 	    open_dialog.setVisible(true);
     }
@@ -297,7 +294,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private void open_ok()
     {
 	    String exp = open_exp.getText(), shot_t = open_shot.getText();
-            topExperiment = exp;
+        topExperiment = exp;
 	    if(exp == null || exp.length() == 0)
 	    {
 	        JOptionPane.showMessageDialog(open_dialog, "Missing experiment name", "Error opening tree",
@@ -318,17 +315,14 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        JOptionPane.showMessageDialog(curr_tree, "Wrong shot number", "Error opening tree",
 		    JOptionPane.WARNING_MESSAGE);
 	        return;
-	    }
-
-
-
+	    }                
 	    if(open_edit.isSelected() && open_readonly.isSelected())
 	    {
 	        JOptionPane.showMessageDialog(curr_tree, "Tree cannot be open in both edit and readonly mode", "Error opening tree",
 		    JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
-	    if(is_editable != open_edit.isSelected())
+	    if(jTraverser.editable != open_edit.isSelected())
 	        pop = null;
 	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected(), false);
 	    open_dialog.setVisible(false);
@@ -338,14 +332,13 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     }
 
 
-
     public void open(String exp, int shot, boolean editable, boolean readonly, boolean realtime)
     {
 	    int i;
 	    Node top_node = null;
 	    JTree prev_tree = curr_tree;
             topExperiment = exp;
-    //first we need to check if the tree is already open
+        // first we need to check if the tree is already open
 	    RemoteTree loop_exp = null;
 	    for(i = 0; i < trees.size(); i++)
 	    {
@@ -360,7 +353,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        trees.removeElementAt(i);
 	        experiments.removeElementAt(i);
 	    }
-
 	    String remote_tree_ip = System.getProperty("remote_tree.ip");
 	    if(remote_tree_ip == null)
 	    {
@@ -384,51 +376,40 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             String name = "//" + remote_tree_ip + "/TreeServer";
             try {
                 curr_experiment = (RemoteTree) Naming.lookup(name);
-            }catch(Exception exc)
-            {
+            } catch(Exception exc) {
 	            JOptionPane.showMessageDialog(frame, exc.getMessage(), "Error opening remote "+exp, JOptionPane.ERROR_MESSAGE);
 	            return;
 	        }
 	    }
-
-
-	    if(shot == 0)
-	    {
+        if(shot == 0)
 	        try {
 	            shot = curr_experiment.getCurrentShot(exp);
-	        }catch(Exception  exc) {
+	        } catch(Exception  exc) {
 	            JOptionPane.showMessageDialog(open_dialog, "Shot 0 not defined for "+ exp, "Error opening tree",
 		        JOptionPane.WARNING_MESSAGE);
 	            return;
 	        }
-	    }
-
-
 	    try {
             curr_experiment.setTree(exp, shot);
             curr_experiment.setEditable(editable);
             curr_experiment.setReadonly(readonly);
             curr_experiment.setRealtime(realtime);
-        }catch(Exception exc)
-        {
-            System.err.println("Error in RMI communication: "+ exc);
-        }
-
+        } catch(Exception exc) {
+            System.err.println("Error in RMI communication: "+ exc);}
 	    try {
 	        Tree.context = curr_experiment.open();
 	        top_node = new Node(curr_experiment, this);
-	    } catch (Exception e) {
-	        JOptionPane.showMessageDialog(frame, e.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
+	    } catch (Exception exc) {
+	        JOptionPane.showMessageDialog(frame, exc.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
-
-
 	    top = new DefaultMutableTreeNode(top_node);
 	    nodeHash.put(top, top_node);
 	    try {
 	        top_node.expand();
-	    } catch(Exception e) {System.out.println("Error expanding tree "+e);}
-	    Node[]members = top_node.getMembers();
+	    } catch(Exception exc) {
+            System.out.println("Error expanding tree "+ exc);}
+	    Node members[] = top_node.getMembers();
 	    for(i = 0; i < members.length; i++)
 	    {
 	        DefaultMutableTreeNode currNode;
@@ -447,46 +428,38 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             curr_tree.setTransferHandler(new FromTransferHandler());
             curr_tree.setDragEnabled(true);
 /////////////////////////////            
-            
         ToolTipManager.sharedInstance().registerComponent(curr_tree);
-
-
-            curr_tree.addKeyListener(new KeyAdapter() {
-              public void keyTyped(KeyEvent e) {
-                if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
-                  int cc = e.getKeyChar();
-                  //if(e.getKeyChar() == 'c')
-                  if (e.getKeyChar() == 3) {
-                    TreeNode.copyToClipboard();
-                  }
+        curr_tree.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+            if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
+                int cc = e.getKeyChar();
+                //if(e.getKeyChar() == 'c')
+                if (e.getKeyChar() == 3) {
+                TreeNode.copyToClipboard();
                 }
-                if (!jTraverser.isEditable())
-                  return;
-                if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
-                  if (e.getKeyChar() == 'c')
-                    TreeNode.copy();
-                  if (e.getKeyChar() == 'v')
-                    TreeNode.paste();
-                }
-                else if (e.getKeyChar() == KeyEvent.VK_DELETE ||
-                         e.getKeyChar() == KeyEvent.VK_BACK_SPACE)
-                  TreeNode.delete();
-              }
-            });
-
-
-
-
-
+            }
+            if (!jTraverser.isEditable())
+                return;
+            if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
+                if (e.getKeyChar() == 'c')
+                TreeNode.copy();
+                if (e.getKeyChar() == 'v')
+                TreeNode.paste();
+            }
+            else if (e.getKeyChar() == KeyEvent.VK_DELETE ||
+                        e.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+                TreeNode.delete();
+            }
+        });
 	    if(is_angled_style)
 	        curr_tree.putClientProperty("JTree.lineStyle", "Angled");
 
 	    // GAB curr_tree.setEditable(false);
 	    try {
 	        curr_tree.setEditable(curr_experiment.isEditable());
-	    }catch(Exception exc){curr_tree.setEditable(false);}
-	    curr_tree.setCellRenderer(new TreeCellRenderer()
-	    {
+	    } catch(Exception exc) {
+            curr_tree.setEditable(false);}
+	    curr_tree.setCellRenderer(new TreeCellRenderer() {
 	        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected,
 		        boolean expanded, boolean boh, int row, boolean leaf)
 	        {
@@ -524,14 +497,15 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    });
 	    curr_tree.addTreeSelectionListener(this);
 	    curr_tree.addMouseListener(this);
-	    curr_tree.getSelectionModel().setSelectionMode(
-	        TreeSelectionModel.SINGLE_TREE_SELECTION);
+	    curr_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	    setViewportView(curr_tree);
 	    trees.push(curr_tree);
 	    experiments.push(curr_experiment);
+        curr_node = null;
 	    try {
-	        is_editable = curr_experiment.isEditable();
-	    }catch(Exception exc){is_editable = false;}
+	        editable = curr_experiment.isEditable();
+	    } catch(Exception exc) {
+            editable = false;}
 	    frame.reportChange(exp,shot,editable,readonly);
     }
 
@@ -577,11 +551,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    curr_tree_node =
 		    (DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
 	    curr_node = (Node)curr_tree_node.getUserObject();
+	    TreeNode.setSelectedNode(curr_node);
 	    //if(e.isPopupTrigger())
 	    if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 	    {
-	        curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
-
 	        NodeBeanInfo nbi = curr_node.getBeanInfo();
 	        final PropertyDescriptor [] node_properties = nbi.getPropertyDescriptors();
 	        final MethodDescriptor [] node_methods = nbi.getMethodDescriptors();
@@ -594,7 +567,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            dialog_sets[i] = new DialogSet();
     		        pop = new JPopupMenu();
 		        menu_items = new JMenuItem[node_properties.length + node_methods.length];
-	            if(is_editable)
+	            if(jTraverser.editable)
 	            {
 		            JMenuItem jm = new JMenu("Add Node");
 		            jm.add(add_action_b = new JMenuItem("Action"));
@@ -625,7 +598,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            pop.add(modify_tags_b = new JMenuItem("Modify tags"));
 		            modify_tags_b.addActionListener(this);
 		            pop.add(rename_node_b = new JMenuItem("Rename node"));
-		            rename_node_b.addActionListener(this);
+		            rename_node_b.addActionListener(new ActionListener() {
+		                public void actionPerformed(ActionEvent e) {
+                        dialogs.rename.show();
+                        }});
 		            pop.addSeparator();
 	            }
 	            item_idx = 0;
@@ -645,7 +621,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			                TreeDialog curr_dialog = dialog_sets[idx].getDialog(
 				            node_properties[idx].getPropertyEditorClass(), curr_node);
 			                curr_dialog.pack();
-			                curr_dialog.setLocation(curr_origin);
+			                curr_dialog.setLocation(frame.dialogLocation());
 			                curr_dialog.setVisible(true);
 			            }
 		            }
@@ -674,7 +650,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            item_idx++;
 	            }
 		        pop.add(flags_b = new JMenuItem("Flags"));
-		        flags_b.addActionListener(this);
+		        flags_b.addActionListener(new ActionListener() {
+		                public void actionPerformed(ActionEvent e) {
+                        dialogs.flags.show();
+                        }});
 	            pop.addSeparator();
 	            pop.add(open_b = new JMenuItem("Open"));
 	            open_b.addActionListener(this);//) {
@@ -707,11 +686,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 	        pop.show(curr_tree, e.getX(), e.getY());
 	    }
-	    else
-	    {
-	        TreeNode.setSelectedNode(curr_node);
-	        curr_tree.treeDidChange();
-	    }
+	    curr_tree.treeDidChange();
         dialogs.update();
     }
 
@@ -757,7 +732,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    add_node_name.setText("");
 	    add_node_tag.setText("");
 	    add_node_dialog.setTitle("Add to: "+ curr_node.getFullPath());
-	    add_node_dialog.setLocation(curr_origin);
+	    add_node_dialog.setLocation(frame.dialogLocation());
 	    add_node_dialog.setVisible(true);
     }
     public void addSubtree()
@@ -799,7 +774,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        add_subtree_dialog.setVisible(true);
 	    }
 	    add_subtree_dialog.setTitle("Add Subtree to: "+ curr_node.getFullPath());
-	    add_subtree_dialog.setLocation(curr_origin);
+	    add_subtree_dialog.setLocation(frame.dialogLocation());
 	    add_subtree_dialog.setVisible(true);
     }
 
@@ -853,7 +828,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    add_device_name.setText("");
 	    add_device_type.setText("");
 	    add_device_dialog.setTitle("Add device to: "+ curr_node.getFullPath());
-	    add_device_dialog.setLocation(curr_origin);
+	    add_device_dialog.setLocation(frame.dialogLocation());
 	    add_device_dialog.setVisible(true);
     }
 
@@ -1098,7 +1073,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	modify_tags_dialog.setTitle("Modify tags of " + curr_node.getFullPath());
 	modify_tags_list.setModel(curr_taglist_model);
 	curr_tag_selection.setText("");
-	modify_tags_dialog.setLocation(curr_origin);
+	modify_tags_dialog.setLocation(frame.dialogLocation());
 	modify_tags_dialog.setVisible(true);
     }
 
@@ -1147,8 +1122,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	if(jb == (Object)add_device_b) addDevice();
 	if(jb == (Object)delete_node_b) deleteNode();
 	if(jb == (Object)modify_tags_b) modifyTags();
-	if(jb == (Object)rename_node_b) dialogs.rename.show();
-	if(jb == (Object)flags_b) dialogs.flags.show();
     }
 
     public void addNode()
@@ -1206,11 +1179,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     {
         reportChange();
     }
-    public Point getMousePosition()
-    {
-        return curr_origin;
-    }
-    public boolean isEditable() {return is_editable; }
     //Inner class FromTranferHandler managed drag operation
     class FromTransferHandler extends TransferHandler
     {
@@ -1241,13 +1209,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         {
             private static JDialog dialog;
             private static JCheckBox[] flag;
-            private static boolean[] editable_flag;
-            private static JButton ok_b; 
-            private static JButton apply_b; 
+            private static boolean[] settable_flag;
+            private static JButton close_b; 
             private static JButton update_b; 
-            private static JButton cancel_b;
-        
-            protected static void construct()
+
+            private static void construct()
 	        {
 	            dialog = new JDialog(frame);
 	            JPanel jp = new JPanel();
@@ -1255,89 +1221,123 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	            JPanel jp1 = new JPanel();
                 jp1.setLayout(new GridLayout(9,2));
                 flag = new JCheckBox[17];
-                jp1.add(flag[ 2] = new JCheckBox("Essential"));
-                jp1.add(flag[15] = new JCheckBox("IncludeInPulse"));
-                jp1.add(flag[ 6] = new JCheckBox("Setup"));
-                jp1.add(flag[ 7] = new JCheckBox("WriteOnce"));
-                jp1.add(flag[11] = new JCheckBox("NoWriteModel"));
-                jp1.add(flag[12] = new JCheckBox("NoWriteShot"));
-                jp1.add(flag[ 8] = new JCheckBox("Compressible"));
-                jp1.add(flag[16] = new JCheckBox("CompressSegments"));
-                jp1.add(flag[10] = new JCheckBox("CompressOnPut"));
-                jp1.add(flag[ 9] = new JCheckBox("DoNotCompress"));
-                jp1.add(flag[ 0] = new JCheckBox("Off"));
-                jp1.add(flag[ 1] = new JCheckBox("ParentOff"));
-                jp1.add(flag[13] = new JCheckBox("PathReference"));
-                jp1.add(flag[14] = new JCheckBox("NidReference"));
-                jp1.add(flag[ 3] = new JCheckBox("Cached"));
                 jp1.add(flag[ 4] = new JCheckBox("Versions"));
                 jp1.add(flag[ 5] = new JCheckBox("Segmented"));
-                editable_flag = new boolean[]{true,false,true,false,false,false,true,true,true,true,true,true,true,false,false,true,true};
+                jp1.add(flag[13] = new JCheckBox("PathReference"));
+                jp1.add(flag[14] = new JCheckBox("NidReference"));
+                jp1.add(flag[ 1] = new JCheckBox("ParentOff"));
+                jp1.add(flag[ 8] = new JCheckBox("Compressible"));
+                jp1.add(flag[ 0] = new JCheckBox("Off"));
+                jp1.add(flag[10] = new JCheckBox("CompressOnPut"));
+                jp1.add(flag[ 9] = new JCheckBox("DoNotCompress"));
+                jp1.add(flag[16] = new JCheckBox("CompressSegments"));
+                jp1.add(flag[11] = new JCheckBox("NoWriteModel"));
+                jp1.add(flag[12] = new JCheckBox("NoWriteShot"));
+                jp1.add(flag[ 7] = new JCheckBox("WriteOnce"));
+                jp1.add(flag[ 2] = new JCheckBox("Essential"));
+                jp1.add(flag[ 6] = new JCheckBox("Setup"));
+                jp1.add(flag[15] = new JCheckBox("IncludeInPulse"));
+                jp1.add(flag[ 3] = new JCheckBox("Cached"));
+                settable_flag = new boolean[]{true,false,true,true,false,false,true,true,false,true,true,true,true,false,false,true,true};
+                flag[0].addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    if (Tree.curr_node == null) return;
+                    if (flag[0].isSelected())
+                        Tree.curr_node.turnOff();
+                    else
+                        Tree.curr_node.turnOn();
+                    jTraverser.tree.reportChange();
+                }});
+                for (byte i = 1 ; i< (byte)flag.length ; i++)
+                  if (flag[i] != null)
+                    {
+                        final byte ii = i;
+                        flag[i].addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e){
+                            editFlag(ii);
+                        }});
+                    }
                 jp.add(jp1);
 	            JPanel jp3 = new JPanel();
-                jp3.setLayout(new GridLayout(2,2));
-	            jp3.add(ok_b = new JButton("OK"));
-	            ok_b.addActionListener(new ActionListener() {
+                jp3.setLayout(new GridLayout(1,2));
+	            jp3.add(close_b = new JButton("Close"));
+	            close_b.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
-                    setFlags();
                     close();
                 }});
-	            jp3.add(apply_b = new JButton("Apply"));
-	            apply_b.addActionListener(new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-                    setFlags();
-                    show();
-		        }});
 	            jp3.add(update_b = new JButton("Refresh"));
 	            update_b.addActionListener(new ActionListener() {
 		        public void actionPerformed(ActionEvent e) {
                     show();
-		        }});
-	            jp3.add(cancel_b = new JButton("Cancel"));
-	            cancel_b.addActionListener(new ActionListener() {
-		        public void actionPerformed(ActionEvent e) {
-                    dialog.setVisible(false);
 		        }});
 	            jp.add(jp3, "South");
 	            dialog.getContentPane().add(jp);
 	            dialog.addKeyListener(new KeyAdapter() {
 	                public void keyTyped(KeyEvent e)
 	                {
-	                    if(e.getKeyCode() == KeyEvent.VK_ENTER)
-                        {
-                            if (is_editable)
-                                setFlags();
-                            show();
-                        }
 	                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
                             dialog.setVisible(false);
 	                }
 	            });
     	        dialog.pack();
             }
+            private static void editFlag(byte idx)
+            {
+                if (Tree.curr_node == null) return;
+                if (flag[idx].isSelected())
+                    try {
+			            Tree.curr_node.setFlag(idx);
+		            } catch(Exception exc)
+		            {
+			            JOptionPane.showMessageDialog(frame, exc.getMessage(),
+			                "Error setting flag"+idx, JOptionPane.WARNING_MESSAGE);
+		            }
+                else
+                    try {
+			            Tree.curr_node.clearFlag(idx);
+		            } catch(Exception exc)
+		            {
+			            JOptionPane.showMessageDialog(frame, exc.getMessage(),
+			                "Error clearing flag "+idx, JOptionPane.WARNING_MESSAGE);
+		            }
+                show();
+            }
+            private static boolean[] readFlags() throws Exception
+            {
+                int iflags = 0;
+                if(Tree.curr_node != null)
+            	    iflags = Tree.curr_node.getFlags();
+                if (iflags<0)
+                    throw new Exception("MdsJava returned -1.");
+                boolean[] flags = new boolean[17];
+                for (byte i = 0; i < 17; i++)
+                    flags[i] = (iflags & (1 << i)) != 0;
+                return flags;
+            }
 
             public static void show()
 	        {
-                if(Tree.curr_node == null) return;
+                if (dialog == null)
+                    construct();
                 boolean[] flags;
 	            try {
-	                flags = Tree.curr_node.getFlags();
+	                flags = readFlags();
 	            } catch(Exception e)
 	            {
 	                System.err.println("Error getting flags: "+e.getMessage());
 	                close();
                     return;
-	            }
-                if (dialog == null)
-                    construct();
+                }
+                boolean is_ok = !(jTraverser.readonly || (Tree.curr_node == null));
                 for (int i = 0 ; i< flag.length ; i++)
                 {
                     flag[i].setSelected(flags[i]);
-                    flag[i].setEnabled(Tree.is_editable && editable_flag[i]);
+                    flag[i].setEnabled(is_ok && settable_flag[i]);
                 }
-                ok_b.setEnabled(Tree.is_editable);
-                apply_b.setEnabled(Tree.is_editable);
-	            dialog.setTitle("Flags of " + Tree.curr_node.getFullPath());
+                if (Tree.curr_node == null)
+	                dialog.setTitle("Flags of <none selected>");
+                else
+	                dialog.setTitle("Flags of " + Tree.curr_node.getFullPath());
 	            if (!dialog.isVisible())
                 {
                     dialog.setLocation(Tree.frame.dialogLocation());
@@ -1355,30 +1355,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                 if (!dialog.isVisible()) return;
                 show();
             }
-            private static void setFlags()
-	        {
-	            if((Tree.curr_node != null) && Tree.is_editable)
-                {
-	                boolean[] flags;
-                    try {
-	                    flags = Tree.curr_node.getFlags();
-	                } catch(Exception e)
-	                {
-	                    System.err.println("Error getting flags: "+e.getMessage());
-	                    return;
-	                }
-                    for (int i = 0 ; i< flag.length ; i++)
-                        if (flag[i] != null)
-                            flags[i] = flag[i].isSelected();
-		            try {
-			            Tree.curr_node.setFlags(flags);
-		            } catch(Exception exc)
-		            {
-			            JOptionPane.showMessageDialog(frame, exc.getMessage(),
-			                "Error setting flags", JOptionPane.WARNING_MESSAGE);
-		            }
-                }
-	        }
         }
  
         static class rename

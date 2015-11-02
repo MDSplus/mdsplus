@@ -386,22 +386,32 @@ JNIEXPORT void JNICALL Java_Database_putData
     RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj, jobject jnid, jint flags) {
-  int nid, status;
-  static int nci_flags;
-  static int nci_flags_len = sizeof(int);
-  struct nci_itm nci_list[] = { {4, NciSET_FLAGS, &nci_flags, &nci_flags_len},
-  {NciEND_OF_LIST, 0, 0, 0}
-  };
+JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj, jobject jnid, jint jflags) {
+    int nid, status;
+    int flags = (int)jflags;
+    NCI_ITM itmlst[] =
+    { {0, NciSET_FLAGS, (unsigned char *)&flags, 0}, {0, NciEND_OF_LIST} };
+    jfieldID nid_fid;
+    jclass cls = (*env)->GetObjectClass(env, jnid);
+    nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+    nid = (*env)->GetIntField(env, jnid, nid_fid);
+    status = TreeSetNci(nid, itmlst);
+    if (!(status & 1))
+        RaiseException(env, MdsGetMsg(status), status);
+}
 
-  jfieldID nid_fid;
-  jclass cls = (*env)->GetObjectClass(env, jnid);
-  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
-  nid = (*env)->GetIntField(env, jnid, nid_fid);
-  nci_flags = flags;
-  status = TreeSetNci(nid, nci_list);
-  if (!(status & 1))
-    RaiseException(env, MdsGetMsg(status), status);
+JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj, jobject jnid, jint jflags) {
+    int nid, status;
+    int flags = (int)jflags;
+    NCI_ITM itmlst[] =
+    { {0, NciCLEAR_FLAGS, (unsigned char *)&flags, 0}, {0, NciEND_OF_LIST} };
+    jfieldID nid_fid;
+    jclass cls = (*env)->GetObjectClass(env, jnid);
+    nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+    nid = (*env)->GetIntField(env, jnid, nid_fid);
+    status = TreeSetNci(nid, itmlst);
+    if (!(status & 1))
+        RaiseException(env, MdsGetMsg(status), status);
 }
 
 JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj, jobject jnid) {

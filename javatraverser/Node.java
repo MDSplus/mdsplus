@@ -192,7 +192,7 @@ public class Node
 
     public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
 
-    public boolean[] getFlags() throws Exception
+    public int getFlags() throws Exception
     {   /*
         0x00001 off
         0x00004 essential
@@ -205,22 +205,17 @@ public class Node
         0x08000 include_in_pulse    
         0x10000 compress_segments    
         */
-	    int flags = experiment.getFlags(nid);
-        if (flags<0)
-            throw new Exception("MdsJava returned -1."); 
-        boolean[] bits = new boolean[32];
-        for (int i = 0; i < 32; i++)
-            bits[i] = (flags & (1 << i)) != 0;
-        return bits;
+        return  experiment.getFlags(nid);
     }
 
-    public void setFlags(boolean[] bits) throws DatabaseException, RemoteException
+    public void setFlag(byte idx) throws DatabaseException, RemoteException
     {
-        int flags = 0;
-        for (int i = 0; i < bits.length; i++)
-            if (bits[i])
-                flags+= (1 >> i);
-        experiment.setFlags(nid, flags);
+        experiment.setFlags(nid, 1<<idx);
+    }
+
+    public void clearFlag(byte idx) throws DatabaseException, RemoteException
+    {
+        experiment.clearFlags(nid, 1<<idx);
     }
 
 
