@@ -50,6 +50,9 @@ class TreeNode(_data.Data):
     def __hasBadTreeReferences__(self,tree):
        return self.tree != tree
 
+    def __deepcopy__(self,dummy):
+       return self
+
     def __fixTreeReferences__(self,tree):
         if (self.nid >> 24) != 0:
             return TreePath(str(self))
