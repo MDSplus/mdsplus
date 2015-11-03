@@ -48,21 +48,6 @@ TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
 # TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
 # endif
 
-.ONESHELL:
-define aaa = 
-case ${build_os}:${host} in
-*linux*:*mingw*)
-set WINEPATH="'$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'";
-set CIAO="ciao";
-echo ${CIAO};
-;;
-esac
-endef
-
-.ONESHELL:
-print_env:
-	${aaa}; \
-	echo ${WINEPATH}
 
 
 
@@ -104,9 +89,16 @@ MOSTLYCLEANFILES = *.out
 
 
 print:
-	@echo "ENV = ${TESTS_ENVIRONMENT}";
+	@echo "--------------------------------------------------------------";
 	@echo "host = ${host}";
+	@echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
+	@echo "LOG_COMPILER = ${LOG_COMPILER}";
+	@echo "LOG_DRIVER   = ${LOG_DRIVER}";
+	@echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
+	@echo "--------------------------------------------------------------";
 
+console:
+	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 
 all-local: $(TESTS)

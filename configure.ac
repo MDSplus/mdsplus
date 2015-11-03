@@ -9,11 +9,8 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
-
-dnl AS_ECHO( --------------------------------------------------------------------- )
-dnl TS_SELECT([ciao])
-dnl AS_ECHO( --------------------------------------------------------------------- )
-dnl AC_MSG_ERROR([end debug])
+dnl TS_TEST()
+dnl exit 0;
 
 # Checks for programs.
 AC_PROG_AWK
@@ -25,6 +22,7 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
+
 
 #FIXME: Remove this when Makefile.inc goes away
 AS_CASE(["$MKDIR_P"],
@@ -281,10 +279,10 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-MAKEUIDDIR="\${top_builddir}/uid/"
-MAKESHLIBDIR="\${top_builddir}/lib/"
-MAKEBINDIR="\${top_builddir}/bin/"
-MAKELIBDIR="\${top_builddir}/lib/"
+MAKEUIDDIR="\$(top_builddir)/uid/"
+MAKESHLIBDIR="\$(top_builddir)/lib/"
+MAKEBINDIR="\$(top_builddir)/bin/"
+MAKELIBDIR="\$(top_builddir)/lib/"
 EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
@@ -370,9 +368,9 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
        fi
-       MAKELIBDIR="\${top_builddir}/${BINDIR}/"
-       MAKESHLIBDIR="\${top_builddir}/${BINDIR}/"
-       MAKEBINDIR="\${top_builddir}/${BINDIR}/"
+       MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
+       MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"
+       MAKEBINDIR="\$(top_builddir)/${BINDIR}/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
@@ -405,18 +403,18 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            TARGET_ARCH="-m64"
            UILCMD=uil
            uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\${top_builddir}/lib${D64}/"
-           MAKESHLIBDIR="\${top_builddir}/lib${D64}/"
-           MAKEUIDDIR="\${top_builddir}/uid${D64}/"
-	   MAKEBINDIR="\${top_builddir}/bin${D64}/"
+	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
          else
            TARGET_ARCH="-m32"
            UILCMD=uil32
            uiddir="${uiddir}32"
-           MAKELIBDIR="\${top_builddir}/lib32/"
-           MAKESHLIBDIR="\${top_builddir}/lib32/"
-           MAKEUIDDIR="\${top_builddir}/uid32/"
-           MAKEBINDIR="\${top_builddir}/bin32/"
+           MAKELIBDIR="\$(top_builddir)/lib32/"
+           MAKESHLIBDIR="\$(top_builddir)/lib32/"
+           MAKEUIDDIR="\$(top_builddir)/uid32/"
+           MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
        FFLAGS="$FFLAGS -fno-range-check"
@@ -550,7 +548,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\${top_builddir}/shlib/";
+       MAKESHLIBDIR="\$(top_builddir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
@@ -1004,34 +1002,16 @@ AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
 dnl TESTS_ENVIRONMENT=@LIBPATH@="${TESTLIBDIR}"
 dnl LOG_DRIVER=${top_srcdir}/conf/test-driver
 
-dnl AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
-dnl AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
-dnl AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+ AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+ AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
+ AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
 
-dnl case $build_os:$host in
-dnl *linux*:*mingw*)
-dnl AS_IF( AS_VAR_TEST_SET(HAVE_WINE),[ 
-dnl     WINEPATH=m4_escape("$(shell winepath -w ${TESTS_LIBDIR});$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)")
-dnl     TESTS_ENVIRONMENT="WINEPATH=${WINEPATH}"
-dnl     LOG_COMPILER="wine"
-dnl   ],[
-dnl     LOG_COMPILER="sh -c 'exit 77'"
-dnl   ]) 
-dnl ;;
-dnl esac
+TS_SELECT()
+ 
+ AC_SUBST(TS_TESTS_ENVIRONMENT)
+ AC_SUBST(TS_LOG_COMPILER)
+dnl AC_SUBST(TS_LOG_DRIVER)
 
-
-
-
-AS_ECHO(${WINEPATH})
-AS_ECHO(["build_os = $build_os"])
-AS_ECHO(["host = $host"])
-
-
-
-
-dnl AC_SUBST(LOG_COMPILER)
-dnl AC_SUBST(LOG_DRIVER)
 
 dnl AC_MSG_NOTICE(********************************)
 dnl AC_MSG_NOTICE(${TESTS_ENVIRONMENT})

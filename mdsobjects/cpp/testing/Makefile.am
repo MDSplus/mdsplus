@@ -48,14 +48,8 @@ TESTS = \
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
-
-
-
-AM_TESTS_ENVIRONMENT = \
-      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
       
 LDADD += testutils/libMdsTestUtils.a
-
 
 
 #

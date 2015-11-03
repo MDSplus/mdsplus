@@ -45,21 +45,24 @@ tests:
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi
 
+ 
 
-TESTS_ENVIRONMENT =
-LOG_COMPILER =
+TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
+LOG_COMPILER      = @TS_LOG_COMPILER@
+# LOG_DRIVER      = @TS_LOG_DRIVER@
 
-if MINGW
-if HAVE_WINECONSOLE
-TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
-LOG_COMPILER += wine
-else
-TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-LOG_COMPILER += sh -c 'exit 77'
-endif
-else
-TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-endif
+
+# if MINGW
+# if HAVE_WINECONSOLE
+# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
+# LOG_COMPILER += wine
+# else
+# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
+# LOG_COMPILER += sh -c 'exit 77'
+# endif
+# else
+# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
+# endif
 
 
 

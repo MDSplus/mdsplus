@@ -88,11 +88,6 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@HAVE_WINECONSOLE_TRUE@@MINGW_TRUE@am__append_1 = WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
-@HAVE_WINECONSOLE_TRUE@@MINGW_TRUE@am__append_2 = wine
-@HAVE_WINECONSOLE_FALSE@@MINGW_TRUE@am__append_3 = @LIBPATH@="@MAKESHLIBDIR@"
-@HAVE_WINECONSOLE_FALSE@@MINGW_TRUE@am__append_4 = sh -c 'exit 77'
-@MINGW_FALSE@am__append_5 = @LIBPATH@="@MAKESHLIBDIR@"
 TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
 	MdsScalarTest_NumericLimits$(EXEEXT) \
@@ -111,7 +106,8 @@ subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/testing.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -651,6 +647,7 @@ HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
+HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
@@ -759,6 +756,8 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 THREAD = @THREAD@
+TS_LOG_COMPILER = @TS_LOG_COMPILER@
+TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
@@ -857,8 +856,21 @@ _tap_py_execute = \
  tr.set_stream(1); \
  tr.run(tests); 
 
-TESTS_ENVIRONMENT = $(am__append_1) $(am__append_3) $(am__append_5)
-LOG_COMPILER = $(am__append_2) $(am__append_4)
+TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
+LOG_COMPILER = @TS_LOG_COMPILER@
+# LOG_DRIVER      = @TS_LOG_DRIVER@
+
+# if MINGW
+# if HAVE_WINECONSOLE
+# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
+# LOG_COMPILER += wine
+# else
+# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
+# LOG_COMPILER += sh -c 'exit 77'
+# endif
+# else
+# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
+# endif
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
@@ -869,14 +881,11 @@ AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
 AM_LIBS = -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
-LDADD = $(TEST_LIBS) @LIBS@ $(AM_LIBS) testutils/libMdsTestUtils.a
-AM_DEFAULT_SOURCE_EXT = .cpp
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
-AM_TESTS_ENVIRONMENT = \
-      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
-
+LDADD = $(TEST_LIBS) @LIBS@ $(AM_LIBS) testutils/libMdsTestUtils.a
+AM_DEFAULT_SOURCE_EXT = .cpp
 
 #
 # VALGRIND: If valgrind was enabled by configuration entry the execution of

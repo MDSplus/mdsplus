@@ -39,7 +39,7 @@ TEST_SUBDIRS = \
                mdsobjects/python/tests \
                mdslib/testing \
                mdsobjects/cpp/testing
-#               testing/selftest
+#              testing/selftest
 
 
 .ONESHELL:
