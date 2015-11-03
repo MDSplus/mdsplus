@@ -7,63 +7,65 @@ import java.awt.datatransfer.*;
 public class TreeNode extends JLabel
 {
     Node node;
-    static Node selected;
     static Node copied;
+    static boolean cut;
     static Font plain_f, bold_f;
     static {
-	plain_f = new Font("Serif", Font.PLAIN, 12);
-	bold_f = new Font("Serif" ,Font.BOLD, 12);
+	    plain_f = new Font("Serif", Font.PLAIN, 12);
+	    bold_f = new Font("Serif" ,Font.BOLD, 12);
     }
 
-    public static void setSelectedNode(Node sel)
-    {
-	    selected = sel;
-   }
 
 	public static void copyToClipboard()
 	{
 	    try {
-                Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-                String []tags = selected.getTags();
-                StringSelection content;
-                String path = selected.getInfo().getPath();
-                content = new StringSelection(path);
-                cb.setContents(content, null);
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            String []tags = Tree.curr_node.getTags();
+            StringSelection content;
+            String path = Tree.curr_node.getFullPath();
+            content = new StringSelection(path);
+            cb.setContents(content, null);
 	    }catch(Exception exc){System.err.println("Cannot copy fullPath to Clipboard");}
 	}
     public static void copy()
     {
-        copied = selected;
+        cut = false;
+        copied = Tree.curr_node;
+        System.out.println("copied: "+copied+" from "+copied.parent);
     }
 
+    public static void cut()
+    {
+        cut = true;
+        copied = Tree.curr_node;
+        System.out.println("cut: "+copied+" from "+copied.parent);
+    }
     public static void paste()
     {
-        if(copied != null && copied != selected)
+        System.out.println((cut ? "moved " : "copied") +copied+ " from " + copied.parent + " to " + Tree.curr_node);
+        if(copied != null && copied != Tree.curr_node)
         {
-            Node.pasteSubtree(copied, selected, true);
+            if (cut)
+            {
+                if (copied.move(Tree.curr_node))
+                    copied = null;
+            }
+            else
+                Node.pasteSubtree(copied, Tree.curr_node, true);
         }
     }
 
     public static void delete()
     {
-        Tree.deleteNode(selected);
+        Tree.deleteNode(Tree.curr_node);
     }
 
     public TreeNode(Node node, String name, Icon icon)
     {
 	    super("MMMMMMMMMMMMMMMM", icon, JLabel.LEFT);
 	    this.node = node;
-        setText(node.getName());
-	    if(node.isOn())
-	        setFont(bold_f);
-	    else
-	        setFont(plain_f);
-	    setForeground(Color.black);
-	    if(node.isDefault())
-	        setBorder(BorderFactory.createLineBorder(Color.black, 1));
-	    else
-	        setBorder(BorderFactory.createLineBorder(Color.white, 1));
-
+	    setFont(bold_f);
+	    setBorder(BorderFactory.createLineBorder(Color.white, 1));
         String tags[] = node.getTags();
         if(tags.length > 0)
         {
@@ -80,21 +82,10 @@ public class TreeNode extends JLabel
 
     public void paint(Graphics g)
     {
-	setText(node.getName());
-	if(node.isDefault())
-	    setForeground(Color.red);
-	else
-	    setForeground(Color.black);
-
-    	if(node.isOn())
-	    setFont(bold_f);
-	else
-	    setFont(plain_f);
-
-	if(selected == node)
-	    setBorder(BorderFactory.createLineBorder(Color.black, 1));
-	else
-	    setBorder(BorderFactory.createLineBorder(Color.white, 1));
-	super.paint(g);
+	    setText(node.getName());
+        setForeground(node.isDefault() ? Color.red : Color.black);
+        setFont(node.isOn() ? bold_f : plain_f);  
+	    setBorder(BorderFactory.createLineBorder((Tree.curr_node == node) ? Color.black : Color.white, 1));
+	    super.paint(g);
     }
 }
