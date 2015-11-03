@@ -70,14 +70,21 @@ extern "C" {
  */
   JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getSons(JNIEnv *, jobject, jobject);
 
-/*
- * Class:     jTraverser_Database
- * Method:    getTags
- * Signature: (LjTraverser/NidData;)[Ljava/lang/String;
- */
+  /*
+  * Class:     jTraverser_Database
+  * Method:    getFlags
+  * Signature: (LjTraverser/NidData;)I;
+  */
+  JNIEXPORT jint JNICALL Java_jTraverser_Database_getFlags(JNIEnv *, jobject, jobject);
+
+  /*
+  * Class:     jTraverser_Database
+  * Method:    getTags
+  * Signature: (LjTraverser/NidData;)[Ljava/lang/String;
+  */
   JNIEXPORT jobjectArray JNICALL Java_jTraverser_Database_getTags(JNIEnv *, jobject, jobject);
 
-/*
+  /*
  * Class:     jTraverser_Database
  * Method:    isOn
  * Signature: (LjTraverser/NidData;)Z
@@ -141,6 +148,19 @@ extern "C" {
   JNIEXPORT void JNICALL Java_jTraverser_Database_setTags(JNIEnv *, jobject, jobject, jobjectArray);
 
 /*
+* Class:     jTraverser_Database
+* Method:    setFlags
+* Signature: (LjTraverser/NidData;I;)
+*/
+JNIEXPORT void JNICALL Java_jTraverser_Database_setFlags(JNIEnv *, jobject, jobject, jint);
+/*
+* Class:     jTraverser_Database
+* Method:    clearFlags
+* Signature: (LjTraverser/NidData;I;)
+*/
+JNIEXPORT void JNICALL Java_jTraverser_Database_clearFlags(JNIEnv *, jobject, jobject, jint);
+
+ /*
  * Class:     jTraverser_Database
  * Method:    startDelete
  * Signature: ([LjTraverser/NidData;)[LjTraverser/NidData;

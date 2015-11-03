@@ -6,6 +6,7 @@ import java.rmi.RemoteException.*;
 import javax.swing.tree.*;
 import java.awt.*;
 
+
 public class Node
 {
     RemoteTree experiment;
@@ -189,10 +190,34 @@ public class Node
         return info;
     }
 
-    public void setInfo(NodeInfo info) throws DatabaseException,
-        RemoteException
-    {
+    public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
+
+    public int getFlags() throws Exception
+    {   /*
+        0x00001 off
+        0x00004 essential
+        0x00040 setup
+        0x00080 write_once
+        0x00100 compressible        
+        0x00400 compress_on_put     
+        0x00800 no_write_model      
+        0x01000 no_write_shot       
+        0x08000 include_in_pulse    
+        0x10000 compress_segments    
+        */
+        return  experiment.getFlags(nid);
     }
+
+    public void setFlag(byte idx) throws DatabaseException, RemoteException
+    {
+        experiment.setFlags(nid, 1<<idx);
+    }
+
+    public void clearFlag(byte idx) throws DatabaseException, RemoteException
+    {
+        experiment.clearFlags(nid, 1<<idx);
+    }
+
 
     public boolean isOn()
     {
