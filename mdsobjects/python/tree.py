@@ -645,12 +645,7 @@ class Tree(object):
         """Clean up data file.
         @rtype: None
         """
-        Tree.lock()
-        try:
-            #ctx = _treeshr.TreeGetContext()
-            status = _treeshr.TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
-        finally:
-            Tree.unlock()
+        status = _treeshr.TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
         if not (status & 1):
             raise _Exceptions.statusToException(status)
 
@@ -658,11 +653,6 @@ class Tree(object):
         """Compress data file.
         @rtype: None
         """
-        Tree.lock()
-        try:
-            #ctx = _treeshr.TreeGetContext()
-            status = _treeshr.TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
-        finally:
-            Tree.unlock()
+        status = _treeshr.TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
         if not (status & 1):
             raise _Exceptions.statusToException(status)
