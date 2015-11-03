@@ -15,13 +15,12 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     MouseListener, ActionListener, KeyListener, DataChangeListener
 {
     static boolean is_remote;
-	static Hashtable nodeHash = new Hashtable();
     static jTraverser frame;
     static int curr_dialog_idx;
     static Node curr_node;
-    static DefaultMutableTreeNode curr_tree_node;
     static JTree curr_tree;
     static RemoteTree curr_experiment;
+    static int context;
     boolean is_angled_style;
     private DefaultMutableTreeNode top;
     private JMenuItem menu_items[];
@@ -30,7 +29,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private PropertyDescriptor curr_property_descr;
     private DialogSet dialog_sets[];
     private java.util.Stack trees, experiments;
-    public static int context;
     private JDialog open_dialog, add_node_dialog, add_subtree_dialog;
     private JTextField open_exp, open_shot;
     private JRadioButton open_readonly, open_edit, open_normal;
@@ -45,10 +43,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private String[] tags;
 	private JTextField add_device_type, add_device_name;
 	private String lastName;
+    private String topExperiment;
 	public static boolean isRemote(){return is_remote;}
-    public static Node getCurrentNode() {return curr_node;}
+    public static Node getCurrentNode(){return curr_node;}
 
-    String topExperiment;
         
 // Temporary, to overcome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b;
@@ -83,7 +81,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    shot = -1;
 	        open(def_tree, shot, false, false, false);
 	    }
-
     }
 
 
@@ -163,77 +160,74 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
     void close()
     {
-	if(curr_tree == null)
-	    return;
-	try {
-	    curr_experiment.close(Tree.context);
-	} catch(Exception e) {
-	    boolean editable = false;
-	    String name = null;
+	    if(curr_tree == null)
+	        return;
 	    try {
-	        editable = curr_experiment.isEditable();
-	        name = curr_experiment.getName().trim();
-	    }catch(Exception exc){}
-		if(editable)
-	    {
-		    int n = JOptionPane.showConfirmDialog(frame, "Tree " + name +
-		        " open in edit mode has been changed: write it before closing?",
-			    "Closing Tree ", JOptionPane.YES_NO_OPTION);
-		    if(n == JOptionPane.YES_OPTION)
-		    {
-		        try{
-			    curr_experiment.write(Tree.context);
-			    curr_experiment.close(Tree.context);
-		        }catch(Exception exc)
+	        curr_experiment.close(Tree.context);
+	    } catch(Exception e) {
+	        boolean editable = false;
+	        String name = null;
+	        try {
+	            editable = curr_experiment.isEditable();
+	            name = curr_experiment.getName().trim();
+	        }catch(Exception exc){}
+		    if(editable)
+	        {
+		        int n = JOptionPane.showConfirmDialog(frame, "Tree " + name +
+		            " open in edit mode has been changed: write it before closing?",
+			        "Closing Tree ", JOptionPane.YES_NO_OPTION);
+		        if(n == JOptionPane.YES_OPTION)
 		        {
-			    JOptionPane.showMessageDialog(frame, "Error closing tree", exc.getMessage(),JOptionPane.WARNING_MESSAGE);
-			    return;
+		            try {
+			        curr_experiment.write(Tree.context);
+			        curr_experiment.close(Tree.context);
+		            }catch(Exception exc) {
+			            JOptionPane.showMessageDialog(frame, "Error closing tree", exc.getMessage(),JOptionPane.WARNING_MESSAGE);
+			            return;
+		            }
 		        }
-		    }
-		    else
-		    {
-		        try {
-			    curr_experiment.quit(Tree.context);
-		        } catch(Exception exce) {
-			    JOptionPane.showMessageDialog(frame, "Error quitting tree", exce.getMessage(),JOptionPane.WARNING_MESSAGE);
-			    //return;
+		        else
+		        {
+		            try {
+			            curr_experiment.quit(Tree.context);
+		            } catch(Exception exce) {
+    			        JOptionPane.showMessageDialog(frame, "Error quitting tree", exce.getMessage(),JOptionPane.WARNING_MESSAGE);
+		            }
 		        }
-		    }
+	        }
+	        else
+	        {
+		        JOptionPane.showMessageDialog(frame, "Error closing tree", e.getMessage(),JOptionPane.WARNING_MESSAGE);
+		        return;
+	        }
+	    }
+	    trees.pop();
+	    experiments.pop();
+	    if(!trees.empty())
+	    {
+	        curr_tree = (JTree)trees.peek();
+	        curr_experiment = (RemoteTree)experiments.peek();
+	        setViewportView(curr_tree);
+	        try {
+	            frame.reportChange(curr_experiment.getName(), curr_experiment.getShot(), curr_experiment.isEditable(), curr_experiment.isReadonly());
+	            if(jTraverser.editable != curr_experiment.isEditable())
+		            pop = null;
+	            jTraverser.editable = curr_experiment.isEditable();
+	        }catch(Exception exc) {System.err.println("Error in RMI communication: "+exc);}
 	    }
 	    else
 	    {
-		JOptionPane.showMessageDialog(frame, "Error closing tree", e.getMessage(),JOptionPane.WARNING_MESSAGE);
-		return;
+	        curr_tree = null;
+	        curr_experiment = null;
+	        JPanel jp = new JPanel();
+	        setViewportView(new JPanel());
+	        frame.reportChange(null, 0, false, false);
 	    }
-	}
-	trees.pop();
-	experiments.pop();
-	if(!trees.empty())
-	{
-	    curr_tree = (JTree)trees.peek();
-	    curr_experiment = (RemoteTree)experiments.peek();
-	    setViewportView(curr_tree);
-	    try {
-	        frame.reportChange(curr_experiment.getName(), curr_experiment.getShot(), curr_experiment.isEditable(), curr_experiment.isReadonly());
-	        if(jTraverser.editable != curr_experiment.isEditable())
-		        pop = null;
-	        jTraverser.editable = curr_experiment.isEditable();
-	    }catch(Exception exc) {System.err.println("Error in RMI communication: "+exc);}
-	}
-	else
-	{
-	    curr_tree = null;
-	    curr_experiment = null;
-	    JPanel jp = new JPanel();
-	    setViewportView(new JPanel());
-	    frame.reportChange(null, 0, false, false);
-
-	}
-    DeviceSetup.closeOpenDevices();
-    curr_node = null;
-    dialogs.update();
-	frame.pack();
-	repaint();
+        DeviceSetup.closeOpenDevices();
+        curr_node = null;
+        dialogs.update();
+	    frame.pack();
+	    repaint();
     }
 
 
@@ -311,7 +305,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    }
 	    try{
 	    shot = Integer.parseInt(shot_t);
-	    } catch(Exception e)	{
+	    } catch(Exception e) {
 	        JOptionPane.showMessageDialog(curr_tree, "Wrong shot number", "Error opening tree",
 		    JOptionPane.WARNING_MESSAGE);
 	        return;
@@ -403,25 +397,24 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        JOptionPane.showMessageDialog(frame, exc.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
-	    top = new DefaultMutableTreeNode(top_node);
-	    nodeHash.put(top, top_node);
+	    top_node.setTreeNode(top = new DefaultMutableTreeNode(top_node));
 	    try {
 	        top_node.expand();
 	    } catch(Exception exc) {
-            System.out.println("Error expanding tree "+ exc);}
+            System.err.println("Error expanding tree "+ exc);}
 	    Node members[] = top_node.getMembers();
 	    for(i = 0; i < members.length; i++)
 	    {
 	        DefaultMutableTreeNode currNode;
 	        top.add(currNode = new DefaultMutableTreeNode(members[i]));
-	        nodeHash.put(currNode, members[i]);
+	        members[i].setTreeNode(currNode);
 	    }
 	    Node sons[] = top_node.getSons();
 	    for(i = 0; i < sons.length; i++)
 	    {
 	        DefaultMutableTreeNode currNode;
 	        top.add(currNode = new DefaultMutableTreeNode(sons[i]));
-	        nodeHash.put(currNode, sons[i]);
+	        sons[i].setTreeNode(currNode);
 	    }
 	    curr_tree = new JTree(top);
 //GAB 2014 Add DragAndDrop capability
@@ -431,34 +424,25 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         ToolTipManager.sharedInstance().registerComponent(curr_tree);
         curr_tree.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-            if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
-                int cc = e.getKeyChar();
-                //if(e.getKeyChar() == 'c')
-                if (e.getKeyChar() == 3) {
-                TreeNode.copyToClipboard();
-                }
-            }
-            if (!jTraverser.isEditable())
-                return;
-            if ( (e.getModifiers() & Event.CTRL_MASK) != 0) {
-                if (e.getKeyChar() == 'c')
-                TreeNode.copy();
-                if (e.getKeyChar() == 'v')
-                TreeNode.paste();
-            }
-            else if (e.getKeyChar() == KeyEvent.VK_DELETE ||
-                        e.getKeyChar() == KeyEvent.VK_BACK_SPACE)
-                TreeNode.delete();
-            }
-        });
+                if (e.getKeyChar() ==  KeyEvent.VK_CANCEL) // i.e. Ctrl+C
+                    TreeNode.copyToClipboard();
+                if (!jTraverser.isEditable()) return;
+                if (e.getKeyChar() ==  KeyEvent.VK_CANCEL) // i.e. Ctrl+C
+                    TreeNode.copy();
+                if (e.getKeyChar() ==  24) // i.e. Ctrl+X
+                    TreeNode.cut();
+                if (e.getKeyChar() == 22) // i.e. Ctrl+V
+                    TreeNode.paste();
+                else if (e.getKeyChar() == KeyEvent.VK_DELETE || e.getKeyChar() == KeyEvent.VK_BACK_SPACE)
+                    TreeNode.delete();
+            }});
 	    if(is_angled_style)
 	        curr_tree.putClientProperty("JTree.lineStyle", "Angled");
-
-	    // GAB curr_tree.setEditable(false);
 	    try {
 	        curr_tree.setEditable(curr_experiment.isEditable());
 	    } catch(Exception exc) {
-            curr_tree.setEditable(false);}
+            curr_tree.setEditable(false);
+        }
 	    curr_tree.setCellRenderer(new TreeCellRenderer() {
 	        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected,
 		        boolean expanded, boolean boh, int row, boolean leaf)
@@ -466,30 +450,20 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	            Object usrObj = ((DefaultMutableTreeNode)value).getUserObject();
 	            Node node;
 	            if(usrObj instanceof String)
-	            {
-	                node = (Node)nodeHash.get(value);
-	                String newName = (((String)usrObj).trim()).toUpperCase();
-	                if(lastName == null || !lastName.equals(newName))
+                {
+                    node = Tree.curr_node;
+                    if (node.getTreeNode() == value)
 	                {
-	                    lastName = newName;
-	                    if(newName.length() > 12 || newName.length() == 0)
+	                    String newName = (((String)usrObj).trim()).toUpperCase();
+                        node.getTreeNode().setUserObject(node);
+	                    if(lastName == null || !lastName.equals(newName))
 	                    {
-	                        JOptionPane.showMessageDialog(frame, "Node name lengh must be between 1 and 12 characters",
-		                    "Error renaming node", JOptionPane.WARNING_MESSAGE);
+                            System.out.println("rename: "+ newName);
+	                        lastName = newName;
+		                    node.rename(newName);
 		                }
-		                else
-		                {
-		                    try {
-		                        node.rename(newName);
-		                    }catch(Exception exc)
-		                    {
-                                JOptionPane.showMessageDialog(frame, "Error renaming node: "+ exc,
-		                        "Error renaming node", JOptionPane.WARNING_MESSAGE);
-		                    }
-		                }
-		            }
-	                ((DefaultMutableTreeNode)value).setUserObject(node);
-	            }
+	                }
+                }
 	            else
 		            node = (Node)usrObj;
 		        return node.getIcon();
@@ -515,7 +489,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    DefaultMutableTreeNode tree_node = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
 	    if(tree_node.isLeaf())
 	    {
-	        curr_node = (Node)tree_node.getUserObject();
+	        curr_node = Tree.getNode(tree_node);
 	        Node sons[], members[];
 	        DefaultMutableTreeNode last_node = null;
 	        try {
@@ -526,12 +500,12 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        for(int i = 0; i < members.length; i++)
 	        {
 		        tree_node.add(last_node = new DefaultMutableTreeNode(members[i]));
-		        nodeHash.put(last_node, members[i]);
+		        members[i].setTreeNode(last_node);
 		    }
 	        for(int i = 0; i < sons.length; i++)
 	        {
 		        tree_node.add(last_node = new DefaultMutableTreeNode(sons[i]));
-		        nodeHash.put(last_node, sons[i]);
+		        sons[i].setTreeNode(last_node);
 		    }
 	        if(last_node != null)
 		    curr_tree.expandPath(new TreePath(last_node.getPath()));
@@ -548,11 +522,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    if(curr_tree == null) return;
 	    int item_idx;
 
-	    curr_tree_node =
-		    (DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
+	    DefaultMutableTreeNode curr_tree_node = (DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
 	    curr_node = (Node)curr_tree_node.getUserObject();
-	    TreeNode.setSelectedNode(curr_node);
-	    //if(e.isPopupTrigger())
 	    if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 	    {
 	        NodeBeanInfo nbi = curr_node.getBeanInfo();
@@ -561,7 +532,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 	        if(pop == null)
 	        {
-		        //dialogs = new JDialog[node_properties.length];
 		        dialog_sets = new DialogSet[node_properties.length];
 		        for(int i = 0; i < node_properties.length; i++)
 		            dialog_sets[i] = new DialogSet();
@@ -617,7 +587,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			            if(idx < node_properties.length)
 			            {
 			                Tree.curr_dialog_idx = idx;
-
 			                TreeDialog curr_dialog = dialog_sets[idx].getDialog(
 				            node_properties[idx].getPropertyEditorClass(), curr_node);
 			                curr_dialog.pack();
@@ -838,17 +807,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    return addNode(usage, name, curr_node);
 	}
 
-
-
     public static Node addNode(int usage, String name, Node toNode)
     {
-        return addNode(usage, name, toNode, curr_tree_node);
-    }
-
-    public static Node addNode(int usage, String name, Node toNode, DefaultMutableTreeNode toTreeNode)
-    {
-        Node new_node = null;
-	    DefaultMutableTreeNode new_tree_node = null;
+        Node new_node;
+	    DefaultMutableTreeNode new_tree_node;
+        DefaultMutableTreeNode toTreeNode = toNode.getTreeNode();
 	    if(name == null || name.length() == 0 || name.length() > 12)
 	    {
 	        JOptionPane.showMessageDialog(frame, "Name length must range between 1 and 12 characters",
@@ -857,43 +820,49 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    }
 	    try {
 	        new_node = toNode.addNode(usage, name);
-	        int num_children = toTreeNode.getChildCount();
-	        int i;
-	        if(num_children > 0)
-	        {
-		        String curr_name;
-		        for(i = 0; i < num_children; i++)
-		        {
-		            curr_name = ((Node)((DefaultMutableTreeNode)toTreeNode.getChildAt(i)).getUserObject()).getName();
-		            if(name.compareTo(curr_name) < 0)
-			        break;
-		        }
-		        curr_tree_node = new_tree_node = new DefaultMutableTreeNode(new_node);
-		        nodeHash.put(new_tree_node, new_node);
-		        DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
-		        tree_model.insertNodeInto(new_tree_node, toTreeNode, i);
-		        //curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));
-		        curr_tree.expandPath(new TreePath(new_tree_node.getPath()));
-		        curr_tree.treeDidChange();
-		        return new_node;
-	        }
-	    }
+            new_tree_node = new DefaultMutableTreeNode(new_node);
+		    new_node.setTreeNode(new_tree_node);
+            Tree.addNodeToParent(new_tree_node, toTreeNode);
+        }
 	    catch(Exception e) {
 	        JOptionPane.showMessageDialog(frame, e.getMessage(),
 		    "Error adding Node", JOptionPane.WARNING_MESSAGE);
 	        return null;
 	    }
-	return new_node;
+	    return new_node;
     }
 
+    static void addNodeToParent(DefaultMutableTreeNode TreeNode, DefaultMutableTreeNode toTreeNode)
+    {
+    	int num_children = toTreeNode.getChildCount();
+	    int i = 0;
+	    if(num_children > 0)
+	    {
+            String name = Tree.getNode(TreeNode).getName();
+		    String curr_name;
+		    for(i = 0; i < num_children; i++)
+		    {
+		        curr_name = ((Node)((DefaultMutableTreeNode)toTreeNode.getChildAt(i)).getUserObject()).getName();
+		        if(name.compareTo(curr_name) < 0)
+			    break;
+		    }
+	    }
+		DefaultTreeModel tree_model = (DefaultTreeModel)Tree.curr_tree.getModel();
+		tree_model.insertNodeInto(TreeNode, toTreeNode, i);
+		Tree.curr_tree.expandPath(new TreePath(TreeNode.getPath()));
+		Tree.curr_tree.treeDidChange();
+    }
 
 	public Node addDevice(String name, String type)
 	{
 	    return addDevice(name, type, curr_node);
 	}
 
-	public static DefaultMutableTreeNode getCurrTreeNode() {return curr_tree_node;}
-	public static void setCurrTreeNode(DefaultMutableTreeNode node){curr_tree_node = node;}
+    public static Node getNode(javax.swing.tree.TreeNode treenode){return Tree.getNode((DefaultMutableTreeNode)treenode);}
+    public static Node getNode(DefaultMutableTreeNode treenode){return (Node)treenode.getUserObject();}
+	public static DefaultMutableTreeNode getCurrTreeNode() {return curr_node.getTreeNode();}
+	public static void setCurrTreeNode(DefaultMutableTreeNode treenode){curr_node = getNode(treenode);}
+
     public static Node addDevice(String name, String type, Node toNode)
     {
 	    DefaultMutableTreeNode new_tree_node = null;
@@ -912,21 +881,20 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    Node new_node = null;
 	    try {
 	        new_node = toNode.addDevice(name, type);
-	        int num_children = curr_tree_node.getChildCount();
+	        int num_children = toNode.getTreeNode().getChildCount();
 	        int i;
 	        if(num_children > 0)
 	        {
 		        String curr_name;
 		        for(i = 0; i < num_children; i++)
 		        {
-		            curr_name = ((Node)((DefaultMutableTreeNode)curr_tree_node.getChildAt(i)).getUserObject()).getName();
+		            curr_name = Tree.getNode(toNode.getTreeNode().getChildAt(i)).getName();
 		            if(name.compareTo(curr_name) < 0)
 			        break;
 		        }
-		        new_tree_node = new DefaultMutableTreeNode(new_node);
-		        nodeHash.put(new_tree_node, new_node);
+		        new_node.setTreeNode(new_tree_node = new DefaultMutableTreeNode(new_node));
 		        DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
-		        tree_model.insertNodeInto(new_tree_node, curr_tree_node, i);
+		        tree_model.insertNodeInto(new_tree_node, curr_node.getTreeNode(), i);
 		        curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));
 		        return new_node;
 	        }
@@ -947,9 +915,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    curr_node = null;
 	}
 
-
-
-
     static void deleteNode(Node delNode)
     {
 	    if(delNode == null) return;
@@ -965,10 +930,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    {
 	        del_node.executeDelete();
 	        DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
-	        tree_model.removeNodeFromParent(curr_tree_node);
+	        tree_model.removeNodeFromParent(delNode.getTreeNode());
 	    }
     }
-
 
     public void modifyTags()
     {
