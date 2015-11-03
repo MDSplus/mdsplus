@@ -1,4 +1,25 @@
-commit cbd04237096016f19860c75b776e2d2b92a9c583 (HEAD -> refs/heads/alpha, refs/remotes/origin/test-gab, refs/remotes/origin/alpha)
+commit d82150981c8f50d5b24ef3afc3365201415f4e29 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: a02df8e becad9f
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Nov 2 14:04:40 2015 -0500
+
+    Merge pull request #188 from MDSplus/twf-fix-add-python-device
+    
+    Fix problem with adding python device caused by recursion of deepcopy…
+
+commit becad9f2e29bb522e296bd13ca7aa790e16ab4d6 (refs/remotes/origin/twf-fix-add-python-device)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 2 13:45:13 2015 -0500
+
+    Fix problem with adding python device caused by recursion of deepcopy of TreeNode
+
+commit a02df8edc247efa69627d478dc99f0d286df78a5 (tag: refs/tags/alpha_release-7-0-172)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Oct 30 23:35:46 2015 -0400
+
+    New release ---- alpha_release-7-0-172
+
+commit cbd04237096016f19860c75b776e2d2b92a9c583 (refs/remotes/origin/test-gab)
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Oct 30 18:41:00 2015 +0100
 
