@@ -11166,19 +11166,15 @@ fi
            sed 's/:/ /g')
          as_fn_append _libs " "
          _prog=$(${CC} --print-search-dir | \
-         grep "programs:" | \
-         sed 's/^programs: =//' | \
-         sed 's/:/ /g')
-         as_fn_append _prog " "
-         as_fn_append _libs "${_prog}"
+           grep "programs:" | \
+           sed 's/^programs: =//' | \
+           sed 's/:/ /g')
+         as_fn_append _libs "${_prog} "
 
-         _sysroot=$(${CC} --print-sysroot)
-         $as_echo "DEBUG: _sysroot = ${_sysroot}"
+                                    _sysroot=$(${CC} --print-sysroot)
          as_fn_append _libs "${_sysroot}/mingw/bin "
          as_fn_append _libs "${_sysroot}/mingw/lib "
          as_fn_append _libs ${MAKESHLIBDIR}
-         $as_echo "DEBUG: _libs = ${_libs}"
-
 
          WINEPATH=
 
@@ -11229,8 +11225,7 @@ fi
          case ${HAVE_WINEPATH} in #(
   yes|Yes|YES|Y|y) :
     for _i in $_libs; do
-           $as_echo " --> $_i"
-           as_fn_append WINEPATH "\$(shell winepath -w $_i);";
+                      as_fn_append WINEPATH "\$(shell winepath -w $_i);";
           done
                                ;; #(
   no|No|NO|N|n) :
@@ -11245,7 +11240,6 @@ esac
 
 
 
-   $as_echo "DEBUG: WINEPATH = ${WINEPATH}"
    as_fn_append TS_TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
    as_fn_append TS_LOG_COMPILER "wine "
  ;;

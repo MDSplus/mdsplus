@@ -29,10 +29,10 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
 
-bin_PROGRAMS = faketest
-faketest_SOURCES = faketest.c
-faketest_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-faketest_LDADD = -L@MAKESHLIBDIR@ $(TEST_LIBS)
+#bin_PROGRAMS = faketest
+#faketest_SOURCES = faketest.c
+#faketest_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+#faketest_LDADD = -L@MAKESHLIBDIR@ $(TEST_LIBS)
 
 
 TEST_SUBDIRS = \
