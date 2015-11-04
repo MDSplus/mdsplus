@@ -49,11 +49,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
         
 // Temporary, to overcome Java's bugs on inner classes
-    JMenuItem open_b, close_b, quit_b;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
-	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b,
-    flags_b,
-	rename_node_b;
+	add_window_b, add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b;
     JButton ok_cb, add_node_ok;
 
     public Tree(JFrame _frame)
@@ -521,8 +518,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     {
 	    if(curr_tree == null) return;
 	    int item_idx;
-
-	    DefaultMutableTreeNode curr_tree_node = (DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
+	    final DefaultMutableTreeNode curr_tree_node = (DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
 	    curr_node = (Node)curr_tree_node.getUserObject();
 	    if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 	    {
@@ -532,6 +528,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 	        if(pop == null)
 	        {
+                JMenuItem mitem;
 		        dialog_sets = new DialogSet[node_properties.length];
 		        for(int i = 0; i < node_properties.length; i++)
 		            dialog_sets[i] = new DialogSet();
@@ -567,11 +564,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            delete_node_b.addActionListener(this);
 		            pop.add(modify_tags_b = new JMenuItem("Modify tags"));
 		            modify_tags_b.addActionListener(this);
-		            pop.add(rename_node_b = new JMenuItem("Rename node"));
-		            rename_node_b.addActionListener(new ActionListener() {
+		            pop.add(mitem = new JMenuItem("Rename node"));
+		            mitem.addActionListener(new ActionListener() {
 		                public void actionPerformed(ActionEvent e) {
-                        dialogs.rename.show();
-                        }});
+                            dialogs.rename.show();
+                    }});
 		            pop.addSeparator();
 	            }
 	            item_idx = 0;
@@ -618,22 +615,27 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		            });
 		            item_idx++;
 	            }
-		        pop.add(flags_b = new JMenuItem("Flags"));
-		        flags_b.addActionListener(new ActionListener() {
-		                public void actionPerformed(ActionEvent e) {
+		        pop.add(mitem = new JMenuItem("Flags"));
+		        mitem.addActionListener(new ActionListener(){
+		            public void actionPerformed(ActionEvent e){
                         dialogs.flags.show();
-                        }});
+                }});
 	            pop.addSeparator();
-	            pop.add(open_b = new JMenuItem("Open"));
-	            open_b.addActionListener(this);//) {
-		        //public void actionPerformed(ActionEvent e) { Open(); }});
-
-	            pop.add(close_b = new JMenuItem("Close"));
-	            close_b.addActionListener(this);//new ActionListener() {
-		        //public void actionPerformed(ActionEvent e) {close(); }});
-
-	            pop.add(quit_b = new JMenuItem("Quit"));
-	            quit_b.addActionListener(this);
+	            pop.add(mitem = new JMenuItem("Open"));
+	            mitem.addActionListener(new ActionListener(){
+		            public void actionPerformed(ActionEvent e){
+                        open();
+                }});
+	            pop.add(mitem = new JMenuItem("Close"));
+	            mitem.addActionListener(new ActionListener(){
+		            public void actionPerformed(ActionEvent e){
+                        close();
+                }});
+	            pop.add(mitem = new JMenuItem("Quit"));
+	            mitem.addActionListener(new ActionListener(){
+		            public void actionPerformed(ActionEvent e){
+                        quit();
+                }});
 	        }
 	        item_idx = 0;
 	        for(int i = 0; i < node_properties.length; i++)
@@ -1068,9 +1070,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     public void actionPerformed(ActionEvent e)
     {
 	Object jb = e.getSource();
-	if(jb == (Object)open_b) open();
-	if(jb == (Object)close_b) close();
-	if(jb == (Object)quit_b) quit();
 	if(jb == (Object)ok_cb) open_ok();
 	if(jb == (Object)add_action_b) addNode(NodeInfo.USAGE_ACTION);
 	if(jb == (Object)add_dispatch_b) addNode(NodeInfo.USAGE_DISPATCH);
