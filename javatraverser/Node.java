@@ -22,11 +22,10 @@ public class Node
     Tree hierarchy;
     static Node copiedNode;
     boolean needsOnCheck = true;
-    boolean is_on = false;
+    boolean is_on;
     private DefaultMutableTreeNode treenode;
 
-    public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException,
-        RemoteException
+    public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException, RemoteException
     {
         this.experiment = experiment;
         this.hierarchy = hierarchy;
@@ -58,7 +57,6 @@ public class Node
         }
         sons = new Node[0];
         members = new Node[0];
-
     }
 
     public void setTreeNode(DefaultMutableTreeNode treenode){this.treenode = treenode;}
@@ -194,28 +192,64 @@ public class Node
 
     public NodeInfo getInfo() throws DatabaseException, RemoteException
     {
-        if (info == null)
+        try{
             info = experiment.getInfo(nid, Tree.context);
+        }
+        catch (Exception exc){System.err.println("Error checking info " + exc);}
         return info;
     }
 
     public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
 
-    public int getFlags() throws Exception
-    {
-        return  experiment.getFlags(nid);
-    }
+    public final Node[] getSons(){return sons;}
+    public final Node[] getMembers(){return members;}
+    public final String toString(){return getName();}
+    // info interface
+    public final byte getDType(){return info.getDType();}
+    public final byte getDClass(){return info.getDClass();}
+    public final byte getUsage(){return info.getUsage();}
+    public final int getOwner() {return info.getOwner();}
+    public final int getLength() {return info.getLength();}
+    public final int getConglomerateNids() {return info.getConglomerateNids(); }
+    public final int getConglomerateElt() { return info.getConglomerateElt();}
+    public final String getDate(){return info.getDate();}
+    public final String getName(){return info.getName();}
+    public final String getFullPath(){return info.getFullPath();}
+    public final String getMinPath(){return info.getMinPath();}
+    public final String getPath(){return info.getPath();}
+    public final boolean isState(){return info.isState();}
+    public final boolean isParentState(){return info.isParentState();}
+    public final boolean isEssential(){return info.isEssential();}
+    public final boolean isCached(){return info.isCached();}
+    public final boolean isVersion(){return info.isVersion();}
+    public final boolean isSegmented(){return info.isSegmented();}
+    public final boolean isSetup(){return info.isSetup();}
+    public final boolean isWriteOnce(){return info.isWriteOnce();}
+    public final boolean isCompressible(){return info.isCompressible();}
+    public final boolean isDoNotCompress(){return info.isDoNotCompress();}
+    public final boolean isCompressOnPut(){return info.isCompressOnPut();}
+    public final boolean isNoWriteModel(){return info.isNoWriteModel();}
+    public final boolean isNoWriteShot(){return info.isNoWriteShot();}
+    public final boolean isPathReference(){return info.isPathReference();}
+    public final boolean isNidReference(){return info.isNidReference();}
+    public final boolean isCompressSegments(){return info.isCompressSegments();}
+    public final boolean isIncludeInPulse(){return info.isIncludeInPulse();}
 
-    public void setFlag(byte idx) throws DatabaseException, RemoteException
+    public final void setFlag(byte idx) throws DatabaseException, RemoteException
     {
         experiment.setFlags(nid, 1<<idx);
+        info.setFlags(experiment.getFlags(nid));
     }
-
     public void clearFlag(byte idx) throws DatabaseException, RemoteException
     {
         experiment.clearFlags(nid, 1<<idx);
+        info.setFlags(experiment.getFlags(nid));
     }
-
+    public int getFlags()
+    {   try{info.setFlags(experiment.getFlags(nid));}
+        catch(Exception exc){System.err.println("Error updating flags " + exc);}
+        return info.getFlags();
+    }
 
     public boolean isOn()
     {
@@ -226,9 +260,9 @@ public class Node
             {
                 is_on = experiment.isOn(nid, Tree.context);
             }
-            catch (Exception e)
+            catch (Exception exc)
             {
-                System.out.println("Error checking state " + e);
+                System.err.println("Error checking state " + exc);
             }
         }
         return is_on;
@@ -301,23 +335,18 @@ public class Node
         {
             curr_nid = experiment.getDefault(Tree.context);
         }
-        catch (Exception e)
+        catch (Exception exc)
         {
-            System.out.println("Error getting default " + e);
+            System.err.println("Error getting default " + exc);
             return false;
         }
         return curr_nid.datum == nid.datum;
     }
 
-    public int getUsage()
-    {
-        return info.usage;
-    }
-
     public NodeBeanInfo getBeanInfo()
     {
         if (bean_info == null)
-            bean_info = new NodeBeanInfo(experiment, info.usage, info.name);
+            bean_info = new NodeBeanInfo(experiment, getUsage(), getName());
         return bean_info;
     }
 
@@ -333,49 +362,9 @@ public class Node
         }
     }
 
-    public void setTags(String[] tags) throws DatabaseException,
-        RemoteException
+    public void setTags(String[] tags) throws DatabaseException, RemoteException
     {
         experiment.setTags(nid, tags, Tree.context);
-    }
-
-    public String getFullPath()
-    {
-        if (info == null)
-            try
-            {
-                info = experiment.getInfo(nid, Tree.context);
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error getting NCI " + e);
-            }
-        return info.getFullPath();
-    }
-
-    public String toString(){return getName();}
-    public String getName()
-    {
-        if (info == null)
-            try
-            {
-                info = experiment.getInfo(nid, Tree.context);
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error getting NCI " + e);
-            }
-        return info.getName().trim();
-    }
-
-    public Node[] getSons()
-    {
-        return sons;
-    }
-
-    public Node[] getMembers()
-    {
-        return members;
     }
 
     public Node addNode(int usage, String name) throws DatabaseException,
@@ -541,7 +530,7 @@ public class Node
         if (tree_label != null)
             return tree_label;
         ImageIcon icon = null;
-        switch (info.usage)
+        switch (getUsage())
         {
             case NodeInfo.USAGE_NONE:
                 icon = loadIcon("structure.gif");
@@ -581,7 +570,7 @@ public class Node
                 icon = loadIcon("compound.gif");
                 break;
         }
-        tree_label = new TreeNode(this, info.name, icon);
+        tree_label = new TreeNode(this, getName(), icon);
         return tree_label;
     }
 

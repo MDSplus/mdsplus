@@ -558,7 +558,8 @@ struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
   struct descriptor_a *array_d;
   static DESCRIPTOR_R(template_rec, 0, 1);
   struct descriptor_r *record_d;
-  int i, ndescs, opcode, dtype, dclass;
+  int i, ndescs, opcode;
+  unsigned char dtype, dclass;
   jobject jdescs;
   jsize length;
   jbyteArray jbytes;
@@ -585,10 +586,10 @@ struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
     return NULL;
   }
   cls = (*env)->GetObjectClass(env, obj);
-  dtype_fid = (*env)->GetFieldID(env, cls, "dtype", "I"),
-      dclass_fid = (*env)->GetFieldID(env, cls, "dclass", "I");
-  dtype = (*env)->GetIntField(env, obj, dtype_fid),
-      dclass = (*env)->GetIntField(env, obj, dclass_fid);
+  dclass_fid = (*env)->GetFieldID(env, cls, "dclass", "B");
+  dclass = (*env)->GetIntField(env, obj, dclass_fid);
+  dtype_fid = (*env)->GetFieldID(env, cls, "dtype", "B");
+  dtype = (*env)->GetIntField(env, obj, dtype_fid);
   switch (dclass) {
   case CLASS_S:
     desc = (struct descriptor *)malloc(sizeof(struct descriptor));

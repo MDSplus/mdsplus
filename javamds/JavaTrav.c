@@ -446,24 +446,25 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
       conglomerate_nids, owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len,
       name_len, fullpath_len, minpath_len, conglomerate_elt,
       conglomerate_elt_len, path_len;
-  static char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512],
-       path[512];
+  static unsigned char dtype, class, usage;
+  static char time_str[256], name[16], fullpath[512], minpath[512], path[512];
   unsigned short asctime_len;
   struct descriptor time_dsc = { 256, DTYPE_T, CLASS_S, time_str };
 
-  struct nci_itm nci_list[] = { {4, NciGET_FLAGS, &nci_flags, &nci_flags_len},
-  {8, NciTIME_INSERTED, time_inserted, &time_len},
-  {4, NciOWNER_ID, &owner_id, &owner_len},
+  struct nci_itm nci_list[] = {
   {1, NciCLASS, &class, &class_len},
   {1, NciDTYPE, &dtype, &dtype_len},
-  {4, NciLENGTH, &length, &length_len},
   {1, NciUSAGE, &usage, &usage_len},
-  {16, NciNODE_NAME, name, &name_len},
+  {4, NciGET_FLAGS, &nci_flags, &nci_flags_len},
+  {4, NciOWNER_ID, &owner_id, &owner_len},
+  {4, NciLENGTH, &length, &length_len},
+  {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len},
+  {4, NciCONGLOMERATE_ELT, &conglomerate_elt, &conglomerate_elt_len},
+  {8, NciTIME_INSERTED, time_inserted, &time_len},
+  {15, NciNODE_NAME, name, &name_len},
   {511, NciFULLPATH, fullpath, &fullpath_len},
   {511, NciMINPATH, minpath, &minpath_len},
   {511, NciPATH, path, &path_len},
-  {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len},
-  {4, NciCONGLOMERATE_ELT, &conglomerate_elt, &conglomerate_elt_len},
   {NciEND_OF_LIST, 0, 0, 0}
   };
 
@@ -484,35 +485,25 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   cls = (*env)->FindClass(env, "NodeInfo");
   constr =
       (*env)->GetStaticMethodID(env, cls, "getNodeInfo",
-				"(ZZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
-  args[0].z = (nci_flags & NciM_STATE) == 0;
-  args[1].z = (nci_flags & NciM_PARENT_STATE) == 0;
-  args[2].z = (nci_flags & NciM_SETUP_INFORMATION) != 0;
-  args[3].z = (nci_flags & NciM_WRITE_ONCE) != 0;
-  args[4].z = (nci_flags & NciM_COMPRESSIBLE) != 0;
-  args[5].z = (nci_flags & NciM_COMPRESS_ON_PUT) != 0;
-  args[6].z = (nci_flags & NciM_NO_WRITE_MODEL) != 0;
-  args[7].z = (nci_flags & NciM_NO_WRITE_SHOT) != 0;
-  args[8].z = (nci_flags & NciM_ESSENTIAL) != 0;
-
+				"(BBBIIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)LNodeInfo;");
   if (time_inserted[0] || time_inserted[1]) {
     LibSysAscTim(&asctime_len, &time_dsc, time_inserted);
     time_str[asctime_len] = 0;
   } else
     strcpy(time_str, "???");
-  args[9].l = (*env)->NewStringUTF(env, time_str);
-  args[10].i = owner_id;
-  args[11].i = dtype;
-  args[12].i = class;
-  args[13].i = length;
-  args[14].i = (int)usage;
-  args[15].l = (*env)->NewStringUTF(env, name);
-  args[16].l = (*env)->NewStringUTF(env, fullpath);
-  args[17].l = (*env)->NewStringUTF(env, minpath);
-  args[18].l = (*env)->NewStringUTF(env, path);
-  args[19].i = conglomerate_nids;
-  args[20].i = conglomerate_elt;
-
+  args[0].b = class;
+  args[1].b = dtype;
+  args[2].b = usage;
+  args[3].i = nci_flags;
+  args[4].i = owner_id;
+  args[5].i = length;
+  args[6].i = conglomerate_nids;
+  args[7].i = conglomerate_elt;
+  args[8].l = (*env)->NewStringUTF(env, time_str);
+  args[9].l = (*env)->NewStringUTF(env, name);
+  args[10].l = (*env)->NewStringUTF(env, fullpath);
+  args[11].l = (*env)->NewStringUTF(env, minpath);
+  args[12].l = (*env)->NewStringUTF(env, path);
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 

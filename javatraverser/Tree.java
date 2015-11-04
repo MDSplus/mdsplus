@@ -452,13 +452,12 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                     if (node.getTreeNode() == value)
 	                {
 	                    String newName = (((String)usrObj).trim()).toUpperCase();
-                        node.getTreeNode().setUserObject(node);
 	                    if(lastName == null || !lastName.equals(newName))
 	                    {
-                            System.out.println("rename: "+ newName);
 	                        lastName = newName;
 		                    node.rename(newName);
 		                }
+                        node.getTreeNode().setUserObject(node);
 	                }
                 }
 	            else
@@ -1131,7 +1130,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    curr_dialog = new TreeDialog(curr_editor);
 		    curr_editor.setFrame(curr_dialog);
 		    dialogs.addElement(curr_dialog);
-		}catch(Exception exc) {System.out.println("Error creating node editor "+exc);}
+		}catch(Exception exc) {System.err.println("Error creating node editor "+exc);}
 	    }
 	    curr_dialog.setUsed(true);
 	    curr_dialog.getEditor().setNode(node);
@@ -1142,6 +1141,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     {
         reportChange();
     }
+
     //Inner class FromTranferHandler managed drag operation
     class FromTransferHandler extends TransferHandler
     {
@@ -1153,12 +1153,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         {
             if(curr_tree == null) return null;
             try {
-                NodeInfo info = curr_node.getInfo();
-                return new StringSelection(topExperiment + ":" + info.fullpath);
+                return new StringSelection(topExperiment + ":" + curr_node.getFullPath());
             }catch(Exception exc) {return null;}
-            
         }    
-            
     }
     
     static class dialogs
@@ -1216,8 +1213,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                     {
                         final byte ii = i;
                         flag[i].addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e){
-                            editFlag(ii);
+                            public void actionPerformed(ActionEvent e){
+                                editFlag(ii);
                         }});
                     }
                 jp.add(jp1);
@@ -1225,8 +1222,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                 jp3.setLayout(new GridLayout(1,2));
 	            jp3.add(close_b = new JButton("Close"));
 	            close_b.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e){
-                    close();
+                    public void actionPerformed(ActionEvent e){
+                        close();
                 }});
 	            jp3.add(update_b = new JButton("Refresh"));
 	            update_b.addActionListener(new ActionListener() {
@@ -1236,12 +1233,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	            jp.add(jp3, "South");
 	            dialog.getContentPane().add(jp);
 	            dialog.addKeyListener(new KeyAdapter() {
-	                public void keyTyped(KeyEvent e)
-	                {
+	                public void keyTyped(KeyEvent e) {
 	                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
                             dialog.setVisible(false);
-	                }
-	            });
+	            }});
     	        dialog.pack();
             }
             private static void editFlag(byte idx)
@@ -1277,7 +1272,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                     flags[i] = (iflags & (1 << i)) != 0;
                 return flags;
             }
-
             public static void show()
 	        {
                 if (dialog == null)
