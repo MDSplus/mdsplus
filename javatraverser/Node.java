@@ -17,12 +17,13 @@ public class Node
     Node[] sons;
     Node[] members;
     boolean is_member;
-    JLabel tree_label = null;
-    NodeBeanInfo bean_info = null;
+    JLabel tree_label;
+    NodeBeanInfo bean_info;
     Tree hierarchy;
-    static Node copiedNode = null;
+    static Node copiedNode;
     boolean needsOnCheck = true;
     boolean is_on = false;
+    private DefaultMutableTreeNode treenode;
 
     public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException,
         RemoteException
@@ -40,13 +41,13 @@ public class Node
         members = new Node[0];
     }
 
-    public Node(RemoteTree experiment, Tree hierarchy, Node parent,
-                boolean is_member, NidData nid)
+    public Node(RemoteTree experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
     {
         this.experiment = experiment;
         this.hierarchy = hierarchy;
-        this.nid = nid;
         this.parent = parent;
+        this.is_member = is_member;
+        this.nid = nid;
         try
         {
             info = experiment.getInfo(nid, Tree.context);
@@ -59,6 +60,9 @@ public class Node
         members = new Node[0];
 
     }
+
+    public void setTreeNode(DefaultMutableTreeNode treenode){this.treenode = treenode;}
+    public DefaultMutableTreeNode getTreeNode(){return treenode;}
 
     void setOnUnchecked()
     {
@@ -89,6 +93,12 @@ public class Node
             System.out.println("Error getting info " + e);
         }
     }
+
+    public void updateCell()
+    {
+        ;
+    }
+
 
     public void updateData() throws DatabaseException, RemoteException
     {
@@ -168,7 +178,6 @@ public class Node
                                           "Error executing message",
                                           JOptionPane.WARNING_MESSAGE);
         }
-
     }
 
     public void setData(Data data) throws DatabaseException, RemoteException
@@ -193,18 +202,7 @@ public class Node
     public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
 
     public int getFlags() throws Exception
-    {   /*
-        0x00001 off
-        0x00004 essential
-        0x00040 setup
-        0x00080 write_once
-        0x00100 compressible        
-        0x00400 compress_on_put     
-        0x00800 no_write_model      
-        0x01000 no_write_shot       
-        0x08000 include_in_pulse    
-        0x10000 compress_segments    
-        */
+    {
         return  experiment.getFlags(nid);
     }
 
@@ -276,8 +274,7 @@ public class Node
                     return;
                 }
                 catch (Exception e)
-                {
-                    
+                {                   
              		try {
                 		experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
             		}catch(Exception exc) {
@@ -290,7 +287,6 @@ public class Node
                     	return;
                 	}
 				}
-
             }
         }
         JOptionPane.showMessageDialog(null, "Missing model in descriptor",
@@ -357,6 +353,7 @@ public class Node
         return info.getFullPath();
     }
 
+    public String toString(){return getName();}
     public String getName()
     {
         if (info == null)
@@ -368,7 +365,7 @@ public class Node
             {
                 System.out.println("Error getting NCI " + e);
             }
-        return info.getName();
+        return info.getName().trim();
     }
 
     public Node[] getSons()
@@ -470,9 +467,7 @@ public class Node
 
     public int startDelete()
     {
-        NidData[] nids =
-            {
-            nid};
+        NidData[] nids ={nid};
         try
         {
             return experiment.startDelete(nids, Tree.context).length;
@@ -486,43 +481,56 @@ public class Node
 
     public void executeDelete()
     {
-        NidData[] nids =
-            {
-            nid};
+        NidData[] nids = {nid};
         try
         {
             experiment.executeDelete(Tree.context);
         }
         catch (Exception e)
         {
-            System.out.println("Error executing delete: " + e.getMessage());
+            System.err.println("Error executing delete: " + e.getMessage());
         }
     }
 
-    void rename(String new_name) throws DatabaseException, RemoteException
-    {
-        experiment.renameNode(nid, new_name, Tree.context);
-        info = experiment.getInfo(nid, Tree.context);
-    }
 
-    void renameLast(String newName) throws Exception
+    boolean move(Node newParent){return changePath(newParent, getName());}
+    boolean rename(String newName){return changePath(parent, newName);}
+    private boolean changePath(Node newParent, String newName)
     {
-        String prevName = getFullPath();
-        int curr;
-        for (curr = prevName.length() - 1;
-             curr > 0 && prevName.charAt(curr) != ':' &&
-             prevName.charAt(curr) != '.'; curr--);
-        String newFullName = prevName.substring(0, curr + 1) + newName;
-        rename(newFullName);
+        if ((newParent==parent) && (newName==getName())) return false; // nothing to do
+        if(newName.length() > 12 || newName.length() == 0)
+	    {
+	        JOptionPane.showMessageDialog(FrameRepository.frame, "Node name lengh must be between 1 and 12 characters",
+		    "Error renaming node", JOptionPane.WARNING_MESSAGE);
+            return false;
+	    }
+	    try
+        {
+            String sep = is_member ? ":" : "."; 
+            experiment.renameNode(nid, newParent.getFullPath()+sep+newName, Tree.context);
+            info = experiment.getInfo(nid, Tree.context);
+        }
+        catch(Exception exc)
+		{
+            JOptionPane.showMessageDialog(FrameRepository.frame, "Error changing node path: "+ exc,
+		    "Error changing node path", JOptionPane.WARNING_MESSAGE);
+            return false;
+		}
+        if (newParent!=parent)
+        {    
+            parent = newParent;
+            Tree.addNodeToParent(getTreeNode(),parent.getTreeNode());
+        }
+        return true;
     }
 
     private ImageIcon loadIcon(String gifname)
     {
         String base = System.getProperty("icon_base");
-//      return (base == null) ? new ImageIcon(ClassLoader.getSystemResource(gifname)) : new ImageIcon(base + "/" + gifname);
-        return (base == null) ?
-            new ImageIcon(getClass().getClassLoader().getResource(gifname)) :
-            new ImageIcon(base + "/" + gifname);
+        if (base == null)
+            return new ImageIcon(getClass().getClassLoader().getResource(gifname));
+        else
+            return new ImageIcon(base + "/" + gifname);
     }
 
     public JLabel getIcon()
@@ -571,21 +579,11 @@ public class Node
                 icon = loadIcon("compound.gif");
                 break;
         }
-
-        if (is_member)
-            tree_label = new TreeNode(this, ": " + info.name, icon);
-        else
-            tree_label = new TreeNode(this, info.name, icon);
+        tree_label = new TreeNode(this, info.name, icon);
         return tree_label;
     }
 
-    public String toString()
-    {
-        return getName();
-    }
-
-    static public void pasteSubtree(Node fromNode, Node toNode,
-                                    boolean isMember)
+    static public void pasteSubtree(Node fromNode, Node toNode, boolean isMember)
     {
         DefaultMutableTreeNode savedTreeNode = Tree.getCurrTreeNode();
         try
@@ -596,16 +594,15 @@ public class Node
             //collect names used so far
             int idx = 0;
             for (int i = 0; i < toNode.sons.length; i++)
-                usedNames[idx++] = toNode.sons[i].getName().trim();
+                usedNames[idx++] = toNode.sons[i].getName();
             for (int i = 0; i < toNode.members.length; i++)
-                usedNames[idx++] = toNode.members[i].getName().trim();
+                usedNames[idx++] = toNode.members[i].getName();
 
             if (fromNode.getUsage() == NodeInfo.USAGE_DEVICE)
             {
                 ConglomData conglom = (ConglomData) fromNode.getData();
                 Node newNode = Tree.addDevice( (isMember ? ":" : ".") +
-                                              getUniqueName(fromNode.getName().
-                    trim(), usedNames),
+                                              getUniqueName(fromNode.getName(), usedNames),
                                               conglom.getModel().getString(),
                                               toNode);
                 newNode.expand();
@@ -615,8 +612,7 @@ public class Node
             {
                 Node newNode = Tree.addNode(fromNode.getUsage(),
                                             (isMember ? ":" : ".") +
-                                            getUniqueName(fromNode.getName().
-                    trim(), usedNames), toNode);
+                                            getUniqueName(fromNode.getName(), usedNames), toNode);
                 if (newNode == null)return;
                 newNode.expand();
                 try

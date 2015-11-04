@@ -150,7 +150,6 @@ public class jTraverser extends JFrame implements ActionListener
 	    {
 	        System.exit(0);
 	    }});
-
 	pack();
 	show();
     }
@@ -188,16 +187,15 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)paste_b) TreeNode.paste();
 
     // Node related
-	Node curr_node = tree.getCurrentNode();
-	if(curr_node == null) return;
+	if(Tree.curr_node == null) return;
     if(source == (Object)turn_on_b)
     {
-	    curr_node.turnOn();
+	    Tree.curr_node.turnOn();
 	    tree.reportChange();
     }
     if(source == (Object)turn_off_b)
     {
-	    curr_node.turnOff();
+	    Tree.curr_node.turnOff();
 	    tree.reportChange();
     }
 
@@ -208,7 +206,7 @@ public void actionPerformed(ActionEvent e)
 	        display_data_d = new TreeDialog(display_data = new DisplayData());
 	        display_data.setFrame(display_data_d);
 	    }
-	    display_data.setNode(curr_node);
+	    display_data.setNode(Tree.curr_node);
 	    display_data_d.pack();
 	    display_data_d.setLocation(dialogLocation());
 	    display_data_d.setVisible(true);
@@ -220,7 +218,7 @@ public void actionPerformed(ActionEvent e)
             display_nci_d = new TreeDialog(display_nci = new DisplayNci());
             display_nci.setFrame(display_nci_d);
         }
-        display_nci.setNode(curr_node);
+        display_nci.setNode(Tree.curr_node);
         display_nci_d.pack();
         display_nci_d.setLocation(dialogLocation());
         display_nci_d.setVisible(true);
@@ -232,7 +230,7 @@ public void actionPerformed(ActionEvent e)
             display_tags_d = new TreeDialog(display_tags = new DisplayTags());
             display_tags.setFrame(display_tags_d);
         }
-        display_tags.setNode(curr_node);
+        display_tags.setNode(Tree.curr_node);
         display_tags_d.pack();
         display_tags_d.setLocation(dialogLocation());
         display_tags_d.setVisible(true);
@@ -244,7 +242,7 @@ public void actionPerformed(ActionEvent e)
 	        modify_data_d = new TreeDialog(modify_data = new ModifyData());
 	        modify_data.setFrame(modify_data_d);
 	    }
-	    modify_data.setNode(curr_node);
+	    modify_data.setNode(Tree.curr_node);
 	    modify_data_d.pack();
 	    modify_data_d.setLocation(dialogLocation());
 	    modify_data_d.setVisible(true);
@@ -252,12 +250,12 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)set_default_b)
     {
 	    try {
-	        curr_node.setDefault();
+	        Tree.curr_node.setDefault();
 	    }catch(Exception exc) {System.out.println("Error setting default "+exc.getMessage());}
 	    tree.reportChange();
     }
     if(source == (Object)setup_device_b)
-        curr_node.setupDevice();
+        Tree.curr_node.setupDevice();
 }
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
