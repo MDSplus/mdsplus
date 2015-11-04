@@ -971,18 +971,18 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 AC_ARG_ENABLE([valgrind],
               [AS_HELP_STRING([--enable-valgrind],
                               [Use valgrind when running unit tests])],
-              [AS_VAR_SET([use_valgrind], [yes])],
+              [AS_VAR_SET([USE_VALGRIND], [yes])],
               [])
 
-if [[ "$use_valgrind" = "yes" ]]; then
- AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
- if [[ "$HAVE_VALGRIND" = "no" ]]; then
-  AC_MSG_ERROR([Valgrind not found in PATH. ])
- fi
-fi
-AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
-
-
+AS_IF([test x"$USE_VALGRIND" = x"yes" ],
+      [AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
+        AS_IF([test x"$HAVE_VALGRIND" = x"yes" ],
+              [AC_MSG_NOTICE([Valgrind ENABLED])],
+              [AC_MSG_WARN([Valgrind DISABLED as it was not found in PATH ])
+               AS_VAR_SET([USE_VALGRIND],[no])
+              ])
+      ])
+AM_CONDITIONAL(USE_VALGRIND, test x"$USE_VALGRIND" = x"yes")
 
 
 ## CHECK related ##
@@ -1061,7 +1061,7 @@ AC_DEFUN([AC_PYTHON_CLASS],[
               [AC_MSG_RESULT(yes); eval $3],
               [AC_MSG_RESULT(no);  eval $4])
 ])
-
+ 
 
 AC_PYTHON_MODULE(tap)
 AC_PYTHON_CLASS(tap, TAPTestRunner, [have_tappy="yes"],)

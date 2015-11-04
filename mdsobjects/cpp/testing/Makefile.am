@@ -72,6 +72,13 @@ LDADD += testutils/libMdsTestUtils.a
 #               --dsymutil=yes --leak-check=yes
 #endif
 
+TS_VALGRIND_FLAGS = \
+               --suppressions=${srcdir}/valgrind-stdlib.supp      \
+               --suppressions=${srcdir}/valgrind-dlerr.supp       \
+               --suppressions=${srcdir}/valgrind-connection.supp  \
+               --suppressions=${srcdir}/valgrind-treenode.supp 
+
+
 
 #
 # Files produced by tests that must be purged

@@ -646,6 +646,7 @@ GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
 HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
@@ -906,6 +907,12 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 #               --suppressions=valgrind-treenode.supp    \
 #               --dsymutil=yes --leak-check=yes
 #endif
+TS_VALGRIND_FLAGS = \
+               --suppressions=${srcdir}/valgrind-stdlib.supp      \
+               --suppressions=${srcdir}/valgrind-dlerr.supp       \
+               --suppressions=${srcdir}/valgrind-connection.supp  \
+               --suppressions=${srcdir}/valgrind-treenode.supp 
+
 
 #
 # Files produced by tests that must be purged
