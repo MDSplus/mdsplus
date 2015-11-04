@@ -1,4 +1,65 @@
-commit d82150981c8f50d5b24ef3afc3365201415f4e29 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 5a4e71f2acfe4a1605779123214e86c2b78dcaea (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 3 09:56:34 2015 +0100
+
+    Add useful methods
+
+commit 6779d1ba99c44b535de5a871febb8b8249a27add
+Merge: 28720c1 f38c650
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 3 09:20:13 2015 +0100
+
+    Merge pull request #189 from zack-vii/aa_traverser_flagedit
+    
+    jTraverser flag edit dialog
+
+commit 28720c1c6e7bfc9d5519db428f94db3a52f05773 (tag: refs/tags/alpha_release-7-0-173)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 2 23:42:54 2015 -0500
+
+    New release ---- alpha_release-7-0-173
+
+commit f38c65023a1f4dd3c44ba13f8bfd8d3c895bcdb2
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 2 21:40:27 2015 +0100
+
+    finalized set clear flags
+    
+    - copyed correc versions of set and clear flags from tcl_set_node
+    - fixed 1>>idx to 1<<idx
+    - fixed rename dialog on changes of current node
+    - rename now closes if node is changed
+    - flag dialog updates on node changes
+
+commit 32288d99bc22b72e336f3656b211e280ef633718
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Oct 31 14:31:34 2015 +0100
+
+    static dialog class
+    
+    manages updates and closing of rename to avoid errors
+
+commit 6fa02a4e95b26cd06a9021d70c5810891bb4a00f
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Oct 31 14:30:52 2015 +0100
+
+    fixed JavaTrav return on error to -1
+
+commit 2df15b9466a1fefec7d00528ac6a4d70fcbc518c
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 30 15:05:11 2015 +0100
+
+    added setFlags and getFlags as raw version
+
+commit 9dbecd707f3ee3dec0f73d92be4bed2135d3088a
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 30 11:05:00 2015 +0100
+
+    flag dialog
+    
+    added dialog with checkboxes
+
+commit d82150981c8f50d5b24ef3afc3365201415f4e29
 Merge: a02df8e becad9f
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Mon Nov 2 14:04:40 2015 -0500
