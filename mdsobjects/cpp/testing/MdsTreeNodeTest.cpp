@@ -825,10 +825,42 @@ int main(int argc, char *argv[])
         n1->addDevice("device","DIO2");                
         
     }
-    
-    
-    
+           
     END_TESTING;            
+
+    BEGIN_TESTING(TreeNode-Tree reference);
+    setenv("test_node_path",".",1);
+    Tree *tree = new Tree("test_node", -1, "NEW");
+    TreeNode *n = tree->addNode(":DATA", "NUMERIC");
+    delete n;
+    tree->write();
+    delete tree;
+    tree = new Tree("test_node", -1);
+    tree->createPulse(1);
+    tree->createPulse(2);
+    delete tree;
+    tree = new Tree("test_node", 1);
+    Tree *tree1 = new Tree("test_node", 2);
+    n = tree->getNode(":DATA");
+    Data *d = new Int32(1);
+    Data *d1 = new Int32(2);
+    n->putData(d);
+    TreeNode *n1 = tree1->getNode(":DATA");
+    n1->putData(d1);
+    deleteData(d);
+    deleteData(d1);
+    d = n->getData();
+    d1 = n1->getData();
+    TEST1(d->getInt() == 1);
+    TEST1(d1->getInt() == 2);
+    deleteData(d);
+    deleteData(d1);
+    delete n;
+    delete n1;
+    delete tree;
+    delete tree1;    
+    END_TESTING;
+    
 }
 
 
