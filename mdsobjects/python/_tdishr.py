@@ -26,8 +26,8 @@ def TdiCompile(expression,args=None):
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     done=False
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         if args is None:
             status=TdiShr.TdiCompile(_C.pointer(descriptor(expression)),_C.pointer(xd),_C.c_void_p(-1))
@@ -62,8 +62,8 @@ def TdiExecute(expression,args=None):
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     done=False
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         if args is None:
             status=TdiShr.TdiExecute(_C.pointer(descriptor(expression)),_C.pointer(xd),_C.c_void_p(-1))
@@ -97,8 +97,8 @@ def TdiDecompile(value):
     descriptor=_descriptor.descriptor
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         status=TdiShr.TdiDecompile(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
@@ -118,8 +118,8 @@ def TdiEvaluate(value):
     descriptor_xd=_descriptor.descriptor_xd
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         status=TdiShr.TdiEvaluate(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
@@ -136,8 +136,8 @@ def TdiData(value):
     descriptor_xd=_descriptor.descriptor_xd
     Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
+    Tree.lock()
     try:
-        Tree.lock()
         restoreContext()
         status=TdiShr.TdiData(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:

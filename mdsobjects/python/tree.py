@@ -163,8 +163,8 @@ class Tree(object):
         @return: Head node of device added
         @rtype: TreeNode
         """
+        Tree.lock()
         try:
-            Tree.lock()
             nid=_mimport('_treeshr',1).TreeAddConglom(self,str(nodename),str(model))
         finally:
             Tree.unlock()
@@ -179,8 +179,8 @@ class Tree(object):
         @return: Node created.
         @rtype: TreeNode
         """
+        Tree.lock()
         try:
-            Tree.lock()
             nid = _mimport('_treeshr',1).TreeAddNode(self,str(nodename),str(usage))
         finally:
             Tree.unlock()
@@ -195,8 +195,8 @@ class Tree(object):
         _treeshr=_mimport('_treeshr',1)
         import ctypes as _C
         from numpy import array
+        Tree.lock()
         try:
-            Tree.lock()
             try:
                 subtrees=self.getNodeWild('***','subtree')
                 included=subtrees.nid_number.compress(subtrees.include_in_pulse)
@@ -220,8 +220,8 @@ class Tree(object):
         @rtype: None
         """
         _treeshr=_mimport('_treeshr',1)
+        Tree.lock()
         try:
-            Tree.lock()
             first=True
             nodes=self.getNodeWild(wild)
             for node in nodes:
@@ -237,8 +237,8 @@ class Tree(object):
         @type shot: int
         @rtype: None
         """
+        Tree.lock()
         try:
-            Tree.lock()
             _mimport('_treeshr',1).TreeDeletePulse(self,shot)
         finally:
             Tree.unlock()
@@ -272,8 +272,8 @@ class Tree(object):
     def edit(self):
         """Open tree for editing.
         @rtype: None"""
+        Tree.lock()
         try:
-            Tree.lock()
             _mimport('_treeshr',1).TreeOpenEdit(self)
         finally:
             Tree.unlock()
@@ -324,8 +324,8 @@ class Tree(object):
         @return: Current shot number for the specified tree
         @rtype: int
         """
+        Tree.lock()
         try:
-            Tree.lock()
             shot=_mimport('_treeshr',1).TreeGetCurrentShotId(str.encode(treename))
         finally:
             Tree.unlock()
@@ -339,8 +339,8 @@ class Tree(object):
         @return: Current default node
         @rtype: TreeNode
         """
+        Tree.lock()
         try:
-            Tree.lock()
             ans = _mimport('treenode',1).TreeNode(_mimport('_treeshr',1).TreeGetDefault(self.ctx),self)
         finally:
             Tree.unlock()
@@ -429,8 +429,8 @@ class Tree(object):
         """Close edit session discarding node structure and tag changes.
         @rtype: None
         """
+        Tree.lock()
         try:
-            Tree.lock()
             _mimport('_treeshr',1).TreeQuitTree(self)
         finally:
             Tree.unlock()
@@ -487,8 +487,8 @@ class Tree(object):
         @type shot: int
         @rtype None
         """
+        Tree.lock()
         try:
-            Tree.lock()
             status=_mimport('_treeshr',1).TreeSetCurrentShotId(str.encode(treename),shot)
         finally:
             Tree.unlock()
@@ -581,10 +581,10 @@ class Tree(object):
         """Write out edited tree.
         @rtype: None
         """
+        Tree.lock()
         try:
             name=self.tree
             shot=self.shot
-            Tree.lock()
             _mimport('_treeshr',1).TreeWriteTree(self,name,shot)
         finally:
             Tree.unlock()
