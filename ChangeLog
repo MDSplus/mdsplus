@@ -1,4 +1,43 @@
-commit 5a4e71f2acfe4a1605779123214e86c2b78dcaea (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 34a4b6b03f2aa7bc0f081ae8194ed963fb9b3b2c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 4 16:58:54 2015 -0500
+
+    Fix external package requirements for rhel releases
+
+commit 5b5c1047c486be8f670ac9261e1265e0ca440855
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 4 14:51:05 2015 +0100
+
+    Added Devices for Tutorial
+
+commit 7e77e8e096d998a4b7d0a357a2b788ecd46a4c91
+Merge: f2c12f5 5ad9b1e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 4 10:58:05 2015 +0100
+
+    Merge pull request #192 from zack-vii/RfxDevices
+    
+    fixed SyntaxWarning in Mill3.py
+
+commit 5ad9b1e8ba23dd795d21940b931ea8a261c9c618
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 10:46:44 2015 +0100
+
+    fixed SyntaxWarning in Mill3.py
+    
+    - fixes SyntaxWarning: import * only allowed at module level
+    - removed unused stuff
+    - completed the commenting out of pymodbus
+    - cleared trailing spaces
+    - removed some empty lines
+
+commit f2c12f52f3bd5e457e480b71367819d02d053a96 (tag: refs/tags/alpha_release-7-0-174)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 3 23:37:59 2015 -0500
+
+    New release ---- alpha_release-7-0-174
+
+commit 5a4e71f2acfe4a1605779123214e86c2b78dcaea
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Nov 3 09:56:34 2015 +0100
 
