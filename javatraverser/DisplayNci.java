@@ -5,27 +5,22 @@ import java.awt.event.*;
 
 public class DisplayNci extends NodeEditor implements ActionListener
 {
-    JLabel label0, label1, label2, label3;
+    JLabel label;
     public DisplayNci()
     {
 	    setLayout(new BorderLayout());
-	    JPanel jp, jpsub;
+	    JPanel jp;
         add(jp = new JPanel(), "North");
 	    jp.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.EAST;
         c.gridx=0;
         c.gridy=0;
-	    jp.add(label0 = new JLabel(""), c);
+	    jp.add(label = new JLabel(""), c);
+ 	    add(jp = new JPanel(), "South");
         c.gridy=1;
-	    jp.add(label1 = new JLabel(""), c);
-        c.gridy=2;
-	    jp.add(label2 = new JLabel(""), c);
-        c.gridy=3;
-	    jp.add(label3 = new JLabel(""), c);
-	    add(jp = new JPanel(), "South");
 	    JButton close;
-	    jp.add(close = new JButton("Close"));
+	    jp.add(close = new JButton("Close"), c);
 	    close.addActionListener(this);
     }
     public void actionPerformed(ActionEvent e) {
@@ -38,9 +33,10 @@ public class DisplayNci extends NodeEditor implements ActionListener
 	    frame.setTitle("Display Nci information");
 	    try{
 	        node.getInfo();
-	    }catch(Exception e){System.out.println("Error retieving Nci"); return; }
-	    label0.setText(node.getFullPath());
-	    StringBuffer sb = new StringBuffer("<html><table cols=1 width=300><td><nobr>Status: ");
+	    }catch(Exception e){System.err.println("Error retieving Nci"); return; }
+	    StringBuffer sb = new StringBuffer("<html><table width=\"320\"> <tr><td width=\"60\" align=\"left\"/><nobr>full path:</nobr></td><td align=\"left\">");
+        sb.append(node.getFullPath());
+        sb.append("</td></tr><tr><td align=\"left\" valign=\"top\">Status:</td><td align=\"left\"><nobr>");
         final String sep = "</nobr>, <nobr>";
 	    if(node.isOn())
 	        sb.append("on");
@@ -81,12 +77,10 @@ public class DisplayNci extends NodeEditor implements ActionListener
 	        sb.append(sep+"compress segments");
 	    if(node.isIncludeInPulse())
 	        sb.append(sep+"include in pulse");
-        sb.append("</nobr></td></table></html>");
-	    label1.setText(sb.toString());
-	    label2.setText("Data inserted: "+ node.getDate()); 
+        sb.append("</nobr></td></tr><tr><td align=\"left\">Data:</td><td align=\"left\">");
 	    String dtype, dclass;
 	    if(node.getLength() == 0)
-	        label3.setText("There is no data stored for this node");
+	        sb.append("There is no data stored for this node");
 	    else
 	    {
 	        switch(node.getDType()) {
@@ -147,7 +141,11 @@ public class DisplayNci extends NodeEditor implements ActionListener
 		        case Data.CLASS_APD: dclass = "CLASS_APD"; break;
                 default: dclass = "CLASS" + ((int)node.getDClass() & 0xFF); break;
 	        }
-	        label3.setText(dtype+"   "+dclass+"   Length: "+node.getLength()+" bytes");
+            sb.append("<nobr>"+dtype+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+dclass+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+node.getLength()+" Bytes</nobr>");
+            sb.append("</td></tr><tr><td align=\"left\">Inserted:</td><td align=\"left\">");
+            sb.append(node.getDate());
+            sb.append("</td></tr></table></html>");
 	    }
+	    label.setText(sb.toString());
     }
 }
