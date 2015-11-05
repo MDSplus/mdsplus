@@ -1,4 +1,16 @@
-commit 61b69dea236e1f0aa044bd23d212cdf7924cdc9e (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit bbf6aac67b4a58f250f962e9dacfaaa8ea154b53 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 4 16:52:41 2015 -0500
+
+    Fix external package requirements for rhel releases
+
+commit 0858d04e378fc9490dd36a9405057d96dc4aa1b3 (tag: refs/tags/stable_release-7-0-57)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 15 19:05:02 2015 -0400
+
+    New release ---- stable_release-7-0-57
+
+commit 61b69dea236e1f0aa044bd23d212cdf7924cdc9e
 Merge: 5b303a8 2ddb24b
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Oct 15 13:37:16 2015 -0400
