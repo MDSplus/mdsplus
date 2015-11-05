@@ -1165,26 +1165,30 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	            JPanel jp = new JPanel();
                 jp.setLayout(new BorderLayout());
 	            JPanel jp1 = new JPanel();
-                jp1.setLayout(new GridLayout(9,2));
-                flag = new JCheckBox[17];
-                jp1.add(flag[ 4] = new JCheckBox("Versions"));
-                jp1.add(flag[ 5] = new JCheckBox("Segmented"));
+                jp1.setLayout(new GridLayout(8,4));
+                flag = new JCheckBox[32];
                 jp1.add(flag[13] = new JCheckBox("PathReference"));
                 jp1.add(flag[14] = new JCheckBox("NidReference"));
-                jp1.add(flag[ 1] = new JCheckBox("ParentOff"));
+                jp1.add(flag[ 5] = new JCheckBox("Segmented"));
                 jp1.add(flag[ 8] = new JCheckBox("Compressible"));
-                jp1.add(flag[ 0] = new JCheckBox("Off"));
-                jp1.add(flag[10] = new JCheckBox("CompressOnPut"));
-                jp1.add(flag[ 9] = new JCheckBox("DoNotCompress"));
+                jp1.add(flag[ 1] = new JCheckBox("ParentOff"));
+                jp1.add(flag[ 4] = new JCheckBox("Versions"));
                 jp1.add(flag[16] = new JCheckBox("CompressSegments"));
+                jp1.add(flag[ 9] = new JCheckBox("DoNotCompress"));
+                jp1.add(flag[ 0] = new JCheckBox("Off"));
+                jp1.add(flag[ 6] = new JCheckBox("Setup"));
+                jp1.add(flag[ 2] = new JCheckBox("Essential"));
+                jp1.add(flag[10] = new JCheckBox("CompressOnPut"));
                 jp1.add(flag[11] = new JCheckBox("NoWriteModel"));
                 jp1.add(flag[12] = new JCheckBox("NoWriteShot"));
                 jp1.add(flag[ 7] = new JCheckBox("WriteOnce"));
-                jp1.add(flag[ 2] = new JCheckBox("Essential"));
-                jp1.add(flag[ 6] = new JCheckBox("Setup"));
                 jp1.add(flag[15] = new JCheckBox("IncludeInPulse"));
                 jp1.add(flag[ 3] = new JCheckBox("Cached"));
-                settable_flag = new boolean[]{true,false,true,true,false,false,true,true,false,true,true,true,true,false,false,true,true};
+                for (byte i = 17 ; i < 31 ; i++)
+                    jp1.add(flag[i] = new JCheckBox("UndefinedFlag"+(i)));
+                jp1.add(flag[31] = new JCheckBox("Error"));
+                settable_flag = new boolean[]{true,false,true,true,false,false,true,true,false,true,true,true,true,false,false,true,true,
+                true,true,true,true,true,true,true,true,true,true,true,true,true,true,false};
                 flag[0].addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
                     if (Tree.curr_node == null) return;
@@ -1194,7 +1198,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                         Tree.curr_node.turnOn();
                     jTraverser.tree.reportChange();
                 }});
-                for (byte i = 1 ; i< (byte)flag.length ; i++)
+                for (byte i = 1 ; i < 32 ; i++)
                   if (flag[i] != null)
                     {
                         final byte ii = i;
@@ -1252,9 +1256,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                 if(Tree.curr_node != null)
             	    iflags = Tree.curr_node.getFlags();
                 if (iflags<0)
-                    throw new Exception("MdsJava returned -1.");
-                boolean[] flags = new boolean[17];
-                for (byte i = 0; i < 17; i++)
+                    jTraverser.stderr("MdsJava returned -1.", null);
+                boolean[] flags = new boolean[32];
+                for (byte i = 0; i < 32; i++)
                     flags[i] = (iflags & (1 << i)) != 0;
                 return flags;
             }
@@ -1271,7 +1275,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                     return;
                 }
                 boolean is_ok = !(jTraverser.readonly || (Tree.curr_node == null));
-                for (int i = 0 ; i< flag.length ; i++)
+                for (int i = 0 ; i < 32 ; i++)
                 {
                     flag[i].setSelected(flags[i]);
                     flag[i].setEnabled(is_ok && settable_flag[i]);

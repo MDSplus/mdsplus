@@ -430,7 +430,7 @@ JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj, jobject
   status = TreeGetNci(nid, nci_list);
   if (!(status & 1)) {
     RaiseException(env, MdsGetMsg(status), status);
-    return -1;
+    return 0x80000000;
   }
   return nci_flags;
 }
