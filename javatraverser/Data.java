@@ -26,10 +26,10 @@ public abstract class Data implements Serializable
 //              System.loadLibrary("TreeShr");
 //              System.loadLibrary("TdiShr");
               System.loadLibrary("JavaMds");
-	        }catch(Throwable e)
+	        }catch(Exception exc)
                 {
-                  System.out.println("Load library "+e);
-                  e.printStackTrace();
+                  jTraverser.stderr("Error loading library", exc);
+                  exc.printStackTrace();
                 }
 	    }
     }

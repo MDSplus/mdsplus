@@ -25,24 +25,24 @@ public class TreeNode extends JLabel
             String path = Tree.curr_node.getFullPath();
             content = new StringSelection(path);
             cb.setContents(content, null);
-	    }catch(Exception exc){System.err.println("Cannot copy fullPath to Clipboard");}
+	    }catch(Exception exc){jTraverser.stderr("Cannot copy fullPath to Clipboard", exc);}
 	}
     public static void copy()
     {
         cut = false;
         copied = Tree.curr_node;
-        System.out.println("copied: "+copied+" from "+copied.parent);
+        jTraverser.stdout("copy: "+copied+" from "+copied.parent);
     }
 
     public static void cut()
     {
         cut = true;
         copied = Tree.curr_node;
-        System.out.println("cut: "+copied+" from "+copied.parent);
+        jTraverser.stdout("cut: "+copied+" from "+copied.parent);
     }
     public static void paste()
     {
-        System.out.println((cut ? "moved " : "copied") +copied+ " from " + copied.parent + " to " + Tree.curr_node);
+        jTraverser.stdout((cut ? "moved: " : "copied: ") +copied+ " from " + copied.parent + " to " + Tree.curr_node);
         if(copied != null && copied != Tree.curr_node)
         {
             if (cut)
@@ -82,7 +82,7 @@ public class TreeNode extends JLabel
 
     public void paint(Graphics g)
     {
-	    setText(node.getName());
+	    setText(node.getName()+"      ");
         setForeground(node.isDefault() ? Color.red : Color.black);
         setFont(node.isOn() ? bold_f : plain_f);  
 	    setBorder(BorderFactory.createLineBorder((Tree.curr_node == node) ? Color.black : Color.white, 1));

@@ -12,6 +12,7 @@ public class jTraverser extends JFrame implements ActionListener
     static String exp_name, shot_name;
     static boolean editable, readonly;
     static Tree tree;
+    static JLabel status = new JLabel("jTaverser started");
     JMenu file_m, edit_m, data_m, customize_m;
     JMenuItem open, close, quit;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
@@ -48,10 +49,21 @@ public class jTraverser extends JFrame implements ActionListener
     }
 
 
+    public static void stdout(String line)
+    {
+         status.setText(line);
+    }
+    public static void stderr(String line, Exception exc)
+    {
+         jTraverser.status.setText("ERROR: "+line+" ("+exc.getMessage()+")");
+         System.err.println(line+"\n"+exc);
+    }
+
     public jTraverser(String exp_name, String shot_name, String access)
     {
 	this.exp_name = exp_name;
 	this.shot_name = shot_name;
+	setTitle("jTraverser - no tree open");
 	Boolean edit = false;
 	Boolean readonly = false;
 	if (access != null)
@@ -141,10 +153,8 @@ public class jTraverser extends JFrame implements ActionListener
 	tree = new Tree(this);
 	if(exp_name != null)
 	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), edit, readonly, false);
-	else
-	    setTitle("jTraverser - no tree open");
-	getContentPane().add(tree);
-
+	getContentPane().add(tree, BorderLayout.NORTH);
+    getContentPane().add(status, BorderLayout.SOUTH);
 	addWindowListener(new WindowAdapter() {
 	    public void windowClosing(WindowEvent e)
 	    {
@@ -251,7 +261,7 @@ public void actionPerformed(ActionEvent e)
     {
 	    try {
 	        Tree.curr_node.setDefault();
-	    }catch(Exception exc) {System.out.println("Error setting default "+exc.getMessage());}
+	    }catch(Exception exc) {jTraverser.stderr("Error setting default",exc);}
 	    tree.reportChange();
     }
     if(source == (Object)setup_device_b)
@@ -266,20 +276,21 @@ void reportChange(String exp, int shot, boolean editable, boolean readonly)
     String title;
     if(exp != null)
     {
-	title = "jTraverser - Tree: " + exp;
-	if(editable)
-	    title = title + " (edit) ";
-	if(readonly)
-	    title = title + " (readonly) ";
-	title = title + " Shot: " + shot;
+	    title = "Tree: " + exp;
+	    if(editable)
+	        title = title + " (edit) ";
+	    if(readonly)
+	        title = title + " (readonly) ";
+	    title = title + " Shot: " + shot;
+        jTraverser.stdout(title);
     }
     else
     {
-	title = "jTraverser - no tree open";
-	edit_m.setEnabled(false);
-	data_m.setEnabled(false);
+	    title = "no tree open";
+	    edit_m.setEnabled(false);
+	    data_m.setEnabled(false);
     }
-    setTitle(title);
+    setTitle("jTraverser - "+title);
     if(exp == null) return;
     data_m.setEnabled(true);
     if(editable)

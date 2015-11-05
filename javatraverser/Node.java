@@ -47,14 +47,8 @@ public class Node
         this.parent = parent;
         this.is_member = is_member;
         this.nid = nid;
-        try
-        {
-            info = experiment.getInfo(nid, Tree.context);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error getting info " + e);
-        }
+        try{info = experiment.getInfo(nid, Tree.context);}
+        catch (Exception exc){jTraverser.stderr("Error getting info", exc);}
         sons = new Node[0];
         members = new Node[0];
     }
@@ -86,10 +80,7 @@ public class Node
             info = experiment.getInfo(nid, Tree.context);
             tree_label = null;
         }
-        catch (Exception e)
-        {
-            System.out.println("Error getting info " + e);
-        }
+        catch (Exception exc){jTraverser.stderr("Error getting info", exc);}
     }
 
     public void updateCell()
@@ -140,27 +131,15 @@ public class Node
 
     public void turnOn()
     {
-        try
-        {
-            experiment.setOn(nid, true, Tree.context);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error turning on " + e.getMessage());
-        }
+        try{experiment.setOn(nid, true, Tree.context);}
+        catch (Exception exc){jTraverser.stderr("Error turning on", exc);}
         setOnUnchecked();
     }
 
     public void turnOff()
     {
-        try
-        {
-            experiment.setOn(nid, false, Tree.context);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error turning on " + e.getMessage());
-        }
+        try{experiment.setOn(nid, false, Tree.context);}
+        catch (Exception exc){jTraverser.stderr("Error turning off", exc);}
         setOnUnchecked();
     }
 
@@ -195,7 +174,7 @@ public class Node
         try{
             info = experiment.getInfo(nid, Tree.context);
         }
-        catch (Exception exc){System.err.println("Error checking info " + exc);}
+        catch (Exception exc){jTraverser.stderr("Error checking info",exc);}
         return info;
     }
 
@@ -247,7 +226,7 @@ public class Node
     }
     public int getFlags()
     {   try{info.setFlags(experiment.getFlags(nid));}
-        catch(Exception exc){System.err.println("Error updating flags " + exc);}
+        catch(Exception exc){jTraverser.stderr("Error updating flags",exc);}
         return info.getFlags();
     }
 
@@ -260,10 +239,7 @@ public class Node
             {
                 is_on = experiment.isOn(nid, Tree.context);
             }
-            catch (Exception exc)
-            {
-                System.err.println("Error checking state " + exc);
-            }
+            catch (Exception exc){jTraverser.stderr("Error checking state",exc);}
         }
         return is_on;
     }
@@ -335,9 +311,8 @@ public class Node
         {
             curr_nid = experiment.getDefault(Tree.context);
         }
-        catch (Exception exc)
-        {
-            System.err.println("Error getting default " + exc);
+        catch (Exception exc){
+            jTraverser.stderr("Error getting default", exc);
             return false;
         }
         return curr_nid.datum == nid.datum;
@@ -461,10 +436,7 @@ public class Node
         {
             return experiment.startDelete(nids, Tree.context).length;
         }
-        catch (Exception e)
-        {
-            System.out.println("Starting delete: " + e.getMessage());
-        }
+        catch (Exception exc){jTraverser.stderr("Error starting delete", exc);}
         return 0;
     }
 
@@ -475,10 +447,7 @@ public class Node
         {
             experiment.executeDelete(Tree.context);
         }
-        catch (Exception e)
-        {
-            System.err.println("Error executing delete: " + e.getMessage());
-        }
+        catch (Exception exc){jTraverser.stderr("Error executing delete", exc);}
     }
 
 
@@ -641,10 +610,7 @@ public class Node
             fromNode.expand();
             toNode.expand();
         }
-        catch (Exception exc)
-        {
-            System.err.println("Error expanding nodes: " + exc);
-        }
+        catch (Exception exc){jTraverser.stderr("Error expanding nodes", exc);}
         try
         {
             Data data = fromNode.getData();
@@ -654,8 +620,7 @@ public class Node
                     toNode.setData(data);
             }
         }
-        catch (Throwable exc)
-        {}
+        catch (Throwable exc){}
         for (int i = 0; i < fromNode.sons.length; i++)
             copySubtreeContent(fromNode.sons[i], toNode.sons[i]);
         for (int i = 0; i < fromNode.members.length; i++)

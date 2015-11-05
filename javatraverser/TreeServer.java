@@ -30,8 +30,7 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
    /* Low level MDS database management routines, will be  masked by the Node class*/
     public int open() throws DatabaseException
     {
-        System.out.println("Server: start open lastCtx = "+lastCtx);
-
+        jTraverser.stdout("Server: start open lastCtx = "+lastCtx);
         tree.open();
         contexts.insertElementAt(new Long(tree.saveContext()), lastCtx);
         return lastCtx++;
@@ -268,14 +267,12 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         RemoteTree server = null;
         try {
             server = new TreeServer();
-       }catch(Exception exc)
-       {
-            System.err.println("Error creating TreeServer: " + exc);
+        }catch(Exception exc){
+            jTraverser.stderr("Error creating TreeServer", exc);
             System.exit(0);
-       }
-       try {
-        Naming.rebind("TreeServer", server);
-       }catch(Exception exc) {System.err.println("Error in Naming.rebind: " + exc);}
+        }
+        try {Naming.rebind("TreeServer", server);}
+        catch(Exception exc) {jTraverser.stderr("Error in Naming.rebind", exc);}
     }
 }
 

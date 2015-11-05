@@ -15,10 +15,10 @@ public class Database implements RemoteTree{
  //           System.loadLibrary("TdiShr");
             System.loadLibrary("JavaMds");
 	    }
-            catch(Throwable e)
+            catch(Exception exc)
             {
-              System.out.println("Cannot load library " + e);
-              e.printStackTrace();
+              jTraverser.stderr("Cannot load library ", exc);
+              exc.printStackTrace();
             }
     }
     public Database() {super();}

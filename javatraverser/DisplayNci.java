@@ -31,9 +31,8 @@ public class DisplayNci extends NodeEditor implements ActionListener
     {	
 	    this.node = node;
 	    frame.setTitle("Display Nci information");
-	    try{
-	        node.getInfo();
-	    }catch(Exception e){System.err.println("Error retieving Nci"); return; }
+	    try{node.getInfo();}
+        catch (Exception exc){jTraverser.stderr("Error retieving Nci", exc);}
 	    StringBuffer sb = new StringBuffer("<html><table width=\"320\"> <tr><td width=\"60\" align=\"left\"/><nobr>full path:</nobr></td><td align=\"left\">");
         sb.append(node.getFullPath());
         sb.append("</td></tr><tr><td align=\"left\" valign=\"top\">Status:</td><td align=\"left\"><nobr>");
