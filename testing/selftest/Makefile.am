@@ -24,7 +24,9 @@ C_TESTS = \
           skip_test \
           error_test \
           fork_success \
-          fork_fail
+          fork_fail \
+          timeout_success \
+          timeout_fail
           
 #          example 
           

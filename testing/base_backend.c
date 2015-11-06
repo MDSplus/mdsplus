@@ -52,7 +52,7 @@ void __mark_point(const char *__assertion, const char *__file, unsigned int __li
 
 void __test_exit() { exit(0); }
 
-
+void __test_timeout(double seconds) { (void)seconds; }
 
 
 

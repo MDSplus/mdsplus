@@ -41,6 +41,7 @@ volatile int error_jmp_state;
 
 
 static int alarm_received = 0;
+static double default_timeout = TEST_DEFAULT_TIMEOUT;
 static pid_t group_pid = 0;
 extern jmp_buf error_jmp_buffer;
 
@@ -605,9 +606,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
         
         // set fork status //
         srunner_set_fork_status(runner, cur_fork_status());           
-        
-        
-        
+                        
         // send runner start event //
         log_srunner_start(runner);    
         log_suite_start(runner,suite);    
@@ -622,7 +621,12 @@ void __test_init(const char *test_name, const char *file, const int line) {
         atexit(__test_exit);
     }
         
+    // create tcase //
     tcase  = tcase_create(test_name);
+    
+    // SET TIMEOUT //
+    __test_timeout(default_timeout);
+    
     suite_add_tcase(suite,tcase);    
     
     #ifdef HAVE_FORK
@@ -650,8 +654,25 @@ void __test_init(const char *test_name, const char *file, const int line) {
     
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  SET TIMEOUT  ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
+void __test_timeout(double seconds) {
+    default_timeout = seconds;
+    if(tcase) {
+        char *time_unit = getenv("TEST_TIMEUNIT");
+        if(time_unit != NULL) {
+            char *endptr = NULL;
+            double tmp = strtod(time_unit, &endptr);
+            if(tmp >= 0 && endptr != time_unit && (*endptr) == '\0')
+                tcase_set_timeout(tcase,seconds*tmp);
+        }        
+        else 
+            tcase_set_timeout(tcase,seconds);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  START TEST  ////////////////////////////////////////////////////////////////

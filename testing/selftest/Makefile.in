@@ -109,7 +109,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 am__EXEEXT_1 = test_options$(EXEEXT) example2$(EXEEXT) \
 	example3$(EXEEXT) example4$(EXEEXT) example_assert$(EXEEXT) \
 	skip_test$(EXEEXT) error_test$(EXEEXT) fork_success$(EXEEXT) \
-	fork_fail$(EXEEXT)
+	fork_fail$(EXEEXT) timeout_success$(EXEEXT) \
+	timeout_fail$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 error_test_SOURCES = error_test.c
 error_test_OBJECTS = error_test.$(OBJEXT)
@@ -148,6 +149,14 @@ test_options_SOURCES = test_options.c
 test_options_OBJECTS = test_options.$(OBJEXT)
 test_options_LDADD = $(LDADD)
 test_options_DEPENDENCIES = $(am__DEPENDENCIES_1)
+timeout_fail_SOURCES = timeout_fail.c
+timeout_fail_OBJECTS = timeout_fail.$(OBJEXT)
+timeout_fail_LDADD = $(LDADD)
+timeout_fail_DEPENDENCIES = $(am__DEPENDENCIES_1)
+timeout_success_SOURCES = timeout_success.c
+timeout_success_OBJECTS = timeout_success.$(OBJEXT)
+timeout_success_LDADD = $(LDADD)
+timeout_success_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -191,10 +200,10 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = error_test.c example2.c $(example3_SOURCES) example4.c \
 	example_assert.c fork_fail.c fork_success.c skip_test.c \
-	test_options.c
+	test_options.c timeout_fail.c timeout_success.c
 DIST_SOURCES = error_test.c example2.c $(example3_SOURCES) example4.c \
 	example_assert.c fork_fail.c fork_success.c skip_test.c \
-	test_options.c
+	test_options.c timeout_fail.c timeout_success.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -735,7 +744,9 @@ C_TESTS = \
           skip_test \
           error_test \
           fork_success \
-          fork_fail
+          fork_fail \
+          timeout_success \
+          timeout_fail
 
 
 #          example 
@@ -870,6 +881,14 @@ test_options$(EXEEXT): $(test_options_OBJECTS) $(test_options_DEPENDENCIES) $(EX
 	@rm -f test_options$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_options_OBJECTS) $(test_options_LDADD) $(LIBS)
 
+timeout_fail$(EXEEXT): $(timeout_fail_OBJECTS) $(timeout_fail_DEPENDENCIES) $(EXTRA_timeout_fail_DEPENDENCIES) 
+	@rm -f timeout_fail$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(timeout_fail_OBJECTS) $(timeout_fail_LDADD) $(LIBS)
+
+timeout_success$(EXEEXT): $(timeout_success_OBJECTS) $(timeout_success_DEPENDENCIES) $(EXTRA_timeout_success_DEPENDENCIES) 
+	@rm -f timeout_success$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(timeout_success_OBJECTS) $(timeout_success_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -885,6 +904,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fork_success.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skip_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timeout_fail.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timeout_success.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1170,6 +1191,20 @@ fork_success.log: fork_success$(EXEEXT)
 fork_fail.log: fork_fail$(EXEEXT)
 	@p='fork_fail$(EXEEXT)'; \
 	b='fork_fail'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+timeout_success.log: timeout_success$(EXEEXT)
+	@p='timeout_success$(EXEEXT)'; \
+	b='timeout_success'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+timeout_fail.log: timeout_fail$(EXEEXT)
+	@p='timeout_fail$(EXEEXT)'; \
+	b='timeout_fail'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

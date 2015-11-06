@@ -77,16 +77,17 @@ EXPORT void __test_assert_fail(const char *file, int line, const char *expr, ...
 EXPORT void __test_exit() __attribute__ ((__noreturn__));
 EXPORT void __test_abort(int code, const char *__msg, const char *__file,
                          unsigned int __line, const char *__function);
-
+EXPORT void __test_timeout(double seconds);
 #else // not _TESTING ( normal build )
 
-void __test_setfork(const int value) {}
+void __test_setfork(const int value) { (void)value; }
 void __test_init(const char *test_name, const char *file, const int line) {}
 void __test_end() {}
 int  __setup_parent() { return 0; }
 int  __setup_child()  { return 0; }
 void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 void __test_exit() { exit(0); }
+void __test_timeout(double seconds) { (void)seconds; }
 
 void __test_abort(int code, const char *__msg, const char *__file,
                   unsigned int __line, const char *__function) 
@@ -125,6 +126,8 @@ void __mark_point(const char *__assertion, const char *__file,
 //  TEST  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+#define TEST_DEFAULT_TIMEOUT 10 // seconds
+
 #ifdef NDEBUG
 #define TEST_FORK(value)      (__ASSERT_VOID_CAST (0))
 #define TEST_ASSERT(expr)     (__ASSERT_VOID_CAST (0)) 
@@ -162,6 +165,8 @@ void __mark_point(const char *__assertion, const char *__file,
 
 #define SKIP_TEST  __test_abort(77,"SKIP: ", __FILE__,__LINE__,__ASSERT_FUNCTION);
 #define ABORT_TEST __test_abort(99,"ERROR: ",__FILE__,__LINE__,__ASSERT_FUNCTION);
+
+#define TEST_TIMEOUT(seconds) (__test_timeout(seconds))
 
 #endif // NDEBUG
 
