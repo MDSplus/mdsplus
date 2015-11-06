@@ -210,10 +210,15 @@ Do this in runs.
   ******************************/
     old = 0;
     for (pn = diff, j = xn; --j >= 0; old = *p32++) {
-      if ((int)(*pn++ = i = *p32 - old) < 0)
-	i = -i;
-      if ((unsigned int)i <= 64)
+      if ((i = *pn++ = *p32 - old) < 0) {
+	if (i == 0x80000000)
+	  i=0;
+	else
+	  i = (-i);
+      }
+      if ((unsigned int)i <= 64) {
 	yy = signif[i];
+      }
       else {
 	yy = 0;
 	if ((unsigned int)i > 0x1000000) {
