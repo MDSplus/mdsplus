@@ -1137,6 +1137,10 @@ class TreePath(TreeNode):
             self.tree=tree.copy()
         return
 
+    def __hasBadTreeReferences__(self,tree):
+       return False
+
+
     def __str__(self):
         """Convert path to string."""
         return self.tree_path.value
