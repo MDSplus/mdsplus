@@ -257,7 +257,7 @@ DATA_FILE *TreeGetVmDatafile()
   return datafile_ptr;
 }
 
-int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, char *record,
+EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, char *record,
 		    int *retsize, int *nodenum, unsigned char flags)
 {
   int status = 1;

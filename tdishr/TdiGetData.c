@@ -693,7 +693,7 @@ int Tdi1Validation(int opcode, int narg, struct descriptor *list[], struct descr
 }
 
 static int use_get_record_fun = 1;
-int TdiGetRecord(int nid, struct descriptor_xd *out)
+EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
 {
   int status;
   static int use_fun = 1;

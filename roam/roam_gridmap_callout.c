@@ -55,7 +55,7 @@ extern int MdsFree1Dx();
 
 int roam_check_access();
 
-globus_result_t roam_gridmap_callout(va_list ap)
+EXPORT globus_result_t roam_gridmap_callout(va_list ap)
 {
   gss_ctx_id_t context;
   char *service;
