@@ -1130,7 +1130,7 @@ static void SetTranslations(XmdsWavedrawWidget w)
   }
 }
 
-void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks)
+EXPORT void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks)
 {
   XmdsWavedrawWidget wdw = (XmdsWavedrawWidget) w;
   (((XmdsWavedrawWidgetClass) wdw->core.widget_class)->wavedraw_class.delete_point_proc) (wdw, idx,

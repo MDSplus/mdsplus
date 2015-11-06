@@ -8,7 +8,7 @@ using namespace std;
 												TREE
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_tree_addDevice(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *typeIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_addDevice(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *typeIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -28,7 +28,7 @@ DLLEXPORT void mdsplus_tree_addDevice(const void *lvTreePtr, void **lvTreeNodePt
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_addNode(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *usageIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_addNode(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *usageIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -48,7 +48,7 @@ DLLEXPORT void mdsplus_tree_addNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn, int shotIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn, int shotIn, ErrorCluster *error)
 {
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
@@ -67,7 +67,7 @@ DLLEXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn,
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *nameIn, int shotIn, const char *modeIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *nameIn, int shotIn, const char *modeIn, ErrorCluster *error)
 {
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
@@ -86,7 +86,7 @@ DLLEXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *na
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_createPulse(const void *lvTreePtr, int shotIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_createPulse(const void *lvTreePtr, int shotIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -107,7 +107,7 @@ DLLEXPORT void mdsplus_tree_createPulse(const void *lvTreePtr, int shotIn, Error
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_deletePulse(const void *lvTreePtr, int shotIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_deletePulse(const void *lvTreePtr, int shotIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -128,14 +128,14 @@ DLLEXPORT void mdsplus_tree_deletePulse(const void *lvTreePtr, int shotIn, Error
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_destructor(void **lvTreePtr)
+EXPORT void mdsplus_tree_destructor(void **lvTreePtr)
 {
 	Tree *treePtr = reinterpret_cast<Tree *>(*lvTreePtr);
 	delete treePtr;
 	*lvTreePtr = NULL;
 }
 
-DLLEXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error)
+EXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -156,7 +156,7 @@ DLLEXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error)
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArrayPtrOut, const char *wildIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArrayPtrOut, const char *wildIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	StringArray *stringArrayPtrOut = NULL;
@@ -179,7 +179,7 @@ DLLEXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArray
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *error)
 {
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
@@ -201,7 +201,7 @@ DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *err
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
@@ -220,7 +220,7 @@ DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, int64_t *sizeOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, int64_t *sizeOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -241,7 +241,7 @@ DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, int64_t *size
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -264,7 +264,7 @@ DLLEXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodeP
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *pathIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *pathIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -286,7 +286,7 @@ DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	}
 }
 
-DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeOut, const char *pathIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeOut, const char *pathIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -308,7 +308,7 @@ DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeO
 }
 
 
-DLLEXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvStringPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvStringPtrIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -332,7 +332,7 @@ DLLEXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeN
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getNode_treepath(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvTreePathPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_getNode_treepath(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvTreePathPtrIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -356,7 +356,7 @@ DLLEXPORT void mdsplus_tree_getNode_treepath(const void *lvTreePtr, void **lvTre
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getNodeWild(const void *lvTreePtr, void **lvTreeNodeArrayPtrOut, const char *pathIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_getNodeWild(const void *lvTreePtr, void **lvTreeNodeArrayPtrOut, const char *pathIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNodeArray *treeNodeArrayPtrOut = NULL;
@@ -379,7 +379,7 @@ DLLEXPORT void mdsplus_tree_getNodeWild(const void *lvTreePtr, void **lvTreeNode
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getNodeWild_usageMask(const void *lvTreePtr, void **lvTreeNodeArrayPtrOut, const char *pathIn, int usageMaskIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_getNodeWild_usageMask(const void *lvTreePtr, void **lvTreeNodeArrayPtrOut, const char *pathIn, int usageMaskIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNodeArray *treeNodeArrayPtrOut = NULL;
@@ -402,7 +402,7 @@ DLLEXPORT void mdsplus_tree_getNodeWild_usageMask(const void *lvTreePtr, void **
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_isModified(const void *lvTreePtr, LVBoolean *lvIsModifiedOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_isModified(const void *lvTreePtr, LVBoolean *lvIsModifiedOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -423,7 +423,7 @@ DLLEXPORT void mdsplus_tree_isModified(const void *lvTreePtr, LVBoolean *lvIsMod
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_isOpenForEdit(const void *lvTreePtr, LVBoolean *lvIsOpenForEditOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_isOpenForEdit(const void *lvTreePtr, LVBoolean *lvIsOpenForEditOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -444,7 +444,7 @@ DLLEXPORT void mdsplus_tree_isOpenForEdit(const void *lvTreePtr, LVBoolean *lvIs
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_isReadOnly(const void *lvTreePtr, LVBoolean *lvIsReadOnlyOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_isReadOnly(const void *lvTreePtr, LVBoolean *lvIsReadOnlyOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -465,7 +465,7 @@ DLLEXPORT void mdsplus_tree_isReadOnly(const void *lvTreePtr, LVBoolean *lvIsRea
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_quit(const void *lvTreePtr, ErrorCluster *error)
+EXPORT void mdsplus_tree_quit(const void *lvTreePtr, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -486,7 +486,7 @@ DLLEXPORT void mdsplus_tree_quit(const void *lvTreePtr, ErrorCluster *error)
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_remove(const void *lvTreePtr, const char *nameIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_remove(const void *lvTreePtr, const char *nameIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -507,7 +507,7 @@ DLLEXPORT void mdsplus_tree_remove(const void *lvTreePtr, const char *nameIn, Er
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagNameIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagNameIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -528,7 +528,7 @@ DLLEXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagName
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster *error)
 {
 	Tree *treePtrIn = NULL;
 	MgErr errorCode = noErr;
@@ -549,7 +549,7 @@ DLLEXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setCurrent(const char *treeNameIn, int shotIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setCurrent(const char *treeNameIn, int shotIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
@@ -568,7 +568,7 @@ DLLEXPORT void mdsplus_tree_setCurrent(const char *treeNameIn, int shotIn, Error
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setDefault(const void *lvTreePtr, const void *lvTreeNodePtrIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setDefault(const void *lvTreePtr, const void *lvTreeNodePtrIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrIn = NULL;
@@ -591,7 +591,7 @@ DLLEXPORT void mdsplus_tree_setDefault(const void *lvTreePtr, const void *lvTree
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setTimeContext(const void *lvTreePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvDeltaDataPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setTimeContext(const void *lvTreePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvDeltaDataPtrIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	Data *startDataPtrIn = NULL;
@@ -619,7 +619,7 @@ DLLEXPORT void mdsplus_tree_setTimeContext(const void *lvTreePtr, const void *lv
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setVersionsInModel(const void *lvTreePtr, LVBoolean *lvVerEnabledIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setVersionsInModel(const void *lvTreePtr, LVBoolean *lvVerEnabledIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	bool verEnabledIn;
@@ -642,7 +642,7 @@ DLLEXPORT void mdsplus_tree_setVersionsInModel(const void *lvTreePtr, LVBoolean 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setVersionsInPulse(const void *lvTreePtr, LVBoolean *lvVerEnabledIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setVersionsInPulse(const void *lvTreePtr, LVBoolean *lvVerEnabledIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	bool verEnabledIn;
@@ -665,7 +665,7 @@ DLLEXPORT void mdsplus_tree_setVersionsInPulse(const void *lvTreePtr, LVBoolean 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_setViewDate(const void *lvTreePtr, const char *dateIn, ErrorCluster *error)
+EXPORT void mdsplus_tree_setViewDate(const void *lvTreePtr, const char *dateIn, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -686,7 +686,7 @@ DLLEXPORT void mdsplus_tree_setViewDate(const void *lvTreePtr, const char *dateI
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_versionsInModelEnabled(const void *lvTreePtr, LVBoolean *lvVerEnabledOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_versionsInModelEnabled(const void *lvTreePtr, LVBoolean *lvVerEnabledOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	bool verEnabledOut;
@@ -709,7 +709,7 @@ DLLEXPORT void mdsplus_tree_versionsInModelEnabled(const void *lvTreePtr, LVBool
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_versionsInPulseEnabled(const void *lvTreePtr, LVBoolean *lvVerEnabledOut, ErrorCluster *error)
+EXPORT void mdsplus_tree_versionsInPulseEnabled(const void *lvTreePtr, LVBoolean *lvVerEnabledOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	bool verEnabledOut;
@@ -732,7 +732,7 @@ DLLEXPORT void mdsplus_tree_versionsInPulseEnabled(const void *lvTreePtr, LVBool
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_write(const void *lvTreePtr, ErrorCluster *error)
+EXPORT void mdsplus_tree_write(const void *lvTreePtr, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -757,7 +757,7 @@ DLLEXPORT void mdsplus_tree_write(const void *lvTreePtr, ErrorCluster *error)
 												TREENODE
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_treenode_addDevice(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *typeIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_addDevice(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *typeIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -780,7 +780,7 @@ DLLEXPORT void mdsplus_treenode_addDevice(const void *lvTreeNodePtr, void **lvTr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_addNode(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *usageIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_addNode(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const char *nameIn, const char *usageIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -803,7 +803,7 @@ DLLEXPORT void mdsplus_treenode_addNode(const void *lvTreeNodePtr, void **lvTree
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_addTag(const void *lvTreeNodePtr, const char *tagNameIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_addTag(const void *lvTreeNodePtr, const char *tagNameIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -824,7 +824,7 @@ DLLEXPORT void mdsplus_treenode_addTag(const void *lvTreeNodePtr, const char *ta
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_beginSegment(const void *lvTreeNodePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvTimeDataPtrIn, const void *lvArrayPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_beginSegment(const void *lvTreeNodePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvTimeDataPtrIn, const void *lvArrayPtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *startDataPtrIn = NULL;
@@ -853,7 +853,7 @@ DLLEXPORT void mdsplus_treenode_beginSegment(const void *lvTreeNodePtr, const vo
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_beginTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_beginTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *initDataArrayPtrIn = NULL;
@@ -876,7 +876,7 @@ DLLEXPORT void mdsplus_treenode_beginTimestampedSegment(const void *lvTreeNodePt
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_containsVersions(const void *lvTreeNodePtr, LVBoolean *lvContainsVersionsOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_containsVersions(const void *lvTreeNodePtr, LVBoolean *lvContainsVersionsOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -897,7 +897,7 @@ DLLEXPORT void mdsplus_treenode_containsVersions(const void *lvTreeNodePtr, LVBo
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_deleteData(const void *lvTreeNodePtr, ErrorCluster *error)
+EXPORT void mdsplus_treenode_deleteData(const void *lvTreeNodePtr, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -918,7 +918,7 @@ DLLEXPORT void mdsplus_treenode_deleteData(const void *lvTreeNodePtr, ErrorClust
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_doMethod(const void *lvTreeNodePtr, const char *methodIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_doMethod(const void *lvTreeNodePtr, const char *methodIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -939,14 +939,14 @@ DLLEXPORT void mdsplus_treenode_doMethod(const void *lvTreeNodePtr, const char *
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_destructor(void **lvTreeNodePtr)
+EXPORT void mdsplus_treenode_destructor(void **lvTreeNodePtr)
 {
 	TreeNode *treeNodePtr = reinterpret_cast<TreeNode *>(*lvTreeNodePtr);
 	delete treeNodePtr;
 	*lvTreeNodePtr = NULL;
 }
 
-DLLEXPORT void mdsplus_treenode_findTags(const void *lvTreeNodePtr, void **lvStringArrayPtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_findTags(const void *lvTreeNodePtr, void **lvStringArrayPtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	StringArray *stringArrayPtrOut = NULL;
@@ -970,7 +970,7 @@ DLLEXPORT void mdsplus_treenode_findTags(const void *lvTreeNodePtr, void **lvStr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getBrother(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getBrother(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -993,7 +993,7 @@ DLLEXPORT void mdsplus_treenode_getBrother(const void *lvTreeNodePtr, void **lvT
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getChild(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getChild(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -1016,7 +1016,7 @@ DLLEXPORT void mdsplus_treenode_getChild(const void *lvTreeNodePtr, void **lvTre
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getChildren(const void *lvTreeNodePtr, LPtrArrHdl lvPtrArrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getChildren(const void *lvTreeNodePtr, LPtrArrHdl lvPtrArrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode **childrenArrOut;
@@ -1052,7 +1052,7 @@ DLLEXPORT void mdsplus_treenode_getChildren(const void *lvTreeNodePtr, LPtrArrHd
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1084,7 +1084,7 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getCompressedLength(const void *lvTreeNodePtr, int *compressedLengthOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getCompressedLength(const void *lvTreeNodePtr, int *compressedLengthOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1105,7 +1105,7 @@ DLLEXPORT void mdsplus_treenode_getCompressedLength(const void *lvTreeNodePtr, i
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getConglomerateElt(const void *lvTreeNodePtr, int *conglomerateEltOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getConglomerateElt(const void *lvTreeNodePtr, int *conglomerateEltOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1126,7 +1126,7 @@ DLLEXPORT void mdsplus_treenode_getConglomerateElt(const void *lvTreeNodePtr, in
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getConglomerateNodes(const void *lvTreeNodePtr, void **lvTreeNodeArrayPtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getConglomerateNodes(const void *lvTreeNodePtr, void **lvTreeNodeArrayPtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNodeArray *treeNodeArrayPtrOut = NULL;
@@ -1149,7 +1149,7 @@ DLLEXPORT void mdsplus_treenode_getConglomerateNodes(const void *lvTreeNodePtr, 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getDepth(const void *lvTreeNodePtr, int *depthOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getDepth(const void *lvTreeNodePtr, int *depthOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1170,7 +1170,7 @@ DLLEXPORT void mdsplus_treenode_getDepth(const void *lvTreeNodePtr, int *depthOu
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getData(const void *lvTreeNodePtr, void **lvDataPtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getData(const void *lvTreeNodePtr, void **lvDataPtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *dataPtrOut = NULL;
@@ -1193,7 +1193,7 @@ DLLEXPORT void mdsplus_treenode_getData(const void *lvTreeNodePtr, void **lvData
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getDescendants(const void *lvTreeNodePtr, LPtrArrHdl lvPtrArrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getDescendants(const void *lvTreeNodePtr, LPtrArrHdl lvPtrArrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode **descendantsArrOut;
@@ -1229,7 +1229,7 @@ DLLEXPORT void mdsplus_treenode_getDescendants(const void *lvTreeNodePtr, LPtrAr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1262,7 +1262,7 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1295,7 +1295,7 @@ DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getLength(const void *lvTreeNodePtr, int *lengthOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getLength(const void *lvTreeNodePtr, int *lengthOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1316,7 +1316,7 @@ DLLEXPORT void mdsplus_treenode_getLength(const void *lvTreeNodePtr, int *length
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getMember(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getMember(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -1339,7 +1339,7 @@ DLLEXPORT void mdsplus_treenode_getMember(const void *lvTreeNodePtr, void **lvTr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getMembers(const void *lvTreeNodePtr, LPtrArrHdl lvPtrArrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getMembers(const void *lvTreeNodePtr, LPtrArrHdl lvPtrArrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode **membersArrOut;
@@ -1375,7 +1375,7 @@ DLLEXPORT void mdsplus_treenode_getMembers(const void *lvTreeNodePtr, LPtrArrHdl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1410,7 +1410,7 @@ DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle
 
 
 
-DLLEXPORT void mdsplus_treenode_getNid(const void *lvTreeNodePtr, int *nidOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNid(const void *lvTreeNodePtr, int *nidOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1431,7 +1431,7 @@ DLLEXPORT void mdsplus_treenode_getNid(const void *lvTreeNodePtr, int *nidOut, E
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNode(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const char *relPathIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNode(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const char *relPathIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -1454,7 +1454,7 @@ DLLEXPORT void mdsplus_treenode_getNode(const void *lvTreeNodePtr, void **lvTree
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNode_string(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const void *lvStringPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNode_string(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, const void *lvStringPtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	String *stringPtrIn = NULL;
@@ -1479,7 +1479,7 @@ DLLEXPORT void mdsplus_treenode_getNode_string(const void *lvTreeNodePtr, void *
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1512,7 +1512,7 @@ DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNumChildren(const void *lvTreeNodePtr, int *numChildrenOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNumChildren(const void *lvTreeNodePtr, int *numChildrenOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1533,7 +1533,7 @@ DLLEXPORT void mdsplus_treenode_getNumChildren(const void *lvTreeNodePtr, int *n
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNumDescendants(const void *lvTreeNodePtr, int *numDescendantsOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNumDescendants(const void *lvTreeNodePtr, int *numDescendantsOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1554,7 +1554,7 @@ DLLEXPORT void mdsplus_treenode_getNumDescendants(const void *lvTreeNodePtr, int
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNumElts(const void *lvTreeNodePtr, int *numEltsOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNumElts(const void *lvTreeNodePtr, int *numEltsOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1575,7 +1575,7 @@ DLLEXPORT void mdsplus_treenode_getNumElts(const void *lvTreeNodePtr, int *numEl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNumMembers(const void *lvTreeNodePtr, int *numMembersOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNumMembers(const void *lvTreeNodePtr, int *numMembersOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1596,7 +1596,7 @@ DLLEXPORT void mdsplus_treenode_getNumMembers(const void *lvTreeNodePtr, int *nu
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getNumSegments(const void *lvTreeNodePtr, int *numSegmentsOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getNumSegments(const void *lvTreeNodePtr, int *numSegmentsOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1618,7 +1618,7 @@ DLLEXPORT void mdsplus_treenode_getNumSegments(const void *lvTreeNodePtr, int *n
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1651,7 +1651,7 @@ DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, L
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getOwnerId(const void *lvTreeNodePtr, int *ownerIdOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getOwnerId(const void *lvTreeNodePtr, int *ownerIdOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1672,7 +1672,7 @@ DLLEXPORT void mdsplus_treenode_getOwnerId(const void *lvTreeNodePtr, int *owner
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getParent(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getParent(const void *lvTreeNodePtr, void **lvTreeNodePtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
@@ -1695,7 +1695,7 @@ DLLEXPORT void mdsplus_treenode_getParent(const void *lvTreeNodePtr, void **lvTr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	char *strOut = NULL;
@@ -1726,7 +1726,7 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-DLLEXPORT void mdsplus_treenode_getSegment(const void *lvTreeNodePtr, void **lvArrayPtrOut, int segIdxIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getSegment(const void *lvTreeNodePtr, void **lvArrayPtrOut, int segIdxIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrOut = NULL;
@@ -1749,7 +1749,7 @@ DLLEXPORT void mdsplus_treenode_getSegment(const void *lvTreeNodePtr, void **lvA
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int segmentIdxIn, void **lvStartDataPtrOut, void **lvEndDataPtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int segmentIdxIn, void **lvStartDataPtrOut, void **lvEndDataPtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *startDataPtrOut = NULL;
@@ -1774,7 +1774,7 @@ DLLEXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *statusOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *statusOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1795,7 +1795,7 @@ DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *status
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1830,7 +1830,7 @@ DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTreePtrOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTreePtrOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Tree *treePtrOut = NULL;
@@ -1853,7 +1853,7 @@ DLLEXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTree
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
@@ -1878,7 +1878,7 @@ DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle l
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isChild(const void *lvTreeNodePtr, LVBoolean *lvIsChildOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isChild(const void *lvTreeNodePtr, LVBoolean *lvIsChildOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1899,7 +1899,7 @@ DLLEXPORT void mdsplus_treenode_isChild(const void *lvTreeNodePtr, LVBoolean *lv
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isCompressOnPut(const void *lvTreeNodePtr, LVBoolean *lvIsCompressOnPutOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isCompressOnPut(const void *lvTreeNodePtr, LVBoolean *lvIsCompressOnPutOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1920,7 +1920,7 @@ DLLEXPORT void mdsplus_treenode_isCompressOnPut(const void *lvTreeNodePtr, LVBoo
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean *lvIsEssentialOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean *lvIsEssentialOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1942,7 +1942,7 @@ DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIsIncludedInPulseOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIsIncludedInPulseOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1963,7 +1963,7 @@ DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVB
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isMember(const void *lvTreeNodePtr, LVBoolean *lvIsMemberOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isMember(const void *lvTreeNodePtr, LVBoolean *lvIsMemberOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1984,7 +1984,7 @@ DLLEXPORT void mdsplus_treenode_isMember(const void *lvTreeNodePtr, LVBoolean *l
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isNoWriteModel(const void *lvTreeNodePtr, LVBoolean *lvIsNoWriteModelOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isNoWriteModel(const void *lvTreeNodePtr, LVBoolean *lvIsNoWriteModelOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2005,7 +2005,7 @@ DLLEXPORT void mdsplus_treenode_isNoWriteModel(const void *lvTreeNodePtr, LVBool
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isNoWriteShot(const void *lvTreeNodePtr, LVBoolean *lvIsNoWriteShotOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isNoWriteShot(const void *lvTreeNodePtr, LVBoolean *lvIsNoWriteShotOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2026,7 +2026,7 @@ DLLEXPORT void mdsplus_treenode_isNoWriteShot(const void *lvTreeNodePtr, LVBoole
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isOn(const void *lvTreeNodePtr, LVBoolean *lvIsOnOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isOn(const void *lvTreeNodePtr, LVBoolean *lvIsOnOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2047,7 +2047,7 @@ DLLEXPORT void mdsplus_treenode_isOn(const void *lvTreeNodePtr, LVBoolean *lvIsO
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isSetup(const void *lvTreeNodePtr, LVBoolean *lvIsSetupOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isSetup(const void *lvTreeNodePtr, LVBoolean *lvIsSetupOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2068,7 +2068,7 @@ DLLEXPORT void mdsplus_treenode_isSetup(const void *lvTreeNodePtr, LVBoolean *lv
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isWriteOnce(const void *lvTreeNodePtr, LVBoolean *lvIsWriteOnceOut, ErrorCluster *error)
+EXPORT void mdsplus_treenode_isWriteOnce(const void *lvTreeNodePtr, LVBoolean *lvIsWriteOnceOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2089,7 +2089,7 @@ DLLEXPORT void mdsplus_treenode_isWriteOnce(const void *lvTreeNodePtr, LVBoolean
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvTimeDataPtrIn, const void *lvArrayPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvTimeDataPtrIn, const void *lvArrayPtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *startDataPtrIn = NULL;
@@ -2127,7 +2127,7 @@ DLLEXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const voi
 	}	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
@@ -2156,7 +2156,7 @@ DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_move(const void *lvTreeNodePtr, const void *lvTreeNodePtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_move(const void *lvTreeNodePtr, const void *lvTreeNodePtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodeParentPtr = NULL;
@@ -2179,7 +2179,7 @@ DLLEXPORT void mdsplus_treenode_move(const void *lvTreeNodePtr, const void *lvTr
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_move_newName(const void *lvTreeNodePtr, const void *lvTreeNodePtrIn, const char *newNameIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_move_newName(const void *lvTreeNodePtr, const void *lvTreeNodePtrIn, const char *newNameIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	TreeNode *treeNodeParentPtr = NULL;
@@ -2202,7 +2202,7 @@ DLLEXPORT void mdsplus_treenode_move_newName(const void *lvTreeNodePtr, const vo
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *lvDataPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *lvDataPtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *dataPtrIn = NULL;
@@ -2226,7 +2226,7 @@ DLLEXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *l
 }
 
 
-DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lvDataPtrIn, int64_t *timeIn, int sizeIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lvDataPtrIn, int64_t *timeIn, int sizeIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *dataPtrIn = NULL;
@@ -2249,7 +2249,7 @@ DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lv
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_putSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, int ofsIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_putSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, int ofsIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
@@ -2272,7 +2272,7 @@ DLLEXPORT void mdsplus_treenode_putSegment(const void *lvTreeNodePtr, const void
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, const LLngArrHdl lvLngArrHdlIn ,ErrorCluster *error)
+EXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, const LLngArrHdl lvLngArrHdlIn ,ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
@@ -2301,7 +2301,7 @@ DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr,
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_remove(const void *lvTreeNodePtr, const char *nameIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_remove(const void *lvTreeNodePtr, const char *nameIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2322,7 +2322,7 @@ DLLEXPORT void mdsplus_treenode_remove(const void *lvTreeNodePtr, const char *na
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_removeTag(const void *lvTreeNodePtr, const char *tagNameIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_removeTag(const void *lvTreeNodePtr, const char *tagNameIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2343,7 +2343,7 @@ DLLEXPORT void mdsplus_treenode_removeTag(const void *lvTreeNodePtr, const char 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_rename(const void *lvTreeNodePtr, const char *newNameIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_rename(const void *lvTreeNodePtr, const char *newNameIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2364,7 +2364,7 @@ DLLEXPORT void mdsplus_treenode_rename(const void *lvTreeNodePtr, const char *ne
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setCompressOnPut(const void *lvTreeNodePtr, LVBoolean *lvCompressOnPutIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setCompressOnPut(const void *lvTreeNodePtr, LVBoolean *lvCompressOnPutIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2388,7 +2388,7 @@ DLLEXPORT void mdsplus_treenode_setCompressOnPut(const void *lvTreeNodePtr, LVBo
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolean *lvEssentialIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolean *lvEssentialIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2412,7 +2412,7 @@ DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolea
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIncludedInPulseIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIncludedInPulseIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2436,7 +2436,7 @@ DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LV
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setNoWriteModel(const void *lvTreeNodePtr, LVBoolean *lvSetNoWriteModelIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setNoWriteModel(const void *lvTreeNodePtr, LVBoolean *lvSetNoWriteModelIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2460,7 +2460,7 @@ DLLEXPORT void mdsplus_treenode_setNoWriteModel(const void *lvTreeNodePtr, LVBoo
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setNoWriteShot(const void *lvTreeNodePtr, LVBoolean *lvNoWriteShotIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setNoWriteShot(const void *lvTreeNodePtr, LVBoolean *lvNoWriteShotIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2484,7 +2484,7 @@ DLLEXPORT void mdsplus_treenode_setNoWriteShot(const void *lvTreeNodePtr, LVBool
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_teenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOnIn, ErrorCluster *error)
+EXPORT void mdsplus_teenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOnIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2508,7 +2508,7 @@ DLLEXPORT void mdsplus_teenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOnI
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setSubTree(const void *lvTreeNodePtr, LVBoolean *lvSubTreeIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setSubTree(const void *lvTreeNodePtr, LVBoolean *lvSubTreeIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2532,7 +2532,7 @@ DLLEXPORT void mdsplus_treenode_setSubTree(const void *lvTreeNodePtr, LVBoolean 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setTree(const void *lvTreeNodePtr, const void *lvTreePtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setTree(const void *lvTreeNodePtr, const void *lvTreePtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Tree *treePtrIn = NULL;
@@ -2555,7 +2555,7 @@ DLLEXPORT void mdsplus_treenode_setTree(const void *lvTreeNodePtr, const void *l
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setWriteOnce(const void *lvTreeNodePtr, LVBoolean *lvWriteOnceIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_setWriteOnce(const void *lvTreeNodePtr, LVBoolean *lvWriteOnceIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2579,7 +2579,7 @@ DLLEXPORT void mdsplus_treenode_setWriteOnce(const void *lvTreeNodePtr, LVBoolea
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_updateSegment(const void *lvTreeNodePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvTimeDataPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_treenode_updateSegment(const void *lvTreeNodePtr, const void *lvStartDataPtrIn, const void *lvEndDataPtrIn, const void *lvTimeDataPtrIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *startDataPtrIn = NULL;
@@ -2610,81 +2610,81 @@ DLLEXPORT void mdsplus_treenode_updateSegment(const void *lvTreeNodePtr, const v
 												TREENODEARRAY
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_treenodearray_destructor(void **lvTreeNodeArrayPtr)
+EXPORT void mdsplus_treenodearray_destructor(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	delete treeNodeArrayPtr;
 	*lvTreeNodeArrayPtr = NULL;
 }
 
-DLLEXPORT TreeNode *mdsplus_treenodearray_getItem(void **lvTreeNodeArrayPtr, int n)
+EXPORT TreeNode *mdsplus_treenodearray_getItem(void **lvTreeNodeArrayPtr, int n)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return (*treeNodeArrayPtr)[n];
 }
 
-DLLEXPORT Int32Array *mdsplus_treenodearray_getCompressedLength(void **lvTreeNodeArrayPtr)
+EXPORT Int32Array *mdsplus_treenodearray_getCompressedLength(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->getCompressedLength();
 }
 
-DLLEXPORT StringArray *mdsplus_treenodearray_getFullPath(void **lvTreeNodeArrayPtr)
+EXPORT StringArray *mdsplus_treenodearray_getFullPath(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->getFullPath();
 }
 
-DLLEXPORT Int32Array *mdsplus_treenodearray_getLength(void **lvTreeNodeArrayPtr)
+EXPORT Int32Array *mdsplus_treenodearray_getLength(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->getLength();
 }
 
-DLLEXPORT Int32Array *mdsplus_treenodearray_getNid(void **lvTreeNodeArrayPtr)
+EXPORT Int32Array *mdsplus_treenodearray_getNid(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->getNid();
 }
 
-DLLEXPORT StringArray *mdsplus_treenodearray_getPath(void **lvTreeNodeArrayPtr)
+EXPORT StringArray *mdsplus_treenodearray_getPath(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->getPath();
 }
 
-DLLEXPORT StringArray *mdsplus_treenodearray_getUsage(void **lvTreeNodeArrayPtr)
+EXPORT StringArray *mdsplus_treenodearray_getUsage(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->getUsage();
 }
 
-DLLEXPORT Int8Array *mdsplus_treenodearray_isCompressOnPut(void **lvTreeNodeArrayPtr)
+EXPORT Int8Array *mdsplus_treenodearray_isCompressOnPut(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->isCompressOnPut();
 }
-DLLEXPORT Int8Array *mdsplus_treenodearray_isNoWriteModel(void **lvTreeNodeArrayPtr)
+EXPORT Int8Array *mdsplus_treenodearray_isNoWriteModel(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->isNoWriteModel();
 }
-DLLEXPORT Int8Array *mdsplus_treenodearray_isNoWriteShot(void **lvTreeNodeArrayPtr)
+EXPORT Int8Array *mdsplus_treenodearray_isNoWriteShot(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->isNoWriteShot();
 }
-DLLEXPORT Int8Array *mdsplus_treenodearray_isOn(void **lvTreeNodeArrayPtr)
+EXPORT Int8Array *mdsplus_treenodearray_isOn(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->isOn();
 }
-DLLEXPORT Int8Array *mdsplus_treenodearray_isSetup(void **lvTreeNodeArrayPtr)
+EXPORT Int8Array *mdsplus_treenodearray_isSetup(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->isSetup();
 }
-DLLEXPORT Int8Array *mdsplus_treenodearray_isWriteOnce(void **lvTreeNodeArrayPtr)
+EXPORT Int8Array *mdsplus_treenodearray_isWriteOnce(void **lvTreeNodeArrayPtr)
 {
 	TreeNodeArray *treeNodeArrayPtr = reinterpret_cast<TreeNodeArray *>(*lvTreeNodeArrayPtr);
 	return treeNodeArrayPtr->isWriteOnce();
@@ -2698,7 +2698,7 @@ DLLEXPORT Int8Array *mdsplus_treenodearray_isWriteOnce(void **lvTreeNodeArrayPtr
 												TREEPATH
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_treepath_destructor(void **lvTreePathPtr)
+EXPORT void mdsplus_treepath_destructor(void **lvTreePathPtr)
 {
 	TreePath *treePathPtr = reinterpret_cast<TreePath *>(*lvTreePathPtr);
 	deleteData(treePathPtr);
