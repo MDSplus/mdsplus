@@ -311,14 +311,19 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       msg[0] = 0;
       if (nciFlags & NciM_COMPRESSIBLE) {
 	strcat(msg, "compressible");
-	strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS)) ? "," : "\n");
+	strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS | NciM_COMPRESS_SEGMENTS)) ? "," : "\n");
       }
       if (nciFlags & NciM_COMPRESS_ON_PUT) {
 	strcat(msg, "compress on put");
-	strcat(msg, (nciFlags & NciM_DO_NOT_COMPRESS) ? "," : "\n");
+	strcat(msg, (nciFlags & (NciM_DO_NOT_COMPRESS | NciM_COMPRESS_SEGMENTS )) ? "," : "\n");
       }
-      if (nciFlags & NciM_DO_NOT_COMPRESS)
-	strcat(msg, "do not compress\n");
+      if (nciFlags & NciM_DO_NOT_COMPRESS) {
+	strcat(msg, "do not compress");
+	strcat(msg, (nciFlags & NciM_COMPRESS_SEGMENTS ) ? "," : "\n");
+      }
+      if (nciFlags & NciM_COMPRESS_SEGMENTS)
+	strcat(msg, "compress segments\n");
+
       if (strlen(msg) > 0) {
 	tclAppend(output, "      ");
 	tclAppend(output, msg);
