@@ -149,10 +149,10 @@ class TreeNode(_data.Data):
         if name.lower() == 'local_path':
             return self.getLocalPath()
         if name.upper() in nciAttributes:
+            _tree.Tree.lock()
             try:
                 if name.lower() == 'mclass':
                     name='class';
-                _tree.Tree.lock()
                 self.restoreContext()
                 try:
                     ans = _data.Data.execute('getnci($,$)',self,name)
@@ -254,8 +254,8 @@ class TreeNode(_data.Data):
                 switch="/no"
             else:
                 raise TypeError('Argument must be True or False')
+        _tree.Tree.lock()
         try:
-            _tree.Tree.lock()
             self.restoreContext()
             cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
             status = _data.Data.compile(cmd).evaluate()
@@ -405,8 +405,8 @@ class TreeNode(_data.Data):
         @type arg: Data
         @rtype: None
         """
+        _tree.Tree.lock()
         try:
-            _tree.Tree.lock()
             self.restoreContext()
             _mimport('_treeshr',1).TreeDoMethod(self,str(method),arg)
         finally:
@@ -761,8 +761,8 @@ class TreeNode(_data.Data):
         @return: Tag names pointing to this node
         @rtype: ndarray
         """
+        _tree.Tree.lock()
         try:
-            _tree.Tree.lock()
             ans=_mimport('_treeshr',1).TreeFindNodeTags(self)
         finally:
             _tree.Tree.unlock()
@@ -908,10 +908,10 @@ class TreeNode(_data.Data):
         @type data: Data
         @rtype: None
         """
+        _tree.Tree.lock()
         try:
             if isinstance(data,_data.Data) and data.__hasBadTreeReferences__(self.tree):
                 data=data.__fixTreeReferences__(self.tree)
-            _tree.Tree.lock()
             _mimport('_treeshr',1).TreePutRecord(self,data)
         finally:
             _tree.Tree.unlock()
@@ -1062,8 +1062,8 @@ class TreeNode(_data.Data):
         @type flag: bool
         @rtype: None
         """
+        _tree.Tree.lock()
         try:
-            _tree.Tree.lock()
             if flag is True:
                 _mimport('_treeshr',1).TreeTurnOn(self)
             else:
@@ -1292,8 +1292,8 @@ class TreeNodeArray(_data.Data):
     
 
     def __getattr__(self,name):
+        _tree.Tree.lock()
         try:
-            _tree.Tree.lock()
             try:
                 self.restoreContext()
                 ans = _data.Data.execute('getnci($,$)',self.nids,name)
