@@ -844,7 +844,7 @@ void __test_abort(int code, const char *__msg, const char *__file,
     error_code = code;
     switch(code) {
     case 77:
-        custom_pass_msg = strdup("SKIP:");
+        custom_pass_msg = strdup(__msg);
         __mark_point(__msg,__file,__line,__function);
         __test_end();
         break;
