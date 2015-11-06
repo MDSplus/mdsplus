@@ -7,11 +7,7 @@
 
 
 int main(int argc, char *argv[])
-{
-
-    
-    TEST_FORK(0);
-             
+{            
     BEGIN_TESTING(example2 fail 1)
     {        
         printf("Hello\n");    

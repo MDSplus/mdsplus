@@ -175,7 +175,6 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     if( cur_fork_status() == CK_FORK && group_pid)
     {
 #     ifdef HAVE_FORK
-        revertStdout();
         _exit(1);
 #     endif /* HAVE_FORK */
     }
