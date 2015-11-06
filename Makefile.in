@@ -77,7 +77,7 @@ docs:
 
 .PHONY: tests
 tests:
-	$(MAKE) -C testing all build_tests
+	$(MAKE) -C testing all clean_tests build_tests
 
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
