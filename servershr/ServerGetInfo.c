@@ -40,7 +40,7 @@ doing.
 extern int ServerConnect();
 extern int GetAnswerInfoTS();
 
-char *ServerGetInfo(int full, char *server)
+EXPORT char *ServerGetInfo(int full, char *server)
 {
   char *cmd = "MdsServerShr->ServerInfo:dsc()";
   char *ans;

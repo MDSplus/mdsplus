@@ -9,11 +9,6 @@ extern "C" {
 #endif
 
 #include <config.h>
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 #include <mdstypes.h>
 
 #define TreeBLOCKID 0x3ade68b1
@@ -40,168 +35,6 @@ extern int TREE_BLOCKID;
 #endif
 
 
-/******************* Prototypes for TREESHR routines *********************/
-
-#ifdef _MDS_NO_PROTO
-
-  extern EXPORT char *TreeAbsPath();	     /********** Use TreeFree(result) *****/
-  extern EXPORT char *_TreeAbsPath();	     /********** Use TreeFree(result) *****/
-  extern EXPORT int TreeAddConglom();
-  extern EXPORT int _TreeAddConglom();
-/* obsolete */ extern int TreeAddMethodImage();
-  extern EXPORT int TreeAddNode();
-  extern EXPORT int _TreeAddNode();
-  extern EXPORT int TreeAddTag();
-  extern EXPORT int _TreeAddTag();
-  extern EXPORT int TreeCleanDatafile();
-  extern EXPORT int _TreeCleanDatafile();
-/* obsolete */ extern EXPORT int TreeClearMethodImageS();
-  extern EXPORT int TreeClose();
-  extern EXPORT int _TreeClose();
-  extern EXPORT int TreeCompressDatafile();
-  extern EXPORT int _TreeCompressDatafile();
-  extern EXPORT int TreeCreatePulseFile();
-  extern EXPORT int _TreeCreatePulseFile();
-  extern EXPORT int TreeCreateTreeFiles();
-  extern EXPORT void TreeDeleteNodeExecute();
-  extern EXPORT int TreeDeleteNodeGetNid();
-  extern EXPORT int TreeDeleteNodeInitialize();
-  extern EXPORT int TreeDeletePulseFile();
-  extern EXPORT int _TreeDeletePulseFile();
-  extern EXPORT int TreeDoMethod();
-  extern EXPORT int _TreeDoMethod();
-/* obsolete */ extern EXPORT int TreeDoMethodHandler();
-  extern EXPORT int TreeEditing();
-  extern EXPORT int _TreeEditing();
-  extern EXPORT int TreeEndConglomerate();
-  extern EXPORT int _TreeEndConglomerate();
-  extern EXPORT int TreeFindNode();
-  extern EXPORT int _TreeFindNode();
-  extern EXPORT int TreeFindNodeEnd();
-  extern EXPORT int _TreeFindNodeEnd();
-  extern EXPORT char *TreeFindNodeTags(); /********** Use TreeFree(result) *****/
-  extern EXPORT char *_TreeFindNodeTags();/********** Use TreeFree(result) *****/
-  extern EXPORT int TreeFindNodeWild();
-  extern EXPORT int _TreeFindNodeWild();
-  extern EXPORT void TreeFindTagEnd();
-  extern EXPORT char *TreeFindTagWild();
-  extern EXPORT char *_TreeFindTagWild();
-  extern EXPORT int TreeFlushOff();
-  extern EXPORT int TreeFlushReset();
-  extern EXPORT int TreeFree();
-  extern EXPORT void TreeFreeDbid();
-  extern EXPORT int TreeGetDbi();
-  extern EXPORT int _TreeGetDbi();
-  extern EXPORT int TreeGetNci();
-  extern EXPORT int _TreeGetNci();
-  extern EXPORT int TreeGetDefaultNid();
-  extern EXPORT int _TreeGetDefaultNid();
-  extern EXPORT char *TreeGetMinimumPath();/********** Use TreeFree(result) *****/
-  extern EXPORT char *_TreeGetMinimumPath();
-					   /********** Use TreeFree(result) *****/
-  extern EXPORT char *TreeGetPath();
-				   /********** Use TreeFree(result) *****/
-  extern EXPORT char *_TreeGetPath();
-				   /********** Use TreeFree(result) *****/
-  extern EXPORT int TreeGetRecord();
-  extern EXPORT int _TreeGetRecord();
-  extern EXPORT int TreeGetStackSize();
-  extern EXPORT int _TreeGetStackSize();
-  extern EXPORT int TreeIsOn();
-  extern EXPORT int _TreeIsOn();
-  extern EXPORT int TreeIsOpen();
-  extern EXPORT int _TreeIsOpen();
-  extern EXPORT int TreeLink();
-  extern EXPORT int TreeMarkIncludes();
-  extern EXPORT int TreeOpen();
-  extern EXPORT int _TreeOpen();
-  extern EXPORT int TreeOpenEdit();
-  extern EXPORT int _TreeOpenEdit();
-  extern EXPORT int TreeOpenNew();
-  extern EXPORT int _TreeOpenNew();
-  extern EXPORT int TreePutRecord();
-  extern EXPORT int _TreePutRecord();
-  extern EXPORT int TreeQuitTree();
-  extern EXPORT int _TreeQuitTree();
-  extern EXPORT int TreeRemoveNodesTags();
-  extern EXPORT int _TreeRemoveNodesTags();
-  extern EXPORT int TreeRemoveTag();
-  extern EXPORT int _TreeRemoveTag();
-  extern EXPORT int TreeRenameNode();
-  extern EXPORT int _TreeRenameNode();
-  extern EXPORT void TreeRestoreContext();
-  extern EXPORT void _TreeRestoreContext();
-  extern EXPORT int TreeRundownTree();
-  extern EXPORT void *TreeSaveContext();
-  extern EXPORT void *_TreeSaveContext();
-  extern EXPORT int TreeSetNci();
-  extern EXPORT int _TreeSetNci();
-  extern EXPORT int TreeSetDefault();
-  extern EXPORT int _TreeSetDefault();
-  extern EXPORT int TreeSetDefaultNid();
-  extern EXPORT int _TreeSetDefaultNid();
-  extern EXPORT int TreeSetNoSubtree();
-  extern EXPORT int _TreeSetNoSubtree();
-  extern EXPORT int TreeSetStackSize();
-  extern EXPORT int _TreeSetStackSize();
-  extern EXPORT int TreeSetSubtree();
-  extern EXPORT int _TreeSetSubtree();
-  extern EXPORT int TreeSetUsage();
-  extern EXPORT int _TreeSetUsage();
-  extern EXPORT int TreeStartConglomerate();
-  extern EXPORT int _TreeStartConglomerate();
-  extern EXPORT void *TreeSwitchDbid();
-  extern EXPORT int TreeTurnOff();
-  extern EXPORT int _TreeTurnOff();
-  extern EXPORT int TreeTurnOn();
-  extern EXPORT int _TreeTurnOn();
-  extern EXPORT int TreeUsePrivateCtx();
-  extern EXPORT int TreeUsingPrivateCtx();
-  extern EXPORT int TreeVerify();
-  extern EXPORT int _TreeVerify();
-  extern EXPORT int TreeWait();
-  extern EXPORT int TreeWriteTree();
-  extern EXPORT int _TreeWriteTree();
-  extern EXPORT int TreeGetCurrentShotId();
-  extern EXPORT int TreeSetCurrentShotId();
-//Segments
-  extern EXPORT int TreeBeginSegment();
-  extern EXPORT int _TreeBeginSegment();
-  extern EXPORT int TreePutSegment();
-  extern EXPORT int _TreePutSegment();
-  extern EXPORT int TreeUpdateSegment();
-  extern EXPORT int _TreeUpdateSegment();
-  extern EXPORT int TreeBeginTimestampedSegment();
-  extern EXPORT int _TreeBeginTimestampedSegment();
-  extern EXPORT int TreePutTimestampedSegment();
-  extern EXPORT int _TreePutTimestampedSegment();
-  extern EXPORT int TreePutRow();
-  extern EXPORT int _TreePutRow();
-  extern EXPORT int TreeSetTimeContext();
-  extern EXPORT int _TreeSetTimeContext();
-  extern EXPORT int TreeGetNumSegments();
-  extern EXPORT int TreeGetSegmentLimits();
-  extern EXPORT int _TreeGetSegmentLimits();
-  extern EXPORT int TreeGetSegments();
-  extern EXPORT int _TreeGetSegments();
-  extern EXPORT int TreeGetSegment();
-  extern EXPORT int _TreeGetSegment();
-  extern EXPORT int TreeGetSegmentInfo();
-  extern EXPORT int _TreeGetSegmentInfo();
-  extern EXPORT int TreeGetSegmentTimes();
-  extern EXPORT int _TreeGetSegmentTimes();
-
-  extern EXPORT int TreeGetXNci();
-  extern EXPORT int _TreeGetXNci();
-  extern EXPORT int TreeSetXNci();
-  extern EXPORT int _TreeSetXNci();
-  extern EXPORT int TreeSetViewDate();
-  extern EXPORT int _TreeSetViewDate();
-  extern EXPORT int TreeSetCurrentShotId();
-  extern EXPORT int TreeGetCurrentShotId();
-  extern EXPORT int TreeSetDbiItm();
-
-#else
 
   extern EXPORT char *TreeAbsPath(char const *in);	     /********** Use TreeFree(result) *****/
   extern EXPORT char *_TreeAbsPath(void *dbid, char const *in);/********** Use TreeFree(result) *****/
@@ -414,7 +247,6 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout,
 				       struct descriptor_xd *name);
 
-#endif
 
 #ifdef __cplusplus
 }

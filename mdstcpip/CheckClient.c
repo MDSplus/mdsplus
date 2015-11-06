@@ -25,7 +25,7 @@
 static void CompressString(struct descriptor *in, int upcase)
 {
   unsigned short len;
-  static int two = 2;
+  static unsigned short two = 2;
   StrTrim(in, in, &len);
   if (upcase)
     StrUpcase(in, in);
@@ -89,7 +89,8 @@ int CheckClient(char *username, int num, char **matchString)
   char *hostfile = GetHostfile();
   if (strncmp(hostfile, "TDI", 3)) {
     FILE *f = fopen(hostfile, "r");
-    static int zero = 0, one = 1, two = 2;
+    static int zero = 0, one = 1;
+    static unsigned short two = 2;
     if (f) {
       static char line_c[1024];
       static struct descriptor line_d = { 0, DTYPE_T, CLASS_S, line_c };
@@ -100,16 +101,16 @@ int CheckClient(char *username, int num, char **matchString)
 	if (line_c[0] != '#') {
 	  int i;
 	  line_d.length = (unsigned short)(strlen(line_c) - 1);
-	  StrElement(&access_id, &zero, &delimiter, &line_d);
-	  StrElement(&local_user, &one, &delimiter, &line_d);
+	  StrElement(&access_id, &zero, (struct descriptor *)&delimiter, (struct descriptor *)&line_d);
+	  StrElement(&local_user, &one, (struct descriptor *)&delimiter, (struct descriptor *)&line_d);
 	  CompressString(&access_id, 1);
 	  CompressString(&local_user, 0);
 	  if (access_id.length) {
 	    for (i = 0; i < num; i++) {
 	      struct descriptor match_d =
 		  { (unsigned short)strlen(matchString[i]), DTYPE_T, CLASS_S, matchString[i] };
-	      struct descriptor match = { 0, DTYPE_T, CLASS_D, 0 };
-	      StrUpcase(&match, &match_d);
+	      struct descriptor_d match = { 0, DTYPE_T, CLASS_D, 0 };
+	      StrUpcase((struct descriptor *)&match, &match_d);
 	      if (access_id.pointer[0] != '!') {
 		if (match.length == strlen("multi") &&
 		    strncmp(match.pointer, "MULTI", strlen("multi")) == 0 &&
@@ -117,12 +118,12 @@ int CheckClient(char *username, int num, char **matchString)
 		    strncmp(access_id.pointer, "MULTI", strlen("multi")) == 0)
 		  BecomeUser(0, &local_user);
 		else {
-		  if (StrMatchWild(&match, &access_id) & 1)
+		  if (StrMatchWild((struct descriptor *)&match, &access_id) & 1)
 		    ok = GetMulti()? 1 : BecomeUser(username, &local_user);
 		}
 	      } else {
-		StrRight(&access_id, &access_id, &two);
-		if (StrMatchWild(&match, &access_id) & 1)
+		StrRight((struct descriptor *)&access_id, (struct descriptor *)&access_id, &two);
+		if (StrMatchWild((struct descriptor *)&match, &access_id) & 1)
 		  ok = 2;
 	      }
 	      StrFree1Dx(&match);
@@ -140,10 +141,10 @@ int CheckClient(char *username, int num, char **matchString)
     int i;
     int status;
     struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor ans_d = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor_d ans_d = { 0, DTYPE_T, CLASS_D, 0 };
     size_t cmdlen = strlen(hostfile) + 10 + strlen(username);
     char *cmd;
-    static int (*TdiExecute) (struct descriptor * cmd, struct descriptor * ans, void *endarg) = 0;
+    static int (*TdiExecute) (struct descriptor * cmd, struct descriptor_d * ans, void *endarg) = 0;
     if (TdiExecute == 0) {
       DESCRIPTOR(TdiShr, "TdiShr");
       DESCRIPTOR(tdiexec, "TdiExecute");
@@ -167,7 +168,7 @@ int CheckClient(char *username, int num, char **matchString)
       ok = 1;
       if (ans_d.pointer && ans_d.length > 0) {
 	if (GetMulti())
-	  ok = BecomeUser(username, &ans_d);
+	  ok = BecomeUser(username, (struct descriptor *)&ans_d);
 	StrFree1Dx(&ans_d);
       }
     } else

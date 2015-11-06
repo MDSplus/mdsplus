@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <sys/wait.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -40,7 +41,7 @@ struct TUNNEL_PIPES {
 };
 #endif
 
-static struct TUNNEL_PIPES *getTunnelPipes(id)
+static struct TUNNEL_PIPES *getTunnelPipes(int id)
 {
   size_t len;
   char *info_name;

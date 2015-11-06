@@ -6,7 +6,7 @@ DLLEXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut, const c
 	MDSplus::Connection *connectionPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		MDSplus::Connection *connectionPtrOut = new MDSplus::Connection(const_cast<char *>(ipPortIn));
@@ -33,7 +33,7 @@ DLLEXPORT void mdsplus_connection_getData(const void *lvConnectionPtr, void **lv
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
 		MDSplus::Data * dataPtrOut = connectionPtr->get((char *)expressionIn);
@@ -52,7 +52,7 @@ DLLEXPORT void mdsplus_connection_putData(const void *lvConnectionPtr, const voi
 	MDSplus::Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
@@ -74,7 +74,7 @@ DLLEXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const ch
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
 		connectionPtr->openTree((char *)tree, shot);
@@ -91,7 +91,7 @@ DLLEXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,  ErrorC
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
 		connectionPtr->closeAllTrees();

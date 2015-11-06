@@ -82,6 +82,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <config.h>
 
 static Complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N,
 			      double *gain);
@@ -93,17 +94,17 @@ Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *o
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindButtwPoles);
 }
 
-Filter *ButtwBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
+EXPORT Filter *ButtwBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
 {
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindButtwPoles);
 }
 
-Filter *ChebInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
+EXPORT Filter *ChebInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
 {
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
-Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
+EXPORT Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n)
 {
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
@@ -217,3 +218,4 @@ static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double
   *gain = 1 / (1 - eps);
   return poles;
 }
+

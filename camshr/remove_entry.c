@@ -31,6 +31,7 @@
 #include "module.h"
 #include "crate.h"
 #include "prototypes.h"
+#include "cts_p.h"
 
 //-------------------------------------------------------------------------
 // remove_entry()

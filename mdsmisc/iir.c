@@ -59,8 +59,9 @@ which actually perform digital filtering.
 #include <stdio.h>
 #include "complex.h"
 #include "filter.h"
+#include <config.h>
 
-Complex *FindFactors(Complex * poles, double fc, int n, double gain)
+EXPORT Complex *FindFactors(Complex * poles, double fc, int n, double gain)
 {
   int i, j;
   double currA;
@@ -103,7 +104,7 @@ Complex *FindFactors(Complex * poles, double fc, int n, double gain)
   return Ak;
 }
 
-Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n,
+EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n,
 		  Complex * (*FindPoles) ())
 {
   Complex *poles, *Ak, cplx1, cplx2;
@@ -199,7 +200,7 @@ Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *ou
   return filter;
 }
 
-Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n,
+EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n,
 		 Complex * (*FindPoles) ())
 {
   Complex *poles, *Ak, cplx;

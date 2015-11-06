@@ -3,6 +3,7 @@
 
 #include <dcl.h>
 #include <mdsshr.h>
+#include <mdsdcl_messages.h>
 
 /**********************************************************************
 * TCL_WFEVENT.C --
@@ -19,7 +20,7 @@
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
-int TclWfevent(void *ctx, char **error, char **output)
+EXPORT int TclWfevent(void *ctx, char **error, char **output)
 {
   char *event = 0;
   char *timeout = 0;

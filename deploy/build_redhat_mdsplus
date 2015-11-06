@@ -13,6 +13,7 @@ mkdir -p /buildroot
 #
 # In the source directory build and install both 64-bit and 32-bit applications.
 #
+export CFLAGS="-Wl,--no-undefined"
 cd /buildsrc
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \

@@ -3,7 +3,7 @@
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #define MAXEXPR 16384
-extern int TdiExecute();
+#include <tdishr.h>
 
 static void tdiputs(char *line);
 int main(int argc, char **argv)
@@ -33,14 +33,14 @@ int main(int argc, char **argv)
     struct descriptor out_d = { 0, DTYPE_T, CLASS_S, 0 };
     out_d.length = (unsigned short)strlen(argv[2]);
     out_d.pointer = argv[2];
-    TdiExecute(&out_unit_other, &out_d, &output_unit MDS_END_ARG);
+    TdiExecute((struct descriptor *)&out_unit_other, &out_d, &output_unit MDS_END_ARG);
   } else
-    TdiExecute(&out_unit_stdout, &output_unit MDS_END_ARG);
+    TdiExecute((struct descriptor *)&out_unit_stdout, &output_unit MDS_END_ARG);
   while (fgets(line_in, MAXEXPR, in) != NULL) {
     int comment = line_in[0] == '!';
     int len = strlen(line_in);
     if (!comment) {
-      TdiExecute(&reset_output_unit, &output_unit, &ans MDS_END_ARG);
+      TdiExecute((struct descriptor *)&reset_output_unit, &output_unit, &ans MDS_END_ARG);
       tdiputs(line_in);
     }
     while (line_in[len - 2] == '\\') {
@@ -64,11 +64,11 @@ int main(int argc, char **argv)
       expr[expr_dsc.length++] = ')';
       expr[expr_dsc.length++] = ')';
 */
-      status = TdiExecute(&expr_dsc, &ans MDS_END_ARG);
+      status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
       if (status & 1)
-	TdiExecute(&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
+	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       else
-	TdiExecute(&error_out, &output_unit, &ans MDS_END_ARG);
+	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
     }
   }
   return 1;
@@ -83,5 +83,5 @@ static void tdiputs(char *line)
   line_d.pointer = line;
   if (line[line_d.length - 1] == '\n')
     line_d.length--;
-  TdiExecute(&write_it, &line_d, &ans MDS_END_ARG);
+  TdiExecute((struct descriptor *)&write_it, &line_d, &ans MDS_END_ARG);
 }

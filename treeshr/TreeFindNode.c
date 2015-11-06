@@ -25,32 +25,32 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
 STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nidin);
 STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one);
 
-int TreeFindNode(char const *path, int *outnid)
+EXPORT int TreeFindNode(char const *path, int *outnid)
 {
   return _TreeFindNode(*TreeCtx(), path, outnid);
 }
 
-int TreeFindNodeWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+EXPORT int TreeFindNodeWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   return _TreeFindNodeWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask);
 }
 
-int TreeFindNodeEnd(void **ctx_in)
+EXPORT int TreeFindNodeEnd(void **ctx_in)
 {
   return _TreeFindNodeEnd(*TreeCtx(), ctx_in);
 }
 
-char *TreeFindNodeTags(int nid_in, void **ctx_ptr)
+EXPORT char *TreeFindNodeTags(int nid_in, void **ctx_ptr)
 {
   return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr);
 }
 
-char *TreeAbsPath(char const *inpath)
+EXPORT char *TreeAbsPath(char const *inpath)
 {
   return _TreeAbsPath(*TreeCtx(), inpath);
 }
 
-int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
+EXPORT int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) * TreeCtx();
   NODE *nodeptr;
@@ -80,7 +80,7 @@ int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
 ( (ctx[ctx->level+1].type != EOL) || \
   ((1<<((node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : node->usage)) & usage_mask) )
 
-int _TreeFindNode(void *dbid, char const *path, int *outnid)
+EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) outnid;
@@ -114,7 +114,7 @@ int _TreeFindNode(void *dbid, char const *path, int *outnid)
   return status;
 }
 
-int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) nid_out;
@@ -806,7 +806,7 @@ STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT * ctx, char **tree, int *treelen,
   return;
 }
 
-int _TreeFindNodeEnd(void *dbid, void **ctx_in)
+EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx_in)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   SEARCH_CONTEXT *ctx = (SEARCH_CONTEXT *) * ctx_in;
@@ -833,7 +833,7 @@ int _TreeFindNodeEnd(void *dbid, void **ctx_in)
   return status;
 }
 
-int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
+EXPORT int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
 {
   int status;
   char *tagname = TreeFindNodeTags(nid_in, ctx_ptr);
@@ -848,7 +848,7 @@ int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
   return status;
 }
 
-char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
+EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) & nid_in;
@@ -908,7 +908,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
   return answer;
 }
 
-char *_TreeAbsPath(void *dbid, char const *inpath)
+EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int nid;
@@ -1007,7 +1007,7 @@ struct tag_search {
   TREE_INFO *info;
 };
 
-int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
+EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
 		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx)
 {
   int len = min(taglen, (short)sizeof(TAG_NAME));
@@ -1124,7 +1124,7 @@ STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
   return strncmp((char *)tsearch->tag, (char *)tag, sizeof(TAG_NAME));
 }
 
-int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr, char **namedsc_ptr,
+EXPORT int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr, char **namedsc_ptr,
 		   SEARCH_TYPE * type_ptr)
 {
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
@@ -1178,7 +1178,7 @@ int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr, 
   return status;
 }
 
-int TreeAbsPathDsc(char *inpath, struct descriptor *outpath)
+EXPORT int TreeAbsPathDsc(char *inpath, struct descriptor *outpath)
 {
   char *ans_c = TreeAbsPath(inpath);
   if (ans_c == 0)

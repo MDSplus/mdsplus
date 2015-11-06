@@ -132,7 +132,7 @@ void TdiDecompileDeindent(struct descriptor_d *pout)
 STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout)
 {
   newline.length = (unsigned short)(((TdiIndent += step) < 8 ? TdiIndent : 8) + 1);
-  return StrAppend(pout, &newline);
+  return StrAppend(pout, (struct descriptor *)&newline);
 }
 
 STATIC_ROUTINE int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout)
@@ -302,7 +302,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	  break;
 	r_ptr = (struct descriptor_r *)pin->dscptrs[0];
 	if (r_ptr->dtype == DTYPE_T)
-	  status = StrAppend(pout, r_ptr);
+	  status = StrAppend(pout, (struct descriptor *)r_ptr);
 	else
 	  status = Tdi0Decompile(r_ptr, P_SUBS, pout);
 	if (status & 1)
@@ -324,7 +324,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	r_ptr = (struct descriptor_r *)pin->dscptrs[0];
 	if (status & 1) {
 	  if (r_ptr->dtype == DTYPE_T)
-	    status = StrAppend(pout, r_ptr);
+	    status = StrAppend(pout, (struct descriptor *)r_ptr);
 	  else
 	    status = Tdi0Decompile(r_ptr, P_SUBS, pout);
 	}

@@ -5,10 +5,9 @@
 #include <string.h>
 #include <mdsshr.h>
 #include <stdlib.h>
-#include <../tdishr/opcopcodes.h>
+#include <mdstypes.h>
+#include <tdishr.h>
 #define MAX_LIMIT 1E10
-extern int TdiData();
-extern int TdiCompile();
 
 static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution);
 
@@ -422,7 +421,7 @@ static int recIsSegmented(struct descriptor *dsc)
 }
 	
 //Check if the passed expression contains at least one segmented node
-int IsSegmented(char *expr)
+EXPORT int IsSegmented(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
@@ -435,7 +434,7 @@ int IsSegmented(char *expr)
     return isSegmented;
 }
     
-int TestGetHelp(char *expr)
+EXPORT int TestGetHelp(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
@@ -450,7 +449,7 @@ int TestGetHelp(char *expr)
     return 1;
 }
     
-int TestGetUnits(char *expr)
+EXPORT int TestGetUnits(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
@@ -467,7 +466,7 @@ int TestGetUnits(char *expr)
     
 
 
-struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -518,7 +517,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
     	title = recGetHelp(xd.pointer);
 	yLabel = recGetUnits(xd.pointer, 0);
 //get Data
-	status = TdiData(&xd, &yXd MDS_END_ARG);
+	status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
@@ -536,7 +535,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
 //Get xLabel, if any
 	xLabel = recGetUnits(xd.pointer, 1);
 //get Data
-	status = TdiData(&xd, &xXd MDS_END_ARG);
+	status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
@@ -764,7 +763,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
 }
 
 
-struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -815,7 +814,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin
     	title = recGetHelp(xd.pointer);
 	yLabel = recGetUnits(xd.pointer, 0);
 //get Data
-	status = TdiData(&xd, &yXd MDS_END_ARG);
+	status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
@@ -833,7 +832,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin
 //Get xLabel, if any
 	xLabel = recGetUnits(xd.pointer, 1);
 //get Data
-	status = TdiData(&xd, &xXd MDS_END_ARG);
+	status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
@@ -1062,7 +1061,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin
 
 
 
-struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -1112,7 +1111,7 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
 //Get Y
     status = TdiCompile(&yExpr, &xd MDS_END_ARG);
     if(status & 1)
-	status = TdiData(&xd, &yXd MDS_END_ARG);
+      status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
@@ -1127,7 +1126,7 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
     free(xExpr.pointer);
     if(status & 1)
-	status = TdiData(&xd, &xXd MDS_END_ARG);
+      status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
@@ -1275,7 +1274,7 @@ static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints,
 
 
 
-struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -1318,7 +1317,7 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t
 //Get Y
     status = TdiCompile(&yExpr, &xd MDS_END_ARG);
     if(status & 1)
-	status = TdiData(&xd, &yXd MDS_END_ARG);
+      status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
@@ -1333,7 +1332,7 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
     free(xExpr.pointer);
     if(status & 1)
-	status = TdiData(&xd, &xXd MDS_END_ARG);
+      status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {

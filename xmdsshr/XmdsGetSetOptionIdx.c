@@ -35,6 +35,7 @@ int XmdsGetOptionIdx(Widget w);
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
+#include <config.h>
 void XmdsSetOptionIdx(Widget w, int idx);
 int XmdsGetOptionIdx(Widget w);
 /*------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ int XmdsGetOptionIdx(Widget w);
 
  Executable:                                                                  */
 
-void XmdsSetOptionIdx(Widget w, int idx)
+EXPORT void XmdsSetOptionIdx(Widget w, int idx)
 {
   static Widget pulldown;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, NULL);
@@ -75,7 +76,7 @@ void XmdsSetOptionIdx(Widget w, int idx)
   }
 }
 
-int XmdsGetOptionIdx(Widget w)
+EXPORT int XmdsGetOptionIdx(Widget w)
 {
   int idx = -1;
   static Widget pulldown;

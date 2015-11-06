@@ -124,7 +124,7 @@
   InputSetNid, InputReset, and InputPut to attach to
   the nids of a particular channel.
 ****************************************************/
-Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount)
+EXPORT Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount)
 {
   Widget widg;
   static char *hierarchy_name[] = { "XmdsInput.uid" };
@@ -136,7 +136,7 @@ Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount)
   return widg;
 }
 
-void XmdsInputSetNid(Widget w, int nid)
+EXPORT void XmdsInputSetNid(Widget w, int nid)
 {
   WidgetList children;
   XtPointer user_data;
@@ -152,7 +152,7 @@ void XmdsInputSetNid(Widget w, int nid)
   XtVaSetValues(children[IDX_TIME], XmNuserData, user_data, NULL);
 }
 
-void XmdsInputReset(Widget w)
+EXPORT void XmdsInputReset(Widget w)
 {
   WidgetList children;
   XtPointer userdata;
@@ -176,7 +176,7 @@ void XmdsInputReset(Widget w)
   XmStringFree(label);
 }
 
-void XmdsInputPut(Widget w)
+EXPORT void XmdsInputPut(Widget w)
 {
   WidgetList children;
   XtPointer userdata;

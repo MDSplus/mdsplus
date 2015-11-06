@@ -14,7 +14,7 @@ DLLEXPORT void mdsplus_tree_addDevice(const void *lvTreePtr, void **lvTreeNodePt
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treeNodePtrOut = treePtr->addDevice(const_cast<char *>(nameIn), const_cast<char *>(typeIn));
@@ -34,7 +34,7 @@ DLLEXPORT void mdsplus_tree_addNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treeNodePtrOut = treePtr->addNode(const_cast<char *>(nameIn), const_cast<char *>(usageIn));
@@ -53,7 +53,7 @@ DLLEXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn,
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		treePtrOut = new Tree(const_cast<char *>(nameIn), shotIn);
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
@@ -72,7 +72,7 @@ DLLEXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *na
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		treePtrOut = new Tree(const_cast<char *>(nameIn), shotIn, const_cast<char *>(modeIn));
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
@@ -91,7 +91,9 @@ DLLEXPORT void mdsplus_tree_createPulse(const void *lvTreePtr, int shotIn, Error
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
+
 	char const * errorMessage = "";
+
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -112,6 +114,7 @@ DLLEXPORT void mdsplus_tree_deletePulse(const void *lvTreePtr, int shotIn, Error
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
+
 	char const * errorMessage = "";
 	try
 	{
@@ -140,6 +143,7 @@ DLLEXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error)
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
+
 	char const * errorMessage = "";
 	try
 	{
@@ -291,7 +295,7 @@ DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeO
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	*lvhasNodeOut = LVBooleanTrue;
 	try
 	{
@@ -1039,7 +1043,7 @@ DLLEXPORT void mdsplus_treenode_getChildren(const void *lvTreeNodePtr, LPtrArrHd
 			(*lvPtrArrHdlOut)->dimSize = static_cast<int32>(childrenArrLen);
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(reinterpret_cast<Data **>(childrenArrOut));
 	}
 	catch (const MdsException &mdsE)
@@ -1071,7 +1075,7 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		//deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1216,7 +1220,7 @@ DLLEXPORT void mdsplus_treenode_getDescendants(const void *lvTreeNodePtr, LPtrAr
 			(*lvPtrArrHdlOut)->dimSize = static_cast<int32>(descendantsArrLen);
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(reinterpret_cast<Data **>(descendantsArrOut));
 	}
 	catch (const MdsException &mdsE)
@@ -1249,7 +1253,7 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		//deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1282,7 +1286,7 @@ DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandl
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1362,7 +1366,7 @@ DLLEXPORT void mdsplus_treenode_getMembers(const void *lvTreeNodePtr, LPtrArrHdl
 			(*lvPtrArrHdlOut)->dimSize = static_cast<int32>(membersArrLen);
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(reinterpret_cast<Data **>(membersArrOut));
 	}
 	catch (const MdsException &mdsE)
@@ -1395,7 +1399,7 @@ DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1499,7 +1503,7 @@ DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandl
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1638,7 +1642,7 @@ DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, L
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1714,7 +1718,7 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
@@ -1857,7 +1861,7 @@ DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle l
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		TreeNode * treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		char const * strOut = treeNodePtr->getUsage();
@@ -1868,7 +1872,7 @@ DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle l
 			MoveBlock(strOut, LStrBuf(*lvStrHdlOut), strOutLen);
 			(*lvStrHdlOut)->cnt = strOutLen;
 		} else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 	} catch (const MdsException &e) {
 		errorCode = bogusError;
 		errorMessage = e.what();

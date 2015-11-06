@@ -32,6 +32,7 @@
 #include "common.h"
 #include "module.h"
 #include "prototypes.h"
+#include "cts_p.h"
 
 //-------------------------------------------------------------------------
 // lookup_entry()
