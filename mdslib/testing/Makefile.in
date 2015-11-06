@@ -94,7 +94,8 @@ subdir = mdslib/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/testing.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -106,6 +107,8 @@ am__EXEEXT_1 = dtype_test$(EXEEXT)
 dtype_test_SOURCES = dtype_test.c
 dtype_test_OBJECTS = dtype_test.$(OBJEXT)
 dtype_test_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+dtype_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -380,8 +383,6 @@ CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CHECK_CFLAGS = @CHECK_CFLAGS@
-CHECK_LIBS = @CHECK_LIBS@
 CLOCK_GETTIME_LIB = @CLOCK_GETTIME_LIB@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -442,6 +443,10 @@ GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
+HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
+HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
+HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
@@ -477,6 +482,7 @@ LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
+LIBRT = @LIBRT@
 LIBS = @LIBS@
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
@@ -549,6 +555,8 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 THREAD = @THREAD@
+TS_LOG_COMPILER = @TS_LOG_COMPILER@
+TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
@@ -629,8 +637,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-PY_LOG_COMPILER = python
+TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+PY_LOG_COMPILER = $(PYTHON)
 PY_LOG_FLAGS = -v
 
 # not used #
@@ -646,16 +654,19 @@ _tap_py_execute = \
  tr.set_stream(1); \
  tr.run(tests); 
 
+TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
+LOG_COMPILER = @TS_LOG_COMPILER@
+# LOG_DRIVER      = @TS_LOG_DRIVER@
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = :
+@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
 @PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
 @PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS) 
-AM_LIBS = @LIBS@ -lMdsLib -lMdsShr -lTreeShr
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+LDADD = $(TEST_LIBS) @LIBS@ -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
@@ -673,10 +684,12 @@ AM_TESTS_ENVIRONMENT = \
 # may rise false positives in valgrind memory check so they may be usefull to
 # generate suppressions codes.
 #
-@USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
-@USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-@USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
+#if USE_VALGRIND
+#LOG_COMPILER = valgrind
+#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+#               --dsymutil=yes --leak-check=yes
+#endif
 
 #
 # Files produced by tests that must be purged
@@ -1136,7 +1149,7 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
 #prova:
 #	echo $(TEST_LOGS);
@@ -1150,14 +1163,15 @@ log: $(TEST_SUITE_LOG)
 tests:
 	echo "Making tests ... "
 	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) log;
+	 $(MAKE) $(AM_MAKEFLAGS) tap;
 	else
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
 
 	echo "TAP version 13" > $@;
 	count=0;

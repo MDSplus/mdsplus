@@ -1,13 +1,14 @@
 SUBDIRS = testutils .
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 include ../../../testing/testing.am
 
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
+AM_LIBS = -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
 
-AM_LIBS = @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
+LDADD = $(TEST_LIBS) @LIBS@ $(AM_LIBS)
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
@@ -47,14 +48,8 @@ TESTS = \
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
-
-
-
-AM_TESTS_ENVIRONMENT = \
-      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
       
-LDADD = testutils/libMdsTestUtils.a
-
+LDADD += testutils/libMdsTestUtils.a
 
 
 #
@@ -67,15 +62,22 @@ LDADD = testutils/libMdsTestUtils.a
 # generate suppressions codes.
 #
 
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --suppressions=valgrind-stdlib.supp      \
-               --suppressions=valgrind-dlerr.supp       \
-               --suppressions=valgrind-connection.supp  \
-               --suppressions=valgrind-treenode.supp    \
-               --dsymutil=yes --leak-check=yes
-endif
+#if USE_VALGRIND
+#LOG_COMPILER = valgrind
+#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+#               --suppressions=valgrind-stdlib.supp      \
+#               --suppressions=valgrind-dlerr.supp       \
+#               --suppressions=valgrind-connection.supp  \
+#               --suppressions=valgrind-treenode.supp    \
+#               --dsymutil=yes --leak-check=yes
+#endif
+
+TS_VALGRIND_FLAGS = \
+               --suppressions=${srcdir}/valgrind-stdlib.supp      \
+               --suppressions=${srcdir}/valgrind-dlerr.supp       \
+               --suppressions=${srcdir}/valgrind-connection.supp  \
+               --suppressions=${srcdir}/valgrind-treenode.supp 
+
 
 
 #

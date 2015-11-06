@@ -1,6 +1,9 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ DEF=mdsmisc.def
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/mdsmisc.def
 
 CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ 

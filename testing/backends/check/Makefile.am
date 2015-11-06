@@ -1,8 +1,6 @@
-SUBDIRS = .
+include @top_builddir@/Makefile.inc
 
-include ${top_srcdir}/Makefile.inc
-
-LIBS = -L@MAKESHLIBDIR@ @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD) @LIBDL@
+LIBS = -L@MAKESHLIBDIR@ @LIBS@ @LIBM@ @SOCKETLIB@ @LIBDL@
 
 AM_CFLAGS = $(TARGET_ARCH)
 AM_CXXFLAGS = $(TARGET_ARCH)

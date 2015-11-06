@@ -72,6 +72,7 @@ public:
 int main(int argc, char *argv[])
 {
     BEGIN_TESTING(Event);
+#   ifndef _WIN32
     
     setenv("UDP_EVENTS","yes",1);
     
@@ -119,6 +120,7 @@ int main(int argc, char *argv[])
         }
     }    
     
+#   endif
     END_TESTING;
 }
 

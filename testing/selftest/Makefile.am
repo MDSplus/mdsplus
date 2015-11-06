@@ -1,11 +1,11 @@
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 include ../../testing/testing.am
 
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
-
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+LDADD = $(TEST_LIBS)
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
@@ -15,12 +15,20 @@ TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
 
-#          example  
-
 C_TESTS = \
+          test_options \
           example2 \
           example3 \
-          example4
+          example4 \
+          example_assert \
+          skip_test \
+          error_test \
+          fork_success \
+          fork_fail \
+          timeout_success \
+          timeout_fail
+          
+#          example 
           
 PY_TESTS = \
            pyex1.py
@@ -30,36 +38,22 @@ PL_TESTS =
 
 TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
 
-
-AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
+# $(eval $(call ${srcdir}/prova.sh))
 
 
 bin_PROGRAMS = example3
 example3_SOURCES = example3.cpp
 
-
-#
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --dsymutil=yes --leak-check=yes
-
-endif
+bin_PROGRAMS += example_assert
+example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
 
 
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = *.out
+MOSTLYCLEANFILES = \
+                   *.out \
+                   libMdsTestDummy.so
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -67,7 +61,23 @@ MOSTLYCLEANFILES = *.out
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 
-all-local: $(TESTS)
+libMdsTestDummy.so: mdstestdummy.cpp
+	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
+
+print:
+	@echo "--------------------------------------------------------------";
+	@echo "host = ${host}";
+	@echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
+	@echo "LOG_COMPILER = ${LOG_COMPILER}";
+	@echo "LOG_DRIVER   = ${LOG_DRIVER}";
+	@echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
+	@echo "--------------------------------------------------------------";
+
+console:
+	$(shell ${TESTS_ENVIRONMENT} wineconsole )
+
+
+all-local: $(TESTS) libMdsTestDummy.so
 clean-local: clean-local-tests                    
 
 check_PROGRAMS = $(C_TESTS)

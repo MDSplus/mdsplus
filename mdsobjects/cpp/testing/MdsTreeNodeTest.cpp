@@ -77,15 +77,25 @@ void print_segment_info(TreeNode *node, int segment = -1)
 } // testing
 
 
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 
 int main(int argc, char *argv[])
 {
     BEGIN_TESTING(TreeNode);
     
+    
+#ifdef _WIN32    
+    _putenv_s("test_tree_path",".");
+    _putenv_s("test_tree2_path",".");
+#else
     setenv("test_tree_path",".",1);
     setenv("test_tree2_path",".",1);
+#endif    
+    
+    
     unique_ptr<Tree> tree = new Tree("test_tree",-1,"NEW");
     unique_ptr<Tree> tree2 = new Tree("test_tree2",-1,"NEW");
     
@@ -815,10 +825,48 @@ int main(int argc, char *argv[])
         n1->addDevice("device","DIO2");                
         
     }
-    
-    
-    
+           
     END_TESTING;            
+
+    BEGIN_TESTING(TreeNode-Tree reference);
+
+#   ifdef _WIN32    
+    _putenv_s("test_node_path",".");
+#   else    
+    setenv("test_node_path",".",1);
+#   endif
+
+    Tree *tree = new Tree("test_node", -1, "NEW");
+    TreeNode *n = tree->addNode(":DATA", "NUMERIC");
+    delete n;
+    tree->write();
+    delete tree;
+    tree = new Tree("test_node", -1);
+    tree->createPulse(1);
+    tree->createPulse(2);
+    delete tree;
+    tree = new Tree("test_node", 1);
+    Tree *tree1 = new Tree("test_node", 2);
+    n = tree->getNode(":DATA");
+    Data *d = new Int32(1);
+    Data *d1 = new Int32(2);
+    n->putData(d);
+    TreeNode *n1 = tree1->getNode(":DATA");
+    n1->putData(d1);
+    deleteData(d);
+    deleteData(d1);
+    d = n->getData();
+    d1 = n1->getData();
+    TEST1(d->getInt() == 1);
+    TEST1(d1->getInt() == 2);
+    deleteData(d);
+    deleteData(d1);
+    delete n;
+    delete n1;
+    delete tree;
+    delete tree1;    
+    END_TESTING;
+    
 }
 
 

@@ -1,6 +1,9 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ DEF=MdsMath.def
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/MdsMath.def
 
 SOURCES = \
 	caxpy.f \

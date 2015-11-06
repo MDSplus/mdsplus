@@ -6,7 +6,25 @@
 int main(int argc, char *argv[])
 {
     TEST_FORK(0);
-    BEGIN_TESTING(example4) 
+    BEGIN_TESTING(no fork success) 
+    {           
+        printf("Hello successfull test\n");    
+        int success = 1;
+        TEST1(success == 1);
+    }
+    END_TESTING;    
+    
+    TEST_FORK(1);
+    BEGIN_TESTING(yes fork fail) 
+    {           
+        printf("Hello successfull test\n");    
+        int success = 0;
+        TEST1(success == 1);
+    }
+    END_TESTING;    
+    
+    TEST_FORK(0);
+    BEGIN_TESTING(no fork success) 
     {           
         printf("Hello successfull test\n");    
         int success = 1;
@@ -14,4 +32,5 @@ int main(int argc, char *argv[])
     }
     END_TESTING;    
 }
+
 

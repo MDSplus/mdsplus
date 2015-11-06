@@ -90,13 +90,14 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 TESTS = $(am__EXEEXT_1) $(PY_TESTS) $(am__EXEEXT_2)
-bin_PROGRAMS = example3$(EXEEXT)
+bin_PROGRAMS = example3$(EXEEXT) example_assert$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = testing/selftest
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/testing.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -105,17 +106,57 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
-am__EXEEXT_1 = example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT)
+am__EXEEXT_1 = test_options$(EXEEXT) example2$(EXEEXT) \
+	example3$(EXEEXT) example4$(EXEEXT) example_assert$(EXEEXT) \
+	skip_test$(EXEEXT) error_test$(EXEEXT) fork_success$(EXEEXT) \
+	fork_fail$(EXEEXT) timeout_success$(EXEEXT) \
+	timeout_fail$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
+error_test_SOURCES = error_test.c
+error_test_OBJECTS = error_test.$(OBJEXT)
+error_test_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+error_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 example2_SOURCES = example2.c
 example2_OBJECTS = example2.$(OBJEXT)
 example2_LDADD = $(LDADD)
+example2_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_example3_OBJECTS = example3.$(OBJEXT)
 example3_OBJECTS = $(am_example3_OBJECTS)
 example3_LDADD = $(LDADD)
+example3_DEPENDENCIES = $(am__DEPENDENCIES_1)
 example4_SOURCES = example4.c
 example4_OBJECTS = example4.$(OBJEXT)
 example4_LDADD = $(LDADD)
+example4_DEPENDENCIES = $(am__DEPENDENCIES_1)
+example_assert_SOURCES = example_assert.c
+example_assert_OBJECTS = example_assert.$(OBJEXT)
+example_assert_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(builddir)/libMdsTestDummy.so
+fork_fail_SOURCES = fork_fail.c
+fork_fail_OBJECTS = fork_fail.$(OBJEXT)
+fork_fail_LDADD = $(LDADD)
+fork_fail_DEPENDENCIES = $(am__DEPENDENCIES_1)
+fork_success_SOURCES = fork_success.c
+fork_success_OBJECTS = fork_success.$(OBJEXT)
+fork_success_LDADD = $(LDADD)
+fork_success_DEPENDENCIES = $(am__DEPENDENCIES_1)
+skip_test_SOURCES = skip_test.c
+skip_test_OBJECTS = skip_test.$(OBJEXT)
+skip_test_LDADD = $(LDADD)
+skip_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+test_options_SOURCES = test_options.c
+test_options_OBJECTS = test_options.$(OBJEXT)
+test_options_LDADD = $(LDADD)
+test_options_DEPENDENCIES = $(am__DEPENDENCIES_1)
+timeout_fail_SOURCES = timeout_fail.c
+timeout_fail_OBJECTS = timeout_fail.$(OBJEXT)
+timeout_fail_LDADD = $(LDADD)
+timeout_fail_DEPENDENCIES = $(am__DEPENDENCIES_1)
+timeout_success_SOURCES = timeout_success.c
+timeout_success_OBJECTS = timeout_success.$(OBJEXT)
+timeout_success_LDADD = $(LDADD)
+timeout_success_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -157,8 +198,12 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = example2.c $(example3_SOURCES) example4.c
-DIST_SOURCES = example2.c $(example3_SOURCES) example4.c
+SOURCES = error_test.c example2.c $(example3_SOURCES) example4.c \
+	example_assert.c fork_fail.c fork_success.c skip_test.c \
+	test_options.c timeout_fail.c timeout_success.c
+DIST_SOURCES = error_test.c example2.c $(example3_SOURCES) example4.c \
+	example_assert.c fork_fail.c fork_success.c skip_test.c \
+	test_options.c timeout_fail.c timeout_success.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -404,8 +449,6 @@ CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CHECK_CFLAGS = @CHECK_CFLAGS@
-CHECK_LIBS = @CHECK_LIBS@
 CLOCK_GETTIME_LIB = @CLOCK_GETTIME_LIB@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -466,6 +509,10 @@ GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
+HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
+HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
+HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
@@ -501,6 +548,7 @@ LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
+LIBRT = @LIBRT@
 LIBS = @LIBS@
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
@@ -573,6 +621,8 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 THREAD = @THREAD@
+TS_LOG_COMPILER = @TS_LOG_COMPILER@
+TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
@@ -653,8 +703,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-PY_LOG_COMPILER = python
+TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+PY_LOG_COMPILER = $(PYTHON)
 PY_LOG_FLAGS = -v
 
 # not used #
@@ -670,49 +720,50 @@ _tap_py_execute = \
  tr.set_stream(1); \
  tr.run(tests); 
 
+TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
+LOG_COMPILER = @TS_LOG_COMPILER@
+# LOG_DRIVER      = @TS_LOG_DRIVER@
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = :
+@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
 @PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
 @PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ $(TEST_LIBS) $(AM_LIBS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+LDADD = $(TEST_LIBS)
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
-
-#          example  
 C_TESTS = \
+          test_options \
           example2 \
           example3 \
-          example4
+          example4 \
+          example_assert \
+          skip_test \
+          error_test \
+          fork_success \
+          fork_fail \
+          timeout_success \
+          timeout_fail
 
+
+#          example 
 PY_TESTS = \
            pyex1.py
 
 PL_TESTS = 
-AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 example3_SOURCES = example3.cpp
-
-#
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-@USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
-@USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-@USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
-
+example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
 
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = *.out
+MOSTLYCLEANFILES = \
+                   *.out \
+                   libMdsTestDummy.so
+
 check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
 all: all-am
 
@@ -794,6 +845,10 @@ clean-binPROGRAMS:
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
+error_test$(EXEEXT): $(error_test_OBJECTS) $(error_test_DEPENDENCIES) $(EXTRA_error_test_DEPENDENCIES) 
+	@rm -f error_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(error_test_OBJECTS) $(error_test_LDADD) $(LIBS)
+
 example2$(EXEEXT): $(example2_OBJECTS) $(example2_DEPENDENCIES) $(EXTRA_example2_DEPENDENCIES) 
 	@rm -f example2$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(example2_OBJECTS) $(example2_LDADD) $(LIBS)
@@ -806,15 +861,51 @@ example4$(EXEEXT): $(example4_OBJECTS) $(example4_DEPENDENCIES) $(EXTRA_example4
 	@rm -f example4$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(example4_OBJECTS) $(example4_LDADD) $(LIBS)
 
+example_assert$(EXEEXT): $(example_assert_OBJECTS) $(example_assert_DEPENDENCIES) $(EXTRA_example_assert_DEPENDENCIES) 
+	@rm -f example_assert$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(example_assert_OBJECTS) $(example_assert_LDADD) $(LIBS)
+
+fork_fail$(EXEEXT): $(fork_fail_OBJECTS) $(fork_fail_DEPENDENCIES) $(EXTRA_fork_fail_DEPENDENCIES) 
+	@rm -f fork_fail$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(fork_fail_OBJECTS) $(fork_fail_LDADD) $(LIBS)
+
+fork_success$(EXEEXT): $(fork_success_OBJECTS) $(fork_success_DEPENDENCIES) $(EXTRA_fork_success_DEPENDENCIES) 
+	@rm -f fork_success$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(fork_success_OBJECTS) $(fork_success_LDADD) $(LIBS)
+
+skip_test$(EXEEXT): $(skip_test_OBJECTS) $(skip_test_DEPENDENCIES) $(EXTRA_skip_test_DEPENDENCIES) 
+	@rm -f skip_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(skip_test_OBJECTS) $(skip_test_LDADD) $(LIBS)
+
+test_options$(EXEEXT): $(test_options_OBJECTS) $(test_options_DEPENDENCIES) $(EXTRA_test_options_DEPENDENCIES) 
+	@rm -f test_options$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_options_OBJECTS) $(test_options_LDADD) $(LIBS)
+
+timeout_fail$(EXEEXT): $(timeout_fail_OBJECTS) $(timeout_fail_DEPENDENCIES) $(EXTRA_timeout_fail_DEPENDENCIES) 
+	@rm -f timeout_fail$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(timeout_fail_OBJECTS) $(timeout_fail_LDADD) $(LIBS)
+
+timeout_success$(EXEEXT): $(timeout_success_OBJECTS) $(timeout_success_DEPENDENCIES) $(EXTRA_timeout_success_DEPENDENCIES) 
+	@rm -f timeout_success$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(timeout_success_OBJECTS) $(timeout_success_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/error_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example_assert.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fork_fail.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fork_success.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skip_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_options.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timeout_fail.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timeout_success.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1041,6 +1132,13 @@ recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+test_options.log: test_options$(EXEEXT)
+	@p='test_options$(EXEEXT)'; \
+	b='test_options'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 example2.log: example2$(EXEEXT)
 	@p='example2$(EXEEXT)'; \
 	b='example2'; \
@@ -1058,6 +1156,55 @@ example3.log: example3$(EXEEXT)
 example4.log: example4$(EXEEXT)
 	@p='example4$(EXEEXT)'; \
 	b='example4'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+example_assert.log: example_assert$(EXEEXT)
+	@p='example_assert$(EXEEXT)'; \
+	b='example_assert'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+skip_test.log: skip_test$(EXEEXT)
+	@p='skip_test$(EXEEXT)'; \
+	b='skip_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+error_test.log: error_test$(EXEEXT)
+	@p='error_test$(EXEEXT)'; \
+	b='error_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+fork_success.log: fork_success$(EXEEXT)
+	@p='fork_success$(EXEEXT)'; \
+	b='fork_success'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+fork_fail.log: fork_fail$(EXEEXT)
+	@p='fork_fail$(EXEEXT)'; \
+	b='fork_fail'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+timeout_success.log: timeout_success$(EXEEXT)
+	@p='timeout_success$(EXEEXT)'; \
+	b='timeout_success'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+timeout_fail.log: timeout_fail$(EXEEXT)
+	@p='timeout_fail$(EXEEXT)'; \
+	b='timeout_fail'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1254,7 +1401,7 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
 #prova:
 #	echo $(TEST_LOGS);
@@ -1268,14 +1415,15 @@ log: $(TEST_SUITE_LOG)
 tests:
 	echo "Making tests ... "
 	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) log;
+	 $(MAKE) $(AM_MAKEFLAGS) tap;
 	else
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
 
 	echo "TAP version 13" > $@;
 	count=0;
@@ -1304,7 +1452,22 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
 
-all-local: $(TESTS)
+libMdsTestDummy.so: mdstestdummy.cpp
+	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
+
+print:
+	@echo "--------------------------------------------------------------";
+	@echo "host = ${host}";
+	@echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
+	@echo "LOG_COMPILER = ${LOG_COMPILER}";
+	@echo "LOG_DRIVER   = ${LOG_DRIVER}";
+	@echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
+	@echo "--------------------------------------------------------------";
+
+console:
+	$(shell ${TESTS_ENVIRONMENT} wineconsole )
+
+all-local: $(TESTS) libMdsTestDummy.so
 clean-local: clean-local-tests                    
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

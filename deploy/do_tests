@@ -41,8 +41,7 @@ do
     	    export MDS_PATH=${MDSPLUS_DIR}/tdi	    
 	    make -C testing taps
 	    ;;
-	
-	
+		
 	pytest)
 	    #
 	    # Set up environment variables to run the pytest

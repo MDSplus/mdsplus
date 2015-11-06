@@ -9,6 +9,9 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
+dnl TS_TEST()
+dnl exit 0;
+
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
@@ -19,6 +22,7 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
+
 
 #FIXME: Remove this when Makefile.inc goes away
 AS_CASE(["$MKDIR_P"],
@@ -254,27 +258,6 @@ AC_ARG_WITH([visual_studio],
 AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
 AC_MSG_RESULT([$with_visual_studio])
 
-dnl ////////////////////////////////////////////////////////////////////////////
-dnl ///  TEST TOOLS  ///////////////////////////////////////////////////////////
-dnl ////////////////////////////////////////////////////////////////////////////
-
-PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
-AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
-
-AC_ARG_ENABLE([valgrind],
-              [AS_HELP_STRING([--enable-valgrind],
-                              [Use valgrind when running unit tests])],
-              [AS_VAR_SET([use_valgrind], [yes])],
-              [])
-
-if [[ "$use_valgrind" = "yes" ]]; then
- AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
- if [[ "$HAVE_VALGRIND" = "no" ]]; then
-  AC_MSG_ERROR([Valgrind not found in PATH. ])
- fi
-fi
-AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
-
 
 
 FORLD=ld
@@ -285,8 +268,7 @@ IDL_LD=""
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-
-CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I\${top_srcdir}/include -I\${top_builddir}/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
 then
@@ -297,10 +279,10 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-MAKEUIDDIR="\$(top_srcdir)/uid/"
-MAKESHLIBDIR="\$(top_srcdir)/lib/"
-MAKEBINDIR="\$(top_srcdir)/bin/"
-MAKELIBDIR="\$(top_srcdir)/lib/"
+MAKEUIDDIR="\$(top_builddir)/uid/"
+MAKESHLIBDIR="\$(top_builddir)/lib/"
+MAKEBINDIR="\$(top_builddir)/bin/"
+MAKELIBDIR="\$(top_builddir)/lib/"
 EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
@@ -386,9 +368,9 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
        fi
-       MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
+       MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
+       MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"
+       MAKEBINDIR="\$(top_builddir)/${BINDIR}/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
@@ -396,7 +378,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
        FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
+       LIBPATH="LD_LIBRARY_PATH";       
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        SHARETYPE=".dll"
@@ -421,18 +403,18 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            TARGET_ARCH="-m64"
            UILCMD=uil
            uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
+	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
          else
            TARGET_ARCH="-m32"
            UILCMD=uil32
            uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_srcdir)/lib32/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
-           MAKEUIDDIR="\$(top_srcdir)/uid32/"
-           MAKEBINDIR="\$(top_srcdir)/bin32/"
+           MAKELIBDIR="\$(top_builddir)/lib32/"
+           MAKESHLIBDIR="\$(top_builddir)/lib32/"
+           MAKEUIDDIR="\$(top_builddir)/uid32/"
+           MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
        FFLAGS="$FFLAGS -fno-range-check"
@@ -444,7 +426,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
        FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
+       LIBPATH="LD_LIBRARY_PATH";       
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        TAR_EXCLUDE="--exclude";
@@ -566,7 +548,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
+       MAKESHLIBDIR="\$(top_builddir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
@@ -886,7 +868,7 @@ then
 elif ( echo $host | grep "mingw" >/dev/null )
 then
     SYBASE_INC="-DSYBASE"
-    SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
+    SYBASE_LIB="-L\${srcdir} -lntwdblib${SQL_ARCH}"
     SYBASE="SYBASE"
     AC_MSG_RESULT(using Windows mssql)
 elif test "$(echo $SYBASE_LIB | grep '\-L')" = ""
@@ -983,11 +965,66 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
+# PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
+# AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
+
+AC_ARG_ENABLE([valgrind],
+              [AS_HELP_STRING([--enable-valgrind],
+                              [Use valgrind when running unit tests])],
+              [AS_VAR_SET([USE_VALGRIND], [yes])],
+              [])
+
+AS_IF([test x"$USE_VALGRIND" = x"yes" ],
+      [AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
+        AS_IF([test x"$HAVE_VALGRIND" = x"yes" ],
+              [AC_MSG_NOTICE([Valgrind ENABLED])],
+              [AC_MSG_WARN([Valgrind DISABLED as it was not found in PATH ])
+               AS_VAR_SET([USE_VALGRIND],[no])
+              ])
+      ])
+AM_CONDITIONAL(USE_VALGRIND, test x"$USE_VALGRIND" = x"yes")
+
+
 ## CHECK related ##
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
 
+AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+             [LIBRT="-lrt"],[LIBRT=""])
 
+AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
+AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
+
+AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
+AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
+
+
+dnl TESTS_ENVIRONMENT=@LIBPATH@="${TESTLIBDIR}"
+dnl LOG_DRIVER=${top_srcdir}/conf/test-driver
+
+ AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+ AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
+ AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+
+TS_SELECT()
+ 
+ AC_SUBST(TS_TESTS_ENVIRONMENT)
+ AC_SUBST(TS_LOG_COMPILER)
+dnl AC_SUBST(TS_LOG_DRIVER)
+
+
+dnl AC_MSG_NOTICE(********************************)
+dnl AC_MSG_NOTICE(${TESTS_ENVIRONMENT})
+dnl AC_MSG_NOTICE(${LOG_DRIVER})
+dnl AC_MSG_NOTICE(${LOG_COMPILER})
+dnl AC_MSG_NOTICE(********************************)
+
+
+dnl  wpath_bin = $  
+
+
+
+# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
@@ -1024,7 +1061,7 @@ AC_DEFUN([AC_PYTHON_CLASS],[
               [AC_MSG_RESULT(yes); eval $3],
               [AC_MSG_RESULT(no);  eval $4])
 ])
-
+ 
 
 AC_PYTHON_MODULE(tap)
 AC_PYTHON_CLASS(tap, TAPTestRunner, [have_tappy="yes"],)
@@ -1111,9 +1148,6 @@ AH_BOTTOM()
 
 
 
-
-
-
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
@@ -1159,6 +1193,7 @@ AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
+AC_SUBST(LIBRT)
 AC_SUBST(LINKSHARED)
 AC_SUBST(LINKJNI)
 AC_SUBST(LINKMODULE)
@@ -1265,6 +1300,7 @@ AC_OUTPUT(Makefile.inc
           tdic/Makefile
           tditest/Makefile 
           testing/Makefile
+          testing/testing.inc
           testing/backends/check/Makefile
           testing/selftest/Makefile
           traverser/Makefile 

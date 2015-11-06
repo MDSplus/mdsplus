@@ -295,11 +295,12 @@ void xml_lfun(SRunner * sr CK_ATTRIBUTE_UNUSED, FILE * file,
 
         gettimeofday(&inittv, NULL);
         clock_gettime(check_get_clockid(), &ts_start);
-        if(localtime_r((const time_t *)&(inittv.tv_sec), &now) != NULL)
-        {
-            strftime(t, sizeof("yyyy-mm-dd hh:mm:ss"), "%Y-%m-%d %H:%M:%S",
-                     &now);
-        }
+        // TODO: make this working in windows
+        //        if(localtime_r((const time_t *)&(inittv.tv_sec), &now) != NULL)
+        //        {
+        //            strftime(t, sizeof("yyyy-mm-dd hh:mm:ss"), "%Y-%m-%d %H:%M:%S",
+        //                     &now);
+        //        }
     }
 
     switch (evt)
