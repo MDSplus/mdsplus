@@ -21,7 +21,7 @@ static void (*PyGILState_Release) (void *) = 0;
   return 0;\
 }
 
-int PyCall(char *cmd, int lock)
+EXPORT int PyCall(char *cmd, int lock)
 {
 #ifndef _WIN32
   void (*old_handler) (int);
@@ -83,7 +83,7 @@ int PyCall(char *cmd, int lock)
   return 1;
 }
 
-void PyReleaseThreadLock()
+EXPORT void PyReleaseThreadLock()
 {
   if (PyGILState_GetThisThreadState && PyEval_ReleaseThread) {
     void *STATE = (*PyGILState_GetThisThreadState) ();

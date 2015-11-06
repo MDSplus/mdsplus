@@ -31,14 +31,14 @@ extern int TdiSortVal();
 	/***************************************************************
 	 * TclShowAttribute:
 	 ***************************************************************/
-int TclShowAttribute(void *ctx, char **error, char **output)
+EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
 {
   int status;
   int nid;
   EMPTYXD(xd);
   char *node = 0;
   char *attr = 0;
-  struct descriptor dsc_string = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d dsc_string = { 0, DTYPE_T, CLASS_D, 0 };
   cli_get_value(ctx, "NODE", &node);
   status = TreeFindNode(node, &nid);
   if (status & 1) {
@@ -93,7 +93,7 @@ int TclShowAttribute(void *ctx, char **error, char **output)
 
 extern int TdiCompile();
 
-int TclSetAttribute(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
+EXPORT int TclSetAttribute(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *attname = 0;

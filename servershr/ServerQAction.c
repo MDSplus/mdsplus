@@ -95,7 +95,7 @@ static int WorkerDied = 0;
 static int LeftWorkerLoop = 0;
 static int CondWStat = 0;
 
-struct descriptor *ServerInfo()
+EXPORT struct descriptor *ServerInfo()
 {
   static DESCRIPTOR(nothing, "");
   static EMPTYXD(xd);
@@ -106,14 +106,14 @@ struct descriptor *ServerInfo()
     return (struct descriptor *)&nothing;
 }
 
-int ServerDebug(int setting)
+EXPORT int ServerDebug(int setting)
 {
   int old = Debug;
   Debug = setting;
   return old;
 }
 
-int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
+EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
   int status;
@@ -427,7 +427,7 @@ static char *Now()
 }
 
 static int doingNid;
-int GetDoingNid()
+EXPORT int GetDoingNid()
 {
   return doingNid;
 }
@@ -445,14 +445,14 @@ static int DoSrvAction(SrvJob * job_in)
     int retstatus;
     DESCRIPTOR_NID(nid_dsc, 0);
     DESCRIPTOR_LONG(ans_dsc, 0);
-    struct descriptor fullpath = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor_d fullpath = { 0, DTYPE_T, CLASS_D, 0 };
     DESCRIPTOR(fullpath_d, "FULLPATH");
     DESCRIPTOR(nullstr, "\0");
     DESCRIPTOR_NID(niddsc, 0);
     niddsc.pointer = (char *)&job->nid;
     doingNid = job->nid;
     status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
-    StrAppend(&fullpath, &nullstr);
+    StrAppend(&fullpath, (struct descriptor *)&nullstr);
     job_text = malloc(fullpath.length + 1024);
     sprintf(job_text, "Doing %s in %s shot %d", fullpath.pointer, job->tree, job->shot);
     old_job_text = current_job_text;
@@ -562,7 +562,7 @@ static void SendToMonitor(MonitorList * m, MonitorList * prev, SrvJob * job_in)
  sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
 */
   char *msg = 0;
-  struct descriptor fullpath = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d fullpath = { 0, DTYPE_T, CLASS_D, 0 };
   DESCRIPTOR(fullpath_d, "FULLPATH");
   DESCRIPTOR(nullstr, "\0");
   DESCRIPTOR_NID(niddsc, 0);
@@ -573,7 +573,7 @@ static void SendToMonitor(MonitorList * m, MonitorList * prev, SrvJob * job_in)
 
     niddsc.pointer = (char *)&job->nid;
     status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
-    StrAppend(&fullpath, &nullstr);
+    StrAppend(&fullpath, (struct descriptor *)&nullstr);
     msg = malloc(fullpath.length + 1024 + strlen(status_text));
     if (job->server && *job->server)
       sprintf(msg, "%s %d %d %d %d %d %s %d %s %s; %s", job->tree, job->shot, job->phase,

@@ -8,6 +8,8 @@
 #include <signal.h>
 #include <config.h>
 #include <stdlib.h>
+#include <libroutines.h>
+#include <strroutines.h>
 
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>

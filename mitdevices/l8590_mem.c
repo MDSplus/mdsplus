@@ -16,7 +16,7 @@
 #include "l8590_sclr_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcValue;
+//extern unsigned short OpcValue;
 
 extern int l8590_sclr___get_setup(struct descriptor *niddsc, InGet_setupStruct * setup);
 extern int GenDeviceFree();
@@ -169,7 +169,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 
 static void Load(Widget w);
 
-int l8590_mem__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8590_mem__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "L8590_MEM.uid" };
   static int nid;

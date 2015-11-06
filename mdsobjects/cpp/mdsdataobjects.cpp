@@ -53,12 +53,12 @@ extern "C" {
 
 //////Wrapper functions called by C code to build a Data class instance from a MDSplus descriptor///////////
 
-extern "C" void *convertDataToDsc(void *data)
+extern "C" EXPORT void *convertDataToDsc(void *data)
 {
 	return ((Data *)data)->convertToDsc();
 }
 
-extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData, 
+extern "C" EXPORT void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData, 
 								  Data *helpData, Data *validationData, Tree *tree)
 {
 	switch(dtype) {
@@ -89,7 +89,7 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 	return 0;
 }
 
-extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
+extern "C" EXPORT void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
 								 Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
 	int revDims[MAX_ARGS];
@@ -120,7 +120,7 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 	return 0;
 }
 
-extern "C" void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
+extern "C" EXPORT void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
 									Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
 //printf("CREATE COMPOUND DATA nDescs = %d ptr= %x\n", nDescs, ptr);
@@ -145,17 +145,17 @@ extern "C" void *createCompoundData(int dtype, int length, char *ptr, int nDescs
 	return 0;
 }
 
-extern "C" void *createApdData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C" EXPORT void *createApdData(int nData, char **dataPtrs, Data *unitsData, 
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Apd(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
-extern "C" void *createListData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C" EXPORT void *createListData(int nData, char **dataPtrs, Data *unitsData, 
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new List(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
-extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C" EXPORT void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData, 
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);

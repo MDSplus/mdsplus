@@ -29,12 +29,14 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
 
 ------------------------------------------------------------------------------*/
 
+#include <config.h>
+
 static char *(*DetailProc) () = 0;
-void ServerSetDetailProc(char *(*detail_proc) ())
+EXPORT void ServerSetDetailProc(char *(*detail_proc) ())
 {
   DetailProc = detail_proc;
 }
 
-char *(*ServerGetDetailProc()) () {
+EXPORT char *(*ServerGetDetailProc()) () {
   return DetailProc;
 }

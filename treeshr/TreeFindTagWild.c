@@ -153,8 +153,9 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 		(char *)(*ctx)->this_tree_info->tag_info[swapint
 							 ((char *)&(*ctx)->this_tree_info->
 							  tags[(*ctx)->next_tag])].name;
-	    StrTrim(&tag_dsc, &s_tag_dsc, &len);
-	    if (StrMatchWild(&tag_dsc, &((*ctx)->search_tag)) & 1) {
+	    StrTrim((struct descriptor *)&tag_dsc, (struct descriptor *)&s_tag_dsc, &len);
+	    if (StrMatchWild((struct descriptor *)&tag_dsc,
+			     (struct descriptor *)&((*ctx)->search_tag)) & 1) {
 	      done = 1;
 	      found = 1;
 	    } else
@@ -177,7 +178,7 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 	    (char *)(*ctx)->this_tree_info->tag_info[swapint
 						     ((char *)&(*ctx)->this_tree_info->
 						      tags[(*ctx)->next_tag])].name;
-	StrTrim(&tag_name, &s_tag_name, &len);
+	StrTrim((struct descriptor *)&tag_name, (struct descriptor *)&s_tag_name, &len);
 	tagname[len] = '\0';
 	nptr +=
 	    swapint(&(*ctx)->this_tree_info->tag_info[swapint
@@ -245,18 +246,18 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
   }
   if ((cptr = strstr(tagnam_ptr, "::")) != 0) {
     tree_len = (unsigned short)(cptr - tagnam_ptr);
-    StrCopyR(&ctx->search_tree, &tree_len, tag_dsc.pointer);
+    StrCopyR((struct descriptor *)&ctx->search_tree, &tree_len, tag_dsc.pointer);
     tag_dsc.length -= (tree_len + 2);
     tag_dsc.pointer += (tree_len + 2);
   } else
-    StrCopyR(&ctx->search_tree, &one, "*");
+    StrCopyR((struct descriptor *)&ctx->search_tree, &one, "*");
   if (tag_dsc.length)
-    StrCopyDx(&ctx->search_tag, &tag_dsc);
+    StrCopyDx((struct descriptor *)&ctx->search_tag, &tag_dsc);
   else
-    StrCopyR(&ctx->search_tag, &one, "*");
-  StrUpcase(&ctx->search_tree, &ctx->search_tree);
-  StrUpcase(&ctx->search_tag, &ctx->search_tag);
-  ctx->top_match = StrMatchWild(&top, &ctx->search_tag) & 1;
+    StrCopyR((struct descriptor *)&ctx->search_tag, &one, "*");
+  StrUpcase((struct descriptor *)&ctx->search_tree, (struct descriptor *)&ctx->search_tree);
+  StrUpcase((struct descriptor *)&ctx->search_tag, (struct descriptor *)&ctx->search_tag);
+  ctx->top_match = StrMatchWild((struct descriptor *)&top, (struct descriptor *)&ctx->search_tag) & 1;
   return ctx;
 }
 
@@ -276,7 +277,7 @@ static int NextTagTree(PINO_DATABASE * dblist, TAG_SEARCH * ctx)
     struct descriptor treenam = { 0, DTYPE_T, CLASS_S, 0 };
     treenam.length = (unsigned short)strlen(ctx->this_tree_info->treenam);
     treenam.pointer = ctx->this_tree_info->treenam;
-    if (StrMatchWild(&treenam, &ctx->search_tree) & 1) {
+    if (StrMatchWild((struct descriptor *)&treenam, (struct descriptor *)&ctx->search_tree) & 1) {
       found = 1;
       break;
     }

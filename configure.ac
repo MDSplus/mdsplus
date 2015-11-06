@@ -20,6 +20,15 @@ AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
 
+# Always do the visibility check but don't set AM_CFLAGS on Windows.
+# This way things get set properly even on Windows.
+AC_MSG_RESULT([before VISIBILITY])
+gl_VISIBILITY
+AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
+if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
+	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
+fi
+
 #FIXME: Remove this when Makefile.inc goes away
 AS_CASE(["$MKDIR_P"],
         [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
@@ -1041,6 +1050,8 @@ AH_VERBATIM([_LL_CONSTANTS], [
 AH_VERBATIM([_WIN32], [
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
+#elif HAVE_VISIBILITY
+# define EXPORT __attribute__((__visibility__("default")))
 #else
 #define EXPORT
 #endif

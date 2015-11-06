@@ -86,7 +86,7 @@ static void str_upcase(char *str)
 //-------------------------------------------------------------------------
 // assign a new module to CTS database
 //-------------------------------------------------------------------------
-int Assign(void *ctx, char **error, char *output)
+EXPORT int Assign(void *ctx, char **error, char *output)
 {
   char line[MODULE_ENTRY + 1];
   int dbFileSize, fd, i, nullMask, numOfEntries;
@@ -205,7 +205,7 @@ int Assign(void *ctx, char **error, char *output)
 //-------------------------------------------------------------------------
 // map generic scsi device names to crate table names 
 //-------------------------------------------------------------------------
-int Autoconfig(void *ctx, char **error, char **output)
+EXPORT int Autoconfig(void *ctx, char **error, char **output)
 {
   char highway_name[CRATE_NAME_SIZE + 1], *pHighwayName;
   char line[CRATE_ENTRY];
@@ -265,7 +265,7 @@ int Autoconfig(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // deassign a module
 //-------------------------------------------------------------------------
-int Deassign(void *ctx, char **error, char **output)
+EXPORT int Deassign(void *ctx, char **error, char **output)
 {
   char db_tmp[64];
   int i, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name;
@@ -366,7 +366,7 @@ int Deassign(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // set a crate on-line or off-line
 //-------------------------------------------------------------------------
-int SetCrate(void *ctx, char **error, char **output)
+EXPORT int SetCrate(void *ctx, char **error, char **output)
 {
   int status;
   char *cratename;
@@ -412,7 +412,7 @@ int SetCrate(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // show crate status, using crates in 'crate.db' file
 //-------------------------------------------------------------------------
-int ShowCrate(void *ctx, char **error, char **output)
+EXPORT int ShowCrate(void *ctx, char **error, char **output)
 {
   char colorENH[9], colorON[9];
   int enhanced, i, online, moduleFound, numOfCrates, numOfModules;
@@ -509,7 +509,7 @@ int ShowCrate(void *ctx, char **error, char **output)
 
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
- int ShowModule(void *ctx, char **error, char **output)
+EXPORT int ShowModule(void *ctx, char **error, char **output)
 {
   char db_tmp[64];		// enough space for a logical name and a cstring terminator     [2002.02.20]
   int i, numOfEntries, status = SUCCESS;
@@ -585,7 +585,7 @@ int ShowCrate(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // Add a crate to the crate db
 //-------------------------------------------------------------------------
-int AddCrate(void *ctx, char **error, char **output)
+EXPORT int AddCrate(void *ctx, char **error, char **output)
 {
   char line[CRATE_ENTRY + 1];
   int dbFileSize, fd, numOfEntries;
@@ -671,7 +671,7 @@ int AddCrate(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // Delete a crate from the crate db
 //-------------------------------------------------------------------------
-int DelCrate(void *ctx, char **error, char **output)
+EXPORT int DelCrate(void *ctx, char **error, char **output)
 {
   char crateName[CRATE_NAME_SIZE + 1];
   int index, numOfEntries;

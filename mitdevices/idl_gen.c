@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "idl_gen.h"
-int idl__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int idl__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "IDL");
@@ -41,8 +41,8 @@ int idl__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   return (TreeSetDefaultNid(old_nid));
 }
 
-int idl__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		   struct descriptor *out_d)
+EXPORT int idl__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		   struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -70,7 +70,7 @@ extern int idl___execute();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int idl__execute(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int idl__execute(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InExecuteStruct)
   struct descriptor_xd work_xd[1];

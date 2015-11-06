@@ -5,9 +5,12 @@
 #include <string.h>
 #include <mdsshr.h>
 #include <stdlib.h>
+#include <mdstypes.h>
 #include <../tdishr/opcopcodes.h>
 #define MAX_LIMIT 1E10
-static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, long xMin, long xMax, int *retPoints, float *retResolution);
+static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution);
+extern int TdiData();
+extern int TdiCompile();
 
 static void swap4(char *buf)
 {
@@ -54,7 +57,7 @@ static double toDouble(void *ptr, int type)
 	    return (double)(*(int *)ptr);
 	case DTYPE_Q:
 	case DTYPE_QU:
-	    return (double)(*(long *)ptr);
+	    return (double)(*(int64_t *)ptr);
     }
     printf("Unsupported Type in getData\n");
     return 0;
@@ -419,7 +422,7 @@ static int recIsSegmented(struct descriptor *dsc)
 }
 	
 //Check if the passed expression contains at least one segmented node
-int IsSegmented(char *expr)
+EXPORT int IsSegmented(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
@@ -432,7 +435,7 @@ int IsSegmented(char *expr)
     return isSegmented;
 }
     
-int TestGetHelp(char *expr)
+EXPORT int TestGetHelp(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
@@ -447,7 +450,7 @@ int TestGetHelp(char *expr)
     return 1;
 }
     
-int TestGetUnits(char *expr)
+EXPORT int TestGetUnits(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
@@ -464,7 +467,7 @@ int TestGetUnits(char *expr)
     
 
 
-struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -589,7 +592,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
 		    break;
 	    	case DTYPE_Q:
 	    	case DTYPE_QU:
-		    y[i] = *((long *)(&yArrD->pointer[i*yArrD->length]));
+		    y[i] = *((int64_t *)(&yArrD->pointer[i*yArrD->length]));
 		    break;
 	    	case DTYPE_DOUBLE:
 		    y[i] = *((double *)(&yArrD->pointer[i*yArrD->length]));
@@ -610,7 +613,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
 	
     swap = *((int *)testEndian) != 1;
     if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU || xArrD->dtype == DTYPE_DOUBLE)
-	xSampleSize = sizeof(long);
+	xSampleSize = sizeof(int64_t);
     else
 	xSampleSize = sizeof(int);
 
@@ -674,10 +677,10 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
 		break;
 	    case DTYPE_Q:
 	    case DTYPE_QU:
-		*((long *)&retArr[idx]) = *((long *)(&xArrD->pointer[i*xArrD->length]));
+		*((int64_t *)&retArr[idx]) = *((int64_t *)(&xArrD->pointer[i*xArrD->length]));
 		if(swap)swap8(&retArr[idx]);
-		idx += sizeof(long);
-		currX = *((long *)(&xArrD->pointer[i*xArrD->length]));
+		idx += sizeof(int64_t);
+		currX = *((int64_t *)(&xArrD->pointer[i*xArrD->length]));
 		break;
 	    case DTYPE_FLOAT:
 		*((float *)&retArr[idx]) = *((float *)(&xArrD->pointer[i*xArrD->length]));
@@ -761,7 +764,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
 }
 
 
-struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, long *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -783,8 +786,8 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
     float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
-    long xMin = *inXMin;
-    long xMax = *inXMax; 
+    int64_t xMin = *inXMin;
+    int64_t xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
     float retInterval;
@@ -886,7 +889,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
 		    break;
 	    	case DTYPE_Q:
 	    	case DTYPE_QU:
-		    y[i] = *((long *)(&yArrD->pointer[i*yArrD->length]));
+		    y[i] = *((int64_t *)(&yArrD->pointer[i*yArrD->length]));
 		    break;
 	    	case DTYPE_DOUBLE:
 		    y[i] = *((double *)(&yArrD->pointer[i*yArrD->length]));
@@ -894,7 +897,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
 	    }
 	}
     }
-    compressDataLongX(y, xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    compressDataLongX(y, (int64_t*) xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
 /*Assemble result. Format:
 -retResolution(float)
@@ -906,7 +909,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
 	
     swap = *((int *)testEndian) != 1;
     if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU || xArrD->dtype == DTYPE_DOUBLE)
-	xSampleSize = sizeof(long);
+	xSampleSize = sizeof(int64_t);
     else
 	xSampleSize = sizeof(int);
 
@@ -970,10 +973,10 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
 		break;
 	    case DTYPE_Q:
 	    case DTYPE_QU:
-		*((long *)&retArr[idx]) = *((long *)(&xArrD->pointer[i*xArrD->length]));
+		*((int64_t *)&retArr[idx]) = *((int64_t *)(&xArrD->pointer[i*xArrD->length]));
 		if(swap)swap8(&retArr[idx]);
-		idx += sizeof(long);
-		currX = *((long *)(&xArrD->pointer[i*xArrD->length]));
+		idx += sizeof(int64_t);
+		currX = *((int64_t *)(&xArrD->pointer[i*xArrD->length]));
 		break;
 	    case DTYPE_FLOAT:
 		*((float *)&retArr[idx]) = *((float *)(&xArrD->pointer[i*xArrD->length]));
@@ -1059,7 +1062,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
 
 
 
-struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -1179,7 +1182,7 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
 		    break;
 	    	case DTYPE_Q:
 	    	case DTYPE_QU:
-		    y[i] = *((long *)(&yArrD->pointer[i*yArrD->length]));
+		    y[i] = *((int64_t *)(&yArrD->pointer[i*yArrD->length]));
 		    break;
 	    	case DTYPE_DOUBLE:
 		    y[i] = *((double *)(&yArrD->pointer[i*yArrD->length]));
@@ -1207,7 +1210,7 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
 
 //Perform possible compression on site (do not realloc arrays) return the actual number of points
 //the type of X array is unknown, element size is passed in xSize
-static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, long xMin, long xMax, int *retPoints, float *retResolution)
+static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution)
 {
     int deltaSamples, actSamples, currSamples;
     int i, j, outIdx, startIdx, endIdx;
@@ -1245,7 +1248,7 @@ static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, lo
 	if(deltaSamples == 1)
 	{
 	    y[outIdx] = y[currSamples];
-	    memcpy(&x[outIdx], &x[currSamples], sizeof(long));
+	    memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
 	    currSamples++;
 	    outIdx++;
 	}
@@ -1259,8 +1262,8 @@ static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, lo
 	    }
 	    y[outIdx] = minY;
 	    y[outIdx+1] = maxY;
-	    memcpy(&x[outIdx], &x[currSamples], sizeof(long));
-	    memcpy(&x[(outIdx+1)], &x[currSamples], sizeof(long));
+	    memcpy(&x[outIdx], &x[currSamples], sizeof(int64_t));
+	    memcpy(&x[(outIdx+1)], &x[currSamples], sizeof(int64_t));
 	    currSamples += deltaSamples;
 	    outIdx += 2;
 	}
@@ -1272,7 +1275,7 @@ static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, lo
 
 
 
-struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXMax, int *reqNSamples)
+EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, int64_t *inXMax, int *reqNSamples)
 {
     static EMPTYXD(retXd);
     EMPTYXD(xd);
@@ -1281,8 +1284,8 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXM
     struct descriptor yExpr = {strlen(sigName), DTYPE_T, CLASS_S, sigName};
     struct descriptor xExpr = {strlen(sigName) + strlen("DIM_OF()"), DTYPE_T, CLASS_S, 0};
     struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
-    struct descriptor xMinD = {sizeof(long), DTYPE_Q, CLASS_S, (char *)inXMin};
-    struct descriptor xMaxD = {sizeof(long), DTYPE_Q, CLASS_S, (char *)inXMax};
+    struct descriptor xMinD = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMin};
+    struct descriptor xMaxD = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMax};
     char *err;
     int nSamples, retSamples;
     int xSampleSize;
@@ -1294,8 +1297,8 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXM
     DESCRIPTOR_A(retDataD, sizeof(float), DTYPE_FLOAT, 0, 0);
     DESCRIPTOR_A(retDimD, 0, 0, 0, 0);
     DESCRIPTOR_SIGNAL_1(retSignalD, &retDataD, 0, &retDimD);
-    long xMin = *inXMin;
-    long xMax = *inXMax; 
+    int64_t xMin = *inXMin;
+    int64_t xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
     float retInterval;
@@ -1385,7 +1388,7 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXM
 		    break;
 	    	case DTYPE_Q:
 	    	case DTYPE_QU:
-		    y[i] = *((long *)(&yArrD->pointer[i*yArrD->length]));
+		    y[i] = *((int64_t *)(&yArrD->pointer[i*yArrD->length]));
 		    break;
 	    	case DTYPE_DOUBLE:
 		    y[i] = *((double *)(&yArrD->pointer[i*yArrD->length]));
@@ -1393,7 +1396,7 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXM
 	    }
 	}
     }
-    compressDataLongX(y, (long *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    compressDataLongX(y, (int64_t *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
     retDataD.pointer = (char *)y;
     retDataD.arsize = sizeof(float ) * retSamples;

@@ -18,6 +18,7 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include "../mdsshr/mdsshrthreadsafe.h"
+#include <tdishr.h>
 
 #if _WIN32 || _WIN64
 #if _WIN64
@@ -36,8 +37,6 @@
 #endif
 #endif
 
-extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(),
-CvtConvertFloat();
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
 			   int *numbytes, void * *dptr, void **m);
 
@@ -1281,7 +1280,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute
     (*env)->ThrowNew(env, exc, error_msg);
     return NULL;
   }
-  status = TdiData(&outXd, &outXd MDS_END_ARG);
+  status = TdiData((struct descriptor *)&outXd, &outXd MDS_END_ARG);
   if (!(status & 1)) {
     error_msg = (char *)MdsGetMsg(status);
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
@@ -2873,12 +2872,12 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw
  * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate(JNIEnv * env, jclass cls, jlong time) {
-  struct descriptor dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
   short len;
   jstring jdate;
   char *date;
 
-  LibSysAscTim(&len, &dateDsc, (int *)&time);
+  LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)&time);
   date = malloc(dateDsc.length + 1);
   memcpy(date, dateDsc.pointer, dateDsc.length);
   date[dateDsc.length] = 0;

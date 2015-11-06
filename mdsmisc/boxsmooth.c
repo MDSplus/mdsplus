@@ -38,8 +38,9 @@ int boxsmooth(int *num, float *in, int *width, float *out)
 ------------------------------------------------------------------------------*/
 
 #include <string.h>
+#include <config.h>
 
-int boxsmooth(int *num, float *in, int *width, float *out)
+EXPORT int boxsmooth(int *num, float *in, int *width, float *out)
 {
   int i;
   int j;

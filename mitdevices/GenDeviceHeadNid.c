@@ -5,7 +5,7 @@
 #include <ncidef.h>
 #include <treeshr.h>
 
-int GenDeviceHeadNid(struct descriptor *niddsc)
+EXPORT int GenDeviceHeadNid(struct descriptor *niddsc)
 {
   int nid = *(int *)niddsc->pointer;
   static int idx;

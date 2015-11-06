@@ -81,7 +81,7 @@ int TdiYacc_BUILD(int ndesc,
   int vm_size = dsc_size + sizeof(unsigned short);
   struct TdiFunctionStruct *this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 
-  TdiRefZone.l_status = LibGetVm(&vm_size, &tmp, &TdiRefZone.l_zone);
+  TdiRefZone.l_status = LibGetVm(&vm_size, (void **)&tmp, &TdiRefZone.l_zone);
   if (!(TdiRefZone.l_status & 1))
     return 1;
   out->builtin = -1;

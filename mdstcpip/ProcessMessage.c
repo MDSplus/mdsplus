@@ -598,7 +598,7 @@ static Message *ExecuteMessage(Connection * connection)
   int message_id = connection->message_id;
 
   // AST REQUEST //
-  if (StrCompare(connection->descrip[0], &eventastreq) == 0) {
+  if (StrCompare(connection->descrip[0], (struct descriptor *)&eventastreq) == 0) {
     static int eventid = -1;
     static DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *newe = (MdsEventList *) malloc(sizeof(MdsEventList));
@@ -641,7 +641,7 @@ static Message *ExecuteMessage(Connection * connection)
       ans = BuildResponse(client_type, message_id, status, &eventiddsc);
   }
   // CAN REQUEST //
-  else if (StrCompare(connection->descrip[0], &eventcanreq) == 0) {
+  else if (StrCompare(connection->descrip[0], (struct descriptor *)&eventcanreq) == 0) {
     static int eventid;
     static DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *e;

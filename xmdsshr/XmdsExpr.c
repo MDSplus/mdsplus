@@ -292,14 +292,14 @@ WidgetClass xmdsExprFieldWidgetClass;
   resources originalXd, and buttonCallback to setup
   the initial widget.
 ****************************************************/
-Widget XmdsCreateExpr(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateExpr(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
   Widget widg;
   widg = XtCreateWidget(name, (WidgetClass) & xmdsExprClassRec, parent, args, argcount);
   return widg;
 }
 
-Widget XmdsCreateExprField(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateExprField(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
   Widget widg;
   xmdsExprClassRec.core_class.initialize = InitializeExprField;
@@ -311,12 +311,12 @@ Widget XmdsCreateExprField(Widget parent, char *name, ArgList args, Cardinal arg
 #define GetString(w) (XmIsTextField(w) ? XmTextFieldGetString(w) : XmTextGetString(w))
 #define SetString(w,string) (XmIsTextField(w) ? XmTextFieldSetString(w,string) : XmTextSetString(w,string))
 
-struct descriptor *XmdsExprFieldGetXd(Widget w)
+EXPORT struct descriptor *XmdsExprFieldGetXd(Widget w)
 {
   return XmdsExprGetXd(w);
 }
 
-struct descriptor *XmdsExprGetXd(Widget w)
+EXPORT struct descriptor *XmdsExprGetXd(Widget w)
 {
   struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   XmdsExprWidget ew = (XmdsExprWidget) w;
@@ -348,12 +348,12 @@ struct descriptor *XmdsExprGetXd(Widget w)
   return (struct descriptor *)ans;
 }
 
-Boolean XmdsExprFieldPut(Widget w)
+EXPORT Boolean XmdsExprFieldPut(Widget w)
 {
   return XmdsExprPut(w);
 }
 
-Boolean XmdsExprPut(Widget w)
+EXPORT Boolean XmdsExprPut(Widget w)
 {
   int status = 1;
   XmdsExprWidget ew = (XmdsExprWidget) w;
@@ -377,23 +377,23 @@ Boolean XmdsExprPut(Widget w)
   return status & 1;
 }
 
-Boolean XmdsExprFieldApply(Widget w)
+EXPORT Boolean XmdsExprFieldApply(Widget w)
 {
   return XmdsExprApply(w);
 }
 
-Boolean XmdsExprApply(Widget w)
+EXPORT Boolean XmdsExprApply(Widget w)
 {
   XmdsExprWidget ew = (XmdsExprWidget) w;
   return ew->expr.put_on_apply ? XmdsExprPut(w) : 1;
 }
 
-void XmdsExprFieldSetDefaultNid(Widget w, int nid)
+EXPORT void XmdsExprFieldSetDefaultNid(Widget w, int nid)
 {
   XmdsExprSetDefaultNid(w, nid);
 }
 
-void XmdsExprSetDefaultNid(Widget w, int nid)
+EXPORT void XmdsExprSetDefaultNid(Widget w, int nid)
 {
   XmdsExprWidget ew = (XmdsExprWidget) w;
   if (nid != ew->expr.default_nid) {
@@ -403,22 +403,22 @@ void XmdsExprSetDefaultNid(Widget w, int nid)
   }
 }
 
-void XmdsExprFieldRegister()
+EXPORT void XmdsExprFieldRegister()
 {
   XmdsExprRegister();
 }
 
-void XmdsExprRegister()
+EXPORT void XmdsExprRegister()
 {
   MrmRegisterClass(1, "XmdsExprWidget", "XmdsCreateExpr", XmdsCreateExpr, xmdsExprWidgetClass);
 }
 
-void XmdsExprFieldReset(Widget w)
+EXPORT void XmdsExprFieldReset(Widget w)
 {
   XmdsExprReset(w);
 }
 
-void XmdsExprReset(Widget w)
+EXPORT void XmdsExprReset(Widget w)
 {
   XmdsExprWidget ew = (XmdsExprWidget) w;
   if (ew->expr.nid)
@@ -429,12 +429,12 @@ void XmdsExprReset(Widget w)
   }
 }
 
-void XmdsExprFieldSetNid(Widget w, int nid, int offset)
+EXPORT void XmdsExprFieldSetNid(Widget w, int nid, int offset)
 {
   XmdsExprSetNid(w, nid, offset);
 }
 
-void XmdsExprSetNid(Widget w, int nid, int offset)
+EXPORT void XmdsExprSetNid(Widget w, int nid, int offset)
 {
   XmdsExprWidget ew = (XmdsExprWidget) w;
   int new_nid;
@@ -458,12 +458,12 @@ void XmdsExprSetNid(Widget w, int nid, int offset)
   ew->expr.nid_offset = offset;
 }
 
-void XmdsExprFieldSetXd(Widget w, struct descriptor *dsc)
+EXPORT void XmdsExprFieldSetXd(Widget w, struct descriptor *dsc)
 {
   XmdsExprSetXd(w, dsc);
 }
 
-void XmdsExprSetXd(Widget w, struct descriptor *dsc)
+EXPORT void XmdsExprSetXd(Widget w, struct descriptor *dsc)
 {
   XmdsExprWidget ew = (XmdsExprWidget) w;
   if (ew->expr.xd)

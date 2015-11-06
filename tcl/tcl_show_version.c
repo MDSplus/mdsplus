@@ -17,7 +17,7 @@
 /***************************************************************
  * TclShowVersion:
  ***************************************************************/
-int TclShowVersion(void *ctx, char **error, char **output)
+EXPORT int TclShowVersion(void *ctx, char **error, char **output)
 {
   *output = strdup(MdsRelease());
   tclAppend(output, "\n");

@@ -46,6 +46,7 @@ int XmdsOnOffToggleButtonApply(Widget w);
 	Description:
 
 ------------------------------------------------------------------------------*/
+#include <config.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <ncidef.h>
@@ -84,7 +85,7 @@ static XtResource resources[] = {
    XmRImmediate, (void *)1}
 };
 
-Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
   Resources *info = (Resources *) XtMalloc(sizeof(Resources));
@@ -115,7 +116,7 @@ static void Destroy(Widget w, Resources * info, XtPointer cb)
   XtFree((char *)info);
 }
 
-Boolean XmdsIsOnOffToggleButton(Widget w)
+EXPORT Boolean XmdsIsOnOffToggleButton(Widget w)
 {
   return GetResources(w) != 0;
 }
@@ -135,20 +136,20 @@ static Resources *GetResources(Widget w)
   return answer;
 }
 
-void XmdsOnOffToggleButtonReset(Widget w)
+EXPORT void XmdsOnOffToggleButtonReset(Widget w)
 {
   Resources *info = GetResources(w);
   if (info)
     XmToggleButtonSetState(w, XmdsIsOn(info->nid + info->nid_offset), 0);
 }
 
-int XmdsOnOffToggleButtonPut(Widget w)
+EXPORT int XmdsOnOffToggleButtonPut(Widget w)
 {
   Resources *info = GetResources(w);
   return info ? XmdsSetState(info->nid + info->nid_offset, w) : 0;
 }
 
-int XmdsOnOffToggleButtonApply(Widget w)
+EXPORT int XmdsOnOffToggleButtonApply(Widget w)
 {
   Resources *info = GetResources(w);
   return info ? (info->put_on_apply ? XmdsOnOffToggleButtonPut(w) : 1) : 0;

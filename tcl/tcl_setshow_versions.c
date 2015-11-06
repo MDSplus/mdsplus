@@ -6,12 +6,13 @@
 #include <dcl.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <mdsdcl_messages.h>
 
 /***************************************************************
  * TclSetVersions:
  **************************************************************/
 
-int TclSetVersions(void *ctx, char **error, char **output)
+EXPORT int TclSetVersions(void *ctx, char **error, char **output)
 {
   int status = 1;
 
@@ -46,7 +47,7 @@ int TclSetVersions(void *ctx, char **error, char **output)
   return status;
 }
 
-int TclShowVersions(void *ctx, char **error, char **output)
+EXPORT int TclShowVersions(void *ctx, char **error, char **output)
 {
   int in_model, in_pulse, status;
   DBI_ITM itmlst[] =

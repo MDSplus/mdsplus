@@ -665,7 +665,7 @@ static char *GetFname(char *tree, int shot)
 {
   int status = 1;
   static char *ans = 0;
-  struct descriptor fname = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d fname = { 0, DTYPE_T, CLASS_D, 0 };
   void *arglist[4];
   char expression[128];
   static void *TdiExecute = 0;

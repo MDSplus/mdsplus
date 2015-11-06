@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <config.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -16,6 +17,8 @@ extern int TdiData();
 extern int TdiEvaluate();
 extern int TdiDecompile();
 extern int TdiCompile();
+extern int TdiConvert();
+
 extern void *createScalarData(int dtype, int length, char *ptr, void *unitsData, void *errorData,
 			      void *helpData, void *validationData, void *tree);
 extern void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr,
@@ -39,13 +42,7 @@ extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int
 extern void *getManyObj(char *serializedIn);
 extern void *putManyObj(char *serializedIn);
 
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
-void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
+EXPORT void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 {
   EMPTYXD(emptyXd);
   int status;
@@ -68,7 +65,7 @@ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 
 #define MAX_DIMS 32
 
-void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims,
+EXPORT void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims,
 			void *ptr)
 {
   EMPTYXD(emptyXd);
@@ -101,7 +98,7 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 }
 
 #define MAX_ARGS 128
-void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs)
+EXPORT void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xds[MAX_ARGS];
@@ -135,7 +132,7 @@ void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndes
   return xdPtr;
 }
 
-void *convertToApdDsc(int type, int ndescs, void **descs)
+EXPORT void *convertToApdDsc(int type, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd **xds =
@@ -170,7 +167,7 @@ void *convertToApdDsc(int type, int ndescs, void **descs)
   return xdPtr;
 }
 
-void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
+EXPORT void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 {
   EMPTYXD(emptyXd);
   int status;
@@ -187,7 +184,7 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
   return (void *)xdPtr;
 }
 
-void *convertFromDsc(void *ptr, void *tree)
+EXPORT void *convertFromDsc(void *ptr, void *tree)
 {
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)ptr;
   struct descriptor *dscPtr;
@@ -337,7 +334,7 @@ void *convertFromDsc(void *ptr, void *tree)
   return (0);
 }
 
-void freeDsc(void *dscPtr)
+EXPORT void freeDsc(void *dscPtr)
 {
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)dscPtr;
   if (xdPtr->class != CLASS_XD) {
@@ -348,7 +345,7 @@ void freeDsc(void *dscPtr)
   free((char *)xdPtr);
 }
 
-char *decompileDsc(void *ptr)
+EXPORT char *decompileDsc(void *ptr)
 {
   int status;
   EMPTYXD(xd);
@@ -369,7 +366,7 @@ char *decompileDsc(void *ptr)
   return buf;
 }
 
-void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
+EXPORT void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
 {
   int varIdx;
   int i, status;
@@ -409,7 +406,7 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, in
   return data;
 }
 
-void *convertToByte(void *dsc)
+EXPORT void *convertToByte(void *dsc)
 {
   int status;
   unsigned short opcode = OpcByte;
@@ -427,7 +424,7 @@ void *convertToByte(void *dsc)
   return xdPtr;
 }
 
-void *convertToByteUnsigned(void *dsc)
+EXPORT void *convertToByteUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcByteUnsigned;
@@ -445,7 +442,7 @@ void *convertToByteUnsigned(void *dsc)
   return xdPtr;
 }
 
-void *convertToShort(void *dsc)
+EXPORT void *convertToShort(void *dsc)
 {
   int status;
   unsigned short opcode = OpcWord;
@@ -463,7 +460,7 @@ void *convertToShort(void *dsc)
   return xdPtr;
 }
 
-void *convertToShortUnsigned(void *dsc)
+EXPORT void *convertToShortUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcWordUnsigned;
@@ -481,7 +478,7 @@ void *convertToShortUnsigned(void *dsc)
   return xdPtr;
 }
 
-void *convertToInt(void *dsc)
+EXPORT void *convertToInt(void *dsc)
 {
   int status;
   unsigned short opcode = OpcLong;
@@ -499,7 +496,7 @@ void *convertToInt(void *dsc)
   return xdPtr;
 }
 
-void *convertToIntUnsigned(void *dsc)
+EXPORT void *convertToIntUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcLongUnsigned;
@@ -517,7 +514,7 @@ void *convertToIntUnsigned(void *dsc)
   return xdPtr;
 }
 
-void *convertToLong(void *dsc)
+EXPORT void *convertToLong(void *dsc)
 {
   int status;
   unsigned short opcode = OpcQuadword;
@@ -535,7 +532,7 @@ void *convertToLong(void *dsc)
   return xdPtr;
 }
 
-void *convertToLongUnsigned(void *dsc)
+EXPORT void *convertToLongUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcQuadwordUnsigned;
@@ -553,7 +550,7 @@ void *convertToLongUnsigned(void *dsc)
   return xdPtr;
 }
 
-void *convertToFloat(void *dsc)
+EXPORT void *convertToFloat(void *dsc)
 {
   int status;
   unsigned short opcode = OpcFloat;
@@ -572,7 +569,7 @@ void *convertToFloat(void *dsc)
   return xdPtr;
 }
 
-void *convertToDouble(void *dsc)
+EXPORT void *convertToDouble(void *dsc)
 {
   int status;
   unsigned short opcode = OpcFT_float;
@@ -591,7 +588,7 @@ void *convertToDouble(void *dsc)
   return xdPtr;
 }
 
-void *convertToShape(void *dsc)
+EXPORT void *convertToShape(void *dsc)
 {
   int status;
   unsigned short opcode = OpcShape;
@@ -609,7 +606,7 @@ void *convertToShape(void *dsc)
   return xdPtr;
 }
 
-void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
+EXPORT void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
 {
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
@@ -633,7 +630,7 @@ void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
   return retXd;
 }
 
-void *convertToUnits(void *dsc, void *unitsDsc)
+EXPORT void *convertToUnits(void *dsc, void *unitsDsc)
 {
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
@@ -653,7 +650,7 @@ void *convertToUnits(void *dsc, void *unitsDsc)
   return retXd;
 }
 
-void *convertToError(void *dsc, void *errorDsc)
+EXPORT void *convertToError(void *dsc, void *errorDsc)
 {
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
@@ -673,7 +670,7 @@ void *convertToError(void *dsc, void *errorDsc)
   return retXd;
 }
 
-char *serializeData(void *dsc, int *retSize, void **retDsc)
+EXPORT char *serializeData(void *dsc, int *retSize, void **retDsc)
 {
   int status;
   struct descriptor *dscIn = (struct descriptor *)dsc;
@@ -699,7 +696,7 @@ char *serializeData(void *dsc, int *retSize, void **retDsc)
   return arrPtr->pointer;
 }
 
-extern void *deserializeData(char const *serialized)
+EXPORT void *deserializeData(char const *serialized)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xdPtr;
@@ -713,11 +710,11 @@ extern void *deserializeData(char const *serialized)
   return xdPtr;
 }
 
-extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
+EXPORT void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
 {
-  struct descriptor dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
   short len;
-  int status = LibSysAscTim(&len, &dateDsc, (int *)timePtr);
+  int status = LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)timePtr);
   if (len > bufLen)
     len = bufLen;
   if (len > 0)
@@ -726,7 +723,7 @@ extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int
   *retLen = len;
 }
 
-extern int64_t convertAsciiToTime(const char *ascTime)
+EXPORT int64_t convertAsciiToTime(const char *ascTime)
 {
   int64_t time;
 //      LibConvertDateString("now", &time);
@@ -765,7 +762,7 @@ EXPORT void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims,
   free((char *)fArr);
 }
 
-extern void convertToIEEEFloat(int dtype, int length, void *ptr)
+EXPORT void convertToIEEEFloat(int dtype, int length, void *ptr)
 {
   int dims[1] = { 1 };
   convertToIEEEFloatArray(dtype, length, 1, dims, ptr);

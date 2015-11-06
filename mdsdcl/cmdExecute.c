@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
+#include <config.h>
 #include <libroutines.h>
 
 #include <libxml/tree.h>
@@ -1008,7 +1009,7 @@ static void mdsdclSetupCommands(xmlDocPtr doc)
                      the xml command definition file.
 */
 
-int mdsdclAddCommands(const char *name_in, char **error)
+EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 {
   int i;
   char *name = 0;
@@ -1099,7 +1100,7 @@ int mdsdclAddCommands(const char *name_in, char **error)
   return status;
 }
 
-int mdsdcl_do_command(char const *command)
+EXPORT int mdsdcl_do_command(char const *command)
 {
   char *error = 0;
   char *output = 0;
@@ -1115,7 +1116,7 @@ int mdsdcl_do_command(char const *command)
   return status;
 }
 
-int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc,
+EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc,
 			  struct descriptor_xd *output_dsc)
 {
   char *error = 0;
@@ -1274,7 +1275,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   return status;
 }
 
-int cli_present(void *ctx, const char *name)
+EXPORT int cli_present(void *ctx, const char *name)
 {
   dclCommandPtr cmd = (dclCommandPtr) ctx;
   int i;
@@ -1293,7 +1294,7 @@ int cli_present(void *ctx, const char *name)
   return ans;
 }
 
-int cli_get_value(void *ctx, const char *name, char **value)
+EXPORT int cli_get_value(void *ctx, const char *name, char **value)
 {
   dclCommandPtr cmd = (dclCommandPtr) ctx;
   int i;
@@ -1338,28 +1339,28 @@ int mdsdcl_get_input_nosymbols(char *prompt, char **input)
 static void (*MDSDCL_OUTPUT_RTN) (char *output) = 0;
 static void (*MDSDCL_ERROR_RTN) (char *error) = 0;
 
-void *mdsdclSetOutputRtn(void (*rtn) ())
+EXPORT void *mdsdclSetOutputRtn(void (*rtn) ())
 {
   void *old_rtn = MDSDCL_OUTPUT_RTN;
   MDSDCL_OUTPUT_RTN = rtn;
   return old_rtn;
 }
 
-void mdsdclFlushOutput(char *output)
+EXPORT void mdsdclFlushOutput(char *output)
 {
   if (MDSDCL_OUTPUT_RTN) {
     MDSDCL_OUTPUT_RTN(output);
   }
 }
 
-void *mdsdclSetErrorRtn(void (*rtn) ())
+EXPORT void *mdsdclSetErrorRtn(void (*rtn) ())
 {
   void *old_rtn = MDSDCL_ERROR_RTN;
   MDSDCL_ERROR_RTN = rtn;
   return old_rtn;
 }
 
-void mdsdclFlushError(char *error)
+EXPORT void mdsdclFlushError(char *error)
 {
   if (MDSDCL_ERROR_RTN) {
     MDSDCL_ERROR_RTN(error);

@@ -153,6 +153,20 @@ ListTreeReturnStruct *ListTreeGetDrop P_((Widget w));
 Widget XmCreateScrolledListTree P_((Widget parent, char *name, Arg * args, Cardinal count));
 
 #undef P_
+#else
+
+extern EXPORT void ListTreeRenameItem(ListTreeWidget w, ListTreeItem * item, char *string);
+extern EXPORT void ListTreeRefresh (ListTreeWidget w);
+extern EXPORT void ListTreeRefreshOff (ListTreeWidget w);
+extern EXPORT void ListTreeRefreshOn (ListTreeWidget w);
+extern EXPORT ListTreeItem *ListTreeFirstItem (ListTreeWidget w);
+extern EXPORT int ListTreeDelete(ListTreeWidget w, ListTreeItem * item);
+extern EXPORT void ListTreeSetItemPixmaps (ListTreeWidget w, ListTreeItem * item, Pixmap openPixmap,
+					   Pixmap closedPixmap);
+extern EXPORT ListTreeItem *ListTreeFindChildName (ListTreeWidget w, ListTreeItem * item, char *name);
+extern EXPORT int ListTreeOrderChildren (ListTreeWidget w, ListTreeItem * item);
+extern EXPORT ListTreeItem *ListTreeAdd (ListTreeWidget w, ListTreeItem * parent, char *string);
+
 #endif
 
 #endif				/* _ListTree_H */

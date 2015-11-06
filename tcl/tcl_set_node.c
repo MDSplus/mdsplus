@@ -13,6 +13,7 @@
 #include <ncidef.h>
 #include <usagedef.h>
 #include <strroutines.h>
+#include <mdsdcl_messages.h>
 
 #include "tcl_p.h"
 
@@ -29,7 +30,7 @@
 	/****************************************************************
 	 * TclSetNode:
 	 ****************************************************************/
-int TclSetNode(void *ctx, char **error, char **output)
+EXPORT int TclSetNode(void *ctx, char **error, char **output)
 {
   int nid;
   int status = 1;
@@ -100,7 +101,7 @@ int TclSetNode(void *ctx, char **error, char **output)
     {
       int set_flags;
       int clear_flags;
-      struct descriptor dsc_path = { 0, DTYPE_T, CLASS_D, 0 };
+      struct descriptor_d dsc_path = { 0, DTYPE_T, CLASS_D, 0 };
       NCI_ITM set_itmlst[] =
 	  { {0, NciSET_FLAGS, (unsigned char *)&set_flags, 0}, {0, NciEND_OF_LIST} };
       NCI_ITM clear_itmlst[] =

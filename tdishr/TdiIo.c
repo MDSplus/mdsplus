@@ -72,7 +72,7 @@ STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 {
   int status;
-  struct descriptor unit_d = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
   status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
   if (unit_d.length != sizeof(*unit))
     *unit = stdout;
@@ -88,7 +88,7 @@ STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
 {
   int status;
-  struct descriptor unit_d = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
   status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
   if (unit_d.length != sizeof(*unit))
     *unit = stdin;
@@ -120,7 +120,7 @@ int Tdi1DateTime(int opcode, int narg, struct descriptor *list[], struct descrip
   if (status & 1)
     status = MdsGet1DxS(&length, &dtype, out_ptr);
   if (status & 1)
-    status = LibSysAscTim(&len, out_ptr->pointer, ptime, 0);
+    status = LibSysAscTim(&len, out_ptr->pointer, ptime);
   if (status & 1)
     out_ptr->pointer->length = len;
   return status;
@@ -197,9 +197,9 @@ int Tdi1Fopen(int opcode, int narg, struct descriptor *list[], struct descriptor
   if (status & 1)
     status = TdiData(list[1], &dmode MDS_END_ARG);
   if (status & 1)
-    status = StrAppend(&dname, &dNUL);
+    status = StrAppend(&dname, (struct descriptor *)&dNUL);
   if (status & 1)
-    status = StrAppend(&dmode, &dNUL);
+    status = StrAppend(&dmode, (struct descriptor *)&dNUL);
   if (status & 1) {
     unit = fopen(dname.pointer, dmode.pointer);
     status = TdiPutUnit(unit, out_ptr);
@@ -228,8 +228,8 @@ int Tdi1Spawn(int opcode, int narg, struct descriptor *list[], struct descriptor
   if (narg > 2 && list[2] && status & 1)
     status = TdiText(list[2], &out MDS_END_ARG);
   if (status & 1) {
-    stat1 = LibSpawn(&cmd, 1, 0);
-    status = TdiPutLong((int *)&stat1, out_ptr);
+    stat1 = LibSpawn((struct descriptor *)&cmd, 1, 0);
+    status = TdiPutLong(&stat1, out_ptr);
   }
   return status;
 }

@@ -66,15 +66,15 @@ STATIC_CONSTANT record_four rec0 =
   { sizeof(opcode), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&opcode, 4,
     __fill_value__ {0, 0, 0, 0} };
 STATIC_CONSTANT DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
-STATIC_CONSTANT struct descriptor EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
 STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 /*--------------------------------------------------------------------------
 	The inner routine scans some classes and tries to compress arrays.
 	If successful returns 1, if unsuccessful returns NORMAL.
 */
-STATIC_ROUTINE int compress(struct descriptor const *pcimage,
-			    struct descriptor const *pcentry, int64_t delta, struct descriptor *pwork)
+STATIC_ROUTINE int compress(const struct descriptor *pcimage,
+			    const struct descriptor *pcentry, int64_t delta, struct descriptor *pwork)
 {
   int j, stat1, status = 1;
   int bit = 0, asize, nitems, (*symbol) ();
@@ -82,7 +82,8 @@ STATIC_ROUTINE int compress(struct descriptor const *pcimage,
   array_coef *pca0, *pca1;
   struct descriptor_a *pdat, *porig;
   record_four *prec;
-  struct descriptor dximage, dxentry, *pd0, *pd1, **ppd;
+  struct descriptor_d dximage, dxentry;
+  struct descriptor *pd0, *pd1, **ppd;
   int align_size;
   if (pwork)
     switch (pwork->class) {
@@ -167,7 +168,7 @@ STATIC_ROUTINE int compress(struct descriptor const *pcimage,
 	  pd1 = &pd0[1] + dximage.length;
 	  if ((char *)pd1 < (char *)plim) {
 	    prec->dscptrs[0] = pd0;
-	    *pd0 = dximage;
+	    *pd0 = *(struct descriptor *)&dximage;
 	    _MOVC3(dximage.length, dximage.pointer, pd0->pointer = (char *)&pd0[1]);
 	  }
 	  pd0 = pd1;
@@ -177,7 +178,7 @@ STATIC_ROUTINE int compress(struct descriptor const *pcimage,
 	  pd1 = &pd0[1] + dxentry.length;
 	  if ((char *)pd1 < (char *)plim) {
 	    prec->dscptrs[1] = pd0;
-	    *pd0 = dxentry;
+	    *pd0 = *(struct descriptor *)&dxentry;
 	    _MOVC3(dxentry.length, dxentry.pointer, pd0->pointer = (char *)&pd0[1]);
 	  }
 	  pd0 = pd1;
@@ -228,9 +229,9 @@ STATIC_ROUTINE int compress(struct descriptor const *pcimage,
 /*--------------------------------------------------------------------------
 	The outside routine.
 */
-int MdsCompress(struct descriptor const *cimage_ptr,
-		struct descriptor const *centry_ptr,
-		struct descriptor const *in_ptr, struct descriptor_xd *out_ptr)
+EXPORT int MdsCompress(const struct descriptor *cimage_ptr,
+		const struct descriptor *centry_ptr,
+		const struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd work;
@@ -298,9 +299,9 @@ Compact/copy from work.
 
 		status = MdsDecompress(%ref(class_ca or r_function), %ref(output_xd))
 */
-int MdsDecompress(struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr)
+EXPORT int MdsDecompress(const struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr)
 {
-  struct descriptor_r *prec = rec_ptr;
+  const struct descriptor_r *prec = rec_ptr;
   int status, (*symbol) ();
   if (prec == 0) {
     MdsFree1Dx(out_ptr, NULL);

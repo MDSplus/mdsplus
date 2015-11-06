@@ -5,13 +5,13 @@
 #include <ncidef.h>
 #include <time.h>
 #include <string.h>
+#include <tdishr.h>
+#include <camshr.h>
 
-extern int TdiData();
-extern int TdiText();
-extern int CamX();
-extern int CamQ();
 
-int DevLong(int *nid, int *ans)
+
+
+EXPORT int DevLong(int *nid, int *ans)
 {
   DESCRIPTOR_NID(nid_d, 0);
   DESCRIPTOR_LONG(ans_d, 0);
@@ -20,7 +20,7 @@ int DevLong(int *nid, int *ans)
   return TdiData(&nid_d, &ans_d MDS_END_ARG);
 }
 
-int DevFloat(int *nid, float *ans)
+EXPORT int DevFloat(int *nid, float *ans)
 {
   DESCRIPTOR_NID(nid_d, 0);
   DESCRIPTOR_FLOAT(ans_d, 0);
@@ -29,7 +29,7 @@ int DevFloat(int *nid, float *ans)
   return TdiData(&nid_d, &ans_d MDS_END_ARG);
 }
 
-int DevCamChk(int status, int *expect_x, int *expect_q)
+EXPORT int DevCamChk(int status, int *expect_x, int *expect_q)
 {
   if (!(status & 1))
     return status;
@@ -47,7 +47,7 @@ int DevCamChk(int status, int *expect_x, int *expect_q)
   return 1;
 }
 
-int DevNids(struct descriptor *niddsc, int size, char *buffer)
+EXPORT int DevNids(struct descriptor *niddsc, int size, char *buffer)
 {
   NCI_ITM nci_lst[] = { {0, NciCONGLOMERATE_NIDS, 0, 0}, {0, NciEND_OF_LIST, 0, 0} };
   nci_lst[0].buffer_length = size;
@@ -55,14 +55,14 @@ int DevNids(struct descriptor *niddsc, int size, char *buffer)
   return TreeGetNci(*(int *)niddsc->pointer, nci_lst);
 }
 
-int DevText(int *nid, struct descriptor *out)
+EXPORT int DevText(int *nid, struct descriptor_d *out)
 {
   DESCRIPTOR_NID(niddsc, 0);
   niddsc.pointer = (char *)nid;
   return TdiText(&niddsc, out MDS_END_ARG);
 }
 
-int DevNid(int *nid_in, int *nid_out)
+EXPORT int DevNid(int *nid_in, int *nid_out)
 {
   EMPTYXD(xd);
   int status = TreeGetRecord(*nid_in, &xd);
@@ -85,7 +85,7 @@ int DevNid(int *nid_in, int *nid_out)
   return status;
 }
 
-int DevWait(float time_in)
+EXPORT int DevWait(float time_in)
 {
   struct timespec req = { (time_t) time_in, (long)((time_in - (long)time_in) * 1E9) };
   struct timespec rem = { 0, 0 };

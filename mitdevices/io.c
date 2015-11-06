@@ -3,10 +3,11 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <fcntl.h>
 #include <string.h>
 #include "acq32ioctl.h"
-
+#include <config.h>
 #ifndef MAX
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
 #endif
@@ -16,7 +17,7 @@
 
 #define MAX_CHUNK_SIZE 1024*1024
 
-int OPEN(const char *pathname, int flags)
+EXPORT int OPEN(const char *pathname, int flags)
 {
   int fd = open(pathname, flags);
   if (fd == -1) {
@@ -27,7 +28,7 @@ int OPEN(const char *pathname, int flags)
   return fd;
 }
 
-int READ(int fd, void *buf, size_t count)
+EXPORT int READ(int fd, void *buf, size_t count)
 {
   int bytes = 0;
   int bytes_to_read = count;
@@ -46,22 +47,22 @@ int READ(int fd, void *buf, size_t count)
   return count - bytes_to_read;
 }
 
-int CLOSE(int fd)
+EXPORT int CLOSE(int fd)
 {
   return close(fd);
 }
 
-FILE *FOPEN(const char *fname, const char *mode)
+EXPORT FILE *FOPEN(const char *fname, const char *mode)
 {
   return fopen(fname, mode);
 }
 
-int FCLOSE(FILE * fd)
+EXPORT int FCLOSE(FILE * fd)
 {
   return fclose(fd);
 }
 
-size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE * stream)
+EXPORT size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
   unsigned int samples_to_read = nmemb;
   int chunk_size;
@@ -98,17 +99,17 @@ size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE * stream)
 /*   return ((this_chunk==0) ? nmemb : this_chunk); */
 /* } */
 
-size_t FWRITE(void *ptr, size_t size, size_t nmemb, FILE * stream)
+EXPORT size_t FWRITE(void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
   return fwrite(ptr, size, nmemb, stream);
 }
 
-int FSEEK(FILE * stream, long offset, int whence)
+EXPORT int FSEEK(FILE * stream, long offset, int whence)
 {
   return fseek(stream, offset, whence);
 }
 
-int DMARead(short *buffer, const char *fname, int *chan, int *samples, int *active_chans)
+EXPORT int DMARead(short *buffer, const char *fname, int *chan, int *samples, int *active_chans)
 {
   int lstart = 0;
   int lend = *samples;
@@ -141,7 +142,7 @@ int DMARead(short *buffer, const char *fname, int *chan, int *samples, int *acti
   return out;
 }
 
-int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *active_chans,
+EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *active_chans,
 	     int *start, int *end, int *inc, float *coeffs, int *num_coeffs)
 {
   int sample;
@@ -216,7 +217,7 @@ int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *act
   return out;
 }
 
-int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, float *coeffs,
+EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, float *coeffs,
 	     int *num_coeffs)
 {
   int samples_to_go;
@@ -293,7 +294,7 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
   return (*end - *start + 1) / *inc;
 }
 
-int Convolve(short *outbuf, short *inbuf, int inbuf_len, float *coeffs, int num_coeffs, int inc)
+EXPORT int Convolve(short *outbuf, short *inbuf, int inbuf_len, float *coeffs, int num_coeffs, int inc)
 {
   int i, j, idx;
   int sample = 0;

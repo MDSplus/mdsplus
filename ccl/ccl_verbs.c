@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <dcl.h>
 #include <string.h>
+#include <camshr.h>
+#include <mdsshr.h>
 
 static int ParseQualifiers();
 static int CheckErrors();
@@ -23,40 +25,21 @@ static int LastStatus;
 static int Xrequired = 1;
 static int Qrequired = 0;
 
-extern int CamBytcnt(IOSB * iosb);
-extern int CamError(int *xexp, int *qexp, IOSB * iosb_in);
-extern int CamX(IOSB * iosb_in);
-extern int CamQ(IOSB * iosb_in);
-extern int CamGetStat(IOSB * iosb_in);
-extern int CamXandQ(IOSB * iosb_in);
-extern int CamFQrepw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamFQstopw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamFStopw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamQrepw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamQscanw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamQstopw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamStopw(char *name, int a, int f, int count, void *data, int mem, IOSB * iosb);
-extern int CamPiow(char *name, int a, int f, void *data, int mem, IOSB * iosb);
-extern int CamPioQrepw(char *name, int a, int f, void *data, int mem, IOSB * iosb);
-extern int CamVerbose(int);
-extern char *MdsGetMsg(int);
-extern int MDSfprintf(FILE *, const char *, const char *);
-
 #define not_implemented(a) \
-    int a(){printf("\n==>  %s : This command is not implemented on this platform\n\n",#a);return 0;}
+    EXPORT int a(){printf("\n==>  %s : This command is not implemented on this platform\n\n",#a);return 0;}
 
-#define multi_io(ccl_name,cam_name) int ccl_name(void *ctx, char **error, char **output) \
+#define multi_io(ccl_name,cam_name) EXPORT int ccl_name(void *ctx, char **error, char **output) \
 {\
   int status = ParseQualifiers(ctx, error, output);				\
-  if (status & 1) status = cam_name(Name,A,F,Count,D,Mem,&iosb);\
-  return CheckErrors(status,&iosb, error, output);				\
+  if (status & 1) status = cam_name(Name,A,F,Count,D,Mem,(unsigned short *)&iosb); \
+  return CheckErrors(status,(unsigned short *)&iosb, error, output);	\
 }
 
-#define single_io(ccl_name,cam_name) int ccl_name(void *ctx, char **error, char **output) \
+#define single_io(ccl_name,cam_name) EXPORT int ccl_name(void *ctx, char **error, char **output) \
 {\
   int status = ParseQualifiers(ctx, error, output);				\
-  if (status & 1) status = cam_name(Name,A,F,D,Mem,&iosb);\
-  return CheckErrors(status,&iosb, error, output);		  \
+  if (status & 1) status = cam_name(Name,A,F,D,Mem,(unsigned short *)&iosb); \
+  return CheckErrors(status,(unsigned short *)&iosb, error, output);	\
 }
 
 single_io(ccl_pio, CamPiow)
@@ -200,14 +183,14 @@ static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
   LastStatus = status;
   if (status & 1) {
     if (Xrequired) {
-      int x = CamX(iosb) & 1;
+      int x = CamX((unsigned short *)iosb) & 1;
       if (x && (Xrequired == -1))
 	*output = strdup("CAMX: got X=1, expecting X=0\n");
       else if (!x && (Xrequired == 1))
 	*output = strdup("CAMNOX: got X=0, expecting X=1\n");
     }
     if (Qrequired) {
-      int q = CamQ(iosb) & 1;
+      int q = CamQ((unsigned short *)iosb) & 1;
       if (q && (Qrequired == -1))
 	*output = strdup("CAMQ: got Q=1, expecting Q=0\n");
       else if (!q && (Qrequired == 1))
@@ -223,7 +206,7 @@ static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
   return status;
 }
 
-int ccl_set_xandq(void *ctx, char **error, char **output)
+EXPORT int ccl_set_xandq(void *ctx, char **error, char **output)
 {
   char *value = 0;
   if (cli_get_value(ctx, "x", &value) & 1) {
@@ -247,29 +230,29 @@ int ccl_set_xandq(void *ctx, char **error, char **output)
   return 1;
 }
 
-int ccl_set_module(void *ctx, char **error, char **output)
+EXPORT int ccl_set_module(void *ctx, char **error, char **output)
 {
   int status = cli_get_value(ctx, "name", &DefName) & 1;
   return status;
 }
 
-int ccl_show_module(void *ctx, char **error, char **output)
+EXPORT int ccl_show_module(void *ctx, char **error, char **output)
 {
   *output = malloc((DefName ? strlen(DefName) : 12) + 100);
   sprintf(*output, "Module set to %s\n", DefName ? DefName : "<undefined>");
   return 1;
 }
 
-int ccl_show_status(void *ctx, char **error, char **output)
+EXPORT int ccl_show_status(void *ctx, char **error, char **output)
 {
   *output = malloc(100);
   sprintf(*output,"Last status = 0x%x, iosb status = 0x%x, bytcnt = %d, %s, %s\n",
-	 LastStatus, iosb.condition, CamBytcnt(&iosb), (CamX(&iosb) & 1) ? "X=1" : "X=0",
-	 (CamQ(&iosb) & 1) ? "Q=1" : "Q=0");
+	  LastStatus, iosb.condition, CamBytcnt((unsigned short *)&iosb), (CamX((unsigned short *)&iosb) & 1) ? "X=1" : "X=0",
+	  (CamQ((unsigned short *)&iosb) & 1) ? "Q=1" : "Q=0");
   return 1;
 }
 
-int ccl_show_data(void *ctx, char **error, char **output)
+EXPORT int ccl_show_data(void *ctx, char **error, char **output)
 {
   int *d32 = (int *)D;
   short *d16 = (short *)D;
@@ -338,12 +321,12 @@ int ccl_show_data(void *ctx, char **error, char **output)
   return 1;
 }
 
-int ccl_set_verbose(void *cts, char **error, char **output)
+EXPORT int ccl_set_verbose(void *cts, char **error, char **output)
 {
   return CamVerbose(1);
 }
 
-int ccl_set_noverbose(void *cts, char **error, char **output)
+EXPORT int ccl_set_noverbose(void *cts, char **error, char **output)
 {
   return CamVerbose(0);
 }

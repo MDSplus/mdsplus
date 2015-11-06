@@ -7,10 +7,10 @@
 #include "l3512_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcValue;
+//extern unsigned short OpcValue;
 
-extern int TdiKind();
-extern int CamQ();
+
+
 
 typedef struct {
   unsigned range:3;
@@ -30,7 +30,7 @@ static int zero = 0;
 #define stop(name,f,a,c,d)  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 #define fstop(name,f,a,c,d)  return_on_error(DevCamChk(CamFStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 
-int l3512___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l3512___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   float duration;
@@ -110,7 +110,7 @@ static DwellCode ConvertDwell(float *dwell)
   return answer;
 }
 
-int l3512___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l3512___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
 
   unsigned short data[32768];

@@ -38,7 +38,7 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerSetLogging(char *server, char logging_mode)
+EXPORT int ServerSetLogging(char *server, char logging_mode)
 {
   struct descrip p1;
   return ServerSendMessage(0, server, SrvSetLogging, 0, 0, 0, 0, 0, 1,

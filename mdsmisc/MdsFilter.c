@@ -30,7 +30,7 @@
 #include <math.h>
 #include "filter.h"
 
-struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off,
+EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off,
 				int *num_in_poles)
 {
   static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
@@ -114,7 +114,7 @@ struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float 
   return &out_xd;
 }
 
-void PrintFilter(Filter * filter)
+EXPORT void PrintFilter(Filter * filter)
 {
   int i, j;
 
@@ -130,3 +130,4 @@ void PrintFilter(Filter * filter)
     }
   }
 }
+

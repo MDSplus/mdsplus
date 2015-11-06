@@ -105,8 +105,8 @@ Assumptions:
 #include "hv4032_gen.h"
 #include "devroutines.h"
 
-extern int CamLamwait();
-extern int TdiCompile();
+
+
 
 static void GetPodSettings(int nid, int *settings);
 
@@ -135,7 +135,7 @@ static void GetPodSettings(int nid, int *settings);
 static int one = 1;
 extern int DevWait(float);
 
-int hv4032___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int hv4032___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = 1;
   int pod;
@@ -183,7 +183,7 @@ static void GetPodSettings(int nid, int *settings)
   return;
 }
 
-int hv4032___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int hv4032___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status = 1;
   int i;
@@ -208,13 +208,13 @@ int hv4032___store(struct descriptor *niddsc, InStoreStruct * setup)
       settings[i] = -1;
   }
   wait_hv2;
-  return_on_error(TdiCompile(&out_dsc, &settings_dsc, &out_xd MDS_END_ARG), status);
+  return_on_error(TdiCompile((struct descriptor *)&out_dsc, &settings_dsc, &out_xd MDS_END_ARG), status);
   return_on_error(TreePutRecord(readout_nid, (struct descriptor *)&out_xd, 0), status);
   MdsFree1Dx(&out_xd, 0);
   return status;
 }
 
-int hv4032___on(struct descriptor *niddsc, InOnStruct * setup)
+EXPORT int hv4032___on(struct descriptor *niddsc, InOnStruct * setup)
 {
   int status = 1;
   send_hv2(1, 0, 5);
@@ -222,7 +222,7 @@ int hv4032___on(struct descriptor *niddsc, InOnStruct * setup)
   return status;
 }
 
-int hv4032___off(struct descriptor *niddsc_ptr, InOffStruct * setup)
+EXPORT int hv4032___off(struct descriptor *niddsc_ptr, InOffStruct * setup)
 {
   int status = 1;
   send_hv2(0, 0, 5);
