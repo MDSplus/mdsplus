@@ -23,6 +23,17 @@ void __assert_fail (const char *__assertion, const char *__file,
 }
 
 
+void __test_abort(int code, const char *__msg, const char *__file,
+                  unsigned int __line, const char *__function) 
+{ 
+    printf(" .-----------------------------------. \n"
+           " |  TEST ABORTED                     | \n"
+           " '-----------------------------------' \n"
+           "  file: %s ,  function: %s, line: %d "
+           "  message:  (%s) \n", 
+           __file,__function,__line,__msg);
+    exit(code); 
+}
 
 
 void __test_setfork(int value) {}
@@ -30,8 +41,6 @@ void __test_setfork(int value) {}
 void __test_init(const char *test_name, const char *file, const int line) {}
 
 void __test_end() {}
-
-void __test_abort(int code) { exit(code); }
 
 int  __setup_parent() {}
 

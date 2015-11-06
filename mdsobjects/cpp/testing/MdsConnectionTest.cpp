@@ -1,6 +1,7 @@
+// if windows skip this test .. //
+#include "testing.h"
 #ifdef _WIN32
-// if windows skip this test .. TODO: return skip code
-int main(int argc, char *argv[]) {return 0;}
+int main(int argc, char *argv[]) { SKIP_TEST }
 #else 
 
 #include <unistd.h>
@@ -14,7 +15,6 @@ int main(int argc, char *argv[]) {return 0;}
 #include <mdsobjects.h>
 
 
-#include "testing.h"
 #include "testutils/testutils.h"
 #include "testutils/unique_ptr.h"
 #include "testutils/MdsIpInstancer.h"

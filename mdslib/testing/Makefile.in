@@ -444,6 +444,7 @@ GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
 HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
@@ -656,18 +657,6 @@ _tap_py_execute = \
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
 # LOG_DRIVER      = @TS_LOG_DRIVER@
-
-# if MINGW
-# if HAVE_WINECONSOLE
-# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
-# LOG_COMPILER += wine
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# LOG_COMPILER += sh -c 'exit 77'
-# endif
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# endif
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
@@ -1181,7 +1170,8 @@ tests:
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
 
 	echo "TAP version 13" > $@;
 	count=0;

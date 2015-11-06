@@ -15,15 +15,16 @@ TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
 
-#          example  
-
 C_TESTS = \
           test_options \
           example2 \
           example3 \
           example4 \
           example_assert \
-          skip_test
+          skip_test \
+          error_test \
+          fork_success \
+          fork_fail
           
 #          example 
           
@@ -35,27 +36,7 @@ PL_TESTS =
 
 TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
 
-# TESTS_ENVIRONMENT =
-# LOG_COMPILER =
-
-# if MINGW
-# if HAVE_WINECONSOLE
-# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
-# LOG_COMPILER += wine
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# LOG_COMPILER += sh -c 'exit 77'
-# endif
-
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# endif
-
-
-
-
 # $(eval $(call ${srcdir}/prova.sh))
-
 
 
 bin_PROGRAMS = example3
@@ -63,24 +44,6 @@ example3_SOURCES = example3.cpp
 
 bin_PROGRAMS += example_assert
 example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
-
-
-#
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-#if USE_VALGRIND
-#LOG_COMPILER = valgrind
-#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-#               --dsymutil=yes --leak-check=yes
-
-#endif
 
 
 #

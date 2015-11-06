@@ -829,7 +829,13 @@ int main(int argc, char *argv[])
     END_TESTING;            
 
     BEGIN_TESTING(TreeNode-Tree reference);
+
+#   ifdef _WIN32    
+    _putenv_s("test_node_path",".");
+#   else    
     setenv("test_node_path",".",1);
+#   endif
+
     Tree *tree = new Tree("test_node", -1, "NEW");
     TreeNode *n = tree->addNode(":DATA", "NUMERIC");
     delete n;

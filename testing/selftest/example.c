@@ -19,21 +19,23 @@ void external_test();
 
 int main(int argc, char *argv[])
 {    
-    // test blok not explicit //
-    BEGIN_TESTING(example1);   
-    printf(" ... child 1 ... \n");    
     
+    BEGIN_TESTING(test 1);
+    printf("test1\n");
     int a = 1;
     TEST1( 1 && "this works and is not logged" );
-    TEST1( a == 0 && "test on failing assertion");        
+//    TEST1( a == 0 && "test on failing assertion");            
+    END_TESTING;
     
+    BEGIN_TESTING(test 1 fail);
+    printf("test1\n");
+    int a = 1;
+    TEST1( a == 0 && "test on failing assertion");            
     END_TESTING;
 
     
     // test block explicit //
-    BEGIN_TESTING(example2) {              
-        printf(" ... child 2 ... \n");
-        
+    BEGIN_TESTING(example2) {                      
         int a, *b; 
         memcpy(b,&a,10000000000);        
         printf("I should be in segfault here...\n");
@@ -45,10 +47,8 @@ int main(int argc, char *argv[])
     TEST_FORK(0);
     
     BEGIN_TESTING(example3) {
-        printf(" ... NO forked function ... \n");
-        
         int c=1;        
-        TEST0(c==0 && "this is true as we expect a false assetion");        
+        TEST0(c==0 && "false");
         test_pass_function();
         test_fail_function();        
     }
@@ -56,8 +56,7 @@ int main(int argc, char *argv[])
     
     
     external_test();
-        
-    
+            
     TEST_FORK(1);    
     BEGIN_TESTING(timeout) {
         printf(" ... child 3 ... \n");

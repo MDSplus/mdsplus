@@ -171,7 +171,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 
     va_end(ap);    
     send_failure_info(to_send);
-    if( cur_fork_status() == CK_FORK )
+    if( cur_fork_status() == CK_FORK && group_pid)
     {
 #     ifdef HAVE_FORK
         revertStdout();
@@ -180,15 +180,15 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     }
     else
     {        
-//#      ifndef _WIN32
-//        printf("sending status ... \n");
-//        error_jmp_state = 1;
-//        if( setcontext(&error_jmp_context) != 0 )
-//        {
-//            printf("ERROR SETCONTEXT\n");
-//            exit(1);
-//        }
-//#      endif
+        //#      ifndef _WIN32
+        //        printf("sending status ... \n");
+        //        error_jmp_state = 1;
+        //        if( setcontext(&error_jmp_context) != 0 )
+        //        {
+        //            printf("ERROR SETCONTEXT\n");
+        //            exit(1);
+        //        }
+        //#      endif
         __test_end();
         exit(1);
     }
@@ -202,9 +202,9 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 void __mark_point(const char *__assertion, const char *__file, 
                   unsigned int __line, const char *__function)
 {
+    if(!suite) __test_init(__assertion,__file,__line);
     send_loc_info(__file, __line);
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +214,7 @@ void __mark_point(const char *__assertion, const char *__file,
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
 {    
+    if(!suite) __test_init(__assertion,__file,__line);
     __test_assert_fail(__file,__line,__assertion,NULL);    
     __test_end();   
     exit(1);
@@ -436,11 +437,14 @@ static int waserror(int status, int signal_expected)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-
+static char *custom_pass_msg = NULL;
 
 static char *pass_msg(void)
 {
-    return strdup("Passed");
+    if(custom_pass_msg)
+        return custom_pass_msg;
+    else
+        return strdup("Passed");
 }
 
 static void set_nofork_info(TestResult * tr)
@@ -672,7 +676,7 @@ int __setup_parent() {
         else {           
             group_pid = pid;
             
-            TestResult *tr = NULL;
+
             
             timer_t timerid;
             struct itimerspec timer_spec;
@@ -709,6 +713,7 @@ int __setup_parent() {
             
             srunner_send_evt(runner, tcase, CLSTART_T);
             send_ctx_info(CK_CTX_SETUP); // FIXX ///
+            TestResult *tr;
             tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);
             if(tr) srunner_add_failure(runner, tr);
             srunner_send_evt(runner, tr, CLEND_T);
@@ -760,14 +765,16 @@ void __test_end()
 {
     // if forked //
 #ifdef HAVE_FORK
-    if(cur_fork_status() == CK_FORK ) {        
+    if(cur_fork_status() == CK_FORK) {        
         if(group_pid) {            
+            // child
             _exit(0);
         }
-        return;
+        else 
+            // parent
+            return;
     }
 #endif
-    revertStdout();
     TestResult *tr;
     send_ctx_info(CK_CTX_SETUP); // FIXX ///
     tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
@@ -800,6 +807,7 @@ void __test_exit()
         srunner_run_end(runner,CK_VERBOSE);
         _nerr = srunner_ntests_failed(runner);
         srunner_free(runner);
+        revertStdout();
     }
     
     if(error_code)
@@ -808,9 +816,23 @@ void __test_exit()
         _exit(_nerr > 0);
 }
 
-void __test_abort(int code) {
+// Force exit with custo signal //
+void __test_abort(int code, const char *__msg, const char *__file,
+                  unsigned int __line, const char *__function) 
+{
+    // TODO: fix this with proper enum related to test_driver
     error_code = code;
-    __test_exit();
+    switch(code) {
+    case 77:
+        custom_pass_msg = strdup("SKIP:");
+        __mark_point(__msg,__file,__line,__function);
+        __test_end();
+        break;
+    default:
+    case 99:
+        __assert_fail(__msg,__file,__line,__function);        
+    }    
+    __test_exit(); 
 }
 
 

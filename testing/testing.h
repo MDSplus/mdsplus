@@ -75,7 +75,8 @@ EXPORT int  __setup_parent();
 EXPORT int  __setup_child();
 EXPORT void __test_assert_fail(const char *file, int line, const char *expr, ...);
 EXPORT void __test_exit() __attribute__ ((__noreturn__));
-EXPORT void __test_abort(int code);
+EXPORT void __test_abort(int code, const char *__msg, const char *__file,
+                         unsigned int __line, const char *__function);
 
 #else // not _TESTING ( normal build )
 
@@ -86,7 +87,16 @@ int  __setup_parent() { return 0; }
 int  __setup_child()  { return 0; }
 void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 void __test_exit() { exit(0); }
-void __test_abort(int code) { exit(code); }
+
+void __test_abort(int code, const char *__msg, const char *__file,
+                  unsigned int __line, const char *__function) 
+{ 
+    printf(" TEST: ABORT - "
+           "  file: %s ,  function: %s, line: %d "
+           "  message:  (%s) \n", 
+           __file,__function,__line,__msg);
+    exit(code); 
+}
 
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
@@ -129,17 +139,17 @@ void __mark_point(const char *__assertion, const char *__file,
 #define TEST_FORK(value)    __test_setfork(value);
 
 #define TEST_ASSERT(expr) \
-    ((expr)								\
+    ((expr)				  \
     ? __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
     : __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION))
 
 #define TEST1(expr)  \
-    ((expr)								\
+    ((expr)			 \
     ? __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
     : __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION))
 
 #define TEST0(expr) \
-    ((expr)								\
+    ((expr)			\
     ? __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
     : __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION)) 
 
@@ -150,8 +160,8 @@ void __mark_point(const char *__assertion, const char *__file,
     
 #define END_TESTING } __test_end();
 
-#define SKIP_TEST  __test_abort(77);
-#define ABORT_TEST __test_abort(99);
+#define SKIP_TEST  __test_abort(77,"SKIP: ", __FILE__,__LINE__,__ASSERT_FUNCTION);
+#define ABORT_TEST __test_abort(99,"ERROR: ",__FILE__,__LINE__,__ASSERT_FUNCTION);
 
 #endif // NDEBUG
 
