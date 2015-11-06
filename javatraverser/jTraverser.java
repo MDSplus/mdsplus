@@ -12,6 +12,7 @@ public class jTraverser extends JFrame implements ActionListener
     static String exp_name, shot_name;
     static boolean editable, readonly;
     static Tree tree;
+    static JLabel status = new JLabel("jTaverser started");
     JMenu file_m, edit_m, data_m, customize_m;
     JMenuItem open, close, quit;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
@@ -48,10 +49,21 @@ public class jTraverser extends JFrame implements ActionListener
     }
 
 
+    public static void stdout(String line)
+    {
+         status.setText(line);
+    }
+    public static void stderr(String line, Exception exc)
+    {
+         jTraverser.status.setText("ERROR: "+line+" ("+exc.getMessage()+")");
+         System.err.println(line+"\n"+exc);
+    }
+
     public jTraverser(String exp_name, String shot_name, String access)
     {
 	this.exp_name = exp_name;
 	this.shot_name = shot_name;
+	setTitle("jTraverser - no tree open");
 	Boolean edit = false;
 	Boolean readonly = false;
 	if (access != null)
@@ -141,16 +153,13 @@ public class jTraverser extends JFrame implements ActionListener
 	tree = new Tree(this);
 	if(exp_name != null)
 	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), edit, readonly, false);
-	else
-	    setTitle("jTraverser - no tree open");
-	getContentPane().add(tree);
-
+	getContentPane().add(tree, BorderLayout.NORTH);
+    getContentPane().add(status, BorderLayout.SOUTH);
 	addWindowListener(new WindowAdapter() {
 	    public void windowClosing(WindowEvent e)
 	    {
 	        System.exit(0);
 	    }});
-
 	pack();
 	show();
     }
@@ -188,16 +197,15 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)paste_b) TreeNode.paste();
 
     // Node related
-	Node curr_node = tree.getCurrentNode();
-	if(curr_node == null) return;
+	if(Tree.curr_node == null) return;
     if(source == (Object)turn_on_b)
     {
-	    curr_node.turnOn();
+	    Tree.curr_node.turnOn();
 	    tree.reportChange();
     }
     if(source == (Object)turn_off_b)
     {
-	    curr_node.turnOff();
+	    Tree.curr_node.turnOff();
 	    tree.reportChange();
     }
 
@@ -208,7 +216,7 @@ public void actionPerformed(ActionEvent e)
 	        display_data_d = new TreeDialog(display_data = new DisplayData());
 	        display_data.setFrame(display_data_d);
 	    }
-	    display_data.setNode(curr_node);
+	    display_data.setNode(Tree.curr_node);
 	    display_data_d.pack();
 	    display_data_d.setLocation(dialogLocation());
 	    display_data_d.setVisible(true);
@@ -220,7 +228,7 @@ public void actionPerformed(ActionEvent e)
             display_nci_d = new TreeDialog(display_nci = new DisplayNci());
             display_nci.setFrame(display_nci_d);
         }
-        display_nci.setNode(curr_node);
+        display_nci.setNode(Tree.curr_node);
         display_nci_d.pack();
         display_nci_d.setLocation(dialogLocation());
         display_nci_d.setVisible(true);
@@ -232,7 +240,7 @@ public void actionPerformed(ActionEvent e)
             display_tags_d = new TreeDialog(display_tags = new DisplayTags());
             display_tags.setFrame(display_tags_d);
         }
-        display_tags.setNode(curr_node);
+        display_tags.setNode(Tree.curr_node);
         display_tags_d.pack();
         display_tags_d.setLocation(dialogLocation());
         display_tags_d.setVisible(true);
@@ -244,7 +252,7 @@ public void actionPerformed(ActionEvent e)
 	        modify_data_d = new TreeDialog(modify_data = new ModifyData());
 	        modify_data.setFrame(modify_data_d);
 	    }
-	    modify_data.setNode(curr_node);
+	    modify_data.setNode(Tree.curr_node);
 	    modify_data_d.pack();
 	    modify_data_d.setLocation(dialogLocation());
 	    modify_data_d.setVisible(true);
@@ -252,12 +260,12 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)set_default_b)
     {
 	    try {
-	        curr_node.setDefault();
-	    }catch(Exception exc) {System.out.println("Error setting default "+exc.getMessage());}
+	        Tree.curr_node.setDefault();
+	    }catch(Exception exc) {jTraverser.stderr("Error setting default",exc);}
 	    tree.reportChange();
     }
     if(source == (Object)setup_device_b)
-        curr_node.setupDevice();
+        Tree.curr_node.setupDevice();
 }
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
@@ -268,20 +276,21 @@ void reportChange(String exp, int shot, boolean editable, boolean readonly)
     String title;
     if(exp != null)
     {
-	title = "jTraverser - Tree: " + exp;
-	if(editable)
-	    title = title + " (edit) ";
-	if(readonly)
-	    title = title + " (readonly) ";
-	title = title + " Shot: " + shot;
+	    title = "Tree: " + exp;
+	    if(editable)
+	        title = title + " (edit) ";
+	    if(readonly)
+	        title = title + " (readonly) ";
+	    title = title + " Shot: " + shot;
+        jTraverser.stdout(title);
     }
     else
     {
-	title = "jTraverser - no tree open";
-	edit_m.setEnabled(false);
-	data_m.setEnabled(false);
+	    title = "no tree open";
+	    edit_m.setEnabled(false);
+	    data_m.setEnabled(false);
     }
-    setTitle(title);
+    setTitle("jTraverser - "+title);
     if(exp == null) return;
     data_m.setEnabled(true);
     if(editable)

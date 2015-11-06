@@ -15,10 +15,10 @@ public class Database implements RemoteTree{
  //           System.loadLibrary("TdiShr");
             System.loadLibrary("JavaMds");
 	    }
-            catch(Throwable e)
+            catch(Exception exc)
             {
-              System.out.println("Cannot load library " + e);
-              e.printStackTrace();
+              jTraverser.stderr("Cannot load library ", exc);
+              exc.printStackTrace();
             }
     }
     public Database() {super();}
@@ -68,7 +68,6 @@ public class Database implements RemoteTree{
     public native Data evaluateSimpleData(Data data, int ctx) throws DatabaseException;
     public native void putData(NidData nid, Data data, int ctx) throws DatabaseException;
     public native void putRow(NidData nid, Data data, long time, int ctx) throws DatabaseException;
-    //public native DatabaseInfo getInfo(); throws DatabaseException;
     public native NodeInfo getInfo(NidData nid, int ctx) throws DatabaseException;
     public native void setTags(NidData nid, String tags[], int ctx) throws DatabaseException;
     public native String[] getTags(NidData nid, int ctx);
