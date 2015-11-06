@@ -53,7 +53,6 @@ LOG_COMPILER      = @TS_LOG_COMPILER@
 
 
 
-
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TAP  ///////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -73,7 +72,8 @@ endif
 .ONESHELL:
 $(TEST_BUILD_TAP):
 	## Make all recursive targets here without dying.
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
 	
 	## Try to build failed targets one by one
 	echo "TAP version 13" > $@;
@@ -92,9 +92,9 @@ $(TEST_BUILD_TAP):
 .ONESHELL:
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
-		
+	
 	## run tests	
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	V=1 $(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
 	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
 	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
 	 

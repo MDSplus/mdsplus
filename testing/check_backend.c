@@ -81,7 +81,7 @@ static void revertStdout()
 {
     if(out_fd < 1) return;
     fflush(stdout);
-    //fclose(stdout);
+    //    fclose(stdout);
     dup2(out_fd, fileno(stdout));
     close(out_fd);
     clearerr(stdout);
@@ -95,7 +95,7 @@ static void revertStdout()
 
 ///  Signal handler for the proces created by test fork
 ///
-#if defined(HAVE_FORK)
+#ifdef HAVE_FORK
 static void CK_ATTRIBUTE_UNUSED sig_handler(int sig_nr)
 {
     
@@ -173,7 +173,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     send_failure_info(to_send);
     if( cur_fork_status() == CK_FORK )
     {
-#     if defined(HAVE_FORK) && HAVE_FORK==1
+#     ifdef HAVE_FORK
         revertStdout();
         _exit(1);
 #     endif /* HAVE_FORK */
@@ -621,7 +621,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
     tcase  = tcase_create(test_name);
     suite_add_tcase(suite,tcase);    
     
-    #if defined(HAVE_FORK)
+    #ifdef HAVE_FORK
     if(cur_fork_status() == CK_FORK ) {
         
         // SIGALRM //
@@ -659,7 +659,7 @@ int __setup_parent() {
     
     
     // FORK //
-#if defined(HAVE_FORK)
+#ifdef HAVE_FORK
     if( cur_fork_status() == CK_FORK )                        
     {
         pid_t pid = fork();        
@@ -715,8 +715,10 @@ int __setup_parent() {
             return 1;
         }
     }
+    else
 #endif
     // child here or no fork available
+    return 0;
     
 //#ifndef _WIN32
 //    // save current context ... ( add Fibers here for windows )    
@@ -732,12 +734,11 @@ int __setup_parent() {
 //    }
 //#endif            
 
-    return 0;
 }
 
 
 int __setup_child() {
-#if defined(HAVE_FORK)
+#ifdef HAVE_FORK
     if(cur_fork_status() == CK_FORK ) {
         setpgid(0, 0);
         group_pid = getpgrp();
@@ -758,23 +759,20 @@ int __setup_child() {
 void __test_end()
 {
     // if forked //
-#if defined(HAVE_FORK)
+#ifdef HAVE_FORK
     if(cur_fork_status() == CK_FORK ) {        
         if(group_pid) {            
-            revertStdout();
             _exit(0);
         }
         return;
     }
 #endif
-    printf("Exiting from handler...\n");
-    
+    revertStdout();
     TestResult *tr;
     send_ctx_info(CK_CTX_SETUP); // FIXX ///
     tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
     if(tr) srunner_add_failure(runner, tr);
-    srunner_send_evt(runner, tr, CLEND_T);
-    
+    srunner_send_evt(runner, tr, CLEND_T);    
 }
 
 
@@ -786,28 +784,42 @@ void __test_end()
 //  EXIT FUNCTION  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+static int error_code = 0;
 
 void __test_exit()
 {
     // if we are on child silently exit //
-#if defined(HAVE_FORK)
+#ifdef HAVE_FORK
     if(cur_fork_status() == CK_FORK && group_pid) {         
-        revertStdout();
         _exit(0);
     }
 #endif
-    log_suite_end(runner, suite);
-    srunner_run_end(runner,CK_VERBOSE);
-    int _nerr = srunner_ntests_failed(runner);
-    srunner_free(runner);
+    int _nerr = 0;    
+    if(runner && suite) {
+        log_suite_end(runner, suite);
+        srunner_run_end(runner,CK_VERBOSE);
+        _nerr = srunner_ntests_failed(runner);
+        srunner_free(runner);
+    }
     
-    _exit(_nerr > 0);
+    if(error_code)
+        _exit(error_code);
+    else
+        _exit(_nerr > 0);
+}
+
+void __test_abort(int code) {
+    error_code = code;
+    __test_exit();
 }
 
 
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  FORK SET FUNCTION  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 void __test_setfork(int value)

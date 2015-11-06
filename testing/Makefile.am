@@ -10,13 +10,14 @@ AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 # Static Base library
 #
 noinst_LIBRARIES = libMdsTest.a
+libMdsTest_a_CFLAGS = -D_TESTING
 libMdsTest_a_SOURCES = base_backend.c
 
 #
 # only check backend for now
 #
 noinst_LIBRARIES += libMdsTestBackend.a
-libMdsTestBackend_a_CFLAGS = -I${srcdir}/backends/check $(AM_CFLAGS)
+libMdsTestBackend_a_CFLAGS = -D_TESTING -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 
 #

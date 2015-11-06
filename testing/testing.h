@@ -1,6 +1,10 @@
+#pragma once
 
 #include <assert.h>
 #include <string.h>
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 #define __THROW
@@ -49,9 +53,78 @@
 
 
 
+
+#if defined __cplusplus 
+extern "C" {
+#endif
+
+#ifdef _TESTING
+
+// Assertion fail declaration as found in assert.h //
+EXPORT void __assert_fail (const char *__assertion, const char *__file,
+                           unsigned int __line, const char *__function)
+__THROW __attribute__ ((__noreturn__));
+
+EXPORT void __mark_point(const char *__assertion, const char *__file, 
+                         unsigned int __line, const char *__function);
+
+EXPORT void __test_setfork(const int value);
+EXPORT void __test_init(const char *test_name, const char *file, const int line);
+EXPORT void __test_end();
+EXPORT int  __setup_parent();
+EXPORT int  __setup_child();
+EXPORT void __test_assert_fail(const char *file, int line, const char *expr, ...);
+EXPORT void __test_exit() __attribute__ ((__noreturn__));
+EXPORT void __test_abort(int code);
+
+#else // not _TESTING ( normal build )
+
+void __test_setfork(const int value) {}
+void __test_init(const char *test_name, const char *file, const int line) {}
+void __test_end() {}
+int  __setup_parent() { return 0; }
+int  __setup_child()  { return 0; }
+void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
+void __test_exit() { exit(0); }
+void __test_abort(int code) { exit(code); }
+
+void __assert_fail (const char *__assertion, const char *__file,
+                    unsigned int __line, const char *__function)
+__THROW __attribute__ ((__noreturn__));
+
+void __mark_point(const char *__assertion, const char *__file, 
+                  unsigned int __line, const char *__function) 
+{
+    printf(" TEST: "
+           "  file: %s ,  function: %s, line: %d "
+           "  assertion:  (%s) \n", 
+           __file,__function,__line,__assertion);               
+}
+
+#endif // _TESTING
+
+#if defined __cplusplus 
+}
+#endif
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //  TEST  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef NDEBUG
+#define TEST_FORK(value)      (__ASSERT_VOID_CAST (0))
+#define TEST_ASSERT(expr)     (__ASSERT_VOID_CAST (0)) 
+#define TEST1(expr)           (__ASSERT_VOID_CAST (0))
+#define TEST0(expr)           (__ASSERT_VOID_CAST (0))
+#define BEGIN_TESTING(description) {    
+#define END_TESTING }
+#define SKIP_TEST  __test_abort(77);
+#define ABORT_TEST __test_abort(99);
+#else
 
 #define TEST_FORK(value)    __test_setfork(value);
 
@@ -69,7 +142,6 @@
     ((expr)								\
     ? __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
     : __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION)) 
-    
 
 #define BEGIN_TESTING(description) \
     __test_init(__STRING(description),__FILE__,__LINE__); \
@@ -78,45 +150,21 @@
     
 #define END_TESTING } __test_end();
 
+#define SKIP_TEST  __test_abort(77);
+#define ABORT_TEST __test_abort(99);
+
+#endif // NDEBUG
+
 
 #if defined __cplusplus
-
 #define TEST_STD_EXCEPTION(val, string) try { val; } catch (std::exception &e) { TEST0( strcmp(e.what(), string) ); }
 #define TEST_MDS_EXCEPTION(val, string) try { val; } catch (std::exception &e) { TEST0( strcmp(e.what(), string) ); }
 #define TEST_EXCEPTION(val, ExceptionClass) { bool correct_exception_caught = false; \
     try { val; } catch (ExceptionClass &e) { correct_exception_caught=true; } catch (...) {} \
     TEST1(correct_exception_caught); }
-
 #endif
 
 
 
-#if defined __cplusplus 
-extern "C" {
-#endif
-
-// Assertion fail declaration as found in assert.h //
-EXPORT void __assert_fail (const char *__assertion, const char *__file,
-                           unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
-
-EXPORT void __test_setfork(const int value);
-
-EXPORT void __test_init(const char *test_name, const char *file, const int line);
-
-EXPORT void __test_end();
-
-EXPORT int  __setup_parent();
-
-EXPORT int  __setup_child();
-
-EXPORT void __test_assert_fail(const char *file, int line, const char *expr, ...);
-
-EXPORT void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function);
-
-EXPORT void __test_exit() __attribute__ ((__noreturn__));
 
 
-#if defined __cplusplus 
-}
-#endif

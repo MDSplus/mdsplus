@@ -111,7 +111,7 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libMdsTest_a_AR = $(AR) $(ARFLAGS)
 libMdsTest_a_LIBADD =
-am_libMdsTest_a_OBJECTS = base_backend.$(OBJEXT)
+am_libMdsTest_a_OBJECTS = libMdsTest_a-base_backend.$(OBJEXT)
 libMdsTest_a_OBJECTS = $(am_libMdsTest_a_OBJECTS)
 libMdsTestBackend_a_AR = $(AR) $(ARFLAGS)
 libMdsTestBackend_a_LIBADD =
@@ -293,6 +293,7 @@ GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
 HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
@@ -506,18 +507,6 @@ _tap_py_execute = \
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
 # LOG_DRIVER      = @TS_LOG_DRIVER@
-
-# if MINGW
-# if HAVE_WINECONSOLE
-# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
-# LOG_COMPILER += wine
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# LOG_COMPILER += sh -c 'exit 77'
-# endif
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# endif
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
@@ -535,8 +524,9 @@ AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 # only check backend for now
 #
 noinst_LIBRARIES = libMdsTest.a libMdsTestBackend.a
+libMdsTest_a_CFLAGS = -D_TESTING
 libMdsTest_a_SOURCES = base_backend.c
-libMdsTestBackend_a_CFLAGS = -I${srcdir}/backends/check $(AM_CFLAGS)
+libMdsTestBackend_a_CFLAGS = -D_TESTING -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 
@@ -605,8 +595,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/base_backend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMdsTestBackend_a-check_backend.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libMdsTest_a-base_backend.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -623,6 +613,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+libMdsTest_a-base_backend.o: base_backend.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMdsTest_a_CFLAGS) $(CFLAGS) -MT libMdsTest_a-base_backend.o -MD -MP -MF $(DEPDIR)/libMdsTest_a-base_backend.Tpo -c -o libMdsTest_a-base_backend.o `test -f 'base_backend.c' || echo '$(srcdir)/'`base_backend.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMdsTest_a-base_backend.Tpo $(DEPDIR)/libMdsTest_a-base_backend.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='base_backend.c' object='libMdsTest_a-base_backend.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMdsTest_a_CFLAGS) $(CFLAGS) -c -o libMdsTest_a-base_backend.o `test -f 'base_backend.c' || echo '$(srcdir)/'`base_backend.c
+
+libMdsTest_a-base_backend.obj: base_backend.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMdsTest_a_CFLAGS) $(CFLAGS) -MT libMdsTest_a-base_backend.obj -MD -MP -MF $(DEPDIR)/libMdsTest_a-base_backend.Tpo -c -o libMdsTest_a-base_backend.obj `if test -f 'base_backend.c'; then $(CYGPATH_W) 'base_backend.c'; else $(CYGPATH_W) '$(srcdir)/base_backend.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libMdsTest_a-base_backend.Tpo $(DEPDIR)/libMdsTest_a-base_backend.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='base_backend.c' object='libMdsTest_a-base_backend.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMdsTest_a_CFLAGS) $(CFLAGS) -c -o libMdsTest_a-base_backend.obj `if test -f 'base_backend.c'; then $(CYGPATH_W) 'base_backend.c'; else $(CYGPATH_W) '$(srcdir)/base_backend.c'; fi`
 
 libMdsTestBackend_a-check_backend.o: check_backend.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libMdsTestBackend_a_CFLAGS) $(CFLAGS) -MT libMdsTestBackend_a-check_backend.o -MD -MP -MF $(DEPDIR)/libMdsTestBackend_a-check_backend.Tpo -c -o libMdsTestBackend_a-check_backend.o `test -f 'check_backend.c' || echo '$(srcdir)/'`check_backend.c
@@ -937,7 +941,8 @@ tests:
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
 
 	echo "TAP version 13" > $@;
 	count=0;
@@ -955,7 +960,7 @@ $(TEST_BUILD_TAP):
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
 
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	V=1 $(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
 	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
 	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
 

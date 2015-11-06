@@ -90,7 +90,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 TESTS = $(am__EXEEXT_1) $(PY_TESTS) $(am__EXEEXT_2)
-bin_PROGRAMS = example3$(EXEEXT)
+bin_PROGRAMS = example3$(EXEEXT) example_assert$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = testing/selftest
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -106,7 +106,9 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
-am__EXEEXT_1 = example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT)
+am__EXEEXT_1 = test_options$(EXEEXT) example2$(EXEEXT) \
+	example3$(EXEEXT) example4$(EXEEXT) example_assert$(EXEEXT) \
+	skip_test$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 example2_SOURCES = example2.c
 example2_OBJECTS = example2.$(OBJEXT)
@@ -121,6 +123,18 @@ example4_SOURCES = example4.c
 example4_OBJECTS = example4.$(OBJEXT)
 example4_LDADD = $(LDADD)
 example4_DEPENDENCIES = $(am__DEPENDENCIES_1)
+example_assert_SOURCES = example_assert.c
+example_assert_OBJECTS = example_assert.$(OBJEXT)
+example_assert_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(builddir)/libMdsTestDummy.so
+skip_test_SOURCES = skip_test.c
+skip_test_OBJECTS = skip_test.$(OBJEXT)
+skip_test_LDADD = $(LDADD)
+skip_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+test_options_SOURCES = test_options.c
+test_options_OBJECTS = test_options.$(OBJEXT)
+test_options_LDADD = $(LDADD)
+test_options_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -162,8 +176,10 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = example2.c $(example3_SOURCES) example4.c
-DIST_SOURCES = example2.c $(example3_SOURCES) example4.c
+SOURCES = example2.c $(example3_SOURCES) example4.c example_assert.c \
+	skip_test.c test_options.c
+DIST_SOURCES = example2.c $(example3_SOURCES) example4.c \
+	example_assert.c skip_test.c test_options.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -470,6 +486,7 @@ GREP = @GREP@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
 HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
@@ -682,18 +699,6 @@ _tap_py_execute = \
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
 # LOG_DRIVER      = @TS_LOG_DRIVER@
-
-# if MINGW
-# if HAVE_WINECONSOLE
-# TESTS_ENVIRONMENT += WINEPATH='$(shell winepath -w @MAKESHLIBDIR@);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/lib);$(shell winepath -w $(shell ${CXX} -print-sysroot)/mingw/bin)'
-# LOG_COMPILER += wine
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# LOG_COMPILER += sh -c 'exit 77'
-# endif
-# else
-# TESTS_ENVIRONMENT += @LIBPATH@="@MAKESHLIBDIR@"
-# endif
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
 @PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
@@ -709,17 +714,21 @@ AM_DEFAULT_SOURCE_EXT = .c
 
 #          example  
 C_TESTS = \
+          test_options \
           example2 \
           example3 \
-          example4 
+          example4 \
+          example_assert \
+          skip_test
 
 
-#test_context
+#          example 
 PY_TESTS = \
            pyex1.py
 
 PL_TESTS = 
 example3_SOURCES = example3.cpp
+example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
 
 #
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
@@ -741,7 +750,10 @@ example3_SOURCES = example3.cpp
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = *.out
+MOSTLYCLEANFILES = \
+                   *.out \
+                   libMdsTestDummy.so
+
 check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
 all: all-am
 
@@ -835,6 +847,18 @@ example4$(EXEEXT): $(example4_OBJECTS) $(example4_DEPENDENCIES) $(EXTRA_example4
 	@rm -f example4$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(example4_OBJECTS) $(example4_LDADD) $(LIBS)
 
+example_assert$(EXEEXT): $(example_assert_OBJECTS) $(example_assert_DEPENDENCIES) $(EXTRA_example_assert_DEPENDENCIES) 
+	@rm -f example_assert$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(example_assert_OBJECTS) $(example_assert_LDADD) $(LIBS)
+
+skip_test$(EXEEXT): $(skip_test_OBJECTS) $(skip_test_DEPENDENCIES) $(EXTRA_skip_test_DEPENDENCIES) 
+	@rm -f skip_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(skip_test_OBJECTS) $(skip_test_LDADD) $(LIBS)
+
+test_options$(EXEEXT): $(test_options_OBJECTS) $(test_options_DEPENDENCIES) $(EXTRA_test_options_DEPENDENCIES) 
+	@rm -f test_options$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_options_OBJECTS) $(test_options_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -844,6 +868,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example4.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example_assert.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skip_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_options.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1070,6 +1097,13 @@ recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+test_options.log: test_options$(EXEEXT)
+	@p='test_options$(EXEEXT)'; \
+	b='test_options'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 example2.log: example2$(EXEEXT)
 	@p='example2$(EXEEXT)'; \
 	b='example2'; \
@@ -1087,6 +1121,20 @@ example3.log: example3$(EXEEXT)
 example4.log: example4$(EXEEXT)
 	@p='example4$(EXEEXT)'; \
 	b='example4'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+example_assert.log: example_assert$(EXEEXT)
+	@p='example_assert$(EXEEXT)'; \
+	b='example_assert'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+skip_test.log: skip_test$(EXEEXT)
+	@p='skip_test$(EXEEXT)'; \
+	b='skip_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1304,7 +1352,8 @@ tests:
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) all;
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
 
 	echo "TAP version 13" > $@;
 	count=0;
@@ -1322,7 +1371,7 @@ $(TEST_BUILD_TAP):
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
 
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	V=1 $(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
 	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
 	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
 
@@ -1332,6 +1381,9 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 .PHONY: clean-local-tests
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+
+libMdsTestDummy.so: mdstestdummy.cpp
+	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
 print:
 	@echo "--------------------------------------------------------------";
@@ -1345,7 +1397,7 @@ print:
 console:
 	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
-all-local: $(TESTS)
+all-local: $(TESTS) libMdsTestDummy.so
 clean-local: clean-local-tests                    
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

@@ -18,11 +18,14 @@ AM_DEFAULT_SOURCE_EXT = .c
 #          example  
 
 C_TESTS = \
+          test_options \
           example2 \
           example3 \
-          example4 
+          example4 \
+          example_assert \
+          skip_test
           
-#test_context
+#          example 
           
 PY_TESTS = \
            pyex1.py
@@ -58,6 +61,9 @@ TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
 bin_PROGRAMS = example3
 example3_SOURCES = example3.cpp
 
+bin_PROGRAMS += example_assert
+example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
+
 
 #
 # VALGRIND: If valgrind was enabled by configuration entry the execution of
@@ -80,13 +86,18 @@ example3_SOURCES = example3.cpp
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = *.out
+MOSTLYCLEANFILES = \
+                   *.out \
+                   libMdsTestDummy.so
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
+
+libMdsTestDummy.so: mdstestdummy.cpp
+	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
 print:
 	@echo "--------------------------------------------------------------";
@@ -101,7 +112,7 @@ console:
 	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 
-all-local: $(TESTS)
+all-local: $(TESTS) libMdsTestDummy.so
 clean-local: clean-local-tests                    
 
 check_PROGRAMS = $(C_TESTS)

@@ -31,6 +31,8 @@ void __test_init(const char *test_name, const char *file, const int line) {}
 
 void __test_end() {}
 
+void __test_abort(int code) { exit(code); }
+
 int  __setup_parent() {}
 
 int  __setup_child() {}
