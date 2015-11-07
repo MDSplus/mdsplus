@@ -1,4 +1,55 @@
-commit bbf6aac67b4a58f250f962e9dacfaaa8ea154b53 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit ef8aa34fb870e835254a673af224e6026f68ebb4 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 0f474ae 5e330a8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:37:16 2015 -0500
+
+    Merge pull request #197 from MDSplus/fix-obscure-compression-bug-stable
+    
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 0f474aec77f66b95509e3d242d5fcf4507109c35
+Merge: 9e84011 f890fdd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:36:13 2015 -0500
+
+    Merge pull request #202 from MDSplus/twf-no-exception-on-treepath-puts-stable
+    
+    Do not raise an Exception in putData if data contains a TreePath refe…
+
+commit f890fdd8b2bc8de047c83979bdf8a9030831ab91 (refs/remotes/origin/twf-no-exception-on-treepath-puts-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:23:28 2015 -0500
+
+    Do not raise an Exception in putData if data contains a TreePath refernce
+
+commit 5e330a86bcfc90b19e715ab95e193822cbbe9111 (refs/remotes/origin/fix-obscure-compression-bug-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 11:31:59 2015 -0500
+
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 9e84011f4744c45bb31ea29f909ebe4cd9cec1fb
+Merge: 3f08070 092e83c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Nov 6 09:25:29 2015 -0500
+
+    Merge pull request #194 from MDSplus/fix-stable-tree-locks
+    
+    Fix all Tree.lock() invokations moving them from inside the try: fina…
+
+commit 092e83cc205c84a3d3e6db401f47995b6549328c (refs/remotes/origin/fix-stable-tree-locks)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 5 09:15:10 2015 -0500
+
+    Fix all Tree.lock() invokations moving them from inside the try: finally: clauses to just before the try block.
+
+commit 3f080708f1ae5de3c175093e7562779e28342982 (tag: refs/tags/stable_release-7-0-58)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 4 19:06:03 2015 -0500
+
+    New release ---- stable_release-7-0-58
+
+commit bbf6aac67b4a58f250f962e9dacfaaa8ea154b53
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 4 16:52:41 2015 -0500
 
