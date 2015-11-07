@@ -1,4 +1,126 @@
-commit 34a4b6b03f2aa7bc0f081ae8194ed963fb9b3b2c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 566bcde4b68208a02c1848454593a6574d9699fe (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 6ac2d4c d5d942b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:37:36 2015 -0500
+
+    Merge pull request #198 from MDSplus/fix-obsucre-compression-bug-alpha
+    
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 6ac2d4c5fe23b2d6334349980843693f006ca75c
+Merge: 4680240 485f1d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:36:47 2015 -0500
+
+    Merge pull request #201 from MDSplus/twf-no-exception-on-treepath-puts
+    
+    Do not raise an Exception in putData if data contains a TreePath refe…
+
+commit 485f1d8243770776fcacee34a20e5ac07a74a293 (refs/remotes/origin/twf-no-exception-on-treepath-puts)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:23:28 2015 -0500
+
+    Do not raise an Exception in putData if data contains a TreePath refernce
+
+commit d5d942be8de17c08c3f35dcbce9e2fe1beb8ae77 (refs/remotes/origin/fix-obsucre-compression-bug-alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 11:31:59 2015 -0500
+
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 4680240191fdb97d026b99b94f4daa4cef7ac3b3
+Merge: 464da9f f28739e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 6 16:03:52 2015 +0100
+
+    Merge pull request #196 from zack-vii/jtraverser
+    
+    Extension of jTraverser's flag editor
+
+commit 464da9faf74f23c4808bc1d2241079d3bc0eea86
+Merge: b3cb2b9 2e863be
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Nov 6 09:12:02 2015 -0500
+
+    Merge pull request #190 from MDSplus/twf-tcl-compress-segments
+    
+    Add compress_segments info with the DIR/FULL command
+
+commit f28739e198626c790fe1a9bdb39b913e1715088e
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 23:55:22 2015 +0100
+
+    extended flag dialog for remaining user defined flags
+    
+    - all 32 flags are available so one can make use of them.
+    - the last bit is the dedicated error bit. and should never be set int(flag)<0 => indicates an error
+
+commit 8ee1bbd5ba114f7209cd86c98fca71e7915d4262
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 03:17:08 2015 +0100
+
+    added status bar for stdout and stderr
+    
+    could replace System.err.println() and System.out.println()
+
+commit b5f3ac0ae4c0f6a7821d5038c5687e5d362adf6a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 01:49:14 2015 +0100
+
+    DisplayNci to fully HTML table
+    
+    better layout of the DisplayNci to handle longer flag lines in a aligned
+    table
+
+commit 3146d823ca9afd3d19d97242ffbea467c37f560c
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 18:09:21 2015 +0100
+
+    restructured NodeInfo (expand to all flags)
+    
+    - made field private with getters
+    - modified JavaTrav.c to return flags int
+    - change dclass, dtype, and usage to byte to solve uint vs int issue
+      this fixed teh DType and Class displa on DisplayNci
+    - modified JavaTrav.c to use unsignad char for dclass, dtype, and usage
+    - modified JavaData.c to use unsignad char for dclass, dtype
+
+commit 591b46863816a3968afd2d9cfa02f0aa795589a0
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 11:25:11 2015 +0100
+
+    inner class test
+
+commit ee57cb1e401d47c94a1712540f97b9f1fb144e74
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 3 19:18:12 2015 +0100
+
+    upgraded rename/move
+    
+    - fixed and implemented copy and move of node structures
+    - Ctrl+X cuts, Ctrl+C copies, and Ctrl+V pastes
+
+commit 8e010be8837e0748ec823e1a9c75bad7084b8d43
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 28 20:56:39 2015 +0100
+
+    change the rename dialog ...
+    
+    ... as it is buggy when changing the path
+    - node.rename is more like move as the full path can be changed
+    - node.renameLast is the proper rename method in node
+    - the error dialogs are safer on lower levels
+    - when requesting the node name the trimmed version is either requested
+    or should fit as well
+    - removed "node" from title as it is too long anyway
+
+commit b3cb2b918cc298189012a94ffc5c303e0efaa22c (tag: refs/tags/alpha_release-7-0-175)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 4 23:38:30 2015 -0500
+
+    New release ---- alpha_release-7-0-175
+
+commit 34a4b6b03f2aa7bc0f081ae8194ed963fb9b3b2c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 4 16:58:54 2015 -0500
 
@@ -36,6 +158,12 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Nov 3 23:37:59 2015 -0500
 
     New release ---- alpha_release-7-0-174
+
+commit 2e863be3d75f3a4080c94ce2e8a3798fca8b245a (refs/remotes/origin/twf-tcl-compress-segments)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 3 08:02:01 2015 -0500
+
+    Add compress_segments info with the DIR/FULL command
 
 commit 5a4e71f2acfe4a1605779123214e86c2b78dcaea
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
