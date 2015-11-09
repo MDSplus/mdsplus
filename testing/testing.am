@@ -47,9 +47,12 @@ tests:
 
  
 
-TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
-LOG_COMPILER      = @TS_LOG_COMPILER@
-# LOG_DRIVER      = @TS_LOG_DRIVER@
+TESTS_ENVIRONMENT   = @TS_TESTS_ENVIRONMENT@
+LOG_COMPILER        = @TS_LOG_COMPILER@
+TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
+
+# use default ...
+# LOG_DRIVER        = @TS_LOG_DRIVER@
 
 
 
@@ -59,14 +62,6 @@ LOG_COMPILER      = @TS_LOG_COMPILER@
 
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
-
-if PY_TAP_SUPPORT
- TAP_PY_LOG_COMPILER = nosetests
- TAP_PY_LOG_FLAGS    = --with-tap --tap-stream
-else
- TAP_PY_LOG_COMPILER = sh -c 'exit 77'
- TAP_PY_LOG_FLAGS    = 
-endif
 
 
 .ONESHELL:
@@ -103,6 +98,19 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	 || exit 1;
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LOG  ///////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: add log output
+$(TEST_SUITE_LOG):
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  XML  ///////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: add xml output
+$(TEST_SUITE_XML):
 
 
 

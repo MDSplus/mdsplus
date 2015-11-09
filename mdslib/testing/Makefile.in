@@ -93,9 +93,10 @@ check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdslib/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/testing.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/libxml.m4 \
+	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/readline.m4 \
+	$(top_srcdir)/m4/testing.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -556,6 +557,8 @@ TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 THREAD = @THREAD@
 TS_LOG_COMPILER = @TS_LOG_COMPILER@
+TS_LOG_DRIVER = @TS_LOG_DRIVER@
+TS_PY_TAP_COMPILER = @TS_PY_TAP_COMPILER@
 TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -656,13 +659,10 @@ _tap_py_execute = \
 
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
-# LOG_DRIVER      = @TS_LOG_DRIVER@
+# LOG_DRIVER        = @TS_LOG_DRIVER@
+TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
-@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
-@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
@@ -671,25 +671,6 @@ TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
 #        mdslib_ctest
-AM_TESTS_ENVIRONMENT = \
-      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
-
-
-#
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-#if USE_VALGRIND
-#LOG_COMPILER = valgrind
-#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-#               --dsymutil=yes --leak-check=yes
-#endif
 
 #
 # Files produced by tests that must be purged
@@ -1167,6 +1148,14 @@ tests:
 	else
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi
+
+# if PY_TAP_SUPPORT
+#  TAP_PY_LOG_COMPILER = nosetests
+#  TAP_PY_LOG_FLAGS    = --with-tap --tap-stream
+# else
+#  TAP_PY_LOG_COMPILER = sh -c 'exit 77'
+#  TAP_PY_LOG_FLAGS    = 
+# endif
 
 .ONESHELL:
 $(TEST_BUILD_TAP):

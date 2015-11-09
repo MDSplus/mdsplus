@@ -71,6 +71,7 @@ print:
 	@echo "LOG_COMPILER = ${LOG_COMPILER}";
 	@echo "LOG_DRIVER   = ${LOG_DRIVER}";
 	@echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
+	@echo "MAKE = ${MAKE}"
 	@echo "--------------------------------------------------------------";
 
 console:
