@@ -268,6 +268,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        open_shot.addKeyListener(this);
 	        open_exp.addKeyListener(this);
 	        open_dialog.pack();
+            open_dialog.setResizable(false);
 	        if (curr_experiment != null)
 	            try {
 		           open_exp.setText(curr_experiment.getName());
@@ -1228,6 +1229,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                             dialog.setVisible(false);
 	            }});
     	        dialog.pack();
+                dialog.setResizable(false);
             }
             private static void editFlag(byte idx)
             {
@@ -1340,6 +1342,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	                }
 	            });
 	            dialog.pack();
+                dialog.setResizable(false);
 	        }
             public static void show()
             {

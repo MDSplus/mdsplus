@@ -18,13 +18,13 @@ public class RangeEditor extends JPanel implements Editor
 	GridLayout gl = new GridLayout(3, 1);
 	gl.setVgap(0);
 	setLayout(gl);
-	begin_edit = new LabeledExprEditor( "Start:    ", new ExprEditor(
+	begin_edit = new LabeledExprEditor( "Start", new ExprEditor(
 	    this.range.getBegin(), false));
 	add(begin_edit);
-	end_edit = new LabeledExprEditor(   "End:      ", new ExprEditor(
+	end_edit = new LabeledExprEditor( "End", new ExprEditor(
 	    this.range.getEnd(), false));
 	add(end_edit);
-	delta_edit = new LabeledExprEditor( "Increment:", new ExprEditor(
+	delta_edit = new LabeledExprEditor( "Increment", new ExprEditor(
 	    this.range.getDelta(), false));
 	add(delta_edit);
     }

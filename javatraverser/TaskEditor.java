@@ -6,7 +6,7 @@ import java.awt.event.*;
 public class TaskEditor extends JPanel implements ActionListener, Editor
 {
     int dtype_idx, curr_dtype_idx;
-    ExprEditor expr_edit;
+    LabeledExprEditor expr_edit;
     MethodEditor method_edit;
     RoutineEditor routine_edit;
     ProgramEditor program_edit;
@@ -42,7 +42,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	setLayout(new BorderLayout());
 	JPanel jp = new JPanel();
 	jp.add(combo);
-	add(jp, "North");
+	add(jp, BorderLayout.PAGE_START);
 	addEditor();
     }
     
@@ -55,35 +55,32 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 		    method_edit = new MethodEditor((MethodData)data);
 		else
 		    method_edit = new MethodEditor(null);
-		add(method_edit, "South");
+		add(method_edit);
 		break;
 	    case 2: 
 		if(dtype_idx == curr_dtype_idx) 
 		    routine_edit = new RoutineEditor((RoutineData)data);
 		else
 		    routine_edit = new RoutineEditor(null);
-		add(routine_edit, "South");
+		add(routine_edit);
 		break;
 	    case 3: 
 		if(dtype_idx == curr_dtype_idx) 
 		    procedure_edit = new ProcedureEditor((ProcedureData)data);
 		else
 		    procedure_edit = new ProcedureEditor(null);
-		add(procedure_edit, "South");
+		add(procedure_edit);
 		break;
 	    case 4: 
 		if(dtype_idx == curr_dtype_idx) 
 		    program_edit = new ProgramEditor((ProgramData)data);
 		else
 		    program_edit = new ProgramEditor(null);
-		add(program_edit, "South");
+		add(program_edit);
 		break;
 	    case 5: 
-		if(dtype_idx == curr_dtype_idx) 
-		    expr_edit = new ExprEditor(data, false, 5,30);
-		else
-		    expr_edit = new ExprEditor(null, false, 5, 30);
-		add(expr_edit, "South");
+        expr_edit = new LabeledExprEditor(data);
+		add(expr_edit);
 		break;
 	}
     } 
@@ -108,6 +105,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	addEditor();
 	validate();
 	dialog.repack();
+	repaint();
     }
     
     public void reset()

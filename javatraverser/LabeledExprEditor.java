@@ -5,6 +5,10 @@ import java.awt.*;
 public class LabeledExprEditor extends JPanel implements Editor
 {
     ExprEditor expr;
+    public LabeledExprEditor(Data data)
+    {
+    this("Expression", new ExprEditor(data, (data != null && data.dtype == Data.DTYPE_T), 4, 20));
+    }
     public LabeledExprEditor(String label_str)
     {
 	this(label_str, new ExprEditor(null, false));
@@ -12,10 +16,8 @@ public class LabeledExprEditor extends JPanel implements Editor
     public LabeledExprEditor(String label_str, ExprEditor expr)
     {
 	this.expr = expr;
-	BorderLayout bl = new BorderLayout();
-	bl.setVgap(0);
-	setLayout(bl);
-	add(new JLabel(label_str), "West");
+	setLayout(new BorderLayout());
+    setBorder(BorderFactory.createTitledBorder(label_str));
 	add(expr, "Center");
     }
 

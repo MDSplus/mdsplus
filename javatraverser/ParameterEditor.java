@@ -14,12 +14,10 @@ public class ParameterEditor extends JPanel implements Editor
         this.expr = expr;
         this.help = help;
         this.validity = validity;
-        BorderLayout bl = new BorderLayout();
-        bl.setVgap(0);
-        setLayout(bl);
-        add(new LabeledExprEditor("Data: ", expr), "North");
-        add(new LabeledExprEditor("Help: ", help), "Center");
-        add(new LabeledExprEditor("Validity: ", validity), "South");
+        setLayout(new BorderLayout());
+        add(new LabeledExprEditor("Data", expr), "North");
+        add(new LabeledExprEditor("Help", help), "Center");
+        add(new LabeledExprEditor("Validity", validity), "South");
     }
 
     public void reset()

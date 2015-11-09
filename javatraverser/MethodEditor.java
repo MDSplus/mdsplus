@@ -17,22 +17,20 @@ public class MethodEditor extends JPanel implements Editor
 	    this.method = new MethodData(null, null, null, new Data[0]);
 	}
 	setLayout(new BorderLayout());
-	JPanel jp = new JPanel();
-	GridLayout gl = new GridLayout(2,1);
-	gl.setVgap(0);
-	jp.setLayout(gl);
-	device_edit = new LabeledExprEditor("Device: ", new ExprEditor(
+	device_edit = new LabeledExprEditor("Device", new ExprEditor(
 	    this.method.getDevice(), true));
-	method_edit = new LabeledExprEditor("Method: ", new ExprEditor(
+	method_edit = new LabeledExprEditor("Method", new ExprEditor(
 	    this.method.getMethod(), true));
+    JPanel jp = new JPanel();
+    jp.setLayout(new GridLayout(2,1));
 	jp.add(device_edit);
 	jp.add(method_edit);
-	add(jp, "North");
+    add(jp, BorderLayout.NORTH);
    	arg_edit = new ArgEditor(this.method.getArguments());
-	add(arg_edit, "Center");
-	timeout_edit = new LabeledExprEditor("Timeout: ", new ExprEditor( 
+	add(arg_edit, BorderLayout.CENTER);
+	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor( 
 	    this.method.getTimeout(), false));
-	add(timeout_edit, "South");
+	add(timeout_edit, BorderLayout.SOUTH);
     }
     
     public void reset()
