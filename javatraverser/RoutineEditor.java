@@ -21,16 +21,16 @@ public class RoutineEditor extends JPanel implements Editor
 	GridLayout gl = new GridLayout(2,1);
 	gl.setVgap(0);
 	jp.setLayout(gl);
-	image_edit = new LabeledExprEditor("Image:   ", new ExprEditor(
+	image_edit = new LabeledExprEditor("Image", new ExprEditor(
 	    this.routine.getImage(), true));
-	routine_edit = new LabeledExprEditor("Routine: ", new ExprEditor(
+	routine_edit = new LabeledExprEditor("Routine", new ExprEditor(
 	    this.routine.getRoutine(), true));
 	jp.add(image_edit);
 	jp.add(routine_edit);
 	add(jp, "North");
    	arg_edit = new ArgEditor(this.routine.getArguments());
 	add(arg_edit, "Center");
-	timeout_edit = new LabeledExprEditor("Timeout: ", new ExprEditor( 
+	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor( 
 	    this.routine.getTimeout(), false));
 	add(timeout_edit, "South");
     }

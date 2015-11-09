@@ -7,12 +7,11 @@ public class DataEditor
     extends JPanel
     implements ActionListener, Editor
 {
-  ExprEditor expr_edit;
-  LabeledExprEditor units_edit;
+  LabeledExprEditor expr_edit, units_edit;
   ParameterEditor param_edit;
   PythonEditor python_edit;
+  JPanel panel;
   JComboBox combo;
-  JPanel mode_panel;
   int mode_idx, curr_mode_idx;
   Data data;
   Data units;
@@ -59,51 +58,44 @@ public class DataEditor
     }
 
     curr_mode_idx = mode_idx;
-    String names[] =
-        {
-        "Undefined", "Expression", "Parameter", "Python Expression"};
+    String names[] = {"Undefined", "Expression", "Parameter", "Python Expression"};
     combo = new JComboBox(names);
     combo.setEditable(false);
     combo.setSelectedIndex(mode_idx);
     combo.addActionListener(this);
-    mode_panel = new JPanel();
-    mode_panel.add(combo);
     setLayout(new BorderLayout());
-    add(mode_panel, "North");
+	JPanel jp = new JPanel();
+	jp.add(combo);
+    add(jp, BorderLayout.NORTH);
     addEditor();
   }
 
   private void addEditor()
   {
+    panel = new JPanel();
+    panel.setLayout(new BorderLayout());
     switch (curr_mode_idx)
     {
       case 0:
         return;
       case 1:
-        if (data != null && data.dtype == Data.DTYPE_T)
-          expr_edit = new ExprEditor(data, true, 8, 30);
-        else
-          expr_edit = new ExprEditor(data, false, 8, 30);
-        units_edit = new LabeledExprEditor("Units: ", new ExprEditor(units, true));
-        add(expr_edit, "Center");
-        mode_panel.add(units_edit);
+        boolean default_to_string = (data != null && data.dtype == Data.DTYPE_T);
+        panel.add(expr_edit = new LabeledExprEditor(data));
         break;
       case 2:
+        Data _data, _help = null, _validation = null;
         if (data != null && data instanceof ParameterData)
         {
-          param_edit = new ParameterEditor(new ExprEditor( ( (ParameterData)data).getDatum(), false, 1, 30),
-                                           new ExprEditor( ( (ParameterData)data).getHelp(), true, 6, 10),
-                                           new ExprEditor( ( (ParameterData)data).getValidation(), false, 1, 30));
+            _data = ( (ParameterData)data).getDatum();
+            _help = ( (ParameterData)data).getHelp();
+            _validation = ( (ParameterData)data).getValidation();
         }
         else
-        {
-          param_edit = new ParameterEditor(new ExprEditor(data, false, 1, 30),
-                                           new ExprEditor(null, true, 8, 10),
-                                           new ExprEditor(null, false, 1, 30));
-        }
-        units_edit = new LabeledExprEditor("Units: ", new ExprEditor(units, true));
-        add(param_edit, "Center");
-        mode_panel.add(units_edit);
+            _data = data;
+        param_edit = new ParameterEditor(new ExprEditor( _data, false, 3, 20),
+                                         new ExprEditor( _help, true, 4, 20),
+                                         new ExprEditor( _validation, false, 1, 20));
+        panel.add(param_edit);
         break;
       case 3: 
         if (data != null && data instanceof FunctionData)
@@ -114,12 +106,12 @@ public class DataEditor
         {
           python_edit = new PythonEditor(null);
         }
-         add(python_edit, "Center");
-         units_edit = new LabeledExprEditor("Units: ", new ExprEditor(units, true));
-         mode_panel.add(units_edit);
-         break;
-          
+        panel.add(python_edit);
+        break;
     }
+    units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
+    panel.add(units_edit, BorderLayout.NORTH);
+    add(panel, BorderLayout.CENTER);
   }
 
   public void actionPerformed(ActionEvent e)
@@ -132,21 +124,7 @@ public class DataEditor
     int idx = combo.getSelectedIndex();
     if (idx == curr_mode_idx)
       return;
-    if (curr_mode_idx == 1)
-    {
-      remove(expr_edit);
-      mode_panel.remove(units_edit);
-    }
-    if (curr_mode_idx == 2)
-    {
-      remove(param_edit);
-      mode_panel.remove(units_edit);
-    }
-    if (curr_mode_idx == 3)
-    {
-      remove(python_edit);
-      mode_panel.remove(units_edit);
-    }
+    remove(panel);
     curr_mode_idx = idx;
     addEditor();
     validate();
@@ -155,21 +133,8 @@ public class DataEditor
 
   public void reset()
   {
-    if (curr_mode_idx == 1)
-    {
-      remove(expr_edit);
-      mode_panel.remove(units_edit);
-    }
-    if (curr_mode_idx == 2)
-    {
-      remove(param_edit);
-      mode_panel.remove(units_edit);
-    }
-    if (curr_mode_idx == 3)
-    {
-      remove(python_edit);
-      mode_panel.remove(units_edit);
-    }
+    if (curr_mode_idx>0)
+        remove(panel);
     curr_mode_idx = mode_idx;
     combo.setSelectedIndex(mode_idx);
     addEditor();
@@ -221,7 +186,6 @@ public class DataEditor
           }
           else
             return python_edit.getData();
-
     }
     return null;
   }

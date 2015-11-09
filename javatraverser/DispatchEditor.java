@@ -6,7 +6,7 @@ import java.awt.event.*;
 public class DispatchEditor extends JPanel implements ActionListener,Editor
 {
     DispatchEdt dispatch_edit;
-    ExprEditor expr_edit;
+    LabeledExprEditor expr_edit;
     JComboBox combo;
     Data data;
     int dtype_idx, curr_dtype_idx;
@@ -38,7 +38,7 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	setLayout(new BorderLayout());
 	JPanel jp = new JPanel();
 	jp.add(combo);
-	add(jp, "North");
+	add(jp, BorderLayout.PAGE_START);
 	addEditor();
     }
 
@@ -51,21 +51,18 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 		    dispatch_edit = new DispatchEdt((DispatchData)data, false);
 		else
 		    dispatch_edit = new DispatchEdt(null, false);
-		add(dispatch_edit, "South");
+		add(dispatch_edit);
 		break;
 	    case 2:
 		if(dtype_idx == curr_dtype_idx)
 		    dispatch_edit = new DispatchEdt((DispatchData)data, true);
 		else
 		    dispatch_edit = new DispatchEdt(null, true);
-		add(dispatch_edit, "South");
+		add(dispatch_edit);
 		break;
 	    case 3:
-		if(dtype_idx == curr_dtype_idx)
-		    expr_edit = new ExprEditor(data, false, 5,30);
-		else
-		    expr_edit = new ExprEditor(null, false, 5, 30);
-		add(expr_edit, "South");
+		expr_edit = new LabeledExprEditor(data);
+		add(expr_edit);
 		break;
 	}
     }
@@ -90,6 +87,7 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	addEditor();
 	validate();
 	dialog.repack();
+	repaint();
     }
 
 
@@ -160,27 +158,26 @@ class DispatchEdt extends JPanel
     }
 	if(this.data.getType() == DispatchData.SCHED_SEQ)
 	    is_sequential = true;
-
-    	GridLayout gl = new GridLayout(4,1);
-	gl.setVgap(0);
-	setLayout(gl);
-	ident_edit = new LabeledExprEditor("Ident:     ", new ExprEditor(this.data.getIdent(), true));
-	phase_edit = new LabeledExprEditor("Phase:     ", new ExprEditor(this.data.getPhase(), true));
-	ident_edit = new LabeledExprEditor("Ident:     ", new ExprEditor(this.data.getIdent(), true));
+	ident_edit = new LabeledExprEditor("Ident", new ExprEditor(this.data.getIdent(), true));
+	phase_edit = new LabeledExprEditor("Phase", new ExprEditor(this.data.getPhase(), true));
+	ident_edit = new LabeledExprEditor("Ident", new ExprEditor(this.data.getIdent(), true));
 	if(is_sequential)
-	    sequence_edit = new LabeledExprEditor("Sequence:  ",
+	    sequence_edit = new LabeledExprEditor("Sequence",
 		new ExprEditor(this.data.getWhen(), false));
 	else
-    	    sequence_edit = new LabeledExprEditor("After:     ",
+    	    sequence_edit = new LabeledExprEditor("After",
 		new ExprEditor(this.data.getWhen(), false));
 
-	completion_edit = new LabeledExprEditor(  "Completion:",
+	completion_edit = new LabeledExprEditor(  "Completion",
 	    new ExprEditor(this.data.getCompletion(), true));
-
-	add(ident_edit);
-	add(phase_edit);
-	add(sequence_edit);
-	add(completion_edit);
+    JPanel jp =new JPanel();
+	jp.setLayout(new GridLayout(4,1));
+	jp.add(ident_edit);
+	jp.add(phase_edit);
+	jp.add(sequence_edit);
+	jp.add(completion_edit);
+	setLayout(new BorderLayout());
+    add(jp, BorderLayout.NORTH);
     }
     public void reset()
     {

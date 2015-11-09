@@ -7,12 +7,11 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 {
     TaskEditor task_edit;
     DispatchEditor dispatch_edit;
-    ExprEditor expr_edit;
-    LabeledExprEditor notify_edit;
+    LabeledExprEditor notify_edit, expr_edit;
     JComboBox combo;
     int mode_idx, curr_mode_idx;
     Data data;
-    JPanel notify_panel;
+    JPanel action_panel;
     boolean editable;
     TreeDialog dialog;
     
@@ -39,12 +38,13 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 	combo.setEditable(false);
 	combo.setSelectedIndex(mode_idx);
 	combo.addActionListener(this);
+	setLayout(new BorderLayout());
 	JPanel jp = new JPanel();
 	jp.add(combo);
-	setLayout(new BorderLayout());
-	add(jp, "North");
+    add(jp, BorderLayout.NORTH);
 	addEditor();
-    }    private void addEditor()
+    }
+    private void addEditor()
     {
 	switch(curr_mode_idx) {
 	    case 0: return;
@@ -53,28 +53,24 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 		{
 		    dispatch_edit = new DispatchEditor(((ActionData)data).getDispatch(),dialog);
 		    task_edit = new TaskEditor(((ActionData)data).getTask(),dialog);
-		    notify_edit = new LabeledExprEditor(
-			"Notify: ", new ExprEditor(((ActionData)data).getErrorlogs(), true));
+		    notify_edit = new LabeledExprEditor("Notify", new ExprEditor(((ActionData)data).getErrorlogs(), true));
 
 		}
 		else
 		{
 		    dispatch_edit = new DispatchEditor(null, dialog);
 		    task_edit = new TaskEditor(null, dialog);
-		    notify_edit = new LabeledExprEditor(
-			"Notify: ", new ExprEditor(null, true));
+		    notify_edit = new LabeledExprEditor("Notify", new ExprEditor(null, true));
 		}
-		add(dispatch_edit, "West");
-		add(task_edit, "East");
-		notify_panel = new JPanel();
-		notify_panel.add(notify_edit);
-		add(notify_panel, "South");
+        action_panel = new JPanel();
+        action_panel.setLayout(new GridLayout(1,2));
+		action_panel.add(dispatch_edit);
+		action_panel.add(task_edit);
+		add(action_panel, BorderLayout.CENTER);
+		add(notify_edit, BorderLayout.SOUTH);
 		break;
 	    case 2: 
-		if(curr_mode_idx == mode_idx)
-		    expr_edit = new ExprEditor(data, false, 5, 30);
-		else
-		    expr_edit = new ExprEditor(null, false, 5, 30);
+		expr_edit = new LabeledExprEditor(data);
 		add(expr_edit, "Center");
 		break;
 	}
@@ -92,12 +88,12 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 	if(idx == curr_mode_idx) return;
 	switch(curr_mode_idx)  {
 	    case 1: 
-		remove(dispatch_edit);
-		dispatch_edit = null; 
-		remove(task_edit);
+		remove(action_panel);
+        action_panel = null;
 		task_edit = null;
-		remove(notify_panel);
-		notify_panel = null;
+		dispatch_edit = null; 
+		remove(notify_edit);
+		notify_edit = null;
 		break;
 	    case 2: 
 		remove(expr_edit); 
@@ -115,10 +111,9 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
     {
     	combo.setSelectedIndex(mode_idx);
 	switch(curr_mode_idx)  {
-		case 1: 
-		    remove(dispatch_edit); 
-		    remove(task_edit);
-		    remove(notify_panel);
+		case 1:  
+		    remove(action_panel);
+		    remove(notify_edit);
 		    break;
 		case 2: remove(expr_edit); break;
 	}
