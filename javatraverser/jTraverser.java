@@ -153,8 +153,8 @@ public class jTraverser extends JFrame implements ActionListener
 	tree = new Tree(this);
 	if(exp_name != null)
 	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), edit, readonly, false);
-	getContentPane().add(tree, BorderLayout.NORTH);
-    getContentPane().add(status, BorderLayout.SOUTH);
+	getContentPane().add(tree);
+    getContentPane().add(status, BorderLayout.PAGE_END);
 	addWindowListener(new WindowAdapter() {
 	    public void windowClosing(WindowEvent e)
 	    {
