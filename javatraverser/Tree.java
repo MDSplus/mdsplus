@@ -1228,6 +1228,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
                             dialog.setVisible(false);
 	            }});
     	        dialog.pack();
+                dialog.setResizable(false);
             }
             private static void editFlag(byte idx)
             {
