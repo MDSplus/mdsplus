@@ -168,7 +168,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    if(editable)
 	        {
 		        int n = JOptionPane.showConfirmDialog(frame, "Tree " + name +
-		            " open in edit mode has been changed: write it before closing?",
+		            " open in edit mode has been changed: Write it before closing?",
 			        "Closing Tree ", JOptionPane.YES_NO_OPTION);
 		        if(n == JOptionPane.YES_OPTION)
 		        {
@@ -919,9 +919,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    int n = JOptionPane.showConfirmDialog(frame, msg, "Delete node(s)", JOptionPane.YES_NO_OPTION);
 	    if(n == JOptionPane.YES_OPTION)
 	    {
-	        del_node.executeDelete();
 	        DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
 	        tree_model.removeNodeFromParent(delNode.getTreeNode());
+	        del_node.executeDelete();
 	    }
     }
 
