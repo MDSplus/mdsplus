@@ -1,4 +1,43 @@
-commit 566bcde4b68208a02c1848454593a6574d9699fe (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit cc6fdc425aef64b538078d169f926e6db24fd9fb (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: f22eb8b 82db1c4
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Nov 9 15:51:15 2015 +0100
+
+    Merge pull request #204 from zack-vii/aa_jtraverser
+    
+    fixed status bar on resizing
+
+commit 82db1c438ad1f435f87aa23b5925d3c23af28fd4
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 15:31:45 2015 +0100
+
+    Make over of the Editors
+    
+    - optimized the use of GridLayout and BorderLayout to make make the
+    right data field to resize with the dialog window.
+    - Arguments, PyPrograms, help etc. will expand.
+
+commit af970ab9e0fa82cd03119772813d1f55cff045f1
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 10:02:18 2015 +0100
+
+    disable resizing flags dialog
+
+commit c8c6db00d3fe103fa598c3e8274b81711ea929bc
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 09:45:50 2015 +0100
+
+    fixed status bar on resizing
+    
+    - status bar remains a one-liner and the tree pane resizes
+
+commit f22eb8bb93aeae4c3f854f9fe543d48f4d22316d (tag: refs/tags/alpha_release-7-0-176)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 6 23:36:47 2015 -0500
+
+    New release ---- alpha_release-7-0-176
+
+commit 566bcde4b68208a02c1848454593a6574d9699fe
 Merge: 6ac2d4c d5d942b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 6 16:37:36 2015 -0500
