@@ -1,13 +1,10 @@
-import time
-import MARTE_GENERIC
+from MARTE_GENERIC import MARTE_GENERIC
 
-class MARTE_MHD_AC_BC(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe MHD_AC_BC'
+class MARTE_MHD_AC_BC(MARTE_GENERIC):
+    print('MARTE_MHD_AC_BC')
     parNames = ['OutputMapping', 'statFreezeTime', 'endFreezeTime', 'currentLimit']
     parValues = [0, 10000., 10000., 400.]
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

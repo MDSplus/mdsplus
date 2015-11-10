@@ -1,14 +1,13 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import *
-import time
-import MARTE_COMMON
+from MDSplus import Data
+from MARTE_COMMON import MARTE_COMMON
 
-class MARTE_RTSM(MARTE_COMMON.MARTE_COMMON):
-    print 'MARTe RTSM'
+class MARTE_RTSM(MARTE_COMMON):
+    print('MARTE_RTSM')
     parNames = ['numStates', 'stateTime','stateNumNext','stateNext','stateNextMask','stateNextPattern','stateOutMode','stateOutBits', 'triggerTime', 'frequency']
 
     parValues = [1,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),Data.compile('zero(8*8, 0.)'),Data.compile('zero(8*8, 0.)'),Data.compile('zero(8*8, 0.)'),
-        Data.compile('zero(8*8, 0.)'),Data.compile('zero(8, 0.)'), 0, 1000] 
+        Data.compile('zero(8*8, 0.)'),Data.compile('zero(8, 0.)'), 0, 1000]
 
     waveParNames = ['state1_wave1','state1_wave2','state1_wave3','state1_wave4','state1_wave5','state1_wave6','state1_wave7','state1_wave8',
         'state2_wave1','state2_wave2','state2_wave3','state2_wave4','state2_wave5','state2_wave6','state2_wave7','state2_wave8',
@@ -17,13 +16,11 @@ class MARTE_RTSM(MARTE_COMMON.MARTE_COMMON):
         'state5_wave1','state5_wave2','state5_wave3','state5_wave4','state5_wave5','state5_wave6','state5_wave7','state5_wave8',
         'state6_wave1','state6_wave2','state6_wave3','state6_wave4','state6_wave5','state6_wave6','state6_wave7','state6_wave8',
         'state7_wave1','state7_wave2','state7_wave3','state7_wave4','state7_wave5','state7_wave6','state7_wave7','state7_wave8',
-        'state8_wave1','state8_wave2','state8_wave3','state8_wave4','state8_wave5','state8_wave6','state8_wave7','state8_wave8']  
+        'state8_wave1','state8_wave2','state8_wave3','state8_wave4','state8_wave5','state8_wave6','state8_wave7','state8_wave8']
 
 
 
-    parts = []
-    for i in range(len(MARTE_COMMON.MARTE_COMMON.parts)):
-      parts.append(MARTE_COMMON.MARTE_COMMON.parts[i])
+    parts = list(MARTE_COMMON.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

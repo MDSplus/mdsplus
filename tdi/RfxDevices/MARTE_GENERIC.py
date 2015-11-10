@@ -1,10 +1,10 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import *
+from MDSplus import Device, Tree, Data, Event
 import os
 import time
 
 class MARTE_GENERIC(Device):
-    print 'MARTe GENERIC '
+    print('MARTE_GENERIC')
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':ID', 'type':'numeric', 'value':0},
@@ -36,7 +36,7 @@ class MARTE_GENERIC(Device):
 #      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
 #      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
 #      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    
+
     parts.append({'path':'.SIGNALS', 'type':'structure'})
     parts.append({'path':'.SIGNALS.ADC_IN', 'type':'structure'})
     for i in range(192):
@@ -57,12 +57,12 @@ class MARTE_GENERIC(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
 	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
 	  'options':('no_write_shot',)})
-     
+
     def getEventName(self):
       if os.environ.get("MARTE_EVENT") is None:
         return "MARTE"
       else:
-        return os.environ["MARTE_EVENT"] 
+        return os.environ["MARTE_EVENT"]
 
     def init(self,arg):
       eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
@@ -72,43 +72,42 @@ class MARTE_GENERIC(Device):
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read frequency')
         return 0
-      try:        
+      try:
         eventStr = eventStr + " " + str(self.trig_source.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read trigger source')
         return 0
-      try:        
+      try:
         eventStr = eventStr + " " + str(self.sampl_start.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Sampling start')
         return 0
-      try:        
+      try:
         eventStr = eventStr + " " + str(self.sampl_end.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Sampling end')
         return 0
-      try:        
+      try:
         eventStr = eventStr + " " + str(self.offset_start.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Offset start')
         return 0
-      try:        
+      try:
         eventStr = eventStr + " " + str(self.offset_end.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Offset end')
         return 0
-      try:        
+      try:
         eventStr = eventStr + " " + str(self.duration.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Duration')
         return 0
 
-
       eventStr = eventStr + " " + str(self.params.getNid())
       eventStr = eventStr + " " + str(self.wave_params.getNid())
       eventStr = eventStr + " " + str(self.input_cal.getNid())
       eventStr = eventStr + " " + str(self.output_cal.getNid())
-      try:        
+      try:
         eventStr = eventStr + " " + self.control.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Control')
@@ -116,22 +115,22 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
-      print eventStr
+      print(eventStr)
       Event.setevent(self.getEventName(), eventStr)
       time.sleep(3)
       return 1
-    
+
 
     def trigger(self, arg):
       eventStr = "TRIGGER " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
       return 1
- 
+
     def pre_req(self, arg):
       eventStr = "PRE_REQ " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
       return 1
- 
+
     def pulse_req(self, arg):
       eventStr = "PULSE_REQ"
       Event.setevent(self.getEventName(), eventStr)
@@ -146,7 +145,7 @@ class MARTE_GENERIC(Device):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
       return 1
- 
+
     def store(self,arg):
       eventStr = "STORE " + str(self.id.data())
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
@@ -155,22 +154,22 @@ class MARTE_GENERIC(Device):
       Event.setevent("MARTE", eventStr)
       time.sleep(3)
       return 1
- 
+
     def abort(self, arg):
       eventStr = "ABORT"
       Event.setevent(self.getEventName(), eventStr)
       return 1
- 
+
     def cacca(self,arg):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 #       eventStr = "STORE " +str(self.id.data())
-#       print eventStr 
+#       print eventStr
 #       Event.setevent(self.getEventName(), eventStr)
 #       time.sleep(10)
 #       return 1
-      
+
     def seq_init(self,arg):
       self.abort(arg)
       time.sleep(3)
@@ -200,13 +199,13 @@ class MARTE_GENERIC(Device):
       time.sleep(3)
       self.collection_complete(arg)
       return 1
-    
+
     def seq_store_start(self,arg):
       self.post_req(arg)
       time.sleep(3)
       self.store(arg)
       return 1
-    
+
     def seq_store_stop(self,arg):
       self.store(arg)
       self.collection_complete(arg)

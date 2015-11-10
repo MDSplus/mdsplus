@@ -1,14 +1,11 @@
-from MDSplus import *
-import time
-import MARTE_GENERIC
+from MDSplus import Data
+from MARTE_GENERIC import MARTE_GENERIC
 
-class MARTE_DEQU(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe DEQU'
+class MARTE_DEQU(MARTE_GENERIC):
+    print('MARTE_DEQU')
     parNames = ['InputMapping', 'InputAutozero', 'bpCorrectionCoeffs', 'torI2TLimit', 'FluxDiffCorrectionOn', 'FluxDiffCorrectionCoeffs', 'AliasRemoveOn', 'TimeConstLpfMandF', 'FourthHarmRecOn', 'deltaTequ']
     parValues = [0,0, Data.compile('zero(32, 0.)+1.'), 0, 0, Data.compile('[-331.63E-9,-123.053E-9,-24.8494E-9,10.2545E-9,15.5055E-9,-35.3507E-9,-186.869E-9]'), 0, 0.16, 0, 0.05]
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

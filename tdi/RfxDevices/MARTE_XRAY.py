@@ -1,14 +1,10 @@
-from MDSplus import *
-import time
-import MARTE_GENERIC
+from MARTE_GENERIC import MARTE_GENERIC
 
-class MARTE_XRAY(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe XRAY'
+class MARTE_XRAY(MARTE_GENERIC):
+    print('MARTE_XRAY')
     parNames = ['param1', 'param2']
     parValues = [0,0]
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):
