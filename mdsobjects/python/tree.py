@@ -132,6 +132,11 @@ class Tree(object):
         @return: Value of attribute
         @rtype: various
         """
+        if name.upper() == name:
+            try:
+                return self.getNode(name)
+            except:
+                pass
         if name.lower() == 'default':
             ans=self.getDefault()
         else:
