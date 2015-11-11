@@ -132,6 +132,11 @@ class TreeNode(_data.Data):
          @rtype: various
          """
 
+        if name.upper() == name:
+            try:
+                return self.getNode(name)
+            except:
+                pass
         if name.lower() == 'nid':
             try:
                 return self.__dict__['nid']
