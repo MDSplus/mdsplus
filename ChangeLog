@@ -1,4 +1,48 @@
-commit cc6fdc425aef64b538078d169f926e6db24fd9fb (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8976a8085c35eebf3f399c27a6c0525d6aeb2772 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 0991617 76342f6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 10 16:33:38 2015 +0100
+
+    Merge pull request #206 from zack-vii/aa_RFX_MARTE
+    
+    make MARTE Device family python3 ready
+
+commit 76342f6178c7468f71c56a872d54fe26cb6ef764
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 10 16:24:50 2015 +0100
+
+    make Devices python3 ready
+    
+    - less verbose
+    - import only what you need
+    => faster more robust
+
+commit 0991617388992a25334faf6e553a9d1c8e6a7231
+Merge: 35353e4 2996dd7
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 10 09:04:39 2015 +0100
+
+    Merge pull request #205 from zack-vii/aa_jtraverser
+    
+    remove from Tree before deleting from file
+
+commit 35353e4cd77b3163533925b3eedb159124202f4a (tag: refs/tags/alpha_release-7-0-177)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 9 23:40:55 2015 -0500
+
+    New release ---- alpha_release-7-0-177
+
+commit 2996dd77c67869f0ceb8aa4baf4a664b75f2111d
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 20:38:23 2015 +0100
+
+    remove from Tree before deleting from file
+    
+    prevents: "Error expanding tree
+    DatabaseException: %TREE-W-NNF, Node Not Found"
+    - typo
+
+commit cc6fdc425aef64b538078d169f926e6db24fd9fb
 Merge: f22eb8b 82db1c4
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Nov 9 15:51:15 2015 +0100
