@@ -1,8 +1,7 @@
-from MDSplus import version
-if version.ispy3:
-    from .MARTE_COMMON import MARTE_COMMON
-else:
-    from MARTE_COMMON import MARTE_COMMON
+try:
+    MARTE_COMMON = __import__('MARTE_COMMON', globals(), level=1).MARTE_COMMON
+except:
+    MARTE_COMMON = __import__('MARTE_COMMON', globals()).MARTE_COMMON
 
 class MARTE_DEVICE(MARTE_COMMON):
     print('MARTE_DEVICE')

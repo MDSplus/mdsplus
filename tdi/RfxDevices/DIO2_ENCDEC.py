@@ -1,12 +1,12 @@
-from MDSplus import Device, Data, Range, Int32, makeArray, version
+from MDSplus import Device, Data, Range, Int32, makeArray
 from threading import Thread
 from numpy import array
 from ctypes import CDLL, byref, c_int
 from time import sleep
-if version.ispy3:
-    from .DIO4 import DIO4
-else:
-    from DIO4 import DIO4
+try:
+    DIO4 = __import__('DIO4', globals(), level=1).DIO4
+except:
+    DIO4 = __import__('DIO4', globals()).DIO4
 
 class DIO2_ENCDEC(Device):
     """INCAA DIO2 Decoder/Encoder channels Timing Module"""

@@ -1,9 +1,9 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import Data, version
-if version.ispy3:
-    from .MARTE_COMMON import MARTE_COMMON
-else:
-    from MARTE_COMMON import MARTE_COMMON
+from MDSplus import Data
+try:
+    MARTE_COMMON = __import__('MARTE_COMMON', globals(), level=1).MARTE_COMMON
+except:
+    MARTE_COMMON = __import__('MARTE_COMMON', globals()).MARTE_COMMON
 
 class MARTE_RTSM(MARTE_COMMON):
     print('MARTE_RTSM')

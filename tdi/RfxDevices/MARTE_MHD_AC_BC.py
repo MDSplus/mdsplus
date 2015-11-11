@@ -1,8 +1,7 @@
-from MDSplus import version
-if version.ispy3:
-    from .MARTE_GENERIC import MARTE_GENERIC
-else:
-    from MARTE_GENERIC import MARTE_GENERIC
+try:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
+except:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_MHD_AC_BC(MARTE_GENERIC):
     print('MARTE_MHD_AC_BC')
