@@ -1,4 +1,85 @@
-commit ef8aa34fb870e835254a673af224e6026f68ebb4 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit e283c1c2f61b803805c3c4ddd0553251580ac587 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 9a8ec16 074a744
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 10 15:50:10 2015 -0500
+
+    Merge pull request #209 from MDSplus/darrens-configure.in
+    
+    Darrens configure.in
+
+commit 074a74432dfe23eda923c5a69a915b833e8b56a2 (refs/remotes/origin/darrens-configure.in)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 10 15:34:00 2015 -0500
+
+    One more time at macosx fix
+
+commit c5fb5d39df318851d97eb6db5e84703d4662fe2f
+Merge: 1d0a5ac 7bbf4c6
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 10 15:14:54 2015 -0500
+
+    Merge branch 'darrens-configure.in' of github.com:MDSplus/mdsplus into darrens-configure.in
+
+commit 1d0a5ac07565397d334030f6808c4ef499c44de7
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 10 15:13:22 2015 -0500
+
+    try again to add install_name to darwin link
+
+commit 7bbf4c6e34c4f878ded7963af39bb48277b4774c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 10 15:05:44 2015 -0500
+
+    Add new configure
+
+commit 9a8ec16ae384e0bc63db1941a56243c478093eaf
+Merge: a40eaa7 7bbf4c6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 10 15:05:34 2015 -0500
+
+    Merge pull request #208 from MDSplus/darrens-configure.in
+    
+    add install_name to darwin link commands
+
+commit e21341d187ae7a8fb496185a91f0a8c7ea680ffe
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 10 14:59:53 2015 -0500
+
+    add install_name to darwin link commands
+
+commit a40eaa7a97c82937fd1fd24a7be35ec4b009f61a
+Merge: 232d0fc 5947ec5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 10 13:50:05 2015 -0500
+
+    Merge pull request #207 from MDSplus/darren-fix-DYLD_LIBRARY_PATH
+    
+    Add link options to set the image_name and make paths relative for
+
+commit 5947ec569723e1693ec62e1543e0939b0eca1bbd (refs/remotes/origin/darren-fix-DYLD_LIBRARY_PATH)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 10 13:30:32 2015 -0500
+
+    autoconf the configure.in with more modern autotools on fc22
+
+commit e1dd24d679fe2ea48e02630351a890e842a3c86d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 10 12:39:30 2015 -0500
+
+    Add link options to set the image_name and make paths relative for
+    macintosh.
+    
+    Thanks to:
+    
+      Darren Garnier
+
+commit 232d0fc0fed82536b8b993082daf466f122b3d50 (tag: refs/tags/stable_release-7-0-59)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 6 19:05:20 2015 -0500
+
+    New release ---- stable_release-7-0-59
+
+commit ef8aa34fb870e835254a673af224e6026f68ebb4
 Merge: 0f474ae 5e330a8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 6 16:37:16 2015 -0500
