@@ -1,4 +1,29 @@
-commit 8976a8085c35eebf3f399c27a6c0525d6aeb2772 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 023dcf65cd504c99367ecc9387a9fa865d75231a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 44c369f 1b57996
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 11 16:58:59 2015 +0100
+
+    Merge pull request #210 from zack-vii/aa_python_tree
+    
+    all-uppercase attributes will be redirected to getNode
+
+commit 1b57996999acc3e1445fd453eea37f8083d13e13
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 11 14:51:10 2015 +0100
+
+    all-uppercase attributes will be redirected to getNode
+    
+    all-uppercase attributes will be redirected to getNode
+    - allows a shortcut of node.getNode('DESC') by using node.DESC
+    - much faster way of getting the desired node
+
+commit 44c369f77ad195f0d2143af93245e0c903d69f09 (tag: refs/tags/alpha_release-7-0-178)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 10 23:50:14 2015 -0500
+
+    New release ---- alpha_release-7-0-178
+
+commit 8976a8085c35eebf3f399c27a6c0525d6aeb2772
 Merge: 0991617 76342f6
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Nov 10 16:33:38 2015 +0100
