@@ -53,12 +53,12 @@ extern "C" {
 
 //////Wrapper functions called by C code to build a Data class instance from a MDSplus descriptor///////////
 
-extern "C" EXPORT void *convertDataToDsc(void *data)
+extern "C"  void *convertDataToDsc(void *data)
 {
 	return ((Data *)data)->convertToDsc();
 }
 
-extern "C" EXPORT void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData, 
+extern "C"  void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData, 
 								  Data *helpData, Data *validationData, Tree *tree)
 {
 	switch(dtype) {
@@ -89,7 +89,7 @@ extern "C" EXPORT void *createScalarData(int dtype, int length, char *ptr, Data 
 	return 0;
 }
 
-extern "C" EXPORT void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
+extern "C"  void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
 								 Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
 	int revDims[MAX_ARGS];
@@ -120,7 +120,7 @@ extern "C" EXPORT void *createArrayData(int dtype, int length, int nDims, int *d
 	return 0;
 }
 
-extern "C" EXPORT void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
+extern "C"  void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
 									Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
 //printf("CREATE COMPOUND DATA nDescs = %d ptr= %x\n", nDescs, ptr);
@@ -145,17 +145,17 @@ extern "C" EXPORT void *createCompoundData(int dtype, int length, char *ptr, int
 	return 0;
 }
 
-extern "C" EXPORT void *createApdData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C"  void *createApdData(int nData, char **dataPtrs, Data *unitsData, 
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Apd(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
-extern "C" EXPORT void *createListData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C"  void *createListData(int nData, char **dataPtrs, Data *unitsData, 
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new List(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
-extern "C" EXPORT void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData, 
+extern "C"  void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData, 
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
@@ -1307,28 +1307,28 @@ char *Uint64::getDate()
 }
 
 
-EXPORT void *TreePath::convertToDsc()
+void *TreePath::convertToDsc()
 {
 	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, path.length(), const_cast<char *>(path.c_str())));
 }
 
-EXPORT void *Array::convertToDsc()
+ void *Array::convertToDsc()
 {
 	return completeConversionToDsc(convertToArrayDsc(clazz, dtype, length, arsize, nDims, dims, ptr));
 }
 
-EXPORT void *Compound::convertToDsc()
+void *Compound::convertToDsc()
 {
 	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, sizeof(short), (void *)&opcode, descs.size(), (void **)(&descs[0])));
 }
 
-EXPORT void *Apd::convertToDsc()
+void *Apd::convertToDsc()
 {
 	return completeConversionToDsc(convertToApdDsc(dtype, descs.size(), (void **)&descs[0]));
 }
 
 
-EXPORT Data *MDSplus::deserialize(char const * serialized)
+Data *MDSplus::deserialize(char const * serialized)
 {
 	void *dscPtr = deserializeData(serialized);
 	if(!dscPtr) throw MdsException("Cannot build Data instance from serialized content");
@@ -1337,7 +1337,7 @@ EXPORT Data *MDSplus::deserialize(char const * serialized)
 	return retData;
 }
 
-EXPORT Data *MDSplus::deserialize(Data *serializedData)
+Data *MDSplus::deserialize(Data *serializedData)
 {
 	Uint8Array *serializedArr = (Uint8Array *)serializedData;
 	return deserialize((const char *)serializedArr->ptr);
@@ -1362,19 +1362,19 @@ std::ostream& MDSplus::operator<<(std::ostream& output, Data *data)
 	delete[] str;
     return output;
 }
-EXPORT Data *Uint8Array::deserialize()
+Data *Uint8Array::deserialize()
 {
     return (Data *)deserializeData(ptr);
 }
 
-EXPORT void Scope::show()
+void Scope::show()
 {
 	char expr[256];
 	std::sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
 	Data *ris = execute(expr);
 	deleteData(ris);
 }
-EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
+Scope::Scope(const char *name, int x, int y, int width, int height)
 {
 	std::string expr("JavaNewWindow(" + std::string(name) + ", -1");
 	Data *ris = execute(expr.c_str());
@@ -1386,14 +1386,14 @@ EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
 	this->height = height;
 	show();
 }
-EXPORT void Scope::plot(Data *x, Data *y , int row, int col, const char *color)
+void Scope::plot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
 	std::sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
-EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
+void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
 	std::sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);

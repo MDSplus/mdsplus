@@ -1312,7 +1312,7 @@ void TreePath::resolveNid()
 
 
 
-EXPORT TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
+TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
 {
 	this->numNodes = numNodes;
 	this->nodes = new TreeNode *[numNodes];
@@ -1321,7 +1321,7 @@ EXPORT TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
 		this->nodes[i] = nodes[i];
 }
 
-EXPORT TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
+TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
 {
 	this->numNodes = numNodes;
 	this->nodes = new TreeNode *[numNodes];
@@ -1330,7 +1330,7 @@ EXPORT TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
 		this->nodes[i] = new TreeNode(nids[i], tree);
 }
 
-EXPORT TreeNodeArray::~TreeNodeArray()
+TreeNodeArray::~TreeNodeArray()
 {
 	if(numNodes > 0)
 	{
@@ -1341,17 +1341,17 @@ EXPORT TreeNodeArray::~TreeNodeArray()
 }
 
 
-EXPORT void *TreeNodeArray::operator new(size_t sz)
+void *TreeNodeArray::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
 
-EXPORT void TreeNodeArray::operator delete(void *p)
+void TreeNodeArray::operator delete(void *p)
 {
 	::operator delete(p);
 }
 
-EXPORT StringArray *TreeNodeArray::getPath()
+StringArray *TreeNodeArray::getPath()
 {
 /* WRONG!! AutoArray cannot wok here because AutoArray objects are instantiated several times and then go
 out of scope, this triggering multiple deallocation of the same C string and crashing the program  
@@ -1377,7 +1377,7 @@ out of scope, this triggering multiple deallocation of the same C string and cra
 
 }
 
-EXPORT StringArray *TreeNodeArray::getFullPath()
+StringArray *TreeNodeArray::getFullPath()
 {
 /* Same as before  
 	std::vector<AutoArray<char> > paths;
@@ -1400,7 +1400,7 @@ EXPORT StringArray *TreeNodeArray::getFullPath()
 	return new StringArray(&nativePaths[0], numNodes);
 }
 
-EXPORT Int32Array *TreeNodeArray::getNid()
+Int32Array *TreeNodeArray::getNid()
 {
 	std::vector<int> nids;
 	for(int i = 0; i < numNodes; ++i)
@@ -1409,7 +1409,7 @@ EXPORT Int32Array *TreeNodeArray::getNid()
 	return new Int32Array(&nids[0], numNodes);
 }
 
-EXPORT Int8Array *TreeNodeArray::isOn()
+Int8Array *TreeNodeArray::isOn()
 {
 	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
@@ -1418,7 +1418,7 @@ EXPORT Int8Array *TreeNodeArray::isOn()
 	return new Int8Array(&info[0], numNodes);
 }
 
-EXPORT void TreeNodeArray::setOn(Int8Array *info)
+void TreeNodeArray::setOn(Int8Array *info)
 {
 	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
@@ -1428,7 +1428,7 @@ EXPORT void TreeNodeArray::setOn(Int8Array *info)
 		nodes[i]->setOn((infoArray[i]) ? true : false);
 }
 
-EXPORT Int8Array *TreeNodeArray::isSetup()
+Int8Array *TreeNodeArray::isSetup()
 {
 	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
@@ -1438,7 +1438,7 @@ EXPORT Int8Array *TreeNodeArray::isSetup()
 }
 
 
-EXPORT Int8Array *TreeNodeArray::isWriteOnce()
+Int8Array *TreeNodeArray::isWriteOnce()
 {
 	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
@@ -1447,7 +1447,7 @@ EXPORT Int8Array *TreeNodeArray::isWriteOnce()
 	return new Int8Array(&info[0], numNodes);
 }
 
-EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
+void TreeNodeArray::setWriteOnce(Int8Array *info)
 {
 	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
@@ -1456,8 +1456,7 @@ EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
 	for(std::size_t i = 0; i < MAX; ++i)
 		nodes[i]->setWriteOnce((infoArray[i]) ? true : false);
 }
-
-EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
+Int8Array *TreeNodeArray::isCompressOnPut()
 {
 	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
@@ -1466,7 +1465,7 @@ EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
 	return new Int8Array(&info[0], numNodes);
 }
 
-EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
+void TreeNodeArray::setCompressOnPut(Int8Array *info)
 {
 	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
@@ -1476,7 +1475,7 @@ EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
 		nodes[i]->setCompressOnPut((infoArray[i]) ? true : false);
 }
 
-EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
+Int8Array *TreeNodeArray::isNoWriteModel()
 {
 	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
@@ -1485,7 +1484,7 @@ EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
 	return new Int8Array(&info[0], numNodes);
 }
 
-EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
+void TreeNodeArray::setNoWriteModel(Int8Array *info)
 {
 	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
@@ -1495,7 +1494,7 @@ EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
 		nodes[i]->setNoWriteModel((infoArray[i]) ? true : false);
 }
 
-EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
+Int8Array *TreeNodeArray::isNoWriteShot()
 {
 	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
@@ -1504,7 +1503,7 @@ EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
 	return new Int8Array(&info[0], numNodes);
 }
 
-EXPORT void TreeNodeArray::setNoWriteShot(Int8Array *info)
+void TreeNodeArray::setNoWriteShot(Int8Array *info)
 {
 	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
@@ -1514,7 +1513,7 @@ EXPORT void TreeNodeArray::setNoWriteShot(Int8Array *info)
 		nodes[i]->setNoWriteShot((infoArray[i]) ? true : false);
 }
 
-EXPORT Int32Array *TreeNodeArray::getLength()
+Int32Array *TreeNodeArray::getLength()
 {
 	std::vector<int> sizes;
 	for(int i = 0; i < numNodes; ++i)
@@ -1523,7 +1522,7 @@ EXPORT Int32Array *TreeNodeArray::getLength()
 	return new Int32Array(&sizes[0], numNodes);
 }
 
-EXPORT Int32Array *TreeNodeArray::getCompressedLength()
+Int32Array *TreeNodeArray::getCompressedLength()
 {
 	std::vector<int> sizes;
 	for(int i = 0; i < numNodes; ++i)
@@ -1532,7 +1531,7 @@ EXPORT Int32Array *TreeNodeArray::getCompressedLength()
 	return new Int32Array(&sizes[0], numNodes);
 }
 
-EXPORT StringArray *TreeNodeArray::getUsage()
+StringArray *TreeNodeArray::getUsage()
 {
 	std::vector<char const *> usages;
 	for(int i = 0; i < numNodes; ++i)
@@ -1546,12 +1545,12 @@ EXPORT StringArray *TreeNodeArray::getUsage()
 ////////////////End TreeNodeArray methods/////////////////////
 
 
-EXPORT void MDSplus::setActiveTree(Tree *tree)
+void MDSplus::setActiveTree(Tree *tree)
 {
 	TreeSwitchDbid(tree->getCtx());
 }
 
-EXPORT Tree *MDSplus::getActiveTree()
+Tree *MDSplus::getActiveTree()
 {
 	char name[1024];
 	int shot;

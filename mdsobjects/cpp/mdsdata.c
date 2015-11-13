@@ -42,7 +42,7 @@ extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int
 extern void *getManyObj(char *serializedIn);
 extern void *putManyObj(char *serializedIn);
 
-EXPORT void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
+void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 {
   EMPTYXD(emptyXd);
   int status;
@@ -65,7 +65,7 @@ EXPORT void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 
 #define MAX_DIMS 32
 
-EXPORT void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims,
+void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims,
 			void *ptr)
 {
   EMPTYXD(emptyXd);
@@ -98,7 +98,7 @@ EXPORT void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int
 }
 
 #define MAX_ARGS 128
-EXPORT void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs)
+void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xds[MAX_ARGS];
@@ -132,7 +132,7 @@ EXPORT void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, i
   return xdPtr;
 }
 
-EXPORT void *convertToApdDsc(int type, int ndescs, void **descs)
+void *convertToApdDsc(int type, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd **xds =
@@ -167,7 +167,7 @@ EXPORT void *convertToApdDsc(int type, int ndescs, void **descs)
   return xdPtr;
 }
 
-EXPORT void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
+void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 {
   EMPTYXD(emptyXd);
   int status;
@@ -184,7 +184,7 @@ EXPORT void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
   return (void *)xdPtr;
 }
 
-EXPORT void *convertFromDsc(void *ptr, void *tree)
+void *convertFromDsc(void *ptr, void *tree)
 {
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)ptr;
   struct descriptor *dscPtr;
@@ -334,7 +334,7 @@ EXPORT void *convertFromDsc(void *ptr, void *tree)
   return (0);
 }
 
-EXPORT void freeDsc(void *dscPtr)
+void freeDsc(void *dscPtr)
 {
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)dscPtr;
   if (xdPtr->class != CLASS_XD) {
@@ -345,7 +345,7 @@ EXPORT void freeDsc(void *dscPtr)
   free((char *)xdPtr);
 }
 
-EXPORT char *decompileDsc(void *ptr)
+char *decompileDsc(void *ptr)
 {
   int status;
   EMPTYXD(xd);
@@ -366,7 +366,7 @@ EXPORT char *decompileDsc(void *ptr)
   return buf;
 }
 
-EXPORT void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
+void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
 {
   int varIdx;
   int i, status;
@@ -406,7 +406,7 @@ EXPORT void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *t
   return data;
 }
 
-EXPORT void *convertToByte(void *dsc)
+void *convertToByte(void *dsc)
 {
   int status;
   unsigned short opcode = OpcByte;
@@ -424,7 +424,7 @@ EXPORT void *convertToByte(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToByteUnsigned(void *dsc)
+void *convertToByteUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcByteUnsigned;
@@ -442,7 +442,7 @@ EXPORT void *convertToByteUnsigned(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToShort(void *dsc)
+void *convertToShort(void *dsc)
 {
   int status;
   unsigned short opcode = OpcWord;
@@ -460,7 +460,7 @@ EXPORT void *convertToShort(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToShortUnsigned(void *dsc)
+void *convertToShortUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcWordUnsigned;
@@ -478,7 +478,7 @@ EXPORT void *convertToShortUnsigned(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToInt(void *dsc)
+void *convertToInt(void *dsc)
 {
   int status;
   unsigned short opcode = OpcLong;
@@ -496,7 +496,7 @@ EXPORT void *convertToInt(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToIntUnsigned(void *dsc)
+void *convertToIntUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcLongUnsigned;
@@ -514,7 +514,7 @@ EXPORT void *convertToIntUnsigned(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToLong(void *dsc)
+void *convertToLong(void *dsc)
 {
   int status;
   unsigned short opcode = OpcQuadword;
@@ -532,7 +532,7 @@ EXPORT void *convertToLong(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToLongUnsigned(void *dsc)
+void *convertToLongUnsigned(void *dsc)
 {
   int status;
   unsigned short opcode = OpcQuadwordUnsigned;
@@ -550,7 +550,7 @@ EXPORT void *convertToLongUnsigned(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToFloat(void *dsc)
+void *convertToFloat(void *dsc)
 {
   int status;
   unsigned short opcode = OpcFloat;
@@ -569,7 +569,7 @@ EXPORT void *convertToFloat(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToDouble(void *dsc)
+void *convertToDouble(void *dsc)
 {
   int status;
   unsigned short opcode = OpcFT_float;
@@ -588,7 +588,7 @@ EXPORT void *convertToDouble(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToShape(void *dsc)
+void *convertToShape(void *dsc)
 {
   int status;
   unsigned short opcode = OpcShape;
@@ -606,7 +606,7 @@ EXPORT void *convertToShape(void *dsc)
   return xdPtr;
 }
 
-EXPORT void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
+void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
 {
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
@@ -630,7 +630,7 @@ EXPORT void *convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
   return retXd;
 }
 
-EXPORT void *convertToUnits(void *dsc, void *unitsDsc)
+void *convertToUnits(void *dsc, void *unitsDsc)
 {
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
@@ -650,7 +650,7 @@ EXPORT void *convertToUnits(void *dsc, void *unitsDsc)
   return retXd;
 }
 
-EXPORT void *convertToError(void *dsc, void *errorDsc)
+void *convertToError(void *dsc, void *errorDsc)
 {
   struct descriptor_xd *retXd;
   EMPTYXD(emptyXd);
@@ -670,7 +670,7 @@ EXPORT void *convertToError(void *dsc, void *errorDsc)
   return retXd;
 }
 
-EXPORT char *serializeData(void *dsc, int *retSize, void **retDsc)
+char *serializeData(void *dsc, int *retSize, void **retDsc)
 {
   int status;
   struct descriptor *dscIn = (struct descriptor *)dsc;
@@ -696,7 +696,7 @@ EXPORT char *serializeData(void *dsc, int *retSize, void **retDsc)
   return arrPtr->pointer;
 }
 
-EXPORT void *deserializeData(char const *serialized)
+void *deserializeData(char const *serialized)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xdPtr;
@@ -710,7 +710,7 @@ EXPORT void *deserializeData(char const *serialized)
   return xdPtr;
 }
 
-EXPORT void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
+void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
 {
   struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
   short len;
@@ -723,7 +723,7 @@ EXPORT void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int
   *retLen = len;
 }
 
-EXPORT int64_t convertAsciiToTime(const char *ascTime)
+int64_t convertAsciiToTime(const char *ascTime)
 {
   int64_t time;
 //      LibConvertDateString("now", &time);
@@ -732,7 +732,7 @@ EXPORT int64_t convertAsciiToTime(const char *ascTime)
 }
 
 //Conversion from VMS to IEEE float
-EXPORT void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr)
+void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr)
 {
   int status, arsize, i;
   float *fArr;
@@ -762,14 +762,14 @@ EXPORT void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims,
   free((char *)fArr);
 }
 
-EXPORT void convertToIEEEFloat(int dtype, int length, void *ptr)
+void convertToIEEEFloat(int dtype, int length, void *ptr)
 {
   int dims[1] = { 1 };
   convertToIEEEFloatArray(dtype, length, 1, dims, ptr);
 }
 
 ///////////////mdsip support for Connection class///////////
-EXPORT struct descriptor_xd *GetManyExecute(char *serializedIn)
+struct descriptor_xd *GetManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor_xd *serResult;
@@ -784,7 +784,7 @@ EXPORT struct descriptor_xd *GetManyExecute(char *serializedIn)
   return &xd;
 }
 
-EXPORT struct descriptor_xd *PutManyExecute(char *serializedIn)
+struct descriptor_xd *PutManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor *serResult;
