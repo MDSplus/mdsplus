@@ -22,7 +22,7 @@ extern "C" {
 	int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
-extern "C" EXPORT void eventAst(void *arg, int len, char *buf)
+extern "C" void eventAst(void *arg, int len, char *buf)
 {
 	Event *ev = (Event *)arg;
 	ev->eventBuf.assign(buf, len);
@@ -31,7 +31,7 @@ extern "C" EXPORT void eventAst(void *arg, int len, char *buf)
     ev->notify();
 }
 
-extern "C" EXPORT void reventAst(char *evname, char *buf, int len, void *arg)
+extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
 {
 	eventAst(arg, len, buf);
 }

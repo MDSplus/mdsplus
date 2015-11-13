@@ -49,7 +49,7 @@ int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * tim
 int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times);
 int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int size);
 
-EXPORT int getTreeData(void *dbid, int nid, void **data, void *tree)
+int getTreeData(void *dbid, int nid, void **data, void *tree)
 {
   EMPTYXD(xd);
   int status;
@@ -63,7 +63,7 @@ EXPORT int getTreeData(void *dbid, int nid, void **data, void *tree)
   return status;
 }
 
-EXPORT int putTreeData(void *dbid, int nid, void *data)
+int putTreeData(void *dbid, int nid, void *data)
 {
   struct descriptor_xd *xdPtr;
   int status;
@@ -74,7 +74,7 @@ EXPORT int putTreeData(void *dbid, int nid, void *data)
   return status;
 }
 
-EXPORT int deleteTreeData(void *dbid, int nid)
+int deleteTreeData(void *dbid, int nid)
 {
   EMPTYXD(xd);
   int status;
@@ -83,7 +83,7 @@ EXPORT int deleteTreeData(void *dbid, int nid)
   return status;
 }
 
-EXPORT void convertTime(int *time, char *retTime)
+void convertTime(int *time, char *retTime)
 {
   char timeStr[512];
   unsigned short retLen;
@@ -94,7 +94,7 @@ EXPORT void convertTime(int *time, char *retTime)
   strcpy(retTime, timeStr);
 }
 
-EXPORT int doTreeMethod(void *dbid, int nid, char *method)
+int doTreeMethod(void *dbid, int nid, char *method)
 {
   struct descriptor nidD = { sizeof(int), DTYPE_NID, CLASS_S, (char *)&nid };
   struct descriptor methodD = { strlen(method), DTYPE_T, CLASS_S, method };
@@ -102,7 +102,7 @@ EXPORT int doTreeMethod(void *dbid, int nid, char *method)
   return TreeDoMethod(dbid, &nidD, &methodD);
 }
 
-EXPORT int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc)
+int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
@@ -121,7 +121,7 @@ EXPORT int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, 
   return status;
 }
 
-EXPORT int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc,
+int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc,
 		    int rowsFilled)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
@@ -142,7 +142,7 @@ EXPORT int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, v
 }
 
 #define PUTROW_BUFSIZE 1000
-EXPORT int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int size)
+int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int size)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
@@ -152,7 +152,7 @@ EXPORT int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int si
   return status;
 }
 
-EXPORT int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs)
+int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
@@ -162,7 +162,7 @@ EXPORT int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs)
   return status;
 }
 
-EXPORT int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc, void *timeDsc)
+int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc, void *timeDsc)
 {
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
   struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
@@ -185,12 +185,12 @@ EXPORT int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, vo
   return status;
 }
 
-EXPORT int getTreeNumSegments(void *dbid, int nid, int *numSegments)
+int getTreeNumSegments(void *dbid, int nid, int *numSegments)
 {
   return _TreeGetNumSegments(dbid, nid, numSegments);
 }
 
-EXPORT int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startPtr, void **endPtr)
+int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startPtr, void **endPtr)
 {
   struct descriptor_xd *startXd, *endXd;
   EMPTYXD(emptyXd);
@@ -205,13 +205,13 @@ EXPORT int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startPtr, v
   return _TreeGetSegmentLimits(dbid, nid, idx, startXd, endXd);
 }
 
-EXPORT int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims,
+int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims,
 		       int *nextRow)
 {
   return _TreeGetSegmentInfo(dbid, nid, segIdx, dtype, dimct, dims, nextRow);
 }
 
-EXPORT int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc)
+int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
@@ -225,7 +225,7 @@ EXPORT int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void 
   return _TreeGetSegment(dbid, nid, segIdx, dataXd, timeXd);
 }
 
-EXPORT int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
+int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
 {
   int status;
 
@@ -243,7 +243,7 @@ EXPORT int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
 
 }
 
-EXPORT int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc)
+int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
@@ -253,7 +253,7 @@ EXPORT int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc)
   return status;
 }
 
-EXPORT int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times)
+int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
@@ -263,7 +263,7 @@ EXPORT int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t
   return status;
 }
 
-EXPORT int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times,
+int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times,
 				      int rowsFilled)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
