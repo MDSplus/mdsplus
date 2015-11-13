@@ -120,8 +120,8 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = mdsobjects/cpp/docs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
-	$(top_srcdir)/m4/libxml.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_build_docker.m4 \
+	$(top_srcdir)/m4/ax_prog_doxygen.m4 $(top_srcdir)/m4/libxml.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/readline.m4 \
 	$(top_srcdir)/m4/testing.m4 $(top_srcdir)/configure.ac
@@ -180,6 +180,7 @@ DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DK_DOCKER_TARGETS = @DK_DOCKER_TARGETS@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
 DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
@@ -229,6 +230,7 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
+HAVE_DOCKER = @HAVE_DOCKER@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
@@ -290,6 +292,7 @@ MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
 MAKEUIDDIR = @MAKEUIDDIR@
+MAKE_COMMAND_OVERRIDE = @MAKE_COMMAND_OVERRIDE@
 MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@

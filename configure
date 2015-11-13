@@ -899,6 +899,9 @@ build_os
 build_vendor
 build_cpu
 build
+MAKE_COMMAND_OVERRIDE
+DK_DOCKER_TARGETS
+HAVE_DOCKER
 target_alias
 host_alias
 build_alias
@@ -940,6 +943,8 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_docker_image
+with_docker_container
 enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
@@ -1653,6 +1658,8 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-docker-image     specify docker images
+  --with-docker-container specify docker container
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
@@ -2828,6 +2835,507 @@ ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
+
+
+
+
+   if ${HAVE_DOCKER+:} false; then :
+
+else
+  # Extract the first word of "docker", so it can be a program name with args.
+set dummy docker; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_DOCKER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_DOCKER"; then
+  ac_cv_prog_HAVE_DOCKER="$HAVE_DOCKER" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_DOCKER="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_DOCKER" && ac_cv_prog_HAVE_DOCKER="no"
+fi
+fi
+HAVE_DOCKER=$ac_cv_prog_HAVE_DOCKER
+if test -n "$HAVE_DOCKER"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_DOCKER" >&5
+$as_echo "$HAVE_DOCKER" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+
+
+# Check whether --with-docker-image was given.
+if test "${with_docker_image+set}" = set; then :
+  withval=$with_docker_image;
+else
+  if ${DOCKER_IMAGE+:} false; then :
+  with_docker_image="${DOCKER_IMAGE}"
+fi
+fi
+
+   if ${with_docker_image+:} false; then :
+  if test x"${with_docker_image}" != x"no"; then :
+  DOCKER_IMAGE="${with_docker_image}"
+else
+  { DOCKER_IMAGE=; unset DOCKER_IMAGE;}
+
+fi
+fi
+
+
+# Check whether --with-docker-container was given.
+if test "${with_docker_container+set}" = set; then :
+  withval=$with_docker_container;
+else
+  if ${DOCKER_CONTAINER+:} false; then :
+  with_docker_container="${DOCKER_CONTAINER}"
+fi
+fi
+
+   if ${with_docker_container+:} false; then :
+  if test x"${with_docker_container}" != x"no"; then :
+  DOCKER_CONTAINER="${with_docker_container}"
+else
+  { DOCKER_CONTAINER=; unset DOCKER_CONTAINER;}
+
+fi
+fi
+
+
+
+
+
+  if ${DOCKER_IMAGE+:} false; then :
+  $as_echo
+     sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## //// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   ////// ##
+_ASBOX
+
+
+         if ${DOCKER_CONTAINER+:} false; then :
+
+else
+  DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
+fi
+
+
+   $as_echo "Starting container from image: ${DOCKER_IMAGE}"
+
+         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
+
+   if test -n "${dk_image}"; then :
+  $as_echo "using docker image: ${dk_image}"
+else
+  eval docker pull ${DOCKER_IMAGE}
+
+         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
+
+          if test -n "${dk_image}"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: \"pulled docker image: ${dk_image}\"" >&5
+$as_echo "$as_me: \"pulled docker image: ${dk_image}\"" >&6;}
+else
+  as_fn_error $? "\"Could not pull the requested image\"" "$LINENO" 5
+fi
+
+fi
+
+
+         dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
+
+
+         dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
+
+   $as_echo "id: ${dk_id} img: ${dk_img}"
+   if test -n "${dk_id}" -a -n "${dk_img}"; then :
+  if test x"${dk_img}" == x"${DOCKER_IMAGE}"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: \"container found of the correct image\"" >&5
+$as_echo "$as_me: \"container found of the correct image\"" >&6;}
+else
+  as_fn_error $? "\"container does not belong to the correct image\"" "$LINENO" 5
+fi
+fi
+
+
+
+      if test -n "${dk_id}"; then :
+
+else
+  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=eproxy2.rfx.local:8080 -e https_proxy=eproxy2.rfx.local:8080 -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v /home/andrea/devel/rfx/mdsplus:/source -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
+fi
+
+  DOCKER_CONTAINER=${DOCKER_CONTAINER}
+
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "RUNNING" ;; #(
+  paused) :
+    $as_echo "UNPAUSE";eval docker unpause ${DOCKER_CONTAINER} ;; #(
+  exited) :
+    $as_echo "RESTART";eval docker restart ${DOCKER_CONTAINER} ;; #(
+  *) :
+    as_fn_error $? "\"container not found.\"" "$LINENO" 5 ;;
+esac
+
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "docker container: ${DOCKER_CONTAINER} is running." ;; #(
+  *) :
+    $as_echo "could not start docker container" ;;
+esac
+
+
+     $as_echo
+
+else
+  if ${DOCKER_CONTAINER+:} false; then :
+  $as_echo
+       sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## //// STARTING CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+_ASBOX
+
+  DOCKER_CONTAINER=${DOCKER_CONTAINER}
+
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "RUNNING" ;; #(
+  paused) :
+    $as_echo "UNPAUSE";eval docker unpause ${DOCKER_CONTAINER} ;; #(
+  exited) :
+    $as_echo "RESTART";eval docker restart ${DOCKER_CONTAINER} ;; #(
+  *) :
+    as_fn_error $? "\"container not found.\"" "$LINENO" 5 ;;
+esac
+
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "docker container: ${DOCKER_CONTAINER} is running." ;; #(
+  *) :
+    $as_echo "could not start docker container" ;;
+esac
+
+       $as_echo
+
+fi
+
+fi
+
+  if ${DOCKER_CONTAINER+:} false; then :
+
+    $as_echo
+    sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## //// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+_ASBOX
+
+    $as_echo " --------------------------------- "
+    $as_echo " docker-image      = ${DOCKER_IMAGE}"
+    $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+    $as_echo " configure args    = ${*}"
+    $as_echo " ac_configure_args = ${ac_configure_args}"
+    $as_echo " configure command = ${0}"
+    $as_echo " configure name    = $(basename ${0})"
+    $as_echo " function args     = "
+    $as_echo " top_srcdir        = ${abs_top_srcdir}"
+    $as_echo " --------------------------------- "
+
+    $as_echo
+    $as_echo " --- "
+    $as_echo " docker configure command: "
+       echo " DK_CMD_CONFIGURE "
+    $as_echo " --- "
+    $as_echo
+
+
+                  dk_configure_args=
+         for arg in ${ac_configure_args}; do
+
+          string="${arg}"
+          substring=""--with-docker-""
+          if test "${string#*$substring}" != "$string"; then :
+  eval :
+else
+  eval as_fn_append dk_configure_args "${arg}"
+fi;
+           as_fn_append dk_configure_args " ";
+         done;
+
+         MAKE_COMMAND="\\\${abs_top_builddir}/dmake"
+         MAKE_COMMAND="\\\${abs_top_builddir}/dmake"
+
+
+
+
+read -d '' DK_DMAKEFILE << _as_read_EOF
+
+#!/bin/sh
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER MAKE  ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# requotes #
+for x in "\${@}" ; do
+    # try to figure out if quoting was required for the $x
+    if [[ "\$x" != "\${x%=*}" ]]; then
+        x=\${x%=*}"=\\""\${x#*=}"\\""
+    elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
+        x="\\\""\$x"\\\""
+    fi
+    echo \$x
+    _args=\$_args" "\$x
+done
+
+
+MAKE=make
+dmake () {
+echo
+echo " *** BUILDING IN DOCKER CONTAINER *** ";
+echo docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "\\\"cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}\\\"";
+echo
+docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
+}
+
+dmake \${@}
+
+
+_as_read_EOF
+
+
+$as_echo " Writing dmake file: "
+$as_echo "${DK_DMAKEFILE}"
+
+$as_echo "${DK_DMAKEFILE}" > dmake
+chmod +x dmake
+
+
+
+         $as_echo " ------------------------- "
+         $as_echo " DOCKER CONFIGURE COMMAND: "
+         $as_echo " ${0} docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; MAKE_COMMAND='${MAKE_COMMAND}' ${0} ${dk_configure_args}\"; exit 0;     "
+         $as_echo " ------------------------- "
+
+                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; MAKE_COMMAND='${MAKE_COMMAND}' ${0} ${dk_configure_args}\"; exit 0;
+
+
+
+
+fi
+
+
+
+
+read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+ \$(info DOCKER)
+ MAKE_COMMAND = \${abs_top_builddir}/dmake
+endif
+
+.PHONY: docker
+.ONESHELL:
+docker:
+	@echo "Opening docker container:";
+	@echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
+
+
+_as_read_EOF
+
+
+
+
+if ${MAKE_COMMAND+:} false; then :
+  MAKE_COMMAND_OVERRIDE="MAKE_COMMAND = ${MAKE_COMMAND}"
+fi
 
 
 # Make sure we can run config.sub.

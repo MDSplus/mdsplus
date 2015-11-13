@@ -4,6 +4,14 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 
+DK_SET_DOCKER_BUILD
+DK_SET_TARGETS
+
+AS_VAR_SET_IF([MAKE_COMMAND],
+  AS_VAR_SET([MAKE_COMMAND_OVERRIDE],
+             ["MAKE_COMMAND = ${MAKE_COMMAND}"]))
+AC_SUBST(MAKE_COMMAND_OVERRIDE)
+
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
@@ -41,7 +49,7 @@ AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
-
+ 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
               [AS_HELP_STRING([--disable-shared],

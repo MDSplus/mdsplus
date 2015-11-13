@@ -91,8 +91,8 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
-	$(top_srcdir)/m4/libxml.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_build_docker.m4 \
+	$(top_srcdir)/m4/ax_prog_doxygen.m4 $(top_srcdir)/m4/libxml.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/readline.m4 \
 	$(top_srcdir)/m4/testing.m4 $(top_srcdir)/configure.ac
@@ -247,6 +247,7 @@ DC1394_SUPPORT = @DC1394_SUPPORT@
 DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DK_DOCKER_TARGETS = @DK_DOCKER_TARGETS@
 DNET_STUB = @DNET_STUB@
 DOXYGEN = @DOXYGEN@
 DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
@@ -291,6 +292,7 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
+HAVE_DOCKER = @HAVE_DOCKER@
 HAVE_NOSETESTS = @HAVE_NOSETESTS@
 HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
@@ -352,6 +354,7 @@ MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
 MAKEUIDDIR = @MAKEUIDDIR@
+MAKE_COMMAND_OVERRIDE = @MAKE_COMMAND_OVERRIDE@
 MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@
@@ -509,8 +512,10 @@ _tap_py_execute = \
 
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
-# LOG_DRIVER        = @TS_LOG_DRIVER@
 TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
+
+# use default ...
+# LOG_DRIVER        = @TS_LOG_DRIVER@
 TEST_SUITE_TAP = test-suite.tap
 TEST_BUILD_TAP = test-build.tap
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
@@ -937,14 +942,6 @@ tests:
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi
 
-# if PY_TAP_SUPPORT
-#  TAP_PY_LOG_COMPILER = nosetests
-#  TAP_PY_LOG_FLAGS    = --with-tap --tap-stream
-# else
-#  TAP_PY_LOG_COMPILER = sh -c 'exit 77'
-#  TAP_PY_LOG_FLAGS    = 
-# endif
-
 .ONESHELL:
 $(TEST_BUILD_TAP):
 	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
@@ -972,6 +969,10 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
 	 || exit 1;
+
+$(TEST_SUITE_LOG):
+
+$(TEST_SUITE_XML):
 
 .PHONY: clean-local-tests
 clean-local-tests:

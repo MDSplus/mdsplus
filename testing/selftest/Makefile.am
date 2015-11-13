@@ -65,14 +65,14 @@ libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
 print:
-	@echo "--------------------------------------------------------------";
-	@echo "host = ${host}";
-	@echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
-	@echo "LOG_COMPILER = ${LOG_COMPILER}";
-	@echo "LOG_DRIVER   = ${LOG_DRIVER}";
-	@echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
-	@echo "MAKE = ${MAKE}"
-	@echo "--------------------------------------------------------------";
+	echo "--------------------------------------------------------------";
+	echo "host = ${host}";
+	echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
+	echo "LOG_COMPILER = ${LOG_COMPILER}";
+	echo "LOG_DRIVER   = ${LOG_DRIVER}";
+	echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
+	echo "MAKE = ${MAKE}"
+	echo "--------------------------------------------------------------";
 
 console:
 	$(shell ${TESTS_ENVIRONMENT} wineconsole )
