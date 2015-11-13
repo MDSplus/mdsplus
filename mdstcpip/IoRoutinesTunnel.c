@@ -6,13 +6,14 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include <sys/wait.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #ifdef _WIN32
 #include <process.h>
 #include <winuser.h>
+#else
+#include <sys/wait.h>
 #endif
 
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
