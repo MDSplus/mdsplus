@@ -18,7 +18,7 @@ _data=_mimport('mdsdata')
 _dtypes=_mimport('_mdsdtypes')
 _ver=_mimport('version')
 
-class MdsIpException(Exception):
+class MdsIpException(_Exceptions.MDSplusException):
   pass
 
 __MdsIpShr=_ver.load_library('MdsIpShr')

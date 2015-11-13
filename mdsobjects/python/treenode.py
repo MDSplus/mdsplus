@@ -19,7 +19,7 @@ _ver=_mimport('version')
 
 
 
-class TreeNodeException(Exception):
+class TreeNodeException(_Exceptions.MDSplusException):
   pass
 
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
