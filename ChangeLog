@@ -1,4 +1,28 @@
-commit 023dcf65cd504c99367ecc9387a9fa865d75231a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit a4356ba121c98b7c6cb62bec64258d51ce23c145 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 48f2f65 733e4ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:01:56 2015 -0500
+
+    Merge pull request #212 from zack-vii/aa_python_mdsarray
+    
+    fix of mdsdtype
+
+commit 733e4aed3f471ddf805c5405083e25d06d085e6a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 12 21:07:37 2015 +0100
+
+    fix of mdsdtype
+    
+    - Array if 5 chars long
+    - dict contains full name
+
+commit 48f2f651d6d7b722cad184e2773eeb23ef9cde83 (tag: refs/tags/alpha_release-7-0-179)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 11 23:38:34 2015 -0500
+
+    New release ---- alpha_release-7-0-179
+
+commit 023dcf65cd504c99367ecc9387a9fa865d75231a
 Merge: 44c369f 1b57996
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Nov 11 16:58:59 2015 +0100
