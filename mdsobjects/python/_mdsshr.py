@@ -28,7 +28,7 @@ __MDSEventCan.argtypes=[_C.c_int32,]
 __MDSEvent=_mdsshr.MDSEvent
 __MDSEvent.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p]
 
-class MdsshrException(Exception):
+class MdsshrException(_Exceptions.MDSplusException):
     pass
 
 class MdsInvalidEvent(MdsshrException):

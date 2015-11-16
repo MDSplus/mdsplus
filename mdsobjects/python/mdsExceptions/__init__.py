@@ -11,8 +11,16 @@ import glob as _g
 class MDSplusException(Exception):
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __init__(self,status=None):
-    if status is not None:
+    if status is not None and isinstance(status,int):
       self.status=status
+    else:
+      self.status=-1
+      self.msgnam='UNKNOWN'
+      if isinstance(status,str):
+	self.message=status
+      else:
+        self.message='Unknown exception'
+      self.fac='MDSplus'
     self.severity=self.severities[self.status & 7]
 
   def __str__(self):

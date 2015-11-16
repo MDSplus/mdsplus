@@ -9,6 +9,11 @@ import numpy as _N
 _dtypes=_mimport('_mdsdtypes')
 _ver=_mimport('version')
 
+_mdsExceptions=_mimport('mdsExceptions')
+
+MDSplusException = _mdsExceptions.MDSplusException
+MdsException = MDSplusException
+
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
     @rtype: string"""
