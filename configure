@@ -2837,6 +2837,10 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
+if test "x$HAVE_DOCKER" = xno; then :
+
+fi
+
 
 
    if ${HAVE_DOCKER+:} false; then :
@@ -2921,8 +2925,7 @@ fi
 fi
 
 
-
-
+  if test "x$HAVE_DOCKER" = xyes; then :
 
   if ${DOCKER_IMAGE+:} false; then :
   $as_echo
@@ -2979,11 +2982,10 @@ fi
       if test -n "${dk_id}"; then :
 
 else
-  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=eproxy2.rfx.local:8080 -e https_proxy=eproxy2.rfx.local:8080 -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v /home/andrea/devel/rfx/mdsplus:/source -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
+  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
-
 
 
          id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
@@ -3097,7 +3099,6 @@ else
 _ASBOX
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
-
 
 
          id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
@@ -3245,9 +3246,24 @@ fi;
            as_fn_append dk_configure_args " ";
          done;
 
-         MAKE_COMMAND="\\\${abs_top_builddir}/dmake"
-         MAKE_COMMAND="\\\${abs_top_builddir}/dmake"
 
+
+
+         $as_echo " ------------------------- "
+         $as_echo " DOCKER CONFIGURE COMMAND: "
+         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} DOCKER_CONTAINER='${DOCKER_CONTAINER}' DOCKER_IMAGE='${DOCKER_IMAGE}' HAVE_DOCKER='no' \"; exit 0;          "
+         $as_echo " ------------------------- "
+
+                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} DOCKER_CONTAINER='${DOCKER_CONTAINER}' DOCKER_IMAGE='${DOCKER_IMAGE}' HAVE_DOCKER='no' \"; exit 0;
+
+
+
+
+fi
+
+
+else
+  if ${DOCKER_CONTAINER+:} false; then :
 
 
 
@@ -3275,7 +3291,6 @@ MAKE=make
 dmake () {
 echo
 echo " *** BUILDING IN DOCKER CONTAINER *** ";
-echo docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "\\\"cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}\\\"";
 echo
 docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
 }
@@ -3287,24 +3302,8 @@ _as_read_EOF
 
 
 $as_echo " Writing dmake file: "
-$as_echo "${DK_DMAKEFILE}"
-
 $as_echo "${DK_DMAKEFILE}" > dmake
 chmod +x dmake
-
-
-
-         $as_echo " ------------------------- "
-         $as_echo " DOCKER CONFIGURE COMMAND: "
-         $as_echo " ${0} docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; MAKE_COMMAND='${MAKE_COMMAND}' ${0} ${dk_configure_args}\"; exit 0;     "
-         $as_echo " ------------------------- "
-
-                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; MAKE_COMMAND='${MAKE_COMMAND}' ${0} ${dk_configure_args}\"; exit 0;
-
-
-
-
-fi
 
 
 
@@ -3317,18 +3316,42 @@ read -d '' DK_DOCKER_TARGETS << _as_read_EOF
 # //////////////////////////////////////////////////////////////////////////// #
 
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
- \$(info DOCKER)
- MAKE_COMMAND = \${abs_top_builddir}/dmake
+
+ \$(info ------ )
+ \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
+ \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
+ \$(info DOCKER SHELL = \$(SHELL) )
+ \$(info ------ )
+
+.PHONY: docker docker-start
+docker:
+	echo "Opening docker session:";
+	echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
+	echo "MFLAGS = \${MFLAGS}"
+
+start:
+	@echo "Starting docker container:";
+	@eval docker restart ${DOCKER_CONTAINER}
+
+stop:
+	@echo "Stopping docker container:";
+	@eval docker stop ${DOCKER_CONTAINER};
+
+shell:
+	@echo "Starting docker shell";
+	@eval docker exec -ti --user ${USER} ${DOCKER_CONTAINER} bash
+
+
 endif
 
-.PHONY: docker
-.ONESHELL:
-docker:
-	@echo "Opening docker container:";
-	@echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
-
-
 _as_read_EOF
+
+
+
+
+
+fi
+fi
 
 
 

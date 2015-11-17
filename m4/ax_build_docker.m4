@@ -45,14 +45,14 @@ AC_DEFUN([AS_CONTAINS],[
 AC_DEFUN([DK_CMD_CNTRUN], m4_normalize([
           docker run -d -it --entrypoint=/bin/sh
           -e DISPLAY=${DISPLAY} 
-          -e http_proxy=eproxy2.rfx.local:8080 
-          -e https_proxy=eproxy2.rfx.local:8080 
+          -e http_proxy=${http_proxy}
+          -e https_proxy=${https_proxy}
           -v /tmp/.X11-unix:/tmp/.X11-unix 
           -v /etc/passwd:/etc/passwd 
           -v /etc/group:/etc/group 
           -v /etc/shadow:/etc/shadow 
           -v /home:/home 
-          -v /home/andrea/devel/rfx/mdsplus:/source
+          -v $(pwd):$(pwd)
           -w $(pwd)
           --name $2
           $1
@@ -70,22 +70,19 @@ AC_DEFUN([DK_CONFIGURE],[
            AS_CONTAINS([${arg}],["--with-docker-"],[:],[AS_VAR_APPEND([dk_configure_args],["${arg}"])]);
            AS_VAR_APPEND([dk_configure_args],[" "]);
          done;
-         
-         AS_VAR_SET([MAKE_COMMAND],["\\\${abs_top_builddir}/dmake"])
-         AS_VAR_SET([MAKE_COMMAND],["\\\${abs_top_builddir}/dmake"])
-         m4_pushdef([dk_configure_cmd], m4_normalize([         
-           docker exec -t 
-           --user ${USER}            
+                  
+         m4_pushdef([dk_configure_cmd], m4_normalize([
+           docker exec -t
+           --user ${USER}
            ${DOCKER_CONTAINER} /bin/sh
-           -c \"cd $(pwd)\; MAKE_COMMAND='${MAKE_COMMAND}' ${0} ${dk_configure_args}\";
+           -c \"cd $(pwd)\; ${0} ${dk_configure_args} DOCKER_CONTAINER='${DOCKER_CONTAINER}' DOCKER_IMAGE='${DOCKER_IMAGE}' HAVE_DOCKER='no' \";
            exit 0;
          ]))
-         
-         DK_WRITE_DMAKEFILE
+                  
          
          AS_ECHO(" ------------------------- ") 
          AS_ECHO(" DOCKER CONFIGURE COMMAND: ")
-         AS_ECHO(" ${0} dk_configure_cmd     ")
+         AS_ECHO(" dk_configure_cmd          ")
          AS_ECHO(" ------------------------- ")
 
          dnl execute configuration inside docker container         
@@ -101,7 +98,6 @@ AC_DEFUN([DK_SET_DOCKER_CONTAINER], [
          AS_VAR_SET_IF([DOCKER_CONTAINER],,AS_VAR_SET([DOCKER_CONTAINER],
          [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
 ])
-
 
 
 
@@ -154,8 +150,7 @@ AS_IF([test -n "${id_img_exist}"],[eval $2], [eval $3])
 
 dnl start existing [container]
 AC_DEFUN([DK_START_CNT],[
-  AS_VAR_SET([DOCKER_CONTAINER],$1)
-  
+  AS_VAR_SET([DOCKER_CONTAINER],$1)  
   get_docker_container_status([dk_status],[${DOCKER_CONTAINER}])
   AS_CASE([${dk_status}],
         [running], [AS_ECHO("RUNNING")],
@@ -204,9 +199,6 @@ AC_DEFUN([DK_START_IMGCNT], [
 
 
 
-AC_DEFUN([DK_SET_DOCKER_BUILD],[
-  DK_CHECK_DOCKER_ARG
-  
   AC_DEFUN([_dk_set_docker_build_debug],[
     AS_ECHO(" --------------------------------- ")
     AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
@@ -220,7 +212,12 @@ AC_DEFUN([DK_SET_DOCKER_BUILD],[
     AS_ECHO(" --------------------------------- ")
   ])
 
-  
+
+AC_DEFUN([DK_SET_DOCKER_BUILD],[
+
+  DK_CHECK_DOCKER_ARG  
+
+  AS_VAR_IF([HAVE_DOCKER],[yes], [
   AS_VAR_SET_IF([DOCKER_IMAGE], 
     [AS_ECHO
      AS_BOX([//// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   //////], [\/])
@@ -234,7 +231,7 @@ AC_DEFUN([DK_SET_DOCKER_BUILD],[
        AS_ECHO
       ])
     ])
-
+  
   AS_VAR_SET_IF([DOCKER_CONTAINER],[
     AS_ECHO
     AS_BOX([//// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   //////], [\/])
@@ -248,6 +245,12 @@ AC_DEFUN([DK_SET_DOCKER_BUILD],[
     DK_CONFIGURE
    ])
    
+  ],
+  AS_VAR_SET_IF([DOCKER_CONTAINER],[
+    DK_WRITE_DMAKEFILE
+    DK_SET_TARGETS
+    ]))
+  
 ])  
 
 
@@ -259,18 +262,35 @@ AS_VAR_READ([DK_DOCKER_TARGETS],[
 # //////////////////////////////////////////////////////////////////////////// #
 
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
- \$(info DOCKER)
- MAKE_COMMAND = \${abs_top_builddir}/dmake
-endif
+ 
+ \$(info ------ )
+ \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
+ \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
+ \$(info DOCKER SHELL = \$(SHELL) )
+ \$(info ------ )
 
-.PHONY: docker
-.ONESHELL:
+.PHONY: docker docker-start
 docker:
-	@echo "Opening docker container:";
+	@echo "Opening docker session:";
 	@echo "selected targets: \$(filter-out \$@,\$(MAKECMDGOALS))";
 
+start:
+	@echo "Starting docker container:";	
+	@eval docker restart ${DOCKER_CONTAINER}	
+
+stop:
+	@echo "Stopping docker container:";
+	@eval docker stop ${DOCKER_CONTAINER};
+
+shell:
+	@echo "Starting docker shell";
+	@eval docker exec -ti --user ${USER} ${DOCKER_CONTAINER} bash
+
+
+endif
 ])
 AC_SUBST([DK_DOCKER_TARGETS])
+AM_SUBST_NOTMAKE([DK_DOCKER_TARGETS])
 ])
 
 
@@ -302,7 +322,6 @@ MAKE=make
 dmake () { 
 echo 
 echo " *** BUILDING IN DOCKER CONTAINER *** ";
-echo docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "\\\"cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}\\\"";
 echo
 docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
 } 
@@ -312,8 +331,6 @@ dmake \${@}
 ]))
 
 AS_ECHO(" Writing dmake file: ")
-AS_ECHO("${DK_DMAKEFILE}")
-
 AS_ECHO("${DK_DMAKEFILE}") > dmake
 chmod +x dmake
 
@@ -346,7 +363,7 @@ dnl   AS_ECHO("COMMAND: ${MAKE_COMMAND}")
  
 dnl  DK_SET_DOCKER_BUILD
 
-DK_WRITE_DMAKEFILE
+dnl DK_WRITE_DMAKEFILE
 
 ])
  

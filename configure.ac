@@ -4,8 +4,10 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 
+dnl docker helpers
+AS_VAR_IF([HAVE_DOCKER],[no],, [])
 DK_SET_DOCKER_BUILD
-DK_SET_TARGETS
+
 
 AS_VAR_SET_IF([MAKE_COMMAND],
   AS_VAR_SET([MAKE_COMMAND_OVERRIDE],
