@@ -23,18 +23,18 @@ class TreeNodeException(_Exceptions.MDSplusException):
   pass
 
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
-                     'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
-                     'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
-                     'ERROR_ON_PUT','ESSENTIAL','FULLPATH','GET_FLAGS','INCLUDE_IN_PULSE',
-                     'IO_STATUS','IO_STV','IS_CHILD','IS_MEMBER','LENGTH','MEMBER','MEMBER_NIDS',
-                     'MINPATH','NID_NUMBER','NID_REFERENCE','NODE_NAME','NO_WRITE_MODEL',
-                     'NO_WRITE_SHOT','NUMBER_OF_CHILDREN','NUMBER_OF_ELTS','NUMBER_OF_MEMBERS','ON',
-                     'ORIGINAL_PART_NAME','OWNER_ID','PARENT','PARENT_DISABLED','PARENT_RELATIONSHIP',
-                     'PARENT_STATE','PATH','PATH_REFERENCE','RECORD','RFA','RLENGTH','SEGMENTED',
-                     'SETUP_INFORMATION','STATE','STATUS','TIME_INSERTED','USAGE','USAGE_ANY',
-                     'USAGE_AXIS','USAGE_COMPOUND_DATA','USAGE_DEVICE','USAGE_DISPATCH','USAGE_NONE',
-                     'USAGE_NUMERIC','USAGE_STR','USAGE_STRUCTURE','USAGE_SUBTREE','USAGE_TASK',
-                     'USAGE_TEXT','USAGE_WINDOW','VERSIONS','WRITE_ONCE')
+                 'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
+                 'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
+                 'ERROR_ON_PUT','ESSENTIAL','FULLPATH','GET_FLAGS','INCLUDE_IN_PULSE',
+                 'IO_STATUS','IO_STV','IS_CHILD','IS_MEMBER','LENGTH','MEMBER','MEMBER_NIDS',
+                 'MINPATH','NID_NUMBER','NID_REFERENCE','NODE_NAME','NO_WRITE_MODEL',
+                 'NO_WRITE_SHOT','NUMBER_OF_CHILDREN','NUMBER_OF_ELTS','NUMBER_OF_MEMBERS','ON',
+                 'ORIGINAL_PART_NAME','OWNER_ID','PARENT','PARENT_DISABLED','PARENT_RELATIONSHIP',
+                 'PARENT_STATE','PATH','PATH_REFERENCE','RECORD','RFA','RLENGTH','SEGMENTED',
+                 'SETUP_INFORMATION','STATE','STATUS','TIME_INSERTED','USAGE','USAGE_ANY',
+                 'USAGE_AXIS','USAGE_COMPOUND_DATA','USAGE_DEVICE','USAGE_DISPATCH','USAGE_NONE',
+                 'USAGE_NUMERIC','USAGE_STR','USAGE_STRUCTURE','USAGE_SUBTREE','USAGE_TASK',
+                 'USAGE_TEXT','USAGE_WINDOW','VERSIONS','WRITE_ONCE','COMPRESS_SEGMENTS')
 
 usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
              'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,'SUBTREE':11,'COMPOUND_DATA':12,'SUBTREE':-1}
@@ -79,6 +79,7 @@ class TreeNode(_data.Data):
          - class_str             - String, Name of MDSplus descriptor class
          - compressible          - Bool, Flag indicating node contains compressible data
          - compress_on_put       - Bool, Flag indicating automatic compression
+         - compress_segments     - Bool, Flag indicating compression for segmented data
          - conglomerate_elt      - Int32, Index of node in a conglomerate
          - conglomerate_nids     - TreeNodeArray, Nodes in same conglomerate
          - data_in_nci           - Uint32, Flag indicating data stored in nci record
@@ -137,7 +138,8 @@ class TreeNode(_data.Data):
                 return self.getNode(name)
             except:
                 pass
-        if name.lower() == 'nid':
+        name = name.lower()
+        if name == 'nid':
             try:
                 return self.__dict__['nid']
             except KeyError:
@@ -150,24 +152,24 @@ class TreeNode(_data.Data):
             return self.__dict__[name]
         except:
             pass
-        if name.lower() == 'record':
+        if name == 'record':
             return self.getData()
-        if name.lower() == 'tags':
+        if name == 'tags':
             return self.getTags()
-        if name.lower() == 'usage':
+        if name == 'usage':
             return _scalar.String(self.usage_str.value[10:])
-        if name.lower() == 'descendants':
+        if name == 'descendants':
             return self.getDescendants()
-        if name.lower() == 'number_of_descendants':
+        if name == 'number_of_descendants':
             return self.number_of_members+self.number_of_children
-        if name.lower() == 'segmented':
+        if name == 'segmented':
             return self.getNumSegments().value > 0
-        if name.lower() == 'local_tree':
+        if name == 'local_tree':
             return self.getLocalTree()
-        if name.lower() == 'local_path':
+        if name == 'local_path':
             return self.getLocalPath()
         if name.upper() in nciAttributes:
-            if name.lower() == 'mclass':
+            if name == 'mclass':
                 name='class';
             _tree.Tree.lock()
             try:
@@ -221,34 +223,38 @@ class TreeNode(_data.Data):
         @type value: various
         @rtype: None
         """
-        uname=name.upper()
-        if uname=="RECORD":
+        name = name.lower()
+        if name=="record":
             self.putData(value)
-        elif uname=="ON":
+        elif name=="on":
             self.setOn(value)
-        elif uname=="NO_WRITE_MODEL":
+        elif name=="disabled":
+            self.setOn(not value)
+        elif name=="no_write_model":
             self.setNoWriteModel(value)
-        elif uname=="NO_WRITE_SHOT":
+        elif name=="no_write_shot":
             self.setNoWriteShot(value)
-        elif uname=="WRITE_ONCE":
+        elif name=="write_once":
             self.setWriteOnce(value)
-        elif uname=="INCLUDE_IN_PULSE":
+        elif name=="include_in_pulse":
             self.setIncludedInPulse(value)
-        elif uname=="COMPRESS_ON_PUT":
+        elif name=="compress_on_put":
             self.setCompressOnPut(value)
-        elif uname=="DO_NOT_COMPRESS":
+        elif name=="compress_segments":
+            self.setCompressSegments(value)
+        elif name=="do_not_compress":
             self.setDoNotCompress(value)
-        elif uname=="ESSENTIAL":
+        elif name=="essential":
             self.setEssential(value)
-        elif uname=="SUBTREE":
+        elif name=="subtree":
             self.setSubtree(value)
-        elif uname=="USAGE":
+        elif name=="usage":
             self.setUsage(value)
-        elif uname=="TAG":
+        elif name=="tag":
             self.addTag(value)
-        elif uname in nciAttributes:
+        elif name.upper() in nciAttributes:
             raise AttributeError('Attribute %s is read only' %(name,))
-        elif uname == "NID":
+        elif name == "nid":
             raise AttributeError('Attribute nid is read only')
         else:
             self.__dict__[name]=value
@@ -1018,6 +1024,14 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('compress_on_put',flag)
+
+    def setCompressSegments(self,flag):
+        """Set compress segments state of this node
+        @param flag: State to set the compress segments characteristic
+        @type flag: bool
+        @rtype: None
+        """
+        self.__setNode('compress_segments',flag)
 
     def setDoNotCompress(self,flag):
         """Set do not compress state of this node
