@@ -1,4 +1,34 @@
-commit a4356ba121c98b7c6cb62bec64258d51ce23c145 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 2422ad2cd4858f468cbb2405a721e501d4de5b32 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 87a9d52 d9a96ac
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Nov 16 18:07:54 2015 +0100
+
+    Merge pull request #214 from MDSplus/twf-fix-scopeutils
+    
+    Use int64_t instead of long to always use 64-bits. Also fix some comp…
+
+commit d9a96ac97ed961a397f07b17e349d8112ec37a3a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 16 11:36:26 2015 -0500
+
+    Use int64_t instead of long to always use 64-bits. Also fix some compile warnings/errors
+
+commit 87a9d52148e3941e11fd8515a4b96f6fb2491f5d
+Merge: c8a6c02 4c7a69a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 16 08:14:57 2015 -0500
+
+    Merge pull request #213 from MDSplus/twf-exception-compatibility
+    
+    Add compatibility to the older MdsException exception class
+
+commit c8a6c024d3db2749947e23a0892ad6db5d38efbc (tag: refs/tags/alpha_release-7-0-180)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 13 23:38:59 2015 -0500
+
+    New release ---- alpha_release-7-0-180
+
+commit a4356ba121c98b7c6cb62bec64258d51ce23c145
 Merge: 48f2f65 733e4ae
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 13 15:01:56 2015 -0500
@@ -6,6 +36,12 @@ Date:   Fri Nov 13 15:01:56 2015 -0500
     Merge pull request #212 from zack-vii/aa_python_mdsarray
     
     fix of mdsdtype
+
+commit 4c7a69ad3bb5eefc658ff7b9d2bdfed8dc44654f (refs/remotes/origin/twf-exception-compatibility)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 14:37:39 2015 -0500
+
+    Add compatibility to old MdsException excetpion class
 
 commit 733e4aed3f471ddf805c5405083e25d06d085e6a
 Author: zack-vii <zack.vii@live.com>
