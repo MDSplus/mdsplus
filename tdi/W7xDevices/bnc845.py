@@ -33,7 +33,11 @@ def bnc_talk (sock, msg) :
 		print('Send %s failed.' % msg)
 		sys.exit(1)
 
-	reply = sock.recv(1024)
+	reply = ''
+	while True :
+		reply += sock.recv(1024)
+		if reply.endswith('\n') : break
+
 	return reply.strip('\n')
 
 def bnc_check (ans, all_ok) : return (True, all_ok) if 'No error' in ans else (False, False)
