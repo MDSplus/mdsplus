@@ -94,9 +94,11 @@ subdir = icons
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_build_docker.m4 \
 	$(top_srcdir)/m4/ax_prog_doxygen.m4 $(top_srcdir)/m4/libxml.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_readline.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
-	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/readline.m4 \
-	$(top_srcdir)/m4/testing.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
+	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -235,8 +237,6 @@ GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
 HAVE_DOCKER = @HAVE_DOCKER@
-HAVE_NOSETESTS = @HAVE_NOSETESTS@
-HAVE_VALGRIND = @HAVE_VALGRIND@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINEBOOT = @HAVE_WINEBOOT@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
@@ -309,6 +309,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
+NOSETESTS = @NOSETESTS@
 NSLLIB = @NSLLIB@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -359,6 +360,12 @@ TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
+VALGRIND = @VALGRIND@
+VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
+VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
+VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
+VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
 VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@

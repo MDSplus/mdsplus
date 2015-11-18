@@ -96,8 +96,8 @@ dnl TEST for python modules
 AC_DEFUN([TS_CHECK_PYTHON_TAP],[
   AC_PYTHON_MODULE(tap)
   AC_PYTHON_MODULE_CLASS(tap, TAPTestRunner, [have_tappy="yes"],)
-  AC_CHECK_PROG(HAVE_NOSETESTS, nosetests, yes, no)
-  AS_IF(test x"${have_tappy}" == x"yes" -a x"${HAVE_NOSETESTS}" == x"yes",
+  AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])  
+  AS_IF(test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x"",
    [eval $2],
    [eval $3])
 ])
@@ -116,19 +116,22 @@ dnl ////////////////////////////////////////////////////////////////////////////
 
 dnl 
 dnl This function select from current build_os and host target the proper env to
-dnl correctly call the test chain
+dnl correctly call the test chain.
+dnl The test chain is composed by: [tests_env] [log_driver] [log_compiler] [test_flags]
 dnl 
 AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([TS_TESTS_ENVIRONMENT])
  AS_VAR_SET([TS_LOG_COMPILER])
  AS_VAR_SET([TS_PY_TAP_COMPILER])
- AS_VAR_SET([TS_LOG_DRIVER],["$(top_srcdir/conf/test-driver)"])
+ AS_VAR_SET([TS_LOG_DRIVER],["\$(top_srcdir)/conf/test-driver"])
 
 
  TS_CHECK_PYTHON_TAP( [$PYTHON],
-   AS_VAR_APPEND([TS_PY_TAP_COMPILER],["nosetests  --with-tap --tap-stream"]),
+   AS_VAR_APPEND([TS_PY_TAP_COMPILER],["${NOSETESTS}  --with-tap --tap-stream"]),
    AS_VAR_APPEND([TS_PY_TAP_COMPILER],[TS_LOG_SKIP]))
 
+ dnl this calls valgrind check with args
+ AX_VALGRIND_CHECK
 
  AS_CASE(["${build_os}:${host}"],
  #
@@ -143,16 +146,13 @@ AC_DEFUN([TS_SELECT],[
       TS_WINEPATH([WINEPATH])      
       AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
-      AS_VAR_IF([USE_VALGRIND],[yes],
-       [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"VALGRIND_LIB='/usr/lib64/valgrind/' ")
-        AS_VAR_APPEND([TS_LOG_COMPILER],"valgrind ")
-        AS_VAR_APPEND([TS_LOG_COMPILER],"--quiet --error-exitcode=1 ")
-        AS_VAR_APPEND([TS_LOG_COMPILER],"--trace-children=yes ")
-        AS_VAR_APPEND([TS_LOG_COMPILER],"--dsymutil=yes --leak-check=yes ")
+      AS_VAR_IF([VALGRIND_ENABLED],[yes],
+       [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"\$(VALGRIND_TESTS_ENVIRONMENT) ")
+        AS_VAR_APPEND([TS_LOG_COMPILER],"\$(VALGRIND_LOG_COMPILER) ")
         AS_VAR_APPEND([TS_LOG_COMPILER],"--vex-iropt-register-updates=allregs-at-mem-access ")
         AS_VAR_APPEND([TS_LOG_COMPILER],"--workaround-gcc296-bugs=yes  ")
-        AS_VAR_APPEND([TS_LOG_COMPILER],"\${TS_VALGRIND_FLAGS}  ")
-        ])
+        AS_VAR_APPEND([TS_LOG_COMPILER],"\$(TS_VALGRIND_FLAGS)  ")
+       ])
       AS_VAR_APPEND([TS_LOG_COMPILER],"wine ")
      ],
      [AS_VAR_APPEND([TS_LOG_COMPILER],[TS_LOG_SKIP])])     
@@ -167,13 +167,10 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_ECHO("Set tests environment for linux->linux")
    AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR} ")
-   AS_VAR_IF([USE_VALGRIND],[yes],
-             [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"VALGRIND_LIB='/usr/lib64/valgrind/' ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"valgrind ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"--quiet --error-exitcode=1 ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"--trace-children=yes ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"--dsymutil=yes --leak-check=yes ")              
-              AS_VAR_APPEND([TS_LOG_COMPILER],"\${TS_VALGRIND_FLAGS}  ")
+   AS_VAR_IF([VALGRIND_ENABLED],[yes],
+             [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"\$(VALGRIND_TESTS_ENVIRONMENT) ")
+              AS_VAR_APPEND([TS_LOG_COMPILER],"\$(VALGRIND_LOG_COMPILER) ")
+              AS_VAR_APPEND([TS_LOG_COMPILER],"\$(TS_VALGRIND_FLAGS)  ")
               ])
  ],
  #
@@ -183,15 +180,14 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_ECHO("Set tests environment")  
    AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR} ")
-   AS_VAR_IF([USE_VALGRIND],[yes],
-             [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"VALGRIND_LIB='/usr/lib64/valgrind/' ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"valgrind ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"--quiet --error-exitcode=1 ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"--trace-children=yes ")
-              AS_VAR_APPEND([TS_LOG_COMPILER],"--dsymutil=yes --leak-check=yes ")              
-              AS_VAR_APPEND([TS_LOG_COMPILER],"\${TS_VALGRIND_FLAGS}  ")
+   AS_VAR_IF([VALGRIND_ENABLED],[yes],
+             [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"\$(VALGRIND_TESTS_ENVIRONMENT) ")
+              AS_VAR_APPEND([TS_LOG_COMPILER],"\$(VALGRIND_LOG_COMPILER) ")
+              AS_VAR_APPEND([TS_LOG_COMPILER],"\$(TS_VALGRIND_FLAGS)  ")
               ])
  ])
+
+# MACOS: add --dsymutil=yes to valgrind
 
 ])
 

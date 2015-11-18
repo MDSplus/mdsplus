@@ -769,16 +769,22 @@ TS_LOG_COMPILER
 TS_TESTS_ENVIRONMENT
 HAVE_WINEPATH
 HAVE_WINEBOOT
-HAVE_NOSETESTS
+VALGRIND_CHECK_RULES
+VALGRIND_HAVE_TOOL_exp_sgcheck
+VALGRIND_HAVE_TOOL_drd
+VALGRIND_HAVE_TOOL_helgrind
+VALGRIND_HAVE_TOOL_memcheck
+VALGRIND_ENABLED
+VALGRIND_ENABLED_FALSE
+VALGRIND_ENABLED_TRUE
+VALGRIND
+NOSETESTS
 HAVE_WINECONSOLE_FALSE
 HAVE_WINECONSOLE_TRUE
 HAVE_WINECONSOLE
 HAVE_WINE_FALSE
 HAVE_WINE_TRUE
 HAVE_WINE
-USE_VALGRIND_FALSE
-USE_VALGRIND_TRUE
-HAVE_VALGRIND
 HAVE_PYTHON_FALSE
 HAVE_PYTHON_TRUE
 pkgpyexecdir
@@ -1642,7 +1648,7 @@ Optional Features:
   --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
   --disable-xmltest       Do not try to compile and run a test LIBXML program
-  --enable-valgrind       Use valgrind when running unit tests
+  --enable-valgrind       Whether to enable Valgrind on the unit tests
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -3325,9 +3331,8 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
 .PHONY: docker docker-start
 docker:
-	echo "Opening docker session:";
-	echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
-	echo "MFLAGS = \${MFLAGS}"
+	@echo "Opening docker session:";
+	@echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
 
 start:
 	@echo "Starting docker container:";
@@ -11676,69 +11681,6 @@ fi
 # PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
 # AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
 
-# Check whether --enable-valgrind was given.
-if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind; USE_VALGRIND=yes
-fi
-
-
-if test x"$USE_VALGRIND" = x"yes" ; then :
-  # Extract the first word of "valgrind", so it can be a program name with args.
-set dummy valgrind; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_VALGRIND+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_VALGRIND"; then
-  ac_cv_prog_HAVE_VALGRIND="$HAVE_VALGRIND" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_VALGRIND="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_VALGRIND" && ac_cv_prog_HAVE_VALGRIND="no"
-fi
-fi
-HAVE_VALGRIND=$ac_cv_prog_HAVE_VALGRIND
-if test -n "$HAVE_VALGRIND"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_VALGRIND" >&5
-$as_echo "$HAVE_VALGRIND" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-        if test x"$HAVE_VALGRIND" = x"yes" ; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Valgrind ENABLED" >&5
-$as_echo "$as_me: Valgrind ENABLED" >&6;}
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind DISABLED as it was not found in PATH " >&5
-$as_echo "$as_me: WARNING: Valgrind DISABLED as it was not found in PATH " >&2;}
-               USE_VALGRIND=no
-
-fi
-
-fi
- if test x"$USE_VALGRIND" = x"yes"; then
-  USE_VALGRIND_TRUE=
-  USE_VALGRIND_FALSE='#'
-else
-  USE_VALGRIND_TRUE='#'
-  USE_VALGRIND_FALSE=
-fi
 
 
 
@@ -11913,7 +11855,7 @@ fi
  TS_TESTS_ENVIRONMENT=
  TS_LOG_COMPILER=
  TS_PY_TAP_COMPILER=
- TS_LOG_DRIVER="$(top_srcdir/conf/test-driver)"
+ TS_LOG_DRIVER="\$(top_srcdir)/conf/test-driver"
 
 
 
@@ -11999,11 +11941,11 @@ fi
 set dummy nosetests; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_NOSETESTS+:} false; then :
+if ${ac_cv_prog_NOSETESTS+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$HAVE_NOSETESTS"; then
-  ac_cv_prog_HAVE_NOSETESTS="$HAVE_NOSETESTS" # Let the user override the test.
+  if test -n "$NOSETESTS"; then
+  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -12012,7 +11954,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_NOSETESTS="yes"
+    ac_cv_prog_NOSETESTS="nosetests"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -12020,24 +11962,266 @@ done
   done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_HAVE_NOSETESTS" && ac_cv_prog_HAVE_NOSETESTS="no"
 fi
 fi
-HAVE_NOSETESTS=$ac_cv_prog_HAVE_NOSETESTS
-if test -n "$HAVE_NOSETESTS"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_NOSETESTS" >&5
-$as_echo "$HAVE_NOSETESTS" >&6; }
+NOSETESTS=$ac_cv_prog_NOSETESTS
+if test -n "$NOSETESTS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
+$as_echo "$NOSETESTS" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-  if test x"${have_tappy}" == x"yes" -a x"${HAVE_NOSETESTS}" == x"yes"; then :
-  eval as_fn_append TS_PY_TAP_COMPILER "nosetests  --with-tap --tap-stream"
+  if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
+  eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}  --with-tap --tap-stream"
 else
   eval as_fn_append TS_PY_TAP_COMPILER "sh -c 'exit 77'"
 fi
+
+
+
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
+$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
+	# Check whether --enable-valgrind was given.
+if test "${enable_valgrind+set}" = set; then :
+  enableval=$enable_valgrind; enable_valgrind=$enableval
+else
+  enable_valgrind=
+fi
+
+
+	# Check for Valgrind.
+	# Extract the first word of "valgrind", so it can be a program name with args.
+set dummy valgrind; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_VALGRIND+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$VALGRIND"; then
+  ac_cv_prog_VALGRIND="$VALGRIND" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_VALGRIND="valgrind"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+VALGRIND=$ac_cv_prog_VALGRIND
+if test -n "$VALGRIND"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND" >&5
+$as_echo "$VALGRIND" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
+
+		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
+
+fi
+	if test "$enable_valgrind" != "no"; then :
+  enable_valgrind=yes
+fi
+
+	 if test "$enable_valgrind" = "yes"; then
+  VALGRIND_ENABLED_TRUE=
+  VALGRIND_ENABLED_FALSE='#'
+else
+  VALGRIND_ENABLED_TRUE='#'
+  VALGRIND_ENABLED_FALSE=
+fi
+
+	VALGRIND_ENABLED=$enable_valgrind
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
+$as_echo "$enable_valgrind" >&6; }
+
+	# Check for Valgrind tools we care about.
+
+
+	if test "$VALGRIND" != ""; then :
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool memcheck" >&5
+$as_echo_n "checking for Valgrind tool memcheck... " >&6; }
+if ${ax_cv_valgrind_tool_memcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_memcheck=
+				if `$VALGRIND --tool=memcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_memcheck="memcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_memcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_memcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_memcheck=$ax_cv_valgrind_tool_memcheck
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool helgrind" >&5
+$as_echo_n "checking for Valgrind tool helgrind... " >&6; }
+if ${ax_cv_valgrind_tool_helgrind+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_helgrind=
+				if `$VALGRIND --tool=helgrind --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_helgrind="helgrind"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_helgrind" >&5
+$as_echo "$ax_cv_valgrind_tool_helgrind" >&6; }
+
+			VALGRIND_HAVE_TOOL_helgrind=$ax_cv_valgrind_tool_helgrind
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool drd" >&5
+$as_echo_n "checking for Valgrind tool drd... " >&6; }
+if ${ax_cv_valgrind_tool_drd+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_drd=
+				if `$VALGRIND --tool=drd --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_drd="drd"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_drd" >&5
+$as_echo "$ax_cv_valgrind_tool_drd" >&6; }
+
+			VALGRIND_HAVE_TOOL_drd=$ax_cv_valgrind_tool_drd
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool exp-sgcheck" >&5
+$as_echo_n "checking for Valgrind tool exp-sgcheck... " >&6; }
+if ${ax_cv_valgrind_tool_exp_sgcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_exp_sgcheck=
+				if `$VALGRIND --tool=exp-sgcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_exp_sgcheck="exp-sgcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_exp_sgcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_exp_sgcheck=$ax_cv_valgrind_tool_exp_sgcheck
+
+
+
+fi
+
+
+
+
+VALGRIND_CHECK_RULES='
+# Valgrind check
+#
+# Optional:
+#  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
+#    files to load. (Default: empty)
+#  - VALGRIND_FLAGS: General flags to pass to all Valgrind tools.
+#    (Default: --num-callers=30)
+#  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
+#    memcheck, helgrind, drd, sgcheck). (Default: various)
+
+# Optional variables
+VALGRIND_SUPPRESSIONS   ?= $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
+VALGRIND_FLAGS          ?= --num-callers=30 --trace-children=yes
+VALGRIND_memcheck_FLAGS ?= --leak-check=full --show-reachable=no
+VALGRIND_helgrind_FLAGS ?= --history-level=approx
+VALGRIND_drd_FLAGS      ?=
+VALGRIND_sgcheck_FLAGS  ?=
+
+# Internal use
+valgrind_tools = memcheck helgrind drd sgcheck
+valgrind_log_files = $(addprefix test-suite-,$(addsuffix .log,$(valgrind_tools)))
+
+valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
+valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
+valgrind_drd_flags = --tool=drd $(VALGRIND_drd_FLAGS)
+valgrind_sgcheck_flags = --tool=exp-sgcheck $(VALGRIND_sgcheck_FLAGS)
+
+valgrind_quiet   = $(valgrind_quiet_$(V))
+valgrind_quiet_  = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
+valgrind_quiet_0 = --quiet
+
+# Support running with and without libtool.
+ifneq ($(LIBTOOL),)
+valgrind_lt = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute
+else
+valgrind_lt =
+endif
+
+#
+# Valgrind chain add ons
+#
+
+VALGRIND_TESTS_ENVIRONMENT = \
+	VALGRIND=$(VALGRIND) \
+	G_SLICE=always-malloc,debug-blocks \
+	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
+
+VALGRIND_LOG_COMPILER = \
+	$(valgrind_lt) \
+	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 \
+	$(valgrind_$(VALGRIND_TOOL)_flags) $(VALGRIND_FLAGS)
+
+
+
+
+
+
+
+DISTCHECK_CONFIGURE_FLAGS ?=
+DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
+
+MOSTLYCLEANFILES ?=
+MOSTLYCLEANFILES += $(valgrind_log_files)
+
+.PHONY: check-valgrind check-valgrind-tool
+'
+
+
 
 
 
@@ -12384,15 +12568,12 @@ esac
 
       as_fn_append TS_TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
       as_fn_append TS_TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
-      if test "x$USE_VALGRIND" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "VALGRIND_LIB='/usr/lib64/valgrind/' "
-        as_fn_append TS_LOG_COMPILER "valgrind "
-        as_fn_append TS_LOG_COMPILER "--quiet --error-exitcode=1 "
-        as_fn_append TS_LOG_COMPILER "--trace-children=yes "
-        as_fn_append TS_LOG_COMPILER "--dsymutil=yes --leak-check=yes "
+      if test "x$VALGRIND_ENABLED" = xyes; then :
+  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
+        as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
         as_fn_append TS_LOG_COMPILER "--vex-iropt-register-updates=allregs-at-mem-access "
         as_fn_append TS_LOG_COMPILER "--workaround-gcc296-bugs=yes  "
-        as_fn_append TS_LOG_COMPILER "\${TS_VALGRIND_FLAGS}  "
+        as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
 
 fi
       as_fn_append TS_LOG_COMPILER "wine "
@@ -12409,13 +12590,10 @@ fi
 
    $as_echo "Set tests environment for linux->linux"
    as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$USE_VALGRIND" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "VALGRIND_LIB='/usr/lib64/valgrind/' "
-              as_fn_append TS_LOG_COMPILER "valgrind "
-              as_fn_append TS_LOG_COMPILER "--quiet --error-exitcode=1 "
-              as_fn_append TS_LOG_COMPILER "--trace-children=yes "
-              as_fn_append TS_LOG_COMPILER "--dsymutil=yes --leak-check=yes "
-              as_fn_append TS_LOG_COMPILER "\${TS_VALGRIND_FLAGS}  "
+   if test "x$VALGRIND_ENABLED" = xyes; then :
+  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
+              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
+              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
 
 fi
   ;; #(
@@ -12426,19 +12604,18 @@ fi
 
    $as_echo "Set tests environment"
    as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$USE_VALGRIND" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "VALGRIND_LIB='/usr/lib64/valgrind/' "
-              as_fn_append TS_LOG_COMPILER "valgrind "
-              as_fn_append TS_LOG_COMPILER "--quiet --error-exitcode=1 "
-              as_fn_append TS_LOG_COMPILER "--trace-children=yes "
-              as_fn_append TS_LOG_COMPILER "--dsymutil=yes --leak-check=yes "
-              as_fn_append TS_LOG_COMPILER "\${TS_VALGRIND_FLAGS}  "
+   if test "x$VALGRIND_ENABLED" = xyes; then :
+  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
+              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
+              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
 
 fi
   ;; #(
   *) :
      ;;
 esac
+
+# MACOS: add --dsymutil=yes to valgrind
 
 
 
@@ -14548,7 +14725,7 @@ ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14720,16 +14897,16 @@ if test -z "${HAVE_PYTHON_TRUE}" && test -z "${HAVE_PYTHON_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_PYTHON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${USE_VALGRIND_TRUE}" && test -z "${USE_VALGRIND_FALSE}"; then
-  as_fn_error $? "conditional \"USE_VALGRIND\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${HAVE_WINE_TRUE}" && test -z "${HAVE_WINE_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_WINE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_WINECONSOLE_TRUE}" && test -z "${HAVE_WINECONSOLE_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_WINECONSOLE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then
+  as_fn_error $? "conditional \"VALGRIND_ENABLED\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_CUTE_DOXYGEN_TRUE}" && test -z "${HAVE_CUTE_DOXYGEN_FALSE}"; then
@@ -15434,6 +15611,7 @@ do
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;
     "tcl/Makefile") CONFIG_FILES="$CONFIG_FILES tcl/Makefile" ;;
     "tdishr/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/Makefile" ;;
+    "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
     "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;

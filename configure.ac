@@ -974,25 +974,9 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-# TODO: Add version here
+## TODO: Add version here
 AM_PATH_PYTHON(,, [:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
-
-dnl AC_PYTHON_CLASS(module,[action-if-true],[action-if-false])
-dnl AC_DEFUN([AC_PYTHON_MODULE],[
-dnl        AC_MSG_CHECKING(python module: $1)
-dnl        AS_IF([ test "$PYTHON" == : ],
-dnl              [AC_MSG_ERROR(no python executable was found); AS_EXIT],)
-              
-dnl        $PYTHON -c "import $1" 2>/dev/null
-dnl        AS_IF([test $? -eq 0],        
-dnl              [AC_MSG_RESULT(yes);
-dnl               eval AS_TR_CPP(HAVE_PYMOD_$1)=yes;
-dnl               eval $2; ],
-dnl              [AC_MSG_RESULT(no);
-dnl               eval AS_TR_CPP(HAVE_PYMOD_$1)=no;
-dnl               eval $3; ])
-dnl ])
 
 
 
@@ -1000,32 +984,12 @@ dnl ])
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-# PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
-# AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
-
-AC_ARG_ENABLE([valgrind],
-              [AS_HELP_STRING([--enable-valgrind],
-                              [Use valgrind when running unit tests])],
-              [AS_VAR_SET([USE_VALGRIND], [yes])],
-              [])
-
-AS_IF([test x"$USE_VALGRIND" = x"yes" ],
-      [AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
-        AS_IF([test x"$HAVE_VALGRIND" = x"yes" ],
-              [AC_MSG_NOTICE([Valgrind ENABLED])],
-              [AC_MSG_WARN([Valgrind DISABLED as it was not found in PATH ])
-               AS_VAR_SET([USE_VALGRIND],[no])
-              ])
-      ])
-AM_CONDITIONAL(USE_VALGRIND, test x"$USE_VALGRIND" = x"yes")
-
-
-## CHECK related ##
+## MdsTestShr CHECK backend related ##
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
-
 AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
              [LIBRT="-lrt"],[LIBRT=""])
+
 
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
@@ -1034,14 +998,11 @@ AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
 AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
 
 
-dnl TESTS_ENVIRONMENT=@LIBPATH@="${TESTLIBDIR}"
-dnl LOG_DRIVER=${top_srcdir}/conf/test-driver
+AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
+AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
 
- AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
- AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
- AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
-
-TS_SELECT()
+TS_SELECT
  
  AC_SUBST(TS_TESTS_ENVIRONMENT)
  AC_SUBST(TS_LOG_COMPILER)
@@ -1049,16 +1010,12 @@ TS_SELECT()
  AC_SUBST(TS_PY_TAP_COMPILER)
 
 dnl AC_MSG_NOTICE(********************************)
-dnl AC_MSG_NOTICE(${TESTS_ENVIRONMENT})
+dnl AC_MSG_NOTICE(${TS_TESTS_ENVIRONMENT})
 dnl AC_MSG_NOTICE(${LOG_DRIVER})
 dnl AC_MSG_NOTICE(${LOG_COMPILER})
 dnl AC_MSG_NOTICE(********************************)
 
-
 dnl  wpath_bin = $  
-
-
-
 # AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
 
 
@@ -1107,9 +1064,9 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
 
-## ////////////////////////////////////////////////////////////////////////// ##
-## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
-## ////////////////////////////////////////////////////////////////////////// ##
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 dnl Here we define all custom autoheader adds to config.h.in 
 
@@ -1287,6 +1244,7 @@ AC_OUTPUT(Makefile.inc
           setevent/Makefile
           tcl/Makefile 
           tdishr/Makefile 
+          tdishr/testing/Makefile 
           tdic/Makefile
           tditest/Makefile 
           testing/Makefile
