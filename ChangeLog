@@ -1,4 +1,54 @@
-commit 2422ad2cd4858f468cbb2405a721e501d4de5b32 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit fa3be5d1b0c5f87f3d38148a2a3195496eb9799f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 64b6557 0460706
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 14:56:30 2015 -0500
+
+    Merge pull request #211 from MDSplus/fix-bnc845
+    
+    Handle arbitrarily long SCPI replies
+
+commit 64b65573c06d61ed9339f909d2c8be4ebd41b087
+Merge: 7d13b59 f1b88d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 08:15:02 2015 -0500
+
+    Merge pull request #216 from zack-vii/aa_python_webscope
+    
+    avoid unsafe functions exec and eval
+
+commit f1b88d965b29eea8b4d6b94a449c7063600768ae
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 19:40:11 2015 +0100
+
+    avoid unsafe functions exec and eval
+    
+    - replaced exec and eval with __import__
+    - fixed error handling : AssertionError: Headers already set!
+
+commit 7d13b594bd3586ade16f2b85d8c83967a554751a
+Merge: 75a5994 84c1ec2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 07:55:48 2015 -0500
+
+    Merge pull request #215 from zack-vii/aa_python
+    
+    python support for disabled and compress_segments
+
+commit 84c1ec25655bd294c8015d30b5eae126c6bac715
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 17 12:21:36 2015 +0100
+
+    support for disabled and compress_segments
+    
+    - allows to set theses flags from device definition
+
+commit 75a599469528ba77a75a38ae26303fadfd144711 (tag: refs/tags/alpha_release-7-0-181)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 16 23:38:22 2015 -0500
+
+    New release ---- alpha_release-7-0-181
+
+commit 2422ad2cd4858f468cbb2405a721e501d4de5b32
 Merge: 87a9d52 d9a96ac
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Nov 16 18:07:54 2015 +0100
@@ -51,6 +101,12 @@ Date:   Thu Nov 12 21:07:37 2015 +0100
     
     - Array if 5 chars long
     - dict contains full name
+
+commit 04607065ff69d41b01198ba2df72e17002f6e756 (refs/remotes/origin/fix-bnc845)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Nov 12 17:02:22 2015 +0100
+
+    Handle arbitrarily long SCPI replies
 
 commit 48f2f651d6d7b722cad184e2773eeb23ef9cde83 (tag: refs/tags/alpha_release-7-0-179)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
