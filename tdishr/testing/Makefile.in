@@ -13,7 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -89,7 +88,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = javadevices
+TESTS = build_test$(EXEEXT)
+check_PROGRAMS = $(am__EXEEXT_1)
+subdir = tdishr/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
@@ -106,6 +107,12 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am__EXEEXT_1 = build_test$(EXEEXT)
+build_test_SOURCES = build_test.c
+build_test_OBJECTS = build_test.$(OBJEXT)
+build_test_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+build_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -118,14 +125,70 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DIST_SOURCES =
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
+depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
+am__depfiles_maybe = depfiles
+am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = build_test.c
+DIST_SOURCES = build_test.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__installdirs = "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"
-am__java_sources = $(java_JAVA)
+am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+# Read a list of newline-separated strings from the standard input,
+# and print each of them once, without duplicates.  Input order is
+# *not* preserved.
+am__uniquify_input = $(AWK) '\
+  BEGIN { nonempty = 0; } \
+  { items[$$0] = 1; nonempty = 1; } \
+  END { if (nonempty) { for (i in items) print i; }; } \
+'
+# Make sure the list of sources is unique.  This is necessary because,
+# e.g., the same source file might be shared among _SOURCES variables
+# for different programs/libraries.
+am__define_uniq_tagged_files = \
+  list='$(am__tagged_files)'; \
+  unique=`for i in $$list; do \
+    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+  done | $(am__uniquify_input)`
+ETAGS = etags
+CTAGS = ctags
+am__tty_colors_dummy = \
+  mgn= red= grn= lgn= blu= brg= std=; \
+  am__color_tests=no
+am__tty_colors = { \
+  $(am__tty_colors_dummy); \
+  if test "X$(AM_COLOR_TESTS)" = Xno; then \
+    am__color_tests=no; \
+  elif test "X$(AM_COLOR_TESTS)" = Xalways; then \
+    am__color_tests=yes; \
+  elif test "X$$TERM" != Xdumb && { test -t 1; } 2>/dev/null; then \
+    am__color_tests=yes; \
+  fi; \
+  if test $$am__color_tests = yes; then \
+    red='[0;31m'; \
+    grn='[0;32m'; \
+    lgn='[1;32m'; \
+    blu='[1;34m'; \
+    mgn='[0;35m'; \
+    brg='[1m'; \
+    std='[m'; \
+  fi; \
+}
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -153,27 +216,165 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-DATA = $(java_DATA)
-am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-# Read a list of newline-separated strings from the standard input,
-# and print each of them once, without duplicates.  Input order is
-# *not* preserved.
-am__uniquify_input = $(AWK) '\
-  BEGIN { nonempty = 0; } \
-  { items[$$0] = 1; nonempty = 1; } \
-  END { if (nonempty) { for (i in items) print i; }; } \
-'
-# Make sure the list of sources is unique.  This is necessary because,
-# e.g., the same source file might be shared among _SOURCES variables
-# for different programs/libraries.
-am__define_uniq_tagged_files = \
-  list='$(am__tagged_files)'; \
-  unique=`for i in $$list; do \
-    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-  done | $(am__uniquify_input)`
-ETAGS = etags
-CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__recheck_rx = ^[ 	]*:recheck:[ 	]*
+am__global_test_result_rx = ^[ 	]*:global-test-result:[ 	]*
+am__copy_in_global_log_rx = ^[ 	]*:copy-in-global-log:[ 	]*
+# A command that, given a newline-separated list of test names on the
+# standard input, print the name of the tests that are to be re-run
+# upon "make recheck".
+am__list_recheck_tests = $(AWK) '{ \
+  recheck = 1; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+        { \
+          if ((getline line2 < ($$0 ".log")) < 0) \
+	    recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[nN][Oo]/) \
+        { \
+          recheck = 0; \
+          break; \
+        } \
+      else if (line ~ /$(am__recheck_rx)[yY][eE][sS]/) \
+        { \
+          break; \
+        } \
+    }; \
+  if (recheck) \
+    print $$0; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# A command that, given a newline-separated list of test names on the
+# standard input, create the global log from their .trs and .log files.
+am__create_global_log = $(AWK) ' \
+function fatal(msg) \
+{ \
+  print "fatal: making $@: " msg | "cat >&2"; \
+  exit 1; \
+} \
+function rst_section(header) \
+{ \
+  print header; \
+  len = length(header); \
+  for (i = 1; i <= len; i = i + 1) \
+    printf "="; \
+  printf "\n\n"; \
+} \
+{ \
+  copy_in_global_log = 1; \
+  global_test_result = "RUN"; \
+  while ((rc = (getline line < ($$0 ".trs"))) != 0) \
+    { \
+      if (rc < 0) \
+         fatal("failed to read from " $$0 ".trs"); \
+      if (line ~ /$(am__global_test_result_rx)/) \
+        { \
+          sub("$(am__global_test_result_rx)", "", line); \
+          sub("[ 	]*$$", "", line); \
+          global_test_result = line; \
+        } \
+      else if (line ~ /$(am__copy_in_global_log_rx)[nN][oO]/) \
+        copy_in_global_log = 0; \
+    }; \
+  if (copy_in_global_log) \
+    { \
+      rst_section(global_test_result ": " $$0); \
+      while ((rc = (getline line < ($$0 ".log"))) != 0) \
+      { \
+        if (rc < 0) \
+          fatal("failed to read from " $$0 ".log"); \
+        print line; \
+      }; \
+      printf "\n"; \
+    }; \
+  close ($$0 ".trs"); \
+  close ($$0 ".log"); \
+}'
+# Restructured Text title.
+am__rst_title = { sed 's/.*/   &   /;h;s/./=/g;p;x;s/ *$$//;p;g' && echo; }
+# Solaris 10 'make', and several other traditional 'make' implementations,
+# pass "-e" to $(SHELL), and POSIX 2008 even requires this.  Work around it
+# by disabling -e (using the XSI extension "set +e") if it's set.
+am__sh_e_setup = case $$- in *e*) set +e;; esac
+# Default flags passed to test drivers.
+am__common_driver_flags = \
+  --color-tests "$$am__color_tests" \
+  --enable-hard-errors "$$am__enable_hard_errors" \
+  --expect-failure "$$am__expect_failure"
+# To be inserted before the command running the test.  Creates the
+# directory for the log if needed.  Stores in $dir the directory
+# containing $f, in $tst the test, in $log the log.  Executes the
+# developer- defined test setup AM_TESTS_ENVIRONMENT (if any), and
+# passes TESTS_ENVIRONMENT.  Set up options for the wrapper that
+# will run the test scripts (or their associated LOG_COMPILER, if
+# thy have one).
+am__check_pre = \
+$(am__sh_e_setup);					\
+$(am__vpath_adj_setup) $(am__vpath_adj)			\
+$(am__tty_colors);					\
+srcdir=$(srcdir); export srcdir;			\
+case "$@" in						\
+  */*) am__odir=`echo "./$@" | sed 's|/[^/]*$$||'`;;	\
+    *) am__odir=.;; 					\
+esac;							\
+test "x$$am__odir" = x"." || test -d "$$am__odir" 	\
+  || $(MKDIR_P) "$$am__odir" || exit $$?;		\
+if test -f "./$$f"; then dir=./;			\
+elif test -f "$$f"; then dir=;				\
+else dir="$(srcdir)/"; fi;				\
+tst=$$dir$$f; log='$@'; 				\
+if test -n '$(DISABLE_HARD_ERRORS)'; then		\
+  am__enable_hard_errors=no; 				\
+else							\
+  am__enable_hard_errors=yes; 				\
+fi; 							\
+case " $(XFAIL_TESTS) " in				\
+  *[\ \	]$$f[\ \	]* | *[\ \	]$$dir$$f[\ \	]*) \
+    am__expect_failure=yes;;				\
+  *)							\
+    am__expect_failure=no;;				\
+esac; 							\
+$(AM_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)
+# A shell command to get the names of the tests scripts with any registered
+# extension removed (i.e., equivalently, the names of the test logs, with
+# the '.log' extension removed).  The result is saved in the shell variable
+# '$bases'.  This honors runtime overriding of TESTS and TEST_LOGS.  Sadly,
+# we cannot use something simpler, involving e.g., "$(TEST_LOGS:.log=)",
+# since that might cause problem with VPATH rewrites for suffix-less tests.
+# See also 'test-harness-vpath-rewrite.sh' and 'test-trs-basic.sh'.
+am__set_TESTS_bases = \
+  bases='$(TEST_LOGS)'; \
+  bases=`for i in $$bases; do echo $$i; done | sed 's/\.log$$//'`; \
+  bases=`echo $$bases`
+RECHECK_LOGS = $(TEST_LOGS)
+AM_RECURSIVE_TARGETS = check recheck
+TEST_SUITE_LOG = test-suite.log
+LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
+am__set_b = \
+  case '$@' in \
+    */*) \
+      case '$*' in \
+        */*) b='$*';; \
+          *) b=`echo '$@' | sed 's/\.log$$//'`; \
+       esac;; \
+    *) \
+      b='$*';; \
+  esac
+am__test_logs1 = $(TESTS:=.log)
+am__test_logs2 = $(am__test_logs1:@EXEEXT@.log=.log)
+am__test_logs3 = $(am__test_logs2:.py.log=.log)
+PY_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+PY_LOG_COMPILE = $(PY_LOG_COMPILER) $(AM_PY_LOG_FLAGS) $(PY_LOG_FLAGS)
+TEST_LOGS = $(am__test_logs3:.pl.log=.log)
+PL_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+PL_LOG_COMPILE = $(PL_LOG_COMPILER) $(AM_PL_LOG_FLAGS) $(PL_LOG_FLAGS)
+am__DIST_COMMON = $(srcdir)/../../testing/testing.am \
+	$(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp \
+	$(top_srcdir)/conf/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -448,171 +649,57 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = *.form
-CLEANFILES = $(java_DATA)
-JAVAROOT = $(builddir)
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javatraverser/jTraverser.jar
-javadir = $(exec_prefix)/java/classes
-java_JAVA = $(SOURCES)
+TEST_CFLAGS = -I${top_srcdir}/testing
+TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+PY_LOG_COMPILER = $(PYTHON)
+PY_LOG_FLAGS = -v
 
-# Build the final jar
-java_DATA = jDevices.jar
+# not used #
+_tap_py_execute = \
+ import unittest; \
+ import tap; \
+ import os; \
+ import sys; \
+ pt = os.path.dirname(os.path.curdir); \
+ loader = unittest.TestLoader(); \
+ tests = loader.loadTestsFromName(sys.argv[1]); \
+ tr = tap.TAPTestRunner(); \
+ tr.set_stream(1); \
+ tr.run(tests); 
 
-# Giant list of source files follow
-SOURCES = \
-ParameterSetting.java \
-ParameterSettingOld.java\
-DEMOADCSetup.java\
-DIO4Setup.java\
-TRCHSetup.java\
-ADC265Setup.java\
-E1463Setup.java\
-VMEWavesSetup.java\
-MPBDecoderSetup.java\
-RFXClockSetup.java \
-RFXPulseSetup.java \
-RFXDClockSetup.java \
-RFXGClockSetup.java \
-MPBEncoderSetup.java \
-RFXTimingSetup.java \
-MPBRecorderSetup.java \
-TRCFSetup.java \
-Aurora14Setup.java \
-ACQD265Setup.java \
-NI6071ESetup.java\
-PELLETSetup.java\
-L5613Setup.java\
-RFXTimesSetup.java\
-RFXPoloidalSetup.java\
-RFXToroidalSetup.java\
-RFXPMSetupSetup.java\
-RFXPCSetupSetup.java \
-RFXPC4SetupSetup.java \
-RFXPVSetupSetup.java \
-RFXTFSetupSetup.java \
-RFXABUnitsSetup.java \
-RFXChopperSetupSetup.java \
-RFXInverterSetupSetup.java \
-RFXFeedforwardSetupSetup.java \
-RFXPRConfigSetup.java \
-RFXPRConfigV1Setup.java \
-TR10Setup.java \
-K3115Setup.java \
-DIO2Setup.java \
-DIO2EncoderSetup.java \
-WE7000Setup.java \
-WE7116Setup.java \
-WE7275Setup.java \
-WEGroupSetup.java \
-RFXControlSetup.java \
-T2ControlSetup.java \
-TR32Setup.java \
-TR6_3Setup.java \
-FR10Setup.java \
-OAM01Setup.java \
-RFXMOPSetup.java \
-RFXANSALDOSetup.java \
-IPC901Setup.java \
-CADHSetup.java \
-J221RFXSetup.java \
-L6810Setup.java \
-RFXVISetupSetup.java \
-RFXVIConfigSetup.java \
-LASER_NDSetup.java\
-EDAMSetupSetup.java\
-DEQUSetupSetup.java\
-EM_GAINSetup.java\
-EM_EQU_TESTSetup.java\
-CHVPSSetup.java\
-CHVPS_SETSetup.java\
-RFXParametersSetup.java\
-CAMERASetup.java\
-FLU_GAINSetup.java\
-DFLUSetupSetup.java\
-EM_FLU_TESTSetup.java\
-BOLOSetup.java\
-XRAYSetup.java\
-SXCSetup.java\
-RFXAxiControlSetup.java\
-RFXAxiToroidalControlSetup.java\
-TOMOSetupSetup.java\
-TSEdgeCCDSetup.java\
-LASER_RUSetup.java\
-GEN_GAINSetup.java\
-EDAM_CPCISetupSetup.java\
-FEGroupSetup.java\
-ISIS_GAINSetup.java\
-FASTCAMSetup.java\
-ST133Setup.java\
-RFXVersionSetup.java\
-WE800Setup.java \
-WE900Setup.java \
-CAENV1731Setup.java \
-CAENV1740Setup.java \
-CYGNET4KSetup.java \
-PLRMSetup.java \
-DPO7054Setup.java \
-L9109Setup.java \
-LASER_NDRTSetup.java \
-IPControlSetup.java \
-EQU_GAINSetup.java \
-EM_EQU_TEST_NEWSetup.java\
-OAM01Setup.java \
-RFXPolControlSetup.java \
-RFXAxiControlSetup.java \
-RFXTorControlSetup.java \
-RFXAxiToroidalControlSetup.java \
-RFXMHDSetup.java \
-EDAM_CPCISetupV1Setup.java \
-MCAMERASetup.java \
-HMSPECTROSetup.java \
-RFXDiagTimesSetup.java \
-RFXDiagTimesV1Setup.java \
-MHD_BR_TESTSetup.java\
-EDA3VmeConfigSetup.java\
-MCUSetup.java\
-SIS3820Setup.java\
-FEMTOSetup.java\
-CAENDT5720Setup.java\
-RFXVConfigSetup.java\
-MARTESetup.java\
-MARTE_MHD_BRSetup.java\
-MARTE_MHD_CTRLSetup.java\
-MARTE_MHD_ISetup.java\
-MARTE_MHD_AC_BCSetup.java\
-MARTE_MHD_BTSetup.java\
-MARTE_DEQUSetup.java\
-MARTE_EDA1Setup.java\
-MARTE_EDA3Setup.java\
-MARTE_EDA1_OUTSetup.java\
-MARTE_EDA3_OUTSetup.java\
-MARTE_CONFIGSetup.java\
-MARTE_WAVEGENSetup.java\
-MARTE_BREAKDOWNSetup.java\
-MARTE_RTSMSetup.java\
-MARTE_XRAYSetup.java\
-MARTE_NESetup.java\
-LASER_YAGSetup.java\
-SPIDER_SMSetup.java\
-SPIDERSetup.java\
-ZELOS2150GVSetup.java\
-NI6259AISetup.java\
-FAKECAMERASetup.java\
-AWG2021Setup.java\
-RFXWAVESETUPSetup.java\
-RFX_PROTECTIONSSetup.java\
-FLIRSC65XSetup.java\
-NI6368AISetup.java\
-ACQIPPSETUPSetup.java\
-DIO2_ENCDECSetup.java\
-MARTE_DEVICESetup.java \
-RFXVICONTROLSetup.java \
-REDPYTADCSetup.java
 
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
+LOG_COMPILER = @TS_LOG_COMPILER@
+TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
+
+# use default ...
+# LOG_DRIVER        = @TS_LOG_DRIVER@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+TEST_BUILD_TAP = test-build.tap
+TEST_SUITE_TAP = test-suite.tap
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+LDADD = $(TEST_LIBS) @LIBS@ -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
+TEST_EXTENSIONS = .py .pl
+AM_DEFAULT_SOURCE_EXT = .c
+
+#
+# Files produced by tests that must be purged
+#
+MOSTLYCLEANFILES = *.out
+check_SCRIPTS = 
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .c .log .o .obj .pl .pl$(EXEEXT) .py .py$(EXEEXT) .trs
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -621,9 +708,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign javadevices/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign tdishr/testing/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign javadevices/Makefile
+	  $(AUTOMAKE) --foreign tdishr/testing/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -632,6 +719,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../../testing/testing.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -642,55 +730,36 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
-classjava.stamp: $(am__java_sources)
-	@list1='$?'; list2=; if test -n "$$list1"; then \
-	  for p in $$list1; do \
-	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	    list2="$$list2 $$d$$p"; \
-	  done; \
-	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) '"$$list2"; \
-	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $$list2; \
-	else :; fi
-	echo timestamp > $@
-install-javaJAVA: classjava.stamp
-	@$(NORMAL_INSTALL)
-	@test -n "$(java_JAVA)" && test -n "$(javadir)" || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(javadir)"; \
-	set x *.class; shift; test "$$1" != "*.class" || exit 0; \
-	echo " $(INSTALL_DATA)" "$$@" "'$(DESTDIR)$(javadir)/$$p'"; \
-	$(INSTALL_DATA) "$$@" "$(DESTDIR)$(javadir)"
+clean-checkPROGRAMS:
+	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
-uninstall-javaJAVA:
-	@$(NORMAL_UNINSTALL)
-	@test -n "$(java_JAVA)" && test -n "$(javadir)" || exit 0; \
-	set x *.class; shift; test "$$1" != "*.class" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(javadir)' && rm -f" "$$@" ")"; \
-	cd "$(DESTDIR)$(javadir)" && rm -f "$$@"
+build_test$(EXEEXT): $(build_test_OBJECTS) $(build_test_DEPENDENCIES) $(EXTRA_build_test_DEPENDENCIES) 
+	@rm -f build_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(build_test_OBJECTS) $(build_test_LDADD) $(LIBS)
 
-clean-javaJAVA:
-	-rm -f *.class classjava.stamp
-install-javaDATA: $(java_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(javadir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(javadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(javadir)" || exit $$?; \
-	done
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
 
-uninstall-javaDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/build_test.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -744,6 +813,77 @@ cscopelist-am: $(am__tagged_files)
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
+# Recover from deleted '.trs' file; this should ensure that
+# "rm -f foo.log; make foo.trs" re-run 'foo.test', and re-create
+# both 'foo.log' and 'foo.trs'.  Break the recipe in two subshells
+# to avoid problems with "make -n".
+.log.trs:
+	rm -f $< $@
+	$(MAKE) $(AM_MAKEFLAGS) $<
+
+# Leading 'am--fnord' is there to ensure the list of targets does not
+# expand to empty, as could happen e.g. with make check TESTS=''.
+am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
+am--force-recheck:
+	@:
+
+check-TESTS:
+	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
+	@list='$(RECHECK_LOGS:.log=.trs)'; test -z "$$list" || rm -f $$list
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	trs_list=`for i in $$bases; do echo $$i.trs; done`; \
+	log_list=`echo $$log_list`; trs_list=`echo $$trs_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) TEST_LOGS="$$log_list"; \
+	exit $$?;
+recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
+	@test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
+	@set +e; $(am__set_TESTS_bases); \
+	bases=`for i in $$bases; do echo $$i; done \
+	         | $(am__list_recheck_tests)` || exit 1; \
+	log_list=`for i in $$bases; do echo $$i.log; done`; \
+	log_list=`echo $$log_list`; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) \
+	        am__force_recheck=am--force-recheck \
+	        TEST_LOGS="$$log_list"; \
+	exit $$?
+build_test.log: build_test$(EXEEXT)
+	@p='build_test$(EXEEXT)'; \
+	b='build_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.py.log:
+	@p='$<'; \
+	$(am__set_b); \
+	$(am__check_pre) $(PY_LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_PY_LOG_DRIVER_FLAGS) $(PY_LOG_DRIVER_FLAGS) -- $(PY_LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+@am__EXEEXT_TRUE@.py$(EXEEXT).log:
+@am__EXEEXT_TRUE@	@p='$<'; \
+@am__EXEEXT_TRUE@	$(am__set_b); \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(PY_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_PY_LOG_DRIVER_FLAGS) $(PY_LOG_DRIVER_FLAGS) -- $(PY_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
+.pl.log:
+	@p='$<'; \
+	$(am__set_b); \
+	$(am__check_pre) $(PL_LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_PL_LOG_DRIVER_FLAGS) $(PL_LOG_DRIVER_FLAGS) -- $(PL_LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+@am__EXEEXT_TRUE@.pl$(EXEEXT).log:
+@am__EXEEXT_TRUE@	@p='$<'; \
+@am__EXEEXT_TRUE@	$(am__set_b); \
+@am__EXEEXT_TRUE@	$(am__check_pre) $(PL_LOG_DRIVER) --test-name "$$f" \
+@am__EXEEXT_TRUE@	--log-file $$b.log --trs-file $$b.trs \
+@am__EXEEXT_TRUE@	$(am__common_driver_flags) $(AM_PL_LOG_DRIVER_FLAGS) $(PL_LOG_DRIVER_FLAGS) -- $(PL_LOG_COMPILE) \
+@am__EXEEXT_TRUE@	"$$tst" $(AM_TESTS_FD_REDIRECT)
+
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -775,12 +915,11 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_SCRIPTS)
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile classjava.stamp $(DATA)
+all-am: Makefile all-local
 installdirs:
-	for dir in "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -801,9 +940,12 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
+	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
+	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -814,11 +956,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-javaJAVA mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-am
 
@@ -832,7 +976,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-javaDATA install-javaJAVA
+install-data-am:
 
 install-dvi: install-dvi-am
 
@@ -861,12 +1005,13 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-am
 
@@ -876,28 +1021,98 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-javaDATA uninstall-javaJAVA
+uninstall-am:
 
-.MAKE: install-am install-strip
+.MAKE: check-am install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-javaJAVA cscopelist-am ctags ctags-am distclean \
+.PHONY: CTAGS GTAGS TAGS all all-am all-local check check-TESTS \
+	check-am clean clean-checkPROGRAMS clean-generic clean-local \
+	cscopelist-am ctags ctags-am distclean distclean-compile \
 	distclean-generic distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
-	install-info-am install-javaDATA install-javaJAVA install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-javaDATA uninstall-javaJAVA
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am recheck tags tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
-jDevices.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+include @top_builddir@/Makefile.inc
+
+#prova:
+#	echo $(TEST_LOGS);
+#	python -c "${_tap_py_execute}" pyex1;
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  select test form env variable  //////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: tap xml log
+tap: $(TEST_SUITE_TAP)
+xml: $(TEST_SUITE_XML)
+log: $(TEST_SUITE_LOG)
+
+tests:
+	echo "Making tests ... "
+	if [ -z ${TEST_FORMAT} ] ; then
+	 $(MAKE) $(AM_MAKEFLAGS) tap;
+	else
+	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
+	fi
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+@VALGRIND_CHECK_RULES@ 
+
+.ONESHELL:
+$(TEST_BUILD_TAP):
+	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
+
+	echo "TAP version 13" > $@;
+	count=0;
+	for i in $(check_PROGRAMS); do \
+	  if ! $(MAKE) -q $$i; then \
+	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	    { ((count++)); \
+	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
+	    }; \
+	  fi; \
+	done; \
+	echo "1..$${count}" >> $@;
+
+.ONESHELL:
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+	export TEST_FORMAT="tap";
+
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
+	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+
+	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
+	 || exit 1;
+
+$(TEST_SUITE_LOG):
+
+$(TEST_SUITE_XML):
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  clean  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: clean-local-tests
+clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+
+all-local: $(TESTS)
+clean-local: clean-local-tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

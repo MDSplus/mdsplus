@@ -15,8 +15,6 @@ TESTS = \
         test_data.py \
         test_trees.py
 
-AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
-
 #
 # Files produced by tests that must be purged
 #
