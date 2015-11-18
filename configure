@@ -3344,7 +3344,7 @@ stop:
 
 shell:
 	@echo "Starting docker shell";
-	@eval docker exec -ti --user ${USER} ${DOCKER_CONTAINER} bash
+	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
 
 
 endif
@@ -12026,9 +12026,6 @@ fi
 
 		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
 
-fi
-	if test "$enable_valgrind" != "no"; then :
-  enable_valgrind=yes
 fi
 
 	 if test "$enable_valgrind" = "yes"; then
