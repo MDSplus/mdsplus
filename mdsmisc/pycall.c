@@ -21,7 +21,7 @@ static void (*PyGILState_Release) (void *) = 0;
   return 0;\
 }
 
-int PyCall(char *cmd, int lock)
+EXPORT int PyCall(char *cmd, int lock)
 {
 #ifndef _WIN32
   void (*old_handler) (int);
@@ -37,6 +37,10 @@ int PyCall(char *cmd, int lock)
 	      "Please define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
       return 0;
     }
+#ifdef _WIN32
+    lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
+    strcat(lib, ".dll");
+#else
     if (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0) {
       lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
     } else {
@@ -44,7 +48,7 @@ int PyCall(char *cmd, int lock)
       strcat(lib, envsym);
       strcat(lib, ".so");
     }
-    /*** See if python routines are already available ***/
+#endif
 #ifndef _WIN32
     handle = dlopen(0, RTLD_NOLOAD);
 #endif
@@ -83,7 +87,7 @@ int PyCall(char *cmd, int lock)
   return 1;
 }
 
-void PyReleaseThreadLock()
+EXPORT void PyReleaseThreadLock()
 {
   if (PyGILState_GetThisThreadState && PyEval_ReleaseThread) {
     void *STATE = (*PyGILState_GetThisThreadState) ();

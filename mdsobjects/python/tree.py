@@ -2,7 +2,7 @@ def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
-        return __import__(name, globals())
+        return __import__(name, glothreadbals())
 
 import threading as _threading
 import traceback as _traceback
@@ -20,7 +20,7 @@ _ver=_mimport('version')
 
 thread_data=_threading.local()
 thread_data._activeTree=0
-thread_data.private=False
+thread_data_private=False
 
 _hard_lock=_threading.Lock()
 
@@ -28,9 +28,10 @@ _openTrees={}
 _activeTree={}
 
 def _getThreadName(thread=None):
+    global thread_data
     if isinstance(thread,str):
         threadName=thread
-    elif thread_data.private:
+    elif thread_data_private:
         if thread is None:
             threadName = _threading.current_thread().getName()
         else:
@@ -155,7 +156,7 @@ class Tree(object):
 
     def usePrivateCtx(cls,on=True):
         global thread_data
-        thread_data.private=on
+        thread_data_private=on
         _treeshr.TreeUsePrivateCtx(on)
     usePrivateCtx=classmethod(usePrivateCtx)
 
@@ -671,3 +672,16 @@ class Tree(object):
             Tree.unlock()
         if not (status & 1):
             raise _Exceptions.statusToException(status)
+
+class TreeRef(Tree):
+    """The TreeRef class uses the current global dbid ctx to construct a tree reference object.
+    Unlike Tree instances created with no arguments, TreeRef instances do not affect the global
+    dbid ctx when they are deleted."""
+    
+    def __init__(self):
+        pass
+    def __del__(self):
+        pass
+    def _getCtx(self):
+        return _treeshr.TreeGetContext()
+    ctx=property(_getCtx)
