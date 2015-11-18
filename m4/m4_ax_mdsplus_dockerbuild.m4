@@ -284,7 +284,7 @@ stop:
 
 shell:
 	@echo "Starting docker shell";
-	@eval docker exec -ti --user ${USER} ${DOCKER_CONTAINER} bash
+	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
 
 
 endif
