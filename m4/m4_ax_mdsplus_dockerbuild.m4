@@ -30,28 +30,6 @@ AC_DEFUN([DK_CHECK_DOCKER_ARG],[
 
 
 
-AC_DEFUN([AS_VAR_READ],[
-read -d '' $1 << _as_read_EOF
-$2
-_as_read_EOF
-])
-
-AC_DEFUN([AS_CONTAINS],[
-          AS_VAR_SET([string],"$1")
-          AS_VAR_SET([substring],"$2")
-          AS_IF([test "${string#*$substring}" != "$string"], [eval $3], [eval $4])])
-
-
-AC_DEFUN([push_IFS],[
-AS_VAR_SET([_save_IFS],[$IFS])
-AS_VAR_SET([IFS],[$1])
-])
-
-AC_DEFUN([pop_IFS],[
-AS_VAR_SET([IFS],[${_save_IFS}])
-])
-
-
 AC_DEFUN([DK_GET_CONFIGURE_ARGS],[
 AX_CONFIGURE_ARGS
 push_IFS(["'"])
@@ -81,12 +59,6 @@ push_IFS(["'"])
  done 
 pop_IFS
 ])
-
-
-AC_DEFUN([DK_ADD_ESCAPE],$([
-dnl TODO: make this for all quote char in sh using awk
-echo $1 | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
-]))
 
 
 
@@ -146,7 +118,6 @@ AC_DEFUN([DK_SET_DOCKER_CONTAINER], [
          AS_VAR_SET_IF([DOCKER_CONTAINER],,AS_VAR_SET([DOCKER_CONTAINER],
          [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
 ])
-
 
 
 dnl test_docker_container [cnt_name] [status] [action_if_yes] [action_if_no] 
@@ -389,7 +360,10 @@ chmod +x dmake
 
 
 
-
+dnl ////////////////////////////////////////////////////////////////////////////
+dnl ////////////////////////////////////////////////////////////////////////////
+dnl ////////////////////////////////////////////////////////////////////////////
+dnl // Utility functions
 
 
 
@@ -415,11 +389,40 @@ dnl  DK_SET_DOCKER_BUILD
 
 dnl DK_WRITE_DMAKEFILE
 
-AS_VAR_SET([X],["ciao \"beo\""])
-AS_ECHO("[$X]")
-AS_ECHO("DK_ADD_ESCAPE(DK_ADD_ESCAPE([$X]))")
-
 exit 0;
 
 ])
  
+
+
+
+
+
+
+
+AC_DEFUN([AS_VAR_READ],[
+read -d '' $1 << _as_read_EOF
+$2
+_as_read_EOF
+])
+
+AC_DEFUN([AS_CONTAINS],[
+          AS_VAR_SET([string],"$1")
+          AS_VAR_SET([substring],"$2")
+          AS_IF([test "${string#*$substring}" != "$string"], [eval $3], [eval $4])])
+
+
+AC_DEFUN([push_IFS],[
+AS_VAR_SET([_save_IFS],[$IFS])
+AS_VAR_SET([IFS],[$1])
+])
+
+AC_DEFUN([pop_IFS],[
+AS_VAR_SET([IFS],[${_save_IFS}])
+])
+
+
+AC_DEFUN([DK_ADD_ESCAPE],$([
+dnl TODO: make this for all quote char in sh using awk
+echo $1 | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+]))
