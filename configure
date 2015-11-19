@@ -2843,6 +2843,8 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
+
+
 if test "x$HAVE_DOCKER" = xno; then :
 
 fi
@@ -2945,6 +2947,40 @@ _ASBOX
 else
   DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
 fi
+
+
+
+   # [$]@ is unsable in 2.60+ but earlier autoconf had no ac_configure_args
+   if test "${ac_configure_args+set}" != "set" ; then
+      ac_configure_args=
+      for ac_arg in ${1+"$@"}; do
+         ac_configure_args="$ac_configure_args '$ac_arg'"
+      done
+   fi
+
+saved_IFS=${IFS}
+IFS="'"
+for x in ${ac_configure_args}; do
+    # try to figure out if quoting was required for the $x
+    if test "$x" == " "; then :
+
+else
+
+    if test "$x" != "${x%=*}"; then :
+  x=${x%=*}"=\\\""${x#*=}"\\\""
+else
+  if test "$x" != "${x%\\[:space:\]\*}"; then :
+  x="\\\""$x"\\\""
+else
+  x="$x"
+fi
+
+fi
+    dk_configure_args="$dk_configure_args '$x'"
+
+fi
+done
+IFS=${saved_IFS}
 
 
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
@@ -3223,12 +3259,9 @@ _ASBOX
     $as_echo " --------------------------------- "
     $as_echo " docker-image      = ${DOCKER_IMAGE}"
     $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-    $as_echo " configure args    = ${*}"
-    $as_echo " ac_configure_args = ${ac_configure_args}"
+    $as_echo " ac_configure_args = ${dk_configure_args}"
     $as_echo " configure command = ${0}"
     $as_echo " configure name    = $(basename ${0})"
-    $as_echo " function args     = "
-    $as_echo " top_srcdir        = ${abs_top_srcdir}"
     $as_echo " --------------------------------- "
 
     $as_echo
@@ -3239,28 +3272,75 @@ _ASBOX
     $as_echo
 
 
-                  dk_configure_args=
-         for arg in ${ac_configure_args}; do
 
-          string="${arg}"
-          substring=""--with-docker-""
-          if test "${string#*$substring}" != "$string"; then :
-  eval :
+                  dk_configure_args=
+
+
+
+   # [$]@ is unsable in 2.60+ but earlier autoconf had no ac_configure_args
+   if test "${ac_configure_args+set}" != "set" ; then
+      ac_configure_args=
+      for ac_arg in ${1+"$@"}; do
+         ac_configure_args="$ac_configure_args '$ac_arg'"
+      done
+   fi
+
+saved_IFS=${IFS}
+IFS="'"
+for x in ${ac_configure_args}; do
+    # try to figure out if quoting was required for the $x
+    if test "$x" == " "; then :
+
 else
-  eval as_fn_append dk_configure_args "${arg}"
+
+    if test "$x" != "${x%=*}"; then :
+  x=${x%=*}"=\\\""${x#*=}"\\\""
+else
+  if test "$x" != "${x%\\[:space:\]\*}"; then :
+  x="\\\""$x"\\\""
+else
+  x="$x"
+fi
+
+fi
+    _args="$_args '$x'"
+
+fi
+done
+IFS=${saved_IFS}
+
+saved_IFS=${IFS}
+IFS="'"
+ for x in ${_args}; do
+    if test "$x" == " "; then :
+  :
+else
+  if test "$x" != "${x%--with-docker-*}"; then :
+  :
+else
+  dk_configure_args="$dk_configure_args $x"
+fi
+fi
+ done
+IFS=${saved_IFS}
+
+         as_fn_append dk_configure_args " "
+         if ${DOCKER_IMAGE+:} false; then :
+  as_fn_append dk_configure_args "DOCKER_IMAGE=\\\"${DOCKER_IMAGE}\\\" "
 fi;
-           as_fn_append dk_configure_args " ";
-         done;
+         if ${DOCKER_CONTAINER+:} false; then :
+  as_fn_append dk_configure_args "DOCKER_CONTAINER=\\\"${DOCKER_CONTAINER}\\\" "
+fi;
 
 
 
 
          $as_echo " ------------------------- "
          $as_echo " DOCKER CONFIGURE COMMAND: "
-         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} DOCKER_CONTAINER='${DOCKER_CONTAINER}' DOCKER_IMAGE='${DOCKER_IMAGE}' HAVE_DOCKER='no' \"; exit 0;          "
+         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \"; exit 0;          "
          $as_echo " ------------------------- "
 
-                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} DOCKER_CONTAINER='${DOCKER_CONTAINER}' DOCKER_IMAGE='${DOCKER_IMAGE}' HAVE_DOCKER='no' \"; exit 0;
+                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \"; exit 0;
 
 
 
@@ -3357,6 +3437,7 @@ _as_read_EOF
 
 fi
 fi
+
 
 
 
@@ -12028,6 +12109,7 @@ fi
 
 fi
 
+
 	 if test "$enable_valgrind" = "yes"; then
   VALGRIND_ENABLED_TRUE=
   VALGRIND_ENABLED_FALSE='#'
@@ -14602,7 +14684,6 @@ esac
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
-
 
 
 

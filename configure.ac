@@ -4,9 +4,13 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 
+
+dnl DK_TEST
+
 dnl docker helpers
 AS_VAR_IF([HAVE_DOCKER],[no],, [])
 DK_SET_DOCKER_BUILD
+
 
 
 AS_VAR_SET_IF([MAKE_COMMAND],
@@ -1092,7 +1096,6 @@ AH_VERBATIM([_WIN32], [
 
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
-
 
 
 AC_SUBST(CAMSHR)

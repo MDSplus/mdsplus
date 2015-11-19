@@ -96,6 +96,7 @@ subdir = javatraverser
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
+	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
