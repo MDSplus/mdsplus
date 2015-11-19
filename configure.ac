@@ -4,6 +4,20 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 
+
+dnl DK_TEST
+
+dnl docker helpers
+AS_VAR_IF([HAVE_DOCKER],[no],, [])
+DK_SET_DOCKER_BUILD
+
+
+
+AS_VAR_SET_IF([MAKE_COMMAND],
+  AS_VAR_SET([MAKE_COMMAND_OVERRIDE],
+             ["MAKE_COMMAND = ${MAKE_COMMAND}"]))
+AC_SUBST(MAKE_COMMAND_OVERRIDE)
+
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
@@ -41,7 +55,7 @@ AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
-
+ 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
               [AS_HELP_STRING([--disable-shared],
@@ -960,37 +974,26 @@ XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  PYTHON   ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: Add version here
+AM_PATH_PYTHON(,, [:])
+AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+
+
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-# PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
-# AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
-
-AC_ARG_ENABLE([valgrind],
-              [AS_HELP_STRING([--enable-valgrind],
-                              [Use valgrind when running unit tests])],
-              [AS_VAR_SET([USE_VALGRIND], [yes])],
-              [])
-
-AS_IF([test x"$USE_VALGRIND" = x"yes" ],
-      [AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
-        AS_IF([test x"$HAVE_VALGRIND" = x"yes" ],
-              [AC_MSG_NOTICE([Valgrind ENABLED])],
-              [AC_MSG_WARN([Valgrind DISABLED as it was not found in PATH ])
-               AS_VAR_SET([USE_VALGRIND],[no])
-              ])
-      ])
-AM_CONDITIONAL(USE_VALGRIND, test x"$USE_VALGRIND" = x"yes")
-
-
-## CHECK related ##
+## MdsTestShr CHECK backend related ##
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
-
 AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
              [LIBRT="-lrt"],[LIBRT=""])
+
 
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
@@ -999,77 +1002,25 @@ AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
 AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
 
 
-dnl TESTS_ENVIRONMENT=@LIBPATH@="${TESTLIBDIR}"
-dnl LOG_DRIVER=${top_srcdir}/conf/test-driver
+AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
+AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
 
- AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
- AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
- AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
-
-TS_SELECT()
+TS_SELECT
  
  AC_SUBST(TS_TESTS_ENVIRONMENT)
  AC_SUBST(TS_LOG_COMPILER)
-dnl AC_SUBST(TS_LOG_DRIVER)
-
+ AC_SUBST(TS_LOG_DRIVER)
+ AC_SUBST(TS_PY_TAP_COMPILER)
 
 dnl AC_MSG_NOTICE(********************************)
-dnl AC_MSG_NOTICE(${TESTS_ENVIRONMENT})
+dnl AC_MSG_NOTICE(${TS_TESTS_ENVIRONMENT})
 dnl AC_MSG_NOTICE(${LOG_DRIVER})
 dnl AC_MSG_NOTICE(${LOG_COMPILER})
 dnl AC_MSG_NOTICE(********************************)
 
-
 dnl  wpath_bin = $  
-
-
-
 # AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
-
-## ////////////////////////////////////////////////////////////////////////// ##
-## //  PYTHON   ///////////////////////////////////////////////////////////// ##
-## ////////////////////////////////////////////////////////////////////////// ##
-
-# TODO: Add version here
-AM_PATH_PYTHON(,, [:])
-AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
-
-dnl AC_PYTHON_CLASS(module,[action-if-true],[action-if-false])
-AC_DEFUN([AC_PYTHON_MODULE],[
-        AC_MSG_CHECKING(python module: $1)
-        AS_IF([ test "$PYTHON" == : ],
-              [AC_MSG_ERROR(no python executable was found); AS_EXIT],)
-              
-        $PYTHON -c "import $1" 2>/dev/null
-        AS_IF([test $? -eq 0],        
-              [AC_MSG_RESULT(yes);
-               eval AS_TR_CPP(HAVE_PYMOD_$1)=yes;
-               eval $2; ],
-              [AC_MSG_RESULT(no);
-               eval AS_TR_CPP(HAVE_PYMOD_$1)=no;
-               eval $3; ])
-])
-
-dnl AC_PYTHON_CLASS(module,class,[action-if-true],[action-if-false])
-AC_DEFUN([AC_PYTHON_CLASS],[
-        AC_MSG_CHECKING(python class $1.$2)        
-        AS_IF([ test "$PYTHON" == : ],
-              [AC_MSG_ERROR(no python executable was found); AS_EXIT],)
-
-        $PYTHON -c "import inspect,$1; exit(inspect.isclass($1.$2) != True);" 2>/dev/null
-        AS_IF([test $? -eq 0],
-              [AC_MSG_RESULT(yes); eval $3],
-              [AC_MSG_RESULT(no);  eval $4])
-])
- 
-
-AC_PYTHON_MODULE(tap)
-AC_PYTHON_CLASS(tap, TAPTestRunner, [have_tappy="yes"],)
-AM_CONDITIONAL([PY_TAP_SUPPORT], test x"$have_tappy" = x"yes")
-
-# python nodetests executable is available #
-AC_CHECK_PROG(HAVE_NOSETESTS, nosetests, yes, no)
-AM_CONDITIONAL([HAVE_NOSETESTS], test x"$HAVE_NOSETESTS" = "xyes")
 
 
 
@@ -1117,9 +1068,9 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
 
-## ////////////////////////////////////////////////////////////////////////// ##
-## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
-## ////////////////////////////////////////////////////////////////////////// ##
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 dnl Here we define all custom autoheader adds to config.h.in 
 
@@ -1145,7 +1096,6 @@ AH_VERBATIM([_WIN32], [
 
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
-
 
 
 AC_SUBST(CAMSHR)
@@ -1297,6 +1247,7 @@ AC_OUTPUT(Makefile.inc
           setevent/Makefile
           tcl/Makefile 
           tdishr/Makefile 
+          tdishr/testing/Makefile 
           tdic/Makefile
           tditest/Makefile 
           testing/Makefile

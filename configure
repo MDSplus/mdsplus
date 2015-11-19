@@ -763,11 +763,28 @@ DX_PROJECT
 HAVE_CUTE_DOXYGEN_FALSE
 HAVE_CUTE_DOXYGEN_TRUE
 DOXYGEN
-HAVE_NOSETESTS_FALSE
-HAVE_NOSETESTS_TRUE
-HAVE_NOSETESTS
-PY_TAP_SUPPORT_FALSE
-PY_TAP_SUPPORT_TRUE
+TS_PY_TAP_COMPILER
+TS_LOG_DRIVER
+TS_LOG_COMPILER
+TS_TESTS_ENVIRONMENT
+HAVE_WINEPATH
+HAVE_WINEBOOT
+VALGRIND_CHECK_RULES
+VALGRIND_HAVE_TOOL_exp_sgcheck
+VALGRIND_HAVE_TOOL_drd
+VALGRIND_HAVE_TOOL_helgrind
+VALGRIND_HAVE_TOOL_memcheck
+VALGRIND_ENABLED
+VALGRIND_ENABLED_FALSE
+VALGRIND_ENABLED_TRUE
+VALGRIND
+NOSETESTS
+HAVE_WINECONSOLE_FALSE
+HAVE_WINECONSOLE_TRUE
+HAVE_WINECONSOLE
+HAVE_WINE_FALSE
+HAVE_WINE_TRUE
+HAVE_WINE
 HAVE_PYTHON_FALSE
 HAVE_PYTHON_TRUE
 pkgpyexecdir
@@ -779,19 +796,6 @@ PYTHON_EXEC_PREFIX
 PYTHON_PREFIX
 PYTHON_VERSION
 PYTHON
-TS_LOG_COMPILER
-TS_TESTS_ENVIRONMENT
-HAVE_WINEPATH
-HAVE_WINEBOOT
-HAVE_WINECONSOLE_FALSE
-HAVE_WINECONSOLE_TRUE
-HAVE_WINECONSOLE
-HAVE_WINE_FALSE
-HAVE_WINE_TRUE
-HAVE_WINE
-USE_VALGRIND_FALSE
-USE_VALGRIND_TRUE
-HAVE_VALGRIND
 UIL
 X_EXTRA_LIBS
 X_LIBS
@@ -901,6 +905,9 @@ build_os
 build_vendor
 build_cpu
 build
+MAKE_COMMAND_OVERRIDE
+DK_DOCKER_TARGETS
+HAVE_DOCKER
 target_alias
 host_alias
 build_alias
@@ -942,6 +949,8 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_docker_image
+with_docker_container
 enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
@@ -1639,7 +1648,7 @@ Optional Features:
   --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
   --disable-xmltest       Do not try to compile and run a test LIBXML program
-  --enable-valgrind       Use valgrind when running unit tests
+  --enable-valgrind       Whether to enable Valgrind on the unit tests
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -1655,6 +1664,8 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-docker-image     specify docker images
+  --with-docker-container specify docker container
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
@@ -2830,6 +2841,610 @@ ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
+
+
+
+
+if test "x$HAVE_DOCKER" = xno; then :
+
+fi
+
+
+
+   if ${HAVE_DOCKER+:} false; then :
+
+else
+  # Extract the first word of "docker", so it can be a program name with args.
+set dummy docker; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_DOCKER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_DOCKER"; then
+  ac_cv_prog_HAVE_DOCKER="$HAVE_DOCKER" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_DOCKER="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_DOCKER" && ac_cv_prog_HAVE_DOCKER="no"
+fi
+fi
+HAVE_DOCKER=$ac_cv_prog_HAVE_DOCKER
+if test -n "$HAVE_DOCKER"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_DOCKER" >&5
+$as_echo "$HAVE_DOCKER" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+
+
+# Check whether --with-docker-image was given.
+if test "${with_docker_image+set}" = set; then :
+  withval=$with_docker_image;
+else
+  if ${DOCKER_IMAGE+:} false; then :
+  with_docker_image="${DOCKER_IMAGE}"
+fi
+fi
+
+   if ${with_docker_image+:} false; then :
+  if test x"${with_docker_image}" != x"no"; then :
+  DOCKER_IMAGE="${with_docker_image}"
+else
+  { DOCKER_IMAGE=; unset DOCKER_IMAGE;}
+
+fi
+fi
+
+
+# Check whether --with-docker-container was given.
+if test "${with_docker_container+set}" = set; then :
+  withval=$with_docker_container;
+else
+  if ${DOCKER_CONTAINER+:} false; then :
+  with_docker_container="${DOCKER_CONTAINER}"
+fi
+fi
+
+   if ${with_docker_container+:} false; then :
+  if test x"${with_docker_container}" != x"no"; then :
+  DOCKER_CONTAINER="${with_docker_container}"
+else
+  { DOCKER_CONTAINER=; unset DOCKER_CONTAINER;}
+
+fi
+fi
+
+
+  if test "x$HAVE_DOCKER" = xyes; then :
+
+  if ${DOCKER_IMAGE+:} false; then :
+  $as_echo
+     sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## //// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   ////// ##
+_ASBOX
+
+
+         if ${DOCKER_CONTAINER+:} false; then :
+
+else
+  DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
+fi
+
+
+
+   # [$]@ is unsable in 2.60+ but earlier autoconf had no ac_configure_args
+   if test "${ac_configure_args+set}" != "set" ; then
+      ac_configure_args=
+      for ac_arg in ${1+"$@"}; do
+         ac_configure_args="$ac_configure_args '$ac_arg'"
+      done
+   fi
+
+saved_IFS=${IFS}
+IFS="'"
+for x in ${ac_configure_args}; do
+    # try to figure out if quoting was required for the $x
+    if test "$x" == " "; then :
+
+else
+
+    if test "$x" != "${x%=*}"; then :
+  x=${x%=*}"=\\\""${x#*=}"\\\""
+else
+  if test "$x" != "${x%\\[:space:\]\*}"; then :
+  x="\\\""$x"\\\""
+else
+  x="$x"
+fi
+
+fi
+    dk_configure_args="$dk_configure_args '$x'"
+
+fi
+done
+IFS=${saved_IFS}
+
+
+   $as_echo "Starting container from image: ${DOCKER_IMAGE}"
+
+         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
+
+   if test -n "${dk_image}"; then :
+  $as_echo "using docker image: ${dk_image}"
+else
+  eval docker pull ${DOCKER_IMAGE}
+
+         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
+
+          if test -n "${dk_image}"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: \"pulled docker image: ${dk_image}\"" >&5
+$as_echo "$as_me: \"pulled docker image: ${dk_image}\"" >&6;}
+else
+  as_fn_error $? "\"Could not pull the requested image\"" "$LINENO" 5
+fi
+
+fi
+
+
+         dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
+
+
+         dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
+
+   $as_echo "id: ${dk_id} img: ${dk_img}"
+   if test -n "${dk_id}" -a -n "${dk_img}"; then :
+  if test x"${dk_img}" == x"${DOCKER_IMAGE}"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: \"container found of the correct image\"" >&5
+$as_echo "$as_me: \"container found of the correct image\"" >&6;}
+else
+  as_fn_error $? "\"container does not belong to the correct image\"" "$LINENO" 5
+fi
+fi
+
+
+
+      if test -n "${dk_id}"; then :
+
+else
+  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
+fi
+
+  DOCKER_CONTAINER=${DOCKER_CONTAINER}
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "RUNNING" ;; #(
+  paused) :
+    $as_echo "UNPAUSE";eval docker unpause ${DOCKER_CONTAINER} ;; #(
+  exited) :
+    $as_echo "RESTART";eval docker restart ${DOCKER_CONTAINER} ;; #(
+  *) :
+    as_fn_error $? "\"container not found.\"" "$LINENO" 5 ;;
+esac
+
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "docker container: ${DOCKER_CONTAINER} is running." ;; #(
+  *) :
+    $as_echo "could not start docker container" ;;
+esac
+
+
+     $as_echo
+
+else
+  if ${DOCKER_CONTAINER+:} false; then :
+  $as_echo
+       sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## //// STARTING CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+_ASBOX
+
+  DOCKER_CONTAINER=${DOCKER_CONTAINER}
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "RUNNING" ;; #(
+  paused) :
+    $as_echo "UNPAUSE";eval docker unpause ${DOCKER_CONTAINER} ;; #(
+  exited) :
+    $as_echo "RESTART";eval docker restart ${DOCKER_CONTAINER} ;; #(
+  *) :
+    as_fn_error $? "\"container not found.\"" "$LINENO" 5 ;;
+esac
+
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=created
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=restarting
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=running
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=paused
+else
+  eval
+fi
+
+
+         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+         if test -n "${id_cnt_status}"; then :
+  eval dk_status=exited
+else
+  eval
+fi
+
+
+  case ${dk_status} in #(
+  running) :
+    $as_echo "docker container: ${DOCKER_CONTAINER} is running." ;; #(
+  *) :
+    $as_echo "could not start docker container" ;;
+esac
+
+       $as_echo
+
+fi
+
+fi
+
+  if ${DOCKER_CONTAINER+:} false; then :
+
+    $as_echo
+    sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## //// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+_ASBOX
+
+    $as_echo " --------------------------------- "
+    $as_echo " docker-image      = ${DOCKER_IMAGE}"
+    $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+    $as_echo " ac_configure_args = ${dk_configure_args}"
+    $as_echo " configure command = ${0}"
+    $as_echo " configure name    = $(basename ${0})"
+    $as_echo " --------------------------------- "
+
+    $as_echo
+    $as_echo " --- "
+    $as_echo " docker configure command: "
+       echo " DK_CMD_CONFIGURE "
+    $as_echo " --- "
+    $as_echo
+
+
+
+                  dk_configure_args=
+
+
+
+   # [$]@ is unsable in 2.60+ but earlier autoconf had no ac_configure_args
+   if test "${ac_configure_args+set}" != "set" ; then
+      ac_configure_args=
+      for ac_arg in ${1+"$@"}; do
+         ac_configure_args="$ac_configure_args '$ac_arg'"
+      done
+   fi
+
+saved_IFS=${IFS}
+IFS="'"
+for x in ${ac_configure_args}; do
+    # try to figure out if quoting was required for the $x
+    if test "$x" == " "; then :
+
+else
+
+    if test "$x" != "${x%=*}"; then :
+  x=${x%=*}"=\\\""${x#*=}"\\\""
+else
+  if test "$x" != "${x%\\[:space:\]\*}"; then :
+  x="\\\""$x"\\\""
+else
+  x="$x"
+fi
+
+fi
+    _args="$_args '$x'"
+
+fi
+done
+IFS=${saved_IFS}
+
+saved_IFS=${IFS}
+IFS="'"
+ for x in ${_args}; do
+    if test "$x" == " "; then :
+  :
+else
+  if test "$x" != "${x%--with-docker-*}"; then :
+  :
+else
+  dk_configure_args="$dk_configure_args $x"
+fi
+fi
+ done
+IFS=${saved_IFS}
+
+         as_fn_append dk_configure_args " "
+         if ${DOCKER_IMAGE+:} false; then :
+  as_fn_append dk_configure_args "DOCKER_IMAGE=\\\"${DOCKER_IMAGE}\\\" "
+fi;
+         if ${DOCKER_CONTAINER+:} false; then :
+  as_fn_append dk_configure_args "DOCKER_CONTAINER=\\\"${DOCKER_CONTAINER}\\\" "
+fi;
+
+
+
+
+         $as_echo " ------------------------- "
+         $as_echo " DOCKER CONFIGURE COMMAND: "
+         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \"; exit 0;          "
+         $as_echo " ------------------------- "
+
+                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \"; exit 0;
+
+
+
+
+fi
+
+
+else
+  if ${DOCKER_CONTAINER+:} false; then :
+
+
+
+read -d '' DK_DMAKEFILE << _as_read_EOF
+
+#!/bin/sh
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER MAKE  ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# requotes #
+for x in "\${@}" ; do
+    # try to figure out if quoting was required for the $x
+    if [[ "\$x" != "\${x%=*}" ]]; then
+        x=\${x%=*}"=\\""\${x#*=}"\\""
+    elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
+        x="\\\""\$x"\\\""
+    fi
+    echo \$x
+    _args=\$_args" "\$x
+done
+
+
+MAKE=make
+dmake () {
+echo
+echo " *** BUILDING IN DOCKER CONTAINER *** ";
+echo
+docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
+}
+
+dmake \${@}
+
+
+_as_read_EOF
+
+
+$as_echo " Writing dmake file: "
+$as_echo "${DK_DMAKEFILE}" > dmake
+chmod +x dmake
+
+
+
+
+read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+
+ \$(info ------ )
+ \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
+ \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
+ \$(info DOCKER SHELL = \$(SHELL) )
+ \$(info ------ )
+
+.PHONY: docker docker-start
+docker:
+	@echo "Opening docker session:";
+	@echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
+
+start:
+	@echo "Starting docker container:";
+	@eval docker restart ${DOCKER_CONTAINER}
+
+stop:
+	@echo "Stopping docker container:";
+	@eval docker stop ${DOCKER_CONTAINER};
+
+shell:
+	@echo "Starting docker shell";
+	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
+
+
+endif
+
+_as_read_EOF
+
+
+
+
+
+fi
+fi
+
+
+
+
+
+if ${MAKE_COMMAND+:} false; then :
+  MAKE_COMMAND_OVERRIDE="MAKE_COMMAND = ${MAKE_COMMAND}"
+fi
 
 
 # Make sure we can run config.sub.
@@ -10915,538 +11530,11 @@ else
 fi
 
 
-
-## ////////////////////////////////////////////////////////////////////////// ##
-## //  TESTS    ///////////////////////////////////////////////////////////// ##
-## ////////////////////////////////////////////////////////////////////////// ##
-
-# PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
-# AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
-
-# Check whether --enable-valgrind was given.
-if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind; USE_VALGRIND=yes
-fi
-
-
-if test x"$USE_VALGRIND" = x"yes" ; then :
-  # Extract the first word of "valgrind", so it can be a program name with args.
-set dummy valgrind; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_VALGRIND+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_VALGRIND"; then
-  ac_cv_prog_HAVE_VALGRIND="$HAVE_VALGRIND" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_VALGRIND="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_VALGRIND" && ac_cv_prog_HAVE_VALGRIND="no"
-fi
-fi
-HAVE_VALGRIND=$ac_cv_prog_HAVE_VALGRIND
-if test -n "$HAVE_VALGRIND"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_VALGRIND" >&5
-$as_echo "$HAVE_VALGRIND" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-        if test x"$HAVE_VALGRIND" = x"yes" ; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Valgrind ENABLED" >&5
-$as_echo "$as_me: Valgrind ENABLED" >&6;}
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind DISABLED as it was not found in PATH " >&5
-$as_echo "$as_me: WARNING: Valgrind DISABLED as it was not found in PATH " >&2;}
-               USE_VALGRIND=no
-
-fi
-
-fi
- if test x"$USE_VALGRIND" = x"yes"; then
-  USE_VALGRIND_TRUE=
-  USE_VALGRIND_FALSE='#'
-else
-  USE_VALGRIND_TRUE='#'
-  USE_VALGRIND_FALSE=
-fi
-
-
-
-## CHECK related ##
-for ac_func in mkstemp
-do :
-  ac_fn_c_check_func "$LINENO" "mkstemp" "ac_cv_func_mkstemp"
-if test "x$ac_cv_func_mkstemp" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_MKSTEMP 1
-_ACEOF
-
-fi
-done
-
-for ac_func in fork
-do :
-  ac_fn_c_check_func "$LINENO" "fork" "ac_cv_func_fork"
-if test "x$ac_cv_func_fork" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_FORK 1
-_ACEOF
-
-fi
-done
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for clock_gettime, timer_create, timer_settime, timer_delete in -lrt" >&5
-$as_echo_n "checking for clock_gettime, timer_create, timer_settime, timer_delete in -lrt... " >&6; }
-if ${ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lrt  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char clock_gettime, timer_create, timer_settime, timer_delete ();
-int
-main ()
-{
-return clock_gettime, timer_create, timer_settime, timer_delete ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete=yes
-else
-  ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" >&5
-$as_echo "$ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" >&6; }
-if test "x$ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" = xyes; then :
-  LIBRT="-lrt"
-else
-  LIBRT=""
-fi
-
-
-# Extract the first word of "wine", so it can be a program name with args.
-set dummy wine; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINE+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINE"; then
-  ac_cv_prog_HAVE_WINE="$HAVE_WINE" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINE="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINE" && ac_cv_prog_HAVE_WINE="no"
-fi
-fi
-HAVE_WINE=$ac_cv_prog_HAVE_WINE
-if test -n "$HAVE_WINE"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINE" >&5
-$as_echo "$HAVE_WINE" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
- if test x"${HAVE_WINE}" = x"yes"; then
-  HAVE_WINE_TRUE=
-  HAVE_WINE_FALSE='#'
-else
-  HAVE_WINE_TRUE='#'
-  HAVE_WINE_FALSE=
-fi
-
-
-# Extract the first word of "wineconsole", so it can be a program name with args.
-set dummy wineconsole; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINECONSOLE+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINECONSOLE"; then
-  ac_cv_prog_HAVE_WINECONSOLE="$HAVE_WINECONSOLE" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINECONSOLE="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINECONSOLE" && ac_cv_prog_HAVE_WINECONSOLE="no"
-fi
-fi
-HAVE_WINECONSOLE=$ac_cv_prog_HAVE_WINECONSOLE
-if test -n "$HAVE_WINECONSOLE"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINECONSOLE" >&5
-$as_echo "$HAVE_WINECONSOLE" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
- if test x"${HAVE_WINECONSOLE}" = x"yes"; then
-  HAVE_WINECONSOLE_TRUE=
-  HAVE_WINECONSOLE_FALSE='#'
-else
-  HAVE_WINECONSOLE_TRUE='#'
-  HAVE_WINECONSOLE_FALSE=
-fi
-
-
-
-
- $as_echo " /////////////////////////////////////////////////////////////////// "
- $as_echo " //// select tests env ///////////////////////////////////////////// "
- $as_echo " /////////////////////////////////////////////////////////////////// "
-
-
- TS_TESTS_ENVIRONMENT=
- TS_LOG_COMPILER=
- TS_VALGRIND_FLAGS=
-
- case "${build_os}:${host}" in #(
-  # LINUX->MINGW
- *linux*:*mingw*) :
-
-   $as_echo "Set tests environment for linux->mingw"
-   if ${HAVE_WINE+:} false; then :
-
-else
-  # Extract the first word of "wine", so it can be a program name with args.
-set dummy wine; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINE+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINE"; then
-  ac_cv_prog_HAVE_WINE="$HAVE_WINE" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINE="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINE" && ac_cv_prog_HAVE_WINE="no"
-fi
-fi
-HAVE_WINE=$ac_cv_prog_HAVE_WINE
-if test -n "$HAVE_WINE"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINE" >&5
-$as_echo "$HAVE_WINE" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-   if test x"${HAVE_WINE}" == x"yes" ; then :
-
-
-    case ${host} in #(
-  i686*mingw*) :
-    winebottle_name="winebottle_mingw32" WINEARCH="win32" ;; #(
-  x86_64*mingw*) :
-    winebottle_name="winebottle_mingw64" WINEARCH="win64"  ;; #(
-  *) :
-     ;;
-esac
-
-
-# Check whether --with-winebottle was given.
-if test "${with_winebottle+set}" = set; then :
-  withval=$with_winebottle;
-else
-  if ${winebottle+:} false; then :
-  with_winebottle="${WINEPREFIX}"
-else
-  with_winebottle="\$(top_builddir)/${winebottle_name}"
-fi
-fi
-
-
-    if ${HAVE_WINEBOOT+:} false; then :
-
-else
-  # Extract the first word of "wineboot", so it can be a program name with args.
-set dummy wineboot; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINEBOOT+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINEBOOT"; then
-  ac_cv_prog_HAVE_WINEBOOT="$HAVE_WINEBOOT" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINEBOOT="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINEBOOT" && ac_cv_prog_HAVE_WINEBOOT="no"
-fi
-fi
-HAVE_WINEBOOT=$ac_cv_prog_HAVE_WINEBOOT
-if test -n "$HAVE_WINEBOOT"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEBOOT" >&5
-$as_echo "$HAVE_WINEBOOT" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-
-         case ${HAVE_WINEBOOT} in #(
-  yes|Yes|YES|Y|y) :
-    if ${WINEPREFIX+:} false; then :
-  $(eval "WINEPREFIX=${WINEPREFIX}         WINEARCH=${WINEARCH}" wineboot -f -r)
-else
-  $(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${WINEARCH}" wineboot -f -i)
-fi
-   ;; #(
-  no|No|NO|N|n) :
-     ;; #(
-  *) :
-     ;; #(
-  *) :
-     ;;
-esac
-             WINEPREFIX=${with_winebottle}
-
-
-
-
-         _libs=$(${CC} --print-search-dir | \
-           grep "libraries:" | \
-           sed 's/^libraries: =//' | \
-           sed 's/:/ /g')
-         as_fn_append _libs " "
-
-         _prog=$(${CC} --print-search-dir | \
-           grep "programs:" | \
-           sed 's/^programs: =//' | \
-           sed 's/:/ /g')
-         as_fn_append _libs "${_prog} "
-
-                  _sysroot=$(${CC} --print-sysroot)
-         as_fn_append _libs "${_sysroot}/mingw/bin "
-         as_fn_append _libs "${_sysroot}/mingw/lib "
-         as_fn_append _libs ${MAKESHLIBDIR}
-
-         WINEPATH=
-
-
-                    if ${HAVE_WINEPATH+:} false; then :
-
-else
-  # Extract the first word of "winepath", so it can be a program name with args.
-set dummy winepath; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_WINEPATH+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$HAVE_WINEPATH"; then
-  ac_cv_prog_HAVE_WINEPATH="$HAVE_WINEPATH" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_WINEPATH="yes"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_HAVE_WINEPATH" && ac_cv_prog_HAVE_WINEPATH="no"
-fi
-fi
-HAVE_WINEPATH=$ac_cv_prog_HAVE_WINEPATH
-if test -n "$HAVE_WINEPATH"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEPATH" >&5
-$as_echo "$HAVE_WINEPATH" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-
-         case ${HAVE_WINEPATH} in #(
-  yes|Yes|YES|Y|y) :
-    for _i in $_libs; do
-           as_fn_append WINEPATH "\$(shell winepath -w $_i);";
-          done
-                               ;; #(
-  no|No|NO|N|n) :
-     ;; #(
-  *) :
-     ;; #(
-  *) :
-     ;;
-esac
-
-
-
-
-
-      as_fn_append TS_TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-      as_fn_append TS_TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
-      if test "x$USE_VALGRIND" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "VALGRIND_LIB='/usr/lib64/valgrind/' "
-        as_fn_append TS_LOG_COMPILER "valgrind "
-        as_fn_append TS_LOG_COMPILER "--quiet --error-exitcode=1 "
-        as_fn_append TS_LOG_COMPILER "--trace-children=yes "
-        as_fn_append TS_LOG_COMPILER "--dsymutil=yes --leak-check=yes "
-        as_fn_append TS_LOG_COMPILER "--vex-iropt-register-updates=allregs-at-mem-access "
-        as_fn_append TS_LOG_COMPILER "--workaround-gcc296-bugs=yes  "
-        as_fn_append TS_LOG_COMPILER "\${TS_VALGRIND_FLAGS}  "
-
-fi
-      as_fn_append TS_LOG_COMPILER "wine "
-else
-  as_fn_append TS_LOG_COMPILER "sh -c 'exit 77'"
-fi
-  ;; #(
-  # LINUX->LINUX
- *linux*:*linux*) :
-
-   $as_echo "Set tests environment for linux->linux"
-   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$USE_VALGRIND" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "VALGRIND_LIB='/usr/lib64/valgrind/' "
-              as_fn_append TS_LOG_COMPILER "valgrind "
-              as_fn_append TS_LOG_COMPILER "--quiet --error-exitcode=1 "
-              as_fn_append TS_LOG_COMPILER "--trace-children=yes "
-              as_fn_append TS_LOG_COMPILER "--dsymutil=yes --leak-check=yes "
-              as_fn_append TS_LOG_COMPILER "\${TS_VALGRIND_FLAGS}  "
-
-fi
-  ;; #(
-  # OTHER
- *) :
-
-   $as_echo "Set tests environment"
-   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$USE_VALGRIND" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "VALGRIND_LIB='/usr/lib64/valgrind/' "
-              as_fn_append TS_LOG_COMPILER "valgrind "
-              as_fn_append TS_LOG_COMPILER "--quiet --error-exitcode=1 "
-              as_fn_append TS_LOG_COMPILER "--trace-children=yes "
-              as_fn_append TS_LOG_COMPILER "--dsymutil=yes --leak-check=yes "
-              as_fn_append TS_LOG_COMPILER "\${TS_VALGRIND_FLAGS}  "
-
-fi
-  ;; #(
-  *) :
-     ;;
-esac
-
-
-
-
-
-
-
-
-
-
-
-
-# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
-
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-# TODO: Add version here
+## TODO: Add version here
 
 
 
@@ -11665,29 +11753,246 @@ fi
 
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  TESTS    ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
 
+## MdsTestShr CHECK backend related ##
+for ac_func in mkstemp
+do :
+  ac_fn_c_check_func "$LINENO" "mkstemp" "ac_cv_func_mkstemp"
+if test "x$ac_cv_func_mkstemp" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MKSTEMP 1
+_ACEOF
 
+fi
+done
 
+for ac_func in fork
+do :
+  ac_fn_c_check_func "$LINENO" "fork" "ac_cv_func_fork"
+if test "x$ac_cv_func_fork" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_FORK 1
+_ACEOF
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking python module: tap" >&5
-$as_echo_n "checking python module: tap... " >&6; }
-        if  test "$PYTHON" == : ; then :
-  as_fn_error $? "no python executable was found" "$LINENO" 5; as_fn_exit $?
+fi
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for clock_gettime, timer_create, timer_settime, timer_delete in -lrt" >&5
+$as_echo_n "checking for clock_gettime, timer_create, timer_settime, timer_delete in -lrt... " >&6; }
+if ${ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lrt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char clock_gettime, timer_create, timer_settime, timer_delete ();
+int
+main ()
+{
+return clock_gettime, timer_create, timer_settime, timer_delete ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete=yes
+else
+  ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" >&5
+$as_echo "$ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" >&6; }
+if test "x$ac_cv_lib_rt_clock_gettime__timer_create__timer_settime__timer_delete" = xyes; then :
+  LIBRT="-lrt"
+else
+  LIBRT=""
 fi
 
-        $PYTHON -c "import tap" 2>/dev/null
-        if test $? -eq 0; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; };
-               eval HAVE_PYMOD_TAP=yes;
-               eval ;
+
+
+# Extract the first word of "wine", so it can be a program name with args.
+set dummy wine; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINE"; then
+  ac_cv_prog_HAVE_WINE="$HAVE_WINE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINE="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINE" && ac_cv_prog_HAVE_WINE="no"
+fi
+fi
+HAVE_WINE=$ac_cv_prog_HAVE_WINE
+if test -n "$HAVE_WINE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINE" >&5
+$as_echo "$HAVE_WINE" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; };
-               eval HAVE_PYMOD_TAP=no;
-               eval ;
+$as_echo "no" >&6; }
 fi
 
+
+ if test x"${HAVE_WINE}" = x"yes"; then
+  HAVE_WINE_TRUE=
+  HAVE_WINE_FALSE='#'
+else
+  HAVE_WINE_TRUE='#'
+  HAVE_WINE_FALSE=
+fi
+
+
+# Extract the first word of "wineconsole", so it can be a program name with args.
+set dummy wineconsole; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINECONSOLE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINECONSOLE"; then
+  ac_cv_prog_HAVE_WINECONSOLE="$HAVE_WINECONSOLE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINECONSOLE="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINECONSOLE" && ac_cv_prog_HAVE_WINECONSOLE="no"
+fi
+fi
+HAVE_WINECONSOLE=$ac_cv_prog_HAVE_WINECONSOLE
+if test -n "$HAVE_WINECONSOLE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINECONSOLE" >&5
+$as_echo "$HAVE_WINECONSOLE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+ if test x"${HAVE_WINECONSOLE}" = x"yes"; then
+  HAVE_WINECONSOLE_TRUE=
+  HAVE_WINECONSOLE_FALSE='#'
+else
+  HAVE_WINECONSOLE_TRUE='#'
+  HAVE_WINECONSOLE_FALSE=
+fi
+
+
+
+$as_echo " /////////////////////////////////////////////////////////////////// "
+$as_echo " //// select tests env ///////////////////////////////////////////// "
+$as_echo " /////////////////////////////////////////////////////////////////// "
+
+
+ TS_TESTS_ENVIRONMENT=
+ TS_LOG_COMPILER=
+ TS_PY_TAP_COMPILER=
+ TS_LOG_DRIVER="\$(top_srcdir)/conf/test-driver"
+
+
+
+
+    if test -z $PYTHON;
+    then
+        if test -z "";
+        then
+            PYTHON="python3"
+        else
+            PYTHON=""
+        fi
+    fi
+    PYTHON_NAME=`basename $PYTHON`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
+$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
+    $PYTHON -c "import tap" 2>/dev/null
+    if test $? -eq 0;
+    then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        eval HAVE_PYMOD_TAP=yes
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        eval HAVE_PYMOD_TAP=no
+        #
+        if test -n ""
+        then
+            as_fn_error $? "failed to find required module tap" "$LINENO" 5
+            exit 1
+        fi
+    fi
+
+
+
+    if test -z $PYTHON;
+    then
+        if test -z "";
+        then
+            PYTHON="python3"
+        else
+            PYTHON=""
+        fi
+    fi
+    PYTHON_NAME=`basename $PYTHON`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
+$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
+    $PYTHON -c "import tap" 2>/dev/null
+    if test $? -eq 0;
+    then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        eval HAVE_PYMOD_TAP=yes
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        eval HAVE_PYMOD_TAP=no
+        #
+        if test -n ""
+        then
+            as_fn_error $? "failed to find required module tap" "$LINENO" 5
+            exit 1
+        fi
+    fi
 
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking python class tap.TAPTestRunner" >&5
 $as_echo_n "checking python class tap.TAPTestRunner... " >&6; }
@@ -11704,25 +12009,15 @@ else
 $as_echo "no" >&6; };  eval
 fi
 
- if test x"$have_tappy" = x"yes"; then
-  PY_TAP_SUPPORT_TRUE=
-  PY_TAP_SUPPORT_FALSE='#'
-else
-  PY_TAP_SUPPORT_TRUE='#'
-  PY_TAP_SUPPORT_FALSE=
-fi
-
-
-# python nodetests executable is available #
-# Extract the first word of "nosetests", so it can be a program name with args.
+  # Extract the first word of "nosetests", so it can be a program name with args.
 set dummy nosetests; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_NOSETESTS+:} false; then :
+if ${ac_cv_prog_NOSETESTS+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$HAVE_NOSETESTS"; then
-  ac_cv_prog_HAVE_NOSETESTS="$HAVE_NOSETESTS" # Let the user override the test.
+  if test -n "$NOSETESTS"; then
+  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -11731,7 +12026,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_NOSETESTS="yes"
+    ac_cv_prog_NOSETESTS="nosetests"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -11739,27 +12034,668 @@ done
   done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_HAVE_NOSETESTS" && ac_cv_prog_HAVE_NOSETESTS="no"
 fi
 fi
-HAVE_NOSETESTS=$ac_cv_prog_HAVE_NOSETESTS
-if test -n "$HAVE_NOSETESTS"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_NOSETESTS" >&5
-$as_echo "$HAVE_NOSETESTS" >&6; }
+NOSETESTS=$ac_cv_prog_NOSETESTS
+if test -n "$NOSETESTS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
+$as_echo "$NOSETESTS" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
- if test x"$HAVE_NOSETESTS" = "xyes"; then
-  HAVE_NOSETESTS_TRUE=
-  HAVE_NOSETESTS_FALSE='#'
+  if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
+  eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}  --with-tap --tap-stream"
 else
-  HAVE_NOSETESTS_TRUE='#'
-  HAVE_NOSETESTS_FALSE=
+  eval as_fn_append TS_PY_TAP_COMPILER "sh -c 'exit 77'"
 fi
 
+
+
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
+$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
+	# Check whether --enable-valgrind was given.
+if test "${enable_valgrind+set}" = set; then :
+  enableval=$enable_valgrind; enable_valgrind=$enableval
+else
+  enable_valgrind=
+fi
+
+
+	# Check for Valgrind.
+	# Extract the first word of "valgrind", so it can be a program name with args.
+set dummy valgrind; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_VALGRIND+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$VALGRIND"; then
+  ac_cv_prog_VALGRIND="$VALGRIND" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_VALGRIND="valgrind"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+VALGRIND=$ac_cv_prog_VALGRIND
+if test -n "$VALGRIND"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND" >&5
+$as_echo "$VALGRIND" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
+
+		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
+
+fi
+
+
+	 if test "$enable_valgrind" = "yes"; then
+  VALGRIND_ENABLED_TRUE=
+  VALGRIND_ENABLED_FALSE='#'
+else
+  VALGRIND_ENABLED_TRUE='#'
+  VALGRIND_ENABLED_FALSE=
+fi
+
+	VALGRIND_ENABLED=$enable_valgrind
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
+$as_echo "$enable_valgrind" >&6; }
+
+	# Check for Valgrind tools we care about.
+
+
+	if test "$VALGRIND" != ""; then :
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool memcheck" >&5
+$as_echo_n "checking for Valgrind tool memcheck... " >&6; }
+if ${ax_cv_valgrind_tool_memcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_memcheck=
+				if `$VALGRIND --tool=memcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_memcheck="memcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_memcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_memcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_memcheck=$ax_cv_valgrind_tool_memcheck
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool helgrind" >&5
+$as_echo_n "checking for Valgrind tool helgrind... " >&6; }
+if ${ax_cv_valgrind_tool_helgrind+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_helgrind=
+				if `$VALGRIND --tool=helgrind --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_helgrind="helgrind"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_helgrind" >&5
+$as_echo "$ax_cv_valgrind_tool_helgrind" >&6; }
+
+			VALGRIND_HAVE_TOOL_helgrind=$ax_cv_valgrind_tool_helgrind
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool drd" >&5
+$as_echo_n "checking for Valgrind tool drd... " >&6; }
+if ${ax_cv_valgrind_tool_drd+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_drd=
+				if `$VALGRIND --tool=drd --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_drd="drd"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_drd" >&5
+$as_echo "$ax_cv_valgrind_tool_drd" >&6; }
+
+			VALGRIND_HAVE_TOOL_drd=$ax_cv_valgrind_tool_drd
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool exp-sgcheck" >&5
+$as_echo_n "checking for Valgrind tool exp-sgcheck... " >&6; }
+if ${ax_cv_valgrind_tool_exp_sgcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_exp_sgcheck=
+				if `$VALGRIND --tool=exp-sgcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_exp_sgcheck="exp-sgcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_exp_sgcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_exp_sgcheck=$ax_cv_valgrind_tool_exp_sgcheck
+
+
+
+fi
+
+
+
+
+VALGRIND_CHECK_RULES='
+# Valgrind check
+#
+# Optional:
+#  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
+#    files to load. (Default: empty)
+#  - VALGRIND_FLAGS: General flags to pass to all Valgrind tools.
+#    (Default: --num-callers=30)
+#  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
+#    memcheck, helgrind, drd, sgcheck). (Default: various)
+
+# Optional variables
+VALGRIND_SUPPRESSIONS   ?= $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
+VALGRIND_FLAGS          ?= --num-callers=30 --trace-children=yes
+VALGRIND_memcheck_FLAGS ?= --leak-check=full --show-reachable=no
+VALGRIND_helgrind_FLAGS ?= --history-level=approx
+VALGRIND_drd_FLAGS      ?=
+VALGRIND_sgcheck_FLAGS  ?=
+
+# Internal use
+valgrind_tools = memcheck helgrind drd sgcheck
+valgrind_log_files = $(addprefix test-suite-,$(addsuffix .log,$(valgrind_tools)))
+
+valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
+valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
+valgrind_drd_flags = --tool=drd $(VALGRIND_drd_FLAGS)
+valgrind_sgcheck_flags = --tool=exp-sgcheck $(VALGRIND_sgcheck_FLAGS)
+
+valgrind_quiet   = $(valgrind_quiet_$(V))
+valgrind_quiet_  = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
+valgrind_quiet_0 = --quiet
+
+# Support running with and without libtool.
+ifneq ($(LIBTOOL),)
+valgrind_lt = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute
+else
+valgrind_lt =
+endif
+
+#
+# Valgrind chain add ons
+#
+
+VALGRIND_TESTS_ENVIRONMENT = \
+	VALGRIND=$(VALGRIND) \
+	G_SLICE=always-malloc,debug-blocks \
+	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
+
+VALGRIND_LOG_COMPILER = \
+	$(valgrind_lt) \
+	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 \
+	$(valgrind_$(VALGRIND_TOOL)_flags) $(VALGRIND_FLAGS)
+
+
+
+
+
+
+
+DISTCHECK_CONFIGURE_FLAGS ?=
+DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
+
+MOSTLYCLEANFILES ?=
+MOSTLYCLEANFILES += $(valgrind_log_files)
+
+.PHONY: check-valgrind check-valgrind-tool
+'
+
+
+
+
+
+ case "${build_os}:${host}" in #(
+  #
+ # LINUX->MINGW
+ #
+ *linux*:*mingw*) :
+
+   $as_echo "Set tests environment for linux->mingw"
+   if ${HAVE_WINE+:} false; then :
+
+else
+  # Extract the first word of "wine", so it can be a program name with args.
+set dummy wine; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINE"; then
+  ac_cv_prog_HAVE_WINE="$HAVE_WINE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINE="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINE" && ac_cv_prog_HAVE_WINE="no"
+fi
+fi
+HAVE_WINE=$ac_cv_prog_HAVE_WINE
+if test -n "$HAVE_WINE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINE" >&5
+$as_echo "$HAVE_WINE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+   if test "x$HAVE_WINE" = xyes; then :
+
+
+    case ${host} in #(
+  i686*mingw*) :
+    winebottle_name="winebottle_mingw32" WINEARCH="win32" ;; #(
+  x86_64*mingw*) :
+    winebottle_name="winebottle_mingw64" WINEARCH="win64"  ;; #(
+  *) :
+     ;;
+esac
+
+
+# Check whether --with-winebottle was given.
+if test "${with_winebottle+set}" = set; then :
+  withval=$with_winebottle;
+else
+  if ${winebottle+:} false; then :
+  with_winebottle="${WINEPREFIX}"
+else
+  with_winebottle="\$(top_builddir)/${winebottle_name}"
+fi
+fi
+
+
+    if ${HAVE_WINEBOOT+:} false; then :
+
+else
+  # Extract the first word of "wineboot", so it can be a program name with args.
+set dummy wineboot; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINEBOOT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINEBOOT"; then
+  ac_cv_prog_HAVE_WINEBOOT="$HAVE_WINEBOOT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINEBOOT="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINEBOOT" && ac_cv_prog_HAVE_WINEBOOT="no"
+fi
+fi
+HAVE_WINEBOOT=$ac_cv_prog_HAVE_WINEBOOT
+if test -n "$HAVE_WINEBOOT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEBOOT" >&5
+$as_echo "$HAVE_WINEBOOT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+  if test "x$HAVE_WINEBOOT" = xyes; then :
+  if ${WINEPREFIX+:} false; then :
+  $(eval "WINEPREFIX=${WINEPREFIX}         WINEARCH=${WINEARCH}" wineboot -f -r)
+else
+  $(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${WINEARCH}" wineboot -f -i)
+fi
+
+fi
+  WINEPREFIX=${with_winebottle}
+
+
+
+         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+$as_echo_n "checking for a sed that does not truncate output... " >&6; }
+if ${ac_cv_path_SED+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
+     for ac_i in 1 2 3 4 5 6 7; do
+       ac_script="$ac_script$as_nl$ac_script"
+     done
+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
+     { ac_script=; unset ac_script;}
+     if test -z "$SED"; then
+  ac_path_SED_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in sed gsed; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_SED" || continue
+# Check for GNU ac_path_SED and select it if it is found.
+  # Check for GNU $ac_path_SED
+case `"$ac_path_SED" --version 2>&1` in
+*GNU*)
+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo '' >> "conftest.nl"
+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_SED_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_SED="$ac_path_SED"
+      ac_path_SED_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_SED_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_SED"; then
+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
+  fi
+else
+  ac_cv_path_SED=$SED
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
+$as_echo "$ac_cv_path_SED" >&6; }
+ SED="$ac_cv_path_SED"
+  rm -f conftest.sed
+
+         { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
+$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
+if ${ac_cv_path_GREP+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$GREP"; then
+  ac_path_GREP_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in grep ggrep; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_GREP" || continue
+# Check for GNU ac_path_GREP and select it if it is found.
+  # Check for GNU $ac_path_GREP
+case `"$ac_path_GREP" --version 2>&1` in
+*GNU*)
+  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo 'GREP' >> "conftest.nl"
+    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_GREP_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_GREP="$ac_path_GREP"
+      ac_path_GREP_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_GREP_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_GREP"; then
+    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
+  fi
+else
+  ac_cv_path_GREP=$GREP
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
+$as_echo "$ac_cv_path_GREP" >&6; }
+ GREP="$ac_cv_path_GREP"
+
+
+         _libs=$(${CC} --print-search-dir | \
+           ${GREP} "libraries:" | \
+           ${SED} 's/^libraries: =//' | \
+           ${SED} 's/:/ /g')
+         as_fn_append _libs " "
+
+         _prog=$(${CC} --print-search-dir | \
+           ${GREP} "programs:" | \
+           ${SED} 's/^programs: =//' | \
+           ${SED} 's/:/ /g')
+         as_fn_append _libs "${_prog} "
+
+                  _sysroot=$(${CC} --print-sysroot)
+         as_fn_append _libs "${_sysroot}/mingw/bin "
+         as_fn_append _libs "${_sysroot}/mingw/lib "
+         as_fn_append _libs ${MAKESHLIBDIR}
+
+         WINEPATH=
+
+
+                    if ${HAVE_WINEPATH+:} false; then :
+
+else
+  # Extract the first word of "winepath", so it can be a program name with args.
+set dummy winepath; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_WINEPATH+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_WINEPATH"; then
+  ac_cv_prog_HAVE_WINEPATH="$HAVE_WINEPATH" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_WINEPATH="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_WINEPATH" && ac_cv_prog_HAVE_WINEPATH="no"
+fi
+fi
+HAVE_WINEPATH=$ac_cv_prog_HAVE_WINEPATH
+if test -n "$HAVE_WINEPATH"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_WINEPATH" >&5
+$as_echo "$HAVE_WINEPATH" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+
+         case ${HAVE_WINEPATH} in #(
+  yes|Yes|YES|Y|y) :
+    for _i in $_libs; do
+           as_fn_append WINEPATH "\$(shell winepath -w $_i);";
+          done
+           ;; #(
+  no|No|NO|N|n) :
+     ;; #(
+  *) :
+     ;; #(
+  *) :
+     ;;
+esac
+
+
+
+
+
+      as_fn_append TS_TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+      as_fn_append TS_TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
+      if test "x$VALGRIND_ENABLED" = xyes; then :
+  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
+        as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
+        as_fn_append TS_LOG_COMPILER "--vex-iropt-register-updates=allregs-at-mem-access "
+        as_fn_append TS_LOG_COMPILER "--workaround-gcc296-bugs=yes  "
+        as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
+
+fi
+      as_fn_append TS_LOG_COMPILER "wine "
+
+else
+  as_fn_append TS_LOG_COMPILER "sh -c 'exit 77'"
+fi
+               TS_PY_TAP_COMPILER="sh -c 'exit 77'"
+  ;; #(
+  #
+ # LINUX->LINUX
+ #
+ *linux*:*linux*) :
+
+   $as_echo "Set tests environment for linux->linux"
+   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
+   if test "x$VALGRIND_ENABLED" = xyes; then :
+  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
+              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
+              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
+
+fi
+  ;; #(
+  #
+ # OTHER
+ #
+ *) :
+
+   $as_echo "Set tests environment"
+   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
+   if test "x$VALGRIND_ENABLED" = xyes; then :
+  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
+              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
+              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
+
+fi
+  ;; #(
+  *) :
+     ;;
+esac
+
+# MACOS: add --dsymutil=yes to valgrind
+
+
+
+
+
+
+
+
+
+# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
 
 
 
@@ -13745,10 +14681,9 @@ esac
 
 
 
-## ////////////////////////////////////////////////////////////////////////// ##
-## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
-## ////////////////////////////////////////////////////////////////////////// ##
-
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 
@@ -13855,7 +14790,7 @@ ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14023,8 +14958,8 @@ if test -z "${XML_TRUE}" && test -z "${XML_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
-if test -z "${USE_VALGRIND_TRUE}" && test -z "${USE_VALGRIND_FALSE}"; then
-  as_fn_error $? "conditional \"USE_VALGRIND\" was never defined.
+if test -z "${HAVE_PYTHON_TRUE}" && test -z "${HAVE_PYTHON_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_PYTHON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_WINE_TRUE}" && test -z "${HAVE_WINE_FALSE}"; then
@@ -14035,16 +14970,8 @@ if test -z "${HAVE_WINECONSOLE_TRUE}" && test -z "${HAVE_WINECONSOLE_FALSE}"; th
   as_fn_error $? "conditional \"HAVE_WINECONSOLE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${HAVE_PYTHON_TRUE}" && test -z "${HAVE_PYTHON_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_PYTHON\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${PY_TAP_SUPPORT_TRUE}" && test -z "${PY_TAP_SUPPORT_FALSE}"; then
-  as_fn_error $? "conditional \"PY_TAP_SUPPORT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_NOSETESTS_TRUE}" && test -z "${HAVE_NOSETESTS_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_NOSETESTS\" was never defined.
+if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then
+  as_fn_error $? "conditional \"VALGRIND_ENABLED\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_CUTE_DOXYGEN_TRUE}" && test -z "${HAVE_CUTE_DOXYGEN_FALSE}"; then
@@ -14749,6 +15676,7 @@ do
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;
     "tcl/Makefile") CONFIG_FILES="$CONFIG_FILES tcl/Makefile" ;;
     "tdishr/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/Makefile" ;;
+    "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
     "tditest/Makefile") CONFIG_FILES="$CONFIG_FILES tditest/Makefile" ;;
     "testing/Makefile") CONFIG_FILES="$CONFIG_FILES testing/Makefile" ;;

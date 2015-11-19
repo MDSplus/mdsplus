@@ -91,10 +91,15 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/m4/testing.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
+	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
+	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
+	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
+	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
+	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -290,8 +295,7 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
-HAVE_NOSETESTS = @HAVE_NOSETESTS@
-HAVE_VALGRIND = @HAVE_VALGRIND@
+HAVE_DOCKER = @HAVE_DOCKER@
 HAVE_WINE = @HAVE_WINE@
 HAVE_WINEBOOT = @HAVE_WINEBOOT@
 HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
@@ -351,6 +355,7 @@ MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
 MAKEUIDDIR = @MAKEUIDDIR@
+MAKE_COMMAND_OVERRIDE = @MAKE_COMMAND_OVERRIDE@
 MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@
@@ -361,6 +366,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
+NOSETESTS = @NOSETESTS@
 NSLLIB = @NSLLIB@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -405,10 +411,18 @@ TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 THREAD = @THREAD@
 TS_LOG_COMPILER = @TS_LOG_COMPILER@
+TS_LOG_DRIVER = @TS_LOG_DRIVER@
+TS_PY_TAP_COMPILER = @TS_PY_TAP_COMPILER@
 TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
+VALGRIND = @VALGRIND@
+VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
+VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
+VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
+VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
 VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
@@ -504,15 +518,22 @@ _tap_py_execute = \
  tr.set_stream(1); \
  tr.run(tests); 
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
-# LOG_DRIVER      = @TS_LOG_DRIVER@
-TEST_SUITE_TAP = test-suite.tap
+TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
+
+# use default ...
+# LOG_DRIVER        = @TS_LOG_DRIVER@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 TEST_BUILD_TAP = test-build.tap
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_COMPILER = sh -c 'exit 77'
-@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_COMPILER = nosetests
-@PY_TAP_SUPPORT_FALSE@TAP_PY_LOG_FLAGS = 
-@PY_TAP_SUPPORT_TRUE@TAP_PY_LOG_FLAGS = --with-tap --tap-stream
+TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 
@@ -924,6 +945,10 @@ include @top_builddir@/Makefile.inc
 #	echo $(TEST_LOGS);
 #	python -c "${_tap_py_execute}" pyex1;
 
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  select test form env variable  //////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
@@ -936,6 +961,12 @@ tests:
 	else
 	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 	fi
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+@VALGRIND_CHECK_RULES@ 
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
@@ -964,6 +995,14 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
 	 || exit 1;
+
+$(TEST_SUITE_LOG):
+
+$(TEST_SUITE_XML):
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  clean  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: clean-local-tests
 clean-local-tests:
