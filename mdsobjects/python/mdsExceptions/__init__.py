@@ -17,9 +17,9 @@ class MDSplusException(Exception):
       self.status=-1
       self.msgnam='UNKNOWN'
       if isinstance(status,str):
-	self.message=status
+          self.message=status
       else:
-        self.message='Unknown exception'
+          self.message='Unknown exception'
       self.fac='MDSplus'
     self.severity=self.severities[self.status & 7]
 
