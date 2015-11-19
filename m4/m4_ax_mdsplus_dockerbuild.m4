@@ -42,36 +42,52 @@ AC_DEFUN([AS_CONTAINS],[
           AS_IF([test "${string#*$substring}" != "$string"], [eval $3], [eval $4])])
 
 
+AC_DEFUN([push_IFS],[
+AS_VAR_SET([_save_IFS],[$IFS])
+AS_VAR_SET([IFS],[$1])
+])
+
+AC_DEFUN([pop_IFS],[
+AS_VAR_SET([IFS],[${_save_IFS}])
+])
+
+
 AC_DEFUN([DK_GET_CONFIGURE_ARGS],[
 AX_CONFIGURE_ARGS
-AS_VAR_SET([saved_IFS],[${IFS}])
-AS_VAR_SET([IFS],["'"])
-for x in ${ac_configure_args}; do
+push_IFS(["'"])
+ for x in ${ac_configure_args}; do
     # try to figure out if quoting was required for the $x
     AS_IF([test "$x" == " "],,[
     AS_IF([test "$x" != "${x%=*}"],
-          [AS_VAR_SET([x],[${x%=*}"=\\\""${x#*=}"\\\""])],
+          [AS_VAR_SET([x],[${x%=*}"=\""${x#*=}"\""])],
           [AS_IF([test "$x" != "${x%\[\[:space:\]\]*}"],
-                 [AS_VAR_SET([x],["\\\""$x"\\\""])],
+                 [AS_VAR_SET([x],["\""$x"\""])],
                  [AS_VAR_SET([x],["$x"])])
           ])    
     AS_VAR_SET([$1],["$$1 '$x'"])
     ])
-done
-AS_VAR_SET([IFS],[${saved_IFS}])
+ done
+pop_IFS
 ])
+
 
 AC_DEFUN([DK_GET_CONFIGURE_ARGS_WITHOUT_DOCKER],[
 DK_GET_CONFIGURE_ARGS([_args])
-AS_VAR_SET([saved_IFS],[${IFS}])
-AS_VAR_SET([IFS],["'"])
+push_IFS(["'"])
  for x in ${_args}; do    
     AS_IF([test "$x" == " "],[:],
           AS_IF([test "$x" != "${x%--with-docker-*}"],[:],
           AS_VAR_SET([$1],["$$1 $x"])))
- done
-AS_VAR_SET([IFS],[${saved_IFS}])
+ done 
+pop_IFS
 ])
+
+
+AC_DEFUN([DK_ADD_ESCAPE],$([
+dnl TODO: make this for all quote char in sh using awk
+echo $1 | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+]))
+
 
 
 
@@ -91,9 +107,8 @@ AC_DEFUN([DK_CMD_CNTRUN], m4_normalize([
           $1
          ]))
 
-m4_define([DK_CMD_MAKE],m4_normalize([[
- dmake \(\) \{ docker exec -t --user \$\{USER\} mingw /bin/sh -c \"cd `pwd`; \$\{MAKE\} \$\$\{*\}\"\; \}\; dmake
-]])) 
+
+
 
 AC_DEFUN([DK_CONFIGURE],[
 
@@ -101,14 +116,14 @@ AC_DEFUN([DK_CONFIGURE],[
          AS_VAR_SET([dk_configure_args])
          DK_GET_CONFIGURE_ARGS_WITHOUT_DOCKER([dk_configure_args])
          AS_VAR_APPEND([dk_configure_args],[" "])
-         AS_VAR_SET_IF([DOCKER_IMAGE],AS_VAR_APPEND([dk_configure_args],["DOCKER_IMAGE=\\\"${DOCKER_IMAGE}\\\" "]));
-         AS_VAR_SET_IF([DOCKER_CONTAINER],AS_VAR_APPEND([dk_configure_args],["DOCKER_CONTAINER=\\\"${DOCKER_CONTAINER}\\\" "]));
+         AS_VAR_SET_IF([DOCKER_IMAGE],AS_VAR_APPEND([dk_configure_args],["DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "]));
+         AS_VAR_SET_IF([DOCKER_CONTAINER],AS_VAR_APPEND([dk_configure_args],["DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "]));
     
          m4_pushdef([dk_configure_cmd], m4_normalize([
            docker exec -t
            --user ${USER}
            ${DOCKER_CONTAINER} /bin/sh
-           -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \";
+           -c \"cd $(pwd)\; ${0} DK_ADD_ESCAPE(${dk_configure_args}) DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"]) \";
            exit 0;
          ]))
                   
@@ -239,7 +254,8 @@ AC_DEFUN([DK_START_IMGCNT], [
     AS_ECHO(" --------------------------------- ")
     AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
     AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
-    AS_ECHO(" ac_configure_args = ${dk_configure_args}")
+    AS_ECHO(" ac_configure_args = ${ac_configure_args}")
+    AS_ECHO(" dk_configure_args = ${dk_configure_args}")
     AS_ECHO(" configure command = ${0}")
     AS_ECHO(" configure name    = $(basename ${0})")
     AS_ECHO(" --------------------------------- ")
@@ -399,8 +415,9 @@ dnl  DK_SET_DOCKER_BUILD
 
 dnl DK_WRITE_DMAKEFILE
 
-DK_GET_CONFIGURE_ARGS([X])
-AS_ECHO("X=${X}")
+AS_VAR_SET([X],["ciao \"beo\""])
+AS_ECHO("[$X]")
+AS_ECHO("DK_ADD_ESCAPE(DK_ADD_ESCAPE([$X]))")
 
 exit 0;
 
