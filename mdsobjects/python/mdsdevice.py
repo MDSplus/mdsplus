@@ -190,18 +190,20 @@ class Device(_treenode.TreeNode):
         head=cls(head)
         head.record=_compound.Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
         head.write_once=True
+        import MDSplus
+        glob = MDSplus.__dict__
+        glob['tree'] = tree
+        glob['path'] = path
+        glob['head'] = head
         for elt in cls.parts:
             node=tree.addNode(path+elt['path'],elt['type'])
         for elt in cls.parts:
             node=tree.getNode(path+elt['path'])
             if 'value' in elt:
-                node.record=elt['value']
-            if 'valueExpr' in elt:
-                try:
-                    import MDSplus
-                except:
-                    pass
-                node.record=eval(elt['valueExpr'])
+                node.record = elt['value']
+            elif 'valueExpr' in elt:
+                glob['node'] = node
+                node.record = eval(elt['valueExpr'], glob)
             if 'options' in elt:
                 for option in elt['options']:
                     exec('node.'+option+'=True')
