@@ -1,4 +1,34 @@
-commit fa3be5d1b0c5f87f3d38148a2a3195496eb9799f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit db4b68f499601bd448874911a27e24200177db54 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 8f95b04 2e6b512
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:53:29 2015 -0500
+
+    Merge pull request #218 from zack-vii/a_python_mdsdevice
+    
+    safer mdsdevice
+
+commit 8f95b0410e8f49b2c90ba7f90b1be000f675fcb2
+Merge: 7c4601f cc2b7dd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:50:49 2015 -0500
+
+    Merge pull request #223 from MDSplus/twf-fix-exceptions-for-p3
+    
+    Fix indentation problem which prevents loading module in python3
+
+commit cc2b7dd0e0e0b451b8bd4c6122e2471b2985e819
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:15:25 2015 -0500
+
+    Fix indentation problem which prevents loading module in python3
+
+commit 7c4601f0a10d761b57cd3195d88f0fb64a2c56a3 (tag: refs/tags/alpha_release-7-0-182)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 17 23:34:28 2015 -0500
+
+    New release ---- alpha_release-7-0-182
+
+commit fa3be5d1b0c5f87f3d38148a2a3195496eb9799f
 Merge: 64b6557 0460706
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Nov 17 14:56:30 2015 -0500
@@ -6,6 +36,16 @@ Date:   Tue Nov 17 14:56:30 2015 -0500
     Merge pull request #211 from MDSplus/fix-bnc845
     
     Handle arbitrarily long SCPI replies
+
+commit 2e6b512edad180f6eb7d075d9be33112913baa47
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 17 19:09:35 2015 +0100
+
+    safer mdsdevice
+    
+    - provides a secure environment for eval on valueExpr.
+    all MDSplus modules plus "tree", "path", "head", and "node" are
+    accessible
 
 commit 64b65573c06d61ed9339f909d2c8be4ebd41b087
 Merge: 7d13b59 f1b88d9
