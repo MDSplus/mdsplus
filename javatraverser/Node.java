@@ -459,7 +459,7 @@ public class Node
         if(newName.length() > 12 || newName.length() == 0)
 	    {
 	        JOptionPane.showMessageDialog(FrameRepository.frame, "Node name lengh must be between 1 and 12 characters",
-		    "Error renaming node", JOptionPane.WARNING_MESSAGE);
+		    "Error renaming node: "+newName.length(), JOptionPane.WARNING_MESSAGE);
             return false;
 	    }
 	    try

@@ -418,7 +418,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() ==  KeyEvent.VK_CANCEL) // i.e. Ctrl+C
                     TreeNode.copyToClipboard();
-                if (!jTraverser.isEditable()) return;
                 if (e.getKeyChar() ==  KeyEvent.VK_CANCEL) // i.e. Ctrl+C
                     TreeNode.copy();
                 if (e.getKeyChar() ==  24) // i.e. Ctrl+X
@@ -472,7 +471,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    } catch(Exception exc) {
             editable = false;}
 	    frame.reportChange(exp,shot,editable,readonly);
-}
+    }
 
 
     public void valueChanged(TreeSelectionEvent e)
