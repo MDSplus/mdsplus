@@ -18,10 +18,6 @@ _scalar=_mimport('mdsscalar')
 _treenode=_mimport('treenode')
 _ver=_mimport('version')
 
-thread_data=_threading.local()
-thread_data._activeTree=0
-thread_data.private=False
-
 _hard_lock=_threading.Lock()
 
 _openTrees={}
@@ -30,7 +26,7 @@ _activeTree={}
 def _getThreadName(thread=None):
     if isinstance(thread,str):
         threadName=thread
-    elif thread_data.private:
+    elif Tree.thread_private:
         if thread is None:
             threadName = _threading.current_thread().getName()
         else:
@@ -90,6 +86,9 @@ class _treeDeleter(_threading.Thread):
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
+    thread_data=_threading.local()
+    thread_activeTree=0
+    thread_private=False
     _lock=_threading.RLock()
 
 	# support for the with-structure
@@ -132,11 +131,6 @@ class Tree(object):
         @return: Value of attribute
         @rtype: various
         """
-        if name.upper() == name:
-            try:
-                return self.getNode(name)
-            except:
-                pass
         if name.lower() == 'default':
             ans=self.getDefault()
         else:
@@ -154,8 +148,7 @@ class Tree(object):
         return ans
 
     def usePrivateCtx(cls,on=True):
-        global thread_data
-        thread_data.private=on
+        Tree.thread_private=on
         _treeshr.TreeUsePrivateCtx(on)
     usePrivateCtx=classmethod(usePrivateCtx)
 
