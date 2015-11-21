@@ -18,9 +18,11 @@ _scalar=_mimport('mdsscalar')
 _treenode=_mimport('treenode')
 _ver=_mimport('version')
 
-_thread_data=_threading.local()
-_thread_data._activeTree=0
-_thread_data.private=False
+class _ThreadData(_threading.local):
+    def __init__(self):
+        self._activeTree=0
+        self.private=False
+_thread_data=_ThreadData()
 
 _hard_lock=_threading.Lock()
 
@@ -28,7 +30,6 @@ _openTrees={}
 _activeTree={}
 
 def _getThreadName(thread=None):
-    global _thread_data
     if isinstance(thread,str):
         threadName=thread
     elif _thread_data.private:
@@ -155,7 +156,6 @@ class Tree(object):
         return ans
 
     def usePrivateCtx(cls,on=True):
-        global _thread_data
         _thread_data.private=on
         _treeshr.TreeUsePrivateCtx(on)
     usePrivateCtx=classmethod(usePrivateCtx)
