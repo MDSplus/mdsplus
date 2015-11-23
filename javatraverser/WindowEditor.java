@@ -147,13 +147,13 @@ static class WindowEdt extends JPanel
 	GridLayout gl = new GridLayout(3, 1);
 	gl.setVgap(0);
 	setLayout(gl);
-	startidx_edit = new LabeledExprEditor( "Start Idx:    ", new ExprEditor(
+	startidx_edit = new LabeledExprEditor("Start Idx", new ExprEditor(
 	    this.window.getStartIdx(), false));
 	add(startidx_edit);
-	endidx_edit = new LabeledExprEditor(   "End Idx:      ", new ExprEditor(
+	endidx_edit = new LabeledExprEditor("End Idx", new ExprEditor(
 	    this.window.getEndIdx(), false));
 	add(endidx_edit);
-	value0_edit = new LabeledExprEditor(	"Time of Zero: ", new ExprEditor(
+	value0_edit = new LabeledExprEditor("Time of Zero", new ExprEditor(
 	    this.window.getValueAt0(), false));
 	add(value0_edit);
     }

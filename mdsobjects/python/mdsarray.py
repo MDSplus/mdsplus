@@ -116,10 +116,7 @@ class Array(_data.Data):
     def _getMdsDtypeNum(self):
         return {'Uint8Array':_dtypes.DTYPE_BU,'Uint16Array':_dtypes.DTYPE_WU,'Uint32Array':_dtypes.DTYPE_LU,'Uint64Array':_dtypes.DTYPE_QU,
                 'Int8Array':_dtypes.DTYPE_B,'Int16Array':_dtypes.DTYPE_W,'Int32Array':_dtypes.DTYPE_L,'Int64Array':_dtypes.DTYPE_Q,
-                'StringArray':_dtypes.DTYPE_T,
-                'Float32Array':_dtypes.DTYPE_FS,
-                'Float64Array':_dtypes.DTYPE_FT}[self.__class__.__name__[0:-6]]
-
+                'StringArray':_dtypes.DTYPE_T,'Float32Array':_dtypes.DTYPE_FS,'Float64Array':_dtypes.DTYPE_FT}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
 
     def __array__(self):

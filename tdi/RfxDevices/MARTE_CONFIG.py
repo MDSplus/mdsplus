@@ -1,9 +1,8 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import *
-import time
+from MDSplus import Device
 
 class MARTE_CONFIG(Device):
-    print 'MARTe CONFIG '
+    print('MARTE_CONFIG')
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':CONFIG', 'type':'numeric', 'value':0},

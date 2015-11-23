@@ -1,11 +1,10 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import *
-import time
-import MARTE_GENERIC
+from MDSplus import Data
+from MARTE_GENERIC import MARTE_GENERIC
 
-class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe MhdCtrl'
-    parNames = ['cleaningEnable', 'extrapolationEnable', 'reconfigurationEnable', 'dynamicDecouplerEnable', 'staticDecouplerEnable', 'applyCleaning', 'extrapolationRadius', 
+class MARTE_MHD_CTRL(MARTE_GENERIC):
+    print('MARTE_MHD_CTRL')
+    parNames = ['cleaningEnable', 'extrapolationEnable', 'reconfigurationEnable', 'dynamicDecouplerEnable', 'staticDecouplerEnable', 'applyCleaning', 'extrapolationRadius',
     'rgM_1', 'rgN_1', 'rgFreq_1', 'rgAmpl_1','rgPhase_1','rgTStart_1','rgRiseTime_1','rgTEnd_1','rgFallTime_1','rgThreshold_1','rgIsRelative_1',
     'rgM_2', 'rgN_2', 'rgFreq_2', 'rgAmpl_2','rgPhase_2','rgTStart_2','rgRiseTime_2','rgTEnd_2','rgFallTime_2','rgThreshold_2','rgIsRelative_2',
     'rgM_3', 'rgN_3', 'rgFreq_3', 'rgAmpl_3','rgPhase_3','rgTStart_3','rgRiseTime_3','rgTEnd_3','rgFallTime_3','rgThreshold_3','rgIsRelative_3',
@@ -74,13 +73,10 @@ class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
     parValues.append(-1)
     parValues.append(-1) #Start and end Bp Autozero time
     parValues.append(-1)
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):
-#      print 'MARTe mhd_bt', i, 1, parNames[i]
       parts.append({'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'})
       parts.append({'path':'.PARAMS:PAR_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text', 'value':parNames[i]})
@@ -104,6 +100,5 @@ class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':'inFF_%03d'%(i+1)})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    print 'PARTS MHD_CTRL FATTE!!!'
 
 

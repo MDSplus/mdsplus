@@ -1,4 +1,390 @@
-commit 34a4b6b03f2aa7bc0f081ae8194ed963fb9b3b2c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit db4b68f499601bd448874911a27e24200177db54 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 8f95b04 2e6b512
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:53:29 2015 -0500
+
+    Merge pull request #218 from zack-vii/a_python_mdsdevice
+    
+    safer mdsdevice
+
+commit 8f95b0410e8f49b2c90ba7f90b1be000f675fcb2
+Merge: 7c4601f cc2b7dd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:50:49 2015 -0500
+
+    Merge pull request #223 from MDSplus/twf-fix-exceptions-for-p3
+    
+    Fix indentation problem which prevents loading module in python3
+
+commit cc2b7dd0e0e0b451b8bd4c6122e2471b2985e819
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:15:25 2015 -0500
+
+    Fix indentation problem which prevents loading module in python3
+
+commit 7c4601f0a10d761b57cd3195d88f0fb64a2c56a3 (tag: refs/tags/alpha_release-7-0-182)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 17 23:34:28 2015 -0500
+
+    New release ---- alpha_release-7-0-182
+
+commit fa3be5d1b0c5f87f3d38148a2a3195496eb9799f
+Merge: 64b6557 0460706
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 14:56:30 2015 -0500
+
+    Merge pull request #211 from MDSplus/fix-bnc845
+    
+    Handle arbitrarily long SCPI replies
+
+commit 2e6b512edad180f6eb7d075d9be33112913baa47
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 17 19:09:35 2015 +0100
+
+    safer mdsdevice
+    
+    - provides a secure environment for eval on valueExpr.
+    all MDSplus modules plus "tree", "path", "head", and "node" are
+    accessible
+
+commit 64b65573c06d61ed9339f909d2c8be4ebd41b087
+Merge: 7d13b59 f1b88d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 08:15:02 2015 -0500
+
+    Merge pull request #216 from zack-vii/aa_python_webscope
+    
+    avoid unsafe functions exec and eval
+
+commit f1b88d965b29eea8b4d6b94a449c7063600768ae
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 19:40:11 2015 +0100
+
+    avoid unsafe functions exec and eval
+    
+    - replaced exec and eval with __import__
+    - fixed error handling : AssertionError: Headers already set!
+
+commit 7d13b594bd3586ade16f2b85d8c83967a554751a
+Merge: 75a5994 84c1ec2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 07:55:48 2015 -0500
+
+    Merge pull request #215 from zack-vii/aa_python
+    
+    python support for disabled and compress_segments
+
+commit 84c1ec25655bd294c8015d30b5eae126c6bac715
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 17 12:21:36 2015 +0100
+
+    support for disabled and compress_segments
+    
+    - allows to set theses flags from device definition
+
+commit 75a599469528ba77a75a38ae26303fadfd144711 (tag: refs/tags/alpha_release-7-0-181)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 16 23:38:22 2015 -0500
+
+    New release ---- alpha_release-7-0-181
+
+commit 2422ad2cd4858f468cbb2405a721e501d4de5b32
+Merge: 87a9d52 d9a96ac
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Nov 16 18:07:54 2015 +0100
+
+    Merge pull request #214 from MDSplus/twf-fix-scopeutils
+    
+    Use int64_t instead of long to always use 64-bits. Also fix some comp…
+
+commit d9a96ac97ed961a397f07b17e349d8112ec37a3a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 16 11:36:26 2015 -0500
+
+    Use int64_t instead of long to always use 64-bits. Also fix some compile warnings/errors
+
+commit 87a9d52148e3941e11fd8515a4b96f6fb2491f5d
+Merge: c8a6c02 4c7a69a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 16 08:14:57 2015 -0500
+
+    Merge pull request #213 from MDSplus/twf-exception-compatibility
+    
+    Add compatibility to the older MdsException exception class
+
+commit c8a6c024d3db2749947e23a0892ad6db5d38efbc (tag: refs/tags/alpha_release-7-0-180)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 13 23:38:59 2015 -0500
+
+    New release ---- alpha_release-7-0-180
+
+commit a4356ba121c98b7c6cb62bec64258d51ce23c145
+Merge: 48f2f65 733e4ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:01:56 2015 -0500
+
+    Merge pull request #212 from zack-vii/aa_python_mdsarray
+    
+    fix of mdsdtype
+
+commit 4c7a69ad3bb5eefc658ff7b9d2bdfed8dc44654f (refs/remotes/origin/twf-exception-compatibility)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 14:37:39 2015 -0500
+
+    Add compatibility to old MdsException excetpion class
+
+commit 733e4aed3f471ddf805c5405083e25d06d085e6a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 12 21:07:37 2015 +0100
+
+    fix of mdsdtype
+    
+    - Array if 5 chars long
+    - dict contains full name
+
+commit 04607065ff69d41b01198ba2df72e17002f6e756 (refs/remotes/origin/fix-bnc845)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Nov 12 17:02:22 2015 +0100
+
+    Handle arbitrarily long SCPI replies
+
+commit 48f2f651d6d7b722cad184e2773eeb23ef9cde83 (tag: refs/tags/alpha_release-7-0-179)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 11 23:38:34 2015 -0500
+
+    New release ---- alpha_release-7-0-179
+
+commit 023dcf65cd504c99367ecc9387a9fa865d75231a
+Merge: 44c369f 1b57996
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 11 16:58:59 2015 +0100
+
+    Merge pull request #210 from zack-vii/aa_python_tree
+    
+    all-uppercase attributes will be redirected to getNode
+
+commit 1b57996999acc3e1445fd453eea37f8083d13e13
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 11 14:51:10 2015 +0100
+
+    all-uppercase attributes will be redirected to getNode
+    
+    all-uppercase attributes will be redirected to getNode
+    - allows a shortcut of node.getNode('DESC') by using node.DESC
+    - much faster way of getting the desired node
+
+commit 44c369f77ad195f0d2143af93245e0c903d69f09 (tag: refs/tags/alpha_release-7-0-178)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 10 23:50:14 2015 -0500
+
+    New release ---- alpha_release-7-0-178
+
+commit 8976a8085c35eebf3f399c27a6c0525d6aeb2772
+Merge: 0991617 76342f6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 10 16:33:38 2015 +0100
+
+    Merge pull request #206 from zack-vii/aa_RFX_MARTE
+    
+    make MARTE Device family python3 ready
+
+commit 76342f6178c7468f71c56a872d54fe26cb6ef764
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 10 16:24:50 2015 +0100
+
+    make Devices python3 ready
+    
+    - less verbose
+    - import only what you need
+    => faster more robust
+
+commit 0991617388992a25334faf6e553a9d1c8e6a7231
+Merge: 35353e4 2996dd7
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 10 09:04:39 2015 +0100
+
+    Merge pull request #205 from zack-vii/aa_jtraverser
+    
+    remove from Tree before deleting from file
+
+commit 35353e4cd77b3163533925b3eedb159124202f4a (tag: refs/tags/alpha_release-7-0-177)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 9 23:40:55 2015 -0500
+
+    New release ---- alpha_release-7-0-177
+
+commit 2996dd77c67869f0ceb8aa4baf4a664b75f2111d
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 20:38:23 2015 +0100
+
+    remove from Tree before deleting from file
+    
+    prevents: "Error expanding tree
+    DatabaseException: %TREE-W-NNF, Node Not Found"
+    - typo
+
+commit cc6fdc425aef64b538078d169f926e6db24fd9fb
+Merge: f22eb8b 82db1c4
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Nov 9 15:51:15 2015 +0100
+
+    Merge pull request #204 from zack-vii/aa_jtraverser
+    
+    fixed status bar on resizing
+
+commit 82db1c438ad1f435f87aa23b5925d3c23af28fd4
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 15:31:45 2015 +0100
+
+    Make over of the Editors
+    
+    - optimized the use of GridLayout and BorderLayout to make make the
+    right data field to resize with the dialog window.
+    - Arguments, PyPrograms, help etc. will expand.
+
+commit af970ab9e0fa82cd03119772813d1f55cff045f1
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 10:02:18 2015 +0100
+
+    disable resizing flags dialog
+
+commit c8c6db00d3fe103fa598c3e8274b81711ea929bc
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 09:45:50 2015 +0100
+
+    fixed status bar on resizing
+    
+    - status bar remains a one-liner and the tree pane resizes
+
+commit f22eb8bb93aeae4c3f854f9fe543d48f4d22316d (tag: refs/tags/alpha_release-7-0-176)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 6 23:36:47 2015 -0500
+
+    New release ---- alpha_release-7-0-176
+
+commit 566bcde4b68208a02c1848454593a6574d9699fe
+Merge: 6ac2d4c d5d942b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:37:36 2015 -0500
+
+    Merge pull request #198 from MDSplus/fix-obsucre-compression-bug-alpha
+    
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 6ac2d4c5fe23b2d6334349980843693f006ca75c
+Merge: 4680240 485f1d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:36:47 2015 -0500
+
+    Merge pull request #201 from MDSplus/twf-no-exception-on-treepath-puts
+    
+    Do not raise an Exception in putData if data contains a TreePath refe…
+
+commit 485f1d8243770776fcacee34a20e5ac07a74a293 (refs/remotes/origin/twf-no-exception-on-treepath-puts)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:23:28 2015 -0500
+
+    Do not raise an Exception in putData if data contains a TreePath refernce
+
+commit d5d942be8de17c08c3f35dcbce9e2fe1beb8ae77 (refs/remotes/origin/fix-obsucre-compression-bug-alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 11:31:59 2015 -0500
+
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 4680240191fdb97d026b99b94f4daa4cef7ac3b3
+Merge: 464da9f f28739e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 6 16:03:52 2015 +0100
+
+    Merge pull request #196 from zack-vii/jtraverser
+    
+    Extension of jTraverser's flag editor
+
+commit 464da9faf74f23c4808bc1d2241079d3bc0eea86
+Merge: b3cb2b9 2e863be
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Nov 6 09:12:02 2015 -0500
+
+    Merge pull request #190 from MDSplus/twf-tcl-compress-segments
+    
+    Add compress_segments info with the DIR/FULL command
+
+commit f28739e198626c790fe1a9bdb39b913e1715088e
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 23:55:22 2015 +0100
+
+    extended flag dialog for remaining user defined flags
+    
+    - all 32 flags are available so one can make use of them.
+    - the last bit is the dedicated error bit. and should never be set int(flag)<0 => indicates an error
+
+commit 8ee1bbd5ba114f7209cd86c98fca71e7915d4262
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 03:17:08 2015 +0100
+
+    added status bar for stdout and stderr
+    
+    could replace System.err.println() and System.out.println()
+
+commit b5f3ac0ae4c0f6a7821d5038c5687e5d362adf6a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 01:49:14 2015 +0100
+
+    DisplayNci to fully HTML table
+    
+    better layout of the DisplayNci to handle longer flag lines in a aligned
+    table
+
+commit 3146d823ca9afd3d19d97242ffbea467c37f560c
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 18:09:21 2015 +0100
+
+    restructured NodeInfo (expand to all flags)
+    
+    - made field private with getters
+    - modified JavaTrav.c to return flags int
+    - change dclass, dtype, and usage to byte to solve uint vs int issue
+      this fixed teh DType and Class displa on DisplayNci
+    - modified JavaTrav.c to use unsignad char for dclass, dtype, and usage
+    - modified JavaData.c to use unsignad char for dclass, dtype
+
+commit 591b46863816a3968afd2d9cfa02f0aa795589a0
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 11:25:11 2015 +0100
+
+    inner class test
+
+commit ee57cb1e401d47c94a1712540f97b9f1fb144e74
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 3 19:18:12 2015 +0100
+
+    upgraded rename/move
+    
+    - fixed and implemented copy and move of node structures
+    - Ctrl+X cuts, Ctrl+C copies, and Ctrl+V pastes
+
+commit 8e010be8837e0748ec823e1a9c75bad7084b8d43
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 28 20:56:39 2015 +0100
+
+    change the rename dialog ...
+    
+    ... as it is buggy when changing the path
+    - node.rename is more like move as the full path can be changed
+    - node.renameLast is the proper rename method in node
+    - the error dialogs are safer on lower levels
+    - when requesting the node name the trimmed version is either requested
+    or should fit as well
+    - removed "node" from title as it is too long anyway
+
+commit b3cb2b918cc298189012a94ffc5c303e0efaa22c (tag: refs/tags/alpha_release-7-0-175)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 4 23:38:30 2015 -0500
+
+    New release ---- alpha_release-7-0-175
+
+commit 34a4b6b03f2aa7bc0f081ae8194ed963fb9b3b2c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 4 16:58:54 2015 -0500
 
@@ -36,6 +422,12 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Nov 3 23:37:59 2015 -0500
 
     New release ---- alpha_release-7-0-174
+
+commit 2e863be3d75f3a4080c94ce2e8a3798fca8b245a (refs/remotes/origin/twf-tcl-compress-segments)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 3 08:02:01 2015 -0500
+
+    Add compress_segments info with the DIR/FULL command
 
 commit 5a4e71f2acfe4a1605779123214e86c2b78dcaea
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>

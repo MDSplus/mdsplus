@@ -1,10 +1,9 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import *
-import time
-import MARTE_GENERIC
+from MDSplus import Data
+from MARTE_GENERIC import MARTE_GENERIC
 
-class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe EDA1'
+class MARTE_EDA1(MARTE_GENERIC):
+    print('MARTE_EDA1')
     parNames = ['ccType', 'psConfiguration','ccKp','ccTEnd','tokccTStart','tokccVMax','rfpccIpStar','rfpccDeltaIpStar','rfpccDeltaTRampDown',
     	'rfpccPOhmMax','rfpccTauz','rfpccTaup','rfpccDeltaTBumpless','aaGain','invAAGain','rfpcc2VrtStar','rfpcc2PCATMaxOnTime','bvGain',
 	'maxPVATCurr','decouplerGain','compResGain','Kp','Ki','tStartEquilIntegralAction','minIpCurr','equilNonlinearFactorSaturation',
@@ -19,14 +18,12 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
         'TokTstartCheckMode','TokThresholdBpmode','TokIpLowQ','TokTunIpFR','TokVpcatRampUp','TokTunVpcat','IFS_DN','LQGIpfilterOn','LQGContIpnormOn','LQGEquiIpNormOn','TokFastRampUpIpOn']
 
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),0,0,0,0,0,0,0,
-        0,0.3,1.5,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,0, 0, 5.649E-5, 0,   
+        0,0.3,1.5,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,0, 0, 5.649E-5, 0,
         0,0.3,1.5,Data.compile('[0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315]'),500,0,0.3,300,150,7.5,0,0,5950,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         Data.compile('[.15,.3,.15,.3,.15,.3,.3,.3]'),Data.compile('[9000E3,2250E3,6000E3,2250E3,6000E3,1500E3,1500E3,2250E3]'), .3,.5,0.,0.,.55,.8,0,1,0,1.,0,1.,
         0., Data.compile('[0.,0.,0.,0.]'), Data.compile('[0.,0.,0.,0.]'), 0,
-        10.2, 100E-9, 160000, .95, 1000, 1, Data.compile('[-2746,-889,4100,0,-1692,-1157,-206,426]'),1,1,1,0] 
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+        10.2, 100E-9, 160000, .95, 1000, 1, Data.compile('[-2746,-889,4100,0,-1692,-1157,-206,426]'),1,1,1,0]
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):
@@ -45,28 +42,22 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
       parts.append({'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'})
       parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric'})
 
-    print 'FATTI PARAMS'
-
     parts.append({'path':'.WAVE_PARAMS', 'type':'structure'})
     waveParNames = ['bvAddRef','deltaIpRef','ipRef','normIpRef','iFSAddRef_1','iFSAddRef_2','iFSAddRef_3','iFSAddRef_4','iFSAddRef_5',
         'iFSAddRef_6','iFSAddRef_7','iFSAddRef_8','deltaIFSAddRef_1','deltaIFSAddRef_2','deltaIFSAddRef_3','deltaIFSAddRef_4',
 	'deltaIFSAddRef_5','deltaIFSAddRef_6','deltaIFSAddRef_7','deltaIFSAddRef_8','deltaHRef','pmatRef','pcatRef','tfatRef',
-	'fRef','btwRef','qRef', 'RplaCos2Ref', 'RplaCos3Ref', 'avgRplasmaRef', 'REF_DELTA_V']  
+	'fRef','btwRef','qRef', 'RplaCos2Ref', 'RplaCos3Ref', 'avgRplasmaRef', 'REF_DELTA_V']
     parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(waveParNames)})
-    print i, ' WAVES'
     for i in range(len(waveParNames)):
-      print 'WAVE', i
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':waveParNames[i]})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric', 'value':Data.compile('[0.,1.]')})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric', 'value':Data.compile('[0.,0.]')})
-    
+
     for i in range(len(waveParNames), 64):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    print 'PARTS FATTE!!!'
-

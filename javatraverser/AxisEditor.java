@@ -5,9 +5,8 @@ import java.awt.event.*;
 
 public class AxisEditor extends JPanel implements ActionListener, Editor
 {
-    ExprEditor expr_edit;
     RangeEditor range_edit;
-    LabeledExprEditor units_edit;
+    LabeledExprEditor expr_edit, units_edit;
     JComboBox combo;
     JPanel mode_panel;
     int mode_idx, curr_mode_idx;
@@ -64,13 +63,13 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	    case 0: return;
 	    case 1: 
 		range_edit = new RangeEditor(range);
-		units_edit = new LabeledExprEditor("Units: ", new ExprEditor(units, true));
+		units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
 		mode_panel.add(units_edit);
 		add(range_edit, "Center");
 		break;
 	    case 2: 
-		expr_edit = new ExprEditor(data, false, 8, 30);
-		units_edit = new LabeledExprEditor("Units: ", new ExprEditor(units, true));
+		expr_edit = new LabeledExprEditor(data);
+		units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
 		mode_panel.add(units_edit);
 		add(expr_edit, "Center");
 		break;
