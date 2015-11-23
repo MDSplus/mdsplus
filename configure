@@ -2958,19 +2958,21 @@ fi
       done
    fi
 
-saved_IFS=${IFS}
+
+_save_IFS=$IFS
 IFS="'"
-for x in ${ac_configure_args}; do
+
+ for x in ${ac_configure_args}; do
     # try to figure out if quoting was required for the $x
     if test "$x" == " "; then :
 
 else
 
     if test "$x" != "${x%=*}"; then :
-  x=${x%=*}"=\\\""${x#*=}"\\\""
+  x=${x%=*}"=\""${x#*=}"\""
 else
   if test "$x" != "${x%\\[:space:\]\*}"; then :
-  x="\\\""$x"\\\""
+  x="\""$x"\""
 else
   x="$x"
 fi
@@ -2979,8 +2981,10 @@ fi
     dk_configure_args="$dk_configure_args '$x'"
 
 fi
-done
-IFS=${saved_IFS}
+ done
+
+IFS=${_save_IFS}
+
 
 
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
@@ -3259,7 +3263,8 @@ _ASBOX
     $as_echo " --------------------------------- "
     $as_echo " docker-image      = ${DOCKER_IMAGE}"
     $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-    $as_echo " ac_configure_args = ${dk_configure_args}"
+    $as_echo " ac_configure_args = ${ac_configure_args}"
+    $as_echo " dk_configure_args = ${dk_configure_args}"
     $as_echo " configure command = ${0}"
     $as_echo " configure name    = $(basename ${0})"
     $as_echo " --------------------------------- "
@@ -3285,19 +3290,21 @@ _ASBOX
       done
    fi
 
-saved_IFS=${IFS}
+
+_save_IFS=$IFS
 IFS="'"
-for x in ${ac_configure_args}; do
+
+ for x in ${ac_configure_args}; do
     # try to figure out if quoting was required for the $x
     if test "$x" == " "; then :
 
 else
 
     if test "$x" != "${x%=*}"; then :
-  x=${x%=*}"=\\\""${x#*=}"\\\""
+  x=${x%=*}"=\""${x#*=}"\""
 else
   if test "$x" != "${x%\\[:space:\]\*}"; then :
-  x="\\\""$x"\\\""
+  x="\""$x"\""
 else
   x="$x"
 fi
@@ -3306,11 +3313,15 @@ fi
     _args="$_args '$x'"
 
 fi
-done
-IFS=${saved_IFS}
+ done
 
-saved_IFS=${IFS}
+IFS=${_save_IFS}
+
+
+
+_save_IFS=$IFS
 IFS="'"
+
  for x in ${_args}; do
     if test "$x" == " "; then :
   :
@@ -3322,14 +3333,16 @@ else
 fi
 fi
  done
-IFS=${saved_IFS}
+
+IFS=${_save_IFS}
+
 
          as_fn_append dk_configure_args " "
          if ${DOCKER_IMAGE+:} false; then :
-  as_fn_append dk_configure_args "DOCKER_IMAGE=\\\"${DOCKER_IMAGE}\\\" "
+  as_fn_append dk_configure_args "DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "
 fi;
          if ${DOCKER_CONTAINER+:} false; then :
-  as_fn_append dk_configure_args "DOCKER_CONTAINER=\\\"${DOCKER_CONTAINER}\\\" "
+  as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
 fi;
 
 
@@ -3337,10 +3350,18 @@ fi;
 
          $as_echo " ------------------------- "
          $as_echo " DOCKER CONFIGURE COMMAND: "
-         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \"; exit 0;          "
+         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} $(
+echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) $(
+echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) \"; exit 0;          "
          $as_echo " ------------------------- "
 
-                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} ${dk_configure_args} HAVE_DOCKER=\\\"no\\\" \"; exit 0;
+                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} $(
+echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) $(
+echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) \"; exit 0;
 
 
 
@@ -12686,6 +12707,7 @@ fi
 esac
 
 # MACOS: add --dsymutil=yes to valgrind
+
 
 
 
