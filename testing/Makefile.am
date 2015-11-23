@@ -42,36 +42,43 @@ TEST_SUBDIRS = \
                mdsobjects/cpp/testing
 #              testing/selftest
 
+TEST_OUTDIR  ?= ${top_builddir}/testing
+
+.ONESHELL:
+print_outfiles:
+	@
+	echo $(TEST_OUTFILES);
+	echo $(TEST_OUTDIR);
 
 .ONESHELL:
 build_tests: $(MdsTestShr)
-	@ :; \
-	list='$(TEST_SUBDIRS)'; \
-	status=0; \
-	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
-	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
-	 ex_taps="$${ex_taps} $$(echo $${subdir} | sed 's|/|_|g').tap"; \
-	done; \
-	echo; \
-	echo " COMPONENTS WITH ERRORS FOUND: $${status} "; \
-	echo; \
-	echo " ------- COPYING TAP SUITES into ${top_builddir}/testing: ";\
-	$(am__cd) ${top_builddir}; \
-	for subdir in $$list; do \
-	 echo "$(INSTALL) $${subdir}/$(TEST_SUITE_TAP) testing/$$(echo $${subdir} | sed 's|/|_|g').tap;"; \
-	 $(INSTALL) $${subdir}/$(TEST_SUITE_TAP) testing/$$(echo $${subdir} | sed 's|/|_|g').tap; \
-	done; \
-	echo " -------- CUT HERE for Jenkins inclusion --------------- ";\
-	for i in $${taps}; do \
-	echo "$$i"; \
-	done; \
-	echo " ------------------------------------------------------- "; \
+	@
+	list='$(TEST_SUBDIRS)';
+	status=0;
+	for subdir in $$list; do echo "Making in $$subdir";
+	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1));
+	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)";	 
+	done;
+	echo
+	echo " COMPONENTS WITH ERRORS FOUND: $${status} "
+	echo
+	echo " ------- SAVING TAP SUITES into ${TEST_OUTDIR}: "
+	$(am__cd) ${top_builddir};
+	$(MKDIR_P) ${TEST_OUTDIR};
+	for subdir in $$list; do 
+	 echo "$(INSTALL) $${subdir}/$(TEST_SUITE_TAP) ${TEST_OUTDIR}/$$(echo $${subdir} | sed 's|/|_|g').tap;";
+	 $(INSTALL) $${subdir}/$(TEST_SUITE_TAP) ${TEST_OUTDIR}/$$(echo $${subdir} | sed 's|/|_|g').tap;
+	done;
+	echo " -------- CUT HERE for Jenkins inclusion --------------- "
+	for i in $${taps}; do
+	echo "$$i"
+	done;
+	echo " ------------------------------------------------------- "
 	exit $${status}
 
 .ONESHELL:
 clean_tests: 
-	@ :; \
+	@
 	list='$(TEST_SUBDIRS)'; \
 	for subdir in $$list; do echo "Cleaning in $$subdir"; \
 	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \

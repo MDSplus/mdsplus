@@ -64,7 +64,9 @@ MOSTLYCLEANFILES = \
 libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
+.ONESHELL:
 print:
+	@
 	echo "--------------------------------------------------------------";
 	echo "host = ${host}";
 	echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
@@ -73,8 +75,9 @@ print:
 	echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
 	echo "MAKE = ${MAKE}"
 	echo "--------------------------------------------------------------";
+	$(tests_config_dump);
 
-console:
+wineconsole:
 	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 

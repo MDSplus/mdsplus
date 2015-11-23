@@ -26,6 +26,9 @@ cd /buildsrc
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
+
+echo " --- MAKING TESTS 64bit --- "
+make tests
 make install
 make clean >/dev/null;
 ./configure --prefix=/buildroot/usr/local/mdsplus \
@@ -49,6 +52,9 @@ then
 else
   export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
 fi
+
+echo " --- MAKING TESTS 32bit --- "
+make tests
 make install
 make clean >/dev/null;
 #

@@ -735,6 +735,15 @@ _tap_py_execute = \
  tr.run(tests); 
 
 
+#prova:
+#	echo $(TEST_LOGS);
+#	python -c "${_tap_py_execute}" pyex1;
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  select test form env variable  //////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+TEST_BUILDTYPE = local
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -1318,18 +1327,29 @@ uninstall-am: uninstall-binPROGRAMS
 
 include @top_builddir@/Makefile.inc
 
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  select test form env variable  //////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
+
+define tests_config_dump
+echo 
+echo " ### CONFIGURATION DUMP: ###"
+echo 
+echo "  # test-suite related:";
+echo "  TEST_BUILDTYPE=${TEST_BUILDTYPE}";
+echo 
+echo "  # flags:";
+echo "  CFLAGS=\"${CFLAGS}\"";
+echo "  CXXFLAGS=\"${CXXFLAGS}\"";
+echo "  CPPFLAGS=\"${CPPFLAGS}\"";
+echo "  LDFLAGS=\"${LDFLAGS}\"";
+echo "  LIBS=\"${LIBS}\"";
+echo "  AM_LDFLAGS=\"${AM_LDFLAGS}\"";
+echo "  AM_LIBS=\"${AM_LIBS}\"";
+echo "  LDADD=\"${LDADD}\"";
+echo 
+endef
 
 tests:
 	echo "Making tests ... "
@@ -1388,7 +1408,9 @@ clean-local-tests:
 libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
+.ONESHELL:
 print:
+	@
 	echo "--------------------------------------------------------------";
 	echo "host = ${host}";
 	echo "TESTS_ENVIRONMENT = ${TESTS_ENVIRONMENT}";
@@ -1397,8 +1419,9 @@ print:
 	echo "%PATH% = $(shell ${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' )"
 	echo "MAKE = ${MAKE}"
 	echo "--------------------------------------------------------------";
+	$(tests_config_dump);
 
-console:
+wineconsole:
 	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 all-local: $(TESTS) libMdsTestDummy.so
