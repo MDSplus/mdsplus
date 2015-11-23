@@ -188,7 +188,7 @@ class TreeNode(_data.Data):
             return ans
         raise AttributeError('Attribute %s is not defined' % (name,))
 
-    def __init__(self,n,tree=None):
+    def __init__(self,n,tree=None,treeref=False):
         """Initialze TreeNode
         @param n: Index of the node in the tree.
         @type n: int
@@ -197,7 +197,10 @@ class TreeNode(_data.Data):
         """
         self.__dict__['nid']=int(n);
         if tree is None:
-            self.tree=_tree.Tree()
+            if treeref:
+                self.tree=_tree.TreeRef()
+            else:
+                self.tree=_tree.Tree()
         else:
             self.tree=tree.copy()
 
