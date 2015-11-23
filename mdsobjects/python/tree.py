@@ -671,3 +671,16 @@ class Tree(object):
             Tree.unlock()
         if not (status & 1):
             raise _Exceptions.statusToException(status)
+
+class TreeRef(Tree):
+    """The TreeRef class uses the current global dbid ctx to construct a tree reference object.
+    Unlike Tree instances created with no arguments, TreeRef instances do not affect the global
+    dbid ctx when they are deleted."""
+    
+    def __init__(self):
+        pass
+    def __del__(self):
+        pass
+    def _getCtx(self):
+        return _treeshr.TreeGetContext()
+    ctx=property(_getCtx)
