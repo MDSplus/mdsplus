@@ -1,8 +1,8 @@
 #define FORMATFILE "/home/mdsplus/cygnet.dat"
-#define FORMAT  "default"	  // NSTC S-Video on input 1
-#define UNITS	1
+#define FORMAT  "default"      // NSTC S-Video on input 1
+#define UNITS    1
 #define UNITSMAP    ((1<<UNITS)-1)  // shorthand - bitmap of all units
-#define DRIVERPARMS ""	      // default
+#define DRIVERPARMS ""          // default
 
 #include <math.h>
 #include <stdio.h>
@@ -17,7 +17,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include <xcliball.h>		// driver function prototypes
+#include <xcliball.h>        // driver function prototypes
 #include <cammdsutils.h>    //Camera MDSplus support
 #include "cygnet.h"
 static void printFrameInfo(void);
@@ -45,9 +45,9 @@ void sigintfunc(int sig)
      * Printing the message isn't important anyhow.
      *
     if (sig == SIGINT)
-	printf("Break\n");
+    printf("Break\n");
     if (sig == SIGFPE)
-	printf("Float\n");
+    printf("Float\n");
     */
 
     pxd_PIXCIclose();
@@ -74,18 +74,18 @@ int epixOpen(char *confFile, int *xPixels, int *yPixels)
     printf("Opening EPIX(R) PIXCI(R) Frame Grabber,\n");
     printf("using configuration parameters '%s',\n", DRIVERPARMS? DRIVERPARMS: "default");
 #endif
-	status = pxd_PIXCIopen(DRIVERPARMS, "", confFile); // confFile includes exposure time which seems to take precedence over later serial commands
+    status = pxd_PIXCIopen(DRIVERPARMS, "", confFile); // confFile includes exposure time which seems to take precedence over later serial commands
     if (status >= 0)
     {
 #ifdef DEBUG
-	    printf("Open OK\n");
+        printf("Open OK\n");
 #endif
         isOpen = true;
     }
     else
     {
-	    printf("Open Error %d\a\a\n", status);
-	    pxd_mesgFault(UNITSMAP);
+        printf("Open Error %d\a\a\n", status);
+        pxd_mesgFault(UNITSMAP);
     }
     printFrameInfo();
     printImageInfo();
@@ -149,8 +149,9 @@ void epixStopVideoCapture(int id)
     pxd_goUnLive(id); // should id be converted to a unitmap?
 }
 
-//Capture either a single frame or timeouts. Return the tick count of the last frame or
-//the passed baseTicks in case of timeout
+//Capture either a single frame or timeouts.
+//Returns 1 on capture and 0 on timeout
+//Return the tick count of the last frame or the passed baseTicks in case of timeout
 
 //frameIdx: frame index (from 0 onwards)
 //bufIdx: index of the last captured frame grabber buffer (-1 the first time)
@@ -187,26 +188,26 @@ int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixe
     {
         int lastCaptured = pxd_capturedBuffer(unitMap);
         if(lastCaptured != lastBufIdx) //A new frame arrived
-	    {
+        {
             currTicks = pxd_capturedSysTicks(unitMap);
             if(bufIdx == -1) //first frame
                 currTime = 0;
             else
                 currTime = (currTicks - baseTicks) * sec_per_tick;
             frame = new unsigned short[xPixels * yPixels];
-	        readPixels = pxd_readushort(unitMap, lastCaptured, 0, 0, xPixels, yPixels, frame, xPixels * yPixels, (char *)"Grey");
-	        if(readPixels != xPixels * yPixels)
-	        {
-	            if (readPixels < 0)
-		            printf("pxd_readushort: %s\n", pxd_mesgErrorCode(readPixels));
-	            else
-		            printf("pxd_readushort error: %d != %d\n", readPixels, xPixels * yPixels);
-	            return 0;
+            readPixels = pxd_readushort(unitMap, lastCaptured, 0, 0, xPixels, yPixels, frame, xPixels * yPixels, (char *)"Grey");
+            if(readPixels != xPixels * yPixels)
+            {
+                if (readPixels < 0)
+                    printf("pxd_readushort: %s\n", pxd_mesgErrorCode(readPixels));
+                else
+                    printf("pxd_readushort error: %d != %d\n", readPixels, xPixels * yPixels);
+                return 0;
             }
 #ifdef DEBUG
             printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
 #endif
-	        camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
+            camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
             *retFrameIdx = frameIdx + 1;
             if(frameIdx == 0)
                 *retBaseTicks = currTicks;
@@ -215,10 +216,10 @@ int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixe
             return 1;
         }
         else //No new frame
-	       nanosleep(&waitTime, NULL);
-        return 0;
+           nanosleep(&waitTime, NULL);
     }
 //If code arrives here timeout occurred
+return 0;
 }
 
 static int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readBytes)
@@ -239,29 +240,29 @@ static int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, in
     waitTime.tv_nsec = 20000000; //20ms
     if(!initialized)
     {
-	    r = pxd_serialConfigure(unitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
+        r = pxd_serialConfigure(unitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
         if (r < 0)
-	    {
-	            printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
-                return r; // error
-	    }
-	    initialized = 1;
+        {
+            printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
+            return r; // error
+        }
+        initialized = 1;
     }
     nanosleep(&waitTime, NULL);
     r = pxd_serialWrite(unitMap, 0, outBuf, outBytes+1);
     if (r < 0)
     {
-	    printf("ERROR IN SERIAL WRITE\n");
+        printf("ERROR IN SERIAL WRITE\n");
         return r; // error
     }
     nanosleep(&waitTime, NULL);
     r = pxd_serialRead(unitMap, 0, readBuf, readBytes);
     if (r < 0)
     {
-	    printf("ERROR IN SERIAL READ\n");
+        printf("ERROR IN SERIAL READ\n");
     }
     if(r != readBytes)
-	printf("ERROR IN SERIAL READ: LESS BYTES READ THAN EXPECTED %d %d\n", r, readBytes);
+    printf("ERROR IN SERIAL READ: LESS BYTES READ THAN EXPECTED %d %d\n", r, readBytes);
     return r;
 }
 
@@ -305,13 +306,13 @@ static float getPCBTemp(int id)
    // char queryBuf[] = {0x4F, 0x56, 0x50};
 
     char queryBuf1[] = {
-	0x53, 0xE0, 0x02, 0x70, 0x00, 0x50};
+    0x53, 0xE0, 0x02, 0x70, 0x00, 0x50};
     char queryBuf2[] = {
-	0x53, 0xE1, 0x01, 0x50};
+    0x53, 0xE1, 0x01, 0x50};
     char queryBuf3[] = {
-	0x53, 0xE0, 0x02, 0x71, 0x00, 0x50};
+    0x53, 0xE0, 0x02, 0x71, 0x00, 0x50};
     char queryBuf4[] = {
-	0x53, 0xE1, 0x01, 0x50};
+    0x53, 0xE1, 0x01, 0x50};
 
     //doTransaction(id, queryBuf, 3, retBuf, 2);
     doTransaction(id, queryBuf1, 6, retBuf, 1);
