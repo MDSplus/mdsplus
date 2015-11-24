@@ -26,6 +26,18 @@ AC_DEFUN([DK_CHECK_DOCKER_ARG],[
           [AS_VAR_SET([DOCKER_CONTAINER],["${with_docker_container}"])],
           [AS_UNSET([DOCKER_CONTAINER])]
           ))
+
+   AC_ARG_WITH(docker-url,
+               [AS_HELP_STRING([--with-docker-url],[specify docker url])],  
+               [],
+               [AS_VAR_SET_IF([DOCKER_URL],
+                              [AS_VAR_SET([with_docker_url], ["${DOCKER_URL}"])],
+                              [])])
+   AS_VAR_SET_IF([with_docker_url],
+   AS_IF( [test x"${with_docker_url}" != x"no"],
+          [AS_VAR_SET([DOCKER_URL],["${with_docker_url}"])],
+          [AS_UNSET([DOCKER_URL])]
+          ))
 ])
 
 
@@ -69,6 +81,7 @@ AC_DEFUN([DK_CMD_CNTRUN], m4_normalize([
           -e http_proxy=${http_proxy}
           -e https_proxy=${https_proxy}
           -v /tmp/.X11-unix:/tmp/.X11-unix 
+          -v /etc/resolv.conf:/etc/resolv.conf
           -v /etc/passwd:/etc/passwd 
           -v /etc/group:/etc/group 
           -v /etc/shadow:/etc/shadow 
@@ -90,6 +103,7 @@ AC_DEFUN([DK_CONFIGURE],[
          AS_VAR_APPEND([dk_configure_args],[" "])
          AS_VAR_SET_IF([DOCKER_IMAGE],AS_VAR_APPEND([dk_configure_args],["DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "]));
          AS_VAR_SET_IF([DOCKER_CONTAINER],AS_VAR_APPEND([dk_configure_args],["DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "]));
+         AS_VAR_SET_IF([DOCKER_FILE],AS_VAR_APPEND([dk_configure_args],["DOCKER_FILE=\"${DOCKER_FILE}\" "]));
     
          m4_pushdef([dk_configure_cmd], m4_normalize([
            docker exec -t
@@ -116,6 +130,11 @@ AC_DEFUN([DK_CONFIGURE],[
 dnl sets DOCKER_CONTAINER var if not set to a unique name based on pwd dir.
 AC_DEFUN([DK_SET_DOCKER_CONTAINER], [
          AS_VAR_SET_IF([DOCKER_CONTAINER],,AS_VAR_SET([DOCKER_CONTAINER],
+         [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
+])
+
+AC_DEFUN([DK_SET_DOCKER_IMAGE], [
+         AS_VAR_SET_IF([DOCKER_IMAGE],,AS_VAR_SET([DOCKER_IMAGE],
          [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
 ])
 
@@ -209,9 +228,7 @@ AC_DEFUN([DK_START_IMGCNT], [
    AS_IF([test -n "${dk_id}" -a -n "${dk_img}"],
          [AS_IF([test x"${dk_img}" == x"$1"],
          [AC_MSG_NOTICE("container found of the correct image")],
-         [AC_MSG_ERROR("container does not belong to the correct image")])])
-
-   
+         [AC_MSG_ERROR("container does not belong to the correct image")])])   
    
    dnl find if container exists or start it
    AS_IF([test -n "${dk_id}"],,
@@ -219,43 +236,59 @@ AC_DEFUN([DK_START_IMGCNT], [
    DK_START_CNT(${DOCKER_CONTAINER})
 ])
 
-  
 
-  AC_DEFUN([_dk_set_docker_build_debug],[
-    AS_ECHO(" --------------------------------- ")
-    AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
-    AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
-    AS_ECHO(" ac_configure_args = ${ac_configure_args}")
-    AS_ECHO(" dk_configure_args = ${dk_configure_args}")
-    AS_ECHO(" configure command = ${0}")
-    AS_ECHO(" configure name    = $(basename ${0})")
-    AS_ECHO(" --------------------------------- ")
-  ])
+AC_DEFUN([DK_START_URL], [   
+   AS_VAR_SET([dk_build_args])
+   AS_VAR_SET_IF([http_proxy], [AS_VAR_APPEND([dk_build_args],["--build-arg http_proxy=\"${http_proxy}\" "])])
+   AS_VAR_SET_IF([https_proxy],[AS_VAR_APPEND([dk_build_args],["--build-arg https_proxy=\"${https_proxy}\" "])])
+   
+   dnl TODO: check status
+   AS_VAR_SET_IF([DOCKER_URL],
+                 [echo docker build ${dk_build_args} -t $2 $1];
+                 [eval docker build ${dk_build_args} -t $2 $1])
+                 
+])
+
+
+AC_DEFUN([AS_BANNER],[
+          AS_ECHO 
+          AS_BOX([// $1 //////], [\/])
+          AS_ECHO 
+         ])
+
+AC_DEFUN([_dk_set_docker_build_debug],[
+         AS_ECHO(" --------------------------------- ")
+         AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
+         AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
+         AS_ECHO(" ac_configure_args = ${ac_configure_args}")
+         AS_ECHO(" dk_configure_args = ${dk_configure_args}")
+         AS_ECHO(" configure command = ${0}")
+         AS_ECHO(" configure name    = $(basename ${0})")
+         AS_ECHO(" --------------------------------- ")
+         ])
 
 
 AC_DEFUN([DK_SET_DOCKER_BUILD],[
-
   DK_CHECK_DOCKER_ARG  
 
   AS_VAR_IF([HAVE_DOCKER],[yes], [
-  AS_VAR_SET_IF([DOCKER_IMAGE], 
-    [AS_ECHO
-     AS_BOX([//// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   //////], [\/])
-       DK_START_IMGCNT(${DOCKER_IMAGE})
-     AS_ECHO
-    ],
+
+  AS_VAR_SET_IF([DOCKER_URL],    
+    [AS_BANNER(["BUILDING IMAGE FOR URL: ${DOCKER_URL}"])
+     DK_SET_DOCKER_IMAGE
+     DK_START_URL(${DOCKER_URL},${DOCKER_IMAGE})])
+     
+  AS_VAR_SET_IF([DOCKER_IMAGE],
+    [AS_BANNER(["STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}"])
+     DK_START_IMGCNT(${DOCKER_IMAGE})],
     [AS_VAR_SET_IF([DOCKER_CONTAINER],
-      [AS_ECHO
-       AS_BOX([//// STARTING CONTAINER: ${DOCKER_CONTAINER}   //////], [\/])
-         DK_START_CNT(${DOCKER_CONTAINER})
-       AS_ECHO
-      ])
+     [AS_BANNER(["STARTING CONTAINER: ${DOCKER_CONTAINER}"])
+      DK_START_CNT(${DOCKER_CONTAINER})])
     ])
   
   AS_VAR_SET_IF([DOCKER_CONTAINER],[
-    AS_ECHO
-    AS_BOX([//// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   //////], [\/])
-      _dk_set_docker_build_debug
+    AS_BANNER(["EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}"])
+    _dk_set_docker_build_debug
     AS_ECHO          
     AS_ECHO(" --- ")
     AS_ECHO(" docker configure command: ")
@@ -266,11 +299,12 @@ AC_DEFUN([DK_SET_DOCKER_BUILD],[
     DK_CONFIGURE
    ])
    
-  ],
-  AS_VAR_SET_IF([DOCKER_CONTAINER],[
-                 DK_WRITE_DMAKEFILE
-                 DK_SET_TARGETS
-                ]))
+  ],[
+   AS_VAR_SET_IF([DOCKER_CONTAINER],[
+                  DK_WRITE_DMAKEFILE
+                  DK_SET_TARGETS
+                 ])
+  ])
   
 ])  
 

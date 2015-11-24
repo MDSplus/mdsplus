@@ -953,6 +953,7 @@ ac_user_opts='
 enable_option_checking
 with_docker_image
 with_docker_container
+with_docker_url
 enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
@@ -1668,6 +1669,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-docker-image     specify docker images
   --with-docker-container specify docker container
+  --with-docker-url       specify docker url
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
@@ -2851,7 +2853,6 @@ if test "x$HAVE_DOCKER" = xno; then :
 fi
 
 
-
    if ${HAVE_DOCKER+:} false; then :
 
 else
@@ -2934,13 +2935,68 @@ fi
 fi
 
 
+# Check whether --with-docker-url was given.
+if test "${with_docker_url+set}" = set; then :
+  withval=$with_docker_url;
+else
+  if ${DOCKER_URL+:} false; then :
+  with_docker_url="${DOCKER_URL}"
+fi
+fi
+
+   if ${with_docker_url+:} false; then :
+  if test x"${with_docker_url}" != x"no"; then :
+  DOCKER_URL="${with_docker_url}"
+else
+  { DOCKER_URL=; unset DOCKER_URL;}
+
+fi
+fi
+
+
   if test "x$HAVE_DOCKER" = xyes; then :
 
-  if ${DOCKER_IMAGE+:} false; then :
-  $as_echo
-     sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
-## //// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   ////// ##
+
+  if ${DOCKER_URL+:} false; then :
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "BUILDING IMAGE FOR URL: ${DOCKER_URL}" ////// ##
 _ASBOX
+          $as_echo
+
+
+         if ${DOCKER_IMAGE+:} false; then :
+
+else
+  DOCKER_IMAGE=build_$(echo $(pwd) | md5sum | awk '{print $1}')
+fi
+
+
+   dk_build_args=
+   if ${http_proxy+:} false; then :
+  as_fn_append dk_build_args "--build-arg http_proxy=\"${http_proxy}\" "
+fi
+   if ${https_proxy+:} false; then :
+  as_fn_append dk_build_args "--build-arg https_proxy=\"${https_proxy}\" "
+fi
+
+      if ${DOCKER_URL+:} false; then :
+  echo docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL};
+                 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
+fi
+
+
+fi
+
+  if ${DOCKER_IMAGE+:} false; then :
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}" ////// ##
+_ASBOX
+          $as_echo
+
 
 
          if ${DOCKER_CONTAINER+:} false; then :
@@ -3024,12 +3080,10 @@ else
 fi
 fi
 
-
-
       if test -n "${dk_id}"; then :
 
 else
-  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
+  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
@@ -3136,14 +3190,15 @@ fi
 esac
 
 
-     $as_echo
-
 else
   if ${DOCKER_CONTAINER+:} false; then :
-  $as_echo
-       sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
-## //// STARTING CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "STARTING CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
+          $as_echo
+
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
@@ -3248,27 +3303,28 @@ fi
     $as_echo "could not start docker container" ;;
 esac
 
-       $as_echo
-
 fi
 
 fi
 
   if ${DOCKER_CONTAINER+:} false; then :
 
-    $as_echo
-    sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
-## //// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   ////// ##
-_ASBOX
 
-    $as_echo " --------------------------------- "
-    $as_echo " docker-image      = ${DOCKER_IMAGE}"
-    $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-    $as_echo " ac_configure_args = ${ac_configure_args}"
-    $as_echo " dk_configure_args = ${dk_configure_args}"
-    $as_echo " configure command = ${0}"
-    $as_echo " configure name    = $(basename ${0})"
-    $as_echo " --------------------------------- "
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
+_ASBOX
+          $as_echo
+
+
+         $as_echo " --------------------------------- "
+         $as_echo " docker-image      = ${DOCKER_IMAGE}"
+         $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+         $as_echo " ac_configure_args = ${ac_configure_args}"
+         $as_echo " dk_configure_args = ${dk_configure_args}"
+         $as_echo " configure command = ${0}"
+         $as_echo " configure name    = $(basename ${0})"
+         $as_echo " --------------------------------- "
 
     $as_echo
     $as_echo " --- "
@@ -3345,6 +3401,9 @@ fi;
          if ${DOCKER_CONTAINER+:} false; then :
   as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
 fi;
+         if ${DOCKER_FILE+:} false; then :
+  as_fn_append dk_configure_args "DOCKER_FILE=\"${DOCKER_FILE}\" "
+fi;
 
 
 
@@ -3371,7 +3430,8 @@ fi
 
 
 else
-  if ${DOCKER_CONTAINER+:} false; then :
+
+   if ${DOCKER_CONTAINER+:} false; then :
 
 
 
@@ -3458,6 +3518,7 @@ _as_read_EOF
 
 
 fi
+
 fi
 
 
