@@ -4,7 +4,6 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 
-
 dnl DK_TEST
 
 dnl docker helpers
@@ -1012,6 +1011,7 @@ TS_SELECT
  AC_SUBST(TS_LOG_COMPILER)
  AC_SUBST(TS_LOG_DRIVER)
  AC_SUBST(TS_PY_TAP_COMPILER)
+ AC_SUBST(TS_PY_TAP_FLAGS)
 
 dnl AC_MSG_NOTICE(********************************)
 dnl AC_MSG_NOTICE(${TS_TESTS_ENVIRONMENT})

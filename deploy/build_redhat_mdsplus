@@ -28,7 +28,8 @@ make clean > /dev/null
 env LANG=en_US.UTF-8 make
 
 echo " --- MAKING TESTS 64bit --- "
-make tests
+make -k tests TEST_OUTDIR=/test_results/tap64 
+
 make install
 make clean >/dev/null;
 ./configure --prefix=/buildroot/usr/local/mdsplus \
@@ -54,7 +55,8 @@ else
 fi
 
 echo " --- MAKING TESTS 32bit --- "
-make tests
+make -k tests TEST_OUTDIR=/test_results/tap32
+
 make install
 make clean >/dev/null;
 #

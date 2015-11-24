@@ -42,7 +42,7 @@ TEST_SUBDIRS = \
                mdsobjects/cpp/testing
 #              testing/selftest
 
-TEST_OUTDIR  ?= ${top_builddir}/testing
+TEST_OUTDIR    ?= ${top_builddir}/testing
 
 .ONESHELL:
 print_outfiles:
@@ -74,7 +74,8 @@ build_tests: $(MdsTestShr)
 	echo "$$i"
 	done;
 	echo " ------------------------------------------------------- "
-	exit $${status}
+	exit $${status};
+	
 
 .ONESHELL:
 clean_tests: 

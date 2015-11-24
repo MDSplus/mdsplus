@@ -123,11 +123,13 @@ AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([TS_TESTS_ENVIRONMENT])
  AS_VAR_SET([TS_LOG_COMPILER])
  AS_VAR_SET([TS_PY_TAP_COMPILER])
+ AS_VAR_SET([TS_PY_TAP_FLAGS])
  AS_VAR_SET([TS_LOG_DRIVER],["\$(top_srcdir)/conf/test-driver"])
 
 
- TS_CHECK_PYTHON_TAP( [$PYTHON],
-   AS_VAR_APPEND([TS_PY_TAP_COMPILER],["${NOSETESTS}  --with-tap --tap-stream"]),
+ TS_CHECK_PYTHON_TAP( [$PYTHON], 
+   [AS_VAR_APPEND([TS_PY_TAP_COMPILER],["${NOSETESTS}"])
+    AS_VAR_APPEND([TS_PY_TAP_FLAGS],   ["--with-tap --tap-stream"])],
    AS_VAR_APPEND([TS_PY_TAP_COMPILER],[TS_LOG_SKIP]))
 
  dnl this calls valgrind check with args

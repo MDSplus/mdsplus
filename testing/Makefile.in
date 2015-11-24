@@ -413,6 +413,7 @@ THREAD = @THREAD@
 TS_LOG_COMPILER = @TS_LOG_COMPILER@
 TS_LOG_DRIVER = @TS_LOG_DRIVER@
 TS_PY_TAP_COMPILER = @TS_PY_TAP_COMPILER@
+TS_PY_TAP_FLAGS = @TS_PY_TAP_FLAGS@
 TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -534,6 +535,7 @@ TEST_BUILDTYPE = local
 TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 LOG_COMPILER = @TS_LOG_COMPILER@
 TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
+TAP_PY_LOG_FLAGS = @TS_PY_TAP_FLAGS@
 
 # use default ...
 # LOG_DRIVER        = @TS_LOG_DRIVER@
@@ -1010,11 +1012,11 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
 
 	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
+	  PY_LOG_COMPILER=$(TAP_PY_LOG_COMPILER) \
 	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
-	 || exit 1;
+	  || exit 1;
 
 $(TEST_SUITE_LOG):
 
@@ -1037,7 +1039,7 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 #              testing/selftest
 
-TEST_OUTDIR  ?= ${top_builddir}/testing
+TEST_OUTDIR    ?= ${top_builddir}/testing
 
 .ONESHELL:
 print_outfiles:
@@ -1069,7 +1071,7 @@ build_tests: $(MdsTestShr)
 	echo "$$i"
 	done;
 	echo " ------------------------------------------------------- "
-	exit $${status}
+	exit $${status};
 
 .ONESHELL:
 clean_tests: 

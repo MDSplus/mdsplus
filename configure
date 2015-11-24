@@ -763,6 +763,7 @@ DX_PROJECT
 HAVE_CUTE_DOXYGEN_FALSE
 HAVE_CUTE_DOXYGEN_TRUE
 DOXYGEN
+TS_PY_TAP_FLAGS
 TS_PY_TAP_COMPILER
 TS_LOG_DRIVER
 TS_LOG_COMPILER
@@ -2840,7 +2841,6 @@ fi
 ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
-
 
 
 
@@ -11948,6 +11948,7 @@ $as_echo " /////////////////////////////////////////////////////////////////// "
  TS_TESTS_ENVIRONMENT=
  TS_LOG_COMPILER=
  TS_PY_TAP_COMPILER=
+ TS_PY_TAP_FLAGS=
  TS_LOG_DRIVER="\$(top_srcdir)/conf/test-driver"
 
 
@@ -12068,7 +12069,8 @@ fi
 
 
   if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
-  eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}  --with-tap --tap-stream"
+  eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}"
+    as_fn_append TS_PY_TAP_FLAGS "--with-tap --tap-stream"
 else
   eval as_fn_append TS_PY_TAP_COMPILER "sh -c 'exit 77'"
 fi
@@ -12707,6 +12709,7 @@ fi
 esac
 
 # MACOS: add --dsymutil=yes to valgrind
+
 
 
 
