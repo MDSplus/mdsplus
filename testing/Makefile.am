@@ -74,7 +74,7 @@ build_tests: $(MdsTestShr)
 	echo "$$i"
 	done;
 	echo " ------------------------------------------------------- "
-	exit $${status};
+	## exit $${status};
 	
 
 .ONESHELL:
