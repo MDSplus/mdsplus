@@ -5,10 +5,10 @@
 #define DRIVERPARMS ""	      // default
 
 #include <math.h>
-#include <stdio.h>		
-#include <signal.h>		
-#include <stdlib.h>		
-#include <stdarg.h>		
+#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include <termios.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -75,7 +75,7 @@ int epixOpen(char *confFile, int *xPixels, int *yPixels)
     printf("using configuration parameters '%s',\n", DRIVERPARMS? DRIVERPARMS: "default");
 #endif
 	status = pxd_PIXCIopen(DRIVERPARMS, "", confFile); // confFile includes exposure time which seems to take precedence over later serial commands
-    if (status >= 0) 
+    if (status >= 0)
     {
 #ifdef DEBUG
 	    printf("Open OK\n");
@@ -149,7 +149,7 @@ void epixStopVideoCapture(int id)
     pxd_goUnLive(id); // should id be converted to a unitmap?
 }
 
-//Capture either a single frame or timeouts. Return the tick count of the last frame or 
+//Capture either a single frame or timeouts. Return the tick count of the last frame or
 //the passed baseTicks in case of timeout
 
 //frameIdx: frame index (from 0 onwards)
@@ -162,12 +162,12 @@ void epixStopVideoCapture(int id)
 //listPtr: pointer to Internal List object for saving frames
 //timeoutMs: timeout in milliseconds
 //retBaseTicks, retBufIdx, retFrameIdx: returned values for frameIdx, bufIdx, baseTicks. Changed onlly when frame acquired
-void epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixels, int yPixels, int dataNid, int timeNid, void *treePtr, void *listPtr, int timeoutMs, int *retFrameIdx, int *retBufIdx, int *retBaseTicks, float *retDuration)
+int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixels, int yPixels, int dataNid, int timeNid, void *treePtr, void *listPtr, int timeoutMs, int *retFrameIdx, int *retBufIdx, int *retBaseTicks, float *retDuration)
 {
     int unitMap = 1 << (idx - 1);
     int lastBufIdx, currTicks;
     int readPixels;
-    float currTime; 
+    float currTime;
     struct timespec waitTime;
     pxbuffer_t  lastbuf = 0;
     xPixels = pxd_imageXdim();
@@ -181,12 +181,12 @@ void epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPix
         lastBufIdx = bufIdx;
     int maxCount = timeoutMs/5; //Maximum number of iterations before timing out
     *retBaseTicks = baseTicks;
-    *retBufIdx = bufIdx;    
+    *retBufIdx = bufIdx;
     *retFrameIdx = frameIdx;  //Default values in case of timeout
     for(int i = 0; i < maxCount; i++)
-    {   
+    {
         int lastCaptured = pxd_capturedBuffer(unitMap);
-        if(lastCaptured != lastBufIdx) //A new frame arrived     
+        if(lastCaptured != lastBufIdx) //A new frame arrived
 	    {
             currTicks = pxd_capturedSysTicks(unitMap);
             if(bufIdx == -1) //first frame
@@ -201,7 +201,7 @@ void epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPix
 		            printf("pxd_readushort: %s\n", pxd_mesgErrorCode(readPixels));
 	            else
 		            printf("pxd_readushort error: %d != %d\n", readPixels, xPixels * yPixels);
-	            return;
+	            return 0;
             }
 #ifdef DEBUG
             printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
@@ -212,10 +212,11 @@ void epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPix
                 *retBaseTicks = currTicks;
             *retBufIdx = lastCaptured;
             *retDuration = (currTicks - *retBaseTicks) * sec_per_tick;
-            return;
+            return 1;
         }
         else //No new frame
-	        nanosleep(&waitTime, NULL);
+	       nanosleep(&waitTime, NULL);
+        return 0;
     }
 //If code arrives here timeout occurred
 }
@@ -237,7 +238,7 @@ static int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, in
     waitTime.tv_sec = 0;
     waitTime.tv_nsec = 20000000; //20ms
     if(!initialized)
-    {	
+    {
 	    r = pxd_serialConfigure(unitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
         if (r < 0)
 	    {
@@ -279,7 +280,7 @@ static float getCMOSTemp(int id)
     char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
     char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
- 
+
     doTransaction(id, queryBuf1, 6, retBuf, 1);
     doTransaction(id, queryBuf2, 6, retBuf, 1);
     doTransaction(id, queryBuf3, 5, retBuf, 1);
@@ -311,7 +312,7 @@ static float getPCBTemp(int id)
 	0x53, 0xE0, 0x02, 0x71, 0x00, 0x50};
     char queryBuf4[] = {
 	0x53, 0xE1, 0x01, 0x50};
- 
+
     //doTransaction(id, queryBuf, 3, retBuf, 2);
     doTransaction(id, queryBuf1, 6, retBuf, 1);
     doTransaction(id, queryBuf2, 4, retBuf, 2);
@@ -335,7 +336,7 @@ static float getFrameRate(int id)
     char queryBuf6[] = {0x53, 0xE1, 0x01, 0x50};
     char queryBuf7[] = {0x53, 0xE0, 0x01, 0xE0, 0x50};
     char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
- 
+
     doTransaction(id, queryBuf1, 5, retBuf, 2);
     doTransaction(id, queryBuf2, 4, retBuf, 3);
     frameRate |= ((retBuf[0] & 0x000000FF) << 24);
@@ -363,7 +364,7 @@ static void setFrameRate(int id, float inFrameRate)
     doTransaction(id, queryBuf2, 6, retBuf, 1);
     doTransaction(id, queryBuf3, 6, retBuf, 1);
     doTransaction(id, queryBuf4, 6, retBuf, 1);
-}   
+}
 
 static double getExposure(int id)
 {
@@ -380,7 +381,7 @@ static double getExposure(int id)
     char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
     char queryBuf9[] = {0x53, 0xE0, 0x01, 0xF1, 0x50};
     char queryBuf10[] = {0x53, 0xE1, 0x01, 0x50};
- 
+
     doTransaction(id, queryBuf1, 5, retBuf, 1);
     doTransaction(id, queryBuf2, 4, retBuf, 2);
     exposure |= ((retBuf[0] & 0x00000000000000FFL) << 32);
@@ -414,7 +415,7 @@ static void setExposure(int id, float exposureMs)
     doTransaction(id, queryBuf2, 6, retBuf, 1);
     doTransaction(id, queryBuf3, 6, retBuf, 1);
     doTransaction(id, queryBuf4, 6, retBuf, 1);
-}   
+}
 
 static float getGain(int id)
 {
@@ -425,7 +426,7 @@ static float getGain(int id)
     char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
     char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD6, 0x50};
     char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
- 
+
     doTransaction(id, queryBuf1, 5, retBuf, 2);
     doTransaction(id, queryBuf2, 4, retBuf, 3);
     gain |= ((retBuf[0] & 0x00FF) << 8);
@@ -437,7 +438,7 @@ static float getGain(int id)
 
 static char getTrigMode(int id)
 {
-    
+
     char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD4, 0x50};
     char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
     char retBuf[2];
@@ -449,7 +450,7 @@ static char getTrigMode(int id)
 
 static void setTrigMode(int id, char trigMode)
 {
-    
+
     char queryBuf1[] = {0x53, 0xE0, 0x02, 0xD4, trigMode, 0x50};
     char retBuf[2];
 
@@ -458,7 +459,7 @@ static void setTrigMode(int id, char trigMode)
 
 static char getBinning(int id)
 {
-    
+
     char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDB, 0x50};
     char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
     char retBuf[10];
@@ -477,7 +478,7 @@ static int getRoiXSize(int id)
     char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
     char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD8, 0x50};
     char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
- 
+
     doTransaction(id, queryBuf1, 5, retBuf, 1);
     doTransaction(id, queryBuf2, 4, retBuf, 2);
     size |= ((retBuf[0] & 0x000F) << 8);
@@ -496,7 +497,7 @@ static int getRoiXOffset(int id)
     char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
     char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDA, 0x50};
     char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
- 
+
     doTransaction(id, queryBuf1, 5, retBuf, 1);
     doTransaction(id, queryBuf2, 4, retBuf, 2);
     offset |= ((retBuf[0] & 0x000F) << 8);
@@ -521,7 +522,7 @@ static int getRoiYSize(int id)
     char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
     char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
- 
+
     doTransaction(id, queryBuf1, 6, retBuf, 1);
     doTransaction(id, queryBuf2, 6, retBuf, 1);
     doTransaction(id, queryBuf3, 5, retBuf, 1);
@@ -551,7 +552,7 @@ static int getRoiYOffset(int id)
     char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
     char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
- 
+
     doTransaction(id, queryBuf1, 6, retBuf, 1);
     doTransaction(id, queryBuf2, 6, retBuf, 1);
     doTransaction(id, queryBuf3, 5, retBuf, 1);
@@ -575,7 +576,7 @@ void epixSetConfiguration(int id, float frameRate, float exposure, char trigMode
 
     printf("READ EXPOSURE: %f\n", getExposure(id));
 }
-  
+
 void epixGetConfiguration(int id, float *PCBTemperature, float *CMOSTemperature, int *binning, int *roiXSize, int *roiXOffset, int *roiYSize, int *roiYOffset)
 {
     *roiXSize = getRoiXSize(id);
@@ -590,11 +591,8 @@ void epixGetConfiguration(int id, float *PCBTemperature, float *CMOSTemperature,
 #endif
 }
 
-void epixGetTemp(int id, int tempIdx, float *pcbTemp, float *cmosTemp, long *time)
+void epixGetTemp(int id, float *pcbTemp, float *cmosTemp)
 {
     *pcbTemp = getPCBTemp(id);
     *cmosTemp = getCMOSTemp(id);
-    struct timeval currTime;
-    gettimeofday(&currTime, NULL);
-    *time = currTime.tv_sec * 1000 + currTime.tv_usec/1000;
 }

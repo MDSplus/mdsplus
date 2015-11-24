@@ -1,8 +1,10 @@
-from MDSplus import Device, Data, Tree, Int32, Uint64, Float32, Float32Array
+from MDSplus import Device, Data, Tree, Dimension, Signal
+from MDSplus import Int32, Uint64Array, Uint16Array, Float32Array
+
 from threading import Thread
-from ctypes import CDLL, byref, c_float, c_long, c_int, c_void_p, c_char_p
+from ctypes import CDLL, byref, c_float, c_int, c_void_p, c_char_p
 from tempfile import mkstemp
-from time import time, sleep
+from time import sleep, time
 from os import close
 
 class CYGNET4K(Device):
@@ -55,14 +57,64 @@ class CYGNET4K(Device):
     tempworkers = {}
     workers = {}
     handels = {}
+    tempworker = None
+    worker = None
+    handle = None
+
+
+    class _mdsLib(object):
+        def camOpenTree(self,*args):
+            return
+        def camStartSaveDeferred(self,*args):
+            return
+        def camStopSave(self,*args):
+            return
+
+    class _raptorLib(object):
+        def epixClose(self):
+            return
+        def epixOpen(self,char_p_tmpPath, ref_xPixels, ref_yPixels):
+            ref_xPixels._obj.value=2048
+            ref_yPixels._obj.value=2048
+            return
+        def epixSetConfiguration(self,int_idx, float_frameRate, float_exposure, int_codedTrigMode):
+            return
+        def epixGetConfiguration(self,int_idx, ref_PCBTemperature, ref_CMOSTemperature, ref_binning, ref_roiXSize, ref_roiXOffset, ref_roiYSize, ref_roiYOffset):
+            ref_PCBTemperature._obj.value = 36.5
+            ref_CMOSTemperature._obj.value = 1752.6
+            ref_binning._obj.value = 0
+            ref_roiXSize._obj.value = 2048
+            ref_roiXOffset._obj.value = 0
+            ref_roiYSize._obj.value = 2048
+            ref_roiYOffset._obj.value = 0
+            return
+        def epixStartVideoCapture(self,args):
+            return
+        def epixCaptureFrame(self,*args):
+            return
+        def epixStopVideoCapture(self,*args):
+            return
+        def epixGetTemp(self,int1, int0, ref_pcbTemp, ref_cmosTemp, *args):
+            t = int(time()*1000)
+            ref_pcbTemp._obj.value = 36+(t % 100)/100.
+            ref_cmosTemp._obj.value = 1700+(t % 1000)/100.
+            return
 
     def checkLibraries(self):
         if CYGNET4K.raptorLib is None:
-            CYGNET4K.raptorLib = CDLL("libRaptor.so")
+            try:
+                CYGNET4K.raptorLib = CDLL("libRaptor.so")
+            except Exception as exc:
+                print(exc)
+                CYGNET4K.raptorLib = CYGNET4K._raptorLib()
         if CYGNET4K.mdsLib is None:
-            CYGNET4K.mdsLib = CDLL("libcammdsutils.so")
+            try:
+                CYGNET4K.mdsLib = CDLL("libcammdsutils.so")
+            except Exception as exc:
+                print(exc)
+                CYGNET4K.mdsLib = CYGNET4K._mdsLib()
 
-    def init(self,arg):
+    def init(self,*args):
         self.frames.setCompressOnPut(False)
         self.checkLibraries()
         tmpPath = self.genconf()
@@ -130,7 +182,7 @@ class CYGNET4K(Device):
         close(fh)
         return abs_path
 
-    def start_store(self, arg):
+    def start_store(self,*args):
         self.checkLibraries()
         self.worker = self.AsynchStore()
         self.worker.daemon = True
@@ -140,8 +192,12 @@ class CYGNET4K(Device):
         self.worker.start()
         return 1
 
-    def stop_store(self,arg):
-        self.restoreWorker()
+    def stop_store(self,*args):
+        try:
+            self.restoreWorker()
+        except Exception as exc:
+            print(exc)
+            return 0
         self.worker.stop()
         self.worker.join()
         return 1
@@ -158,9 +214,9 @@ class CYGNET4K(Device):
         if self.nid in CYGNET4K.workers.keys():
             self.worker = CYGNET4K.workers[self.nid]
         else:
-            print('Cannot restore worker!!')
+            raise Exception('Cannot restore worker!!\nMaybe no worker has been started.')
 
-    def start_temp_monitor(self, arg):
+    def start_temp_monitor(self,*args):
         self.checkLibraries()
         self.tempWorker = self.AsynchTemp()
         self.tempWorker.daemon = True
@@ -183,8 +239,12 @@ class CYGNET4K(Device):
         self.tempWorker.start()
         return 1
 
-    def stop_temp_monitor(self,arg):
-        self.restoreTempWorker()
+    def stop_temp_monitor(self,*args):
+        try:
+            self.restoreTempWorker()
+        except Exception as exc:
+            print(exc)
+            return 0
         self.tempWorker.stop()
         return 1
 
@@ -200,7 +260,7 @@ class CYGNET4K(Device):
         if self.nid in CYGNET4K.tempworkers.keys():
             self.tempworkers = CYGNET4K.tempworkers[self.nid]
         else:
-            print('Cannot restore worker!!')
+            raise Exception('Cannot restore worker!!\nMaybe no worker has been started.')
 
 
     class AsynchStore(Thread):
@@ -233,20 +293,33 @@ class CYGNET4K(Device):
             measuredTimes = []
             currDuration = c_float(0)
 
+            pcbTemp = c_float(0)
+            cmosTemp = c_float(0)
+
+            measuredPcbTemp = []
+            measuredCmosTemp = []
+
+            pcbdata = Data.compile('$VALUE/16.')
+            cmosdata = Data.compile('$VALUE')
             CYGNET4K.raptorLib.epixStartVideoCapture(c_int(self.id))
             while not self.stopReq:
                 if(self.duration < 0 or currDuration < self.duration):
                     CYGNET4K.raptorLib.epixCaptureFrame(c_int(self.id), frameIdx, bufIdx, baseTicks, c_int(self.xPixels), c_int(self.yPixels), c_int(framesNid), c_int(timebaseNid), treePtr, listPtr, timeoutMs, byref(frameIdx), byref(bufIdx), byref(baseTicks), byref(currDuration))
                     if bufIdx.value != prevBufIdx: # detect new frame
+                        CYGNET4K.raptorLib.epixGetTemp(c_int(1), c_int(0), byref(pcbTemp), byref(cmosTemp))
                         prevBufIdx = bufIdx.value
                         measuredTimes.append(self.device.trig_time.data() + currDuration.value)
+                        measuredPcbTemp.append(pcbTemp.value)
+                        measuredCmosTemp.append(cmosTemp.value)
                 else:
                     break
             # Finished storing frames, stop camera integration and store measured frame times
             CYGNET4K.raptorLib.epixStopVideoCapture(c_int(self.id))
-            self.device.frame_clock.putData(Float32Array(measuredTimes))
             CYGNET4K.mdsLib.camStopSave(listPtr)
-            return 0
+            self.device.frame_clock.putData(Float32Array(measuredTimes))
+            self.device.pcb_temp.record = Signal(pcbdata,Uint16Array(measuredPcbTemp),Dimension(None,Uint64Array(measuredTimes)))
+            self.device.cmos_temp.record = Signal(cmosdata,Uint16Array(measuredCmosTemp),Dimension(None,Uint64Array(measuredTimes)))
+            return 1
 
         def stop(self):
             self.stopReq = True
@@ -266,17 +339,13 @@ class CYGNET4K(Device):
         def run(self):
             pcbTemp = c_float(0)
             cmosTemp = c_float(0)
-            currTime = c_long(0)
-            startTime = int(time())
             while (not self.stopReq):
-                CYGNET4K.raptorLib.epixGetTemp(c_int(1), c_int(0), byref(pcbTemp), byref(cmosTemp), byref(currTime))
-                self.device.pcb_temp.putRow(1024, Float32(pcbTemp), Uint64(currTime))
-                self.device.cmos_temp.putRow(1024, Float32(cmosTemp), Uint64(currTime))
-                curr_time_ms = int((currTime.value + startTime))
-                if (self.hasTrend):
-                    tree = Tree(self.trendTree, self.trendShot)
-                    tree.getNode(self.trendPcb).putRow(1024, Float32(pcbTemp), Uint64(curr_time_ms))
-                    tree.getNode(self.trendCmos).putRow(1024, Float32(cmosTemp), Uint64(curr_time_ms))
+                currTime = int(time()*1000)  # currTimeC is also only taken form timeofday
+                CYGNET4K.raptorLib.epixGetTemp(c_int(1), c_int(0), byref(pcbTemp), byref(cmosTemp))
+                tree=Tree(self.trendTree, self.trendShot)
+                tree.getNode(self.trendPcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp),-1)
+                tree.getNode(self.trendCmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(cmosTemp),-1)
+                print(tree.tree,tree.shot,currTime,pcbTemp.value,cmosTemp.value,tree.getNode(self.trendPcb).data().shape)
                 sleep(0.5)
             return 0
 
