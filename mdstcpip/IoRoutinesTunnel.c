@@ -78,7 +78,7 @@ static int tunnel_disconnect(int id)
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
-  ssize_t num;
+  DWORD num;
   return p && WriteFile(p->stdin_pipe, buffer, buflen, &num, NULL) ? num : -1;
 }
 #else
@@ -93,7 +93,7 @@ static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait
 static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
-  ssize_t num;
+  DWORD num;
   return p && ReadFile(p->stdout_pipe, buffer, buflen, &num, NULL) ? num : -1;
 }
 #else
@@ -142,7 +142,7 @@ static void ChildSignalHandler(int num)
 static int tunnel_connect(int id, char *protocol, char *host)
 {
   SECURITY_ATTRIBUTES saAttr;
-  size_t len = strlen(protocol) * 2 + strlen(host) + 128;
+  size_t len = strlen(protocol) * 2 + strlen(host) + 512;
   char *cmd = (char *)malloc(len);
   BOOL bSuccess = FALSE;
   PROCESS_INFORMATION piProcInfo;
@@ -157,13 +157,8 @@ static int tunnel_connect(int id, char *protocol, char *host)
   HANDLE g_hInputFile = NULL;
   int nSize;
   int status;
-  WCHAR *lcmd;
-  _snprintf_s(cmd, len, len - 1, "cmd /Q /C mdsip-client-%s %s mdsip-server-%s", protocol, host,
+  _snprintf_s(cmd, len, len - 1, "cmd.exe /Q /C mdsip-client-%s %s mdsip-server-%s", protocol, host,
 	      protocol);
-  nSize = MultiByteToWideChar(CP_UTF8, 0, cmd, -1, NULL, 0);
-  lcmd = malloc(nSize + 1);
-  nSize = MultiByteToWideChar(CP_UTF8, 0, cmd, -1, lcmd, nSize);
-  free(cmd);
   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
   saAttr.bInheritHandle = TRUE;
   saAttr.lpSecurityDescriptor = NULL;
@@ -186,8 +181,9 @@ static int tunnel_connect(int id, char *protocol, char *host)
   siStartInfo.hStdInput = g_hChildStd_IN_Rd;
   siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
   bSuccess =
-      CreateProcess(NULL, lcmd, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &siStartInfo,
+      CreateProcess(NULL, cmd, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &siStartInfo,
 		    &piProcInfo);
+  free(cmd);
   if (bSuccess) {
     WaitForInputIdle(piProcInfo.hProcess, 10000);
     p.stdin_pipe = g_hChildStd_IN_Wr;
@@ -199,9 +195,10 @@ static int tunnel_connect(int id, char *protocol, char *host)
     SetConnectionInfo(id, "tunnel", 0, &p, sizeof(p));
     status = 1;
   } else {
+    DWORD errstatus = GetLastError();
+    fprintf(stderr,"Error in CreateProcees, error: %d\n",errstatus);
     status = 0;
   }
-  free(lcmd);
   return status;
 }
 #else
