@@ -1,4 +1,46 @@
-commit db4b68f499601bd448874911a27e24200177db54 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit cafed8669063b0b23bdbd6b32eab69ba107f2ea5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 354d8aa 5989eca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 12:34:45 2015 -0500
+
+    Merge pull request #230 from MDSplus/twf-gil-locking-fix-for-device-setup
+    
+    1) Only do locking of python GIL when doing setup methods (needed for …
+
+commit 5989ecad26227b7180b1dcf7081bdb7ece1b4149 (refs/remotes/origin/twf-gil-locking-fix-for-device-setup)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 09:40:40 2015 -0500
+
+    1)Only do locking of python GIL when doing setup methods (needed for glade based setups).\n2)Use MdsMisc->PyCall on windows too.\n3) Prevent closing dbid tree context when doing python doMethod.\n4) Fix py function on windows.\n5) Fix tdi py functions for python3.
+
+commit 354d8aa67a4f2a6e09d554fbc9946d4f41b33ff2
+Merge: 9b15db6 3edf09d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 08:41:04 2015 -0500
+
+    Merge pull request #229 from MDSplus/bstandley-fix-thread-handling-in-tree-py
+    
+    Bstandley fix thread handling in tree py
+
+commit 3edf09dc81fa06174b7a609342724174a8a7cbdd (refs/remotes/origin/bstandley-fix-thread-handling-in-tree-py)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Sat Nov 21 01:10:24 2015 +0100
+
+    Use a subclass to add attributes to threading.local, remove unnecessary global statements
+
+commit 9d589c9473fd1e3fc632a98342950778398ffb09 (refs/remotes/origin/twf-fix-thread-handling-in-tree-py)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 20 13:52:20 2015 -0500
+
+    Make the thread_data symbol global but not exported in the tree module
+
+commit 9b15db66e4180ed21a9f8422a7cf6714dccf8caa (tag: refs/tags/alpha_release-7-0-183)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Nov 19 23:32:27 2015 -0500
+
+    New release ---- alpha_release-7-0-183
+
+commit db4b68f499601bd448874911a27e24200177db54
 Merge: 8f95b04 2e6b512
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Nov 19 11:53:29 2015 -0500
