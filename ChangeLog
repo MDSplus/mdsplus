@@ -1,4 +1,49 @@
-commit cafed8669063b0b23bdbd6b32eab69ba107f2ea5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 9468959bb30af73a5e63d578a51d91262d285aef (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: ea490f2 ecb25f9
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 24 16:00:28 2015 -0500
+
+    Merge pull request #232 from MDSplus/twf-remove-class-files-from-install
+    
+    Remove all class files from the buildroot. They are not needed in the…
+
+commit ea490f28352382724ffdd018cb99b1fd9f1667dd
+Merge: d976229 366264d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 24 15:59:35 2015 -0500
+
+    Merge pull request #231 from MDSplus/twf-fix-ssh-plugin-on-windows
+    
+    Fix tunnel plugins on windows (i.e. ssh)
+
+commit ecb25f933eb3a112e61c4d6282cff7e9bb5e56fb (refs/remotes/origin/twf-remove-class-files-from-install)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 24 15:44:44 2015 -0500
+
+    Remove all class files from the buildroot. They are not needed in the install.
+
+commit 366264d12f0b9e574a33ed4ceb6d3a5da081bcdc (refs/remotes/origin/twf-fix-ssh-plugin-on-windows)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 24 11:30:26 2015 -0500
+
+    Fix tunnel plugins on windows (i.e. ssh)
+
+commit d9762296c2d2f07cb54dd06cfe2d9dbf8ae63dba
+Merge: c2804e7 8fbc2a6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 24 09:56:41 2015 +0100
+
+    Merge pull request #200 from zack-vii/a_jscope_eventupdate_block
+    
+    jScope eventupdate block
+
+commit c2804e7ee102ecb5474cf1d5211d76227b158a98 (tag: refs/tags/alpha_release-7-0-184)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 23 23:33:47 2015 -0500
+
+    New release ---- alpha_release-7-0-184
+
+commit cafed8669063b0b23bdbd6b32eab69ba107f2ea5
 Merge: 354d8aa 5989eca
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Nov 23 12:34:45 2015 -0500
@@ -21,6 +66,13 @@ Date:   Mon Nov 23 08:41:04 2015 -0500
     Merge pull request #229 from MDSplus/bstandley-fix-thread-handling-in-tree-py
     
     Bstandley fix thread handling in tree py
+
+commit 8fbc2a6d943145156c02fe9c09c6eb9abfff3b87
+Merge: 188d4a0 9b15db6
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Nov 23 10:59:44 2015 +0100
+
+    Merge branch 'alpha' into a_jscope_eventupdate_block
 
 commit 3edf09dc81fa06174b7a609342724174a8a7cbdd (refs/remotes/origin/bstandley-fix-thread-handling-in-tree-py)
 Author: Brian Standley <brian@brianstandley.com>
@@ -327,6 +379,16 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 6 16:23:28 2015 -0500
 
     Do not raise an Exception in putData if data contains a TreePath refernce
+
+commit 188d4a01a505e949949d013b4220085ba583b9c7
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 6 20:33:06 2015 +0100
+
+    - added a busy check on event dispatching
+    
+    Prevents events from dispatching when busy.
+    Ii caused jScope to freeze if an event occured during loading of a
+    configuration.
 
 commit d5d942be8de17c08c3f35dcbce9e2fe1beb8ae77 (refs/remotes/origin/fix-obsucre-compression-bug-alpha)
 Author: Tom Fredian <twf@psfc.mit.edu>
