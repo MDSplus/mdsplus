@@ -78,8 +78,8 @@ static int tunnel_disconnect(int id)
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
-  DWORD num;
-  return p && WriteFile(p->stdin_pipe, buffer, buflen, &num, NULL) ? num : -1;
+  ssize_t num = 0;
+  return (p && WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
 }
 #else
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
@@ -93,8 +93,8 @@ static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait
 static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
-  DWORD num;
-  return p && ReadFile(p->stdout_pipe, buffer, buflen, &num, NULL) ? num : -1;
+  ssize_t num = 0;
+  return (p && ReadFile(p->stdout_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
 }
 #else
 static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
