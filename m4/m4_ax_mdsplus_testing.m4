@@ -13,10 +13,17 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS WINE    /////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 
+
+AC_DEFUN([TS_WINEPATH],[
+for _i in $1; do
+ AS_VAR_APPEND($2, "\$(shell winepath -w $_i);");
+done
+])
+
 dnl compile a winepath command using specified directories
-dnl Usage: TS_WINEPATH [var],[library_dirs],[search_dirs]
+dnl Usage: TS_WINEPATH [var],[library_dirs]
 dnl 
-AC_DEFUN([TS_WINEPATH],[         
+AC_DEFUN([TS_WINE_LIBRARIESPATH],[         
          m4_pushdef([libdir], [m4_default([$2], [${MAKESHLIBDIR}])])
          AC_PROG_SED
          AC_PROG_GREP
@@ -103,7 +110,7 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 dnl generate SKIP log_compiler
-AC_DEFUN([TS_LOG_SKIP],["sh -c 'exit 77'"])
+AC_DEFUN([TS_LOG_SKIP],[":"])
 
 
 
@@ -126,6 +133,7 @@ AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([TS_PY_TAP_FLAGS])
  AS_VAR_SET([TS_LOG_DRIVER],["\$(top_srcdir)/conf/test-driver"])
 
+ AS_VAR_SET([abs_srcdir],$(cd ${srcdir}; pwd))
 
  TS_CHECK_PYTHON_TAP( [$PYTHON], 
    [AS_VAR_APPEND([TS_PY_TAP_COMPILER],["${NOSETESTS}"])
@@ -145,7 +153,9 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_SET_IF([HAVE_WINE],,[AC_CHECK_PROG(HAVE_WINE,wine,yes,no)])
    AS_VAR_IF([HAVE_WINE],[yes],
      [TS_WINE_ENV([WINEPREFIX],[WINEARCH]) 
-      TS_WINEPATH([WINEPATH])      
+      TS_WINE_LIBRARIESPATH([WINEPATH])
+      AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"MDSPLUS_DIR=${abs_srcdir} ")
+      AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"MDS_PATH=${abs_srcdir}/tdi ")      
       AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
       AS_VAR_IF([VALGRIND_ENABLED],[yes],
@@ -168,6 +178,8 @@ AC_DEFUN([TS_SELECT],[
  [*linux*:*linux*],
  [
    AS_ECHO("Set tests environment for linux->linux")
+   AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"MDSPLUS_DIR=${abs_srcdir} ")
+   AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"MDS_PATH=${abs_srcdir}/tdi ")
    AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR} ")
    AS_VAR_IF([VALGRIND_ENABLED],[yes],
              [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"\$(VALGRIND_TESTS_ENVIRONMENT) ")
@@ -181,6 +193,8 @@ AC_DEFUN([TS_SELECT],[
  [*],
  [
    AS_ECHO("Set tests environment")  
+   AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"MDSPLUS_DIR=${abs_srcdir} ")
+   AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"MDS_PATH=${abs_srcdir}/tdi ")
    AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR} ")
    AS_VAR_IF([VALGRIND_ENABLED],[yes],
              [AS_VAR_APPEND([TS_TESTS_ENVIRONMENT],"\$(VALGRIND_TESTS_ENVIRONMENT) ")
