@@ -4,6 +4,9 @@
 #define UNITSMAP    ((1<<UNITS)-1)  // shorthand - bitmap of all units
 #define DRIVERPARMS ""          // default
 
+//#undef DEBUG
+
+
 #include <math.h>
 #include <stdio.h>
 #include <signal.h>
@@ -20,8 +23,11 @@
 #include <xcliball.h>        // driver function prototypes
 #include <cammdsutils.h>    //Camera MDSplus support
 #include "cygnet.h"
+
+#ifdef DEBUG
 static void printFrameInfo(void);
 static void printImageInfo(void);
+#endif
 
 static bool isOpen = false;
 static double sec_per_tick = 1E-3;
@@ -87,8 +93,10 @@ int epixOpen(char *confFile, int *xPixels, int *yPixels)
         printf("Open Error %d\a\a\n", status);
         pxd_mesgFault(UNITSMAP);
     }
+#ifdef DEBUG
     printFrameInfo();
     printImageInfo();
+#endif
     *xPixels = pxd_imageXdim();
     *yPixels = pxd_imageYdim();
     uint32 ticku[2];
@@ -108,16 +116,15 @@ void epixClose(void)
     isOpen = false;
 }
 
+#ifdef DEBUG
 /*
  * Report image frame buffer memory size
  */
 static void printFrameInfo(void)
 {
-#ifdef DEBUG
     printf("Image frame buffer memory size: %.3f Kbytes\n", (double)pxd_infoMemsize(UNITSMAP)/1024);
     printf("Image frame buffers           : %d\n", pxd_imageZdim());
     printf("Number of boards              : %d\n", pxd_infoUnits());
-#endif
 }
 
 /*
@@ -125,15 +132,13 @@ static void printFrameInfo(void)
  */
 static void printImageInfo(void)
 {
-#ifdef DEBUG
     printf("Image resolution:\n");
     printf("xdim           = %d\n", pxd_imageXdim());
     printf("ydim           = %d\n", pxd_imageYdim());
     printf("colors         = %d\n", pxd_imageCdim());
     printf("bits per pixel = %d\n", pxd_imageCdim()*pxd_imageBdim());
-#endif
 }
-
+#endif
 
 /*
  * Capture
@@ -142,11 +147,18 @@ static void printImageInfo(void)
 void epixStartVideoCapture(int id)
 {
     pxd_goLivePair(id, 1, 2); // should id be converted to a unitmap?
+#ifdef DEBUG
+    printf("Video capture started.\n");
+#endif
 }
 
 void epixStopVideoCapture(int id)
 {
     pxd_goUnLive(id); // should id be converted to a unitmap?
+#ifdef DEBUG
+    printf("Video capture stopped.\n");
+#endif
+
 }
 
 //Capture either a single frame or timeouts.
@@ -208,9 +220,9 @@ int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixe
             printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
 #endif
             camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
-            *retFrameIdx = frameIdx + 1;
             if(frameIdx == 0)
                 *retBaseTicks = currTicks;
+            *retFrameIdx = frameIdx + 1;
             *retBufIdx = lastCaptured;
             *retDuration = (currTicks - *retBaseTicks) * sec_per_tick;
             return 1;
@@ -222,7 +234,7 @@ int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixe
 return 0;
 }
 
-static int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readBytes)
+int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readBytes)
 {
     int r;
     int unitMap = 1 << (id-1);
@@ -266,11 +278,11 @@ static int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, in
     return r;
 }
 
-static float getCMOSTemp(int id)
+short getCMOSTemp(int id)
 {
     int retCount, r;
     char retBuf[50];
-    int temp = 0;
+    short temp = 0;
 
     char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x7E, 0x50};
     char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
@@ -286,18 +298,16 @@ static float getCMOSTemp(int id)
     doTransaction(id, queryBuf2, 6, retBuf, 1);
     doTransaction(id, queryBuf3, 5, retBuf, 1);
     doTransaction(id, queryBuf4, 4, retBuf, 2);
-    //temp |= (retBuf[0] & 0x00FF) << 8;
-    temp = (retBuf[0] &0x000000FF);
+    temp = (retBuf[0] & 0x00FF);
     doTransaction(id, queryBuf5, 6, retBuf, 1);
     doTransaction(id, queryBuf6, 6, retBuf, 1);
     doTransaction(id, queryBuf7, 5, retBuf, 1);
     doTransaction(id, queryBuf8, 4, retBuf, 2);
-    temp |= (retBuf[0] & 0x000000FF) << 8;
-    //temp |= (retBuf[0] &0x00FF);
-    return (float)temp;
+    temp |= (retBuf[0] & 0x00FF) << 8;
+    return temp;
 }
 
-static float getPCBTemp(int id)
+short getPCBTemp(int id)
 {
     int retCount, r;
     char retBuf[50];
@@ -321,7 +331,7 @@ static float getPCBTemp(int id)
     doTransaction(id, queryBuf3, 6, retBuf, 1);
     doTransaction(id, queryBuf4, 4, retBuf, 2);
     temp |= (retBuf[0] & 0x00FF);
-    return temp/16.;
+    return temp;
 }
 
 static float getFrameRate(int id)
@@ -568,32 +578,26 @@ static int getRoiYOffset(int id)
     return (int)size;
 }
 
-void epixSetConfiguration(int id, float frameRate, float exposure, char trigMode)
+void epixSetConfiguration(int id, float frameRate, char trigMode)
 {
     setFrameRate(id, frameRate);
-//    if(exposure > 0)
-//        setExposure(id, exposure); // set definitively via config file
     setTrigMode(id, (char)trigMode);
-
-    printf("READ EXPOSURE: %f\n", getExposure(id));
 }
 
-void epixGetConfiguration(int id, float *PCBTemperature, float *CMOSTemperature, int *binning, int *roiXSize, int *roiXOffset, int *roiYSize, int *roiYOffset)
+void epixGetConfiguration(int id, int *binning, int *roiXSize, int *roiXOffset, int *roiYSize, int *roiYOffset)
 {
     *roiXSize = getRoiXSize(id);
     *roiXOffset = getRoiXOffset(id);
     *roiYSize = getRoiYSize(id);
     *roiYOffset = getRoiYOffset(id);
-    *PCBTemperature = getPCBTemp(id);
-    *CMOSTemperature = getCMOSTemp(id);
     *binning = getBinning(id);
 #ifdef DEBUG
     printf("EXPOSURE READ AS %f\n", getExposure(id));
 #endif
 }
 
-void epixGetTemp(int id, float *pcbTemp, float *cmosTemp)
+void epixGetTemp(int id, float *pcbTemp, short *cmosTemp)
 {
-    *pcbTemp = getPCBTemp(id);
+    *pcbTemp = getPCBTemp(id)/16.;
     *cmosTemp = getCMOSTemp(id);
 }
