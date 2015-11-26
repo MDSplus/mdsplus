@@ -43,6 +43,7 @@ class CYGNET4K(Device):
     workers = {}
     handels = {}
 
+    """dummy drivers for testing"""
     class _mdsLib(object):
         def __init__(self):
             self.tree = None
@@ -101,8 +102,9 @@ class CYGNET4K(Device):
             return int((36+((time()*1000) % 10)/10.)*16)
         def getCMOSTemp(self,id):
             return int(1700+((time()*1000) % 100))
+    """dummy drivers for testing - end"""
 
-    @staticmethod
+    @staticmethod  # allows it to be called eg in python for direct interaction
     def checkLibraries():
         if CYGNET4K.raptorLib is None:
             try:
@@ -119,7 +121,6 @@ class CYGNET4K(Device):
 
     def __init__(self, n):
         super(CYGNET4K,self).__init__(n)
-        CYGNET4K.checkLibraries()
         self.trendworker = None
         self.worker = None
         self.handle = None
@@ -130,6 +131,7 @@ class CYGNET4K(Device):
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0')
             return 2752528  # Essential action failed
+        CYGNET4K.checkLibraries()
         tmpPath = self.genconf()
         xPixels = c_int(0)
         yPixels = c_int(0)
@@ -240,6 +242,7 @@ class CYGNET4K(Device):
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0')
             return 2752528  # Essential action failed
+        CYGNET4K.checkLibraries()
         if not CYGNET4K.isOpen:
             conffile = self.conf_file.data()
             xPixels = c_int(0)
