@@ -19,12 +19,14 @@ class CYGNET4K(Device):
       {'path':':EXPOSURE', 'type':'numeric', 'valueExpr':"Int32(90).setUnits('ms')",'options':('no_write_shot',)}, # msec
       {'path':':FRAME_MODE', 'type':'text', 'value':'EXTERNAL RISING','options':('no_write_shot',)},
       {'path':':FRAME_RATE', 'type':'numeric', 'valueExpr':"Float32(10.).setUnits('Hz')",'options':('no_write_shot',)}, # Hz
-      {'path':':TREND_TREE', 'type':'text','options':('no_write_shot',)},
-      {'path':':TREND_SHOT', 'type':'numeric','options':('no_write_shot',)},
-      {'path':':TREND_PCB', 'type':'text','options':('no_write_shot',)},
-      {'path':':TREND_CMOS', 'type':'text','options':('no_write_shot',)},
-      {'path':':TREND_START','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_trend',head))",'options':('no_write_shot',)},
-      {'path':':TREND_STOP','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'STORE',50,None),Method(None,'stop_trend',head))",'options':('no_write_shot',)},
+      {'path':':TREND', 'type':'structure'},
+      {'path':':TREND:TREE', 'type':'text','options':('no_write_shot',)},
+      {'path':':TREND:SHOT', 'type':'numeric','options':('no_write_shot',)},
+      {'path':':TREND:PCB', 'type':'text','options':('no_write_shot',)},
+      {'path':':TREND:CMOS', 'type':'text','options':('no_write_shot',)},
+      {'path':':TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
+      {'path':':TREND:START','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_trend',head))",'options':('no_write_shot',)},
+      {'path':':TREND:STOP','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'STORE',50,None),Method(None,'stop_trend',head))",'options':('no_write_shot',)},
       {'path':':ACT_IDENT', 'type':'text','value':'CAMERA_SERVER','options':('no_write_shot',)},
       {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'PULSE_PREP',50,None),Method(None,'init',head))",'options':('no_write_shot',)},
       {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_store',head))",'options':('no_write_shot',)},
@@ -263,7 +265,7 @@ class CYGNET4K(Device):
             print('Check TREND_TREE and TREND_SHOT.')
             return 265388258  # No Data
         self.trendWorker = self.AsynchTrend()
-        self.trendWorker.configure(self, idx, trendTree, trendShot, trendPcb, trendCmos)
+        self.trendWorker.configure(self, idx, float(self.trend_period.data()), trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
         self.TrendWorker.start()
         return 2752521  # Normal successful completion
@@ -353,54 +355,55 @@ class CYGNET4K(Device):
 
 
     class AsynchTrend(Thread):
-        def configure(self, device, id, trendTree, trendShot, trendPcb, trendCmos):
+        def configure(self, device, id, trendPeriod, trendTree, trendShot, trendPcb, trendCmos):
             self.device = device
             self.id = id
-            self.trendTree = trendTree
-            self.trendShot = trendShot
-            self.trendPcb = trendPcb
-            self.trendCmos = trendCmos
+            self.period = trendPeriod
+            self.tree = trendTree
+            self.shot = trendShot
+            self.pcb = trendPcb
+            self.cmos = trendCmos
             self.stopReq = False
             self.daemon = True
 
         def run(self):
             try:#test open Nodes
-                tree = Tree(self.trendTree, self.trendShot)
+                tree = Tree(self.tree, self.shot)
                 try:
-                    tree.getNode(self.trendPcb)
+                    tree.getNode(self.pcb)
                 except Exception as exc:
                     print(exc)
-                    self.trendPcb = None
+                    self.pcb = None
                 try:
-                    tree.getNode(self.trendCmos)
+                    tree.getNode(self.cmos)
                 except Exception as exc:
                     print(exc)
-                    self.trendCmos = None
+                    self.cmos = None
             except Exception as exc:
                 print(exc)
-                print('Cannot access trend tree. Check TREND_TREE and TREND_SHOT.')
+                print('Cannot access trend tree. Check TREND:TREE and TREND_SHOT.')
                 return 265388160  # Tree Not Found
-            if self.trendPcb is None and self.trendCmos is None:
-                print('Cannot access any node for trend. Check TREND_PCB, TREND_CMOS on. Nodes must exist on %s.' % repr(tree))
+            if self.pcb is None and self.cmos is None:
+                print('Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
                 return 265388144  # Node Not Found
-            if self.trendPcb is None:
-                print('Cannot access node for pcb trend. Check TREND_PCB. Continue with cmos trend.')
-            elif self.trendCmos is None:
-                print('Cannot access node for cmos trend. Check TREND_CMOS. Continue with pcb trend.')
+            if self.pcb is None:
+                print('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
+            elif self.cmos is None:
+                print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
             while (not self.stopReq):
-                sleep(1.-(time() % 1.));  # wait remaining period unit 1 sec step
-                currTime = int(time()+.1)*1000;  # currTime in steps of 1 sec
+                sleep(self.period-(time() % self.period));  # wait remaining period unit self.period
+                currTime = int(int(time()/self.period+.1)*self.period*1000);  # currTime in steps of self.period
                 try:
-                    if self.trendShot==0:
-                        if Tree.getCurrent(self.trendTree) != tree.shot:
-                            tree = Tree(self.trendTree, self.trendShot)
-                    if self.trendPcb is not None:
+                    if self.shot==0:
+                        if Tree.getCurrent(self.tree) != tree.shot:
+                            tree = Tree(self.tree, self.shot)
+                    if self.pcb is not None:
                         pcbTemp = CYGNET4K.raptorLib.getPCBTemp(c_int(self.id))/16.
-                        tree.getNode(self.trendPcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
-                    if self.trendCmos is not None:
+                        tree.getNode(self.pcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
+                    if self.cmos is not None:
                         cmosTemp = CYGNET4K.raptorLib.getCMOSTemp(c_int(self.id))
-                        tree.getNode(self.trendCmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
-                    #print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp,tree.getNode(self.trendPcb).data().shape)
+                        tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
+                    #print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp,tree.getNode(self.pcb).data().shape)
                 except Exception as exc:
                     print(exc)
                     print('failure during temperature readout')
