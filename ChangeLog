@@ -1,4 +1,25 @@
-commit 9468959bb30af73a5e63d578a51d91262d285aef (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 805582c6467a7f72e3543ded0b6353d8b4ab5071 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 8435a6f 3375886
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Nov 25 12:32:56 2015 -0500
+
+    Merge pull request #233 from MDSplus/twf-fix-ssh-plugin-on-windows
+    
+    Fix ssh plugin on windows and support use of putty/plink.exe for ssh …
+
+commit 3375886a9c48443e3feef5801fb8dacde6bdf874 (refs/remotes/origin/twf-fix-ssh-plugin-on-windows)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 25 11:53:21 2015 -0500
+
+    Fix ssh plugin on windows and support use of putty/plink.exe for ssh client.
+
+commit 8435a6f584a2b8c2584b42df37c978ec9c56ad68 (tag: refs/tags/alpha_release-7-0-185)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 24 23:33:26 2015 -0500
+
+    New release ---- alpha_release-7-0-185
+
+commit 9468959bb30af73a5e63d578a51d91262d285aef
 Merge: ea490f2 ecb25f9
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Tue Nov 24 16:00:28 2015 -0500
@@ -22,7 +43,7 @@ Date:   Tue Nov 24 15:44:44 2015 -0500
 
     Remove all class files from the buildroot. They are not needed in the install.
 
-commit 366264d12f0b9e574a33ed4ceb6d3a5da081bcdc (refs/remotes/origin/twf-fix-ssh-plugin-on-windows)
+commit 366264d12f0b9e574a33ed4ceb6d3a5da081bcdc
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Nov 24 11:30:26 2015 -0500
 
