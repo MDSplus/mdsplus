@@ -516,11 +516,16 @@ class Data(object):
     """Representation"""
 
 
-    def data(self):
+    def data(self,*altvalue):
         """Return primitimive value of the data.
         @rtype: Scalar,Array
         """
-        return self.execute("data($)",(self,)).value
+        try:
+            return self.execute("data($)",(self,)).value
+        except _Exceptions.treeshrExceptions.TreeNODATA:
+            if len(altvalue)==1:
+                return altvalue[0]
+            raise _Exceptions.treeshrExceptions.TreeNODATA
 
     def _getDescrPtr(self):
         """Return pointer to descriptor of inself as an int

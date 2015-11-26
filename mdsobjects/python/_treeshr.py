@@ -112,7 +112,7 @@ def TreeFindTagWild(tree,wild):
     TreeFindTagEnd(_C.pointer(ctx))
 
 
-def TreeGetRecord(n):
+def TreeGetRecord(n,*altvalue):
     """Get record from MDSplus tree. Accepts path, TreeNode or integer and the value"""
     value=descriptor_xd()
     status=__TreeGetRecord(n.tree.ctx,n.nid,_C.pointer(value))
@@ -121,6 +121,8 @@ def TreeGetRecord(n):
         ans = value.value
         descriptor.tree=None
         return ans
+    elif len(altvalue)==1 and status == _Exceptions.treeshrExceptions.TreeNODATA.status:
+        return altvalue[0]
     else:
         raise _Exceptions.statusToException(status)
 
