@@ -9,8 +9,7 @@ class MARTE_COMMON(Device):
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':ID', 'type':'numeric', 'value':0},
-      {'path':':CONTROL', 'type':'text', 'value':'CONTROL'}
-      ]
+      {'path':':CONTROL', 'type':'text', 'value':'CONTROL'}]
 
     parts.append({'path':'.SIGNALS', 'type':'structure'})
     parts.append({'path':'.SIGNALS:NAMES', 'type':'text'})
@@ -20,12 +19,13 @@ class MARTE_COMMON(Device):
       parts.append({'path':'.SIGNALS:SIGNAL_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS:SIGNAL_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS:SIGNAL_%03d:DATA'%(i+1), 'type':'signal'})
+    del(i)
     parts.append({'path':':INIT_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
+        'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
+        'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
-	  'options':('no_write_shot',)})
+        'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
+        'options':('no_write_shot',)})
 
 
 
@@ -86,4 +86,3 @@ class MARTE_COMMON(Device):
       Event.setevent(self.getEventName(), eventStr)
       sleep(10)
       return 1
-

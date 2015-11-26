@@ -1,13 +1,10 @@
-from MDSplus import *
-from numpy import *
-from threading import *
-import time
-import os
-import errno
-from ctypes import *
+from MDSplus import Device, Data, Int32
+from ctypes import CDLL,c_int,c_double
+from threading import Thread
+from time import sleep
 
 class ACQIPPSETUP(Device):
-    print 'ACQIPPSETUP'
+    print('ACQIPPSETUP')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """IPP probe & thermocoupels acquisition setup"""
 
@@ -39,158 +36,127 @@ class ACQIPPSETUP(Device):
     parts.append({'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_wave_gen',head))",
         'options':('no_write_shot',)})
-    
+
     parts.append({'path':'.SWEEP_WAVE:WAVE_EXPR', 'type':'numeric'})
-		
-		
+
     isRunning = False
+    niInterfaceLib = None
 
-    class AsynchWaveGen(Thread):            
+    class AsynchWaveGen(Thread):
 
-        def configure(self, device, niInterfaceLib):
+        def configure(self, device):
             self.device = device
-            self.niInterfaceLib = niInterfaceLib
-
+            self.nid = device.getNid()
         #      set tree ipp_probes/shot=2
         #  do/method :ACQIPPSETUP start_wave_gen
 
         def run(self):
 
-            if niInterfaceLib == 0 :
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
+            if ACQIPPSETUP.niInterfaceLib is None:
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot load libNiInterface.so')
                 return 0
-        
-            try: 
+
+            try:
                 board_id = self.device.sweep_wave_board_id.data();
             except:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing Board Id' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing Board Id' )
                 return 0
 
-            try: 
+            try:
                 channel = self.device.sweep_wave_ao_chan.data();
             except:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing output channel number 0..3' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing output channel number 0..3' )
                 return 0
 
-            try: 
+            try:
                 minValue = self.device.sweep_wave_min.data();
             except:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing min sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing min sweep value' )
                 return 0
 
-            try: 
+            try:
                 maxValue = self.device.sweep_wave_max.data();
             except:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing max sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing max sweep value' )
                 return 0
 
-            try: 
+            try:
                 waverate = self.device.sweep_wave_freq.data();
             except:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing frequency sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing frequency sweep value' )
                 return 0
 
-            try: 
+            try:
                 trigMode = self.device.sweep_wave_trig_mode.data();
             except:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing trig mode sweep value' )
+                Data.execute('DevLogErr($1,$2)', self.nid, 'Missing trig mode sweep value' )
                 return 0
 
             level  = ( maxValue - minValue ) /2.;
             offset = ( maxValue + minValue ) / 2.;
-    
-            print "Offset  ", offset, " Vpp level ", level * 2
+
+            print("Offset  ", offset, " Vpp level ", level * 2)
 
             offset = offset / 10.;
             level = level / 10.;
 
-            print "Reference Offset  ", offset, " Vpp level ", level * 2
+            print("Reference Offset  ", offset, " Vpp level ", level * 2)
 
             if(trigMode == 'EXTERNAL'):
                  softwareTrigger = 0;
             else:
                  softwareTrigger = 1;
 
-            self.niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
+            ACQIPPSETUP.niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
 
-	    """	
-	    count = 0
-	    delay = 2;
+            """
+    	      count = 0
+    	      delay = 2;
             while count < 5:
                 time.sleep(delay)
                 count += 1
                 print " %s" % (  time.ctime(time.time()) )
- 	    """
-
-            #print "Thread STOP"
-
+            """
             return
 
 
     def restoreInfo(self):
-
-        global niInterfaceLib
-
-        try:
-            niInterfaceLib
-        except:
-            niInterfaceLib = CDLL("libNiInterface.so")
+        if ACQIPPSETUP.niInterfaceLib is None:
+            ACQIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
 
 
     def start_wave_gen(self, arg):
+        print('======= Initialize waveform generation ========')
 
-        print '======= Initialize waveform generation ========'
-
-        global niInterfaceLib
- 	global isRunning
-
-        try:
-           isRunning
-        except:
-           isRunning = False
-
-	if isRunning :
-	    print "Is running stop thread"
-	    niInterfaceLib.stopWaveGeneration()
-            time.sleep(2);
+        if ACQIPPSETUP.isRunning :
+            print("Is running stop thread")
+            ACQIPPSETUP.niInterfaceLib.stopWaveGeneration()
 
         self.worker = self.AsynchWaveGen()
-        self.worker.daemon = True        
-
-
-	#print "Is running ", isRunning
-
-
+        self.worker.daemon = True
 
         self.restoreInfo()
 
         #niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(nSamples), (numTrigger))
         #niInterfaceLib.generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel, double offset, double level, uint32_t waverate, char softwareTrigger);
         #niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
-     
-	#print "Start new thread"
-	isRunning = True
-	self.worker.configure(self, niInterfaceLib);
-	self.worker.start()
 
-        #print "End Initialization"
-        print "==============================================="
+        ACQIPPSETUP.isRunning = True
+        self.worker.configure(self);
+        self.worker.start()
 
-        return 1  
+        print("===============================================")
+
+        return 1
 
 
     def stop_wave_gen(self, arg):
 
-        print '========= Stop waveform generation ============'
-        global niInterfaceLib
-        global isRunning
-
+        print('========= Stop waveform generation ============')
         self.restoreInfo()
-        isRunning = False
-        niInterfaceLib.stopWaveGeneration()
-        time.sleep(2)
-        print "==============================================="
+        ACQIPPSETUP.isRunning = False
+        ACQIPPSETUP.niInterfaceLib.stopWaveGeneration()
+        sleep(2)
+        print("===============================================")
 
-        return 1        
-
-
+        return 1

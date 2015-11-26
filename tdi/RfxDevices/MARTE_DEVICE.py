@@ -1,4 +1,8 @@
-from MARTE_COMMON import MARTE_COMMON
+from MDSplus import version
+if version.ispy3:
+    from .MARTE_COMMON import MARTE_COMMON
+else:
+    from MARTE_COMMON import MARTE_COMMON
 
 class MARTE_DEVICE(MARTE_COMMON):
     print('MARTE_DEVICE')
@@ -24,4 +28,7 @@ class MARTE_DEVICE(MARTE_COMMON):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':waveParNames[i]})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-
+    del(i)
+    del(parNames)
+    del(parValues)
+    del(waveParNames)

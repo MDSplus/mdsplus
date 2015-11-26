@@ -1,12 +1,13 @@
-from MDSplus import *
-from numpy import *
-from threading import *
+from MDSplus import Device, Data, Dimension, Range, Window
+from MDSplus import Int32, Float32, Float32Array, Float64
+from ctypes import CDLL,Structure,c_int,c_uint,c_char,c_byte,c_ubyte,c_float,byref,c_char_p,c_void_p,c_short
+#from numpy import *
+from threading import Thread
 import time
 import os
-import errno
-from ctypes import *
+#import errno
 class NI6368AI(Device):
-    print 'NI6368AI'
+    print('NI6368AI')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """NI PXI-6368 X-series multi functional data acquisition card"""
 
@@ -46,10 +47,16 @@ class NI6368AI(Device):
         'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
         'options':('no_write_shot',)})
 
-    
+
 #File descriptor
     ai_fd = 0
     boardId = 0
+    ni6368AiFds = {}
+    ni6368DevFds = {}
+    ni6368Workers = {}
+    niLib = None
+    niInterfaceLib = None
+
 
     class XSERIES_DEV_INFO(Structure):
         _fields_ = [("product_id", c_uint),
@@ -103,41 +110,19 @@ class NI6368AI(Device):
     nonDiffChanMap = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 #saveInfo and restoreInfo allow to handle open file descriptors
     def saveInfo(self):
-      global ni6368AiFds
-      global ni6368DevFds
-      global ni6368Nids
-      try:
-        ni6368AiFds
-      except:
-        ni6368AiFds = []
-        ni6368Nids = []
-      try:
-        idx = ni6368Nids.index(self.getNid())
-      except:
-        #print 'SAVE INFO: SAVING HANDLE'
-        ni6368AiFds.append(self.ai_fd)
-        ni6368Nids.append(self.getNid())
-        return
-      return
+        self.ni6368AiFds[self.getNid()] = self.ai_fd
 
     def restoreInfo(self):
-        global ni6368AiFds
-        global ni6368Nids
-        global niLib
-        global niInterfaceLib
-
+        if self.niLib is None:
+            self.niLib = CDLL("libnixseries.so")
+        if self.niInterfaceLib is None:
+            self.niInterfaceLib = CDLL("libNiInterface.so")
         try:
-            niLib
+            self.ai_fd = self.ni6368AiFds[self.getNid()]
+            print('RESTORE INFO HANDLE FOUND')
         except:
-            niLib = CDLL("libnixseries.so")
-            niInterfaceLib = CDLL("libNiInterface.so")
-        try:
-            idx = ni6368Nids.index(self.getNid())
-            self.ai_fd = ni6368AiFds[idx]
-            print 'RESTORE INFO HANDLE FOUND'
-        except:
-            print 'RESTORE INFO HANDLE NOT FOUND'
-            try: 
+            print('RESTORE INFO HANDLE NOT FOUND')
+            try:
                 boardId = self.board_id.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing Board Id' )
@@ -145,60 +130,31 @@ class NI6368AI(Device):
             try:
                 fileName = '/dev/PXIe-6368.'+str(boardId)+'.ai';
                 self.ai_fd = os.open(fileName, os.O_RDWR);
-                print 'Open fileName : ', fileName
+                print('Open fileName : ', fileName)
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
                 return 0
         return 1
 
     def closeInfo(self):
-        global ni6368AiFds
-        global ni6368Nids
         try:
-            idx = ni6368Nids.index(self.getNid())
-            self.ai_fd = ni6368AiFds[idx]
-            ni6368AiFds.remove(self.ai_fd)
-            ni6368Nids.remove(self.getNid())
-            os.close(self.ai_fd)
+            os.close(self.ni6368AiFds[self.getNid()])
+            del(self.ni6368AiFds[self.getNid()])
+            self.ai_fd = -1
         except:
-            print ' '
-            #print 'CLOSE INFO: HANDLE NOT FOUND'
+            pass
+            #print('CLOSE INFO: HANDLE NOT FOUND')
         return 1
 
 ################################### Worker Management
     def saveWorker(self):
-      global ni6368Workers
-      global ni6368WorkerNids
-      try:
-        ni6368Workers
-      except:
-        ni6368WorkerNids = []
-        ni6368Workers = []
-      try:
-        #print 'Find worker'
-        idx = ni6368WorkerNids.index(self.getNid())
-#        print 'Find worker ', idx
-        ni6368Workers[idx] = self.worker
-#        print 'Find worker ', self.worker
-      except:
-        #print 'SAVE WORKER: NEW WORKER'
-        ni6368WorkerNids.append(self.getNid())
-        ni6368Workers.append(self.worker)
-        return
-      return
+      self.ni6368Worker[self.getNid()] = self.worker
 
     def restoreWorker(self):
-      global ni6368WorkerNids
-      global ni6368Workers
-      
       try:
-        #print "restoreWorker"
-        idx = ni6368WorkerNids.index(self.getNid())
-#        print "restoreWorker idx ", idx
-        self.worker = ni6368Workers[idx]
-#        print "restoreWorker worker ", self.worker
+        self.worker = self.ni6368Worker[self.getNid()]
       except:
-        print 'Cannot restore worker!!'
+        print('Cannot restore worker!!')
 
 ########################AsynchStore class
     class AsynchStore(Thread):
@@ -209,35 +165,35 @@ class NI6368AI(Device):
         #stopAcq = c_void_p(0)
 
 
-        def configure(self, device, niLib, niInterfaceLib, ai_fd, chanMap, hwChanMap, treePtr, stopAcq):
-            print "=========== Async Store initialization =========="
+        def configure(self, device, ai_fd, chanMap, hwChanMap, treePtr, stopAcq):
+            print("=========== Async Store initialization ==========")
             self.device = device
-            self.niLib = niLib
-            self.niInterfaceLib = niInterfaceLib
+            self.niLib = device.niLib
+            self.niInterfaceLib = device.niInterfaceLib
             self.ai_fd = ai_fd
             self.chanMap = chanMap
             self.hwChanMap = hwChanMap
             self.treePtr = treePtr
             self.stopAcq = stopAcq
-            print self.stopAcq
-            print "=========== Fine =========="
+            print(self.stopAcq)
+            print("=========== Fine ==========")
 
 
         def run(self):
             import os
             bufSize = self.device.buf_size.data()
             segmentSize = self.device.seg_length.data()
-            counters = [0]*len(self.chanMap)
+            #counters = [0]*len(self.chanMap)
             boardId = self.device.board_id.data();
             acqMode = self.device.acq_mode.data()
             sampleToSkip = self.device.start_idx.data()
             transientRec = False
             startTime = float( self.device.start_time.data() )
             trigSource = self.device.trig_source.data()
-	    clockSource = self.device.clock_source.evaluate()
+            clockSource = self.device.clock_source.evaluate()
 
-	    frequency = float( clockSource.getDelta() )
- 
+            frequency = float( clockSource.getDelta() )
+
             try:
                 #In multi trigger acquisition acquired data from trigger_time[i]+start_time up to trigger_time[i] + end_time
                 #Time value to be associted at the first sample of the i-esima acquisition must be trigger_time[i]+start_time
@@ -246,10 +202,10 @@ class NI6368AI(Device):
                 timesIdx0 = trigSource
             except:
                 #Single trigger acquire data from start time up to end time
-                #Time value to be associted at the first sample must be start time 
+                #Time value to be associted at the first sample must be start time
                 numTrigger = 1
                 timesIdx0 = []
-                timesIdx0.append(0)     
+                timesIdx0.append(0)
 
             if( acqMode == 'TRANSIENT REC.'):
                 transientRec = True
@@ -265,22 +221,22 @@ class NI6368AI(Device):
 
             coeff_array = c_float*4
             coeff = coeff_array();
-                
+
             for chan in range(len(self.chanMap)):
                 try:
-                    #print 'CHANNEL', self.chanMap[chan]+1
+                    #print('CHANNEL', self.chanMap[chan]+1
 
                     currFd = os.open('/dev/PXIe-6368.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]]), os.O_RDWR | os.O_NONBLOCK)
                     chanFd.append(currFd)
-                    chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )    
-                    #print "chanFd "+'channel_%d_data_raw'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]   
+                    chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
+                    #print("chanFd "+'channel_%d_data_raw'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]
                     gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                     gain_code = self.device.gainDict[gain]
                     status = self.niInterfaceLib.getCalibrationParams(currFd, gain_code, coeff)
                     #status = 0
                     if( status < 0 ):
                         Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536'%(str(self.chanMap[chan])) )
-                        coeff[0] = coeff[2] = coeff[3] = 0  
+                        coeff[0] = coeff[2] = coeff[3] = 0
                         coeff[1] = c_float( gain / 65536. )
 
                     getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
@@ -288,7 +244,7 @@ class NI6368AI(Device):
                 except:
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan] + 1) )
                     self.closeAll(chanFd, saveList)
-                    return 
+                    return
 
 
             if(bufSize > segmentSize):
@@ -301,8 +257,8 @@ class NI6368AI(Device):
 
             if( not transientRec ):
                 numSamples  = -1
-                print "PXI 6368 CONTINUOUS ", numSamples 
-                
+                print("PXI 6368 CONTINUOUS ", numSamples)
+
             else:
                 self.niInterfaceLib.setStopAcqFlag(self.stopAcq);
                 try:
@@ -310,38 +266,38 @@ class NI6368AI(Device):
                 except:
                     numSamples = 0
 
-            #print "--+++ NUM SAMPLES ", numSamples
-            #print "--+++ Segment Size ", segmentSize
-            #print "--+++ sample to skip ", sampleToSkip
-                        
+            #print("--+++ NUM SAMPLES ", numSamples
+            #print("--+++ Segment Size ", segmentSize
+            #print("--+++ sample to skip ", sampleToSkip
+
             self.niInterfaceLib.startSave(byref(saveList))
 
-            print "---------- SAVE list", saveList 
+            print("---------- SAVE list", saveList)
 
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
-             
+
             trigCount = 0
 
             time.sleep(1)
 
-            #print "Start device in acquisition thread %d"%(self.ai_fd)
+            #print("Start device in acquisition thread %d"%(self.ai_fd)
             status = self.niLib.xseries_start_ai(c_int(self.ai_fd))
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
                 return
-           
-	    #timeAt0 = timesIdx0[trigCount] + startTime;
-	    timeAt0 = startTime;
-        
-            print self.stopAcq
+
+            #timeAt0 = timesIdx0[trigCount] + startTime;
+            timeAt0 = startTime;
+
+            print(self.stopAcq)
 
 
             while not self.stopReq:
                 status = self.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
    ##Check termination
                 trigCount += 1
-                #print "PXI 6368 Trigger count %d num %d num smp %d status %d " %(trigCount , numTrigger, numSamples, status) 
+                #print("PXI 6368 Trigger count %d num %d num smp %d status %d " %(trigCount , numTrigger, numSamples, status)
                 if ( (numSamples > 0 and trigCount == numTrigger)  or ( status < 0 ) ):
                     self.stopReq = True
 
@@ -360,10 +316,10 @@ class NI6368AI(Device):
 
 
             """
-            print "OK"
+            print("OK"
             for chan in range(len(self.chanMap)):
                     os.close(chanFd[chan])
-            print 'ASYNCH WORKER TERMINATED'
+            print('ASYNCH WORKER TERMINATED'
             self.niInterfaceLib.stopSave(saveList)
             self.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
@@ -382,23 +338,20 @@ class NI6368AI(Device):
                 try:
                     os.close(chanFd[chan])
                 except:
-                    print 'Exception'
+                    print('Exception')
                     pass
-            #print 'ASYNCH WORKER TERMINATED'
+            #print('ASYNCH WORKER TERMINATED'
             self.niInterfaceLib.stopSave(saveList)
             self.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
 
-#############End Inner class AsynchStore      
-    
-##########init############################################################################ 
-   
+#############End Inner class AsynchStore
+
+##########init############################################################################
+
     def init(self, arg):
 
-        print '================= PXI 6368 Init ==============='
-
-        global niLib
-        global niInterfaceLib
+        print('================= PXI 6368 Init ===============')
 
         if self.restoreInfo() == 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
@@ -408,7 +361,7 @@ class NI6368AI(Device):
 
         try:
             inputMode = self.inputModeDict[self.input_mode.data()]
-        except: 
+        except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Input Mode')
             return 0
 
@@ -416,27 +369,27 @@ class NI6368AI(Device):
 
         fileName = '/dev/PXIe-6368.'+str(self.boardId);
         dev_fd = os.open(fileName, os.O_RDWR);
-        #print 'Open ai_fd: ', self.ai_fd
+        #print('Open ai_fd: ', self.ai_fd
 
         device_info = self.XSERIES_DEV_INFO(0,"",0,0,0,0,0,0)
 
-        # get card info 
-        status = niInterfaceLib._xseries_get_device_info(c_int(dev_fd), byref(device_info));
+        # get card info
+        status = self.niInterfaceLib._xseries_get_device_info(c_int(dev_fd), byref(device_info));
         if status:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading card information')
             return 0
 
         os.close(dev_fd)
-        
-        print 'OK xseries_get_device_info'
 
-        #Stop the segment TODO is this necessary since the reset is next 
-        niLib.xseries_stop_ai(c_int(self.ai_fd))
+        print('OK xseries_get_device_info')
+
+        #Stop the segment TODO is this necessary since the reset is next
+        self.niLib.xseries_stop_ai(c_int(self.ai_fd))
 
         #reset AI segment
-        status = niLib.xseries_reset_ai(c_int(self.ai_fd))
+        status = self.niLib.xseries_reset_ai(c_int(self.ai_fd))
         if ( status ):
-            errno = niInterfaceLib.getErrno();
+            errno = self.niInterfaceLib.getErrno();
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset AI segment: (%d) %s' % (errno, os.strerror( errno )) )
             return 0
 
@@ -444,30 +397,30 @@ class NI6368AI(Device):
         try:
             acqMode = self.acq_mode.data()
         except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve acquisition mode management')          
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve acquisition mode management')
             return 0
 
-#trigger mode        
+#trigger mode
         try:
             trigMode = self.trig_mode.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid triger mode definition')
             return 0
 
-#trigger source    
+#trigger source
         try:
             trigSource = ( self.trig_source.data() )
         except:
             if(trigMode == 'EXTERNAL'):
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')          
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
                 return 0
             else:
                 trigSource = 0.
                 self.trig_source.putData( Float32(trigSource) )
-        print 'PXI 6368 Trigger source: ', trigSource
+        print('PXI 6368 Trigger source: ', trigSource)
 
         try:
-            numTrigger = len(trigSource) - 1 
+            numTrigger = len(trigSource) - 1
             """
             Trigger time must be set to 0. in multi trigger
             acquisition for correct evaluation of the number
@@ -476,38 +429,38 @@ class NI6368AI(Device):
             trigTime = 0.
         except:
             numTrigger = 1
-            trigTime = trigSource     
-        #print 'Trigger number: ', numTrigger
+            trigTime = trigSource
+        #print('Trigger number: ', numTrigger
 
 
-#clock mode      
+#clock mode
         try:
             clockMode = self.clock_mode.data()
             if(clockMode == 'INTERNAL'):
                 frequency = self.clock_freq.data()
                 if( frequency > 2000000.  ):
-                    print 'Frequency out of limits'
+                    print('Frequency out of limits')
                     frequency = 2000000.
                     self.clock_source.putData(frequency)
-                  
+
                 clockSource = Range(None,None, Float64(1./frequency))
                 self.clock_source.putData(clockSource)
             else:
-                #print 'External'
+                #print('External'
                 clockSource = self.clock_source.evaluate()
-                print 'PXI 6368 External CLOCK: ', clockSource
+                print('PXI 6368 External CLOCK: ', clockSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid clock definition')
             return 0
 
-        print 'PXI 6368 CLOCK: ', clockSource
+        print('PXI 6368 CLOCK: ', clockSource)
 
 #Time management
 
         try:
             useTime = self.use_time.data()
         except:
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve time or samples management')          
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve time or samples management')
             return 0
 
 
@@ -516,22 +469,22 @@ class NI6368AI(Device):
                 try:
                     startTime = float( self.start_time.data() )
                     endTime = float( self.end_time.data() )
-                    print 'PXI 6368 startTime  = ', startTime 
-                    print 'PXI 6368 endTime    = ', endTime
-                    print 'PXI 6368 trigTime   = ', trigTime
+                    print('PXI 6368 startTime  = ', startTime)
+                    print('PXI 6368 endTime    = ', endTime)
+                    print('PXI 6368 trigTime   = ', trigTime)
 
                 except:
-                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')          
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')
                     return 0
 
-		
+
 #Originale
                 startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), startTime)
-                #print "Originale startIdx ", startIdx
+                #print("Originale startIdx ", startIdx
                 endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), endTime)
-                #print "Originale endIdx ", endIdx	 
-                
-                """   
+                #print("Originale endIdx ", endIdx
+
+                """
                 if endTime > 0:
                     endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), endTime + trigTime)
                 else:
@@ -544,31 +497,31 @@ class NI6368AI(Device):
                     startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigTime + startTime), clockSource), trigTime)
 		"""
 
-                print 'PXI 6368 startIdx = ', Int32(int(startIdx))
+                print('PXI 6368 startIdx = ', Int32(int(startIdx)))
                 self.start_idx.putData(Int32(int(startIdx)))
 
-                print 'PXI 6368 endIdx   = ', Int32(int(endIdx))
+                print('PXI 6368 endIdx   = ', Int32(int(endIdx)))
                 self.end_idx.putData(Int32(int(endIdx)))
-                      
+
             else:
                 endIdx = self.end_idx.data()
                 startIdx = self.start_idx.data()
-            
+
             nSamples = endIdx - startIdx
 
             postTrigger = nSamples + startIdx
             preTrigger = nSamples - endIdx
 
-            print 'PXI 6368 nSamples     = ', Int32(int(nSamples))
-            print 'PXI 6368 seg_length   = ', self.seg_length.data()
+            print('PXI 6368 nSamples     = ', Int32(int(nSamples)))
+            print('PXI 6368 seg_length   = ', self.seg_length.data())
 
 
         else: #Continuous Acquisition
             if useTime == 'YES':
                 try:
                     startTime = float( self.start_time.data() )
-                    print 'PXI 6368 startTime  = ', startTime 
-                    print 'PXI 6368 trigTime = ', trigTime
+                    print('PXI 6368 startTime  = ', startTime)
+                    print('PXI 6368 trigTime = ', trigTime)
 
                     startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), startTime)
 
@@ -579,25 +532,23 @@ class NI6368AI(Device):
                 startIdx = self.start_idx.data()
             nSamples = -1
 
-		
+
         if acqMode == 'TRANSIENT REC.':
             if startIdx >= 0 :
-                niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(startIdx + nSamples), (numTrigger))
+                self.niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(startIdx + nSamples), (numTrigger))
                 #niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(0), 0)
-
             else:
-                print 'preTrigger    = ', Int32(int(preTrigger))
-                print 'postTrigger   = ', Int32(int(postTrigger))
-		if  trigTime > startTime: 
-                   print 'PXI 6368 Acquire only post trigger'
-                   nSamples = postTrigger
-                   self.start_idx.putData(Int32(int(0)))
-                   self.start_time.putData(Float32(trigTime))
-
-                niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(nSamples), (numTrigger))
-                #niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(0), 0)
+                print('preTrigger    = ', Int32(int(preTrigger)))
+                print('postTrigger   = ', Int32(int(postTrigger)))
+            if  trigTime > startTime:
+               print('PXI 6368 Acquire only post trigger')
+               nSamples = postTrigger
+               self.start_idx.putData(Int32(int(0)))
+               self.start_time.putData(Float32(trigTime))
+               self.niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(nSamples), (numTrigger))
+               #niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(0), 0)
         else:
-            niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(0), 0)
+            self.niInterfaceLib.xseries_create_ai_conf_ptr(byref(aiConf), c_int(0), c_int(0), 0)
 
 
         """
@@ -607,74 +558,74 @@ class NI6368AI(Device):
         """
 
         #XSERIES_AI_DMA_BUFFER_SIZE = 0
-        status = niLib.xseries_set_ai_attribute(aiConf, c_int(0) , c_int(1000));
+        status = self.niLib.xseries_set_ai_attribute(aiConf, c_int(0) , c_int(1000));
         if(status != 0):
-            errno = niInterfaceLib.getErrno();
+            errno = self.niInterfaceLib.getErrno();
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Set DMA buffer size : (%d) %s' % (errno, os.strerror( errno )) )
             return 0
 
 
-#SET trigger         
+#SET trigger
 
-        #disable external gate 
-        status = niLib.xseries_set_ai_external_gate(aiConf, self.XSERIES_AI_EXTERNAL_GATE_DISABLED, self.XSERIES_AI_POLARITY_ACTIVE_LOW_OR_FALLING_EDGE)
+        #disable external gate
+        status = self.niLib.xseries_set_ai_external_gate(aiConf, self.XSERIES_AI_EXTERNAL_GATE_DISABLED, self.XSERIES_AI_POLARITY_ACTIVE_LOW_OR_FALLING_EDGE)
         if( status != 0 ):
-            errno = niInterfaceLib.getErrno();
+            errno = self.niInterfaceLib.getErrno();
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot disable external gate!: (%d) %s' % (errno, os.strerror( errno )) )
             return 0
 
-        if(trigMode == 'EXTERNAL'):            
+        if(trigMode == 'EXTERNAL'):
             #if(acqMode == 'TRANSIENT REC.'):
-             print "PXI 6368 select start trigger External (START1 signal)" 
-             status = niLib.xseries_set_ai_start_trigger(aiConf, self.XSERIES_AI_START_TRIGGER_PFI1, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE ,1)
+             print("PXI 6368 select start trigger External (START1 signal)")
+             status = self.niLib.xseries_set_ai_start_trigger(aiConf, self.XSERIES_AI_START_TRIGGER_PFI1, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE ,1)
              #test
              #status = niLib.xseries_set_ai_reference_trigger(aiConf, self.XSERIES_AI_START_TRIGGER_PFI1, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE ,1)
 
 
              if( status != 0 ):
-                 errno = niInterfaceLib.getErrno();
+                 errno = self.niInterfaceLib.getErrno();
                  Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger: (%d) %s' % (errno, os.strerror( errno )) )
                  return 0
-                
+
         else:
-            print "PXI 6368 select start trigger Internal (START1 signal)"
+            print("PXI 6368 select start trigger Internal (START1 signal)")
             #status = niLib.xseries_set_ai_start_trigger(aiConf, self.XSERIES_AI_START_TRIGGER_SW_PULSE, self.XSERIES_AI_POLARITY_ACTIVE_LOW_OR_FALLING_EDGE, 0)
-            status = niLib.xseries_set_ai_start_trigger(aiConf, self.XSERIES_AI_START_TRIGGER_LOW, self.XSERIES_AI_POLARITY_ACTIVE_LOW_OR_FALLING_EDGE, 0)
+            status = self.niLib.xseries_set_ai_start_trigger(aiConf, self.XSERIES_AI_START_TRIGGER_LOW, self.XSERIES_AI_POLARITY_ACTIVE_LOW_OR_FALLING_EDGE, 0)
             if( status != 0 ):
-                errno = niInterfaceLib.getErrno();
+                errno = self.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set auto start trigger: (%d) %s' % (errno, os.strerror( errno )) )
                 return 0
 
-#SET clock       
+#SET clock
         if(clockMode == 'INTERNAL'):
-            period = int( 100000000/frequency ) #TB3 clock 100MHz 
-            print "PXI 6368 Internal CLOCK TB3 period ", period
+            period = int( 100000000/frequency ) #TB3 clock 100MHz
+            print("PXI 6368 Internal CLOCK TB3 period ", period)
 
-            status = niLib.xseries_set_ai_scan_interval_counter(aiConf, self.XSERIES_SCAN_INTERVAL_COUNTER_TB3, self.XSERIES_SCAN_INTERVAL_COUNTER_POLARITY_RISING_EDGE, c_int(period), c_int(2));
+            status = self.niLib.xseries_set_ai_scan_interval_counter(aiConf, self.XSERIES_SCAN_INTERVAL_COUNTER_TB3, self.XSERIES_SCAN_INTERVAL_COUNTER_POLARITY_RISING_EDGE, c_int(period), c_int(2));
             if(status != 0):
-                errno = niInterfaceLib.getErrno();
+                errno = self.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set internal sample clock: (%d) %s' % (errno, os.strerror( errno )) )
                 return 0
 
 
         else:
-            #print "PXI 6368 Program the sample clock (START signal) to start on a rising edge"
-            status = niLib.xseries_set_ai_sample_clock(aiConf, self.XSERIES_AI_SAMPLE_CONVERT_CLOCK_PFI0, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE, c_int(1))
-            if( status == 0): 
+            #print("PXI 6368 Program the sample clock (START signal) to start on a rising edge"
+            status = self.niLib.xseries_set_ai_sample_clock(aiConf, self.XSERIES_AI_SAMPLE_CONVERT_CLOCK_PFI0, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE, c_int(1))
+            if( status == 0):
                 #Program the convert to be the same as START.
-                status = niLib.xseries_set_ai_convert_clock(aiConf, self.XSERIES_AI_SAMPLE_CONVERT_CLOCK_INTERNALTIMING, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE)
-            if(status == 0): 
+                status = self.niLib.xseries_set_ai_convert_clock(aiConf, self.XSERIES_AI_SAMPLE_CONVERT_CLOCK_INTERNALTIMING, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE)
+            if(status == 0):
                 #Program the sample and convert clock timing specifications
-                status = niLib.xseries_set_ai_scan_interval_counter(aiConf, self.XSERIES_SCAN_INTERVAL_COUNTER_TB3, self.XSERIES_SCAN_INTERVAL_COUNTER_POLARITY_RISING_EDGE, c_int(50),  c_int(2));    
+                status = self.niLib.xseries_set_ai_scan_interval_counter(aiConf, self.XSERIES_SCAN_INTERVAL_COUNTER_TB3, self.XSERIES_SCAN_INTERVAL_COUNTER_POLARITY_RISING_EDGE, c_int(50),  c_int(2));
             if(status != 0):
-                errno = niInterfaceLib.getErrno();
+                errno = self.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot configure external device clock: (%d) %s' % (errno, os.strerror( errno )) )
                 return 0
 
 
 #Channel configuration
         numChannels = 16
-        activeChan = 0;
+        #activeChan = 0;
         for chan in range(1, numChannels+1):
             try:
                 getattr(self, 'channel_%d_data_raw'%(chan)).setCompressOnPut(False)
@@ -690,32 +641,32 @@ class NI6368AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan))
                 return 0
             if(enabled):
-                #print ' GAIN: ' + str(gain) + ' INPUT MODE: ' + str(inputMode)
-                status = niLib.xseries_add_ai_channel(aiConf, c_short(chan-1), gain, inputMode, c_byte(1))
+                #print(' GAIN: ' + str(gain) + ' INPUT MODE: ' + str(inputMode)
+                status = self.niLib.xseries_add_ai_channel(aiConf, c_short(chan-1), gain, inputMode, c_byte(1))
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(chan))
                     return 0
-                print 'PXI 6368 CHAN '+ str(chan) + ' CONFIGURED'
-                activeChan = chan
+                print('PXI 6368 CHAN '+ str(chan) + ' CONFIGURED')
+                #activeChan = chan
             #else:
-                #print 'CHAN '+ str(chan) + ' DISABLED'
-        
+                #print('CHAN '+ str(chan) + ' DISABLED'
 
-        #endfor        
 
-        niLib.xseries_stop_ai(c_int(self.ai_fd))
+        #endfor
+
+        self.niLib.xseries_stop_ai(c_int(self.ai_fd))
 
         try:
-            status = niInterfaceLib.xseries_set_ai_conf_ptr(c_int(self.ai_fd), aiConf)
+            status = self.niInterfaceLib.xseries_set_ai_conf_ptr(c_int(self.ai_fd), aiConf)
             #status = niLib.xseries_load_ai_conf( c_int(self.ai_fd), aiConf)
             if(status != 0):
-                errno = niInterfaceLib.getErrno();
+                errno = self.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load ai configuration : (%d) %s' % (errno, os.strerror( errno )) )
                 return 0
-        except IOError as e:
+        except IOError:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Exception: cannot load ai configuration: (%d) %s' % (errno, os.strerror( errno )) )
             return 0
-        
+
         """
         if(acqMode == 'TRANSIENT REC.'):
             status = niLib.xseries_start_ai(c_int(self.ai_fd))
@@ -726,21 +677,19 @@ class NI6368AI(Device):
 
         self.saveInfo()
 
-        print "==============================================="
-       
+        print("===============================================")
+
         return 1
 
 ##########StartStore
     def start_store(self, arg):
-        global niLib
-        global niInterfaceLib
         self.restoreInfo()
-        self.worker = self.AsynchStore()        
-        self.worker.daemon = True 
+        self.worker = self.AsynchStore()
+        self.worker.daemon = True
         self.worker.stopReq = False
         chanMap = []
 
-        print self.worker
+        print(self.worker)
 
         numChannels = 16
         for chan in range(0, numChannels):
@@ -753,14 +702,14 @@ class NI6368AI(Device):
                 return 0
 
         treePtr = c_void_p(0)
-        status = niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+        self.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
 
         stopAcq = c_void_p(0)
-        niInterfaceLib.getStopAcqFlag(byref(stopAcq));
-        print stopAcq
+        self.niInterfaceLib.getStopAcqFlag(byref(stopAcq));
+        print(stopAcq)
 
         #if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-        self.worker.configure(self, niLib, niInterfaceLib, self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)
+        self.worker.configure(self, self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)
         #else:
         #    self.worker.configure(self, niLib, niInterfaceLib, self.ai_fd, chanMap, self.nonDiffChanMap, treePtr)
 
@@ -769,13 +718,13 @@ class NI6368AI(Device):
         return 1
 
     def stop_store(self,arg):
-      print "PXI 6368 stop_store"
+      print("PXI 6368 stop_store")
       self.restoreWorker()
       if self.worker.isAlive():
-          print "PXI 6368 stop_worker"
+          print("PXI 6368 stop_worker")
           self.worker.stop()
       return 1
-               
+
     """
     def readConfig(self,arg):
       global niLib
@@ -788,17 +737,15 @@ class NI6368AI(Device):
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot read board configuration')
           return 0
       return 1
-    """  
+    """
 
     def trigger(self,arg):
-      global niLib
-      global niInterfaceLib
       self.restoreInfo()
 
       try:
-            status = niLib.xseries_start_ai(c_int(self.ai_fd))
+            status = self.niLib.xseries_start_ai(c_int(self.ai_fd))
             if(status != 0):
-                errno = niInterfaceLib.getErrno();
+                errno = self.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition : (%d) %s' % (errno , os.strerror( errno )) )
                 return
       except:

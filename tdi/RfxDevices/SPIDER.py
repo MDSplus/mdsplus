@@ -1,9 +1,8 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import *
-import time
+from MDSplus import Device
 
 class SPIDER(Device):
-    print 'SPIDER'
+    print('SPIDER')
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':CAMERA_FREQ', 'type':'numeric', 'value':10},
@@ -50,4 +49,3 @@ class SPIDER(Device):
       {'path':'.WAVE_REC:MAX_X', 'type':'numeric'},
       {'path':'.WAVE_REC:MIN_Y', 'type':'numeric'},
       {'path':'.WAVE_REC:MAX_Y', 'type':'numeric'}]
- 

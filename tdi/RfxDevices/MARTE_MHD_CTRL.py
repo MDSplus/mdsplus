@@ -1,6 +1,9 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import Data
-from MARTE_GENERIC import MARTE_GENERIC
+from MDSplus import Data, version
+if version.ispy3:
+    from .MARTE_GENERIC import MARTE_GENERIC
+else:
+    from MARTE_GENERIC import MARTE_GENERIC
 
 class MARTE_MHD_CTRL(MARTE_GENERIC):
     print('MARTE_MHD_CTRL')
@@ -100,5 +103,6 @@ class MARTE_MHD_CTRL(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':'inFF_%03d'%(i+1)})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-
-
+    del(i)
+    del(parNames)
+    del(parValues)

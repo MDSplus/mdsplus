@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 from MDSplus import Device, Tree, Data, Event
-import os
-import time
+from os import environ
+from time import sleep
 
 class MARTE_GENERIC(Device):
     print('MARTE_GENERIC')
@@ -57,12 +57,13 @@ class MARTE_GENERIC(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
 	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
 	  'options':('no_write_shot',)})
+    del(i)
 
     def getEventName(self):
-      if os.environ.get("MARTE_EVENT") is None:
+      if environ.get("MARTE_EVENT") is None:
         return "MARTE"
       else:
-        return os.environ["MARTE_EVENT"]
+        return environ["MARTE_EVENT"]
 
     def init(self,arg):
       eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
@@ -117,7 +118,7 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       print(eventStr)
       Event.setevent(self.getEventName(), eventStr)
-      time.sleep(3)
+      sleep(3)
       return 1
 
 
@@ -152,7 +153,7 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       Event.setevent("MARTE", eventStr)
-      time.sleep(3)
+      sleep(3)
       return 1
 
     def abort(self, arg):
@@ -167,23 +168,23 @@ class MARTE_GENERIC(Device):
 #       eventStr = "STORE " +str(self.id.data())
 #       print eventStr
 #       Event.setevent(self.getEventName(), eventStr)
-#       time.sleep(10)
+#       sleep(10)
 #       return 1
 
     def seq_init(self,arg):
       self.abort(arg)
-      time.sleep(3)
+      sleep(3)
       self.pre_req(arg)
-      time.sleep(3)
+      sleep(3)
       self.init(arg)
       self.pulse_req(arg)
       return 1
 
     def seq_init_start(self,arg):
       self.abort(arg)
-      time.sleep(3)
+      sleep(3)
       self.pre_req(arg)
-      time.sleep(3)
+      sleep(3)
       self.init(arg)
       return 1
 
@@ -194,15 +195,15 @@ class MARTE_GENERIC(Device):
 
     def seq_store(self,arg):
       self.post_req(arg)
-      time.sleep(3)
+      sleep(3)
       self.store(arg)
-      time.sleep(3)
+      sleep(3)
       self.collection_complete(arg)
       return 1
 
     def seq_store_start(self,arg):
       self.post_req(arg)
-      time.sleep(3)
+      sleep(3)
       self.store(arg)
       return 1
 

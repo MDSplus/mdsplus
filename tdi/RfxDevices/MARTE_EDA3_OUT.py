@@ -1,4 +1,8 @@
-from MARTE_GENERIC import MARTE_GENERIC
+from MDSplus import version
+if version.ispy3:
+    from .MARTE_GENERIC import MARTE_GENERIC
+else:
+    from MARTE_GENERIC import MARTE_GENERIC
 
 class MARTE_EDA3_OUT(MARTE_GENERIC):
     print('MARTE_EDA3_OUT')
@@ -31,4 +35,6 @@ class MARTE_EDA3_OUT(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-
+    del(i)
+    del(parNames)
+    del(parValues)

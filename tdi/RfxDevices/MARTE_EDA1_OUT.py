@@ -1,4 +1,8 @@
-from MARTE_GENERIC import MARTE_GENERIC
+from MDSplus import version
+if version.ispy3:
+    from .MARTE_GENERIC import MARTE_GENERIC
+else:
+    from MARTE_GENERIC import MARTE_GENERIC
 
 class MARTE_EDA1_OUT(MARTE_GENERIC):
     print('MARTE_EDA1_OUT')

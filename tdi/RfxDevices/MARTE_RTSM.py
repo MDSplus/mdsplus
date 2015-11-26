@@ -1,6 +1,9 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import Data
-from MARTE_COMMON import MARTE_COMMON
+from MDSplus import Data, version
+if version.ispy3:
+    from .MARTE_COMMON import MARTE_COMMON
+else:
+    from MARTE_COMMON import MARTE_COMMON
 
 class MARTE_RTSM(MARTE_COMMON):
     print('MARTE_RTSM')
@@ -17,8 +20,6 @@ class MARTE_RTSM(MARTE_COMMON):
         'state6_wave1','state6_wave2','state6_wave3','state6_wave4','state6_wave5','state6_wave6','state6_wave7','state6_wave8',
         'state7_wave1','state7_wave2','state7_wave3','state7_wave4','state7_wave5','state7_wave6','state7_wave7','state7_wave8',
         'state8_wave1','state8_wave2','state8_wave3','state8_wave4','state8_wave5','state8_wave6','state8_wave7','state8_wave8']
-
-
 
     parts = list(MARTE_COMMON.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
@@ -39,3 +40,7 @@ class MARTE_RTSM(MARTE_COMMON):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':waveParNames[i]})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
+    del(i)
+    del(parNames)
+    del(parValues)
+    del(waveParNames)
