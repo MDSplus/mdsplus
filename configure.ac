@@ -5,18 +5,8 @@ AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 
-dnl DK_TEST
-
 dnl docker helpers
-AS_VAR_IF([HAVE_DOCKER],[no],, [])
 DK_SET_DOCKER_BUILD
-
-
-
-AS_VAR_SET_IF([MAKE_COMMAND],
-  AS_VAR_SET([MAKE_COMMAND_OVERRIDE],
-             ["MAKE_COMMAND = ${MAKE_COMMAND}"]))
-AC_SUBST(MAKE_COMMAND_OVERRIDE)
 
 AC_CANONICAL_TARGET
 

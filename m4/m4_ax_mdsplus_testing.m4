@@ -110,7 +110,9 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 dnl generate SKIP log_compiler
-AC_DEFUN([TS_LOG_SKIP],["\"sh -c 'exit 77'\""])
+AC_DEFUN([TS_LOG_SKIP],[
+ AS_VAR_APPEND([$1],["\"sh -c \\\"exit 77\\\"; :\""])
+])
 
 
 
@@ -129,6 +131,7 @@ dnl
 AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([TS_TESTS_ENVIRONMENT])
  AS_VAR_SET([TS_LOG_COMPILER])
+ AS_VAR_SET([TS_LOG_FLAGS])
  AS_VAR_SET([TS_PY_TAP_COMPILER])
  AS_VAR_SET([TS_PY_TAP_FLAGS])
  AS_VAR_SET([TS_LOG_DRIVER],["\$(top_srcdir)/conf/test-driver"])
@@ -138,7 +141,7 @@ AC_DEFUN([TS_SELECT],[
  TS_CHECK_PYTHON_TAP( [$PYTHON], 
    [AS_VAR_APPEND([TS_PY_TAP_COMPILER],["${NOSETESTS}"])
     AS_VAR_APPEND([TS_PY_TAP_FLAGS],   ["--with-tap --tap-stream"])],
-   AS_VAR_APPEND([TS_PY_TAP_COMPILER],[TS_LOG_SKIP]))
+   [TS_LOG_SKIP([TS_PY_TAP_COMPILER])])
 
  dnl this calls valgrind check with args
  AX_VALGRIND_CHECK
@@ -167,10 +170,10 @@ AC_DEFUN([TS_SELECT],[
        ])
       AS_VAR_APPEND([TS_LOG_COMPILER],"wine ")
      ],
-     [AS_VAR_APPEND([TS_LOG_COMPILER],[TS_LOG_SKIP])])     
+     [TS_LOG_SKIP([TS_LOG_COMPILER])])
      dnl TODO: add python in wine (with winetricks?)
      dnl force SKIP log for python for now
-     AS_VAR_SET([TS_PY_TAP_COMPILER],[TS_LOG_SKIP])     
+     TS_LOG_SKIP([TS_PY_TAP_COMPILER])
  ],
  #
  # LINUX->LINUX

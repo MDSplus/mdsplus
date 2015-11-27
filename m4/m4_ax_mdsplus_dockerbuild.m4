@@ -373,6 +373,7 @@ ifeq (docker,\$(MAKECMDGOALS))
 	echo " make docker start <- start the docker container "
 	echo " make docker stop  <- pause the docker container "
 	echo " make docker shell <- launch a shell inside the running container "
+	echo " make docker shell USER=root <- launch the shell as root "
 	echo 
 endif
 	echo 
@@ -385,19 +386,16 @@ export SHELL = \${local_SHELL}
 .PHONY: start stop shell
 start:
 	@echo "Starting docker container:";
-	eval docker restart \${DOCKER_CONTAINER}	
+	docker restart \${DOCKER_CONTAINER}	
 
 stop:
 	@echo "Stopping docker container:";
-	eval docker stop \${DOCKER_CONTAINER};
+	docker stop \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
-	eval docker exec -ti --user \${USER} \${DOCKER_CONTAINER} bash
-
-root-shell:
-	@echo "Starting docker shell with root user";
-	eval docker exec -ti --user root \${DOCKER_CONTAINER} bash
+	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
+	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
 	
 endif
 ])
@@ -421,30 +419,10 @@ AS_VAR_READ([DK_DSHELLFILE],m4_escape([
 DOCKER_CONTAINER=${DOCKER_CONTAINER}
 DOCKER_IMAGE=${DOCKER_IMAGE}
 
-# requotes args, try to figure out if quoting was required for $@
-for x in "\${@}" ; do
-    if [[ "\$x" != "\${x%=*}" ]]; then
-        x=\${x%=*}"=\\""\${x#*=}"\\""
-    elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
-        x="\\\""\$x"\\\""
-    fi
-    _args=\$_args" "\$x
-done
-
-# obsolete function (not to be used anymore)
-dmake () { 
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
-} 
-
-dshell () {
+quoted_args="\$(printf " %q" "\$\@")"
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${_args}";
-}
-
-# execute command
-dshell \${@}
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 ]))
 

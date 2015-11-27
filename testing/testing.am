@@ -126,9 +126,9 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
 	
 	## run tests	
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS)  \
-	  PY_LOG_COMPILER=$(TAP_PY_LOG_COMPILER) \
-	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	 PY_LOG_COMPILER=$(TAP_PY_LOG_COMPILER) \
+	 PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
 	 
 	## collate test-build.tap and 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \

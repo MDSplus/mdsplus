@@ -908,7 +908,6 @@ build_os
 build_vendor
 build_cpu
 build
-MAKE_COMMAND_OVERRIDE
 DK_DOCKER_TARGETS
 HAVE_DOCKER
 target_alias
@@ -2850,10 +2849,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-if test "x$HAVE_DOCKER" = xno; then :
-
-fi
-
 
    if ${HAVE_DOCKER+:} false; then :
 
@@ -3470,30 +3465,10 @@ read -d '' DK_DSHELLFILE << _as_read_EOF
 DOCKER_CONTAINER=${DOCKER_CONTAINER}
 DOCKER_IMAGE=${DOCKER_IMAGE}
 
-# requotes args, try to figure out if quoting was required for
-for x in "\${@}" ; do
-    if [[ "\$x" != "\${x%=*}" ]]; then
-        x=\${x%=*}"=\\""\${x#*=}"\\""
-    elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
-        x="\\\""\$x"\\\""
-    fi
-    _args=\$_args" "\$x
-done
-
-# obsolete function (not to be used anymore)
-dmake () {
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
-}
-
-dshell () {
+quoted_args="\$(printf " %q" "\$\@")"
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${_args}";
-}
-
-# execute command
-dshell \${@}
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 
 _as_read_EOF
@@ -3541,6 +3516,7 @@ ifeq (docker,\$(MAKECMDGOALS))
 	echo " make docker start <- start the docker container "
 	echo " make docker stop  <- pause the docker container "
 	echo " make docker shell <- launch a shell inside the running container "
+	echo " make docker shell USER=root <- launch the shell as root "
 	echo
 endif
 	echo
@@ -3553,19 +3529,16 @@ export SHELL = \${local_SHELL}
 .PHONY: start stop shell
 start:
 	@echo "Starting docker container:";
-	eval docker restart \${DOCKER_CONTAINER}
+	docker restart \${DOCKER_CONTAINER}
 
 stop:
 	@echo "Stopping docker container:";
-	eval docker stop \${DOCKER_CONTAINER};
+	docker stop \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
-	eval docker exec -ti --user \${USER} \${DOCKER_CONTAINER} bash
-
-root-shell:
-	@echo "Starting docker shell with root user";
-	eval docker exec -ti --user root \${DOCKER_CONTAINER} bash
+	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
+	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
 
 endif
 
@@ -3579,13 +3552,6 @@ fi
 
 fi
 
-
-
-
-
-if ${MAKE_COMMAND+:} false; then :
-  MAKE_COMMAND_OVERRIDE="MAKE_COMMAND = ${MAKE_COMMAND}"
-fi
 
 
 # Make sure we can run config.sub.
@@ -12161,6 +12127,7 @@ fi
 
  TS_TESTS_ENVIRONMENT=
  TS_LOG_COMPILER=
+ TS_LOG_FLAGS=
  TS_PY_TAP_COMPILER=
  TS_PY_TAP_FLAGS=
  TS_LOG_DRIVER="\$(top_srcdir)/conf/test-driver"
@@ -12287,7 +12254,9 @@ fi
   eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}"
     as_fn_append TS_PY_TAP_FLAGS "--with-tap --tap-stream"
 else
-  eval as_fn_append TS_PY_TAP_COMPILER "\"sh -c 'exit 77'\""
+  eval
+ as_fn_append TS_PY_TAP_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+
 fi
 
 
@@ -12889,9 +12858,13 @@ fi
       as_fn_append TS_LOG_COMPILER "wine "
 
 else
-  as_fn_append TS_LOG_COMPILER "\"sh -c 'exit 77'\""
+
+ as_fn_append TS_LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+
 fi
-               TS_PY_TAP_COMPILER="\"sh -c 'exit 77'\""
+
+ as_fn_append TS_PY_TAP_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+
   ;; #(
   #
  # LINUX->LINUX

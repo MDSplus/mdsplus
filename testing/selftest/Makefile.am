@@ -77,8 +77,8 @@ print:
 	echo "--------------------------------------------------------------";
 	$(tests_config_dump);
 
-wineconsole:
-	$(shell ${TESTS_ENVIRONMENT} wineconsole )
+# wineconsole:
+#	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 
 all-local: $(TESTS) libMdsTestDummy.so
