@@ -283,7 +283,6 @@ class TreeNode(_data.Data):
               raise _Exceptions.statusToException(status)
         finally:
             _tree.Tree.unlock()
-        return
 
     def __str__(self):
         """Convert TreeNode to string."""
@@ -336,6 +335,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         _treeshr.TreeAddTag(self.tree,self.nid,str(tag))
+        return self
 
     def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
         """Begin a record segment
@@ -924,7 +924,7 @@ class TreeNode(_data.Data):
         """Store data
         @param data: Data to store in this node.
         @type data: Data
-        @rtype: None
+        @rtype: original type
         """
         _tree.Tree.lock()
         try:
@@ -933,7 +933,7 @@ class TreeNode(_data.Data):
             _treeshr.TreePutRecord(self,data)
         finally:
             _tree.Tree.unlock()
-        return
+        return self
 
     def putRow(self,bufsize,array,timestamp):
         """Load a timestamped segment row
@@ -1027,6 +1027,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('compress_on_put',flag)
+        return self
 
     def setCompressSegments(self,flag):
         """Set compress segments state of this node
@@ -1035,6 +1036,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('compress_segments',flag)
+        return self
 
     def setDoNotCompress(self,flag):
         """Set do not compress state of this node
@@ -1043,7 +1045,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('do_not_compress',flag)
-        return
+        return self
 
     def setEssential(self,flag):
         """Set essential state of this node
@@ -1051,7 +1053,8 @@ class TreeNode(_data.Data):
         @type flag: bool
         @rtype: None
         """
-        return self.__setNode('essential',flag)
+        self.__setNode('essential',flag)
+        return self
 
     def setIncludedInPulse(self,flag):
         """Set include in pulse state of this node
@@ -1059,7 +1062,8 @@ class TreeNode(_data.Data):
         @type flag: bool
         @rtype: None
         """
-        return self.__setNode('included',flag)
+        self.__setNode('included',flag)
+        return self
 
     def setNoWriteModel(self,flag):
         """Set no write model state for this node
@@ -1068,7 +1072,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('model_write',not flag)
-        return
+        return self
 
     def setNoWriteShot(self,flag):
         """Set no write shot state for this node
@@ -1077,7 +1081,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('shot_write',not flag)
-        return
+        return self
 
     def setOn(self,flag):
         """Turn node on or off
@@ -1096,7 +1100,8 @@ class TreeNode(_data.Data):
                     raise TypeError('argument must be True or False')
         finally:
             _tree.Tree.unlock()
-        return
+        return self
+
 
     def setSubtree(self,flag):
         """Enable/Disable node as a subtree
@@ -1105,6 +1110,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         _treeshr.TreeSetSubtree(self,flag)
+        return self
 
     def setUsage(self,usage):
         """Set the usage of a node
@@ -1117,6 +1123,7 @@ class TreeNode(_data.Data):
         except KeyError:
             raise KeyError('Invalid usage specified. Use one of %s' % (str(usage_table.keys()),))
         _treeshr.TreeSetUsage(self.tree.ctx,self.nid,usagenum)
+        return self
 
     def setTree(self,tree):
         """Set Tree associated with this node
@@ -1125,6 +1132,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.tree=tree.copy()
+        return self
 
     def setWriteOnce(self,flag):
         """Set write once state of node
@@ -1133,7 +1141,7 @@ class TreeNode(_data.Data):
         @rtype: None
         """
         self.__setNode('write_once',flag)
-        return
+        return self
 
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
@@ -1182,8 +1190,7 @@ class TreeNodeArray(_data.Data):
         @return: node
         @rtype: TreeNode
         """
-        ans=TreeNode(self.nids[n],self.tree)
-        return ans
+        return TreeNode(self.nids[n],self.tree)
 
     def restoreContext(self):
         self.tree.restoreContext()
@@ -1260,6 +1267,7 @@ class TreeNodeArray(_data.Data):
         """
         for nid in self:
             nid.setWriteOnce(flag)
+        return self
 
     def isCompressOnPut(self):
         """Is nodes set to compress on put
@@ -1275,6 +1283,7 @@ class TreeNodeArray(_data.Data):
         """
         for nid in self:
             nid.setCompressOnPut(flag)
+        return self
 
     def isNoWriteModel(self):
         """True if nodes set to no write model
@@ -1290,6 +1299,7 @@ class TreeNodeArray(_data.Data):
         """
         for nid in self:
             nid.setNoWriteModel(flag)
+        return self
 
     def isNoWriteShot(self):
         """True if nodes are set no write shot
@@ -1305,6 +1315,7 @@ class TreeNodeArray(_data.Data):
         """
         for nid in self:
             nid.setNoWriteShot(flag)
+        return self
 
     def getUsage(self):
         """Get usage of nodes
@@ -1315,8 +1326,6 @@ class TreeNodeArray(_data.Data):
         for nid in self:
             a.append(str(nid.usage))
         return _array.makeArray(a)
-
-
 
     def __getattr__(self,name):
         _tree.Tree.lock()
