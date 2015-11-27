@@ -36,8 +36,8 @@ public class NodeInfo implements Serializable
     public static final int NO_WRITE_SHOT =    1 << 12;
     public static final int PATH_REFERENCE =   1 << 13;
     public static final int NID_REFERENCE =    1 << 14;
-    public static final int COMPRESS_SEGMENTS =1 << 15;
-    public static final int INCLUDE_IN_PULSE = 1 << 16;
+    public static final int INCLUDE_IN_PULSE = 1 << 15;
+    public static final int COMPRESS_SEGMENTS =1 << 16;
 
     public static final NodeInfo getNodeInfo(byte dclass, byte dtype, byte usage, int flags, int owner, int length, int conglomerate_nids, int conglomerate_elt,
 	                                   String date_inserted, String name, String fullpath, String minpath, String path)

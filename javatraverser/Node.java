@@ -459,7 +459,7 @@ public class Node
         if(newName.length() > 12 || newName.length() == 0)
 	    {
 	        JOptionPane.showMessageDialog(FrameRepository.frame, "Node name lengh must be between 1 and 12 characters",
-		    "Error renaming node", JOptionPane.WARNING_MESSAGE);
+		    "Error renaming node: "+newName.length(), JOptionPane.WARNING_MESSAGE);
             return false;
 	    }
 	    try
@@ -493,11 +493,9 @@ public class Node
             return new ImageIcon(base + "/" + gifname);
     }
 
-    public JLabel getIcon()
+    public JLabel getIcon(boolean isSelected)
     {
         if (info == null)return null;
-        if (tree_label != null)
-            return tree_label;
         ImageIcon icon = null;
         switch (getUsage())
         {
@@ -539,7 +537,7 @@ public class Node
                 icon = loadIcon("compound.gif");
                 break;
         }
-        tree_label = new TreeNode(this, getName(), icon);
+        tree_label = new TreeNode(this, getName(), icon, isSelected);
         return tree_label;
     }
 
