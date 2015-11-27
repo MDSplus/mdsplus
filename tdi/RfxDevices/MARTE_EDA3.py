@@ -1,6 +1,8 @@
-# -*- coding: iso-8859-1 -*-
 from MDSplus import Data
-from MARTE_GENERIC import MARTE_GENERIC
+try:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
+except:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_EDA3(MARTE_GENERIC):
     print('MARTE_EDA3')
@@ -27,16 +29,15 @@ class MARTE_EDA3(MARTE_GENERIC):
       parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric'})
 
     parts.append({'path':'.WAVE_PARAMS', 'type':'structure'})
-    print('WAVE PAR NAMES')
     waveParNames = ['ppTorInvCurrentRefs_1','ppTorInvCurrentRefs_2','ppTorInvCurrentRefs_3','ppTorInvCurrentRefs_4','ppTorInvCurrentRefs_5',
-		'ppTorInvCurrentRefs_6','ppTorInvCurrentRefs_7','ppTorInvCurrentRefs_8','ppTorInvCurrentRefs_9','ppTorInvCurrentRefs_10',
-		'ppTorInvCurrentRefs_11','ppTorInvCurrentRefs_12','capacitorsVoltageRefs_1','capacitorsVoltageRefs_2','capacitorsVoltageRefs_3',
-		'capacitorsVoltageRefs_4','capacitorsVoltageRefs_5',
-		'capacitorsVoltageRefs_6','capacitorsVoltageRefs_7','capacitorsVoltageRefs_8','capacitorsVoltageRefs_9','capacitorsVoltageRefs_10',
-		'capacitorsVoltageRefs_11','capacitorsVoltageRefs_12', 'fRef',
-                'ppTorInvVoltageRefs_1','ppTorInvVoltageRefs_2','ppTorInvVoltageRefs_3','ppTorInvVoltageRefs_4','ppTorInvVoltageRefs_5',
-		'ppTorInvVoltageRefs_6','ppTorInvVoltageRefs_7','ppTorInvVoltageRefs_8','ppTorInvVoltageRefs_9','ppTorInvVoltageRefs_10',
-		'ppTorInvVoltageRefs_11','ppTorInvVoltageRefs_12']
+        'ppTorInvCurrentRefs_6','ppTorInvCurrentRefs_7','ppTorInvCurrentRefs_8','ppTorInvCurrentRefs_9','ppTorInvCurrentRefs_10',
+        'ppTorInvCurrentRefs_11','ppTorInvCurrentRefs_12','capacitorsVoltageRefs_1','capacitorsVoltageRefs_2','capacitorsVoltageRefs_3',
+        'capacitorsVoltageRefs_4','capacitorsVoltageRefs_5',
+        'capacitorsVoltageRefs_6','capacitorsVoltageRefs_7','capacitorsVoltageRefs_8','capacitorsVoltageRefs_9','capacitorsVoltageRefs_10',
+        'capacitorsVoltageRefs_11','capacitorsVoltageRefs_12', 'fRef',
+        'ppTorInvVoltageRefs_1','ppTorInvVoltageRefs_2','ppTorInvVoltageRefs_3','ppTorInvVoltageRefs_4','ppTorInvVoltageRefs_5',
+        'ppTorInvVoltageRefs_6','ppTorInvVoltageRefs_7','ppTorInvVoltageRefs_8','ppTorInvVoltageRefs_9','ppTorInvVoltageRefs_10',
+        'ppTorInvVoltageRefs_11','ppTorInvVoltageRefs_12']
 
     parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(waveParNames)})
     for i in range(len(waveParNames)):

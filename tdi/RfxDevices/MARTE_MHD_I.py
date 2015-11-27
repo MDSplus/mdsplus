@@ -1,4 +1,7 @@
-from MARTE_GENERIC import MARTE_GENERIC
+try:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
+except:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_MHD_I(MARTE_GENERIC):
     print('MARTE_MHD_I')
@@ -31,4 +34,6 @@ class MARTE_MHD_I(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-
+    del(i)
+    del(parNames)
+    del(parValues)

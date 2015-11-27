@@ -1,12 +1,11 @@
-from MDSplus import *
-from numpy import *
-from threading import *
-from ctypes import *
-import datetime
-import time
+from MDSplus import Device, Int32, Data
+from threading import Thread
+from ctypes import CDLL,c_void_p,c_char_p,c_byte,c_short,c_int,c_float,byref
+from datetime import datetime
+from time import sleep, mktime
 
 class ZELOS2150GV(Device):
-    print 'Zelos2150GV'
+    print('ZELOS2150GV')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Zelos 2150GV Camera"""
     parts=[
@@ -35,38 +34,35 @@ class ZELOS2150GV(Device):
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
       {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
       {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
-      {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},  
+      {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},
       {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
       {'path':':STREAM_HILIM', 'type':'numeric', 'value':32767}]
     parts.append({'path':':INIT_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
+      'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
+      'options':('no_write_shot',)})
     parts.append({'path':':START_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'start_store',head))",
-	  'options':('no_write_shot',)})
+      'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'start_store',head))",
+      'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
-	  'options':('no_write_shot',)})
-    print 'Zelos2150GV added'
-    
-    
-    handle = 0
+      'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+      'options':('no_write_shot',)})
+    handles = {}
+    workers = {}
+    kappaLib = None
+    mdsLib = None
+    streamLib = None
 
-####Asynchronous readout internal class       
+
+####Asynchronous readout internal class
     class AsynchStore(Thread):
-      frameIdx = 0
-      stopReq = False
-   
-    
-      def configure(self, device, kappaLib, mdsLib, streamLib, width, height, hBuffers):
+
+      def configure(self, device, width, height, hBuffers):
         self.device = device
-        self.kappaLib = kappaLib
-        self.mdsLib = mdsLib
-        self.streamLib = streamLib
         self.width = width
         self.height = height
         self.hBuffers = hBuffers
-
+        self.frameIdx = 0
+        self.stopReq = False
 
       def run(self):
         frameType = c_short * (self.height.value * self.width.value) #used for acquired frame
@@ -76,25 +72,25 @@ class ZELOS2150GV(Device):
         frame8bit = frameType()
 
         treePtr = c_void_p(0)
-        status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
+        status = ZELOS2150GV.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
         if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
           return 0
 
-        if self.device.frame_sync.data() == 'EXTERNAL': 
+        if self.device.frame_sync.data() == 'EXTERNAL':
           isExternal = 1
           timebaseNid=self.device.frame_clock.getNid()
         else:
           isExternal = 0
           timebaseNid=c_int(-1)
 
-        if self.device.streaming.data() == 'Stream and Store': 
+        if self.device.streaming.data() == 'Stream and Store':
           isStreaming = 1
           isStorage = 1
-        if self.device.streaming.data() == 'Only Stream': 
+        if self.device.streaming.data() == 'Only Stream':
           isStreaming = 1
           isStorage = 0
-        if self.device.streaming.data() == 'Only Store': 
+        if self.device.streaming.data() == 'Only Store':
           isStreaming = 0
           isStorage = 1
 
@@ -106,38 +102,38 @@ class ZELOS2150GV(Device):
 
         lowLim=c_int(self.device.stream_lolim.data())
         highLim=c_int(self.device.stream_hilim.data())
-        minLim=c_int(0)            
-        maxLim=c_int(32767)     
+        minLim=c_int(0)
+        maxLim=c_int(32767)
 
         tcpStreamHandle=c_int(-1)
-        streamPort=c_int(self.device.stream_port.data()) 
-        frameTimeInt=0
+        streamPort=c_int(self.device.stream_port.data())
+        #frameTimeInt=0
         prevFrameTime=0
         totFrameTime=0
         framePeriod = int(self.device.frame_period.data()*1000)
         skipFrameStream=int(float(1/self.device.frame_period.data())/25.0)-1
-        print 'skipFrameStream:',skipFrameStream
+        print('skipFrameStream:',skipFrameStream)
         if(skipFrameStream<0):
           skipFrameStream=0
-	frameStreamCounter = skipFrameStream
+        frameStreamCounter = skipFrameStream
         frameTotalCounter = 0
         status=c_int(-1)
         self.idx = 0
 
         while not self.stopReq:
 
-          self.kappaLib.kappaGetFrame(self.device.handle, byref(status), frameBuffer)
+          ZELOS2150GV.kappaLib.kappaGetFrame(self.device.handle, byref(status), frameBuffer)
           if status.value==3:
-            print 'get frame timeout!'
-          else:	
+            print('get frame timeout!')
+          else:
             frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
-            frameTotalCounter = frameTotalCounter + 1     #never resetted     
+            frameTotalCounter = frameTotalCounter + 1     #never resetted
 
-          if isExternal==0:  #internal clock source -> S.O. timestamp 
-             timestamp=datetime.datetime.now()
-             frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)  #ms                        
+          if isExternal==0:  #internal clock source -> S.O. timestamp
+             timestamp=datetime.now()
+             frameTime=int(mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)  #ms
              if frameTotalCounter==1:
-               prevFrameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
+               prevFrameTime=int(mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
                deltaT=frameTime-prevFrameTime
                totFrameTime=0
              else:
@@ -145,36 +141,36 @@ class ZELOS2150GV(Device):
                prevFrameTime=frameTime
                totFrameTime=totFrameTime+deltaT
              if (deltaT<framePeriod) and (deltaT>5):
-               time.sleep(float(framePeriod-deltaT)/1000.0)
-          
+               sleep(float(framePeriod-deltaT)/1000.0)
+
 
           #if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
-          if( (isStorage==1) and (status.value==1)  ):  #frame complete 
-            savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0) 
+          if( (isStorage==1) and (status.value==1)  ):  #frame complete
+            ZELOS2150GV.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0)
             self.idx = self.idx + 1
-            print 'saved frame idx:', self.idx
+            print('saved frame idx:', self.idx)
 
           if(isStreaming==1):
-            if(tcpStreamHandle.value==-1): 
-              fede=self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
+            if(tcpStreamHandle.value==-1):
+              fede=ZELOS2150GV.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
               if(fede!=-1):
-                print '\nConnected to FFMPEG on localhost:',streamPort.value
+                print('\nConnected to FFMPEG on localhost:',streamPort.value)
             if(frameStreamCounter == skipFrameStream+1):
               frameStreamCounter=0
             if(frameStreamCounter == 0 and tcpStreamHandle.value!=-1):
-              self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, autoScale, byref(lowLim), byref(highLim), minLim, maxLim)
-              self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit)  
+              ZELOS2150GV.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, autoScale, byref(lowLim), byref(highLim), minLim, maxLim)
+              ZELOS2150GV.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit)
 
         #endwhile
-        self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
+        ZELOS2150GV.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
         #print 'Stream Tcp Connection Closed'
-    
-        status = self.kappaLib.kappaStopAcquisition(self.device.handle, self.hBuffers)
+
+        status = ZELOS2150GV.kappaLib.kappaStopAcquisition(self.device.handle, self.hBuffers)
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot stop camera acquisition')
 
         #close device and remove from info
-        self.kappaLib.kappaClose(self.device.handle)
+        ZELOS2150GV.kappaLib.kappaClose(self.device.handle)
         self.device.removeInfo()
         return 0
 
@@ -186,160 +182,112 @@ class ZELOS2150GV(Device):
 
 
 
-###save worker###  
+###save worker###
     def saveWorker(self):
-      global zelosWorkers
-      global zelosWorkerNids
-      try:
-        zelosWorkers
-      except:
-	zelosWorkerNids = []
-        zelosWorkers = []
-      try:
-        idx = zelosWorkerNids.index(self.getNid())
-        zelosWorkers[idx] = self.worker
-      except:
-        print 'SAVE WORKER: NEW WORKER'
-        zelosWorkerNids.append(self.getNid())
-        zelosWorkers.append(self.worker)
-        return
-      return
+        ZELOS2150GV.workers[self.nid] = self.worker
 
-###save Info###   
-#saveInfo and restoreInfo allow to manage multiple occurrences of camera devices 
-#and to avoid opening and closing devices handles 
+###save Info###
+#saveInfo and restoreInfo allow to manage multiple occurrences of camera devices
+#and to avoid opening and closing devices handles
     def saveInfo(self):
-      global zelosHandles
-      global zelosNids
-      try:
-        zelosHandles
-      except:
-	zelosHandles = []
-	zelosNids = []
-      try:
-        idx = zelosNids.index(self.getNid())
-      except:
-        print 'SAVE INFO: SAVING HANDLE'
-        zelosHandles.append(self.handle)
-        zelosNids.append(self.getNid())
-        return
-      return
+        ZELOS2150GV.handels[self.nid] = self.handel
 
-###restore worker###   
+###restore worker###
     def restoreWorker(self):
-      global zelosWorkerNids
-      global zelosWorkers    
-      try:
-        idx = zelosWorkerNids.index(self.getNid())
-        self.worker = zelosWorkers[idx]
-      except:
-        print 'Cannot restore worker!!'
+      if self.nid in ZELOS2150GV.workers.keys():
+        self.worker = ZELOS2150GV.workers[self.nid]
+      else:
+        print('Cannot restore worker!!')
 
-###restore info###   
+###restore info###
     def restoreInfo(self):
-      global zelosHandles
-      global zelosNids
-      global kappaLib
-      global streamLib
-      global mdsLib
-      try:
-        kappaLib
-      except:
-        kappaLib = CDLL("libkappazelos.so")
-      try:
-        mdsLib
-      except:
-        mdsLib = CDLL("libcammdsutils.so")
-      try:
-        streamLib
-      except:
-        streamLib = CDLL("libcamstreamutils.so")
-      try:
-        idx = zelosNids.index(self.getNid())
-        self.handle = zelosHandles[idx]
-        print 'RESTORE INFO HANDLE TROVATO'
-      except:
-        print 'RESTORE INFO HANDLE NON TROVATO'
-        try: 
+      if ZELOS2150GV.kappaLib is None:
+        ZELOS2150GV.kappaLib = CDLL("libkappazelos.so")
+      if ZELOS2150GV.mdsLib is None:
+        ZELOS2150GV.mdsLib = CDLL("libcammdsutils.so")
+      if ZELOS2150GV.streamLib is None:
+        ZELOS2150GV.streamLib = CDLL("libcamstreamutils.so")
+      if self.nid in ZELOS2150GV.handels.keys():
+        self.handel = ZELOS2150GV.handels[self.nid]
+      else:
+        print('RESTORE INFO HANDLE NON TROVATO')
+        try:
           name = self.name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
           return 0
 
         self.handle = c_void_p(0)
-        status = kappaLib.kappaOpen(c_char_p(name), byref(self.handle))
-        if status < 0:  
+        status = ZELOS2150GV.kappaLib.kappaOpen(c_char_p(name), byref(self.handle))
+        if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
           return 0
       return
 
-###remove info###    
+###remove info###
     def removeInfo(self):
-      global zelosHandles
-      global zelosNids
       try:
-        zelosNids.remove(self.getNid())
-        zelosHandles.remove(self.handle)
+        del(ZELOS2150GV.handels[self.nid])
       except:
-        print 'ERROR TRYING TO REMOVE INFO'
+        print('ERROR TRYING TO REMOVE INFO')
       return
 
 
-##########init############################################################################    
+##########init############################################################################
     def init(self,arg):
       global kappaLib
       self.restoreInfo()
-      self.frames.setCompressOnPut(False)	
+      self.frames.setCompressOnPut(False)
 
-      status = kappaLib.kappaSetColorCoding(self.handle, c_int(6))   #Y14
+      status = ZELOS2150GV.kappaLib.kappaSetColorCoding(self.handle, c_int(6))   #Y14
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
         return 0
 
 ###Exposure	Mode
-      if self.frame_sync.data() == 'EXTERNAL': 
-        status = kappaLib.kappaSetExposureMode(self.handle, c_int(3)) #3 = ZELOS_ENUM_EXPOSUREMODE_RESETRESTART 
+      if self.frame_sync.data() == 'EXTERNAL':
+        status = ZELOS2150GV.kappaLib.kappaSetExposureMode(self.handle, c_int(3)) #3 = ZELOS_ENUM_EXPOSUREMODE_RESETRESTART
       else:
-        status = kappaLib.kappaSetExposureMode(self.handle, c_int(2)) #2 = ZELOS_ENUM_EXPOSUREMODE_FREERUNNINGSEQUENTIAL
+        status = ZELOS2150GV.kappaLib.kappaSetExposureMode(self.handle, c_int(2)) #2 = ZELOS_ENUM_EXPOSUREMODE_FREERUNNINGSEQUENTIAL
 
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Mode')
         return 0
 
-###Exposure	
+###Exposure
       autoExp = self.auto_exp.data()
       if autoExp == 'YES':
-      	status = kappaLib.kappaSetAET(self.handle, c_int(1))
+        status = ZELOS2150GV.kappaLib.kappaSetAET(self.handle, c_int(1))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET On')
           return 0
-        status = kappaLib.kappaSetAutoExposureLevel(self.handle, c_int(self.exp_lev.data()))
+        status = ZELOS2150GV.kappaLib.kappaSetAutoExposureLevel(self.handle, c_int(self.exp_lev.data()))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Auto Exposure Level')
           return 0
       else:
-      	status = kappaLib.kappaSetAET(self.handle, c_int(0))
+        status = ZELOS2150GV.kappaLib.kappaSetAET(self.handle, c_int(0))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET Off')
           return 0
-        status = kappaLib.kappaSetExposure(self.handle, c_float(self.exp_time.data()))
+        status = ZELOS2150GV.kappaLib.kappaSetExposure(self.handle, c_float(self.exp_time.data()))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Time')
           return 0
-          
+
 ###Gain
       autoGain = self.auto_gain.data()
       if autoGain == 'YES':
-      	status = kappaLib.kappaSetAGC(self.handle, c_int(1))
+        status = ZELOS2150GV.kappaLib.kappaSetAGC(self.handle, c_int(1))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
           return 0
       else:
-      	status = kappaLib.kappaSetAGC(self.handle, c_int(0))
+        status = ZELOS2150GV.kappaLib.kappaSetAGC(self.handle, c_int(0))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
           return 0
-        status = kappaLib.kappaSetGain(self.handle, c_int(self.gain_lev.data()))
+        status = ZELOS2150GV.kappaLib.kappaSetGain(self.handle, c_int(self.gain_lev.data()))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Gain')
           return 0
@@ -347,27 +295,27 @@ class ZELOS2150GV(Device):
 ###Slow Scan
       slowScan = self.slow_scan.data()
       if slowScan == 'YES':
-       status = kappaLib.kappaSetSlowScan(self.handle, c_int(1))
+       status = ZELOS2150GV.kappaLib.kappaSetSlowScan(self.handle, c_int(1))
       else:
-       status = kappaLib.kappaSetSlowScan(self.handle, c_int(0))
+       status = ZELOS2150GV.kappaLib.kappaSetSlowScan(self.handle, c_int(0))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Slow Scan')
         return 0
 
 ###Frame Area
-      status = kappaLib.kappaSetReadoutArea(self.handle, c_int(self.frame_x.data()),c_int(self.frame_y.data()),c_int(self.frame_width.data()),c_int(self.frame_height.data()))
+      status = ZELOS2150GV.kappaLib.kappaSetReadoutArea(self.handle, c_int(self.frame_x.data()),c_int(self.frame_y.data()),c_int(self.frame_width.data()),c_int(self.frame_height.data()))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Readout Area')
         return 0
 
 ###Measure Area
-      status = kappaLib.kappaSetMeasureWindow(self.handle, c_int(self.meas_x.data()),c_int(self.meas_y.data()),c_int(self.meas_width.data()),c_int(self.meas_height.data()))
+      status = ZELOS2150GV.kappaLib.kappaSetMeasureWindow(self.handle, c_int(self.meas_x.data()),c_int(self.meas_y.data()),c_int(self.meas_width.data()),c_int(self.meas_height.data()))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Measure Window')
         return 0
 
 ###Binning
-      status = kappaLib.kappaSetBinning(self.handle, c_int(self.hor_binning), c_int(self.ver_binning))
+      status = ZELOS2150GV.kappaLib.kappaSetBinning(self.handle, c_int(self.hor_binning), c_int(self.ver_binning))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set horizontal or vertical binning')
         return 0
@@ -378,13 +326,11 @@ class ZELOS2150GV(Device):
 
 ####################trigger###PER ORA NON FUNZIONA
     def trigger(self,arg):
-      global kappaLib
       self.restoreInfo()
-
       synch = self.frame_sync.data()   ###Synchronization
       if synch == 'INTERNAL':
         timeMs = int(self.frame_period.data()/1E-3)
-        status = kappaLib.kappaSetTriggerTimer(self.handle, c_int(timeMs))		
+        status = ZELOS2150GV.kappaLib.kappaSetTriggerTimer(self.handle, c_int(timeMs))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set Frame period in internal sync mode')
           return 0
@@ -393,34 +339,34 @@ class ZELOS2150GV(Device):
         return 0
       self.saveInfo()
       return 1
-		
-##########start store############################################################################   
+
+##########start store############################################################################
     def start_store(self, arg):
       global kappaLib
       global mdsLib
       global streamLib
       self.restoreInfo()
-      self.worker = self.AsynchStore()        
-      self.worker.daemon = True 
+      self.worker = self.AsynchStore()
+      self.worker.daemon = True
       self.worker.stopReq = False
       hBuffers = c_void_p(0)
       width = c_int(0)
       height = c_int(0)
       payloadSize = c_int(0)
-      status = kappaLib.kappaStartAcquisition(self.handle, byref(hBuffers), byref(width), byref(height), byref(payloadSize))
+      status = ZELOS2150GV.kappaLib.kappaStartAcquisition(self.handle, byref(hBuffers), byref(width), byref(height), byref(payloadSize))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition')
         return 0
-      self.worker.configure(self, kappaLib, mdsLib, streamLib, width, height, hBuffers)
+      self.worker.configure(self, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()
       return 1
 
 
-##########stop store############################################################################   
+##########stop store############################################################################
     def stop_store(self,arg):
-      print 'STOP STORE'
+      print('STOP STORE')
       self.restoreWorker()
       self.worker.stop()
-      print 'FLAG SETTATO'
+      print('FLAG SETTATO')
       return 1

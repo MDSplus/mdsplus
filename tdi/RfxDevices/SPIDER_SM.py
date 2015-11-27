@@ -1,12 +1,9 @@
-from MDSplus import *
-from numpy import *
-from threading import *
-import time
+from MDSplus import Int32, Device
+
 class SPIDER_SM(Device):
-    print 'SpiderStateMachine'
+    print('SPIDER_SM')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """SPIDER State Machine Configuration"""
-    print 'SpiderStateMachine 1'
     parts=[
       {'path':'.MASTER_SM', 'type':'structure'},
       {'path':'.MASTER_SM.IS_MASTER', 'type':'structure'},
@@ -104,7 +101,7 @@ class SPIDER_SM(Device):
       {'path':'.ELECTRIC.IS_MASTER:VAL', 'type':'numeric', 'value':0},
       {'path':'.ELECTRIC.CHILD_MASK', 'type':'structure'},
       {'path':'.ELECTRIC.CHILD_MASK:PV_NAME', 'type':'text', 'value':'ELECTRIC:CHILDREN_MASK'},
-      {'path':'.ELECTRIC.CHILD_MASK:VAL', 'type':'numeric', 'value':1},      
+      {'path':'.ELECTRIC.CHILD_MASK:VAL', 'type':'numeric', 'value':1},
       {'path':'.ELECTRIC.ESSENTIAL', 'type':'structure'},
       {'path':'.ELECTRIC.ESSENTIAL:PV_NAME', 'type':'text', 'value':'ELECTRIC:ESSENTIAL'},
       {'path':'.ELECTRIC.ESSENTIAL:VAL', 'type':'numeric', 'value':1},
@@ -378,4 +375,3 @@ class SPIDER_SM(Device):
       {'path':'.DIAG_T.ESSENTIAL', 'type':'structure'},
       {'path':'.DIAG_T.ESSENTIAL:PV_NAME', 'type':'text', 'value':'DIAG_T:ESSENTIAL'},
       {'path':'.DIAG_T.ESSENTIAL:VAL', 'type':'numeric', 'value':1}]
-    print 'SpiderStateMachine 2'

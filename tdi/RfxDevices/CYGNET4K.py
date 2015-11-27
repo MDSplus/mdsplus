@@ -7,7 +7,7 @@ import tempfile
 import os
 
 class CYGNET4K(Device):
-    print('Cygnet4K')
+    print('CYGNET4K')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Cygnet 4K sCMOS Camera"""
     parts=[
@@ -48,7 +48,6 @@ class CYGNET4K(Device):
     parts.append({'path':':STOP_MON_T','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_temp_monitor',head))",
 	  'options':('no_write_shot')})
-    print('Cygnet4K added')
 
 
 ####Asynchronous temp readout internal class

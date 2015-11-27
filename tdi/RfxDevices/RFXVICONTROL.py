@@ -1,7 +1,7 @@
-from MDSplus import *
-from ctypes import *
+from MDSplus import Device
 
 class RFXVICONTROL(Device):
+  print('RFXVICONTROL')
   parts=[{'path':':COMMENT', 'type':'text'},
   {'path':':FILLING_TYPE', 'type':'numeric', 'value':3},
   {'path':':IMP_LEVEL', 'type':'numeric', 'value':100},
@@ -9,7 +9,7 @@ class RFXVICONTROL(Device):
   {'path':':CONTROL', 'type':'numeric', 'value':0},
   {'path':':CTRL_START', 'type':'numeric', 'value':0},
   {'path':':NE_SCALE', 'type':'numeric', 'value':0}]
-  
+
   parts.append({'path':':FILL_WAVE','type':'signal', 'options':'compress_on_put'})
   parts.append({'path':':FILL_MIN_X','type':'numeric', 'value':0})
   parts.append({'path':':FILL_MAX_X','type':'numeric', 'value':1})
@@ -27,6 +27,3 @@ class RFXVICONTROL(Device):
   parts.append({'path':':CTRL_MAX_X','type':'numeric', 'value':1})
   parts.append({'path':':CTRL_MIN_Y','type':'numeric', 'value':0})
   parts.append({'path':':CTRL_MAX_Y','type':'numeric', 'value':10})
-
-  print 'RFXVICONTROL activated'
-  

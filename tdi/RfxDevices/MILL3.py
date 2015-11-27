@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from MDSplus import Device, Data
+from MDSplus import Device, Data, version
 #from pymodbus.client.sync import ModbusTcpClient
 #from pymodbus.exceptions import ModbusException
-import serial
 import struct
 import time
 
 class MILL3(Device):
+    print('MILL3')
     parts=[
         {'path':':COMMENT', 'type':'text'},
         {'path':':IP', 'type':'text'},
@@ -51,23 +51,22 @@ class MILL3(Device):
         if ":" != chr(msg[6]): raise SerialBadMessageException
 
     #    print(cmd[2:6]==msg[2:6])
-
-        data = struct.unpack_from('>i', buffer(msg), 7)
+        data = struct.unpack_from('>i', version.buffer(msg), 7)
 
         return data[0]
 
 
 
     def STORE(self, arg):
-        from serial import SerialException, SerialTimeoutException
+        import serial
         import modbus_tk
         import modbus_tk.defines as cst
         import modbus_tk.modbus_tcp as modbus_tcp
 
-        class SerialReadTimeoutException(SerialException):
+        class SerialReadTimeoutException(serial.SerialException):
             """Read tmeout give an exception"""
 
-        class SerialBadMessageException(SerialException):
+        class SerialBadMessageException(serial.SerialException):
             """Received bad message give an exception"""
 
         LONG_TRANSLATION_SET_POINT_MAX_VALUE = 1540
@@ -75,19 +74,19 @@ class MILL3(Device):
 
         bad = 1
 
-        print 'START STORE'
+        print('START STORE')
 
         try:
             ip = str(self.ip.data())
             ip = ip.strip()
-            print ' IP: ' + ip
+            print(' IP: ' + ip)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP')
             return 0
 
         try:
             longTranslationSetPoint = self.long_trn_sp.data()
-            print ' LONG_TRN_SP: ' + str(longTranslationSetPoint)
+            print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
                 return 0
@@ -97,7 +96,7 @@ class MILL3(Device):
 
         try:
             shortTranslationSetPoint = self.short_trn_sp.data()
-            print ' SHORT_TRN_SP: ' + str(shortTranslationSetPoint)
+            print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
                 return 0
@@ -108,7 +107,7 @@ class MILL3(Device):
         try:
             moxaCom1 = str(self.moxa_com1.data())
             moxaCom1 = moxaCom1.strip()
-            print ' MOXA_COM1: ' + moxaCom1
+            print(' MOXA_COM1: ' + moxaCom1)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM1')
             return 0
@@ -116,7 +115,7 @@ class MILL3(Device):
         try:
             moxaCom2 = str(self.moxa_com2.data())
             moxaCom2 = moxaCom2.strip()
-            print ' MOXA_COM2: ' + moxaCom2
+            print(' MOXA_COM2: ' + moxaCom2)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM2')
             return 0
@@ -124,7 +123,7 @@ class MILL3(Device):
         try:
             moxaCom3 = str(self.moxa_com3.data())
             moxaCom3 = moxaCom3.strip()
-            print ' MOXA_COM3: ' + moxaCom3
+            print(' MOXA_COM3: ' + moxaCom3)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM3')
             return 0
@@ -132,7 +131,7 @@ class MILL3(Device):
         try:
             moxaCom4 = str(self.moxa_com4.data())
             moxaCom4 = moxaCom4.strip()
-            print ' MOXA_COM4: ' + moxaCom4
+            print(' MOXA_COM4: ' + moxaCom4)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             return 0
@@ -145,13 +144,13 @@ class MILL3(Device):
             master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=2)
 
         except modbus_tk.modbus.ModbusError, e:
-            print "Modbus error ", e.get_exception_code()
+            print("Modbus error ", e.get_exception_code()
         except Exception, e2:
-            print "Error ", str(e2)
+            print("Error ", str(e2)
         """
 
 
-        print 'OK'
+        print('OK')
 
         try:
             port=moxaCom1
@@ -288,26 +287,26 @@ class MILL3(Device):
             print("pressure: " + data)
             setattr(self,'pressure',float(data))
             """
-        except modbus_tk.modbus.ModbusError, e:
-            print "Modbus error ", e.get_exception_code()
+        except modbus_tk.modbus.ModbusError as e:
+            print("Modbus error ", e.get_exception_code())
             bad = 0
-        except Exception, e2:
-            print "Error ", str(e2)
+        except Exception as e2:
+            print("Error ", str(e2))
             bad = 0
 #        except ModbusException as e:
-#            print e
+#            print(e
 #            bad = 0
-        except SerialTimeoutException:
-            print "Timeout on write operation"
+        except serial.SerialTimeoutException:
+            print("Timeout on write operation")
             bad = 0
-        except SerialReadTimeoutException:
-            print "Timeout on read operation"
+        except serial.SerialReadTimeoutException:
+            print("Timeout on read operation")
             bad = 0
-        except SerialBadMessageException:
-            print "Bad message"
+        except serial.SerialBadMessageException:
+            print("Bad message")
             bad = 0
-        except SerialException:
-            print "Could not open port " + port
+        except serial.SerialException:
+            print("Could not open port " + port)
             bad = 0
         finally:
             if self.ser is not None: self.ser.close()
@@ -316,20 +315,20 @@ class MILL3(Device):
             #time.sleep(1.0)
             #self.c.close()
             #if self.c is not None: self.c.close()
-            print "status: " + str(bad)
-            return bad
+            print("status: " + str(bad))
+        return bad
 
 
     def INIT(self, arg):
+        import serial
         import modbus_tk
         import modbus_tk.defines as cst
         import modbus_tk.modbus_tcp as modbus_tcp
-        from serial import SerialException, SerialTimeoutException
 
-        class SerialReadTimeoutException(SerialException):
+        class SerialReadTimeoutException(serial.SerialException):
             """Read tmeout give an exception"""
 
-        class SerialBadMessageException(SerialException):
+        class SerialBadMessageException(serial.SerialException):
             """Received bad message give an exception"""
 
         LONG_TRANSLATION_SET_POINT_MAX_VALUE = 1540
@@ -337,19 +336,19 @@ class MILL3(Device):
 
         bad = 1
 
-        print 'START INIT'
+        print('START INIT')
 
         try:
             ip = str(self.ip.data())
             ip = ip.strip()
-            print ' IP: ' + ip
+            print(' IP: ' + ip)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP')
             return 0
 
         try:
             longTranslationSetPoint = self.long_trn_sp.data()
-            print ' LONG_TRN_SP: ' + str(longTranslationSetPoint)
+            print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
                 return 0
@@ -359,7 +358,7 @@ class MILL3(Device):
 
         try:
             shortTranslationSetPoint = self.short_trn_sp.data()
-            print ' SHORT_TRN_SP: ' + str(shortTranslationSetPoint)
+            print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
                 return 0
@@ -370,7 +369,7 @@ class MILL3(Device):
         try:
             moxaCom1 = str(self.moxa_com1.data())
             moxaCom1 = moxaCom1.strip()
-            print ' MOXA_COM1: ' + moxaCom1
+            print(' MOXA_COM1: ' + moxaCom1)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM1')
             return 0
@@ -378,7 +377,7 @@ class MILL3(Device):
         try:
             moxaCom2 = str(self.moxa_com2.data())
             moxaCom2 = moxaCom2.strip()
-            print ' MOXA_COM2: ' + moxaCom2
+            print(' MOXA_COM2: ' + moxaCom2)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM2')
             return 0
@@ -386,7 +385,7 @@ class MILL3(Device):
         try:
             moxaCom3 = str(self.moxa_com3.data())
             moxaCom3 = moxaCom3.strip()
-            print ' MOXA_COM3: ' + moxaCom3
+            print(' MOXA_COM3: ' + moxaCom3)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM3')
             return 0
@@ -394,7 +393,7 @@ class MILL3(Device):
         try:
             moxaCom4 = str(self.moxa_com4.data())
             moxaCom4 = moxaCom4.strip()
-            print ' MOXA_COM4: ' + moxaCom4
+            print(' MOXA_COM4: ' + moxaCom4)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             return 0
@@ -407,12 +406,12 @@ class MILL3(Device):
             master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=2)
 
         except modbus_tk.modbus.ModbusError, e:
-            print "Modbus error ", e.get_exception_code()
+            print("Modbus error ", e.get_exception_code()
         except Exception, e2:
-            print "Error ", str(e2)
+            print("Error ", str(e2)
         """
 
-        print 'OK'
+        print('OK')
 
         try:
             port=moxaCom1
@@ -461,26 +460,26 @@ class MILL3(Device):
             data=data.strip()
             print("pressure: " + data)
             setattr(self,'pressure',float(data))
-        except modbus_tk.modbus.ModbusError, e:
-            print "Modbus error ", e.get_exception_code()
+        except modbus_tk.modbus.ModbusError as e:
+            print("Modbus error ", e.get_exception_code())
             bad = 0
-        except Exception, e2:
-            print "Error ", str(e2)
+        except Exception as e2:
+            print("Error ", str(e2))
             bad = 0
 #        except ModbusException as e:
-#            print e
+#            print(e
 #            bad = 0
-        except SerialTimeoutException:
-            print "Timeout on write operation"
+        except serial.SerialTimeoutException:
+            print("Timeout on write operation")
             bad = 0
-        except SerialReadTimeoutException:
-            print "Timeout on read operation"
+        except serial.SerialReadTimeoutException:
+            print("Timeout on read operation")
             bad = 0
-        except SerialBadMessageException:
-            print "Bad message"
+        except serial.SerialBadMessageException:
+            print("Bad message")
             bad = 0
-        except SerialException:
-            print "Could not open port " + port
+        except serial.SerialException:
+            print("Could not open port " + port)
             bad = 0
         finally:
             if self.ser is not None: self.ser.close()
@@ -489,5 +488,5 @@ class MILL3(Device):
             #time.sleep(1.0)
             #self.c.close()
             #if self.c is not None: self.c.close()
-            print "status: " + str(bad)
-            return bad
+            print("status: " + str(bad))
+        return bad
