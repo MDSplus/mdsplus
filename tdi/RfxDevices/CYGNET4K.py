@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Tree, Dimension, Signal
+from MDSplus import Device, Data, Tree, Dimension, Signal, mdsExceptions
 from MDSplus import Int32, Int16Array, Uint16Array, Uint64Array, Float32Array
 from threading import Thread
 from ctypes import CDLL, byref, c_float, c_int, c_void_p, c_char_p
@@ -111,14 +111,14 @@ class CYGNET4K(Device):
         if CYGNET4K.raptorLib is None:
             try:
                 CYGNET4K.raptorLib = CDLL("libRaptor.so")
-            except Exception as exc:
-                print(exc)
+            except WindowsError as exc:
+                print('Raptor: '+exc.strerror+'. Using dummy driver.')
                 CYGNET4K.raptorLib = CYGNET4K._raptorLib()
         if CYGNET4K.mdsLib is None:
             try:
                 CYGNET4K.mdsLib = CDLL("libcammdsutils.so")
-            except Exception as exc:
-                print(exc)
+            except WindowsError as exc:
+                print('cammdsutils: '+exc.strerror+'. Using dummy driver.')
                 CYGNET4K.mdsLib = CYGNET4K._mdsLib()
 
     def __init__(self, n):
@@ -131,8 +131,8 @@ class CYGNET4K(Device):
     def init(self,*args):
         idx = int(self.device_id.data())
         if idx < 0:
-            print('Wrong value of Device Id, must be greater than 0')
-            return 2752528  # Essential action failed
+            print('Wrong value of Device Id, must be greater than 0.')
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         CYGNET4K.checkLibraries()
         tmpPath = self.genconf()
         xPixels = c_int(0)
@@ -144,15 +144,17 @@ class CYGNET4K(Device):
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
         codedTrigMode = 0
+        print('TriggerMode: %s' % trigMode)
         if(trigMode == 'EXTERNAL RISING'):
             codedTrigMode = 0xC0
-        if(trigMode == 'EXTERNAL FALLING'):
+        elif(trigMode == 'EXTERNAL FALLING'):
             codedTrigMode = 0x40
-        if(trigMode == 'INTEGRATE THEN READ'):
+        elif(trigMode == 'INTEGRATE THEN READ'):
             codedTrigMode = 0x0C
-        if(trigMode == 'FIXED FRAME RATE'):
+        elif(trigMode == 'FIXED FRAME RATE'):
             codedTrigMode = 0x0E
-        print('TriggerMode: %s' % trigMode)
+        else:
+            return mdsExceptions.DevBAD_MODE.status
         CYGNET4K.raptorLib.epixSetConfiguration(c_int(idx), c_float(frameRate), c_int(codedTrigMode))
         binning = c_int(0)
         roiXSize = c_int(0)
@@ -171,14 +173,15 @@ class CYGNET4K(Device):
             binning = '%x' % binning.value
             print('binning %s' % binning)
         roi_rect = Uint16Array([roiXOffset.value,roiYOffset.value,roiXSize.value,roiYSize.value])
+        roi_rect.help = '[x,y,width,height]'
         try:
             self.binning.record = binning
             self.roi_rect.record = roi_rect
-        except:
-            if (self.binning.data() != binning) or any(self.roi_rect.data() != roi_rect):
+        except mdsExceptions.TreeNOOVERWRITE:
+            if not (self.binning.data() == binning) and all(self.roi_rect.data() == roi_rect):
                 print('Re-initialization error: Parameter mismatch!')
-                return 2752528  # Essential action failed
-        return 2752521  # Normal successful completion
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
+        return mdsExceptions.TreeNORMAL.status
 
     def genconf(self):
         confPath = self.conf_file.data()
@@ -204,26 +207,23 @@ class CYGNET4K(Device):
     def start_store(self,*args):
         idx = int(self.device_id.data())
         if idx < 0:
-            print('Wrong value of Device Id, must be greater than 0')
-            return 2752528  # Essential action failed
+            print('Wrong value of Device Id, must be greater than 0.')
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         if not CYGNET4K.isInitialized.get(idx,False):
-            print('Device not initialized: you need to init first.')
-            return 2752528  # Essential action failed
+            print('Device not initialized: Run init first.')
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.worker = self.AsynchStore()
         self.worker.configure(self, idx, self.roi_rect.data(), self.duration.data())
         self.saveWorker()
         self.worker.start()
-        return 2752521  # Normal successful completion
+        return mdsExceptions.TreeNORMAL.status
 
     def stop_store(self,*args):
-        try:
-            self.restoreWorker()
-        except Exception as exc:
-            print(exc)
-            return 2752528  # Essential action failed
+        if not self.restoreWorker():
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.worker.stop()
         self.worker.join()
-        return 2752521  # Normal successful completion
+        return mdsExceptions.TreeNORMAL.status
 
     def saveWorker(self):
         if self.nid in CYGNET4K.workers.keys():
@@ -236,14 +236,15 @@ class CYGNET4K(Device):
     def restoreWorker(self):
         if self.nid in CYGNET4K.workers.keys():
             self.worker = CYGNET4K.workers[self.nid]
-        else:
-            raise Exception('Cannot restore worker!!\nMaybe no worker has been started.')
+            return True
+        print('Cannot restore worker!!\nMaybe no worker has been started.')
+        return False
 
     def start_trend(self,*args):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0')
-            return 2752528  # Essential action failed
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         CYGNET4K.checkLibraries()
         if not CYGNET4K.isOpen:
             conffile = self.conf_file.data()
@@ -263,21 +264,18 @@ class CYGNET4K(Device):
                 trendCmos = None
         except:
             print('Check TREND_TREE and TREND_SHOT.')
-            return 265388258  # No Data
+            return mdsExceptions.TreeNODATA.status
         self.trendWorker = self.AsynchTrend()
         self.trendWorker.configure(self, idx, float(self.trend_period.data()), trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
         self.TrendWorker.start()
-        return 2752521  # Normal successful completion
+        return mdsExceptions.TreeNORMAL.status
 
     def stop_trend(self,*args):
-        try:
-            self.restoreTrendWorker()
-        except Exception as exc:
-            print(exc)
-            return 2752528  # Essential action failed
+        if not self.restoreTrendWorker():
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.trendWorker.stop()
-        return 2752521  # Normal successful completion
+        return mdsExceptions.TreeNORMAL.status
 
     def saveTrendWorker(self):
         if self.nid in CYGNET4K.trendworkers.keys():
@@ -290,8 +288,9 @@ class CYGNET4K(Device):
     def restoreTrendWorker(self):
         if self.nid in CYGNET4K.trendworkers.keys():
             self.trendworker = CYGNET4K.trendworkers[self.nid]
-        else:
-            raise Exception('Cannot restore worker!!\nMaybe no worker has been started.')
+            return True
+        print('Cannot restore worker!!\nMaybe no worker has been started.')
+        return False
 
 
     class AsynchStore(Thread):
@@ -310,7 +309,7 @@ class CYGNET4K(Device):
             status = CYGNET4K.mdsLib.camOpenTree(c_char_p(self.device.tree.name), c_int(self.device.tree.shot), byref(treePtr))
             if status == -1:
                 Data.execute('DevLogErr($1,$2)', self.device.nid, 'Cannot open tree')
-                return 265392146  # Error opening file for read-write
+                return mdsExceptions.TreeFOPENW.status
 
             listPtr = c_void_p(0)
             CYGNET4K.mdsLib.camStartSaveDeferred(byref(listPtr)) # alt: camStartSave
@@ -348,7 +347,7 @@ class CYGNET4K(Device):
             self.device.temp_pcb.record = Signal(pcbData,Int16Array(measuredPcbTemp),dim)
             self.device.temp_cmos.record = Signal(cmosData,Int16Array(measuredCmosTemp),dim)
             print('done')
-            return 2752521  # Normal successful completion
+            return mdsExceptions.TreeNORMAL.status
 
         def stop(self):
             self.stopReq = True
@@ -382,10 +381,10 @@ class CYGNET4K(Device):
             except Exception as exc:
                 print(exc)
                 print('Cannot access trend tree. Check TREND:TREE and TREND_SHOT.')
-                return 265388160  # Tree Not Found
+                return mdsExceptions.TreeTNF.status
             if self.pcb is None and self.cmos is None:
                 print('Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
-                return 265388144  # Node Not Found
+                return mdsExceptions.TreeNNF.status
             if self.pcb is None:
                 print('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
             elif self.cmos is None:
@@ -409,7 +408,7 @@ class CYGNET4K(Device):
                     print('failure during temperature readout')
                 sleep(0.01)
             print('done')
-            return 2752521  # Normal successful completion
+            return mdsExceptions.TreeNORMAL.status
 
         def stop(self):
             self.stopReq = True
