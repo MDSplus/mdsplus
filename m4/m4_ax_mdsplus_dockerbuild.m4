@@ -370,20 +370,26 @@ ifeq (docker,\$(MAKECMDGOALS))
 	echo " installed, it would be possible also to start  debugger  inside. "
 	echo
 	echo " Additional targets: "	
-	echo " make docker start <- start the docker container "
-	echo " make docker stop  <- pause the docker container "
-	echo " make docker shell <- launch a shell inside the running container "
+	echo " make docker start   <- start the docker container "
+	echo " make docker stop    <- pause the docker container "
+	echo " make docker shell   <- launch a shell inside the container "
 	echo " make docker shell USER=root <- launch the shell as root "
+	echo " make docker inspect <- get info on container (such as ipaddr)"
 	echo 
 endif
 	echo 
 
 
+# TODO: change this to find subpattern of docker
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
 export SHELL = \${local_SHELL}
 
-.PHONY: start stop shell
+.PHONY: info start stop shell inspect
+inspect:
+	@echo "info:";
+	docker inspect \${DOCKER_CONTAINER}
+
 start:
 	@echo "Starting docker container:";
 	docker restart \${DOCKER_CONTAINER}	
