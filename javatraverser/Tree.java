@@ -571,7 +571,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			            {
 			                Tree.curr_dialog_idx = idx;
 			                TreeDialog curr_dialog = dialog_sets[idx].getDialog(
-				            node_properties[idx].getPropertyEditorClass(), currnode);
+				            node_properties[idx].getPropertyEditorClass(), Tree.getCurrentNode());
 			                curr_dialog.pack();
 			                curr_dialog.setLocation(frame.dialogLocation());
 			                curr_dialog.setVisible(true);
@@ -592,7 +592,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			            if(idx < node_methods.length)
 			            {
 				            try {
-				                node_methods[idx].getMethod().invoke(currnode);
+				                node_methods[idx].getMethod().invoke(Tree.getCurrentNode());
 				            }catch(Exception exc) {System.out.println("Error executing " + exc); }
 				            curr_tree.expandPath(new TreePath(curr_tree_node.getPath()));
 				            curr_tree.treeDidChange();
