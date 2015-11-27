@@ -10,7 +10,7 @@ import java.util.*;
 public class jTraverser extends JFrame implements ActionListener
 {
     static String exp_name, shot_name;
-    static boolean editable, readonly;
+    static boolean editable, readonly, model;
     static Tree tree;
     static JLabel status = new JLabel("jTaverser started");
     JMenu file_m, edit_m, data_m, customize_m;
@@ -197,15 +197,16 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)paste_b) TreeNode.paste();
 
     // Node related
-	if(Tree.curr_node == null) return;
+    Node currnode = Tree.getCurrentNode();
+	if(currnode == null) return;
     if(source == (Object)turn_on_b)
     {
-	    Tree.curr_node.turnOn();
+	    currnode.turnOn();
 	    tree.reportChange();
     }
     if(source == (Object)turn_off_b)
     {
-	    Tree.curr_node.turnOff();
+	    currnode.turnOff();
 	    tree.reportChange();
     }
 
@@ -216,7 +217,7 @@ public void actionPerformed(ActionEvent e)
 	        display_data_d = new TreeDialog(display_data = new DisplayData());
 	        display_data.setFrame(display_data_d);
 	    }
-	    display_data.setNode(Tree.curr_node);
+	    display_data.setNode(currnode);
 	    display_data_d.pack();
 	    display_data_d.setLocation(dialogLocation());
 	    display_data_d.setVisible(true);
@@ -228,7 +229,7 @@ public void actionPerformed(ActionEvent e)
             display_nci_d = new TreeDialog(display_nci = new DisplayNci());
             display_nci.setFrame(display_nci_d);
         }
-        display_nci.setNode(Tree.curr_node);
+        display_nci.setNode(currnode);
         display_nci_d.pack();
         display_nci_d.setLocation(dialogLocation());
         display_nci_d.setVisible(true);
@@ -240,7 +241,7 @@ public void actionPerformed(ActionEvent e)
             display_tags_d = new TreeDialog(display_tags = new DisplayTags());
             display_tags.setFrame(display_tags_d);
         }
-        display_tags.setNode(Tree.curr_node);
+        display_tags.setNode(currnode);
         display_tags_d.pack();
         display_tags_d.setLocation(dialogLocation());
         display_tags_d.setVisible(true);
@@ -252,7 +253,7 @@ public void actionPerformed(ActionEvent e)
 	        modify_data_d = new TreeDialog(modify_data = new ModifyData());
 	        modify_data.setFrame(modify_data_d);
 	    }
-	    modify_data.setNode(Tree.curr_node);
+	    modify_data.setNode(currnode);
 	    modify_data_d.pack();
 	    modify_data_d.setLocation(dialogLocation());
 	    modify_data_d.setVisible(true);
@@ -260,16 +261,17 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)set_default_b)
     {
 	    try {
-	        Tree.curr_node.setDefault();
+	        currnode.setDefault();
 	    }catch(Exception exc) {jTraverser.stderr("Error setting default",exc);}
 	    tree.reportChange();
     }
     if(source == (Object)setup_device_b)
-        Tree.curr_node.setupDevice();
+        currnode.setupDevice();
 }
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
 {
+    jTraverser.model = shot<0;
     jTraverser.editable = editable;
     jTraverser.readonly = readonly;
     jTraverser.exp_name = exp;

@@ -493,11 +493,9 @@ public class Node
             return new ImageIcon(base + "/" + gifname);
     }
 
-    public JLabel getIcon()
+    public JLabel getIcon(boolean isSelected)
     {
         if (info == null)return null;
-        if (tree_label != null)
-            return tree_label;
         ImageIcon icon = null;
         switch (getUsage())
         {
@@ -539,7 +537,7 @@ public class Node
                 icon = loadIcon("compound.gif");
                 break;
         }
-        tree_label = new TreeNode(this, getName(), icon);
+        tree_label = new TreeNode(this, getName(), icon, isSelected);
         return tree_label;
     }
 

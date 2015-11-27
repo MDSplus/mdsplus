@@ -14,72 +14,44 @@ public class TreeNode extends JLabel
 	    plain_f = new Font("Serif", Font.PLAIN, 12);
 	    bold_f = new Font("Serif" ,Font.BOLD, 12);
     }
-
-	public static void copyToClipboard()
-	{
-	    try {
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-            String []tags = Tree.curr_node.getTags();
-            StringSelection content;
-            String path = Tree.curr_node.getFullPath();
-            content = new StringSelection(path);
-            cb.setContents(content, null);
-	    }catch(Exception exc){jTraverser.stderr("Cannot copy fullPath to Clipboard", exc);}
-	}
-
-    public static void copy()
+    final Color CWrite    = new Color(0,128,0);
+    final Color CWriteO   = new Color(96,64,0);
+    final Color CNoWrite  = new Color(128,0,0);
+    final Color CNoWriteO = new Color(192,0,0);
+    final Color CMSetup   = new Color(0,0,128);
+    final Color CMSetupO  = new Color(96,0,128);
+    final Color CSSetup   = new Color(128,0,128);
+    final Color CSSetupO  = new Color(192,0,96);
+    final Color CNorm     = new Color(0,0,0);
+    final Color CNormO    = new Color(96,0,0);
+    final Color CInclude  = new Color(0,0,0);
+    final Color CExclude  = new Color(128,128,128);
+    public TreeNode(Node node, String name, Icon icon, boolean isSelected)
     {
-        cut = false;
-        copied = Tree.curr_node;
-        jTraverser.stdout("copy: "+copied+" from "+copied.parent);
-    }
-
-    public static void cut()
-    {
-        if (jTraverser.isEditable())
-        {
-            cut = true;
-            copied = Tree.curr_node;
-            jTraverser.stdout("cut: "+copied+" from "+copied.parent);
-        }
-        else
-            copy();
-    }
-
-    public static void paste()
-    {
-        if (jTraverser.isEditable())
-        {
-            jTraverser.stdout((cut ? "moved: " : "copied: ") +copied+ " from " + copied.parent + " to " + Tree.curr_node);
-            if(copied != null && copied != Tree.curr_node)
-            {
-                if (cut)
-                {
-                    if (copied.move(Tree.curr_node))
-                        copied = null;
-                }
-                else
-                    Node.pasteSubtree(copied, Tree.curr_node, true);
-            }
-        }
-        else
-            jTraverser.stdout("Cannot paste "+copied+". Tree not in edit mode.");
-    }
-
-    public static void delete()
-    {
-        if (jTraverser.isEditable())
-            Tree.deleteNode(Tree.curr_node);
-        else
-            jTraverser.stdout("Cannot delete "+Tree.curr_node+". Tree not in edit mode.");
-    }
-
-    public TreeNode(Node node, String name, Icon icon)
-    {
-	    super("MMMMMMMMMMMMMMMM", icon, JLabel.LEFT);
+	    super((node.isDefault() ? "("+node.getName()+")" : node.getName()), icon, JLabel.LEFT);
 	    this.node = node;
-	    setFont(bold_f);
-	    setBorder(BorderFactory.createLineBorder(Color.white, 1));
+        if (node.getUsage()==NodeInfo.USAGE_SUBTREE)
+            setForeground(node.isIncludeInPulse() ? CInclude : CExclude);
+        else
+        {
+            if (node.isNoWriteModel() & node.isNoWriteModel())
+                setForeground(CNoWrite);
+            else if (node.isNoWriteModel())
+                setForeground( jTraverser.model ? (node.isWriteOnce() ? CNoWriteO : CNoWrite) : (node.isWriteOnce() ? CWriteO  : CWrite ));
+            else if (node.isNoWriteShot())
+                setForeground(!jTraverser.model ? (node.isWriteOnce() ? CNoWriteO : CNoWrite) : (node.isWriteOnce() ? CWriteO  : CWrite ));
+            else if (node.isSetup())
+                setForeground( jTraverser.model ? (node.isWriteOnce() ? CMSetupO  : CMSetup ) : (node.isWriteOnce() ? CSSetupO : CSSetup));
+            else
+                setForeground(node.isWriteOnce() ? CNormO : CNorm);
+        }
+        setFont(node.isOn() ? bold_f : plain_f);
+	    setBorder(BorderFactory.createLineBorder(isSelected ? Color.black : Color.white, 1));
+    }
+
+    @Override
+    public String getToolTipText()
+    {
         String tags[] = node.getTags();
         if(tags.length > 0)
         {
@@ -90,16 +62,77 @@ public class TreeNode extends JLabel
                 if(i < tags.length - 1)
                     tagsStr += "\n";
             }
-            setToolTipText(tagsStr);
+            return tagsStr;
         }
+        return null;
     }
 
-    public void paint(Graphics g)
+	public static void copyToClipboard()
+	{
+        Node currnode = Tree.getCurrentNode();
+	    if(currnode == null) return;
+	    try {
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            String []tags = currnode.getTags();
+            StringSelection content;
+            String path = currnode.getFullPath();
+            content = new StringSelection(path);
+            cb.setContents(content, null);
+	    }catch(Exception exc){jTraverser.stderr("Cannot copy fullPath to Clipboard", exc);}
+	}
+
+    public static void copy()
     {
-	    setText(node.getName()+"      ");
-        setForeground(node.isDefault() ? Color.red : Color.black);
-        setFont(node.isOn() ? bold_f : plain_f);  
-	    setBorder(BorderFactory.createLineBorder((Tree.curr_node == node) ? Color.black : Color.white, 1));
-	    super.paint(g);
+        Node currnode = Tree.getCurrentNode();
+	    if(currnode == null) return;
+        cut = false;
+        copied = currnode;
+        jTraverser.stdout("copy: "+copied+" from "+copied.parent);
+    }
+
+    public static void cut()
+    {
+        Node currnode = Tree.getCurrentNode();
+	    if(currnode == null) return;
+        if (jTraverser.isEditable())
+        {
+            cut = true;
+            copied = currnode;
+            jTraverser.stdout("cut: "+copied+" from "+copied.parent);
+        }
+        else
+            copy();
+    }
+
+    public static void paste()
+    {
+        Node currnode = Tree.getCurrentNode();
+	    if(currnode == null) return;
+        if (jTraverser.isEditable())
+        {
+            jTraverser.stdout((cut ? "moved: " : "copied: ") +copied+ " from " + copied.parent + " to " + currnode);
+            if(copied != null && copied != currnode)
+            {
+                if (cut)
+                {
+                    if (copied.move(currnode))
+                        copied = null;
+                }
+                else
+                    Node.pasteSubtree(copied, currnode, true);
+            }
+        }
+        else
+            jTraverser.stdout("Cannot paste "+copied+". Tree not in edit mode.");
+    }
+
+    public static void delete()
+    {
+        Node currnode = Tree.getCurrentNode();
+	    if(currnode == null) return;
+        if (jTraverser.isEditable())
+            Tree.deleteNode(currnode);
+        else
+            jTraverser.stdout("Cannot delete "+currnode+". Tree not in edit mode.");
     }
 }

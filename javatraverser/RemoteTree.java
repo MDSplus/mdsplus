@@ -54,4 +54,3 @@ public interface RemoteTree extends Remote {
     public void setCurrentShot(String experiment, int shot)throws RemoteException;
     public void setEvent(String event)throws RemoteException, DatabaseException;
 }
-
