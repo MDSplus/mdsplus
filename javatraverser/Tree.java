@@ -1396,6 +1396,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             }
 	        else
 		        node = (Node)usrObj;
+            if (isSelected)
+                Tree.dialogs.update();  
             return node.getIcon(isSelected);
 	    }
 	}
