@@ -12253,7 +12253,7 @@ fi
   eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}"
     as_fn_append TS_PY_TAP_FLAGS "--with-tap --tap-stream"
 else
-  eval as_fn_append TS_PY_TAP_COMPILER ":"
+  eval as_fn_append TS_PY_TAP_COMPILER "\"sh -c 'exit 77'\""
 fi
 
 
@@ -12855,9 +12855,9 @@ fi
       as_fn_append TS_LOG_COMPILER "wine "
 
 else
-  as_fn_append TS_LOG_COMPILER ":"
+  as_fn_append TS_LOG_COMPILER "\"sh -c 'exit 77'\""
 fi
-               TS_PY_TAP_COMPILER=":"
+               TS_PY_TAP_COMPILER="\"sh -c 'exit 77'\""
   ;; #(
   #
  # LINUX->LINUX

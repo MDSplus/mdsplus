@@ -110,7 +110,7 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 dnl generate SKIP log_compiler
-AC_DEFUN([TS_LOG_SKIP],[":"])
+AC_DEFUN([TS_LOG_SKIP],["\"sh -c 'exit 77'\""])
 
 
 
