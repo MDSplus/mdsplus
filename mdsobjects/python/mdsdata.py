@@ -8,10 +8,9 @@ import numpy as _N
 
 _dtypes=_mimport('_mdsdtypes')
 _ver=_mimport('version')
+_Exceptions=_mimport('mdsExceptions')
 
-_mdsExceptions=_mimport('mdsExceptions')
-
-MDSplusException = _mdsExceptions.MDSplusException
+MDSplusException = _Exceptions.MDSplusException
 MdsException = MDSplusException
 
 def getUnits(item):
@@ -120,6 +119,10 @@ class Data(object):
         """Return raw part of object
         @rtype: Data"""
         return Data.execute('raw_of($)',self)
+    def units_of(self):
+        """Return units of object
+        @rtype: Data"""
+        return Data.execute('units_of($)',self)
 
     def getDimensionAt(self,idx=0):
         """Return dimension of object
@@ -130,85 +133,79 @@ class Data(object):
 
     dim_of=getDimensionAt
 
-    def _getUnits(self):
-        return Data.execute('units($)',self)
-
-    def _setUnits(self,units):
+    def getUnits(self):
+        """Return the TDI evaluation of UNITS_OF(this).
+        EmptyData is returned if no units defined.
+        @rtype: Data"""
+        return Data.execute('units_of($)',self)
+    def setUnits(self,units):
+        """Set the units of the Data instance.
+        @type: String
+        @rtype: original type"""
         if units is None:
             if hasattr(self,'_units'):
                 delattr(self,'_units')
         else:
             self._units=units
-        return
+        return self
+    units=property(getUnits,setUnits)
 
-    units=property(_getUnits,_setUnits)
-    """
-    The units of the Data instance.
-    @type: String
-    """
-
-    def _getError(self):
+    def getError(self):
+        """Get the error field.
+        Returns EmptyData if no error defined.
+        @rtype: Data"""
         return Data.execute('error_of($)',self)
 
-    def _setError(self,error):
+    def setError(self,error):
+        """Set the Error field for this Data instance.
+        @type: Data
+        @rtype: original type"""
         if error is None:
             if hasattr(self,'_error'):
                 delattr(self,'_error')
         else:
             self._error=error
-        return
+        return self
 
-    error=property(_getError,_setError)
-    """
-    The error vector to associate with the data.
-    @type: Data
-    """
+    error=property(getError,setError)
 
-    def _getHelp(self):
+    def getHelp(self):
+        """Returns the result of TDI GET_HELP(this).
+        Returns EmptyData if no help field defined.
+        @rtype: Data"""
         return Data.execute('help_of($)',self)
 
-    def _setHelp(self,help):
+    def setHelp(self,help):
+        """Set the Help  field for this Data instance.
+        @rtype: original type
+        """
         if help is None:
             if hasattr(self,'_help'):
                 delattr(self,'_help')
         else:
             self._help=help
-        return
+        return self
 
-    help=property(_getHelp,_setHelp)
-    """
-    The help string associated with the data.
-    @type: String
-    """
+    help=property(getHelp,setHelp)
 
-    def _getValidation(self):
+    def getValidation(self):
         return Data.execute('validation_of($)',self)
 
-    def _setValidation(self,validation):
+    def setValidation(self,validation):
+        """A validation procedure for the data.
+        Currently no built-in utilities make use of this validation property.
+        One could envision storing an expression which tests the data and returns
+        a result.
+        @type: Data
+        @rtype: original type"""
         if validation is None:
             if hasattr(self,'_validation'):
                 delattr(self,'_validation')
         else:
             self._validation=validation
-        return
-
-    def setValidation(self,validation):
-        self._setValidation(validation)
         return self
 
-    validation=property(_getValidation,_setValidation)
-    """
-    A validation procedure for the data.
-    Currently no built-in utilities make use of this validation property.
-    One could envision storing an expression which tests the data and returns
-    a result.
-    @type: Data
-    """
-
-    def units_of(self):
-        """Return units part of the object
-        @rtype: Data"""
-        return Data.execute('units_of($)',self)
+    validation=property(getValidation,setValidation)
 
     def push_dollar_value(self):
         """Set $value for expression evaluation
@@ -689,26 +686,6 @@ class Data(object):
         """
         return str(Data.execute('text($)',self))
 
-    def getUnits(self):
-        """Return the TDI evaluation of UNITS_OF(this). EmptyData is returned if no units
-        defined.
-        @rtype: Data
-        """
-        return self.units
-
-    def getHelp(self):
-        """Returns the result of TDI GET_HELP(this). Returns EmptyData if no help field
-        defined.
-        @rtype: Data
-        """
-        return self.help
-
-    def getError(self):
-        """Get the error field. Returns EmptyData if no error defined.
-        @rtype: Data
-        """
-        return self.error
-
     def hasNodeReference(self):
         """Return True if data item contains a tree reference
         @rtype: Bool
@@ -724,27 +701,6 @@ class Data(object):
                 if isinstance(arg,Data) and arg.hasNodeReference():
                     return True
         return False
-
-    def setUnits(self,units):
-        """Set units
-        @rtype: original type
-        """
-        self.units=units
-        return self
-
-    def setHelp(self,help):
-        """Set the Help  field for this Data instance.
-        @rtype: original type
-        """
-        self.help=help
-        return self
-
-    def setError(self,error):
-        """Set the Error field for this Data instance.
-        @rtype: original type
-        """
-        self.error=error
-        return self
 
     def mayHaveChanged(self):
         """return true if the represented data could have been changed since the last time
