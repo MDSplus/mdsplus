@@ -3459,43 +3459,49 @@ else
 
 
 
-read -d '' DK_DMAKEFILE << _as_read_EOF
+read -d '' DK_DSHELLFILE << _as_read_EOF
 
 #!/bin/sh
 # //////////////////////////////////////////////////////////////////////////// #
-# //// DOCKER MAKE  ////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# requotes #
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
+
+# requotes args, try to figure out if quoting was required for
 for x in "\${@}" ; do
-    # try to figure out if quoting was required for the $x
     if [[ "\$x" != "\${x%=*}" ]]; then
         x=\${x%=*}"=\\""\${x#*=}"\\""
     elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
         x="\\\""\$x"\\\""
     fi
-    echo \$x
     _args=\$_args" "\$x
 done
 
-
-MAKE=make
+# obsolete function (not to be used anymore)
 dmake () {
-echo
-echo " *** BUILDING IN DOCKER CONTAINER *** ";
-echo
-docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
 }
 
-dmake \${@}
+dshell () {
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${_args}";
+}
+
+# execute command
+dshell \${@}
 
 
 _as_read_EOF
 
 
-$as_echo " Writing dmake file: "
-$as_echo "${DK_DMAKEFILE}" > dmake
-chmod +x dmake
+$as_echo " Writing dshell file: "
+$as_echo "${DK_DSHELLFILE}" > dshell
+chmod +x dshell
 
 
 
@@ -3507,31 +3513,59 @@ read -d '' DK_DOCKER_TARGETS << _as_read_EOF
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+DOCKER_CONTAINER = ${DOCKER_CONTAINER}
+DOCKER_IMAGE     = ${DOCKER_IMAGE}
+
+# if MAKESHELL is not defined use local dshell to enter docker container
+docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
+local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
+export SHELL = \${docker_SHELL}
+
+.PHONY: docker
+.ONESHELL:
+docker:
+	@
+	echo
+ifeq (docker,\$(MAKECMDGOALS))
+	echo " This build was set to work with Docker: "
+	echo " ---------------------------------------------------------------- "
+	echo " This means that you should see a running docker container named: "
+	echo " ${DOCKER_CONTAINER}. 	"
+	echo " Using a map of the current srcdir and builddir and some envs the "
+	echo " build system should be able to launch make inside the container. "
+	echo " Use the usual make command and targets to build inside docker.   "
+	echo " In addition if your docker image has ssh daemon and  gdb  server "
+	echo " installed, it would be possible also to start  debugger  inside. "
+	echo
+	echo " Additional targets: "
+	echo " make docker start <- start the docker container "
+	echo " make docker stop  <- pause the docker container "
+	echo " make docker shell <- launch a shell inside the running container "
+	echo
+endif
+	echo
+
+
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
- \$(info ------ )
- \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
- \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
- \$(info DOCKER SHELL = \$(SHELL) )
- \$(info ------ )
+export SHELL = \${local_SHELL}
 
-.PHONY: docker docker-start
-docker:
-	@echo "Opening docker session:";
-	@echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
-
+.PHONY: start stop shell
 start:
 	@echo "Starting docker container:";
-	@eval docker restart ${DOCKER_CONTAINER}
+	eval docker restart \${DOCKER_CONTAINER}
 
 stop:
 	@echo "Stopping docker container:";
-	@eval docker stop ${DOCKER_CONTAINER};
+	eval docker stop \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
-	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
+	eval docker exec -ti --user \${USER} \${DOCKER_CONTAINER} bash
 
+root-shell:
+	@echo "Starting docker shell with root user";
+	eval docker exec -ti --user root \${DOCKER_CONTAINER} bash
 
 endif
 

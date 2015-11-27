@@ -280,11 +280,7 @@ AC_DEFUN([DK_START_URL], [
 
 
 
-AC_DEFUN([AS_BANNER],[
-          AS_ECHO 
-          AS_BOX([// $1 //////], [\/])
-          AS_ECHO 
-         ])
+
 
 AC_DEFUN([_dk_set_docker_build_debug],[
          AS_ECHO(" --------------------------------- ")
@@ -331,12 +327,15 @@ AC_DEFUN([DK_SET_DOCKER_BUILD],[
    
   ],[
    AS_VAR_SET_IF([DOCKER_CONTAINER],[
-                  DK_WRITE_DMAKEFILE
+                  DK_WRITE_DSHELLFILE
                   DK_SET_TARGETS
                  ])
   ])
   
 ])  
+
+
+
 
 
 AC_DEFUN([DK_SET_TARGETS],[
@@ -346,32 +345,60 @@ AS_VAR_READ([DK_DOCKER_TARGETS],[
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
- 
- \$(info ------ )
- \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
- \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
- \$(info DOCKER SHELL = \$(SHELL) )
- \$(info ------ )
+DOCKER_CONTAINER = ${DOCKER_CONTAINER}
+DOCKER_IMAGE     = ${DOCKER_IMAGE}
 
-.PHONY: docker docker-start
+# if MAKESHELL is not defined use local dshell to enter docker container
+docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
+local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
+export SHELL = \${docker_SHELL}
+
+.PHONY: docker
+.ONESHELL:
 docker:
-	@echo "Opening docker session:";
-	@echo "selected targets: \$(filter-out \$@,\$(MAKECMDGOALS))";
+	@
+	echo
+ifeq (docker,\$(MAKECMDGOALS))
+	echo " This build was set to work with Docker: "
+	echo " ---------------------------------------------------------------- "
+	echo " This means that you should see a running docker container named: "
+	echo " ${DOCKER_CONTAINER}. 	"
+	echo " Using a map of the current srcdir and builddir and some envs the "
+	echo " build system should be able to launch make inside the container. "
+	echo " Use the usual make command and targets to build inside docker.   "
+	echo " In addition if your docker image has ssh daemon and  gdb  server "
+	echo " installed, it would be possible also to start  debugger  inside. "
+	echo
+	echo " Additional targets: "	
+	echo " make docker start <- start the docker container "
+	echo " make docker stop  <- pause the docker container "
+	echo " make docker shell <- launch a shell inside the running container "
+	echo 
+endif
+	echo 
 
+
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+
+export SHELL = \${local_SHELL}
+
+.PHONY: start stop shell
 start:
-	@echo "Starting docker container:";	
-	@eval docker restart ${DOCKER_CONTAINER}	
+	@echo "Starting docker container:";
+	eval docker restart \${DOCKER_CONTAINER}	
 
 stop:
 	@echo "Stopping docker container:";
-	@eval docker stop ${DOCKER_CONTAINER};
+	eval docker stop \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
-	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
+	eval docker exec -ti --user \${USER} \${DOCKER_CONTAINER} bash
 
-
+root-shell:
+	@echo "Starting docker shell with root user";
+	eval docker exec -ti --user root \${DOCKER_CONTAINER} bash
+	
 endif
 ])
 AC_SUBST([DK_DOCKER_TARGETS])
@@ -383,41 +410,47 @@ m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([DK_DOCKER_TARGETS])])
 
 
 
-AC_DEFUN([DK_WRITE_DMAKEFILE],[
-AS_VAR_READ([DK_DMAKEFILE],m4_escape([
+AC_DEFUN([DK_WRITE_DSHELLFILE],[
+AS_VAR_READ([DK_DSHELLFILE],m4_escape([
 #!/bin/sh
 # //////////////////////////////////////////////////////////////////////////// #
-# //// DOCKER MAKE  ////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# requotes #
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
+
+# requotes args, try to figure out if quoting was required for $@
 for x in "\${@}" ; do
-    # try to figure out if quoting was required for the $x
     if [[ "\$x" != "\${x%=*}" ]]; then
         x=\${x%=*}"=\\""\${x#*=}"\\""
     elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
         x="\\\""\$x"\\\""
     fi
-    echo \$x
     _args=\$_args" "\$x
 done
 
-
-MAKE=make
+# obsolete function (not to be used anymore)
 dmake () { 
-echo 
-echo " *** BUILDING IN DOCKER CONTAINER *** ";
-echo
-docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
 } 
 
-dmake \${@}
+dshell () {
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${_args}";
+}
+
+# execute command
+dshell \${@}
 
 ]))
 
-AS_ECHO(" Writing dmake file: ")
-AS_ECHO("${DK_DMAKEFILE}") > dmake
-chmod +x dmake
+AS_ECHO(" Writing dshell file: ")
+AS_ECHO("${DK_DSHELLFILE}") > dshell
+chmod +x dshell
 
 ])
  
@@ -429,30 +462,9 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 dnl // Utility functions
 
-
-
  
 AC_DEFUN([DK_TEST],[
  
-dnl   if_docker_image_exist(["mdsplus/docker:rhel6"],AS_ECHO(YESS),AS_ECHO(NOO))
-  
-dnl   get_docker_container_status([status],[ciao])
-dnl   AS_CASE([${status}],
-dnl           [running],AS_ECHO("RUNNING"),
-dnl           [paused],AS_ECHO("PAUSED"),
-dnl           [exited],AS_ECHO("EXITED")
-dnl           )
-dnl  AS_VAR_SET(DOCKER_CONTAINER, [rhel6])
-dnl  DK_START_IMGCNT([mdsplus/docker:build_rhel6])
-dnl  DK_START_CNT([rhel6])
-
-dnl   AS_VAR_SET([MAKE_COMMAND],["'DK_CMD_MAKE'"])
-dnl   AS_ECHO("COMMAND: ${MAKE_COMMAND}")
- 
-dnl  DK_SET_DOCKER_BUILD
-
-dnl DK_WRITE_DMAKEFILE
-
 
 exit 0;
 
@@ -463,6 +475,11 @@ exit 0;
 
 
 
+AC_DEFUN([AS_BANNER],[
+          AS_ECHO 
+          AS_BOX([// $1 //////], [\/])
+          AS_ECHO 
+         ])
 
 
 AC_DEFUN([AS_VAR_READ],[
