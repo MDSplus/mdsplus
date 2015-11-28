@@ -1,4 +1,174 @@
-commit 805582c6467a7f72e3543ded0b6353d8b4ab5071 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 0c89fa727dfc8c4e956cd7970dc5f6fd639c50af (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 19ac366 d57f018
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 15:55:13 2015 +0100
+
+    Merge pull request #241 from zack-vii/aa_jtraverser
+    
+    update flag dialog when browsing Tree
+
+commit d57f01890c1c43f58e6c34ef795f67015a5834b6
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 15:44:22 2015 +0100
+
+    update flag dialog when browsing Tree
+    
+    update dialog when using cursor keys on keyboard to browse through tree
+    allows a fast way of checking and setting flags
+
+commit 19ac366f061f6e933c76242454a1a623895438d7
+Merge: fd18e5c c7221a1
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 13:39:00 2015 +0100
+
+    Merge pull request #238 from zack-vii/aa_mds_cygnet4k
+    
+    mds cygnet4k workover
+
+commit c7221a1b4323117e8a890a323d0cb639eabd5b08
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 13:00:47 2015 +0100
+
+    error handling
+
+commit 013bb6faf5b9287c9c8fdef83e7d0207e9a7c9f5
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 21:54:30 2015 +0100
+
+    trend to structure, added period
+
+commit ad347ae1847ca63ba149641f4ca9981657b7c46c
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 13:54:03 2015 +0100
+
+    comment on dummy libs and banned check lib from init
+
+commit e2305962b96b8bd44ffd6bf5f47913cc40f7b311
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 13:20:25 2015 +0100
+
+    fixed stop_trend, isInit flag, handle write once
+
+commit ac40e36d1097ed260dfc06856e71565e91efecb7
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 15:43:25 2015 +0100
+
+    temper cpp continue
+    
+    - export more function for testing and direct access
+    - added units
+    - turned cmos temp to raw uint16
+    - errorcodes
+    - new node labels
+
+commit 4a51eb7fb0af060fe99a15d6ff7efd7a2bc957ee
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 24 22:53:33 2015 +0100
+
+    temper cpp
+    
+    - reopen Tree before each put for transient tree
+    - cleaned up layout
+    - use fixed times for trend
+    - read temps in full steps of 0.5 secs
+    - uncomment remove(tmpPath)
+    - read temp on each frame
+
+commit 5d308a90b11b053b612da03908954b41afc21625
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 24 13:22:04 2015 +0100
+
+    CYGNET4K dummy and fixes
+    
+    - putRow -> makeSegment (put row generates shape (N,1,) we want (N,))
+    - dummy driver
+    - fix put dimensions
+    - fix time
+    - remove time from epixGetTemp@raptorLib
+    - dyn args
+
+commit 58bd82b671b0764081461b39a4298b409e94a8b7
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 27 18:55:51 2015 +0100
+
+    ACT_IDENT
+    
+    use :ACT_IDENT Node for CAMERA_SERVER
+
+commit 66389b9540f7593c7225062d2083ef5f1fee17d8
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 15:40:51 2015 +0100
+
+    Update cygnet4k to support python3
+    
+    - restructure
+    - reopen Tree before each put for transient tree
+
+commit fd18e5c2329600ae5249a46a63f38cd390ad77b3
+Merge: f40d819 7dc5dcc
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 09:54:29 2015 +0100
+
+    Merge pull request #235 from zack-vii/aa_RfxDevices
+    
+    RfxDevices update
+
+commit f40d81902e770d04510ea8654684ab479e050176
+Merge: 5eb3b56 278690e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 09:51:53 2015 +0100
+
+    Merge pull request #237 from zack-vii/aa_jtraverser
+    
+    jTraverser Upgrade
+
+commit 278690eb9b930a602443befe357844a99a7512a2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 03:04:06 2015 +0100
+
+    fixup! colored flags, reactivated tree updates
+
+commit f091685cb785ebeedd95ff523069955510ca516d
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 02:36:03 2015 +0100
+
+    colored flags, reactivated tree updates
+    
+    - get current selection instead of curr_node
+    - colorize labels according to Setup, nowrite*, writeOnce,
+    includeInPulse
+    - remove short cut in Node.getIcon to get full capabilities of JTree
+    - hence no need for TreeNode.paint -> constructor
+
+commit 7dc5dcc7a363b22fe6c3fc7b2805643b9c2e662d
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 11 09:25:34 2015 +0100
+
+    _mimport
+    
+    changed the import method
+
+commit e4e585f6f6651ad4811399392379bfcc9607ebaa
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 14:18:26 2015 +0100
+
+    Update to support python3
+    
+    reduced verbosity on import
+
+commit 39fbb927abf6fae83a72f1d53cb19099151ca3d4
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 20 16:16:59 2015 +0100
+
+    some rename fix
+
+commit 5eb3b56f86a7994093497fb8cbd763b0e7da3fae (tag: refs/tags/alpha_release-7-0-186)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 25 23:37:12 2015 -0500
+
+    New release ---- alpha_release-7-0-186
+
+commit 805582c6467a7f72e3543ded0b6353d8b4ab5071
 Merge: 8435a6f 3375886
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Nov 25 12:32:56 2015 -0500
