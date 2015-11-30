@@ -3045,8 +3045,8 @@ public:
     void setNoWriteShot(bool flag);
     bool isEssential();
     void setEssential(bool flag);
-    bool isIncludedInPulse();
-    void setIncludedInPulse(bool flag);
+    bool isIncludeInPulse();
+    void setIncludeInPulse(bool flag);
     bool isMember();
     bool isChild();
     ///@}

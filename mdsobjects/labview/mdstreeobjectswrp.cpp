@@ -1942,7 +1942,7 @@ DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIsIncludedInPulseOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_treenode_isIncludeInPulse(const void *lvTreeNodePtr, LVBoolean *lvisIncludeInPulseOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1951,7 +1951,7 @@ DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVB
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
-		*lvIsIncludedInPulseOut = (treeNodePtr->isIncludedInPulse() == true) ? LVBooleanTrue : LVBooleanFalse;
+		*lvisIncludeInPulseOut = (treeNodePtr->isIncludeInPulse() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -2412,7 +2412,7 @@ DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolea
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIncludedInPulseIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_treenode_setIncludeInPulse(const void *lvTreeNodePtr, LVBoolean *lvIncludeInPulseIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2421,10 +2421,10 @@ DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LV
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
-		if (*lvIncludedInPulseIn == LVBooleanTrue)
-			treeNodePtr->setIncludedInPulse(true);
+		if (*lvIncludeInPulseIn == LVBooleanTrue)
+			treeNodePtr->setIncludeInPulse(true);
 		else
-			treeNodePtr->setIncludedInPulse(false);
+			treeNodePtr->setIncludeInPulse(false);
 	}
 	catch (const MdsException &mdsE)
 	{

@@ -292,7 +292,7 @@ public class TreeNode extends Data
 	/**
 	 * Return true if the underlying subtree is included in the pulse file
 	 */
-	public boolean isIncludedInPulse() throws MdsException
+	public boolean isIncludeInPulse() throws MdsException
         {
             resolveNid();
             return getNciFlag(nid, tree.getCtx1(), tree.getCtx2(), NciM_INCLUDE_IN_PULSE);
@@ -303,7 +303,7 @@ public class TreeNode extends Data
 	 * 
 	 * @param flag
 	 */
-	public void setIncludedInPulse(boolean flag) throws MdsException
+	public void setIncludeInPulse(boolean flag) throws MdsException
         {
             resolveNid();
             setNciFlag(nid, tree.getCtx1(), tree.getCtx2(), NciM_INCLUDE_IN_PULSE, flag);

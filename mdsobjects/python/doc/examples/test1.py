@@ -98,7 +98,7 @@ def test(quiet=False):
     Print(ip.getMinPath())
     Print(ip.getPath())
     Print(ip.getNodeName())
-    Print(ip.isIncludedInPulse())
+    Print(ip.isIncludeInPulse())
     Print(ip.getDepth())
     Print(ip.isChild())
     Print(ip.parent.getChild())

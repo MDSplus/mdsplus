@@ -835,7 +835,7 @@ class TreeNode(_data.Data):
         """
         return self.essential
 
-    def isIncludedInPulse(self):
+    def isIncludeInPulse(self):
         """Return true if this subtree is to be included in pulse file
         @return: True if subtree is to be included in pulse file creation.
         @rtype: bool

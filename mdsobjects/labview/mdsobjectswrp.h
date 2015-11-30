@@ -689,8 +689,8 @@ extern "C" {
 						  ErrorCluster * error);
   DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr,
 					      LVBoolean * lvIsEssentialOut, ErrorCluster * error);
-  DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr,
-						    LVBoolean * lvIsIncludedInPulseOut,
+  DLLEXPORT void mdsplus_treenode_isIncludeInPulse(const void *lvTreeNodePtr,
+						    LVBoolean * lvisIncludeInPulseOut,
 						    ErrorCluster * error);
   DLLEXPORT void mdsplus_treenode_isMember(const void *lvTreeNodePtr, LVBoolean * lvIsMemberOut,
 					   ErrorCluster * error);
@@ -741,8 +741,8 @@ extern "C" {
 						   ErrorCluster * error);
   DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolean * lvEssentialIn,
 					       ErrorCluster * error);
-  DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr,
-						     LVBoolean * lvIncludedInPulseIn,
+  DLLEXPORT void mdsplus_treenode_setIncludeInPulse(const void *lvTreeNodePtr,
+						     LVBoolean * lvIncludeInPulseIn,
 						     ErrorCluster * error);
   DLLEXPORT void mdsplus_treenode_setNoWriteModel(const void *lvTreeNodePtr,
 						  LVBoolean * lvSetNoWriteModelIn,

@@ -721,7 +721,7 @@ void TreeNode::setNoWriteShot(bool flag) {
 	setFlag(NciM_NO_WRITE_SHOT, flag);
 }
 
-bool TreeNode::isIncludedInPulse() {
+bool TreeNode::isIncludeInPulse() {
 	return getFlag(NciM_INCLUDE_IN_PULSE);
 }
 
@@ -741,7 +741,7 @@ bool TreeNode::isChild() {
 	return (par & NciK_IS_CHILD) ? true : false;
 }
 
-void TreeNode::setIncludedInPulse(bool flag) {
+void TreeNode::setIncludeInPulse(bool flag) {
 	setFlag(NciM_INCLUDE_IN_PULSE, flag);
 }
 
@@ -1565,4 +1565,3 @@ ostream &operator<<(ostream &stream, TreeNode *treeNode)
 {
 	return stream << treeNode->getPathStr();
 }
-
