@@ -1942,6 +1942,10 @@ DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
+DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvisIncludeInPulseOut, ErrorCluster *error)
+{
+    mdsplus_treenode_isIncludeInPulse(lvTreeNodePtr, lvisIncludeInPulseOut, error);
+}
 DLLEXPORT void mdsplus_treenode_isIncludeInPulse(const void *lvTreeNodePtr, LVBoolean *lvisIncludeInPulseOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
@@ -2412,6 +2416,10 @@ DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolea
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
+DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LVBoolean *lvIncludeInPulseIn, ErrorCluster *error)
+{
+    mdsplus_treenode_setIncludeInPulse(lvTreeNodePtr, lvIncludeInPulseIn, error);
+}
 DLLEXPORT void mdsplus_treenode_setIncludeInPulse(const void *lvTreeNodePtr, LVBoolean *lvIncludeInPulseIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
