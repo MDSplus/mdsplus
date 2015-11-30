@@ -118,7 +118,8 @@ inline void MdsDataTest::test_numeric_cast_function(mds::Data *data, Fn fn, cons
     catch ( std::exception &e ) { TEST_STD_EXCEPTION((data->*fn)(), e.what()); }
     try {
         R casted_val = mds::numeric_cast<R>(value);
-        TEST1( casted_val == (data->*fn)() );
+        R data_val = (data->*fn)();        
+        TEST1( casted_val == data_val );
     } catch(...) {} // do not throw //
 }
 
