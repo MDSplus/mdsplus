@@ -1144,6 +1144,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             private static void construct()
 	        {
 	            dialog = new JDialog(frame);
+	            dialog.setFocusableWindowState(false);
 	            JPanel jp = new JPanel();
                 jp.setLayout(new BorderLayout());
 	            JPanel jp1 = new JPanel();
