@@ -1058,7 +1058,7 @@ class TreeNode(_data.Data):
         self.__setNode('essential',flag)
         return self
 
-    def setIncludedInPulse(self,flag):
+    def setIncludeInPulse(self,flag):
         """Set include in pulse state of this node
         @param flag: State to set the include in pulse characteristic. If true and this node is the top node of a subtree the subtree will be included in the pulse.
         @type flag: bool
