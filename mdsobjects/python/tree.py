@@ -140,20 +140,20 @@ class Tree(object):
             except:
                 pass
         if name.lower() == 'default':
-            ans=self.getDefault()
-        else:
-            if name.lower() == 'shot':
-                name='shotid'
-            elif name.lower() == 'tree':
-                name='name'
+            return self.getDefault()
+        if name.lower() == 'top':
+            return _treenode.TreeNode(0,self)
+        if name.lower() == 'shot':
+            name='shotid'
+        elif name.lower() == 'tree':
+            name='name'
+        try:
+            return _treeshr.TreeGetDbi(self,name)
+        except KeyError:
             try:
-                ans = _treeshr.TreeGetDbi(self,name)
-            except KeyError:
-                try:
-                    ans = self.__dict__[name]
-                except:
-                    raise AttributeError('No such attribute: '+name)
-        return ans
+                return self.__dict__[name]
+            except:
+                raise AttributeError('No such attribute: '+name)
 
     def usePrivateCtx(cls,on=True):
         _thread_data.private=on
@@ -677,7 +677,7 @@ class TreeRef(Tree):
     """The TreeRef class uses the current global dbid ctx to construct a tree reference object.
     Unlike Tree instances created with no arguments, TreeRef instances do not affect the global
     dbid ctx when they are deleted."""
-    
+
     def __init__(self):
         pass
     def __del__(self):
