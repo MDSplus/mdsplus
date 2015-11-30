@@ -240,7 +240,7 @@ class TreeNode(_data.Data):
         elif name=="write_once":
             self.setWriteOnce(value)
         elif name=="include_in_pulse":
-            self.setIncludedInPulse(value)
+            self.setIncludeInPulse(value)
         elif name=="compress_on_put":
             self.setCompressOnPut(value)
         elif name=="compress_segments":
