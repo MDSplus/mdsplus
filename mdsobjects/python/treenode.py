@@ -332,7 +332,7 @@ class TreeNode(_data.Data):
         """Add a tagname to this node
         @param tag: tagname for this node
         @type tag: str
-        @rtype: None
+        @rtype: original type
         """
         _treeshr.TreeAddTag(self.tree,self.nid,str(tag))
         return self
@@ -985,7 +985,7 @@ class TreeNode(_data.Data):
         """Remove a tagname from this node
         @param tag: Tagname to remove from this node
         @type tag: str
-        @rtype: None
+        @rtype: original type
         """
         try:
             tag = _ver.tostr(tag)
@@ -995,12 +995,13 @@ class TreeNode(_data.Data):
         except _Exceptions.TreeNNF:
             raise TreeNodeException("Tag %s is not defined" % (tag,))
         self.tree.removeTag(tag)
+        return self
 
     def rename(self,newname):
         """Rename node this node
         @param newname: new name of this node. 1-12 characters, no path delimiters.
         @type newname: str
-        @rtype: None
+        @rtype: original type
         """
         if newname.find(':') >=0 or newname.find('.') >= 0:
             raise TreeNodeException("Invalid node name, do not include path delimiters in nodename")
@@ -1012,6 +1013,7 @@ class TreeNode(_data.Data):
             _treeshr.TreeRenameNode(self,newname)
         finally:
             self.tree.setDefault(olddefault)
+        return self
 
     def restoreContext(self):
         """Restore tree context. Used by internal functions.
@@ -1024,7 +1026,7 @@ class TreeNode(_data.Data):
         """Set compress on put state of this node
         @param flag: State to set the compress on put characteristic
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('compress_on_put',flag)
         return self
@@ -1033,7 +1035,7 @@ class TreeNode(_data.Data):
         """Set compress segments state of this node
         @param flag: State to set the compress segments characteristic
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('compress_segments',flag)
         return self
@@ -1042,7 +1044,7 @@ class TreeNode(_data.Data):
         """Set do not compress state of this node
         @param flag: True do disable compression, False to enable compression
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('do_not_compress',flag)
         return self
@@ -1051,7 +1053,7 @@ class TreeNode(_data.Data):
         """Set essential state of this node
         @param flag: State to set the essential characteristic. This is used on action nodes when phases are dispacted.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('essential',flag)
         return self
@@ -1060,7 +1062,7 @@ class TreeNode(_data.Data):
         """Set include in pulse state of this node
         @param flag: State to set the include in pulse characteristic. If true and this node is the top node of a subtree the subtree will be included in the pulse.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('included',flag)
         return self
@@ -1069,7 +1071,7 @@ class TreeNode(_data.Data):
         """Set no write model state for this node
         @param flag: State to set the no write in model characteristic. If true then no data can be stored in this node in the model.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('model_write',not flag)
         return self
@@ -1078,7 +1080,7 @@ class TreeNode(_data.Data):
         """Set no write shot state for this node
         @param flag: State to set the no write in shot characteristic. If true then no data can be stored in this node in a shot file.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('shot_write',not flag)
         return self
@@ -1087,7 +1089,7 @@ class TreeNode(_data.Data):
         """Turn node on or off
         @param flag: State to set the on characteristic. If true then the node is turned on. If false the node is turned off.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         _tree.Tree.lock()
         try:
@@ -1107,7 +1109,7 @@ class TreeNode(_data.Data):
         """Enable/Disable node as a subtree
         @param flag: True to make node a subtree reference. Node must be a child node with no descendants.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         _treeshr.TreeSetSubtree(self,flag)
         return self
@@ -1116,7 +1118,7 @@ class TreeNode(_data.Data):
         """Set the usage of a node
         @param usage: Usage string.
         @type flag: str
-        @rtype: None
+        @rtype: original type
         """
         try:
             usagenum=usage_table[usage.upper()]
@@ -1129,7 +1131,7 @@ class TreeNode(_data.Data):
         """Set Tree associated with this node
         @param tree: Tree instance to associated with this node
         @type tree: Tree
-        @rtype: None
+        @rtype: original type
         """
         self.tree=tree.copy()
         return self
@@ -1138,7 +1140,7 @@ class TreeNode(_data.Data):
         """Set write once state of node
         @param flag: State to set the write once characteristic. If true then data can only be written if the node is empty.
         @type flag: bool
-        @rtype: None
+        @rtype: original type
         """
         self.__setNode('write_once',flag)
         return self
@@ -1263,7 +1265,7 @@ class TreeNodeArray(_data.Data):
 
     def setWriteOnce(self,flag):
         """Set nodes write once
-        @rtype: None
+        @rtype: original type
         """
         for nid in self:
             nid.setWriteOnce(flag)
@@ -1296,6 +1298,7 @@ class TreeNodeArray(_data.Data):
         """Set no write model flag
         @param flag: True to disallow writing to model
         @type flag: bool
+        @rtype: original type
         """
         for nid in self:
             nid.setNoWriteModel(flag)
@@ -1312,6 +1315,7 @@ class TreeNodeArray(_data.Data):
         """set no write shot flags
         @param flag: True if setting no write shot
         @type flag: bool
+        @rtype: original type
         """
         for nid in self:
             nid.setNoWriteShot(flag)
