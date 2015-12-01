@@ -19,10 +19,6 @@ public fun Py(in _cmd, optional in _varname, optional in _global_namespace, opti
 
    public ___TDI___global_ns= present(_global_namespace) ? 1 : 0;
    MdsMisc->PyCall(_execCall,val(1));
-   if (ALLOCATED(public _PyReleaseThreadLock)) {
-     MdsMisc->PyReleaseThreadLock();
-     deallocate(public _PyReleaseThreadLock);
-   }
    if (allocated(public ___TDI___exception)) {
      public _py_exception=public ___TDI___exception;
      return(0);

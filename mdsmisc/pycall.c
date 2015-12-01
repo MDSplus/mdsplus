@@ -93,10 +93,11 @@ EXPORT int PyCall(char *cmd, int lock)
 
 EXPORT void PyReleaseThreadLock()
 {
-  if (PyGILState_GetThisThreadState && PyEval_ReleaseThread) {
+/*  if (PyGILState_GetThisThreadState && PyEval_ReleaseThread) {
     void *STATE = (*PyGILState_GetThisThreadState) ();
     (*PyEval_ReleaseThread) (STATE);
   }
+*/
 }
 
 #ifdef MAIN
