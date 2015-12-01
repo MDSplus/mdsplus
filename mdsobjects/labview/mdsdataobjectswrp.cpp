@@ -6652,17 +6652,17 @@ DLLEXPORT void prova44(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = "";
+//  char const * errorMessage = "";
   int i;
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
-      char *currErr = (char *)exc.what();
-      errorMessage = strdup(currErr);
+  {
+//      char *currErr = (char *)exc.what();
+//      errorMessage = strdup(currErr);
       errorCode = bogusError;
    }
- 
+
   *outInt = inInt;
 //  fillErrorCluster(errorCode, errorSource, errorMessage, error);
   fillErrorCluster(errorCode, errorSource, "", error);
@@ -6679,7 +6679,7 @@ DLLEXPORT void prova45(int inInt, int *outInt, ErrorCluster *error)
   }catch(const MdsException &exc)
   { 
       char *currErr = (char *)exc.what();
-      errorMessage = strdup(currErr);	
+      errorMessage = strdup(currErr);
       errorCode = bogusError;
    }
  
