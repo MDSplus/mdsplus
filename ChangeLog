@@ -1,4 +1,99 @@
-commit 0c89fa727dfc8c4e956cd7970dc5f6fd639c50af (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit e31b3944ec9886a9847cc1fbae7bf13968b7e857 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 5ab984a fcff9cc
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Dec 1 00:50:57 2015 +0100
+
+    Merge pull request #244 from zack-vii/aa_jtraverser
+    
+    prevent FlagDialog from getting focus
+
+commit fcff9cc55f51ce36bb492d0888b21b3a29dbe712
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 00:25:39 2015 +0100
+
+    prevent FlagDialog from getting focus
+    
+    allows fast way of toggling flags:
+    You can navigate through a large number of nodes using arrow-keys and
+    quickly toggle flag with the mouse
+
+commit 5ab984abb8369ee9dd82052a2f5dbb716fd73ae7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 10:48:41 2015 -0500
+
+    Fix for renamed method: setIncludeInPulse. include_in_pulse attribute still refered to setIncludedInPulse.
+
+commit 0cf4e6f3b6bb41a8fa5a56fdf57257d992c83733
+Merge: bcb7529 377fde2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 09:20:20 2015 -0500
+
+    Merge pull request #242 from zack-vii/ss_setInclude(d)InPulse
+    
+    setIncludedInPulse vs include_in_pulse
+
+commit 377fde2668f94b44cdb1ec96f7afb728f501d02e
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 15:05:49 2015 +0100
+
+    setIncludedInPulse vs include_in_pulse
+    
+    should it not be setIncludeInPulse
+    but might be too late now
+
+commit bcb75293bb079817b8052b6667a38841c17008a5
+Merge: e8a2619 3956b31
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 08:40:22 2015 -0500
+
+    Merge pull request #239 from zack-vii/aa_python_mdsdata_help_etc
+    
+    cleanup setHelp, setUnits, setError ...
+
+commit e8a261977f5a69bacaf94e2f82a3cb73a995932a
+Merge: f0e800d 7d70783
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 08:40:05 2015 -0500
+
+    Merge pull request #240 from zack-vii/aa_python_tree_node
+    
+    tree shortcut to top
+
+commit 3956b31b07c9aba3468724b56cbdccfb2bc89c01
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 10:37:26 2015 +0100
+
+    fixed some comments
+    
+    included rename and removeTag
+
+commit ac6db4ba46ca15e60621ec5c2b9bcbca4d28d365
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 14:44:36 2015 +0100
+
+    return self
+    
+    add return self to all set* of TreeNode class to allow
+    node = tree.getNode(name).setOn(True).setEssential(True).putData(123)
+
+commit 2de1b109ba5dcedc047dcf932d4ce7fbd21d8690
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 13:26:25 2015 +0100
+
+    cleanup setHelp, setUnits, setError ...
+    
+    no need for extra public methods if private once are available
+    removed "_" fom _set* and _get* to replace duplicate set* and get*
+    since _set* and _get* are 'private' methods this should not affect and
+    other module
+
+commit f0e800d6aed2825770ff2b134bd455c643c9f6e5 (tag: refs/tags/alpha_release-7-0-187)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 27 23:36:56 2015 -0500
+
+    New release ---- alpha_release-7-0-187
+
+commit 0c89fa727dfc8c4e956cd7970dc5f6fd639c50af
 Merge: 19ac366 d57f018
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Nov 27 15:55:13 2015 +0100
@@ -15,6 +110,14 @@ Date:   Fri Nov 27 15:44:22 2015 +0100
     
     update dialog when using cursor keys on keyboard to browse through tree
     allows a fast way of checking and setting flags
+
+commit 7d70783d385fb166d50fad3ee9198ae8012ac534
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 14:24:21 2015 +0100
+
+    tree shortcut to top
+    
+    added to __getattr__
 
 commit 19ac366f061f6e933c76242454a1a623895438d7
 Merge: fd18e5c c7221a1
