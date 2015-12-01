@@ -91,7 +91,7 @@ DLLEXPORT void mdsplus_tree_createPulse(const void *lvTreePtr, int shotIn, Error
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -112,7 +112,7 @@ DLLEXPORT void mdsplus_tree_deletePulse(const void *lvTreePtr, int shotIn, Error
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -140,7 +140,7 @@ DLLEXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error)
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -162,7 +162,7 @@ DLLEXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArray
 	StringArray *stringArrayPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -184,7 +184,7 @@ DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *err
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtrOut = getActiveTree();
@@ -205,7 +205,7 @@ DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, 
 {
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		*currentOut = Tree::getCurrent(const_cast<char *>(treeNameIn));
@@ -225,7 +225,7 @@ DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, int64_t *size
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -247,7 +247,7 @@ DLLEXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodeP
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -270,7 +270,7 @@ DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -314,7 +314,7 @@ DLLEXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeN
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -338,7 +338,7 @@ DLLEXPORT void mdsplus_tree_getNode_treepath(const void *lvTreePtr, void **lvTre
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -362,7 +362,7 @@ DLLEXPORT void mdsplus_tree_getNodeWild(const void *lvTreePtr, void **lvTreeNode
 	TreeNodeArray *treeNodeArrayPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -385,7 +385,7 @@ DLLEXPORT void mdsplus_tree_getNodeWild_usageMask(const void *lvTreePtr, void **
 	TreeNodeArray *treeNodeArrayPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -407,7 +407,7 @@ DLLEXPORT void mdsplus_tree_isModified(const void *lvTreePtr, LVBoolean *lvIsMod
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -428,7 +428,7 @@ DLLEXPORT void mdsplus_tree_isOpenForEdit(const void *lvTreePtr, LVBoolean *lvIs
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -449,7 +449,7 @@ DLLEXPORT void mdsplus_tree_isReadOnly(const void *lvTreePtr, LVBoolean *lvIsRea
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -470,7 +470,7 @@ DLLEXPORT void mdsplus_tree_quit(const void *lvTreePtr, ErrorCluster *error)
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -491,7 +491,7 @@ DLLEXPORT void mdsplus_tree_remove(const void *lvTreePtr, const char *nameIn, Er
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -512,7 +512,7 @@ DLLEXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagName
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -533,7 +533,7 @@ DLLEXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster 
 	Tree *treePtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtrIn = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtrIn));
@@ -553,7 +553,7 @@ DLLEXPORT void mdsplus_tree_setCurrent(const char *treeNameIn, int shotIn, Error
 {
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		Tree::setCurrent(const_cast<char *>(treeNameIn), shotIn);
@@ -574,7 +574,7 @@ DLLEXPORT void mdsplus_tree_setDefault(const void *lvTreePtr, const void *lvTree
 	TreeNode *treeNodePtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -599,7 +599,7 @@ DLLEXPORT void mdsplus_tree_setTimeContext(const void *lvTreePtr, const void *lv
 	Data *deltaDataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -625,7 +625,7 @@ DLLEXPORT void mdsplus_tree_setVersionsInModel(const void *lvTreePtr, LVBoolean 
 	bool verEnabledIn;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -648,7 +648,7 @@ DLLEXPORT void mdsplus_tree_setVersionsInPulse(const void *lvTreePtr, LVBoolean 
 	bool verEnabledIn;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -670,7 +670,7 @@ DLLEXPORT void mdsplus_tree_setViewDate(const void *lvTreePtr, const char *dateI
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -692,7 +692,7 @@ DLLEXPORT void mdsplus_tree_versionsInModelEnabled(const void *lvTreePtr, LVBool
 	bool verEnabledOut;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -715,7 +715,7 @@ DLLEXPORT void mdsplus_tree_versionsInPulseEnabled(const void *lvTreePtr, LVBool
 	bool verEnabledOut;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -737,7 +737,7 @@ DLLEXPORT void mdsplus_tree_write(const void *lvTreePtr, ErrorCluster *error)
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
@@ -763,7 +763,7 @@ DLLEXPORT void mdsplus_treenode_addDevice(const void *lvTreeNodePtr, void **lvTr
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -786,7 +786,7 @@ DLLEXPORT void mdsplus_treenode_addNode(const void *lvTreeNodePtr, void **lvTree
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -808,7 +808,7 @@ DLLEXPORT void mdsplus_treenode_addTag(const void *lvTreeNodePtr, const char *ta
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -833,7 +833,7 @@ DLLEXPORT void mdsplus_treenode_beginSegment(const void *lvTreeNodePtr, const vo
 	Array *initialDataArrayPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -859,7 +859,7 @@ DLLEXPORT void mdsplus_treenode_beginTimestampedSegment(const void *lvTreeNodePt
 	Array *initDataArrayPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -881,7 +881,7 @@ DLLEXPORT void mdsplus_treenode_containsVersions(const void *lvTreeNodePtr, LVBo
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -902,7 +902,7 @@ DLLEXPORT void mdsplus_treenode_deleteData(const void *lvTreeNodePtr, ErrorClust
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -923,7 +923,7 @@ DLLEXPORT void mdsplus_treenode_doMethod(const void *lvTreeNodePtr, const char *
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -952,7 +952,7 @@ DLLEXPORT void mdsplus_treenode_findTags(const void *lvTreeNodePtr, void **lvStr
 	StringArray *stringArrayPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -976,7 +976,7 @@ DLLEXPORT void mdsplus_treenode_getBrother(const void *lvTreeNodePtr, void **lvT
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -999,7 +999,7 @@ DLLEXPORT void mdsplus_treenode_getChild(const void *lvTreeNodePtr, void **lvTre
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1023,7 +1023,7 @@ DLLEXPORT void mdsplus_treenode_getChildren(const void *lvTreeNodePtr, LPtrArrHd
 	int childrenArrLen = 0;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1058,7 +1058,7 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1089,7 +1089,7 @@ DLLEXPORT void mdsplus_treenode_getCompressedLength(const void *lvTreeNodePtr, i
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1110,7 +1110,7 @@ DLLEXPORT void mdsplus_treenode_getConglomerateElt(const void *lvTreeNodePtr, in
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1132,7 +1132,7 @@ DLLEXPORT void mdsplus_treenode_getConglomerateNodes(const void *lvTreeNodePtr, 
 	TreeNodeArray *treeNodeArrayPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1154,7 +1154,7 @@ DLLEXPORT void mdsplus_treenode_getDepth(const void *lvTreeNodePtr, int *depthOu
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1176,7 +1176,7 @@ DLLEXPORT void mdsplus_treenode_getData(const void *lvTreeNodePtr, void **lvData
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1200,7 +1200,7 @@ DLLEXPORT void mdsplus_treenode_getDescendants(const void *lvTreeNodePtr, LPtrAr
 	int descendantsArrLen = 0;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1235,7 +1235,7 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1268,7 +1268,7 @@ DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandl
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1300,7 +1300,7 @@ DLLEXPORT void mdsplus_treenode_getLength(const void *lvTreeNodePtr, int *length
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1322,7 +1322,7 @@ DLLEXPORT void mdsplus_treenode_getMember(const void *lvTreeNodePtr, void **lvTr
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1346,7 +1346,7 @@ DLLEXPORT void mdsplus_treenode_getMembers(const void *lvTreeNodePtr, LPtrArrHdl
 	int membersArrLen = 0;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1381,7 +1381,7 @@ DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1415,7 +1415,7 @@ DLLEXPORT void mdsplus_treenode_getNid(const void *lvTreeNodePtr, int *nidOut, E
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1437,7 +1437,7 @@ DLLEXPORT void mdsplus_treenode_getNode(const void *lvTreeNodePtr, void **lvTree
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1461,7 +1461,7 @@ DLLEXPORT void mdsplus_treenode_getNode_string(const void *lvTreeNodePtr, void *
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1485,7 +1485,7 @@ DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandl
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1517,7 +1517,7 @@ DLLEXPORT void mdsplus_treenode_getNumChildren(const void *lvTreeNodePtr, int *n
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1538,7 +1538,7 @@ DLLEXPORT void mdsplus_treenode_getNumDescendants(const void *lvTreeNodePtr, int
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1559,7 +1559,7 @@ DLLEXPORT void mdsplus_treenode_getNumElts(const void *lvTreeNodePtr, int *numEl
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1580,7 +1580,7 @@ DLLEXPORT void mdsplus_treenode_getNumMembers(const void *lvTreeNodePtr, int *nu
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1601,7 +1601,7 @@ DLLEXPORT void mdsplus_treenode_getNumSegments(const void *lvTreeNodePtr, int *n
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1624,7 +1624,7 @@ DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, L
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1656,7 +1656,7 @@ DLLEXPORT void mdsplus_treenode_getOwnerId(const void *lvTreeNodePtr, int *owner
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1678,7 +1678,7 @@ DLLEXPORT void mdsplus_treenode_getParent(const void *lvTreeNodePtr, void **lvTr
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1701,7 +1701,7 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1732,7 +1732,7 @@ DLLEXPORT void mdsplus_treenode_getSegment(const void *lvTreeNodePtr, void **lvA
 	Array *arrayPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1756,7 +1756,7 @@ DLLEXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int 
 	Data *endDataPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1779,7 +1779,7 @@ DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *status
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1800,7 +1800,7 @@ DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1836,7 +1836,7 @@ DLLEXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTree
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1883,7 +1883,7 @@ DLLEXPORT void mdsplus_treenode_isChild(const void *lvTreeNodePtr, LVBoolean *lv
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1904,7 +1904,7 @@ DLLEXPORT void mdsplus_treenode_isCompressOnPut(const void *lvTreeNodePtr, LVBoo
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1925,7 +1925,7 @@ DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1947,7 +1947,7 @@ DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVB
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1968,7 +1968,7 @@ DLLEXPORT void mdsplus_treenode_isMember(const void *lvTreeNodePtr, LVBoolean *l
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -1989,7 +1989,7 @@ DLLEXPORT void mdsplus_treenode_isNoWriteModel(const void *lvTreeNodePtr, LVBool
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2010,7 +2010,7 @@ DLLEXPORT void mdsplus_treenode_isNoWriteShot(const void *lvTreeNodePtr, LVBoole
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2031,7 +2031,7 @@ DLLEXPORT void mdsplus_treenode_isOn(const void *lvTreeNodePtr, LVBoolean *lvIsO
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2052,7 +2052,7 @@ DLLEXPORT void mdsplus_treenode_isSetup(const void *lvTreeNodePtr, LVBoolean *lv
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2073,7 +2073,7 @@ DLLEXPORT void mdsplus_treenode_isWriteOnce(const void *lvTreeNodePtr, LVBoolean
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2098,7 +2098,7 @@ DLLEXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const voi
 	Array *initialDataArrayPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2134,7 +2134,7 @@ DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr
 	int64_t *timesArrIn = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2162,7 +2162,7 @@ DLLEXPORT void mdsplus_treenode_move(const void *lvTreeNodePtr, const void *lvTr
 	TreeNode *treeNodeParentPtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2185,7 +2185,7 @@ DLLEXPORT void mdsplus_treenode_move_newName(const void *lvTreeNodePtr, const vo
 	TreeNode *treeNodeParentPtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2208,7 +2208,7 @@ DLLEXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *l
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2232,7 +2232,7 @@ DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lv
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2255,7 +2255,7 @@ DLLEXPORT void mdsplus_treenode_putSegment(const void *lvTreeNodePtr, const void
 	Array *arrayPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2279,7 +2279,7 @@ DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr,
 	int64_t *timesArrIn = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2306,7 +2306,7 @@ DLLEXPORT void mdsplus_treenode_remove(const void *lvTreeNodePtr, const char *na
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2327,7 +2327,7 @@ DLLEXPORT void mdsplus_treenode_removeTag(const void *lvTreeNodePtr, const char 
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2348,7 +2348,7 @@ DLLEXPORT void mdsplus_treenode_rename(const void *lvTreeNodePtr, const char *ne
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2369,7 +2369,7 @@ DLLEXPORT void mdsplus_treenode_setCompressOnPut(const void *lvTreeNodePtr, LVBo
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2393,7 +2393,7 @@ DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolea
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2417,7 +2417,7 @@ DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LV
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2441,7 +2441,7 @@ DLLEXPORT void mdsplus_treenode_setNoWriteModel(const void *lvTreeNodePtr, LVBoo
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2465,7 +2465,7 @@ DLLEXPORT void mdsplus_treenode_setNoWriteShot(const void *lvTreeNodePtr, LVBool
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2489,7 +2489,7 @@ DLLEXPORT void mdsplus_teenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOnI
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2513,7 +2513,7 @@ DLLEXPORT void mdsplus_treenode_setSubTree(const void *lvTreeNodePtr, LVBoolean 
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2538,7 +2538,7 @@ DLLEXPORT void mdsplus_treenode_setTree(const void *lvTreeNodePtr, const void *l
 	Tree *treePtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2560,7 +2560,7 @@ DLLEXPORT void mdsplus_treenode_setWriteOnce(const void *lvTreeNodePtr, LVBoolea
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
@@ -2587,7 +2587,7 @@ DLLEXPORT void mdsplus_treenode_updateSegment(const void *lvTreeNodePtr, const v
 	Data *timeDataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	try
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
