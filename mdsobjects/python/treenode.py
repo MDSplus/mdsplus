@@ -483,12 +483,12 @@ class TreeNode(_data.Data):
         """
         return self.conglomerate_nids
 
-    def getData(self):
+    def getData(self, *altvalue):
         """Return data
         @return: data stored in this node
         @rtype: Data
         """
-        return _treeshr.TreeGetRecord(self)
+        return _treeshr.TreeGetRecord(self, *altvalue)
 
     def getDepth(self):
         """Get depth of this node in the tree
