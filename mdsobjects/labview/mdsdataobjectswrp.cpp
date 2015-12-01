@@ -6659,8 +6659,7 @@ DLLEXPORT void prova44(int inInt, int *outInt, ErrorCluster *error)
   }catch(const MdsException &exc)
   { 
       char *currErr = (char *)exc.what();
-      errorMessage = new char[strlen(currErr)+1];
-      strcpy(errorMessage, currErr);	
+      errorMessage = strdup(currErr);
       errorCode = bogusError;
    }
  
@@ -6680,8 +6679,7 @@ DLLEXPORT void prova45(int inInt, int *outInt, ErrorCluster *error)
   }catch(const MdsException &exc)
   { 
       char *currErr = (char *)exc.what();
-      errorMessage = new char[strlen(currErr)+1];
-      strcpy(errorMessage, currErr);	
+      errorMessage = strdup(currErr);	
       errorCode = bogusError;
    }
  
