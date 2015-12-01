@@ -344,34 +344,6 @@ class Tree(object):
         finally:
             Tree.unlock()
 
-    def doMethod(self,nid,method):
-        """For internal use only. Support for PyDoMethod.fun used for python device support"""
-
-        n=_treenode.TreeNode(nid,self)
-        top=n.conglomerate_nids[0]
-        c=top.record
-        q=c.qualifiers
-        model=c.model
-
-        for i in range(len(q)):
-            exec( str(q[0]))
-        try:
-            status = None
-            exec( str('status=_data.makeData('+model+'(n).'+method+'(_data.Data.getTdiVar("__do_method_arg__")))'))
-            status.setTdiVar('_result')
-            if isinstance(status,_scalar.Int32):
-                status.setTdiVar("_method_status")
-            else:
-                _data.makeData(1).setTdiVar("_method_status")
-        except AttributeError:
-            _data.makeData(0xfd180b0).setTdiVar("_method_status")
-        except Exception:
-            print("Error doing %s on node %s" % (str(method),str(n)))
-            _traceback.print_exc()
-            _data.makeData(0).setTdiVar("_method_status")
-            raise
-        return _data.Data.getTdiVar("_result")
-
     def edit(self):
         """Open tree for editing.
         @rtype: None"""

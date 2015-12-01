@@ -160,7 +160,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	arglist[1] = &exp;;
 	arglist[nargs] = MdsEND_ARG;
 	status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
-	if (status & 1) {
+	/*	if (status & 1) {
 	  STATIC_CONSTANT DESCRIPTOR(getstat, "public _method_status");
 	  int stat;
 	  DESCRIPTOR_LONG(stat_d, &stat);
@@ -174,6 +174,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	}
 	if (status == TdiUNKNOWN_VAR || status == LibINVSTRDES)
 	  status = TreeNOMETHOD;
+	*/
       }
       StrFree1Dx(&exp);
       *TreeCtx() = dbid;

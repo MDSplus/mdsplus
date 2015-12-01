@@ -13,6 +13,7 @@ static void (*PyEval_InitThreads) () = 0;
 static void (*PyEval_ReleaseThread) (void *) = 0;
 static void (*PyRun_SimpleString) (char *) = 0;
 static void (*PyGILState_Release) (void *) = 0;
+static void (*PyEval_SaveThread)() = 0;
 
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
@@ -27,6 +28,7 @@ EXPORT int PyCall(char *cmd, int lock)
   void (*old_handler) (int);
 #endif
   void *GIL;
+  lock=1;
   if (!PyGILState_Ensure) {
     void *handle;
     char *lib;
@@ -67,11 +69,13 @@ EXPORT int PyCall(char *cmd, int lock)
     loadrtn(PyGILState_GetThisThreadState, 1);
     loadrtn(Py_Initialize, 1);
     loadrtn(PyEval_InitThreads, 1);
+    loadrtn(PyEval_SaveThread, 1);
     loadrtn(PyEval_ReleaseThread, 1);
     loadrtn(PyRun_SimpleString, 1);
     loadrtn(PyGILState_Release, 1);
     (*Py_Initialize) ();
     (*PyEval_InitThreads) ();
+    (*PyEval_SaveThread) ();
   }
   if (lock)
     GIL = (*PyGILState_Ensure) ();
