@@ -1,5 +1,4 @@
 public fun Py(in _cmd, optional in _varname, optional in _global_namespace, optional in _lock) {
-   _locked=present(_lock) ? _lock : 0;
    if (NOT ALLOCATED(public _PyInit)) {
      _sym=0qu;
      if (getenv("PyLib") == "") {
@@ -7,7 +6,7 @@ public fun Py(in _cmd, optional in _varname, optional in _global_namespace, opti
        write(*,"Please define PyLib to be the name of your python library, i.e. 'python2.4'\n\n\n");
        abort();
      }
-     MdsMisc->PyCall("from MDSplus import execPy as ___TDI___execPy",val(_locked));
+     MdsMisc->PyCall("from MDSplus import execPy as ___TDI___execPy",val(1));
    }
    public ___TDI___cmds=_cmd;
    if (present(_varname))
@@ -19,7 +18,7 @@ public fun Py(in _cmd, optional in _varname, optional in _global_namespace, opti
    deallocate(public ___TDI___answer);
 
    public ___TDI___global_ns= present(_global_namespace) ? 1 : 0;
-   MdsMisc->PyCall(_execCall,val(_locked));
+   MdsMisc->PyCall(_execCall,val(1));
    if (ALLOCATED(public _PyReleaseThreadLock)) {
      MdsMisc->PyReleaseThreadLock();
      deallocate(public _PyReleaseThreadLock);
