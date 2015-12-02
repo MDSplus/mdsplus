@@ -153,13 +153,32 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       if (TdiExecute == 0)
 	status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
       if (status & 1) {
+	EMPTYXD(list_xd);
+	struct descriptor_xd *ans_xd=arglist[nargs];
+	arglist[nargs]=&list_xd;
 	for (i = nargs; i > 0; i--)
 	  arglist[i + 1] = arglist[i];
 	nargs += 2;
 	arglist[0] = arglist_nargs(nargs);
-	arglist[1] = &exp;;
+	arglist[1] = &exp;
 	arglist[nargs] = MdsEND_ARG;
 	status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
+        if (status & 1) {
+	  struct descriptor_a *list = (struct descriptor_a *)list_xd.pointer;
+	  if (list && list->dtype == DTYPE_LIST && list->arsize == (sizeof(void *)*2)) {
+	    struct descriptor *statd = ((struct descriptor **)list->pointer)[0];
+	    struct descriptor *ansd = ((struct descriptor **)list->pointer)[1];
+	    if (statd && statd->pointer && statd->dtype == DTYPE_L && ansd) {
+	      MdsCopyDxXd(ansd,ans_xd);
+	      status = *(int *)statd->pointer;
+	    } else {
+	      status = 0;
+	    }
+	  }
+	  else
+	    status = 0;
+	  MdsFree1Dx(&list_xd,0);
+	}
       }
       StrFree1Dx(&exp);
       *TreeCtx() = dbid;

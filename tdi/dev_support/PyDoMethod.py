@@ -14,25 +14,24 @@ def PyDoMethod(n,method,*args):
         exec(str(q)) in globals()
     if not model in globals():
         stderr.write("Python device implementation not found for %s after doing %s" % (model,str(q)))
-        return DevPYDEVICE_NOT_FOUND.status
-    device = globals()[model](n)
+        return [DevPYDEVICE_NOT_FOUND.status,None]
     try:
+        device = globals()[model](n)
         try:
             methodobj = device.__getattribute__(method)
         except AttributeError:
-            return TreeNOMETHOD.status
+            return [TreeNOMETHOD.status,None]
         try:
-            status = methodobj(*args)
+            return [1,methodobj(*args)]
         except TypeError:
             print('Your device method %s.%s requires at least one argument.' % (model,method))
             print('No argument has been provided as it is probably not required by the method.')
             print('MDSplus does not require device methods to accept an argument anymore.')
-            status = methodobj(None)
+            return [1,methodobj(None)]
     except:
         exc = exc_info()[1]
         stderr.write("Python error in %s.%s:\n%s\n" % (model,method,repr(exc)))
         if hasattr(exc,'status'):
-            status = exc.status
+            return [exc.status,None]
         else:
-            status = 0
-    return status
+            return [0,None]
