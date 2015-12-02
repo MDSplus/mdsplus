@@ -45,7 +45,7 @@ static double default_timeout = TEST_DEFAULT_TIMEOUT;
 static pid_t group_pid = 0;
 extern jmp_buf error_jmp_buffer;
 
-
+#ifdef HAVE_FORK
 static struct sigaction sigint_old_action;
 static struct sigaction sigterm_old_action;
 static struct sigaction sigalarm_old_action;
@@ -53,6 +53,7 @@ static struct sigaction sigalarm_old_action;
 static struct sigaction sigalarm_new_action;
 static struct sigaction sigint_new_action;
 static struct sigaction sigterm_new_action;
+#endif
 
 static Suite   *suite  = NULL;
 static SRunner *runner = NULL;
@@ -234,8 +235,7 @@ static TestResult *receive_result_info_fork(const char *tcname,
                                             signed char allowed_exit_value);
 
 
-//#if defined(HAVE_FORK) && HAVE_FORK==1
-
+#if defined(HAVE_FORK)
 static void set_fork_info(TestResult * tr, int status, int expected_signal,
                           signed char allowed_exit_value);
 static char *signal_msg(int sig);
@@ -427,7 +427,7 @@ static int waserror(int status, int signal_expected)
     return ((was_sig && (signal_received != signal_expected)) ||
             (was_exit && exit_status != 0));
 }
-//#     endif /* HAVE_FORK */
+#     endif /* HAVE_FORK */
 
 
 

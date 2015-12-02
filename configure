@@ -764,13 +764,20 @@ DX_PROJECT
 HAVE_CUTE_DOXYGEN_FALSE
 HAVE_CUTE_DOXYGEN_TRUE
 DOXYGEN
-TS_PY_TAP_FLAGS
-TS_PY_TAP_COMPILER
-TS_LOG_DRIVER
-TS_LOG_COMPILER
-TS_TESTS_ENVIRONMENT
+VALGRIND_memcheck_FLAGS
+VALGRIND_FLAGS
+PY_LOG_FLAGS_XML
+PY_LOG_COMPILER_XML
+PY_LOG_FLAGS_TAP
+PY_LOG_COMPILER_TAP
+PY_LOG_FLAGS
+PY_LOG_COMPILER
+LOG_DRIVER
+LOG_COMPILER
+TESTS_ENVIRONMENT
 HAVE_WINEPATH
 HAVE_WINEBOOT
+NOSETESTS
 VALGRIND_CHECK_RULES
 VALGRIND_HAVE_TOOL_exp_sgcheck
 VALGRIND_HAVE_TOOL_drd
@@ -780,7 +787,6 @@ VALGRIND_ENABLED
 VALGRIND_ENABLED_FALSE
 VALGRIND_ENABLED_TRUE
 VALGRIND
-NOSETESTS
 PERL
 HAVE_WINECONSOLE_FALSE
 HAVE_WINECONSOLE_TRUE
@@ -4271,7 +4277,6 @@ else
 fi
 
   MAINT=$MAINTAINER_MODE_TRUE
-
 
 
 
@@ -12031,12 +12036,6 @@ else
 fi
 
 
-
-$as_echo " /////////////////////////////////////////////////////////////////// "
-$as_echo " //// select tests env ///////////////////////////////////////////// "
-$as_echo " /////////////////////////////////////////////////////////////////// "
-
-
 ac_perl_list_modules="TAP::Parser 0 TAP::Parser::Aggregator 0"
 # Make sure we have perl
 if test -z "$PERL"; then
@@ -12130,13 +12129,331 @@ else
   as_fn_error $? "could not find perl" "$LINENO" 5
 fi
 
+ # this calls valgrind check with args
 
- TS_TESTS_ENVIRONMENT=
- TS_LOG_COMPILER=
- TS_LOG_FLAGS=
- TS_PY_TAP_COMPILER=
- TS_PY_TAP_FLAGS=
- TS_LOG_DRIVER="\$(top_srcdir)/conf/test-driver"
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
+$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
+	# Check whether --enable-valgrind was given.
+if test "${enable_valgrind+set}" = set; then :
+  enableval=$enable_valgrind; enable_valgrind=$enableval
+else
+  enable_valgrind=
+fi
+
+
+	# Check for Valgrind.
+	# Extract the first word of "valgrind", so it can be a program name with args.
+set dummy valgrind; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_VALGRIND+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$VALGRIND"; then
+  ac_cv_prog_VALGRIND="$VALGRIND" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_VALGRIND="valgrind"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+VALGRIND=$ac_cv_prog_VALGRIND
+if test -n "$VALGRIND"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND" >&5
+$as_echo "$VALGRIND" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
+
+		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
+
+fi
+
+
+	 if test "$enable_valgrind" = "yes"; then
+  VALGRIND_ENABLED_TRUE=
+  VALGRIND_ENABLED_FALSE='#'
+else
+  VALGRIND_ENABLED_TRUE='#'
+  VALGRIND_ENABLED_FALSE=
+fi
+
+	VALGRIND_ENABLED=$enable_valgrind
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
+$as_echo "$enable_valgrind" >&6; }
+
+	# Check for Valgrind tools we care about.
+
+
+        # permits use of AM_TESTS_FD_REDIRECT to change suppressions redirections
+
+
+	if test "$VALGRIND" != ""; then :
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool memcheck" >&5
+$as_echo_n "checking for Valgrind tool memcheck... " >&6; }
+if ${ax_cv_valgrind_tool_memcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_memcheck=
+				if `$VALGRIND --tool=memcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_memcheck="memcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_memcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_memcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_memcheck=$ax_cv_valgrind_tool_memcheck
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool helgrind" >&5
+$as_echo_n "checking for Valgrind tool helgrind... " >&6; }
+if ${ax_cv_valgrind_tool_helgrind+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_helgrind=
+				if `$VALGRIND --tool=helgrind --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_helgrind="helgrind"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_helgrind" >&5
+$as_echo "$ax_cv_valgrind_tool_helgrind" >&6; }
+
+			VALGRIND_HAVE_TOOL_helgrind=$ax_cv_valgrind_tool_helgrind
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool drd" >&5
+$as_echo_n "checking for Valgrind tool drd... " >&6; }
+if ${ax_cv_valgrind_tool_drd+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_drd=
+				if `$VALGRIND --tool=drd --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_drd="drd"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_drd" >&5
+$as_echo "$ax_cv_valgrind_tool_drd" >&6; }
+
+			VALGRIND_HAVE_TOOL_drd=$ax_cv_valgrind_tool_drd
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool exp-sgcheck" >&5
+$as_echo_n "checking for Valgrind tool exp-sgcheck... " >&6; }
+if ${ax_cv_valgrind_tool_exp_sgcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_exp_sgcheck=
+				if `$VALGRIND --tool=exp-sgcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_exp_sgcheck="exp-sgcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_exp_sgcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_exp_sgcheck=$ax_cv_valgrind_tool_exp_sgcheck
+
+
+
+fi
+
+
+
+
+VALGRIND_CHECK_RULES='
+# //////////////////////////////////////////////////////////////////////////// #
+# /// Valgrind check  //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# Optional:
+#  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
+#    files to load. (Default: empty)
+#  - VALGRIND_FLAGS: General flags to pass to all Valgrind tools.
+#    (Default: --num-callers=30)
+#  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
+#    memcheck, helgrind, drd, sgcheck). (Default: various)
+
+# Optional variables
+VALGRIND_LIB             ?= /usr/lib64/valgrind
+
+VALGRIND_FLAGS           ?=
+VALGRIND_FLAGS           += --num-callers=30 --trace-children=yes
+
+VALGRIND_memcheck_FLAGS  ?=
+VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
+
+VALGRIND_helgrind_FLAGS  ?=
+VALGRIND_helgrind_FLAGS  += --history-level=approx
+
+VALGRIND_drd_FLAGS       ?=
+VALGRIND_drd_FLAGS       +=
+
+VALGRIND_sgcheck_FLAGS   ?=
+VALGRIND_sgcheck_FLAGS   +=
+
+VALGRIND_SUPPRESSIONS    ?=
+VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
+
+VALGRIND_SUPPRESSIONS_PY ?=
+VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
+                            $(VALGRIND_SUPPRESSIONS) \
+                            $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
+
+
+# Internal use
+valgrind_tools = memcheck helgrind drd sgcheck
+valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(valgrind_tools))) \
+                     $(foreach tst,$(TESTS),$(addprefix $(tst)-valgrind-,$(addsuffix .xml,$(valgrind_tools))))
+
+valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
+
+valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
+valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
+valgrind_drd_flags = --tool=drd $(VALGRIND_drd_FLAGS)
+valgrind_sgcheck_flags = --tool=exp-sgcheck $(VALGRIND_sgcheck_FLAGS)
+
+valgrind_quiet   = $(valgrind_quiet_$(V))
+valgrind_quiet_  = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
+valgrind_quiet_0 = --quiet
+
+# Support running with and without libtool.
+ifneq ($(LIBTOOL),)
+valgrind_lt = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute
+else
+valgrind_lt =
+endif
+
+#
+# Valgrind chain add ons
+#
+
+VALGRIND_TESTS_ENVIRONMENT ?=
+VALGRIND_TESTS_ENVIRONMENT += \
+	VALGRIND=$(VALGRIND) \
+	VALGRIND_LIB=$(VALGRIND_LIB) \
+	G_SLICE=always-malloc,debug-blocks \
+	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
+
+VALGRIND_LOG_COMPILER = \
+	$(valgrind_lt) \
+	$(VALGRIND) --error-exitcode=1 \
+	$(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY) \
+	$(valgrind_$(VALGRIND_TOOL)_flags) \
+	$(VALGRIND_FLAGS) \
+	${TS_VALGRIND_FLAGS}
+
+
+
+.PHONY: check-valgrind check-valgrind-tool
+.PHONY: check-valgrind-suppressions check-valgrind-suppressions-tool
+ifeq ($(VALGRIND_ENABLED),yes)
+
+check-valgrind: all
+	@ \
+	$(foreach tool,$(valgrind_tools), \
+		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
+			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
+		) \
+	)
+
+check-valgrind-tool:
+	@ \
+	$(MAKE) check-TESTS \
+	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(PY_LOG_COMPILER)" \
+	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
+
+
+check-valgrind-suppressions: all
+	@ \
+	$(foreach tool,$(valgrind_tools), \
+		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
+			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
+		) \
+	)
+
+check-valgrind-suppressions-tool:
+	@ \
+	$(MAKE) check-TESTS \
+	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$f-valgrind.supp" \
+	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
+
+else
+
+check-valgrind check-valgrind-tool \
+check-valgrind-suppressions check-valgrind-suppressions-tool:
+	@echo "Need to reconfigure with --enable-valgrind"
+endif
+
+
+
+DISTCHECK_CONFIGURE_FLAGS ?=
+DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
+
+MOSTLYCLEANFILES ?=
+MOSTLYCLEANFILES += $(valgrind_log_files)
+'
+
+
+
+
+
+
+ # selects particular envs for build:host
+
+ TESTS_ENVIRONMENT=
+ LOG_COMPILER=
+ LOG_FLAGS=
+ PY_LOG_COMPILER_TAP=
+ PY_LOG_FLAGS_TAP=
+ LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
 
  abs_srcdir=$(cd ${srcdir}; pwd)
 
@@ -12257,254 +12574,13 @@ fi
 
 
   if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
-  eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}"
-    as_fn_append TS_PY_TAP_FLAGS "--with-tap --tap-stream"
+  eval as_fn_append PY_LOG_COMPILER_TAP "${NOSETESTS}"
+    as_fn_append PY_LOG_FLAGS_TAP "--with-tap --tap-stream"
 else
   eval
- as_fn_append TS_PY_TAP_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+ as_fn_append PY_LOG_COMPILER_TAP "\"sh -c \\\"exit 77\\\"; :\""
 
 fi
-
-
-
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
-$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
-	# Check whether --enable-valgrind was given.
-if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind; enable_valgrind=$enableval
-else
-  enable_valgrind=
-fi
-
-
-	# Check for Valgrind.
-	# Extract the first word of "valgrind", so it can be a program name with args.
-set dummy valgrind; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_VALGRIND+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$VALGRIND"; then
-  ac_cv_prog_VALGRIND="$VALGRIND" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_VALGRIND="valgrind"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-VALGRIND=$ac_cv_prog_VALGRIND
-if test -n "$VALGRIND"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND" >&5
-$as_echo "$VALGRIND" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-
-	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
-
-		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
-
-fi
-
-
-	 if test "$enable_valgrind" = "yes"; then
-  VALGRIND_ENABLED_TRUE=
-  VALGRIND_ENABLED_FALSE='#'
-else
-  VALGRIND_ENABLED_TRUE='#'
-  VALGRIND_ENABLED_FALSE=
-fi
-
-	VALGRIND_ENABLED=$enable_valgrind
-
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
-$as_echo "$enable_valgrind" >&6; }
-
-	# Check for Valgrind tools we care about.
-
-
-	if test "$VALGRIND" != ""; then :
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool memcheck" >&5
-$as_echo_n "checking for Valgrind tool memcheck... " >&6; }
-if ${ax_cv_valgrind_tool_memcheck+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_memcheck=
-				if `$VALGRIND --tool=memcheck --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_memcheck="memcheck"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_memcheck" >&5
-$as_echo "$ax_cv_valgrind_tool_memcheck" >&6; }
-
-			VALGRIND_HAVE_TOOL_memcheck=$ax_cv_valgrind_tool_memcheck
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool helgrind" >&5
-$as_echo_n "checking for Valgrind tool helgrind... " >&6; }
-if ${ax_cv_valgrind_tool_helgrind+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_helgrind=
-				if `$VALGRIND --tool=helgrind --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_helgrind="helgrind"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_helgrind" >&5
-$as_echo "$ax_cv_valgrind_tool_helgrind" >&6; }
-
-			VALGRIND_HAVE_TOOL_helgrind=$ax_cv_valgrind_tool_helgrind
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool drd" >&5
-$as_echo_n "checking for Valgrind tool drd... " >&6; }
-if ${ax_cv_valgrind_tool_drd+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_drd=
-				if `$VALGRIND --tool=drd --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_drd="drd"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_drd" >&5
-$as_echo "$ax_cv_valgrind_tool_drd" >&6; }
-
-			VALGRIND_HAVE_TOOL_drd=$ax_cv_valgrind_tool_drd
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool exp-sgcheck" >&5
-$as_echo_n "checking for Valgrind tool exp-sgcheck... " >&6; }
-if ${ax_cv_valgrind_tool_exp_sgcheck+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_exp_sgcheck=
-				if `$VALGRIND --tool=exp-sgcheck --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_exp_sgcheck="exp-sgcheck"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_exp_sgcheck" >&5
-$as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
-
-			VALGRIND_HAVE_TOOL_exp_sgcheck=$ax_cv_valgrind_tool_exp_sgcheck
-
-
-
-fi
-
-
-
-
-VALGRIND_CHECK_RULES='
-# Valgrind check
-#
-# Optional:
-#  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
-#    files to load. (Default: empty)
-#  - VALGRIND_FLAGS: General flags to pass to all Valgrind tools.
-#    (Default: --num-callers=30)
-#  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
-#    memcheck, helgrind, drd, sgcheck). (Default: various)
-
-# Optional variables
-VALGRIND_SUPPRESSIONS   ?= $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
-VALGRIND_FLAGS          ?= --num-callers=30 --trace-children=yes
-VALGRIND_memcheck_FLAGS ?= --leak-check=full --show-reachable=no
-VALGRIND_helgrind_FLAGS ?= --history-level=approx
-VALGRIND_drd_FLAGS      ?=
-VALGRIND_sgcheck_FLAGS  ?=
-
-# Internal use
-valgrind_tools = memcheck helgrind drd sgcheck
-valgrind_log_files = $(addprefix test-suite-,$(addsuffix .log,$(valgrind_tools)))
-
-valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
-valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
-valgrind_drd_flags = --tool=drd $(VALGRIND_drd_FLAGS)
-valgrind_sgcheck_flags = --tool=exp-sgcheck $(VALGRIND_sgcheck_FLAGS)
-
-valgrind_quiet   = $(valgrind_quiet_$(V))
-valgrind_quiet_  = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
-valgrind_quiet_0 = --quiet
-
-# Support running with and without libtool.
-ifneq ($(LIBTOOL),)
-valgrind_lt = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute
-else
-valgrind_lt =
-endif
-
-#
-# Valgrind chain add ons
-#
-
-VALGRIND_TESTS_ENVIRONMENT = \
-	VALGRIND=$(VALGRIND) \
-	G_SLICE=always-malloc,debug-blocks \
-	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
-
-VALGRIND_LOG_COMPILER = \
-	$(valgrind_lt) \
-	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 \
-	$(valgrind_$(VALGRIND_TOOL)_flags) $(VALGRIND_FLAGS)
-
-
-
-
-
-
-
-DISTCHECK_CONFIGURE_FLAGS ?=
-DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
-
-MOSTLYCLEANFILES ?=
-MOSTLYCLEANFILES += $(valgrind_log_files)
-
-.PHONY: check-valgrind check-valgrind-tool
-'
-
-
 
 
 
@@ -12558,6 +12634,7 @@ fi
 
 fi
    if test "x$HAVE_WINE" = xyes; then :
+
 
 
     case ${host} in #(
@@ -12626,7 +12703,7 @@ fi
 fi
   if test "x$HAVE_WINEBOOT" = xyes; then :
   if ${WINEPREFIX+:} false; then :
-  $(eval "WINEPREFIX=${WINEPREFIX}         WINEARCH=${WINEARCH}" wineboot -f -r)
+  $(eval "WINEPREFIX=${WINEPREFIX}             WINEARCH=${WINEARCH}" wineboot -f -r)
 else
   $(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${WINEARCH}" wineboot -f -i)
 fi
@@ -12849,27 +12926,44 @@ esac
 
 
 
-      as_fn_append TS_TESTS_ENVIRONMENT "MDSPLUS_DIR=${abs_srcdir} "
-      as_fn_append TS_TESTS_ENVIRONMENT "MDS_PATH=${abs_srcdir}/tdi "
-      as_fn_append TS_TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-      as_fn_append TS_TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
-      if test "x$VALGRIND_ENABLED" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
-        as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
-        as_fn_append TS_LOG_COMPILER "--vex-iropt-register-updates=allregs-at-mem-access "
-        as_fn_append TS_LOG_COMPILER "--workaround-gcc296-bugs=yes  "
-        as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
 
+if ${_mds_path+:} false; then :
+
+else
+  _mds_path=
 fi
-      as_fn_append TS_LOG_COMPILER "wine "
+for _i in "${abs_srcdir}/tdi"; do
+ as_fn_append _mds_path "\$(shell winepath -w $_i);";
+done
+
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH=${_mds_path} "
+      as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+      as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
+      as_fn_append TESTS_ENVIRONMENT "VALGRIND_LIB=/usr/lib64/valgrind "
+      as_fn_append LOG_COMPILER "wine "
+
+ # WINE Valgrind tuning ..
+ # see: http://wiki.winehq.org/WineAndValgrind
+ #
+ # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
+      as_fn_append VALGRIND_FLAGS "--vex-iropt-register-updates=allregs-at-mem-access "
+ #
+ # quiets warnings about accesses slightly below the stack pointer. This is due
+ # to a known but benign piece of code in Wine's ntdll
+ # (see Bug #26263 for details)
+      as_fn_append VALGRIND_memcheck_FLAGS "--workaround-gcc296-bugs=yes  "
+
 
 else
 
- as_fn_append TS_LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+ as_fn_append LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
 
 fi
 
- as_fn_append TS_PY_TAP_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+ as_fn_append PY_LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+
+
+ as_fn_append PY_LOG_COMPILER_TAP "\"sh -c \\\"exit 77\\\"; :\""
 
   ;; #(
   #
@@ -12878,31 +12972,20 @@ fi
  *linux*:*linux*) :
 
    $as_echo "Set tests environment for linux->linux"
-   as_fn_append TS_TESTS_ENVIRONMENT "MDSPLUS_DIR=${abs_srcdir} "
-   as_fn_append TS_TESTS_ENVIRONMENT "MDS_PATH=${abs_srcdir}/tdi "
-   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$VALGRIND_ENABLED" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
-              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
-              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
-
-fi
+   as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
   ;; #(
   #
  # OTHER
  #
  *) :
 
-   $as_echo "Set tests environment"
-   as_fn_append TS_TESTS_ENVIRONMENT "MDSPLUS_DIR=${abs_srcdir} "
-   as_fn_append TS_TESTS_ENVIRONMENT "MDS_PATH=${abs_srcdir}/tdi "
-   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$VALGRIND_ENABLED" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
-              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
-              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
-
-fi
+   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tests may not be supported for this host!\"" >&5
+$as_echo "$as_me: WARNING: \"Tests may not be supported for this host!\"" >&2;}
+   as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
   ;; #(
   *) :
      ;;
@@ -12913,6 +12996,7 @@ esac
 
 
 
+ ## test chain substitution ##
 
 
 
@@ -12920,7 +13004,10 @@ esac
 
 
 
-# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
+
+
+
+
 
 
 

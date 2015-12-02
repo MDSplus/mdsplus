@@ -13,9 +13,6 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
-dnl TS_TEST()
-dnl exit 0;
-
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
@@ -991,32 +988,28 @@ AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
 AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
 AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
 
-
-AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
-AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
-AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
-
-
 AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,,
      AC_MSG_WARN(No Perl tap module found))
 
-TS_SELECT
+ # this calls valgrind check with args
+ AX_VALGRIND_CHECK
+
+ # selects particular envs for build:host
+ TS_SELECT
  
- AC_SUBST(TS_TESTS_ENVIRONMENT)
- AC_SUBST(TS_LOG_COMPILER)
- AC_SUBST(TS_LOG_DRIVER)
- AC_SUBST(TS_PY_TAP_COMPILER)
- AC_SUBST(TS_PY_TAP_FLAGS)
+ ## test chain substitution ##
+ AC_SUBST(TESTS_ENVIRONMENT)
+ AC_SUBST(LOG_COMPILER)
+ AC_SUBST(LOG_DRIVER)
+ AC_SUBST(PY_LOG_COMPILER)
+ AC_SUBST(PY_LOG_FLAGS)
+ AC_SUBST(PY_LOG_COMPILER_TAP)
+ AC_SUBST(PY_LOG_FLAGS_TAP)
+ AC_SUBST(PY_LOG_COMPILER_XML)
+ AC_SUBST(PY_LOG_FLAGS_XML)
 
-dnl AC_MSG_NOTICE(********************************)
-dnl AC_MSG_NOTICE(${TS_TESTS_ENVIRONMENT})
-dnl AC_MSG_NOTICE(${LOG_DRIVER})
-dnl AC_MSG_NOTICE(${LOG_COMPILER})
-dnl AC_MSG_NOTICE(********************************)
-
-dnl  wpath_bin = $  
-# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
-
+ AC_SUBST(VALGRIND_FLAGS)
+ AC_SUBST(VALGRIND_memcheck_FLAGS)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##

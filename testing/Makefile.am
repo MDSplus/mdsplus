@@ -57,25 +57,30 @@ build_tests: $(MdsTestShr)
 	status=0;
 	for subdir in $$list; do echo "Making in $$subdir";
 	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1));
-	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)";	 
-	done;
-	echo
-	echo " COMPONENTS WITH ERRORS FOUND: $${status} "
-	echo
-	echo " ------- SAVING TAP SUITES into ${TEST_OUTDIR}: "
-	$(am__cd) ${top_builddir};
-	$(MKDIR_P) ${TEST_OUTDIR};
-	for subdir in $$list; do 
-	 echo "$(INSTALL) $${subdir}/$(TEST_SUITE_TAP) ${TEST_OUTDIR}/$$(echo $${subdir} | sed 's|/|_|g').tap;";
-	 $(INSTALL) $${subdir}/$(TEST_SUITE_TAP) ${TEST_OUTDIR}/$$(echo $${subdir} | sed 's|/|_|g').tap;
+	 taps="$${taps},$${subdir}/$(TEST_SUITE_TAP)";	 
 	done;
 	echo " -------- CUT HERE for Jenkins inclusion --------------- "
-	for i in $${taps}; do
-	echo "$$i"
-	done;
+	echo $${taps};
+	echo $${taps} > ${TEST_OUTDIR}/list_tap_results.txt;
 	echo " ------------------------------------------------------- "
 	## exit $${status};
 	
+.ONESHELL:
+build_valgrind_tests:
+	@
+	list='$(TEST_SUBDIRS)';
+	status=0;
+	xml_results=;
+	for subdir in $$list; do echo "Making in $$subdir";
+	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) check-valgrind || (( status |= 1));
+	 xml_results="$${xml_results},$${subdir}/*-valgrind-*.xml";
+	done;
+	echo " -------- CUT HERE for Jenkins inclusion --------------- "
+	echo $${xml_results};
+	echo $${xml_results} > ${TEST_OUTDIR}/list_valgrind_xml_results.txt;
+	echo " ------------------------------------------------------- "
+	## exit $${status};	
+
 
 .ONESHELL:
 clean_tests: 

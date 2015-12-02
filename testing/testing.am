@@ -1,36 +1,17 @@
 
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS =  -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
 
-PY_LOG_COMPILER = $(PYTHON)
-PY_LOG_FLAGS    = -v
 
 
-
-
-
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-
-# //////////////////////////////////////////////////////////////////////////// #
 # ///  select test form env variable  //////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 
 TEST_BUILDTYPE = local
 
@@ -39,26 +20,6 @@ TEST_BUILDTYPE = local
 tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
-
-
-define tests_config_dump
-echo 
-echo " ### CONFIGURATION DUMP: ###"
-echo 
-echo "  # test-suite related:";
-echo "  TEST_BUILDTYPE=${TEST_BUILDTYPE}";
-echo 
-echo "  # flags:";
-echo "  CFLAGS=\"${CFLAGS}\"";
-echo "  CXXFLAGS=\"${CXXFLAGS}\"";
-echo "  CPPFLAGS=\"${CPPFLAGS}\"";
-echo "  LDFLAGS=\"${LDFLAGS}\"";
-echo "  LIBS=\"${LIBS}\"";
-echo "  AM_LDFLAGS=\"${AM_LDFLAGS}\"";
-echo "  AM_LIBS=\"${AM_LIBS}\"";
-echo "  LDADD=\"${LDADD}\"";
-echo 
-endef
 
 tests:
 	echo "Making tests ... "
@@ -82,13 +43,14 @@ tests:
 # ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-TESTS_ENVIRONMENT   = @TS_TESTS_ENVIRONMENT@
-LOG_COMPILER        = @TS_LOG_COMPILER@
-TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
-TAP_PY_LOG_FLAGS    = @TS_PY_TAP_FLAGS@
+LOG_DRIVER          ?= @LOG_DRIVER@
+TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
+LOG_COMPILER        ?= @LOG_COMPILER@
 
-# use default ...
-# LOG_DRIVER        = @TS_LOG_DRIVER@
+PY_LOG_COMPILER     ?= $(PYTHON)
+PY_LOG_FLAGS        ?= -v
+PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
+PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
 
 
@@ -127,8 +89,8 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	
 	## run tests	
 	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	 PY_LOG_COMPILER=$(TAP_PY_LOG_COMPILER) \
-	 PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+	 PY_LOG_COMPILER=$(PY_LOG_COMPILER_TAP) \
+	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)";
 	 
 	## collate test-build.tap and 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
@@ -140,7 +102,7 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 ## TODO: add log output
-$(TEST_SUITE_LOG):
+## $(TEST_SUITE_LOG):
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##

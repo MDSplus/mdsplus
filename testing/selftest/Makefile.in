@@ -14,6 +14,11 @@
 
 @SET_MAKE@
 
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -420,7 +425,6 @@ RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
 am__EXEEXT_2 =
 TEST_SUITE_LOG = test-suite.log
-LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
 LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
   case '$@' in \
@@ -562,6 +566,8 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LOG_COMPILER = @LOG_COMPILER@
+LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
@@ -604,6 +610,12 @@ PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
+PY_LOG_COMPILER = @PY_LOG_COMPILER@
+PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
+PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@
+PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
+PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -627,21 +639,19 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
 THREAD = @THREAD@
-TS_LOG_COMPILER = @TS_LOG_COMPILER@
-TS_LOG_DRIVER = @TS_LOG_DRIVER@
-TS_PY_TAP_COMPILER = @TS_PY_TAP_COMPILER@
-TS_PY_TAP_FLAGS = @TS_PY_TAP_FLAGS@
-TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
 VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
 VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
 VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
+VALGRIND_memcheck_FLAGS = @VALGRIND_memcheck_FLAGS@
 VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
@@ -720,42 +730,9 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-PY_LOG_COMPILER = $(PYTHON)
-PY_LOG_FLAGS = -v
 
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
-
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-# //////////////////////////////////////////////////////////////////////////// #
 # ///  select test form env variable  //////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 TEST_BUILDTYPE = local
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
-LOG_COMPILER = @TS_LOG_COMPILER@
-TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
-TAP_PY_LOG_FLAGS = @TS_PY_TAP_FLAGS@
-
-# use default ...
-# LOG_DRIVER        = @TS_LOG_DRIVER@
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -1037,6 +1014,112 @@ distclean-tags:
 am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
 am--force-recheck:
 	@:
+
+$(TEST_SUITE_LOG): $(TEST_LOGS)
+	@$(am__set_TESTS_bases); \
+	am__f_ok () { test -f "$$1" && test -r "$$1"; }; \
+	redo_bases=`for i in $$bases; do \
+	              am__f_ok $$i.trs && am__f_ok $$i.log || echo $$i; \
+	            done`; \
+	if test -n "$$redo_bases"; then \
+	  redo_logs=`for i in $$redo_bases; do echo $$i.log; done`; \
+	  redo_results=`for i in $$redo_bases; do echo $$i.trs; done`; \
+	  if $(am__make_dryrun); then :; else \
+	    rm -f $$redo_logs && rm -f $$redo_results || exit 1; \
+	  fi; \
+	fi; \
+	if test -n "$$am__remaking_logs"; then \
+	  echo "fatal: making $(TEST_SUITE_LOG): possible infinite" \
+	       "recursion detected" >&2; \
+	elif test -n "$$redo_logs"; then \
+	  am__remaking_logs=yes $(MAKE) $(AM_MAKEFLAGS) $$redo_logs; \
+	fi; \
+	if $(am__make_dryrun); then :; else \
+	  st=0;  \
+	  errmsg="fatal: making $(TEST_SUITE_LOG): failed to create"; \
+	  for i in $$redo_bases; do \
+	    test -f $$i.trs && test -r $$i.trs \
+	      || { echo "$$errmsg $$i.trs" >&2; st=1; }; \
+	    test -f $$i.log && test -r $$i.log \
+	      || { echo "$$errmsg $$i.log" >&2; st=1; }; \
+	  done; \
+	  test $$st -eq 0 || exit 1; \
+	fi
+	@$(am__sh_e_setup); $(am__tty_colors); $(am__set_TESTS_bases); \
+	ws='[ 	]'; \
+	results=`for b in $$bases; do echo $$b.trs; done`; \
+	test -n "$$results" || results=/dev/null; \
+	all=`  grep "^$$ws*:test-result:"           $$results | wc -l`; \
+	pass=` grep "^$$ws*:test-result:$$ws*PASS"  $$results | wc -l`; \
+	fail=` grep "^$$ws*:test-result:$$ws*FAIL"  $$results | wc -l`; \
+	skip=` grep "^$$ws*:test-result:$$ws*SKIP"  $$results | wc -l`; \
+	xfail=`grep "^$$ws*:test-result:$$ws*XFAIL" $$results | wc -l`; \
+	xpass=`grep "^$$ws*:test-result:$$ws*XPASS" $$results | wc -l`; \
+	error=`grep "^$$ws*:test-result:$$ws*ERROR" $$results | wc -l`; \
+	if test `expr $$fail + $$xpass + $$error` -eq 0; then \
+	  success=true; \
+	else \
+	  success=false; \
+	fi; \
+	br='==================='; br=$$br$$br$$br$$br; \
+	result_count () \
+	{ \
+	    if test x"$$1" = x"--maybe-color"; then \
+	      maybe_colorize=yes; \
+	    elif test x"$$1" = x"--no-color"; then \
+	      maybe_colorize=no; \
+	    else \
+	      echo "$@: invalid 'result_count' usage" >&2; exit 4; \
+	    fi; \
+	    shift; \
+	    desc=$$1 count=$$2; \
+	    if test $$maybe_colorize = yes && test $$count -gt 0; then \
+	      color_start=$$3 color_end=$$std; \
+	    else \
+	      color_start= color_end=; \
+	    fi; \
+	    echo "$${color_start}# $$desc $$count$${color_end}"; \
+	}; \
+	create_testsuite_report () \
+	{ \
+	  result_count $$1 "TOTAL:" $$all   "$$brg"; \
+	  result_count $$1 "PASS: " $$pass  "$$grn"; \
+	  result_count $$1 "SKIP: " $$skip  "$$blu"; \
+	  result_count $$1 "XFAIL:" $$xfail "$$lgn"; \
+	  result_count $$1 "FAIL: " $$fail  "$$red"; \
+	  result_count $$1 "XPASS:" $$xpass "$$red"; \
+	  result_count $$1 "ERROR:" $$error "$$mgn"; \
+	}; \
+	{								\
+	  echo "$(PACKAGE_STRING): $(subdir)/$(TEST_SUITE_LOG)" |	\
+	    $(am__rst_title);						\
+	  create_testsuite_report --no-color;				\
+	  echo;								\
+	  echo ".. contents:: :depth: 2";				\
+	  echo;								\
+	  for b in $$bases; do echo $$b; done				\
+	    | $(am__create_global_log);					\
+	} >$(TEST_SUITE_LOG).tmp || exit 1;				\
+	mv $(TEST_SUITE_LOG).tmp $(TEST_SUITE_LOG);			\
+	if $$success; then						\
+	  col="$$grn";							\
+	 else								\
+	  col="$$red";							\
+	  test x"$$VERBOSE" = x || cat $(TEST_SUITE_LOG);		\
+	fi;								\
+	echo "$${col}$$br$${std}"; 					\
+	echo "$${col}Testsuite summary for $(PACKAGE_STRING)$${std}";	\
+	echo "$${col}$$br$${std}"; 					\
+	create_testsuite_report --maybe-color;				\
+	echo "$$col$$br$$std";						\
+	if $$success; then :; else					\
+	  echo "$${col}See $(subdir)/$(TEST_SUITE_LOG)$${std}";		\
+	  if test -n "$(PACKAGE_BUGREPORT)"; then			\
+	    echo "$${col}Please report to $(PACKAGE_BUGREPORT)$${std}";	\
+	  fi;								\
+	  echo "$$col$$br$$std";					\
+	fi;								\
+	$$success || exit 1
 
 check-TESTS:
 	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
@@ -1335,25 +1418,6 @@ tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
 
-define tests_config_dump
-echo 
-echo " ### CONFIGURATION DUMP: ###"
-echo 
-echo "  # test-suite related:";
-echo "  TEST_BUILDTYPE=${TEST_BUILDTYPE}";
-echo 
-echo "  # flags:";
-echo "  CFLAGS=\"${CFLAGS}\"";
-echo "  CXXFLAGS=\"${CXXFLAGS}\"";
-echo "  CPPFLAGS=\"${CPPFLAGS}\"";
-echo "  LDFLAGS=\"${LDFLAGS}\"";
-echo "  LIBS=\"${LIBS}\"";
-echo "  AM_LDFLAGS=\"${AM_LDFLAGS}\"";
-echo "  AM_LIBS=\"${AM_LIBS}\"";
-echo "  LDADD=\"${LDADD}\"";
-echo 
-endef
-
 tests:
 	echo "Making tests ... "
 	if [ -z ${TEST_FORMAT} ] ; then
@@ -1367,6 +1431,19 @@ tests:
 # //////////////////////////////////////////////////////////////////////////// #
 
 @VALGRIND_CHECK_RULES@ 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+LOG_DRIVER          ?= @LOG_DRIVER@
+TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
+LOG_COMPILER        ?= @LOG_COMPILER@
+
+PY_LOG_COMPILER     ?= $(PYTHON)
+PY_LOG_FLAGS        ?= -v
+PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
+PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
@@ -1390,13 +1467,11 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
 
 	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	 PY_LOG_COMPILER=$(TAP_PY_LOG_COMPILER) \
-	 PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
+	 PY_LOG_COMPILER=$(PY_LOG_COMPILER_TAP) \
+	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)";
 
 	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
 	  || exit 1;
-
-$(TEST_SUITE_LOG):
 
 $(TEST_SUITE_XML):
 
@@ -1424,8 +1499,8 @@ print:
 	echo "--------------------------------------------------------------";
 	$(tests_config_dump);
 
-# wineconsole:
-#	$(shell ${TESTS_ENVIRONMENT} wineconsole )
+wineconsole:
+	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 all-local: $(TESTS) libMdsTestDummy.so
 clean-local: clean-local-tests                    

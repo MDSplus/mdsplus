@@ -79,6 +79,11 @@ docs:
 tests:
 	$(MAKE) -C testing all clean_tests build_tests
 
+.PHONY: tests-valgrind
+tests-valgrind:
+	$(MAKE) -C testing all clean_tests build_valgrind_tests
+
+
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
 .PHONY: clean

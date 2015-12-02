@@ -44,7 +44,8 @@ TESTS = \
         MdsEventSuppression \
         MdsEventTest \
         MdsConnectionTest \
-        MdsExpressionCompileTest
+        MdsExpressionCompileTest \
+        MdsCompoundRefCountTest
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression

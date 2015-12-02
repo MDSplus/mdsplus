@@ -28,7 +28,7 @@ make clean > /dev/null
 env LANG=en_US.UTF-8 make
 
 echo " --- MAKING TESTS 64bit --- "
-make -k tests TEST_OUTDIR=/test_results/tap64 
+make -k tests
 
 make install
 make clean >/dev/null;
@@ -55,7 +55,7 @@ else
 fi
 
 echo " --- MAKING TESTS 32bit --- "
-make -k tests TEST_OUTDIR=/test_results/tap32
+make -k tests
 
 make install
 make clean >/dev/null;
@@ -78,11 +78,17 @@ then
               --bindir=/dbgbuildroot/usr/local/mdsplus/bin64 \
               --libdir=/dbgbuildroot/usr/local/mdsplus/lib64 \
               --host=x86-64-linux \
-              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FFLAGS="-g -O0"
+              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" CPPFLAGS="-g -O0" CXXFLAGS="-g -O0" FFLAGS="-g -O0" \
+              --enable-valgrind
     make clean > /dev/null
     env LANG=en_US.UTF-8 make
+    
+    echo " --- MAKING VALGRIND TESTS 64bit --- "
+    make -k tests-valgrind
+
     make install
 fi
+
 
 if (( "$#" ))
 then
