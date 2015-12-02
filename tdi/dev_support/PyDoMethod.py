@@ -1,10 +1,9 @@
-from MDSplus import StringArray, Int32
+from MDSplus import StringArray
 from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
-    top = n.conglomerate_nids[0]
-    c = top.record
+    c = n.conglomerate_nids[0].record
     q = c.qualifiers
     model = str(c.model)
     method = str(method)
@@ -15,7 +14,7 @@ def PyDoMethod(n,method,*args):
         exec(str(q)) in globals()
     if not model in globals():
         stderr.write("Python device implementation not found for %s after doing %s" % (model,str(q)))
-        return DevPYDEVICE_NOT_FOUND.status  # Device not found
+        return DevPYDEVICE_NOT_FOUND.status
     device = globals()[model](n)
     try:
         try:
@@ -29,11 +28,11 @@ def PyDoMethod(n,method,*args):
             print('No argument has been provided as it is probably not required by the method.')
             print('MDSplus does not require device methods to accept an argument anymore.')
             status = methodobj(None)
-    except Exception:
-        stderr.write("Python error in %s.%s:\n%s\n" % (model,method,repr(exc_info())))
+    except:
+        exc = exc_info()[1]
+        stderr.write("Python error in %s.%s:\n%s\n" % (model,method,repr(exc)))
         if hasattr(exc,'status'):
             status = exc.status
         else:
             status = 0
     return status
-
