@@ -1,4 +1,68 @@
-commit e31b3944ec9886a9847cc1fbae7bf13968b7e857 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 1681b4c56982b27f44f17bc6cf8460c691cf010e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: dad7e6e 07fb206
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Dec 1 20:49:56 2015 +0100
+
+    Merge pull request #234 from zack-vii/aa_python
+    
+    python added alternative for data like get for dict.
+    since it only adds functionality there is no reason not to merge it
+
+commit 07fb206ab20a5ef8f00995624c57a649f3200796
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 12:06:26 2015 +0100
+
+    allow alternative for data()
+    
+    - node.data(<value>) or node.getData(<value>)
+    returns <value> on  _Exceptions.TreeNODATA
+
+commit dad7e6ecebe236f5756beb5117fc4684d4f6feb7
+Merge: 30d922f 2b9d1f3
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Dec 1 19:38:49 2015 +0100
+
+    Merge pull request #245 from zack-vii/aa_char_const_warning
+    
+    char const warning - no syntax error and not changes content wise
+
+commit 2b9d1f311b1813d554bbb34860ac0fc99fbfd6c0
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 10:06:35 2015 +0100
+
+    commented unused lines
+    
+    errorMessage is not used
+
+commit f37ee927a31062575c2a1eba4d4131b13434f84f
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 02:07:28 2015 +0100
+
+    replace malloc+strcpy with strdup
+    
+    these must be char * because of strcpy
+
+commit 93c8634376bea7f0ede1e4cc01a3489977e6ca96
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 01:07:29 2015 +0100
+
+    char const * warning mdsdataobjectswrp.cpp
+
+commit 83c3cb1f8d48b410847befb05b68b0066ebbf92f
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 00:44:06 2015 +0100
+
+    char const * warning
+    
+    char * = <constant string> should be char const * to avoid Warning
+
+commit 30d922f52c2426a7ba64ad0fdee31b84942f3f84 (tag: refs/tags/alpha_release-7-0-188)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 30 23:37:53 2015 -0500
+
+    New release ---- alpha_release-7-0-188
+
+commit e31b3944ec9886a9847cc1fbae7bf13968b7e857
 Merge: 5ab984a fcff9cc
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Tue Dec 1 00:50:57 2015 +0100
