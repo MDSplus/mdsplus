@@ -13,7 +13,7 @@ def PyDoMethod(n,method,*args):
     else:
         exec(str(q)) in globals()
     if not model in globals():
-        stderr.write("Python device implementation not found for %s after doing %s" % (model,str(q)))
+        stderr.write("Python device implementation not found for %s after doing %s\n\n" % (model,str(q)))
         return [DevPYDEVICE_NOT_FOUND.status,None]
     try:
         device = globals()[model](n)
@@ -26,11 +26,11 @@ def PyDoMethod(n,method,*args):
         except TypeError:
             print('Your device method %s.%s requires at least one argument.' % (model,method))
             print('No argument has been provided as it is probably not required by the method.')
-            print('MDSplus does not require device methods to accept an argument anymore.')
+            print('MDSplus does not require device methods to accept an argument anymore.\n')
             return [1,methodobj(None)]
     except:
         exc = exc_info()[1]
-        stderr.write("Python error in %s.%s:\n%s\n" % (model,method,repr(exc)))
+        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,repr(exc)))
         if hasattr(exc,'status'):
             return [exc.status,None]
         else:
