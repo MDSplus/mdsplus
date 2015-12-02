@@ -206,6 +206,12 @@ class DevINV_SETUP(DevException):
   msgnam="INV_SETUP"
 
 
+class DevPYDEVICE_NOT_FOUND(DevException):
+  status=662470914
+  message="Python device class not found."
+  msgnam="PYDEVICE_NOT_FOUND"
+
+
 class ReticonException(MDSplusException):
   fac="Reticon"
 
