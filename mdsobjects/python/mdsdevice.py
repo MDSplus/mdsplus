@@ -129,10 +129,9 @@ class Device(_treenode.TreeNode):
             self.head=node.nid
         super(Device,self).__init__(node.nid,node.tree)
 
-    def ORIGINAL_PART_NAME(self,arg):
+    def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @param arg: Not used. Placeholder for do method argument
         @type arg: Use None
         @return: Part name of this node
         @rtype: str

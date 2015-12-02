@@ -169,7 +169,11 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	    struct descriptor *statd = ((struct descriptor **)list->pointer)[0];
 	    struct descriptor *ansd = ((struct descriptor **)list->pointer)[1];
 	    if (statd && statd->pointer && statd->dtype == DTYPE_L && ansd) {
-	      MdsCopyDxXd(ansd,ans_xd);
+	      if (ans_xd->class == CLASS_XD) {
+		MdsCopyDxXd(ansd,ans_xd);
+	      } else {
+		StrCopyDx(ans_xd,ansd);
+	      }
 	      status = *(int *)statd->pointer;
 	    } else {
 	      status = 0;
