@@ -412,7 +412,7 @@ class TreeNode(_data.Data):
             if not (status & 1):
                 raise TreeNodeException(_mdsshr.MdsGetMsg(status,"Error dispatching node"))
 
-    def doMethod(self,method,arg=None):
+    def doMethod(self,method,*args):
         """Execute method on conglomerate element
         @param method: method name to perform
         @type method: str
@@ -423,10 +423,9 @@ class TreeNode(_data.Data):
         _tree.Tree.lock()
         try:
             self.restoreContext()
-            _treeshr.TreeDoMethod(self,str(method),arg)
+            return _treeshr.TreeDoMethod(self,str(method),*args)
         finally:
             _tree.Tree.unlock()
-        return
 
     def getBrother(self):
         """Return sibling of this node

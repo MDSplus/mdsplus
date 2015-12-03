@@ -100,7 +100,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   {0, NciEND_OF_LIST, 0, 0}
   };
   void (*addr) ();
-  static void (*TdiExecute) () = 0;
+  static int (*TdiExecute) () = 0;
   STATIC_CONSTANT DESCRIPTOR(close, "$)");
   STATIC_CONSTANT DESCRIPTOR(arg, "$,");
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
@@ -155,6 +155,8 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       if (status & 1) {
 	EMPTYXD(list_xd);
 	struct descriptor_xd *ans_xd=arglist[nargs];
+	DESCRIPTOR_LONG(stat_d,&status);
+	static DESCRIPTOR(dollar_d,"$");
 	arglist[nargs]=&list_xd;
 	for (i = nargs; i > 0; i--)
 	  arglist[i + 1] = arglist[i];
@@ -168,19 +170,16 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  if (list && list->dtype == DTYPE_LIST && list->arsize == (sizeof(void *)*2)) {
 	    struct descriptor *statd = ((struct descriptor **)list->pointer)[0];
 	    struct descriptor *ansd = ((struct descriptor **)list->pointer)[1];
-	    if (statd && statd->pointer && statd->dtype == DTYPE_L && ansd) {
-	      if (ans_xd->class == CLASS_XD) {
-		MdsCopyDxXd(ansd,ans_xd);
-	      } else {
-		StrCopyDx(ans_xd,ansd);
-	      }
-	      status = *(int *)statd->pointer;
+	    if (ansd) {
+	      (*TdiExecute)(&dollar_d, ansd, ans_xd, MdsEND_ARG);
 	    } else {
-	      status = 0;
+	      (*TdiExecute)(&dollar_d,statd,ans_xd, MdsEND_ARG);
 	    }
 	  }
-	  else
+	  else {
 	    status = 0;
+	    (*TdiExecute)(&dollar_d,&stat_d,ans_xd);
+	  }
 	  MdsFree1Dx(&list_xd,0);
 	}
       }

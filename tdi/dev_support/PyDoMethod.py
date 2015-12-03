@@ -1,4 +1,4 @@
-from MDSplus import StringArray
+from MDSplus import StringArray,Int32
 from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND
 from sys import stderr,exc_info
 
@@ -22,16 +22,17 @@ def PyDoMethod(n,method,*args):
         except AttributeError:
             return [TreeNOMETHOD.status,None]
         try:
-            return [1,methodobj(*args)]
+            return [Int32(1),methodobj(*args)]
         except TypeError:
             print('Your device method %s.%s requires at least one argument.' % (model,method))
             print('No argument has been provided as it is probably not required by the method.')
             print('MDSplus does not require device methods to accept an argument anymore.\n')
-            return [1,methodobj(None)]
+            return [Int32(1),methodobj(None)]
     except:
         exc = exc_info()[1]
-        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,repr(exc)))
+        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
+        
         if hasattr(exc,'status'):
             return [exc.status,None]
         else:
-            return [0,None]
+            return [Int32(0),None]

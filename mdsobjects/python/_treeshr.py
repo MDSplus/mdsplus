@@ -173,11 +173,17 @@ def TreeSetTimeContext(begin,end,delta):
     if not (status & 1):
         raise _Exceptions.statusToException(status)
 
-def TreeDoMethod(n,method,arg=None):
+def TreeDoMethod(n,method,*args):
     """Do a method of an MDSplus device. Accepts path, TreeNode or integer and the value"""
-    status=__TreeDoMethod(n.tree.ctx,_C.pointer(descriptor(n)),_C.pointer(descriptor(method)),_C.pointer(descriptor(arg)),0xffffffff)
+    arglist=[n.tree.ctx,_C.pointer(descriptor(n)),_C.pointer(descriptor(method))]
+    ans_d=descriptor_xd()
+    for arg in args:
+        arglist.append(_C.pointer(descriptor(arg)))
+    arglist.append(_C.pointer(ans_d))
+    arglist.append(_C.c_void_p(0xffffffff))
+    status=__TreeDoMethod(*arglist)
     if (status & 1):
-        return status
+        return ans_d.value
     else:
         raise _Exceptions.statusToException(status)
 
@@ -655,7 +661,6 @@ TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
 __TreeDeletePulseFile=__TreeShr._TreeDeletePulseFile
 __TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32]
 __TreeDoMethod=__TreeShr._TreeDoMethod
-__TreeDoMethod.argtypes=[_C.c_void_p,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int32]
 __TreeGetRecord=__TreeShr._TreeGetRecord
 __TreeGetRecord.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor_xd)]
 __TreePutRecord=__TreeShr._TreePutRecord
