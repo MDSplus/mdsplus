@@ -382,23 +382,27 @@ class CYGNET4K(Device):
                 print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
             iID = c_int(self.id)
             while (not self.stopReq):
-                sleep(self.period-(time() % self.period));  # wait remaining period unit self.period
-                currTime = int(int(time()/self.period+.1)*self.period*1000);  # currTime in steps of self.period
-                try:
-                    if self.shot==0:
-                        if Tree.getCurrent(self.tree) != tree.shot:
-                            tree = Tree(self.tree, self.shot)
-                    if self.pcb is not None:
-                        pcbTemp = CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.
-                        tree.getNode(self.pcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
-                    if self.cmos is not None:
-                        cmosTemp = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
-                        tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
-                    if CYGNET4K.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
-                except Exception as exc:
-                    print(exc)
-                    print('failure during temperature readout')
-                sleep(0.01)
+                timeTillNextMeasurement = self.period-(time() % self.period)
+                if timeTillNextMeasurement>0.6:
+                    sleep(.5)  # listen to stopReq
+                else:
+                    sleep(timeTillNextMeasurement);  # wait remaining period unit self.period
+                    currTime = int(int(time()/self.period+.1)*self.period*1000);  # currTime in steps of self.period
+                    try:
+                        if self.shot==0:
+                            if Tree.getCurrent(self.tree) != tree.shot:
+                                tree = Tree(self.tree, self.shot)
+                        if self.pcb is not None:
+                            pcbTemp = CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.
+                            tree.getNode(self.pcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
+                        if self.cmos is not None:
+                            cmosTemp = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
+                            tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
+                        if CYGNET4K.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
+                    except Exception as exc:
+                        print(exc)
+                        print('failure during temperature readout')
+                    sleep(0.01)
             print('done')
 
         def stop(self):
