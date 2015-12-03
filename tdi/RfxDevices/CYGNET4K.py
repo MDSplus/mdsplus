@@ -205,6 +205,7 @@ class CYGNET4K(Device):
         if not CYGNET4K.isInitialized.get(idx,False):
             print('Device not initialized: Run init first.')
             raise mdsExceptions.TclFAILED_ESSENTIAL
+        self.frames.deleteData()  # checks if we can write
         self.worker = self.AsynchStore()
         self.worker.configure(self, idx)
         self.saveWorker()
