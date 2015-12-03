@@ -1141,6 +1141,7 @@ uninstall-am:
 
 
 include @top_builddir@/Makefile.inc
+TEST_FORMAT    ?= tap
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
@@ -1148,12 +1149,8 @@ xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
 
 tests:
-	echo "Making tests ... "
-	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) tap;
-	else
-	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
-	fi
+	@echo "Making tests ... "; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
@@ -1191,15 +1188,19 @@ $(TEST_BUILD_TAP):
 	done; \
 	echo "1..$${count}" >> $@;
 
+.PHONY: $(TEST_SUITE_TAP)
 .ONESHELL:
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap";
 
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
+	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS  \
 	 PY_LOG_COMPILER=$(PY_LOG_COMPILER_TAP) \
 	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)";
 
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
+	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+	else suite="$@"; \
+	fi; \
+	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
 	  || exit 1;
 
 $(TEST_SUITE_XML):

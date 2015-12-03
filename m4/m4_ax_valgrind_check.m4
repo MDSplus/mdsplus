@@ -190,7 +190,7 @@ VALGRIND_LOG_COMPILER = \
 .PHONY: check-valgrind-suppressions check-valgrind-suppressions-tool
 ifeq ($(VALGRIND_ENABLED),yes)
 
-check-valgrind: all
+check-valgrind:
 	@ \
 	$(foreach tool,$(valgrind_tools), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
@@ -200,14 +200,14 @@ check-valgrind: all
 
 check-valgrind-tool:
 	@ \
-	$(MAKE) check-TESTS \
+	$(MAKE) tests \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(PY_LOG_COMPILER)" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 
-check-valgrind-suppressions: all
+check-valgrind-suppressions:
 	@ \
 	$(foreach tool,$(valgrind_tools), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
@@ -217,7 +217,7 @@ check-valgrind-suppressions: all
 
 check-valgrind-suppressions-tool:
 	@ \
-	$(MAKE) check-TESTS \
+	$(MAKE) tests \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
