@@ -73,7 +73,7 @@ class ZELOS2150GV(Device):
         status = ZELOS2150GV.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
         if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         if self.device.frame_sync.data() == 'EXTERNAL':
           isExternal = 1
@@ -170,7 +170,7 @@ class ZELOS2150GV(Device):
         #close device and remove from info
         ZELOS2150GV.kappaLib.kappaClose(self.device.handle)
         self.device.removeInfo()
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
       def stop(self):
@@ -213,13 +213,13 @@ class ZELOS2150GV(Device):
           name = self.name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         self.handle = c_void_p(0)
         status = ZELOS2150GV.kappaLib.kappaOpen(c_char_p(name), byref(self.handle))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
       return
 
 ###remove info###
@@ -239,7 +239,7 @@ class ZELOS2150GV(Device):
       status = ZELOS2150GV.kappaLib.kappaSetColorCoding(self.handle, c_int(6))   #Y14
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Exposure	Mode
       if self.frame_sync.data() == 'EXTERNAL':
@@ -249,7 +249,7 @@ class ZELOS2150GV(Device):
 
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Mode')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Exposure
       autoExp = self.auto_exp.data()
@@ -257,20 +257,20 @@ class ZELOS2150GV(Device):
         status = ZELOS2150GV.kappaLib.kappaSetAET(self.handle, c_int(1))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET On')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         status = ZELOS2150GV.kappaLib.kappaSetAutoExposureLevel(self.handle, c_int(self.exp_lev.data()))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Auto Exposure Level')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
       else:
         status = ZELOS2150GV.kappaLib.kappaSetAET(self.handle, c_int(0))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET Off')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         status = ZELOS2150GV.kappaLib.kappaSetExposure(self.handle, c_float(self.exp_time.data()))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Time')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Gain
       autoGain = self.auto_gain.data()
@@ -278,16 +278,16 @@ class ZELOS2150GV(Device):
         status = ZELOS2150GV.kappaLib.kappaSetAGC(self.handle, c_int(1))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
       else:
         status = ZELOS2150GV.kappaLib.kappaSetAGC(self.handle, c_int(0))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         status = ZELOS2150GV.kappaLib.kappaSetGain(self.handle, c_int(self.gain_lev.data()))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Gain')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Slow Scan
       slowScan = self.slow_scan.data()
@@ -297,27 +297,27 @@ class ZELOS2150GV(Device):
        status = ZELOS2150GV.kappaLib.kappaSetSlowScan(self.handle, c_int(0))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Slow Scan')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Frame Area
       status = ZELOS2150GV.kappaLib.kappaSetReadoutArea(self.handle, c_int(self.frame_x.data()),c_int(self.frame_y.data()),c_int(self.frame_width.data()),c_int(self.frame_height.data()))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Readout Area')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Measure Area
       status = ZELOS2150GV.kappaLib.kappaSetMeasureWindow(self.handle, c_int(self.meas_x.data()),c_int(self.meas_y.data()),c_int(self.meas_width.data()),c_int(self.meas_height.data()))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Measure Window')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Binning
       status = ZELOS2150GV.kappaLib.kappaSetBinning(self.handle, c_int(self.hor_binning), c_int(self.ver_binning))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set horizontal or vertical binning')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       self.saveInfo()
-      return 1
+      return
 
 ####################trigger###PER ORA NON FUNZIONA
     def trigger(self):
@@ -328,12 +328,12 @@ class ZELOS2150GV(Device):
         status = ZELOS2150GV.kappaLib.kappaSetTriggerTimer(self.handle, c_int(timeMs))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set Frame period in internal sync mode')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
       else:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot issue software trigger if external synchornization')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       self.saveInfo()
-      return 1
+      return
 
 ##########start store############################################################################
     def start_store(self):
@@ -351,11 +351,11 @@ class ZELOS2150GV(Device):
       status = ZELOS2150GV.kappaLib.kappaStartAcquisition(self.handle, byref(hBuffers), byref(width), byref(height), byref(payloadSize))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       self.worker.configure(self, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()
-      return 1
+      return
 
 
 ##########stop store############################################################################
@@ -364,4 +364,4 @@ class ZELOS2150GV(Device):
       self.restoreWorker()
       self.worker.stop()
       print('FLAG SETTATO')
-      return 1
+      return

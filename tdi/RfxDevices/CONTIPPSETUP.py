@@ -62,10 +62,10 @@ class CONTIPPSETUP(Device):
         self.restoreInfo()
         if CONTIPPSETUP.niInterfaceLib == 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         if CONTIPPSETUP.threadActive :
             CONTIPPSETUP.niInterfaceLib.temperatureCtrlCommand(c_char_p("start"))
-        return 1
+        return
 
         self.worker = self.AsynchWaveGen()
         self.worker.daemon = True
@@ -74,43 +74,43 @@ class CONTIPPSETUP(Device):
             board_id = self.board_id.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing Board Id' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             ai_chan_list = self.ai_chan_list.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing analog input channels list' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             ai_fdch_idx = self.ai_fdch_idx.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing feddbach channel reference index in the channel list' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             clock_freq = self.clock_freq.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing control loop frequency value' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             aoch_id = self.aoch_id.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing analog output channel. Refereence signal to power supply' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             doch_id = self.doch_id.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing digital output channel. Digital signal to heating cable rele\' ' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
             temp_ref = self.temp_ref.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing digital temperature set point' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         print("Start new thread")
         print("ai_chan_list ",ai_chan_list)
@@ -123,7 +123,7 @@ class CONTIPPSETUP(Device):
         self.worker.start()
         print("End Initialization")
         CONTIPPSETUP.threadActive = True
-        return 1
+        return
 
 
     def exit(self):
@@ -131,18 +131,18 @@ class CONTIPPSETUP(Device):
         self.restoreInfo()
         if CONTIPPSETUP.niInterfaceLib == 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         CONTIPPSETUP.threadActive = False
         CONTIPPSETUP.niInterfaceLib.temperatureCtrlCommand(c_char_p("exit"))
         sleep(2)
-        return 1
+        return
 
 
     def stop(self):
         self.restoreInfo()
         if CONTIPPSETUP.niInterfaceLib == 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         CONTIPPSETUP.niInterfaceLib.temperatureCtrlCommand(c_char_p("stop"))
         sleep(2)
-        return 1
+        return

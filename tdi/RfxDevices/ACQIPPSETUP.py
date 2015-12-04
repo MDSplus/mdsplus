@@ -51,43 +51,43 @@ class ACQIPPSETUP(Device):
 
             if ACQIPPSETUP.niInterfaceLib is None:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot load libNiInterface.so')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 board_id = self.device.sweep_wave_board_id.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing Board Id' )
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 channel = self.device.sweep_wave_ao_chan.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing output channel number 0..3' )
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 minValue = self.device.sweep_wave_min.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing min sweep value' )
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 maxValue = self.device.sweep_wave_max.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing max sweep value' )
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 waverate = self.device.sweep_wave_freq.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing frequency sweep value' )
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 trigMode = self.device.sweep_wave_trig_mode.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing trig mode sweep value' )
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             level  = ( maxValue - minValue ) /2.;
             offset = ( maxValue + minValue ) / 2.;
@@ -144,7 +144,7 @@ class ACQIPPSETUP(Device):
 
         print("===============================================")
 
-        return 1
+        return
 
 
     def stop_wave_gen(self):
@@ -156,4 +156,4 @@ class ACQIPPSETUP(Device):
         sleep(2)
         print("===============================================")
 
-        return 1
+        return

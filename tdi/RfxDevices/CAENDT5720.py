@@ -134,7 +134,7 @@ class CAENDT5720(Device):
           status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
           if status != 0:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Error reading number of acquired segments' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
           actSegments = actSegments.value
           for chan in range(numChannels):
             channels[chan] = ndarray(currChanSamples * actSegments)
@@ -145,7 +145,7 @@ class CAENDT5720(Device):
 
             if status != 0:
               Data.execute('DevLogErr($1,$2)', self.nid, 'ASYNCH: Error reading data segment')
-              return mdsExceptions.TclFAILED_ESSENTIAL.status
+              raise mdsExceptions.TclFAILED_ESSENTIAL
 
             #actSize = 4 * (segment.eventSize & 0x0fffffff)
             #counter = segment.time/2
@@ -170,18 +170,18 @@ class CAENDT5720(Device):
                   getattr(self.device, 'channel_%d_seg_raw'%(chan+1)).makeSegment(Float64(segmentCounter * currChanSamples), Float64((segmentCounter+actSegments) * currChanSamples), dim, data)
                 except:
                   Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')
-                  return mdsExceptions.TclFAILED_ESSENTIAL.status
+                  raise mdsExceptions.TclFAILED_ESSENTIAL
             #endif actSegments > 0
           #endfor chan in range(0,numChannels)
           segmentCounter = segmentCounter + actSegments
 ###################################################
           if(self.stopReq):
             print('ASYNCH STORE EXITED!!!!')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
           status = CAENDT5720.caenLib.CAENVME_IRQEnable(self.handle, c_int(0x01));
 
         #endwhile self.stopReq == 0:
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
       def stop(self):
         self.stopReq = True
@@ -209,13 +209,13 @@ class CAENDT5720(Device):
           boardId = self.board_id.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         self.handle = c_long(0)
         print('HANDLE NON TROVATO ADESSO INIZIA:IZZO DRIVER')
         status = CAENDT5720.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(boardId), byref(self.handle))
         if status != 0:
           print('Error initializing CAENVME')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         self.cv = Condition()
         self.readCv = Condition()
         IRQw = self.IRQWait()
@@ -229,30 +229,30 @@ class CAENDT5720(Device):
         self.board_id.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       vmeAddress = 0
       try:
         clock = self.clock_source.evaluate()
         dt = clock.getDelta().data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating clock source' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         trigTime = self.trig_source.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating trigger source' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         startIdx = self.start_idx.data()
         endIdx = self.end_idx.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating start or end idx')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         pts = self.pts.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating Post Trigger Samples' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
     #Compute Segment Size
       try:
@@ -260,7 +260,7 @@ class CAENDT5720(Device):
         segmentSamples = 1048576/nSegments
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading max number of segments' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
     # Get Active channels
       chanMask = c_int(0)
@@ -273,7 +273,7 @@ class CAENDT5720(Device):
           nActChans = nActChans + 1
       if nActChans == 0:
         print('No active groups')
-        return 1
+        return
       segmentSize = 16 + 2*segmentSamples * nActChans
       acqMode = self.acq_mode.data()
 
@@ -284,7 +284,7 @@ class CAENDT5720(Device):
             offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()
           except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading channel offset')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
           if acqMode == 'CONTINUOUS WITH COUNTER':
             useCounter = True
             data = Data.compile("2*($1 - 2048)/4096.+$2", TreePath(getattr(self, 'channel_%d_seg_raw'%(chan+1)).getFullPath()), offset);
@@ -299,7 +299,7 @@ class CAENDT5720(Device):
             getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
           except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error Writing data' )
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
       #endfor chan in range(0,numChannels):
 
 
@@ -308,12 +308,12 @@ class CAENDT5720(Device):
       self.worker.stopReq = False
       self.worker.configure(self.handle, startIdx, endIdx, pts, chanMask, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, self.getNid(), self, self.cv, self.readCv, useCounter, self.irq_events.data() + 1)
       self.worker.start()
-      return 1
+      return
 
 
     def stop_store(self):
       self.worker.stop()
-      return 1
+      return
 
 ################################# INIT ###############################
     def init(self):
@@ -324,7 +324,7 @@ class CAENDT5720(Device):
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0xEF24), byref(data), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting V1740 Device' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
     #give some time
       sleep(0.1)
@@ -334,7 +334,7 @@ class CAENDT5720(Device):
       status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8140), byref(devType), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing group configuration')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       numChannels = devType.value >> 16
       print('NUM CHANNELS: ', numChannels)
       self.num_channels.putData(numChannels)
@@ -345,26 +345,26 @@ class CAENDT5720(Device):
         nSegments=self.num_segments.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Number of Segments')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       segmentCode = segmentDict[nSegments]
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x800c), byref(c_int(segmentCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing number of segments' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 #Global Channel Configuration
       trigModeDict = {'OVER THRESHOLD':0, 'UNDER THRESHOLD':1}
       try:
         trigMode = self.trig_mode.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Trigger mode')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       trigModeCode = trigModeDict[trigMode]
       conf = trigModeCode << 6
       conf = conf | 0x00000010
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8000), byref(c_int(conf)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing group configuration')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #Channel configurations
       trigEnableCode = 0
@@ -377,13 +377,13 @@ class CAENDT5720(Device):
         status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1080 + chan * 0x100), byref(c_int(threshold)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing threshold level')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 #threshold samples
         threshSamples = getattr(self, 'channel_%d_thresh_sampl'%(chan+1)).data()
         status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1084 + chan * 0x100), byref(c_int(threshSamples)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing threshold samples')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 #offset
         offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()
         if(offset > 1):
@@ -394,7 +394,7 @@ class CAENDT5720(Device):
         status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1098 + chan * 0x100), byref(c_int(int(offset + 0x08000))), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing DAC offset')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 #states
         state = getattr(self, 'channel_%d_state'%(chan+1)).data()
         chanEnableCode = chanEnableCode | (enabledDict[state] << chan)
@@ -407,11 +407,11 @@ class CAENDT5720(Device):
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8120), byref(c_int(chanEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing Channel enable register')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing Channel trigger enable register')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #Set trigger enabling
       trigExt = self.trig_ext.data()
@@ -421,7 +421,7 @@ class CAENDT5720(Device):
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing trigger configuration')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #Front Panel trigger out setting set TRIG/CLK to TTL
       data = 1
@@ -435,7 +435,7 @@ class CAENDT5720(Device):
           trigSource = trigSource[0]
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #Clock source
       clockMode = self.clock_mode.data()
@@ -444,7 +444,7 @@ class CAENDT5720(Device):
           clockSource = self.clock_source()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Clock source')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
       else:
         clockSource = Range(None, None, Float64(1/250E6))
         self.clock_source.putData(clockSource)
@@ -454,11 +454,11 @@ class CAENDT5720(Device):
         pts = self.pts.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve PTS Samples')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       segmentSize = 1048576/nSegments
       if pts > segmentSize:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'PTS Larger than segmentSize')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8114), byref(c_int(pts>>2)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
 
 #Time management
@@ -469,7 +469,7 @@ class CAENDT5720(Device):
           endTime = self.end_time.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         if endTime > 0:
           endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, segmentSize, trigSource), clockSource), Float64(endTime + trigSource))
         else:
@@ -489,7 +489,7 @@ class CAENDT5720(Device):
 #      print 'currStartIdx: ', currStartIdx
       if currStartIdx < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/pre-trigger samples')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
       currEndIdx = segmentSize - pts + endIdx.data()
 #      print 'segmentSize: ', segmentSize
@@ -498,7 +498,7 @@ class CAENDT5720(Device):
 #      print 'currEndIdx: ', currEndIdx
       if currEndIdx >= segmentSize:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/post-trigger samples')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
       acqMode = self.acq_mode.data()
       if acqMode == 'CONTINUOUS' or acqMode == 'CONTINUOUS WITH COUNTER':
@@ -509,15 +509,15 @@ class CAENDT5720(Device):
         status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0xEF18), byref(c_int(irqEvents)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting IRQ events')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0xEF00), byref(c_int(0x09)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting IRQ line')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         status = CAENDT5720.caenLib.CAENVME_IRQEnable(self.handle, c_int(0x01))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error Enabling IRQ')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 #Start asynchronous readout
         self.start_store()
       #endif acqMode == 'CONTINUOUS SAMPLING'
@@ -527,7 +527,7 @@ class CAENDT5720(Device):
         runCommand = runCommand | 0x00000040
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(4)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       self.saveInfo()
-      return 1
+      return
 
 
 ################################TRIGGER###################################
@@ -540,11 +540,11 @@ class CAENDT5720(Device):
         status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           print('Error resetting V1740 Device')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
-        return 1
+          raise mdsExceptions.TclFAILED_ESSENTIAL
+        return
       except:
         print('Generic SW trigger Error')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ####################################STORE###################################
 
@@ -555,13 +555,13 @@ class CAENDT5720(Device):
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error stopping device')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
     #need to wait a while
       sleep(0.1)
       acqMode = self.acq_mode.data()
       if acqMode == 'CONTINUOUS' or acqMode == 'CONTINUOUS WITH COUNTER':
         self.stop_store(0)
-        return 1
+        return
 
 
       try:
@@ -569,23 +569,23 @@ class CAENDT5720(Device):
         dt = clock.getDelta().data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating clock source' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         trig = self.trig_source.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating trigger source' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         startIdx = self.start_idx.data()
         endIdx = self.end_idx.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating start or end idx')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         pts = self.pts.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error evaluating Post Trigger Samples' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
 
@@ -594,10 +594,10 @@ class CAENDT5720(Device):
       status = CAENDT5720.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading number of acquired segments' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
       if actSegments.value == 0:
-        return 1
+        return
 
 
     #Compute Segment Size
@@ -606,7 +606,7 @@ class CAENDT5720(Device):
         segmentSamples = 1048576/nSegments
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading max number of segments' )
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
     # Get Active channels
@@ -620,7 +620,7 @@ class CAENDT5720(Device):
           nActChans = nActChans + 1
       if nActChans == 0:
         print('No active groups')
-        return 1
+        return
 
       segmentSize = 16 + 2*segmentSamples * nActChans
 
@@ -643,12 +643,12 @@ class CAENDT5720(Device):
         status = CAENDT5720.caenLib.CAENVME_FIFOBLTReadCycle(self.handle, c_int(vmeAddress), byref(segment), c_int(segmentSize),  c_int(self.cvA32_S_DATA), c_int(self.cvD64), byref(retLen))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading data segment')
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         actSize = 4 * (segment.eventSize & 0x0fffffff)
         if actSize != segmentSize:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Expected event size different from expected size' )
-          return mdsExceptions.TclFAILED_ESSENTIAL.status
+          raise mdsExceptions.TclFAILED_ESSENTIAL
         counter = segment.time/2
         triggers.append(counter*dt)
         deltas.append(dt)
@@ -672,7 +672,7 @@ class CAENDT5720(Device):
             offset = getattr(self, 'channel_%d_offset'%(chan+1))
           except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading channel offset')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
           raw = Int16Array(channels[chan])
           raw.setUnits("counts")
           data = Data.compile("2*($VALUE - 2048)/4096.+$1", offset);
@@ -682,9 +682,9 @@ class CAENDT5720(Device):
             getattr(self, 'channel_%d_data'%(chan+1)).putData(signal)
           except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot write Signal in tree')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
       #endfor chan in range(numChannels)
-      return 1
+      return
 
 
 

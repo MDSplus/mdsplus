@@ -27,7 +27,7 @@ class FEMTO(Device):
             print('Name=',name)
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'WARNING: device with no name')
-            #return mdsExceptions.TclFAILED_ESSENTIAL.status
+            #raise mdsExceptions.TclFAILED_ESSENTIAL
 
         # Get IP Address
         try:
@@ -44,7 +44,7 @@ class FEMTO(Device):
             print('COM port = ',comPort)
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'ERROR: No COM port. Put COMx in traverser.')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         femto = array('B')
 
@@ -60,7 +60,7 @@ class FEMTO(Device):
                 #print 'gainVal=',gainVal
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'ERROR: Invalid gain setting in Femto %02d.'%(i))
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 acdc = self.__getattr__('channel_%02d_acdc'%(i)).data()
@@ -69,7 +69,7 @@ class FEMTO(Device):
                 #print 'acdcVal=',acdcVal
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'ERROR: Invalid acdc setting in Femto %02d.'%(i))
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 hsln = self.__getattr__('channel_%02d_hsln'%(i)).data()
@@ -78,7 +78,7 @@ class FEMTO(Device):
                 #print 'hslnVal=',hslnVal
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'ERROR: Invalid hsln setting in Femto %02d.'%(i))
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 conf=gainVal+acdcVal+hslnVal
@@ -86,7 +86,7 @@ class FEMTO(Device):
                 femto.append(conf)
             except:
                 print("Error appending data to array.")
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
         print("Init Femto Amplifier: data reading completed.")
 
@@ -98,19 +98,19 @@ class FEMTO(Device):
                 deviceLib = CDLL("RS232Lib.dll")
             except:
                 print('ERROR: Cannot link to device library femto.dll')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
                 femtostr=femto.tostring()
                 #print 'femtostrtype=',type(femtostr),'val=',femtostr
             except:
                 print('Error converting array to string.')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
                 deviceLib.Femto232Write.argtypes = [c_char_p, c_char_p]
                 deviceLib.Femto232Write(c_char_p(comPort), c_char_p(femtostr))
             except:
                 print('Error doing Femto232Write() in .dll')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
         #REMOTE MODE
         else:
@@ -119,7 +119,7 @@ class FEMTO(Device):
             if status == 0:
                 Data.execute('MdsDisconnect()')
                 Data.execute('DevLogErr($1,$2)', self.nid, "Cannot Connect to specified IP ADDRESS: ", ipAddr)
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             # init
             status = Data.execute('MdsValue("RS232Lib->Femto232Write($1,$2)",$1,$2)', comPort, Int8Array(femto))
             for i in range(0,65):
@@ -128,9 +128,9 @@ class FEMTO(Device):
             if status == 0:
                 Data.execute('MdsDisconnect()')
                 Data.execute('DevLogErr($1,$2)', self.nid, "ERROR doing MdsValue(femto->Femto232Write(...))")
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             # disconnect
             Data.execute('MdsDisconnect()')
 
         print('Init Femto Amplifier: end.')
-        return 1
+        return

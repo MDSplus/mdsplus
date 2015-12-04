@@ -117,7 +117,7 @@ class NI6682(Device):
             print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         res = NI6682.libts.NI6682_Create(c_int(boardId));
         print('NI6682_Create(): ', res)
@@ -135,22 +135,22 @@ class NI6682(Device):
                 # Better using __dict__ because getattr calls the constructor. Not possible why?
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('CHANNEL_PFI%d.TRIG_MODE: '%(i), tm)
 
             try:
                 decimation = getattr(self, 'channel_pfi%d_decimation'%(i)).data();
                 if decimation < 1: # decimation must be greather than 0
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Decimation must be greater than 0: ', decimation)
-                    return mdsExceptions.TclFAILED_ESSENTIAL.status
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('CHANNEL_PFI%d.DECIMATION: '%(i), decimation)
 
         # If executed for the first time
 
-        return 1;
+        return;
 
 # STORE
     def FINALISE(self):
@@ -165,7 +165,7 @@ class NI6682(Device):
             print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
         res = NI6682.libts.NI6682_Finalise(c_int(boardId));
@@ -174,7 +174,7 @@ class NI6682(Device):
         res = NI6682.libts.NI6682_Destroy(c_int(boardId));
         print('NI6682_Destroy(): ', res)
 
-        return 1;
+        return;
 
 
     class Storeman(Thread):
@@ -251,12 +251,12 @@ class NI6682(Device):
             self.board_id.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         #self.restoreInfo();
         self.ni6682Storeman.start();
 
-        return 1;
+        return;
 
     def STOP_STORE(self):
 
@@ -269,7 +269,7 @@ class NI6682(Device):
             self.board_id.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
         #self.restoreInfo();
@@ -278,4 +278,4 @@ class NI6682(Device):
         del self.ni6682Storeman;
         del NI6682.ni6682Storemen[self.getNid()];
 
-        return 1;
+        return;

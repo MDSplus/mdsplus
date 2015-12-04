@@ -51,36 +51,36 @@ class CYGNET4K(Device):
             try:
                 self.tree = Tree(char_p_name.value,int_shot.value)
                 ref_treePtr._obj.value = self.tree.ctx.value
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             except:
                 return -1
         def camStartSaveDeferred(self,*argin):
-            return
+            return 1
         def camStopSave(self,*argin):
-            return
+            return 1
 
     class _raptorLib(object):
         def __init__(self):
             self.clock = time()
             self.t0 = 0
         def epixClose(self):
-            return
+            return 1
         def epixOpen(self,char_p_tmpPath, ref_xPixels, ref_yPixels):
             ref_xPixels._obj.value=2048
             ref_yPixels._obj.value=2048
-            return
+            return 1
         def epixSetConfiguration(self, iID, float_frameRate, int_codedTrigMode):
             self.float_frameRate = float_frameRate
-
+            return 1
         def epixGetConfiguration(self,iID, ref_binning, ref_roiXSize, ref_roiXOffset, ref_roiYSize, ref_roiYOffset):
             ref_binning._obj.value = 0x00
             ref_roiXSize._obj.value = 2048
             ref_roiXOffset._obj.value = 0
             ref_roiYSize._obj.value = 2048
             ref_roiYOffset._obj.value = 0
-            return
+            return 1
         def epixStartVideoCapture(self,*argin):
-            return
+            return 1
         def epixCaptureFrame(self, iID, frameIdx, bufIdx, baseTicks, int_xPixels, int_yPixels, int_framesNid, int_timebaseNid, treePtr, listPtr, timeoutMs, ref_frameIdx, ref_bufIdx, ref_baseTicks, ref_currDuration):
             for i in range(100):
                 now = time()
@@ -97,7 +97,7 @@ class CYGNET4K(Device):
             ref_currDuration._obj.value = currTime
             return 0
         def epixStopVideoCapture(self,iID):
-            return
+            return 1
         def getPCBTemp(self,iID):
             return int((36+((time()*1000) % 10)/10.)*16)
         def getCMOSTemp(self,iID):
@@ -130,7 +130,7 @@ class CYGNET4K(Device):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0.')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         CYGNET4K.checkLibraries()
         tmpPath = self.genconf()
         xPixels = c_int(0)
@@ -178,8 +178,7 @@ class CYGNET4K(Device):
         except mdsExceptions.TreeNOOVERWRITE:
             if not (self.binning.data() == binning) and all(self.roi_rect.data() == roi_rect):
                 print('Re-initialization error: Parameter mismatch!')
-                return mdsExceptions.TclFAILED_ESSENTIAL.status
-        return mdsExceptions.TreeNORMAL.status
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
     def genconf(self):
         confPath = self.conf_file.data()
@@ -206,22 +205,20 @@ class CYGNET4K(Device):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0.')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         if not CYGNET4K.isInitialized.get(idx,False):
             print('Device not initialized: Run init first.')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         self.worker = self.AsynchStore()
         self.worker.configure(self, idx, self.roi_rect.data(), self.duration.data())
         self.saveWorker()
         self.worker.start()
-        return mdsExceptions.TreeNORMAL.status
 
     def stop_store(self):
         if not self.restoreWorker():
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         self.worker.stop()
         self.worker.join()
-        return mdsExceptions.TreeNORMAL.status
 
     def saveWorker(self):
         if self.nid in CYGNET4K.workers.keys():
@@ -242,7 +239,7 @@ class CYGNET4K(Device):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0')
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         CYGNET4K.checkLibraries()
         if not CYGNET4K.isOpen:
             conffile = self.conf_file.data()
@@ -267,13 +264,11 @@ class CYGNET4K(Device):
         self.trendWorker.configure(self, idx, float(self.trend_period.data()), trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
         self.TrendWorker.start()
-        return mdsExceptions.TreeNORMAL.status
 
     def stop_trend(self):
         if not self.restoreTrendWorker():
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         self.trendWorker.stop()
-        return mdsExceptions.TreeNORMAL.status
 
     def saveTrendWorker(self):
         if self.nid in CYGNET4K.trendworkers.keys():
@@ -345,7 +340,6 @@ class CYGNET4K(Device):
             self.device.temp_pcb.record = Signal(pcbData,Int16Array(measuredPcbTemp),dim)
             self.device.temp_cmos.record = Signal(cmosData,Int16Array(measuredCmosTemp),dim)
             print('done')
-            return mdsExceptions.TreeNORMAL.status
 
         def stop(self):
             self.stopReq = True
@@ -406,7 +400,6 @@ class CYGNET4K(Device):
                     print('failure during temperature readout')
                 sleep(0.01)
             print('done')
-            return mdsExceptions.TreeNORMAL.status
 
         def stop(self):
             self.stopReq = True

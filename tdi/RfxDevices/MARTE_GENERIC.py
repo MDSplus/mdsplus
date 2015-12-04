@@ -71,37 +71,37 @@ class MARTE_GENERIC(Device):
         eventStr = eventStr + " " + str(self.frequency.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read frequency')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         eventStr = eventStr + " " + str(self.trig_source.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read trigger source')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         eventStr = eventStr + " " + str(self.sampl_start.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Sampling start')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         eventStr = eventStr + " " + str(self.sampl_end.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Sampling end')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         eventStr = eventStr + " " + str(self.offset_start.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Offset start')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         eventStr = eventStr + " " + str(self.offset_end.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Offset end')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
         eventStr = eventStr + " " + str(self.duration.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Duration')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
       eventStr = eventStr + " " + str(self.params.getNid())
       eventStr = eventStr + " " + str(self.wave_params.getNid())
@@ -111,40 +111,40 @@ class MARTE_GENERIC(Device):
         eventStr = eventStr + " " + self.control.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Control')
-        return mdsExceptions.TclFAILED_ESSENTIAL.status
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       print(eventStr)
       Event.setevent(self.getEventName(), eventStr)
       sleep(3)
-      return 1
+      return
 
 
     def trigger(self):
       eventStr = "TRIGGER " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
     def pre_req(self):
       eventStr = "PRE_REQ " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
     def pulse_req(self):
       eventStr = "PULSE_REQ"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
     def post_req(self):
       eventStr = "POST_REQ"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
     def collection_complete(self):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
     def store(self):
       eventStr = "STORE " + str(self.id.data())
@@ -153,22 +153,22 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       Event.setevent("MARTE", eventStr)
       sleep(3)
-      return 1
+      return
 
     def abort(self):
       eventStr = "ABORT"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
     def cacca(self):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 #       eventStr = "STORE " +str(self.id.data())
 #       print eventStr
 #       Event.setevent(self.getEventName(), eventStr)
 #       sleep(10)
-#       return 1
+#       return
 
     def seq_init(self):
       self.abort()
@@ -177,7 +177,7 @@ class MARTE_GENERIC(Device):
       sleep(3)
       self.init()
       self.pulse_req()
-      return 1
+      return
 
     def seq_init_start(self):
       self.abort()
@@ -185,12 +185,12 @@ class MARTE_GENERIC(Device):
       self.pre_req()
       sleep(3)
       self.init()
-      return 1
+      return
 
     def seq_init_stop(self):
       self.init()
       self.pulse_req()
-      return 1
+      return
 
     def seq_store(self):
       self.post_req()
@@ -198,15 +198,15 @@ class MARTE_GENERIC(Device):
       self.store()
       sleep(3)
       self.collection_complete()
-      return 1
+      return
 
     def seq_store_start(self):
       self.post_req()
       sleep(3)
       self.store(ag)
-      return 1
+      return
 
     def seq_store_stop(self):
       self.store()
       self.collection_complete()
-      return 1
+      return
