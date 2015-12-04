@@ -321,7 +321,7 @@ class ZELOS2150GV(Device):
       return 1
 
 ####################trigger###PER ORA NON FUNZIONA
-    def trigger(self,arg):
+    def trigger(self,*arg):
       self.restoreInfo()
       synch = self.frame_sync.data()   ###Synchronization
       if synch == 'INTERNAL':
@@ -337,7 +337,7 @@ class ZELOS2150GV(Device):
       return 1
 
 ##########start store############################################################################
-    def start_store(self, arg):
+    def start_store(self,*arg):
       global kappaLib
       global mdsLib
       global streamLib
@@ -360,7 +360,7 @@ class ZELOS2150GV(Device):
 
 
 ##########stop store############################################################################
-    def stop_store(self,arg):
+    def stop_store(self,*arg):
       print('STOP STORE')
       self.restoreWorker()
       self.worker.stop()

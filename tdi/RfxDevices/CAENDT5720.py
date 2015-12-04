@@ -225,7 +225,7 @@ class CAENDT5720(Device):
         IRQw.start()
       return
 
-    def start_store(self):
+    def start_store(self,*arg):
       try:
         self.board_id.data()
       except:
@@ -312,12 +312,12 @@ class CAENDT5720(Device):
       return 1
 
 
-    def stop_store(self,arg):
+    def stop_store(self,*arg):
       self.worker.stop()
       return 1
 
 ################################# INIT ###############################
-    def init(self,arg):
+    def init(self,*arg):
       self.restoreInfo()
       vmeAddress = 0
 #Module Reset
@@ -533,7 +533,7 @@ class CAENDT5720(Device):
 
 ################################TRIGGER###################################
 
-    def trigger(self,arg):
+    def trigger(self,*arg):
       self.restoreInfo()
       try:
         vmeAddress = 0
@@ -549,7 +549,7 @@ class CAENDT5720(Device):
 
 ####################################STORE###################################
 
-    def store(self,arg):
+    def store(self,*arg):
       self.restoreInfo()
       vmeAddress = 0
 # Stop device

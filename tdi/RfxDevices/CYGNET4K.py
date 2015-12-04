@@ -55,9 +55,9 @@ class CYGNET4K(Device):
                 return mdsExceptions.TclFAILED_ESSENTIAL.status
             except:
                 return -1
-        def camStartSaveDeferred(self,*args):
+        def camStartSaveDeferred(self,*argin):
             return
-        def camStopSave(self,*args):
+        def camStopSave(self,*argin):
             return
 
     class _raptorLib(object):
@@ -70,19 +70,19 @@ class CYGNET4K(Device):
             ref_xPixels._obj.value=2048
             ref_yPixels._obj.value=2048
             return
-        def epixSetConfiguration(self, int_idx, float_frameRate, int_codedTrigMode):
+        def epixSetConfiguration(self, iID, float_frameRate, int_codedTrigMode):
             self.float_frameRate = float_frameRate
 
-        def epixGetConfiguration(self,int_idx, ref_binning, ref_roiXSize, ref_roiXOffset, ref_roiYSize, ref_roiYOffset):
+        def epixGetConfiguration(self,iID, ref_binning, ref_roiXSize, ref_roiXOffset, ref_roiYSize, ref_roiYOffset):
             ref_binning._obj.value = 0x00
             ref_roiXSize._obj.value = 2048
             ref_roiXOffset._obj.value = 0
             ref_roiYSize._obj.value = 2048
             ref_roiYOffset._obj.value = 0
             return
-        def epixStartVideoCapture(self,args):
+        def epixStartVideoCapture(self,*argin):
             return
-        def epixCaptureFrame(self, int_id, frameIdx, bufIdx, baseTicks, int_xPixels, int_yPixels, int_framesNid, int_timebaseNid, treePtr, listPtr, timeoutMs, ref_frameIdx, ref_bufIdx, ref_baseTicks, ref_currDuration):
+        def epixCaptureFrame(self, iID, frameIdx, bufIdx, baseTicks, int_xPixels, int_yPixels, int_framesNid, int_timebaseNid, treePtr, listPtr, timeoutMs, ref_frameIdx, ref_bufIdx, ref_baseTicks, ref_currDuration):
             for i in range(100):
                 now = time()
                 if(frameIdx.value == 0):
@@ -96,12 +96,12 @@ class CYGNET4K(Device):
                     return 1
                 sleep(0.005)
             ref_currDuration._obj.value = currTime
-            return mdsExceptions.TclFAILED_ESSENTIAL.status
-        def epixStopVideoCapture(self,*args):
+            return 0
+        def epixStopVideoCapture(self,iID):
             return
-        def getPCBTemp(self,id):
+        def getPCBTemp(self,iID):
             return int((36+((time()*1000) % 10)/10.)*16)
-        def getCMOSTemp(self,id):
+        def getCMOSTemp(self,iID):
             return int(1700+((time()*1000) % 100))
     """dummy drivers for testing - end"""
 
@@ -127,7 +127,7 @@ class CYGNET4K(Device):
         self.handle = None
 
 
-    def init(self,*args):
+    def init(self,*arg):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0.')
@@ -203,7 +203,7 @@ class CYGNET4K(Device):
         close(fh)
         return abs_path
 
-    def start_store(self,*args):
+    def start_store(self,*arg):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0.')
@@ -217,7 +217,7 @@ class CYGNET4K(Device):
         self.worker.start()
         return mdsExceptions.TreeNORMAL.status
 
-    def stop_store(self,*args):
+    def stop_store(self,*arg):
         if not self.restoreWorker():
             return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.worker.stop()
@@ -239,7 +239,7 @@ class CYGNET4K(Device):
         print('Cannot restore worker!!\nMaybe no worker has been started.')
         return False
 
-    def start_trend(self,*args):
+    def start_trend(self,*arg):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0')
@@ -270,7 +270,7 @@ class CYGNET4K(Device):
         self.TrendWorker.start()
         return mdsExceptions.TreeNORMAL.status
 
-    def stop_trend(self,*args):
+    def stop_trend(self,*arg):
         if not self.restoreTrendWorker():
             return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.trendWorker.stop()

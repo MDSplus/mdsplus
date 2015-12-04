@@ -31,7 +31,7 @@ class SIS3820(Device):
     'options':('no_write_shot',)})
 
     # Init function
-    def init(self,arg):
+    def init(self,*arg):
         print('************ START INIT ************')
     # Get IP Address
         try:
@@ -109,7 +109,7 @@ class SIS3820(Device):
 ########################################### END INIT #######################################
 
     # Arm Function
-    def arm(self, arg):
+    def arm(self,*arg):
         print('************ START ARM ************')
     # Get IP Address
         try:
@@ -141,8 +141,13 @@ class SIS3820(Device):
 ########################################### END ARM #######################################
 
     # Store Function
+<<<<<<< HEAD
     def store(self, arg):
         from MDSplus import mdsExceptions, Signal, Data, Dimension, Window, Range
+=======
+    def store(self,*arg):
+        from MDSplus import mdsException, Signal, Data, Dimension, Window, Range
+>>>>>>> 064d0c6... removed unnecessary arg down passing in MARTE_GENERIC arg->*arg
         print('************ START STORE ************')
     # Get IP Address
         try:

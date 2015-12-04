@@ -35,7 +35,7 @@ class MARTE_COMMON(Device):
         return environ["MARTE_EVENT"]
 
 #init method will send a SETUP event with the required information to allow MDSInterface service retrieving parameter and signal information
-    def init(self,arg):
+    def init(self,*arg):
       eventStr = "SETUP " + Tree.getActiveTree().name + " "  + self.control.data() + " " + str(Tree.getActiveTree().shot) + " " + str(self.id.data()) + " "
 
       eventStr = eventStr + " " + str(self.params.getNid())
@@ -47,39 +47,39 @@ class MARTE_COMMON(Device):
       return 1
 #load method will send a LOAD event forcing reporting in MARTe confirguration the actual value of MDSplus parameters.
 #GAM field MdsId will specify the target device for every GAM taking MDSplus parameters
-    def load(self,arg):
+    def load(self,*arg):
        eventStr = "LOAD"
        Event.setevent(self.getEventName(), eventStr)
        return 1
 
 #Event transition requests
-    def pre_req(self, arg):
+    def pre_req(self,*arg):
       eventStr = "PRE_REQ " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def pulse_req(self, arg):
+    def pulse_req(self,*arg):
       eventStr = "PULSE_REQ"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def post_req(self, arg):
+    def post_req(self,*arg):
       eventStr = "POST_REQ"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def collection_complete(self, arg):
+    def collection_complete(self,*arg):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def abort(self, arg):
+    def abort(self,*arg):
       eventStr = "ABORT"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
 #force flushing of buffered data. Typially called after COLLECTION_COMPLETE event
-    def store(self,arg):
+    def store(self,*arg):
       eventStr = "STORE " +  str(self.id.data())
       print(eventStr)
       Event.setevent(self.getEventName(), eventStr)

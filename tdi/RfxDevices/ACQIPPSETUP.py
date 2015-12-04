@@ -123,7 +123,7 @@ class ACQIPPSETUP(Device):
             ACQIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
 
 
-    def start_wave_gen(self, arg):
+    def start_wave_gen(self,*arg):
         print('======= Initialize waveform generation ========')
 
         if ACQIPPSETUP.isRunning :
@@ -148,7 +148,7 @@ class ACQIPPSETUP(Device):
         return 1
 
 
-    def stop_wave_gen(self, arg):
+    def stop_wave_gen(self,*arg):
 
         print('========= Stop waveform generation ============')
         self.restoreInfo()

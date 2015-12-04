@@ -17,7 +17,7 @@ class FEMTO(Device):
         'options':('no_write_shot',)})
 
 
-    def init(self,arg):
+    def init(self,*arg):
         from array import array
         print("Init Femto Amplifier: reading data from traverser...")
 

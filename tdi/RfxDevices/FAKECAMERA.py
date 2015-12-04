@@ -242,7 +242,7 @@ class FAKECAMERA(Device):
 
 
 ##########init############################################################################
-    def init(self,arg):
+    def init(self,*arg):
       self.restoreInfo()
       self.frames.setCompressOnPut(False)
 
@@ -256,7 +256,7 @@ class FAKECAMERA(Device):
 
 
 ##########start store############################################################################
-    def start_store(self, arg):
+    def start_store(self,*arg):
       self.restoreInfo()
       self.worker = self.AsynchStore()
       self.worker.daemon = True
@@ -276,7 +276,7 @@ class FAKECAMERA(Device):
 
 
 ##########stop store############################################################################
-    def stop_store(self,arg):
+    def stop_store(self,*arg):
       if Device.debug: print('STOP STORE')
       self.restoreWorker()
       self.worker.stop()

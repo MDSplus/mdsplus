@@ -84,7 +84,7 @@ class DIO4(Device):
 
 
 # INIT
-    def INIT(self, arg):
+    def INIT(self,*arg):
         if Device.debug: print('INIT')
 
 # Board ID
@@ -614,7 +614,7 @@ class DIO4(Device):
 
 
 # RESET
-    def RESET(self, arg):
+    def RESET(self,*arg):
         print('RESET')
 # Board ID
         try:
@@ -657,7 +657,7 @@ class DIO4(Device):
 
 
 
-    def STORE(self, arg):
+    def STORE(self,*arg):
         if Device.debug: print('STORE')
 # Board ID
         try:
@@ -762,7 +762,7 @@ class DIO4(Device):
         return 1
 
 
-    def TRIGGER(self, arg):
+    def TRIGGER(self,*arg):
         if Device.debug: print('TRIGGER')
 # Board ID
         try:
@@ -927,7 +927,7 @@ class DIO4(Device):
     def removeInfo(self):
         del(DIO4.handles[self.nid])
 
-    def start_store(self, arg):
+    def start_store(self,*arg):
         if Device.debug: print('START STORE')
         self.restoreInfo()
         self.worker = self.AsynchStore()
@@ -937,7 +937,7 @@ class DIO4(Device):
         self.worker.start()
         return 1
 
-    def stop_store(self,arg):
+    def stop_store(self,*arg):
         if Device.debug: print('STOP STORE')
         self.restoreWorker()
         self.worker.stop()
