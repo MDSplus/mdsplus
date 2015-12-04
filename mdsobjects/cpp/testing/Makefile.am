@@ -73,11 +73,17 @@ LDADD += testutils/libMdsTestUtils.a
 #               --dsymutil=yes --leak-check=yes
 #endif
 
-TS_VALGRIND_FLAGS = \
-               --suppressions=${srcdir}/valgrind-stdlib.supp      \
-               --suppressions=${srcdir}/valgrind-dlerr.supp       \
-               --suppressions=${srcdir}/valgrind-connection.supp  \
-               --suppressions=${srcdir}/valgrind-treenode.supp 
+#VALGRIND_FLAGS = \
+#               --suppressions=${srcdir}/valgrind-stdlib.supp      \
+#               --suppressions=${srcdir}/valgrind-dlerr.supp       \
+#               --suppressions=${srcdir}/valgrind-connection.supp  \
+#               --suppressions=${srcdir}/valgrind-treenode.supp 
+
+VALGRIND_SUPPRESSIONS_FILES = \
+                              $(srcdir)/valgrind-stdlib.supp      \
+                              $(srcdir)/valgrind-dlerr.supp       \
+                              $(srcdir)/valgrind-connection.supp  \
+                              $(srcdir)/valgrind-treenode.supp 
 
 
 

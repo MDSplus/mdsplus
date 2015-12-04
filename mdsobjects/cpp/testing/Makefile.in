@@ -112,7 +112,9 @@ subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
+	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
+	$(top_srcdir)/m4/m4_ax_is_release.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
 	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
@@ -914,11 +916,17 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 #               --suppressions=valgrind-treenode.supp    \
 #               --dsymutil=yes --leak-check=yes
 #endif
-TS_VALGRIND_FLAGS = \
-               --suppressions=${srcdir}/valgrind-stdlib.supp      \
-               --suppressions=${srcdir}/valgrind-dlerr.supp       \
-               --suppressions=${srcdir}/valgrind-connection.supp  \
-               --suppressions=${srcdir}/valgrind-treenode.supp 
+
+#VALGRIND_FLAGS = \
+#               --suppressions=${srcdir}/valgrind-stdlib.supp      \
+#               --suppressions=${srcdir}/valgrind-dlerr.supp       \
+#               --suppressions=${srcdir}/valgrind-connection.supp  \
+#               --suppressions=${srcdir}/valgrind-treenode.supp 
+VALGRIND_SUPPRESSIONS_FILES = \
+                              $(srcdir)/valgrind-stdlib.supp      \
+                              $(srcdir)/valgrind-dlerr.supp       \
+                              $(srcdir)/valgrind-connection.supp  \
+                              $(srcdir)/valgrind-treenode.supp 
 
 
 #

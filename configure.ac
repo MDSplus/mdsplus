@@ -13,6 +13,40 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
+
+dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
+dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
+dnl 
+dnl * git-directory:  ax_is_release will be 'no' if a '.git' directory exists
+dnl * minor-version:  ax_is_release will be 'no' if the minor version number
+dnl                   in $PACKAGE_VERSION is odd; this assumes
+dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
+dnl * micro-version:  ax_is_release will be 'no' if the micro version number
+dnl                   in $PACKAGE_VERSION is odd; this assumes
+dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
+dnl * always:         ax_is_release will always be 'yes'
+dnl * never:          ax_is_release will always be 'no'
+dnl 
+AX_IS_RELEASE([always])
+
+
+dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
+dnl see: www.gnu.org/software/autoconf-archive/ax_check_enable_debug.html
+dnl 
+dnl Check for the presence of an –enable-debug option to configure, with the 
+dnl specified default value used when the option is not present. Return the 
+dnl value in the variable $ax_enable_debug.
+dnl Specifying ’yes’ adds ’-g -O0’ to the compilation flags for all languages. 
+dnl Specifying ’info’ adds ’-g’ to the compilation flags. Specifying ’profile’ 
+dnl adds ’-g -pg’ to the compilation flags and ’-pg’ to the linking flags. 
+dnl Otherwise, nothing is added. 
+dnl 
+dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no], 
+dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...], 
+dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
+
+
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
