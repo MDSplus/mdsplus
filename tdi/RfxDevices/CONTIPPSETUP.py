@@ -1,10 +1,9 @@
-from MDSplus import mdsExceptions, Device, Data, Int32
+from MDSplus import mdsExceptions, Device, Data
 from threading import Thread
 from time import sleep
 from ctypes import CDLL, c_uint, c_int, c_char_p, c_double
 
 class CONTIPPSETUP(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Probe temperature control setup"""
 
     parts=[ {'path':':COMMENT', 'type':'text'},

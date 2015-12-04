@@ -6,7 +6,6 @@ import time
 import os
 
 class NI6368AI(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """NI PXI-6368 X-series multi functional data acquisition card"""
 
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},

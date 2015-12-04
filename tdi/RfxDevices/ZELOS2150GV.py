@@ -1,11 +1,10 @@
-from MDSplus import mdsExceptions, Device, Int32, Data
+from MDSplus import mdsExceptions, Device, Data
 from threading import Thread
 from ctypes import CDLL,c_void_p,c_char_p,c_byte,c_short,c_int,c_float,byref
 from datetime import datetime
 from time import sleep, mktime
 
 class ZELOS2150GV(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Zelos 2150GV Camera"""
     parts=[
       {'path':':NAME', 'type':'text'},

@@ -4,7 +4,6 @@ from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p
 import os
 
 class NI6259AI(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """NI PXI-6259 M-series multi functional data acquisition card"""
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},

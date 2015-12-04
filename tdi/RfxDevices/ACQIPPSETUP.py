@@ -1,10 +1,9 @@
-from MDSplus import mdsExceptions, Device, Data, Int32
+from MDSplus import mdsExceptions, Device, Data
 from ctypes import CDLL,c_int,c_double
 from threading import Thread
 from time import sleep
 
 class ACQIPPSETUP(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """IPP probe & thermocoupels acquisition setup"""
     parts=[ {'path':':COMMENT', 'type':'text'}]
     parts.append({'path':'.PROBE', 'type':'structure'})

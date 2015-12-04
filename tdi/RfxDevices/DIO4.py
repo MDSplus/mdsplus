@@ -1,4 +1,4 @@
-from MDSplus import mdsExceptions, Device, Data, Range, Int32, makeArray
+from MDSplus import mdsExceptions, Device, Data, Range, makeArray
 from threading import Thread
 from numpy import array
 from ctypes import CDLL, byref, c_int
@@ -7,7 +7,6 @@ from time import sleep
 
 class DIO4(Device):
     """INCAA DIO4 Timing Module"""
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':SW_MODE', 'type':'text', 'value':'LOCAL'},
         {'path':':IP_ADDR', 'type':'text'},

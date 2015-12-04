@@ -1,4 +1,4 @@
-from MDSplus import mdsExceptions, Device, Data, Int32Array
+from MDSplus import mdsExceptions, Device, Signal, Data, Dimension, Window, Range, Int32Array 
 from ctypes import c_int
 
 class SIS3820(Device):
@@ -141,13 +141,7 @@ class SIS3820(Device):
 ########################################### END ARM #######################################
 
     # Store Function
-<<<<<<< HEAD
-    def store(self, arg):
-        from MDSplus import mdsExceptions, Signal, Data, Dimension, Window, Range
-=======
     def store(self,*arg):
-        from MDSplus import mdsException, Signal, Data, Dimension, Window, Range
->>>>>>> 064d0c6... removed unnecessary arg down passing in MARTE_GENERIC arg->*arg
         print('************ START STORE ************')
     # Get IP Address
         try:

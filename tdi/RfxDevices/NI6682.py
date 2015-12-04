@@ -5,7 +5,7 @@ RfxDevices
 @copyright: 2012
 @license: GNU GPL
 """
-from MDSplus import mdsExceptions, Device, Data, Int32, Int64, Int64Array
+from MDSplus import mdsExceptions, Device, Data, Int64, Int64Array
 from threading import Thread
 from ctypes import CDLL, c_int, byref
 from time import sleep
@@ -14,7 +14,6 @@ from time import sleep
 class NI6682(Device):
     """National Instrument 6682 device. This implementation uses only a limited set of the hardware facilities.
        In particular the board is just used as a Time-to-Digital Converter (TDC). """
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts = [{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},
         {'path':':CLOCK_SOURCE', 'type':'text', 'value':'PTP'}]

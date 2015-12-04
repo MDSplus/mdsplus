@@ -6,7 +6,6 @@ from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 from time import sleep
 
 class CAENDT5720(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """CAEN DT5720 4 Channels 12 Bit 250MS/S Digitizer"""
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
       {'path':':COMMENT', 'type':'text'},

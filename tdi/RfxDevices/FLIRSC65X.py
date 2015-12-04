@@ -1,11 +1,10 @@
-from MDSplus import mdsExceptions, Device, Data, Int32, version
+from MDSplus import mdsExceptions, Device, Data, version
 from ctypes import CDLL, byref, c_double, c_int, c_void_p, c_char_p, create_string_buffer
 from numpy import array
 from threading import Thread
 import traceback
 
 class FLIRSC65X(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """FLIR655 NEW Camera"""
     parts=[
       {'path':':NAME', 'type':'text'},

@@ -1,7 +1,6 @@
-from MDSplus import mdsExceptions, Int32, Device
+from MDSplus import mdsExceptions, Device
 
 class SPIDER_SM(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """SPIDER State Machine Configuration"""
     parts=[
       {'path':'.MASTER_SM', 'type':'structure'},

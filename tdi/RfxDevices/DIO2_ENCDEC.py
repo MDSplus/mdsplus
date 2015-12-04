@@ -1,4 +1,4 @@
-from MDSplus import mdsExceptions, Device, Data, Range, Int32, makeArray
+from MDSplus import mdsExceptions, Device, Data, Range, makeArray
 from threading import Thread
 from numpy import array
 from ctypes import CDLL, byref, c_int
@@ -10,7 +10,6 @@ except:
 
 class DIO2_ENCDEC(Device):
     """INCAA DIO2 Decoder/Encoder channels Timing Module"""
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':SW_MODE', 'type':'text', 'value':'LOCAL'},
         {'path':':IP_ADDR', 'type':'text'},

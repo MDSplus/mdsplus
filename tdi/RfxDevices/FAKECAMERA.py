@@ -1,11 +1,10 @@
-from MDSplus import mdsExceptions, Device, Data, Int32
+from MDSplus import mdsExceptions, Device, Data
 from threading import Thread
 from ctypes import CDLL, c_void_p, c_int, c_short, c_byte, byref, c_char_p, c_float
 import datetime
 import time
 
 class FAKECAMERA(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Fake Camera"""
     parts=[
       {'path':':NAME', 'type':'text', 'value':'Fake Camera 1'},

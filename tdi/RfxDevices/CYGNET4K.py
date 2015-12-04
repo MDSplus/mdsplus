@@ -7,7 +7,6 @@ from time import sleep, time
 from os import close, remove
 
 class CYGNET4K(Device):
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Cygnet 4K sCMOS Camera"""
     parts=[
       {'path':':CONF_FILE', 'type':'text','options':('no_write_shot',)},
