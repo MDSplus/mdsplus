@@ -6,6 +6,7 @@ def _mimport(name, level=1):
 
 _data=_mimport('mdsdata')
 _dtypes=_mimport('_mdsdtypes')
+_Exceptions=_mimport('mdsExceptions')
 
 class Compound(_data.Data):
     def __init__(self,*args, **params):
@@ -234,6 +235,17 @@ class _Conglom(Compound):
     information used for locating the external code.
     """
     fields=('image','model','name','qualifiers')
+    def getClass(self, ):
+        if not self.image=='__python__':
+            raise Exception('Conglom does not represent a python class.')
+        model = str(self.model)
+        safe_env = {}
+        qualifiers = self.qualifiers.value.tolist()
+        if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
+        exec(compile(qualifiers,'<string>','exec')) in safe_env
+        if not model in safe_env:
+            raise _Exceptions.DevPYDEVICE_NOT_FOUND
+        return safe_env[model]
 Conglom=MetaClass('Conglom',(_Conglom,),{})
 
 class _Dependency(Compound):
