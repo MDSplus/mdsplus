@@ -131,7 +131,6 @@ class Device(_treenode.TreeNode):
     def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @type arg: Use None
         @return: Part name of this node
         @rtype: str
         """
@@ -171,7 +170,7 @@ class Device(_treenode.TreeNode):
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
-    def Add(cls,tree,path):
+    def Add(cls,tree,name):
         """Used to add a device instance to an MDSplus tree.
         This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
         For this to work the device class name (uppercase only) and the package name must be returned in the MdsDevices tdi function.
@@ -182,25 +181,27 @@ class Device(_treenode.TreeNode):
         And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
         on (i.e. write_once).
         """
+        parent = tree
+        if isinstance(tree, _treenode.TreeNode): tree = tree.tree
         cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
-        head=tree.addNode(path,'DEVICE')
+        head=parent.addNode(name,'DEVICE')
         head=cls(head)
         head.record=_compound.Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
         head.write_once=True
         import MDSplus
         glob = MDSplus.__dict__
         glob['tree'] = tree
-        glob['path'] = path
+        glob['path'] = head.path
         glob['head'] = head
         for elt in cls.parts:
-            node=tree.addNode(path+elt['path'],elt['type'])
-        for elt in cls.parts:
-            node=tree.getNode(path+elt['path'])
+            node=head.addNode(elt['path'],elt['type'])
             if 'value' in elt:
+                if Device.debug: print(node,node.usage,elt['value'])
                 node.record = elt['value']
             elif 'valueExpr' in elt:
                 glob['node'] = node
+                if Device.debug: print(node,node.usage,elt['valueExpr'])
                 node.record = eval(elt['valueExpr'], glob)
             if 'options' in elt:
                 for option in elt['options']:
@@ -212,11 +213,10 @@ class Device(_treenode.TreeNode):
     def dw_setup(self,*args):
         """Bring up a glade setup interface if one exists in the same package as the one providing the device subclass
 
-        The gtk.main() procedure must be run in a separate thread to avoid locking the main program. 
+        The gtk.main() procedure must be run in a separate thread to avoid locking the main program.
         """
         try:
             from widgets import MDSplusWidget
-            from mdsscalar import Int32
             import gtk.glade
             import os,gtk,inspect,threading
             import sys
@@ -263,4 +263,3 @@ class Device(_treenode.TreeNode):
     def waitForSetups(cls):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)
-
