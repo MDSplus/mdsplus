@@ -1,5 +1,5 @@
 from MDSplus import mdsExceptions, Device, Data, Tree, Dimension, Signal
-from MDSplus import Int32, Int16Array, Uint16Array, Uint64Array, Float32Array
+from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from threading import Thread
 from ctypes import CDLL, byref, c_byte, c_short, c_int, c_double, c_void_p, c_char_p
 from tempfile import mkstemp
@@ -88,7 +88,7 @@ class CYGNET4K(Device):
                 if now-self.clock>1./self.float_frameRate.value:
                     self.clock = now
                     piFrameIdx._obj.value = piFrameIdx._obj.value+1
-                    if CYGNET4K.debug:
+                    if Device.debug:
                         print("FRAME %d READ AT TIME %f" % (piFrameIdx._obj.value, pdCurrTime._obj.value))
                     return 1
                 sleep(0.005)
@@ -127,10 +127,10 @@ class CYGNET4K(Device):
         exposure = float(self.exposure.data())
         if exposure < 0.     : exposure = 0.     # must avoid negative numbers
         if exposure > 13000. : exposure = 13000. # tested with a (80 MHz) config file specifiying 10s exposures at 0.1Hz, so this is a safe limit at 60MHz
-        if CYGNET4K.debug: print("EXPOSURE (SET): %f" % exposure)
+        if Device.debug: print("EXPOSURE (SET): %f" % exposure)
         exp_clks = '%08X' % int(exposure * 60e3)
         byte_str = [exp_clks[0:2], exp_clks[2:4], exp_clks[4:6], exp_clks[6:8]]
-        if CYGNET4K.debug: print(byte_str)
+        if Device.debug: print(byte_str)
         line0 = '    0x124F0450,     0x53060D50,     0x06D402E0,     0xE0530650,     0x5000ED02,     0x02E05306,     0x0650' + byte_str[0] + 'EE,     0xEF02E053,     \n'
         line1 = '    0x530650' + byte_str[1] + ',     0x' + byte_str[2] + 'F002E0,     0xE0530650,     0x50' + byte_str[3] + 'F102,     0x02E05306,     0x06502FDD,     0xDE02E053,     0x530650AF,     \n'
         fh, abs_path = mkstemp()
@@ -159,7 +159,7 @@ class CYGNET4K(Device):
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
         codedTrigMode = 0
-        if CYGNET4K.debug: print('TriggerMode: %s' % trigMode)
+        if Device.debug: print('TriggerMode: %s' % trigMode)
         if(trigMode == 'EXTERNAL RISING'):
             codedTrigMode = 0xC0
         elif(trigMode == 'EXTERNAL FALLING'):
@@ -186,7 +186,7 @@ class CYGNET4K(Device):
             binning = '4x4'
         else:
             binning = '%x' % binning.value
-        if CYGNET4K.debug: print('binning %s' % binning)
+        if Device.debug: print('binning %s' % binning)
         sRoiRect = Uint16Array([sRoiXOffset.value,sRoiYOffset.value,sRoiXSize.value,sRoiYSize.value])
         sRoiRect.help = '[x,y,width,height]'
         try:
@@ -398,7 +398,7 @@ class CYGNET4K(Device):
                         if self.cmos is not None:
                             cmosTemp = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
                             tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
-                        if CYGNET4K.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
+                        if Device.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
                     except Exception as exc:
                         print(exc)
                         print('failure during temperature readout')
