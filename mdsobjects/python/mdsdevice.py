@@ -128,10 +128,9 @@ class Device(_treenode.TreeNode):
             self.head=node.nid
         super(Device,self).__init__(node.nid,node.tree)
 
-    def ORIGINAL_PART_NAME(self,arg):
+    def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @param arg: Not used. Placeholder for do method argument
         @type arg: Use None
         @return: Part name of this node
         @rtype: str
@@ -213,12 +212,7 @@ class Device(_treenode.TreeNode):
     def dw_setup(self,*args):
         """Bring up a glade setup interface if one exists in the same package as the one providing the device subclass
 
-        The gtk.main() procedure must be run in a separate thread to avoid locking the main program. If this method
-        is invoked via the Py() TDI function, care must be made to do unlock the python thread lock the first time
-        a gtkMain thread is created. This thread unlocking has to be done in the Py TDI function after the GIL state
-        has been restored. This method sets a public TDI variable, _PyReleaseThreadLock, which is inspected in the Py
-        function and if defined, the Py function will release the thread lock. This locking scheme was arrived at
-        after several days of trial and error and seems to work with at least Python versions 2.4 and 2.6.
+        The gtk.main() procedure must be run in a separate thread to avoid locking the main program. 
         """
         try:
             from widgets import MDSplusWidget
@@ -254,8 +248,6 @@ class Device(_treenode.TreeNode):
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()
         if Device.gtkThread is None or not Device.gtkThread.isAlive():
-            if Device.gtkThread is None:
-                Int32(1).setTdiVar("_PyReleaseThreadLock");
             Device.gtkThread=gtkMain()
             Device.gtkThread.start()
         return 1

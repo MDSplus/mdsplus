@@ -382,12 +382,12 @@ class descriptor(_C.Structure):
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
                     if descriptor.tree is None:
-                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.TreeRef())
                     else:
                       return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
-                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.TreeRef())
                     else:
                        return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):

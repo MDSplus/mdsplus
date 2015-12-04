@@ -522,10 +522,10 @@ class Data(object):
         """
         try:
             return self.execute("data($)",(self,)).value
-        except _Exceptions.treeshrExceptions.TreeNODATA:
+        except _Exceptions.TreeNODATA:
             if len(altvalue)==1:
                 return altvalue[0]
-            raise _Exceptions.treeshrExceptions.TreeNODATA
+            raise
 
     def _getDescrPtr(self):
         """Return pointer to descriptor of inself as an int

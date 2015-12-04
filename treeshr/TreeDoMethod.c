@@ -100,7 +100,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   {0, NciEND_OF_LIST, 0, 0}
   };
   void (*addr) ();
-  static void (*TdiExecute) () = 0;
+  static int (*TdiExecute) () = 0;
   STATIC_CONSTANT DESCRIPTOR(close, "$)");
   STATIC_CONSTANT DESCRIPTOR(arg, "$,");
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
@@ -153,27 +153,35 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       if (TdiExecute == 0)
 	status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
       if (status & 1) {
+	EMPTYXD(list_xd);
+	struct descriptor_xd *ans_xd=arglist[nargs];
+	DESCRIPTOR_LONG(stat_d,&status);
+	static DESCRIPTOR(dollar_d,"$");
+	arglist[nargs]=&list_xd;
 	for (i = nargs; i > 0; i--)
 	  arglist[i + 1] = arglist[i];
 	nargs += 2;
 	arglist[0] = arglist_nargs(nargs);
-	arglist[1] = &exp;;
+	arglist[1] = &exp;
 	arglist[nargs] = MdsEND_ARG;
 	status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
-	if (status & 1) {
-	  STATIC_CONSTANT DESCRIPTOR(getstat, "public _method_status");
-	  int stat;
-	  DESCRIPTOR_LONG(stat_d, &stat);
-	  arglist[0] = arglist_nargs(3);
-	  arglist[1] = &getstat;
-	  arglist[2] = &stat_d;
-	  arglist[3] = MdsEND_ARG;
-	  status = (int)((char *)LibCallg(arglist, TdiExecute) - (char *)0);
-	  if (status & 1)
-	    status = stat;
+        if (status & 1) {
+	  struct descriptor_a *list = (struct descriptor_a *)list_xd.pointer;
+	  if (list && list->dtype == DTYPE_LIST && list->arsize == (sizeof(void *)*2)) {
+	    struct descriptor *statd = ((struct descriptor **)list->pointer)[0];
+	    struct descriptor *ansd = ((struct descriptor **)list->pointer)[1];
+	    if (ansd) {
+	      (*TdiExecute)(&dollar_d, ansd, ans_xd, MdsEND_ARG);
+	    } else {
+	      (*TdiExecute)(&dollar_d,statd,ans_xd, MdsEND_ARG);
+	    }
+	  }
+	  else {
+	    status = 0;
+	    (*TdiExecute)(&dollar_d,&stat_d,ans_xd);
+	  }
+	  MdsFree1Dx(&list_xd,0);
 	}
-	if (status == TdiUNKNOWN_VAR || status == LibINVSTRDES)
-	  status = TreeNOMETHOD;
       }
       StrFree1Dx(&exp);
       *TreeCtx() = dbid;
@@ -183,16 +191,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	      method_ptr MDS_END_ARG);
     for (i = 0; i < method.length; i++)
       method.pointer[i] = tolower(method.pointer[i]);
-    /*
-       lib$establish(TREE$DO_METHOD_HANDLER);
-     */
     if (conglom_ptr->image && conglom_ptr->image->dtype == DTYPE_T)
       status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
     else
       status = 0;
-    /*
-       lib$revert();
-     */
     if (status & 1) {
       void *old_dbid = *TreeCtx();
       *TreeCtx() = dbid;

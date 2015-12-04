@@ -81,6 +81,8 @@ static int Initialize()
 {
   if (PyTuple_New == NULL) {
     void *(*Py_Initialize) () = 0;
+    void *(*PyEval_InitThreads)() = 0;
+    void *(*PyEval_SaveThread)() = 0;
     void *handle;
     char *lib;
     char *envsym = getenv("PyLib");
@@ -120,6 +122,10 @@ static int Initialize()
       free(lib);
       loadrtn(Py_Initialize, 1);
       (*Py_Initialize) ();
+      loadrtn(PyEval_InitThreads,1);
+      (*PyEval_InitThreads)();
+      loadrtn(PyEval_SaveThread, 1);
+      (*PyEval_SaveThread)();
     }
     loadrtn(PyGILState_Ensure,1);
     loadrtn(PyGILState_Release,1);

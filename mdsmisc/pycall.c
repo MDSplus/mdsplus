@@ -13,6 +13,7 @@ static void (*PyEval_InitThreads) () = 0;
 static void (*PyEval_ReleaseThread) (void *) = 0;
 static void (*PyRun_SimpleString) (char *) = 0;
 static void (*PyGILState_Release) (void *) = 0;
+static void (*PyEval_SaveThread)() = 0;
 
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
@@ -21,7 +22,7 @@ static void (*PyGILState_Release) (void *) = 0;
   return 0;\
 }
 
-EXPORT int PyCall(char *cmd, int lock)
+EXPORT int PyCall(char *cmd)
 {
 #ifndef _WIN32
   void (*old_handler) (int);
@@ -67,14 +68,15 @@ EXPORT int PyCall(char *cmd, int lock)
     loadrtn(PyGILState_GetThisThreadState, 1);
     loadrtn(Py_Initialize, 1);
     loadrtn(PyEval_InitThreads, 1);
+    loadrtn(PyEval_SaveThread, 1);
     loadrtn(PyEval_ReleaseThread, 1);
     loadrtn(PyRun_SimpleString, 1);
     loadrtn(PyGILState_Release, 1);
     (*Py_Initialize) ();
     (*PyEval_InitThreads) ();
+    (*PyEval_SaveThread) ();
   }
-  if (lock)
-    GIL = (*PyGILState_Ensure) ();
+  GIL = (*PyGILState_Ensure) ();
 #ifndef _WIN32
   old_handler = signal(SIGCHLD, SIG_DFL);
 #endif
@@ -82,22 +84,6 @@ EXPORT int PyCall(char *cmd, int lock)
 #ifndef _WIN32
   signal(SIGCHLD, old_handler);
 #endif
-  if (lock)
-    (*PyGILState_Release) (GIL);
+  (*PyGILState_Release) (GIL);
   return 1;
 }
-
-EXPORT void PyReleaseThreadLock()
-{
-  if (PyGILState_GetThisThreadState && PyEval_ReleaseThread) {
-    void *STATE = (*PyGILState_GetThisThreadState) ();
-    (*PyEval_ReleaseThread) (STATE);
-  }
-}
-
-#ifdef MAIN
-int main()
-{
-  pycall("print 42");
-}
-#endif
