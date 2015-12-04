@@ -4,7 +4,6 @@ except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_MHD_AC_BC(MARTE_GENERIC):
-    print('MARTE_MHD_AC_BC')
     parNames = ['OutputMapping', 'statFreezeTime', 'endFreezeTime', 'currentLimit']
     parValues = [0, 10000., 10000., 400.]
     parts = list(MARTE_GENERIC.parts)

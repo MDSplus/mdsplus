@@ -4,7 +4,6 @@ from time import sleep
 from ctypes import CDLL, c_uint, c_int, c_char_p, c_double
 
 class CONTIPPSETUP(Device):
-    print('CONTIPPSETUP')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Probe temperature control setup"""
 

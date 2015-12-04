@@ -5,7 +5,6 @@ from threading import Thread
 import traceback
 
 class FLIRSC65X(Device):
-    print('FLIRSC65X')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """FLIR655 NEW Camera"""
     parts=[

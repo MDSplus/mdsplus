@@ -7,7 +7,6 @@ import json
 from  time import sleep
 
 class REDPYTADC(Device):
-  print('REDPYTADC')
   parts=[{'path':':IP_ADDR', 'type':'text'},{'path':':COMMENT', 'type':'text'},
   {'path':':TRIG_SOURCE', 'type':'numeric', 'value':2},
   {'path':':TRIG_EDGE', 'type':'numeric', 'value':0},

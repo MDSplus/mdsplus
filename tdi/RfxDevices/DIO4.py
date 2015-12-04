@@ -7,7 +7,6 @@ from time import sleep
 
 class DIO4(Device):
     """INCAA DIO4 Timing Module"""
-    print('DIO4')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':SW_MODE', 'type':'text', 'value':'LOCAL'},
@@ -86,12 +85,12 @@ class DIO4(Device):
 
 # INIT
     def INIT(self, arg):
-        print('INIT')
+        if Device.debug: print('INIT')
 
 # Board ID
         try:
             boardId = self.board_id.data()
-            print('BOARD_ID: ' + str(boardId))
+            if Device.debug: print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             return 0
@@ -108,7 +107,7 @@ class DIO4(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
                 return 0
-            print('IP_ADDR: ' + ipAddr)
+            if Device.debug: print('IP_ADDR: ' + ipAddr)
 # Clock Source
         clockSourceDict = {'INTERNAL':0, 'HIGHWAY':1, 'EXTERNAL':2}
         try:
@@ -116,7 +115,7 @@ class DIO4(Device):
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid CLOCK_SOURCE')
             return 0
-        print('CLOCK_SOURCE: ' + self.clock_source.data() + ' - ID: ' + str(clockSource))
+        if Device.debug: print('CLOCK_SOURCE: ' + self.clock_source.data() + ' - ID: ' + str(clockSource))
 # Recorder Event
         recStartEv = 0
         if getattr(self, 'rec_start_ev').isOn():
@@ -134,7 +133,7 @@ class DIO4(Device):
             if synch == 'YES':
                 synchEvent = self.synch_event.data()
                 synchEvSize =Data.execute('size($1)', synchEvent)
-                print('synch event size: ' + str(synchEvSize))
+                if Device.debug: print('synch event size: ' + str(synchEvSize))
                 if synchEvSize == 1:
                     synchEvents.append(Data.execute('TimingDecodeEvent($1)', synchEvent))
                 else:
@@ -169,7 +168,7 @@ class DIO4(Device):
 # SW EVENT Configuration Check
         huge = float( Data.execute('HUGE(0.)') )
         if getattr(self, 'out_ev_sw').isOn():
-            print('SW EVENT IS ON')
+            if Device.debug: print('SW EVENT IS ON')
             try:
                 evName = getattr(self, 'out_ev_sw_name').data()
             except:
@@ -190,7 +189,7 @@ class DIO4(Device):
                 return 0
 
             try:
-                print('LEGGO evTime')
+                if Device.debug: print('LEGGO evTime')
                 evTime = getattr(self, 'out_ev_sw_time').data()
             except:
                 evTime = huge
@@ -198,15 +197,15 @@ class DIO4(Device):
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software channel')
                 return 0
             nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
-            print('NAME: ' + evName)
-            print('PATH: ' + nodePath)
+            if Device.debug: print('NAME: ' + evName)
+            if Device.debug: print('PATH: ' + nodePath)
             status = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
-            print('FATTO')
+            if Device.debug: print('FATTO')
             if status == -1:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
                 return 0
         else:
-            print('SW EVENT IS OFF')
+            if Device.debug: print('SW EVENT IS OFF')
 
 
 
@@ -221,7 +220,7 @@ class DIO4(Device):
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
                     return 0
-                print('FUNCTION: ' + function)
+                if Device.debug: print('FUNCTION: ' + function)
                 if function == 'CLOCK': #Clock Generation
                     try :
                         frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
@@ -269,7 +268,7 @@ class DIO4(Device):
                                 if eventSize == 1:
                                     eventCodes.append(Data.execute('TimingDecodeEvent($1)', event))
                                     eventTime = Data.execute('TimingGetEventTime($1)', event)
-                                    print('eventTime: ' + str(eventTime))
+                                    if Device.debug: print('eventTime: ' + str(eventTime))
                                     if eventTime == huge or eventTime == -huge:
                                         eventTime = getattr(self,'channel_%d_trigger'%(c+1)).data()
                                     else:
@@ -277,7 +276,7 @@ class DIO4(Device):
                                 else:
                                     for i in range(eventSize):
                                         eventCodes.append(Data.execute('TimingDecodeEvent($1)', event[i]))
-                                print('eventCodes: ' + str(eventCodes))
+                                if Device.debug: print('eventCodes: ' + str(eventCodes))
                                 getattr(self,'channel_%d_trigger'%(c+1)).data()
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'error events')
@@ -285,15 +284,15 @@ class DIO4(Device):
                         cyclicDict = {'NO':0, 'YES':1}
                         levelDict = {'LOW':0, 'HIGH':1}
                         cyclic = cyclicDict[getattr(self,'channel_%d_cyclic'%(c+1)).data()]
-                        print(cyclic)
+                        if Device.debug: print(cyclic)
                         initLev1 = levelDict[getattr(self,'channel_%d_init_lev_1'%(c+1)).data()]
-                        print(initLev1)
+                        if Device.debug: print(initLev1)
                         initLev2 = levelDict[getattr(self,'channel_%d_init_lev_2'%(c+1)).data()]
-                        print(initLev2)
+                        if Device.debug: print(initLev2)
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
-                        print(duration)
+                        if Device.debug: print(duration)
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
-                        print(delay)
+                        if Device.debug: print(delay)
                         evTermDict = {'NO':0, 'YES':1}
                         evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
                         evTermCode = evTermDict[evTerm]
@@ -321,8 +320,8 @@ class DIO4(Device):
                         duration_path = getattr(self,'channel_%d_duration'%(c+1)).getFullPath()
                         trigger_1 = trig_path + '+' + delay_path
                         trigger_2 = trigger_1 + '+' +  duration_path
-                        print(trigger_1)
-                        print(trigger_2)
+                        if Device.debug: print(trigger_1)
+                        if Device.debug: print(trigger_2)
                         getattr(self, 'channel_%d_trigger_1'%(c+1)).putData(Data.compile(trigger_1))
                         getattr(self, 'channel_%d_trigger_2'%(c+1)).putData(Data.compile(trigger_2))
 
@@ -349,7 +348,7 @@ class DIO4(Device):
                                     raise
                                 eventSize = eA.size
                                 #eventSize = Data.execute('size($1)', event)
-                                print(eventSize)
+                                if Device.debug: print(eventSize)
                                 if eventSize == 1:
                                     eventCodes.append(Data.execute('TimingDecodeEvent($1)', event))
                                     eventTime = Data.execute('TimingGetEventTime($1)', event)
@@ -360,14 +359,14 @@ class DIO4(Device):
                                         setattr(self,'channel_%d_trigger'%(c+1), eventTime)
                                 else:
                                     for i in range(eventSize):
-                                        print(eA[i])
+                                        if Device.debug: print(eA[i])
                                         eventCodes.append(Data.execute('TimingDecodeEvent($1)', event[i]))
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot resolve event(s) for channel %d'%(c+1))
                                 return 0
                         frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
-                        print('duration: ' + str(duration))
+                        if Device.debug: print('duration: ' + str(duration))
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
                         dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
                         cyclicDict = {'NO':0, 'YES':1}
@@ -502,10 +501,10 @@ class DIO4(Device):
                                 evCode = Data.execute('TimingDecodeEvent($1)', evName)
                             else:
                                 evCode = 0
-                            print('evCode: ' + str(evCode))
+                            if Device.debug: print('evCode: ' + str(evCode))
                             if evCode != 0:
                                 nodePath = getattr(self, 'channel_%d_out_ev%d_code'%(c+1, e+1)).getFullPath()
-                                print(nodePath)
+                                if Device.debug: print(nodePath)
                                 setattr(self,'channel_%d_out_ev%d_code'%(c+1, e+1), evCode)
                             else:
                                 try:
@@ -543,10 +542,10 @@ class DIO4(Device):
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event edge specification for channel %d'%(c+1))
                                 return 0
 
-                            print('channel: ' + str(c))
+                            if Device.debug: print('channel: ' + str(c))
                             realChannel = 2*c+1+e
-                            print('real channel: ' + str(realChannel))
-                            print('code: ' + str(evCode))
+                            if Device.debug: print('real channel: ' + str(realChannel))
+                            if Device.debug: print('code: ' + str(evCode))
                             if swMode == 'REMOTE':
                                 #status = Data.execute('MdsValue("DIO4HWSetEventGenChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4,$5)', boardId, c, evCode, evTermCode, evEdgeCode)
                                 status = Data.execute('MdsValue("DIO4HWSetEventGenChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4,$5)', boardId, realChannel, evCode, evTermCode, evEdgeCode)
@@ -564,7 +563,7 @@ class DIO4(Device):
 
 
                         else:
-                            print('OFF')
+                            if Device.debug: print('OFF')
 
                 elif function == 'CLOCK SOURCE + CLOCK':
                     try :
@@ -620,7 +619,7 @@ class DIO4(Device):
 # Board ID
         try:
             boardId = self.board_id.data()
-            print('BOARD_ID: ' + str(boardId))
+            if Device.debug: print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             return 0
@@ -636,7 +635,7 @@ class DIO4(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
                 return 0
-            print('IP_ADDR: ' + ipAddr)
+            if Device.debug: print('IP_ADDR: ' + ipAddr)
 #HW Reset
         if swMode == 'REMOTE':
             status = Data.execute('MdsConnect("'+ ipAddr + '")')
@@ -659,11 +658,11 @@ class DIO4(Device):
 
 
     def STORE(self, arg):
-        print('STORE')
+        if Device.debug: print('STORE')
 # Board ID
         try:
             boardId = self.board_id.data()
-            print('BOARD_ID: ' + str(boardId))
+            if Device.debug: print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
             return 0
@@ -702,9 +701,9 @@ class DIO4(Device):
         recEvents = Data.execute("_DIO4_rec_events")
         recTimes = Data.execute("_DIO4_rec_times")
         recEventNum  = Data.execute("size(_DIO4_rec_times)")
-        print("EVENTS ",recEvents)
-        print("TIMES ", recTimes)
-        print("NUM   ", recEventNum)
+        if Device.debug: print("EVENTS ",recEvents)
+        if Device.debug: print("TIMES ", recTimes)
+        if Device.debug: print("NUM   ", recEventNum)
 
         #if recEvents[0] != -1:
         if recEventNum > 0 :
@@ -723,7 +722,7 @@ class DIO4(Device):
                 recStartTime = 0
             setattr(self,'rec_times', recTimes + recStartTime)
             """
-            print("rec_times ", self.rec_times.getFullPath())
+            if Device.debug: print("rec_times ", self.rec_times.getFullPath())
             #self.rec_times.putData(recTimes + recStartTime)
 
         channelMask = 0
@@ -735,7 +734,7 @@ class DIO4(Device):
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
                     return 0
-                print('FUNCTION: ' + function)
+                if Device.debug: print('FUNCTION: ' + function)
                 if function == 'PULSE' or function == 'GCLOCK' or function == 'DCLOCK':
                     if swMode == 'REMOTE':
                         status = Data.execute('MdsValue("DIO4HWGetPhaseCount(0, $1, $2)", $1,$2)', boardId, channelMask)
@@ -764,7 +763,7 @@ class DIO4(Device):
 
 
     def TRIGGER(self, arg):
-        print('TRIGGER')
+        if Device.debug: print('TRIGGER')
 # Board ID
         try:
             boardId = self.board_id.data()
@@ -874,9 +873,9 @@ class DIO4(Device):
         #    print('OFF')
         if getattr(self, 'out_ev_sw').isOn():
             try:
-                print('SW CHANNEL IS ON')
+                if Device.debug: print('SW CHANNEL IS ON')
                 evCode = getattr(self, 'out_ev_sw_code').data()
-                print(evCode)
+                if Device.debug: print(evCode)
                 if swMode == 'REMOTE':
                     status = Data.execute('MdsValue("DIO4HWEventTrigger(0, $1, $2)", $1,$2)', boardId, evCode)
                     if status == 0:
@@ -906,12 +905,12 @@ class DIO4(Device):
 
         if self.nid in DIO4.handles.keys():
             self.handle = DIO4.handles[self.nid]
-            print('RESTORE INFO HANDLE TROVATO')
+            if Device.debug: print('RESTORE INFO HANDLE TROVATO')
         else:
             print('RESTORE INFO HANDLE NON TROVATO')
             try:
                 boardId = self.board_id.data()
-                print(boardId)
+                if Device.debug: print(boardId)
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid BOARD_ID')
                 return 0
@@ -929,7 +928,7 @@ class DIO4(Device):
         del(DIO4.handles[self.nid])
 
     def start_store(self, arg):
-        print('START STORE')
+        if Device.debug: print('START STORE')
         self.restoreInfo()
         self.worker = self.AsynchStore()
         self.worker.daemon = True
@@ -939,7 +938,7 @@ class DIO4(Device):
         return 1
 
     def stop_store(self,arg):
-        print('STOP STORE')
+        if Device.debug: print('STOP STORE')
         self.restoreWorker()
         self.worker.stop()
         return 1
@@ -954,7 +953,7 @@ class DIO4(Device):
 
         def run(self):
             while not self.stopReq:
-                print('RUN')
+                if Device.debug: print('RUN')
                 sleep(5)
 
         def stop(self):

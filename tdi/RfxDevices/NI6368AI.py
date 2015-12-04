@@ -1,13 +1,11 @@
 from MDSplus import Device, Data, Dimension, Range, Window
 from MDSplus import Int32, Float32, Float32Array, Float64
 from ctypes import CDLL,Structure,c_int,c_uint,c_char,c_byte,c_ubyte,c_float,byref,c_char_p,c_void_p,c_short
-#from numpy import *
 from threading import Thread
 import time
 import os
-#import errno
+
 class NI6368AI(Device):
-    print('NI6368AI')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """NI PXI-6368 X-series multi functional data acquisition card"""
 

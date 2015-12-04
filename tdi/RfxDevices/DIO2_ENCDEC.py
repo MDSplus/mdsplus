@@ -10,7 +10,6 @@ except:
 
 class DIO2_ENCDEC(Device):
     """INCAA DIO2 Decoder/Encoder channels Timing Module"""
-    print('DIO2_ENCDEC')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':SW_MODE', 'type':'text', 'value':'LOCAL'},

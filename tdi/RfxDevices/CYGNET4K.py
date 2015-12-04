@@ -7,7 +7,6 @@ from time import sleep, time
 from os import close, remove
 
 class CYGNET4K(Device):
-    print('CYGNET4K')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Cygnet 4K sCMOS Camera"""
     parts=[
@@ -25,12 +24,12 @@ class CYGNET4K(Device):
       {'path':':TREND:PCB', 'type':'text','options':('no_write_shot',)},
       {'path':':TREND:CMOS', 'type':'text','options':('no_write_shot',)},
       {'path':':TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
-      {'path':':TREND:START','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_trend',head))",'options':('no_write_shot',)},
-      {'path':':TREND:STOP','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'STORE',50,None),Method(None,'stop_trend',head))",'options':('no_write_shot',)},
+      {'path':':TREND:START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start_trend',head))",'options':('no_write_shot',)},
+      {'path':':TREND:STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_trend',head))",'options':('no_write_shot',)},
       {'path':':ACT_IDENT', 'type':'text','value':'CAMERA_SERVER','options':('no_write_shot',)},
-      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'PULSE_PREP',50,None),Method(None,'init',head))",'options':('no_write_shot',)},
-      {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'INIT',50,None),Method(None,'start_store',head))",'options':('no_write_shot',)},
-      {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.ACT_IDENT,'STORE',50,None),Method(None,'stop_store',head))",'options':('no_write_shot',)},
+      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'PULSE_PREP',50,None),Method(None,'init',head))",'options':('no_write_shot',)},
+      {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start_store',head))",'options':('no_write_shot',)},
+      {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_store',head))",'options':('no_write_shot',)},
       {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
       {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
       {'path':':TEMP_CMOS', 'type':'signal','options':('no_write_model','write_once')},

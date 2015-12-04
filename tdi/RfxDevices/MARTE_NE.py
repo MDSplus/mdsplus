@@ -4,11 +4,7 @@ except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_NE(MARTE_GENERIC):
-    print('MARTE_NE')
-
-    parNames = ['ctrlEnabled', 'gas_type','vGVmin','vGVmax','vGVopen','tGVopen','kp','ti',
-        'ctrlTimePeriod','ctrlStartTime','iPlaMin','ne_scale']
-
+    parNames = ['ctrlEnabled', 'gas_type','vGVmin','vGVmax','vGVopen','tGVopen','kp','ti','ctrlTimePeriod','ctrlStartTime','iPlaMin','ne_scale']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0]
 
     waveParNames = ['ne_ref']

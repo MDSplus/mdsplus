@@ -4,7 +4,6 @@ except:
     MARTE_COMMON = __import__('MARTE_COMMON', globals()).MARTE_COMMON
 
 class MARTE_DEVICE(MARTE_COMMON):
-    print('MARTE_DEVICE')
     parNames = ['param1', 'param2', 'param3', 'param4', 'param5', 'param6', 'param7', 'param8', 'param9', 'param10', 'param11', 'param12', 'param13', 'param14', 'param15', 'param16' ]
     waveParNames = ['paramWave1', 'paramWave2', 'paramWave3', 'paramWave4', 'paramWave5', 'paramWave6', 'paramWave7', 'paramWave8']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]

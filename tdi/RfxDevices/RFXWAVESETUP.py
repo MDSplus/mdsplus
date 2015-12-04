@@ -1,7 +1,6 @@
 from MDSplus import Device
 
 class RFXWAVESETUP(Device):
-    print('RFXWAVESETUP')
     """Generic Wavefor configuration mdsplus device"""
     parts=[{'path':':COMMENT','type':'text'}]
     for i in range(1,7):

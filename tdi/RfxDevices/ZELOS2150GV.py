@@ -5,7 +5,6 @@ from datetime import datetime
 from time import sleep, mktime
 
 class ZELOS2150GV(Device):
-    print('ZELOS2150GV')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Zelos 2150GV Camera"""
     parts=[

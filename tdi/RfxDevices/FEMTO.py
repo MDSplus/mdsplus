@@ -2,7 +2,6 @@ from MDSplus import Device, Data, Int8Array
 from ctypes import CDLL, c_char_p
 
 class FEMTO(Device):
-    print("FEMTO")
     parts=[{'path':':NAME','type':'text'},{'path':':COMMENT', 'type':'text'},
     {'path':':IP_ADDR', 'type':'text'},{'path':':COM_PORT', 'type':'text', 'value':'COM1'}]
 

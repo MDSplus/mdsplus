@@ -1,11 +1,9 @@
-from MDSplus import Data
 try:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
 except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_MHD_CTRL(MARTE_GENERIC):
-    print('MARTE_MHD_CTRL')
     parNames = ['cleaningEnable', 'extrapolationEnable', 'reconfigurationEnable', 'dynamicDecouplerEnable', 'staticDecouplerEnable', 'applyCleaning', 'extrapolationRadius',
     'rgM_1', 'rgN_1', 'rgFreq_1', 'rgAmpl_1','rgPhase_1','rgTStart_1','rgRiseTime_1','rgTEnd_1','rgFallTime_1','rgThreshold_1','rgIsRelative_1',
     'rgM_2', 'rgN_2', 'rgFreq_2', 'rgAmpl_2','rgPhase_2','rgTStart_2','rgRiseTime_2','rgTEnd_2','rgFallTime_2','rgThreshold_2','rgIsRelative_2',
@@ -42,39 +40,12 @@ class MARTE_MHD_CTRL(MARTE_GENERIC):
     'staticDecoupler', 'outCoilEnabled', 'supercoilIdx', 'reconfiguredModes',
     'refCutoffFreq_1','refCutoffFreq_2','refCutoffFreq_3','refCutoffFreq_4','refCutoffFreq_5','refCutoffFreq_6','refCutoffFreq_7','refCutoffFreq_8',
     'freezeStartTime', 'freezeEndTime', 'startBpAutozero', 'endBpAutozero']
-    parValues = [0,0,0,0,0,Data.compile('zero(192, 0)'), 0]
-    for i in range(88):  #References
-      parValues.append(0)
-    for i in range(88):  #FF References
-      parValues.append(0)
-    for i in range(8):  #Mode Controller
-      parValues.append(0)
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(0)
-      parValues.append(0)
-      parValues.append(0)
-    for i in range(8):  #VS Controller
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(Data.compile('zero(192, 0.)'))
-      parValues.append(0)
-      parValues.append(0)
-      parValues.append(0)
-    parValues.append(Data.compile('diagonal(zero(192,0.)+1)'))
-    parValues.append(Data.compile('zero(192, 0.)+1'))
-    parValues.append(Data.compile('zero(192, 0.)-1'))
-    parValues.append(Data.compile('zero(192, 0.)'))
-    for i in range(8):  #Reference cutoff frequency
-      parValues.append(0)
-    parValues.append(-1) #Start and end freeze time
-    parValues.append(-1)
-    parValues.append(-1) #Start and end Bp Autozero time
-    parValues.append(-1)
+    parValues = ( ['0','0','0','0','0','TdiCompile("zero(192, 0.)")', '0'] +
+                (['0']*88)*2 + # References and FF References
+                (['0']+['TdiCompile("zero(192, 0.)")']*4+['0']*3)*8 +  # Mode Controller
+                (['TdiCompile("zero(192, 0.)")']*5+['0']*3)*8 +  # VS Controller
+                 ['TdiCompile("diagonal(zero(192,0.)+1)")','TdiCompile("zero(192, 0.)+1")','TdiCompile("zero(192, 0.)-1")','TdiCompile("zero(192, 0.)")'] +
+                 ['0']*8 + ['-1']*4)  # Start and end of freeze and Bp Autozero time
     parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
@@ -84,7 +55,7 @@ class MARTE_MHD_CTRL(MARTE_GENERIC):
       parts.append({'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text', 'value':parNames[i]})
       parts.append({'path':'.PARAMS:PAR_%03d:TYPE'%(i+1), 'type':'text'})
       parts.append({'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'})
-      parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','value':parValues[i]})
+      parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','valueExpr':parValues[i]})
 
     for i in range(len(parNames), 512):
       parts.append({'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'})

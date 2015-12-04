@@ -5,7 +5,6 @@ from os import environ
 from time import sleep
 
 class MARTE_COMMON(Device):
-    print('MARTE_COMMON')
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':ID', 'type':'numeric', 'value':0},

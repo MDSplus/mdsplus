@@ -2,7 +2,6 @@
 from MDSplus import Device
 
 class RFX_PROTECTIONS(Device):
-    print('RFX_PROTECTIONS')
     """RFX Machine Protections configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':MAX_BR_HOR_W', 'type':'numeric'},

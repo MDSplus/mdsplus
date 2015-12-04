@@ -16,7 +16,6 @@ from time import sleep
 class NI6682(Device):
     """National Instrument 6682 device. This implementation uses only a limited set of the hardware facilities.
        In particular the board is just used as a Time-to-Digital Converter (TDC). """
-    print('NI6682')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts = [{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},
@@ -142,10 +141,9 @@ class NI6682(Device):
                 return 0
             print('CHANNEL_PFI%d.TRIG_MODE: '%(i), tm)
 
-            #TODO decimation must be greather than 0
             try:
                 decimation = getattr(self, 'channel_pfi%d_decimation'%(i)).data();
-                if decimation < 1:
+                if decimation < 1: # decimation must be greather than 0
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Decimation must be greater than 0: ', decimation)
                     return 0
             except:

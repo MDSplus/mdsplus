@@ -4,7 +4,6 @@ except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_EDA1_OUT(MARTE_GENERIC):
-    print('MARTE_EDA1_OUT')
     parNames = ['OutputMapping']
     parValues = [0]
     parts = list(MARTE_GENERIC.parts)

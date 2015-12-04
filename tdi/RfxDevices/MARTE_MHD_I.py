@@ -4,7 +4,6 @@ except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_MHD_I(MARTE_GENERIC):
-    print('MARTE_MHD_I')
     parNames = ['InputMapping', 'InputAutozero', 'i2t']
     parValues = [0,0,0]
     parts = list(MARTE_GENERIC.parts)

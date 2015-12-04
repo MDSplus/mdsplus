@@ -5,7 +5,6 @@ import datetime
 import time
 
 class FAKECAMERA(Device):
-    print('FAKECAMERA')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Fake Camera"""
     parts=[
@@ -38,7 +37,8 @@ class FAKECAMERA(Device):
     cammdsutils = None
     camstreamutils = None
 
-    def __init__(self):
+    def __init__(self,node):
+      super(FAKECAMERA,self).__init__(node)
       self.handle = 0
 
 ####Asynchronous readout internal class
@@ -190,7 +190,7 @@ class FAKECAMERA(Device):
         FAKECAMERA.camstreamutils = CDLL("libcamstreamutils.so")
       if self.getNid() in FAKECAMERA.handles.keys():
         self.handle = FAKECAMERA.handles[self.getNid()]
-        print('RESTORE INFO HANDLE TROVATO')
+        if Device.debug: print('RESTORE INFO HANDLE TROVATO')
       else:
         print('RESTORE INFO HANDLE NON TROVATO')
 
@@ -230,7 +230,7 @@ class FAKECAMERA(Device):
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
           return 0
-        print('restoreInfo ended')
+        if Device.debug: print('restoreInfo ended')
       return
 
 ###remove info###
@@ -277,8 +277,8 @@ class FAKECAMERA(Device):
 
 ##########stop store############################################################################
     def stop_store(self,arg):
-      print('STOP STORE')
+      if Device.debug: print('STOP STORE')
       self.restoreWorker()
       self.worker.stop()
-      print('FLAG SETTATO')
+      print('done')
       return 1

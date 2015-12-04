@@ -2,7 +2,6 @@ from MDSplus import Device, Data, Int32Array
 from ctypes import c_int
 
 class SIS3820(Device):
-    print('SIS3820')
     """SIS3820 Struck Multi Purpose Scaler"""
     parts=[{'path':':BASE_ADDR', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},

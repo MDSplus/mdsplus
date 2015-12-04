@@ -4,7 +4,6 @@ from threading import Thread
 from time import sleep
 
 class ACQIPPSETUP(Device):
-    print('ACQIPPSETUP')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """IPP probe & thermocoupels acquisition setup"""
 

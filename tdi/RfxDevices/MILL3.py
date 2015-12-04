@@ -6,7 +6,6 @@ import struct
 import time
 
 class MILL3(Device):
-    print('MILL3')
     parts=[
         {'path':':COMMENT', 'type':'text'},
         {'path':':IP', 'type':'text'},

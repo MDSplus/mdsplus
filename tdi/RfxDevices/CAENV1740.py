@@ -1,13 +1,18 @@
-from MDSplus import  TreeNode, Int32, Int16Array, Float64Array, Float64, Signal, Data, Dimension, Window, Range
+from MDsplus import TreeNode, Signal, Data, Dimension, Window, Range,Device
+from MDSplus import Int32, Int16Array, Float64Array, Float64
 from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 from time import sleep
 
 class CAENV1740(object):
-    print('CAENV1740')
     """CAEN V1740 64 Channels 12 Bit 65MS/S Digitizer"""
     caenLib = None
-
+    partNames = ['COMMENT','BOARD_ID','VME_ADDRESS','TRIG_MODE','TRIG_SOFT','TRIG_EXT','TRIG_SOURCE','TRIG_INT_TIM','CLOCK_MODE','CLOCK_DIV','CLOCK_SOURCE',
+                 'NUM_SEGMENTS','USE_TIME','PTS','START_IDX','END_IDX','START_TIME','END_TIME','CONT_SAMPLES']
+    parts =     [{'path':'.'+partName, 'type':'any'} for partName in partNames]
+    def Add(self,tree,path):
+        print('Add is not implemented for this device')
     def __init__(self,node):
+      super(CAENV1740,self).__init__(node)
       self.node=node
       self.N_HEAD = 0
       self.N_COMMENT = 1
@@ -161,7 +166,7 @@ class CAENV1740(object):
               if clockMode == 'EXTERNAL':
                   try:
                       clockSource = TreeNode(baseNid + self.N_CLOCK_SOURCE).getData()
-                      print('Clock source: ', clockSource)
+                      if Device.debug: print('Clock source: ', clockSource)
                   except:
                       print('Cannot resolve Clock source')
                       CAENV1740.caenLib.CAENVME_End(handle)
@@ -228,9 +233,9 @@ class CAENV1740(object):
       try:
           baseNid = self.node.getNid()
           boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
-          print('BOARD ID: ', boardId)
+          if Device.debug: print('BOARD ID: ', boardId)
           vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
-          print('VME ADDRESS: ', vmeAddress)
+          if Device.debug: print('VME ADDRESS: ', vmeAddress)
   #Module Reset
           status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
           if status != 0:
@@ -257,9 +262,9 @@ class CAENV1740(object):
         try:  # except line 508
             baseNid = self.node.getNid()
             boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
-            print('BOARD ID: ', boardId)
+            if Device.debug: print('BOARD ID: ', boardId)
             vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
-            print('VME ADDRESS: ', vmeAddress)
+            if Device.debug: print('VME ADDRESS: ', vmeAddress)
             try:
                 clock = TreeNode(baseNid + self.N_CLOCK_SOURCE).evaluate()
                 dt = clock.getDelta().data()
@@ -306,7 +311,7 @@ class CAENV1740(object):
                 CAENV1740.caenLib.CAENVME_End(handle)
                 return 0
 
-            print('Acquired segments: ', actSegments.value)
+            if Device.debug: print('Acquired segments: ', actSegments.value)
             if actSegments.value == 0:
                 CAENV1740.caenLib.CAENVME_End(handle)
                 return 1
@@ -331,7 +336,7 @@ class CAENV1740(object):
                 if (groupMask & (1 << group)) != 0:
                     nActGroups = nActGroups + 1
             if nActGroups == 0:
-                print('No active groups')
+                if Device.debug: print('No active groups')
                 CAENV1740.caenLib.CAENVME_End(handle)
                 return 1
             segmentSize = 16 + segmentSamples * nActGroups * 8 * 12 / 8

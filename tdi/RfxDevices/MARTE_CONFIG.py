@@ -2,7 +2,6 @@
 from MDSplus import Device
 
 class MARTE_CONFIG(Device):
-    print('MARTE_CONFIG')
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':CONFIG', 'type':'numeric', 'value':0},

@@ -1,7 +1,6 @@
 from MDSplus import Int32, Device
 
 class SPIDER_SM(Device):
-    print('SPIDER_SM')
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """SPIDER State Machine Configuration"""
     parts=[

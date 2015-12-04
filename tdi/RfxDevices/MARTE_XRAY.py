@@ -4,7 +4,6 @@ except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_XRAY(MARTE_GENERIC):
-    print('MARTE_XRAY')
     parNames = ['param1', 'param2']
     parValues = [0,0]
     parts = list(MARTE_GENERIC.parts)
