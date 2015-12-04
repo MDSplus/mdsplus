@@ -72,7 +72,7 @@ static void videoirqfunc(int sig)
 /*
  * Open the XCLIB C Library for use.
  */
-int epixOpen(char *confFile, int *xPixels, int *yPixels)
+int epixOpen(char *confFile, int *iXPixels, int *iYPixels)
 {
     int status;
     if(isOpen) return 0;
@@ -97,8 +97,8 @@ int epixOpen(char *confFile, int *xPixels, int *yPixels)
     printFrameInfo();
     printImageInfo();
 #endif
-    *xPixels = pxd_imageXdim();
-    *yPixels = pxd_imageYdim();
+    *iXPixels = pxd_imageXdim();
+    *iYPixels = pxd_imageYdim();
     uint32 ticku[2];
     if(pxd_infoSysTicksUnits(ticku) == 0)
     {
@@ -165,79 +165,75 @@ void epixStopVideoCapture(int id)
 //Returns 1 on capture and 0 on timeout
 //Return the tick count of the last frame or the passed baseTicks in case of timeout
 
-//frameIdx: frame index (from 0 onwards)
-//bufIdx: index of the last captured frame grabber buffer (-1 the first time)
-//baseTicks: last 32 bits of system time when the last buffer has been taken
-//xPixels, yPixels: number of pixels
+//id: device id (1)
+//iXPixels, iYPixels: number of pixels
 //dataNid: nid number of target data node
 //timeNid: nid number of associated timestamp node. If -1, the time is put directly in the segmented data, else a reference to the timebase is put
-//treePtr: pointer to Tree object
-//listPtr: pointer to Internal List object for saving frames
 //timeoutMs: timeout in milliseconds
-//retBaseTicks, retBufIdx, retFrameIdx: returned values for frameIdx, bufIdx, baseTicks. Changed onlly when frame acquired
-int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixels, int yPixels, int dataNid, int timeNid, void *treePtr, void *listPtr, int timeoutMs, int *retFrameIdx, int *retBufIdx, int *retBaseTicks, float *retDuration)
+//*treePtr: pointer to Tree object
+//*listPtr: pointer to Internal List object for saving frames
+//*bufIdx: index of the last captured frame grabber buffer        (initialize with -1 !!!)
+//*frameIdx: frame index (from 0 onwards)
+//*baseTicks: last 32 bits of system time when the first frame has been taken
+//*currtime: returns time since reference t=0
+int epixCaptureFrame(int iID, int iDataNid, double dTriggerTime, int iTimeOutMs, void *pTree, void *pList, int *piBufIdx, int *piFrameIdx, int *piBaseTicks, double *pdCurrTime)
 {
-    int unitMap = 1 << (idx - 1);
-    int lastBufIdx, currTicks;
-    int readPixels;
-    float currTime;
-    struct timespec waitTime;
+    int iUnitMap = 1 << (iID - 1);
+    int iLastBufIdx, iCurrTicks;
+    int iPixelsRead, iPixelsToRead, iPixelsX, iPixelsY;
+    struct timespec sWaitTime;
     pxbuffer_t  lastbuf = 0;
-    xPixels = pxd_imageXdim();
-    yPixels = pxd_imageYdim();
-    unsigned short *frame;
-    waitTime.tv_sec = 0;
-    waitTime.tv_nsec = 5000000; //5ms delay
-    if(bufIdx < 0)
-        lastBufIdx = pxd_capturedBuffer(unitMap);  //The first time captureFrame is called
-    else
-        lastBufIdx = bufIdx;
-    int maxCount = timeoutMs/5; //Maximum number of iterations before timing out
-    *retBaseTicks = baseTicks;
-    *retBufIdx = bufIdx;
-    *retFrameIdx = frameIdx;  //Default values in case of timeout
-    for(int i = 0; i < maxCount; i++)
+    iXPixels = pxd_imageXdim();
+    iYPixels = pxd_imageYdim();
+    iPixelsToRead = iXPixels * iYPixels;
+    sWaitTime.tv_sec = 0;
+    sWaitTime.tv_nsec = 5000000; //5ms delay
+    if(*piBufIdx < 0)
     {
-        int lastCaptured = pxd_capturedBuffer(unitMap);
-        if(lastCaptured != lastBufIdx) //A new frame arrived
+        iLastBufIdx = pxd_capturedBuffer(iUnitMap);  //The first time captureFrame is called
+        *piFrameIdx = 0;
+    }
+    else
+        iLastBufIdx = *piBufIdx;
+    int iMaxCount = iTimeOutMs/5; //Maximum number of iterations before timing out
+    for(int i = 0; i < iMaxCount; i++)
+    {
+        int iLastCaptured = pxd_capturedBuffer(iUnitMap);
+        if(iLastCaptured != iLastBufIdx) //A new frame arrived
         {
-            currTicks = pxd_capturedSysTicks(unitMap);
-            if(bufIdx == -1) //first frame
-                currTime = 0;
-            else
-                currTime = (currTicks - baseTicks) * sec_per_tick;
-            frame = new unsigned short[xPixels * yPixels];
-            readPixels = pxd_readushort(unitMap, lastCaptured, 0, 0, xPixels, yPixels, frame, xPixels * yPixels, (char *)"Grey");
-            if(readPixels != xPixels * yPixels)
+            iCurrTicks = pxd_capturedSysTicks(iUnitMap);//internal clock
+            if ( *piFrameIdx == 0) //first frame
+                *piBaseTicks = iCurrTicks;
+            *pdCurrTime = (iCurrTicks - (*piBaseTicks)) * sec_per_tick + dTriggerTime;
+            unsigned short *piFrame = new unsigned short[iPixelsToRead];//allocate frame
+            iPixelsRead = pxd_readushort(iUnitMap, iLastCaptured, 0, 0, iXPixels, iYPixels, piFrame, iPixelsToRead, (char *)"Grey");//get frame
+#ifdef DEBUG
+            printf("FRAME %d READ AT TIME %f\n", *piFrameIdx, *pdCurrTime);
+#endif
+            if(iPixelsRead != iPixelsToRead)
             {
-                if (readPixels < 0)
-                    printf("pxd_readushort: %s\n", pxd_mesgErrorCode(readPixels));
+                if (iPixelsRead < 0)
+                    printf("pxd_readushort: %s\n", pxd_mesgErrorCode(iPixelsRead));
                 else
-                    printf("pxd_readushort error: %d != %d\n", readPixels, xPixels * yPixels);
+                    printf("pxd_readushort error: %d != %d\n", iPixelsRead, iPixelsToRead);
                 return 0;
             }
-#ifdef DEBUG
-            printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
-#endif
-            camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
-            if(frameIdx == 0)
-                *retBaseTicks = currTicks;
-            *retFrameIdx = frameIdx + 1;
-            *retBufIdx = lastCaptured;
-            *retDuration = (currTicks - *retBaseTicks) * sec_per_tick;
+            camSaveFrameDirect(piFrame, iXPixels, iYPixels, *pdCurrTime, 12, pTree, iDataNid, -1, *piFrameIdx, pList);
+            *piBufIdx = iLastCaptured;
+            *piFrameIdx += 1;
             return 1;
         }
         else //No new frame
-           nanosleep(&waitTime, NULL);
+            nanosleep(&sWaitTime, NULL);
     }
 //If code arrives here timeout occurred
-return 0;
+    return 0;
 }
 
 int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readBytes)
 {
     int r;
-    int unitMap = 1 << (id-1);
+    int iUnitMap = 1 << (id-1);
     struct timespec waitTime;
     static int initialized = 0;
     char *outBuf = new char[outBytes+1];
@@ -252,7 +248,7 @@ int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readB
     waitTime.tv_nsec = 20000000; //20ms
     if(!initialized)
     {
-        r = pxd_serialConfigure(unitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
+        r = pxd_serialConfigure(iUnitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
         if (r < 0)
         {
             printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
@@ -261,14 +257,14 @@ int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readB
         initialized = 1;
     }
     nanosleep(&waitTime, NULL);
-    r = pxd_serialWrite(unitMap, 0, outBuf, outBytes+1);
+    r = pxd_serialWrite(iUnitMap, 0, outBuf, outBytes+1);
     if (r < 0)
     {
         printf("ERROR IN SERIAL WRITE\n");
         return r; // error
     }
     nanosleep(&waitTime, NULL);
-    r = pxd_serialRead(unitMap, 0, readBuf, readBytes);
+    r = pxd_serialRead(iUnitMap, 0, readBuf, readBytes);
     if (r < 0)
     {
         printf("ERROR IN SERIAL READ\n");
@@ -278,7 +274,7 @@ int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readB
     return r;
 }
 
-short getCMOSTemp(int id)
+short epixGetCMOSTemp(int id)
 {
     int retCount, r;
     char retBuf[50];
@@ -307,7 +303,7 @@ short getCMOSTemp(int id)
     return temp;
 }
 
-short getPCBTemp(int id)
+short epixGetPCBTemp(int id)
 {
     int retCount, r;
     char retBuf[50];
@@ -598,6 +594,6 @@ void epixGetConfiguration(int id, int *binning, int *roiXSize, int *roiXOffset, 
 
 void epixGetTemp(int id, float *pcbTemp, short *cmosTemp)
 {
-    *pcbTemp = getPCBTemp(id)/16.;
-    *cmosTemp = getCMOSTemp(id);
+    *pcbTemp = epixGetPCBTemp(id)/16.;
+    *cmosTemp = epixGetCMOSTemp(id);
 }
