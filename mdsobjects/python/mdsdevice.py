@@ -4,8 +4,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-_mimport('_loadglobals').load(globals())
-
+from os import getenv
 _treeshr=_mimport('_treeshr')
 _treenode=_mimport('treenode')
 _compound=_mimport('compound')
@@ -85,7 +84,7 @@ class Device(_treenode.TreeNode):
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-
+    debug = getenv('DEBUG_DEVICES')
     gtkThread = None
 
     def __class_init__(cls):
@@ -206,7 +205,7 @@ class Device(_treenode.TreeNode):
                 node.record = eval(elt['valueExpr'], glob)
             if 'options' in elt:
                 for option in elt['options']:
-                    exec('node.'+option+'=True')
+                    node.__setattr__(option,True)
         _treeshr.TreeEndConglomerate(tree)
     Add=classmethod(Add)
 
@@ -223,10 +222,9 @@ class Device(_treenode.TreeNode):
         """
         try:
             from widgets import MDSplusWidget
-#            from mdsdata import Data
             from mdsscalar import Int32
             import gtk.glade
-            import os,gtk,inspect,threading#,gobject
+            import os,gtk,inspect,threading
             import sys
             class gtkMain(threading.Thread):
                 def run(self):
