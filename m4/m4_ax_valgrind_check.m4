@@ -119,7 +119,7 @@ VALGRIND_CHECK_RULES='
 VALGRIND_LIB             ?= /usr/lib64/valgrind
 
 VALGRIND_FLAGS           ?=
-VALGRIND_FLAGS           += --num-callers=30 --trace-children=yes
+VALGRIND_FLAGS           += --num-callers=30 --trace-children=yes --child-silent-after-fork=yes
 
 VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
