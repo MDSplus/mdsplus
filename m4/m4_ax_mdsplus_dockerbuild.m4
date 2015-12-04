@@ -195,7 +195,9 @@ AC_DEFUN([get_docker_container_status],[
 
 
 AC_DEFUN([get_docker_image_id],[
-         AS_VAR_SET([$1], $(docker images -a -q $2))         
+dnl         the former was commented out as it fails in older docker versions
+dnl         AS_VAR_SET([$1], $(docker images -a -q $2))
+         AS_VAR_SET([$1], $(docker images -a | ${AWK} -v _img=$2 {if ($1 ":" $2 == _img) {print $3}} ))
 ])
 
 AC_DEFUN([get_docker_container_id],[
@@ -209,6 +211,7 @@ AC_DEFUN([get_docker_container_image],[
 
 AC_DEFUN([if_docker_image_exist],[
 AS_VAR_SET([id_img_exist], $(docker images -a -q $1 ))
+
 AS_IF([test -n "${id_img_exist}"],[eval $2], [eval $3])
 ])
 
@@ -237,16 +240,21 @@ AC_DEFUN([DK_START_IMGCNT], [
    DK_SET_DOCKER_CONTAINER
    DK_GET_CONFIGURE_ARGS([dk_configure_args])
 
+
+   AS_ECHO("Pulling image: $1")
+   docker pull $1;
+   
    AS_ECHO("Starting container from image: $1")         
-   get_docker_image_id([dk_image],[$1])
-   AS_IF([test -n "${dk_image}"],
-         AS_ECHO("using docker image: ${dk_image}"),
-         [eval docker pull $1
-          get_docker_image_id([dk_image],[$1])
-          AS_IF([test -n "${dk_image}"],
-                [AC_MSG_NOTICE("pulled docker image: ${dk_image}")],
-                [AC_MSG_ERROR("Could not pull the requested image")])
-         ])
+dnl   get_docker_image_id([dk_image],[$1])
+dnl   AS_IF([test -n "${dk_image}"],
+dnl         [docker pull $1;
+dnl          AS_ECHO("using docker image: ${dk_image}")],
+dnl         [docker pull $1;
+dnl          get_docker_image_id([dk_image],[$1]);
+dnl          AS_IF([test -n "${dk_image}"],
+dnl                [AC_MSG_NOTICE("pulled docker image: ${dk_image}")],
+dnl                [AC_MSG_ERROR("Could not pull the requested image")])
+dnl         ])
    
    dnl find if container exists and belongs to selected image   
    get_docker_container_id([dk_id],${DOCKER_CONTAINER})

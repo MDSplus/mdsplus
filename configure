@@ -3050,25 +3050,11 @@ IFS=${_save_IFS}
 
 
 
+
+   $as_echo "Pulling image: ${DOCKER_IMAGE}"
+   docker pull ${DOCKER_IMAGE};
+
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
-
-         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
-
-   if test -n "${dk_image}"; then :
-  $as_echo "using docker image: ${dk_image}"
-else
-  eval docker pull ${DOCKER_IMAGE}
-
-         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
-
-          if test -n "${dk_image}"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: \"pulled docker image: ${dk_image}\"" >&5
-$as_echo "$as_me: \"pulled docker image: ${dk_image}\"" >&6;}
-else
-  as_fn_error $? "\"Could not pull the requested image\"" "$LINENO" 5
-fi
-
-fi
 
 
          dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
