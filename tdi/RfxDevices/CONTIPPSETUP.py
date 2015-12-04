@@ -57,7 +57,7 @@ class CONTIPPSETUP(Device):
         if CONTIPPSETUP.niInterfaceLib is None:
             CONTIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
 
-    def start(self,*arg):
+    def start(self):
         print('OK Init')
         self.restoreInfo()
         if CONTIPPSETUP.niInterfaceLib == 0 :
@@ -126,7 +126,7 @@ class CONTIPPSETUP(Device):
         return 1
 
 
-    def exit(self,*arg):
+    def exit(self):
         print("End Initialization")
         self.restoreInfo()
         if CONTIPPSETUP.niInterfaceLib == 0 :
@@ -138,7 +138,7 @@ class CONTIPPSETUP(Device):
         return 1
 
 
-    def stop(self,*arg):
+    def stop(self):
         self.restoreInfo()
         if CONTIPPSETUP.niInterfaceLib == 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')

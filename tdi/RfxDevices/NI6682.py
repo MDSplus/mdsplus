@@ -104,7 +104,7 @@ class NI6682(Device):
 
 
 # INIT
-    def INITIALISE(self,*arg):
+    def INITIALISE(self):
 
         print('INITIALISE')
         if NI6682.libts is None:
@@ -153,7 +153,7 @@ class NI6682(Device):
         return 1;
 
 # STORE
-    def FINALISE(self,*arg):
+    def FINALISE(self):
 
         print('FINALISE')
 
@@ -240,7 +240,7 @@ class NI6682(Device):
             self.keepWorking = False;
 
 
-    def START_STORE(self,*arg):
+    def START_STORE(self):
 
         print('START_STORE')
 
@@ -258,7 +258,7 @@ class NI6682(Device):
 
         return 1;
 
-    def STOP_STORE(self,*arg):
+    def STOP_STORE(self):
 
         print('STOP_STORE')
 

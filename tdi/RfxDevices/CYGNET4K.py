@@ -126,7 +126,7 @@ class CYGNET4K(Device):
         self.handle = None
 
 
-    def init(self,*arg):
+    def init(self):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0.')
@@ -202,7 +202,7 @@ class CYGNET4K(Device):
         close(fh)
         return abs_path
 
-    def start_store(self,*arg):
+    def start_store(self):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0.')
@@ -216,7 +216,7 @@ class CYGNET4K(Device):
         self.worker.start()
         return mdsExceptions.TreeNORMAL.status
 
-    def stop_store(self,*arg):
+    def stop_store(self):
         if not self.restoreWorker():
             return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.worker.stop()
@@ -238,7 +238,7 @@ class CYGNET4K(Device):
         print('Cannot restore worker!!\nMaybe no worker has been started.')
         return False
 
-    def start_trend(self,*arg):
+    def start_trend(self):
         idx = int(self.device_id.data())
         if idx < 0:
             print('Wrong value of Device Id, must be greater than 0')
@@ -269,7 +269,7 @@ class CYGNET4K(Device):
         self.TrendWorker.start()
         return mdsExceptions.TreeNORMAL.status
 
-    def stop_trend(self,*arg):
+    def stop_trend(self):
         if not self.restoreTrendWorker():
             return mdsExceptions.TclFAILED_ESSENTIAL.status
         self.trendWorker.stop()

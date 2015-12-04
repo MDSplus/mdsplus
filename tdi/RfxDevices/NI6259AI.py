@@ -287,7 +287,7 @@ class NI6259AI(Device):
 #############End Inner class AsynchStore
 
 ##########init############################################################################
-    def init(self,*arg):
+    def init(self):
 
         print('================= PXI 6259 Init ===============')
 
@@ -601,7 +601,7 @@ class NI6259AI(Device):
         return 1
 
 ##########StartStore
-    def start_store(self,*arg):
+    def start_store(self):
         self.restoreInfo()
         self.worker = self.AsynchStore()
         self.worker.daemon = True
@@ -637,7 +637,7 @@ class NI6259AI(Device):
         self.worker.start()
         return 1
 
-    def stop_store(self,*arg):
+    def stop_store(self):
       print("PXI 6259 stop_store")
       self.restoreWorker()
       if self.worker.isAlive():
@@ -645,7 +645,7 @@ class NI6259AI(Device):
           self.worker.stop()
       return 1
 
-    def readConfig(self,*arg):
+    def readConfig(self):
       self.restoreInfo()
       try:
           NI6259AI.niInterfaceLib.readAiConfiguration(c_int(self.fd))
@@ -654,7 +654,7 @@ class NI6259AI(Device):
           return mdsExceptions.TclFAILED_ESSENTIAL.status
       return 1
 
-    def trigger(self,*arg):
+    def trigger(self):
       global niLib
       global niInterfaceLib
       self.restoreInfo()

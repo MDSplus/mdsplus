@@ -24,7 +24,7 @@ class REDPYTADC(Device):
 	'options':('no_write_shot',)})
 
 
-  def init(self,*arg):
+  def init(self):
     try:
       hConn = httplib.HTTPConnection(self.ip_addr.data())
       hConn.request("GET", "/bazaar?start=scope+gen")
@@ -84,7 +84,7 @@ class REDPYTADC(Device):
     return 1
 
 
-  def trigger(self,*arg):
+  def trigger(self):
     try:
       hConn = httplib.HTTPConnection(self.ip_addr.data())
     except:
@@ -99,7 +99,7 @@ class REDPYTADC(Device):
       return mdsExceptions.TclFAILED_ESSENTIAL.status
     return 1
 
-  def store(self,*arg):
+  def store(self):
     try:
       hConn = httplib.HTTPConnection(self.ip_addr.data())
     except:

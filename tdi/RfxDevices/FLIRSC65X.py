@@ -188,7 +188,7 @@ class FLIRSC65X(Device):
 
 
 ##########init############################################################################
-    def init(self,*arg):
+    def init(self):
       if self.restoreInfo() == 0:
           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
@@ -519,7 +519,7 @@ class FLIRSC65X(Device):
       return 1
 
 ####################MANUAL CALIBRATION ACTION
-    def calib(self,*arg):
+    def calib(self):
       if self.restoreInfo() == 0:
           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
@@ -534,7 +534,7 @@ class FLIRSC65X(Device):
 
 
 ####################MANUAL AUTOFOCUS ACTION
-    def autofocus(self,*arg):
+    def autofocus(self):
       if self.restoreInfo() == 0:
           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
@@ -549,7 +549,7 @@ class FLIRSC65X(Device):
 
 
 ####################READ FOCUS POSITION
-    def readFocusPos(self,*arg):
+    def readFocusPos(self):
       if self.restoreInfo() == 0:
           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
@@ -567,7 +567,7 @@ class FLIRSC65X(Device):
 
 
 ####################WRITE FOCUS POSITION
-    def writeFocusPos(self,*arg):
+    def writeFocusPos(self):
       if self.restoreInfo() == 0:
           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
@@ -582,7 +582,7 @@ class FLIRSC65X(Device):
 
 
 ##########start store############################################################################
-    def start_store(self,*arg):
+    def start_store(self):
       if self.restoreInfo() == 0:
           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
@@ -605,7 +605,7 @@ class FLIRSC65X(Device):
 
 
 ##########stop store############################################################################
-    def stop_store(self,*arg):
+    def stop_store(self):
 
       print('STOP STORE')
 

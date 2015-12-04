@@ -78,7 +78,7 @@ class DIO2_ENCDEC(Device):
 
 
 # INIT
-    def init(self,*arg):
+    def init(self):
         print('INIT')
 
 # Board ID
@@ -729,7 +729,7 @@ class DIO2_ENCDEC(Device):
 
 
 # reset
-    def reset(self,*arg):
+    def reset(self):
         print('reset')
 # Board ID
         try:
@@ -775,7 +775,7 @@ class DIO2_ENCDEC(Device):
 
 
 
-    def store(self,*arg):
+    def store(self):
         print('store')
 
         if not getattr(self, 'rec_start_ev').isOn():
@@ -884,7 +884,7 @@ class DIO2_ENCDEC(Device):
             Data.execute('MdsDisconnect()')
         return 1
 
-    def trigger(self,*arg):
+    def trigger(self):
         print('trigger')
 # Board ID
         try:
@@ -1056,7 +1056,7 @@ class DIO2_ENCDEC(Device):
     def removeInfo(self):
         del(DIO4.handles[self.nid])
 
-    def start_store(self,*arg):
+    def start_store(self):
         print('START STORE')
         self.restoreInfo()
         self.worker = self.AsynchStore()
@@ -1066,7 +1066,7 @@ class DIO2_ENCDEC(Device):
         self.worker.start()
         return 1
 
-    def stop_store(self,*arg):
+    def stop_store(self):
         print('STOP STORE')
         self.restoreWorker()
         self.worker.stop()

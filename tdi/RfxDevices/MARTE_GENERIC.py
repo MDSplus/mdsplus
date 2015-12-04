@@ -64,7 +64,7 @@ class MARTE_GENERIC(Device):
       else:
         return environ["MARTE_EVENT"]
 
-    def init(self,*arg):
+    def init(self):
       eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
       eventStr = eventStr + " " + str(Tree.getActiveTree().shot)
       try:
@@ -121,32 +121,32 @@ class MARTE_GENERIC(Device):
       return 1
 
 
-    def trigger(self,*arg):
+    def trigger(self):
       eventStr = "TRIGGER " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def pre_req(self,*arg):
+    def pre_req(self):
       eventStr = "PRE_REQ " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def pulse_req(self,*arg):
+    def pulse_req(self):
       eventStr = "PULSE_REQ"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def post_req(self,*arg):
+    def post_req(self):
       eventStr = "POST_REQ"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def collection_complete(self,*arg):
+    def collection_complete(self):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def store(self,*arg):
+    def store(self):
       eventStr = "STORE " + str(self.id.data())
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
@@ -155,12 +155,12 @@ class MARTE_GENERIC(Device):
       sleep(3)
       return 1
 
-    def abort(self,*arg):
+    def abort(self):
       eventStr = "ABORT"
       Event.setevent(self.getEventName(), eventStr)
       return 1
 
-    def cacca(self,*arg):
+    def cacca(self):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
       return 1
@@ -170,7 +170,7 @@ class MARTE_GENERIC(Device):
 #       sleep(10)
 #       return 1
 
-    def seq_init(self,*arg):
+    def seq_init(self):
       self.abort()
       sleep(3)
       self.pre_req()
@@ -179,7 +179,7 @@ class MARTE_GENERIC(Device):
       self.pulse_req()
       return 1
 
-    def seq_init_start(self,*arg):
+    def seq_init_start(self):
       self.abort()
       sleep(3)
       self.pre_req()
@@ -187,12 +187,12 @@ class MARTE_GENERIC(Device):
       self.init()
       return 1
 
-    def seq_init_stop(self,*arg):
+    def seq_init_stop(self):
       self.init()
       self.pulse_req()
       return 1
 
-    def seq_store(self,*arg):
+    def seq_store(self):
       self.post_req()
       sleep(3)
       self.store()
@@ -200,13 +200,13 @@ class MARTE_GENERIC(Device):
       self.collection_complete()
       return 1
 
-    def seq_store_start(self,*arg):
+    def seq_store_start(self):
       self.post_req()
       sleep(3)
       self.store(ag)
       return 1
 
-    def seq_store_stop(self,*arg):
+    def seq_store_stop(self):
       self.store()
       self.collection_complete()
       return 1

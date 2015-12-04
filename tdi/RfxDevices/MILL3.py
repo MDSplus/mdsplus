@@ -56,7 +56,7 @@ class MILL3(Device):
 
 
 
-    def STORE(self,*arg):
+    def STORE(self):
         import serial
         import modbus_tk
         import modbus_tk.defines as cst
@@ -318,7 +318,7 @@ class MILL3(Device):
         return bad
 
 
-    def INIT(self,*arg):
+    def INIT(self):
         import serial
         import modbus_tk
         import modbus_tk.defines as cst

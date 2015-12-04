@@ -52,7 +52,7 @@ class CAENV1740(object):
       self.N_DATA_0= 68
       return
 
-    def init(self,*arg):
+    def init(self):
       if CAENV1740.caenLib is None:
           CAENV1740.caenLib = CDLL("libCAENVME.so")
       handle = c_long(0)
@@ -222,7 +222,7 @@ class CAENV1740(object):
 
 ################################TRIGGER###################################
 
-    def trigger(self,*arg):
+    def trigger(self):
       if CAENV1740.caenLib is None:
         CAENV1740.caenLib = CDLL("libCAENVME.so")
       handle = c_long(0)
@@ -251,7 +251,7 @@ class CAENV1740(object):
 
 ####################################STORE###################################
 
-    def store(self,*arg):
+    def store(self):
         if CAENV1740.caenLib is None:
           CAENV1740.caenLib = CDLL("libCAENVME.so")
         handle = c_long(0)

@@ -346,7 +346,7 @@ class NI6368AI(Device):
 
 ##########init############################################################################
 
-    def init(self,*arg):
+    def init(self):
 
         print('================= PXI 6368 Init ===============')
 
@@ -679,7 +679,7 @@ class NI6368AI(Device):
         return 1
 
 ##########StartStore
-    def start_store(self,*arg):
+    def start_store(self):
         self.restoreInfo()
         self.worker = self.AsynchStore()
         self.worker.daemon = True
@@ -714,7 +714,7 @@ class NI6368AI(Device):
         self.worker.start()
         return 1
 
-    def stop_store(self,*arg):
+    def stop_store(self):
       print("PXI 6368 stop_store")
       self.restoreWorker()
       if self.worker.isAlive():
@@ -723,7 +723,7 @@ class NI6368AI(Device):
       return 1
 
     """
-    def readConfig(self,*arg):
+    def readConfig(self):
       global niLib
       global niInterfaceLib
       self.restoreInfo()
@@ -736,7 +736,7 @@ class NI6368AI(Device):
       return 1
     """
 
-    def trigger(self,*arg):
+    def trigger(self):
       self.restoreInfo()
 
       try:

@@ -1,4 +1,4 @@
-from MDSplus import mdsExceptions, Device, Signal, Data, Dimension, Window, Range, Int32Array 
+from MDSplus import mdsExceptions, Device, Signal, Data, Dimension, Window, Range, Int32Array
 from ctypes import c_int
 
 class SIS3820(Device):
@@ -31,7 +31,7 @@ class SIS3820(Device):
     'options':('no_write_shot',)})
 
     # Init function
-    def init(self,*arg):
+    def init(self):
         print('************ START INIT ************')
     # Get IP Address
         try:
@@ -109,7 +109,7 @@ class SIS3820(Device):
 ########################################### END INIT #######################################
 
     # Arm Function
-    def arm(self,*arg):
+    def arm(self):
         print('************ START ARM ************')
     # Get IP Address
         try:
@@ -141,7 +141,7 @@ class SIS3820(Device):
 ########################################### END ARM #######################################
 
     # Store Function
-    def store(self,*arg):
+    def store(self):
         print('************ START STORE ************')
     # Get IP Address
         try:
