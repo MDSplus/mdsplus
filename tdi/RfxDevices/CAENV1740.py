@@ -1,5 +1,5 @@
 from MDsplus import TreeNode, Signal, Data, Dimension, Window, Range,Device
-from MDSplus import Int32, Int16Array, Float64Array, Float64
+from MDSplus import mdsExceptions, Int32, Int16Array, Float64Array, Float64
 from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 from time import sleep
 
@@ -59,7 +59,7 @@ class CAENV1740(object):
       status = CAENV1740.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
       if status != 0:
           print('Error initializing CAENVME')
-      return 0
+      return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       try:
           baseNid = self.node.getNid()
@@ -73,7 +73,7 @@ class CAENV1740(object):
           if status != 0:
               print('Error resetting V1740 Device')
               CAENV1740.caenLib.CAENVME_End(handle)
-              return 0
+              return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #give some time
           sleep(0.01)
@@ -86,7 +86,7 @@ class CAENV1740(object):
           if status != 0:
               print('Error writing number of segments')
               CAENV1740.caenLib.CAENVME_End(handle)
-              return 0
+              return mdsExceptions.TclFAILED_ESSENTIAL.status
 #Global Group Configuration
           trigModeDict = {'OVER THRESHOLD':0, 'UNDER THRESHOLD':1}
           trigMode = TreeNode(baseNid + self.N_TRIG_MODE).data()
@@ -97,7 +97,7 @@ class CAENV1740(object):
           if status != 0:
               print('Error writing group configuration')
               CAENV1740.caenLib.CAENVME_End(handle)
-              return 0
+              return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #Group configurations
           trigEnableCode = 0
@@ -110,7 +110,7 @@ class CAENV1740(object):
 #              if status != 0:
 #              print 'writing threshold level'
 #              CAENV1740.caenLib.CAENVME_End(handle)
-#              return 0
+#              return mdsExceptions.TclFAILED_ESSENTIAL.status
 #offset
               offset = TreeNode(baseNid+self.N_CHANNEL_0 + group * self.K_NODES_PER_CHANNEL + self.N_CHAN_OFFSET).data()
               if(offset > 1):
@@ -122,7 +122,7 @@ class CAENV1740(object):
               if status != 0:
                   print('Error writing DAC offset')
                   CAENV1740.caenLib.CAENVME_End(handle)
-                  return 0
+                  return mdsExceptions.TclFAILED_ESSENTIAL.status
 #states
               state = TreeNode(baseNid+self.N_CHANNEL_0 + group * self.K_NODES_PER_CHANNEL + self.N_CHAN_STATE).data()
               chanEnableCode = chanEnableCode | (enabledDict[state] << group)
@@ -138,12 +138,12 @@ class CAENV1740(object):
               if status != 0:
                   print('Error writing trigger configuration')
                   CAENV1740.caenLib.CAENVME_End(handle)
-                  return 0
+                  return mdsExceptions.TclFAILED_ESSENTIAL.status
               status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8120), byref(c_int(chanEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
               if status != 0:
                   print('Error writing channel enabling')
                   CAENV1740.caenLib.CAENVME_End(handle)
-                  return 0
+                  return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #Front Panel trigger out setting set TRIG/CLK to TTL
               data = 1
@@ -159,7 +159,7 @@ class CAENV1740(object):
               except:
                   print('Cannot resolve Trigger source')
                   CAENV1740.caenLib.CAENVME_End(handle)
-                  return 0
+                  return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #Clock source
               clockMode = TreeNode(baseNid + self.N_CLOCK_MODE).data()
@@ -170,7 +170,7 @@ class CAENV1740(object):
                   except:
                       print('Cannot resolve Clock source')
                       CAENV1740.caenLib.CAENVME_End(handle)
-                      return 0
+                      return mdsExceptions.TclFAILED_ESSENTIAL.status
               else:
                   clockSource = Range(None, None, Float64(1/62.5E6))
                   TreeNode(baseNid + self.N_CLOCK_SOURCE).putData(clockSource)
@@ -181,12 +181,12 @@ class CAENV1740(object):
               except:
                   print('Cannot resolve PTS samples')
                   CAENV1740.caenLib.CAENVME_End(handle)
-                  return 0
+                  return mdsExceptions.TclFAILED_ESSENTIAL.status
               segmentSize = 196608/nSegments
               if pts > segmentSize:
                   print('PTS Larger than segmentSize')
                   CAENV1740.caenLib.CAENVME_End(handle)
-                  return 0
+                  return mdsExceptions.TclFAILED_ESSENTIAL.status
               status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8114), byref(c_int(pts)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
 
 #Time management
@@ -198,7 +198,7 @@ class CAENV1740(object):
                   except:
                       print('Cannot Read Start or End time')
                       CAENV1740.caenLib.CAENVME_End(handle)
-                      return 0
+                      return mdsExceptions.TclFAILED_ESSENTIAL.status
               if endTime > 0:
                   endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), endTime + trigSource)
               else:
@@ -218,7 +218,7 @@ class CAENV1740(object):
       except:
           print('Generic Error')
           CAENV1740.caenLib.CAENVME_End(handle)
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ################################TRIGGER###################################
 
@@ -229,7 +229,7 @@ class CAENV1740(object):
       status = CAENV1740.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
       if status != 0:
           print('Error initializing CAENVME')
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
           baseNid = self.node.getNid()
           boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
@@ -241,13 +241,13 @@ class CAENV1740(object):
           if status != 0:
               print('Error resetting V1740 Device')
               CAENV1740.caenLib.CAENVME_End(handle)
-              return 0
+              return mdsExceptions.TclFAILED_ESSENTIAL.status
           CAENV1740.caenLib.CAENVME_End(handle)
           return 1
       except:
           print('Generic Error')
           CAENV1740.caenLib.CAENVME_End(handle)
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ####################################STORE###################################
 
@@ -258,7 +258,7 @@ class CAENV1740(object):
         status = CAENV1740.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
         if status != 0:
             print('Error initializing CAENVME')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         try:  # except line 508
             baseNid = self.node.getNid()
             boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
@@ -271,26 +271,26 @@ class CAENV1740(object):
             except:
                 print('Error evaluating clock source')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             try:
                 trig = TreeNode(baseNid + self.N_TRIG_SOURCE).data()
             except:
                 print('Error evaluating trigger source')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             try:
                 startIdx = TreeNode(baseNid + self.N_START_IDX).data()
                 endIdx = TreeNode(baseNid + self.N_END_IDX).data()
             except:
                 print('Error evaluating start or end idx')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             try:
                 pts = TreeNode(baseNid + self.N_PTS).data()
             except:
                 print('Error evaluating Post Trigger Samples')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
         # Stop device
@@ -298,7 +298,7 @@ class CAENV1740(object):
             if status != 0:
                 print('Error stopping device')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         #need to wait a while
             sleep(0.1)
 
@@ -309,7 +309,7 @@ class CAENV1740(object):
             if status != 0:
                 print('Error reading number of acquired segments')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
 
             if Device.debug: print('Acquired segments: ', actSegments.value)
             if actSegments.value == 0:
@@ -325,7 +325,7 @@ class CAENV1740(object):
             except:
                 print('Error reading max number of segments')
                 CAENV1740.caenLib.CAENVME_End(handle)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         # Get Active groups
             groupMask = c_int(0)
@@ -367,12 +367,12 @@ class CAENV1740(object):
                 if status != 0:
                     print('Error reading data segment')
                     CAENV1740.caenLib.CAENVME_End(handle)
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
                 actSize = 4 * (segment.eventSize & 0x0fffffff)
                 if actSize != segmentSize:
                     print('Expected event size different from expected size')
                     CAENV1740.caenLib.CAENVME_End(handle)
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
                 counter = segment.time/2
                 triggers.append(counter*dt)
                 deltas.append(dt)
@@ -490,7 +490,7 @@ class CAENV1740(object):
                     except:
                         print('Error evaluating group offset')
                         CAENV1740.caenLib.CAENVME_End(handle)
-                        return 0
+                        return mdsExceptions.TclFAILED_ESSENTIAL.status
                     for chan in range(0,8):
                         raw = Int16Array(channels[group * 8 + chan])
                         raw.setUnits("counts")
@@ -502,7 +502,7 @@ class CAENV1740(object):
                         except:
                             print('Cannot write Signal in the tree')
                             CAENV1740.caenLib.CAENVME_End(handle)
-                            return 0
+                            return mdsExceptions.TclFAILED_ESSENTIAL.status
                      #endfor
                  #endif
             #endfor
@@ -512,6 +512,6 @@ class CAENV1740(object):
         except:  # try line 258
             print('Generic Error')
             CAENV1740.caenLib.CAENVME_End(handle)
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 

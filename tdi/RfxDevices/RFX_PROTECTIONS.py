@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import Device
+from MDSplus import mdsExceptions, Device
 
 class RFX_PROTECTIONS(Device):
     """RFX Machine Protections configuration"""

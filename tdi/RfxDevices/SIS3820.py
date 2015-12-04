@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Int32Array
+from MDSplus import mdsExceptions, Device, Data, Int32Array
 from ctypes import c_int
 
 class SIS3820(Device):
@@ -18,6 +18,7 @@ class SIS3820(Device):
         else:
             parts.append({'path':'.CHANNEL_%d'%(i), 'type':'structure'})
             parts.append({'path':'.CHANNEL_%d:DATA'%(i),'type':'signal', 'options':('no_write_model','compress_on_put')})
+    del(i)
 
     parts.append({'path':':INIT_ACTION','type':'action',
     'valueExpr':"Action(Dispatch('VME_SERVER','INIT',50,None),Method(None,'init',head))",
@@ -28,7 +29,6 @@ class SIS3820(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
     'valueExpr':"Action(Dispatch('VME_SERVER','STORE',50,None),Method(None,'store',head))",
     'options':('no_write_shot',)})
-    del i
 
     # Init function
     def init(self,arg):
@@ -39,21 +39,21 @@ class SIS3820(Device):
             print('IP Addr=',ipAddr)
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Remote IP Address')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Get Base Address
         try:
             baseAddr = self.base_addr.data()
             print('Base Addr =',baseAddr)
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Base Address specification')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Get OP Mode
         opModeDict = {'SCALER':0, 'MULTI CHANNEL SCALER':1, 'VME FIFO WRITE':2}
         try:
             opMode = opModeDict[self.op_mode.data()]
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid OP Mode')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('OP Mode=',opMode)
     # Get LNE Mode
         lneModeDict = {'VME':0, 'CONTROL SIGNAL':1, 'INTERNAL 10MHZ':2, 'CHANNEL N':3, 'PRESET':4}
@@ -61,21 +61,21 @@ class SIS3820(Device):
             lneMode = lneModeDict[self.lne_mode.data()]
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Mode')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('LNE Mode=',lneMode)
     # Get LNE Source
         try:
             lneSource = self.lne_source.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Source')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('LNE Source=',lneSource)
     # Get Scan Count
         try:
             scanCount = self.scan_count.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Scan Count')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('Scan Count=',scanCount)
     # Get Channels Setup
         channelMask = 0
@@ -95,14 +95,14 @@ class SIS3820(Device):
         if status == 0:
             Data.execute('MdsDisconnect()')
             Data.execute('DevLogErr($1,$2)', self.nid, "Cannot Connect to VME. See VME console for details")
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # init SIS3820 Configuration
         if status > 0:
             status = Data.execute('MdsValue("SIS3820->sis3820_init(val($1),val($2),val($3),val($4),val($5))",$1,$2,$3,$4,$5)',baseAddr,opMode,lneMode,scanCount,channelMask)
             if status != 0:
                 Data.execute('MdsDisconnect()')
                 Data.execute('DevLogErr($1,$2)', self.nid, "Cannot execute HW initialization. See VME console for details")
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             Data.execute('MdsDisconnect()')
         print('************ END INIT ************')
         return 1
@@ -116,25 +116,25 @@ class SIS3820(Device):
             ipAddr = self.ip_addr.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Remote IP Address')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Get Base Address
         try:
             baseAddr = self.base_addr.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Base Address specification')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Connect to SIS3820 via MDS IP
         status = Data.execute('MdsConnect("'+ ipAddr +'")')
         if status == 0:
             Data.execute('MdsDisconnect()')
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Connect to VME. See VME console for details')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # ARM SIS3820
         status = Data.execute('MdsValue("SIS3820->sis3820_arm(val($1))", $1)', baseAddr)
         if status != 0:
             Data.execute('MdsDisconnect()')
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute HW ARM. See VME console for details')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         Data.execute('MdsDisconnect()')
         print('************ END ARM ************')
         return 1
@@ -142,26 +142,26 @@ class SIS3820(Device):
 
     # Store Function
     def store(self, arg):
-        from MDSplus import Signal, Data, Dimension, Window, Range
+        from MDSplus import mdsExceptions, Signal, Data, Dimension, Window, Range
         print('************ START STORE ************')
     # Get IP Address
         try:
             ipAddr = self.ip_addr.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Remote IP Address')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Get Base Address
         try:
             baseAddr = self.base_addr.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Base Address specification')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Get Scan Count
         try:
             scanCount = self.scan_count.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Scan Count')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('Scan Count=',scanCount)
     # Get LNE Mode
         lneModeDict = {'VME':0, 'CONTROL SIGNAL':1, 'INTERNAL 10MHZ':2, 'CHANNEL N':3, 'PRESET':4}
@@ -169,14 +169,14 @@ class SIS3820(Device):
             lneMode = lneModeDict[self.lne_mode.data()]
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Mode')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('LNE Mode=',lneMode)
     # Get LNE Source
         try:
             lneSource = self.lne_source.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Source')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         print('LNE Source=',lneSource)
     # Get Channels Setup
         channelMask = 0
@@ -196,19 +196,19 @@ class SIS3820(Device):
         if status == 0:
             Data.execute('MdsDisconnect()')
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Connect to VME. See VME console for details')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Wait End Acquisition
         status = Data.execute('MdsValue("SIS3820->sis3820_waitEndAcquisition(val($1), val($2))", $1, $2)', baseAddr, scanCount)
         if status != 0:
             Data.execute('MdsDisconnect()')
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute HW Acquisition. See VME console for details')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
     # Pre Store Fase
         status = Data.execute('MdsValue("SIS3820->sis3820_preStore(val($1), val($2))", $1, $2)', baseAddr, channelMask)
         if status != 0:
             Data.execute('MdsDisconnect()')
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute HW Acquisition. See VME console for details')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         DataArray = c_int * scanCount
         rawChan = []
@@ -225,7 +225,7 @@ class SIS3820(Device):
                 #ending = clk.end
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid LNE Source')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         for chan in range(0,32):
             if channelMask & ( 1 << chan ):

@@ -1,4 +1,4 @@
-from MDSplus import Device
+from MDSplus import mdsExceptions, Device
 
 class RFXVICONTROL(Device):
    parts=[{'path':':COMMENT', 'type':'text'},

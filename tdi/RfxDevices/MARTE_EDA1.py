@@ -1,4 +1,4 @@
-from MDSplus import Data
+from MDSplus import mdsExceptions, Data
 try:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
 except:
@@ -61,6 +61,4 @@ class MARTE_EDA1(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    del(i)
-    del(parNames)
-    del(parValues)
+    del(parNames,parValues,i)

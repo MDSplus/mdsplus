@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Tree, Dimension, Signal, mdsExceptions
+from MDSplus import mdsExceptions, Device, Data, Tree, Dimension, Signal, mdsExceptions
 from MDSplus import Int32, Int16Array, Uint16Array, Uint64Array, Float32Array
 from threading import Thread
 from ctypes import CDLL, byref, c_float, c_int, c_void_p, c_char_p
@@ -52,7 +52,7 @@ class CYGNET4K(Device):
             try:
                 self.tree = Tree(char_p_name.value,int_shot.value)
                 ref_treePtr._obj.value = self.tree.ctx.value
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             except:
                 return -1
         def camStartSaveDeferred(self,*args):
@@ -96,7 +96,7 @@ class CYGNET4K(Device):
                     return 1
                 sleep(0.005)
             ref_currDuration._obj.value = currTime
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         def epixStopVideoCapture(self,*args):
             return
         def getPCBTemp(self,id):

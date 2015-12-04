@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from MDSplus import Device, Data, version
+from MDSplus import mdsExceptions, Device, Data, version
 #from pymodbus.client.sync import ModbusTcpClient
 #from pymodbus.exceptions import ModbusException
 import struct
@@ -81,27 +81,27 @@ class MILL3(Device):
             print(' IP: ' + ip)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             longTranslationSetPoint = self.long_trn_sp.data()
             print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             shortTranslationSetPoint = self.short_trn_sp.data()
             print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom1 = str(self.moxa_com1.data())
@@ -109,7 +109,7 @@ class MILL3(Device):
             print(' MOXA_COM1: ' + moxaCom1)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM1')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom2 = str(self.moxa_com2.data())
@@ -117,7 +117,7 @@ class MILL3(Device):
             print(' MOXA_COM2: ' + moxaCom2)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM2')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom3 = str(self.moxa_com3.data())
@@ -125,7 +125,7 @@ class MILL3(Device):
             print(' MOXA_COM3: ' + moxaCom3)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM3')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom4 = str(self.moxa_com4.data())
@@ -133,7 +133,7 @@ class MILL3(Device):
             print(' MOXA_COM4: ' + moxaCom4)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
         """
@@ -343,27 +343,27 @@ class MILL3(Device):
             print(' IP: ' + ip)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             longTranslationSetPoint = self.long_trn_sp.data()
             print(' LONG_TRN_SP: ' + str(longTranslationSetPoint))
             if longTranslationSetPoint < 0 or longTranslationSetPoint > LONG_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid LONG_TRN_SP')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             shortTranslationSetPoint = self.short_trn_sp.data()
             print(' SHORT_TRN_SP: ' + str(shortTranslationSetPoint))
             if shortTranslationSetPoint < 0 or shortTranslationSetPoint > SHORT_TRANSLATION_SET_POINT_MAX_VALUE:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SHORT_TRN_SP')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom1 = str(self.moxa_com1.data())
@@ -371,7 +371,7 @@ class MILL3(Device):
             print(' MOXA_COM1: ' + moxaCom1)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM1')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom2 = str(self.moxa_com2.data())
@@ -379,7 +379,7 @@ class MILL3(Device):
             print(' MOXA_COM2: ' + moxaCom2)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM2')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom3 = str(self.moxa_com3.data())
@@ -387,7 +387,7 @@ class MILL3(Device):
             print(' MOXA_COM3: ' + moxaCom3)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM3')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
             moxaCom4 = str(self.moxa_com4.data())
@@ -395,7 +395,7 @@ class MILL3(Device):
             print(' MOXA_COM4: ' + moxaCom4)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
         """

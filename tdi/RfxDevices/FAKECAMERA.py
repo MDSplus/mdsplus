@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Int32
+from MDSplus import mdsExceptions, Device, Data, Int32
 from threading import Thread
 from ctypes import CDLL, c_void_p, c_int, c_short, c_byte, byref, c_char_p, c_float
 import datetime
@@ -66,7 +66,7 @@ class FAKECAMERA(Device):
         status = FAKECAMERA.cammdsutils.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
         if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         if self.device.streaming.data() == 'Stream and Store':
           isStreaming = 1
@@ -157,7 +157,7 @@ class FAKECAMERA(Device):
         #close device and remove from info
         FAKECAMERA.fakecamera.fakeClose(self.device.handle)
         self.device.removeInfo()
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       def stop(self):
         self.stopReq = True
@@ -198,38 +198,38 @@ class FAKECAMERA(Device):
           name = self.name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
           exp_name = self.exp_name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source experiment name' )
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
           exp_shot = self.exp_shot.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source shot' )
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
           exp_node = self.exp_node.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source frame node' )
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         try:
           frame_rate = self.frame_rate.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing reading frame rate' )
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         self.handle = c_void_p(0)
         print('restoreInfo before fakeOpen')
         status = FAKECAMERA.lib.fakeOpen(c_char_p(exp_name), c_char_p(exp_shot), c_char_p(exp_node), c_float(frame_rate), byref(self.handle))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
         if Device.debug: print('restoreInfo ended')
       return
 
@@ -249,7 +249,7 @@ class FAKECAMERA(Device):
 #      status = FakeCam.Lib.fakeSetColorCoding(self.handle, c_int(6));
 #      if status < 0:
 #        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
-#        return 0
+#        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       self.saveInfo()
       return 1
@@ -268,7 +268,7 @@ class FAKECAMERA(Device):
       status = FAKECAMERA.fakecamera.fakeStartAcquisition(self.handle, byref(hBuffers), byref(width), byref(height), byref(payloadSize))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       self.worker.configure(self, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()

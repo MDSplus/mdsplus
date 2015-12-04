@@ -33,7 +33,5 @@ class MARTE_MHD_AC_BC(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    del(i)
-    del(parNames)
-    del(parValues)
+    del(parNames,parValues,i)
 

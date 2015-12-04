@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Int32, version
+from MDSplus import mdsExceptions, Device, Data, Int32, version
 from ctypes import CDLL, byref, c_double, c_int, c_void_p, c_char_p, create_string_buffer
 from numpy import array
 from threading import Thread
@@ -101,7 +101,7 @@ class FLIRSC65X(Device):
                 Data.execute('DevLogErr($1,$2)', self.device.nid, 'Cannot close camera : ' + self.device.error.raw )
 
             self.device.removeInfo()
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         def stop(self):
             print("STOP frames acquisition loop")
@@ -127,7 +127,7 @@ class FLIRSC65X(Device):
             self.worker = FLIRSC65X.workers[self.nid]
         else:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot restore worker!!')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         return 1
 
 ###restore info###
@@ -154,7 +154,7 @@ class FLIRSC65X(Device):
         """
       except:
            Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot load library : ' + libName )
-           return 0
+           return mdsExceptions.TclFAILED_ESSENTIAL.status
       if self.nid in FLIRSC65X.handles.keys():
         self.handle = FLIRSC65X.handles[self.nid]
         print('RESTORE INFO HANDLE TROVATO')
@@ -164,7 +164,7 @@ class FLIRSC65X(Device):
           name = self.name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.nid, 'Missing device name' )
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         print("Opening")
 
@@ -176,7 +176,7 @@ class FLIRSC65X(Device):
         if status < 0:
           FLIRSC65X.flirLib.getLastError(self.handle, self.error)
           Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open device '+ name +'('+self.error.raw+')')
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       return 1
 
@@ -191,7 +191,7 @@ class FLIRSC65X(Device):
 ##########init############################################################################
     def init(self,arg):
       if self.restoreInfo() == 0:
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       self.saveInfo()
 
@@ -199,13 +199,13 @@ class FLIRSC65X(Device):
         self.frames.setCompressOnPut(False)
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot disable automatic compresson on put for frames node')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       try:
         self.frames_metad.setCompressOnPut(False)
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot disable automatic compresson on put for frames_metad node')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ###Object Parameters
 
@@ -213,61 +213,61 @@ class FLIRSC65X(Device):
         o_refl_temp = c_double(self.object_refl_temp.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object refletive temperature')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_atm_temp = c_double(self.object_atm_temp.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object atmosfere temperature')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_distance = c_double(self.object_distance.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object distance')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_emissivity = c_double(self.object_emissivity.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object emissivity')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_atm_hum = c_double(self.object_atm_hum.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object atmosfere humidity')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_optic_temp = c_double(self.object_optic_temp.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object optic temperature')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_optic_trans = c_double(self.object_optic_trans.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object optic transmission')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         o_atm_trans = c_double(self.object_atm_trans.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object atmosfere trasmission')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
       status = FLIRSC65X.flirLib.setObjectParameters(self.handle, o_refl_temp, o_atm_temp, o_distance, o_emissivity, o_atm_hum , o_optic_temp, o_optic_trans, o_atm_trans )
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Object Parameters : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ###Frame Rate
       try:
          frameRate = self.timing_frame_rate.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid frame rate value')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       status = FLIRSC65X.flirLib.setFrameRateNew(self.handle, c_double(frameRate))
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Frame Rate : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ###Frame Area
       x=c_int(0)
@@ -278,7 +278,7 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Get Readout Area : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       #write data in mdsplus
       self.frame_x.putData(x.value)
@@ -291,7 +291,7 @@ class FLIRSC65X(Device):
          measureRange = self.cam_setup_meas_range.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid measurement range value')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       if measureRange == '-40...150':
         measRangeInt=c_int(0)
@@ -305,7 +305,7 @@ class FLIRSC65X(Device):
         try:
           FLIRSC65X.flirLib.getLastError(self.handle, self.error)
           Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Measurement Range : ' + self.error.raw)
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
           traceback.print_exc()
 
@@ -314,7 +314,7 @@ class FLIRSC65X(Device):
         frameTempUnit = self.frame_temp_unit.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid image temperature unit (Radiometric, 10mk, 100mk) value')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       if frameTempUnit == 'Radiometric':
         frameTempUnitCode=c_int(0)
@@ -327,27 +327,27 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Image Temperature unit : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ###Frame Trigger mode
       try:
         burstDuration = self.timing_burst_dur.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid acquisition duration value')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       try:
         triggerMode = self.timing_trig_mode.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid trigger mode value')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       try:
         trigSource = self.timing_trig_source.data()
       except:
         if triggerMode == 'EXTERNAL':
            Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid trigger source value')
-           return 0
+           return mdsExceptions.TclFAILED_ESSENTIAL.status
         else:
            trigSource = array([0.])
 
@@ -373,14 +373,14 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Internal/External Trigger : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ###Calibration
       try:
         calibAuto = self.cam_setup_calib_auto.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid auto calibration setup')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       calibModeCode = c_int(1)
       if calibAuto == 'NO':
@@ -389,23 +389,23 @@ class FLIRSC65X(Device):
            calibModeCode = c_int(0)
         except:
            Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid calibration duration value')
-           return 0
+           return mdsExceptions.TclFAILED_ESSENTIAL.status
         if numTrigger > 1 and (burstDuration + calibTime) > (trigSource[1] - trigSource[0]) :
            Data.execute('DevLogErr($1,$2)', self.nid, 'Calibration executed during acquisition')
-           return 0
+           return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       status = FLIRSC65X.flirLib.setCalibMode(self.handle, calibModeCode)
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Internal/External Trigger : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 ###Streaming
       try:
         streamingMode = self.streaming_mode.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming mode setup')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
       if streamingMode == 'Stream and Store':
@@ -427,31 +427,31 @@ class FLIRSC65X(Device):
                   autoAdjustLimit = c_int(0)
           except:
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming autoscale parameter value')
-             return 0
+             return mdsExceptions.TclFAILED_ESSENTIAL.status
 
           try:
              lowLim = c_int(self.streaming_lolim.data())
           except:
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming low temperature limit parameter value')
-             return 0
+             return mdsExceptions.TclFAILED_ESSENTIAL.status
 
           try:
              highLim = c_int(self.streaming_hilim.data())
           except:
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming high temperature limit parameter value')
-             return 0
+             return mdsExceptions.TclFAILED_ESSENTIAL.status
 
           try:
              streamingPort = c_int(self.streaming_port.data())
           except:
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming port parameter value')
-             return 0
+             return mdsExceptions.TclFAILED_ESSENTIAL.status
 
           try:
              streamingServer = self.streaming_server.data()
           except:
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming server parameter value')
-             return 0
+             return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       else:
           autoAdjustLimit = c_int(0)
@@ -471,7 +471,7 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute streaming setup mode : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
 ###Acquisition
@@ -481,20 +481,20 @@ class FLIRSC65X(Device):
         acqSkipFrameNumber = c_int( self.timing_skip_frame.data() )
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid acquisition decimation value')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       status = FLIRSC65X.flirLib.setAcquisitionMode(self.handle, storeEnabled , acqSkipFrameNumber)
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute acquisition setup mode : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       try:
        treePtr = c_void_p(0)
        status = FLIRSC65X.mdsLib.camOpenTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
        if status == -1:
          Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open tree')
-         return 0
+         return mdsExceptions.TclFAILED_ESSENTIAL.status
       except:
        traceback.print_exc()
 
@@ -506,7 +506,7 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute set tree info : '+self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
 ###Auto Calibration
@@ -514,7 +514,7 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Calibration : '+self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       print('Init action completed.')
       return 1
@@ -522,13 +522,13 @@ class FLIRSC65X(Device):
 ####################MANUAL CALIBRATION ACTION
     def calib(self,arg):
       if self.restoreInfo() == 0:
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       status = FLIRSC65X.flirLib.executeAutoCalib(self.handle)
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Calibration '+ self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       #self.saveInfo()
       return 1
@@ -537,13 +537,13 @@ class FLIRSC65X(Device):
 ####################MANUAL AUTOFOCUS ACTION
     def autofocus(self,arg):
       if self.restoreInfo() == 0:
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       status = FLIRSC65X.flirLib.executeAutoFocus(self.handle)
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Focus : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       self.saveInfo()
       return 1
@@ -552,14 +552,14 @@ class FLIRSC65X(Device):
 ####################READ FOCUS POSITION
     def readFocusPos(self,arg):
       if self.restoreInfo() == 0:
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       focPos=0
       status = FLIRSC65X.flirLib.getFocusAbsPosition(self.handle, byref(c_int(focPos)))
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Focus Position : '+ self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       self.focus_pos.putData(focPos)   #write data in mdsplus
 
@@ -570,13 +570,13 @@ class FLIRSC65X(Device):
 ####################WRITE FOCUS POSITION
     def writeFocusPos(self,arg):
       if self.restoreInfo() == 0:
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       status = FLIRSC65X.flirLib.setFocusAbsPosition(self.handle, c_int(self.focus_pos.data()))
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Write Focus Position : ' + self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       self.saveInfo()
       return 1
@@ -585,7 +585,7 @@ class FLIRSC65X(Device):
 ##########start store############################################################################
     def start_store(self, arg):
       if self.restoreInfo() == 0:
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       self.worker = self.AsynchStore()
       self.worker.daemon = True
@@ -598,7 +598,7 @@ class FLIRSC65X(Device):
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Start Camera Acquisition : '+self.error.raw)
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       self.worker.configure(self)
       self.saveWorker()
       self.worker.start()

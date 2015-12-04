@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Range, Dimension, Window, Int32, Float32, Float64
+from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p
 import os
@@ -20,7 +20,7 @@ class NI6259AI(Device):
         parts.append({'path':'.CHANNEL_%d:POLARITY'%(i+1), 'type':'text', 'value':'BIPOLAR'})
         parts.append({'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'text', 'value':'10V'})
         parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
-    del i
+    del(i)
     parts.append({'path':':END_IDX', 'type':'numeric'})
     parts.append({'path':':INIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
@@ -107,21 +107,21 @@ class NI6259AI(Device):
                 boardId = self.board_id.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing Board Id' )
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             try:
                 fileName = '/dev/pxi6259.'+str(boardId)+'.ai';
                 self.fd = os.open(fileName, os.O_RDWR);
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         """
         try:
             if( niLib.pxi6259_reset_ai(self.fd) ):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ fileName)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ fileName)
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         """
         return 1
 
@@ -132,10 +132,10 @@ class NI6259AI(Device):
             try:
                 if NI6259AI.niLib.pxi6259_reset_ai(self.fd):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ self.fd)
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ self.fd)
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             os.close(self.fd)
         return 1
 
@@ -299,7 +299,7 @@ class NI6259AI(Device):
             inputMode = self.inputModeDict[self.input_mode.data()]
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Input Mode')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
             numChannels = 16
         else:
@@ -314,7 +314,7 @@ class NI6259AI(Device):
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan+1)).data()]
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
             if(enabled):
                 if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
                     currChan = self.diffChanMap[chan]
@@ -324,7 +324,7 @@ class NI6259AI(Device):
                 status = NI6259AI.niLib.pxi6259_add_ai_channel(aiConf, c_byte(currChan), polarity, gain, inputMode, c_byte(0))
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(currChan + 1))
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
                 print('PXI 6259 CHAN '+ str(currChan+1) + ' CONFIGURED')
                 activeChan = activeChan + 1
         #endfor
@@ -341,7 +341,7 @@ class NI6259AI(Device):
             acqMode = self.acq_mode.data()
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve acquisition mode management')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #trigger mode
         try:
@@ -364,7 +364,7 @@ class NI6259AI(Device):
                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_REFERENCE_POLARITY, self.AI_REFERENCE_POLARITY_RISING_EDGE)
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        return 0
+                        return mdsExceptions.TclFAILED_ESSENTIAL.status
                     """
                     # Sostituzione temporanea per gestire acquisizione a IPP trigger preso dal 6368
                     # status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
@@ -379,7 +379,7 @@ class NI6259AI(Device):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        return 0
+                        return mdsExceptions.TclFAILED_ESSENTIAL.status
                 else:
                     # Sostituzione etmporanea per gestire acquisizione a IPP trigger preso dal 6368
                     # status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
@@ -394,14 +394,14 @@ class NI6259AI(Device):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        return 0
+                        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
                 if( trigMode == 'EXTERNAL_PFI1' ):
                     status = NI6259AI.niLib.pxi6259_export_ai_signal( aiConf, self.PXI6259_AI_START_TRIGGER,  self.PXI6259_RTSI1 )
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot route PFI1 signal to RTSI1')
-                        return 0
+                        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
             else:
                 #print "AI_START_SELECT ", self.AI_START_SELECT
@@ -420,11 +420,11 @@ class NI6259AI(Device):
                     #    status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_REFERENCE_POLARITY, self.AI_REFERENCE_POLARITY_RISING_EDGE)
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        return 0
+                        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid triger mode definition')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #trigger source
         try:
@@ -435,7 +435,7 @@ class NI6259AI(Device):
             print('PXI 6259 Trigger source: ', trigSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #clock mode
         try:
@@ -455,7 +455,7 @@ class NI6259AI(Device):
                 status = NI6259AI.niLib.pxi6259_set_ai_sample_clk(aiConf, c_int(divisions), c_int(3), self.AI_SAMPLE_SELECT_SI_TC, self.AI_SAMPLE_POLARITY_RISING_EDGE)
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Sample Clock')
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
                 """
                 if nSamples > 0:
                     clockSource = Range(Float64(0), Float64(nSamples * divisions/20000000.) , Float64(divisions/20000000.))
@@ -470,15 +470,15 @@ class NI6259AI(Device):
                 status = NI6259AI.niLib.pxi6259_set_ai_sample_clk(aiConf, c_int(16), c_int(3), self.AI_SAMPLE_SELECT_PFI0, self.AI_SAMPLE_POLARITY_RISING_EDGE)
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot configure device clock')
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
 
             status = NI6259AI.niLib.pxi6259_set_ai_convert_clk(aiConf, c_int(20), c_int(3), self.AI_CONVERT_SELECT_SI2TC, self.AI_CONVERT_POLARITY_RISING_EDGE)
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Convert Clock')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid clock definition')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 #Time management
         if acqMode == 'TRANSIENT REC.':
@@ -487,7 +487,7 @@ class NI6259AI(Device):
 
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve time or samples management')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
 
             if useTime == 'YES':
                 try:
@@ -501,7 +501,7 @@ class NI6259AI(Device):
 
                 except:
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')
-                    return 0
+                    return mdsExceptions.TclFAILED_ESSENTIAL.status
 
 
                 startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), startTime)
@@ -581,12 +581,12 @@ class NI6259AI(Device):
 
         if(status != 0):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Number of Samples')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         status = NI6259AI.niLib.pxi6259_load_ai_conf(c_int(self.fd), aiConf)
         if(status != 0):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load configuration')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
 
         """
         if acqMode == 'TRANSIENT REC.':
@@ -615,7 +615,7 @@ class NI6259AI(Device):
             inputMode = self.inputModeDict[self.input_mode.data()]
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Input Mode')
-            return 0
+            return mdsExceptions.TclFAILED_ESSENTIAL.status
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
             numChannels = 16
         else:
@@ -627,7 +627,7 @@ class NI6259AI(Device):
                     chanMap.append(chan)
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
         treePtr = c_void_p(0)
         NI6259AI.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
@@ -652,7 +652,7 @@ class NI6259AI(Device):
           NI6259AI.niInterfaceLib.readAiConfiguration(c_int(self.fd))
       except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot read board configuration')
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
       return 1
 
     def trigger(self,arg):
@@ -663,8 +663,8 @@ class NI6259AI(Device):
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
-                return 0
+                return mdsExceptions.TclFAILED_ESSENTIAL.status
       except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Exception Cannot Start Acquisition')
-          return 0
+          return mdsExceptions.TclFAILED_ESSENTIAL.status
       return 1

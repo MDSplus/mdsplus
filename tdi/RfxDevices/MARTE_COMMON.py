@@ -1,6 +1,6 @@
 # -*- coding: iso-8859-1 -*-
 #MDSplus device superclass for MARTe applications
-from MDSplus import Device, Event, Tree
+from MDSplus import mdsExceptions, Device, Event, Tree
 from os import environ
 from time import sleep
 

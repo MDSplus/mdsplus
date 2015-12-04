@@ -1,5 +1,5 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import Device, Tree, Data, Event
+from MDSplus import mdsExceptions, Device, Tree, Data, Event
 from os import environ
 from time import sleep
 
@@ -71,37 +71,37 @@ class MARTE_GENERIC(Device):
         eventStr = eventStr + " " + str(self.frequency.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read frequency')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         eventStr = eventStr + " " + str(self.trig_source.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read trigger source')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         eventStr = eventStr + " " + str(self.sampl_start.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Sampling start')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         eventStr = eventStr + " " + str(self.sampl_end.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Sampling end')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         eventStr = eventStr + " " + str(self.offset_start.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Offset start')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         eventStr = eventStr + " " + str(self.offset_end.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Offset end')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       try:
         eventStr = eventStr + " " + str(self.duration.data())
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Duration')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
 
       eventStr = eventStr + " " + str(self.params.getNid())
       eventStr = eventStr + " " + str(self.wave_params.getNid())
@@ -111,7 +111,7 @@ class MARTE_GENERIC(Device):
         eventStr = eventStr + " " + self.control.data()
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Control')
-        return 0
+        return mdsExceptions.TclFAILED_ESSENTIAL.status
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())

@@ -28,7 +28,4 @@ class MARTE_NE(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':waveParNames[i]})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    del(i)
-    del(parNames)
-    del(parValues)
-    del(waveParNames)
+    del(parNames,parValues,waveParNames,i)
