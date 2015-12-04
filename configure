@@ -12434,11 +12434,11 @@ VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.su
                             $(VALGRIND_SUPPRESSIONS) \
                             $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
 
+VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
 # Internal use
-valgrind_tools = memcheck helgrind drd sgcheck
-valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(valgrind_tools))) \
-                     $(foreach tst,$(TESTS),$(addprefix $(tst)-valgrind-,$(addsuffix .xml,$(valgrind_tools))))
+valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
+                     $(foreach tst,$(TESTS),$(addprefix $(tst)-valgrind-,$(addsuffix .xml,$(VALGRIND_TOOLS))))
 
 valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
 
@@ -12484,7 +12484,7 @@ ifeq ($(VALGRIND_ENABLED),yes)
 
 check-valgrind:
 	@ \
-	$(foreach tool,$(valgrind_tools), \
+	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
@@ -12501,7 +12501,7 @@ check-valgrind-tool:
 
 check-valgrind-suppressions:
 	@ \
-	$(foreach tool,$(valgrind_tools), \
+	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
 		) \
