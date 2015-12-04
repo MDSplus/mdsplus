@@ -1,22 +1,20 @@
-from MDSplus import StringArray,Int32
+from MDSplus import Int32
 from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
     c = n.conglomerate_nids[0].record
-    q = c.qualifiers
     model = str(c.model)
     method = str(method)
-    if isinstance(q,StringArray):
-        for i in range(len(q)):
-            exec(str(q[i])) in globals()
-    else:
-        exec(str(q)) in globals()
-    if not model in globals():
-        stderr.write("Python device implementation not found for %s after doing %s\n\n" % (model,str(q)))
-        return [DevPYDEVICE_NOT_FOUND.status,None]
+    safe_env = {}
+    qualifiers = c.qualifiers.value.tolist()
+    if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
+    exec(compile(qualifiers,'<string>','exec')) in safe_env
+    if not model in safe_env:
+        stderr.write("Python device implementation not found for %s after doing %s\n\n" % (model,qualifiers))
+        return [Int32(DevPYDEVICE_NOT_FOUND.status),None]
     try:
-        device = globals()[model](n)
+        device = safe_env[model](n)
         try:
             methodobj = device.__getattribute__(method)
         except AttributeError:
@@ -31,7 +29,7 @@ def PyDoMethod(n,method,*args):
     except:
         exc = exc_info()[1]
         stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
-        
+
         if hasattr(exc,'status'):
             return [exc.status,None]
         else:
