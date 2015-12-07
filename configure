@@ -2963,6 +2963,8 @@ fi
   if test "x$HAVE_DOCKER" = xyes; then :
 
 
+
+
   if ${DOCKER_URL+:} false; then :
 
           $as_echo
@@ -3076,27 +3078,18 @@ fi
 
 else
   $as_echo "CREATE ";
-          user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
-          user_id=$(echo ${user_entry} | awk -F: '{print $3}')
-          user_group=$(echo ${user_entry} | awk -F: '{print $4}')
-          user_home=$(echo ${user_entry} | awk -F: '{print $6}')
-          group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
-          user_groups=$(id -G ${USER} | sed 's/ /,/g')
+  user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+  user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+  user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+  user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+  group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+  user_groups=$(id -G ${USER} | sed 's/ /,/g')
+  abs_srcdir=$(cd ${srcdir}; pwd)
 
-          abs_srcdir=$(cd ${srcdir}; pwd)
 
-          docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
+  docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
 
-          $as_echo ----
-          $as_echo "user_entry = ${user_entry}"
-          $as_echo "group_entry = ${group_entry}"
-          $as_echo "user_id = ${user_id}"
-          $as_echo "user_gp = ${user_group}"
-          $as_echo "user_hm = ${user_home}"
-          $as_echo "user_sg = ${user_groups}"
-          $as_echo ----
-
-          docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; echo root:root | chpasswd; sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config; /sbin/sshd-keygen; nohup /sbin/sshd; "
+  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
 
 fi
 
@@ -3324,6 +3317,144 @@ fi
   if ${DOCKER_CONTAINER+:} false; then :
 
 
+user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+user_groups=$(id -G ${USER} | sed 's/ /,/g')
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
+
+
+
+
+read -d '' DK_DSHELLFILE << _as_read_EOF
+
+#!/bin/sh
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
+
+abs_srcdir=${abs_srcdir}
+abs_builddir=${abs_builddir}
+user_id=${user_id}
+user_group=${user_group}
+user_groups=${user_groups}
+user_home=${user_home}
+
+# not used yet
+function run () {
+docker run -d -it --entrypoint=/bin/sh -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_srcdir}:\${abs_srcdir} -v \${abs_builddir}:\${abs_builddir} -v \${user_home}:\${user_home} -w \${abs_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; /sbin/sshd-keygen; nohup /sbin/sshd; ";
+}
+
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+quoted_args="\$(printf " %q" "\$\@")"
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
+
+
+_as_read_EOF
+
+
+$as_echo " Writing dshell file: "
+$as_echo "${DK_DSHELLFILE}" > dshell
+chmod +x dshell
+
+
+
+
+read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+DOCKER_CONTAINER = ${DOCKER_CONTAINER}
+DOCKER_IMAGE     = ${DOCKER_IMAGE}
+
+user_id     = ${user_id}
+user_group  = ${user_group}
+user_groups = ${user_groups}
+user_home   = ${user_home}
+
+# if MAKESHELL is not defined use local dshell to enter docker container
+docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
+local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
+export SHELL = \${docker_SHELL}
+
+.PHONY: docker
+.ONESHELL:
+docker:
+	@
+	echo
+ifeq (docker,\$(MAKECMDGOALS))
+	echo " This build was set to work with Docker: "
+	echo " ---------------------------------------------------------------- "
+	echo " This means that you should see a running docker container named: "
+	echo " ${DOCKER_CONTAINER}. 	"
+	echo " Using a map of the current srcdir and builddir and some envs the "
+	echo " build system should be able to launch make inside the container. "
+	echo " Use the usual make command and targets to build inside docker.   "
+	echo " In addition if your docker image has ssh daemon and  gdb  server "
+	echo " installed, it would be possible also to start  debugger  inside. "
+	echo
+	echo " Additional targets: "
+	echo " make docker start   <- start the docker container "
+	echo " make docker stop    <- remove the docker container "
+	echo " make docker shell   <- launch a shell inside the container "
+	echo " make docker shell USER=root <- launch the shell as root "
+	echo " make docker inspect <- get info on container (such as ipaddr)"
+	echo
+endif
+	echo
+
+
+# TODO: change this to find subpattern of docker
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+
+export SHELL = \${local_SHELL}
+
+.PHONY: info start stop shell inspect run
+inspect:
+	@echo "info:";
+	docker inspect \${DOCKER_CONTAINER}
+
+.ONESHELL:
+start:
+	@echo "Starting docker container:";
+	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+
+stop:
+	@echo "Stopping docker container:";
+	docker stop \${DOCKER_CONTAINER};
+	docker rm \${DOCKER_CONTAINER};
+
+shell:
+	@echo "Starting docker shell";
+	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
+	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
+
+endif
+
+_as_read_EOF
+
+
+
+
+
+fi
+
+  if ${DOCKER_CONTAINER+:} false; then :
+
+
           $as_echo
           sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
@@ -3346,6 +3477,57 @@ _ASBOX
        echo " DK_CMD_CONFIGURE "
     $as_echo " --- "
     $as_echo
+
+
+user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+user_groups=$(id -G ${USER} | sed 's/ /,/g')
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
+
+
+
+
+read -d '' DK_DSHELLFILE << _as_read_EOF
+
+#!/bin/sh
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
+
+abs_srcdir=${abs_srcdir}
+abs_builddir=${abs_builddir}
+user_id=${user_id}
+user_group=${user_group}
+user_groups=${user_groups}
+user_home=${user_home}
+
+# not used yet
+function run () {
+docker run -d -it --entrypoint=/bin/sh -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_srcdir}:\${abs_srcdir} -v \${abs_builddir}:\${abs_builddir} -v \${user_home}:\${user_home} -w \${abs_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; /sbin/sshd-keygen; nohup /sbin/sshd; ";
+}
+
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+quoted_args="\$(printf " %q" "\$\@")"
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
+
+
+_as_read_EOF
+
+
+$as_echo " Writing dshell file: "
+$as_echo "${DK_DSHELLFILE}" > dshell
+chmod +x dshell
+
 
 
 
@@ -3442,36 +3624,19 @@ echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 
 fi
 
-
 else
 
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-
-read -d '' DK_DSHELLFILE << _as_read_EOF
-
-#!/bin/sh
-# //////////////////////////////////////////////////////////////////////////// #
-# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-# env
-DOCKER_CONTAINER=${DOCKER_CONTAINER}
-DOCKER_IMAGE=${DOCKER_IMAGE}
-
-quoted_args="\$(printf " %q" "\$\@")"
-echo "Docker: Entering container \${DOCKER_CONTAINER} ";
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
-
-
-_as_read_EOF
-
-
-$as_echo " Writing dshell file: "
-$as_echo "${DK_DSHELLFILE}" > dshell
-chmod +x dshell
+user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+user_groups=$(id -G ${USER} | sed 's/ /,/g')
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
 
 
 
@@ -3485,6 +3650,11 @@ read -d '' DK_DOCKER_TARGETS << _as_read_EOF
 
 DOCKER_CONTAINER = ${DOCKER_CONTAINER}
 DOCKER_IMAGE     = ${DOCKER_IMAGE}
+
+user_id     = ${user_id}
+user_group  = ${user_group}
+user_groups = ${user_groups}
+user_home   = ${user_home}
 
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
@@ -3509,7 +3679,7 @@ ifeq (docker,\$(MAKECMDGOALS))
 	echo
 	echo " Additional targets: "
 	echo " make docker start   <- start the docker container "
-	echo " make docker stop    <- pause the docker container "
+	echo " make docker stop    <- remove the docker container "
 	echo " make docker shell   <- launch a shell inside the container "
 	echo " make docker shell USER=root <- launch the shell as root "
 	echo " make docker inspect <- get info on container (such as ipaddr)"
@@ -3523,18 +3693,21 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
 export SHELL = \${local_SHELL}
 
-.PHONY: info start stop shell inspect
+.PHONY: info start stop shell inspect run
 inspect:
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
+.ONESHELL:
 start:
 	@echo "Starting docker container:";
-	docker restart \${DOCKER_CONTAINER}
+	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
 
 stop:
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
+	docker rm \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
