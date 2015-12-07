@@ -1175,8 +1175,12 @@ PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
 .ONESHELL:
 $(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
+	if [ -n ${VALGRIND_BUILD} ]; then
+	 $(MAKE) -k $(AM_MAKEFLAGS) clean all;
+	else
+	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
+	fi
 
 	echo "TAP version 13" > $@;
 	count=0;

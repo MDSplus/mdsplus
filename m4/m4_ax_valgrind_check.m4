@@ -119,7 +119,9 @@ VALGRIND_CHECK_RULES='
 VALGRIND_LIB             ?= /usr/lib64/valgrind
 
 VALGRIND_FLAGS           ?=
-VALGRIND_FLAGS           += --num-callers=30 --trace-children=yes --child-silent-after-fork=yes
+VALGRIND_FLAGS           += --num-callers=30 --trace-children=yes \
+                            --child-silent-after-fork=yes \
+                            --trace-children-skip-by-arg=*SetMdsplusFileProtection*
 
 VALGRIND_memcheck_FLAGS  ?=
 VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
@@ -200,6 +202,7 @@ check-valgrind:
 check-valgrind-tool:
 	@ \
 	$(MAKE) tests \
+	VALGRING_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(PY_LOG_COMPILER)" \
@@ -217,6 +220,7 @@ check-valgrind-suppressions:
 check-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) tests \
+	VALGRING_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
