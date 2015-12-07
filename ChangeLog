@@ -1,4 +1,152 @@
-commit 1681b4c56982b27f44f17bc6cf8460c691cf010e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 6a1ebc73fc87e31a639fca386d18d294b14012bd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 1f757c8 d76f567
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Fri Dec 4 22:51:52 2015 +0100
+
+    Merge pull request #249 from zack-vii/aa_python_compound
+    
+    it only add a feature that comes in pretty handy when developing devices in python
+
+commit 1f757c874415209980d9620566cbb1704f9a8883
+Merge: 836f8a7 6d210ac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 4 12:44:37 2015 -0500
+
+    Merge pull request #246 from MDSplus/twf-fix-gil-locking
+    
+    Twf fix gil locking
+
+commit 836f8a7c32b49260ad249b645141497570f06021
+Merge: b167063 fe2df61
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 4 08:16:08 2015 -0500
+
+    Merge pull request #248 from zack-vii/aa_python_mdsdevice2
+    
+    update on mdsdevice: include debug, removed another exec
+
+commit 6d210acfe69e02cacc13dfa167ff60f43b7d5ca6 (refs/remotes/origin/twf-fix-gil-locking)
+Merge: 31deeb3 9aa6f7d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 4 08:11:46 2015 -0500
+
+    Merge pull request #247 from zack-vii/gillock
+    
+    Gillock
+
+commit 9aa6f7d36c30d5b1f8217e751c9b820b10bab571
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 12:57:43 2015 +0100
+
+    optimized the exec part
+    
+    - convert input to a string
+    - concatenate list of strings to a list of statements (';'.join)
+    - using a safe environment safe_env instead of global
+
+commit fe2df6122a496b971796eec31e632eddc54d111e
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 11:38:14 2015 +0100
+
+    update on mdsdevice: include debug, removed another exec
+    
+    - debug can now be used by any device (inspired by MitDevices)
+    - options are all attributes and can be looked up without exec
+    - since the the globals for the device generation are taken from import
+    MDSplus at runtime no need for loadglobals.load
+
+commit d76f5676caf9973551fa3c76796eb06e37d60aec
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 12:21:32 2015 +0100
+
+    added getClass to Conglom
+    
+    - finds the python class of a device conglomerate
+    - helps to test devices from inside python using >>> dev =
+    node.record.getClass(node)
+
+commit 31deeb3a709d9b8e7c20ac023daca84a3ea117a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 3 13:32:44 2015 -0500
+
+    Fix DoMethod return status handling and fix support for original part name methods on python devices. If no value is returned by PyDoMethod the value will be filled in with the status of the method (i.e. success if no exceptions and the exception status value or 0 if an exception is thrown by the method.
+
+commit 8cdb3917fcb5078a563c144a8444f778ab152848
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 16:01:30 2015 -0500
+
+    Add some line feeds to output messages
+
+commit 45139db10d6515127e6c302d0aeec0f2a8e31a25
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 14:02:20 2015 -0500
+
+    Fix original part name method. TreeDoMethod on python devices needs to handle output descriptors of CLASS_XD or CLASS_D.
+
+commit 2e4562a1f8cf541a7ba8c4bdceb48aa5bca243f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 13:24:00 2015 -0500
+
+    PyDoMethod now returns a list who's first element is the return status and the second element is the return value of the Method. TreeDoMethod copies the answer into the output argument and returns the status as the return value.
+
+commit 2f37699b309bc53f928d9b3b525c51f4ffaef230
+Merge: 8489a56 23d1c56
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 11:18:46 2015 -0500
+
+    Merge PyDoMethod.py changes
+
+commit 8489a56acf90b5ed052b2ab34a642130ce20cdc9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 11:07:41 2015 -0500
+
+    Add new device status return for python device not found. Fix PyDoMethod to handle device methods defined with unused argument parameter. Make PyDoMethod python2.4 compatible.
+
+commit 23d1c56a630dfa53da95c859bfe952ab3b854207
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 2 16:55:49 2015 +0100
+
+    suggestion for final PyDoMethod.py
+    
+    stderr.write works on python2.4
+
+commit 8f272825a326bf32ac73485df7a1b9b08f99802d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 10:09:03 2015 -0500
+
+    Cleanup and fixes for PyDoMethod.py
+
+commit 514c6424ddd2d9697c074b1484de7aa103c55fb7
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 2 14:25:08 2015 +0100
+
+    PyDoMethod.py workover
+
+commit b1670637d5e065ae5b0ed4f721aa75b653f53135 (tag: refs/tags/alpha_release-7-0-189)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Dec 1 23:33:09 2015 -0500
+
+    New release ---- alpha_release-7-0-189
+
+commit 4ff25ce2f09b0ded924bf663cef1d82de30fb86c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 1 17:21:04 2015 -0500
+
+    Remove the release thread function. It is no longer needed.
+
+commit 4c714f26985933720266bbed197a12ff4cf52c22
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 1 16:51:49 2015 -0500
+
+    All python execution is now locking GIL
+
+commit f71b0396be7f057252886d42756e27d44d2b7167
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 1 16:48:11 2015 -0500
+
+    Fix python GIL locking and replace PyDoMethod.fun with PyDoMethod.py
+
+commit 1681b4c56982b27f44f17bc6cf8460c691cf010e
 Merge: dad7e6e 07fb206
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Tue Dec 1 20:49:56 2015 +0100
