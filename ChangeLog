@@ -1,4 +1,16 @@
-commit 6a1ebc73fc87e31a639fca386d18d294b14012bd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 5f8bc5b4725b8f84f6f63c5b3cfbb4827b9677e3 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 7 15:53:57 2015 -0500
+
+    Use --no-check-certificate with wget for rhel5
+
+commit e6b21547f33407ae88e8fd50dc30de37b0014eae (tag: refs/tags/alpha_release-7-0-190)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 7 09:50:30 2015 -0500
+
+    New release ---- alpha_release-7-0-190
+
+commit 6a1ebc73fc87e31a639fca386d18d294b14012bd
 Merge: 1f757c8 d76f567
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Fri Dec 4 22:51:52 2015 +0100
