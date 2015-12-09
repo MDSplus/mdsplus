@@ -194,8 +194,10 @@ class Device(_treenode.TreeNode):
         glob['tree'] = tree
         glob['path'] = head.path
         glob['head'] = head
-        for elt in cls.parts:
+        for elt in cls.parts:  # first add all nodes
             node=head.addNode(elt['path'],elt['type'])
+        for elt in cls.parts:  # then you can reference them in valueExpr
+            node=head.getNode(elt['path'])
             if 'value' in elt:
                 if Device.debug: print(node,node.usage,elt['value'])
                 node.record = elt['value']
