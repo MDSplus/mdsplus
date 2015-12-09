@@ -1,4 +1,4 @@
-from MDSplus import mdsExceptions, Device, Data, Tree, Dimension, Signal
+from MDSplus import mdsExceptions, Device, Data, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from threading import Thread
 from ctypes import CDLL, byref, c_byte, c_short, c_int, c_double, c_void_p, c_char_p
@@ -31,8 +31,8 @@ class CYGNET4K(Device):
       {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_store',head))",'options':('no_write_shot',)},
       {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
       {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
-      {'path':':TEMP_CMOS', 'type':'signal','options':('no_write_model','write_once')},
-      {'path':':TEMP_PCB', 'type':'signal','options':('no_write_model','write_once')},
+      {'path':':TEMP_CMOS', 'type':'numeric','options':('no_write_model','write_once')},
+      {'path':':TEMP_PCB', 'type':'numeric','options':('no_write_model','write_once')},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model','write_once')},
     ]
     raptorLib = None
@@ -314,30 +314,22 @@ class CYGNET4K(Device):
             piFrameIdx = byref(iFrameIdx)
             piBaseTicks = byref(iBaseTicks)
             pdCurrTime = byref(dCurrTime)
-            """prepare temperature reading"""
-            pcbData  = Data.compile('FLOAT($VALUE/16.)').setUnits('oC')
-            cmosData = Data.compile('$VALUE')
-            measuredTimes = []
-            measuredPcbTemp = []
-            measuredCmosTemp = []
-            """start capturing"""
+            """capture temps before"""
+            pcbTemp =  [CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.,None]
+            cmosTemp = [CYGNET4K.raptorLib.epixGetCMOSTemp(iID)   ,None]
+            """start capturing frames"""
             CYGNET4K.raptorLib.epixStartVideoCapture(iID)
-            while not self.stopReq:
-                if(self.duration < 0 or dCurrTime.value < self.duration):
-                    if CYGNET4K.raptorLib.epixCaptureFrame(iID, iFramesNid, dTriggerTime, iTimeoutMs, pTree, pList, piBufIdx, piFrameIdx, piBaseTicks, pdCurrTime):
-                        pcbTemp = CYGNET4K.raptorLib.epixGetPCBTemp(iID)
-                        cmosTemp = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
-                        measuredTimes.append(dCurrTime.value)
-                        measuredPcbTemp.append(pcbTemp)
-                        measuredCmosTemp.append(cmosTemp)
-                else:
-                    break
+            while (not self.stopReq) and (self.duration < 0 or dCurrTime.value < self.duration):
+                CYGNET4K.raptorLib.epixCaptureFrame(iID, iFramesNid, dTriggerTime, iTimeoutMs, pTree, pList, piBufIdx, piFrameIdx, piBaseTicks, pdCurrTime)
             """Finished storing frames, stop camera integration and store measured frame times"""
             CYGNET4K.raptorLib.epixStopVideoCapture(iID)
+            """capture temps after"""
+            pcbTemp[1]  = CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.
+            cmosTemp[1] = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
+            self.device.temp_pcb.record  = Float32Array(pcbTemp)
+            self.device.temp_cmos.record = Int16Array(cmosTemp)
+            """transfer data to tree"""
             CYGNET4K.mdsLib.camStopSave(pList)
-            dim = Dimension(None,Float32Array(measuredTimes)+self.device.trigger_time.data()).setUnits('s')
-            self.device.temp_pcb.record = Signal(pcbData,Int16Array(measuredPcbTemp),dim)
-            self.device.temp_cmos.record = Signal(cmosData,Int16Array(measuredCmosTemp),dim)
             print('done')
 
         def stop(self):
