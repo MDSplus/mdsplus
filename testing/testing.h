@@ -106,7 +106,7 @@ __THROW __attribute__ ((__noreturn__));
 void __mark_point(const char *__assertion, const char *__file, 
                   unsigned int __line, const char *__function) 
 {
-    printf(" TEST: "
+    printf(" TEST: OK"
            "  file: %s ,  function: %s, line: %d "
            "  assertion:  (%s) \n", 
            __file,__function,__line,__assertion);               

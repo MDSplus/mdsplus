@@ -364,33 +364,29 @@ local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
 export SHELL = \${docker_SHELL}
 
 .PHONY: docker
-.ONESHELL:
 docker:
-	@
-	echo
 ifeq (docker,\$(MAKECMDGOALS))
-	echo " This build was set to work with Docker: "
-	echo " ---------------------------------------------------------------- "
-	echo " This means that you should see a running docker container named: "
-	echo " ${DOCKER_CONTAINER}. 	"
-	echo " Using a map of the current srcdir and builddir and some envs the "
-	echo " build system should be able to launch make inside the container. "
-	echo " Use the usual make command and targets to build inside docker.   "
-	echo " In addition if your docker image has ssh daemon and  gdb  server "
-	echo " installed, it would be possible also to start  debugger  inside. "
-	echo
-	echo " Additional targets: "	
-	echo " make docker start   <- start the docker container "
-	echo " make docker stop    <- remove the docker container "
-	echo " make docker shell   <- launch a shell inside the container "
-	echo " make docker shell USER=root <- launch the shell as root "
-	echo " make docker inspect <- get info on container (such as ipaddr)"
-	echo 
+	@ \
+	echo " This build was set to work with Docker: "                          \
+	echo " ---------------------------------------------------------------- " \
+	echo " This means that you should see a running docker container named: " \
+	echo " ${DOCKER_CONTAINER}. 	"                                         \
+	echo " Using a map of the current srcdir and builddir and some envs the " \
+	echo " build system should be able to launch make inside the container. " \
+	echo " Use the usual make command and targets to build inside docker.   " \
+	echo " In addition if your docker image has ssh daemon and  gdb  server " \
+	echo " installed, it would be possible also to start  debugger  inside. " \
+	echo \
+	echo " Additional targets: "                                           \
+	echo " make docker start   <- start the docker container "             \
+	echo " make docker stop    <- remove the docker container "            \
+	echo " make docker shell   <- launch a shell inside the container "    \
+	echo " make docker shell USER=root <- launch the shell as root "       \
+	echo " make docker inspect <- get info on container (such as ipaddr)"  \
+	echo ;
 endif
-	echo 
 
 
-# TODO: change this to find subpattern of docker
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
 export SHELL = \${local_SHELL}
@@ -400,7 +396,6 @@ inspect:
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-.ONESHELL:
 start:
 	@echo "Starting docker container:";	
 	m4_normalize( docker run -d -it --entrypoint=/bin/sh 
@@ -463,29 +458,29 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-# not used yet
-function run () {
-m4_normalize( docker run -d -it --entrypoint=/bin/sh 
-                     -e DISPLAY=\${DISPLAY}
-                     -e http_proxy=\${http_proxy} 
-                     -e https_proxy=\${https_proxy} 
-                     -v /tmp/.X11-unix:/tmp/.X11-unix     
-                     -v /etc/resolv.conf:/etc/resolv.conf 
-                     -v \${abs_srcdir}:\${abs_srcdir} 
-                     -v \${abs_builddir}:\${abs_builddir} 
-                     -v \${user_home}:\${user_home}   
-                     -w \${abs_builddir}         
-                     --name \${DOCKER_CONTAINER} 
-                     \${DOCKER_IMAGE};
-             )                       
-m4_normalize( docker exec --user root \${DOCKER_CONTAINER} sh -c "
-                          echo ${user_entry}  >> /etc/passwd; 
-                          echo ${group_entry} >> /etc/group;
-                          /sbin/sshd-keygen;
-                          nohup /sbin/sshd;
-                         ";
-             )
-}
+dnl # not used yet
+dnl function run () {
+dnl m4_normalize( docker run -d -it --entrypoint=/bin/sh 
+dnl                     -e DISPLAY=\${DISPLAY}
+dnl                     -e http_proxy=\${http_proxy} 
+dnl                     -e https_proxy=\${https_proxy} 
+dnl                     -v /tmp/.X11-unix:/tmp/.X11-unix     
+dnl                     -v /etc/resolv.conf:/etc/resolv.conf 
+dnl                     -v \${abs_srcdir}:\${abs_srcdir} 
+dnl                     -v \${abs_builddir}:\${abs_builddir} 
+dnl                     -v \${user_home}:\${user_home}   
+dnl                     -w \${abs_builddir}         
+dnl                     --name \${DOCKER_CONTAINER} 
+dnl                     \${DOCKER_IMAGE};
+dnl             )                       
+dnl m4_normalize( docker exec --user root \${DOCKER_CONTAINER} sh -c "
+dnl                          echo ${user_entry}  >> /etc/passwd; 
+dnl                          echo ${group_entry} >> /etc/group;
+dnl                          /sbin/sshd-keygen;
+dnl                          nohup /sbin/sshd;
+dnl                         ";
+dnl            )
+dnl }
 
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"

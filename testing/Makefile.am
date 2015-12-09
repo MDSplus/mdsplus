@@ -30,12 +30,6 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
 
-#bin_PROGRAMS = faketest
-#faketest_SOURCES = faketest.c
-#faketest_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-#faketest_LDADD = -L@MAKESHLIBDIR@ $(TEST_LIBS)
-
-
 TEST_SUBDIRS = \
                mdsobjects/python/tests \
                mdslib/testing \
@@ -44,11 +38,6 @@ TEST_SUBDIRS = \
 
 TEST_OUTDIR    ?= ${top_builddir}/testing
 
-.ONESHELL:
-print_outfiles:
-	@
-	echo $(TEST_OUTFILES);
-	echo $(TEST_OUTDIR);
 
 .ONESHELL:
 build_tests: $(MdsTestShr)
@@ -82,9 +71,8 @@ build_valgrind_tests:
 	## exit $${status};	
 
 
-.ONESHELL:
 clean_tests: 
-	@
+	@ \
 	list='$(TEST_SUBDIRS)'; \
 	for subdir in $$list; do echo "Cleaning in $$subdir"; \
 	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \

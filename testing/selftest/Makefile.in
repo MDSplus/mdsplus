@@ -1444,17 +1444,19 @@ PY_LOG_FLAGS        ?= -v
 PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
-.ONESHELL:
 $(TEST_BUILD_TAP):
-	if [ -n ${VALGRIND_BUILD} ]; then
-	 $(MAKE) -k $(AM_MAKEFLAGS) clean all;
-	else
+	@ \
+	if [ -n "$${VALGRIND_BUILD}" ]; then \
+	 echo "building clean tests for valgrind"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) clean all; \
+	else \
+	 echo "building tests using D_TESTING set"; \
 	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
-	fi
-
-	echo "TAP version 13" > $@;
-	count=0;
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	fi; \
+        \
+	echo "TAP version 13" > $@; \
+	count=0; \
 	for i in $(check_PROGRAMS); do \
 	  if ! $(MAKE) -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
@@ -1466,14 +1468,13 @@ $(TEST_BUILD_TAP):
 	echo "1..$${count}" >> $@;
 
 .PHONY: $(TEST_SUITE_TAP)
-.ONESHELL:
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-	export TEST_FORMAT="tap";
-
+	export TEST_FORMAT="tap"; \
+	\
 	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS  \
 	 PY_LOG_COMPILER=$(PY_LOG_COMPILER_TAP) \
-	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)";
-
+	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)"; \
+	\
 	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 	else suite="$@"; \
 	fi; \
@@ -1493,7 +1494,7 @@ clean-local-tests:
 libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
-.ONESHELL:
+# .ONESHELL:
 print:
 	@
 	echo "--------------------------------------------------------------";

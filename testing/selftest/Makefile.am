@@ -64,7 +64,7 @@ MOSTLYCLEANFILES = \
 libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
-.ONESHELL:
+# .ONESHELL:
 print:
 	@
 	echo "--------------------------------------------------------------";

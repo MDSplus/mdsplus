@@ -3347,11 +3347,6 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-# not used yet
-function run () {
-docker run -d -it --entrypoint=/bin/sh -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_srcdir}:\${abs_srcdir} -v \${abs_builddir}:\${abs_builddir} -v \${user_home}:\${user_home} -w \${abs_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; /sbin/sshd-keygen; nohup /sbin/sshd; ";
-}
 
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
@@ -3390,33 +3385,29 @@ local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
 export SHELL = \${docker_SHELL}
 
 .PHONY: docker
-.ONESHELL:
 docker:
-	@
-	echo
 ifeq (docker,\$(MAKECMDGOALS))
-	echo " This build was set to work with Docker: "
-	echo " ---------------------------------------------------------------- "
-	echo " This means that you should see a running docker container named: "
-	echo " ${DOCKER_CONTAINER}. 	"
-	echo " Using a map of the current srcdir and builddir and some envs the "
-	echo " build system should be able to launch make inside the container. "
-	echo " Use the usual make command and targets to build inside docker.   "
-	echo " In addition if your docker image has ssh daemon and  gdb  server "
-	echo " installed, it would be possible also to start  debugger  inside. "
-	echo
-	echo " Additional targets: "
-	echo " make docker start   <- start the docker container "
-	echo " make docker stop    <- remove the docker container "
-	echo " make docker shell   <- launch a shell inside the container "
-	echo " make docker shell USER=root <- launch the shell as root "
-	echo " make docker inspect <- get info on container (such as ipaddr)"
-	echo
+	@ \
+	echo " This build was set to work with Docker: "                          \
+	echo " ---------------------------------------------------------------- " \
+	echo " This means that you should see a running docker container named: " \
+	echo " ${DOCKER_CONTAINER}. 	"                                         \
+	echo " Using a map of the current srcdir and builddir and some envs the " \
+	echo " build system should be able to launch make inside the container. " \
+	echo " Use the usual make command and targets to build inside docker.   " \
+	echo " In addition if your docker image has ssh daemon and  gdb  server " \
+	echo " installed, it would be possible also to start  debugger  inside. " \
+	echo \
+	echo " Additional targets: "                                           \
+	echo " make docker start   <- start the docker container "             \
+	echo " make docker stop    <- remove the docker container "            \
+	echo " make docker shell   <- launch a shell inside the container "    \
+	echo " make docker shell USER=root <- launch the shell as root "       \
+	echo " make docker inspect <- get info on container (such as ipaddr)"  \
+	echo ;
 endif
-	echo
 
 
-# TODO: change this to find subpattern of docker
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
 export SHELL = \${local_SHELL}
@@ -3426,7 +3417,6 @@ inspect:
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-.ONESHELL:
 start:
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
@@ -3509,11 +3499,6 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-# not used yet
-function run () {
-docker run -d -it --entrypoint=/bin/sh -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_srcdir}:\${abs_srcdir} -v \${abs_builddir}:\${abs_builddir} -v \${user_home}:\${user_home} -w \${abs_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; /sbin/sshd-keygen; nohup /sbin/sshd; ";
-}
 
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
@@ -3662,33 +3647,29 @@ local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
 export SHELL = \${docker_SHELL}
 
 .PHONY: docker
-.ONESHELL:
 docker:
-	@
-	echo
 ifeq (docker,\$(MAKECMDGOALS))
-	echo " This build was set to work with Docker: "
-	echo " ---------------------------------------------------------------- "
-	echo " This means that you should see a running docker container named: "
-	echo " ${DOCKER_CONTAINER}. 	"
-	echo " Using a map of the current srcdir and builddir and some envs the "
-	echo " build system should be able to launch make inside the container. "
-	echo " Use the usual make command and targets to build inside docker.   "
-	echo " In addition if your docker image has ssh daemon and  gdb  server "
-	echo " installed, it would be possible also to start  debugger  inside. "
-	echo
-	echo " Additional targets: "
-	echo " make docker start   <- start the docker container "
-	echo " make docker stop    <- remove the docker container "
-	echo " make docker shell   <- launch a shell inside the container "
-	echo " make docker shell USER=root <- launch the shell as root "
-	echo " make docker inspect <- get info on container (such as ipaddr)"
-	echo
+	@ \
+	echo " This build was set to work with Docker: "                          \
+	echo " ---------------------------------------------------------------- " \
+	echo " This means that you should see a running docker container named: " \
+	echo " ${DOCKER_CONTAINER}. 	"                                         \
+	echo " Using a map of the current srcdir and builddir and some envs the " \
+	echo " build system should be able to launch make inside the container. " \
+	echo " Use the usual make command and targets to build inside docker.   " \
+	echo " In addition if your docker image has ssh daemon and  gdb  server " \
+	echo " installed, it would be possible also to start  debugger  inside. " \
+	echo \
+	echo " Additional targets: "                                           \
+	echo " make docker start   <- start the docker container "             \
+	echo " make docker stop    <- remove the docker container "            \
+	echo " make docker shell   <- launch a shell inside the container "    \
+	echo " make docker shell USER=root <- launch the shell as root "       \
+	echo " make docker inspect <- get info on container (such as ipaddr)"  \
+	echo ;
 endif
-	echo
 
 
-# TODO: change this to find subpattern of docker
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 
 export SHELL = \${local_SHELL}
@@ -3698,7 +3679,6 @@ inspect:
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-.ONESHELL:
 start:
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
@@ -12668,7 +12648,7 @@ check-valgrind:
 check-valgrind-tool:
 	@ \
 	$(MAKE) tests \
-	VALGRING_BUILD="yes" \
+	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(PY_LOG_COMPILER)" \
@@ -12686,7 +12666,7 @@ check-valgrind-suppressions:
 check-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) tests \
-	VALGRING_BUILD="yes" \
+	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
