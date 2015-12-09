@@ -57,7 +57,6 @@ TEST_SUITE_TAP = test-suite.tap
 
 
 ## .ONESHELL:
-.PHONY: $(TEST_BUILD_TAP)
 $(TEST_BUILD_TAP):
 	## Make all recursive targets here without dying. \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \

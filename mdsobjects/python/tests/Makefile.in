@@ -1024,7 +1024,6 @@ PY_LOG_FLAGS        ?= -v
 PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
-.PHONY: $(TEST_BUILD_TAP)
 $(TEST_BUILD_TAP):
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
