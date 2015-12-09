@@ -1173,8 +1173,8 @@ PY_LOG_FLAGS        ?= -v
 PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
+.PHONY: $(TEST_BUILD_TAP)
 $(TEST_BUILD_TAP):
-	@ \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
 	 $(MAKE) -k $(AM_MAKEFLAGS) clean all; \
@@ -1218,6 +1218,7 @@ $(TEST_SUITE_XML):
 
 .PHONY: clean-local-tests
 clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP)
 
 all-local: $(TESTS)
 clean-local: clean-local-tests

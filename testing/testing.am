@@ -57,8 +57,8 @@ TEST_SUITE_TAP = test-suite.tap
 
 
 ## .ONESHELL:
+.PHONY: $(TEST_BUILD_TAP)
 $(TEST_BUILD_TAP):
-	@ \
 	## Make all recursive targets here without dying. \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
@@ -125,7 +125,7 @@ $(TEST_SUITE_XML):
 
 .PHONY: clean-local-tests
 clean-local-tests:
-##	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_BUILD_TAP)
 
 
 
