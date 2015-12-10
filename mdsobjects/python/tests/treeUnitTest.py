@@ -169,7 +169,7 @@ class treeTests(TestCase):
         self.assertEqual(ip.essential,ip.isEssential())
         mhdtree=self.pytree2.getNode('\\PYTREESUB::TOP')
         self.assertEqual(mhdtree.include_in_pulse,True)
-        self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludedInPulse())
+        self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludeInPulse())
         self.assertEqual(ip.length,int(Data.execute('getnci($,"LENGTH")',ip)))
         self.assertEqual(ip.length,ip.getLength())
         self.assertEqual(ip.no_write_shot,False)

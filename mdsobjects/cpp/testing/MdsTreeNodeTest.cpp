@@ -460,7 +460,7 @@ int main(int argc, char *argv[])
         // IS INCLUDED IN PULSE //
 
         // TODO: capire ...         
-        TEST0( node->isIncludedInPulse() );        
+        TEST0( node->isIncludeInPulse() );        
         shot->edit();
         node = shot->addNode("onlypulse","ANY");        
         
@@ -469,11 +469,11 @@ int main(int argc, char *argv[])
         //        tree->createPulse(2);
         //        tree->edit(true);        
         //        shot = new Tree("test_tree",2);        
-        //        TEST1( node->isIncludedInPulse() );                
+        //        TEST1( node->isIncludeInPulse() );                
         //        TEST_EXCEPTION( unique_ptr<Data>(unique_ptr<TreeNode>(shot->getNode("no_in_pulse"))->getData()), MdsException );
         
-        node->setIncludedInPulse(true);
-        TEST1( node->isIncludedInPulse() );
+        node->setIncludeInPulse(true);
+        TEST1( node->isIncludeInPulse() );
         
     }
     
@@ -814,51 +814,6 @@ int main(int argc, char *argv[])
         
         n1->addDevice("device","DIO2");                
         
-    }
-    
-    
-    
-    END_TESTING;            
+    }   
+    END_TESTING;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
