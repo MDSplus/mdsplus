@@ -1,4 +1,51 @@
-commit 5f8bc5b4725b8f84f6f63c5b3cfbb4827b9677e3 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 5419074401cbf686b27527e89df9725bd4b76f7a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 71bb02f 2e37e0f
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Dec 9 21:35:33 2015 +0100
+
+    Merge pull request #254 from zack-vii/aa_python_mdsdevice
+    
+    missed a line there
+
+commit 2e37e0f334afaeb052b4a4a1f3a04061f02bd129
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 9 21:14:34 2015 +0100
+
+    fix of recent changes #250
+    
+    you need to add al nodes first to be able to reference then in valueExpr
+
+commit 71bb02f947735847f072a14d0ab4789290281f52
+Merge: 9d27882 054afeb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 9 08:55:08 2015 -0500
+
+    Merge pull request #253 from wmarquesr/alpha
+    
+    Refactoring conditional directives.
+
+commit 9d27882500a7dba1ff8cbf7a5c684a8c21d2eb2e
+Merge: 9b57016 15df2ef
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 9 08:53:01 2015 -0500
+
+    Merge pull request #250 from zack-vii/aa_python_mdsdevice
+    
+    fixed bug in Add of Device class
+
+commit 054afebc8895dc37f4e4566fc8fcb3f1ad41d29b
+Author: Wesley M <wesleymr.27@gmail.com>
+Date:   Tue Dec 8 22:55:19 2015 -0300
+
+    Refactoring conditional directives for alternative if statements and incomplete if conditions..
+
+commit 9b57016159c8c44600928eb09734087b3580aa38 (tag: refs/tags/alpha_release-7-0-191)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 7 23:43:28 2015 -0500
+
+    New release ---- alpha_release-7-0-191
+
+commit 5f8bc5b4725b8f84f6f63c5b3cfbb4827b9677e3
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Dec 7 15:53:57 2015 -0500
 
@@ -9,6 +56,18 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Dec 7 09:50:30 2015 -0500
 
     New release ---- alpha_release-7-0-190
+
+commit 15df2ef3eef28c993b42e750458ecb85124cb065
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 20:46:32 2015 +0100
+
+    fixed bug in Add of Device class
+    
+    - If path did not start with '.' or ':' nodes of the device could have
+    become siblings of the device
+    - allowes to add devices as member of TreeNodes
+    ! adding a device did only work if path is not in root of tree (could
+    still fail on path)
 
 commit 6a1ebc73fc87e31a639fca386d18d294b14012bd
 Merge: 1f757c8 d76f567
