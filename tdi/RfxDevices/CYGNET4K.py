@@ -26,7 +26,7 @@ class CYGNET4K(Device):
       {'path':':TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start_trend',head))",'options':('no_write_shot','write_once')},
       {'path':':TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_trend',head))",'options':('no_write_shot','write_once')},
       {'path':':ACT_IDENT', 'type':'text','value':'CAMERA_SERVER','options':('no_write_shot',)},
-      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'PULSE_PREP',50,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',40,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
       {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start_store',head))",'options':('no_write_shot','write_once')},
       {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_store',head))",'options':('no_write_shot','write_once')},
       {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
