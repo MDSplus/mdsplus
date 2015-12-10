@@ -249,6 +249,7 @@ class CYGNET4K(Device):
         if not self.restoreTrendWorker():
             raise mdsExceptions.TclFAILED_ESSENTIAL
         self.trendWorker.stop()
+        self.trendWorker.join()
 
     """worker related methods and classes"""
 
