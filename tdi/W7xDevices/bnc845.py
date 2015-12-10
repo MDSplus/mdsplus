@@ -88,6 +88,8 @@ class BNC845 (MDSplus.Device) :
 		delay_buf = ''
 		dwell_buf = ''
 
+		if len(steps.shape) < 2 : steps = steps.reshape(1, 2)
+
 		N = steps.shape[0]
 		for i in range(N) :
 			dwell = (steps[i][0] - steps[i-1][0] if i > 0 else steps[i][0]) / 1e3
