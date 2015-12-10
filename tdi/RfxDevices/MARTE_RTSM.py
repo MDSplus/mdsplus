@@ -1,16 +1,12 @@
-# -*- coding: iso-8859-1 -*-
-from MDSplus import Data
 try:
     MARTE_COMMON = __import__('MARTE_COMMON', globals(), level=1).MARTE_COMMON
 except:
     MARTE_COMMON = __import__('MARTE_COMMON', globals()).MARTE_COMMON
 
 class MARTE_RTSM(MARTE_COMMON):
-    print('MARTE_RTSM')
     parNames = ['numStates', 'stateTime','stateNumNext','stateNext','stateNextMask','stateNextPattern','stateOutMode','stateOutBits', 'triggerTime', 'frequency']
 
-    parValues = [1,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),Data.compile('zero(8*8, 0.)'),Data.compile('zero(8*8, 0.)'),Data.compile('zero(8*8, 0.)'),
-        Data.compile('zero(8*8, 0.)'),Data.compile('zero(8, 0.)'), 0, 1000]
+    parValues = ['1']+['TdiCompile("zero(8, 0.)")']*2+['TdiCompile("zero(64, 0.)")']*4+['TdiCompile("zero(8, 0.)")', '0', '1000']
 
     waveParNames = ['state1_wave1','state1_wave2','state1_wave3','state1_wave4','state1_wave5','state1_wave6','state1_wave7','state1_wave8',
         'state2_wave1','state2_wave2','state2_wave3','state2_wave4','state2_wave5','state2_wave6','state2_wave7','state2_wave8',
@@ -30,7 +26,7 @@ class MARTE_RTSM(MARTE_COMMON):
       parts.append({'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text', 'value':parNames[i]})
       parts.append({'path':'.PARAMS:PAR_%03d:TYPE'%(i+1), 'type':'text'})
       parts.append({'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'})
-      parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','value':parValues[i]})
+      parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','valueExpr':parValues[i]})
 
     parts.append({'path':'.WAVE_PARAMS', 'type':'structure'})
     parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':0})
@@ -40,7 +36,4 @@ class MARTE_RTSM(MARTE_COMMON):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':waveParNames[i]})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    del(i)
-    del(parNames)
-    del(parValues)
-    del(waveParNames)
+    del(parNames,parValues,waveParNames,i)

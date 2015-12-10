@@ -1,11 +1,9 @@
-from MDSplus import Data
 try:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
 except:
     MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
 class MARTE_EDA3(MARTE_GENERIC):
-    print('MARTE_EDA3')
     parNames = ['tauVTheta','tauVTor','tauD','kp','ki','kd','vCompOn','iCompOn','iFBOn','iPTrig','tTrig',
        'deltaVTorTrig','deltaTBT1','deltaTBT2','rVesselTuningFactor', 'thetaNom,', 'tTrigVth', 'deltaTBT1Vth', 'DeadTimeCompOn', 'kDeadTimeComp', 'DeTiMinHystCurrThreshold', 'DeTiMaxHystCurrThreshold']
     parValues = [0.002,0.0005,0.002,1.367,0.,0.,0.,1.,1.,0.,0.002,0.,0.01,0.01,1.,1.42,0, 0, 0,0,0,0]
@@ -44,8 +42,8 @@ class MARTE_EDA3(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text', 'value':waveParNames[i]})
-      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric', 'value':Data.compile('[0.,1.]')})
-      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric', 'value':Data.compile('[0.,0.]')})
+      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric', 'valueExpr':'Float32Array([0.,1.])'})
+      parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric', 'valueExpr':'Float32Array([0.,0.])'})
 
     for i in range(len(waveParNames), 64):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'})
@@ -53,3 +51,4 @@ class MARTE_EDA3(MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
+    del(parNames,parValues,waveParNames,i)

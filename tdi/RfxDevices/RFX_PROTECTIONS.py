@@ -1,8 +1,7 @@
 # -*- coding: iso-8859-1 -*-
-from MDSplus import Device
+from MDSplus import mdsExceptions, Device
 
 class RFX_PROTECTIONS(Device):
-    print('RFX_PROTECTIONS')
     """RFX Machine Protections configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':MAX_BR_HOR_W', 'type':'numeric'},

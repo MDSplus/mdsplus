@@ -1,13 +1,10 @@
-from MDSplus import Device, Data, Int32
+from MDSplus import mdsExceptions, Device, Data
 from ctypes import CDLL,c_int,c_double
 from threading import Thread
 from time import sleep
 
 class ACQIPPSETUP(Device):
-    print('ACQIPPSETUP')
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """IPP probe & thermocoupels acquisition setup"""
-
     parts=[ {'path':':COMMENT', 'type':'text'}]
     parts.append({'path':'.PROBE', 'type':'structure'})
     parts.append({'path':'.PROBE:START_TIME', 'type':'numeric', 'value':0})
@@ -54,43 +51,43 @@ class ACQIPPSETUP(Device):
 
             if ACQIPPSETUP.niInterfaceLib is None:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot load libNiInterface.so')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 board_id = self.device.sweep_wave_board_id.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing Board Id' )
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 channel = self.device.sweep_wave_ao_chan.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing output channel number 0..3' )
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 minValue = self.device.sweep_wave_min.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing min sweep value' )
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 maxValue = self.device.sweep_wave_max.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing max sweep value' )
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 waverate = self.device.sweep_wave_freq.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing frequency sweep value' )
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 trigMode = self.device.sweep_wave_trig_mode.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Missing trig mode sweep value' )
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             level  = ( maxValue - minValue ) /2.;
             offset = ( maxValue + minValue ) / 2.;
@@ -125,7 +122,7 @@ class ACQIPPSETUP(Device):
             ACQIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
 
 
-    def start_wave_gen(self, arg):
+    def start_wave_gen(self):
         print('======= Initialize waveform generation ========')
 
         if ACQIPPSETUP.isRunning :
@@ -147,10 +144,10 @@ class ACQIPPSETUP(Device):
 
         print("===============================================")
 
-        return 1
+        return
 
 
-    def stop_wave_gen(self, arg):
+    def stop_wave_gen(self):
 
         print('========= Stop waveform generation ============')
         self.restoreInfo()
@@ -159,4 +156,4 @@ class ACQIPPSETUP(Device):
         sleep(2)
         print("===============================================")
 
-        return 1
+        return
