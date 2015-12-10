@@ -243,7 +243,7 @@ class CYGNET4K(Device):
         self.trendWorker = self.AsynchTrend()
         self.trendWorker.configure(self, dev_id, trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
-        self.TrendWorker.start()
+        self.trendWorker.start()
 
     def stop_trend(self):
         if not self.restoreTrendWorker():
@@ -374,6 +374,7 @@ class CYGNET4K(Device):
             elif self.cmos is None:
                 print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
             iID = c_int(self.dev_id)
+            print('started trend on dev %d writing to %s - %s and %s every %fs' % (self.dev_id,self.tree,self.pcb,self.cmos,self.period))
             while (not self.stopReq):
                 timeTillNextMeasurement = self.period-(time() % self.period)
                 if timeTillNextMeasurement>0.6:
