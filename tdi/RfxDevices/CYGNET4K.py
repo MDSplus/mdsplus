@@ -146,8 +146,8 @@ class CYGNET4K(Device):
     """methods for action nodes"""
 
     def init(self):
-        idx = int(self.device_id.data())
-        if idx < 0:
+        dev_id = int(self.device_id.data())
+        if dev_id < 0:
             print('Wrong value of Device Id, must be greater than 0.')
             raise mdsExceptions.TclFAILED_ESSENTIAL
         CYGNET4K.checkLibraries()
@@ -170,14 +170,14 @@ class CYGNET4K(Device):
             codedTrigMode = 0x0E
         else:
             raise mdsExceptions.DevBAD_MODE
-        CYGNET4K.raptorLib.epixSetConfiguration(c_int(idx), c_double(frameRate), c_byte(codedTrigMode))
+        CYGNET4K.raptorLib.epixSetConfiguration(c_int(dev_id), c_double(frameRate), c_byte(codedTrigMode))
         cBinning    = c_byte(0)
         sRoiXSize   = c_short(0)
         sRoiXOffset = c_short(0)
         sRoiYSize   = c_short(0)
         sRoiYOffset = c_short(0)
-        CYGNET4K.raptorLib.epixGetConfiguration(c_int(idx), byref(cBinning), byref(sRoiXSize), byref(sRoiXOffset), byref(sRoiYSize), byref(sRoiYOffset))
-        CYGNET4K.isInitialized[idx] = True
+        CYGNET4K.raptorLib.epixGetConfiguration(c_int(dev_id), byref(cBinning), byref(sRoiXSize), byref(sRoiXOffset), byref(sRoiYSize), byref(sRoiYOffset))
+        CYGNET4K.isInitialized[dev_id] = True
         if(cBinning.value == 0x00):
             binning= '1x1'
         elif(binning.value == 0x11):
@@ -198,16 +198,16 @@ class CYGNET4K(Device):
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
     def start_store(self):
-        idx = int(self.device_id.data())
-        if idx < 0:
+        dev_id = int(self.device_id.data())
+        if dev_id < 0:
             print('Wrong value of Device Id, must be greater than 0.')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        if not CYGNET4K.isInitialized.get(idx,False):
+        if not CYGNET4K.isInitialized.get(dev_id,False):
             print('Device not initialized: Run init first.')
             raise mdsExceptions.TclFAILED_ESSENTIAL
         self.frames.deleteData()  # checks if we can write
         self.worker = self.AsynchStore()
-        self.worker.configure(self, idx)
+        self.worker.configure(self, dev_id)
         self.saveWorker()
         self.worker.start()
 
@@ -218,8 +218,8 @@ class CYGNET4K(Device):
         self.worker.join()
 
     def start_trend(self):
-        idx = int(self.device_id.data())
-        if idx < 0:
+        dev_id = int(self.device_id.data())
+        if dev_id < 0:
             print('Wrong value of Device Id, must be greater than 0')
             raise mdsExceptions.TclFAILED_ESSENTIAL
         CYGNET4K.checkLibraries()
@@ -241,7 +241,7 @@ class CYGNET4K(Device):
             print('Check TREND_TREE and TREND_SHOT.')
             raise mdsExceptions.TreeNODATA
         self.trendWorker = self.AsynchTrend()
-        self.trendWorker.configure(self, id, trendTree, trendShot, trendPcb, trendCmos)
+        self.trendWorker.configure(self, dev_id, trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
         self.TrendWorker.start()
 
@@ -285,9 +285,9 @@ class CYGNET4K(Device):
 
 
     class AsynchStore(Thread):
-        def configure(self, device, id):
+        def configure(self, device, dev_id):
             self.device = device
-            self.id = id
+            self.dev_id = dev_id
             self.framesNid = device.frames.nid
             self.duration = float(device.duration.data())
             self.stopReq = False
@@ -303,7 +303,7 @@ class CYGNET4K(Device):
                 raise mdsExceptions.TreeFOPENW
             pList = c_void_p(0)
             CYGNET4K.mdsLib.camStartSaveDeferred(byref(pList)) # alt: camStartSave
-            iID = c_int(self.id)
+            iID = c_int(self.dev_id)
             iFramesNid = c_int(self.framesNid)
             dTriggerTime = c_double(self.triggerTime)
             iTimeoutMs = c_int(500)
@@ -338,9 +338,9 @@ class CYGNET4K(Device):
 
 
     class AsynchTrend(Thread):
-        def configure(self, device, id, trendTree, trendShot, trendPcb, trendCmos):
+        def configure(self, device, dev_id, trendTree, trendShot, trendPcb, trendCmos):
             self.device = device
-            self.id = id
+            self.dev_id = dev_id
             self.period = float(device.trend_period.data())
             self.tree = trendTree
             self.shot = trendShot
@@ -373,7 +373,7 @@ class CYGNET4K(Device):
                 print('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
             elif self.cmos is None:
                 print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
-            iID = c_int(self.id)
+            iID = c_int(self.dev_id)
             while (not self.stopReq):
                 timeTillNextMeasurement = self.period-(time() % self.period)
                 if timeTillNextMeasurement>0.6:
