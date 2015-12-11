@@ -1,4 +1,74 @@
-commit 5419074401cbf686b27527e89df9725bd4b76f7a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit d6e7ede665445c95cf83426662d2eafd149ca2fe (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 5422cf3 82226c5
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Dec 10 15:47:11 2015 +0100
+
+    Merge pull request #251 from zack-vii/aa_python_RfxDevices
+    
+    python rfxdevices update
+
+commit 5422cf3029b3236a67e9904d3c14af870ead4c90
+Merge: 847de2f 7749e13
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Dec 10 15:46:45 2015 +0100
+
+    Merge pull request #243 from zack-vii/aa_Include(d)InPulse
+    
+    systematically replaced IncludedInPulse with IncludeInPulse
+
+commit 82226c53fbb51ca198b46bbbff4b454000c5b9b2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 20:35:59 2015 +0100
+
+    changed return error.status to raise error, retrun 1 to return
+    
+    to be in line with the new gil-locking error handling
+
+commit 874d36d663c05e79b219f79d6ded7dcf734c92f5
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 20:12:24 2015 +0100
+
+    removed unused arguments
+
+commit 83de2ab52a9f76e54c177606ec7ff3ebe26c35e3
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 14:10:15 2015 +0100
+
+    removed Int32(1).setTdiVar('_PyReleaseThreadLock')
+
+commit d4a728d43e13c6893891b644c1bdda9b19ad642b
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 19:29:03 2015 +0100
+
+    removed unnecessary arg down passing in MARTE_GENERIC arg->*arg
+    
+    - prepared everything for new gil-lock error argument passing
+    - just replace all (self,*arg) with (self)
+
+commit 59ff8c4322f00ac7f7ee15545ee0013e606fed3f
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 21:07:54 2015 +0100
+
+    replaced return 0 with return mdsExceptions.TclFAILED_ESSENTIAL.status
+    
+    prepares for a quick replacement for new gil-locking errorhandling
+
+commit 6d7582a6036ac16e32b7e26fa06d1dae4b6fe8ba
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 15:57:48 2015 +0100
+
+    added debug from Device class
+    added import check in __init__
+    
+    major speedup loading package due to use of [value]*count
+
+commit 847de2f9daea1493624672ee10627e995e457a0a (tag: refs/tags/alpha_release-7-0-192)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 9 23:47:17 2015 -0500
+
+    New release ---- alpha_release-7-0-192
+
+commit 5419074401cbf686b27527e89df9725bd4b76f7a
 Merge: 71bb02f 2e37e0f
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Wed Dec 9 21:35:33 2015 +0100
@@ -244,6 +314,22 @@ Date:   Tue Dec 1 19:38:49 2015 +0100
     Merge pull request #245 from zack-vii/aa_char_const_warning
     
     char const warning - no syntax error and not changes content wise
+
+commit 7749e13b6def07ed5a7ec94397dbcfdb1e7027a2
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 21:23:14 2015 +0100
+
+    added old exported function names for compatibility
+
+commit 6effffba5895ce618c2377673de7f748392e4d79
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 17:12:52 2015 +0100
+
+    systematically replaced IncludedInPulse with IncludeInPulse
+    
+    Not sure it this should be done, but at least teh treenode.py should be
+    considered. However, in this case also test1.py and treeUnitTest.py must
+    be changed (c.f. #242 and 5ab984a)
 
 commit 2b9d1f311b1813d554bbb34860ac0fc99fbfd6c0
 Author: zack-vii <zack.vii@live.com>
@@ -813,7 +899,7 @@ Date:   Thu Nov 12 21:07:37 2015 +0100
     - Array if 5 chars long
     - dict contains full name
 
-commit 04607065ff69d41b01198ba2df72e17002f6e756 (refs/remotes/origin/fix-bnc845)
+commit 04607065ff69d41b01198ba2df72e17002f6e756
 Author: Brian Standley <brian@brianstandley.com>
 Date:   Thu Nov 12 17:02:22 2015 +0100
 
