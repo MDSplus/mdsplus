@@ -1176,8 +1176,7 @@ PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 $(TEST_BUILD_TAP):
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	 CFLAGS="${CFLAGS} -D_TESTING -UHAVE_FORK" CPPFLAGS="${CPPFLAGS} -D_TESTING -UHAVE_FORK"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) clean all; \
 	else \
 	 echo "building tests using D_TESTING set"; \
 	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \

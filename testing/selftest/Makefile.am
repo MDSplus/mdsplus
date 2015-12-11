@@ -16,6 +16,7 @@ AM_DEFAULT_SOURCE_EXT = .c
 
 
 C_TESTS = \
+          leak_test \
           test_options \
           example2 \
           example3 \

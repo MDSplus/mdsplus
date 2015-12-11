@@ -690,10 +690,14 @@ int __setup_parent() {
         if(pid == -1) 
             // error forking //
             eprintf("Error forking to a new process:", __FILE__, __LINE__);     
-        else if(pid == 0) {
-            // child waits for the parent job execution //
-            setpgid(0, 0);
-            group_pid = getpgrp();
+        else if(pid == 0) {            
+            return 0;
+            // continue on child //
+        }
+        else {           
+            group_pid = pid;
+            
+
             
             timer_t timerid;
             struct itimerspec timer_spec;
@@ -735,10 +739,6 @@ int __setup_parent() {
             if(tr) srunner_add_failure(runner, tr);
             srunner_send_evt(runner, tr, CLEND_T);
             return 1;
-        }
-        else {
-            // we are on parent //
-            return 0;
         }
     }
     else

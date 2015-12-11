@@ -119,11 +119,11 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
-am__EXEEXT_1 = test_options$(EXEEXT) example2$(EXEEXT) \
-	example3$(EXEEXT) example4$(EXEEXT) example_assert$(EXEEXT) \
-	skip_test$(EXEEXT) error_test$(EXEEXT) fork_success$(EXEEXT) \
-	fork_fail$(EXEEXT) timeout_success$(EXEEXT) \
-	timeout_fail$(EXEEXT)
+am__EXEEXT_1 = leak_test$(EXEEXT) test_options$(EXEEXT) \
+	example2$(EXEEXT) example3$(EXEEXT) example4$(EXEEXT) \
+	example_assert$(EXEEXT) skip_test$(EXEEXT) error_test$(EXEEXT) \
+	fork_success$(EXEEXT) fork_fail$(EXEEXT) \
+	timeout_success$(EXEEXT) timeout_fail$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 error_test_SOURCES = error_test.c
 error_test_OBJECTS = error_test.$(OBJEXT)
@@ -154,6 +154,10 @@ fork_success_SOURCES = fork_success.c
 fork_success_OBJECTS = fork_success.$(OBJEXT)
 fork_success_LDADD = $(LDADD)
 fork_success_DEPENDENCIES = $(am__DEPENDENCIES_1)
+leak_test_SOURCES = leak_test.c
+leak_test_OBJECTS = leak_test.$(OBJEXT)
+leak_test_LDADD = $(LDADD)
+leak_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 skip_test_SOURCES = skip_test.c
 skip_test_OBJECTS = skip_test.$(OBJEXT)
 skip_test_LDADD = $(LDADD)
@@ -212,11 +216,11 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = error_test.c example2.c $(example3_SOURCES) example4.c \
-	example_assert.c fork_fail.c fork_success.c skip_test.c \
-	test_options.c timeout_fail.c timeout_success.c
+	example_assert.c fork_fail.c fork_success.c leak_test.c \
+	skip_test.c test_options.c timeout_fail.c timeout_success.c
 DIST_SOURCES = error_test.c example2.c $(example3_SOURCES) example4.c \
-	example_assert.c fork_fail.c fork_success.c skip_test.c \
-	test_options.c timeout_fail.c timeout_success.c
+	example_assert.c fork_fail.c fork_success.c leak_test.c \
+	skip_test.c test_options.c timeout_fail.c timeout_success.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -748,6 +752,7 @@ LDADD = $(TEST_LIBS)
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 C_TESTS = \
+          leak_test \
           test_options \
           example2 \
           example3 \
@@ -885,6 +890,10 @@ fork_success$(EXEEXT): $(fork_success_OBJECTS) $(fork_success_DEPENDENCIES) $(EX
 	@rm -f fork_success$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(fork_success_OBJECTS) $(fork_success_LDADD) $(LIBS)
 
+leak_test$(EXEEXT): $(leak_test_OBJECTS) $(leak_test_DEPENDENCIES) $(EXTRA_leak_test_DEPENDENCIES) 
+	@rm -f leak_test$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(leak_test_OBJECTS) $(leak_test_LDADD) $(LIBS)
+
 skip_test$(EXEEXT): $(skip_test_OBJECTS) $(skip_test_DEPENDENCIES) $(EXTRA_skip_test_DEPENDENCIES) 
 	@rm -f skip_test$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(skip_test_OBJECTS) $(skip_test_LDADD) $(LIBS)
@@ -914,6 +923,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/example_assert.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fork_fail.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fork_success.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/leak_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/skip_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timeout_fail.Po@am__quote@
@@ -1144,6 +1154,13 @@ recheck: all $(check_PROGRAMS) $(check_SCRIPTS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+leak_test.log: leak_test$(EXEEXT)
+	@p='leak_test$(EXEEXT)'; \
+	b='leak_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test_options.log: test_options$(EXEEXT)
 	@p='test_options$(EXEEXT)'; \
 	b='test_options'; \
@@ -1447,8 +1464,7 @@ PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 $(TEST_BUILD_TAP):
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	 CFLAGS="${CFLAGS} -D_TESTING -UHAVE_FORK" CPPFLAGS="${CPPFLAGS} -D_TESTING -UHAVE_FORK"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) clean all; \
 	else \
 	 echo "building tests using D_TESTING set"; \
 	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \
