@@ -1462,7 +1462,7 @@
     </help>
     <routine name="TclWfevent"/>
     <parameter name="p1" label="event" prompt="Event" required="True"/>
-    <qualifier name="TIMEOUT" required="True"/>
+    <qualifier name="TIMEOUT" required="True" defaulted="True" default="0"/>
   </verb>
 
   <verb name="write">
