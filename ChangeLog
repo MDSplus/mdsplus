@@ -1,4 +1,16 @@
-commit d6e7ede665445c95cf83426662d2eafd149ca2fe (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit b0925ba85b95b9423e4c0a8760989928da9a8346 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 11 09:17:49 2015 -0500
+
+    Fix missing default value for wfevent timeout
+
+commit 428a615236e47704fbff9613cf5ce7e4aa12226e (tag: refs/tags/alpha_release-7-0-193)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Dec 10 23:47:44 2015 -0500
+
+    New release ---- alpha_release-7-0-193
+
+commit d6e7ede665445c95cf83426662d2eafd149ca2fe
 Merge: 5422cf3 82226c5
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Dec 10 15:47:11 2015 +0100
