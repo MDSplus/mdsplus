@@ -1,4 +1,16 @@
-commit e283c1c2f61b803805c3c4ddd0553251580ac587 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 7e11c842260497726b82a382227cfcc05b3e4d20 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 11 09:17:49 2015 -0500
+
+    Fix missing default value for wfevent timeout
+
+commit 28c8f7c9a0996e176b588f456c866a0f74830f1d (tag: refs/tags/stable_release-7-0-60)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 10 19:05:10 2015 -0500
+
+    New release ---- stable_release-7-0-60
+
+commit e283c1c2f61b803805c3c4ddd0553251580ac587
 Merge: 9a8ec16 074a744
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Tue Nov 10 15:50:10 2015 -0500
