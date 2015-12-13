@@ -1,13 +1,11 @@
 """
 RfxDevices
 ==========
-
 @authors: Anton Soppelsa (IGI Padova)
 @copyright: 2012
 @license: GNU GPL
 """
-
-from MDSplus import Device, Data, Int32, Int64, Int64Array
+from MDSplus import mdsExceptions, Device, Data, Int64, Int64Array
 from threading import Thread
 from ctypes import CDLL, c_int, byref
 from time import sleep
@@ -16,8 +14,6 @@ from time import sleep
 class NI6682(Device):
     """National Instrument 6682 device. This implementation uses only a limited set of the hardware facilities.
        In particular the board is just used as a Time-to-Digital Converter (TDC). """
-    print('NI6682')
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts = [{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},
         {'path':':CLOCK_SOURCE', 'type':'text', 'value':'PTP'}]
@@ -28,7 +24,7 @@ class NI6682(Device):
         parts.append({'path':'.CHANNEL_PFI%d:DECIMATION'%(i), 'type':'numeric', 'value':1})
         parts.append({'path':'.CHANNEL_PFI%d:TIME_SEC'%(i), 'type':'numeric', 'options':('no_write_model',)})
         parts.append({'path':'.CHANNEL_PFI%d:TIME_NSEC'%(i), 'type':'numeric', 'options':('no_write_model',)})
-
+    del(i)
     parts.append({'path':':INITIALISE','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','INITIALISE',50,None),Method(None,'INITIALISE',head))",
         'options':('no_write_shot',)})
@@ -108,7 +104,7 @@ class NI6682(Device):
 
 
 # INIT
-    def INITIALISE(self, arg):
+    def INITIALISE(self):
 
         print('INITIALISE')
         if NI6682.libts is None:
@@ -121,7 +117,7 @@ class NI6682(Device):
             print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         res = NI6682.libts.NI6682_Create(c_int(boardId));
         print('NI6682_Create(): ', res)
@@ -139,26 +135,25 @@ class NI6682(Device):
                 # Better using __dict__ because getattr calls the constructor. Not possible why?
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('CHANNEL_PFI%d.TRIG_MODE: '%(i), tm)
 
-            #TODO decimation must be greather than 0
             try:
                 decimation = getattr(self, 'channel_pfi%d_decimation'%(i)).data();
-                if decimation < 1:
+                if decimation < 1: # decimation must be greather than 0
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Decimation must be greater than 0: ', decimation)
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid TRIG_MODE')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('CHANNEL_PFI%d.DECIMATION: '%(i), decimation)
 
         # If executed for the first time
 
-        return 1;
+        return;
 
 # STORE
-    def FINALISE(self, arg):
+    def FINALISE(self):
 
         print('FINALISE')
 
@@ -170,7 +165,7 @@ class NI6682(Device):
             print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
         res = NI6682.libts.NI6682_Finalise(c_int(boardId));
@@ -179,7 +174,7 @@ class NI6682(Device):
         res = NI6682.libts.NI6682_Destroy(c_int(boardId));
         print('NI6682_Destroy(): ', res)
 
-        return 1;
+        return;
 
 
     class Storeman(Thread):
@@ -245,7 +240,7 @@ class NI6682(Device):
             self.keepWorking = False;
 
 
-    def START_STORE(self, arg):
+    def START_STORE(self):
 
         print('START_STORE')
 
@@ -256,14 +251,14 @@ class NI6682(Device):
             self.board_id.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
         #self.restoreInfo();
         self.ni6682Storeman.start();
 
-        return 1;
+        return;
 
-    def STOP_STORE(self, arg):
+    def STOP_STORE(self):
 
         print('STOP_STORE')
 
@@ -274,7 +269,7 @@ class NI6682(Device):
             self.board_id.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
         #self.restoreInfo();
@@ -283,4 +278,4 @@ class NI6682(Device):
         del self.ni6682Storeman;
         del NI6682.ni6682Storemen[self.getNid()];
 
-        return 1;
+        return;

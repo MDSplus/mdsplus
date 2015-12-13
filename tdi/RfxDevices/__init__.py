@@ -6,11 +6,25 @@ RfxDevices
 @license: GNU GPL
 =======
 """
+from MDSplus import Device as _debug
+if _debug.debug: 
+    from sys import stdout as _stdout
+    def _debug(s,p=tuple()):
+        _stdout.write(s % p)
+else:
+    def _debug(s,p=tuple()):
+        pass
 def _mimport(name):
+    _debug('loading %-16s',(name+':'))
     try:
-        return __import__(name, globals(), fromlist=[name], level=1).__getattribute__(name)
+        try:
+            module = __import__(name, globals(), fromlist=[name], level=1).__getattribute__(name)
+        except:
+            module = __import__(name, globals(), fromlist=[name]).__getattribute__(name)
+        _debug(' successful\n')
+        return module
     except:
-        return __import__(name, globals(), fromlist=[name]).__getattribute__(name)
+        _debug(' failed!\n')
 
 ACQIPPSETUP = _mimport('ACQIPPSETUP')
 CAENDT5720 = _mimport('CAENDT5720')
@@ -59,3 +73,4 @@ SIS3820 = _mimport('SIS3820')
 SPIDER = _mimport('SPIDER')
 SPIDER_SM = _mimport('SPIDER_SM')
 ZELOS2150GV = _mimport('ZELOS2150GV')
+print('RfxDevices loaded.')

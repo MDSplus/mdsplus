@@ -1,12 +1,10 @@
-from MDSplus import Device, Data, Int32
+from MDSplus import mdsExceptions, Device, Data
 from threading import Thread
 from ctypes import CDLL, c_void_p, c_int, c_short, c_byte, byref, c_char_p, c_float
 import datetime
 import time
 
 class FAKECAMERA(Device):
-    print('FAKECAMERA')
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Fake Camera"""
     parts=[
       {'path':':NAME', 'type':'text', 'value':'Fake Camera 1'},
@@ -38,7 +36,8 @@ class FAKECAMERA(Device):
     cammdsutils = None
     camstreamutils = None
 
-    def __init__(self):
+    def __init__(self,node):
+      super(FAKECAMERA,self).__init__(node)
       self.handle = 0
 
 ####Asynchronous readout internal class
@@ -66,7 +65,7 @@ class FAKECAMERA(Device):
         status = FAKECAMERA.cammdsutils.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
         if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
-          return 0
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         if self.device.streaming.data() == 'Stream and Store':
           isStreaming = 1
@@ -157,7 +156,7 @@ class FAKECAMERA(Device):
         #close device and remove from info
         FAKECAMERA.fakecamera.fakeClose(self.device.handle)
         self.device.removeInfo()
-        return 0
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
       def stop(self):
         self.stopReq = True
@@ -190,7 +189,7 @@ class FAKECAMERA(Device):
         FAKECAMERA.camstreamutils = CDLL("libcamstreamutils.so")
       if self.getNid() in FAKECAMERA.handles.keys():
         self.handle = FAKECAMERA.handles[self.getNid()]
-        print('RESTORE INFO HANDLE TROVATO')
+        if Device.debug: print('RESTORE INFO HANDLE TROVATO')
       else:
         print('RESTORE INFO HANDLE NON TROVATO')
 
@@ -198,39 +197,39 @@ class FAKECAMERA(Device):
           name = self.name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
-          return 0
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
           exp_name = self.exp_name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source experiment name' )
-          return 0
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
           exp_shot = self.exp_shot.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source shot' )
-          return 0
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
           exp_node = self.exp_node.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source frame node' )
-          return 0
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
           frame_rate = self.frame_rate.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing reading frame rate' )
-          return 0
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
         self.handle = c_void_p(0)
         print('restoreInfo before fakeOpen')
         status = FAKECAMERA.lib.fakeOpen(c_char_p(exp_name), c_char_p(exp_shot), c_char_p(exp_node), c_float(frame_rate), byref(self.handle))
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
-          return 0
-        print('restoreInfo ended')
+          raise mdsExceptions.TclFAILED_ESSENTIAL
+        if Device.debug: print('restoreInfo ended')
       return
 
 ###remove info###
@@ -242,21 +241,21 @@ class FAKECAMERA(Device):
 
 
 ##########init############################################################################
-    def init(self,arg):
+    def init(self):
       self.restoreInfo()
       self.frames.setCompressOnPut(False)
 
 #      status = FakeCam.Lib.fakeSetColorCoding(self.handle, c_int(6));
 #      if status < 0:
 #        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
-#        return 0
+#        raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return 1
+      return
 
 
 ##########start store############################################################################
-    def start_store(self, arg):
+    def start_store(self):
       self.restoreInfo()
       self.worker = self.AsynchStore()
       self.worker.daemon = True
@@ -268,17 +267,17 @@ class FAKECAMERA(Device):
       status = FAKECAMERA.fakecamera.fakeStartAcquisition(self.handle, byref(hBuffers), byref(width), byref(height), byref(payloadSize))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition')
-        return 0
+        raise mdsExceptions.TclFAILED_ESSENTIAL
       self.worker.configure(self, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()
-      return 1
+      return
 
 
 ##########stop store############################################################################
-    def stop_store(self,arg):
-      print('STOP STORE')
+    def stop_store(self):
+      if Device.debug: print('STOP STORE')
       self.restoreWorker()
       self.worker.stop()
-      print('FLAG SETTATO')
-      return 1
+      print('done')
+      return

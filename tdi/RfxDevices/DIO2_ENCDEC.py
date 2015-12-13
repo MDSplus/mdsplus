@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Range, Int32, makeArray
+from MDSplus import mdsExceptions, Device, Data, Range, makeArray
 from threading import Thread
 from numpy import array
 from ctypes import CDLL, byref, c_int
@@ -10,8 +10,6 @@ except:
 
 class DIO2_ENCDEC(Device):
     """INCAA DIO2 Decoder/Encoder channels Timing Module"""
-    print('DIO2_ENCDEC')
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':SW_MODE', 'type':'text', 'value':'LOCAL'},
         {'path':':IP_ADDR', 'type':'text'},
@@ -80,7 +78,7 @@ class DIO2_ENCDEC(Device):
 
 
 # INIT
-    def init(self, arg):
+    def init(self):
         print('INIT')
 
 # Board ID
@@ -89,20 +87,20 @@ class DIO2_ENCDEC(Device):
             print('BOARD_ID: ' + str(boardId))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 # Software Mode
         try:
             swMode = self.sw_mode.data()
             print('swMode: ' + str(swMode))
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SW_MODE')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         if swMode == 'REMOTE':
             try:
                 ipAddr = self.ip_addr.data()
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             print('IP_ADDR: ' + ipAddr)
 # Clock Source
         #clockSourceDict = {'INTERNAL':0, 'HIGHWAY':1, 'EXTERNAL':2}
@@ -111,7 +109,7 @@ class DIO2_ENCDEC(Device):
             clockSource = clockSourceDict[self.clock_source.data()]
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid CLOCK_SOURCE')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         print('CLOCK_SOURCE: ' + self.clock_source.data() + ' - ID: ' + str(clockSource))
 # Recorder Event
         recStartEv = 0
@@ -143,7 +141,7 @@ class DIO2_ENCDEC(Device):
                 synchEvents.append(-1)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SYNCH_EVENT')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 # HW Init
         if swMode == 'REMOTE':
             status = Data.execute('MdsConnect("'+ ipAddr + '")')
@@ -152,15 +150,15 @@ class DIO2_ENCDEC(Device):
                 if status == 0:
                     Data.execute('MdsDisconnect()')
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW initialization')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot connect to remote CPCI system')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             status = Data.execute("DIO2_ENCDECHWInit(0, $1, $2, $3, $4)", boardId, clockSource, recStartEv, makeArray(synchEvents))
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW initialization')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
 # SW EVENT Configuration Check
         huge = float( Data.execute('HUGE(0.)') )
@@ -183,7 +181,7 @@ class DIO2_ENCDEC(Device):
                     evCode = 0
             if evCode == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event specification for software channel')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             try:
                 nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
@@ -197,14 +195,14 @@ class DIO2_ENCDEC(Device):
             if evTime == huge:
                 print('Perche non va')
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software event')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
             #print 'NAME: ' + evName
             #print 'PATH: ' + nodePath
             status = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
             if status == -1:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             print('SW EVENT IS OFF')
 
@@ -217,7 +215,7 @@ class DIO2_ENCDEC(Device):
                     function = getattr(self, 'channel_%d_function'%(c+1)).data()
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
                 print('FUNCTION: ' + function)
 
                 if function != 'ENCODER':
@@ -227,12 +225,12 @@ class DIO2_ENCDEC(Device):
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW IO chanel setup. See CPCI console for details')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     else:
                         status = Data.execute("DIO2_ENCDECHWSetIOConnectionChan(0, $1, $2)", boardId, c)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW IO chanel setup')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #Clock Generation
                 if function == 'CLOCK':
@@ -241,13 +239,13 @@ class DIO2_ENCDEC(Device):
                         #print 'FREQ: ' + str(frequency)
                         if frequency <= 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid clock frequency parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         dutyCycle = float( getattr(self,'channel_%d_duty_cycle'%(c+1)).data() )
                         #print 'Duty Cycle: ' + str(dutyCycle)
                         if dutyCycle <= 0 or dutyCycle > 100 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid clock duty cycle parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         #Channel termination flags on DIO2 not yet implemented
                         #terminationDict = {'NO':0, 'YES':1}
@@ -256,7 +254,7 @@ class DIO2_ENCDEC(Device):
 
                     except:
                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid clock parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     if swMode == 'REMOTE':
                         #status = Data.execute('MdsValue("DIO4HWSetClockChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4, $5)', boardId, c, frequency, dutyCycle, terminationCode)
@@ -264,13 +262,13 @@ class DIO2_ENCDEC(Device):
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW clock setup. See CPCI console for details')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     else:
                         #status = Data.execute("DIO4HWSetClockChan(0, $1, $2, $3, $4, $5)", boardId, c, frequency, dutyCycle, terminationCode)
                         status = Data.execute("DIO2HWSetClockChan(0, $1, $2, $3, $4)", boardId, c, frequency, dutyCycle)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW clock setup')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     period = int((1. / frequency) / 1E-7 + 0.5) * 1E-7;
                     #setattr(self, 'channel_%d_clock'%(c+1), Data.compile('BUILD_RANGE("+*+","+*+","+str(period)+")'))
@@ -307,13 +305,13 @@ class DIO2_ENCDEC(Device):
                                         eventTime = float( getattr(self,'channel_%d_trigger'%(c+1)).data() )
                                     except:
                                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Cannot associate a time to event ' + str(event) + ' for channel %d'%(c+1))
-                                        return 0
+                                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
                                 print('PULSE eventCodes: ' + str(eventCodes))
                                 getattr(self,'channel_%d_trigger'%(c+1)).data()
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid event for pulse channel %d'%(c+1))
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         cyclicDict = {'NO':0, 'YES':1}
                         levelDict = {'LOW':0, 'HIGH':1}
@@ -322,34 +320,34 @@ class DIO2_ENCDEC(Device):
                              #print cyclic
                         except:
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid pulse cyclic parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         try:
                              initLev1 = levelDict[getattr(self,'channel_%d_init_lev_1'%(c+1)).data()]
                              #print initLev1
                         except:
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid pulse Lev1 parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         try:
                             initLev2 = levelDict[getattr(self,'channel_%d_init_lev_2'%(c+1)).data()]
                             #print initLev2
                         except:
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid pulse Lev2 parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
                         #print duration
                         if duration < 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid pulse duration parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
                         #print delay
                         if delay < 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid pulse delay parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         #Channel termination flags on DIO2 not yet implemented
                         #terminationDict = {'NO':0, 'YES':1}
@@ -357,19 +355,19 @@ class DIO2_ENCDEC(Device):
                         #terminationCode = terminationDict[termination]
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Pulse parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     if swMode == 'REMOTE':
                         status = Data.execute('MdsValue("DIO2HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9)', boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW pulse setup. See CPCI console for details')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     else:
                         status = Data.execute("DIO2HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)",boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW pulse setup')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     try:
                         trig_path = getattr(self,'channel_%d_trigger'%(c+1)).getFullPath()
                         delay_path = getattr(self,'channel_%d_delay'%(c+1)).getFullPath()
@@ -383,7 +381,7 @@ class DIO2_ENCDEC(Device):
 
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write Pulse parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 #Gated Clock Generation
                 elif function == 'GCLOCK':
                     trigModeDict = {'EVENT':0, 'RISING EDGE':1, 'FALLING EDGE':2, 'SOFTWARE':3}
@@ -411,7 +409,7 @@ class DIO2_ENCDEC(Device):
                                         setattr(self,'channel_%d_trigger'%(c+1), eventTime)
                                 else:
                                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot configure GClock channel with more than one event: channel %d'%(c+1))
-                                    return 0
+                                    raise mdsExceptions.TclFAILED_ESSENTIAL
                                     """
                                     for i in range(eventSize):
                                         print eA[i]
@@ -420,33 +418,33 @@ class DIO2_ENCDEC(Device):
                                         eventTime = getattr(self,'channel_%d_trigger'%(c+1)).data()
                                     except:
                                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot associate a time to event ' + str(event) + ' for channel %d'%(c+1))
-                                        return 0
+                                        raise mdsExceptions.TclFAILED_ESSENTIAL
                                     """
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot resolve event(s) for channel %d'%(c+1))
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
                         if frequency <= 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid gated clock frequency parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
                         print('duration: ', duration)
                         if duration < 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid gated clock duration parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
                         if delay < 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid gated clock delay parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
                         if dutyCycle < 0 or dutyCycle > 100  :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid gated clock duty cycle parameter for channel %d'%(c+1))
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                         #Cycling function non yet implemented gated Clock
                         #cyclicDict = {'NO':0, 'YES':1}
@@ -459,7 +457,7 @@ class DIO2_ENCDEC(Device):
 
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     print(boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0])
 
@@ -469,14 +467,14 @@ class DIO2_ENCDEC(Device):
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW GClock setup. See CPCI console for details')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     else:
                         #status = Data.execute("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle)
                         status = Data.execute("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7)",boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0])
 
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW GClock setup')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     try:
                         trig_path = getattr(self,'channel_%d_trigger'%(c+1)).getFullPath()
@@ -493,7 +491,7 @@ class DIO2_ENCDEC(Device):
                         getattr(self, 'channel_%d_clock'%(c+1)).putData(Range(Data.compile(trigger_1), Data.compile(trigger_2), period))
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write GCLOCK parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 #Dual speed Clock Generation
                 elif function == 'DCLOCK':
                     trigModeDict = {'EVENT':0, 'RISING EDGE':1, 'FALLING EDGE':2, 'SOFTWARE':3}
@@ -521,7 +519,7 @@ class DIO2_ENCDEC(Device):
                                         setattr(self,'channel_%d_trigger'%(c+1), eventTime)
                                 else:
                                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot configure DClock channel with more than one event: channel %d'%(c+1))
-                                    return 0
+                                    raise mdsExceptions.TclFAILED_ESSENTIAL
                                     """
                                     for i in range(eventSize):
                                         print eA[i]
@@ -530,11 +528,11 @@ class DIO2_ENCDEC(Device):
                                         eventTime = getattr(self,'channel_%d_trigger'%(c+1)).data()
                                     except:
                                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot associate a time to event ' + event + ' for channel %d'%(c+1))
-                                        return 0
+                                        raise mdsExceptions.TclFAILED_ESSENTIAL
                                     """
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot resolve event(s) for channel %d'%(c+1))
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
                         freq1 = getattr(self,'channel_%d_freq_1'%(c+1)).data()
                         freq2 = getattr(self,'channel_%d_freq_2'%(c+1)).data()
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
@@ -545,7 +543,7 @@ class DIO2_ENCDEC(Device):
                         #terminationCode = terminationDict[termination]
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Dual Speed Clock parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     if swMode == 'REMOTE':
                         #status = Data.execute('MdsValue("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9)', boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes), terminationCode)
@@ -553,13 +551,13 @@ class DIO2_ENCDEC(Device):
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW GClock setup. See CPCI console for details')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     else:
                         #status = Data.execute("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)",boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes), terminationCode)
                         status = Data.execute("DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, freq1, freq2, delay, duration, eventCodes[0])
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW DClock setup')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     try:
                         trig_path = getattr(self,'channel_%d_trigger'%(c+1)).getFullPath()
@@ -583,7 +581,7 @@ class DIO2_ENCDEC(Device):
                         #setattr(self, 'channel_%d_clock'%(c+1), Data.compile('BUILD_RANGE([-1E6,'+trig1+','+trig2+'],['+trig1+','+trig2+',1E6],['+str(period1)+','+str(period2)+','+str(period1)+'])'))
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write DCLOCK parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
                 elif function == 'ENCODER':
                     for e in range(2):
                         if getattr(self, 'channel_%d_out_ev%d'%(c+1, e+1)).isOn():
@@ -606,7 +604,7 @@ class DIO2_ENCDEC(Device):
                                     evCode = 0
                             if evCode == 0:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event specification for channel %d'%(c+1+e))
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
 
                             try:
                                 evTime = float(getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).data())
@@ -617,13 +615,13 @@ class DIO2_ENCDEC(Device):
                             if evTime == huge:
                                 print("3 Perche entra qui")
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for channel %d'%(c+1+e))
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
                             nodePath = getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).getFullPath()
                             print('evName: ', evName)
                             status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
                             if status == -1:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register event time')
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
                             terminationDict = {'NO':0, 'YES':1}
                             try:
                                 nodePath = getattr(self, 'channel_%d_out_ev%d_termination'%(c+1, e+1)).getFullPath()
@@ -632,7 +630,7 @@ class DIO2_ENCDEC(Device):
                                 terminationCode = terminationDict[termination]
                             except:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event termination specification for channel %d'%(c+1+e))
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
 
                             #Event Edge flags non yet implemented in DIO2 Channel
                             #evEdgeDict = {'FALLING':0, 'RISING':1}
@@ -641,7 +639,7 @@ class DIO2_ENCDEC(Device):
                             #    evEdgeCode = evEdgeDict[evEdge]
                             #except:
                             #    Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event edge specification for channel %d'%(c+1))
-                            #    return 0
+                            #    raise mdsExceptions.TclFAILED_ESSENTIAL
                         else:
                             #Also if channel is off channel input configuration must be done
                             print('Event channel %d OFF'%(2*c+1+e))
@@ -656,12 +654,12 @@ class DIO2_ENCDEC(Device):
                             if status == 0:
                                 Data.execute('MdsDisconnect()')
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW set event setup.')
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
                         else:
                             status = Data.execute("DIO2_ENCDECHWInitChan(0, $1, $2, $3, $4, $5)", boardId, clockSource, realChannel, evCode, terminationCode)
                             if status == 0:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW set event setup')
-                                return 0
+                                raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 #If Channel is OFF for DIO2 module compatibility with DIO2 driver odd channel is configure
                 #as input even as output
@@ -670,12 +668,12 @@ class DIO2_ENCDEC(Device):
                     if status == 0:
                         Data.execute('MdsDisconnect()')
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW IO chanel setup. See CPCI console for details')
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
                 else:
                     status = Data.execute("DIO2_ENCDECHWSetIOConnectionChan(0, $1, $2)", boardId, c)
                     if status == 0:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW IO chanel setup')
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
                 print('Channel %d OFF'%(c+1))
             """
                 External clock source sytnchronization not yet implemented in DIO2 Module
@@ -690,18 +688,18 @@ class DIO2_ENCDEC(Device):
 
                     except:
                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid CLOCK SOURCE + CLOCK parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
                     if swMode == 'REMOTE':
                         status = Data.execute('MdsValue("DIO4HWSetExternalClockChan(0, $1, $2, $3, $4, $5, $6)", $1,$2,$3,$4,$5,$6)', boardId, c, freq1, freq2, dutyCycle, evTermCode)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW clock setup. See CPCI console for details')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                     else:
                         status = Data.execute("DIO4HWSetExternalClockChan(0, $1, $2, $3, $4, $5, $6)", boardId, c, freq1, freq2, dutyCycle, evTermCode)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW clock setup')
-                            return 0
+                            raise mdsExceptions.TclFAILED_ESSENTIAL
                 # DEVO SCRIVERE ANCHE freq1 DA QUALCHE PARTE ??????
                     period = long((1. / freq2) / 1E-7 + 0.5) * 1E-7;
                     getattr(self, 'channel_%d_clock'%(c+1)).putData(Range(None, None, period))
@@ -714,7 +712,7 @@ class DIO2_ENCDEC(Device):
             Data.execute('MdsDisconnect()')
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot start DIO2 device. See CPCI console for details')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             #print " Start DIO2", boardId, channelMask, synchFlag
             #status = Data.execute('MdsValue("DIO4HWStartChan(0, $1, $2, $3)", $1,$2,$3)', boardId, channelMask, synchFlag)
@@ -722,16 +720,16 @@ class DIO2_ENCDEC(Device):
             #print " End Start DIO2----"
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot start DIO2 Device')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
         print("===== End py INIT ")
 
-        return 1
+        return
 
 
 
 # reset
-    def reset(self, arg):
+    def reset(self):
         print('reset')
 # Board ID
         try:
@@ -739,19 +737,19 @@ class DIO2_ENCDEC(Device):
             #print 'BOARD_ID: ' + str(boardId)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 # Software Mode
         try:
             swMode = self.sw_mode.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SW_MODE')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         if swMode == 'REMOTE':
             try:
                 ipAddr = self.ip_addr.data()
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             #print 'IP_ADDR: ' + ipAddr
 #HW Reset
         if swMode == 'REMOTE':
@@ -761,28 +759,28 @@ class DIO2_ENCDEC(Device):
                 if status == 0:
                     Data.execute('MdsDisconnect()')
                     Data.execute('DevLogErr', self.nid, 'Cannot execute remote HW reset. See CPCI console for details')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 Data.execute('DevLogErr', self.nid, 'Cannot connect to remote CPCI system')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             status = Data.execute("DIO2HWReset($1)", boardId)
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW reset')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
         if swMode == 'REMOTE':
             Data.execute('MdsDisconnect()')
-        return 1
+        return
 
 
 
-    def store(self, arg):
+    def store(self):
         print('store')
 
         if not getattr(self, 'rec_start_ev').isOn():
             Data.execute('DevLogErr($1, $2)', self.nid, 'Events recording is not enabled')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 # Board ID
         try:
@@ -790,19 +788,19 @@ class DIO2_ENCDEC(Device):
             #print 'BOARD_ID: ' + str(boardId)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 # Software Mode
         try:
             swMode = self.sw_mode.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SW_MODE')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         if swMode == 'REMOTE':
             try:
                 ipAddr = self.ip_addr.data()
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 #HW
         recEvents = []
         recTimes = []
@@ -817,10 +815,10 @@ class DIO2_ENCDEC(Device):
                 except:
                     Data.execute('MdsDisconnect()')
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute DIO2HWGetRecEvents')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 Data.execute('DevLogErr', self.nid, 'Cannot connect to remote CPCI system')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             try:
                 recEvents = Data.execute("DIO2HWGetRecEvents(0, $1)", boardId)
@@ -834,7 +832,7 @@ class DIO2_ENCDEC(Device):
                 print("TIMES ", recTimes)
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute DIO2HWGetRecEvents')
-                return 0;
+                raise mdsExceptions.TclFAILED_ESSENTIAL;
 
         print("recEventNum ", recEventNum)
 
@@ -860,7 +858,7 @@ class DIO2_ENCDEC(Device):
                     function = getattr(self, 'channel_%d_function'%(c+1)).data()
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
                 #print 'FUNCTION: ' + function
                 if function == 'PULSE' or function == 'GCLOCK' or function == 'DCLOCK':
                     try:
@@ -870,7 +868,7 @@ class DIO2_ENCDEC(Device):
                             phases = Data.execute("DIO2HWGetPhaseCount(0, $1, $2)",boardId, c)
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot get phase count')
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
                     #print phases
                     trigPath = getattr(self,'channel_%d_trigger'%(c+1)).getFullPath()
@@ -881,12 +879,12 @@ class DIO2_ENCDEC(Device):
                         setattr(self, 'channel_%d_trig_2'%(c+1), Data.compile(trig2))
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write trigger parameters for channel %d'%(c+1))
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
         if swMode == 'REMOTE':
             Data.execute('MdsDisconnect()')
-        return 1
+        return
 
-    def trigger(self, arg):
+    def trigger(self):
         print('trigger')
 # Board ID
         try:
@@ -894,26 +892,26 @@ class DIO2_ENCDEC(Device):
             #print 'BOARD_ID: ' + str(boardId)
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid BOARD_ID')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 # Software Mode
         try:
             swMode = self.sw_mode.data()
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid SW_MODE')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         if swMode == 'REMOTE':
             try:
                 ipAddr = self.ip_addr.data()
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid IP_ADDR')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
         clockSourceDict = {'INTERNAL':0, 'HIGHWAY':1}
         try:
             clockSourceDict[self.clock_source.data()]
         except:
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid CLOCK_SOURCE')
-            return 0
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         #print 'CLOCK_SOURCE: ' + self.clock_source.data() + ' - ID: ' + str(clockSource)
 
 
@@ -925,7 +923,7 @@ class DIO2_ENCDEC(Device):
                     function = getattr(self, 'channel_%d_function'%(c+1)).data()
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
                 if (function == 'PULSE' or function == 'DCLOCK' or function == 'GCLOCK'):
                     trigModeDict = {'EVENT':0, 'RISING EDGE':1, 'FALLING EDGE':2, 'SOFTWARE':3}
                     try:
@@ -935,7 +933,7 @@ class DIO2_ENCDEC(Device):
                             channelMask = channelMask | (1 << c)
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid trigger mode')
-                        return 0
+                        raise mdsExceptions.TclFAILED_ESSENTIAL
 
         if swMode == 'REMOTE':
             status = Data.execute('MdsConnect("'+ ipAddr + '")')
@@ -944,15 +942,15 @@ class DIO2_ENCDEC(Device):
                 if status == 0:
                     Data.execute('MdsDisconnect()')
                     Data.execute('DevLogErr', self.nid, 'Cannot execute remote trigger')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 Data.execute('DevLogErr', self.nid, 'Cannot connect to remote CPCI system')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             status = Data.execute("DIO2_ENCDECHWTrigger(0, $1, $2)", boardId, channelMask)
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute trigger')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #SW EVENT parameter check execute in init action too
         huge = Data.execute('HUGE(0.)')
@@ -974,7 +972,7 @@ class DIO2_ENCDEC(Device):
                     evCode = 0
             if evCode == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event specification for software channel')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
                 evTime = getattr(self, 'out_ev_sw_time').data()
                 print("evTime: ",evTime)
@@ -982,24 +980,24 @@ class DIO2_ENCDEC(Device):
                 evTime = huge
             if evTime == huge:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software event')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
             status = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
             if status == -1:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
             if swMode == 'REMOTE':
                 status = Data.execute('MdsValue("DIO2_ENCDECHWEventTrigger(0, $1, $2)", $1,$2)', boardId, evCode)
                 if status == 0:
                     Data.execute('MdsDisconnect()')
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW event trigger')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 status = Data.execute("DIO2_ENCDECHWEventTrigger(0, $1, $2)", boardId, evCode)
                 if status == 0:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
         """
         Il canale non capisco perche debba essere generato un veneto software con codice 0
         else:
@@ -1010,18 +1008,18 @@ class DIO2_ENCDEC(Device):
                 if status == 0:
                     Data.execute('MdsDisconnect()')
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW event trigger')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
             else:
                 #print "nodePath: ",nodePath , evCode
                 status = Data.execute("DIO2_ENCDECHWEventTrigger(0, $1, $2)", boardId, evCode)
                 if status == 0:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
-                    return 0
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
         """
 
         if swMode == 'REMOTE':
             Data.execute('MdsDisconnect()')
-        return 1
+        return
 
 
 
@@ -1044,7 +1042,7 @@ class DIO2_ENCDEC(Device):
                 print(boardId)
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid BOARD_ID')
-                return 0
+                raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
                 DIO4.mainLib.DIO4_InitLibrary()
                 status = DIO4.mainLib.DIO4_Open(c_int(boardId), byref(c_int(self.handle)))
@@ -1052,13 +1050,13 @@ class DIO2_ENCDEC(Device):
                 print(self.handle)
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
-                return 0
-        return 1
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+        return
 
     def removeInfo(self):
         del(DIO4.handles[self.nid])
 
-    def start_store(self, arg):
+    def start_store(self):
         print('START STORE')
         self.restoreInfo()
         self.worker = self.AsynchStore()
@@ -1066,13 +1064,13 @@ class DIO2_ENCDEC(Device):
         self.worker.configure(self, self.handle)
         self.saveWorker()
         self.worker.start()
-        return 1
+        return
 
-    def stop_store(self,arg):
+    def stop_store(self):
         print('STOP STORE')
         self.restoreWorker()
         self.worker.stop()
-        return 1
+        return
 
     class AsynchStore(Thread):
         def __init__(self):

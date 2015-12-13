@@ -1,11 +1,10 @@
 # -*- coding: iso-8859-1 -*-
 #MDSplus device superclass for MARTe applications
-from MDSplus import Device, Event, Tree
+from MDSplus import mdsExceptions, Device, Event, Tree
 from os import environ
 from time import sleep
 
 class MARTE_COMMON(Device):
-    print('MARTE_COMMON')
     """MARTe configuration"""
     parts=[{'path':':COMMENT', 'type':'text'},
       {'path':':ID', 'type':'numeric', 'value':0},
@@ -36,7 +35,7 @@ class MARTE_COMMON(Device):
         return environ["MARTE_EVENT"]
 
 #init method will send a SETUP event with the required information to allow MDSInterface service retrieving parameter and signal information
-    def init(self,arg):
+    def init(self):
       eventStr = "SETUP " + Tree.getActiveTree().name + " "  + self.control.data() + " " + str(Tree.getActiveTree().shot) + " " + str(self.id.data()) + " "
 
       eventStr = eventStr + " " + str(self.params.getNid())
@@ -45,44 +44,44 @@ class MARTE_COMMON(Device):
       print(eventStr)
       Event.setevent(self.getEventName(), eventStr)
       sleep(3)
-      return 1
+      return
 #load method will send a LOAD event forcing reporting in MARTe confirguration the actual value of MDSplus parameters.
 #GAM field MdsId will specify the target device for every GAM taking MDSplus parameters
-    def load(self,arg):
+    def load(self):
        eventStr = "LOAD"
        Event.setevent(self.getEventName(), eventStr)
-       return 1
+       return
 
 #Event transition requests
-    def pre_req(self, arg):
+    def pre_req(self):
       eventStr = "PRE_REQ " + str(self.id.data())
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
-    def pulse_req(self, arg):
+    def pulse_req(self):
       eventStr = "PULSE_REQ"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
-    def post_req(self, arg):
+    def post_req(self):
       eventStr = "POST_REQ"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
-    def collection_complete(self, arg):
+    def collection_complete(self):
       eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
-    def abort(self, arg):
+    def abort(self):
       eventStr = "ABORT"
       Event.setevent(self.getEventName(), eventStr)
-      return 1
+      return
 
 #force flushing of buffered data. Typially called after COLLECTION_COMPLETE event
-    def store(self,arg):
+    def store(self):
       eventStr = "STORE " +  str(self.id.data())
       print(eventStr)
       Event.setevent(self.getEventName(), eventStr)
       sleep(10)
-      return 1
+      return

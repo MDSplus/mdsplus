@@ -1,4 +1,4 @@
-from MDSplus import Device, Data, Float32, Float32Array, version
+from MDSplus import mdsExceptions, Device, Data, Float32, Float32Array, version
 if version.ispy3:
     import http as httplib
 else:
@@ -7,7 +7,6 @@ import json
 from  time import sleep
 
 class REDPYTADC(Device):
-  print('REDPYTADC')
   parts=[{'path':':IP_ADDR', 'type':'text'},{'path':':COMMENT', 'type':'text'},
   {'path':':TRIG_SOURCE', 'type':'numeric', 'value':2},
   {'path':':TRIG_EDGE', 'type':'numeric', 'value':0},
@@ -25,14 +24,14 @@ class REDPYTADC(Device):
 	'options':('no_write_shot',)})
 
 
-  def init(self, arg):
+  def init(self):
     try:
       hConn = httplib.HTTPConnection(self.ip_addr.data())
       hConn.request("GET", "/bazaar?start=scope+gen")
       hConn.getresponse()
     except:
       print('Cannot connect to '+self.ip_addr.data())
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
     trigSource = self.trig_source.data()
     trigEdge = self.trig_edge.data()
     fullScale1 = self.full_scale_1.data()
@@ -47,7 +46,7 @@ class REDPYTADC(Device):
       hConn.getresponse()
     except:
       print("Cannot load trig_mode")
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
 
     jsonStr = {'datasets':{'params':{'trig_source':int(trigSource)}}}
     print(jsonStr)
@@ -56,7 +55,7 @@ class REDPYTADC(Device):
       hConn.getresponse()
     except:
       print("Cannot load trig_source")
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
 
     jsonStr = {'datasets':{'params':{'trig_edge': int(trigEdge)}}}
     try:
@@ -64,7 +63,7 @@ class REDPYTADC(Device):
       hConn.getresponse()
     except:
       print("Cannot load trig_edge")
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
     jsonStr = {'datasets':{'params':{'gain_ch1': int(fullScale1)}}}
@@ -73,7 +72,7 @@ class REDPYTADC(Device):
       hConn.getresponse()
     except:
       print("Cannot load gain_ch1")
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
 
     jsonStr = {'datasets':{'params':{'gain_ch2': int(fullScale2)}}}
     try:
@@ -81,38 +80,38 @@ class REDPYTADC(Device):
       hConn.getresponse()
     except:
       print("Cannot load gain_ch2")
-      return 0
-    return 1
+      raise mdsExceptions.TclFAILED_ESSENTIAL
+    return
 
 
-  def trigger(self, arg):
+  def trigger(self):
     try:
       hConn = httplib.HTTPConnection(self.ip_addr.data())
     except:
       print('Cannot connect to '+self.ip_addr.data())
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
     jsonStr = {'datasets':{'params':{'single_btn': 1}}}
     try:
       hConn.request("POST", "/data", json.dumps(jsonStr))
       hConn.getresponse()
     except:
       print("Cannot trigger device")
-      return 0
-    return 1
+      raise mdsExceptions.TclFAILED_ESSENTIAL
+    return
 
-  def store(self, arg):
+  def store(self):
     try:
       hConn = httplib.HTTPConnection(self.ip_addr.data())
     except:
       print('Cannot connect to '+self.ip_addr.data())
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
     try:
       hConn.request("GET", "/data")
       r = hConn.getresponse()
       jans = json.load(r)
     except:
       print('Cannot get data')
-      return 0
+      raise mdsExceptions.TclFAILED_ESSENTIAL
 
     chan1 = jans['datasets']['g1'][0]['data']
     chan2 = jans['datasets']['g1'][1]['data']
@@ -139,7 +138,7 @@ class REDPYTADC(Device):
         self.channel_1.putData(sig1)
     except:
         print('Cannot Save Channel 1')
-        return 0
+        raise mdsExceptions.TclFAILED_ESSENTIAL
 
     try:
         dim2 = Data.compile('$1 + $2', Float32Array(x1), Float32(triggerTime))
@@ -148,5 +147,5 @@ class REDPYTADC(Device):
         self.channel_2.putData(sig2)
     except:
         print('Cannot Save Channel 2')
-        return 0
-    return 1
+        raise mdsExceptions.TclFAILED_ESSENTIAL
+    return
