@@ -142,6 +142,7 @@ VALGRIND_SUPPRESSIONS_PY ?=
 VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
                             $(VALGRIND_SUPPRESSIONS) \
                             $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
+                            
 
 VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
@@ -201,7 +202,7 @@ check-valgrind:
 
 check-valgrind-tool:
 	@ \
-	$(MAKE) tests \
+	$(MAKE) check-TESTS \
 	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
@@ -219,12 +220,12 @@ check-valgrind-suppressions:
 
 check-valgrind-suppressions-tool:
 	@ \
-	$(MAKE) tests \
+	$(MAKE) check-TESTS \
 	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
-	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$f-valgrind.supp" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$f-valgrind-$(VALGRIND_TOOL).supp" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 else

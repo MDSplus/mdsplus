@@ -100,6 +100,13 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS PYTHON  /////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 
+AC_DEFUN([TS_CHECK_PYTHON],[
+  AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])  
+  AS_IF(test x"${NOSETESTS}" != x"",
+   [eval $2],
+   [eval $3])
+])
+
 dnl TEST for python modules
 AC_DEFUN([TS_CHECK_PYTHON_TAP],[
   AC_PYTHON_MODULE(tap)
@@ -133,6 +140,8 @@ AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([TESTS_ENVIRONMENT])
  AS_VAR_SET([LOG_COMPILER])
  AS_VAR_SET([LOG_FLAGS])
+ AS_VAR_SET([PY_LOG_COMPILER])
+ AS_VAR_SET([PY_LOG_FLAGS])
  AS_VAR_SET([PY_LOG_COMPILER_TAP])
  AS_VAR_SET([PY_LOG_FLAGS_TAP])
  AS_VAR_SET([LOG_DRIVER],["\$(SHELL) \$(top_srcdir)/conf/test-driver"])
@@ -144,6 +153,11 @@ AC_DEFUN([TS_SELECT],[
     AS_VAR_APPEND([PY_LOG_FLAGS_TAP],   ["--with-tap --tap-stream"])],
    [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
 
+ TS_CHECK_PYTHON_TAP( [$PYTHON], 
+   [AS_VAR_APPEND([PY_LOG_COMPILER],["${NOSETESTS}"])
+    AS_VAR_APPEND([PY_LOG_FLAGS],   [""])],
+   [TS_LOG_SKIP([PY_LOG_COMPILER])])
+ 
 
  AS_CASE(["${build_os}:${host}"],
  #

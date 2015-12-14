@@ -40,8 +40,8 @@ LOG_DRIVER          ?= @LOG_DRIVER@
 TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
 LOG_COMPILER        ?= @LOG_COMPILER@
 
-PY_LOG_COMPILER     ?= $(PYTHON)
-PY_LOG_FLAGS        ?= -v
+PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
@@ -56,7 +56,6 @@ TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 
 
-## .ONESHELL:
 $(TEST_BUILD_TAP):
 	## Make all recursive targets here without dying. \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
@@ -83,7 +82,6 @@ $(TEST_BUILD_TAP):
 	echo "1..$${count}" >> $@;
 
 
-## .ONESHELL:
 .PHONY: $(TEST_SUITE_TAP)
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	export TEST_FORMAT="tap"; \
@@ -93,7 +91,7 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	 PY_LOG_COMPILER=$(PY_LOG_COMPILER_TAP) \
 	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)"; \
 	\
-	## collate test-build.tap and \
+	## collate test-build.tap \
 	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 	else suite="$@"; \
 	fi; \

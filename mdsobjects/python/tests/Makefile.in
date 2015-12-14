@@ -635,6 +635,14 @@ TESTS = \
         test_trees.py
 
 
+# DISABLE PYTHON LEAK DETECTION 
+# This suppression file shall be removed when python will finally introduce the
+# patch to detect if valgrind is running .. take a look at the file for details.
+#
+VALGRIND_SUPPRESSIONS_FILES_PY = \
+         ${top_srcdir}/conf/valgrind-python-disableleak.supp
+
+
 #
 # Files produced by tests that must be purged
 #
@@ -1019,8 +1027,8 @@ LOG_DRIVER          ?= @LOG_DRIVER@
 TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
 LOG_COMPILER        ?= @LOG_COMPILER@
 
-PY_LOG_COMPILER     ?= $(PYTHON)
-PY_LOG_FLAGS        ?= -v
+PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
