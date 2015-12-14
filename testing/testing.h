@@ -158,8 +158,7 @@ void __mark_point(const char *__assertion, const char *__file,
 
 #define BEGIN_TESTING(description) \
     __test_init(__STRING(description),__FILE__,__LINE__); \
-    if( __setup_parent() ) { /* do something more after parent */ ;} \
-    else { if(__setup_child()) { /* do something more after child */ ;}
+    if( !__setup_parent() ) { __setup_child();
     
 #define END_TESTING } __test_end();
 
