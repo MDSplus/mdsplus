@@ -411,7 +411,7 @@ int LibSigToRet()
   return 1;
 }
 
-STATIC_THREADSAFE char *FIS_Error = 0;
+STATIC_THREADSAFE char *FIS_Error = "";
 
 char *LibFindImageSymbolErrString()
 {
@@ -443,83 +443,96 @@ STATIC_ROUTINE void dlopen_unlock()
   pthread_mutex_unlock(&dlopen_mutex);
 }
 
-int LibFindImageSymbol_C(const char *filename, const char *symbol, void **symbol_value)
-{
-  char *full_filename = malloc(strlen(filename) + 10);
-  void *handle;
-  char *tmp_error1 = 0;
-  char *tmp_error2 = 0;
-  int dlopen_mode = RTLD_LAZY;
-  int lib_offset = 3;
-  char *old_fis_error;
-
-  *symbol_value = NULL;
-
-#ifdef _WIN32
-  strcpy(full_filename, filename);
-  lib_offset = 0;
-#else
-  if (strncmp(filename, "lib", 3)) {
-    strcpy(full_filename, "lib");
-    strcat(full_filename, filename);
-  } else
-    strcpy(full_filename, filename);
-#endif
-  if (strncmp
-      (filename + strlen(filename) - strlen(SHARELIB_TYPE), SHARELIB_TYPE, strlen(SHARELIB_TYPE)))
-    strcat(full_filename, SHARELIB_TYPE);
-  dlopen_lock();
-  old_fis_error = FIS_Error;
-  dlopen_mode = RTLD_NOW /* | RTLD_GLOBAL */ ;
-  handle = dlopen(full_filename, dlopen_mode);
+static void *loadLib(const char *dirspec, const char *filename, char *errorstr) {
+  void *handle = NULL;
+  char *full_filename = alloca( strlen(dirspec) + strlen(filename) + 10);
+  if (strlen(dirspec)>0) {
+    if (strchr(dirspec,'\\')) {
+      sprintf(full_filename, "%s\\%s", dirspec, filename);
+    } else {
+      sprintf(full_filename, "%s/%s", dirspec, filename);
+    }
+  } else {
+    strcpy(full_filename,filename);
+  }
+  handle = dlopen(full_filename, RTLD_NOW);
   if (handle == NULL) {
-    tmp_error1 = dlerror();
-    if (tmp_error1 == NULL)
-      tmp_error1 = "";
-    tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1) + 1), tmp_error1);
-    handle = dlopen(filename, dlopen_mode);
-    if (handle == NULL) {
-      tmp_error2 = dlerror();
-      if (tmp_error2 == NULL)
-	tmp_error2 = "";
-      tmp_error2 = strcpy((char *)malloc(strlen(tmp_error2) + 1), tmp_error2);
-      handle = dlopen(&full_filename[lib_offset], dlopen_mode);
+    snprintf(errorstr + strlen(errorstr), 4096 - strlen(errorstr), "Error loading %s: %s\n", full_filename, dlerror());
+  }
+  return handle;
+}
+
+int LibFindImageSymbol_C(const char *filename_in, const char *symbol, void **symbol_value)
+{
+#ifdef _WIN32
+  const char *prefix="";
+  const char delim = ';';
+#else
+  const char *prefix="lib";
+  const char delim = ':';
+#endif
+  int status;
+  void *handle = NULL;
+  char *errorstr = alloca(4096);
+  char *filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
+  errorstr[0]='\0';
+  *symbol_value = NULL;
+  if ((strlen(prefix) > 0) && strncmp(filename_in, prefix, strlen(prefix))) {
+    sprintf(filename, "%s%s", prefix, filename_in);
+  } else {
+    strcpy(filename, filename_in);
+  }
+  if (strcmp(filename+strlen(filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE)) {
+    strcat(filename,SHARELIB_TYPE);
+  }
+  dlopen_lock();
+  handle = loadLib("", filename, errorstr);
+  if (handle == NULL &&
+      (strchr(filename, '/') == 0) &&
+      (strchr(filename, '\\') == 0)) {
+    char *library_path=getenv("MDSPLUS_LIBRARY_PATH");
+    if (library_path) {
+      int offset = 0;
+      char *libpath=strdup(library_path);
+      while (offset < strlen(library_path)) {
+	char *dptr = strchr(libpath+offset, delim);
+	if (dptr)
+	  *dptr='\0';
+	handle = loadLib(libpath+offset, filename, errorstr);
+	if (handle)
+	  break;
+	offset = offset+strlen(libpath+offset)+1;
+      }
+      free(libpath);
+    }
+    if ((handle == NULL) && (delim == ':')) {
+      char *mdir = getenv("MDSPLUS_DIR");
+      if (mdir) {
+	char *libdir = alloca(strlen("mdir")+10);
+	sprintf(libdir, "%s/%s", mdir, "lib");
+	handle = loadLib(libdir, filename, errorstr);
+      }
     }
   }
   if (handle != NULL) {
     *symbol_value = dlsym(handle, symbol);
-    if (!(*symbol_value)) {
-      char *tmp = dlerror();
-      if (tmp == NULL)
-	tmp = "";
-      sprintf((FIS_Error =
-	       (char *)malloc(strlen(tmp) + strlen("error finding symbol , ") + strlen(symbol) +
-			      1)), "error finding symbol %s, %s", symbol, tmp);
+    if (*symbol_value == NULL) {
+      fprintf(stderr,"Error finding symbol %s in %s: %s\n",symbol, filename_in, dlerror());
     }
-  } else {
-    char *tmp = dlerror();
-    if (tmp == 0)
-      tmp = "";
-    sprintf((FIS_Error =
-	     (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n") +
-			    strlen(full_filename) * 3 + strlen(tmp) + strlen(tmp_error1) +
-			    strlen(tmp_error2) + 10)),
-	    "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n", filename, tmp_error1,
-	    full_filename, tmp_error2, &full_filename[3], tmp);
   }
-  if (old_fis_error != 0 && old_fis_error != FIS_Error)
-    free(old_fis_error);
-  dlopen_unlock();
-  if (tmp_error1)
-    free(tmp_error1);
-  if (tmp_error2)
-    free(tmp_error2);
-  free(full_filename);
-  if (*symbol_value == NULL)
-    return LibKEYNOTFOU;
+  if (strlen(FIS_Error) > 0) {
+    free(FIS_Error);
+    FIS_Error="";
+  }
+  if (*symbol_value == NULL) {
+    FIS_Error = strdup(errorstr);
+    status = LibKEYNOTFOU;
+  }
   else
-    return 1;
-}
+    status = 1;
+  dlopen_unlock();
+  return status;
+}  
 
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
