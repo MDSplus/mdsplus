@@ -1,4 +1,26 @@
-commit b0925ba85b95b9423e4c0a8760989928da9a8346 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit adeda313c981d1e2e12906f937df1eb5aa87efac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: fb5dc6b c9b00f2
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Sun Dec 13 20:31:17 2015 +0100
+
+    Merge pull request #256 from MDSplus/fix-bnc845
+    
+    Handle malformed STEPS config. very useful since Matlab drops trailing dimensions if they are of length 1
+
+commit c9b00f2ca5e8b5c7655de17f4d46db019f4988c0 (refs/remotes/origin/fix-bnc845)
+Merge: 28a7639 fb5dc6b
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Sun Dec 13 19:37:22 2015 +0100
+
+    Merge branch 'alpha' into fix-bnc845
+
+commit fb5dc6b842068d9a78311be42d0b0703622a4468 (tag: refs/tags/alpha_release-7-0-194)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Dec 11 23:48:44 2015 -0500
+
+    New release ---- alpha_release-7-0-194
+
+commit b0925ba85b95b9423e4c0a8760989928da9a8346
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Dec 11 09:17:49 2015 -0500
 
@@ -27,6 +49,12 @@ Date:   Thu Dec 10 15:46:45 2015 +0100
     Merge pull request #243 from zack-vii/aa_Include(d)InPulse
     
     systematically replaced IncludedInPulse with IncludeInPulse
+
+commit 28a7639d27725e90dc4ab8ea0edb63ab99ff76d4
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Dec 10 14:48:12 2015 +0100
+
+    Handle malformed STEPS config
 
 commit 82226c53fbb51ca198b46bbbff4b454000c5b9b2
 Author: zack-vii <zack.vii@live.com>
