@@ -140,8 +140,7 @@ AC_DEFUN([DK_CONFIGURE],[
            -c \"cd $(pwd)\; ${0} DK_ADD_ESCAPE(${dk_configure_args}) DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"]) \";
            exit 0;
          ]))
-                  
-         
+                           
          AS_ECHO(" ------------------------- ") 
          AS_ECHO(" DOCKER CONFIGURE COMMAND: ")
          AS_ECHO(" dk_configure_cmd          ")
@@ -282,9 +281,6 @@ AC_DEFUN([_dk_set_docker_build_debug],[
          AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
          AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
          AS_ECHO(" ac_configure_args = ${ac_configure_args}")
-         AS_ECHO(" dk_configure_args = ${dk_configure_args}")
-         AS_ECHO(" configure command = ${0}")
-         AS_ECHO(" configure name    = $(basename ${0})")
          AS_ECHO(" --------------------------------- ")
          ])
 
@@ -318,12 +314,6 @@ AC_DEFUN([DK_SET_DOCKER_BUILD],[
   AS_VAR_SET_IF([DOCKER_CONTAINER],[
     AS_BANNER(["EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}"])
     _dk_set_docker_build_debug
-    AS_ECHO          
-    AS_ECHO(" --- ")
-    AS_ECHO(" docker configure command: ")
-       echo " DK_CMD_CONFIGURE "
-    AS_ECHO(" --- ")
-    AS_ECHO
     
     dk_set_user_env
     DK_WRITE_DSHELLFILE
@@ -364,31 +354,30 @@ local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
 export SHELL = \${docker_SHELL}
 
 .PHONY: docker
-docker:
 ifeq (docker,\$(MAKECMDGOALS))
+docker:
 	@ \
-	echo " This build was set to work with Docker: "                          \
-	echo " ---------------------------------------------------------------- " \
-	echo " This means that you should see a running docker container named: " \
-	echo " ${DOCKER_CONTAINER}. 	"                                         \
-	echo " Using a map of the current srcdir and builddir and some envs the " \
-	echo " build system should be able to launch make inside the container. " \
-	echo " Use the usual make command and targets to build inside docker.   " \
-	echo " In addition if your docker image has ssh daemon and  gdb  server " \
-	echo " installed, it would be possible also to start  debugger  inside. " \
-	echo \
-	echo " Additional targets: "                                           \
-	echo " make docker start   <- start the docker container "             \
-	echo " make docker stop    <- remove the docker container "            \
-	echo " make docker shell   <- launch a shell inside the container "    \
-	echo " make docker shell USER=root <- launch the shell as root "       \
-	echo " make docker inspect <- get info on container (such as ipaddr)"  \
+	echo ; \
+	echo " This build was set to work with Docker: "; \
+	echo " ---------------------------------------------------------------- "; \
+	echo " This means that you should see a running docker container named: "; \
+	echo " ${DOCKER_CONTAINER}. 	"                                        ; \
+	echo " Using a map of the current srcdir and builddir and some envs the "; \
+	echo " build system should be able to launch make inside the container. "; \
+	echo " Use the usual make command and targets to build inside docker.   "; \
+	echo ; \
+	echo " Additional targets: "                                           ; \
+	echo " make docker start   <- run the docker container "               ; \
+	echo " make docker stop    <- stop and remove the docker container "   ; \
+	echo " make docker shell   <- launch a shell inside the container "    ; \
+	echo " make docker shell USER=root <- launch the shell as root "       ; \
+	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
 	echo ;
+else
+docker: ;
 endif
 
-
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
-
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
@@ -458,30 +447,6 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-dnl # not used yet
-dnl function run () {
-dnl m4_normalize( docker run -d -it --entrypoint=/bin/sh 
-dnl                     -e DISPLAY=\${DISPLAY}
-dnl                     -e http_proxy=\${http_proxy} 
-dnl                     -e https_proxy=\${https_proxy} 
-dnl                     -v /tmp/.X11-unix:/tmp/.X11-unix     
-dnl                     -v /etc/resolv.conf:/etc/resolv.conf 
-dnl                     -v \${abs_srcdir}:\${abs_srcdir} 
-dnl                     -v \${abs_builddir}:\${abs_builddir} 
-dnl                     -v \${user_home}:\${user_home}   
-dnl                     -w \${abs_builddir}         
-dnl                     --name \${DOCKER_CONTAINER} 
-dnl                     \${DOCKER_IMAGE};
-dnl             )                       
-dnl m4_normalize( docker exec --user root \${DOCKER_CONTAINER} sh -c "
-dnl                          echo ${user_entry}  >> /etc/passwd; 
-dnl                          echo ${group_entry} >> /etc/group;
-dnl                          /sbin/sshd-keygen;
-dnl                          nohup /sbin/sshd;
-dnl                         ";
-dnl            )
-dnl }
-
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
@@ -489,8 +454,8 @@ docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
 
 ]))
 
-AS_ECHO(" Writing dshell file: ")
-AS_ECHO("${DK_DSHELLFILE}") > dshell
+AS_ECHO(" Writing dshell file: ${abs_builddir}/dshell ")
+AS_ECHO("${DK_DSHELLFILE}") > ${abs_builddir}/dshell
 chmod +x dshell
 
 ])
@@ -504,9 +469,6 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl // Utility functions
 
  
-
-
-
 AC_DEFUN([AS_BANNER],[
           AS_ECHO 
           AS_BOX([// $1 //////], [\/])

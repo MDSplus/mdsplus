@@ -3347,7 +3347,6 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
@@ -3357,8 +3356,8 @@ docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
 _as_read_EOF
 
 
-$as_echo " Writing dshell file: "
-$as_echo "${DK_DSHELLFILE}" > dshell
+$as_echo " Writing dshell file: ${abs_builddir}/dshell "
+$as_echo "${DK_DSHELLFILE}" > ${abs_builddir}/dshell
 chmod +x dshell
 
 
@@ -3385,31 +3384,30 @@ local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
 export SHELL = \${docker_SHELL}
 
 .PHONY: docker
-docker:
 ifeq (docker,\$(MAKECMDGOALS))
+docker:
 	@ \
-	echo " This build was set to work with Docker: "                          \
-	echo " ---------------------------------------------------------------- " \
-	echo " This means that you should see a running docker container named: " \
-	echo " ${DOCKER_CONTAINER}. 	"                                         \
-	echo " Using a map of the current srcdir and builddir and some envs the " \
-	echo " build system should be able to launch make inside the container. " \
-	echo " Use the usual make command and targets to build inside docker.   " \
-	echo " In addition if your docker image has ssh daemon and  gdb  server " \
-	echo " installed, it would be possible also to start  debugger  inside. " \
-	echo \
-	echo " Additional targets: "                                           \
-	echo " make docker start   <- start the docker container "             \
-	echo " make docker stop    <- remove the docker container "            \
-	echo " make docker shell   <- launch a shell inside the container "    \
-	echo " make docker shell USER=root <- launch the shell as root "       \
-	echo " make docker inspect <- get info on container (such as ipaddr)"  \
+	echo ; \
+	echo " This build was set to work with Docker: "; \
+	echo " ---------------------------------------------------------------- "; \
+	echo " This means that you should see a running docker container named: "; \
+	echo " ${DOCKER_CONTAINER}. 	"                                        ; \
+	echo " Using a map of the current srcdir and builddir and some envs the "; \
+	echo " build system should be able to launch make inside the container. "; \
+	echo " Use the usual make command and targets to build inside docker.   "; \
+	echo ; \
+	echo " Additional targets: "                                           ; \
+	echo " make docker start   <- run the docker container "               ; \
+	echo " make docker stop    <- stop and remove the docker container "   ; \
+	echo " make docker shell   <- launch a shell inside the container "    ; \
+	echo " make docker shell USER=root <- launch the shell as root "       ; \
+	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
 	echo ;
+else
+docker: ;
 endif
 
-
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
-
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
@@ -3456,17 +3454,8 @@ _ASBOX
          $as_echo " docker-image      = ${DOCKER_IMAGE}"
          $as_echo " docker-container  = ${DOCKER_CONTAINER}"
          $as_echo " ac_configure_args = ${ac_configure_args}"
-         $as_echo " dk_configure_args = ${dk_configure_args}"
-         $as_echo " configure command = ${0}"
-         $as_echo " configure name    = $(basename ${0})"
          $as_echo " --------------------------------- "
 
-    $as_echo
-    $as_echo " --- "
-    $as_echo " docker configure command: "
-       echo " DK_CMD_CONFIGURE "
-    $as_echo " --- "
-    $as_echo
 
 
 user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
@@ -3499,7 +3488,6 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
@@ -3509,8 +3497,8 @@ docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
 _as_read_EOF
 
 
-$as_echo " Writing dshell file: "
-$as_echo "${DK_DSHELLFILE}" > dshell
+$as_echo " Writing dshell file: ${abs_builddir}/dshell "
+$as_echo "${DK_DSHELLFILE}" > ${abs_builddir}/dshell
 chmod +x dshell
 
 
@@ -3588,7 +3576,6 @@ fi;
 
 
 
-
          $as_echo " ------------------------- "
          $as_echo " DOCKER CONFIGURE COMMAND: "
          $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} $(
@@ -3647,31 +3634,30 @@ local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
 export SHELL = \${docker_SHELL}
 
 .PHONY: docker
-docker:
 ifeq (docker,\$(MAKECMDGOALS))
+docker:
 	@ \
-	echo " This build was set to work with Docker: "                          \
-	echo " ---------------------------------------------------------------- " \
-	echo " This means that you should see a running docker container named: " \
-	echo " ${DOCKER_CONTAINER}. 	"                                         \
-	echo " Using a map of the current srcdir and builddir and some envs the " \
-	echo " build system should be able to launch make inside the container. " \
-	echo " Use the usual make command and targets to build inside docker.   " \
-	echo " In addition if your docker image has ssh daemon and  gdb  server " \
-	echo " installed, it would be possible also to start  debugger  inside. " \
-	echo \
-	echo " Additional targets: "                                           \
-	echo " make docker start   <- start the docker container "             \
-	echo " make docker stop    <- remove the docker container "            \
-	echo " make docker shell   <- launch a shell inside the container "    \
-	echo " make docker shell USER=root <- launch the shell as root "       \
-	echo " make docker inspect <- get info on container (such as ipaddr)"  \
+	echo ; \
+	echo " This build was set to work with Docker: "; \
+	echo " ---------------------------------------------------------------- "; \
+	echo " This means that you should see a running docker container named: "; \
+	echo " ${DOCKER_CONTAINER}. 	"                                        ; \
+	echo " Using a map of the current srcdir and builddir and some envs the "; \
+	echo " build system should be able to launch make inside the container. "; \
+	echo " Use the usual make command and targets to build inside docker.   "; \
+	echo ; \
+	echo " Additional targets: "                                           ; \
+	echo " make docker start   <- run the docker container "               ; \
+	echo " make docker stop    <- stop and remove the docker container "   ; \
+	echo " make docker shell   <- launch a shell inside the container "    ; \
+	echo " make docker shell USER=root <- launch the shell as root "       ; \
+	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
 	echo ;
+else
+docker: ;
 endif
 
-
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
-
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
