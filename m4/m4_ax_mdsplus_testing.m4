@@ -119,7 +119,7 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
- AS_VAR_APPEND([$1],["\"sh -c \\\"exit 77\\\"; :\""])
+ AS_VAR_APPEND([$1],["sh -c \\\"exit 77\\\"; :"])
 ])
 
 
@@ -191,10 +191,6 @@ AC_DEFUN([TS_SELECT],[
       
      ],
      [TS_LOG_SKIP([LOG_COMPILER])])
-     dnl TODO: add python in wine (with winetricks?)
-     dnl force SKIP log for python for now
-     TS_LOG_SKIP([PY_LOG_COMPILER])
-     TS_LOG_SKIP([PY_LOG_COMPILER_TAP])
  ],
  #
  # LINUX->LINUX

@@ -536,7 +536,16 @@ USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
 VALGRIND_ENABLED = @VALGRIND_ENABLED@
-VALGRIND_FLAGS = @VALGRIND_FLAGS@
+
+#
+# Skipping child programs that are launched inside python
+#
+VALGRIND_FLAGS = \
+                 --trace-children-skip=*/ld \
+                 --trace-children-skip=*/collect2 \
+                 --trace-children-skip=*/ldconfig \
+                 --trace-children-skip=*/sh
+
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
 VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@

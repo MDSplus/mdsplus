@@ -12565,7 +12565,8 @@ VALGRIND_CHECK_RULES='
 VALGRIND_LIB             ?= /usr/lib64/valgrind
 
 VALGRIND_FLAGS           ?=
-VALGRIND_FLAGS           += --num-callers=30 --trace-children=yes \
+VALGRIND_FLAGS           += --num-callers=30 \
+                            --trace-children=yes \
                             --child-silent-after-fork=yes \
                             --trace-children-skip-by-arg=*SetMdsplusFileProtection*
 
@@ -12829,7 +12830,7 @@ fi
     as_fn_append PY_LOG_FLAGS_TAP "--with-tap --tap-stream"
 else
   eval
- as_fn_append PY_LOG_COMPILER_TAP "\"sh -c \\\"exit 77\\\"; :\""
+ as_fn_append PY_LOG_COMPILER_TAP "sh -c \\\"exit 77\\\"; :"
 
 fi
 
@@ -12955,7 +12956,7 @@ fi
     as_fn_append PY_LOG_FLAGS ""
 else
   eval
- as_fn_append PY_LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+ as_fn_append PY_LOG_COMPILER "sh -c \\\"exit 77\\\"; :"
 
 fi
 
@@ -13333,15 +13334,9 @@ done
 
 else
 
- as_fn_append LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
+ as_fn_append LOG_COMPILER "sh -c \\\"exit 77\\\"; :"
 
 fi
-
- as_fn_append PY_LOG_COMPILER "\"sh -c \\\"exit 77\\\"; :\""
-
-
- as_fn_append PY_LOG_COMPILER_TAP "\"sh -c \\\"exit 77\\\"; :\""
-
   ;; #(
   #
  # LINUX->LINUX
