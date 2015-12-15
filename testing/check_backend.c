@@ -604,7 +604,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
         }
         
         // set fork status //
-        srunner_set_fork_status(runner, cur_fork_status());           
+        srunner_set_fork_status(runner, cur_fork_status());
                         
         // send runner start event //
         log_srunner_start(runner);    

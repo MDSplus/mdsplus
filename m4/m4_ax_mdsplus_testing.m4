@@ -100,7 +100,7 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS PYTHON  /////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 
-AC_DEFUN([TS_CHECK_PYTHON],[
+AC_DEFUN([TS_CHECK_NOSETESTS],[
   AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])  
   AS_IF(test x"${NOSETESTS}" != x"",
    [eval $2],
@@ -153,7 +153,7 @@ AC_DEFUN([TS_SELECT],[
     AS_VAR_APPEND([PY_LOG_FLAGS_TAP],   ["--with-tap --tap-stream"])],
    [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
 
- TS_CHECK_PYTHON_TAP( [$PYTHON], 
+ TS_CHECK_NOSETESTS( [$PYTHON], 
    [AS_VAR_APPEND([PY_LOG_COMPILER],["${NOSETESTS}"])
     AS_VAR_APPEND([PY_LOG_FLAGS],   [""])],
    [TS_LOG_SKIP([PY_LOG_COMPILER])])

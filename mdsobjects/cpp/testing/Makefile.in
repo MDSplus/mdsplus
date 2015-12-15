@@ -1759,6 +1759,19 @@ tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
 
+.PHONY: rebuild-tests
+rebuild-tests:
+	@\
+	if [ -n "$${VALGRIND_BUILD}" ]; then \
+	 echo "building clean tests for valgrind"; \
+	 $(MAKE) -k -B $(AM_MAKEFLAGS) all \
+	else \
+	 echo "building tests using D_TESTING set"; \
+	 $(MAKE) -k -B $(AM_MAKEFLAGS) all \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	fi;
+
+.PHONY: tests
 tests:
 	@echo "Making tests ... "; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
@@ -1782,16 +1795,9 @@ PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
-$(TEST_BUILD_TAP):
-	if [ -n "$${VALGRIND_BUILD}" ]; then \
-	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) clean all; \
-	else \
-	 echo "building tests using D_TESTING set"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
-	fi; \
-        \
+$(TEST_BUILD_TAP): rebuild-tests
+	@ \
+	echo "Try to build targets one by one"; \
 	echo "TAP version 13" > $@; \
 	count=0; \
 	for i in $(check_PROGRAMS); do \
@@ -1806,10 +1812,11 @@ $(TEST_BUILD_TAP):
 
 .PHONY: $(TEST_SUITE_TAP)
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+	@ \
+	echo "Run tests with tap result"; \
 	export TEST_FORMAT="tap"; \
-	\
 	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS  \
-	 PY_LOG_COMPILER=$(PY_LOG_COMPILER_TAP) \
+	 PY_LOG_COMPILER="$(PY_LOG_COMPILER_TAP)" \
 	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)"; \
 	\
 	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \

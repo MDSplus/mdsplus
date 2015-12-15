@@ -194,7 +194,8 @@ VALGRIND_LOG_COMPILER = \
 ifeq ($(VALGRIND_ENABLED),yes)
 
 check-valgrind:
-	@ \	
+	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
@@ -204,7 +205,6 @@ check-valgrind:
 check-valgrind-tool:
 	@ \
 	$(MAKE) check-TESTS \
-	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(PY_LOG_COMPILER)" \
@@ -213,6 +213,7 @@ check-valgrind-tool:
 
 check-valgrind-suppressions:
 	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
@@ -222,7 +223,6 @@ check-valgrind-suppressions:
 check-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) check-TESTS \
-	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \

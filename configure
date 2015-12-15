@@ -12641,6 +12641,7 @@ ifeq ($(VALGRIND_ENABLED),yes)
 
 check-valgrind:
 	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
@@ -12650,7 +12651,6 @@ check-valgrind:
 check-valgrind-tool:
 	@ \
 	$(MAKE) check-TESTS \
-	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --xml=yes --xml-file=\$$\$$f-valgrind-$(VALGRIND_TOOL).xml $(PY_LOG_COMPILER)" \
@@ -12659,6 +12659,7 @@ check-valgrind-tool:
 
 check-valgrind-suppressions:
 	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
@@ -12668,7 +12669,6 @@ check-valgrind-suppressions:
 check-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) check-TESTS \
-	VALGRIND_BUILD="yes" \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
@@ -12836,84 +12836,6 @@ fi
 
 
 
-
-    if test -z $PYTHON;
-    then
-        if test -z "";
-        then
-            PYTHON="python3"
-        else
-            PYTHON=""
-        fi
-    fi
-    PYTHON_NAME=`basename $PYTHON`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
-$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
-    $PYTHON -c "import tap" 2>/dev/null
-    if test $? -eq 0;
-    then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        eval HAVE_PYMOD_TAP=yes
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        eval HAVE_PYMOD_TAP=no
-        #
-        if test -n ""
-        then
-            as_fn_error $? "failed to find required module tap" "$LINENO" 5
-            exit 1
-        fi
-    fi
-
-
-
-    if test -z $PYTHON;
-    then
-        if test -z "";
-        then
-            PYTHON="python3"
-        else
-            PYTHON=""
-        fi
-    fi
-    PYTHON_NAME=`basename $PYTHON`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
-$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
-    $PYTHON -c "import tap" 2>/dev/null
-    if test $? -eq 0;
-    then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        eval HAVE_PYMOD_TAP=yes
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        eval HAVE_PYMOD_TAP=no
-        #
-        if test -n ""
-        then
-            as_fn_error $? "failed to find required module tap" "$LINENO" 5
-            exit 1
-        fi
-    fi
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking python class tap.TAPTestRunner" >&5
-$as_echo_n "checking python class tap.TAPTestRunner... " >&6; }
-        if  test "$PYTHON" == : ; then :
-  as_fn_error $? "no python executable was found" "$LINENO" 5; as_fn_exit $?
-fi
-
-        $PYTHON -c "import inspect,tap; exit(inspect.isclass(tap.TAPTestRunner) != True);" 2>/dev/null
-        if test $? -eq 0; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; eval have_tappy="yes"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; };  eval
-fi
-
   # Extract the first word of "nosetests", so it can be a program name with args.
 set dummy nosetests; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -12951,7 +12873,7 @@ $as_echo "no" >&6; }
 fi
 
 
-  if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
+  if test x"${NOSETESTS}" != x""; then :
   eval as_fn_append PY_LOG_COMPILER "${NOSETESTS}"
     as_fn_append PY_LOG_FLAGS ""
 else
