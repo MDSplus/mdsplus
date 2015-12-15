@@ -1441,12 +1441,14 @@ log: $(TEST_SUITE_LOG)
 .PHONY: rebuild-tests
 rebuild-tests:
 	@ \
+	rm -f *.$(OBJEXT); \
+	rm -f $(check_PROGRAMS); \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) mostlyclean-compile all; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all; \
 	else \
 	 echo "building tests using D_TESTING set"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) mostlyclean-compile all \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all \
 	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
 	fi;
 
