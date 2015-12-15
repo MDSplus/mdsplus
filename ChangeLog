@@ -1,4 +1,19 @@
-commit adeda313c981d1e2e12906f937df1eb5aa87efac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit df557f0e13b1a56b10c70d4290868c74dfee051c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 6f08fce a5d0326
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Dec 14 11:37:17 2015 -0500
+
+    Merge pull request #257 from MDSplus/twf-new-find-image-symbol
+    
+    Provide mechanism for LibFindImageSymtol to not require LD_LIBRARY_PA…
+
+commit 6f08fceec104109c449f2c5c09872451319d93e5 (tag: refs/tags/alpha_release-7-0-195)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sun Dec 13 23:42:57 2015 -0500
+
+    New release ---- alpha_release-7-0-195
+
+commit adeda313c981d1e2e12906f937df1eb5aa87efac
 Merge: fb5dc6b c9b00f2
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Sun Dec 13 20:31:17 2015 +0100
@@ -19,6 +34,12 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Dec 11 23:48:44 2015 -0500
 
     New release ---- alpha_release-7-0-194
+
+commit a5d0326bb896de2c4cbe3def7ae70d19386a62bc (refs/remotes/origin/twf-new-find-image-symbol)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 11 16:07:51 2015 -0500
+
+    Provide mechanism for LibFindImageSymtol to not require LD_LIBRARY_PATH or DYLD_LIBRARY_PATH
 
 commit b0925ba85b95b9423e4c0a8760989928da9a8346
 Author: Tom Fredian <twf@psfc.mit.edu>
