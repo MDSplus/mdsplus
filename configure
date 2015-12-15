@@ -12376,9 +12376,7 @@ fi
 
  # this calls valgrind check with args
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
-$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
-	# Check whether --enable-valgrind was given.
+		# Check whether --enable-valgrind was given.
 if test "${enable_valgrind+set}" = set; then :
   enableval=$enable_valgrind; enable_valgrind=$enableval
 else
@@ -12427,7 +12425,9 @@ fi
 
 	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
 
-		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Could not find valgrind; either install it or reconfigure with --disable-valgrind" >&5
+$as_echo "$as_me: WARNING: Could not find valgrind; either install it or reconfigure with --disable-valgrind" >&2;}
+		enable_valgrind="no"
 
 fi
 
@@ -12442,6 +12442,8 @@ fi
 
 	VALGRIND_ENABLED=$enable_valgrind
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
+$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
 $as_echo "$enable_valgrind" >&6; }
 
@@ -12679,7 +12681,10 @@ else
 
 check-valgrind check-valgrind-tool \
 check-valgrind-suppressions check-valgrind-suppressions-tool:
-	@echo "Need to reconfigure with --enable-valgrind"
+	@ \
+	echo "  ------------------------------------------  "; \
+	echo "  Need to reconfigure with --enable-valgrind  "; \
+	echo "  ------------------------------------------  ";
 endif
 
 

@@ -59,8 +59,7 @@
 
 dnl TODO: add custom valgrind installation and VALGRIND_LIB
 AC_DEFUN([AX_VALGRIND_CHECK],[
-	dnl Check for --enable-valgrind
-	AC_MSG_CHECKING([whether to enable Valgrind on the unit tests])
+	dnl Check for --enable-valgrind	
 	AC_ARG_ENABLE([valgrind],
 	              [AS_HELP_STRING([--enable-valgrind], 
 		                      [Whether to enable Valgrind on the unit tests])],
@@ -70,12 +69,14 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 	AC_CHECK_PROG([VALGRIND],[valgrind],[valgrind])
 
 	AS_IF([test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""],[
-		AC_MSG_ERROR([Could not find valgrind; either install it or reconfigure with --disable-valgrind])
+		AC_MSG_WARN([Could not find valgrind; either install it or reconfigure with --disable-valgrind])
+		enable_valgrind="no"
 	])
 	
 
 	AM_CONDITIONAL([VALGRIND_ENABLED],[test "$enable_valgrind" = "yes"])
 	AC_SUBST([VALGRIND_ENABLED],[$enable_valgrind])
+	AC_MSG_CHECKING([whether to enable Valgrind on the unit tests])
 	AC_MSG_RESULT([$enable_valgrind])
 
 	# Check for Valgrind tools we care about.
@@ -233,7 +234,10 @@ else
 
 check-valgrind check-valgrind-tool \
 check-valgrind-suppressions check-valgrind-suppressions-tool:
-	@echo "Need to reconfigure with --enable-valgrind"
+	@ \
+	echo "  ------------------------------------------  "; \
+	echo "  Need to reconfigure with --enable-valgrind  "; \
+	echo "  ------------------------------------------  ";
 endif
 
 
