@@ -2,9 +2,9 @@
 include @top_builddir@/Makefile.inc
 include ../../testing/testing.am
 
-AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
+AM_CFLAGS   = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
-AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+AM_LDFLAGS  = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
 LDADD = $(TEST_LIBS)
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -29,7 +29,6 @@ C_TESTS = \
           timeout_success \
           timeout_fail
           
-#          example 
           
 PY_TESTS = \
            pyex1.py
@@ -38,9 +37,6 @@ PL_TESTS =
 
 
 TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
-
-# $(eval $(call ${srcdir}/prova.sh))
-
 
 bin_PROGRAMS = example3
 example3_SOURCES = example3.cpp

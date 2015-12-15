@@ -765,8 +765,6 @@ C_TESTS = \
           timeout_success \
           timeout_fail
 
-
-#          example 
 PY_TESTS = \
            pyex1.py
 
