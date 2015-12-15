@@ -1155,7 +1155,7 @@ rebuild-tests:
 	@\
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k -B $(AM_MAKEFLAGS) all \
+	 $(MAKE) -k -B $(AM_MAKEFLAGS) all; \
 	else \
 	 echo "building tests using D_TESTING set"; \
 	 $(MAKE) -k -B $(AM_MAKEFLAGS) all \
