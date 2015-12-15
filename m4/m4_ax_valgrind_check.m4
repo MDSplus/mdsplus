@@ -36,9 +36,9 @@
 #     VALGRIND_SUPPRESSIONS_FILES = my-project.supp
 #     EXTRA_DIST = my-project.supp
 #
-#   This results in a "check-valgrind" rule being added to any Makefile.am
+#   This results in a "tests-valgrind" rule being added to any Makefile.am
 #   which includes "@VALGRIND_CHECK_RULES@" (assuming the module has been
-#   configured with --enable-valgrind). Running `make check-valgrind` in
+#   configured with --enable-valgrind). Running `make tests-valgrind` in
 #   that directory will run the module's test suite (`make check`) once for
 #   each of the available Valgrind tools (out of memcheck, helgrind, drd and
 #   sgcheck), and will output results to valgrind-suite-$toolname.log for each.
@@ -63,7 +63,7 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 	AC_ARG_ENABLE([valgrind],
 	              [AS_HELP_STRING([--enable-valgrind], 
 		                      [Whether to enable Valgrind on the unit tests])],
-	              [enable_valgrind=$enableval],[enable_valgrind=])
+	              [enable_valgrind=$enableval],[enable_valgrind="yes"])
 
 	# Check for Valgrind.
 	AC_CHECK_PROG([VALGRIND],[valgrind],[valgrind])
@@ -190,20 +190,20 @@ VALGRIND_LOG_COMPILER = \
 
 
 
-.PHONY: check-valgrind check-valgrind-tool
-.PHONY: check-valgrind-suppressions check-valgrind-suppressions-tool
+.PHONY: tests-valgrind tests-valgrind-tool
+.PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
 ifeq ($(VALGRIND_ENABLED),yes)
 
-check-valgrind:
+tests-valgrind:
 	@ \
 	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
-check-valgrind-tool:
+tests-valgrind-tool:
 	@ \
 	$(MAKE) check-TESTS \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
@@ -212,16 +212,16 @@ check-valgrind-tool:
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 
-check-valgrind-suppressions:
+tests-valgrind-suppressions:
 	@ \
 	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
-check-valgrind-suppressions-tool:
+tests-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) check-TESTS \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
@@ -232,8 +232,8 @@ check-valgrind-suppressions-tool:
 
 else
 
-check-valgrind check-valgrind-tool \
-check-valgrind-suppressions check-valgrind-suppressions-tool:
+tests-valgrind tests-valgrind-tool \
+tests-valgrind-suppressions tests-valgrind-suppressions-tool:
 	@ \
 	echo "  ------------------------------------------  "; \
 	echo "  Need to reconfigure with --enable-valgrind  "; \

@@ -12366,7 +12366,7 @@ fi
 if test "${enable_valgrind+set}" = set; then :
   enableval=$enable_valgrind; enable_valgrind=$enableval
 else
-  enable_valgrind=
+  enable_valgrind="yes"
 fi
 
 
@@ -12623,20 +12623,20 @@ VALGRIND_LOG_COMPILER = \
 
 
 
-.PHONY: check-valgrind check-valgrind-tool
-.PHONY: check-valgrind-suppressions check-valgrind-suppressions-tool
+.PHONY: tests-valgrind tests-valgrind-tool
+.PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
 ifeq ($(VALGRIND_ENABLED),yes)
 
-check-valgrind:
+tests-valgrind:
 	@ \
 	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
-check-valgrind-tool:
+tests-valgrind-tool:
 	@ \
 	$(MAKE) check-TESTS \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
@@ -12645,16 +12645,16 @@ check-valgrind-tool:
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 
-check-valgrind-suppressions:
+tests-valgrind-suppressions:
 	@ \
 	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
 		) \
 	)
 
-check-valgrind-suppressions-tool:
+tests-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) check-TESTS \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
@@ -12665,8 +12665,8 @@ check-valgrind-suppressions-tool:
 
 else
 
-check-valgrind check-valgrind-tool \
-check-valgrind-suppressions check-valgrind-suppressions-tool:
+tests-valgrind tests-valgrind-tool \
+tests-valgrind-suppressions tests-valgrind-suppressions-tool:
 	@ \
 	echo "  ------------------------------------------  "; \
 	echo "  Need to reconfigure with --enable-valgrind  "; \
