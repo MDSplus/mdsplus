@@ -326,7 +326,7 @@ int TdiExtPython(struct descriptor *modname_d,
   char *filename;
   int stat;
 #ifndef _WIN32
-  struct sigaction offact = {SIG_DFL, NULL, 0, 0, NULL};
+  struct sigaction offact = {SIG_DFL, 0, 0, 0, 0};
   struct sigaction oldact;
   stat=sigaction(SIGCHLD, &offact, &oldact);
 #endif
