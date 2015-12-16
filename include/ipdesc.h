@@ -47,25 +47,6 @@ struct descrip {
 extern "C" {
 #endif
 
-#ifdef _NO_MDS_PROTO
-  extern SOCKET ConnectToMds();
-  extern void FreeMessage(void *m);
-  extern int SendArg();
-  extern int GetAnswerInfo();
-  extern int DisconnectFromMds();
-  extern struct descrip *MakeDescrip();
-  extern struct descrip *MakeDescripWithLength();
-  extern int MdsEventAst();
-  extern int MdsEventCan();
-  extern int HostToIp();
-#ifndef MdsLib_H
-  extern int MdsValue();
-  extern int MdsPut();
-  extern int MdsOpen();
-  extern int MdsSetDefault();
-  extern int MdsClose();
-#endif
-#else
 #ifndef __MDSIP_H__
   extern int ConnectToMds(char *host);
   extern int SendArg(int s, unsigned char i, char dtype, unsigned char nargs, short len, char ndims,
@@ -87,7 +68,6 @@ extern "C" {
   extern int MdsSetDefault(int conid, char *node);
   extern int MdsClose(int conid);
   extern void FreeMessage(void *m);
-#endif
 #endif
 #endif
 

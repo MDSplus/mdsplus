@@ -114,6 +114,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #include <math.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
+#include <xmdsshr.h>
 #include <Xmds/XmdsWaveformP.h>
 
 /*------------------------------------------------------------------------------
@@ -391,7 +392,7 @@ static float resinc;
 
  Executable:                                                                  */
 
-Widget XmdsCreateWaveform(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateWaveform(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
   return XtCreateWidget(name, xmdsWaveformWidgetClass, parent, args, argcount);
 }
@@ -1798,7 +1799,7 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req, XmdsWa
   return changed;
 }
 
-void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct * x, XmdsWaveformValStruct * y, char *title,
+EXPORT void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct * x, XmdsWaveformValStruct * y, char *title,
 			float *xmin, float *xmax, float *ymin, float *ymax, Boolean defer)
 {
   (((XmdsWaveformWidgetClass) w->core.widget_class)->waveform_class.update_proc) (w, x, y, title,
@@ -1806,19 +1807,19 @@ void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct * x, XmdsWaveformValStru
 										  ymax, defer);
 }
 
-void XmdsWaveformSetCrosshairs(Widget w, float *x, float *y, Boolean attach)
+EXPORT void XmdsWaveformSetCrosshairs(Widget w, float *x, float *y, Boolean attach)
 {
   (((XmdsWaveformWidgetClass) w->core.widget_class)->waveform_class.set_crosshairs_proc) (w, x, y,
 											  attach);
 }
 
-void XmdsWaveformSetPointerMode(Widget w, int mode)
+EXPORT void XmdsWaveformSetPointerMode(Widget w, int mode)
 {
   (((XmdsWaveformWidgetClass) w->core.widget_class)->waveform_class.set_pointer_mode_proc) (w,
 											    mode);
 }
 
-void XmdsWaveformSetWave(Widget w, int count, float *x, float *y, Boolean * select,
+EXPORT void XmdsWaveformSetWave(Widget w, int count, float *x, float *y, Boolean * select,
 			 Boolean * pendown, Boolean autoscale, Boolean defer_update)
 {
   (((XmdsWaveformWidgetClass) w->core.widget_class)->waveform_class.set_wave_proc) (w, count, x, y,
@@ -1983,7 +1984,7 @@ static void SetPointerMode(XmdsWaveformWidget w, int mode)
   }
 }
 
-void XmdsWaveformPrint(Widget w, FILE * fid, int width, int height, int rotate,
+EXPORT void XmdsWaveformPrint(Widget w, FILE * fid, int width, int height, int rotate,
 		       char *title, char *window_title, int inp_resolution)
 {
   (((XmdsWaveformWidgetClass) w->core.widget_class)->waveform_class.print_proc)
@@ -2674,7 +2675,7 @@ static void DrawString(XmdsWaveformWidget w, Display * display, Window win, GC g
   }
 }
 
-void XmdsWaveformReverse(Widget w, int reverse)
+EXPORT void XmdsWaveformReverse(Widget w, int reverse)
 {
   (((XmdsWaveformWidgetClass) w->core.widget_class)->waveform_class.reverse_proc) (w, reverse);
 }

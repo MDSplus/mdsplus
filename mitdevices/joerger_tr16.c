@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "devroutines.h"
 
-extern int CamXandQ();
+
 
 static int one = 1;
 static int zero = 0;
@@ -79,9 +79,9 @@ int joerger_tr16___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_st
 #define JOERGER_TR16_N_CHAN_ENDIDX 2
 #define JOERGER_TR16_N_CHAN_GAINIDX 3
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
 int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 {

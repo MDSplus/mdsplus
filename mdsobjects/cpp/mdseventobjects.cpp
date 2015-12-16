@@ -5,11 +5,6 @@
 using namespace MDSplus;
 using namespace std;
 
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 #define MAX_ARGS 512
 

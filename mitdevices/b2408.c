@@ -7,16 +7,14 @@
 #include <mitdevices_msg.h>
 #include <stdio.h>
 #include "devroutines.h"
-extern int CamPiow();
-extern int CamStopw();
-extern int TdiCompile();
-extern int XmdsIsOn();
+#include <xmdsshr.h>
+
 static int one = 1;
 #define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem,0), &one, &one),status)
 #define stop(f,a,c,d)  return_on_error(DevCamChk(CamStopw(setup->name, a, f, c, &d, 24, 0), &one, 0),status)
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-int b2408___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int b2408___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = 1;
   pio(26, 0, 0, 16);
@@ -36,7 +34,7 @@ typedef struct _status_reg {
   unsigned:8;
 } StatusReg;
 
-int b2408___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int b2408___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int i;
   int j;
@@ -97,11 +95,11 @@ int b2408___store(struct descriptor *niddsc, InStoreStruct * setup)
 /*    if (status_reg.ext_clk) { */
     if (1) {
       return_on_error(TdiCompile
-		      (&expr, &clock_dsc, &clock_mult_dsc, &trig_dsc, &buffer_dsc,
+		      ((struct descriptor *)&expr, &clock_dsc, &clock_mult_dsc, &trig_dsc, &buffer_dsc,
 		       (struct descriptor *)&xd MDS_END_ARG), status);
     } else {
       return_on_error(TdiCompile
-		      (&int_clock_expr, &clock_mult_dsc, &trig_dsc, &buffer_dsc,
+		      ((struct descriptor *)&int_clock_expr, &clock_mult_dsc, &trig_dsc, &buffer_dsc,
 		       (struct descriptor *)&xd MDS_END_ARG), status);
     }
     return_on_error(TreePutRecord(output_nid, (struct descriptor *)&xd, 0), status);

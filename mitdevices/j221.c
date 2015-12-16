@@ -10,10 +10,6 @@
 #include "j221_gen.h"
 #include "devroutines.h"
 
-extern int TdiData();
-extern int TdiLong();
-extern int TdiExecute();
-extern int TdiCompile();
 static int one = 1;
 static short zero = 0;
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
@@ -23,7 +19,7 @@ static short zero = 0;
 
 static int merge_data(int nid, int **data, int **times, int *ndata);
 
-int j221___init(struct descriptor *nid, InInitStruct * setup)
+EXPORT int j221___init(struct descriptor *nid, InInitStruct * setup)
 {
   int status = 1;
   int merge_status;
@@ -108,8 +104,8 @@ static int merge_data(int nid, int **data, int **times, int *ndata)
     int width = 0;
     wave_arsize[i] = 0;
     if (TreeIsOn(chan_nid) & 1 && TreeGetRecord(chan_nid, &xd) != TreeNODATA) {
-      if (TdiData(&xd, &xd MDS_END_ARG) & 1) {
-	if (TdiLong(&xd, &xd MDS_END_ARG) & 1) {
+      if (TdiData((struct descriptor *)&xd, &xd MDS_END_ARG) & 1) {
+	if (TdiLong((struct descriptor *)&xd, &xd MDS_END_ARG) & 1) {
 	  if (xd.pointer->class == CLASS_A) {	/* Not array type? */
 	    if (!(DevLong(&mode_nid, &width) & 1))
 	      width = 0;
@@ -190,7 +186,7 @@ static int merge_data(int nid, int **data, int **times, int *ndata)
   return status;
 }
 
-int j221___add(int *head_nid)
+EXPORT int j221___add(int *head_nid)
 {
   int i;
   static int len;
@@ -200,7 +196,7 @@ int j221___add(int *head_nid)
   static DESCRIPTOR(check, "GETNCI($,\"LENGTH\")");
   int status;
   c_nid = *head_nid + J221_N_OUTPUT_01;
-  status = TdiExecute(&check, &nid_dsc, &len_dsc MDS_END_ARG);
+  status = TdiExecute((struct descriptor *)&check, &nid_dsc, &len_dsc MDS_END_ARG);
   if ((status & 1) && (len > 0))
     return status;
   for (i = 0; i < 12; i++) {
@@ -231,19 +227,19 @@ int j221___add(int *head_nid)
     setpoints_nid = chan_nid + J221_N_OUTPUT_01_SET_POINTS - J221_N_OUTPUT_01;
     divide_nid = *head_nid + J221_N_CLOCK_DIVIDE;
     start_trig_nid = *head_nid + J221_N_START_TRIG;
-    TdiCompile(&trigs, &clock_nid_d, &mode_nid_d, &set_points_nid_d, &divide_nid_d,
+    TdiCompile((struct descriptor *)&trigs, &clock_nid_d, &mode_nid_d, &set_points_nid_d, &divide_nid_d,
 	       &start_trig_nid_d, &xd MDS_END_ARG);
     TreePutRecord(triggers_nid, (struct descriptor *)&xd, 0);
-    TdiCompile(&gates, &clock_nid_d, &mode_nid_d, &set_points_nid_d, &divide_nid_d,
+    TdiCompile((struct descriptor *)&gates, &clock_nid_d, &mode_nid_d, &set_points_nid_d, &divide_nid_d,
 	       &start_trig_nid_d, &xd MDS_END_ARG);
     TreePutRecord(gates_nid, (struct descriptor *)&xd, 0);
-    TdiCompile(&signal, &gates_nid_d, &xd MDS_END_ARG);
+    TdiCompile((struct descriptor *)&signal, &gates_nid_d, &xd MDS_END_ARG);
     TreePutRecord(chan_nid, (struct descriptor *)&xd, 0);
   }
   return status;
 }
 
-int j221___trigger(struct descriptor *nid, InTriggerStruct * setup)
+EXPORT int j221___trigger(struct descriptor *nid, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0);		/* Start it running */

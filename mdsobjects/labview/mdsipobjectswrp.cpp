@@ -1,12 +1,12 @@
 #include "mdsobjectswrp.h"
 
 
-DLLEXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut, const char *ipPortIn, ErrorCluster *error)
+EXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut, const char *ipPortIn, ErrorCluster *error)
 {
 	MDSplus::Connection *connectionPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		MDSplus::Connection *connectionPtrOut = new MDSplus::Connection(const_cast<char *>(ipPortIn));
@@ -22,18 +22,18 @@ DLLEXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut, const c
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_connection_destructor(void **lvConnectionPtr)
+EXPORT void mdsplus_connection_destructor(void **lvConnectionPtr)
 {
 	MDSplus::Connection *connectionPtr = reinterpret_cast<MDSplus::Connection *>(*lvConnectionPtr);
 	delete connectionPtr;
 	*lvConnectionPtr = NULL;
 }
 
-DLLEXPORT void mdsplus_connection_getData(const void *lvConnectionPtr, void **lvDataPtrOut, const char *expressionIn, ErrorCluster *error)
+EXPORT void mdsplus_connection_getData(const void *lvConnectionPtr, void **lvDataPtrOut, const char *expressionIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
 		MDSplus::Data * dataPtrOut = connectionPtr->get((char *)expressionIn);
@@ -47,12 +47,12 @@ DLLEXPORT void mdsplus_connection_getData(const void *lvConnectionPtr, void **lv
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_connection_putData(const void *lvConnectionPtr, const void *lvDataPtrIn, const char *pathIn, ErrorCluster *error)
+EXPORT void mdsplus_connection_putData(const void *lvConnectionPtr, const void *lvDataPtrIn, const char *pathIn, ErrorCluster *error)
 {
 	MDSplus::Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
@@ -70,11 +70,11 @@ DLLEXPORT void mdsplus_connection_putData(const void *lvConnectionPtr, const voi
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const char *tree, int shot,  ErrorCluster *error)
+EXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const char *tree, int shot,  ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
 		connectionPtr->openTree((char *)tree, shot);
@@ -87,11 +87,11 @@ DLLEXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const ch
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,  ErrorCluster *error)
+EXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,  ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		MDSplus::Connection * connectionPtr = reinterpret_cast<MDSplus::Connection *>(const_cast<void *>(lvConnectionPtr));
 		connectionPtr->closeAllTrees();

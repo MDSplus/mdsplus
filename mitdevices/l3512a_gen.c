@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l3512a_gen.h"
-int l3512a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l3512a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L3512A");
@@ -70,8 +70,8 @@ int l3512a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l3512a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		      struct descriptor *out_d)
+EXPORT int l3512a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		      struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -117,7 +117,7 @@ extern int l3512a___init();
 #define free_xd_array { int i; for(i=0; i<4;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int l3512a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l3512a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[4];
@@ -141,7 +141,7 @@ int l3512a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int l3512a___store();
 #define free_xd_array { int i; for(i=0; i<4;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l3512a__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l3512a__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[4];

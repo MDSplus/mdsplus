@@ -140,7 +140,7 @@ int Tdi3Element(struct descriptor *number_ptr,
   delim_dsc.class = CLASS_S;
   out_dsc.class = CLASS_S;
   for (; status & 1 && --n >= 0;) {
-    STATIC_CONSTANT int zero = 0;
+    STATIC_CONSTANT unsigned short zero = 0;
     number = *(int *)pnumber, pnumber += number_step;
     status = StrElement(&out_dsc, &number, &delim_dsc, &source_dsc);
     if (!(status & 1))
@@ -348,9 +348,9 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
 		/****************************************************
                 Case insensitive and ignore trailing blanks and tabs.
                 ****************************************************/
-    status = StrUpcase(&one_dsc, &tmp_dsc);
+    status = StrUpcase((struct descriptor *)&one_dsc, (struct descriptor *)&tmp_dsc);
     if (status & 1)
-      status = StrTrim(&one_dsc, &one_dsc, 0);
+      status = StrTrim((struct descriptor *)&one_dsc, (struct descriptor *)&one_dsc, 0);
     if (!(status & 1))
       break;
 		/******************************

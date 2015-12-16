@@ -11,12 +11,8 @@
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
+#include  <tdishr.h>
 
-extern int TdiExecute();
-extern int TdiData();
-extern int TdiCvt();
-extern int TdiCompile();
-extern int TdiDebug();
 
 #ifdef _WIN32
 #define BlockSig(a)
@@ -43,7 +39,7 @@ static int UnBlockSig(int sig_number)
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-int IdlMdsClose(int argc, void **argv)
+EXPORT int IdlMdsClose(int argc, void **argv)
 {
   int status;
   BlockSig(SIGALRM);
@@ -57,7 +53,7 @@ int IdlMdsClose(int argc, void **argv)
   return status;
 }
 
-int IdlMdsOpen(int argc, void **argv)
+EXPORT int IdlMdsOpen(int argc, void **argv)
 {
   int status;
   BlockSig(SIGALRM);
@@ -66,7 +62,7 @@ int IdlMdsOpen(int argc, void **argv)
   return status;
 }
 
-int IdlMdsSetDefault(int argc, void **argv)
+EXPORT int IdlMdsSetDefault(int argc, void **argv)
 {
   int status;
   int nid;
@@ -305,7 +301,7 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
   }
 }
 
-int IdlMdsValue(int argc, void **argv)
+EXPORT int IdlMdsValue(int argc, void **argv)
 {
   int status;
   int arglistlen = 3 + (argc / 2);
@@ -337,7 +333,7 @@ int IdlMdsValue(int argc, void **argv)
 	DESCRIPTOR_FLOAT(float_d, 0);
 	float_d.pointer = (char *)&float_v;
 	if (float_d.dtype != mdsValueAnswer.pointer->dtype)
-	  TdiCvt(&mdsValueAnswer, &float_d, &mdsValueAnswer MDS_END_ARG);
+	  TdiCvt((struct descriptor *)&mdsValueAnswer, &float_d, &mdsValueAnswer MDS_END_ARG);
       } else if (mdsValueAnswer.pointer->dtype == DTYPE_D ||
 		 mdsValueAnswer.pointer->dtype == DTYPE_G ||
 		 mdsValueAnswer.pointer->dtype == DTYPE_FT ||
@@ -348,14 +344,14 @@ int IdlMdsValue(int argc, void **argv)
 	double_d.pointer = (char *)&double_v;
 	double_d.dtype = DTYPE_NATIVE_DOUBLE;
 	if (double_d.dtype != mdsValueAnswer.pointer->dtype)
-	  TdiCvt(&mdsValueAnswer, &double_d, &mdsValueAnswer MDS_END_ARG);
+	  TdiCvt((struct descriptor *)&mdsValueAnswer, &double_d, &mdsValueAnswer MDS_END_ARG);
       } else if (mdsValueAnswer.pointer->dtype == DTYPE_FC ||
 		 mdsValueAnswer.pointer->dtype == DTYPE_FSC) {
 	float float_v[2] = { (float)0.0, (float)0.0 };
 	struct descriptor complex_d = { sizeof(float_v), DTYPE_FLOAT_COMPLEX, CLASS_S, 0 };
 	complex_d.pointer = (char *)float_v;
 	if (complex_d.dtype != mdsValueAnswer.pointer->dtype)
-	  TdiCvt(&mdsValueAnswer, &complex_d, &mdsValueAnswer MDS_END_ARG);
+	  TdiCvt((struct descriptor *)&mdsValueAnswer, &complex_d, &mdsValueAnswer MDS_END_ARG);
       } else if (mdsValueAnswer.pointer->dtype == DTYPE_DC ||
 		 mdsValueAnswer.pointer->dtype == DTYPE_GC ||
 		 mdsValueAnswer.pointer->dtype == DTYPE_FTC) {
@@ -363,7 +359,7 @@ int IdlMdsValue(int argc, void **argv)
 	struct descriptor dcomplex_d = { sizeof(double_v), DTYPE_DOUBLE_COMPLEX, CLASS_S, 0 };
 	dcomplex_d.pointer = (char *)double_v;
 	if (dcomplex_d.dtype != mdsValueAnswer.pointer->dtype)
-	  TdiCvt(&mdsValueAnswer, &dcomplex_d, &mdsValueAnswer MDS_END_ARG);
+	  TdiCvt((struct descriptor *)&mdsValueAnswer, &dcomplex_d, &mdsValueAnswer MDS_END_ARG);
       }
       ((char *)argv[2])[0] = 0;
       if (mdsValueAnswer.pointer->class == CLASS_S) {
@@ -496,7 +492,7 @@ int IdlMdsValue(int argc, void **argv)
   return status;
 }
 
-int IdlMdsPut(int argc, void **argv)
+EXPORT int IdlMdsPut(int argc, void **argv)
 {
   int status;
   int arglistlen = 4 + (argc / 2);
@@ -535,7 +531,7 @@ int IdlMdsPut(int argc, void **argv)
   return status;
 }
 
-int IdlGetAns(int argc, void **argv)
+EXPORT int IdlGetAns(int argc, void **argv)
 {
   if (mdsValueAnswer.pointer->class == CLASS_S) {
     memcpy(argv[0], mdsValueAnswer.pointer->pointer, mdsValueAnswer.pointer->length);

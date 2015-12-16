@@ -33,8 +33,9 @@ int XmdsBells(int *number_of_bells )
 ------------------------------------------------------------------------------*/
 
 #include <X11/Xlib.h>
+#include <config.h>
 
-int XmdsBells(int *num_bells)
+EXPORT int XmdsBells(int *num_bells)
 {
   static Display *display = 0;
   int i;

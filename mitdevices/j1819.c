@@ -41,11 +41,11 @@ int J1819_TRIGGER(struct descriptor *niddsc);
 #include <stdlib.h>
 #include "j1819_gen.h"
 #include "devroutines.h"
-extern int CamPiow();
-extern int CamXandQ();
-extern int CamStopw();
 
-extern unsigned short OpcValue;
+
+
+
+//extern unsigned short OpcValue;
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -55,7 +55,7 @@ static int one = 1;
 #define fstop(f,a,n,d)  return_on_error(DevCamChk(CamFStopw(setup->name, a, f, n, d, 24, 0), &one, 0),status)
 #define return_on_error(func,statret) status = func; if (!(status & 1)) return statret
 
-int j1819___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int j1819___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   int mem_cntrl;
@@ -70,7 +70,7 @@ int j1819___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-int j1819___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int j1819___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   static int start = 1;
   static DESCRIPTOR_LONG(start_dsc, &start);
@@ -126,7 +126,7 @@ int j1819___store(struct descriptor *niddsc, InStoreStruct * setup)
   return 1;
 }
 
-int j1819___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int j1819___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(28, 0, 0);

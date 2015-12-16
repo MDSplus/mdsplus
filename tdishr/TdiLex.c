@@ -243,14 +243,14 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
 	/*******************
         Find final location.
         *******************/
-  bad = StrFindFirstNotInSet(&str_dsc, &valid_dsc);
+  bad = StrFindFirstNotInSet((struct descriptor *)&str_dsc, (struct descriptor *)&valid_dsc);
   if (bad > 0)
     str_dsc.length = bad - 1;
 
 	/**********************
         Find special exponents.
         **********************/
-  idx = StrFindFirstInSet(&str_dsc, &dfghst_dsc);
+  idx = StrFindFirstInSet((struct descriptor *)&str_dsc, (struct descriptor *)&dfghst_dsc);
   if (idx) {
     switch (tst = str[idx - 1]) {
     case 'D':
@@ -628,11 +628,11 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
     MAKE_S(DTYPE_NID, (unsigned short)sizeof(nid), mark_ptr->rptr);
     *(int *)mark_ptr->rptr->pointer = nid;
   } else {
-    struct descriptor abs_dsc = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor_d abs_dsc = { 0, DTYPE_T, CLASS_D, 0 };
     char *apath = TreeAbsPath((char *)str_l);
     if (apath != NULL) {
       unsigned short alen = (unsigned short)strlen(apath);
-      StrCopyR(&abs_dsc, &alen, apath);
+      StrCopyR((struct descriptor *)&abs_dsc, &alen, apath);
       TreeFree(apath);
       MAKE_S(DTYPE_PATH, abs_dsc.length, mark_ptr->rptr);
       _MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);

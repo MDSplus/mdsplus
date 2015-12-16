@@ -303,7 +303,7 @@ Do this in runs.
 	MdsXpand.C
 	Expand compressed data.
 */
-int MdsXpand(int *nitems_ptr,
+EXPORT int MdsXpand(int *nitems_ptr,
 	     struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr, int *bit_ptr)
 {
   int nitems = *nitems_ptr;

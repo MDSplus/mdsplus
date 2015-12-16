@@ -35,7 +35,7 @@ int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 #include "servershrp.h"
 #include <treeshr.h>
 
-int ServerFreeDispatchTable(void *vtable)
+EXPORT int ServerFreeDispatchTable(void *vtable)
 {
   if (vtable) {
     DispatchTable *table = vtable;

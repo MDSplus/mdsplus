@@ -35,7 +35,7 @@ static void report(char *msg)
 }
 */
 
-struct descriptor_xd *getDeviceFields(char *deviceName)
+EXPORT struct descriptor_xd *getDeviceFields(char *deviceName)
 {
   int status, nid, curr_nid, i;
   char *names, *path;
@@ -936,7 +936,7 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
 }
 
 //static int doAction(int nid)
-int doAction(int nid)
+EXPORT int doAction(int nid)
 {
   extern int TdiEvaluate();
   int status;
@@ -956,7 +956,7 @@ int doAction(int nid)
   struct descriptor retStatus_d = { sizeof(int), DTYPE_L, CLASS_S, (char *)&retStatus };
   char type = DTYPE_L;
   DESCRIPTOR_CALL(call_d, 0, 253, 0, 0);
-  struct descriptor *decArgs;
+  struct descriptor_d *decArgs;
   char *currPtr;
   int argLen, numArgs;
 
@@ -1160,7 +1160,7 @@ int doAction(int nid)
       if (!procedure_d_ptr->arguments[i])
 	break;
 
-      currPtr = MdsDescrToCstring(&decArgs[i]);
+      currPtr = MdsDescrToCstring((struct descriptor *)&decArgs[i]);
       if (i < numArgs - 1)
 	sprintf(&command[strlen(command)], "%s,", currPtr);
       else

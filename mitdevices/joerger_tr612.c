@@ -11,12 +11,12 @@
 #include <stdio.h>
 #include "devroutines.h"
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
-extern int CamXandQ();
-extern int TdiCompile();
+
+
 
 static int one = 1;
 #define pio(f,a,data,q) {\
@@ -181,7 +181,6 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct * setup)
 	TdiCompile(&burst_dim, &max_samples_d, &trigger_d, dimension.axis,
 		   &burst_dimension MDS_END_ARG);
     max_samples++;
-    StrFree1Dx(&burst_dim);
     time.data = burst_dimension.pointer;
   } else
     time.data = (struct descriptor *)&dimension;

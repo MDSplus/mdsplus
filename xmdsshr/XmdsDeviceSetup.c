@@ -44,10 +44,11 @@ int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, S
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <treeshr.h>
+#include <xmdsshr.h>
 
 void XmdsSetDeviceNid(int nid);
 
-int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, String ident,
+EXPORT int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, String ident,
 		    MrmRegisterArglist reglist, MrmCount regnum, Widget * widget_return)
 {
   static int device_nid;
@@ -77,12 +78,12 @@ int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, S
 
 static int device_nid = 0;
 
-void XmdsSetDeviceNid(int nid)
+EXPORT void XmdsSetDeviceNid(int nid)
 {
   device_nid = nid;
 }
 
-int XmdsGetDeviceNid()
+EXPORT int XmdsGetDeviceNid()
 {
   return device_nid;
 }

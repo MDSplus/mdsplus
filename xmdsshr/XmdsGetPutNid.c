@@ -65,9 +65,11 @@ int XmdsXdsAreValid(Widget w)
 	Description:
 
 ------------------------------------------------------------------------------*/
+#include <config.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <mdsshr.h>
+#include <xmdsshr.h>
 #include <Xm/XmP.h>
 #include <X11/Composite.h>
 #include <Xm/ToggleB.h>

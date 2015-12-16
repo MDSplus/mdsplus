@@ -16,6 +16,7 @@
 #include <mdsdescrip.h>
 #include <libroutines.h>
 #include <stdio.h>
+#include <mdsshr.h>
 
 #pragma pack(1)
 

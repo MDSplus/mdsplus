@@ -533,7 +533,7 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
 STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value,
 				UNPACKED_REAL intermediate_value, U_Int_32 options);
 
-CVT_STATUS CvtConvertFloat(void *input_value,
+extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
 			   U_Int_32 input_type, void *output_value, U_Int_32 output_type)
 
 /*

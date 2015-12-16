@@ -39,12 +39,12 @@ extern int TdiCvt();
 extern int TdiDimOf();
 struct descriptor *Resample(struct descriptor *in_sig, struct descriptor *in_x);
 
-struct descriptor *resample(struct descriptor *in_sig, struct descriptor *in_x)
+EXPORT struct descriptor *resample(struct descriptor *in_sig, struct descriptor *in_x)
 {
   return Resample(in_sig, in_x);
 }
 
-struct descriptor *Resample(struct descriptor *in_sig, struct descriptor *in_x)
+EXPORT struct descriptor *Resample(struct descriptor *in_sig, struct descriptor *in_x)
 {
 
 #define return_on_error(func,error) if (!((status = func)&1)) return error

@@ -21,7 +21,7 @@
 	 * TclEdit:
 	 * Open tree for edit
 	 ***************************************************************/
-int TclEdit(void *ctx, char **error, char **output)
+EXPORT int TclEdit(void *ctx, char **error, char **output)
 {
   int shot;
   int sts;

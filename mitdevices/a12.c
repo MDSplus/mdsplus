@@ -6,12 +6,10 @@
 #include "a12_gen.h"
 #include "devroutines.h"
 
-extern int CamXandQ();
-
 #define pio(fv,av) {int a = av; int f = fv; int zero=0; int one=1; \
  if (!((status = DevCamChk(CamPiow(setup->name,a,f,&zero,16,0),&one,&one)) & 1)) return status;}
 
-int a12___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int a12___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   pio(9, 0)
@@ -21,14 +19,14 @@ int a12___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int a12___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int a12___stop(struct descriptor *niddsc, InStopStruct * setup)
 {
   int status;
   pio(25, 1)
       return status;
 }
 
-int a12___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int a12___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
@@ -46,9 +44,9 @@ static int sinewave;
 #define A12_N_INP_STARTIDX   1
 #define A12_N_INP_ENDIDX     2
 
-extern unsigned short OpcAdd, OpcMultiply, OpcValue;
+//extern unsigned short OpcAdd, OpcMultiply, OpcValue;
 
-int a12__store(struct descriptor *niddsc_ptr)
+EXPORT int a12__store(struct descriptor *niddsc_ptr)
 {
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) {status = retstatus; goto error;}
@@ -59,7 +57,7 @@ int a12__store(struct descriptor *niddsc_ptr)
 
   static int c_nids[A12_K_CONG_NODES];
 
-  static struct descriptor name_d = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_d name_d = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -99,7 +97,7 @@ int a12__store(struct descriptor *niddsc_ptr)
 
   return_on_error(DevNids(niddsc_ptr, sizeof(c_nids), c_nids), status);
   return_on_error(DevText(&c_nids[A12_N_NAME], &name_d), DEV$_BAD_NAME);
-  name = MdsDescrToCstring(&name_d);
+  name = MdsDescrToCstring((struct descriptor *)&name_d);
   dvalue.ndesc = 0;
 
   StrFree1Dx(&name_d);

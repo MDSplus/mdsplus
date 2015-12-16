@@ -15,6 +15,7 @@
 #include <inttypes.h>
 #include <sys/times.h>
 #include <pthread.h>
+#include <config.h>
 
 static unsigned char *buf = NULL;
 static double *frame_times = NULL;
@@ -60,7 +61,7 @@ static void swapbytes(unsigned char *dest, unsigned char *src, unsigned int sz)
   }
 }
 
-void *CaptureFrames(void *arg)
+EXPORT void *CaptureFrames(void *arg)
 {
   uint64_t start_time = 0;
 
@@ -177,7 +178,7 @@ void *CaptureFrames(void *arg)
  *
  */
 
-int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
+EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
 	       int shutter, int gain, int trig_on, int frame_rate, int width_in,
 	       int height_in, int xoffset, int yoffset, int debug)
 {
@@ -364,7 +365,7 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
   return (1);
 }
 
-int dc1394ReadTimes(double *data)
+EXPORT int dc1394ReadTimes(double *data)
 {
   if (frame_times) {
     memcpy((char *)data, (char *)frame_times, next_frame * sizeof(double));
@@ -373,7 +374,7 @@ int dc1394ReadTimes(double *data)
     return (0);
 }
 
-int dc1394ReadFrames(char *data)
+EXPORT int dc1394ReadFrames(char *data)
 {
   int status;
   if (buf) {
@@ -394,16 +395,16 @@ int dc1394ReadFrames(char *data)
   return (status);
 }
 
-void dc1394GetCameraModel(char *string)
+EXPORT void dc1394GetCameraModel(char *string)
 {
   strcpy(string, model);
 }
 
-void dc1394Done(void *arg)
+EXPORT void dc1394Done(void *arg)
 {
 }
 
-void dc1394GetCaptureParams(int *num_frames, int *frame_width, int *frame_height, int *frame_depth)
+EXPORT void dc1394GetCaptureParams(int *num_frames, int *frame_width, int *frame_height, int *frame_depth)
 {
   *num_frames = next_frame;
   *frame_width = width;
@@ -411,7 +412,7 @@ void dc1394GetCaptureParams(int *num_frames, int *frame_width, int *frame_height
   *frame_depth = bytes;
 }
 
-extern int dc1394LoadImage()
+EXPORT extern int dc1394LoadImage()
 {
   fprintf(stderr, "dc1394_support.so now loaded \n");
   return (1);

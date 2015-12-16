@@ -91,7 +91,7 @@ JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls, jstring j
   return ris;
 }
 
-jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
+EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
 {
   jclass cls, data_cls;
   jmethodID constr;
@@ -550,7 +550,7 @@ jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
   return 0;
 }
 
-struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
+EXPORT struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
 {
   jclass cls;
   jfieldID datum_fid, re_fid, im_fid, descs_fid, opcode_fid, dtype_fid, dclass_fid, flags_fid;
@@ -851,7 +851,7 @@ struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
   return 0;
 }
 
-void FreeDescrip(struct descriptor *desc)
+EXPORT void FreeDescrip(struct descriptor *desc)
 {
   struct descriptor_r *record_d;
   struct descriptor_a *array_d;

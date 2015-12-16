@@ -31,8 +31,9 @@ Invoked from MDSEVENT.PRO
 ------------------------------------------------------------------------------*/
 #include <ipdesc.h>
 #include <stdlib.h>
-extern int MDSEventAst();
-extern int MDSEventCan();
+#include <unistd.h>
+#include <config.h>
+#include <mdsshr.h>
 
 typedef struct _event_struct {
   int stub_id;
@@ -59,7 +60,7 @@ extern void MdsDispatchEvent();
 
 static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
-static void EventAst(EventStruct * e, int eventid, char *data);
+static void EventAst(void * e, int eventid, char *data);
 #include <export.h>
 #ifdef _WIN32
 #define BlockSig(arg)
@@ -82,7 +83,7 @@ static int UnBlockSig(int sig_number)
 }
 #endif
 
-int IDLMdsEventCan(int argc, void * *argv)
+EXPORT int IDLMdsEventCan(int argc, void * *argv)
 {
   EventStruct *e, *p;
   SOCKET sock = (SOCKET) ((char *)argv[0] - (char *)0);
@@ -106,7 +107,7 @@ int IDLMdsEventCan(int argc, void * *argv)
   return status;
 }
 
-int IDLMdsGetevi(int argc, void **argv)
+EXPORT int IDLMdsGetevi(int argc, void **argv)
 {
   int eventid = (unsigned int)((char *)argv[0] - (char *)0);
   EventStruct *e;
@@ -155,14 +156,15 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
   }
 }
 
-static void EventAst(EventStruct * e, int len, char *data)
+static void EventAst(void * e_in, int len, char *data)
 {
+  EventStruct *e = (EventStruct *)e_in;
   if (len > 0)
     memcpy(e->value, data, len > 12 ? 12 : len);
   write(event_pipe[1], &e, sizeof(EventStruct *));
 }
 #endif
-int IDLMdsEvent(int argc, void * *argv)
+EXPORT int IDLMdsEvent(int argc, void * *argv)
 {
   SOCKET sock = (SOCKET) ((char *)argv[0] - (char *)0);
   int *base_id = (int *)argv[1];
@@ -206,9 +208,9 @@ int IDLMdsEvent(int argc, void * *argv)
       e->next = EventList;
       EventList = e;
       if (sock >= 0) {
-	MdsEventAst(sock, name, (void (*)(int))EventAst, e, &e->event_id);
+	MdsEventAst(sock, name, EventAst, e, &e->event_id);
       } else {
-	MDSEventAst(name, (void (*)(int))EventAst, e, &e->event_id);
+	MDSEventAst(name, EventAst, e, &e->event_id);
       }
       IDL_WidgetStubLock(FALSE);
       return e->loc_event_id;
@@ -220,8 +222,9 @@ int IDLMdsEvent(int argc, void * *argv)
 }
 
 #ifdef WIN32
-static void EventAst(EventStruct * e, int len, char *data)
+static void EventAst(void * e_in, int len, char *data)
 {
+  EventStruct *e = (EventStruct *)e_in;
   char *stub_rec;
   char *base_rec;
   IDL_WidgetStubLock(TRUE);

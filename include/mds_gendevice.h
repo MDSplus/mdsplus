@@ -8,25 +8,9 @@
 #include <strroutines.h>
 #include <mds_stdarg.h>
 #include <camdef.h>
+#include <tdishr.h>
+#include <camshr.h>
 
-extern int CamBytcnt(unsigned short *iosb);
-extern int CamError(int *xexp, int *qexp, unsigned short *iosb_in);
-extern int CamX(unsigned short *iosb_in);
-extern int CamQ(unsigned short *iosb_in);
-extern int CamGetStat(unsigned short *iosb_in);
-extern int CamXandQ(unsigned short *iosb_in);
-extern int CamFQrepw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamFQstopw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamFStopw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamQrepw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamQscanw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamQstopw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamStopw(char *name, int a, int f, int count, void *data, int mem, short *iosb);
-extern int CamPiow(char *name, int a, int f, void *data, int mem, short *iosb);
-extern int CamPioQrepw(char *name, int a, int f, void *data, int mem, short *iosb);
-
-extern int TdiData();
-extern int TdiCompile();
 extern int GenDeviceSignal(int, unsigned long, unsigned long);
 extern int GenDeviceCallData(int, int, struct descriptor_xd *);
 extern int GenDeviceCvtFloatCode();
@@ -226,7 +210,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     {   DESCRIPTOR(expr_d, expr);\
 	int curr_usage = usage;\
 	struct descriptor_xd comp_expr_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};\
-	status = TdiCompile(&expr_d, &comp_expr_xd MDS_END_ARG);\
+	status = TdiCompile((struct descriptor *)&expr_d, &comp_expr_xd MDS_END_ARG);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
 	if(!curr_usage) { switch(comp_expr_xd.pointer->dtype)  {\
 	    case DTYPE_DISPATCH : curr_usage = TreeUSAGE_DISPATCH; break;\
@@ -281,7 +265,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 
 #define COPY_PART_NAME(name)\
 {   DESCRIPTOR(return_d, STRING_LITERAL(name));\
-    status = StrCopyDx(out_d, &return_d); }
+    status = StrCopyDx((struct descriptor *)out_d, (struct descriptor *)&return_d); }
 
 #define DevNODATA        2
 #define DevMODSTR        1

@@ -238,7 +238,7 @@ STATIC_THREADSAFE pthread_mutex_t global_mutex;
 #endif
 
 STATIC_THREADSAFE int global_mutex_initialized = 0;
-void MdsGlobalUnlock()
+EXPORT void MdsGlobalUnlock()
 {
   if (!global_mutex_initialized) {
     global_mutex_initialized = 1;
@@ -248,7 +248,7 @@ void MdsGlobalUnlock()
 
 }
 
-void MdsGlobalLock()
+EXPORT void MdsGlobalLock()
 {
   if (!global_mutex_initialized) {
     global_mutex_initialized = 1;

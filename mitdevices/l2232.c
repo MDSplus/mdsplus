@@ -14,8 +14,8 @@
 
 	Call sequence: 
 
-int L2232__INIT(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
-int L2232__STORE(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
+EXPORT int L2232__INIT(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
+EXPORT int L2232__STORE(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -34,10 +34,10 @@ int L2232__STORE(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
-extern int CamPiow();
-extern int CamStopw();
-extern int CamXandQ();
-extern int TdiCompile();
+
+
+
+
 #include "l2232_gen.h"
 #include "devroutines.h"
 /*------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ static int one = 1;
 
  Executable:                                                                  */
 
-int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) {return retstatus; }
@@ -78,7 +78,7 @@ int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int l2232___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l2232___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
   unsigned short dummy;
   int nid;
@@ -96,7 +96,7 @@ int l2232___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   return_on_error(DevCamChk(CamStopw(setup->cts_name, 0, 2, 32, buffer, 16, 0), &one, 0), status);
   return_on_error(DevCamChk(CamPiow(setup->cts_name, 0, 2, &dummy, 16, 0), &one, 0), status);
 
-  return_on_error(TdiCompile(&expr, &a_dsc, (struct descriptor *)&sig MDS_END_ARG), status);
+  return_on_error(TdiCompile((struct descriptor *)&expr, &a_dsc, (struct descriptor *)&sig MDS_END_ARG), status);
   nid = setup->head_nid + L2232_N_INPUTS;
   return_on_error(TreePutRecord(nid, (struct descriptor *)&sig, 0), status);
   MdsFree1Dx(&sig, 0);

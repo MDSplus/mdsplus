@@ -17,7 +17,7 @@
 	 * TclSetevent:
 	 * Close tree file(s).
 	 ***************************************************************/
-int TclSetEvent(void *ctx)
+EXPORT int TclSetEvent(void *ctx)
 {
   char *event = 0;
   int status;

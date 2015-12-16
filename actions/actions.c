@@ -205,7 +205,7 @@ static int Refresh()
       if (parent)
 	TreeGetNci(parent, p_itmlst);
       actions[i].included = parent ? (p_flags & NciM_INCLUDE_IN_PULSE) != 0 : 1;
-      StrCopyDx(&ident, &blank);
+      StrCopyDx(&ident, (struct descriptor *)&blank);
       actions[i].idx = 0;
       if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1) {
 	struct descriptor_dispatch *dispatch = (struct descriptor_dispatch *)xd.pointer;
@@ -267,25 +267,25 @@ static int Refresh()
 	strcpy(line, line_s);
 	switch (actions[i].phase) {
 	case 0x10000001:
-	  StrCopyDx(&error, &bad_phase);
+	  StrCopyDx(&error, (struct descriptor *)&bad_phase);
 	  break;
 	case 0x10000002:
-	  StrCopyDx(&error, &bad_index);
+	  StrCopyDx(&error, (struct descriptor *)&bad_index);
 	  break;
 	case 0x10000003:
-	  StrCopyDx(&error, &bad_server);
+	  StrCopyDx(&error, (struct descriptor *)&bad_server);
 	  break;
 	case 0x10000004:
-	  StrCopyDx(&error, &not_sequential);
+	  StrCopyDx(&error, (struct descriptor *)&not_sequential);
 	  break;
 	case 0x10000005:
-	  StrCopyDx(&error, &not_an_action);
+	  StrCopyDx(&error, (struct descriptor *)&not_an_action);
 	  break;
 	default:
 	  if (TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1)
-	    StrCopyDx(&prefix, &phase_str);
+	    StrCopyDx(&prefix, (struct descriptor *)&phase_str);
 	  else
-	    StrCopyDx(&error, &bad_phase);
+	    StrCopyDx(&error, (struct descriptor *)&bad_phase);
 	  break;
 	}
 	item = XmStringCreateSimple(line);
