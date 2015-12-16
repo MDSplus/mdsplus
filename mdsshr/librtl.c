@@ -517,7 +517,7 @@ int LibFindImageSymbol_C(const char *filename_in, const char *symbol, void **sym
   if (handle != NULL) {
     *symbol_value = dlsym(handle, symbol);
     if (*symbol_value == NULL) {
-      fprintf(stderr,"Error finding symbol %s in %s: %s\n",symbol, filename_in, dlerror());
+      snprintf(errorstr + strlen(errorstr), 4096 - strlen(errorstr), "Error: %s\n", dlerror());
     }
   }
   if (strlen(FIS_Error) > 0) {
