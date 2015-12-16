@@ -5522,9 +5522,9 @@ _ACEOF
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: **********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&5
 $as_echo "**********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&6; }
-if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
-	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-fi
+#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
+#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
+#fi
 
 #FIXME: Remove this when Makefile.inc goes away
 case "$MKDIR_P" in #(
@@ -6553,6 +6553,7 @@ if test "${with_gsi+set}" = set; then :
 else
   with_gsi=no
 fi
+
 case $with_gsi in #(
   no) :
     MDSTCPIP=mdstcpip ;; #(

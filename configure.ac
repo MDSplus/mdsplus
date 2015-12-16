@@ -25,9 +25,9 @@ AC_CHECK_TOOL([WINDRES], [windres], [:])
 AC_MSG_RESULT([before VISIBILITY])
 gl_VISIBILITY
 AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
-if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
-	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-fi
+#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
+#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
+#fi
 
 #FIXME: Remove this when Makefile.inc goes away
 AS_CASE(["$MKDIR_P"],
