@@ -24,7 +24,11 @@ def getRelease():
         release=mdsplus_version
     except:
         pass
-    return (release,name)
+    if '-' in release:
+        parts=release.split('-')
+        name=name+'_'+parts[0]
+        release=parts[1]
+    return (release,name.lower())
 
 
 try:
