@@ -24,7 +24,11 @@ def getRelease():
         release=mdsplus_version
     except:
         pass
-    return (release,name)
+    if '-' in release:
+        parts=release.split('-')
+        name=name+'_'+parts[0]
+        release=parts[1]
+    return (release,name.lower())
 
 
 try:
@@ -43,6 +47,7 @@ __version__="%s%s"
 """ % (version,branch))
   f_init.close()
   try:
+    pname='MDSplus'
     setup(name=name,
       version=version,
       description='MDSplus Python Objects',
@@ -54,18 +59,18 @@ __version__="%s%s"
       author_email='twf@www.mdsplus.org',
       url='http://www.mdsplus.org/',
       download_url = 'http://www.mdsplus.org/mdsplus_download/python',
-      package_dir = {name:'.',
-                     name+'.tdibuiltins':'./tdibuiltins',
-                     name+'.tests':'./tests',
-                     name+'.widgets':'./widgets',
-                     name+'.wsgi':'./wsgi',
-                     name+'.mdsExceptions':'./mdsExceptions'},
-      packages = [name,
-                  name+'.tdibuiltins',
-                  name+'.tests',
-                  name+'.widgets',
-                  name+'.wsgi',
-                  name+'.mdsExceptions'],
+      package_dir = {pname:'.',
+                     pname+'.tdibuiltins':'./tdibuiltins',
+                     pname+'.tests':'./tests',
+                     pname+'.widgets':'./widgets',
+                     pname+'.wsgi':'./wsgi',
+                     pname+'.mdsExceptions':'./mdsExceptions'},
+      packages = [pname,
+                  pname+'.tdibuiltins',
+                  pname+'.tests',
+                  pname+'.widgets',
+                  pname+'.wsgi',
+                  pname+'.mdsExceptions'],
       package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
       include_package_data = True,
       platforms = ('Any',),

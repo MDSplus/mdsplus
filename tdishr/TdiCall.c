@@ -53,7 +53,6 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
 #else
   int f_regs = 1;		/*(opcode == 0) */
 #endif
-  LibEstablish(TdiFaultHandler);
   switch (opcode) {
   case DTYPE_F:
   case DTYPE_FS:
@@ -130,7 +129,6 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
   unsigned char origin[255];
   dx.dtype = (unsigned char)opcode;
   dx.pointer = (char *)result;
-  LibEstablish(TdiFaultHandler);
   memset(newdsc, 0, sizeof(newdsc));
   if (narg > 255 + 2)
     status = TdiNDIM_OVER;

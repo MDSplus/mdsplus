@@ -18,7 +18,7 @@
 #define t_float_exp(val) (((*(int64_t *)val) >> 52) & 0x7ff)
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
-int IsRoprand(int dtype, void *value)
+EXPORT int IsRoprand(int dtype, void *value)
 {
   int ans = 0;
   switch (dtype) {

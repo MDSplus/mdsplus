@@ -242,7 +242,7 @@ ifdef MdsIpGSI
 #include makefile-header
 
 $(MdsIpGSI):  IoRoutinesGsi.c
-	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LIBS) $(LINK_MDSIPSHR) $$(pkg-config --libs globus-xio globus-xio-gsi-driver globus-gssapi-gsi globus-gss-assist)
+	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LIBS) $(LINK_MDSIPSHR) $$(pkg-config --libs globus-xio globus-xio-gsi-driver globus-gssapi-gsi globus-gss-assist globus-common)
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp $< $@

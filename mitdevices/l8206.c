@@ -9,17 +9,17 @@
 static int one = 1;
 static int zero = 0;
 
-extern int CamQ();
+
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define pio(f,d) return_on_error(DevCamChk(CamPiow(setup->name,0,f,d,16,0),&one,0),status)
 #define stop(f,count,buffer)  return_on_error(DevCamChk(CamStopw(setup->name,0,f,count,buffer,16,0),&one,0),status)
 
-extern int TdiData();
+
 
 static short buffer[65536];
 static DESCRIPTOR_A(data, sizeof(short), DTYPE_W, buffer, sizeof(buffer));
 
-int l8206___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8206___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 {
   int status;
   int download_nid = setup->head_nid + L8206_N_DOWNLOAD;
@@ -38,7 +38,7 @@ int l8206___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int l8206___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8206___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 {
   int status;
   int savstatus;

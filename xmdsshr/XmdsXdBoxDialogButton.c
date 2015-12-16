@@ -72,7 +72,7 @@ static XtResource resources[] = {
    XmRImmediate, (void *)1}
 };
 
-Widget XmdsCreateXdBoxDialogButton(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateXdBoxDialogButton(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
   Resources *info = (Resources *) XtMalloc(sizeof(Resources));
@@ -110,7 +110,7 @@ static void Popup(Widget w, Resources * info, XtPointer cb)
     XmdsManageWindow(info->popup_w);
 }
 
-Boolean XmdsIsXdBoxDialogButton(Widget w)
+EXPORT Boolean XmdsIsXdBoxDialogButton(Widget w)
 {
   return GetResources(w) != 0;
 }
@@ -130,7 +130,7 @@ static Resources *GetResources(Widget w)
   return answer;
 }
 
-void XmdsXdBoxDialogButtonReset(Widget w)
+EXPORT void XmdsXdBoxDialogButtonReset(Widget w)
 {
   Resources *info = GetResources(w);
   if (info)
@@ -138,19 +138,19 @@ void XmdsXdBoxDialogButtonReset(Widget w)
   return;
 }
 
-int XmdsXdBoxDialogButtonPut(Widget w)
+EXPORT int XmdsXdBoxDialogButtonPut(Widget w)
 {
   Resources *info = GetResources(w);
   return info ? XmdsXdBoxPut(info->popup_w) : 0;
 }
 
-int XmdsXdBoxDialogButtonApply(Widget w)
+EXPORT int XmdsXdBoxDialogButtonApply(Widget w)
 {
   Resources *info = GetResources(w);
   return info ? XmdsXdBoxApply(info->popup_w) : 0;
 }
 
-Widget XmdsXdBoxDialogButtonGetXdBox(Widget w)
+EXPORT Widget XmdsXdBoxDialogButtonGetXdBox(Widget w)
 {
   Resources *info = GetResources(w);
   return info ? info->popup_w : 0;

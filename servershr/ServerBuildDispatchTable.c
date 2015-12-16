@@ -85,7 +85,7 @@ static int AddReference(int idx, int *nid)
   return 0;
 }
 
-static int fixup_nid(int *nid, int idx, struct descriptor *path_out)
+static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out)
 {
   static DESCRIPTOR(dtype_str, "DTYPE");
   static int dtype;
@@ -102,7 +102,7 @@ static int fixup_nid(int *nid, int idx, struct descriptor *path_out)
     sprintf(ident, "_ACTION_%08X", *nid);
     ident_dsc.length = strlen(ident);
     ident_dsc.pointer = ident;
-    StrCopyDx(path_out, &ident_dsc);
+    StrCopyDx((struct descriptor *)path_out, (struct descriptor *)&ident_dsc);
     strcpy(tmp, ident);
     strcpy(ident, "public ");
     strcat(ident, tmp);
@@ -115,7 +115,7 @@ static int fixup_nid(int *nid, int idx, struct descriptor *path_out)
   return 0;
 }
 
-static int fixup_path(struct descriptor *path_in, int idx, struct descriptor *path_out)
+static int fixup_path(struct descriptor *path_in, int idx, struct descriptor_d *path_out)
 {
   char *path = strncpy((char *)malloc(path_in->length + 1), path_in->pointer, path_in->length);
   int nid;
@@ -150,14 +150,14 @@ static void LinkConditions()
   return;
 }
 
-int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
+EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
 {
   DispatchTable **table_ptr = (DispatchTable **) table;
   void *ctx = 0;
   int i;
   static char *allnodes = "***";
   static DESCRIPTOR(varnames, "_ACTION_*");
-  static struct descriptor varnames_d = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_d varnames_d = { 0, DTYPE_T, CLASS_D, 0 };
   char *nodespec = wildcard ? wildcard : allnodes;
   int mask = 1 << TreeUSAGE_ACTION;
   int status = 1;
@@ -187,7 +187,7 @@ int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
   nids = (int *)malloc(MAX_ACTIONS * sizeof(int));
   num_actions = 0;
   if (!varnames_d.length)
-    StrCopyDx(&varnames_d, &varnames);
+    StrCopyDx((struct descriptor *)&varnames_d, (struct descriptor *)&varnames);
   while ((TreeFindNodeWild(nodespec, &nids[num_actions], &ctx, mask) & 1)
 	 && (num_actions < MAX_ACTIONS))
     num_actions++;
@@ -201,7 +201,7 @@ int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
     (*table_ptr)->shot = shot;
     strcpy((*table_ptr)->tree, tree);
     for (i = 0, nidptr = nids; i < num_actions; nidptr++, i++) {
-      struct descriptor event_name = { 0, DTYPE_T, CLASS_D, 0 };
+      struct descriptor_d event_name = { 0, DTYPE_T, CLASS_D, 0 };
       struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, 0 };
       static EMPTYXD(xd);
       niddsc.pointer = (char *)nidptr;

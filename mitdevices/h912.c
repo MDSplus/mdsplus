@@ -9,13 +9,9 @@
 #include "h912_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
 
-extern int CamXandQ();
-extern int TdiGetLong();
-extern int TdiCompile();
+
+
 
 static int ReadChannel(InStoreStruct * setup, int samps, int chan, short *data_ptr);
 static int one = 1;
@@ -26,7 +22,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-int h912___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int h912___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   struct _msetup {
     unsigned pretrig:1;
@@ -54,21 +50,21 @@ int h912___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int h912___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int h912___stop(struct descriptor *niddsc, InStopStruct * setup)
 {
   int status;
   pio(25, 0, 0, 16)
       return status;
 }
 
-int h912___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int h912___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16)
       return status;
 }
 
-int h912___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int h912___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status;
   int mstatus;
@@ -137,7 +133,7 @@ int h912___store(struct descriptor *niddsc, InStoreStruct * setup)
     clock = (struct descriptor *)&int_clock;
   }
   return_on_error(TdiCompile
-		  (&timestamps_exp, clock, &blocks_d, &blocksize_d, &trigger, &pts_d,
+		  ((struct descriptor *)&timestamps_exp, clock, &blocks_d, &blocksize_d, &trigger, &pts_d,
 		   &timestamps MDS_END_ARG));
   return_on_error(TreePutRecord(timestamps_nid, (struct descriptor *)&timestamps, 0));
   samples = blocksize * blocks;
@@ -174,7 +170,7 @@ int h912___store(struct descriptor *niddsc, InStoreStruct * setup)
 	  raw.a0 = (char *)buffer;
 	  raw.arsize = raw.m[0] * sizeof(short);
 	  return_on_error(TdiCompile
-			  (&sig_exp, &raw, &timestamps_nid_d, &start_d, &end_d,
+			  ((struct descriptor *)&sig_exp, &raw, &timestamps_nid_d, &start_d, &end_d,
 			   &signal MDS_END_ARG));
 	  return_on_error(TreePutRecord(sig_nid, (struct descriptor *)&signal, 0));
 	}

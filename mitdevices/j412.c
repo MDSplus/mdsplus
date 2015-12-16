@@ -7,9 +7,6 @@
 #include "j412_gen.h"
 #include "devroutines.h"
 
-extern int TdiData();
-extern int TdiLong();
-
 static int one = 1;
 #define min(a,b) ((a) < (b)) ? (a) : (b)
 #define max(a,b) ((a) < (b)) ? (b) : (a)
@@ -17,13 +14,13 @@ static int one = 1;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(in_struct->name, a, f, d, 16, 0), &one, &one))
 #define stop(f,a,n,d)  return_on_error(DevCamChk(CamStopw(in_struct->name, a, f, n, d, 24, 0), &one, &one))
 
-int j412___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+EXPORT int j412___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
 {
   struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int status;
-  status = TdiLong(in_struct->set_points, &xd MDS_END_ARG);
+  status = TdiLong((struct descriptor *)in_struct->set_points, &xd MDS_END_ARG);
   if (status & 1)
-    status = TdiData(&xd, &xd MDS_END_ARG);
+    status = TdiData((struct descriptor *)&xd, &xd MDS_END_ARG);
   if (status & 1) {
     struct descriptor_a *a_ptr = (struct descriptor_a *)xd.pointer;
     int num = a_ptr->arsize / a_ptr->length;

@@ -18,6 +18,7 @@
 #include <usagedef.h>
 #include <dcl.h>
 #include <mdsshr.h>
+#include <libroutines.h>
 #include <treeshr.h>
 #include <mdsdescrip.h>
 
@@ -33,10 +34,6 @@
 *  20-Jan-1998  TRG  Create.  Ported from original mds code.
 *
 ************************************************************************/
-
-extern char *MdsDtypeString();
-extern char *MdsClassString();
-extern int LibSysAscTim();
 
 static int doFull(char **output, int nid, unsigned char nodeUsage, int version);
 	/****************************************************************
@@ -88,7 +85,7 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
   if (time[0]==0 && time[1]== 0)
     return "                       ";
 
-  LibSysAscTim(&len, &dsc_datime, time, flags);
+  LibSysAscTim(&len, (struct descriptor *)&dsc_datime, time);
   datime[len] = '\0';
   return (datime);
 }
@@ -105,7 +102,7 @@ void tclAppend(char **output, char *str)
 	 * TclDirectory:
 	 * Perform directory function
 	 ****************************************************************/
-int TclDirectory(void *ctx, char **error, char **output)
+EXPORT int TclDirectory(void *ctx, char **error, char **output)
 {
   char *tagnam;
   char msg[128];
@@ -323,7 +320,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       }
       if (nciFlags & NciM_COMPRESS_SEGMENTS)
 	strcat(msg, "compress segments\n");
-
+	
       if (strlen(msg) > 0) {
 	tclAppend(output, "      ");
 	tclAppend(output, msg);
@@ -372,7 +369,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
   return status;
 }
 
-int TclLs(void *ctx)
+EXPORT int TclLs(void *ctx)
 {
   char *cmd = 0;
   cli_get_value(ctx, "command_line", &cmd);

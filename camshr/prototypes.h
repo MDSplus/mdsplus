@@ -12,6 +12,7 @@
 #include "ScsiCamac.h"
 #include "module.h"
 #include "crate.h"
+#include <config.h>
 
 // SCSI CAMAC funtion prototypes
 int CamPiow(char *Name,		// CAMAC module name
@@ -101,34 +102,34 @@ int QueryHighwayType(char *serial_driver);
 int TestUnitReady(char *serial_driver);
 
 // verbs.c function prototypes
-int add_entry(int dbType, char *newEntry);
+extern EXPORT int add_entry(int dbType, char *newEntry);
 int bisearch(int dbType, const void *target, int size,
 	     int (*compare) (const void *key1, const void *key2));
-int check_for_file(char *FileName);
+extern EXPORT int check_for_file(char *FileName);
 int check_sema4();
 int commit_entry(int dbType);
 int compare_str(const void *key1, const void *key2);
 int copy(int dbType, char *in_file, char *out_file, int count);
 int create_sema4();
 int create_tmp_file(int dbType, int count, char *filename);
-int expand_db(int dbType, int numOfEntries);
+extern EXPORT int expand_db(int dbType, int numOfEntries);
 int find_scsi_device(char *deviceName);
-int get_crate_status(char *crate_name, int *crate_status);
-int get_db_file_size(char *FileName);
-int get_file_count(int dbType);
-char *get_file_name(char *filename);
+extern EXPORT int get_crate_status(char *crate_name, int *crate_status);
+extern EXPORT int get_db_file_size(char *FileName);
+extern EXPORT int get_file_count(int dbType);
+extern EXPORT char *get_file_name(char *filename);
 int get_scsi_device_number(char *highway_name, int *enhanced, int *online);
 int issort(void *data, int size, int esize, int (*compare) (const void *key1, const void *key2));
 int lock_file();
-int lookup_entry(int dbType, char *module_name);
-int map_data_file(int dbType);
-int map_scsi_device(char *highway_name);
+extern EXPORT int lookup_entry(int dbType, char *module_name);
+extern EXPORT int map_data_file(int dbType);
+extern EXPORT int map_scsi_device(char *highway_name);
 int MSGLVL(int lvl);
-void parse_crate_db(struct CRATE *in, struct Crate_ *out);
-void parse_cts_db(struct MODULE *in, struct Module_ *out);
+extern EXPORT void parse_crate_db(struct CRATE *in, struct Crate_ *out);
+extern EXPORT void parse_cts_db(struct MODULE *in, struct Module_ *out);
 int remove_cts_entry(int index);
-int ScsiSystemStatus(void);
-int turn_crate_on_off_line(char *crate_name, int state);
+extern EXPORT int ScsiSystemStatus(void);
+extern EXPORT int turn_crate_on_off_line(char *crate_name, int state);
 int unlock_file();
 int xlate_logicalname(char *Name, CamKey * Key);
 

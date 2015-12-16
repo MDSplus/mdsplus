@@ -11,7 +11,6 @@
 #include "decoder.h"
 #include "devroutines.h"
 
-extern int TdiExecute();
 
 static int GetEvent(char *name, EventMask * mask);
 static int GetOcta(int event_nid, EventMask * events);
@@ -248,7 +247,7 @@ static int GetEvent(char *name, EventMask * mask)
   int status;
   name_dsc.length = strlen(name);
   name_dsc.pointer = name;
-  status = TdiExecute(&expr, &name_dsc, &xd MDS_END_ARG);
+  status = TdiExecute((struct descriptor *)&expr, &name_dsc, &xd MDS_END_ARG);
   if (status & 1) {
     unsigned char event = *(unsigned char *)xd.pointer->pointer;
     mask->bits[event / 32] |= 1 << (event % 32);
@@ -256,7 +255,7 @@ static int GetEvent(char *name, EventMask * mask)
   return status & 1;
 }
 
-int mit_decoder__get_event(int *ref_nid, unsigned int *event_mask)
+EXPORT int mit_decoder__get_event(int *ref_nid, unsigned int *event_mask)
 {
   static DESCRIPTOR_NID(nid_dsc, 0);
   unsigned int i;
@@ -264,7 +263,7 @@ int mit_decoder__get_event(int *ref_nid, unsigned int *event_mask)
   static DESCRIPTOR(expression, "BYTE_UNSIGNED(DATA(EVENT_LOOKUP($)))");
   int status;
   nid_dsc.pointer = (char *)ref_nid;
-  status = TdiExecute(&expression, &nid_dsc, &xd MDS_END_ARG);
+  status = TdiExecute((struct descriptor *)&expression, &nid_dsc, &xd MDS_END_ARG);
   if (status & 1) {
     if (xd.pointer->class == CLASS_A) {
       struct descriptor_a *array = (struct descriptor_a *)xd.pointer;

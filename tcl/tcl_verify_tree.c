@@ -18,7 +18,7 @@
 	/***************************************************************
 	 * TclVerifyTree:
 	 ***************************************************************/
-int TclVerifyTree(void *ctx, char **error, char **output)
+EXPORT int TclVerifyTree(void *ctx, char **error, char **output)
 {				/* Returns: status                        */
   int sts;
 

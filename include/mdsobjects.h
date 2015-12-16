@@ -1,12 +1,6 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
 #define NOMINMAX
-# ifdef _WIN32
-#  define EXPORT __declspec(dllexport)
-# else
-#  define EXPORT
-# endif
-
 #include <algorithm>
 #include <complex>
 #include <exception>
@@ -156,7 +150,6 @@ namespace MDSplus  {
 class Tree;
 
 EXPORT void setActiveTree(Tree *tree);
-
 EXPORT Tree *getActiveTree();
 
 
@@ -3856,8 +3849,8 @@ EXPORT Data *execute(const char *expr);
 EXPORT Data *executeWithArgs(const char *expr, int nArgs ...);
 EXPORT Data *execute(const char *expr, Tree *tree);
 EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
-Tree *getActiveTree();
-void setActiveTree(Tree *tree);
+//EXPORT Tree *getActiveTree();
+//EXPORT void setActiveTree(Tree *tree);
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
 EXPORT void deleteTreeNode(TreeNode *node);

@@ -21,16 +21,16 @@
 #include <Xmds/XmdsXdBoxDialogButton.h>
 static float fval = 0;
 static DESCRIPTOR_FLOAT(float_d, &fval);
-extern int TdiData();
-extern int TdiCvt();
-extern int TdiDimOf();
-extern int TdiLong();
-extern int TdiExecute();
+
+
+
+
+
 static float (*csval) () = 0;
 static void (*csakm) () = 0;
 extern int DevCamChk();
-extern int CamPiow();
-extern int CamQrepw();
+
+
 
 static int one = 1;
 static int zero = 0;
@@ -84,7 +84,7 @@ static void UpdateXdBox(Widget w, int count, float *x, float *y, Boolean * selec
 
  Executable:                                                                  */
 
-int b5910a__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int b5910a__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "B5910A.uid" };
   static int nid;
@@ -187,8 +187,8 @@ static void ResetWave(Widget w)
     ext_clock_nid = (intptr_t) user_data;
     dimension.axis = &ext_clock;
   }
-  if ((TdiData(&dimension, &times_xd MDS_END_ARG) & 1) &&
-      (TdiCvt(&times_xd, &float_d, &times_xd MDS_END_ARG) & 1)) {
+  if ((TdiData((struct descriptor *)&dimension, &times_xd MDS_END_ARG) & 1) &&
+      (TdiCvt((struct descriptor *)&times_xd, &float_d, &times_xd MDS_END_ARG) & 1)) {
     if (times_xd.pointer->class == CLASS_A) {
       struct descriptor_a *array = (struct descriptor_a *)times_xd.pointer;
       count = min(count, ((int)(array->arsize / sizeof(float))));
@@ -219,8 +219,8 @@ static void ResetWave(Widget w)
 	Widget dw = XtNameToWidget(Top(w), d_name(i));
 	Widget fw = XtNameToWidget(Top(w), fit_name(i));
 	if ((valid_xd = (struct descriptor_xd *)XmdsXdBoxGetXd(xdbw))
-	    && (TdiData(valid_xd->pointer, &knot_y_xd MDS_END_ARG) & 1)
-	    && (TdiCvt(&knot_y_xd, &float_d, &knot_y_xd MDS_END_ARG) & 1)) {
+	    && (TdiData((struct descriptor *)valid_xd->pointer, &knot_y_xd MDS_END_ARG) & 1)
+	    && (TdiCvt((struct descriptor *)&knot_y_xd, &float_d, &knot_y_xd MDS_END_ARG) & 1)) {
 	  if (knot_y_xd.pointer->class == CLASS_A) {
 	    struct descriptor_a *array = (struct descriptor_a *)knot_y_xd.pointer;
 	    num_knots = array->arsize / sizeof(float);
@@ -231,8 +231,8 @@ static void ResetWave(Widget w)
 	  }
 	}
 	if (num_knots && valid_xd && (TdiDimOf(valid_xd->pointer, &knot_x_xd MDS_END_ARG) & 1) &&
-	    (TdiData(&knot_x_xd, &knot_x_xd MDS_END_ARG) & 1)
-	    && (TdiCvt(&knot_x_xd, &float_d, &knot_x_xd MDS_END_ARG) & 1)) {
+	    (TdiData((struct descriptor *)&knot_x_xd, &knot_x_xd MDS_END_ARG) & 1)
+	    && (TdiCvt((struct descriptor *)&knot_x_xd, &float_d, &knot_x_xd MDS_END_ARG) & 1)) {
 	  if (knot_x_xd.pointer->class == CLASS_A) {
 	    struct descriptor_a *array = (struct descriptor_a *)knot_x_xd.pointer;
 	    num_knots = min(num_knots, ((int)(array->arsize / sizeof(float))));
@@ -563,7 +563,7 @@ static int InitMath()
   return status;
 }
 
-int b5910a_SPLFIT(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
+EXPORT int b5910a_SPLFIT(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
 {
   int i;
   if (*num_knots > 2) {
@@ -595,7 +595,7 @@ static void Spline(int count, float *x, float *y, Boolean * selected, Boolean * 
     pen_down[num_knots + i] = 1;
 }
 
-int b5910a_LINFIT(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
+EXPORT int b5910a_LINFIT(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
 {
   float slope;
   float intercept;
@@ -771,7 +771,7 @@ static int Count(Widget w)
   struct descriptor_xd *valid_xd;
   count_d.pointer = (char *)&count;
   if ((valid_xd = (struct descriptor_xd *)XmdsExprGetXd(XtNameToWidget(Top(w), "*samples"))))
-    TdiData(valid_xd, &count_d MDS_END_ARG);
+    TdiData((struct descriptor *)valid_xd, &count_d MDS_END_ARG);
   return count;
 }
 
@@ -803,7 +803,7 @@ static char *fit_name(int channel)
 #define return_on_error(call,retstatus)\
  if (!((status = (call)) & 1)) {return retstatus;}
 
-int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
 
   int status;
@@ -829,7 +829,7 @@ int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
     static float dts[] =
 	{ 1. / 2000, 1. / 5000, 1. / 10000, 1. / 20000, 1. / 50000, 1. / 100000, 1. / 200000,
 1. / 500000 };
-    return_on_error(TdiExecute(&dt_expr, setup->int_clock, &dt_dsc MDS_END_ARG), B5910A$_BAD_CLOCK);
+    return_on_error(TdiExecute((struct descriptor *)&dt_expr, setup->int_clock, &dt_dsc MDS_END_ARG), B5910A$_BAD_CLOCK);
     for (i = 0; i < 7 && dt < dts[i]; i++) ;
     reg.freq = i;
     reg.clock = 0;
@@ -862,7 +862,7 @@ int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
       data = setup->channel_4;
       break;
     }
-    status = TdiExecute(&chan_exp, data, &y MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&chan_exp, data, &y MDS_END_ARG);
     if (status & 1) {
       float *yval = (float *)y.pointer->pointer;
       float volts_per_bit;

@@ -12,6 +12,8 @@
 #ifdef _WIN32
 #include <process.h>
 #include <winuser.h>
+#else
+#include <sys/wait.h>
 #endif
 
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait);
@@ -40,7 +42,7 @@ struct TUNNEL_PIPES {
 };
 #endif
 
-static struct TUNNEL_PIPES *getTunnelPipes(id)
+static struct TUNNEL_PIPES *getTunnelPipes(int id)
 {
   size_t len;
   char *info_name;

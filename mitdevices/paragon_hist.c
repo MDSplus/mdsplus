@@ -39,15 +39,8 @@
 #include "paragon_hist_gen.h"
 #include "devroutines.h"
 
-extern int TdiData();
-extern int TdiExecute();
-extern int TdiVector();
-extern int TdiSort();
-extern int TdiSubscript();
-extern int TdiUnion();
-
-int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out, int *isftp);
-int PARAGON_FTP_DELETE(char *report, int delete);
+EXPORT int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out, int *isftp);
+EXPORT int PARAGON_FTP_DELETE(char *report, int delete);
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
@@ -75,9 +68,9 @@ int paragon_hist___insert(struct descriptor *niddsc, InInsertStruct * setup)
 
 static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort)
 {
-  static struct descriptor rpt_name = { 0, DTYPE_T, CLASS_D, 0 };
-  static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
-  static struct descriptor names[10] = { {0, DTYPE_T, CLASS_D, 0},
+  static struct descriptor_d rpt_name = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_d names[10] = { {0, DTYPE_T, CLASS_D, 0},
   {0, DTYPE_T, CLASS_D, 0},
   {0, DTYPE_T, CLASS_D, 0},
   {0, DTYPE_T, CLASS_D, 0},
@@ -111,7 +104,7 @@ static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort)
   char line[256];
   FILE *file;
   int isftp;
-  status = PARAGON_FTP_COPY(setup->report_name, &rpt_name, &isftp);
+  status = PARAGON_FTP_COPY(setup->report_name, (struct descriptor *)&rpt_name, &isftp);
   if (!(status & 1)) {
     return (status);
   }
@@ -125,7 +118,7 @@ static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort)
       static int limit_nid;
       static DESCRIPTOR_NID(nid_dsc, &limit_nid);
       limit_nid = setup->head_nid + PARAGON_HIST_N_LIMIT_0 + i;
-      status = TdiData(&nid_dsc, &limits[i] MDS_END_ARG);
+      status = TdiData((struct descriptor *)&nid_dsc, &limits[i] MDS_END_ARG);
       if (!(status & 1))
 	MdsFree1Dx(&limits[i], 0);
       nums[i] = 0;
@@ -140,9 +133,9 @@ static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort)
       TIME time;
       float value;
       if (strlen(line) >= 70) {
-	if (ParseHistorian(line, &name, &value, &time)) {
+	if (ParseHistorian(line, (struct descriptor *)&name, &value, &time)) {
 	  for (i = 0; i < 10;) {
-	    if (StrCompare(&name, &names[i]) == 0)
+	    if (StrCompare((struct descriptor *)&name, (struct descriptor *)&names[i]) == 0)
 	      break;
 	    else
 	      i++;
@@ -204,9 +197,9 @@ static void StoreSignal(int nid,
     static struct descriptor_xd selections = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
     static DESCRIPTOR(select, "(($1 > $2[0]) && ($1 < $2[1]))");
     static DESCRIPTOR(pack, "PACK($, $)");
-    TdiExecute(&select, &vals, limits, &selections MDS_END_ARG);
-    TdiExecute(&pack, &vals, &selections, &values MDS_END_ARG);
-    TdiExecute(&pack, &tims, &selections, &times MDS_END_ARG);
+    TdiExecute((struct descriptor *)&select, &vals, limits, &selections MDS_END_ARG);
+    TdiExecute((struct descriptor *)&pack, &vals, &selections, &values MDS_END_ARG);
+    TdiExecute((struct descriptor *)&pack, &tims, &selections, &times MDS_END_ARG);
     MdsFree1Dx(&selections, 0);
   } else {
     MdsCopyDxXd((struct descriptor *)&tims, &times);
@@ -220,23 +213,23 @@ static void StoreSignal(int nid,
     static DESCRIPTOR(dim_of, "DIM_OF($)");
     static DESCRIPTOR(val_of, "DATA($)");
     static DESCRIPTOR(set_range, "SET_RANGE(SIZE($1), $1)");
-    TdiExecute(&dim_of, &tmp_xd, &time MDS_END_ARG);
-    TdiExecute(&val_of, &tmp_xd, &value MDS_END_ARG);
-    TdiVector(&value, &values, &values MDS_END_ARG);
-    TdiVector(&time, &times, &times MDS_END_ARG);
-    TdiExecute(&set_range, &values, &values MDS_END_ARG);
-    TdiExecute(&set_range, &times, &times MDS_END_ARG);
+    TdiExecute((struct descriptor *)&dim_of, &tmp_xd, &time MDS_END_ARG);
+    TdiExecute((struct descriptor *)&val_of, &tmp_xd, &value MDS_END_ARG);
+    TdiVector((struct descriptor *)&value, &values, &values MDS_END_ARG);
+    TdiVector((struct descriptor *)&time, &times, &times MDS_END_ARG);
+    TdiExecute((struct descriptor *)&set_range, &values, &values MDS_END_ARG);
+    TdiExecute((struct descriptor *)&set_range, &times, &times MDS_END_ARG);
     if (sort) {
       static struct descriptor_xd index = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
       static struct descriptor_xd sorted_values = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
       static struct descriptor_xd sorted_times = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
       static struct descriptor_xd sorted_signal = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
       static DESCRIPTOR_SIGNAL_1(signal, &sorted_values, 0, &sorted_times);
-      TdiSort(times.pointer, &index MDS_END_ARG);
-      TdiSubscript(times.pointer, index.pointer, &sorted_times MDS_END_ARG);
-      TdiSubscript(values.pointer, index.pointer, &sorted_values MDS_END_ARG);
-      TdiUnion(sorted_times.pointer, &time MDS_END_ARG);
-      TdiSubscript(&signal, time.pointer, &sorted_signal MDS_END_ARG);
+      TdiSort((struct descriptor *)times.pointer, &index MDS_END_ARG);
+      TdiSubscript((struct descriptor *)times.pointer, index.pointer, &sorted_times MDS_END_ARG);
+      TdiSubscript((struct descriptor *)values.pointer, index.pointer, &sorted_values MDS_END_ARG);
+      TdiUnion((struct descriptor *)sorted_times.pointer, &time MDS_END_ARG);
+      TdiSubscript((struct descriptor *)&signal, time.pointer, &sorted_signal MDS_END_ARG);
       status = TreePutRecord(nid, (struct descriptor *)&sorted_signal, 0);
       MdsFree1Dx(&index, 0);
       MdsFree1Dx(&sorted_values, 0);
@@ -298,17 +291,17 @@ static int ParseHistorian(char *line, struct descriptor *name, float *value, TIM
   return status;
 }
 
-int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out, int *isftp)
+EXPORT int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out, int *isftp)
 {
   struct descriptor report = { 0, DTYPE_T, CLASS_S, 0 };
   DESCRIPTOR(ftp_it, "PARAGON_FTP_COPY($)");
   report.length = strlen(report_in);
   report.pointer = report_in;
   *isftp = 1;
-  return TdiExecute(&ftp_it, &report, report_out MDS_END_ARG);
+  return TdiExecute((struct descriptor *)&ftp_it, &report, report_out MDS_END_ARG);
 }
 
-int PARAGON_FTP_DELETE(char *report_in, int delete)
+EXPORT int PARAGON_FTP_DELETE(char *report_in, int delete)
 {
   int status;
   struct descriptor report = { 0, DTYPE_T, CLASS_S, 0 };
@@ -318,7 +311,7 @@ int PARAGON_FTP_DELETE(char *report_in, int delete)
   report.length = strlen(report_in);
   report.pointer = report_in;
   delete_d.pointer = (char *)&delete;
-  status = TdiExecute(&ftp_it, &report, &delete_d, &ans MDS_END_ARG);
+  status = TdiExecute((struct descriptor *)&ftp_it, &report, &delete_d, &ans MDS_END_ARG);
   MdsFree1Dx(&ans, 0);
   return status;
 }

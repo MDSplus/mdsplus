@@ -380,13 +380,13 @@ XmdsWavedrawClassRec xmdsWavedrawClassRec = {
    }
 };
 
-WidgetClass xmdsWavedrawWidgetClass;
+EXPORT WidgetClass xmdsWavedrawWidgetClass;
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
   return XtCreateWidget(name, xmdsWavedrawWidgetClass, parent, args, argcount);
 }
@@ -500,7 +500,7 @@ static void Refresh(XmdsWavedrawWidget w)
   (((XmdsWavedrawWidgetClass) w->core.widget_class)->core_class.expose) ((Widget) w, 0, 0);
 }
 
-Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx, float *desired_x, float *desired_y,
+EXPORT Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx, float *desired_x, float *desired_y,
 			      float *new_x, float *new_y, Boolean callcallbacks, XEvent * event)
 {
   return (((XmdsWavedrawWidgetClass) w->core.widget_class)->wavedraw_class.move_point_proc) (w, idx,
@@ -1130,7 +1130,7 @@ static void SetTranslations(XmdsWavedrawWidget w)
   }
 }
 
-void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks)
+EXPORT void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks)
 {
   XmdsWavedrawWidget wdw = (XmdsWavedrawWidget) w;
   (((XmdsWavedrawWidgetClass) wdw->core.widget_class)->wavedraw_class.delete_point_proc) (wdw, idx,
@@ -1174,7 +1174,7 @@ static void DeletePoint(XmdsWavedrawWidget w, int idx, Boolean callcallbacks)
   Refresh(w);
 }
 
-Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy, Boolean callcallbacks,
+EXPORT Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy, Boolean callcallbacks,
 			     enum XmdsWaveformMotionRestriction motion)
 {
   XmdsWavedrawWidget wdw = (XmdsWavedrawWidget) w;

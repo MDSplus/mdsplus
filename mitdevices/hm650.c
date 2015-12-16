@@ -30,14 +30,14 @@ Note also that the front panel VETO and CLR inputs may inhibit action.
 #include "hm650_gen.h"
 #include "devroutines.h"
 
-extern int TdiCompile();
+
 static int one = 1;
 #define min(a,b) ((a)<(b) ? (a) : (b))
 #define max(a,b) ((a)>(b) ? (a) : (b))
 #define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, &one),status)
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = 1;
   int dly_status = 1;
@@ -102,7 +102,7 @@ int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
 	break;
       }
       trig_dsc.pointer = (char *)&trig_in;
-      put_status = TdiCompile(&expr, &trig_dsc, &delay_dsc MDS_END_ARG);
+      put_status = TdiCompile((struct descriptor *)&expr, &trig_dsc, &delay_dsc MDS_END_ARG);
       if (put_status & 2)
 	put_status = TreePutRecord(trig_out, (struct descriptor *)&out_xd, 0);
     }
@@ -120,7 +120,7 @@ int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
     return 1;
 }
 
-int hm650___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int hm650___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0, 16);

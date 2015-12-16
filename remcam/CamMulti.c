@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <config.h>
 
 #ifndef min
 #define min(a,b) ((a) < (b)) ? (a) : (b)
@@ -21,7 +22,7 @@ static int CamMulti(char *routine, char *name, int a, int f, int count, void *da
 		    unsigned short *iosb);
 
 #define MakeMulti(locnam,remnam) \
-int locnam(char *name, int a, int f, int count, void *data, int mem, unsigned short *iosb) \
+EXPORT int locnam(char *name, int a, int f, int count, void *data, int mem, unsigned short *iosb) \
 { \
   return CamMulti(#remnam,name,a,f,count,data,mem,iosb); \
 }
@@ -108,7 +109,7 @@ static int DoCamMulti(char *routine, char *name, int a, int f, int count, void *
   return status;
 }
 
-int CamSetMAXBUF(char *name, int new)
+EXPORT int CamSetMAXBUF(char *name, int new)
 {
   int serverid = RemoteServerId();
   int status = -1;
@@ -127,7 +128,7 @@ int CamSetMAXBUF(char *name, int new)
   return status;
 }
 
-int CamGetMAXBUF(char *name)
+EXPORT int CamGetMAXBUF(char *name)
 {
   int serverid = RemoteServerId();
   int status = -1;

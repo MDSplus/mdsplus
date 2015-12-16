@@ -152,7 +152,7 @@ written by
 
 #else
 
-   #define UDT_API __attribute__ ((visibility("default")))
+   #define UDT_API __attribute__ ((visibility("hidden")))
 
 #endif
 

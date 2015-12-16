@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <mdsdcl_messages.h>
 #include "tcl_p.h"
 
 /**********************************************************************
@@ -55,7 +56,7 @@ char tclUsageToNumber(const char *usage, char **error)
   return -1;
 }
 
-int TclAddNode(void *ctx, char **error, char **output)
+EXPORT int TclAddNode(void *ctx, char **error, char **output)
 {				/* Return: status                 */
   int nid;
   int sts;

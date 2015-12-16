@@ -139,17 +139,17 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	&& strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
       void *dbid = *TreeCtx();
       /**** Try python class ***/
-      struct descriptor exp = { 0, DTYPE_T, CLASS_D, 0 };
+      struct descriptor_d exp = { 0, DTYPE_T, CLASS_D, 0 };
       STATIC_CONSTANT DESCRIPTOR(open, "PyDoMethod(");
-      StrCopyDx(&exp, &open);
+      StrCopyDx((struct descriptor *)&exp, (struct descriptor *)&open);
       if (nargs == 4 && method_ptr->length == strlen("DW_SETUP")
 	  && strncmp(method_ptr->pointer, "DW_SETUP", strlen("DW_SETUP")) == 0) {
 	arglist[3] = arglist[4];
 	nargs--;
       }
       for (i = 1; i < nargs - 1; i++)
-	StrAppend(&exp, &arg);
-      StrAppend(&exp, &close);
+	StrAppend(&exp, (struct descriptor *)&arg);
+      StrAppend(&exp, (struct descriptor *)&close);
       if (TdiExecute == 0)
 	status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
       if (status & 1) {

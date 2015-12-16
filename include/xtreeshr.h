@@ -2,11 +2,6 @@
 #include <string.h>
 #include <mdsshr.h>
 #include <mdstypes.h>
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * retTime);
 EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD,

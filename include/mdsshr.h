@@ -66,67 +66,64 @@ extern "C" {
 /// \param out the compressed data.
 /// \return status value. Either 1 for success or LibSTRTRU status code if data is not compressible
 ///
-  EXPORT extern int MdsCompress(struct descriptor const *cimage, struct descriptor const *centry,
-				struct descriptor const *in, struct descriptor_xd *out);
-  EXPORT extern int MdsDecompress(struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr);
-  EXPORT extern int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out);
-  EXPORT extern int MdsCopyDxXdZ(struct descriptor const *in, struct descriptor_xd *out, void **zone,
+
+extern int MdsCompress(const struct descriptor *cimage, const struct descriptor *centry,
+		       const struct descriptor *in, struct descriptor_xd *out);
+extern int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descriptor *dsc2_ptr);
+extern int MdsDecompress(const struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr);
+extern int MdsCopyDxXd(const struct descriptor *in, struct descriptor_xd *out);
+extern int MdsCopyDxXdZ(const struct descriptor *in, struct descriptor_xd *out, void **zone,
 				 int (*fixup_nid) (), void *fixup_nid_arg, int (*fixup_path) (),
 				 void *fixup_path_arg);
-  EXPORT extern char *MdsDescrToCstring(struct descriptor const *string_dsc);
-  EXPORT extern int MDSfprintf(FILE * fp, char const *fmt, ...);
-  EXPORT extern void MdsFree(void *);
-  EXPORT extern int MdsGet1Dx(unsigned int const *len, unsigned char const *dtype, struct descriptor_xd *dsc,
+extern char *MdsDescrToCstring(const struct descriptor *string_dsc);
+extern int MDSfprintf(FILE * fp, char const *fmt, ...);
+extern void MdsFree(void *);
+extern int MdsGet1Dx(const unsigned int *len, const unsigned char *dtype, struct descriptor_xd *dsc,
 			      void **zone);
-  EXPORT extern int MdsGet1DxA(struct descriptor_a const *in, unsigned short const *len, unsigned char const *dtype,
+extern int MdsGet1DxA(const struct descriptor_a *in, const unsigned short *len, const unsigned char *dtype,
 			       struct descriptor_xd *out);
-  EXPORT extern int MdsGet1DxS(unsigned short const *len, unsigned char const *dtype,
+extern int MdsGet1DxS(const unsigned short *len, const unsigned char *dtype,
 			       struct descriptor_xd *out);
-  EXPORT extern int MdsGetCurrentShotId(char const *experiment);
-  EXPORT extern char *MdsGetMsg(int sts);
-  EXPORT extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
-  EXPORT extern int MdsMsg(int sts, char const *fmt, ...);
-  EXPORT extern void MdsPk(char *nbits, int *nitems, int pack[], int items[], int *bit);
-  EXPORT extern int MDSQueueEvent(char const *event, int *eventid);
-  EXPORT extern int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data);
-  EXPORT extern int MdsSetCurrentShotId(char const *experiment, int shot);
-  EXPORT extern int MdsSerializeDscIn(char const *in, struct descriptor_xd *out);
-  EXPORT extern int MdsSerializeDscOutZ(struct descriptor const *in, struct descriptor_xd *out,
+extern char *MdsGetMsg(int sts);
+extern void MdsGetMsgDsc(int status, struct descriptor *out);
+extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
+extern int MdsMsg(int sts, const char *fmt, ...);
+extern int MDSQueueEvent(const char *event, int *eventid);
+extern int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data);
+extern int MdsSerializeDscIn(const char *in, struct descriptor_xd *out);
+extern int MdsSerializeDscOutZ(const struct descriptor *in, struct descriptor_xd *out,
 					int (*fixupNid) (), void *fixupNidArg, int (*fixupPath) (),
 					void *fixupPathArg, int compress, int *compressible,
 					unsigned int *length, unsigned int *reclen,
 					unsigned char *dtype, unsigned char *classType,
 					int altbuflen, void *altbuf, int *data_in_altbuf);
-  EXPORT extern int MdsSerializeDscOut(struct descriptor const *in, struct descriptor_xd *out);
-  EXPORT extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit);
-  EXPORT extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descriptor_a *items,
-			     int *bit);
-  EXPORT extern int MDSEvent(char const *eventName, int num_bytes, char *data);
-  EXPORT extern int MDSEventAst(char const *eventName, void (*astadr) (void *, int, char *),
+extern int MdsSerializeDscOut(const struct descriptor *in, struct descriptor_xd *out);
+extern int MDSSetEventTimeout(int seconds);
+extern int MDSEvent(const char *eventName, int num_bytes, char *data);
+extern int MDSEventAst(const char *eventName, void (*astadr) (void *, int, char *),
 				void *astprm, int *eventid);
-  EXPORT extern int MDSEventCan(int eventid);
-  EXPORT extern int MDSUdpEvent(char const *eventName, int bufLen, char const *buf);
-  EXPORT extern int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *),
-				   void *astprm, int *eventid);
-  EXPORT extern int MDSUdpEventCan(int id);
-  EXPORT extern int MDSWfevent(char const *evname, int buflen, char *data, int *datlen);
-  EXPORT extern int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout);
-  EXPORT extern char *MdsDtypeString(int id);
-  EXPORT extern char *MdsClassString(int id);
-  EXPORT extern int MDSprintf(char const *fmt, ...);
-  EXPORT extern char *MdsUsageString(int id);
-  EXPORT extern char *TranslateLogical(char const *name);
-  EXPORT extern void TranslateLogicalFree(char *value);
-  EXPORT extern int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out);
-  EXPORT extern const char *MdsRelease();
-  EXPORT extern void MdsFloatToTime(double floatTime, uint64_t * outTime);
-  EXPORT extern void MdsFloatToDelta(double floatTime, uint64_t * outTime);
-  EXPORT extern void MdsTimeToFloat(uint64_t inTime, float *outFloat);
-  EXPORT extern void MdsTimeToDouble(uint64_t inTime, double *outFloat);
-  EXPORT extern int MdsPutEnv(char const *cmd);
-  EXPORT extern void MdsGlobalLock();
-  EXPORT extern void MdsGlobalUnlock();
-  EXPORT extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
+extern int MDSEventCan(int eventid);
+extern int MDSWfevent(const char *evname, int buflen, char *data, int *datlen);
+extern int MDSWfeventTimed(const char *evname, int buflen, char *data, int *datlen, int timeout);
+extern char *MdsDtypeString(const unsigned char id);
+extern char *MdsClassString(const unsigned char id);
+extern int MDSprintf(const char *fmt, ...);
+extern char *MdsUsageString(const unsigned char id);
+extern char *TranslateLogical(const char *name);
+extern void TranslateLogicalFree(char *value);
+extern int TranslateLogicalXd(const struct descriptor *in, struct descriptor_xd *out);
+extern const char *MdsRelease();
+extern struct descriptor *MdsReleaseDsc();
+extern void MdsFloatToTime(const double floatTime, uint64_t * outTime);
+extern void MdsFloatToDelta(const double floatTime, uint64_t * outTime);
+extern void MdsTimeToFloat(const uint64_t inTime, float *outFloat);
+extern void MdsTimeToDouble(const uint64_t inTime, double *outFloat);
+extern int MdsPutEnv(const char *cmd);
+extern void MdsGlobalLock();
+extern void MdsGlobalUnlock();
+extern int MdsXpand(int *nitems_ptr, struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr,
+                     int *bit_ptr);
+
 
 
 #ifdef __cplusplus

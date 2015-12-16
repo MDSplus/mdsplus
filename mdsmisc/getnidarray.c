@@ -36,7 +36,7 @@ int GetNidArray(struct dsc$descriptor *list, int **nids, int *num_nids)
 
 extern unsigned short OpcVector;
 
-int GetNidArray(struct descriptor *list, int **nids, int *num_nids)
+EXPORT int GetNidArray(struct descriptor *list, int **nids, int *num_nids)
 {
 
   struct descriptor *ptr;

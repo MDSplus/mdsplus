@@ -16,17 +16,9 @@
 #include <Xmds/XmdsNidOptionMenu.h>
 #include "devroutines.h"
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
 
-extern int CamXandQ();
-extern int CamQ();
-extern int CamGetStat();
-extern int TdiXtoI();
-extern int TdiNint();
-extern int TdiLong();
-extern int TdiText();
+
+
 extern int DevWait(float);
 static int one = 1;
 static int zero = 0;
@@ -42,7 +34,7 @@ static Boolean apply_proc(Widget w);
 static void pts_activate_proc(Widget w);
 static void pts_dismiss_proc(Widget w);
 
-int l8210___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8210___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 {
   int status;
   pio(9, 0, 0);
@@ -57,7 +49,7 @@ static int ReadChannel(InStoreStruct * setup, int *max_samps_ptr, int chan, int 
 static int DevXToI(float start_time, float end_time, struct descriptor_dimension *dimension,
 		   int min_idx, int max_idx, int *start_idx, int *end_idx);
 
-int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 {
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
@@ -275,11 +267,11 @@ static int DevXToI(float start_time,
 	{ sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_A, 0, 0, 0, {0, 0, 0, 0, 0}, 1, 0 };
     time_array_dsc.pointer = (char *)times;
     time_array_dsc.arsize = num_times * sizeof(float);
-    status = TdiXtoI(dimension, &time_array_dsc, &idxs_xd MDS_END_ARG);
+    status = TdiXtoI((struct descriptor *)dimension, &time_array_dsc, &idxs_xd MDS_END_ARG);
     if (status & 1) {
-      status = TdiNint(&idxs_xd, &idxs_xd MDS_END_ARG);
+      status = TdiNint((struct descriptor *)&idxs_xd, &idxs_xd MDS_END_ARG);
       if (status & 1) {
-	status = TdiLong(&idxs_xd, &idxs_xd MDS_END_ARG);
+	status = TdiLong((struct descriptor *)&idxs_xd, &idxs_xd MDS_END_ARG);
 	if (status & 1) {
 	  struct descriptor_a *a_ptr = (struct descriptor_a *)idxs_xd.pointer;
 	  int *i_ptr = (int *)a_ptr->pointer;
@@ -324,7 +316,7 @@ static int DevXToI(float start_time,
 
  Executable:                                                                  */
 
-int l8210__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8210__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   Widget dbox;
   static String uids[] = { "L8210.uid", "L8210_HEADERS.uid" };
@@ -377,7 +369,7 @@ static void pts_activate_proc(Widget w)
   struct descriptor_xd *header_xd = XmdsNidOptionMenuGetXd(header_w);
   static char header[7];
   static struct descriptor header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
-  int status = TdiText(header_xd, &header_dsc MDS_END_ARG);
+  int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
   int i;
   XmScaleGetValue(mems_w, &mems);
   L8210HeaderToPTS(header, (char *)&mems, pts);

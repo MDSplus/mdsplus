@@ -807,6 +807,8 @@ LINKWHOLE
 EGREP
 GREP
 CPP
+HAVE_VISIBILITY
+CFLAG_VISIBILITY
 WINDRES
 SED
 RANLIB
@@ -5462,6 +5464,68 @@ else
 fi
 
 
+# Always do the visibility check but don't set AM_CFLAGS on Windows.
+# This way things get set properly even on Windows.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: before VISIBILITY" >&5
+$as_echo "before VISIBILITY" >&6; }
+
+
+
+  CFLAG_VISIBILITY=
+  HAVE_VISIBILITY=0
+  if test -n "$GCC"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for simple visibility declarations" >&5
+$as_echo_n "checking for simple visibility declarations... " >&6; }
+    if ${gl_cv_cc_visibility+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      gl_save_CFLAGS="$CFLAGS"
+      CFLAGS="$CFLAGS -fvisibility=hidden"
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+extern __attribute__((__visibility__("hidden"))) int hiddenvar;
+         extern __attribute__((__visibility__("default"))) int exportedvar;
+         extern __attribute__((__visibility__("hidden"))) int hiddenfunc (void);
+         extern __attribute__((__visibility__("default"))) int exportedfunc (void);
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_cc_visibility=yes
+else
+  gl_cv_cc_visibility=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+      CFLAGS="$gl_save_CFLAGS"
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_cc_visibility" >&5
+$as_echo "$gl_cv_cc_visibility" >&6; }
+    if test $gl_cv_cc_visibility = yes; then
+      CFLAG_VISIBILITY="-fvisibility=hidden"
+      HAVE_VISIBILITY=1
+    fi
+  fi
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_VISIBILITY $HAVE_VISIBILITY
+_ACEOF
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: **********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&5
+$as_echo "**********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&6; }
+#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
+#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
+#fi
+
 #FIXME: Remove this when Makefile.inc goes away
 case "$MKDIR_P" in #(
   *install-sh*) :
@@ -5480,7 +5544,6 @@ case "$host" in #(
 esac
 
 #AC_CONFIG_HEADER(include/config.h)
-
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'

@@ -157,7 +157,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
   return status;
 }
 
-int TreeSetNciItm(int nid, int code, int value)
+EXPORT int TreeSetNciItm(int nid, int code, int value)
 {
   NCI_ITM itm[] = { {0, 0, 0, 0}, {0, 0, 0, 0} };
   itm[0].buffer_length = (short)sizeof(int);

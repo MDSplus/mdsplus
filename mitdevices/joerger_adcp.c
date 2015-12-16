@@ -8,20 +8,20 @@
 #include "joerger_adcp_gen.h"
 #include "devroutines.h"
 
-extern int TdiCompile();
+
 extern int DevWait(float);
 static int one = 1;
 #define return_on_error(f) if (!((status = f) & 1)) return status;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0))
 
-int joerger_adcp___init(struct descriptor *nid_dsc, InInitStruct * setup)
+EXPORT int joerger_adcp___init(struct descriptor *nid_dsc, InInitStruct * setup)
 {
   int status;
   pio(24, 0, 0)
       return status;
 }
 
-int joerger_adcp___store(struct descriptor *nid_dsc, InStoreStruct * setup)
+EXPORT int joerger_adcp___store(struct descriptor *nid_dsc, InStoreStruct * setup)
 {
   int status;
   int chan;
@@ -50,7 +50,7 @@ int joerger_adcp___store(struct descriptor *nid_dsc, InStoreStruct * setup)
     pio(0, chan, &buffer[chan]);
   pio(1, 15, (short *)&operating_mode);
   coef = coefs[operating_mode.coef];
-  return_on_error(TdiCompile(&output_expr, &buffer_dsc, &coef_dsc, &output_xd MDS_END_ARG));
+  return_on_error(TdiCompile((struct descriptor *)&output_expr, &buffer_dsc, &coef_dsc, &output_xd MDS_END_ARG));
   status = TreePutRecord(c_nids[JOERGER_ADCP_N_INPUTS], (struct descriptor *)&output_xd, 0);
   return status;
 }

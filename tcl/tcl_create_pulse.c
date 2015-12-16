@@ -269,7 +269,7 @@ static int DistributedCreate(int shot, int *nids, int num, char **error, char **
 	/**************************************************************
 	 * TclCreatePulse:
 	 **************************************************************/
-int TclCreatePulse(void *ctx, char **error, char **output)
+EXPORT int TclCreatePulse(void *ctx, char **error, char **output)
 {
   int shot;
   char *asciiShot = 0;
