@@ -427,8 +427,6 @@ m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([DK_DOCKER_TARGETS])])
 
 
 
-
-
 AC_DEFUN([DK_WRITE_DSHELLFILE],[
 AS_VAR_READ([DK_DSHELLFILE],m4_escape([
 #!/bin/sh
@@ -449,6 +447,7 @@ user_home=${user_home}
 
 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
+[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
  sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
