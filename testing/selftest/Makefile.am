@@ -1,4 +1,3 @@
-
 include @top_builddir@/Makefile.inc
 include ../../testing/testing.am
 
@@ -61,7 +60,6 @@ MOSTLYCLEANFILES = \
 libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
-# .ONESHELL:
 print:
 	@
 	echo "--------------------------------------------------------------";
@@ -79,9 +77,9 @@ wineconsole:
 
 
 all-local: $(TESTS) libMdsTestDummy.so
-clean-local: clean-local-tests                    
+
+clean-local: clean-local-tests
 
 check_PROGRAMS = $(C_TESTS)
 check_SCRIPTS  = $(PY_TESTS) $(PL_TESTS)
-
 

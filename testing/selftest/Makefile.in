@@ -1427,7 +1427,6 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
-
 include @top_builddir@/Makefile.inc
 TEST_FORMAT    ?= tap
 
@@ -1513,11 +1512,11 @@ $(TEST_SUITE_XML):
 .PHONY: clean-local-tests
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
 
 libMdsTestDummy.so: mdstestdummy.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
-# .ONESHELL:
 print:
 	@
 	echo "--------------------------------------------------------------";
@@ -1534,7 +1533,8 @@ wineconsole:
 	$(shell ${TESTS_ENVIRONMENT} wineconsole )
 
 all-local: $(TESTS) libMdsTestDummy.so
-clean-local: clean-local-tests                    
+
+clean-local: clean-local-tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1095,6 +1095,7 @@ $(TEST_SUITE_XML):
 .PHONY: clean-local-tests
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
 
 clean-local: clean-local-tests
 

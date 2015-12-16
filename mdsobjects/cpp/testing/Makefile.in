@@ -105,8 +105,7 @@ TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
 	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
 	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
-	MdsExpressionCompileTest$(EXEEXT) \
-	MdsCompoundRefCountTest$(EXEEXT)
+	MdsExpressionCompileTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -141,8 +140,7 @@ am__EXEEXT_1 = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsTreeSuppression$(EXEEXT) MdsTreeTest$(EXEEXT) \
 	MdsTreeNodeTest$(EXEEXT) MdsEventSuppression$(EXEEXT) \
 	MdsEventTest$(EXEEXT) MdsConnectionTest$(EXEEXT) \
-	MdsExpressionCompileTest$(EXEEXT) \
-	MdsCompoundRefCountTest$(EXEEXT)
+	MdsExpressionCompileTest$(EXEEXT)
 MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
@@ -159,11 +157,6 @@ MdsCallTest_OBJECTS = MdsCallTest.$(OBJEXT)
 MdsCallTest_LDADD = $(LDADD)
 MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
-MdsCompoundRefCountTest_SOURCES = MdsCompoundRefCountTest.cpp
-MdsCompoundRefCountTest_OBJECTS = MdsCompoundRefCountTest.$(OBJEXT)
-MdsCompoundRefCountTest_LDADD = $(LDADD)
-MdsCompoundRefCountTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) testutils/libMdsTestUtils.a
 MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
 MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
 MdsCompoundTest_LDADD = $(LDADD)
@@ -302,23 +295,21 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
-	MdsCompoundRefCountTest.cpp MdsCompoundTest.cpp \
-	MdsConglomTest.cpp MdsConnectionTest.cpp MdsDataTest.cpp \
-	MdsDimensionTest.cpp MdsEventSuppression.cpp MdsEventTest.cpp \
-	MdsExceptionTest.cpp MdsExpressionCompileTest.cpp \
-	MdsFunctionTest.cpp MdsRangeTest.cpp \
-	MdsScalarTest_NumericConversion.cpp \
+	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
+	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
+	MdsEventTest.cpp MdsExceptionTest.cpp \
+	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
+	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
 	MdsTreeSuppression.cpp MdsTreeTest.cpp MdsWindowTest.cpp \
 	buildtest.cpp
 DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
-	MdsCompoundRefCountTest.cpp MdsCompoundTest.cpp \
-	MdsConglomTest.cpp MdsConnectionTest.cpp MdsDataTest.cpp \
-	MdsDimensionTest.cpp MdsEventSuppression.cpp MdsEventTest.cpp \
-	MdsExceptionTest.cpp MdsExpressionCompileTest.cpp \
-	MdsFunctionTest.cpp MdsRangeTest.cpp \
-	MdsScalarTest_NumericConversion.cpp \
+	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
+	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
+	MdsEventTest.cpp MdsExceptionTest.cpp \
+	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
+	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
 	MdsTreeSuppression.cpp MdsTreeTest.cpp MdsWindowTest.cpp \
@@ -906,22 +897,6 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 # may rise false positives in valgrind memory check so they may be usefull to
 # generate suppressions codes.
 #
-
-#if USE_VALGRIND
-#LOG_COMPILER = valgrind
-#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-#               --suppressions=valgrind-stdlib.supp      \
-#               --suppressions=valgrind-dlerr.supp       \
-#               --suppressions=valgrind-connection.supp  \
-#               --suppressions=valgrind-treenode.supp    \
-#               --dsymutil=yes --leak-check=yes
-#endif
-
-#VALGRIND_FLAGS = \
-#               --suppressions=${srcdir}/valgrind-stdlib.supp      \
-#               --suppressions=${srcdir}/valgrind-dlerr.supp       \
-#               --suppressions=${srcdir}/valgrind-connection.supp  \
-#               --suppressions=${srcdir}/valgrind-treenode.supp 
 VALGRIND_SUPPRESSIONS_FILES = \
                               $(srcdir)/valgrind-stdlib.supp      \
                               $(srcdir)/valgrind-dlerr.supp       \
@@ -932,7 +907,17 @@ VALGRIND_SUPPRESSIONS_FILES = \
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = \
+MOSTLYCLEANFILES = *.out \
+                   testing.hosts \
+                   test_node_001.characteristics \
+                   test_node_001.datafile \
+                   test_node_001.tree \
+                   test_node_002.characteristics \
+                   test_node_002.datafile \
+                   test_node_002.tree \
+                   test_node_model.characteristics \
+                   test_node_model.datafile \
+                   test_node_model.tree \
                    test_tree_001.characteristics \
                    test_tree_001.datafile \
                    test_tree_001.tree \
@@ -947,8 +932,7 @@ MOSTLYCLEANFILES = \
                    test_tree_model.tree \
                    leaktest_model.characteristics \
                    leaktest_model.datafile \
-                   leaktest_model.tree \
-                   *.out
+                   leaktest_model.tree
 
 check_SCRIPTS = 
 all: all-recursive
@@ -1000,10 +984,6 @@ MdsApdTest$(EXEEXT): $(MdsApdTest_OBJECTS) $(MdsApdTest_DEPENDENCIES) $(EXTRA_Md
 MdsCallTest$(EXEEXT): $(MdsCallTest_OBJECTS) $(MdsCallTest_DEPENDENCIES) $(EXTRA_MdsCallTest_DEPENDENCIES) 
 	@rm -f MdsCallTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsCallTest_OBJECTS) $(MdsCallTest_LDADD) $(LIBS)
-
-MdsCompoundRefCountTest$(EXEEXT): $(MdsCompoundRefCountTest_OBJECTS) $(MdsCompoundRefCountTest_DEPENDENCIES) $(EXTRA_MdsCompoundRefCountTest_DEPENDENCIES) 
-	@rm -f MdsCompoundRefCountTest$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsCompoundRefCountTest_OBJECTS) $(MdsCompoundRefCountTest_LDADD) $(LIBS)
 
 MdsCompoundTest$(EXEEXT): $(MdsCompoundTest_OBJECTS) $(MdsCompoundTest_DEPENDENCIES) $(EXTRA_MdsCompoundTest_DEPENDENCIES) 
 	@rm -f MdsCompoundTest$(EXEEXT)
@@ -1098,7 +1078,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsActionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsApdTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCallTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCompoundRefCountTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCompoundTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConglomTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConnectionTest.Po@am__quote@
@@ -1545,13 +1524,6 @@ MdsExpressionCompileTest.log: MdsExpressionCompileTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsCompoundRefCountTest.log: MdsCompoundRefCountTest$(EXEEXT)
-	@p='MdsCompoundRefCountTest$(EXEEXT)'; \
-	b='MdsCompoundRefCountTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1836,8 +1808,10 @@ $(TEST_SUITE_XML):
 .PHONY: clean-local-tests
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
 
 all-local: $(TESTS)
+
 clean-local: clean-local-tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

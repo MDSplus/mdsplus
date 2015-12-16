@@ -44,8 +44,7 @@ TESTS = \
         MdsEventSuppression \
         MdsEventTest \
         MdsConnectionTest \
-        MdsExpressionCompileTest \
-        MdsCompoundRefCountTest
+        MdsExpressionCompileTest        
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
@@ -63,22 +62,6 @@ LDADD += testutils/libMdsTestUtils.a
 # generate suppressions codes.
 #
 
-#if USE_VALGRIND
-#LOG_COMPILER = valgrind
-#AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-#               --suppressions=valgrind-stdlib.supp      \
-#               --suppressions=valgrind-dlerr.supp       \
-#               --suppressions=valgrind-connection.supp  \
-#               --suppressions=valgrind-treenode.supp    \
-#               --dsymutil=yes --leak-check=yes
-#endif
-
-#VALGRIND_FLAGS = \
-#               --suppressions=${srcdir}/valgrind-stdlib.supp      \
-#               --suppressions=${srcdir}/valgrind-dlerr.supp       \
-#               --suppressions=${srcdir}/valgrind-connection.supp  \
-#               --suppressions=${srcdir}/valgrind-treenode.supp 
-
 VALGRIND_SUPPRESSIONS_FILES = \
                               $(srcdir)/valgrind-stdlib.supp      \
                               $(srcdir)/valgrind-dlerr.supp       \
@@ -90,8 +73,17 @@ VALGRIND_SUPPRESSIONS_FILES = \
 #
 # Files produced by tests that must be purged
 #
-
-MOSTLYCLEANFILES = \
+MOSTLYCLEANFILES = *.out \
+                   testing.hosts \
+                   test_node_001.characteristics \
+                   test_node_001.datafile \
+                   test_node_001.tree \
+                   test_node_002.characteristics \
+                   test_node_002.datafile \
+                   test_node_002.tree \
+                   test_node_model.characteristics \
+                   test_node_model.datafile \
+                   test_node_model.tree \
                    test_tree_001.characteristics \
                    test_tree_001.datafile \
                    test_tree_001.tree \
@@ -106,9 +98,7 @@ MOSTLYCLEANFILES = \
                    test_tree_model.tree \
                    leaktest_model.characteristics \
                    leaktest_model.datafile \
-                   leaktest_model.tree \
-                   *.out
-
+                   leaktest_model.tree
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
@@ -116,6 +106,7 @@ MOSTLYCLEANFILES = \
 
 
 all-local: $(TESTS)
+
 clean-local: clean-local-tests
 
 check_PROGRAMS = $(TESTS)
