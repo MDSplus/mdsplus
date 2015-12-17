@@ -117,9 +117,7 @@ def TreeGetRecord(n,*altvalue):
     value=descriptor_xd()
     status=__TreeGetRecord(n.tree.ctx,n.nid,_C.pointer(value))
     if (status & 1):
-        descriptor.tree=n.tree
         ans = value.value
-        descriptor.tree=None
         return ans
     elif len(altvalue)==1 and status == _Exceptions.treeshrExceptions.TreeNODATA.status:
         return altvalue[0]

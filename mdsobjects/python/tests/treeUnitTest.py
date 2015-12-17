@@ -7,6 +7,9 @@ from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
 import random
+import gc as _gc
+import time
+from tree import _openTrees
 
 class treeTests(TestCase):
 
@@ -213,10 +216,9 @@ class treeTests(TestCase):
     def finish(self):
         del(self.pytree)
         del(self.pytree2)
+        _gc.collect()
 
     def runTest(self):
-#        from time import sleep
-#        sleep(20)
         self.editTrees()
         self.openTrees()
         self.getNode()

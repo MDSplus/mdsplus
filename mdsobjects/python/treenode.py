@@ -200,6 +200,7 @@ class TreeNode(_data.Data):
             if treeref:
                 self.tree=_tree.TreeRef()
             else:
+                #raise Exception("treenode without tree")
                 self.tree=_tree.Tree()
         else:
             self.tree=tree.copy()
@@ -1163,7 +1164,7 @@ class TreePath(TreeNode):
     def __init__(self,path,tree=None):
         self.tree_path=_data.makeData(str(path));
         if tree is None:
-            self.tree=_tree.Tree()
+            self.tree=_tree.TreeRef()
         else:
             self.tree=tree.copy()
         return
@@ -1180,7 +1181,7 @@ class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):
         self.nids=_array.Int32Array(nids)
         if tree is None:
-            self.tree=_tree.Tree()
+            self.tree=_tree.TreeRef()
         else:
             self.tree=tree.copy()
 
@@ -1191,7 +1192,7 @@ class TreeNodeArray(_data.Data):
         @return: node
         @rtype: TreeNode
         """
-        return TreeNode(self.nids[n],self.tree)
+        return TreeNode(self.nids[n],self.tree.copy())
 
     def restoreContext(self):
         self.tree.restoreContext()

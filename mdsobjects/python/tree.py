@@ -9,6 +9,7 @@ import traceback as _traceback
 import ctypes as _C
 import numpy as _N
 import copy as _copy
+import sys as _sys
 
 _mdsshr=_mimport('_mdsshr')
 _treeshr=_mimport('_treeshr')
@@ -41,22 +42,23 @@ def _getThreadName(thread=None):
         threadName = 'main'
     return threadName
 
-def _addOpenTree(ctx,thread=None):
-    if isinstance(ctx,Tree):
-        ctx = ctx.ctx
-    if isinstance(ctx,_C.c_void_p):
-        ctx = ctx.value
+def _addOpenTree(tree,thread=None):
+    if tree.ctx == 0:
+        return
+    ctx = tree.ctx.value
     if ctx == 0:
         return
     if ctx in _openTrees:
-        _openTrees[ctx]['refcount']+=1
+        _openTrees[ctx]['references'].append(tree._id)
     else:
-        _openTrees[ctx]={'thread':_getThreadName(thread),'refcount':1}
+        _openTrees[ctx]={'thread':_getThreadName(thread),'references':[tree._id]}
 
-def _removeOpenTree(ctx):
+def _removeOpenTree(tree):
+    ctx = tree.ctx.value
     if ctx in _openTrees:
-        _openTrees[ctx]['refcount']-=1
-        if _openTrees[ctx]['refcount']<1:
+        if tree._id in _openTrees[ctx]['references']:
+            _openTrees[ctx]['references'].remove(tree._id)
+        if len(_openTrees[ctx]['references'])==0:
             threadName=_openTrees[ctx]['thread']
             if threadName in _activeTree and _activeTree[threadName]==ctx:
                 _setActiveTree(0,threadName)
@@ -83,8 +85,8 @@ class _treeDeleter(_threading.Thread):
     def run(self):
       _hard_lock.acquire()
       try:
-          if hasattr(self,'ctx') and isinstance(self.ctx,_C.c_void_p):
-              _removeOpenTree(self.ctx.value)
+          if hasattr(self,'tree'):
+              _removeOpenTree(self.tree)
       finally:
           _hard_lock.release()
 
@@ -93,6 +95,7 @@ class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
+    _id=0
 
 	# support for the with-structure
     def __enter__(self):
@@ -109,7 +112,7 @@ class Tree(object):
       """
       if hasattr(self,'ctx'):
           t=_treeDeleter()
-          t.ctx=self.ctx
+          t.tree=self
           t.start()
 
     def __getattr__(self,name):
@@ -173,6 +176,7 @@ class Tree(object):
         @type mode: str
         """
         _hard_lock.acquire()
+        self._id=Tree._id=Tree._id+1
         try:
             if tree is None:
                 try:
@@ -196,7 +200,7 @@ class Tree(object):
                 else:
                     raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
-                _addOpenTree(self.ctx.value)
+                _addOpenTree(self)
                 _setActiveTree(self.ctx.value)
                 _treeshr.TreeRestoreContext(self.ctx)
         finally:
@@ -208,10 +212,12 @@ class Tree(object):
     def copy(self):
         _hard_lock.acquire()
         try:
-            _addOpenTree(self)
+            ans = _copy.copy(self)
+            ans._id=Tree._id=Tree._id+1
+            _addOpenTree(ans)
         finally:
             _hard_lock.release()
-        return _copy.copy(self)
+        return ans
 
     def __setattr__(self,name,value):
         """
@@ -654,6 +660,8 @@ class TreeRef(Tree):
         pass
     def __del__(self):
         pass
+    def copy(self):
+        return self
     def _getCtx(self):
         return _treeshr.TreeGetContext()
     ctx=property(_getCtx)
