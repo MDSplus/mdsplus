@@ -18,8 +18,14 @@
 typedef void* PyObject,PyThreadState;
 typedef ssize_t Py_ssize_t;
 
+static void (*Py_Initialize)() = 0;
+static int  (*PyEval_ThreadsInitialized)() = 0;
+static void (*PyEval_InitThreads)() = 0;
 static PyThreadState *(*PyGILState_Ensure)() = 0;
 static void (*PyGILState_Release)() = 0;
+static PyThreadState *(*PyEval_SaveThread)() = 0;
+static void (*PyEval_RestoreThread)() = 0;
+
 static void (*Py_DecRef)() = 0;
 static PyObject *(*PyTuple_New) () = 0;
 static PyObject *(*PyString_FromString) () = 0;
@@ -81,14 +87,9 @@ static PyObject *pyObjFromString(char *str) {
 static int Initialize()
 {
   if (PyTuple_New == NULL) {
-    void *(*Py_Initialize) () = 0;
-    void *(*PyEval_InitThreads)() = 0;
-    void *(*PyEval_SaveThread)() = 0;
     void *handle;
     char *lib;
     char *envsym = getenv("PyLib");
-
-
     if (!envsym) {
       fprintf(stderr,
 	      "\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\n",
@@ -121,15 +122,14 @@ static int Initialize()
 	return 0;
       }
       free(lib);
-      loadrtn(Py_Initialize, 1);
-      (*Py_Initialize) ();
-      loadrtn(PyEval_InitThreads,1);
-      (*PyEval_InitThreads)();
-      loadrtn(PyEval_SaveThread, 1);
-      (*PyEval_SaveThread)();
+      loadrtn(Py_Initialize,1);
     }
+    loadrtn(PyEval_ThreadsInitialized, 1);
+    loadrtn(PyEval_InitThreads,1);
     loadrtn(PyGILState_Ensure,1);
     loadrtn(PyGILState_Release,1);
+    loadrtn(PyEval_SaveThread,1);
+    loadrtn(PyEval_RestoreThread,1);
     loadrtn(Py_DecRef, 1);
     loadrtn(PyTuple_New, 1);
     loadrtn(PyString_FromString, 0);
@@ -162,6 +162,9 @@ static int Initialize()
     loadrtn(PyList_GetItem, 1);
     loadrtn(PyObject_Str,1);
   }
+  (*Py_Initialize)();
+  if (!(*PyEval_ThreadsInitialized)())
+    (*PyEval_InitThreads)();
   return 1;
 }
 
@@ -335,16 +338,18 @@ int TdiExtPython(struct descriptor *modname_d,
     if (Initialize()) {
       PyObject *ans;
       PyObject *pyargs;
-      PyThreadState *gil = (*PyGILState_Ensure)();
       PyObject *pyFunction;
       PyObject *pyArgs;
+      PyThreadState *GIL = (*PyGILState_Ensure)();
       addToPath(dirspec);
       free(dirspec);
       pyFunction = getFunction(filename, filename);
       if (pyFunction) {
 	free(filename);
 	pyArgs = argsToTuple(nargs, args);
+        PyThreadState *_save = (*PyEval_SaveThread)();
 	ans = (*PyObject_CallObject)(pyFunction, pyArgs);
+        (*PyEval_RestoreThread)(_save);
 	if (ans == 0) {
 	  printf("Error calling fun in %s\n", filename);
 	  if ((*PyErr_Occurred)()) {
@@ -357,7 +362,7 @@ int TdiExtPython(struct descriptor *modname_d,
 	  status = 1;
 	}
       }
-      (*PyGILState_Release)(gil);
+      (*PyGILState_Release)(GIL);
     }
   }
 #ifndef _WIN32
