@@ -20,7 +20,7 @@ static void (*PyRun_SimpleString) (char *) = 0;
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
   fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
-  PyGILState_Ensure=0;\
+  Py_Initialize=0;\
   return 0;\
 }
 
@@ -73,17 +73,17 @@ EXPORT int PyCall(char *cmd)
     loadrtn(PyRun_SimpleString, 1);
     loadrtn(PyGILState_Release, 1);
   }
-  (*Py_Initialize)();
-  if (!(*PyEval_ThreadsInitialized)())
-      (*PyEval_InitThreads)();
-  GIL = (*PyGILState_Ensure)();
+  Py_Initialize();
+  if (!PyEval_ThreadsInitialized())
+      PyEval_InitThreads();
+  GIL = PyGILState_Ensure();
 #ifndef _WIN32
   old_handler = signal(SIGCHLD, SIG_DFL);
 #endif
-  (*PyRun_SimpleString)(cmd);
+  PyRun_SimpleString(cmd);
 #ifndef _WIN32
   signal(SIGCHLD, old_handler);
 #endif
-  (*PyGILState_Release)(GIL);
+  PyGILState_Release(GIL);
   return 1;
 }
