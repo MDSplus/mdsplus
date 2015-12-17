@@ -529,7 +529,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
     if ((handle == NULL) && (delim == ':')) {
       char *mdir = getenv("MDSPLUS_DIR");
       if (mdir) {
-	char *libdir = alloca(strlen("mdir")+10);
+	char *libdir = alloca(strlen(mdir)+10);
 	sprintf(libdir, "%s/%s", mdir, "lib");
 	handle = loadLib(libdir, filename, errorstr);
       }
