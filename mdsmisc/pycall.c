@@ -6,14 +6,16 @@
 #ifndef _WIN32
 #include <signal.h>
 #endif
-static void *(*PyGILState_Ensure) () = 0;
-static void *(*PyGILState_GetThisThreadState) () = 0;
-static void (*Py_Initialize) () = 0;
-static void (*PyEval_InitThreads) () = 0;
-static void (*PyEval_ReleaseThread) (void *) = 0;
+typedef void* PyThreadState;
+static void (*Py_Initialize)() = 0;
+static int  (*PyEval_ThreadsInitialized)() = 0;
+static void (*PyEval_InitThreads)() = 0;
+static PyThreadState *(*PyGILState_Ensure)() = 0;
+static void (*PyGILState_Release)() = 0;
+static PyThreadState *(*PyEval_SaveThread)() = 0;
+static void (*PyEval_RestoreThread)() = 0;
+
 static void (*PyRun_SimpleString) (char *) = 0;
-static void (*PyGILState_Release) (void *) = 0;
-static void (*PyEval_SaveThread)() = 0;
 
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
@@ -27,8 +29,8 @@ EXPORT int PyCall(char *cmd)
 #ifndef _WIN32
   void (*old_handler) (int);
 #endif
-  void *GIL;
-  if (!PyGILState_Ensure) {
+  PyThreadState *GIL;
+  if (!Py_Initialize) {
     void *handle;
     char *lib;
     char *envsym = getenv("PyLib");
@@ -53,9 +55,9 @@ EXPORT int PyCall(char *cmd)
 #ifndef _WIN32
     handle = dlopen(0, RTLD_NOLOAD);
 #endif
-    loadrtn(PyGILState_Ensure, 0);
+    loadrtn(Py_Initialize, 0);
     /*** If not, load the python library ***/
-    if (!PyGILState_Ensure) {
+    if (!Py_Initialize) {
       handle = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);
       if (!handle) {
 	fprintf(stderr, "\n\nUnable to load python library: %s\nError: %s\n\n", lib, dlerror());
@@ -63,27 +65,25 @@ EXPORT int PyCall(char *cmd)
 	return 0;
       }
       free(lib);
-      loadrtn(PyGILState_Ensure, 1);
+      loadrtn(Py_Initialize, 1);
     }
-    loadrtn(PyGILState_GetThisThreadState, 1);
-    loadrtn(Py_Initialize, 1);
+    loadrtn(PyEval_ThreadsInitialized, 1);
     loadrtn(PyEval_InitThreads, 1);
-    loadrtn(PyEval_SaveThread, 1);
-    loadrtn(PyEval_ReleaseThread, 1);
+    loadrtn(PyGILState_Ensure, 1);
     loadrtn(PyRun_SimpleString, 1);
     loadrtn(PyGILState_Release, 1);
-    (*Py_Initialize) ();
-    (*PyEval_InitThreads) ();
-    (*PyEval_SaveThread) ();
   }
-  GIL = (*PyGILState_Ensure) ();
+  (*Py_Initialize)();
+  if (!(*PyEval_ThreadsInitialized)())
+      (*PyEval_InitThreads)();
+  GIL = (*PyGILState_Ensure)();
 #ifndef _WIN32
   old_handler = signal(SIGCHLD, SIG_DFL);
 #endif
-  (*PyRun_SimpleString) (cmd);
+  (*PyRun_SimpleString)(cmd);
 #ifndef _WIN32
   signal(SIGCHLD, old_handler);
 #endif
-  (*PyGILState_Release) (GIL);
+  (*PyGILState_Release)(GIL);
   return 1;
 }
