@@ -68,6 +68,8 @@
 #include <Xm/PrimitiveP.h>
 #endif
 
+#include <stdio.h>
+
 /* New fields for the Waveform widget class record */
 
 #ifndef XmInheritBorderHighlight	/* Motif 1.1 */
