@@ -30,7 +30,7 @@ static void printImageInfo(void);
 #endif
 
 static bool isOpen = false;
-static double sec_per_tick = 1E-3;
+static double dSecPerTick = 1E-3;
 
 /*
  *  SUPPORT STUFF:
@@ -72,7 +72,7 @@ static void videoirqfunc(int sig)
 /*
  * Open the XCLIB C Library for use.
  */
-int epixOpen(char *confFile, int *xPixels, int *yPixels)
+int epixOpen(char *pcConfFile)
 {
     int status;
     if(isOpen) return 0;
@@ -80,7 +80,7 @@ int epixOpen(char *confFile, int *xPixels, int *yPixels)
     printf("Opening EPIX(R) PIXCI(R) Frame Grabber,\n");
     printf("using configuration parameters '%s',\n", DRIVERPARMS? DRIVERPARMS: "default");
 #endif
-    status = pxd_PIXCIopen(DRIVERPARMS, "", confFile); // confFile includes exposure time which seems to take precedence over later serial commands
+    status = pxd_PIXCIopen(DRIVERPARMS, "", pcConfFile); // ConfFile includes exposure time which seems to take precedence over later serial commands
     if (status >= 0)
     {
 #ifdef DEBUG
@@ -97,14 +97,12 @@ int epixOpen(char *confFile, int *xPixels, int *yPixels)
     printFrameInfo();
     printImageInfo();
 #endif
-    *xPixels = pxd_imageXdim();
-    *yPixels = pxd_imageYdim();
     uint32 ticku[2];
     if(pxd_infoSysTicksUnits(ticku) == 0)
     {
-        sec_per_tick = (double)ticku[0] / (double)ticku[1] * 1E-6;
+        dSecPerTick = (double)ticku[0] / (double)ticku[1] * 1E-6;
 #ifdef DEBUG
-        printf("Microseconds per tick: %f\n", sec_per_tick * 1E6);
+        printf("Microseconds per tick: %f\n", dSecPerTick * 1E6);
 #endif
     }
     return status;
@@ -143,18 +141,17 @@ static void printImageInfo(void)
 /*
  * Capture
  */
-
-void epixStartVideoCapture(int id)
+void epixStartVideoCapture(int iID)
 {
-    pxd_goLivePair(id, 1, 2); // should id be converted to a unitmap?
+    pxd_goLivePair(iID, 1, 2); // should iID be converted to a unitmap?
 #ifdef DEBUG
     printf("Video capture started.\n");
 #endif
 }
 
-void epixStopVideoCapture(int id)
+void epixStopVideoCapture(int iID)
 {
-    pxd_goUnLive(id); // should id be converted to a unitmap?
+    pxd_goUnLive(iID); // should iID be converted to a unitmap?
 #ifdef DEBUG
     printf("Video capture stopped.\n");
 #endif
@@ -165,439 +162,406 @@ void epixStopVideoCapture(int id)
 //Returns 1 on capture and 0 on timeout
 //Return the tick count of the last frame or the passed baseTicks in case of timeout
 
-//frameIdx: frame index (from 0 onwards)
-//bufIdx: index of the last captured frame grabber buffer (-1 the first time)
-//baseTicks: last 32 bits of system time when the last buffer has been taken
-//xPixels, yPixels: number of pixels
+//iID: device iID (1)
 //dataNid: nid number of target data node
 //timeNid: nid number of associated timestamp node. If -1, the time is put directly in the segmented data, else a reference to the timebase is put
-//treePtr: pointer to Tree object
-//listPtr: pointer to Internal List object for saving frames
 //timeoutMs: timeout in milliseconds
-//retBaseTicks, retBufIdx, retFrameIdx: returned values for frameIdx, bufIdx, baseTicks. Changed onlly when frame acquired
-int epixCaptureFrame(int idx, int frameIdx, int bufIdx, int baseTicks, int xPixels, int yPixels, int dataNid, int timeNid, void *treePtr, void *listPtr, int timeoutMs, int *retFrameIdx, int *retBufIdx, int *retBaseTicks, float *retDuration)
+//*treePtr: pointer to Tree object
+//*listPtr: pointer to Internal List object for saving frames
+//*bufIdx: index of the last captured frame grabber buffer        (initialize with -1 !!!)
+//*frameIdx: frame index (from 0 onwards)
+//*baseTicks: last 32 bits of system time when the first frame has been taken
+//*currtime: returns time since reference t=0
+int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime, int iTimeoutMs, void *pTree, void *pList, int *piBufIdx, int *piFrameIdx, int *piBaseTicks, double *pdCurrTime)
 {
-    int unitMap = 1 << (idx - 1);
-    int lastBufIdx, currTicks;
-    int readPixels;
-    float currTime;
+    int iUnitMap = 1 << (iID - 1);
+    int iLastBufIdx, iCurrTicks;
+    int iPixelsRead, iPixelsToRead, iPixelsX, iPixelsY;
     struct timespec waitTime;
     pxbuffer_t  lastbuf = 0;
-    xPixels = pxd_imageXdim();
-    yPixels = pxd_imageYdim();
-    unsigned short *frame;
+    iPixelsX = pxd_imageXdim();
+    iPixelsY = pxd_imageYdim();
+    iPixelsToRead = iPixelsX * iPixelsY;
     waitTime.tv_sec = 0;
     waitTime.tv_nsec = 5000000; //5ms delay
-    if(bufIdx < 0)
-        lastBufIdx = pxd_capturedBuffer(unitMap);  //The first time captureFrame is called
-    else
-        lastBufIdx = bufIdx;
-    int maxCount = timeoutMs/5; //Maximum number of iterations before timing out
-    *retBaseTicks = baseTicks;
-    *retBufIdx = bufIdx;
-    *retFrameIdx = frameIdx;  //Default values in case of timeout
-    for(int i = 0; i < maxCount; i++)
+    if(*piBufIdx < 0)
     {
-        int lastCaptured = pxd_capturedBuffer(unitMap);
-        if(lastCaptured != lastBufIdx) //A new frame arrived
+        iLastBufIdx = pxd_capturedBuffer(iUnitMap);  //The first time captureFrame is called
+        *piFrameIdx = 0;
+    }
+    else
+        iLastBufIdx = *piBufIdx;
+    int iMaxCount = iTimeoutMs/5; //Maximum number of iterations before timing out
+    for(int i = 0; i < iMaxCount; i++)
+    {
+        int iLastCaptured = pxd_capturedBuffer(iUnitMap);
+        if(iLastCaptured != iLastBufIdx) //A new frame arrived
         {
-            currTicks = pxd_capturedSysTicks(unitMap);
-            if(bufIdx == -1) //first frame
-                currTime = 0;
-            else
-                currTime = (currTicks - baseTicks) * sec_per_tick;
-            frame = new unsigned short[xPixels * yPixels];
-            readPixels = pxd_readushort(unitMap, lastCaptured, 0, 0, xPixels, yPixels, frame, xPixels * yPixels, (char *)"Grey");
-            if(readPixels != xPixels * yPixels)
+            iCurrTicks = pxd_capturedSysTicks(iUnitMap);//internal clock
+            if ( *piFrameIdx == 0) //first frame
+                *piBaseTicks = iCurrTicks;
+            *pdCurrTime = (iCurrTicks - (*piBaseTicks)) * dSecPerTick + dTriggerTime;
+            unsigned short *piFrame = new unsigned short[iPixelsToRead];//allocate frame
+            iPixelsRead = pxd_readushort(iUnitMap, iLastCaptured, 0, 0, iPixelsX, iPixelsY, piFrame, iPixelsToRead, (char *)"Grey");//get frame
+#ifdef DEBUG
+            printf("FRAME %d READ AT TIME %f\n", *piFrameIdx, *pdCurrTime);
+#endif
+            if(iPixelsRead != iPixelsToRead)
             {
-                if (readPixels < 0)
-                    printf("pxd_readushort: %s\n", pxd_mesgErrorCode(readPixels));
+                if (iPixelsRead < 0)
+                    printf("pxd_readushort: %s\n", pxd_mesgErrorCode(iPixelsRead));
                 else
-                    printf("pxd_readushort error: %d != %d\n", readPixels, xPixels * yPixels);
+                    printf("pxd_readushort error: %d != %d\n", iPixelsRead, iPixelsToRead);
                 return 0;
             }
-#ifdef DEBUG
-            printf("FRAME %d READ AT TIME %f\n", frameIdx, currTime);
-#endif
-            camSaveFrameDirect(frame, xPixels, yPixels, currTime, 12, treePtr, dataNid, timeNid, frameIdx, listPtr);
-            if(frameIdx == 0)
-                *retBaseTicks = currTicks;
-            *retFrameIdx = frameIdx + 1;
-            *retBufIdx = lastCaptured;
-            *retDuration = (currTicks - *retBaseTicks) * sec_per_tick;
+            camSaveFrameDirect(piFrame, iPixelsX, iPixelsY, *pdCurrTime, 12, pTree, iFramesNid, -1, *piFrameIdx, pList);
+            *piBufIdx = iLastCaptured;
+            *piFrameIdx += 1;
             return 1;
         }
         else //No new frame
-           nanosleep(&waitTime, NULL);
+            nanosleep(&waitTime, NULL);
     }
 //If code arrives here timeout occurred
-return 0;
+    return 0;
 }
 
-int doTransaction(int id, char *outBufIn, int outBytes, char *readBuf, int readBytes)
+int doTransaction(int iID, const char *pcOutBufIn, int iOutBytes, char *pcReadBuf, int iBytesToRead)
 {
-    int r;
-    int unitMap = 1 << (id-1);
+    int iBytesRead;
+    int iUnitMap = 1 << (iID-1);
     struct timespec waitTime;
-    static int initialized = 0;
-    char *outBuf = new char[outBytes+1];
-    outBuf[outBytes] = 0;
-    for(int i = 0; i < outBytes; i++)
+    static bool isInitialized = false;
+    char *pcOutBuf = new char[iOutBytes+1];
+    pcOutBuf[iOutBytes] = 0;
+    for(int i = 0; i < iOutBytes; i++)
     {
-        outBuf[i] = outBufIn[i];
-        outBuf[outBytes] ^= outBuf[i];
+        pcOutBuf[i] = pcOutBufIn[i];
+        pcOutBuf[iOutBytes] ^= pcOutBuf[i];
     }
-
     waitTime.tv_sec = 0;
     waitTime.tv_nsec = 20000000; //20ms
-    if(!initialized)
+    if(!isInitialized)
     {
-        r = pxd_serialConfigure(unitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
-        if (r < 0)
+        iBytesRead = pxd_serialConfigure(iUnitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
+        if (iBytesRead < 0)
         {
             printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
-            return r; // error
+            return iBytesRead; // error
         }
-        initialized = 1;
+        isInitialized = true;
     }
     nanosleep(&waitTime, NULL);
-    r = pxd_serialWrite(unitMap, 0, outBuf, outBytes+1);
-    if (r < 0)
+    iBytesRead = pxd_serialWrite(iUnitMap, 0, pcOutBuf, iOutBytes+1);
+    if (iBytesRead < 0)
     {
         printf("ERROR IN SERIAL WRITE\n");
-        return r; // error
+        return iBytesRead; // error
     }
     nanosleep(&waitTime, NULL);
-    r = pxd_serialRead(unitMap, 0, readBuf, readBytes);
-    if (r < 0)
-    {
+    iBytesRead = pxd_serialRead(iUnitMap, 0, pcReadBuf, iBytesToRead);
+    if (iBytesRead < 0)
         printf("ERROR IN SERIAL READ\n");
-    }
-    if(r != readBytes)
-    printf("ERROR IN SERIAL READ: LESS BYTES READ THAN EXPECTED %d %d\n", r, readBytes);
-    return r;
+    else if(iBytesRead != iBytesToRead)
+        printf("ERROR IN SERIAL READ: LESS BYTES READ THAN EXPECTED %d %d\n", iBytesRead, iBytesToRead);
+    return iBytesRead;
 }
 
-short getCMOSTemp(int id)
+short epixGetCMOSTemp(int iID)
 {
-    int retCount, r;
-    char retBuf[50];
-    short temp = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x7E, 0x50};
+    const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0x72, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF3, 0x7F, 0x50};
+    const char queryBuf6[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
+    const char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
+    const char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x7E, 0x50};
-    char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0x72, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF3, 0x7F, 0x50};
-    char queryBuf6[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
-    char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
-    char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
-
-
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
-    doTransaction(id, queryBuf2, 6, retBuf, 1);
-    doTransaction(id, queryBuf3, 5, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    temp = (retBuf[0] & 0x00FF);
-    doTransaction(id, queryBuf5, 6, retBuf, 1);
-    doTransaction(id, queryBuf6, 6, retBuf, 1);
-    doTransaction(id, queryBuf7, 5, retBuf, 1);
-    doTransaction(id, queryBuf8, 4, retBuf, 2);
-    temp |= (retBuf[0] & 0x00FF) << 8;
-    return temp;
+    short sTemp = 0;
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    sTemp = (cRetBuf[0] & 0x00FF);
+    doTransaction(iID, queryBuf5, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf6, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf7, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf8, 4, cRetBuf, 2);
+    sTemp |= (cRetBuf[0] & 0x00FF) << 8;
+    return sTemp;
 }
 
-short getPCBTemp(int id)
+short epixGetPCBTemp(int iID)
 {
-    int retCount, r;
-    char retBuf[50];
-    short temp = 0;
+   // const char queryBuf[] = {0x4F, 0x56, 0x50};
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0x70, 0x00, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x02, 0x71, 0x00, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
 
-   // char queryBuf[] = {0x4F, 0x56, 0x50};
-
-    char queryBuf1[] = {
-    0x53, 0xE0, 0x02, 0x70, 0x00, 0x50};
-    char queryBuf2[] = {
-    0x53, 0xE1, 0x01, 0x50};
-    char queryBuf3[] = {
-    0x53, 0xE0, 0x02, 0x71, 0x00, 0x50};
-    char queryBuf4[] = {
-    0x53, 0xE1, 0x01, 0x50};
-
-    //doTransaction(id, queryBuf, 3, retBuf, 2);
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
-    doTransaction(id, queryBuf2, 4, retBuf, 2);
-    temp = (retBuf[0] & 0x3) << 8;
-    doTransaction(id, queryBuf3, 6, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    temp |= (retBuf[0] & 0x00FF);
-    return temp;
+    short sTemp = 0;
+    char cRetBuf[2];
+    //doTransaction(iID, queryBuf, 3, cRetBuf, 2);
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 2);
+    sTemp = (cRetBuf[0] & 0x3) << 8;
+    doTransaction(iID, queryBuf3, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    sTemp |= (cRetBuf[0] & 0x00FF);
+    return sTemp;
 }
 
-static float getFrameRate(int id)
+static double getFrameRate(int iID)
 {
-    char retBuf[50];
-    int frameRate = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDD, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDE, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf5[] = {0x53, 0xE0, 0x01, 0xDF, 0x50};
+    const char queryBuf6[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf7[] = {0x53, 0xE0, 0x01, 0xE0, 0x50};
+    const char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDD, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDE, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf5[] = {0x53, 0xE0, 0x01, 0xDF, 0x50};
-    char queryBuf6[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf7[] = {0x53, 0xE0, 0x01, 0xE0, 0x50};
-    char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
-
-    doTransaction(id, queryBuf1, 5, retBuf, 2);
-    doTransaction(id, queryBuf2, 4, retBuf, 3);
-    frameRate |= ((retBuf[0] & 0x000000FF) << 24);
-    doTransaction(id, queryBuf3, 5, retBuf, 2);
-    doTransaction(id, queryBuf4, 4, retBuf, 3);
-    frameRate |= ((retBuf[0] & 0x000000FF) << 16);
-    doTransaction(id, queryBuf5, 5, retBuf, 2);
-    doTransaction(id, queryBuf6, 4, retBuf, 3);
-    frameRate |= ((retBuf[0] & 0x000000FF) << 8);
-    doTransaction(id, queryBuf7, 5, retBuf, 2);
-    doTransaction(id, queryBuf8, 4, retBuf, 3);
-    frameRate |= (retBuf[0] & 0x000000FF);
-    return 1E9/(frameRate * 16.66);
+    int iFrameRate = 0;
+    char cRetBuf[3];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 3);
+    iFrameRate |= ((cRetBuf[0] & 0x000000FF) << 24);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 3);
+    iFrameRate |= ((cRetBuf[0] & 0x000000FF) << 16);
+    doTransaction(iID, queryBuf5, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf6, 4, cRetBuf, 3);
+    iFrameRate |= ((cRetBuf[0] & 0x000000FF) << 8);
+    doTransaction(iID, queryBuf7, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf8, 4, cRetBuf, 3);
+    iFrameRate |= (cRetBuf[0] & 0x000000FF);
+    return (double)iFrameRate / 6E7;
 }
 
-static void setFrameRate(int id, float inFrameRate)
+static void setFrameRate(int iID, double dFrameRate)
 {
-    int frameRate = fabs(1E9/(inFrameRate * 16.66));
-    char queryBuf1[] = {0x53, 0xE0, 0x02, 0xDD, (frameRate & 0xFF000000) >> 24, 0x50};
-    char queryBuf2[] = {0x53, 0xE0, 0x02, 0xDE, (frameRate & 0x00FF0000) >> 16, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x02, 0xDF, (frameRate & 0x0000FF00) >> 8, 0x50};
-    char queryBuf4[] = {0x53, 0xE0, 0x02, 0xE0, (frameRate & 0x000000FF), 0x50};
-    char retBuf[50];
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
-    doTransaction(id, queryBuf2, 6, retBuf, 1);
-    doTransaction(id, queryBuf3, 6, retBuf, 1);
-    doTransaction(id, queryBuf4, 6, retBuf, 1);
+    int iFrameRate = fabs(6E7 * dFrameRate);
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xDD, (iFrameRate & 0xFF000000) >> 24, 0x50};
+    const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xDE, (iFrameRate & 0x00FF0000) >> 16, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x02, 0xDF, (iFrameRate & 0x0000FF00) >> 8, 0x50};
+    const char queryBuf4[] = {0x53, 0xE0, 0x02, 0xE0, (iFrameRate & 0x000000FF), 0x50};
+
+    char cRetBuf[1];
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf3, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 6, cRetBuf, 1);
 }
 
-static double getExposure(int id)
+static double getExposure(int iID)
 {
-    char retBuf[50];
-    long exposure = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xED, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xEE, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf5[] = {0x53, 0xE0, 0x01, 0xEF, 0x50};
+    const char queryBuf6[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf7[] = {0x53, 0xE0, 0x01, 0xF0, 0x50};
+    const char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf9[] = {0x53, 0xE0, 0x01, 0xF1, 0x50};
+    const char queryBuf10[]= {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xED, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0xEE, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf5[] = {0x53, 0xE0, 0x01, 0xEF, 0x50};
-    char queryBuf6[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf7[] = {0x53, 0xE0, 0x01, 0xF0, 0x50};
-    char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf9[] = {0x53, 0xE0, 0x01, 0xF1, 0x50};
-    char queryBuf10[] = {0x53, 0xE1, 0x01, 0x50};
-
-    doTransaction(id, queryBuf1, 5, retBuf, 1);
-    doTransaction(id, queryBuf2, 4, retBuf, 2);
-    exposure |= ((retBuf[0] & 0x00000000000000FFL) << 32);
-    doTransaction(id, queryBuf3, 5, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    exposure |= ((retBuf[0] & 0x000000FF) << 24);
-    doTransaction(id, queryBuf5, 5, retBuf, 1);
-    doTransaction(id, queryBuf6, 4, retBuf, 2);
-    exposure |= ((retBuf[0] & 0x000000FF) << 16);
-    doTransaction(id, queryBuf7, 5, retBuf, 1);
-    doTransaction(id, queryBuf8, 4, retBuf, 2);
-    exposure |= ((retBuf[0] & 0x000000FF) << 8);
-    doTransaction(id, queryBuf9, 5, retBuf, 1);
-    doTransaction(id, queryBuf10, 4, retBuf, 2);
-    exposure |= (retBuf[0] & 0x000000FF);
-    return exposure * 16.66/1000000.;
+    long lExposure = 0;
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 2);
+    lExposure |= ((cRetBuf[0] & 0x00000000000000FFL) << 32);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    lExposure |= ((cRetBuf[0] & 0x000000FF) << 24);
+    doTransaction(iID, queryBuf5, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf6, 4, cRetBuf, 2);
+    lExposure |= ((cRetBuf[0] & 0x000000FF) << 16);
+    doTransaction(iID, queryBuf7, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf8, 4, cRetBuf, 2);
+    lExposure |= ((cRetBuf[0] & 0x000000FF) << 8);
+    doTransaction(iID, queryBuf9, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf10,4, cRetBuf, 2);
+    lExposure |= (cRetBuf[0] & 0x000000FF);
+    return (double)lExposure / 6E4;
 }
 
-static void setExposure(int id, float exposureMs)
+static void setExposure(int iID, double dExposureMs)
 {
-    long exposure = fabs(1E6 * exposureMs/16.66);
-//    long exposure = fabs(1E9 * exposureMs/16.66);
+    long lExposure = fabs(6E4 * dExposureMs);//60MHz: 1E6/16.6666 = 6e4
+//    long lExposure = fabs(6E7 * dExposure);
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xED, (lExposure & 0x000000FF00000000L) >> 32, 0x50};
+    const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xEE, (lExposure & 0xFF000000) >> 24, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x02, 0xEF, (lExposure & 0x00FF0000) >> 16, 0x50};
+    const char queryBuf4[] = {0x53, 0xE0, 0x02, 0xF0, (lExposure & 0x0000FF00) >> 8, 0x50};
+    const char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF1, (lExposure & 0x000000FF), 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x02, 0xED, (exposure & 0x000000FF00000000L) >> 32, 0x50};
-    char queryBuf2[] = {0x53, 0xE0, 0x02, 0xEE, (exposure & 0xFF000000) >> 24, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x02, 0xEF, (exposure & 0x00FF0000) >> 16, 0x50};
-    char queryBuf4[] = {0x53, 0xE0, 0x02, 0xF0, (exposure & 0x0000FF00) >> 8, 0x50};
-    char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF1, (exposure & 0x000000FF), 0x50};
-    char retBuf[50];
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
-    doTransaction(id, queryBuf2, 6, retBuf, 1);
-    doTransaction(id, queryBuf3, 6, retBuf, 1);
-    doTransaction(id, queryBuf4, 6, retBuf, 1);
+    char cRetBuf[1];
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf3, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 6, cRetBuf, 1);
 }
 
-static float getGain(int id)
+static float getGain(int iID)
 {
-    char retBuf[50];
-    short gain = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD5, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD6, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD5, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD6, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-
-    doTransaction(id, queryBuf1, 5, retBuf, 2);
-    doTransaction(id, queryBuf2, 4, retBuf, 3);
-    gain |= ((retBuf[0] & 0x00FF) << 8);
-    doTransaction(id, queryBuf3, 5, retBuf, 2);
-    doTransaction(id, queryBuf4, 4, retBuf, 3);
-    gain |= (retBuf[0] & 0x00FF);
-    return gain/512.;
+    short sGain = 0;
+    char cRetBuf[3];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 3);
+    sGain |= ((cRetBuf[0] & 0x00FF) << 8);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 3);
+    sGain |= (cRetBuf[0] & 0x00FF);
+    return sGain/512.;
 }
 
-static char getTrigMode(int id)
+static char getTrigMode(int iID)
 {
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD4, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD4, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char retBuf[2];
-
-    doTransaction(id, queryBuf1, 5, retBuf, 2);
-    doTransaction(id, queryBuf2, 4, retBuf, 3);
-    return retBuf[0];
+    char cRetBuf[3];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 2);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 3);
+    return cRetBuf[0];
 }
 
-static void setTrigMode(int id, char trigMode)
+static void setTrigMode(int iID, char cTrigMode)
 {
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xD4, cTrigMode, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x02, 0xD4, trigMode, 0x50};
-    char retBuf[2];
-
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
+    char cRetBuf[1];
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
 }
 
-static char getBinning(int id)
+static char getBinning(int iID)
 {
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDB, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xDB, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char retBuf[10];
-
-    doTransaction(id, queryBuf1, 5, retBuf, 1);
-    doTransaction(id, queryBuf2, 4, retBuf, 2);
-    return retBuf[0];
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 2);
+    return cRetBuf[0];
 }
 
-static int getRoiXSize(int id)
+static short getRoiXSize(int iID)
 {
-    char retBuf[50];
-    short size = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD7, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD8, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD7, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0xD8, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-
-    doTransaction(id, queryBuf1, 5, retBuf, 1);
-    doTransaction(id, queryBuf2, 4, retBuf, 2);
-    size |= ((retBuf[0] & 0x000F) << 8);
-    doTransaction(id, queryBuf3, 5, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    size |= (retBuf[0] & 0x00FF);
-    return (int)size;
+    short sSize = 0;
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 2);
+    sSize |= ((cRetBuf[0] & 0x000F) << 8);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    sSize |= (cRetBuf[0] & 0x00FF);
+    return sSize;
 }
 
-static int getRoiXOffset(int id)
+static short getRoiXOffset(int iID)
 {
-    char retBuf[50];
-    short offset = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD9, 0x50};
+    const char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDA, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x01, 0xD9, 0x50};
-    char queryBuf2[] = {0x53, 0xE1, 0x01, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0xDA, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-
-    doTransaction(id, queryBuf1, 5, retBuf, 1);
-    doTransaction(id, queryBuf2, 4, retBuf, 2);
-    offset |= ((retBuf[0] & 0x000F) << 8);
-    doTransaction(id, queryBuf3, 5, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    offset |= (retBuf[0] & 0x00FF);
-    return (int)offset;
+    short sOffset = 0;
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 4, cRetBuf, 2);
+    sOffset |= ((cRetBuf[0] & 0x000F) << 8);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    sOffset |= (cRetBuf[0] & 0x00FF);
+    return sOffset;
 }
 
-static int getRoiYSize(int id)
+static short getRoiYSize(int iID)
 {
-    char retBuf[50];
-    short size = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x01, 0x50};
+    const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF3, 0x02, 0x50};
+    const char queryBuf6[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
+    const char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
+    const char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x01, 0x50};
-    char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-
-    char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF3, 0x02, 0x50};
-    char queryBuf6[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
-    char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
-    char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
-
-
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
-    doTransaction(id, queryBuf2, 6, retBuf, 1);
-    doTransaction(id, queryBuf3, 5, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    size |= (retBuf[0] & 0x00FF);
-
-    doTransaction(id, queryBuf5, 6, retBuf, 1);
-    doTransaction(id, queryBuf6, 6, retBuf, 1);
-    doTransaction(id, queryBuf7, 5, retBuf, 1);
-    doTransaction(id, queryBuf8, 4, retBuf, 2);
-    size |= ((retBuf[0] & 0x000F) << 8);
-    return (int)size;
+    short sSize = 0;
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    sSize |= (cRetBuf[0] & 0x00FF);
+    doTransaction(iID, queryBuf5, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf6, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf7, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf8, 4, cRetBuf, 2);
+    sSize |= ((cRetBuf[0] & 0x000F) << 8);
+    return sSize;
 }
 
-static int getRoiYOffset(int id)
+static short getRoiYOffset(int iID)
 {
-    char retBuf[50];
-    short size = 0;
+    const char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x03, 0x50};
+    const char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
+    const char queryBuf3[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
+    const char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
+    const char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF3, 0x04, 0x50};
+    const char queryBuf6[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
+    const char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
+    const char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
 
-    char queryBuf1[] = {0x53, 0xE0, 0x02, 0xF3, 0x03, 0x50};
-    char queryBuf2[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
-    char queryBuf3[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
-    char queryBuf4[] = {0x53, 0xE1, 0x01, 0x50};
-
-    char queryBuf5[] = {0x53, 0xE0, 0x02, 0xF3, 0x04, 0x50};
-    char queryBuf6[] = {0x53, 0xE0, 0x02, 0xF4, 0x00, 0x50};
-    char queryBuf7[] = {0x53, 0xE0, 0x01, 0x73, 0x50};
-    char queryBuf8[] = {0x53, 0xE1, 0x01, 0x50};
-
-
-    doTransaction(id, queryBuf1, 6, retBuf, 1);
-    doTransaction(id, queryBuf2, 6, retBuf, 1);
-    doTransaction(id, queryBuf3, 5, retBuf, 1);
-    doTransaction(id, queryBuf4, 4, retBuf, 2);
-    size |= (retBuf[0] & 0x00FF);
-
-    doTransaction(id, queryBuf5, 6, retBuf, 1);
-    doTransaction(id, queryBuf6, 6, retBuf, 1);
-    doTransaction(id, queryBuf7, 5, retBuf, 1);
-    doTransaction(id, queryBuf8, 4, retBuf, 2);
-    size |= ((retBuf[0] & 0x000F) << 8);
-    return (int)size;
+    short sSize = 0;
+    char cRetBuf[2];
+    doTransaction(iID, queryBuf1, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf2, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf3, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf4, 4, cRetBuf, 2);
+    sSize |= (cRetBuf[0] & 0x00FF);
+    doTransaction(iID, queryBuf5, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf6, 6, cRetBuf, 1);
+    doTransaction(iID, queryBuf7, 5, cRetBuf, 1);
+    doTransaction(iID, queryBuf8, 4, cRetBuf, 2);
+    sSize |= ((cRetBuf[0] & 0x000F) << 8);
+    return sSize;
 }
 
-void epixSetConfiguration(int id, float frameRate, char trigMode)
+void epixSetConfiguration(int iID, double dFrameRate, char cTrigMode)
 {
-    setFrameRate(id, frameRate);
-    setTrigMode(id, (char)trigMode);
+    setFrameRate(iID, dFrameRate);
+    setTrigMode(iID, cTrigMode);
 }
 
-void epixGetConfiguration(int id, int *binning, int *roiXSize, int *roiXOffset, int *roiYSize, int *roiYOffset)
+void epixGetConfiguration(int iID, char *pcBinning, short *psRoiXSize, short *psRoiXOffset, short *psRoiYSize, short *psRoiYOffset)
 {
-    *roiXSize = getRoiXSize(id);
-    *roiXOffset = getRoiXOffset(id);
-    *roiYSize = getRoiYSize(id);
-    *roiYOffset = getRoiYOffset(id);
-    *binning = getBinning(id);
+    *pcBinning    = getBinning(iID);
+    *psRoiXSize   = getRoiXSize(iID);
+    *psRoiXOffset = getRoiXOffset(iID);
+    *psRoiYSize   = getRoiYSize(iID);
+    *psRoiYOffset = getRoiYOffset(iID);
 #ifdef DEBUG
-    printf("EXPOSURE READ AS %f\n", getExposure(id));
+    printf("EXPOSURE READ AS %f\n", getExposure(iID));
 #endif
 }
 
-void epixGetTemp(int id, float *pcbTemp, short *cmosTemp)
+void epixGetTemp(int iID, float *pfPcbTemp, short *psCmosTemp)
 {
-    *pcbTemp = getPCBTemp(id)/16.;
-    *cmosTemp = getCMOSTemp(id);
+    *pfPcbTemp  = epixGetPCBTemp(iID)/16.;
+    *psCmosTemp = epixGetCMOSTemp(iID);
 }
