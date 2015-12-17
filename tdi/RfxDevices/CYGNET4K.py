@@ -155,6 +155,9 @@ class CYGNET4K(Device):
         CYGNET4K.raptorLib.epixClose() # as config file is dynamically generated we want to force a re-open
         CYGNET4K.isOpen = False
         CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(tmpPath))
+        if not CYGNET4K.isOpen:
+            print('Could not open camera. No camera connected?.')
+            raise mdsExceptions.DevPYDEVICE_NOT_FOUND
         remove(tmpPath)
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
@@ -226,6 +229,9 @@ class CYGNET4K(Device):
         if not CYGNET4K.isOpen:
             conffile = self.conf_file.data()
             CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(conffile))
+            if not CYGNET4K.isOpen:
+                print('Could not open camera. No camera connected?.')
+                raise mdsExceptions.DevPYDEVICE_NOT_FOUND
         try:#test open Nodes
             trendTree = str(self.trend_tree.data())
             trendShot = int(self.trend_shot.data())
