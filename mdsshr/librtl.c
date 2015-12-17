@@ -1007,7 +1007,7 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
 EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
   char *time_str;
-  char time_out[23];
+  char time_out[24];
   unsigned short slen = sizeof(time_out);
   time_t bintim = LibCvtTim(time_in, 0);
   int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
