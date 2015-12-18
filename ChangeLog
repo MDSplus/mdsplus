@@ -1,4 +1,278 @@
-commit df557f0e13b1a56b10c70d4290868c74dfee051c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 44a6d2a63f000512e01dd5194815adba5cc93bc4 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 0e20885 90a86d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:51:28 2015 -0500
+
+    Merge pull request #261 from MDSplus/twf-fix-python-tree-refs
+    
+    Twf fix python tree refs
+
+commit 0e20885ae12af243d541d83363af8f9f8a4be56f
+Merge: 0b92731 fdbcad9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:48:24 2015 -0500
+
+    Merge pull request #264 from MDSplus/twf-fix-code-detected-by-new-gcc
+    
+    New gcc on Ubuntu finding errors in the code. This should get MDSplus…
+
+commit 0b927316a24628ff195f4a1ef640173d6ec9a96a
+Merge: 6306e27 f247aa6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:40:45 2015 -0500
+
+    Merge pull request #265 from MDSplus/twf-fix-LibFindImageSymbol
+    
+    fix allocation size error in LibFindImageSymbol_C
+
+commit f247aa66c295b6da98eb655b49838d780989272c (refs/remotes/origin/twf-fix-LibFindImageSymbol)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:01:29 2015 -0500
+
+    fix allocation size error in LibFindImageSymbol_C
+
+commit fdbcad9dda5e622caf66ebef3f425853ab59a608 (refs/remotes/origin/twf-fix-code-detected-by-new-gcc)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 11:35:40 2015 -0500
+
+    New gcc on Ubuntu finding errors in the code. This should get MDSplus to build but another pull request will be coming with additional fixes uncovered by the new gcc
+
+commit 6306e27a93d197f4dd38b77d893f3823104d3804
+Merge: d9c87d2 44b4e39
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Dec 17 08:19:37 2015 +0100
+
+    Merge pull request #262 from zack-vii/aa_cygnet4k
+    
+    Aa cygnet4k
+
+commit 44b4e3999d0f284fabbf2a0ab17f46e17f6a1810
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 17 04:37:28 2015 +0100
+
+    raise an error if device cannot be opend
+
+commit 318bc6c54a432235f0468be1a949e3d5f001e552
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 18:34:13 2015 +0100
+
+    fixed trendWorker misspelling
+
+commit 2374cb7d6d68afc45d46cb7d31e243e024c37995
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 15:12:13 2015 +0100
+
+    fixed id/idx to dev_id
+
+commit e23fa91b9b1b855cfee06b5de5a412f7802560fb
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 15:04:55 2015 +0100
+
+    wait for store/trend to stop
+    using join thread
+
+commit 52f3209846dab7deeed1290450bb31f092e80cb5
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 11:01:23 2015 +0100
+
+    put ACT_INIT in INIT phase before START
+
+commit 82909758c50492176ede982ff4b83a280afc23ad
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 09:08:53 2015 +0100
+
+    ACT_START/STOP for TREND, write_once for ACT*
+
+commit 4d5f4479ca046c7ac8a643343ebbb79c9b533f37
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 9 21:32:39 2015 +0100
+
+    CYGNET4K removed  temperature reading
+    
+    during measurement.
+    it blocks the camera if the frame rate is too high
+    read it before and after instead
+
+commit 74ea8e15253c697d12b476bbd462b09a6fdc48a1
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Dec 5 03:21:39 2015 +0100
+
+    updated CYGNET4KSETUP.java and .form
+    
+    adapted to new Node layout
+
+commit fb00858a16d7983b49d58daf83c15d201d9feca7
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 23:45:20 2015 +0100
+
+    use Device.debug
+
+commit f72f1b5c65e4ac46ca381fc8cad6d844d33a0c80
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 3 22:08:05 2015 +0100
+
+    remove 'return 1' add interrupt loop for trend stopReq
+
+commit 97606a11cba328d225051319dc696e673127146b
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 3 21:16:00 2015 +0100
+
+    wipe node at start_store
+    
+    - preemptive raise of a write_once error
+    - clears node for fresh measurement
+
+commit 4d089398c9d2f3cf8c4a96c0a02cf4b543a6f27e
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 3 19:26:37 2015 +0100
+
+    updated driver typed variable names, retyped
+    
+    - clear structure for IO
+
+commit 7003445c917acabc43bfe86f4c82e82273e7f491
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 21:02:12 2015 +0100
+
+    update to new GIL-locking and include TriggerTime
+    
+    - raise error instead of returning status
+    - included debug
+    - no more pythreadlock stuff
+    include triggertime in cpp
+
+commit 90a86d60128f20c5bee1d2d1c4e2fbe53c0e8161 (refs/remotes/origin/twf-fix-python-tree-refs)
+Merge: fc1bee9 d9c87d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 16:25:29 2015 -0500
+
+    Merge remote-tracking branch 'refs/remotes/origin/alpha' into twf-fix-python-tree-refs
+
+commit fc1bee9891746ea6293dfe4a426495bad0301ab8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 16:20:57 2015 -0500
+
+    Fix tracking of tree instances to make sure all trees get closed after use
+
+commit d9c87d24e298582b8d74537d748d4f813eff4db4
+Merge: 5dbd166 bbe5156
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Dec 16 14:57:08 2015 -0500
+
+    Merge pull request #260 from MDSplus/twf-fix-python-module-name
+    
+    Fix python module name to leave it as MDSplus while the egg is renamed to mdsplus[_branch]-version
+
+commit bbe5156034f77ee56cb3f66c9b67e76ccb329214 (refs/remotes/origin/twf-fix-python-module-name)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 14:33:00 2015 -0500
+
+    leave package name lowercase but still import MDSplus
+
+commit 5dbd16667d44851c90519aedc92c67df71537f7f
+Merge: ae67432 ef80f61
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 10:47:00 2015 -0500
+
+    Merge pull request #258 from MDSplus/twf-feature-exports2
+    
+    Twf feature exports2
+
+commit ae674322ee2837aca4175d2ac5b401d5f0babbf6
+Merge: 4e9cd64 b84c322
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Dec 16 09:19:15 2015 -0500
+
+    Merge pull request #259 from MDSplus/twf-python-package-version-name-fix
+    
+    Make python package namd and version compliant with naming convention…
+
+commit b84c322a31a2160199e52548ee0b8900675999b0 (refs/remotes/origin/twf-python-package-version-name-fix)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 08:43:06 2015 -0500
+
+    Make python package namd and version compliant with naming conventions and rules
+
+commit 4e9cd641b48f01cda51ca1ffab3453238aa01cfd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 08:30:22 2015 -0500
+
+    Remove error printout in LibFindImageSymbol
+
+commit ef80f614e1a77594b60588b408ba7ee20d97f156 (refs/remotes/origin/twf-feature-exports2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 08:27:34 2015 -0500
+
+    remove printout from LibFindimageSymbol
+
+commit ab9ff974254a62783d040d435a448caad680f980
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 07:50:52 2015 -0500
+
+    temporarily remove export hiding so this can be merged in safely
+
+commit 8ef0b44c6aae648f3767c9a697820133fade32bd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 15 16:54:10 2015 -0500
+
+    Cannot build with cflag -no-undefined because of the IDL libraries
+
+commit 1df0aa990c53b580160e00613a8c037c5f91490d
+Merge: 4ac65a4 1bc31ba
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 15 11:44:00 2015 -0500
+
+    Merge branch 'twf-feature-exports' of github.com:/MDSplus/mdsplus into twf-feature-exports
+
+commit 4ac65a49919afe908dc26a9b287bf03510819675
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:18:47 2015 -0500
+
+    Add exports to hdf5 library
+
+commit fd05c0e43e1d90b4c6068bf223ea50d5cbedf46a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:27 2015 -0500
+
+    change windows exports files
+
+commit 70c76dd22143193b2097f3a997e928cd40032fb6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:16 2015 -0500
+
+    Fix header file include for windows
+
+commit e685c05d99e9aaf122e1b90b04dc7aa90290674f
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 13 15:43:48 2015 +0100
+
+    Remove useless EXTERN
+
+commit 7876b9cf43ee9bfb89ce91ccc844eea681fc050c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:02:31 2015 -0500
+
+    remove udt exports and export boxsmooth
+
+commit 225d187fb99a7b2be94df91cddbbfaf6bc0c530e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 15:17:59 2015 -0500
+
+    More exports added
+
+commit cdb9698ef15aac840b59ba122350daa9ced4e3a9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 13:12:10 2015 -0500
+
+    Add EXPORT to functions and symbols needed to be exported and add prototypes to some of the C header files
+
+commit f13e30a4e059491360432f4d3feb8c60e54ba6fe (tag: refs/tags/alpha_release-7-0-196)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 14 23:33:14 2015 -0500
+
+    New release ---- alpha_release-7-0-196
+
+commit df557f0e13b1a56b10c70d4290868c74dfee051c
 Merge: 6f08fce a5d0326
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Mon Dec 14 11:37:17 2015 -0500
@@ -936,6 +1210,12 @@ Date:   Fri Nov 13 23:38:59 2015 -0500
 
     New release ---- alpha_release-7-0-180
 
+commit 1bc31ba60225b4db75dd5fe0032c399abd4d5aaa (refs/remotes/origin/twf-feature-exports)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:18:47 2015 -0500
+
+    Add exports to hdf5 library
+
 commit a4356ba121c98b7c6cb62bec64258d51ce23c145
 Merge: 48f2f65 733e4ae
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -950,6 +1230,24 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 13 14:37:39 2015 -0500
 
     Add compatibility to old MdsException excetpion class
+
+commit 413ed349b01616a1b4705f37f0c1ffd98c6b7eef
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:27 2015 -0500
+
+    change windows exports files
+
+commit 2dfa5d2cf00910f87c779b28ea88f097d95e688a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:16 2015 -0500
+
+    Fix header file include for windows
+
+commit 3555cb8d758de9b63c222db9b01a2f6bb7443971
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 13 15:43:48 2015 +0100
+
+    Remove useless EXTERN
 
 commit 733e4aed3f471ddf805c5405083e25d06d085e6a
 Author: zack-vii <zack.vii@live.com>
@@ -1104,6 +1402,18 @@ Date:   Fri Nov 6 16:23:28 2015 -0500
 
     Do not raise an Exception in putData if data contains a TreePath refernce
 
+commit b639028f2eb13cfd777bbe5ab33e13f707143e54
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:02:31 2015 -0500
+
+    remove udt exports and export boxsmooth
+
+commit 4d6a2cc02efbd57a403ae29770c5cb6e5c0dc326
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 15:17:59 2015 -0500
+
+    More exports added
+
 commit 188d4a01a505e949949d013b4220085ba583b9c7
 Author: zack-vii <zack.vii@live.com>
 Date:   Fri Nov 6 20:33:06 2015 +0100
@@ -1113,6 +1423,12 @@ Date:   Fri Nov 6 20:33:06 2015 +0100
     Prevents events from dispatching when busy.
     Ii caused jScope to freeze if an event occured during loading of a
     configuration.
+
+commit 790ac68c1a0b6f2e92655c8f05e4fb724fbf2d67
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 13:12:10 2015 -0500
+
+    Add EXPORT to functions and symbols needed to be exported and add prototypes to some of the C header files
 
 commit d5d942be8de17c08c3f35dcbce9e2fe1beb8ae77 (refs/remotes/origin/fix-obsucre-compression-bug-alpha)
 Author: Tom Fredian <twf@psfc.mit.edu>
