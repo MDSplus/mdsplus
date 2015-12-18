@@ -21,11 +21,15 @@ def PyDoMethod(n,method,*args):
             return [TreeNOMETHOD.status,None]
         try:
             return [Int32(1),methodobj(*args)]
-        except TypeError:
-            print('Your device method %s.%s requires at least one argument.' % (model,method))
-            print('No argument has been provided as it is probably not required by the method.')
-            print('MDSplus does not require device methods to accept an argument anymore.\n')
-            return [Int32(1),methodobj(None)]
+        except TypeError as exc:
+            exc = exc_info()[1]
+            if exc.message.startswith(method+'()'):
+                print('Your device method %s.%s requires at least one argument.' % (model,method))
+                print('No argument has been provided as it is probably not required by the method.')
+                print('MDSplus does not require device methods to accept an argument anymore.\n')
+                return [Int32(1),methodobj(None)]
+            else:
+                raise exc
     except:
         exc = exc_info()[1]
         stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
