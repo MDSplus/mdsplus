@@ -766,6 +766,7 @@ HAVE_CUTE_DOXYGEN_TRUE
 DOXYGEN
 VALGRIND_memcheck_FLAGS
 VALGRIND_FLAGS
+TESTS_SKIP
 PY_LOG_FLAGS_XML
 PY_LOG_COMPILER_XML
 PY_LOG_FLAGS_TAP
@@ -794,6 +795,7 @@ HAVE_WINECONSOLE
 HAVE_WINE_FALSE
 HAVE_WINE_TRUE
 HAVE_WINE
+PYTHON_ARCHITECTURE
 HAVE_PYTHON_FALSE
 HAVE_PYTHON_TRUE
 pkgpyexecdir
@@ -8150,7 +8152,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch
+       -dynamic";
        if (test "$F77" = "f77"); then
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -12104,6 +12107,59 @@ fi
 
 
 
+    if test -z $PYTHON;
+    then
+        if test -z "${PYTHON}";
+        then
+            PYTHON="python3"
+        else
+            PYTHON="${PYTHON}"
+        fi
+    fi
+    PYTHON_NAME=`basename $PYTHON`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: platform" >&5
+$as_echo_n "checking $PYTHON_NAME module: platform... " >&6; }
+    $PYTHON -c "import platform" 2>/dev/null
+    if test $? -eq 0;
+    then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        eval HAVE_PYMOD_PLATFORM=yes
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        eval HAVE_PYMOD_PLATFORM=no
+        #
+        if test -n "required"
+        then
+            as_fn_error $? "failed to find required module platform" "$LINENO" 5
+            exit 1
+        fi
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for python architecture" >&5
+$as_echo_n "checking for python architecture... " >&6; }
+    _python_arch=`${PYTHON} -c "import sys, platform; sys.stdout.write(platform.architecture()[0])"`
+
+    if test "x$_python_arch" = x64bit; then :
+
+               ${PYTHON} -c "import sys; sys.exit(sys.maxsize <= 2**32)"
+               if test $? -eq 0; then :
+
+else
+
+               _python_arch=32bit
+fi
+
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${_python_arch}" >&5
+$as_echo "${_python_arch}" >&6; }
+    PYTHON_ARCHITECTURE=${_python_arch}
+
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -13262,7 +13318,8 @@ fi
    $as_echo "Set tests environment for linux->linux"
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
-   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
+   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
   ;; #(
   #
  # OTHER
@@ -13273,7 +13330,8 @@ fi
 $as_echo "$as_me: WARNING: \"Tests may not be supported for this host!\"" >&2;}
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
-   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
+   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
   ;; #(
   *) :
      ;;
@@ -13292,6 +13350,11 @@ esac
 
 
 
+
+
+
+
+          TESTS_SKIP="sh -c \\\"exit 77\\\"; :"
 
 
 

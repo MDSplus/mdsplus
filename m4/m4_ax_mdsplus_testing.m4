@@ -117,13 +117,15 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
    [eval $3])
 ])
 
+
+AC_DEFUN([TS_SET_SKIP_CMD],[
+          AS_VAR_SET([$1],["sh -c \\\"exit 77\\\"; :"])
+         ])
+
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
  AS_VAR_APPEND([$1],["sh -c \\\"exit 77\\\"; :"])
 ])
-
-
-
 
 
 
@@ -200,7 +202,8 @@ AC_DEFUN([TS_SELECT],[
    AS_ECHO("Set tests environment for linux->linux")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR} ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
  ],
  #
  # OTHER
@@ -210,7 +213,8 @@ AC_DEFUN([TS_SELECT],[
    AC_MSG_WARN("Tests may not be supported for this host!")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR} ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
  ])
 
 # MACOS: add --dsymutil=yes to valgrind 

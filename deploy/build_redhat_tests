@@ -27,7 +27,7 @@ Usage: $SCRIPTNAME [options] [commands]
        -h|-help|--help)           get this help      
        -c|-config|--config)       set distribution config file
        -b|-builddir|--builddir)   set build directory
-       -r|-MDSPLUS_DIR|--MDSPLUS_DIR)     set target root directory
+       -r|-prefix|--prefix)       set target root directory
        
 EOF
 }

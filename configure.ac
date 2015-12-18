@@ -529,7 +529,8 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch 
+       -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -1003,6 +1004,8 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 AM_PATH_PYTHON(,, [:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
+AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
+AC_SUBST(PYTHON_ARCHITECTURE)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -1031,7 +1034,7 @@ AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,,
  # selects particular envs for build:host
  TS_SELECT
  
- ## test chain substitution ##
+ ## test chain substitution ## 
  AC_SUBST(TESTS_ENVIRONMENT)
  AC_SUBST(LOG_COMPILER)
  AC_SUBST(LOG_DRIVER)
@@ -1041,6 +1044,9 @@ AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,,
  AC_SUBST(PY_LOG_FLAGS_TAP)
  AC_SUBST(PY_LOG_COMPILER_XML)
  AC_SUBST(PY_LOG_FLAGS_XML)
+
+ TS_SET_SKIP_CMD([TESTS_SKIP])
+ AC_SUBST(TESTS_SKIP)
 
  AC_SUBST(VALGRIND_FLAGS)
  AC_SUBST(VALGRIND_memcheck_FLAGS)

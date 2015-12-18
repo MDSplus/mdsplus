@@ -118,6 +118,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
 	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
+	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
@@ -743,6 +744,7 @@ PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PYTHON = @PYTHON@
+PYTHON_ARCHITECTURE = @PYTHON_ARCHITECTURE@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -778,6 +780,7 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -872,6 +875,12 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
+PY_ARCH_TEST = $(shell $(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@)
+
+# $(info LD_LIBRARY_PATH = $(LD_LIBRARY_PATH))
+# $(info TESTS_ENVIRONMENT = $(TESTS_ENVIRONMENT))
+# $(info PY_ARCH_TEST = $(PY_ARCH_TEST))
+# $(info PY_LOG_COMPILER_TAP = $(PY_LOG_COMPILER_TAP))
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -1764,9 +1773,9 @@ LOG_DRIVER          ?= @LOG_DRIVER@
 TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
 LOG_COMPILER        ?= @LOG_COMPILER@
 
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_COMPILER     ?= $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER@,@TESTS_SKIP@)
 PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
-PY_LOG_COMPILER_TAP ?= @PY_LOG_COMPILER_TAP@
+PY_LOG_COMPILER_TAP ?= $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER_TAP@,@TESTS_SKIP@)
 PY_LOG_FLAGS_TAP    ?= @PY_LOG_FLAGS_TAP@
 
 $(TEST_BUILD_TAP): rebuild-tests
@@ -1809,6 +1818,15 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+
+.PHONY: tests-envdump
+tests-envdump:
+	@echo; \
+	echo ----------------------------------------------------------------; \
+	echo TESTS_ENVIRONMENT = ;\
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	 echo "     $${_i}"; \
+	done;
 
 all-local: $(TESTS)
 
