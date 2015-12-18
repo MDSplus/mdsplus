@@ -60,11 +60,6 @@ PY_LOG_FLAGS        = @PY_LOG_FLAGS@
 PY_LOG_COMPILER_TAP = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER_TAP@,@TESTS_SKIP@)
 PY_LOG_FLAGS_TAP    = @PY_LOG_FLAGS_TAP@
 
-# $(info LD_LIBRARY_PATH = $(LD_LIBRARY_PATH))
-# $(info TESTS_ENVIRONMENT = $(TESTS_ENVIRONMENT))
-# $(info PY_ARCH_TEST = $(PY_ARCH_TEST))
-# $(info PY_LOG_COMPILER_TAP = $(PY_LOG_COMPILER_TAP))
-
 
 
 # //////////////////////////////////////////////////////////////////////////// #

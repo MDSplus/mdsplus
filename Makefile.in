@@ -77,11 +77,11 @@ docs:
 
 .PHONY: tests
 tests:
-	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-clean tests
+	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests
 
 .PHONY: tests-valgrind
 tests-valgrind:
-	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-clean tests-valgrind
+	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-valgrind
 
 
 clean_DIRS = $(addprefix clean_, $(PARTS))
