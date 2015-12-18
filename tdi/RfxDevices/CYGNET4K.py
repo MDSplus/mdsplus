@@ -106,13 +106,13 @@ class CYGNET4K(Device):
         if CYGNET4K.raptorLib is None:
             try:
                 CYGNET4K.raptorLib = CDLL("libRaptor.so")
-            except WindowsError as exc:
+            except OSError as exc:
                 print('Raptor: '+exc.strerror+'. Using dummy driver.')
                 CYGNET4K.raptorLib = CYGNET4K._raptorLib()
         if CYGNET4K.mdsLib is None:
             try:
                 CYGNET4K.mdsLib = CDLL("libcammdsutils.so")
-            except WindowsError as exc:
+            except OSError as exc:
                 print('cammdsutils: '+exc.strerror+'. Using dummy driver.')
                 CYGNET4K.mdsLib = CYGNET4K._mdsLib()
 
