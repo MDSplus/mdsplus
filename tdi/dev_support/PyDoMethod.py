@@ -21,7 +21,7 @@ def PyDoMethod(n,method,*args):
             return [TreeNOMETHOD.status,None]
         try:
             return [Int32(1),methodobj(*args)]
-        except TypeError as exc:
+        except TypeError:
             exc = exc_info()[1]
             if exc.message.startswith(method+'()'):
                 print('Your device method %s.%s requires at least one argument.' % (model,method))
