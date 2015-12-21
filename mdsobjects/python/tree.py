@@ -19,6 +19,8 @@ _scalar=_mimport('mdsscalar')
 _treenode=_mimport('treenode')
 _ver=_mimport('version')
 
+_activeTree={}
+
 class _ThreadData(_threading.local):
     def __init__(self):
         self._activeTree=0
@@ -27,8 +29,6 @@ _thread_data=_ThreadData()
 
 _hard_lock=_threading.Lock()
 
-_openTrees={}
-_activeTree={}
 
 def _getThreadName(thread=None):
     if isinstance(thread,str):
@@ -42,34 +42,6 @@ def _getThreadName(thread=None):
         threadName = 'main'
     return threadName
 
-def _addOpenTree(tree,thread=None):
-    if tree.ctx == 0:
-        return
-    ctx = tree.ctx.value
-    if ctx == 0:
-        return
-    if ctx in _openTrees:
-        _openTrees[ctx]['references'].append(tree._id)
-    else:
-        _openTrees[ctx]={'thread':_getThreadName(thread),'references':[tree._id]}
-
-def _removeOpenTree(tree):
-    ctx = tree.ctx.value
-    if ctx in _openTrees:
-        if tree._id in _openTrees[ctx]['references']:
-            _openTrees[ctx]['references'].remove(tree._id)
-        if len(_openTrees[ctx]['references'])==0:
-            threadName=_openTrees[ctx]['thread']
-            if threadName in _activeTree and _activeTree[threadName]==ctx:
-                _setActiveTree(0,threadName)
-            activeCtx = _treeshr.TreeRestoreContext(_C.c_void_p(0))
-            if isinstance(activeCtx,_C.c_void_p) and activeCtx.value != ctx:
-                _treeshr.TreeRestoreContext(activeCtx)
-            status=_treeshr.TreeCloseAll(_C.c_void_p(ctx))
-            if (status & 1):
-                _treeshr.TreeFreeDbid(_C.c_void_p(ctx))
-            del _openTrees[ctx]
-
 def _setActiveTree(ctx,thread=None):
     _activeTree[_getThreadName(thread)]=ctx
 
@@ -81,16 +53,18 @@ def _getActiveTree(thread=None):
         ctx = 0
     return ctx
 
-class _treeDeleter(_threading.Thread):
-    def run(self):
-      _hard_lock.acquire()
-      try:
-          if hasattr(self,'tree'):
-              _removeOpenTree(self.tree)
-      finally:
-          _hard_lock.release()
-
-
+class _TreeCtx(object):
+    ctxs=[]
+    def __init__(self,ctx):
+        self.ctx=ctx
+        _TreeCtx.ctxs.append(ctx)
+    def __del__(self):
+        _TreeCtx.ctxs.remove(self.ctx)
+        if self.ctx not in _TreeCtx.ctxs:
+            status=_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
+            if (status & 1):
+                _treeshr.TreeFreeDbid(_C.c_void_p(self.ctx))
+          
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
@@ -104,16 +78,7 @@ class Tree(object):
         """ Cleanup for with statement. If tree is open for edit close it. """
         if self.open_for_edit:
             self.quit()
-        self.__del__()
 
-    def __del__(self):
-      """Delete Tree instance
-      @rtype: None
-      """
-      if hasattr(self,'ctx'):
-          t=_treeDeleter()
-          t.tree=self
-          t.start()
 
     def __getattr__(self,name):
         """
@@ -176,7 +141,7 @@ class Tree(object):
         @type mode: str
         """
         _hard_lock.acquire()
-        self._id=Tree._id=Tree._id+1
+#        self._id=Tree._id=Tree._id+1
         try:
             if tree is None:
                 try:
@@ -200,24 +165,14 @@ class Tree(object):
                 else:
                     raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
-                _addOpenTree(self)
                 _setActiveTree(self.ctx.value)
                 _treeshr.TreeRestoreContext(self.ctx)
+                self.tctx=_TreeCtx(self.ctx.value)
         finally:
             _hard_lock.release()
 
     def __deepcopy__(self,memo):
         return self
-
-    def copy(self):
-        _hard_lock.acquire()
-        try:
-            ans = _copy.copy(self)
-            ans._id=Tree._id=Tree._id+1
-            _addOpenTree(ans)
-        finally:
-            _hard_lock.release()
-        return ans
 
     def __setattr__(self,name,value):
         """
@@ -650,18 +605,3 @@ class Tree(object):
             Tree.unlock()
         if not (status & 1):
             raise _Exceptions.statusToException(status)
-
-class TreeRef(Tree):
-    """The TreeRef class uses the current global dbid ctx to construct a tree reference object.
-    Unlike Tree instances created with no arguments, TreeRef instances do not affect the global
-    dbid ctx when they are deleted."""
-
-    def __init__(self):
-        pass
-    def __del__(self):
-        pass
-    def copy(self):
-        return self
-    def _getCtx(self):
-        return _treeshr.TreeGetContext()
-    ctx=property(_getCtx)

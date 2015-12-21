@@ -9,7 +9,6 @@ from compound import Signal,Range
 import random
 import gc as _gc
 import time
-from tree import _openTrees
 
 class treeTests(TestCase):
 
@@ -217,6 +216,8 @@ class treeTests(TestCase):
         del(self.pytree)
         del(self.pytree2)
         _gc.collect()
+#        import subprocess
+#        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
 
     def runTest(self):
         self.editTrees()
