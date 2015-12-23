@@ -28,8 +28,9 @@ STATIC_ROUTINE int TdiHashOne(int len, char *pstring)
   int hash = 0, n = len;
   char *ps = pstring;
   while (--n >= 0 && *ps) {
-    __builtin_smul_overflow(hash, 11, &hash);
-    __builtin_sadd_overflow(hash, (upcase(ps) - ' '), &hash);
+    hash = (int)(((uint64_t)hash) * 11 + (upcase(ps) - ' '));
+    //__builtin_smul_overflow(hash, 11, &hash);
+    //__builtin_sadd_overflow(hash, (upcase(ps) - ' '), &hash);
     ps++;
   }
   hash %= TdiHASH_MAX;
