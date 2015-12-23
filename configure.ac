@@ -94,6 +94,26 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])])
 
+# Add address sanitizer options to flags, if requested. Only useful for GCC
+# version 4.8 and later.
+AC_ARG_ENABLE([sanitizer],
+  [AS_HELP_STRING(
+    [--enable-sanitizer],
+    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
+  )],
+  [enable_san="$enableval"],
+  [enable_san="no"]
+)
+
+AX_COMPILER_VERSION
+if test "$enable_san" = "yes" -a "$GCC" = yes; then
+   AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
+                       [enable_san="yes"], [enable_san="no"] )
+   if test "$enable_san" = "yes"; then
+       CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
+   fi
+fi
+
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
 dnl                              [Build MacOSX Universal Binary])],
