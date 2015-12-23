@@ -198,12 +198,12 @@ class TreeNode(_data.Data):
         self.__dict__['nid']=int(n);
         if tree is None:
             if treeref:
-                self.tree=_tree.TreeRef()
+                self.tree=_tree.Tree()
             else:
                 #raise Exception("treenode without tree")
                 self.tree=_tree.Tree()
         else:
-            self.tree=tree.copy()
+            self.tree=tree
 
     def __setattr__(self,name,value):
         """
@@ -1133,7 +1133,7 @@ class TreeNode(_data.Data):
         @type tree: Tree
         @rtype: original type
         """
-        self.tree=tree.copy()
+        self.tree=tree
         return self
 
     def setWriteOnce(self,flag):
@@ -1164,9 +1164,9 @@ class TreePath(TreeNode):
     def __init__(self,path,tree=None):
         self.tree_path=_data.makeData(str(path));
         if tree is None:
-            self.tree=_tree.TreeRef()
+            self.tree=_tree.Tree()
         else:
-            self.tree=tree.copy()
+            self.tree=tree
         return
 
     def __hasBadTreeReferences__(self,tree):
@@ -1181,9 +1181,9 @@ class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):
         self.nids=_array.Int32Array(nids)
         if tree is None:
-            self.tree=_tree.TreeRef()
+            self.tree=_tree.Tree()
         else:
-            self.tree=tree.copy()
+            self.tree=tree
 
     def __getitem__(self,n):
         """Return TreeNode from mdsarray. array[n]
@@ -1192,7 +1192,7 @@ class TreeNodeArray(_data.Data):
         @return: node
         @rtype: TreeNode
         """
-        return TreeNode(self.nids[n],self.tree.copy())
+        return TreeNode(self.nids[n],self.tree)
 
     def restoreContext(self):
         self.tree.restoreContext()
