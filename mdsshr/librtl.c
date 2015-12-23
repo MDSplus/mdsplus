@@ -1059,7 +1059,9 @@ EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
     if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
       return StrSTRTOOLON;
     StrGet1Dx(&len, &new);
-    memcpy(new.pointer, out->pointer, out->length);
+    if (out->pointer) {
+      memcpy(new.pointer, out->pointer, out->length);
+    }
     memcpy(new.pointer + out->length, tail->pointer, tail->length);
     StrFree1Dx(out);
     *out = new;
