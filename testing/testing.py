@@ -76,11 +76,11 @@ def run():
     try:
         ts.run_nose(frame[1])
     except:
+        module = inspect.getmodule(frame[0])
         try:
-            module = inspect.getmodule(frame[0])
             ts.run(module)
         except:
-            ts.skip_test(module,'Unable to run tests')
+            ts.skip_test(module.__name__,'Unable to run tests')
 
 
 if __name__ == '__main__':
@@ -90,5 +90,5 @@ if __name__ == '__main__':
     try:
         ts.run_nose(sys.argv[1])
     except:
-        ts.skip_test(module,'Unable to run tests')
+        ts.skip_test(sys.argv[1],'Unable to run nose tests (python-nose missing?)')
 
