@@ -1,5 +1,5 @@
 from __future__ import print_function
-from unittest import TestCase,TestSuite
+from unittest import TestCase,TestSuite,SkipTest
 import numpy
 
 class dataTests(TestCase):
@@ -503,4 +503,12 @@ class dataTests(TestCase):
 def suite():
     tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
     return TestSuite(map(dataTests,tests))
+
+
+#if __name__ == '__main__':
+#    try:
+#        import testing
+#        testing.run()
+#    except:
+#        pass
 

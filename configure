@@ -12760,6 +12760,52 @@ MOSTLYCLEANFILES += $(valgrind_log_files)
  abs_srcdir=$(cd ${srcdir}; pwd)
 
 
+  # Extract the first word of "nosetests", so it can be a program name with args.
+set dummy nosetests; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_NOSETESTS+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$NOSETESTS"; then
+  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_NOSETESTS="nosetests"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+NOSETESTS=$ac_cv_prog_NOSETESTS
+if test -n "$NOSETESTS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
+$as_echo "$NOSETESTS" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if test x"${NOSETESTS}" != x""; then :
+  :
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"python-nose not found\"" >&5
+$as_echo "$as_me: WARNING: \"python-nose not found\"" >&2;}
+fi
+
+
+
 
     if test -z $PYTHON;
     then
@@ -12876,63 +12922,18 @@ fi
 
 
   if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
-  eval as_fn_append PY_LOG_COMPILER_TAP "${NOSETESTS}"
-    as_fn_append PY_LOG_FLAGS_TAP "--with-tap --tap-stream"
+  :
 else
-  eval
- as_fn_append PY_LOG_COMPILER_TAP "sh -c \\\"exit 77\\\"; :"
-
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tap plugin for python-nose not found\"" >&5
+$as_echo "$as_me: WARNING: \"Tap plugin for python-nose not found\"" >&2;}
 fi
 
 
+ as_fn_append PY_LOG_COMPILER "${PYTHON} \$(top_srcdir)/testing/testing.py"
+ as_fn_append PY_LOG_FLAGS ""
 
-  # Extract the first word of "nosetests", so it can be a program name with args.
-set dummy nosetests; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_NOSETESTS+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$NOSETESTS"; then
-  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_NOSETESTS="nosetests"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-NOSETESTS=$ac_cv_prog_NOSETESTS
-if test -n "$NOSETESTS"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
-$as_echo "$NOSETESTS" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  if test x"${NOSETESTS}" != x""; then :
-  eval as_fn_append PY_LOG_COMPILER "${NOSETESTS}"
-    as_fn_append PY_LOG_FLAGS ""
-else
-  eval
- as_fn_append PY_LOG_COMPILER "sh -c \\\"exit 77\\\"; :"
-
-fi
-
-
+ as_fn_append PY_LOG_COMPILER_TAP "${PYTHON} \$(top_srcdir)/testing/testing.py"
+ as_fn_append PY_LOG_FLAGS_TAP ""
 
  case "${build_os}:${host}" in #(
   #
@@ -13303,7 +13304,6 @@ done
  # (see Bug #26263 for details)
       as_fn_append VALGRIND_memcheck_FLAGS "--workaround-gcc296-bugs=yes  "
 
-
 else
 
  as_fn_append LOG_COMPILER "sh -c \\\"exit 77\\\"; :"
@@ -13319,7 +13319,7 @@ fi
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
   ;; #(
   #
  # OTHER
@@ -13331,7 +13331,7 @@ $as_echo "$as_me: WARNING: \"Tests may not be supported for this host!\"" >&2;}
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
   ;; #(
   *) :
      ;;

@@ -56,27 +56,27 @@ AC_DEFUN([TS_WINE_LIBRARIESPATH],[
           done
           ]) dnl YN
          ]) dnl _ts_winepath
-         
+
          dnl TODO:  m4_ifval(m4_normalize([cond]), if-text, if-blank)
-         _ts_winepath()         
-         
+         _ts_winepath()
+
          m4_popdef([_ts_winepath])
          m4_popdef([libdir])
 ])
 
 
 dnl TS_WINE_ENV [WINEPREFIX] [WINEARCH]
-dnl 
+dnl
 AC_DEFUN([TS_WINE_ENV],[
-  
+
   dnl select wine architecture
   AS_CASE([${host}],
           [i686*mingw*],   [AS_VAR_SET([winebottle_name],["winebottle_mingw32"]) AS_VAR_SET([$2],["win32"])],
           [x86_64*mingw*], [AS_VAR_SET([winebottle_name],["winebottle_mingw64"]) AS_VAR_SET([$2],["win64"])] )
-          
+
   dnl select a wine bottle
   AC_ARG_WITH(winebottle,
-              [AS_HELP_STRING([--with-winebottle],[specify bottle])],  
+              [AS_HELP_STRING([--with-winebottle],[specify bottle])],
               [],
               [AS_VAR_SET_IF([winebottle],
                              [AS_VAR_SET([with_winebottle], ["${WINEPREFIX}"])],
@@ -91,7 +91,7 @@ AC_DEFUN([TS_WINE_ENV],[
    ])
   AS_VAR_SET([$1],[${with_winebottle}])
   ]) dnl HAVE_WINE
-]) 
+])
 
 
 
@@ -101,20 +101,20 @@ dnl /// TS PYTHON  /////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 
 AC_DEFUN([TS_CHECK_NOSETESTS],[
-  AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])  
+  AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])
   AS_IF(test x"${NOSETESTS}" != x"",
-   [eval $2],
-   [eval $3])
+   [$2],
+   [$3])
 ])
 
 dnl TEST for python modules
 AC_DEFUN([TS_CHECK_PYTHON_TAP],[
   AC_PYTHON_MODULE(tap)
   AC_PYTHON_MODULE_CLASS(tap, TAPTestRunner, [have_tappy="yes"],)
-  AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])  
+  AC_CHECK_PROG([NOSETESTS], [nosetests], [nosetests])
   AS_IF(test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x"",
-   [eval $2],
-   [eval $3])
+   [$2],
+   [$3])
 ])
 
 
@@ -133,11 +133,11 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS SELECT HOST  ////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 
-dnl 
+dnl
 dnl This function select from current build_os and host target the proper env to
 dnl correctly call the test chain.
 dnl The test chain is composed by: [tests_env] [log_driver] [log_compiler] [test_flags]
-dnl 
+dnl
 AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([TESTS_ENVIRONMENT])
  AS_VAR_SET([LOG_COMPILER])
@@ -150,47 +150,55 @@ AC_DEFUN([TS_SELECT],[
 
  AS_VAR_SET([abs_srcdir],$(cd ${srcdir}; pwd))
 
- TS_CHECK_PYTHON_TAP( [$PYTHON], 
-   [AS_VAR_APPEND([PY_LOG_COMPILER_TAP],["${NOSETESTS}"])
-    AS_VAR_APPEND([PY_LOG_FLAGS_TAP],   ["--with-tap --tap-stream"])],
-   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
+ TS_CHECK_NOSETESTS( [$PYTHON],
+ [:],
+ [AC_MSG_WARN("python-nose not found")])
+dnl   [AS_VAR_APPEND([PY_LOG_COMPILER],["${NOSETESTS}"])
+dnl    AS_VAR_APPEND([PY_LOG_FLAGS],   [""])],
+dnl   [TS_LOG_SKIP([PY_LOG_COMPILER])])
 
- TS_CHECK_NOSETESTS( [$PYTHON], 
-   [AS_VAR_APPEND([PY_LOG_COMPILER],["${NOSETESTS}"])
-    AS_VAR_APPEND([PY_LOG_FLAGS],   [""])],
-   [TS_LOG_SKIP([PY_LOG_COMPILER])])
- 
+ TS_CHECK_PYTHON_TAP( [$PYTHON],
+ [:],
+ [AC_MSG_WARN("Tap plugin for python-nose not found")])
+dnl   [AS_VAR_APPEND([PY_LOG_COMPILER_TAP],["${NOSETESTS}"])
+dnl    AS_VAR_APPEND([PY_LOG_FLAGS_TAP],   ["--with-tap --tap-stream"])],
+dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
+
+ AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} \$(top_srcdir)/testing/testing.py"])
+ AS_VAR_APPEND([PY_LOG_FLAGS], [""])
+
+ AS_VAR_APPEND([PY_LOG_COMPILER_TAP],  ["${PYTHON} \$(top_srcdir)/testing/testing.py"])
+ AS_VAR_APPEND([PY_LOG_FLAGS_TAP], [""])
 
  AS_CASE(["${build_os}:${host}"],
  #
  # LINUX->MINGW
  #
- [*linux*:*mingw*], 
+ [*linux*:*mingw*],
  [
    AS_ECHO("Set tests environment for linux->mingw")
    AS_VAR_SET_IF([HAVE_WINE],,[AC_CHECK_PROG(HAVE_WINE,wine,yes,no)])
    AS_VAR_IF([HAVE_WINE],[yes],
      [
-      TS_WINE_ENV([WINEPREFIX],[WINEARCH]) 
-      TS_WINE_LIBRARIESPATH([WINEPATH])      
+      TS_WINE_ENV([WINEPREFIX],[WINEARCH])
+      TS_WINE_LIBRARIESPATH([WINEPATH])
       TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=${_mds_path} ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"VALGRIND_LIB=/usr/lib64/valgrind ")      
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"VALGRIND_LIB=/usr/lib64/valgrind ")
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
 
  # WINE Valgrind tuning ..
  # see: http://wiki.winehq.org/WineAndValgrind
  #
- # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind 
+ # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
       AS_VAR_APPEND([VALGRIND_FLAGS],"--vex-iropt-register-updates=allregs-at-mem-access ")
  #
- # quiets warnings about accesses slightly below the stack pointer. This is due 
- # to a known but benign piece of code in Wine's ntdll 
- # (see Bug #26263 for details) 
+ # quiets warnings about accesses slightly below the stack pointer. This is due
+ # to a known but benign piece of code in Wine's ntdll
+ # (see Bug #26263 for details)
       AS_VAR_APPEND([VALGRIND_memcheck_FLAGS],"--workaround-gcc296-bugs=yes  ")
-      
      ],
      [TS_LOG_SKIP([LOG_COMPILER])])
  ],
@@ -203,7 +211,7 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
  ],
  #
  # OTHER
@@ -214,11 +222,11 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
  ])
 
-# MACOS: add --dsymutil=yes to valgrind 
- 
+# MACOS: add --dsymutil=yes to valgrind
+
 
 ])
 
@@ -234,7 +242,7 @@ AC_DEFUN([TS_TEST],[
  AS_ECHO( --- )
 
  TS_WINEPATH([WINEPATH],[/bin,/lib])
- TS_DEBUG_VAR(WINEPATH) 
+ TS_DEBUG_VAR(WINEPATH)
 dnl TS_SELECT()
 dnl TS_DEBUG_VAR(WINEPATH)
 dnl TS_DEBUG_VAR(TESTS_ENVIRONMENT)
@@ -280,9 +288,9 @@ dnl        "$$tst" $(AM_TESTS_FD_REDIRECT)
 
 
 
-dnl # 
+dnl #
 dnl # nosetests alternative TODO: add this with nosetests check
-dnl # 
+dnl #
 dnl _tap_py_execute = \
 dnl import unittest; \
 dnl import tap; \
@@ -293,7 +301,7 @@ dnl loader = unittest.TestLoader(); \
 dnl tests = loader.loadTestsFromName(sys.argv[1]); \
 dnl tr = tap.TAPTestRunner(); \
 dnl tr.set_stream(1); \
-dnl tr.run(tests); 
+dnl tr.run(tests);
 
 dnl #prova:
 dnl #	echo $(TEST_LOGS);

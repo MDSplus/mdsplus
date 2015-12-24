@@ -750,8 +750,8 @@ PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
-PY_LOG_COMPILER = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER@,@TESTS_SKIP@)
-PY_LOG_COMPILER_TAP = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER_TAP@,@TESTS_SKIP@)
+PY_LOG_COMPILER = @PY_LOG_COMPILER@
+PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
 PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
 PY_LOG_FLAGS = @PY_LOG_FLAGS@
 PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
@@ -875,7 +875,6 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
-PY_ARCH_TEST = $(shell $(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@)
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -1767,6 +1766,8 @@ tests:
 LOG_DRIVER          ?= @LOG_DRIVER@
 TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
 LOG_COMPILER        ?= @LOG_COMPILER@
+PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 
 $(TEST_BUILD_TAP): rebuild-tests
 	@ \
@@ -1788,9 +1789,7 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 	@ \
 	echo "Run tests with tap result"; \
 	export TEST_FORMAT="tap"; \
-	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS  \
-	 PY_LOG_COMPILER="$(PY_LOG_COMPILER_TAP)" \
-	 PY_LOG_FLAGS="$(PY_LOG_FLAGS_TAP)"; \
+	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS;  \
 	\
 	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 	else suite="$@"; \

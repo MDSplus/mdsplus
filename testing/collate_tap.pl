@@ -18,7 +18,11 @@ foreach my $file (@files) {
       while ( my $result = $parser->next ) {
         if( $result->is_test ) {
           $test_count += 1;
-          printf "%s %d %s \n", $result->ok, $test_count, $result->description;
+          if( $result->has_skip || $result->has_todo ) {
+            printf "%s %d %s # %s %s \n", $result->ok, $test_count, $result->description,
+                              $result->directive, $result->explanation; }
+          else {
+            printf "%s %d %s \n", $result->ok, $test_count, $result->description; }
         }
       }            
       $aggregate->add($file, $parser);
