@@ -135,8 +135,8 @@ void __mark_point(const char *__assertion, const char *__file,
 #define TEST0(expr)           (__ASSERT_VOID_CAST (0))
 #define BEGIN_TESTING(description) {    
 #define END_TESTING }
-#define SKIP_TEST  __test_abort(77);
-#define ABORT_TEST __test_abort(99);
+#define SKIP_TEST  __test_abort(77,"SKIP: ", __FILE__,__LINE__,"");
+#define ABORT_TEST __test_abort(99,"ERROR: ",__FILE__,__LINE__,"");
 #else
 
 #define TEST_FORK(value)    __test_setfork(value);
