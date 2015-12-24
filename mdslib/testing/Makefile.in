@@ -13,6 +13,11 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -94,10 +99,14 @@ subdir = mdslib/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
+	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
+	$(top_srcdir)/m4/m4_ax_is_release.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
+	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
+	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
@@ -353,7 +362,6 @@ am__set_TESTS_bases = \
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
 TEST_SUITE_LOG = test-suite.log
-LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
 LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
   case '$@' in \
@@ -495,6 +503,8 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LOG_COMPILER = @LOG_COMPILER@
+LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
@@ -506,7 +516,6 @@ MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
 MAKEUIDDIR = @MAKEUIDDIR@
-MAKE_COMMAND_OVERRIDE = @MAKE_COMMAND_OVERRIDE@
 MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@
@@ -528,15 +537,23 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PYTHON = @PYTHON@
+PYTHON_ARCHITECTURE = @PYTHON_ARCHITECTURE@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
+PY_LOG_COMPILER = @PY_LOG_COMPILER@
+PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
+PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@
+PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
+PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -560,20 +577,20 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
-TS_LOG_COMPILER = @TS_LOG_COMPILER@
-TS_LOG_DRIVER = @TS_LOG_DRIVER@
-TS_PY_TAP_COMPILER = @TS_PY_TAP_COMPILER@
-TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
 VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
 VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
 VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
+VALGRIND_memcheck_FLAGS = @VALGRIND_memcheck_FLAGS@
 VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
@@ -652,32 +669,9 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-PY_LOG_COMPILER = $(PYTHON)
-PY_LOG_FLAGS = -v
 
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
-LOG_COMPILER = @TS_LOG_COMPILER@
-TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
-
-# use default ...
-# LOG_DRIVER        = @TS_LOG_DRIVER@
+# ///  select test form env variable  //////////////////////////////////////// #
+TEST_BUILDTYPE = local
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -829,6 +823,112 @@ distclean-tags:
 am--fnord $(TEST_LOGS) $(TEST_LOGS:.log=.trs): $(am__force_recheck)
 am--force-recheck:
 	@:
+
+$(TEST_SUITE_LOG): $(TEST_LOGS)
+	@$(am__set_TESTS_bases); \
+	am__f_ok () { test -f "$$1" && test -r "$$1"; }; \
+	redo_bases=`for i in $$bases; do \
+	              am__f_ok $$i.trs && am__f_ok $$i.log || echo $$i; \
+	            done`; \
+	if test -n "$$redo_bases"; then \
+	  redo_logs=`for i in $$redo_bases; do echo $$i.log; done`; \
+	  redo_results=`for i in $$redo_bases; do echo $$i.trs; done`; \
+	  if $(am__make_dryrun); then :; else \
+	    rm -f $$redo_logs && rm -f $$redo_results || exit 1; \
+	  fi; \
+	fi; \
+	if test -n "$$am__remaking_logs"; then \
+	  echo "fatal: making $(TEST_SUITE_LOG): possible infinite" \
+	       "recursion detected" >&2; \
+	elif test -n "$$redo_logs"; then \
+	  am__remaking_logs=yes $(MAKE) $(AM_MAKEFLAGS) $$redo_logs; \
+	fi; \
+	if $(am__make_dryrun); then :; else \
+	  st=0;  \
+	  errmsg="fatal: making $(TEST_SUITE_LOG): failed to create"; \
+	  for i in $$redo_bases; do \
+	    test -f $$i.trs && test -r $$i.trs \
+	      || { echo "$$errmsg $$i.trs" >&2; st=1; }; \
+	    test -f $$i.log && test -r $$i.log \
+	      || { echo "$$errmsg $$i.log" >&2; st=1; }; \
+	  done; \
+	  test $$st -eq 0 || exit 1; \
+	fi
+	@$(am__sh_e_setup); $(am__tty_colors); $(am__set_TESTS_bases); \
+	ws='[ 	]'; \
+	results=`for b in $$bases; do echo $$b.trs; done`; \
+	test -n "$$results" || results=/dev/null; \
+	all=`  grep "^$$ws*:test-result:"           $$results | wc -l`; \
+	pass=` grep "^$$ws*:test-result:$$ws*PASS"  $$results | wc -l`; \
+	fail=` grep "^$$ws*:test-result:$$ws*FAIL"  $$results | wc -l`; \
+	skip=` grep "^$$ws*:test-result:$$ws*SKIP"  $$results | wc -l`; \
+	xfail=`grep "^$$ws*:test-result:$$ws*XFAIL" $$results | wc -l`; \
+	xpass=`grep "^$$ws*:test-result:$$ws*XPASS" $$results | wc -l`; \
+	error=`grep "^$$ws*:test-result:$$ws*ERROR" $$results | wc -l`; \
+	if test `expr $$fail + $$xpass + $$error` -eq 0; then \
+	  success=true; \
+	else \
+	  success=false; \
+	fi; \
+	br='==================='; br=$$br$$br$$br$$br; \
+	result_count () \
+	{ \
+	    if test x"$$1" = x"--maybe-color"; then \
+	      maybe_colorize=yes; \
+	    elif test x"$$1" = x"--no-color"; then \
+	      maybe_colorize=no; \
+	    else \
+	      echo "$@: invalid 'result_count' usage" >&2; exit 4; \
+	    fi; \
+	    shift; \
+	    desc=$$1 count=$$2; \
+	    if test $$maybe_colorize = yes && test $$count -gt 0; then \
+	      color_start=$$3 color_end=$$std; \
+	    else \
+	      color_start= color_end=; \
+	    fi; \
+	    echo "$${color_start}# $$desc $$count$${color_end}"; \
+	}; \
+	create_testsuite_report () \
+	{ \
+	  result_count $$1 "TOTAL:" $$all   "$$brg"; \
+	  result_count $$1 "PASS: " $$pass  "$$grn"; \
+	  result_count $$1 "SKIP: " $$skip  "$$blu"; \
+	  result_count $$1 "XFAIL:" $$xfail "$$lgn"; \
+	  result_count $$1 "FAIL: " $$fail  "$$red"; \
+	  result_count $$1 "XPASS:" $$xpass "$$red"; \
+	  result_count $$1 "ERROR:" $$error "$$mgn"; \
+	}; \
+	{								\
+	  echo "$(PACKAGE_STRING): $(subdir)/$(TEST_SUITE_LOG)" |	\
+	    $(am__rst_title);						\
+	  create_testsuite_report --no-color;				\
+	  echo;								\
+	  echo ".. contents:: :depth: 2";				\
+	  echo;								\
+	  for b in $$bases; do echo $$b; done				\
+	    | $(am__create_global_log);					\
+	} >$(TEST_SUITE_LOG).tmp || exit 1;				\
+	mv $(TEST_SUITE_LOG).tmp $(TEST_SUITE_LOG);			\
+	if $$success; then						\
+	  col="$$grn";							\
+	 else								\
+	  col="$$red";							\
+	  test x"$$VERBOSE" = x || cat $(TEST_SUITE_LOG);		\
+	fi;								\
+	echo "$${col}$$br$${std}"; 					\
+	echo "$${col}Testsuite summary for $(PACKAGE_STRING)$${std}";	\
+	echo "$${col}$$br$${std}"; 					\
+	create_testsuite_report --maybe-color;				\
+	echo "$$col$$br$$std";						\
+	if $$success; then :; else					\
+	  echo "$${col}See $(subdir)/$(TEST_SUITE_LOG)$${std}";		\
+	  if test -n "$(PACKAGE_BUGREPORT)"; then			\
+	    echo "$${col}Please report to $(PACKAGE_BUGREPORT)$${std}";	\
+	  fi;								\
+	  echo "$$col$$br$$std";					\
+	fi;								\
+	$$success || exit 1
 
 check-TESTS:
 	@list='$(RECHECK_LOGS)';           test -z "$$list" || rm -f $$list
@@ -1046,27 +1146,31 @@ uninstall-am:
 
 
 include @top_builddir@/Makefile.inc
-
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  select test form env variable  //////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
+TEST_FORMAT    ?= tap
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
 
+.PHONY: rebuild-tests
+rebuild-tests:
+	@ \
+	rm -f *.$(OBJEXT); \
+	rm -f $(check_PROGRAMS); \
+	if [ -n "$${VALGRIND_BUILD}" ]; then \
+	 echo "building clean tests for valgrind"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all; \
+	else \
+	 echo "building tests using D_TESTING set"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	fi;
+
+.PHONY: tests
 tests:
-	echo "Making tests ... "
-	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) tap;
-	else
-	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
-	fi
+	@echo "Making tests ... "; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
@@ -1074,13 +1178,21 @@ tests:
 
 @VALGRIND_CHECK_RULES@ 
 
-.ONESHELL:
-$(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
-	echo "TAP version 13" > $@;
-	count=0;
+LOG_DRIVER          ?= @LOG_DRIVER@
+TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
+LOG_COMPILER        ?= @LOG_COMPILER@
+PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
+
+$(TEST_BUILD_TAP): rebuild-tests
+	@ \
+	echo "Try to build targets one by one"; \
+	echo "TAP version 13" > $@; \
+	count=0; \
 	for i in $(check_PROGRAMS); do \
 	  if ! $(MAKE) -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
@@ -1091,18 +1203,18 @@ $(TEST_BUILD_TAP):
 	done; \
 	echo "1..$${count}" >> $@;
 
-.ONESHELL:
+.PHONY: $(TEST_SUITE_TAP)
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-	export TEST_FORMAT="tap";
-
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
-	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
-	 || exit 1;
-
-$(TEST_SUITE_LOG):
+	@ \
+	echo "Run tests with tap result"; \
+	export TEST_FORMAT="tap"; \
+	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS;  \
+	\
+	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+	else suite="$@"; \
+	fi; \
+	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
+	  || exit 1;
 
 $(TEST_SUITE_XML):
 
@@ -1112,7 +1224,20 @@ $(TEST_SUITE_XML):
 
 .PHONY: clean-local-tests
 clean-local-tests:
-	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
+
+.PHONY: tests-envdump
+tests-envdump:
+	@echo; \
+	echo ----------------------------------------------------------------; \
+	echo TESTS_ENVIRONMENT = ;\
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	 echo "     $${_i}"; \
+	done;
+
+print_shell:
+	@echo "SHELL = ${SHELL}"
 
 all-local: $(TESTS)
 clean-local: clean-local-tests

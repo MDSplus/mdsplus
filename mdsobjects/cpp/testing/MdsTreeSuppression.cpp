@@ -26,7 +26,7 @@ using namespace testing;
 
 int main(int argc, char *argv[])
 {
-
+    BEGIN_TESTING(MDSTreeSuppression);
 #ifdef _WIN32
     _putenv_s("leaktest_path",".");
 #else
@@ -34,19 +34,19 @@ int main(int argc, char *argv[])
 #endif
     
     Tree * tree = new Tree("leaktest",-1,"NEW");    
-    Tree * tree2 = new Tree("leaktest",-1,"EDIT");
+    tree->write();
+    delete tree;
+
+    tree = new Tree("leaktest",-1,"EDIT");
 
     TreeNode * node = tree->addNode("dummy_node","NUMERIC");
     delete node;
       
-    TreeNode * node2 = tree2->addNode("dummy_node","TEXT");
+    TreeNode * node2 = tree->addNode("dummy_node2","TEXT");
     delete node2;
         
     tree->write();
-    tree2->write();       
-    
-    delete tree2;
-    delete tree;       
-    return 0;
+    delete tree;
+    END_TESTING;
 }
 

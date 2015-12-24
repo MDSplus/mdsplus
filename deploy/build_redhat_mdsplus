@@ -26,8 +26,13 @@ cd /buildsrc
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
+
+echo " --- MAKING TESTS 64bit --- "
+make -k tests
+
 make install
-make clean >/dev/null;
+make clean >/dev/null
+
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \
             --with-labview=/3rd-party-apis-master/labview \
@@ -49,8 +54,13 @@ then
 else
   export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
 fi
+
+echo " --- MAKING TESTS 32bit --- "
+make -k tests
+
 make install
-make clean >/dev/null;
+make clean >/dev/null
+
 #
 # Build the debug version of code for testing
 # with valgrind. Currently the testing is done with python tests so
@@ -58,8 +68,8 @@ make clean >/dev/null;
 # other tests we may want to test both 64-bit and 32-bit.
 #
 
-if ( echo "$@" | grep vg > /dev/null )
-then
+# if ( echo "$@" | grep vg > /dev/null )
+# then
     mkdir /dbgbuildroot
     ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
               --exec_prefix=/dbgbuildroot/usr/local/mdsplus \
@@ -70,19 +80,23 @@ then
               --bindir=/dbgbuildroot/usr/local/mdsplus/bin64 \
               --libdir=/dbgbuildroot/usr/local/mdsplus/lib64 \
               --host=x86-64-linux \
-              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FFLAGS="-g -O0"
+              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+              --enable-valgrind \
+              CFLAGS="-g3 -O0" CPPFLAGS="-g3 -O0" CXXFLAGS="-g3 -O0" FFLAGS="-g3 -O0"
     make clean > /dev/null
     env LANG=en_US.UTF-8 make
+    
+    echo " --- MAKING VALGRIND TESTS 64bit --- "
+    make -k tests-valgrind
     make install
-fi
-
-if (( "$#" ))
-then
-    echo Doing tests: $@
-    export LIBDIR=lib64
-    chmod a+x ./deploy/do_tests
-    ./deploy/do_tests $@
-fi
+# fi
+# if (( "$#" ))
+# then
+#    echo Doing tests: $@
+#    export LIBDIR=lib64
+#    chmod a+x ./deploy/do_tests
+#    ./deploy/do_tests $@
+# fi
 
 #
 # IF the /installer directory is found then build a repository with the new rpm's in it.

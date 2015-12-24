@@ -1,0 +1,218 @@
+#!/bin/bash
+
+# set -e
+# set -o verbose
+
+SCRIPTNAME=$(basename "$0")
+SCRIPT_DIR=$(dirname "$0")
+
+SRCDIR=${SRCDIR:=${SCRIPT_DIR}/../}
+BUILDDIR=${BUILDDIR:=$(pwd)}
+MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+CONFIG_FILE=${CONFIG_FILE:=/usr/local/bin/build_mdsplus.conf}
+
+# evaluate config file
+if [ -f ${CONFIG_FILE} ]; then 
+ echo "Reading config file: ${CONFIG_FILE}"
+ source ${CONFIG_FILE}
+fi
+
+print_help() {
+cat << EOF
+
+Usage: $SCRIPTNAME [options] [commands]
+
+       options
+       -------
+       -h|-help|--help)           get this help      
+       -c|-config|--config)       set distribution config file
+       -b|-builddir|--builddir)   set build directory
+       -r|-prefix|--prefix)       set target root directory
+       
+EOF
+}
+
+## parse cmd parameters:
+while [[ "$1" == -* ]] ; do
+	case "$1" in
+		-h|-help|--help)
+			print_help
+			exit
+			;;
+		-c|-config|--config)
+		        CONFIG_FILE=$2
+			shift 2
+			;;
+		-s|-srcdir|--srcdir)
+		        SRCDIR=$2
+			shift 2
+			;;
+		-b|-builddir|--builddir)
+			BUILDDIR=$2
+			shift 2
+			;;
+		-p|-prefix|--prefix)
+			MDSPLUS_DIR=$2
+			shift 2
+			;;
+		-docker-image|--docker-image)
+		        DOKER_IMAGE=$2
+			shift 2
+			;;
+	        -v|-verbose|--verbose)
+		        set -o verbose
+			shift
+			;;
+		--)
+			#echo "-- found"
+			shift
+			break
+			;;
+		*)
+		        break
+			;;
+	esac
+done
+
+if [ $# -lt 1 ] ; then
+	echo "Incorrect parameters. Use --help for usage instructions."
+	exit 1
+fi
+
+## get absoulute paths
+ABS_SRCDIR=$(cd ${SRCDIR}; pwd)
+ABS_BUILDDIR=$(cd ${SRCDIR}; pwd)
+
+## ensure mdsplusdir is set
+MDSPLUS_DIR=${MDSPLUS_DIR:=${ABS_BUILDDIR}}
+
+
+function install_prefix () {
+ [ -d $1 ] || mkdir -p $1
+ pushd $1
+ # Get the 3rd party software headers etc from github
+ if [ ! -d 3rd-party-apis-master ]; then
+  wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (tar zxf -)
+ fi
+ popd
+}
+
+
+
+function set_args() {
+   ## setup configure arguments
+   if [ -n "${DOCKER_IMAGE}" ]; then
+    _docker_args="--with-docker-image=${DOCKER_IMAGE}"
+   fi
+
+   if [ -n "${VALGRIND_LIB}" ]; then
+    _valgrind_args="--enable-valgrind"
+   fi
+   
+   if [ -n "${JDK_DIR}" ]; then
+    _java_args="--with-jdk=${JDK_DIR}"
+   else
+    _java_args="--disable-java"
+   fi
+}
+
+
+
+function build_64()  {
+  echo /////////////////////////////////////////////////////////////////////////
+  echo /// BUILD 64bit  ////////////////////////////////////////////////////////
+  echo /////////////////////////////////////////////////////////////////////////
+
+   install_prefix ${MDSPLUS_DIR}   
+   set_args
+
+   [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
+   pushd ${BUILDDIR}
+   ${ABS_SRCDIR}/configure \
+            --prefix=${MDSPLUS_DIR} \
+            --exec_prefix=${MDSPLUS_DIR}  \
+            --bindir=${MDSPLUS_DIR}/bin64 \
+            --libdir=${MDSPLUS_DIR}/lib64 \
+            --with-idl=${MDSPLUS_DIR}/3rd-party-apis-master/idl \
+            --with-labview=${MDSPLUS_DIR}/3rd-party-apis-master/labview \
+            --with-gsi=/usr:gcc64 \
+            --host=x86-64-linux   \
+            --with-java_target=6  \
+            --with-java_bootclasspath=${SRCDIR}/rt.jar \
+            ${_java_args}     \
+            ${_valgrind_args} \
+            ${_docker_args}   \
+            $@;
+   
+   make clean > /dev/null
+   $MAKE
+   echo 
+   echo " --- MAKING TESTS 64bit --- "
+   $MAKE -k tests TEST_FORMAT=tap
+   echo 
+   echo " --- MAKING TESTS 64bit --- "
+   $MAKE -k tests-valgrind TEST_FORMAT=tap
+
+   popd
+   exit
+};
+
+function build_32()  {
+  echo /////////////////////////////////////////////////////////////////////////
+  echo /// BUILD 32bit  ////////////////////////////////////////////////////////
+  echo /////////////////////////////////////////////////////////////////////////
+   
+   install_prefix ${MDSPLUS_DIR}   
+   set_args
+
+   [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
+   pushd ${BUILDDIR}
+   ${ABS_SRCDIR}/configure \
+            --prefix=${MDSPLUS_DIR} \
+            --exec_prefix=${MDSPLUS_DIR}  \
+            --bindir=${MDSPLUS_DIR}/bin32 \
+            --libdir=${MDSPLUS_DIR}/lib32 \
+            --with-idl=${MDSPLUS_DIR}/3rd-party-apis-master/idl \
+            --with-labview=${MDSPLUS_DIR}/3rd-party-apis-master/labview \
+            --with-gsi=/usr:gcc32 \
+            --host=i686-linux     \
+            --with-java_target=6  \
+            --with-java_bootclasspath=${SRCDIR}/rt.jar \
+            ${_java_args}     \
+            ${_valgrind_args} \
+            ${_docker_args}   \
+            $@;
+
+   make clean > /dev/null
+   $MAKE
+   echo 
+   echo " --- MAKING TESTS 32bit --- "
+   $MAKE -k tests TEST_FORMAT=tap
+   echo 
+   echo " --- MAKING TESTS 32bit --- "
+   $MAKE -k tests-valgrind TEST_FORMAT=tap
+
+   popd
+   exit
+};
+
+
+
+
+echo ///////////////////////////////////////////////////////////////////////////
+echo /// build_redhat_tests ////////////////////////////////////////////////////
+echo ///////////////////////////////////////////////////////////////////////////
+echo 
+
+eval $1 ${@:2}
+exit
+
+
+
+
+
+
+
+
+
+

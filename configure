@@ -585,6 +585,7 @@ PACKAGE_STRING='MDSplus 6.0a'
 PACKAGE_BUGREPORT='mdsplus@lists.psfc.mit.edu'
 PACKAGE_URL=''
 
+ac_unique_file="include/mdsdescrip.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -763,12 +764,21 @@ DX_PROJECT
 HAVE_CUTE_DOXYGEN_FALSE
 HAVE_CUTE_DOXYGEN_TRUE
 DOXYGEN
-TS_PY_TAP_COMPILER
-TS_LOG_DRIVER
-TS_LOG_COMPILER
-TS_TESTS_ENVIRONMENT
+VALGRIND_memcheck_FLAGS
+VALGRIND_FLAGS
+TESTS_SKIP
+PY_LOG_FLAGS_XML
+PY_LOG_COMPILER_XML
+PY_LOG_FLAGS_TAP
+PY_LOG_COMPILER_TAP
+PY_LOG_FLAGS
+PY_LOG_COMPILER
+LOG_DRIVER
+LOG_COMPILER
+TESTS_ENVIRONMENT
 HAVE_WINEPATH
 HAVE_WINEBOOT
+NOSETESTS
 VALGRIND_CHECK_RULES
 VALGRIND_HAVE_TOOL_exp_sgcheck
 VALGRIND_HAVE_TOOL_drd
@@ -778,13 +788,14 @@ VALGRIND_ENABLED
 VALGRIND_ENABLED_FALSE
 VALGRIND_ENABLED_TRUE
 VALGRIND
-NOSETESTS
+PERL
 HAVE_WINECONSOLE_FALSE
 HAVE_WINECONSOLE_TRUE
 HAVE_WINECONSOLE
 HAVE_WINE_FALSE
 HAVE_WINE_TRUE
 HAVE_WINE
+PYTHON_ARCHITECTURE
 HAVE_PYTHON_FALSE
 HAVE_PYTHON_TRUE
 pkgpyexecdir
@@ -905,7 +916,6 @@ build_os
 build_vendor
 build_cpu
 build
-MAKE_COMMAND_OVERRIDE
 DK_DOCKER_TARGETS
 HAVE_DOCKER
 target_alias
@@ -951,8 +961,10 @@ ac_user_opts='
 enable_option_checking
 with_docker_image
 with_docker_container
+with_docker_url
 enable_silent_rules
 enable_maintainer_mode
+enable_debug
 enable_dependency_tracking
 enable_largefile
 enable_shared
@@ -1637,6 +1649,8 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
+  --enable-debug=[yes/info/profile/no]
+                          compile with debugging
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
@@ -1666,6 +1680,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-docker-image     specify docker images
   --with-docker-container specify docker container
+  --with-docker-url       specify docker url
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
@@ -2845,11 +2860,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-if test "x$HAVE_DOCKER" = xno; then :
-
-fi
-
-
 
    if ${HAVE_DOCKER+:} false; then :
 
@@ -2933,13 +2943,70 @@ fi
 fi
 
 
+# Check whether --with-docker-url was given.
+if test "${with_docker_url+set}" = set; then :
+  withval=$with_docker_url;
+else
+  if ${DOCKER_URL+:} false; then :
+  with_docker_url="${DOCKER_URL}"
+fi
+fi
+
+   if ${with_docker_url+:} false; then :
+  if test x"${with_docker_url}" != x"no"; then :
+  DOCKER_URL="${with_docker_url}"
+else
+  { DOCKER_URL=; unset DOCKER_URL;}
+
+fi
+fi
+
+
   if test "x$HAVE_DOCKER" = xyes; then :
 
-  if ${DOCKER_IMAGE+:} false; then :
-  $as_echo
-     sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
-## //// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   ////// ##
+
+
+
+  if ${DOCKER_URL+:} false; then :
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "BUILDING IMAGE FOR URL: ${DOCKER_URL}" ////// ##
 _ASBOX
+          $as_echo
+
+
+         if ${DOCKER_IMAGE+:} false; then :
+
+else
+  DOCKER_IMAGE=build_$(echo $(pwd) | md5sum | awk '{print $1}')
+fi
+
+
+   dk_build_args=
+   if ${http_proxy+:} false; then :
+  as_fn_append dk_build_args "--build-arg http_proxy=\"${http_proxy}\" "
+fi
+   if ${https_proxy+:} false; then :
+  as_fn_append dk_build_args "--build-arg https_proxy=\"${https_proxy}\" "
+fi
+
+      if ${DOCKER_URL+:} false; then :
+  echo docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL};
+                 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
+fi
+
+
+fi
+
+  if ${DOCKER_IMAGE+:} false; then :
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}" ////// ##
+_ASBOX
+          $as_echo
+
 
 
          if ${DOCKER_CONTAINER+:} false; then :
@@ -2987,25 +3054,11 @@ IFS=${_save_IFS}
 
 
 
+
+   $as_echo "Pulling image: ${DOCKER_IMAGE}"
+   docker pull ${DOCKER_IMAGE};
+
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
-
-         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
-
-   if test -n "${dk_image}"; then :
-  $as_echo "using docker image: ${dk_image}"
-else
-  eval docker pull ${DOCKER_IMAGE}
-
-         dk_image=$(docker images -a -q ${DOCKER_IMAGE})
-
-          if test -n "${dk_image}"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: \"pulled docker image: ${dk_image}\"" >&5
-$as_echo "$as_me: \"pulled docker image: ${dk_image}\"" >&6;}
-else
-  as_fn_error $? "\"Could not pull the requested image\"" "$LINENO" 5
-fi
-
-fi
 
 
          dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
@@ -3023,12 +3076,23 @@ else
 fi
 fi
 
-
-
       if test -n "${dk_id}"; then :
 
 else
-  $as_echo "CREATES";eval docker run -d -it --entrypoint=/bin/sh -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/passwd:/etc/passwd -v /etc/group:/etc/group -v /etc/shadow:/etc/shadow -v /home:/home -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE}
+  $as_echo "CREATE ";
+  user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+  user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+  user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+  user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+  group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+  user_groups=$(id -G ${USER} | sed 's/ /,/g')
+  abs_srcdir=$(cd ${srcdir}; pwd)
+
+
+  docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
+
+  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
@@ -3135,14 +3199,15 @@ fi
 esac
 
 
-     $as_echo
-
 else
   if ${DOCKER_CONTAINER+:} false; then :
-  $as_echo
-       sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
-## //// STARTING CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "STARTING CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
+          $as_echo
+
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
@@ -3247,34 +3312,199 @@ fi
     $as_echo "could not start docker container" ;;
 esac
 
-       $as_echo
-
 fi
 
 fi
 
   if ${DOCKER_CONTAINER+:} false; then :
 
-    $as_echo
-    sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
-## //// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   ////// ##
+
+user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+user_groups=$(id -G ${USER} | sed 's/ /,/g')
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
+
+
+
+
+read -d '' DK_DSHELLFILE << _as_read_EOF
+
+#!/bin/sh
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
+
+abs_srcdir=${abs_srcdir}
+abs_builddir=${abs_builddir}
+user_id=${user_id}
+user_group=${user_group}
+user_groups=${user_groups}
+user_home=${user_home}
+
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+quoted_args="\$(printf " %q" "\$\@")"
+[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
+
+
+_as_read_EOF
+
+
+$as_echo " Writing dshell file: ${abs_builddir}/dshell "
+$as_echo "${DK_DSHELLFILE}" > ${abs_builddir}/dshell
+chmod +x dshell
+
+
+
+
+read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+DOCKER_CONTAINER = ${DOCKER_CONTAINER}
+DOCKER_IMAGE     = ${DOCKER_IMAGE}
+
+user_id     = ${user_id}
+user_group  = ${user_group}
+user_groups = ${user_groups}
+user_home   = ${user_home}
+
+# if MAKESHELL is not defined use local dshell to enter docker container
+docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
+local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
+export SHELL = \${docker_SHELL}
+
+.PHONY: docker
+ifeq (docker,\$(MAKECMDGOALS))
+docker:
+	@ \
+	echo ; \
+	echo " This build was set to work with Docker: "; \
+	echo " ---------------------------------------------------------------- "; \
+	echo " This means that you should see a running docker container named: "; \
+	echo " ${DOCKER_CONTAINER}. 	"                                        ; \
+	echo " Using a map of the current srcdir and builddir and some envs the "; \
+	echo " build system should be able to launch make inside the container. "; \
+	echo " Use the usual make command and targets to build inside docker.   "; \
+	echo ; \
+	echo " Additional targets: "                                           ; \
+	echo " make docker start   <- run the docker container "               ; \
+	echo " make docker stop    <- stop and remove the docker container "   ; \
+	echo " make docker shell   <- launch a shell inside the container "    ; \
+	echo " make docker shell USER=root <- launch the shell as root "       ; \
+	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
+	echo ;
+else
+docker: ;
+endif
+
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+export SHELL = \${local_SHELL}
+
+.PHONY: info start stop shell inspect run
+inspect:
+	@echo "info:";
+	docker inspect \${DOCKER_CONTAINER}
+
+start:
+	@echo "Starting docker container:";
+	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+
+stop:
+	@echo "Stopping docker container:";
+	docker stop \${DOCKER_CONTAINER};
+	docker rm \${DOCKER_CONTAINER};
+
+shell:
+	@echo "Starting docker shell";
+	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
+	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
+
+endif
+
+_as_read_EOF
+
+
+
+
+
+fi
+
+  if ${DOCKER_CONTAINER+:} false; then :
+
+
+          $as_echo
+          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
+          $as_echo
 
-    $as_echo " --------------------------------- "
-    $as_echo " docker-image      = ${DOCKER_IMAGE}"
-    $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-    $as_echo " ac_configure_args = ${ac_configure_args}"
-    $as_echo " dk_configure_args = ${dk_configure_args}"
-    $as_echo " configure command = ${0}"
-    $as_echo " configure name    = $(basename ${0})"
-    $as_echo " --------------------------------- "
 
-    $as_echo
-    $as_echo " --- "
-    $as_echo " docker configure command: "
-       echo " DK_CMD_CONFIGURE "
-    $as_echo " --- "
-    $as_echo
+         $as_echo " --------------------------------- "
+         $as_echo " docker-image      = ${DOCKER_IMAGE}"
+         $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+         $as_echo " ac_configure_args = ${ac_configure_args}"
+         $as_echo " --------------------------------- "
+
+
+
+user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+user_groups=$(id -G ${USER} | sed 's/ /,/g')
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
+
+
+
+
+read -d '' DK_DSHELLFILE << _as_read_EOF
+
+#!/bin/sh
+# //////////////////////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
+
+abs_srcdir=${abs_srcdir}
+abs_builddir=${abs_builddir}
+user_id=${user_id}
+user_group=${user_group}
+user_groups=${user_groups}
+user_home=${user_home}
+
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+quoted_args="\$(printf " %q" "\$\@")"
+[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
+
+
+_as_read_EOF
+
+
+$as_echo " Writing dshell file: ${abs_builddir}/dshell "
+$as_echo "${DK_DSHELLFILE}" > ${abs_builddir}/dshell
+chmod +x dshell
+
 
 
 
@@ -3344,7 +3574,9 @@ fi;
          if ${DOCKER_CONTAINER+:} false; then :
   as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
 fi;
-
+         if ${DOCKER_FILE+:} false; then :
+  as_fn_append dk_configure_args "DOCKER_FILE=\"${DOCKER_FILE}\" "
+fi;
 
 
 
@@ -3368,49 +3600,19 @@ echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 
 fi
 
-
 else
-  if ${DOCKER_CONTAINER+:} false; then :
+
+   if ${DOCKER_CONTAINER+:} false; then :
 
 
-
-read -d '' DK_DMAKEFILE << _as_read_EOF
-
-#!/bin/sh
-# //////////////////////////////////////////////////////////////////////////// #
-# //// DOCKER MAKE  ////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-# requotes #
-for x in "\${@}" ; do
-    # try to figure out if quoting was required for the $x
-    if [[ "\$x" != "\${x%=*}" ]]; then
-        x=\${x%=*}"=\\""\${x#*=}"\\""
-    elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
-        x="\\\""\$x"\\\""
-    fi
-    echo \$x
-    _args=\$_args" "\$x
-done
-
-
-MAKE=make
-dmake () {
-echo
-echo " *** BUILDING IN DOCKER CONTAINER *** ";
-echo
-docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
-}
-
-dmake \${@}
-
-
-_as_read_EOF
-
-
-$as_echo " Writing dmake file: "
-$as_echo "${DK_DMAKEFILE}" > dmake
-chmod +x dmake
+user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+user_id=$(echo ${user_entry} | awk -F: '{print $3}')
+user_group=$(echo ${user_entry} | awk -F: '{print $4}')
+user_home=$(echo ${user_entry} | awk -F: '{print $6}')
+group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
+user_groups=$(id -G ${USER} | sed 's/ /,/g')
+abs_builddir=$(pwd)
+abs_srcdir=$(cd ${srcdir}; pwd)
 
 
 
@@ -3422,31 +3624,65 @@ read -d '' DK_DOCKER_TARGETS << _as_read_EOF
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+DOCKER_CONTAINER = ${DOCKER_CONTAINER}
+DOCKER_IMAGE     = ${DOCKER_IMAGE}
 
- \$(info ------ )
- \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
- \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
- \$(info DOCKER SHELL = \$(SHELL) )
- \$(info ------ )
+user_id     = ${user_id}
+user_group  = ${user_group}
+user_groups = ${user_groups}
+user_home   = ${user_home}
 
-.PHONY: docker docker-start
+# if MAKESHELL is not defined use local dshell to enter docker container
+docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
+local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
+export SHELL = \${docker_SHELL}
+
+.PHONY: docker
+ifeq (docker,\$(MAKECMDGOALS))
 docker:
-	@echo "Opening docker session:";
-	@echo "selected targets: \$(filter-out \,\$(MAKECMDGOALS))";
+	@ \
+	echo ; \
+	echo " This build was set to work with Docker: "; \
+	echo " ---------------------------------------------------------------- "; \
+	echo " This means that you should see a running docker container named: "; \
+	echo " ${DOCKER_CONTAINER}. 	"                                        ; \
+	echo " Using a map of the current srcdir and builddir and some envs the "; \
+	echo " build system should be able to launch make inside the container. "; \
+	echo " Use the usual make command and targets to build inside docker.   "; \
+	echo ; \
+	echo " Additional targets: "                                           ; \
+	echo " make docker start   <- run the docker container "               ; \
+	echo " make docker stop    <- stop and remove the docker container "   ; \
+	echo " make docker shell   <- launch a shell inside the container "    ; \
+	echo " make docker shell USER=root <- launch the shell as root "       ; \
+	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
+	echo ;
+else
+docker: ;
+endif
+
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+export SHELL = \${local_SHELL}
+
+.PHONY: info start stop shell inspect run
+inspect:
+	@echo "info:";
+	docker inspect \${DOCKER_CONTAINER}
 
 start:
 	@echo "Starting docker container:";
-	@eval docker restart ${DOCKER_CONTAINER}
+	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
 
 stop:
 	@echo "Stopping docker container:";
-	@eval docker stop ${DOCKER_CONTAINER};
+	docker stop \${DOCKER_CONTAINER};
+	docker rm \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
-	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
-
+	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
+	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
 
 endif
 
@@ -3457,15 +3693,9 @@ _as_read_EOF
 
 
 fi
+
 fi
 
-
-
-
-
-if ${MAKE_COMMAND+:} false; then :
-  MAKE_COMMAND_OVERRIDE="MAKE_COMMAND = ${MAKE_COMMAND}"
-fi
 
 
 # Make sure we can run config.sub.
@@ -4180,6 +4410,108 @@ fi
 
   MAINT=$MAINTAINER_MODE_TRUE
 
+
+
+
+
+
+
+    ax_is_release=yes
+
+
+
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable debugging" >&5
+$as_echo_n "checking whether to enable debugging... " >&6; }
+
+    ax_enable_debug_default=no
+    ax_enable_debug_is_release=$ax_is_release
+
+    # If this is a release, override the default.
+    if test "$ax_enable_debug_is_release" = "yes"; then :
+  ax_enable_debug_default="no"
+fi
+
+
+
+
+    # Check whether --enable-debug was given.
+if test "${enable_debug+set}" = set; then :
+  enableval=$enable_debug;
+else
+  enable_debug=$ax_enable_debug_default
+fi
+
+
+    # empty mean debug yes
+    if test "x$enable_debug" = "x"; then :
+  enable_debug="yes"
+fi
+
+    # case of debug
+    case $enable_debug in #(
+  yes) :
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	CFLAGS="${CFLAGS} -g -O0"
+	CXXFLAGS="${CXXFLAGS} -g -O0"
+	FFLAGS="${FFLAGS} -g -O0"
+	FCFLAGS="${FCFLAGS} -g -O0"
+	OBJCFLAGS="${OBJCFLAGS} -g -O0"
+       ;; #(
+  info) :
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: info" >&5
+$as_echo "info" >&6; }
+	CFLAGS="${CFLAGS} -g"
+	CXXFLAGS="${CXXFLAGS} -g"
+	FFLAGS="${FFLAGS} -g"
+	FCFLAGS="${FCFLAGS} -g"
+	OBJCFLAGS="${OBJCFLAGS} -g"
+       ;; #(
+  profile) :
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: profile" >&5
+$as_echo "profile" >&6; }
+	CFLAGS="${CFLAGS} -g -pg"
+	CXXFLAGS="${CXXFLAGS} -g -pg"
+	FFLAGS="${FFLAGS} -g -pg"
+	FCFLAGS="${FCFLAGS} -g -pg"
+	OBJCFLAGS="${OBJCFLAGS} -g -pg"
+	LDFLAGS="${LDFLAGS} -pg"
+       ;; #(
+  *) :
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+			if test "x${CFLAGS+set}" != "xset"; then :
+  CFLAGS="-g -O2"
+fi
+	if test "x${CXXFLAGS+set}" != "xset"; then :
+  CXXFLAGS="-g -O2"
+fi
+	if test "x${FFLAGS+set}" != "xset"; then :
+  FFLAGS="-g -O2"
+fi
+	if test "x${FCFLAGS+set}" != "xset"; then :
+  FCFLAGS="-g -O2"
+fi
+	if test "x${OBJCFLAGS+set}" != "xset"; then :
+  OBJCFLAGS="-g -O2"
+fi
+       ;;
+esac
+
+            if test "x$enable_debug" = "xyes"; then :
+
+else
+
+$as_echo "#define NDEBUG /**/" >>confdefs.h
+
+fi
+    ax_enable_debug=$enable_debug
 
 
 
@@ -7820,7 +8152,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch
+       -dynamic";
        if (test "$F77" = "f77"); then
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -11774,6 +12107,59 @@ fi
 
 
 
+    if test -z $PYTHON;
+    then
+        if test -z "${PYTHON}";
+        then
+            PYTHON="python3"
+        else
+            PYTHON="${PYTHON}"
+        fi
+    fi
+    PYTHON_NAME=`basename $PYTHON`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: platform" >&5
+$as_echo_n "checking $PYTHON_NAME module: platform... " >&6; }
+    $PYTHON -c "import platform" 2>/dev/null
+    if test $? -eq 0;
+    then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        eval HAVE_PYMOD_PLATFORM=yes
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        eval HAVE_PYMOD_PLATFORM=no
+        #
+        if test -n "required"
+        then
+            as_fn_error $? "failed to find required module platform" "$LINENO" 5
+            exit 1
+        fi
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for python architecture" >&5
+$as_echo_n "checking for python architecture... " >&6; }
+    _python_arch=`${PYTHON} -c "import sys, platform; sys.stdout.write(platform.architecture()[0])"`
+
+    if test "x$_python_arch" = x64bit; then :
+
+               ${PYTHON} -c "import sys; sys.exit(sys.maxsize <= 2**32)"
+               if test $? -eq 0; then :
+
+else
+
+               _python_arch=32bit
+fi
+
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${_python_arch}" >&5
+$as_echo "${_python_arch}" >&6; }
+    PYTHON_ARCHITECTURE=${_python_arch}
+
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -11939,16 +12325,484 @@ else
 fi
 
 
+ac_perl_list_modules="TAP::Parser 0 TAP::Parser::Aggregator 0"
+# Make sure we have perl
+if test -z "$PERL"; then
+# Extract the first word of "perl", so it can be a program name with args.
+set dummy perl; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PERL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PERL"; then
+  ac_cv_prog_PERL="$PERL" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PERL="perl"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
 
-$as_echo " /////////////////////////////////////////////////////////////////// "
-$as_echo " //// select tests env ///////////////////////////////////////////// "
-$as_echo " /////////////////////////////////////////////////////////////////// "
+fi
+fi
+PERL=$ac_cv_prog_PERL
+if test -n "$PERL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PERL" >&5
+$as_echo "$PERL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
 
- TS_TESTS_ENVIRONMENT=
- TS_LOG_COMPILER=
- TS_PY_TAP_COMPILER=
- TS_LOG_DRIVER="\$(top_srcdir)/conf/test-driver"
+fi
+
+# Check the number of arguments
+args_num=`echo $ac_perl_list_modules | wc -w`
+check_args=$(( $args_num % 2 ))
+if test "$check_args" = "1" ; then
+  as_fn_error $? "syntax error" "$LINENO" 5
+else
+  eval
+fi
+
+if test "x$PERL" != x; then
+  ac_failed=0
+  while test ${#ac_perl_list_modules} -gt 2 ; do
+	module_name=`echo $ac_perl_list_modules | cut -d " " -f 1`
+	module_version=`echo $ac_perl_list_modules | cut -d " " -f 2`
+	ac_perl_list_modules=`echo $ac_perl_list_modules | cut -d " " -f 3-`
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for perl module $module_name version $module_version" >&5
+$as_echo_n "checking for perl module $module_name version $module_version... " >&6; }
+
+	$PERL "-M$module_name" -e exit > /dev/null 2>&1
+	if test $? -ne 0; then
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; };
+	  ac_failed=1
+	  ac_perl_list_modules=""
+	else
+	  version=`$PERL "-M$module_name" -e 'print $'"$module_name::VERSION" 2>&1`
+	  $PERL -e 'exit(shift cmp shift)' "$version" "$module_version"
+	  if test $? -eq 0 -o $? -eq 1 ; then
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ok" >&5
+$as_echo "ok" >&6; };
+	  else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	    ac_failed=1
+	    ac_perl_list_modules=""
+	  fi
+	fi;
+  done
+
+  if test "$ac_failed" = 0; then
+    :
+
+  else
+    :
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No Perl tap module found" >&5
+$as_echo "$as_me: WARNING: No Perl tap module found" >&2;}
+  fi
+else
+  as_fn_error $? "could not find perl" "$LINENO" 5
+fi
+
+ # this calls valgrind check with args
+
+		# Check whether --enable-valgrind was given.
+if test "${enable_valgrind+set}" = set; then :
+  enableval=$enable_valgrind; enable_valgrind=$enableval
+else
+  enable_valgrind="yes"
+fi
+
+
+	# Check for Valgrind.
+	# Extract the first word of "valgrind", so it can be a program name with args.
+set dummy valgrind; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_VALGRIND+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$VALGRIND"; then
+  ac_cv_prog_VALGRIND="$VALGRIND" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_VALGRIND="valgrind"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+VALGRIND=$ac_cv_prog_VALGRIND
+if test -n "$VALGRIND"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND" >&5
+$as_echo "$VALGRIND" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
+
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Could not find valgrind; either install it or reconfigure with --disable-valgrind" >&5
+$as_echo "$as_me: WARNING: Could not find valgrind; either install it or reconfigure with --disable-valgrind" >&2;}
+		enable_valgrind="no"
+
+fi
+
+
+	 if test "$enable_valgrind" = "yes"; then
+  VALGRIND_ENABLED_TRUE=
+  VALGRIND_ENABLED_FALSE='#'
+else
+  VALGRIND_ENABLED_TRUE='#'
+  VALGRIND_ENABLED_FALSE=
+fi
+
+	VALGRIND_ENABLED=$enable_valgrind
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
+$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
+$as_echo "$enable_valgrind" >&6; }
+
+	# Check for Valgrind tools we care about.
+
+
+        # permits use of AM_TESTS_FD_REDIRECT to change suppressions redirections
+
+
+	if test "$VALGRIND" != ""; then :
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool memcheck" >&5
+$as_echo_n "checking for Valgrind tool memcheck... " >&6; }
+if ${ax_cv_valgrind_tool_memcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_memcheck=
+				if `$VALGRIND --tool=memcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_memcheck="memcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_memcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_memcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_memcheck=$ax_cv_valgrind_tool_memcheck
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool helgrind" >&5
+$as_echo_n "checking for Valgrind tool helgrind... " >&6; }
+if ${ax_cv_valgrind_tool_helgrind+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_helgrind=
+				if `$VALGRIND --tool=helgrind --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_helgrind="helgrind"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_helgrind" >&5
+$as_echo "$ax_cv_valgrind_tool_helgrind" >&6; }
+
+			VALGRIND_HAVE_TOOL_helgrind=$ax_cv_valgrind_tool_helgrind
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool drd" >&5
+$as_echo_n "checking for Valgrind tool drd... " >&6; }
+if ${ax_cv_valgrind_tool_drd+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_drd=
+				if `$VALGRIND --tool=drd --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_drd="drd"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_drd" >&5
+$as_echo "$ax_cv_valgrind_tool_drd" >&6; }
+
+			VALGRIND_HAVE_TOOL_drd=$ax_cv_valgrind_tool_drd
+
+
+
+
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool exp-sgcheck" >&5
+$as_echo_n "checking for Valgrind tool exp-sgcheck... " >&6; }
+if ${ax_cv_valgrind_tool_exp_sgcheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+				ax_cv_valgrind_tool_exp_sgcheck=
+				if `$VALGRIND --tool=exp-sgcheck --help >/dev/null 2>&1`; then :
+
+					ax_cv_valgrind_tool_exp_sgcheck="exp-sgcheck"
+
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_exp_sgcheck" >&5
+$as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
+
+			VALGRIND_HAVE_TOOL_exp_sgcheck=$ax_cv_valgrind_tool_exp_sgcheck
+
+
+
+fi
+
+
+
+
+VALGRIND_CHECK_RULES='
+# //////////////////////////////////////////////////////////////////////////// #
+# /// Valgrind check  //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# Optional:
+#  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
+#    files to load. (Default: empty)
+#  - VALGRIND_FLAGS: General flags to pass to all Valgrind tools.
+#    (Default: --num-callers=30)
+#  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
+#    memcheck, helgrind, drd, sgcheck). (Default: various)
+
+# Optional variables
+VALGRIND_LIB             ?= /usr/lib64/valgrind
+
+VALGRIND_FLAGS           ?=
+VALGRIND_FLAGS           += --num-callers=30 \
+                            --trace-children=yes \
+                            --child-silent-after-fork=yes \
+                            --trace-children-skip-by-arg=*SetMdsplusFileProtection*
+
+VALGRIND_memcheck_FLAGS  ?=
+VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
+
+VALGRIND_helgrind_FLAGS  ?=
+VALGRIND_helgrind_FLAGS  += --history-level=approx
+
+VALGRIND_drd_FLAGS       ?=
+VALGRIND_drd_FLAGS       +=
+
+VALGRIND_sgcheck_FLAGS   ?=
+VALGRIND_sgcheck_FLAGS   +=
+
+VALGRIND_SUPPRESSIONS    ?=
+VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
+
+VALGRIND_SUPPRESSIONS_PY ?=
+VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
+                            $(VALGRIND_SUPPRESSIONS) \
+                            $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
+
+
+VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
+
+# Internal use
+valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
+                     $(TEST_LOGS:.log=-valgrind-*.log) \
+                     $(TEST_LOGS:.log=-valgrind-*.xml)
+
+valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
+
+valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
+valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
+valgrind_drd_flags = --tool=drd $(VALGRIND_drd_FLAGS)
+valgrind_sgcheck_flags = --tool=exp-sgcheck $(VALGRIND_sgcheck_FLAGS)
+
+valgrind_quiet   = $(valgrind_quiet_$(V))
+valgrind_quiet_  = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
+valgrind_quiet_0 = --quiet
+
+# Support running with and without libtool.
+ifneq ($(LIBTOOL),)
+valgrind_lt = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute
+else
+valgrind_lt =
+endif
+
+#
+# Valgrind chain add ons
+#
+
+VALGRIND_TESTS_ENVIRONMENT ?=
+VALGRIND_TESTS_ENVIRONMENT += \
+	VALGRIND=$(VALGRIND) \
+	VALGRIND_LIB=$(VALGRIND_LIB) \
+	G_SLICE=always-malloc,debug-blocks \
+	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
+
+VALGRIND_LOG_COMPILER = \
+	$(valgrind_lt) \
+	$(VALGRIND) --error-exitcode=1 \
+	$(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY) \
+	$(valgrind_$(VALGRIND_TOOL)_flags) \
+	$(VALGRIND_FLAGS)
+
+
+
+.PHONY: tests-valgrind tests-valgrind-tool
+.PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
+ifeq ($(VALGRIND_ENABLED),yes)
+
+tests-valgrind:
+	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(foreach tool,$(VALGRIND_TOOLS), \
+		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+		) \
+	)
+
+tests-valgrind-tool:
+	@ \
+	$(MAKE) check-TESTS \
+	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(LOG_COMPILER)" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(PY_LOG_COMPILER)" \
+	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
+
+
+tests-valgrind-suppressions:
+	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(foreach tool,$(VALGRIND_TOOLS), \
+		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
+		) \
+	)
+
+tests-valgrind-suppressions-tool:
+	@ \
+	$(MAKE) check-TESTS \
+	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
+	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
+
+else
+
+tests-valgrind tests-valgrind-tool \
+tests-valgrind-suppressions tests-valgrind-suppressions-tool:
+	@ \
+	echo "  ------------------------------------------  "; \
+	echo "  Need to reconfigure with --enable-valgrind  "; \
+	echo "  ------------------------------------------  ";
+endif
+
+
+
+DISTCHECK_CONFIGURE_FLAGS ?=
+DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
+
+MOSTLYCLEANFILES ?=
+MOSTLYCLEANFILES += $(valgrind_log_files)
+'
+
+
+
+
+
+
+ # selects particular envs for build:host
+
+ TESTS_ENVIRONMENT=
+ LOG_COMPILER=
+ LOG_FLAGS=
+ PY_LOG_COMPILER=
+ PY_LOG_FLAGS=
+ PY_LOG_COMPILER_TAP=
+ PY_LOG_FLAGS_TAP=
+ LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
+
+ abs_srcdir=$(cd ${srcdir}; pwd)
+
+
+  # Extract the first word of "nosetests", so it can be a program name with args.
+set dummy nosetests; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_NOSETESTS+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$NOSETESTS"; then
+  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_NOSETESTS="nosetests"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+NOSETESTS=$ac_cv_prog_NOSETESTS
+if test -n "$NOSETESTS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
+$as_echo "$NOSETESTS" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if test x"${NOSETESTS}" != x""; then :
+  :
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"python-nose not found\"" >&5
+$as_echo "$as_me: WARNING: \"python-nose not found\"" >&2;}
+fi
 
 
 
@@ -12068,253 +12922,18 @@ fi
 
 
   if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
-  eval as_fn_append TS_PY_TAP_COMPILER "${NOSETESTS}  --with-tap --tap-stream"
+  :
 else
-  eval as_fn_append TS_PY_TAP_COMPILER "sh -c 'exit 77'"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tap plugin for python-nose not found\"" >&5
+$as_echo "$as_me: WARNING: \"Tap plugin for python-nose not found\"" >&2;}
 fi
 
 
-
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
-$as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
-	# Check whether --enable-valgrind was given.
-if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind; enable_valgrind=$enableval
-else
-  enable_valgrind=
-fi
-
-
-	# Check for Valgrind.
-	# Extract the first word of "valgrind", so it can be a program name with args.
-set dummy valgrind; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_VALGRIND+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$VALGRIND"; then
-  ac_cv_prog_VALGRIND="$VALGRIND" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_VALGRIND="valgrind"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-VALGRIND=$ac_cv_prog_VALGRIND
-if test -n "$VALGRIND"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND" >&5
-$as_echo "$VALGRIND" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-
-	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
-
-		as_fn_error $? "Could not find valgrind; either install it or reconfigure with --disable-valgrind" "$LINENO" 5
-
-fi
-
-
-	 if test "$enable_valgrind" = "yes"; then
-  VALGRIND_ENABLED_TRUE=
-  VALGRIND_ENABLED_FALSE='#'
-else
-  VALGRIND_ENABLED_TRUE='#'
-  VALGRIND_ENABLED_FALSE=
-fi
-
-	VALGRIND_ENABLED=$enable_valgrind
-
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
-$as_echo "$enable_valgrind" >&6; }
-
-	# Check for Valgrind tools we care about.
-
-
-	if test "$VALGRIND" != ""; then :
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool memcheck" >&5
-$as_echo_n "checking for Valgrind tool memcheck... " >&6; }
-if ${ax_cv_valgrind_tool_memcheck+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_memcheck=
-				if `$VALGRIND --tool=memcheck --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_memcheck="memcheck"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_memcheck" >&5
-$as_echo "$ax_cv_valgrind_tool_memcheck" >&6; }
-
-			VALGRIND_HAVE_TOOL_memcheck=$ax_cv_valgrind_tool_memcheck
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool helgrind" >&5
-$as_echo_n "checking for Valgrind tool helgrind... " >&6; }
-if ${ax_cv_valgrind_tool_helgrind+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_helgrind=
-				if `$VALGRIND --tool=helgrind --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_helgrind="helgrind"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_helgrind" >&5
-$as_echo "$ax_cv_valgrind_tool_helgrind" >&6; }
-
-			VALGRIND_HAVE_TOOL_helgrind=$ax_cv_valgrind_tool_helgrind
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool drd" >&5
-$as_echo_n "checking for Valgrind tool drd... " >&6; }
-if ${ax_cv_valgrind_tool_drd+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_drd=
-				if `$VALGRIND --tool=drd --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_drd="drd"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_drd" >&5
-$as_echo "$ax_cv_valgrind_tool_drd" >&6; }
-
-			VALGRIND_HAVE_TOOL_drd=$ax_cv_valgrind_tool_drd
-
-
-
-
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Valgrind tool exp-sgcheck" >&5
-$as_echo_n "checking for Valgrind tool exp-sgcheck... " >&6; }
-if ${ax_cv_valgrind_tool_exp_sgcheck+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-
-				ax_cv_valgrind_tool_exp_sgcheck=
-				if `$VALGRIND --tool=exp-sgcheck --help >/dev/null 2>&1`; then :
-
-					ax_cv_valgrind_tool_exp_sgcheck="exp-sgcheck"
-
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_valgrind_tool_exp_sgcheck" >&5
-$as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
-
-			VALGRIND_HAVE_TOOL_exp_sgcheck=$ax_cv_valgrind_tool_exp_sgcheck
-
-
-
-fi
-
-
-
-
-VALGRIND_CHECK_RULES='
-# Valgrind check
-#
-# Optional:
-#  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
-#    files to load. (Default: empty)
-#  - VALGRIND_FLAGS: General flags to pass to all Valgrind tools.
-#    (Default: --num-callers=30)
-#  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
-#    memcheck, helgrind, drd, sgcheck). (Default: various)
-
-# Optional variables
-VALGRIND_SUPPRESSIONS   ?= $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
-VALGRIND_FLAGS          ?= --num-callers=30 --trace-children=yes
-VALGRIND_memcheck_FLAGS ?= --leak-check=full --show-reachable=no
-VALGRIND_helgrind_FLAGS ?= --history-level=approx
-VALGRIND_drd_FLAGS      ?=
-VALGRIND_sgcheck_FLAGS  ?=
-
-# Internal use
-valgrind_tools = memcheck helgrind drd sgcheck
-valgrind_log_files = $(addprefix test-suite-,$(addsuffix .log,$(valgrind_tools)))
-
-valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
-valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
-valgrind_drd_flags = --tool=drd $(VALGRIND_drd_FLAGS)
-valgrind_sgcheck_flags = --tool=exp-sgcheck $(VALGRIND_sgcheck_FLAGS)
-
-valgrind_quiet   = $(valgrind_quiet_$(V))
-valgrind_quiet_  = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
-valgrind_quiet_0 = --quiet
-
-# Support running with and without libtool.
-ifneq ($(LIBTOOL),)
-valgrind_lt = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=execute
-else
-valgrind_lt =
-endif
-
-#
-# Valgrind chain add ons
-#
-
-VALGRIND_TESTS_ENVIRONMENT = \
-	VALGRIND=$(VALGRIND) \
-	G_SLICE=always-malloc,debug-blocks \
-	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
-
-VALGRIND_LOG_COMPILER = \
-	$(valgrind_lt) \
-	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 \
-	$(valgrind_$(VALGRIND_TOOL)_flags) $(VALGRIND_FLAGS)
-
-
-
-
-
-
-
-DISTCHECK_CONFIGURE_FLAGS ?=
-DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
-
-MOSTLYCLEANFILES ?=
-MOSTLYCLEANFILES += $(valgrind_log_files)
-
-.PHONY: check-valgrind check-valgrind-tool
-'
-
-
-
-
+ as_fn_append PY_LOG_COMPILER "${PYTHON} \$(top_srcdir)/testing/testing.py"
+ as_fn_append PY_LOG_FLAGS ""
+
+ as_fn_append PY_LOG_COMPILER_TAP "${PYTHON} \$(top_srcdir)/testing/testing.py"
+ as_fn_append PY_LOG_FLAGS_TAP ""
 
  case "${build_os}:${host}" in #(
   #
@@ -12366,6 +12985,7 @@ fi
 
 fi
    if test "x$HAVE_WINE" = xyes; then :
+
 
 
     case ${host} in #(
@@ -12434,7 +13054,7 @@ fi
 fi
   if test "x$HAVE_WINEBOOT" = xyes; then :
   if ${WINEPREFIX+:} false; then :
-  $(eval "WINEPREFIX=${WINEPREFIX}         WINEARCH=${WINEARCH}" wineboot -f -r)
+  $(eval "WINEPREFIX=${WINEPREFIX}             WINEARCH=${WINEARCH}" wineboot -f -r)
 else
   $(eval "WINEPREFIX=$(pwd)/${winebottle_name} WINEARCH=${WINEARCH}" wineboot -f -i)
 fi
@@ -12657,22 +13277,38 @@ esac
 
 
 
-      as_fn_append TS_TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-      as_fn_append TS_TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
-      if test "x$VALGRIND_ENABLED" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
-        as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
-        as_fn_append TS_LOG_COMPILER "--vex-iropt-register-updates=allregs-at-mem-access "
-        as_fn_append TS_LOG_COMPILER "--workaround-gcc296-bugs=yes  "
-        as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
 
-fi
-      as_fn_append TS_LOG_COMPILER "wine "
+if ${_mds_path+:} false; then :
 
 else
-  as_fn_append TS_LOG_COMPILER "sh -c 'exit 77'"
+  _mds_path=
 fi
-               TS_PY_TAP_COMPILER="sh -c 'exit 77'"
+for _i in "${abs_srcdir}/tdi"; do
+ as_fn_append _mds_path "\$(shell winepath -w $_i);";
+done
+
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH=${_mds_path} "
+      as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
+      as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
+      as_fn_append TESTS_ENVIRONMENT "VALGRIND_LIB=/usr/lib64/valgrind "
+      as_fn_append LOG_COMPILER "wine "
+
+ # WINE Valgrind tuning ..
+ # see: http://wiki.winehq.org/WineAndValgrind
+ #
+ # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
+      as_fn_append VALGRIND_FLAGS "--vex-iropt-register-updates=allregs-at-mem-access "
+ #
+ # quiets warnings about accesses slightly below the stack pointer. This is due
+ # to a known but benign piece of code in Wine's ntdll
+ # (see Bug #26263 for details)
+      as_fn_append VALGRIND_memcheck_FLAGS "--workaround-gcc296-bugs=yes  "
+
+else
+
+ as_fn_append LOG_COMPILER "sh -c \\\"exit 77\\\"; :"
+
+fi
   ;; #(
   #
  # LINUX->LINUX
@@ -12680,27 +13316,22 @@ fi
  *linux*:*linux*) :
 
    $as_echo "Set tests environment for linux->linux"
-   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$VALGRIND_ENABLED" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
-              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
-              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
-
-fi
+   as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
   ;; #(
   #
  # OTHER
  #
  *) :
 
-   $as_echo "Set tests environment"
-   as_fn_append TS_TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR} "
-   if test "x$VALGRIND_ENABLED" = xyes; then :
-  as_fn_append TS_TESTS_ENVIRONMENT "\$(VALGRIND_TESTS_ENVIRONMENT) "
-              as_fn_append TS_LOG_COMPILER "\$(VALGRIND_LOG_COMPILER) "
-              as_fn_append TS_LOG_COMPILER "\$(TS_VALGRIND_FLAGS)  "
-
-fi
+   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tests may not be supported for this host!\"" >&5
+$as_echo "$as_me: WARNING: \"Tests may not be supported for this host!\"" >&2;}
+   as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
+   as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
+   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
   ;; #(
   *) :
      ;;
@@ -12711,13 +13342,23 @@ esac
 
 
 
+ ## test chain substitution ##
 
 
 
 
 
 
-# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
+
+
+
+
+
+          TESTS_SKIP="sh -c \\\"exit 77\\\"; :"
+
+
+
+
 
 
 

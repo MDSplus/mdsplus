@@ -18,9 +18,11 @@ cd /buildsrc
             --libdir=/buildroot/bin_x86_64 \
             --host=x86_64-w64-mingw32 \
 	    --with-python_include=/3rd-party-apis-master/windows-python27 \
-            --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar
+            --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar           
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
+echo " --- MAKING TESTS 64bit --- "
+make -k tests TEST_OUTDIR=/test_results/tap64 
 make install
 make clean >/dev/null;
 ./configure --prefix=/buildroot \
@@ -40,6 +42,8 @@ then
 else
   export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
 fi
+echo " --- MAKING TESTS 32bit --- "
+make -k tests TEST_OUTDIR=/test_results/tap32
 make install
 make clean >/dev/null
 if [   ! -z "$WINBLD_USER" -a \

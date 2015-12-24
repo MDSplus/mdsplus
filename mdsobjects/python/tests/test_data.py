@@ -1,13 +1,17 @@
-from unittest import TestCase,TestSuite
+from __future__ import print_function
+from unittest import TestCase,TestSuite,SkipTest
 import numpy
 
 class dataTests(TestCase):
 
     def setUp(self):
-        import os,sys
+        import os,sys        
         sys.path.insert(0,os.path.dirname(__file__)+os.path.sep+os.path.pardir)
         import _loadglobals
         _loadglobals.load(globals())
+
+    def tearDown(self):
+        pass
 
     def basicBinaryOperators(self):
         def doit(operator,x,y,ans):
@@ -499,4 +503,12 @@ class dataTests(TestCase):
 def suite():
     tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
     return TestSuite(map(dataTests,tests))
+
+
+#if __name__ == '__main__':
+#    try:
+#        import testing
+#        testing.run()
+#    except:
+#        pass
 

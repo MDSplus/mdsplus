@@ -26,6 +26,18 @@ AC_DEFUN([DK_CHECK_DOCKER_ARG],[
           [AS_VAR_SET([DOCKER_CONTAINER],["${with_docker_container}"])],
           [AS_UNSET([DOCKER_CONTAINER])]
           ))
+
+   AC_ARG_WITH(docker-url,
+               [AS_HELP_STRING([--with-docker-url],[specify docker url])],  
+               [],
+               [AS_VAR_SET_IF([DOCKER_URL],
+                              [AS_VAR_SET([with_docker_url], ["${DOCKER_URL}"])],
+                              [])])
+   AS_VAR_SET_IF([with_docker_url],
+   AS_IF( [test x"${with_docker_url}" != x"no"],
+          [AS_VAR_SET([DOCKER_URL],["${with_docker_url}"])],
+          [AS_UNSET([DOCKER_URL])]
+          ))
 ])
 
 
@@ -62,23 +74,52 @@ pop_IFS
 
 
 
+AC_DEFUN([dk_set_user_env], [
+AS_VAR_SET([user_entry], [$(awk -F: "{if (\$[]1 == \"${USER}\") {print \$[]0} }" /etc/passwd)])
+AS_VAR_SET([user_id],    [$(echo ${user_entry} | awk -F: '{print $[]3}')])
+AS_VAR_SET([user_group], [$(echo ${user_entry} | awk -F: '{print $[]4}')])
+AS_VAR_SET([user_home],  [$(echo ${user_entry} | awk -F: '{print $[]6}')])
+AS_VAR_SET([group_entry],[$(awk -F: "{if (\$[]3 == \"${user_group}\") {print \$[]0} }" /etc/group)])
+AS_VAR_SET([user_groups],[$(id -G ${USER} | sed 's/ /,/g')])
+AS_VAR_SET([abs_builddir],[$(pwd)])
+AS_VAR_SET([abs_srcdir],[$(cd ${srcdir}; pwd)])
 
-AC_DEFUN([DK_CMD_CNTRUN], m4_normalize([
-          docker run -d -it --entrypoint=/bin/sh
-          -e DISPLAY=${DISPLAY} 
-          -e http_proxy=${http_proxy}
-          -e https_proxy=${https_proxy}
-          -v /tmp/.X11-unix:/tmp/.X11-unix 
-          -v /etc/passwd:/etc/passwd 
-          -v /etc/group:/etc/group 
-          -v /etc/shadow:/etc/shadow 
-          -v /home:/home 
-          -v $(pwd):$(pwd)
-          -w $(pwd)
-          --name $2
-          $1
-         ]))
+])
 
+
+AC_DEFUN([DK_CMD_CNTRUN], [
+  AS_VAR_SET([user_entry], [$(awk -F: "{if (\$[]1 == \"${USER}\") {print \$[]0} }" /etc/passwd)])
+  AS_VAR_SET([user_id],    [$(echo ${user_entry} | awk -F: '{print $[]3}')])
+  AS_VAR_SET([user_group], [$(echo ${user_entry} | awk -F: '{print $[]4}')])
+  AS_VAR_SET([user_home],  [$(echo ${user_entry} | awk -F: '{print $[]6}')])
+  AS_VAR_SET([group_entry],[$(awk -F: "{if (\$[]3 == \"${user_group}\") {print \$[]0} }" /etc/group)])
+  AS_VAR_SET([user_groups],[$(id -G ${USER} | sed 's/ /,/g')])
+  AS_VAR_SET([abs_srcdir],[$(cd ${srcdir}; pwd)])
+
+
+  m4_normalize([ docker run -d -it --entrypoint=/bin/sh \
+                     -e USER=${USER} \
+                     -e DISPLAY=${DISPLAY} \
+                     -e http_proxy=${http_proxy} \
+                     -e https_proxy=${https_proxy} \
+                     -v /tmp/.X11-unix:/tmp/.X11-unix \
+                     -v /etc/resolv.conf:/etc/resolv.conf \
+                     -v ${abs_srcdir}:${abs_srcdir} \
+                     -v ${user_home}:${user_home} \
+                     -v $(pwd):$(pwd) \
+                     -w $(pwd) \
+                     --name $2 \
+                     $1;
+               ])
+                       
+  m4_normalize([ docker exec --user root $2 sh -c "
+                          echo ${user_entry}  >> /etc/passwd; 
+                          echo ${group_entry} >> /etc/group;
+                          test -f /sbin/sshd-keygen && /sbin/sshd-keygen;
+                          test -f /sbin/sshd && nohup /sbin/sshd;
+                         ";
+                       ])
+])
 
 
 
@@ -90,6 +131,7 @@ AC_DEFUN([DK_CONFIGURE],[
          AS_VAR_APPEND([dk_configure_args],[" "])
          AS_VAR_SET_IF([DOCKER_IMAGE],AS_VAR_APPEND([dk_configure_args],["DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "]));
          AS_VAR_SET_IF([DOCKER_CONTAINER],AS_VAR_APPEND([dk_configure_args],["DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "]));
+         AS_VAR_SET_IF([DOCKER_FILE],AS_VAR_APPEND([dk_configure_args],["DOCKER_FILE=\"${DOCKER_FILE}\" "]));
     
          m4_pushdef([dk_configure_cmd], m4_normalize([
            docker exec -t
@@ -98,8 +140,7 @@ AC_DEFUN([DK_CONFIGURE],[
            -c \"cd $(pwd)\; ${0} DK_ADD_ESCAPE(${dk_configure_args}) DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"]) \";
            exit 0;
          ]))
-                  
-         
+                           
          AS_ECHO(" ------------------------- ") 
          AS_ECHO(" DOCKER CONFIGURE COMMAND: ")
          AS_ECHO(" dk_configure_cmd          ")
@@ -116,6 +157,11 @@ AC_DEFUN([DK_CONFIGURE],[
 dnl sets DOCKER_CONTAINER var if not set to a unique name based on pwd dir.
 AC_DEFUN([DK_SET_DOCKER_CONTAINER], [
          AS_VAR_SET_IF([DOCKER_CONTAINER],,AS_VAR_SET([DOCKER_CONTAINER],
+         [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
+])
+
+AC_DEFUN([DK_SET_DOCKER_IMAGE], [
+         AS_VAR_SET_IF([DOCKER_IMAGE],,AS_VAR_SET([DOCKER_IMAGE],
          [build_$(echo $(pwd) | md5sum | awk '{print $[]1}')]))
 ])
 
@@ -149,7 +195,7 @@ AC_DEFUN([get_docker_container_status],[
 
 
 AC_DEFUN([get_docker_image_id],[
-         AS_VAR_SET([$1], $(docker images -a -q $2))         
+         AS_VAR_SET([$1], $(docker images -a | ${AWK} -v _img=$2 {if ($1 ":" $2 == _img) {print $3}} ))
 ])
 
 AC_DEFUN([get_docker_container_id],[
@@ -160,10 +206,9 @@ AC_DEFUN([get_docker_container_image],[
          AS_VAR_SET([$1], $(docker ps -a -f name=$2 --format "{{.Image}}"))         
 ])
 
-
 AC_DEFUN([if_docker_image_exist],[
-AS_VAR_SET([id_img_exist], $(docker images -a -q $1 ))
-AS_IF([test -n "${id_img_exist}"],[eval $2], [eval $3])
+          AS_VAR_SET([id_img_exist], $(docker images -a -q $1 ))
+          AS_IF([test -n "${id_img_exist}"],[eval $2], [eval $3])
 ])
 
 
@@ -191,16 +236,11 @@ AC_DEFUN([DK_START_IMGCNT], [
    DK_SET_DOCKER_CONTAINER
    DK_GET_CONFIGURE_ARGS([dk_configure_args])
 
+
+   AS_ECHO("Pulling image: $1")
+   docker pull $1;
+      
    AS_ECHO("Starting container from image: $1")         
-   get_docker_image_id([dk_image],[$1])
-   AS_IF([test -n "${dk_image}"],
-         AS_ECHO("using docker image: ${dk_image}"),
-         [eval docker pull $1
-          get_docker_image_id([dk_image],[$1])
-          AS_IF([test -n "${dk_image}"],
-                [AC_MSG_NOTICE("pulled docker image: ${dk_image}")],
-                [AC_MSG_ERROR("Could not pull the requested image")])
-         ])
    
    dnl find if container exists and belongs to selected image   
    get_docker_container_id([dk_id],${DOCKER_CONTAINER})
@@ -209,70 +249,88 @@ AC_DEFUN([DK_START_IMGCNT], [
    AS_IF([test -n "${dk_id}" -a -n "${dk_img}"],
          [AS_IF([test x"${dk_img}" == x"$1"],
          [AC_MSG_NOTICE("container found of the correct image")],
-         [AC_MSG_ERROR("container does not belong to the correct image")])])
+         [AC_MSG_ERROR("container does not belong to the correct image")])])         
 
-   
-   
    dnl find if container exists or start it
    AS_IF([test -n "${dk_id}"],,
-         [AS_ECHO("CREATES")];[eval DK_CMD_CNTRUN($1,${DOCKER_CONTAINER})])
+         [AS_ECHO("CREATE ")];[DK_CMD_CNTRUN($1,${DOCKER_CONTAINER})])
    DK_START_CNT(${DOCKER_CONTAINER})
 ])
 
-  
 
-  AC_DEFUN([_dk_set_docker_build_debug],[
-    AS_ECHO(" --------------------------------- ")
-    AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
-    AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
-    AS_ECHO(" ac_configure_args = ${ac_configure_args}")
-    AS_ECHO(" dk_configure_args = ${dk_configure_args}")
-    AS_ECHO(" configure command = ${0}")
-    AS_ECHO(" configure name    = $(basename ${0})")
-    AS_ECHO(" --------------------------------- ")
-  ])
+AC_DEFUN([DK_START_URL], [   
+   AS_VAR_SET([dk_build_args])
+   AS_VAR_SET_IF([http_proxy], [AS_VAR_APPEND([dk_build_args],["--build-arg http_proxy=\"${http_proxy}\" "])])
+   AS_VAR_SET_IF([https_proxy],[AS_VAR_APPEND([dk_build_args],["--build-arg https_proxy=\"${https_proxy}\" "])])
+   
+   dnl TODO: check status
+   AS_VAR_SET_IF([DOCKER_URL],
+                 [echo docker build ${dk_build_args} -t $2 $1];
+                 [eval docker build ${dk_build_args} -t $2 $1])
+                 
+])
+
+
+
+
+
+
+
+AC_DEFUN([_dk_set_docker_build_debug],[
+         AS_ECHO(" --------------------------------- ")
+         AS_ECHO(" docker-image      = ${DOCKER_IMAGE}")
+         AS_ECHO(" docker-container  = ${DOCKER_CONTAINER}")
+         AS_ECHO(" ac_configure_args = ${ac_configure_args}")
+         AS_ECHO(" --------------------------------- ")
+         ])
 
 
 AC_DEFUN([DK_SET_DOCKER_BUILD],[
-
   DK_CHECK_DOCKER_ARG  
 
   AS_VAR_IF([HAVE_DOCKER],[yes], [
-  AS_VAR_SET_IF([DOCKER_IMAGE], 
-    [AS_ECHO
-     AS_BOX([//// STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}   //////], [\/])
-       DK_START_IMGCNT(${DOCKER_IMAGE})
-     AS_ECHO
-    ],
+
+
+
+  AS_VAR_SET_IF([DOCKER_URL],    
+    [AS_BANNER(["BUILDING IMAGE FOR URL: ${DOCKER_URL}"])
+     DK_SET_DOCKER_IMAGE
+     DK_START_URL(${DOCKER_URL},${DOCKER_IMAGE})])
+     
+  AS_VAR_SET_IF([DOCKER_IMAGE],
+    [AS_BANNER(["STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}"])
+     DK_START_IMGCNT(${DOCKER_IMAGE})],
     [AS_VAR_SET_IF([DOCKER_CONTAINER],
-      [AS_ECHO
-       AS_BOX([//// STARTING CONTAINER: ${DOCKER_CONTAINER}   //////], [\/])
-         DK_START_CNT(${DOCKER_CONTAINER})
-       AS_ECHO
-      ])
+     [AS_BANNER(["STARTING CONTAINER: ${DOCKER_CONTAINER}"])
+      DK_START_CNT(${DOCKER_CONTAINER})])
     ])
+
+  AS_VAR_SET_IF([DOCKER_CONTAINER],[
+                  dk_set_user_env
+                  DK_WRITE_DSHELLFILE
+                  DK_SET_TARGETS
+                 ])
   
   AS_VAR_SET_IF([DOCKER_CONTAINER],[
-    AS_ECHO
-    AS_BOX([//// EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}   //////], [\/])
-      _dk_set_docker_build_debug
-    AS_ECHO          
-    AS_ECHO(" --- ")
-    AS_ECHO(" docker configure command: ")
-       echo " DK_CMD_CONFIGURE "
-    AS_ECHO(" --- ")
-    AS_ECHO
+    AS_BANNER(["EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}"])
+    _dk_set_docker_build_debug
     
+    dk_set_user_env
+    DK_WRITE_DSHELLFILE
     DK_CONFIGURE
+    dnl and exit
    ])
-   
-  ],
-  AS_VAR_SET_IF([DOCKER_CONTAINER],[
-                 DK_WRITE_DMAKEFILE
-                 DK_SET_TARGETS
-                ]))
+   ],[
+   AS_VAR_SET_IF([DOCKER_CONTAINER],[
+                   dk_set_user_env
+                   DK_SET_TARGETS
+                  ])   
+  ])
   
 ])  
+
+
+
 
 
 AC_DEFUN([DK_SET_TARGETS],[
@@ -282,32 +340,84 @@ AS_VAR_READ([DK_DOCKER_TARGETS],[
 # //// DOCKER TARGETS  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
- 
- \$(info ------ )
- \$(info DOCKER MAKECMDGOALS = \$(MAKECMDGOALS) )
- \$(info DOCKER MAKE_COMMAND = \$(MAKE_COMMAND) )
- \$(info DOCKER SHELL = \$(SHELL) )
- \$(info ------ )
+DOCKER_CONTAINER = ${DOCKER_CONTAINER}
+DOCKER_IMAGE     = ${DOCKER_IMAGE}
 
-.PHONY: docker docker-start
+user_id     = ${user_id}
+user_group  = ${user_group}
+user_groups = ${user_groups}
+user_home   = ${user_home}
+
+# if MAKESHELL is not defined use local dshell to enter docker container
+docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
+local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
+export SHELL = \${docker_SHELL}
+
+.PHONY: docker
+ifeq (docker,\$(MAKECMDGOALS))
 docker:
-	@echo "Opening docker session:";
-	@echo "selected targets: \$(filter-out \$@,\$(MAKECMDGOALS))";
+	@ \
+	echo ; \
+	echo " This build was set to work with Docker: "; \
+	echo " ---------------------------------------------------------------- "; \
+	echo " This means that you should see a running docker container named: "; \
+	echo " ${DOCKER_CONTAINER}. 	"                                        ; \
+	echo " Using a map of the current srcdir and builddir and some envs the "; \
+	echo " build system should be able to launch make inside the container. "; \
+	echo " Use the usual make command and targets to build inside docker.   "; \
+	echo ; \
+	echo " Additional targets: "                                           ; \
+	echo " make docker start   <- run the docker container "               ; \
+	echo " make docker stop    <- stop and remove the docker container "   ; \
+	echo " make docker shell   <- launch a shell inside the container "    ; \
+	echo " make docker shell USER=root <- launch the shell as root "       ; \
+	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
+	echo ;
+else
+docker: ;
+endif
+
+ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
+export SHELL = \${local_SHELL}
+
+.PHONY: info start stop shell inspect run
+inspect:
+	@echo "info:";
+	docker inspect \${DOCKER_CONTAINER}
 
 start:
 	@echo "Starting docker container:";	
-	@eval docker restart ${DOCKER_CONTAINER}	
+	m4_normalize( docker run -d -it --entrypoint=/bin/sh 
+	                     -e USER=\${USER}
+			     -e DISPLAY=\${DISPLAY}
+			     -e http_proxy=\${http_proxy} 
+			     -e https_proxy=\${https_proxy} 
+			     -v /tmp/.X11-unix:/tmp/.X11-unix     
+			     -v /etc/resolv.conf:/etc/resolv.conf 
+			     -v \${abs_top_srcdir}:\${abs_top_srcdir} 
+			     -v \${abs_top_builddir}:\${abs_top_builddir} 
+			     -v \${user_home}:\${user_home}   
+			     -w \${abs_top_builddir}         
+			     --name \${DOCKER_CONTAINER} 
+			     \${DOCKER_IMAGE}; )
+	m4_normalize( docker exec --user root \${DOCKER_CONTAINER} 
+	                          sh -c "
+	                            echo ${user_entry}  >> /etc/passwd; 
+				    echo ${group_entry} >> /etc/group;
+				    test -f /sbin/sshd-keygen && /sbin/sshd-keygen;
+				    test -f /sbin/sshd && nohup /sbin/sshd;
+				  ";)
 
 stop:
 	@echo "Stopping docker container:";
-	@eval docker stop ${DOCKER_CONTAINER};
+	docker stop \${DOCKER_CONTAINER};
+	docker rm \${DOCKER_CONTAINER};
 
 shell:
 	@echo "Starting docker shell";
-	@eval docker exec -ti --user \${USER} ${DOCKER_CONTAINER} bash
-
-
+	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
+	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
+	
 endif
 ])
 AC_SUBST([DK_DOCKER_TARGETS])
@@ -317,43 +427,35 @@ m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([DK_DOCKER_TARGETS])])
 
 
 
-
-
-AC_DEFUN([DK_WRITE_DMAKEFILE],[
-AS_VAR_READ([DK_DMAKEFILE],m4_escape([
+AC_DEFUN([DK_WRITE_DSHELLFILE],[
+AS_VAR_READ([DK_DSHELLFILE],m4_escape([
 #!/bin/sh
 # //////////////////////////////////////////////////////////////////////////// #
-# //// DOCKER MAKE  ////////////////////////////////////////////////////////// #
+# //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# requotes #
-for x in "\${@}" ; do
-    # try to figure out if quoting was required for the $x
-    if [[ "\$x" != "\${x%=*}" ]]; then
-        x=\${x%=*}"=\\""\${x#*=}"\\""
-    elif [[ "\$x" != "\${x%[[:space:]]*}" ]]; then
-        x="\\\""\$x"\\\""
-    fi
-    echo \$x
-    _args=\$_args" "\$x
-done
+# env
+DOCKER_CONTAINER=${DOCKER_CONTAINER}
+DOCKER_IMAGE=${DOCKER_IMAGE}
 
+abs_srcdir=${abs_srcdir}
+abs_builddir=${abs_builddir}
+user_id=${user_id}
+user_group=${user_group}
+user_groups=${user_groups}
+user_home=${user_home}
 
-MAKE=make
-dmake () { 
-echo 
-echo " *** BUILDING IN DOCKER CONTAINER *** ";
-echo
-docker exec -t --user \${USER} ${DOCKER_CONTAINER} sh -c "cd \$(pwd); \${MAKE} -e MAKE_COMMAND='\${MAKE}' \${_args}";
-} 
-
-dmake \${@}
+echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+quoted_args="\$(printf " %q" "\$\@")"
+[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 ]))
 
-AS_ECHO(" Writing dmake file: ")
-AS_ECHO("${DK_DMAKEFILE}") > dmake
-chmod +x dmake
+AS_ECHO(" Writing dshell file: ${abs_builddir}/dshell ")
+AS_ECHO("${DK_DSHELLFILE}") > ${abs_builddir}/dshell
+chmod +x dshell
 
 ])
  
@@ -365,39 +467,12 @@ dnl ////////////////////////////////////////////////////////////////////////////
 dnl ////////////////////////////////////////////////////////////////////////////
 dnl // Utility functions
 
-
-
  
-AC_DEFUN([DK_TEST],[
- 
-dnl   if_docker_image_exist(["mdsplus/docker:rhel6"],AS_ECHO(YESS),AS_ECHO(NOO))
-  
-dnl   get_docker_container_status([status],[ciao])
-dnl   AS_CASE([${status}],
-dnl           [running],AS_ECHO("RUNNING"),
-dnl           [paused],AS_ECHO("PAUSED"),
-dnl           [exited],AS_ECHO("EXITED")
-dnl           )
-dnl  AS_VAR_SET(DOCKER_CONTAINER, [rhel6])
-dnl  DK_START_IMGCNT([mdsplus/docker:build_rhel6])
-dnl  DK_START_CNT([rhel6])
-
-dnl   AS_VAR_SET([MAKE_COMMAND],["'DK_CMD_MAKE'"])
-dnl   AS_ECHO("COMMAND: ${MAKE_COMMAND}")
- 
-dnl  DK_SET_DOCKER_BUILD
-
-dnl DK_WRITE_DMAKEFILE
-
-exit 0;
-
-])
- 
-
-
-
-
-
+AC_DEFUN([AS_BANNER],[
+          AS_ECHO 
+          AS_BOX([// $1 //////], [\/])
+          AS_ECHO 
+         ])
 
 
 AC_DEFUN([AS_VAR_READ],[
