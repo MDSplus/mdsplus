@@ -3,28 +3,49 @@ dnl @(#)$RCSfile$ $Revision$
 AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
-
-
-dnl DK_TEST
+AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 
 dnl docker helpers
-AS_VAR_IF([HAVE_DOCKER],[no],, [])
 DK_SET_DOCKER_BUILD
-
-
-
-AS_VAR_SET_IF([MAKE_COMMAND],
-  AS_VAR_SET([MAKE_COMMAND_OVERRIDE],
-             ["MAKE_COMMAND = ${MAKE_COMMAND}"]))
-AC_SUBST(MAKE_COMMAND_OVERRIDE)
 
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
-dnl TS_TEST()
-dnl exit 0;
+
+dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
+dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
+dnl 
+dnl * git-directory:  ax_is_release will be 'no' if a '.git' directory exists
+dnl * minor-version:  ax_is_release will be 'no' if the minor version number
+dnl                   in $PACKAGE_VERSION is odd; this assumes
+dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
+dnl * micro-version:  ax_is_release will be 'no' if the micro version number
+dnl                   in $PACKAGE_VERSION is odd; this assumes
+dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
+dnl * always:         ax_is_release will always be 'yes'
+dnl * never:          ax_is_release will always be 'no'
+dnl 
+AX_IS_RELEASE([always])
+
+
+dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
+dnl see: www.gnu.org/software/autoconf-archive/ax_check_enable_debug.html
+dnl 
+dnl Check for the presence of an –enable-debug option to configure, with the 
+dnl specified default value used when the option is not present. Return the 
+dnl value in the variable $ax_enable_debug.
+dnl Specifying ’yes’ adds ’-g -O0’ to the compilation flags for all languages. 
+dnl Specifying ’info’ adds ’-g’ to the compilation flags. Specifying ’profile’ 
+dnl adds ’-g -pg’ to the compilation flags and ’-pg’ to the linking flags. 
+dnl Otherwise, nothing is added. 
+dnl 
+dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no], 
+dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...], 
+dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
+
 
 # Checks for programs.
 AC_PROG_AWK
@@ -508,7 +529,8 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch 
+       -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -982,6 +1004,8 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 AM_PATH_PYTHON(,, [:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
+AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
+AC_SUBST(PYTHON_ARCHITECTURE)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -1001,27 +1025,31 @@ AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
 AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
 AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
 
+AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,,
+     AC_MSG_WARN(No Perl tap module found))
 
-AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
-AS_ECHO(" //// select tests env ///////////////////////////////////////////// ")
-AS_ECHO(" /////////////////////////////////////////////////////////////////// ")
+ # this calls valgrind check with args
+ AX_VALGRIND_CHECK
 
-TS_SELECT
+ # selects particular envs for build:host
+ TS_SELECT
  
- AC_SUBST(TS_TESTS_ENVIRONMENT)
- AC_SUBST(TS_LOG_COMPILER)
- AC_SUBST(TS_LOG_DRIVER)
- AC_SUBST(TS_PY_TAP_COMPILER)
+ ## test chain substitution ## 
+ AC_SUBST(TESTS_ENVIRONMENT)
+ AC_SUBST(LOG_COMPILER)
+ AC_SUBST(LOG_DRIVER)
+ AC_SUBST(PY_LOG_COMPILER)
+ AC_SUBST(PY_LOG_FLAGS)
+ AC_SUBST(PY_LOG_COMPILER_TAP)
+ AC_SUBST(PY_LOG_FLAGS_TAP)
+ AC_SUBST(PY_LOG_COMPILER_XML)
+ AC_SUBST(PY_LOG_FLAGS_XML)
 
-dnl AC_MSG_NOTICE(********************************)
-dnl AC_MSG_NOTICE(${TS_TESTS_ENVIRONMENT})
-dnl AC_MSG_NOTICE(${LOG_DRIVER})
-dnl AC_MSG_NOTICE(${LOG_COMPILER})
-dnl AC_MSG_NOTICE(********************************)
+ TS_SET_SKIP_CMD([TESTS_SKIP])
+ AC_SUBST(TESTS_SKIP)
 
-dnl  wpath_bin = $  
-# AC_CHECK_LIB([rt], [clock_gettime, timer_create, timer_settime, timer_delete])
-
+ AC_SUBST(VALGRIND_FLAGS)
+ AC_SUBST(VALGRIND_memcheck_FLAGS)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##

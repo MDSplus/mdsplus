@@ -81,13 +81,13 @@ EXPORT void __test_timeout(double seconds);
 #else // not _TESTING ( normal build )
 
 void __test_setfork(const int value) { (void)value; }
-void __test_init(const char *test_name, const char *file, const int line) {}
-void __test_end() {}
 int  __setup_parent() { return 0; }
 int  __setup_child()  { return 0; }
 void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 void __test_exit() { exit(0); }
 void __test_timeout(double seconds) { (void)seconds; }
+void __test_init(const char *test_name, const char *file, const int line) {}
+void __test_end() { atexit(__test_exit); }
 
 void __test_abort(int code, const char *__msg, const char *__file,
                   unsigned int __line, const char *__function) 
@@ -106,7 +106,7 @@ __THROW __attribute__ ((__noreturn__));
 void __mark_point(const char *__assertion, const char *__file, 
                   unsigned int __line, const char *__function) 
 {
-    printf(" TEST: "
+    printf(" TEST: OK"
            "  file: %s ,  function: %s, line: %d "
            "  assertion:  (%s) \n", 
            __file,__function,__line,__assertion);               
@@ -135,8 +135,8 @@ void __mark_point(const char *__assertion, const char *__file,
 #define TEST0(expr)           (__ASSERT_VOID_CAST (0))
 #define BEGIN_TESTING(description) {    
 #define END_TESTING }
-#define SKIP_TEST  __test_abort(77);
-#define ABORT_TEST __test_abort(99);
+#define SKIP_TEST  __test_abort(77,"SKIP: ", __FILE__,__LINE__,"");
+#define ABORT_TEST __test_abort(99,"ERROR: ",__FILE__,__LINE__,"");
 #else
 
 #define TEST_FORK(value)    __test_setfork(value);
@@ -158,8 +158,7 @@ void __mark_point(const char *__assertion, const char *__file,
 
 #define BEGIN_TESTING(description) \
     __test_init(__STRING(description),__FILE__,__LINE__); \
-    if( __setup_parent() ) { /* do something more after parent */ ;} \
-    else { if(__setup_child()) { /* do something more after child */ ;}
+    if( !__setup_parent() ) { __setup_child();
     
 #define END_TESTING } __test_end();
 

@@ -11,6 +11,7 @@ using namespace testing;
 
 int main(int argc, char *argv[])
 {
+    SKIP_TEST
     BEGIN_TESTING(Apd);
     
     // NOTE: Apd does not increment reference counting !! //            

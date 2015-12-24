@@ -36,12 +36,12 @@
 #     VALGRIND_SUPPRESSIONS_FILES = my-project.supp
 #     EXTRA_DIST = my-project.supp
 #
-#   This results in a "check-valgrind" rule being added to any Makefile.am
+#   This results in a "tests-valgrind" rule being added to any Makefile.am
 #   which includes "@VALGRIND_CHECK_RULES@" (assuming the module has been
-#   configured with --enable-valgrind). Running `make check-valgrind` in
+#   configured with --enable-valgrind). Running `make tests-valgrind` in
 #   that directory will run the module's test suite (`make check`) once for
 #   each of the available Valgrind tools (out of memcheck, helgrind, drd and
-#   sgcheck), and will output results to test-suite-$toolname.log for each.
+#   sgcheck), and will output results to valgrind-suite-$toolname.log for each.
 #   The target will succeed if there are zero errors and fail otherwise.
 #
 #   The macro supports running with and without libtool.
@@ -59,27 +59,31 @@
 
 dnl TODO: add custom valgrind installation and VALGRIND_LIB
 AC_DEFUN([AX_VALGRIND_CHECK],[
-	dnl Check for --enable-valgrind
-	AC_MSG_CHECKING([whether to enable Valgrind on the unit tests])
+	dnl Check for --enable-valgrind	
 	AC_ARG_ENABLE([valgrind],
 	              [AS_HELP_STRING([--enable-valgrind], 
 		                      [Whether to enable Valgrind on the unit tests])],
-	              [enable_valgrind=$enableval],[enable_valgrind=])
+	              [enable_valgrind=$enableval],[enable_valgrind="yes"])
 
 	# Check for Valgrind.
 	AC_CHECK_PROG([VALGRIND],[valgrind],[valgrind])
 
 	AS_IF([test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""],[
-		AC_MSG_ERROR([Could not find valgrind; either install it or reconfigure with --disable-valgrind])
+		AC_MSG_WARN([Could not find valgrind; either install it or reconfigure with --disable-valgrind])
+		enable_valgrind="no"
 	])
 	
 
 	AM_CONDITIONAL([VALGRIND_ENABLED],[test "$enable_valgrind" = "yes"])
 	AC_SUBST([VALGRIND_ENABLED],[$enable_valgrind])
+	AC_MSG_CHECKING([whether to enable Valgrind on the unit tests])
 	AC_MSG_RESULT([$enable_valgrind])
 
 	# Check for Valgrind tools we care about.
 	m4_define([valgrind_tool_list],[[memcheck], [helgrind], [drd], [exp-sgcheck]])
+
+        # permits use of AM_TESTS_FD_REDIRECT to change suppressions redirections
+        m4_pattern_allow(AM_TESTS_FD_REDIRECT)
 
 	AS_IF([test "$VALGRIND" != ""],[
 		m4_foreach([vgtool],[valgrind_tool_list],[
@@ -100,7 +104,9 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 
 VALGRIND_CHECK_RULES='
-# Valgrind check
+# //////////////////////////////////////////////////////////////////////////// #
+# /// Valgrind check  //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 #
 # Optional:
 #  - VALGRIND_SUPPRESSIONS_FILES: Space-separated list of Valgrind suppressions
@@ -111,16 +117,44 @@ VALGRIND_CHECK_RULES='
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
 # Optional variables
-VALGRIND_SUPPRESSIONS   ?= $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
-VALGRIND_FLAGS          ?= --num-callers=30 --trace-children=yes
-VALGRIND_memcheck_FLAGS ?= --leak-check=full --show-reachable=no
-VALGRIND_helgrind_FLAGS ?= --history-level=approx
-VALGRIND_drd_FLAGS      ?=
-VALGRIND_sgcheck_FLAGS  ?=
+VALGRIND_LIB             ?= /usr/lib64/valgrind
+
+VALGRIND_FLAGS           ?=
+VALGRIND_FLAGS           += --num-callers=30 \
+                            --trace-children=yes \
+                            --child-silent-after-fork=yes \
+                            --trace-children-skip-by-arg=*SetMdsplusFileProtection*
+
+VALGRIND_memcheck_FLAGS  ?=
+VALGRIND_memcheck_FLAGS  += --leak-check=full --show-reachable=no
+
+VALGRIND_helgrind_FLAGS  ?=
+VALGRIND_helgrind_FLAGS  += --history-level=approx
+
+VALGRIND_drd_FLAGS       ?=
+VALGRIND_drd_FLAGS       +=
+
+VALGRIND_sgcheck_FLAGS   ?=
+VALGRIND_sgcheck_FLAGS   +=
+
+VALGRIND_SUPPRESSIONS    ?=
+VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
+
+VALGRIND_SUPPRESSIONS_PY ?=
+VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
+                            $(VALGRIND_SUPPRESSIONS) \
+                            $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
+                            
+
+VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
 # Internal use
-valgrind_tools = memcheck helgrind drd sgcheck
-valgrind_log_files = $(addprefix test-suite-,$(addsuffix .log,$(valgrind_tools)))
+valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
+                     $(TEST_LOGS:.log=-valgrind-*.log) \
+                     $(TEST_LOGS:.log=-valgrind-*.xml)
+dnl                  $(foreach tst,$(TESTS),$(addprefix $(tst)-valgrind-,$(addsuffix .xml,$(VALGRIND_TOOLS))))
+                     
+valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
 
 valgrind_memcheck_flags = --tool=memcheck $(VALGRIND_memcheck_FLAGS)
 valgrind_helgrind_flags = --tool=helgrind $(VALGRIND_helgrind_FLAGS)
@@ -142,40 +176,71 @@ endif
 # Valgrind chain add ons
 #
 
-VALGRIND_TESTS_ENVIRONMENT = \
+VALGRIND_TESTS_ENVIRONMENT ?=
+VALGRIND_TESTS_ENVIRONMENT += \
 	VALGRIND=$(VALGRIND) \
+	VALGRIND_LIB=$(VALGRIND_LIB) \
 	G_SLICE=always-malloc,debug-blocks \
 	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
 
 VALGRIND_LOG_COMPILER = \
 	$(valgrind_lt) \
-	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 \
-	$(valgrind_$(VALGRIND_TOOL)_flags) $(VALGRIND_FLAGS)
+	$(VALGRIND) --error-exitcode=1 \
+	$(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY) \
+	$(valgrind_$(VALGRIND_TOOL)_flags) \
+	$(VALGRIND_FLAGS)
 
 
-dnl # Use recursive makes in order to ignore errors during check
-dnl check-valgrind:
-dnl ifeq ($(VALGRIND_ENABLED),yes)
-dnl	-$(foreach tool,$(valgrind_tools), \
-dnl		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
-dnl			$(MAKE) $(AM_MAKEFLAGS) -k check-valgrind-tool VALGRIND_TOOL=$(tool); \
-dnl		) \
-dnl	)
-dnl else
-dnl	@echo "Need to reconfigure with --enable-valgrind"
-dnl endif
 
-dnl # check-valgrind-tool:
-dnl ifeq ($(VALGRIND_ENABLED),yes)
-dnl $(MAKE) check-TESTS \
-dnl 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT)" \
-dnl 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER)" \
-dnl 	LOG_FLAGS="$(valgrind_$(VALGRIND_TOOL)_flags)" \
-dnl 	TEST_SUITE_LOG=test-suite-$(VALGRIND_TOOL).log
-dnl else
-dnl @echo "Need to reconfigure with --enable-valgrind"
-dnl endif
+.PHONY: tests-valgrind tests-valgrind-tool
+.PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
+ifeq ($(VALGRIND_ENABLED),yes)
 
+tests-valgrind:
+	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(foreach tool,$(VALGRIND_TOOLS), \
+		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
+		) \
+	)
+
+tests-valgrind-tool:
+	@ \
+	$(MAKE) check-TESTS \
+	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(LOG_COMPILER)" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(PY_LOG_COMPILER)" \
+	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
+
+
+tests-valgrind-suppressions:
+	@ \
+	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(foreach tool,$(VALGRIND_TOOLS), \
+		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
+			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
+		) \
+	)
+
+tests-valgrind-suppressions-tool:
+	@ \
+	$(MAKE) check-TESTS \
+	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
+	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
+
+else
+
+tests-valgrind tests-valgrind-tool \
+tests-valgrind-suppressions tests-valgrind-suppressions-tool:
+	@ \
+	echo "  ------------------------------------------  "; \
+	echo "  Need to reconfigure with --enable-valgrind  "; \
+	echo "  ------------------------------------------  ";
+endif
 
 
 
@@ -184,10 +249,46 @@ DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
 
 MOSTLYCLEANFILES ?=
 MOSTLYCLEANFILES += $(valgrind_log_files)
-
-.PHONY: check-valgrind check-valgrind-tool
 '
 
-	AC_SUBST([VALGRIND_CHECK_RULES])
-	m4_ifdef([_AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE([VALGRIND_CHECK_RULES])])
+dnl VALGRIND_CHECK_RULES subsituition 
+AC_SUBST([VALGRIND_CHECK_RULES])
+m4_ifdef([_AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE([VALGRIND_CHECK_RULES])])
+
 ])
+
+
+
+
+
+
+
+dnl --- TEST CHAIN ---
+
+dnl LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+dnl LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
+dnl PY_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+dnl PY_LOG_COMPILE = $(PY_LOG_COMPILER) $(AM_PY_LOG_FLAGS) $(PY_LOG_FLAGS)
+
+dnl am__test_logs1 = $(TESTS:=.log)
+dnl am__test_logs2 = $(am__test_logs1:.log=.log)
+dnl TEST_LOGS = $(am__test_logs2:.test.log=.log)
+dnl TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/conf/test-driver
+dnl TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) $(TEST_LOG_FLAGS)
+dnl DIST_SUBDIRS = $(SUBDIRS)
+
+dnl buildtest.log: buildtest$(EXEEXT)
+dnl        @p='buildtest$(EXEEXT)'; \
+dnl        b='buildtest'; \
+dnl        $(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+dnl        --log-file $$b.log --trs-file $$b.trs \
+dnl        $(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+dnl        "$$tst" $(AM_TESTS_FD_REDIRECT)
+
+dnl .py.log:
+dnl        @p='$<'; \
+dnl        $(am__set_b); \
+dnl        $(am__check_pre) $(PY_LOG_DRIVER) --test-name "$$f" \
+dnl        --log-file $$b.log --trs-file $$b.trs \
+dnl        $(am__common_driver_flags) $(AM_PY_LOG_DRIVER_FLAGS) $(PY_LOG_DRIVER_FLAGS) -- $(PY_LOG_COMPILE) \
+dnl        "$$tst" $(AM_TESTS_FD_REDIRECT)
