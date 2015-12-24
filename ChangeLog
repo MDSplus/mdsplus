@@ -1,4 +1,46 @@
-commit fe32d0d0ecf03b68ac0d67233de900cc830c784c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit c05d38f5a87a12e89f90707977a6fc1528c376ac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 196a8ce 01848d1
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Dec 23 10:38:23 2015 -0500
+
+    Merge pull request #268 from MDSplus/twf-add-enable-santitize
+    
+    Add --enable-sanitizer option to configure
+
+commit 196a8ced8b06cf1b21e4e9f8a0e7c833f85b06bb
+Merge: 4409046 38cf130
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:06:45 2015 -0500
+
+    Merge pull request #267 from MDSplus/twf-tree-garbage-collection-again
+    
+    Use _TreeCtx object to handle garbage collection and final closing of…
+
+commit 01848d151b8967f208055e9fb70e9106f7f2e290
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:06:44 2015 -0500
+
+    Add --enable-sanitizer option to configure
+
+commit 440904638f6e79254bb23bbee8a6d2a81895f0cf (tag: refs/tags/alpha_release-7-0-198)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 21 23:34:03 2015 -0500
+
+    New release ---- alpha_release-7-0-198
+
+commit 38cf130de4d1c514197773f51d1afef1ea5beb7f (refs/remotes/origin/twf-tree-garbage-collection-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 21 12:23:29 2015 -0500
+
+    Remove temporary file
+
+commit 2c188d34f3ba8f67b6e3e78a3e172f92b7941b57
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 21 09:32:51 2015 -0500
+
+    Use _TreeCtx object to handle garbage collection and final closing of tree context
+
+commit fe32d0d0ecf03b68ac0d67233de900cc830c784c
 Merge: ae95c22 f97be58
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Dec 21 08:20:56 2015 -0500
