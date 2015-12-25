@@ -18,50 +18,55 @@
 typedef void* PyObject,PyThreadState;
 typedef ssize_t Py_ssize_t;
 
+static void (*Py_Initialize)() = 0;
+static int  (*PyEval_ThreadsInitialized)() = 0;
+static void (*PyEval_InitThreads)() = 0;
 static PyThreadState *(*PyGILState_Ensure)() = 0;
 static void (*PyGILState_Release)() = 0;
+
 static void (*Py_DecRef)() = 0;
-static PyObject *(*PyTuple_New) () = 0;
-static PyObject *(*PyString_FromString) () = 0;
-static PyObject *(*PyUnicode_FromString) () = 0;
-static void (*PyTuple_SetItem) () = 0;
-static PyObject *(*PyTuple_GetItem) () = 0;
-static PyObject *(*PyObject_CallObject) () = 0;
-static PyObject *(*PyObject_GetAttrString) () = 0;
-static void *(*PyLong_AsVoidPtr) () = 0;
-static PyObject *(*PyErr_Occurred) () = 0;
-static void (*PyErr_Print) () = 0;
-static PyObject *(*PyImport_ImportModule) () = 0;
-static PyObject *(*PyModule_GetDict) () = 0;
-static PyObject *(*PyDict_GetItemString) () = 0;
-static PyObject *(*Py_BuildValue) () = 0;
+static PyObject *(*PyTuple_New)() = 0;
+static PyObject *(*PyString_FromString)() = 0;
+static PyObject *(*PyUnicode_FromString)() = 0;
+static void (*PyTuple_SetItem)() = 0;
+static PyObject *(*PyTuple_GetItem)() = 0;
+static PyObject *(*PyObject_CallObject)() = 0;
+static PyObject *(*PyObject_GetAttrString)() = 0;
+static void *(*PyLong_AsVoidPtr)() = 0;
+static PyObject *(*PyErr_Occurred)() = 0;
+static void (*PyErr_Print)() = 0;
+static PyObject *(*PyImport_ImportModule)() = 0;
+static PyObject *(*PyModule_GetDict)() = 0;
+static PyObject *(*PyDict_GetItemString)() = 0;
+static PyObject *(*Py_BuildValue)() = 0;
 static PyObject *_Py_NoneStruct;
-static PyObject *(*PyList_Insert) () = 0;
-static PyObject *(*PyObject_CallFunction) () = 0;
-static PyObject *(*PySys_GetObject) () = 0;
-static int64_t (*PyLong_AsLong) () = 0;
-static char *(*PyString_AsString) () = 0;
+static PyObject *(*PyList_Insert)() = 0;
+static PyObject *(*PyObject_CallFunction)() = 0;
+static PyObject *(*PySys_GetObject)() = 0;
+static int64_t (*PyLong_AsLong)() = 0;
+static char *(*PyString_AsString)() = 0;
 static char *(*PyBytes_AsString)() = 0;
 static PyObject *(*PyUnicode_AsEncodedString)() = 0;
-static Py_ssize_t(*PyList_Size) () = 0;
-static int (*PyCallable_Check) () = 0;
-static PyObject *(*PyList_GetItem) () = 0;
-static PyObject *(*PyObject_Str) () = 0;
+static Py_ssize_t(*PyList_Size)() = 0;
+static int (*PyCallable_Check)() = 0;
+static PyObject *(*PyList_GetItem)() = 0;
+static PyObject *(*PyObject_Str)() = 0;
 
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
   fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
+  Py_Initialize=0;\
   return 0;\
 }
 
 static char *getStringFromPyObj(PyObject *obj) {
   char *ans;
   if (PyString_AsString == NULL) {
-    PyObject *uc = (*PyUnicode_AsEncodedString)(obj, "utf-8","");
-    ans = (*PyBytes_AsString)(uc);
+    PyObject *uc = PyUnicode_AsEncodedString(obj, "utf-8","");
+    ans = PyBytes_AsString(uc);
   }
   else {
-    ans = (*PyString_AsString)(obj);
+    ans = PyString_AsString(obj);
   }
   return ans;
 }
@@ -69,26 +74,21 @@ static char *getStringFromPyObj(PyObject *obj) {
 static PyObject *pyObjFromString(char *str) {
   PyObject *ans;
   if (PyString_FromString == NULL) {
-    ans = (*PyUnicode_FromString)(str);
+    ans = PyUnicode_FromString(str);
   }
   else {
-    ans = (*PyString_FromString)(str);
+    ans = PyString_FromString(str);
   }
   return ans;
 }
       
-  
+
 static int Initialize()
 {
   if (PyTuple_New == NULL) {
-    void *(*Py_Initialize) () = 0;
-    void *(*PyEval_InitThreads)() = 0;
-    void *(*PyEval_SaveThread)() = 0;
     void *handle;
     char *lib;
     char *envsym = getenv("PyLib");
-
-
     if (!envsym) {
       fprintf(stderr,
 	      "\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\n",
@@ -121,13 +121,10 @@ static int Initialize()
 	return 0;
       }
       free(lib);
-      loadrtn(Py_Initialize, 1);
-      (*Py_Initialize) ();
-      loadrtn(PyEval_InitThreads,1);
-      (*PyEval_InitThreads)();
-      loadrtn(PyEval_SaveThread, 1);
-      (*PyEval_SaveThread)();
+      loadrtn(Py_Initialize,1);
     }
+    loadrtn(PyEval_ThreadsInitialized, 1);
+    loadrtn(PyEval_InitThreads,1);
     loadrtn(PyGILState_Ensure,1);
     loadrtn(PyGILState_Release,1);
     loadrtn(Py_DecRef, 1);
@@ -162,6 +159,9 @@ static int Initialize()
     loadrtn(PyList_GetItem, 1);
     loadrtn(PyObject_Str,1);
   }
+  Py_Initialize();
+  if (!PyEval_ThreadsInitialized())
+    PyEval_InitThreads();
   return 1;
 }
 
@@ -176,24 +176,24 @@ static PyObject *getFunction(char *modulename, char *functionname)
   PyObject *method;
   PyObject *ans = 0;
   PyObject *args;
-  module = (*PyImport_ImportModule)(modulename);
+  module = PyImport_ImportModule(modulename);
   if (module == 0) {
     printf("Error importing module %s\n", modulename);
-    if ((*PyErr_Occurred)()) {
+    if (PyErr_Occurred()) {
       PyErr_Print();
     }
   } else {
-    ans = (*PyObject_GetAttrString)(module, functionname);
+    ans = PyObject_GetAttrString(module, functionname);
     if (ans == 0) {
       printf("Error finding function called '%s' in module %s\n", functionname, modulename);
-      if ((*PyErr_Occurred)()) {
-	(*PyErr_Print)();
+      if (PyErr_Occurred()) {
+	PyErr_Print();
       }
-      (*Py_DecRef)(module);
+      Py_DecRef(module);
     } else {
-      if (!(*PyCallable_Check)(ans)) {
+      if (!PyCallable_Check(ans)) {
 	printf("Error, item called '%s' in module %s is not callable\n", functionname, modulename);
-	(*Py_DecRef)(ans);
+	Py_DecRef(ans);
 	ans = 0;
       }
     }
@@ -209,18 +209,18 @@ static void addToPath(char *dirspec)
   PyObject *sys_path;
   PyObject *path;
   int found = 0;
-  sys_path = (*PySys_GetObject)("path");
-  listlen = (*PyList_Size)(sys_path);
+  sys_path = PySys_GetObject("path");
+  listlen = PyList_Size(sys_path);
   for (idx = 0; idx < listlen && (found == 0); idx++) {
     PyObject *pathPart;
-    pathPart = (*PyList_GetItem)(sys_path, idx);
-    if (strcmp(getStringFromPyObj((*PyObject_Str)(pathPart)), dirspec) == 0) {
+    pathPart = PyList_GetItem(sys_path, idx);
+    if (strcmp(getStringFromPyObj(PyObject_Str(pathPart)), dirspec) == 0) {
       found = 1;
     }
   }
   if (found != 1) {
     path = pyObjFromString(dirspec);
-    (*PyList_Insert)(sys_path, (Py_ssize_t) 0, path);
+    PyList_Insert(sys_path, (Py_ssize_t) 0, path);
   }
 }
 
@@ -258,26 +258,26 @@ static PyObject *argsToTuple(int nargs, struct descriptor **args)
   /* Convert descriptor argument list to a tuple of python objects. */
   int idx = 0;
   PyObject *pointerToObject = 0;
-  PyObject *ans = (*PyTuple_New)(nargs);
+  PyObject *ans = PyTuple_New(nargs);
   if (!pointerToObject)
     pointerToObject = getFunction("MDSplus", "pointerToObject");
   if (pointerToObject) {
     for (idx = 0; idx < nargs; idx++) {
       PyObject *arg =
-	(*PyObject_CallFunction)(pointerToObject, (sizeof(void *) == 8) ? "L" : "l", args[idx]);
+	PyObject_CallFunction(pointerToObject, (sizeof(void *) == 8) ? "L" : "l", args[idx]);
       if (arg) {
-	(*PyTuple_SetItem)(ans, idx, arg);
+	PyTuple_SetItem(ans, idx, arg);
       } else {
-	if ((*PyErr_Occurred)()) {
-	  (*PyErr_Print)();
+	if (PyErr_Occurred()) {
+	  PyErr_Print();
 	}
 	break;
       }
     }
   }
   if (idx != nargs) {
-    (*Py_DecRef)(ans);
-    ans = (*PyTuple_New)(0);
+    Py_DecRef(ans);
+    ans = PyTuple_New(0);
   }
   return ans;
 }
@@ -287,32 +287,32 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
   PyObject *makeDataFunction;
   PyObject *dataObj;
   makeDataFunction = getFunction("MDSplus", "makeData");
-  dataObj = (*PyObject_CallFunction)(makeDataFunction, "O", value);
+  dataObj = PyObject_CallFunction(makeDataFunction, "O", value);
   if (dataObj) {
-    PyObject *descr = (*PyObject_GetAttrString)(dataObj, "descriptor");
+    PyObject *descr = PyObject_GetAttrString(dataObj, "descriptor");
     if (descr) {
-      PyObject *descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
+      PyObject *descrPtr = PyObject_GetAttrString(descr, "addressof");
       if (descrPtr) {
-	MdsCopyDxXd((struct descriptor *)(*PyLong_AsLong)(descrPtr), outptr);
-	(*Py_DecRef)(descrPtr);
+	MdsCopyDxXd((struct descriptor *)PyLong_AsLong(descrPtr), outptr);
+	Py_DecRef(descrPtr);
       } else {
 	printf("Error getting address of descriptor\n");
-	if ((*PyErr_Occurred)()) {
-	  (*PyErr_Print)();
+	if (PyErr_Occurred()) {
+	  PyErr_Print();
 	}
       }
-      (*Py_DecRef)(descr);
+      Py_DecRef(descr);
     } else {
       printf("Error getting descriptor\n");
-      if ((*PyErr_Occurred)()) {
-	(*PyErr_Print)();
+      if (PyErr_Occurred()) {
+	PyErr_Print();
       }
     }
-    (*Py_DecRef)(dataObj);
+    Py_DecRef(dataObj);
   } else {
     printf("Error converting answer to MDSplus datatype\n");
-    if ((*PyErr_Occurred)()) {
-      (*PyErr_Print)();
+    if (PyErr_Occurred()) {
+      PyErr_Print();
     }
   }
 }
@@ -326,7 +326,7 @@ int TdiExtPython(struct descriptor *modname_d,
   char *filename;
   int stat;
 #ifndef _WIN32
-  struct sigaction offact = {SIG_DFL, NULL, 0, 0, NULL};
+  struct sigaction offact = {SIG_DFL, 0, 0, 0, 0};
   struct sigaction oldact;
   stat=sigaction(SIGCHLD, &offact, &oldact);
 #endif
@@ -335,29 +335,29 @@ int TdiExtPython(struct descriptor *modname_d,
     if (Initialize()) {
       PyObject *ans;
       PyObject *pyargs;
-      PyThreadState *gil = (*PyGILState_Ensure)();
       PyObject *pyFunction;
       PyObject *pyArgs;
+      PyThreadState *GIL = PyGILState_Ensure();
       addToPath(dirspec);
       free(dirspec);
       pyFunction = getFunction(filename, filename);
       if (pyFunction) {
 	free(filename);
 	pyArgs = argsToTuple(nargs, args);
-	ans = (*PyObject_CallObject)(pyFunction, pyArgs);
+	ans = PyObject_CallObject(pyFunction, pyArgs);
 	if (ans == 0) {
 	  printf("Error calling fun in %s\n", filename);
-	  if ((*PyErr_Occurred)()) {
-	    (*PyErr_Print)();
+	  if (PyErr_Occurred()) {
+	    PyErr_Print();
 	  }
 	} else {
 	  getAnswer(ans, out_ptr);
-	  (*Py_DecRef)(ans);
-	  (*Py_DecRef)(pyArgs);
+	  Py_DecRef(ans);
+	  Py_DecRef(pyArgs);
 	  status = 1;
 	}
       }
-      (*PyGILState_Release)(gil);
+      PyGILState_Release(GIL);
     }
   }
 #ifndef _WIN32
