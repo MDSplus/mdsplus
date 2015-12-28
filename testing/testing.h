@@ -128,17 +128,6 @@ void __mark_point(const char *__assertion, const char *__file,
 
 #define TEST_DEFAULT_TIMEOUT 10 // seconds
 
-#ifdef NDEBUG
-#define TEST_FORK(value)      (__ASSERT_VOID_CAST (0))
-#define TEST_ASSERT(expr)     (__ASSERT_VOID_CAST (0)) 
-#define TEST1(expr)           (__ASSERT_VOID_CAST (0))
-#define TEST0(expr)           (__ASSERT_VOID_CAST (0))
-#define BEGIN_TESTING(description) {    
-#define END_TESTING }
-#define SKIP_TEST  __test_abort(77,"SKIP: ", __FILE__,__LINE__,"");
-#define ABORT_TEST __test_abort(99,"ERROR: ",__FILE__,__LINE__,"");
-#else
-
 #define TEST_FORK(value)    __test_setfork(value);
 
 #define TEST_ASSERT(expr) \
@@ -162,12 +151,11 @@ void __mark_point(const char *__assertion, const char *__file,
     
 #define END_TESTING } __test_end();
 
-#define SKIP_TEST  __test_abort(77,"SKIP: ", __FILE__,__LINE__,__ASSERT_FUNCTION);
-#define ABORT_TEST __test_abort(99,"ERROR: ",__FILE__,__LINE__,__ASSERT_FUNCTION);
+#define SKIP_TEST  __test_abort(77,"# SKIP ", __FILE__,__LINE__,__ASSERT_FUNCTION);
+#define ABORT_TEST __test_abort(99,"# ERROR ",__FILE__,__LINE__,__ASSERT_FUNCTION);
 
 #define TEST_TIMEOUT(seconds) (__test_timeout(seconds))
 
-#endif // NDEBUG
 
 
 #if defined __cplusplus

@@ -17,7 +17,7 @@ dnl ////////////////////////////////////////////////////////////////////////////
 AC_DEFUN([TS_WINEPATH],[
 AS_VAR_SET_IF([$1],,AS_VAR_SET([$1]))
 for _i in $2; do
- AS_VAR_APPEND([$1], "\$(shell winepath -w $_i);");
+ AS_VAR_APPEND([$1], "$(shell winepath -w $_i 2>/dev/null);");
 done
 ])
 
@@ -47,20 +47,15 @@ AC_DEFUN([TS_WINE_LIBRARIESPATH],[
          AS_VAR_APPEND([_libs],m4_join([" "],libdir))
           
          AS_VAR_SET($1) 
-         m4_pushdef([_ts_winepath],[
-          dnl // if not defined HAVE_WINEPATH search for winepath in current path //
-          AS_VAR_SET_IF([HAVE_WINEPATH],,[AC_CHECK_PROG(HAVE_WINEPATH,winepath,yes,no)])
-          TS_VAR_YN(HAVE_WINEPATH,[
-          for _i in $_libs; do
-           AS_VAR_APPEND($1, "\$(shell winepath -w $_i);");
-          done
-          ]) dnl YN
-         ]) dnl _ts_winepath
-
-         dnl TODO:  m4_ifval(m4_normalize([cond]), if-text, if-blank)
-         _ts_winepath()
-
-         m4_popdef([_ts_winepath])
+         dnl // if not defined HAVE_WINEPATH search for winepath in current path //
+         AS_VAR_SET_IF([HAVE_WINEPATH],,[AC_CHECK_PROG(HAVE_WINEPATH,winepath,yes,no)])
+         TS_VAR_YN(HAVE_WINEPATH,[
+         for _i in $_libs; do
+dnl          AS_ECHO("path-> $_i")
+          AS_VAR_APPEND($1, "\$(shell winepath -w $_i 2>/dev/null);");
+         done
+         ]) dnl YN
+         
          m4_popdef([libdir])
 ])
 
@@ -183,7 +178,7 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
       TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=${_mds_path} ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='${_mds_path}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"VALGRIND_LIB=/usr/lib64/valgrind ")

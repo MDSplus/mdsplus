@@ -445,10 +445,10 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+>&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 [ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
  sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 ]))

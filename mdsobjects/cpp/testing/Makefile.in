@@ -1817,6 +1817,13 @@ tests-envdump:
 	 echo "     $${_i}"; \
 	done;
 
+@HAVE_WINE_TRUE@wineconsole:
+@HAVE_WINE_TRUE@	@ \
+@HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
+@HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
+@HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
+@HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
+
 all-local: $(TESTS)
 
 clean-local: clean-local-tests

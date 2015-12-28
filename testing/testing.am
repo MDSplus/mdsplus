@@ -139,6 +139,11 @@ tests-envdump:
 	done;
 
 
-
-
-
+if HAVE_WINE
+wineconsole:
+	@ \
+	echo "--------------------------------------------------------------"; \
+	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
+	echo "--------------------------------------------------------------"; \
+	${TESTS_ENVIRONMENT} wineconsole
+endif
