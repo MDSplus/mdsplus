@@ -21,7 +21,8 @@ SOURCES = boxsmooth.c \
 	  MdsFilter.c \
 	  whoami.c \
 	  pycall.c \
-	  ScopeUtilities.c
+	  ScopeUtilities.c \
+	  datastreams.cpp
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsMisc.exports
