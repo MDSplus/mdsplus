@@ -927,7 +927,9 @@ Array *Array::getSubArray(int startDim, int nSamples)
 		newDims[i] = dims[i];
 	newDims[0] = nSamples;
 
-	return (Array *)createArrayData(dtype, length, nDims, newDims, ptr+(startIdx * length), 0,0,0,0);
+	Array *retArr = (Array *)createArrayData(dtype, length, nDims, newDims, ptr+(startIdx * length), 0,0,0,0);
+	delete [] newDims;
+	return retArr;
 }
 
 
