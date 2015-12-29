@@ -3349,10 +3349,10 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+>&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 [ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
  sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 
@@ -3491,10 +3491,10 @@ user_group=${user_group}
 user_groups=${user_groups}
 user_home=${user_home}
 
-echo "Docker: Entering container \${DOCKER_CONTAINER} ";
+>&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
 [ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
+docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
  sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 
@@ -13214,9 +13214,7 @@ $as_echo "$ac_cv_path_GREP" >&6; }
          as_fn_append _libs ${MAKESHLIBDIR}
 
          WINEPATH=
-
-
-                    if ${HAVE_WINEPATH+:} false; then :
+                  if ${HAVE_WINEPATH+:} false; then :
 
 else
   # Extract the first word of "winepath", so it can be a program name with args.
@@ -13262,9 +13260,9 @@ fi
          case ${HAVE_WINEPATH} in #(
   yes|Yes|YES|Y|y) :
     for _i in $_libs; do
-           as_fn_append WINEPATH "\$(shell winepath -w $_i);";
-          done
-           ;; #(
+          as_fn_append WINEPATH "\$(shell winepath -w $_i 2>/dev/null);";
+         done
+          ;; #(
   no|No|NO|N|n) :
      ;; #(
   *) :
@@ -13276,18 +13274,16 @@ esac
 
 
 
-
-
 if ${_mds_path+:} false; then :
 
 else
   _mds_path=
 fi
 for _i in "${abs_srcdir}/tdi"; do
- as_fn_append _mds_path "\$(shell winepath -w $_i);";
+ as_fn_append _mds_path "$(shell winepath -w $_i 2>/dev/null);";
 done
 
-      as_fn_append TESTS_ENVIRONMENT "MDS_PATH=${_mds_path} "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='${_mds_path}' "
       as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
       as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
       as_fn_append TESTS_ENVIRONMENT "VALGRIND_LIB=/usr/lib64/valgrind "

@@ -10,10 +10,9 @@ using namespace testing;
 
 
 int main(int argc, char *argv[])
-{
-    SKIP_TEST
+{    
     BEGIN_TESTING(Action);
-    
+    SKIP_TEST("Action test is not implemented yet");
     // TO BE DONE //
     // ACTION and DISPATCHER is not tested yet //
     

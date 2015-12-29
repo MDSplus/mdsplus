@@ -11,8 +11,8 @@ using namespace testing;
 
 int main(int argc, char *argv[])
 {
-    SKIP_TEST
     BEGIN_TESTING(Apd);
+    SKIP_TEST("Apd test is not implemented yet");
     
     // NOTE: Apd does not increment reference counting !! //            
     // TO BE CONTINUED ... //

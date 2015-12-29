@@ -81,9 +81,6 @@ test_arch:
 
 
 
-wineconsole:
-	${TESTS_ENVIRONMENT} wineconsole
-
 
 all-local: $(TESTS) libMdsTestDummy.so
 

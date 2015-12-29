@@ -151,8 +151,8 @@ void __mark_point(const char *__assertion, const char *__file,
     
 #define END_TESTING } __test_end();
 
-#define SKIP_TEST  __test_abort(77,"# SKIP ", __FILE__,__LINE__,__ASSERT_FUNCTION);
-#define ABORT_TEST __test_abort(99,"# ERROR ",__FILE__,__LINE__,__ASSERT_FUNCTION);
+#define SKIP_TEST(msg)  __test_abort(77,msg, __FILE__,__LINE__,__ASSERT_FUNCTION);
+#define ABORT_TEST(msg) __test_abort(99,msg,__FILE__,__LINE__,__ASSERT_FUNCTION);
 
 #define TEST_TIMEOUT(seconds) (__test_timeout(seconds))
 

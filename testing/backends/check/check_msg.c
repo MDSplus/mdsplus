@@ -83,11 +83,12 @@ static FILE *get_pipe(void)
     return NULL;
 }
 
-void send_failure_info(const char *msg)
+void send_failure_info(const char *msg, int rtype)
 {
     FailMsg fmsg;
 
     fmsg.msg = strdup(msg);
+    fmsg.rtype = rtype;
     ppack(get_pipe(), CK_MSG_FAIL, (CheckMsg *) & fmsg);
     free(fmsg.msg);
 }
@@ -179,6 +180,7 @@ static TestResult *construct_test_result(RcvMsg * rmsg, int waserror)
         if(rmsg->failctx != CK_CTX_INVALID)
         {
             tr->ctx = rmsg->failctx;
+            tr->rtype = rmsg->rtype;
         }
         else
         {
@@ -193,12 +195,14 @@ static TestResult *construct_test_result(RcvMsg * rmsg, int waserror)
     {
         tr->ctx = CK_CTX_SETUP;
         tr->msg = NULL;
+        tr->rtype = CK_PASS;
         tr_set_loc_by_ctx(tr, CK_CTX_SETUP, rmsg);
     }
     else
     {
         tr->ctx = CK_CTX_TEST;
         tr->msg = NULL;
+        tr->rtype = CK_PASS;
         tr->duration = rmsg->duration;
         tr_set_loc_by_ctx(tr, CK_CTX_TEST, rmsg);
     }

@@ -1,7 +1,7 @@
 // if windows skip this test .. //
 #include "testing.h"
 #ifdef _WIN32
-int main(int argc, char *argv[]) { SKIP_TEST }
+int main(int argc, char *argv[]) { SKIP_TEST("Connection test requires fork") }
 #else 
 
 #include <unistd.h>
@@ -10,8 +10,7 @@ int main(int argc, char *argv[]) { SKIP_TEST }
 #include <signal.h>
 
 
-# include <sys/wait.h>
-
+#include <sys/wait.h>
 #include <mdsobjects.h>
 
 

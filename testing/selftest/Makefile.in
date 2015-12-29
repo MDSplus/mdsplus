@@ -1548,9 +1548,6 @@ test_arch:
 	$(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ || echo FAIL;
 	$(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@ || echo FAIL;
 
-wineconsole:
-	${TESTS_ENVIRONMENT} wineconsole
-
 all-local: $(TESTS) libMdsTestDummy.so
 
 clean-local: clean-local-tests

@@ -308,7 +308,7 @@ void _ck_assert_failed(const char *file, int line, const char *expr, ...)
     }
 
     va_end(ap);
-    send_failure_info(to_send);
+    send_failure_info(to_send,CK_FAILURE);
     if(cur_fork_status() == CK_FORK)
     {
 #if defined(HAVE_FORK) && HAVE_FORK==1
@@ -448,7 +448,7 @@ TestResult *tr_create(void)
 
 static void tr_init(TestResult * tr)
 {
-    tr->ctx = CK_CTX_INVALID;
+    tr->ctx = CK_CTX_INVALID;    
     tr->line = -1;
     tr->rtype = CK_TEST_RESULT_INVALID;
     tr->msg = NULL;
