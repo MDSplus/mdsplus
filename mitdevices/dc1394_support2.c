@@ -241,7 +241,7 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   // set ISO speed:
   err = dc1394_video_set_iso_speed(camera, iso_speed);
   if (err != DC1394_SUCCESS) {
-    fprintf(stderr, "Failed to set ISO speed. Error code %d\n");
+    fprintf(stderr, "Failed to set ISO speed. Error code %d\n", err);
     exit(0);
   }
 

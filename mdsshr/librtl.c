@@ -1037,7 +1037,7 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
     time_out[21] = '0' + (char)(chunks / 1000000);
     time_out[22] = '0' + (char)((chunks % 1000000) / 100000);
   } else
-    strcpy(time_out, "\?\?-\?\?\?-\?\?\?\?  \?\?:\?\?:\?\?.\?\?");
+    strcpy(time_out, "\?\?-\?\?\?-\?\?\?\? \?\?:\?\?:\?\?.\?\?");
   StrCopyR(str, &slen, time_out);
   if (len)
     *len = slen;
