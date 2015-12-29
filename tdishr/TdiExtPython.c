@@ -84,15 +84,14 @@ static int Initialize()
     void *(*Py_Initialize) () = 0;
     void *(*PyEval_InitThreads)() = 0;
     void *(*PyEval_SaveThread)() = 0;
+    int  (*PyEval_ThreadsInitialized)() = 0;
     void *handle;
     char *lib;
     char *envsym = getenv("PyLib");
 
 
     if (!envsym) {
-      fprintf(stderr,
-	      "\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\n",
-	      "Please define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
+      fprintf(stderr,"\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\nPlease define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
       return 0;
     }
 #ifdef _WIN32
@@ -123,10 +122,14 @@ static int Initialize()
       free(lib);
       loadrtn(Py_Initialize, 1);
       (*Py_Initialize) ();
-      loadrtn(PyEval_InitThreads,1);
-      (*PyEval_InitThreads)();
-      loadrtn(PyEval_SaveThread, 1);
+      loadrtn(PyEval_ThreadsInitialized,1);
       (*PyEval_SaveThread)();
+      if ((*PyEval_ThreadsInitialized)() == 0) {
+	(*PyEval_InitThreads) ();
+	(*PyEval_SaveThread) ();
+      }
+      loadrtn(PyEval_InitThreads,1);
+      loadrtn(PyEval_SaveThread, 1);
     }
     loadrtn(PyGILState_Ensure,1);
     loadrtn(PyGILState_Release,1);
@@ -326,7 +329,7 @@ int TdiExtPython(struct descriptor *modname_d,
   char *filename;
   int stat;
 #ifndef _WIN32
-  struct sigaction offact = {SIG_DFL, NULL, 0, 0, NULL};
+  struct sigaction offact = {SIG_DFL, 0, 0, 0, 0};
   struct sigaction oldact;
   stat=sigaction(SIGCHLD, &offact, &oldact);
 #endif
