@@ -14,7 +14,7 @@ static void (*PyEval_ReleaseThread) (void *) = 0;
 static void (*PyRun_SimpleString) (char *) = 0;
 static void (*PyGILState_Release) (void *) = 0;
 static void (*PyEval_SaveThread)() = 0;
-
+static int  (*PyEval_ThreadsInitialized)() = 0;
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
   fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
@@ -73,8 +73,11 @@ EXPORT int PyCall(char *cmd)
     loadrtn(PyRun_SimpleString, 1);
     loadrtn(PyGILState_Release, 1);
     (*Py_Initialize) ();
-    (*PyEval_InitThreads) ();
-    (*PyEval_SaveThread) ();
+    loadrtn(PyEval_ThreadsInitialized,1);
+    if ((*PyEval_ThreadsInitialized)() == 0) {
+      (*PyEval_InitThreads) ();
+      (*PyEval_SaveThread) ();
+    }
   }
   GIL = (*PyGILState_Ensure) ();
 #ifndef _WIN32
