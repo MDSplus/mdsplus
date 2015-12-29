@@ -10,7 +10,7 @@
 
 extern int registerListener(char *experiment, char *tree, int shot);
 extern void unregisterListener(int listenerId);
-extern struct descriptor_xd *getNewSamplesSerialized(int id);
+extern struct descriptor_xd *getNewSamplesSerializedXd();
 extern int TdiDecompile();
 
 static void printDecompiled(struct descriptor *inD)
@@ -35,16 +35,17 @@ static void printDecompiled(struct descriptor *inD)
 
 int main(int argc, char *argv[])
 {
-	int id;
+	int id, id1;
 	int status;
 	struct timespec waitTime;
 	struct descriptor_xd *retXd;
 	EMPTYXD(xd);
 
 	id = registerListener("2 * test_0", "test", 1);
+	id1 = registerListener("10 * build_path('test_1')", "test", 1);
 	while(1)
 	{
-		retXd = getNewSamplesSerialized(id);
+		retXd = getNewSamplesSerializedXd();
 		if(!retXd->pointer)
 		{
 			printf("Error: Null serialized  returned\n");
