@@ -1,10 +1,18 @@
+#include <globus_common.h>
+#include <gssapi.h>
+#include <globus_gss_assist.h>
+#include <globus_gridmap_callout_error.h>
+#include <stdlib.h>
+
+#ifdef HAVE_GETADDRINFO
+#undef HAVE_GETADDRINFO
+#endif
+#ifdef HAVE_GETPWUID
+#undef HAVE_GETPWUID
+#endif
+
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#include "globus_common.h"
-#include "gssapi.h"
-#include "globus_gss_assist.h"
-#include "globus_gridmap_callout_error.h"
-#include <stdlib.h>
 
 extern int TdiExecute();
 extern int MdsFree1Dx();

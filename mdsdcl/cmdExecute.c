@@ -1106,11 +1106,11 @@ EXPORT int mdsdcl_do_command(char const *command)
   char *output = 0;
   int status = mdsdcl_do_command_extra_args(command, 0, &error, &output, 0, 0);
   if (error) {
-    fprintf(stderr, error);
+    fprintf(stderr, "%s", error);
     free(error);
   }
   if (output) {
-    fprintf(stdout, output);
+    fprintf(stdout,"%s", output);
     free(output);
   }
   return status;
@@ -1259,7 +1259,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   }
   if (output != NULL) {
     if (output_out == NULL) {
-      fprintf(stdout, output);
+      fprintf(stdout, "%s", output);
       fflush(stdout);
       free(output);
     } else {

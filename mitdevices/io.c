@@ -36,7 +36,7 @@ EXPORT int READ(int fd, void *buf, size_t count)
     bytes = read(fd, buf, bytes_to_read);
     if (bytes < 0) {
       char msg[132];
-      sprintf(msg, "READ returned zero, quit at %d\n", count - bytes_to_read);
+      sprintf(msg, "READ returned zero, quit at %zd\n", count - bytes_to_read);
       perror(msg);
       break;
 
@@ -74,7 +74,7 @@ EXPORT size_t FREAD(void *ptr, size_t size, size_t nmemb, FILE * stream)
     this_chunk = fread(ptr, size, chunk_size, stream);
 
     if (this_chunk <= 0) {
-      fprintf(stderr, "fread returned zero, quit at %d\n", nmemb - samples_to_read);
+      fprintf(stderr, "fread returned zero, quit at %zd\n", nmemb - samples_to_read);
       break;
     }
 
