@@ -447,9 +447,8 @@ user_home=${user_home}
 
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
-[[ \$- == *i* ]] && _interative=-i
 [ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t \$_interactive --user \${USER} \${DOCKER_CONTAINER} \
+docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
  sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
 
 ]))
