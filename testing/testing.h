@@ -96,7 +96,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 void __test_exit() { exit(0); }
 void __test_timeout(double seconds) { (void)seconds; }
 void __test_init(const char *test_name, const char *file, const int line) {}
-void __test_end() { atexit(__test_exit); }
+void __test_end() { /*atexit(__test_exit);*/ }
 
 void __test_abort(int code, const char *__msg, const char *__file,
                   unsigned int __line, const char *__function) 
