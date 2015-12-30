@@ -117,8 +117,11 @@ inline void MdsDataTest::test_numeric_cast_function(mds::Data *data, Fn fn, cons
     try { mds::numeric_cast<T>(value); }
     catch ( std::exception &e ) { TEST_STD_EXCEPTION((data->*fn)(), e.what()); }
     try {
-        R casted_val = mds::numeric_cast<R>(value);
-        TEST1( casted_val == (data->*fn)() );
+        // NOTE: seems that the optimizer makes a fail in 32bit if these are not
+        // volatile variables ( failing case is: test_conversion_limits<Int32> )
+        volatile R casted_val = mds::numeric_cast<R>(value);
+        volatile R data_val = (data->*fn)();        
+        TEST1( casted_val == data_val );
     } catch(...) {} // do not throw //
 }
 
@@ -142,16 +145,16 @@ template < typename T >
 inline void MdsDataTest::test_data_numerics(mds::Data *data, const T value) {
     TEST1( data->getSize() == 1 );
 
-    //    TEST1( data->getByte() == numeric_cast<char>(value) );
-    //    TEST1( data->getShort() == numeric_cast<short>(value) );
-    //    TEST1( data->getInt() == numeric_cast<int>(value) );
-    //    TEST1( data->getLong() == numeric_cast<int64_t>(value) );
-    //    TEST1( data->getByteUnsigned() == numeric_cast<unsigned char>(value) );
-    //    TEST1( data->getShortUnsigned() == numeric_cast<unsigned short>(value) );
-    //    TEST1( data->getIntUnsigned() == numeric_cast<unsigned int>(value) );
-    //    TEST1( data->getLongUnsigned() == numeric_cast<uint64_t>(value) );
-    //    TEST1( data->getFloat() == numeric_cast<float>(value) );
-    //    TEST1( data->getDouble() == numeric_cast<double>(value) );
+//        TEST1( data->getByte() == mds::numeric_cast<char>(value) );
+//        TEST1( data->getShort() == mds::numeric_cast<short>(value) );
+//        TEST1( data->getInt() == mds::numeric_cast<int>(value) );
+//        TEST1( data->getLong() == mds::numeric_cast<int64_t>(value) );
+//        TEST1( data->getByteUnsigned() == mds::numeric_cast<unsigned char>(value) );
+//        TEST1( data->getShortUnsigned() == mds::numeric_cast<unsigned short>(value) );
+//        TEST1( data->getIntUnsigned() == mds::numeric_cast<unsigned int>(value) );
+//        TEST1( data->getLongUnsigned() == mds::numeric_cast<uint64_t>(value) );
+//        TEST1( data->getFloat() == mds::numeric_cast<float>(value) );
+//        TEST1( data->getDouble() == mds::numeric_cast<double>(value) );
 
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(char, getByte), value);
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(short, getShort), value);

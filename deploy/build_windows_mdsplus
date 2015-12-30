@@ -5,6 +5,8 @@ cleanup() {
 }
 
 set -e
+MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+
 wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
 export JNI_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk
 export JNI_MD_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk/win32
@@ -18,11 +20,16 @@ cd /buildsrc
             --libdir=/buildroot/bin_x86_64 \
             --host=x86_64-w64-mingw32 \
 	    --with-python_include=/3rd-party-apis-master/windows-python27 \
-            --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar
-make clean > /dev/null
-env LANG=en_US.UTF-8 make
-make install
-make clean >/dev/null;
+            --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar           
+
+$MAKE clean > /dev/null
+$MAKE
+echo 
+echo " --- MAKING TESTS 64bit --- "
+$MAKE -k tests TEST_FORMAT=tap
+echo 
+$MAKE install
+
 ./configure --prefix=/buildroot \
             --exec_prefix=/buildroot \
             --with-labview=/3rd-party-apis-master/labview \
@@ -33,13 +40,17 @@ make clean >/dev/null;
             --host=i686-w64-mingw32 \
 	    --with-python_include=/3rd-party-apis-master/windows-python27 \
             --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar
-env LANG=en_US.UTF-8 make
+
+$MAKE clean >/dev/null;
+$MAKE
 if [ -z "$BNAME" ]
 then
   export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
 else
   export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
 fi
+echo " --- MAKING TESTS 32bit --- "
+$MAKE -k tests TEST_FORMAT=tap
 make install
 make clean >/dev/null
 if [   ! -z "$WINBLD_USER" -a \

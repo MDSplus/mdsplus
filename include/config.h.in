@@ -164,6 +164,9 @@
 /* Define to 1 if you have the <windows.h> header file. */
 #undef HAVE_WINDOWS_H
 
+/* Define if debugging is disabled */
+#undef NDEBUG
+
 /* "Define NEED_SEMUN" */
 #undef NEED_SEMUN
 

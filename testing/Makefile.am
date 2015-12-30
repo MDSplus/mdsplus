@@ -1,7 +1,6 @@
 SUBDIRS = backends/check .
 
 include @top_builddir@/Makefile.inc
-include testing.am
 
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
@@ -30,60 +29,56 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
 
-#bin_PROGRAMS = faketest
-#faketest_SOURCES = faketest.c
-#faketest_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-#faketest_LDADD = -L@MAKESHLIBDIR@ $(TEST_LIBS)
-
-
 TEST_SUBDIRS = \
                mdsobjects/python/tests \
                mdslib/testing \
                mdsobjects/cpp/testing
 #              testing/selftest
 
+TEST_OUTDIR    ?= ${top_builddir}/testing
 
-.ONESHELL:
-build_tests: $(MdsTestShr)
-	@ :; \
-	list='$(TEST_SUBDIRS)'; \
-	status=0; \
-	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
-	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
-	 ex_taps="$${ex_taps} $$(echo $${subdir} | sed 's|/|_|g').tap"; \
-	done; \
-	echo; \
-	echo " COMPONENTS WITH ERRORS FOUND: $${status} "; \
-	echo; \
-	echo " ------- COPYING TAP SUITES into ${top_builddir}/testing: ";\
-	$(am__cd) ${top_builddir}; \
-	for subdir in $$list; do \
-	 echo "$(INSTALL) $${subdir}/$(TEST_SUITE_TAP) testing/$$(echo $${subdir} | sed 's|/|_|g').tap;"; \
-	 $(INSTALL) $${subdir}/$(TEST_SUITE_TAP) testing/$$(echo $${subdir} | sed 's|/|_|g').tap; \
-	done; \
-	echo " -------- CUT HERE for Jenkins inclusion --------------- ";\
-	for i in $${taps}; do \
-	echo "$$i"; \
-	done; \
-	echo " ------------------------------------------------------- "; \
-	exit $${status}
 
-.ONESHELL:
-clean_tests: 
-	@ :; \
-	list='$(TEST_SUBDIRS)'; \
-	for subdir in $$list; do echo "Cleaning in $$subdir"; \
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
-	done;
-	
 
-taps: all clean_tests build_tests
+.PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
+tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_SUBDIRS))
+clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_SUBDIRS))
+$(tests_DIRS):
+	$(MAKE) -C $(@:tests__%=%) tests
+
+$(clean_DIRS):
+	$(MAKE) -C $(@:clean__%=%) clean
+
+$(tests_valgrind_DIRS):
+	$(MAKE) -C $(@:tests_valgrind__%=%) tests-valgrind
+
+$(tests_valgrind_suppressions_DIRS):
+	$(MAKE) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+
+
+.PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
+tests: $(tests_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *.tap,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind: $(tests_valgrind_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *-valgrind-*.xml,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
+
+tests-clean: $(clean_DIRS)
+
 
 all-local: $(MdsTestShr)
 
 clean-local:
-	$(RM) $(MdsTestShr)
+	-$(RM) $(MdsTestShr)
 
 
 

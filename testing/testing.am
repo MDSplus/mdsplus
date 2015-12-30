@@ -1,51 +1,41 @@
 
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
 TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS =  -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
-
-PY_LOG_COMPILER = $(PYTHON)
-PY_LOG_FLAGS    = -v
-
-
-
-
-
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-
-# //////////////////////////////////////////////////////////////////////////// #
 # ///  select test form env variable  //////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 
+TEST_BUILDTYPE  = local
+TEST_FORMAT    ?= tap
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
 xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
 
-tests:
-	echo "Making tests ... "
-	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) tap;
-	else
-	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
-	fi
 
+.PHONY: rebuild-tests
+rebuild-tests:
+	@ \
+	rm -f *.$(OBJEXT); \
+	rm -f $(check_PROGRAMS); \
+	if [ -n "$${VALGRIND_BUILD}" ]; then \
+	 echo "building clean tests for valgrind"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all; \
+	else \
+	 echo "building tests using D_TESTING set"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	fi;
+
+.PHONY: tests
+tests:
+	@echo "Making tests ... "; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -55,20 +45,22 @@ tests:
 @VALGRIND_CHECK_RULES@ 
 
 
-
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-TESTS_ENVIRONMENT   = @TS_TESTS_ENVIRONMENT@
-LOG_COMPILER        = @TS_LOG_COMPILER@
-TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
+LOG_DRIVER          ?= @LOG_DRIVER@
+TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
+LOG_COMPILER        ?= @LOG_COMPILER@
+PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 
-# use default ...
-# LOG_DRIVER        = @TS_LOG_DRIVER@
-
-
-
+## PY_ARCH_TEST = $(shell $(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@)
+## PY_ARCH_TEST = yes
+## PY_LOG_COMPILER     = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER@,@TESTS_SKIP@)
+## PY_LOG_FLAGS        = @PY_LOG_FLAGS@
+## PY_LOG_COMPILER_TAP = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER_TAP@,@TESTS_SKIP@)
+## PY_LOG_FLAGS_TAP    = @PY_LOG_FLAGS_TAP@
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -78,15 +70,11 @@ TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 
 
-.ONESHELL:
-$(TEST_BUILD_TAP):
-	## Make all recursive targets here without dying.
-	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
-	
-	## Try to build failed targets one by one
-	echo "TAP version 13" > $@;
-	count=0;
+$(TEST_BUILD_TAP): rebuild-tests
+	@ \
+	echo "Try to build targets one by one"; \
+	echo "TAP version 13" > $@; \
+	count=0; \
 	for i in $(check_PROGRAMS); do \
 	  if ! $(MAKE) -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
@@ -98,27 +86,34 @@ $(TEST_BUILD_TAP):
 	echo "1..$${count}" >> $@;
 
 
-.ONESHELL:
+.PHONY: $(TEST_SUITE_TAP)
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-	export TEST_FORMAT="tap";
+if HAVE_PL_TAP_PARSER
+	@ \
+	echo "Run tests with tap result"; \
+	export TEST_FORMAT="tap"; \
+	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS; \
+	\
+	## collate test-build.tap \
+	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+	else suite="$@"; \
+	fi; \
+	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
+	  || exit 1
+else
+	@ \
+	echo "Run tests without collating results"; \
+	export TEST_FORMAT="tap"; \
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 	
-	## run tests	
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
-	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-	 
-	## collate test-build.tap and 
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
-	 || exit 1;
-
-
+endif
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LOG  ///////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 ## TODO: add log output
-$(TEST_SUITE_LOG):
+## $(TEST_SUITE_LOG):
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -137,12 +132,28 @@ $(TEST_SUITE_XML):
 
 .PHONY: clean-local-tests
 clean-local-tests:
-	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
 
 
 
 
+.PHONY: tests-envdump
+tests-envdump:
+	@echo; \
+	echo ----------------------------------------------------------------; \
+	echo TESTS_ENVIRONMENT = ;\
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	 echo "     $${_i}"; \
+	done;
 
 
 
-
+if HAVE_WINE
+wineconsole:
+	@ \
+	echo "--------------------------------------------------------------"; \
+	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
+	echo "--------------------------------------------------------------"; \
+	${TESTS_ENVIRONMENT} wineconsole
+endif

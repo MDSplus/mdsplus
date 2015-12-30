@@ -52,5 +52,7 @@ libMdsTestUtils_a_SOURCES = $(_SOURCES)
 libMdsTestDummy.so: testutils.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 	
+MOSTLYCLEANFILES = libMdsTestDummy.so
+
 all-local: libMdsTestDummy.so
 

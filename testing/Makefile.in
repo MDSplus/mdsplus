@@ -93,10 +93,14 @@ subdir = testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
+	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
+	$(top_srcdir)/m4/m4_ax_is_release.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
+	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
+	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
@@ -198,8 +202,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/testing.am \
-	$(top_srcdir)/conf/depcomp
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/conf/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -344,6 +347,8 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LOG_COMPILER = @LOG_COMPILER@
+LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
@@ -355,7 +360,6 @@ MAKEINFO = @MAKEINFO@
 MAKELIBDIR = @MAKELIBDIR@
 MAKESHLIBDIR = @MAKESHLIBDIR@
 MAKEUIDDIR = @MAKEUIDDIR@
-MAKE_COMMAND_OVERRIDE = @MAKE_COMMAND_OVERRIDE@
 MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@
@@ -377,15 +381,23 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PYTHON = @PYTHON@
+PYTHON_ARCHITECTURE = @PYTHON_ARCHITECTURE@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
+PY_LOG_COMPILER = @PY_LOG_COMPILER@
+PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
+PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@
+PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
+PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -409,20 +421,20 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
-TS_LOG_COMPILER = @TS_LOG_COMPILER@
-TS_LOG_DRIVER = @TS_LOG_DRIVER@
-TS_PY_TAP_COMPILER = @TS_PY_TAP_COMPILER@
-TS_TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
 VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
 VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
 VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
+VALGRIND_memcheck_FLAGS = @VALGRIND_memcheck_FLAGS@
 VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
@@ -500,40 +512,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 SUBDIRS = backends/check .
-TEST_CFLAGS = -I${top_srcdir}/testing
-TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-PY_LOG_COMPILER = $(PYTHON)
-PY_LOG_FLAGS = -v
-
-# not used #
-_tap_py_execute = \
- import unittest; \
- import tap; \
- import os; \
- import sys; \
- pt = os.path.dirname(os.path.curdir); \
- loader = unittest.TestLoader(); \
- tests = loader.loadTestsFromName(sys.argv[1]); \
- tr = tap.TAPTestRunner(); \
- tr.set_stream(1); \
- tr.run(tests); 
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-TESTS_ENVIRONMENT = @TS_TESTS_ENVIRONMENT@
-LOG_COMPILER = @TS_LOG_COMPILER@
-TAP_PY_LOG_COMPILER = @TS_PY_TAP_COMPILER@
-
-# use default ...
-# LOG_DRIVER        = @TS_LOG_DRIVER@
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-TEST_BUILD_TAP = test-build.tap
-TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
 
@@ -550,21 +528,20 @@ libMdsTest_a_SOURCES = base_backend.c
 libMdsTestBackend_a_CFLAGS = -D_TESTING -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
-
-#bin_PROGRAMS = faketest
-#faketest_SOURCES = faketest.c
-#faketest_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-#faketest_LDADD = -L@MAKESHLIBDIR@ $(TEST_LIBS)
 TEST_SUBDIRS = \
                mdsobjects/python/tests \
                mdslib/testing \
                mdsobjects/cpp/testing
 
+tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_SUBDIRS))
+clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_SUBDIRS))
 all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/testing.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -584,7 +561,6 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/testing.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -941,73 +917,6 @@ uninstall-am:
 
 include @top_builddir@/Makefile.inc
 
-#prova:
-#	echo $(TEST_LOGS);
-#	python -c "${_tap_py_execute}" pyex1;
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  select test form env variable  //////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-.PHONY: tap xml log
-tap: $(TEST_SUITE_TAP)
-xml: $(TEST_SUITE_XML)
-log: $(TEST_SUITE_LOG)
-
-tests:
-	echo "Making tests ... "
-	if [ -z ${TEST_FORMAT} ] ; then
-	 $(MAKE) $(AM_MAKEFLAGS) tap;
-	else
-	 $(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
-	fi
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-@VALGRIND_CHECK_RULES@ 
-
-.ONESHELL:
-$(TEST_BUILD_TAP):
-	$(MAKE) -k $(AM_MAKEFLAGS) clean all \
-	CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING";
-
-	echo "TAP version 13" > $@;
-	count=0;
-	for i in $(check_PROGRAMS); do \
-	  if ! $(MAKE) -q $$i; then \
-	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
-	    { ((count++)); \
-	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
-	    }; \
-	  fi; \
-	done; \
-	echo "1..$${count}" >> $@;
-
-.ONESHELL:
-$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-	export TEST_FORMAT="tap";
-
-	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_LOGS) \
-	  PY_LOG_COMPILER="$(TAP_PY_LOG_COMPILER)" \
-	  PY_LOG_FLAGS="$(TAP_PY_LOG_FLAGS)";
-
-	perl ${top_srcdir}/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $@ \
-	 || exit 1;
-
-$(TEST_SUITE_LOG):
-
-$(TEST_SUITE_XML):
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  clean  //////////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-.PHONY: clean-local-tests
-clean-local-tests:
-	-$(RM) -rf $(TEST_BUILD_TAP) $(TEST_SUITE_TAP)
-
 #
 # Shared library
 #
@@ -1017,46 +926,42 @@ $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 #              testing/selftest
 
-.ONESHELL:
-build_tests: $(MdsTestShr)
-	@ :; \
-	list='$(TEST_SUBDIRS)'; \
-	status=0; \
-	for subdir in $$list; do echo "Making in $$subdir"; \
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tap || (( status |= 1)); \
-	 taps="$${taps} $${subdir}/$(TEST_SUITE_TAP)"; \
-	 ex_taps="$${ex_taps} $$(echo $${subdir} | sed 's|/|_|g').tap"; \
-	done; \
-	echo; \
-	echo " COMPONENTS WITH ERRORS FOUND: $${status} "; \
-	echo; \
-	echo " ------- COPYING TAP SUITES into ${top_builddir}/testing: ";\
-	$(am__cd) ${top_builddir}; \
-	for subdir in $$list; do \
-	 echo "$(INSTALL) $${subdir}/$(TEST_SUITE_TAP) testing/$$(echo $${subdir} | sed 's|/|_|g').tap;"; \
-	 $(INSTALL) $${subdir}/$(TEST_SUITE_TAP) testing/$$(echo $${subdir} | sed 's|/|_|g').tap; \
-	done; \
-	echo " -------- CUT HERE for Jenkins inclusion --------------- ";\
-	for i in $${taps}; do \
-	echo "$$i"; \
-	done; \
-	echo " ------------------------------------------------------- "; \
-	exit $${status}
+TEST_OUTDIR    ?= ${top_builddir}/testing
 
-.ONESHELL:
-clean_tests: 
-	@ :; \
-	list='$(TEST_SUBDIRS)'; \
-	for subdir in $$list; do echo "Cleaning in $$subdir"; \
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
-	done;
+.PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
+$(tests_DIRS):
+	$(MAKE) -C $(@:tests__%=%) tests
 
-taps: all clean_tests build_tests
+$(clean_DIRS):
+	$(MAKE) -C $(@:clean__%=%) clean
+
+$(tests_valgrind_DIRS):
+	$(MAKE) -C $(@:tests_valgrind__%=%) tests-valgrind
+
+$(tests_valgrind_suppressions_DIRS):
+	$(MAKE) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+
+.PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
+tests: $(tests_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *.tap,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind: $(tests_valgrind_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *-valgrind-*.xml,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
+
+tests-clean: $(clean_DIRS)
 
 all-local: $(MdsTestShr)
 
 clean-local:
-	$(RM) $(MdsTestShr)
+	-$(RM) $(MdsTestShr)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -72,8 +72,9 @@ public:
 int main(int argc, char *argv[])
 {
     BEGIN_TESTING(Event);
-#   ifndef _WIN32
-    
+#   ifdef _WIN32
+    SKIP_TEST("Event test requires fork")
+#   else 
     setenv("UDP_EVENTS","yes",1);
     
     {        

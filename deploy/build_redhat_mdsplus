@@ -10,24 +10,12 @@ wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (
 # make the root to build into
 #
 mkdir -p /buildroot
+
 #
 # In the source directory build and install both 64-bit and 32-bit applications.
 #
 cd /buildsrc
-./configure --prefix=/buildroot/usr/local/mdsplus \
-            --exec_prefix=/buildroot/usr/local/mdsplus \
-            --with-labview=/3rd-party-apis-master/labview \
-            --with-jdk=$JDK_DIR \
-            --with-idl=/3rd-party-apis-master/idl \
-            --with-gsi=/usr:gcc64 \
-            --bindir=/buildroot/usr/local/mdsplus/bin64 \
-            --libdir=/buildroot/usr/local/mdsplus/lib64 \
-            --host=x86-64-linux \
-            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
-make clean > /dev/null
-env LANG=en_US.UTF-8 make
-make install
-make clean >/dev/null;
+
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \
             --with-labview=/3rd-party-apis-master/labview \
@@ -38,7 +26,34 @@ make clean >/dev/null;
             --libdir=/buildroot/usr/local/mdsplus/lib32 \
             --host=i686-linux \
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
+
+make clean > /dev/null
 env LANG=en_US.UTF-8 make;
+
+echo " --- MAKING TESTS 32bit --- "
+make -k tests
+make install
+
+
+./configure --prefix=/buildroot/usr/local/mdsplus \
+            --exec_prefix=/buildroot/usr/local/mdsplus \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=/3rd-party-apis-master/idl \
+            --with-gsi=/usr:gcc64 \
+            --bindir=/buildroot/usr/local/mdsplus/bin64 \
+            --libdir=/buildroot/usr/local/mdsplus/lib64 \
+            --host=x86-64-linux \
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
+
+make clean > /dev/null
+env LANG=en_US.UTF-8 make
+
+echo " --- MAKING TESTS 64bit --- "
+make -k tests
+make install
+
+
 #
 # Define MDSPLUS_VERSION environment variable which is used for the python
 # setup.py
@@ -49,8 +64,7 @@ then
 else
   export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
 fi
-make install
-make clean >/dev/null;
+
 #
 # Build the debug version of code for testing
 # with valgrind. Currently the testing is done with python tests so
@@ -58,10 +72,10 @@ make clean >/dev/null;
 # other tests we may want to test both 64-bit and 32-bit.
 #
 
-if ( echo "$@" | grep vg > /dev/null )
-then
-    mkdir /dbgbuildroot
-    ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
+ if ( echo "$@" | grep vg > /dev/null )
+ then
+ mkdir /dbgbuildroot
+ ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
               --exec_prefix=/dbgbuildroot/usr/local/mdsplus \
               --with-labview=/3rd-party-apis-master/labview \
               --with-jdk=$JDK_DIR \
@@ -70,19 +84,21 @@ then
               --bindir=/dbgbuildroot/usr/local/mdsplus/bin64 \
               --libdir=/dbgbuildroot/usr/local/mdsplus/lib64 \
               --host=x86-64-linux \
-              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FFLAGS="-g -O0"
+              --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+              --enable-valgrind \
+              --enable-debug=yes
     make clean > /dev/null
-    env LANG=en_US.UTF-8 make
+    env LANG=en_US.UTF-8 make    
     make install
-fi
-
-if (( "$#" ))
-then
+ fi
+ 
+ if (( "$#" ))
+ then
     echo Doing tests: $@
     export LIBDIR=lib64
     chmod a+x ./deploy/do_tests
     ./deploy/do_tests $@
-fi
+ fi
 
 #
 # IF the /installer directory is found then build a repository with the new rpm's in it.

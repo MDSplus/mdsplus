@@ -44,4 +44,4 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKEUIDDIR@cw_wvedit.uid : cw_wvedit.uil ; $(UIL) -o $@ cw_wvedit.uil
+@MAKEUIDDIR@cw_wvedit.uid : cw_wvedit.uil ; $(UIL) -o $@ $^

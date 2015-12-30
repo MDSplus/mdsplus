@@ -39,13 +39,19 @@ volatile int error_jmp_state;
 
 #define MSG_LEN 100
 
+//#ifndef HAVE_FORK
+//#define HAVE_FORK
+//#endif
 
 static int alarm_received = 0;
 static double default_timeout = TEST_DEFAULT_TIMEOUT;
 static pid_t group_pid = 0;
 extern jmp_buf error_jmp_buffer;
 
+static char *custom_pass_msg = NULL;
+static int error_code = 0;
 
+#ifdef HAVE_FORK
 static struct sigaction sigint_old_action;
 static struct sigaction sigterm_old_action;
 static struct sigaction sigalarm_old_action;
@@ -53,6 +59,7 @@ static struct sigaction sigalarm_old_action;
 static struct sigaction sigalarm_new_action;
 static struct sigaction sigint_new_action;
 static struct sigaction sigterm_new_action;
+#endif
 
 static Suite   *suite  = NULL;
 static SRunner *runner = NULL;
@@ -171,7 +178,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     }
 
     va_end(ap);    
-    send_failure_info(to_send);
+    send_failure_info(to_send, CK_FAILURE);
     if( cur_fork_status() == CK_FORK && group_pid)
     {
 #     ifdef HAVE_FORK
@@ -216,12 +223,20 @@ void __assert_fail (const char *__assertion, const char *__file,
 {    
     if(!suite) __test_init(__assertion,__file,__line);
     __test_assert_fail(__file,__line,__assertion,NULL);    
-    __test_end();   
+    
+    // FIX
+    __test_end();
     exit(1);
 }
 
 
-
+static char *pass_msg(void)
+{
+    if(custom_pass_msg)
+        return custom_pass_msg;
+    else
+        return strdup("Passed");
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  fork  ////////////////////////////////////////////////////////////////////
@@ -234,8 +249,7 @@ static TestResult *receive_result_info_fork(const char *tcname,
                                             signed char allowed_exit_value);
 
 
-//#if defined(HAVE_FORK) && HAVE_FORK==1
-
+#if defined(HAVE_FORK)
 static void set_fork_info(TestResult * tr, int status, int expected_signal,
                           signed char allowed_exit_value);
 static char *signal_msg(int sig);
@@ -243,7 +257,6 @@ static char *signal_error_msg(int signal_received, int signal_expected);
 static char *exit_msg(int exitstatus);
 static int waserror(int status, int expected_signal);
 
-static char *pass_msg(void);
 
 
 static TestResult *receive_result_info_fork(const char *tcname,
@@ -273,12 +286,24 @@ static TestResult *receive_result_info_fork(const char *tcname,
 static void set_fork_info(TestResult * tr, int status, int signal_expected,
                           signed char allowed_exit_value)
 {
+    // nonzero value if the child process terminated because it received a
+    // signal that was not handled    
     int was_sig = WIFSIGNALED(status);
+    
+    // nonzero value if the child process terminated normally with exit, _exit    
     int was_exit = WIFEXITED(status);
+    
+    // returns the exit status of the child. This consists of the least
+    // significant 8 bits of the status argument that the child specified in a
+    // call to exit(3) or _exit(2) or as the argument for a return statement in
+    // main(). This macro should be employed only if WIFEXITED returned true.    
     signed char exit_status = WEXITSTATUS(status);
+    
+    // returns the number of the signal that caused the child process to
+    // terminate. This macro should be employed only if WIFSIGNALED returned
+    // true.            
     int signal_received = WTERMSIG(status);
 
-    
     if(was_sig)
     {
         if(signal_expected == signal_received)
@@ -324,6 +349,8 @@ static void set_fork_info(TestResult * tr, int status, int signal_expected,
             tr->msg = signal_msg(signal_received);
         }
     }
+    
+    // no signal .. (child exited by itself)
     else if(signal_expected == 0)
     {
         if(was_exit && exit_status == allowed_exit_value)
@@ -337,17 +364,20 @@ static void set_fork_info(TestResult * tr, int status, int signal_expected,
         }
         else if(was_exit && exit_status != allowed_exit_value)
         {
-            if(tr->msg == NULL)
+            if(tr->rtype == CK_TEST_RESULT_INVALID)
             {                   /* early exit */
                 tr->rtype = CK_ERROR;
                 tr->msg = exit_msg(exit_status);
+                error_code = exit_status;
             }
             else
             {
-                tr->rtype = CK_FAILURE;
+                //  tr->rtype = CK_FAILURE;
+                error_code = exit_status;
             }
         }
     }
+    
     else
     {                           /* a signal was expected and none raised */
         if(was_exit)
@@ -427,7 +457,7 @@ static int waserror(int status, int signal_expected)
     return ((was_sig && (signal_received != signal_expected)) ||
             (was_exit && exit_status != 0));
 }
-//#     endif /* HAVE_FORK */
+#     endif /* HAVE_FORK */
 
 
 
@@ -437,27 +467,14 @@ static int waserror(int status, int signal_expected)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static char *custom_pass_msg = NULL;
 
-static char *pass_msg(void)
-{
-    if(custom_pass_msg)
-        return custom_pass_msg;
-    else
-        return strdup("Passed");
-}
+
+
 
 static void set_nofork_info(TestResult * tr)
 {
-    if(tr->msg == NULL)
-    {
-        tr->rtype = CK_PASS;
+    if(tr->msg == NULL && tr->rtype == CK_PASS )
         tr->msg = pass_msg();
-    }
-    else
-    {
-        tr->rtype = CK_FAILURE;
-    }
 }
 
 static TestResult *receive_result_info_nofork(const char *tcname,
@@ -604,7 +621,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
         }
         
         // set fork status //
-        srunner_set_fork_status(runner, cur_fork_status());           
+        srunner_set_fork_status(runner, cur_fork_status());
                         
         // send runner start event //
         log_srunner_start(runner);    
@@ -648,8 +665,9 @@ void __test_init(const char *test_name, const char *file, const int line) {
     }
     #endif
     
-    // mark point in case signal is received before any test //
-    send_loc_info(file,line);    
+    // mark point in case signal is received before any test //    
+    send_ctx_info(CK_CTX_TEST);
+    send_loc_info(file,line);
     
 }
 
@@ -692,6 +710,7 @@ int __setup_parent() {
             eprintf("Error forking to a new process:", __FILE__, __LINE__);     
         else if(pid == 0) {            
             return 0;
+            // continue on child //
         }
         else {           
             group_pid = pid;
@@ -732,7 +751,7 @@ int __setup_parent() {
             
             
             srunner_send_evt(runner, tcase, CLSTART_T);
-            send_ctx_info(CK_CTX_SETUP); // FIXX ///
+//            send_ctx_info(CK_CTX_SETUP); // FIXX ///
             TestResult *tr;
             tr = receive_result_info_fork(tcase->name, "test_main", 0, status, 0, 0);
             if(tr) srunner_add_failure(runner, tr);
@@ -743,22 +762,7 @@ int __setup_parent() {
     else
 #endif
     // child here or no fork available
-    return 0;
-    
-//#ifndef _WIN32
-//    // save current context ... ( add Fibers here for windows )    
-//    if (getcontext(&error_jmp_context) < 0)
-//        exit(1);    
-//    if( error_jmp_state == 1 ) {
-//        printf("ret 1\n");
-//        return 1;
-//    }
-//    else {
-//        printf("ret 0\n");
-//        return 0;
-//    }
-//#endif            
-
+    return 0;   
 }
 
 
@@ -784,7 +788,7 @@ int __setup_child() {
 void __test_end()
 {
     // if forked //
-#ifdef HAVE_FORK
+#   ifdef HAVE_FORK
     if(cur_fork_status() == CK_FORK) {        
         if(group_pid) {            
             // child
@@ -794,9 +798,8 @@ void __test_end()
             // parent
             return;
     }
-#endif
+#   endif
     TestResult *tr;
-    send_ctx_info(CK_CTX_SETUP); // FIXX ///
     tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
     if(tr) srunner_add_failure(runner, tr);
     srunner_send_evt(runner, tr, CLEND_T);    
@@ -811,16 +814,16 @@ void __test_end()
 //  EXIT FUNCTION  /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int error_code = 0;
+
 
 void __test_exit()
 {
     // if we are on child silently exit //
-#ifdef HAVE_FORK
+#   ifdef HAVE_FORK
     if(cur_fork_status() == CK_FORK && group_pid) {         
         _exit(0);
     }
-#endif
+#   endif
     int _nerr = 0;    
     if(runner && suite) {
         log_suite_end(runner, suite);
@@ -841,18 +844,34 @@ void __test_abort(int code, const char *__msg, const char *__file,
                   unsigned int __line, const char *__function) 
 {
     // TODO: fix this with proper enum related to test_driver
-    error_code = code;
+    error_code = code;    
+    if(tcase) __mark_point(tcase->name,__file,__line,__function);
+    else __mark_point("test aborted",__file,__line,__function);
+    
     switch(code) {
     case 77:
         custom_pass_msg = strdup(__msg);
-        __mark_point(__msg,__file,__line,__function);
-        __test_end();
+        send_failure_info(__msg, CK_SKIP);        
+        if( cur_fork_status() == CK_FORK && group_pid)
+        {
+    #     ifdef HAVE_FORK
+            _exit(code);
+    #     endif /* HAVE_FORK */
+        }
+        else
+        {        
+            TestResult *tr;
+            tr = receive_result_info_nofork(tcase->name, "test_main", 0, 0);
+            if(tr) srunner_add_failure(runner, tr);
+            srunner_send_evt(runner, tr, CLEND_T);                
+        }                
         break;
     default:
     case 99:
         __assert_fail(__msg,__file,__line,__function);        
     }    
-    __test_exit(); 
+    //    __test_exit();
+    exit(code);
 }
 
 
