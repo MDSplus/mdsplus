@@ -545,6 +545,7 @@ _SOURCES = \
 #
 noinst_LIBRARIES = libMdsTestUtils.a
 libMdsTestUtils_a_SOURCES = $(_SOURCES)
+MOSTLYCLEANFILES = libMdsTestDummy.so
 all: all-am
 
 .SUFFIXES:
@@ -758,6 +759,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 

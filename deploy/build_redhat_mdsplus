@@ -27,12 +27,13 @@ cd /buildsrc
             --host=i686-linux \
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
 
+make clean > /dev/null
 env LANG=en_US.UTF-8 make;
 
 echo " --- MAKING TESTS 32bit --- "
 make -k tests
 make install
-make clean
+
 
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \
@@ -44,13 +45,14 @@ make clean
             --libdir=/buildroot/usr/local/mdsplus/lib64 \
             --host=x86-64-linux \
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
+
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
 
 echo " --- MAKING TESTS 64bit --- "
 make -k tests
 make install
-make clean
+
 
 #
 # Define MDSPLUS_VERSION environment variable which is used for the python

@@ -107,9 +107,7 @@ MOSTLYCLEANFILES = *.out \
 
 all-local: $(TESTS)
 
-
 clean-local: clean-local-tests
-	$(MAKE) -C testutils clean
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS  =
