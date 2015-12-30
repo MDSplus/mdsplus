@@ -108,12 +108,8 @@ MOSTLYCLEANFILES = *.out \
 all-local: $(TESTS)
 
 
-SUBDIRS_clean=$(addprefix clean_,$(filter-out .,$(SUBDIRS)))
-$(SUBDIRS_clean):
-	$(MAKE) -C $(@:clean_%=%) clean
-
-clean-local: clean-local-tests $(SUBDIRS_clean)
-
+clean-local: clean-local-tests
+	$(MAKE) -C testutils clean
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS  =

@@ -937,7 +937,6 @@ MOSTLYCLEANFILES = *.out \
                    leaktest_model.datafile \
                    leaktest_model.tree
 
-SUBDIRS_clean = $(addprefix clean_,$(filter-out .,$(SUBDIRS)))
 check_SCRIPTS = 
 all: all-recursive
 
@@ -1830,10 +1829,9 @@ tests-envdump:
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
 
 all-local: $(TESTS)
-$(SUBDIRS_clean):
-	$(MAKE) -C $(@:clean_%=%) clean
 
-clean-local: clean-local-tests $(SUBDIRS_clean)
+clean-local: clean-local-tests
+	$(MAKE) -C testutils clean
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
