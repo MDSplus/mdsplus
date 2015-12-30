@@ -38,45 +38,42 @@ TEST_SUBDIRS = \
 TEST_OUTDIR    ?= ${top_builddir}/testing
 
 
-.ONESHELL:
-tests: $(MdsTestShr)
-	@
-	list='$(TEST_SUBDIRS)';
-	status=0;
-	for subdir in $$list; do echo "Making in $$subdir";
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tests || (( status |= 1));
-	 taps="$${taps},$${subdir}/$(TEST_SUITE_TAP)";	 
-	done;
-	echo " -------- CUT HERE for Jenkins inclusion --------------- "
-	echo $${taps};
-	echo $${taps} > ${TEST_OUTDIR}/list_tap_results.txt;
-	echo " ------------------------------------------------------- "
-	## exit $${status};
-	
-.ONESHELL:
-tests-valgrind:
-	@
-	list='$(TEST_SUBDIRS)';
-	status=0;
-	xml_results=;
-	for subdir in $$list; do echo "Making in $$subdir";
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) tests-valgrind || (( status |= 1));
-	 xml_results="$${xml_results},$${subdir}/*-valgrind-*.xml";
-	done;
-	echo " -------- CUT HERE for Jenkins inclusion --------------- "
-	echo $${xml_results};
-	echo $${xml_results} > ${TEST_OUTDIR}/list_valgrind_xml_results.txt;
-	echo " ------------------------------------------------------- "
-	## exit $${status};	
+
+.PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
+tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_SUBDIRS))
+clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_SUBDIRS))
+$(tests_DIRS):
+	$(MAKE) -C $(@:tests__%=%) tests
+
+$(clean_DIRS):
+	$(MAKE) -C $(@:clean__%=%) clean
+
+$(tests_valgrind_DIRS):
+	$(MAKE) -C $(@:tests_valgrind__%=%) tests-valgrind
+
+$(tests_valgrind_suppressions_DIRS):
+	$(MAKE) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
 
 
-tests-clean:
+.PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
+tests: $(tests_DIRS)
 	@ \
-	list='$(TEST_SUBDIRS)'; \
-	for subdir in $$list; do echo "Cleaning in $$subdir"; \
-	 $(am__cd) ${top_builddir}/$${subdir} && $(MAKE) $(AM_MAKEFLAGS) clean; \
-	done;
-	
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *.tap,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind: $(tests_valgrind_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *-valgrind-*.xml,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
+
+tests-clean: $(clean_DIRS)
+
 
 all-local: $(MdsTestShr)
 
