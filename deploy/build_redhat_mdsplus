@@ -68,10 +68,10 @@ make clean >/dev/null
 # other tests we may want to test both 64-bit and 32-bit.
 #
 
-# if ( echo "$@" | grep vg > /dev/null )
-# then
-    mkdir /dbgbuildroot
-    ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
+ if ( echo "$@" | grep vg > /dev/null )
+ then
+ mkdir /dbgbuildroot
+ ./configure --prefix=/dbgbuildroot/usr/local/mdsplus \
               --exec_prefix=/dbgbuildroot/usr/local/mdsplus \
               --with-labview=/3rd-party-apis-master/labview \
               --with-jdk=$JDK_DIR \
@@ -84,19 +84,16 @@ make clean >/dev/null
               --enable-valgrind \
               --enable-debug=yes
     make clean > /dev/null
-    env LANG=en_US.UTF-8 make
-    
-    echo " --- MAKING VALGRIND TESTS 64bit --- "
-    make -k tests-valgrind
+    env LANG=en_US.UTF-8 make    
     make install
-# fi
-# if (( "$#" ))
-# then
-#    echo Doing tests: $@
-#    export LIBDIR=lib64
-#    chmod a+x ./deploy/do_tests
-#    ./deploy/do_tests $@
-# fi
+ fi
+ if (( "$#" ))
+ then
+    echo Doing tests: $@
+    export LIBDIR=lib64
+    chmod a+x ./deploy/do_tests
+    ./deploy/do_tests $@
+ fi
 
 #
 # IF the /installer directory is found then build a repository with the new rpm's in it.
