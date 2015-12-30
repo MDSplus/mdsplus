@@ -132,7 +132,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
 #ifdef WIN32
     HWND wid1, wid2;
 #endif
-    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG) e);
+    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG) 0);
 #ifdef WIN32
     IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *) & wid1, (IDL_LONG *) & wid2);
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM) NULL, (LPARAM) NULL);
