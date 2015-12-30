@@ -8,7 +8,6 @@ SCRIPT_DIR=$(dirname "$0")
 
 SRCDIR=${SRCDIR:=${SCRIPT_DIR}/../}
 BUILDDIR=${BUILDDIR:=$(pwd)}
-MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 CONFIG_FILE=${CONFIG_FILE:=/usr/local/bin/build_mdsplus.conf}
 
 # evaluate config file
@@ -83,8 +82,13 @@ fi
 ABS_SRCDIR=$(cd ${SRCDIR}; pwd)
 ABS_BUILDDIR=$(cd ${SRCDIR}; pwd)
 
+## set commands
+CONFIGURE=${ABS_SRCDIR}/configure
+MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+
 ## ensure mdsplusdir is set
 MDSPLUS_DIR=${MDSPLUS_DIR:=${ABS_BUILDDIR}}
+MDS_PATH=${MDS_PATH:=${ABS_SRCDIR}/tdi}
 
 
 function install_prefix () {
@@ -98,27 +102,38 @@ function install_prefix () {
 }
 
 
+function append() { $1="${$1} $2" }
 
 function set_args() {
    ## setup configure arguments
    if [ -n "${DOCKER_IMAGE}" ]; then
     _docker_args="--with-docker-image=${DOCKER_IMAGE}"
+    append(_args_list,$_docker_args)
+   fi
+
+   if [ -n "${DEBUG}" ]; then
+    _debug_args="--enable-debug=${DEBUG}"
+    append(_args_list,$_debug_args)
    fi
 
    if [ -n "${VALGRIND_LIB}" ]; then
     _valgrind_args="--enable-valgrind"
+    append(_args_list,$_valgrind_args)
    fi
    
    if [ -n "${JDK_DIR}" ]; then
     _java_args="--with-jdk=${JDK_DIR}"
+    append(_args_list,$_java_args)        
    else
+   # TODO: remove this !
     _java_args="--disable-java"
+    append(_args_list,$_java_args)        
    fi
 }
 
 
 
-function build_64()  {
+function build_tests()  {
   echo /////////////////////////////////////////////////////////////////////////
   echo /// BUILD 64bit  ////////////////////////////////////////////////////////
   echo /////////////////////////////////////////////////////////////////////////
@@ -128,7 +143,7 @@ function build_64()  {
 
    [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
    pushd ${BUILDDIR}
-   ${ABS_SRCDIR}/configure \
+   ${CONFIGURE} \
             --prefix=${MDSPLUS_DIR} \
             --exec_prefix=${MDSPLUS_DIR}  \
             --bindir=${MDSPLUS_DIR}/bin64 \
@@ -167,7 +182,7 @@ function build_32()  {
 
    [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
    pushd ${BUILDDIR}
-   ${ABS_SRCDIR}/configure \
+   ${CONFIGURE} \
             --prefix=${MDSPLUS_DIR} \
             --exec_prefix=${MDSPLUS_DIR}  \
             --bindir=${MDSPLUS_DIR}/bin32 \

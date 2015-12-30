@@ -82,7 +82,7 @@ make clean >/dev/null
               --host=x86-64-linux \
               --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
               --enable-valgrind \
-              CFLAGS="-g3 -O0" CPPFLAGS="-g3 -O0" CXXFLAGS="-g3 -O0" FFLAGS="-g3 -O0"
+              --enable-debug=yes
     make clean > /dev/null
     env LANG=en_US.UTF-8 make
     
