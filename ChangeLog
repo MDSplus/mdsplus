@@ -1,4 +1,73 @@
-commit c05d38f5a87a12e89f90707977a6fc1528c376ac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 66c98cd4fff609a89170c790577796b89bae8d2a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 24c9646 3a4f8f8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 16:34:56 2015 -0500
+
+    Merge pull request #273 from MDSplus/twf-cleanup-compile-warnings-and-old-cvsignores
+    
+    Fix most of the compiler warnings and remove old cvsignore files
+
+commit 24c96466794fa66a529277ef9d44f658aab918e3
+Merge: 470d9ac 412b4fb
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 16:29:50 2015 -0500
+
+    Merge pull request #269 from MDSplus/twf-sanitize-found-bugs
+    
+    Fixes found by compiling with sanitizers
+
+commit 470d9acb06f16296f66ca71837f04ecbc371cc5b
+Merge: dba0c80 e3611f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 16:19:28 2015 -0500
+
+    Merge pull request #274 from MDSplus/fix-make-install-bash-error
+    
+    Fix find command for java directory on make install
+
+commit e3611f446126a73801c4ab0c499399b603adc7dd
+Author: josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 15:51:46 2015 -0500
+
+    Fix find command for java directory on make install
+    
+    The find command in make install was erroring out if the destination root
+    directory java did not exist.  Added punctuation to this line so make will ignore it.
+
+commit dba0c806622eb5878fee3e93e4afb5c6f9409eed
+Merge: d9de3d6 3b83978
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 15:47:19 2015 -0500
+
+    Merge pull request #272 from MDSplus/twf-fix-pycall-and-tdiextpython-interaction
+    
+    Fix pycall and TdiExtPython interaction
+
+commit 3a4f8f86a8d9663919eefbca3d21a8a182dec527 (refs/remotes/origin/twf-cleanup-compile-warnings-and-old-cvsignores)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 14:16:27 2015 -0500
+
+    Fix most of the compiler warnings and remove old cvsignore files
+
+commit 3b83978f32df4c0cac2a4ef9dba05c38cd2dd2ae (refs/remotes/origin/twf-fix-pycall-and-tdiextpython-interaction)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 12:27:17 2015 -0500
+
+    Fix pycall and TdiExtPython interaction
+
+commit d9de3d6ee538334399fa20f67889ded680f5df97 (tag: refs/tags/alpha_release-7-0-199)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 23 23:36:41 2015 -0500
+
+    New release ---- alpha_release-7-0-199
+
+commit 412b4fbbed3ff5c15356e2fced8bae76b6e5f49e (refs/remotes/origin/twf-sanitize-found-bugs)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 11:07:17 2015 -0500
+
+    avoid integer overflow without using advanced gcc builtins
+
+commit c05d38f5a87a12e89f90707977a6fc1528c376ac
 Merge: 196a8ce 01848d1
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Dec 23 10:38:23 2015 -0500
@@ -6,6 +75,12 @@ Date:   Wed Dec 23 10:38:23 2015 -0500
     Merge pull request #268 from MDSplus/twf-add-enable-santitize
     
     Add --enable-sanitizer option to configure
+
+commit 504003c00bbae0b48974eb23b2999bd677d58502
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:49:57 2015 -0500
+
+    Fixes found by compiling with sanitizers
 
 commit 196a8ced8b06cf1b21e4e9f8a0e7c833f85b06bb
 Merge: 4409046 38cf130
@@ -2753,7 +2828,7 @@ Date:   Tue Sep 29 15:01:59 2015 +0200
     
     Dev gm
 
-commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca (refs/remotes/origin/dev-gm)
+commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca
 Merge: 356f704 6641aab
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Sep 29 14:56:14 2015 +0200
