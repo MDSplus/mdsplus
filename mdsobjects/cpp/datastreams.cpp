@@ -2,9 +2,11 @@
 #include <mdsobjects.h>
 #include <time.h>
 
-extern "C" int registerListener(char *experiment, char *tree, int shot);
-extern "C" void unregisterListener(int listenerId);
-extern "C" void *getNewSamplesSerializedXd();
+extern "C" {
+EXPORT int registerListener(char *expr, char *tree, int shot);
+EXPORT void unregisterListener(int listenerId);
+EXPORT void *getNewSamplesSerializedXd();
+}
 
 static 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool daemonStarted = false;
@@ -83,11 +85,14 @@ public:
 			return;	
 		if(numSegments != lastSegment) //First condition: number of segments has increased
 		{
+			segNode->getSegmentInfo(numSegments-1, &dtype, &dimct, dims, &nextRow);
+			lastNextRow = nextRow; 
+//Do not signal condition in which number of segments has increased but no wor has nee writen in the new segment
+			if(numSegments > lastSegment +1 || nextRow > 0)
+				dataAvailable = true;
 			lastSegment = numSegments;
-			segNode->getSegmentInfo(lastSegment-1, &dtype, &dimct, dims, &nextRow);
-			lastNextRow = nextRow;
-			dataAvailable = true;
-			pthread_cond_signal(&availCond); //Awake pending threadd
+			if(dataAvailable)
+				pthread_cond_signal(&availCond); //Awake pending threadd
 			return;
 		}
 		segNode->getSegmentInfo(lastSegment-1, &dtype, &dimct, dims, &nextRow); //Second condition: 
@@ -156,11 +161,14 @@ public:
 			retData = sigData;
 			retDim = evalDimension;
 		}
-		if(lastTime)
-			MDSplus::deleteData(lastTime);
+		if(retDim->getSize() > 0)
+		{
+			if(lastTime)
+				MDSplus::deleteData(lastTime);
 		//Record last sample time. It will be used in the next turn a start time in time context
-		lastTime = ((MDSplus::Array *)retDim)->getElementAt(retDim->getSize() - 1);
-		dataAvailable = false;
+			lastTime = ((MDSplus::Array *)retDim)->getElementAt(retDim->getSize() - 1);
+			dataAvailable = false;
+		}
 		MDSplus::Signal *retSig = new MDSplus::Signal(retData,NULL, retDim);  //Build a signal from evaluated samples and times
 		return retSig;
     }
@@ -211,7 +219,7 @@ static MDSplus::TreeNode *getSegmentedNode(MDSplus::Data *data, MDSplus::Tree *t
 static std::vector<StreamInfo *> streamInfoV;
 
 /// Register a new listener
-int registerListener(char *expr, char *experiment, int shot)
+EXPORT int registerListener(char *expr, char *experiment, int shot)
 {
 	pthread_mutex_lock(&mutex);
 	try {
@@ -246,7 +254,7 @@ int registerListener(char *expr, char *experiment, int shot)
 
 /// Unregister a data listener. Deallocate corresponding StreamInfo instance but do not remove it from
 /// StreamInfoV array in order to preserve index consistence
-void unregisterListener(int listenerId)
+EXPORT void unregisterListener(int listenerId)
 {
 	if(listenerId < 0 || listenerId >= streamInfoV.size())
 		return;
@@ -304,7 +312,7 @@ MDSplus::Data *getNewSamplesSerialized()
 
 
 //Returns a XD pointer
-void *getNewSamplesSerializedXd()
+EXPORT void *getNewSamplesSerializedXd()
 {
 	MDSplus::Data *serialized = getNewSamplesSerialized();
 	void *descrPtr = serialized->convertToDsc();
