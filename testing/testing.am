@@ -88,18 +88,25 @@ $(TEST_BUILD_TAP): rebuild-tests
 
 .PHONY: $(TEST_SUITE_TAP)
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+if HAVE_PL_TAP_PARSER
 	@ \
 	echo "Run tests with tap result"; \
 	export TEST_FORMAT="tap"; \
-	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS;  \
+	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS; \
 	\
 	## collate test-build.tap \
 	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 	else suite="$@"; \
 	fi; \
 	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
-	  || exit 1;
-
+	  || exit 1
+else
+	@ \
+	echo "Run tests without collating results"; \
+	export TEST_FORMAT="tap"; \
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+	
+endif
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LOG  ///////////////////////////////////////////////////////////////// ##
@@ -129,6 +136,8 @@ clean-local-tests:
 	-$(RM) -rf $(TEST_SUITE_TAP)
 
 
+
+
 .PHONY: tests-envdump
 tests-envdump:
 	@echo; \
@@ -137,6 +146,7 @@ tests-envdump:
 	for _i in ${TESTS_ENVIRONMENT}; do \
 	 echo "     $${_i}"; \
 	done;
+
 
 
 if HAVE_WINE

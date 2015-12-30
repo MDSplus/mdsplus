@@ -1203,16 +1203,20 @@ $(TEST_BUILD_TAP): rebuild-tests
 
 .PHONY: $(TEST_SUITE_TAP)
 $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-	@ \
-	echo "Run tests with tap result"; \
-	export TEST_FORMAT="tap"; \
-	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS;  \
-	\
-	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
-	else suite="$@"; \
-	fi; \
-	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
-	  || exit 1;
+@HAVE_PL_TAP_PARSER_TRUE@	@ \
+@HAVE_PL_TAP_PARSER_TRUE@	echo "Run tests with tap result"; \
+@HAVE_PL_TAP_PARSER_TRUE@	export TEST_FORMAT="tap"; \
+@HAVE_PL_TAP_PARSER_TRUE@	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS; \
+@HAVE_PL_TAP_PARSER_TRUE@	\
+@HAVE_PL_TAP_PARSER_TRUE@	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+@HAVE_PL_TAP_PARSER_TRUE@	else suite="$@"; \
+@HAVE_PL_TAP_PARSER_TRUE@	fi; \
+@HAVE_PL_TAP_PARSER_TRUE@	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
+@HAVE_PL_TAP_PARSER_TRUE@	  || exit 1
+@HAVE_PL_TAP_PARSER_FALSE@	@ \
+@HAVE_PL_TAP_PARSER_FALSE@	echo "Run tests without collating results"; \
+@HAVE_PL_TAP_PARSER_FALSE@	export TEST_FORMAT="tap"; \
+@HAVE_PL_TAP_PARSER_FALSE@	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 
 $(TEST_SUITE_XML):
 

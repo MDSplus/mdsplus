@@ -788,6 +788,8 @@ VALGRIND_ENABLED
 VALGRIND_ENABLED_FALSE
 VALGRIND_ENABLED_TRUE
 VALGRIND
+HAVE_PL_TAP_PARSER_FALSE
+HAVE_PL_TAP_PARSER_TRUE
 PERL
 HAVE_WINECONSOLE_FALSE
 HAVE_WINECONSOLE_TRUE
@@ -12465,15 +12467,25 @@ $as_echo "no" >&6; }
 
   if test "$ac_failed" = 0; then
     :
-
+    have_pl_tap_parser=yes
   else
     :
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No Perl tap module found" >&5
+    have_pl_tap_parser=no
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: No Perl tap module found" >&5
 $as_echo "$as_me: WARNING: No Perl tap module found" >&2;}
+
   fi
 else
   as_fn_error $? "could not find perl" "$LINENO" 5
 fi
+ if test x"${have_pl_tap_parser}" = x"yes"; then
+  HAVE_PL_TAP_PARSER_TRUE=
+  HAVE_PL_TAP_PARSER_FALSE='#'
+else
+  HAVE_PL_TAP_PARSER_TRUE='#'
+  HAVE_PL_TAP_PARSER_FALSE=
+fi
+
 
  # this calls valgrind check with args
 
@@ -15684,6 +15696,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_WINECONSOLE_TRUE}" && test -z "${HAVE_WINECONSOLE_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_WINECONSOLE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_PL_TAP_PARSER_TRUE}" && test -z "${HAVE_PL_TAP_PARSER_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_PL_TAP_PARSER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then

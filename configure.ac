@@ -1031,8 +1031,12 @@ AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
 AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
 AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
 
-AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,,
-     AC_MSG_WARN(No Perl tap module found))
+AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,
+     [AS_VAR_SET([have_pl_tap_parser],[yes])],
+     [AS_VAR_SET([have_pl_tap_parser],[no])
+      AC_MSG_WARN([No Perl tap module found])
+     ])
+AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 
  # this calls valgrind check with args
  AX_VALGRIND_CHECK
