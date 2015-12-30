@@ -13371,7 +13371,7 @@ done
 
 else
 
- as_fn_append LOG_COMPILER "sh -c \\\"exit 77\\\"; :"
+ as_fn_append LOG_COMPILER "sh -c \"exit 77\"; :"
 
 fi
   ;; #(
@@ -13419,7 +13419,7 @@ esac
 
 
 
-          TESTS_SKIP="sh -c \\\"exit 77\\\"; :"
+          TESTS_SKIP="sh -c \"exit 77\"; :"
 
 
 

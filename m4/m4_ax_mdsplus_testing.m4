@@ -114,12 +114,12 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 
 
 AC_DEFUN([TS_SET_SKIP_CMD],[
-          AS_VAR_SET([$1],["sh -c \\\"exit 77\\\"; :"])
+          AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
          ])
 
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
- AS_VAR_APPEND([$1],["sh -c \\\"exit 77\\\"; :"])
+ AS_VAR_APPEND([$1],["sh -c \"exit 77\"; :"])
 ])
 
 
