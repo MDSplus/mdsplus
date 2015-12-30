@@ -937,7 +937,7 @@ MOSTLYCLEANFILES = *.out \
                    leaktest_model.datafile \
                    leaktest_model.tree
 
-SUBDIRS_clean = $(addprefix clean_,$(SUBDIRS))
+SUBDIRS_clean = $(addprefix clean_,$(filter-out .,$(SUBDIRS)))
 check_SCRIPTS = 
 all: all-recursive
 
