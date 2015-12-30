@@ -2243,8 +2243,9 @@ public class Waveform
 
   protected double MinXSignal() {
     if (waveform_signal == null) {
-      return 0.;
+       return 0.;
     }
+    System.out.println("MINXSIGNAL: "+waveform_signal.getXmin());
     return waveform_signal.getXmin();
   }
 
@@ -2809,7 +2810,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     // to do: code goes here.
   }
   
-  public void signalUpdated(boolean changeLimits)
+  public  void signalUpdated(boolean changeLimits)
   {
       change_limits = changeLimits;
       not_drawn = true;

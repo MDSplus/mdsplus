@@ -1321,7 +1321,11 @@ remove 28/06/2005
         {
             try
             {
-                Class cl = Class.forName("jScope."+server_item.class_name);
+                Class cl;
+                if(server_item.class_name.contains("."))
+                    cl = Class.forName(server_item.class_name);
+                else
+                    cl = Class.forName("jScope."+server_item.class_name);
                 new_dp = (DataProvider) cl.newInstance();
             }
             catch (Exception e)

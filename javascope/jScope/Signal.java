@@ -306,9 +306,9 @@ public class Signal implements WaveDataListener
     //1D management
     double x[] = null;
     float y[] = null;
+    long  xLong[] = null; 
     float upError[];
     float lowError[];
-    long  xLong[] = null;
     boolean upToDate = false;
     static final int NUM_POINTS = 2000;
     
@@ -657,12 +657,15 @@ public class Signal implements WaveDataListener
     {
         error = asym_error = false;
         data = new XYWaveData(_x, _y, _n_points);
+System.out.println("COPY SIGNAL XMIN: " + _xmin);
         xmin = _xmin;
         xmax = _xmax;
         if (xmax - xmin < _x[1] - _x[0])
             xmax = xmin + _x[1] - _x[0];
-        saved_xmin = curr_xmax = xmin;
-        saved_xmax = curr_xmin = xmax;
+//        saved_xmin = curr_xmax = xmin;
+//        saved_xmax = curr_xmin = xmax;
+        saved_xmin = curr_xmin = xmin;
+        saved_xmax = curr_xmax = xmax;
         if (xmax <= xmin)
             saved_xmax = xmax = xmin + (float) 1E-6;
         if (_ymin > _ymax)
@@ -2402,7 +2405,10 @@ public class Signal implements WaveDataListener
     {
         if(type == TYPE_1D || type == TYPE_2D && ( mode2D == Signal.MODE_XZ ||
                                                    mode2D == Signal.MODE_IMAGE ) )
-            return data.isXLong();
+        {
+           // return data.isXLong(); Gabriele Dec 2015
+           return xLong != null;
+        }
         else
             return false;
     }
@@ -2432,6 +2438,12 @@ public class Signal implements WaveDataListener
 
     public void setXLimits(double xmin, double xmax, int mode)
     {
+                
+System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);                
+         if(xmin == 0)
+         {
+             System.out.println("TOMBOLA");
+         }
         if(xmin != -Double.MAX_VALUE)
         {
             this.xmin = xmin;
@@ -3107,61 +3119,79 @@ public class Signal implements WaveDataListener
  //           xmin += delta;
  //           xmax += delta;  
         }
-
-        int samplesBefore, samplesAfter;
-        for(samplesBefore = 0; samplesBefore < xLong.length - 1 && xLong[samplesBefore] < regX[0]; samplesBefore++);
-        if(samplesBefore > 0 && samplesBefore < xLong.length && xLong[samplesBefore] > regX[0])
-            samplesBefore--;
-        for(samplesAfter = 0; samplesAfter < xLong.length - 1 && 
-                xLong[xLong.length - samplesAfter - 1] > regX[regX.length - 1]; samplesAfter++);
-        if(samplesAfter > 0 && xLong.length - samplesAfter - 1 >= 0 && xLong[xLong.length - samplesAfter - 1] < regX[regX.length - 1])
-            samplesAfter--;
-        double []newX = new double[samplesBefore + regX.length+samplesAfter];
-        long []newXLong = new long[samplesBefore + regX.length+samplesAfter];
-        float []newY = new float[samplesBefore + regX.length+samplesAfter];
         
-        for(int i = 0; i < samplesBefore; i++)
-        {
-            newX[i] = x[i];
-            newXLong[i] = xLong[i];
-            newY[i] = y[i];
-        }
-        for(int i = 0; i < regX.length; i++)
-        {
-            newX[samplesBefore+i] = regX[i];
-            newXLong[samplesBefore+i] = regX[i];
-            newY[samplesBefore+i] = regY[i];
-        }
-        for(int i = 0; i < samplesAfter; i++)
-        {
-            newXLong[newX.length - i - 1] = xLong[x.length - i - 1];
-            newX[newX.length - i - 1] = x[x.length - i - 1];
-            newY[newX.length - i - 1] = y[x.length - i - 1];
-        }
-        if(regX[0] >= xLong[xLong.length - 1]) //Data are being appended
+        if(xLong == null) //First data chunk
         {
             resolutionManager.appendRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
-            double delta =  newX[newX.length - 1] - x[x.length-1];
-             if(freezed)
-            {
-                xmax += delta;
-                xmin += delta;
-            }
-            else
-                xmax = newX[newX.length - 1];
-
-            x = newX;
-            xLong = newXLong;
-            y = newY;
+            xmin = regX[0];
+            xmax = regX[regX.length - 1];
+            xLong = regX;
+            x = new double[regX.length];
+            for(int i = 0; i < regX.length; i++)
+                x[i] = regX[i];
+            y = regY;
+System.out.println("FIRE SIGNAL UPDATED PER PRIMI PUNTI XMIN: "+ xmin);
             fireSignalUpdated(true);
         }
-        else 
+        else //Data Appended
         {
-            resolutionManager.addRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
-            x = newX;
-            xLong = newXLong;
-            y = newY;
-            fireSignalUpdated(false);
+        
+            int samplesBefore, samplesAfter;
+            for(samplesBefore = 0; samplesBefore < xLong.length && xLong[samplesBefore] < regX[0]; samplesBefore++);
+//            for(samplesBefore = 0; samplesBefore < xLong.length - 1 && xLong[samplesBefore] < regX[0]; samplesBefore++);
+            if(samplesBefore > 0 && samplesBefore < xLong.length && xLong[samplesBefore] > regX[0])
+                samplesBefore--;
+            for(samplesAfter = 0; samplesAfter < xLong.length - 1 && 
+                    xLong[xLong.length - samplesAfter - 1] > regX[regX.length - 1]; samplesAfter++);
+            if(samplesAfter > 0 && xLong.length - samplesAfter - 1 >= 0 && xLong[xLong.length - samplesAfter - 1] < regX[regX.length - 1])
+                samplesAfter--;
+            double []newX = new double[samplesBefore + regX.length+samplesAfter];
+            long []newXLong = new long[samplesBefore + regX.length+samplesAfter];
+            float []newY = new float[samplesBefore + regX.length+samplesAfter];
+
+            for(int i = 0; i < samplesBefore; i++)
+            {
+                newX[i] = x[i];
+                newXLong[i] = xLong[i];
+                newY[i] = y[i];
+            }
+            for(int i = 0; i < regX.length; i++)
+            {
+                newX[samplesBefore+i] = regX[i];
+                newXLong[samplesBefore+i] = regX[i];
+                newY[samplesBefore+i] = regY[i];
+            }
+            for(int i = 0; i < samplesAfter; i++)
+            {
+                newXLong[newX.length - i - 1] = xLong[x.length - i - 1];
+                newX[newX.length - i - 1] = x[x.length - i - 1];
+                newY[newX.length - i - 1] = y[x.length - i - 1];
+            }
+            if(regX[0] >= xLong[xLong.length - 1]) //Data are being appended
+            {
+                resolutionManager.appendRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
+                double delta =  newX[newX.length - 1] - x[x.length-1];
+                 if(freezed)
+                {
+                    xmax += delta;
+                    xmin += delta;
+                }
+                else
+                    xmax = newX[newX.length - 1];
+
+                x = newX;
+                xLong = newXLong;
+                y = newY;
+                fireSignalUpdated(true);
+            }
+            else 
+            {
+                resolutionManager.addRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
+                x = newX;
+                xLong = newXLong;
+                y = newY;
+                fireSignalUpdated(false);
+            }
         }
      }
     

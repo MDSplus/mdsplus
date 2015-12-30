@@ -1571,6 +1571,37 @@ public class MultiWaveform
         super.SetMode(mod);
     }
     
+    //Inherits from parent in order to force UpdateLimits
+    public  void signalUpdated(boolean changeLimits)
+    {
+      change_limits = changeLimits;
+      not_drawn = true;
+      for (int i = 1; i < signals.size(); i++)
+       {
+            if ( (Signal) signals.elementAt(i) == null)
+                continue;
+            if (waveform_signal.getXmax() < ((Signal) signals.elementAt(i)).getXmax())
+                waveform_signal.setXLimits(waveform_signal.getXmin(), 
+                        ((Signal) signals.elementAt(i)).getXmax(), Signal.SIMPLE);
+ //                       ((Signal) signals.elementAt(i)).getXmax(), Signal.SIMPLE);
+            if(waveform_signal.getXmin() > ((Signal) signals.elementAt(i)).getXmin())
+                waveform_signal.setXLimits(((Signal) signals.elementAt(i)).getXmin(), 
+                        waveform_signal.getXmax(), Signal.SIMPLE);
+ //                       waveform_signal.getXmax(), Signal.SIMPLE);
+            
+            if (waveform_signal.getYmax() <
+                ( (Signal) signals.elementAt(i)).getYmax())
+                waveform_signal.setYmax( ( (Signal) signals.elementAt(i)).
+                                        getYmax(), Signal.SIMPLE);
+//                                        getYmax(), Signal.SIMPLE);
+             if (waveform_signal.getYmin() >
+                ( (Signal) signals.elementAt(i)).getYmin())
+                waveform_signal.setYmin( ( (Signal) signals.elementAt(i)).
+                                        getYmin(), Signal.SIMPLE);
+ //                                       getYmin(), Signal.SIMPLE);
+      }
+      repaint();
+    }
 
 
 }
