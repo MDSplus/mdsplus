@@ -8,9 +8,9 @@
 #include <time.h>
 
 
-extern int registerListener(char *experiment, char *tree, int shot);
-extern void unregisterListener(int listenerId);
-extern struct descriptor_xd *getNewSamplesSerializedXd();
+EXPORT int registerListener(char *experiment, char *tree, int shot);
+EXPORT void unregisterListener(int listenerId);
+EXPORT struct descriptor_xd *getNewSamplesSerializedXd();
 extern int TdiDecompile();
 
 static void printDecompiled(struct descriptor *inD)

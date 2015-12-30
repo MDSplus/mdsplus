@@ -21,10 +21,10 @@ SOURCES = boxsmooth.c \
 	  MdsFilter.c \
 	  whoami.c \
 	  pycall.c \
-	  ScopeUtilities.c \
-	  datastreams.cpp
+	  ScopeUtilities.c 
 
-OBJECTS = $(SOURCES:.c=.o)
+
+OBJECTS = $(SOURCES:.c=.o) 
 EXPORTS = MdsMisc.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsMisc.a
