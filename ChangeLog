@@ -1,4 +1,40 @@
-commit 66c98cd4fff609a89170c790577796b89bae8d2a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 844fa4ee40b6af8e43a0769c4f16b3291ea5215e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 9ee5c41 4507ae7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 20:28:28 2015 -0500
+
+    Merge pull request #275 from MDSplus/twf-fix-idl-events
+    
+    Fix cleanup of idl mdsevent widgets
+
+commit 9ee5c41e194451f205cfc47135756e7f336bac02
+Merge: 5d59d1e a863cc2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 20:28:09 2015 -0500
+
+    Merge pull request #277 from MDSplus/twf-fix-exceptions
+    
+    Fix MDSExceptions __init__ function
+
+commit a863cc2d8aa15456a1d9ce338ca82bc0c725f438 (refs/remotes/origin/twf-fix-exceptions)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 16:25:35 2015 -0500
+
+    Fix MDSExceptions __init__ function
+
+commit 4507ae7790c9bed41d5713c5ed8809e55d5f5be3 (refs/remotes/origin/twf-fix-idl-events)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 09:15:29 2015 -0500
+
+    Fix cleanup of idl mdsevent widgets
+
+commit 5d59d1e8071ed27e482a7eae8347bc53734f3047 (tag: refs/tags/alpha_release-7-0-200)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Dec 29 23:34:21 2015 -0500
+
+    New release ---- alpha_release-7-0-200
+
+commit 66c98cd4fff609a89170c790577796b89bae8d2a
 Merge: 24c9646 3a4f8f8
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Tue Dec 29 16:34:56 2015 -0500
