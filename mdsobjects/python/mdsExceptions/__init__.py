@@ -13,7 +13,7 @@ class MDSplusException(Exception):
   def __init__(self,status=None):
     if status is not None and isinstance(status,int):
       self.status=status
-    else:
+    if self.status is None:
       self.status=-1
       self.msgnam='UNKNOWN'
       if isinstance(status,str):
