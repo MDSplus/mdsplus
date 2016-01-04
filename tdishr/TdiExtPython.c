@@ -123,13 +123,13 @@ static int Initialize()
       loadrtn(Py_Initialize, 1);
       (*Py_Initialize) ();
       loadrtn(PyEval_ThreadsInitialized,1);
-      (*PyEval_SaveThread)();
       if ((*PyEval_ThreadsInitialized)() == 0) {
+        loadrtn(PyEval_InitThreads,1);
+        loadrtn(PyEval_SaveThread, 1);
+
 	(*PyEval_InitThreads) ();
 	(*PyEval_SaveThread) ();
       }
-      loadrtn(PyEval_InitThreads,1);
-      loadrtn(PyEval_SaveThread, 1);
     }
     loadrtn(PyGILState_Ensure,1);
     loadrtn(PyGILState_Release,1);
