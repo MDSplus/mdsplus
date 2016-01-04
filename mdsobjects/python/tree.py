@@ -167,7 +167,8 @@ class Tree(object):
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
                 _setActiveTree(self.ctx.value)
                 _treeshr.TreeRestoreContext(self.ctx)
-                self.tctx=_TreeCtx(self.ctx.value)
+                if tree is not None:
+                    self.tctx=_TreeCtx(self.ctx.value)
         finally:
             _hard_lock.release()
 
