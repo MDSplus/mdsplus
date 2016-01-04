@@ -1,13 +1,15 @@
+#include <config.h>
+#include <dlfcn.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifndef _WIN32
+#include <signal.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-#include <stdio.h>
-#include <string.h>
 #include <tdishr_messages.h>
-#include <dlfcn.h>
-#include <signal.h>
-#include <config.h>
-#include <stdlib.h>
 #include <libroutines.h>
 #include <strroutines.h>
 
@@ -15,11 +17,17 @@
 #include <alloca.h>
 #endif
 
-typedef void* PyObject,PyThreadState;
-typedef ssize_t Py_ssize_t;
-
+#define loadrtn(name,check) name=dlsym(handle,#name);	\
+  if (check && !name) { \
+  fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
+  return 0;\
+}
+typedef void* PyThreadState;
 static PyThreadState *(*PyGILState_Ensure)() = 0;
-static void (*PyGILState_Release)() = 0;
+static void (*PyGILState_Release)(PyThreadState *) = 0;
+
+typedef void* PyObject;
+typedef ssize_t Py_ssize_t;
 static void (*Py_DecRef)() = 0;
 static PyObject *(*PyTuple_New) () = 0;
 static PyObject *(*PyString_FromString) () = 0;
@@ -48,48 +56,16 @@ static int (*PyCallable_Check) () = 0;
 static PyObject *(*PyList_GetItem) () = 0;
 static PyObject *(*PyObject_Str) () = 0;
 
-#define loadrtn(name,check) name=dlsym(handle,#name);	\
-  if (check && !name) { \
-  fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
-  return 0;\
-}
-
-static char *getStringFromPyObj(PyObject *obj) {
-  char *ans;
-  if (PyString_AsString == NULL) {
-    PyObject *uc = (*PyUnicode_AsEncodedString)(obj, "utf-8","");
-    ans = (*PyBytes_AsString)(uc);
-  }
-  else {
-    ans = (*PyString_AsString)(obj);
-  }
-  return ans;
-}
-
-static PyObject *pyObjFromString(char *str) {
-  PyObject *ans;
-  if (PyString_FromString == NULL) {
-    ans = (*PyUnicode_FromString)(str);
-  }
-  else {
-    ans = (*PyString_FromString)(str);
-  }
-  return ans;
-}
-      
-  
 static int Initialize()
 {
-  if (PyTuple_New == NULL) {
-    void *(*Py_Initialize) () = 0;
-    void *(*PyEval_InitThreads)() = 0;
-    void *(*PyEval_SaveThread)() = 0;
+  if (!PyGILState_Ensure) {
+    void (*Py_Initialize) () = 0;
+    void (*PyEval_InitThreads)() = 0;
     int  (*PyEval_ThreadsInitialized)() = 0;
+    void *(*PyEval_SaveThread)() = 0;
     void *handle;
     char *lib;
     char *envsym = getenv("PyLib");
-
-
     if (!envsym) {
       fprintf(stderr,"\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\nPlease define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
       return 0;
@@ -122,21 +98,21 @@ static int Initialize()
       free(lib);
       loadrtn(Py_Initialize, 1);
       (*Py_Initialize) ();
-      loadrtn(PyEval_ThreadsInitialized,1);
-      (*PyEval_SaveThread)();
+      loadrtn(PyEval_ThreadsInitialized, 1);
       if ((*PyEval_ThreadsInitialized)() == 0) {
+        loadrtn(PyEval_InitThreads, 1);
+        loadrtn(PyEval_SaveThread, 1);
 	(*PyEval_InitThreads) ();
 	(*PyEval_SaveThread) ();
       }
-      loadrtn(PyEval_InitThreads,1);
-      loadrtn(PyEval_SaveThread, 1);
     }
-    loadrtn(PyGILState_Ensure,1);
-    loadrtn(PyGILState_Release,1);
+    loadrtn(PyGILState_Ensure, 1);
+    loadrtn(PyGILState_Release, 1);
+    /*** load python functions ***/
     loadrtn(Py_DecRef, 1);
     loadrtn(PyTuple_New, 1);
     loadrtn(PyString_FromString, 0);
-    if (PyString_FromString == NULL) {
+    if (!PyString_FromString) {
       loadrtn(PyUnicode_FromString, 1);
     }
     loadrtn(PyTuple_SetItem, 1);
@@ -156,7 +132,7 @@ static int Initialize()
     loadrtn(PySys_GetObject, 1);
     loadrtn(PyLong_AsLong, 1);
     loadrtn(PyString_AsString, 0);
-    if (PyString_AsString == NULL) {
+    if (!PyString_AsString) {
       loadrtn(PyUnicode_AsEncodedString, 1);
       loadrtn(PyBytes_AsString, 1);
     }
@@ -166,6 +142,29 @@ static int Initialize()
     loadrtn(PyObject_Str,1);
   }
   return 1;
+}
+
+static char *getStringFromPyObj(PyObject *obj) {
+  char *ans;
+  if (PyString_AsString == NULL) {
+    PyObject *uc = (*PyUnicode_AsEncodedString)(obj, "utf-8","");
+    ans = (*PyBytes_AsString)(uc);
+  }
+  else {
+    ans = (*PyString_AsString)(obj);
+  }
+  return ans;
+}
+
+static PyObject *pyObjFromString(char *str) {
+  PyObject *ans;
+  if (PyString_FromString == NULL) {
+    ans = (*PyUnicode_FromString)(str);
+  }
+  else {
+    ans = (*PyString_FromString)(str);
+  }
+  return ans;
 }
 
 static PyObject *getFunction(char *modulename, char *functionname)
@@ -327,18 +326,17 @@ int TdiExtPython(struct descriptor *modname_d,
      as the module in that module passing the arguments and get the answer back from python. */
   int status = TdiUNKNOWN_VAR;
   char *filename;
-  int stat;
 #ifndef _WIN32
   struct sigaction offact = {SIG_DFL, 0, 0, 0, 0};
   struct sigaction oldact;
-  stat=sigaction(SIGCHLD, &offact, &oldact);
+  sigaction(SIGCHLD, &offact, &oldact);
 #endif
   char *dirspec = findModule(modname_d, &filename);
   if (dirspec) {
     if (Initialize()) {
+      PyThreadState *GIL = (*PyGILState_Ensure)();
       PyObject *ans;
       PyObject *pyargs;
-      PyThreadState *gil = (*PyGILState_Ensure)();
       PyObject *pyFunction;
       PyObject *pyArgs;
       addToPath(dirspec);
@@ -360,11 +358,11 @@ int TdiExtPython(struct descriptor *modname_d,
 	  status = 1;
 	}
       }
-      (*PyGILState_Release)(gil);
+      (*PyGILState_Release)(GIL);
     }
   }
 #ifndef _WIN32
-  stat=sigaction(SIGCHLD, &oldact, NULL);
+  sigaction(SIGCHLD, &oldact, NULL);
 #endif
   return status;
 }
