@@ -1,4 +1,65 @@
-commit 844fa4ee40b6af8e43a0769c4f16b3291ea5215e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 0f29e5aa03bcbcdbefd87ea3d9a2df2b57c0c513 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 2aca940 50b9fad
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 4 23:31:32 2016 +0100
+
+    Merge pull request #252 from zack-vii/aa_javadevices
+    
+    added windows compiling script and removed vs solution
+
+commit 50b9fad941efea28cd62b5bddfcd7c9d75d3fe40
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Dec 5 01:46:42 2015 +0100
+
+    added windows compiling script and removed vs solution
+    
+    vs is useless without project file
+
+commit 2aca9409c44ef81bab25a08717cbad6a359acc12
+Merge: 09eedef deca31d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 4 16:20:56 2016 -0500
+
+    Merge pull request #281 from MDSplus/twf-python-garbage-collection-again
+    
+    Do not do garbage collection on Tree instances created by obtaining t…
+
+commit 09eedef835e1c79a5547b03583f1df9db593ea66
+Merge: e1f6e15 e6c6efa
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 4 16:20:33 2016 -0500
+
+    Merge pull request #279 from zack-vii/zck_fixnclean_pycall
+    
+    unified the initialisation of python:
+
+commit deca31d233cc6d8e0beffe610fddea99a5ffda03 (refs/remotes/origin/twf-python-garbage-collection-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 4 14:11:32 2016 -0500
+
+    Do not do garbage collection on Tree instances created by obtaining the global tree context
+
+commit e6c6efa91d5b4bc204009a985f44e0b9d0468bba
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 4 13:54:39 2016 +0100
+
+    unified the initialisation of python:
+    
+    - prefer sigaction() over signal()
+    - define PyThreadState
+    - removed unused PyGILState_GetThisThreadState
+    - removed unused PyEval_ReleaseThread
+    - copied and adapted Initialize() to pycall()
+    - do not nullify PyGILState_Ensure on loaderror in loadrtn (would happen
+    on PyString_FromString->PyUnicode_FromString etc.)
+
+commit e1f6e1521a2743b75bf5748470a4e939791cc5e2 (tag: refs/tags/alpha_release-7-0-201)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 30 23:34:20 2015 -0500
+
+    New release ---- alpha_release-7-0-201
+
+commit 844fa4ee40b6af8e43a0769c4f16b3291ea5215e
 Merge: 9ee5c41 4507ae7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Dec 30 20:28:28 2015 -0500
