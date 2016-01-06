@@ -1,4 +1,25 @@
-commit 0f29e5aa03bcbcdbefd87ea3d9a2df2b57c0c513 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit fa8fedaf6788c8a04600a6c4b06d8074333eceb4 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 7ededd0 9825357
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 11:40:10 2016 -0500
+
+    Merge pull request #283 from MDSplus/jas-make-idl-mdssetevent-data-optional
+    
+    idl events, tdi-events - don't pass string for empty data, handle length of string correctly
+
+commit 98253574c40a5920f314ae1fc0e04f995c8d3a14 (refs/remotes/origin/jas-make-idl-mdssetevent-data-optional)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 5 11:01:36 2016 -0500
+
+    don't pass string for empty data, handle length of string correctly
+
+commit 7ededd07549c1c4c7e4ff840418973b3464fca20 (tag: refs/tags/alpha_release-7-0-202)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Jan 4 23:34:38 2016 -0500
+
+    New release ---- alpha_release-7-0-202
+
+commit 0f29e5aa03bcbcdbefd87ea3d9a2df2b57c0c513
 Merge: 2aca940 50b9fad
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Mon Jan 4 23:31:32 2016 +0100
