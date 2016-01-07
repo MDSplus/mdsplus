@@ -449,7 +449,7 @@ user_home=${user_home}
 quoted_args="\$(printf " %q" "\$\@")"
 [ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
 docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
+ sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
 
 ]))
 
