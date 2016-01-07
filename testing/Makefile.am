@@ -45,16 +45,16 @@ clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_SUBDIRS))
 tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_SUBDIRS))
 tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_SUBDIRS))
 $(tests_DIRS):
-	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
 
 $(clean_DIRS):
-	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 
 $(tests_valgrind_DIRS):	
-	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
 
 $(tests_valgrind_suppressions_DIRS):
-	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
 
 
 .PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
