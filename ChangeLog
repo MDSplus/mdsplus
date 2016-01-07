@@ -1,4 +1,48 @@
-commit fa8fedaf6788c8a04600a6c4b06d8074333eceb4 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit e55e026ad8a43baa52cad42602f361ecc15d5700 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 33c99fe f928752
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 6 22:45:57 2016 +0100
+
+    Merge pull request #285 from MDSplus/twf-remove-pycall-replace-py-fun-with-python-one
+    
+    Replace the py.fun and mdsmisc->pycall with a Py.py fun to greatly si…
+
+commit f928752790b4f489fe6971ec0e7cdda15d3c0e59 (refs/remotes/origin/twf-remove-pycall-replace-py-fun-with-python-one)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 14:35:40 2016 -0500
+
+    Remove pycall from exports
+
+commit 5280c4b025e14b89b681d73a44a95aae12ff7f91
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 14:08:46 2016 -0500
+
+    Replace the py.fun and mdsmisc->pycall with a Py.py fun to greatly simplify the code
+
+commit 33c99fe2836b801f70c7c5fee73667d74eddc4aa
+Merge: bec5d07 deaddd7
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 6 22:19:05 2016 +0100
+
+    Merge pull request #288 from zack-vii/aa_jtraverser
+    
+    changed colors, nothing critical
+
+commit deaddd7a74aecec708a578a837c12603611e6338
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 11:03:02 2015 +0100
+
+    changed colors
+    
+    not so red if only write_once
+
+commit bec5d0715c9eb812c4f4ce180b320d0c89732ad5 (tag: refs/tags/alpha_release-7-0-203)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 5 23:34:24 2016 -0500
+
+    New release ---- alpha_release-7-0-203
+
+commit fa8fedaf6788c8a04600a6c4b06d8074333eceb4
 Merge: 7ededd0 9825357
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 5 11:40:10 2016 -0500
