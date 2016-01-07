@@ -930,16 +930,16 @@ TEST_OUTDIR    ?= ${top_builddir}/testing
 
 .PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
 $(tests_DIRS):
-	$(MAKE) -C $(@:tests__%=%) tests
+	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
 
 $(clean_DIRS):
-	$(MAKE) -C $(@:clean__%=%) clean
+	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 
-$(tests_valgrind_DIRS):
-	$(MAKE) -C $(@:tests_valgrind__%=%) tests-valgrind
+$(tests_valgrind_DIRS):	
+	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
 
 $(tests_valgrind_suppressions_DIRS):
-	$(MAKE) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+	$(MAKE) -k $(AM_MAKEFLAGS) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
 
 .PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
 tests: $(tests_DIRS)
