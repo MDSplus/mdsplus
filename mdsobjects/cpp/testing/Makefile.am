@@ -8,7 +8,7 @@ AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
 AM_LIBS = -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
 
-LDADD = $(TEST_LIBS) @LIBS@ $(AM_LIBS)
+LDADD = $(TEST_LIBS) testutils/libMdsTestUtils.a @LIBS@ $(AM_LIBS)
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
@@ -48,8 +48,6 @@ TESTS = \
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
-      
-LDADD += testutils/libMdsTestUtils.a
 
 
 #
