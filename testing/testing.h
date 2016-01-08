@@ -111,15 +111,15 @@ void __test_abort(int code, const char *__msg, const char *__file,
 
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
-//__THROW __attribute__ ((__noreturn__));
-{
-    printf(" TEST: FAIL"
-           "  file: %s ,  function: %s, line: %d "
-           "  assertion:  (%s) \n", 
-           __file,__function,__line,__assertion);
-    fflush(stdout);
-    abort();
-}
+__THROW __attribute__ ((__noreturn__));
+//{
+//    printf(" TEST: FAIL"
+//           "  file: %s ,  function: %s, line: %d "
+//           "  assertion:  (%s) \n", 
+//           __file,__function,__line,__assertion);
+//    fflush(stdout);
+//    abort();
+//}
 
 
 void __mark_point(const char *__assertion, const char *__file, 
