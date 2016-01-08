@@ -3093,7 +3093,7 @@ else
 
   docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
 
-  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 fi
 
@@ -3340,7 +3340,6 @@ read -d '' DK_DSHELLFILE << _as_read_EOF
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# env
 DOCKER_CONTAINER=${DOCKER_CONTAINER}
 DOCKER_IMAGE=${DOCKER_IMAGE}
 
@@ -3353,10 +3352,11 @@ user_home=${user_home}
 
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
-[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
-
+if [ -n "\${MAKESHELL}" ]; then
+ \${MAKESHELL} \${quoted_args};
+else
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} bash -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
+fi
 
 _as_read_EOF
 
@@ -3423,7 +3423,7 @@ inspect:
 start:
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -3482,7 +3482,6 @@ read -d '' DK_DSHELLFILE << _as_read_EOF
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# env
 DOCKER_CONTAINER=${DOCKER_CONTAINER}
 DOCKER_IMAGE=${DOCKER_IMAGE}
 
@@ -3495,10 +3494,11 @@ user_home=${user_home}
 
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
-[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
-
+if [ -n "\${MAKESHELL}" ]; then
+ \${MAKESHELL} \${quoted_args};
+else
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} bash -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
+fi
 
 _as_read_EOF
 
@@ -3674,7 +3674,7 @@ inspect:
 start:
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -12661,8 +12661,6 @@ $as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
 fi
 
 
-
-
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
 # /// Valgrind check  //////////////////////////////////////////////////////// #
@@ -12757,6 +12755,7 @@ ifeq ($(VALGRIND_ENABLED),yes)
 
 tests-valgrind:
 	@ \
+	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
 	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
@@ -12766,7 +12765,7 @@ tests-valgrind:
 
 tests-valgrind-tool:
 	@ \
-	$(MAKE) check-TESTS \
+	$(MAKE) -k check-TESTS \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(PY_LOG_COMPILER)" \
@@ -12784,7 +12783,7 @@ tests-valgrind-suppressions:
 
 tests-valgrind-suppressions-tool:
 	@ \
-	$(MAKE) check-TESTS \
+	$(MAKE) -k check-TESTS \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \

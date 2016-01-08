@@ -187,17 +187,8 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     }
     else
     {        
-        //#      ifndef _WIN32
-        //        printf("sending status ... \n");
-        //        error_jmp_state = 1;
-        //        if( setcontext(&error_jmp_context) != 0 )
-        //        {
-        //            printf("ERROR SETCONTEXT\n");
-        //            exit(1);
-        //        }
-        //#      endif
         __test_end();
-        exit(1);
+        _exit(1);
     }
 }
 
@@ -226,7 +217,7 @@ void __assert_fail (const char *__assertion, const char *__file,
     
     // FIX
     __test_end();
-    exit(1);
+    _exit(1);
 }
 
 

@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     BEGIN_TESTING(leak test);
 
-    int undef;
+    volatile int undef;
     if(undef) {
         printf(".");
     }

@@ -115,8 +115,6 @@ AC_DEFUN([DK_CMD_CNTRUN], [
   m4_normalize([ docker exec --user root $2 sh -c "
                           echo ${user_entry}  >> /etc/passwd; 
                           echo ${group_entry} >> /etc/group;
-                          test -f /sbin/sshd-keygen && /sbin/sshd-keygen;
-                          test -f /sbin/sshd && nohup /sbin/sshd;
                          ";
                        ])
 ])
@@ -404,8 +402,6 @@ start:
 	                          sh -c "
 	                            echo ${user_entry}  >> /etc/passwd; 
 				    echo ${group_entry} >> /etc/group;
-				    test -f /sbin/sshd-keygen && /sbin/sshd-keygen;
-				    test -f /sbin/sshd && nohup /sbin/sshd;
 				  ";)
 
 stop:
@@ -434,7 +430,6 @@ AS_VAR_READ([DK_DSHELLFILE],m4_escape([
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-# env
 DOCKER_CONTAINER=${DOCKER_CONTAINER}
 DOCKER_IMAGE=${DOCKER_IMAGE}
 
@@ -447,10 +442,11 @@ user_home=${user_home}
 
 >&2 echo "Docker: Entering container \${DOCKER_CONTAINER} ";
 quoted_args="\$(printf " %q" "\$\@")"
-[ -n "\${MAKESHELL}" ] && \${MAKESHELL} \${quoted_args} || \
-docker exec -t --user \${USER} \${DOCKER_CONTAINER} \
- sh -c "cd \$(pwd); export MAKESHELL=/bin/sh; sh \${quoted_args}";
-
+if [ -n "\${MAKESHELL}" ]; then
+ \${MAKESHELL} \${quoted_args};
+else
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} bash -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
+fi
 ]))
 
 AS_ECHO(" Writing dshell file: ${abs_builddir}/dshell ")

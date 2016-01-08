@@ -96,7 +96,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 void __test_exit() { exit(0); }
 void __test_timeout(double seconds) { (void)seconds; }
 void __test_init(const char *test_name, const char *file, const int line) {}
-void __test_end() { /*atexit(__test_exit);*/ }
+void __test_end() { atexit(__test_exit); }
 
 void __test_abort(int code, const char *__msg, const char *__file,
                   unsigned int __line, const char *__function) 
@@ -105,12 +105,22 @@ void __test_abort(int code, const char *__msg, const char *__file,
            "  file: %s ,  function: %s, line: %d "
            "  message:  (%s) \n", 
            __file,__function,__line,__msg);
-    exit(code); 
+    fflush(stdout);
+    _Exit(code); 
 }
 
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
+//__THROW __attribute__ ((__noreturn__));
+{
+    printf(" TEST: FAIL"
+           "  file: %s ,  function: %s, line: %d "
+           "  assertion:  (%s) \n", 
+           __file,__function,__line,__assertion);
+    fflush(stdout);
+    abort();
+}
+
 
 void __mark_point(const char *__assertion, const char *__file, 
                   unsigned int __line, const char *__function) 
@@ -118,7 +128,8 @@ void __mark_point(const char *__assertion, const char *__file,
     printf(" TEST: OK"
            "  file: %s ,  function: %s, line: %d "
            "  assertion:  (%s) \n", 
-           __file,__function,__line,__assertion);               
+           __file,__function,__line,__assertion);
+    fflush(stdout);
 }
 
 #endif // _TESTING
@@ -160,7 +171,7 @@ void __mark_point(const char *__assertion, const char *__file,
     
 #define END_TESTING } __test_end();
 
-#define SKIP_TEST(msg)  __test_abort(77,msg, __FILE__,__LINE__,__ASSERT_FUNCTION);
+#define SKIP_TEST(msg)  __test_abort(77,msg,__FILE__,__LINE__,__ASSERT_FUNCTION);
 #define ABORT_TEST(msg) __test_abort(99,msg,__FILE__,__LINE__,__ASSERT_FUNCTION);
 
 #define TEST_TIMEOUT(seconds) (__test_timeout(seconds))
