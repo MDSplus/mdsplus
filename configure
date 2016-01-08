@@ -3093,7 +3093,7 @@ else
 
   docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
 
-  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 fi
 
@@ -3423,7 +3423,7 @@ inspect:
 start:
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -3674,7 +3674,7 @@ inspect:
 start:
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; test -f /sbin/sshd-keygen && /sbin/sshd-keygen; test -f /sbin/sshd && nohup /sbin/sshd; ";
+	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -12659,8 +12659,6 @@ $as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
 
 
 fi
-
-
 
 
 VALGRIND_CHECK_RULES='

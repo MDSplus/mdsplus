@@ -115,8 +115,6 @@ AC_DEFUN([DK_CMD_CNTRUN], [
   m4_normalize([ docker exec --user root $2 sh -c "
                           echo ${user_entry}  >> /etc/passwd; 
                           echo ${group_entry} >> /etc/group;
-                          test -f /sbin/sshd-keygen && /sbin/sshd-keygen;
-                          test -f /sbin/sshd && nohup /sbin/sshd;
                          ";
                        ])
 ])
@@ -404,8 +402,6 @@ start:
 	                          sh -c "
 	                            echo ${user_entry}  >> /etc/passwd; 
 				    echo ${group_entry} >> /etc/group;
-				    test -f /sbin/sshd-keygen && /sbin/sshd-keygen;
-				    test -f /sbin/sshd && nohup /sbin/sshd;
 				  ";)
 
 stop:
