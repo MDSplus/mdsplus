@@ -15,7 +15,7 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
     	if_error(execute(_command),return(0));
 	return(_stat);
      }
-     fun private DevAddPythonDevice(in _path, in _type) {
+/*     fun private DevAddPythonDevice(in _path, in _type) {
         if (getenv("PyLib") == "") abort();
     	_models = MdsDevices();
     	_model = UPCASE(_type)//'\000';
@@ -29,7 +29,7 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
         if (_stat == 0) abort();
 	return(_stat);
      }
-
+*/
    _path = (extract(0, 1, _path) == '\\') ? '\\'//_path : _path;
   _cmd = "_stat = "//_type//'__add("'//_path//'", "'//_type//'")';
   if_error(execute(_cmd), _stat=DevAddPythonDevice(_path, _type), _stat=DevAddCalledDevice(_path,_type) ,return(0));
