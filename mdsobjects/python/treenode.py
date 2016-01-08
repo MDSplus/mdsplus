@@ -179,6 +179,8 @@ class TreeNode(_data.Data):
                     if isinstance(ans,_scalar.Uint8):
                         if name not in ('class','dtype'):
                             ans = bool(ans)
+                    if isinstance(ans,(TreeNodeArray,TreeNode)):
+                        ans.tree=self.tree
                 except _Exceptions.TreeNNF:
                   ans = None
             finally:
@@ -448,7 +450,7 @@ class TreeNode(_data.Data):
         except:
             children = None
         if children is None:
-            children = TreeNodeArray(_array.Int32Array([]))
+            children = TreeNodeArray(_array.Int32Array([]),self.tree)
         return children
 
     def getClass(self):
@@ -507,14 +509,14 @@ class TreeNode(_data.Data):
         except:
             children = None
         if members is None and children is None:
-            ans = TreeNodeArray(_array.Int32Array([]))
+            ans = TreeNodeArray(_array.Int32Array([]),self.tree)
         elif members is None:
             ans = children
         elif children is None:
             ans = members
         else:
             nids = members.data().tolist()+children.data().tolist()
-            ans  = TreeNodeArray(_array.Int32Array(nids))
+            ans  = TreeNodeArray(_array.Int32Array(nids),self.tree)
         return ans
 
     def getDtype(self):
@@ -584,7 +586,7 @@ class TreeNode(_data.Data):
         except:
             member = None
         if member is None:
-            member = TreeNodeArray(_array.Int32Array([]))
+            member = TreeNodeArray(_array.Int32Array([]),self.tree)
         return member
 
     def getMinPath(self):
@@ -629,12 +631,15 @@ class TreeNode(_data.Data):
         @return: node matching path
         @rtype: TreeNodeArray
         """
+        ans = None
         if path[0] == '\\':
-            return self.tree.getNode(path)
+            ans = self.tree.getNode(path)
         else:
             if path[0] != ':' and path[0] != '.':
                 path=':'+path
-            return self.tree.getNodeWild(self.fullpath+path)
+            ans = self.tree.getNodeWild(self.fullpath+path)
+        if ans is not None:
+            ans.tree = self.tree
 
     def getNumChildren(self):
         """Return number of children nodes.
