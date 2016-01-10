@@ -5,11 +5,8 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 import threading as _threading
-import traceback as _traceback
 import ctypes as _C
 import numpy as _N
-import copy as _copy
-import sys as _sys
 
 _mdsshr=_mimport('_mdsshr')
 _treeshr=_mimport('_treeshr')
@@ -64,7 +61,7 @@ class _TreeCtx(object):
             status=_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
             if (status & 1):
                 _treeshr.TreeFreeDbid(_C.c_void_p(self.ctx))
-          
+
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
@@ -141,7 +138,6 @@ class Tree(object):
         @type mode: str
         """
         _hard_lock.acquire()
-#        self._id=Tree._id=Tree._id+1
         try:
             if tree is None:
                 try:
@@ -370,7 +366,7 @@ class Tree(object):
         @return: Node if found
         @rtype: TreeNode
         """
-        if isinstance(name,int):
+        if isinstance(name,(int,_scalar.Int32)):
             return _treenode.TreeNode(name,self)
         else:
             Tree.lock()
