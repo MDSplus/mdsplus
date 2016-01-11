@@ -472,7 +472,6 @@ public class MdsDataProvider
                  asynchSource = getAsynchSource();
                 if(asynchSource != null)
                 {
-                    System.out.println("PIGLIATA ASYNCH SOURCE!!");
                     asynchSource.startGeneration(expression.substring("ASYNCH::".length()));
                 }
                 return true;

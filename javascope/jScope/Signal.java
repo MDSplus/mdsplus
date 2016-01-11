@@ -115,6 +115,7 @@ public class Signal implements WaveDataListener
     private WaveData low_errorData;
 
      
+    private boolean xLimitsInitialized = false;
     /**
      * x min signal region
      */
@@ -286,7 +287,10 @@ public class Signal implements WaveDataListener
     Vector<Vector> contourSignals = new Vector<Vector>();
     Vector<Float> contourLevelValues = new Vector<Float>();
 
-    boolean freezed = false;
+    final int NOT_FREEZED = 0, FREEZED_BLOCK = 1, FREEZED_SCROLL = 2;
+    int freezeMode = NOT_FREEZED;
+    double freezedXMin, freezedXMax;
+    
     Vector<XYData> pendingUpdatesV = new Vector<XYData>();
     Vector<SignalListener> signalListeners = new Vector<SignalListener>();
 /** Private caches of the signal (only for 1D Signals)
@@ -528,6 +532,7 @@ public class Signal implements WaveDataListener
         low_errorData = lowErrData;
         if(xminVal != -Double.MAX_VALUE)
         {
+            xLimitsInitialized = true;
             saved_xmin = this.xmin = curr_xmin = xminVal;
         }
         if(xmaxVal != Double.MAX_VALUE)
@@ -563,6 +568,7 @@ public class Signal implements WaveDataListener
         error = asym_error = false;
         data = new XYWaveData(_x, _y, _n_points);
         setAxis();
+        xLimitsInitialized = true;
         saved_xmin = curr_xmin = xmin;
         saved_xmax = curr_xmax = xmax;
         saved_ymin = ymin;
@@ -657,7 +663,7 @@ public class Signal implements WaveDataListener
     {
         error = asym_error = false;
         data = new XYWaveData(_x, _y, _n_points);
-System.out.println("COPY SIGNAL XMIN: " + _xmin);
+        xLimitsInitialized = true;
         xmin = _xmin;
         xmax = _xmax;
         if (xmax - xmin < _x[1] - _x[0])
@@ -744,6 +750,7 @@ System.out.println("COPY SIGNAL XMIN: " + _xmin);
         data.addWaveDataListener(this);
         resolutionManager = new ResolutionManager(s.resolutionManager);
         
+        xLimitsInitialized = s.xLimitsInitialized;
         
         
         saved_ymax = s.saved_ymax;
@@ -850,7 +857,7 @@ System.out.println("COPY SIGNAL XMIN: " + _xmin);
         
         startIndexToUpdate = s.startIndexToUpdate;
         signalListeners = s.signalListeners;
-        freezed = s.freezed;
+        freezeMode = s.freezeMode;
      }
 
     
@@ -869,6 +876,7 @@ System.out.println("COPY SIGNAL XMIN: " + _xmin);
     public Signal(Signal s, double start_x, double end_x,
                   double start_y, double end_y)
     {
+        xLimitsInitialized = true;
         this.data = s.data;
         nans = s.nans;
         n_nans = s.n_nans;
@@ -914,7 +922,6 @@ System.out.println("COPY SIGNAL XMIN: " + _xmin);
     public double getX(int idx)
     {
  
-        //System.out.println("getX " + idx);
         if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
             return sliceX[idx];
        try {
@@ -2406,7 +2413,7 @@ System.out.println("COPY SIGNAL XMIN: " + _xmin);
         if(type == TYPE_1D || type == TYPE_2D && ( mode2D == Signal.MODE_XZ ||
                                                    mode2D == Signal.MODE_IMAGE ) )
         {
-           // return data.isXLong(); Gabriele Dec 2015
+           //return data.isXLong(); //Gabriele Dec 2015
            return xLong != null;
         }
         else
@@ -2435,14 +2442,24 @@ System.out.println("COPY SIGNAL XMIN: " + _xmin);
     boolean fix_ymin = false;
     boolean fix_ymax = false;
 
+    public boolean xLimitsInitialized()
+    {
+        return xLimitsInitialized;
+    }
 
     public void setXLimits(double xmin, double xmax, int mode)
     {
-                
-System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);                
+        if(freezeMode != NOT_FREEZED)
+            return;
+        xLimitsInitialized = true;
          if(xmin == 0)
          {
-             System.out.println("TOMBOLA");
+             try {
+                 throw new Exception();
+             }catch(Exception exc)
+             {
+                 exc.printStackTrace();
+             }
          }
         if(xmin != -Double.MAX_VALUE)
         {
@@ -2544,8 +2561,18 @@ System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);
     }
 
 
-    public double getXmin() {return xmin;}
-    public double getXmax() {return xmax;}
+    public double getXmin() 
+    {
+       // if(!xLimitsInitialized)
+       //     return Double.MAX_VALUE;
+        return xmin;
+    }
+    public double getXmax() 
+    {
+       // if(!xLimitsInitialized)
+       //     return -Double.MAX_VALUE;
+        return xmax;
+    }
     public double getYmin() {return ymin;}
     public double getYmax() {return ymax;}
 
@@ -2649,6 +2676,7 @@ System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);
             double minMax[] = resolutionManager.getMinMaxX();
             if(minMax[0] == -Double.MAX_VALUE && minMax[1] == Double.MAX_VALUE)
             {
+                xLimitsInitialized = true;
                 xmin = x[0];
                 xmax = x[x.length - 1];
                 return;
@@ -3048,13 +3076,12 @@ System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);
     
     
     
-    public synchronized void dataRegionUpdated(double []regX, float []regY, double resolution)
+    public  void dataRegionUpdated(double []regX, float []regY, double resolution)
     {
-        
         
         if(regX == null || regX.length == 0) return;
         if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
-        if(freezed) //If zooming in some inner part of the sugnal
+        if(freezeMode != NOT_FREEZED) //If zooming in ANY part of the signal
         {
              pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true, regX[0], regX[regX.length - 1]));
             return;
@@ -3104,20 +3131,20 @@ System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);
             fireSignalUpdated(false);
         }
     }
-    public void dataRegionUpdated(long []regX, float []regY, double resolution)
+    public  void dataRegionUpdated(long []regX, float []regY, double resolution)
     {
-       if(regX == null || regX.length == 0) return;
+        if(regX == null || regX.length == 0) return;
         if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
-        if(freezed && regX[0] > xmax) //If zooming in some inner part of the signal
+        if(freezeMode == FREEZED_BLOCK) //If zooming in some inner part of the signal
         {
             pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true));
             return;
         }
-        if(freezed && regX[0] <= xmax) //If zooming the end of the signal do the update keeing the width of the zoomed region
+        if(freezeMode == FREEZED_SCROLL) //If zooming the end of the signal do the update keeing the width of the zoomed region
         {
             double delta = regX[regX.length - 1] - regX[0];
- //           xmin += delta;
- //           xmax += delta;  
+            xmin += delta;
+            xmax += delta;  
         }
         
         if(xLong == null) //First data chunk
@@ -3130,7 +3157,6 @@ System.out.println("SIGNAL SET LIMITS XMIN: "+ xmin);
             for(int i = 0; i < regX.length; i++)
                 x[i] = regX[i];
             y = regY;
-System.out.println("FIRE SIGNAL UPDATED PER PRIMI PUNTI XMIN: "+ xmin);
             fireSignalUpdated(true);
         }
         else //Data Appended
@@ -3171,12 +3197,12 @@ System.out.println("FIRE SIGNAL UPDATED PER PRIMI PUNTI XMIN: "+ xmin);
             {
                 resolutionManager.appendRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
                 double delta =  newX[newX.length - 1] - x[x.length-1];
-                 if(freezed)
+                if(freezeMode == FREEZED_SCROLL)
                 {
                     xmax += delta;
                     xmin += delta;
                 }
-                else
+                else if(freezeMode == NOT_FREEZED)
                     xmax = newX[newX.length - 1];
 
                 x = newX;
@@ -3217,18 +3243,29 @@ System.out.println("FIRE SIGNAL UPDATED PER PRIMI PUNTI XMIN: "+ xmin);
     }
     void freeze()
     {
-        freezed = true;
+        if(isLongX() && xmax > xLong[xLong.length - 1])
+            freezeMode = FREEZED_SCROLL;
+        else
+            freezeMode = FREEZED_BLOCK;
+        freezedXMin = xmin;
+        freezedXMax = xmax;
     }
     void unfreeze()
     {
-        freezed = false;
+        freezeMode = NOT_FREEZED;
+        xmin = freezedXMin;
+        xmax = freezedXMax;
         for(int i = 0; i < pendingUpdatesV.size(); i++)
         {
             if(pendingUpdatesV.elementAt(i).xLong != null)
+            {
                 dataRegionUpdated(pendingUpdatesV.elementAt(i).xLong, pendingUpdatesV.elementAt(i).y, pendingUpdatesV.elementAt(i).resolution); 
+            }
             else
+            {
                 dataRegionUpdated(pendingUpdatesV.elementAt(i).x, pendingUpdatesV.elementAt(i).y, pendingUpdatesV.elementAt(i).resolution); 
-        }
+             }
+       }
         pendingUpdatesV.clear();
     }
     

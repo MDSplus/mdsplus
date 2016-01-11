@@ -192,8 +192,6 @@ public class Grid
                           double xmin, double ymin, 
                           boolean xlog, boolean ylog)
     {
-
-System.out.println("BUILD GRID: " +xmax + "  " + xmin);
         if (ymax <= ymin)
             ymax = ymin + 1E-10;
         if (xmax <= xmin)

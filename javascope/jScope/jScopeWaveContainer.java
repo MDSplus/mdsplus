@@ -96,7 +96,6 @@ class jScopeWaveContainer
 
                     try
                     {
-
                         UpdateAllWave();
 
                         date = new Date();
