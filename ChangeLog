@@ -1,4 +1,28 @@
-commit e55e026ad8a43baa52cad42602f361ecc15d5700 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit ebcec9a55a4e499442953ac1f4f30f9cf74d29ef (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 1111494 6c361cb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 11:20:18 2016 -0500
+
+    Merge pull request #289 from MDSplus/jas-fix-compress-error-for-FS-minus-zero
+    
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+
+commit 6c361cbab11e7bf2b716dce0191d440a6fd6b283 (refs/remotes/origin/jas-fix-compress-error-for-FS-minus-zero)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jan 7 14:27:48 2016 -0500
+
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+    
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+    non-semantic fix - don't do the new stuff if dtype is FS
+
+commit 111149403b5e8c38e31f0b6e5cd4e7d00869fa80 (tag: refs/tags/alpha_release-7-0-204)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Jan 6 23:37:38 2016 -0500
+
+    New release ---- alpha_release-7-0-204
+
+commit e55e026ad8a43baa52cad42602f361ecc15d5700
 Merge: 33c99fe f928752
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Wed Jan 6 22:45:57 2016 +0100

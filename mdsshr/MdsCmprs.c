@@ -211,7 +211,7 @@ Do this in runs.
     old = 0;
     for (pn = diff, j = xn; --j >= 0; old = *p32++) {
       if ((i = *pn++ = *p32 - old) < 0) {
-	if (i == 0x80000000)
+	if ((i == 0x80000000) && (dtype != DTYPE_FS))
 	  i=0;
 	else
 	  i = (-i);
