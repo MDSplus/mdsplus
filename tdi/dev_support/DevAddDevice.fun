@@ -30,8 +30,8 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
 	return(_stat);
      }
 */
-   _path = (extract(0, 1, _path) == '\\') ? '\\'//_path : _path;
-  _cmd = "_stat = "//_type//'__add("'//_path//'", "'//_type//'")';
-  if_error(execute(_cmd), _stat=DevAddPythonDevice(_path, _type), _stat=DevAddCalledDevice(_path,_type) ,return(0));
+   _path_q = (extract(0, 1, _path) == '\\') ? '\\'//_path : _path;
+  _cmd = "_stat = "//_type//'__add("'//_path_q//'", "'//_type//'")';
+  if_error(execute(_cmd), _stat=DevAddPythonDevice(_path, _type), _stat=DevAddCalledDevice(_path_q,_type) ,return(0));
   return(_stat);
 }
