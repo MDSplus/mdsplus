@@ -212,6 +212,12 @@ class DevPYDEVICE_NOT_FOUND(DevException):
   msgnam="PYDEVICE_NOT_FOUND"
 
 
+class DevDEVICE_CONNECTION_FAILED(DevException):
+  status=662470922
+  message="Could not connect to device. Maybe it is not connected or turned off."
+  msgnam="DEVICE_CONNECTION_FAILED"
+
+
 class ReticonException(MDSplusException):
   fac="Reticon"
 
