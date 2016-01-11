@@ -158,7 +158,7 @@ class CYGNET4K(Device):
         CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(tmpPath))
         if not CYGNET4K.isOpen:
             print('Could not open camera. No camera connected?.')
-            raise mdsExceptions.DevPYDEVICE_NOT_FOUND
+            raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
         remove(tmpPath)
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
@@ -232,7 +232,7 @@ class CYGNET4K(Device):
             CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(conffile))
             if not CYGNET4K.isOpen:
                 print('Could not open camera. No camera connected?.')
-                raise mdsExceptions.DevPYDEVICE_NOT_FOUND
+                raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
         try:#test open Nodes
             trendTree = str(self.trend_tree.data())
             trendShot = int(self.trend_shot.data())
