@@ -2449,18 +2449,17 @@ public class Signal implements WaveDataListener
 
     public void setXLimits(double xmin, double xmax, int mode)
     {
-        if(freezeMode != NOT_FREEZED)
+        if(freezeMode != NOT_FREEZED) //If adding samples when freezed
+        {
+            if(xmin >= this.xmin && xmax <= this.xmax)
+            {
+                this.xmin = xmin;
+                this.xmax = xmax;
+            }
             return;
+        }    
+            
         xLimitsInitialized = true;
-         if(xmin == 0)
-         {
-             try {
-                 throw new Exception();
-             }catch(Exception exc)
-             {
-                 exc.printStackTrace();
-             }
-         }
         if(xmin != -Double.MAX_VALUE)
         {
             this.xmin = xmin;
