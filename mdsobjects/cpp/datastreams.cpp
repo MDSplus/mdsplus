@@ -87,8 +87,9 @@ public:
 		{
 			segNode->getSegmentInfo(numSegments-1, &dtype, &dimct, dims, &nextRow);
 			lastNextRow = nextRow; 
-//Do not signal condition in which number of segments has increased but no wor has nee writen in the new segment
-			if(numSegments > lastSegment +1 || nextRow > 0)
+//Do not signal condition in which number of segments has increased but no row has nee writen in the new segment
+			if(numSegments > lastSegment +1 && nextRow > 0)
+//			if(numSegments > lastSegment +1 || nextRow > 0)
 				dataAvailable = true;
 			lastSegment = numSegments;
 			if(dataAvailable)
@@ -113,12 +114,16 @@ public:
 		MDSplus::Data *segData = segNode->getData();//Read segmented data in order to retrieve dimension
 		unsigned char clazz, dtype;
 		if(!segData)
+		{
+			dataAvailable = false;
 			return NULL;
+		}
     	segData->getInfo((char *)&clazz, (char *)&dtype);
 		if(clazz != CLASS_R || dtype != DTYPE_SIGNAL)   //Data read from segment must be a signal
 		{
 			std::cout << "Internal error: non signal returned from segmented node" << std::endl;
 		    MDSplus::deleteData(segData);
+			dataAvailable = false;
 			return NULL;
 		}
 		MDSplus::Signal *sig = (MDSplus::Signal *)segData;
@@ -137,6 +142,7 @@ public:
 			std::cout << "Internal error: not an array of samples returned" << std::endl;
 		    MDSplus::deleteData(sigData);
 			MDSplus::deleteData(evalDimension);
+			dataAvailable = false;
 			return NULL;
 		}
 		evalDimension->getInfo((char *)&clazz, (char *)&dtype); //Dimensions must be an aray
@@ -145,6 +151,7 @@ public:
 			std::cout << "Internal error: not an array of times returned" << std::endl;
 		    MDSplus::deleteData(sigData);
 			MDSplus::deleteData(evalDimension);
+			dataAvailable = false;
 			return NULL;
 		}
 		//Throw first useless sample if not the first chunk.
@@ -167,9 +174,9 @@ public:
 				MDSplus::deleteData(lastTime);
 		//Record last sample time. It will be used in the next turn a start time in time context
 			lastTime = ((MDSplus::Array *)retDim)->getElementAt(retDim->getSize() - 1);
-			dataAvailable = false;
 		}
 		MDSplus::Signal *retSig = new MDSplus::Signal(retData,NULL, retDim);  //Build a signal from evaluated samples and times
+		dataAvailable = false;
 		return retSig;
     }
 };  //End class StreamInfo
@@ -271,6 +278,7 @@ EXPORT void unregisterListener(int listenerId)
 MDSplus::Data *getNewSamplesSerialized()
 {
 	//First loop: check whether any data is available
+	pthread_mutex_unlock(&mutex);
 	bool dataAvailable = false;
 	for(int idx = 0; idx < streamInfoV.size(); idx++)
 	{
