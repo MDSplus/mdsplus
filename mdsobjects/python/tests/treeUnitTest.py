@@ -64,6 +64,11 @@ class treeTests(TestCase):
         for i in range(10):
             node=pytreesub_top.addNode('child%02d' % (i,),'structure')
             node.addDevice('dt200_%02d' % (i,),'dt200')
+        node = pytree_top.addNode('NUM_CMPRS', 'numeric')
+        node.compress_on_put = True
+        node = pytree_top.addNode('SIG_CMPRS', 'signal')
+        node.compress_on_put = True
+
         pytree.write()
         pytreesub.write()
 
@@ -212,6 +217,18 @@ class treeTests(TestCase):
         self.assertEqual(ip.getSegment(0),None)
         return
 
+    def putCompressedNumeric(self):
+        testing = Tree('testing', -1)
+        self.pytree.NUM_CMPRS.record=testing.SRC_NUMERIC.record
+	self.assertEqual((self.pytree.NUM_CMPRS.record == testing.SRC_NUMERIC.record).all(), True)
+        return
+
+    def putCompressedSignal(self):
+        testing = Tree('testing', -1)
+        self.pytree.SIG_CMPRS.record=Tree('testing',-1).SRC_SIGNAL.record
+        self.assertEqual((self.pytree.SIG_CMPRS.record == testing.SRC_SIGNAL.record).all(), True)
+        return
+
     def finish(self):
         del(self.pytree)
         del(self.pytree2)
@@ -227,6 +244,8 @@ class treeTests(TestCase):
         self.nodeLinkage()
         self.nciInfo()
         self.getData()
+        self.putCompressedNumeric()
+        self.putCompressedSignal()
         self.finish()
 
 def suite():
