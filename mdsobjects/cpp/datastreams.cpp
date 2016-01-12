@@ -87,8 +87,9 @@ public:
 		{
 			segNode->getSegmentInfo(numSegments-1, &dtype, &dimct, dims, &nextRow);
 			lastNextRow = nextRow; 
-//Do not signal condition in which number of segments has increased but no wor has nee writen in the new segment
-			if(numSegments > lastSegment +1 || nextRow > 0)
+//Do not signal condition in which number of segments has increased but no row has nee writen in the new segment
+			if(numSegments > lastSegment +1 && nextRow > 0)
+//			if(numSegments > lastSegment +1 || nextRow > 0)
 				dataAvailable = true;
 			lastSegment = numSegments;
 			if(dataAvailable)
