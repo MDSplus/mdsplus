@@ -11,7 +11,7 @@ import glob as _g
 class MDSplusException(Exception):
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __init__(self,status=None):
-    if status is not None and isinstance(status,int):
+    if isinstance(status,int):
       self.status=status
     else:
       self.status=-1

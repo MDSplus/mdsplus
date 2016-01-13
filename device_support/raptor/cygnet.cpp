@@ -92,6 +92,7 @@ int epixOpen(char *pcConfFile)
     {
         printf("Open Error %d\a\a\n", status);
         pxd_mesgFault(UNITSMAP);
+        return status;
     }
 #ifdef DEBUG
     printFrameInfo();

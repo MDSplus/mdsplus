@@ -117,14 +117,14 @@ function esocket
 end
 
 pro mdsevent_can,id
-    widget_control, id, get_value=e
-    dummy=call_external(EventImage(),'IDLMdsEventCan',esocket(),e.event_id,value=[1,1])
+    ss=widget_info(id,/child)
+    if (ss ne 0) then widget_control,ss,/destroy
   return
 end
 
 pro mdsevent_cleanup, id
-    e = mdsevent_getevi(id)
-    dummy=call_external(EventImage(),'IDLMdsEventCan',esocket(),e.event_id,value=[1,1])
+    widget_control, id, get_uvalue=event_id
+    dummy=call_external(EventImage(),'IDLMdsEventCan',esocket(),event_id,value=[1,1])
   return
 end
 

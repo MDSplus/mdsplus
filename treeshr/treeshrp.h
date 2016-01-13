@@ -3,6 +3,7 @@
 
 #include <config.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
@@ -153,9 +154,21 @@ typedef struct named_attributes_index {
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 #else
 
-#define swapquad(ptr) (*(int64_t *)(ptr))
-#define swapint(ptr) (*(int *)(ptr))
-#define swapshort(ptr) (*(short *)(ptr))
+static inline int64_t swapquad(void *buf) {
+  int64_t ans;
+  memcpy(&ans,buf,sizeof(ans));
+  return ans;
+}
+static inline int32_t swapint(void *buf) {
+  int32_t ans;
+  memcpy(&ans,buf,sizeof(ans));
+  return ans;
+}
+static inline int16_t swapshort(void *buf) {
+  int16_t ans;
+  memcpy(&ans,buf,sizeof(ans));
+  return ans;
+}
 
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]; \
