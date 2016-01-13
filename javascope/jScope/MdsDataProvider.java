@@ -1622,6 +1622,8 @@ public class MdsDataProvider
                 error = desc.error;
             switch (desc.dtype)
             {
+                case Descriptor.DTYPE_DOUBLE:
+                    return desc.double_data[0];
                 case Descriptor.DTYPE_FLOAT:
                     return desc.float_data[0];
                 case Descriptor.DTYPE_LONG:
