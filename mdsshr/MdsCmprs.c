@@ -220,7 +220,7 @@ Do this in runs.
 	yy = 32;
       }
       else {
-	unsigned int delta = (i < 0) ? -1 : i;
+	unsigned int delta = (i < 0) ? -i : i;
 	if (delta <= 64) {
 	  yy = signif[delta];
 	}
