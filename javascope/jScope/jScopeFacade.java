@@ -3356,7 +3356,8 @@ class ServerDialog
         "ASCIIDataProvider",
         "T2DataProvider",
         "LocalDataProvider",
-        "MdsAsynchDataProvider"};
+        "MdsAsynchDataProvider",
+        "MDSplus.MdsStreamingDataProvider"};
 
     ServerDialog(JFrame _dw, String title)
     {

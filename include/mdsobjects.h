@@ -3562,33 +3562,6 @@ public:
     void removeTag(char const * tagName);
     int64_t getDatafileSize();
 };
-/////////////////End Class Tree /////////////////////
-#ifdef CACHEDTREES
-/////////////////CachedTree/////////////////////////
-#define DEFAULT_CACHE_SIZE 2000000
-class EXPORT CachedTree: public Tree
-{
-    bool cacheShared;
-    int cacheSize;
-public:
-    CachedTree(char *name,int shot,bool shared,int size);
-    CachedTree(char *name, int shot);
-    virtual ~CachedTree();
-    virtual void open();
-    virtual void close();
-    void configure(bool cacheShared, int cacheSize)
-    {
-        this->cacheShared = cacheShared;
-        this->cacheSize = cacheSize;
-    }
-    bool isCacheShared() {return cacheShared;}
-    int getCacheSize() { return cacheSize;}
-    CachedTreeNode *getCachedNode(char *path);
-    static void synch();
-};
-/////////////////End CachedTree/////////
-#endif
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Event  /////////////////////////////////////////////////////////////////////
@@ -3742,6 +3715,38 @@ private:
 
 
 ///////////////remote data access classes ////////////////
+//
+///  mdsip Connection in MDSplus
+///  ------------------------------
+/// Connection objects are used tio establish a remote connection to a mdsip server. 
+/// Connection is carried out by the object constructor and then it is possible to evaluate remote expressions
+/// The basic methods of Conneciton class are:
+/// * openTree(char *tree, int shot) Open a tree at the mdsip server side
+/// * closeTree(char *tree, int shot) Close the remote tree
+/// * setDefault(char *path) Set default position in remote tree
+/// * Data *get(const char *expr) Remote expression evaluation
+/// * Data *get(const char *expr, Data **args, int nArgs) Remote expression evaluation with arguments
+/// * put(const char *path, char *expr, Data **args, int nArgs) Put an expression (with arguments) in remote tree
+/// Class connection allows also the remote evaluation and put of multiple expressions. Support classes 
+/// GetMany and PutMany are used fior this purpose. GetMany and PutMany provide methods for inserting
+/// expressions to be evaluated and stored, respectively. In addition both classes provide method execute()
+/// that executes remote evaluation/store of the set of associated expressions. GetMany and PutMany are 
+/// not instantiated directly, but are obtained by Connection Facotry methods getMany() and putMany()
+/// Class connection provides also support for remote data streaming using publish - subscribe pattern
+/// Clients can register to a connection instance specifying a remote tree, shot and expression contining
+/// at least a reference to a segmented node. Whenever new data are appended to the segmented node at the
+/// server side registered listeners are notified and receive the (chunk of) newly evaluated data and times
+/// A listener will inherit abstract class DataStreamListener that defines a single method:
+/// * void dataReceived(Data samples, Data times). 
+/// This method is asynchronously called by the connection frameworkwhen new data are available.
+/// It is possible to register multiple listeners to the same connection object. Once all listeners are
+/// registered, Connection method startStreaming will start the streaming process. 
+/// NOTE: when streaming is started, the Connection instance is fully devoted to streaming management.
+/// Therefore methods get and put cannot be called afterwards for that  Connection instance 
+/// (they will freeze). 
+
+
+
 class Connection;
 class EXPORT GetMany: public List
 {
@@ -3788,6 +3793,15 @@ public:
     void checkStatus(char *name);
 };
 
+
+class EXPORT DataStreamListener 
+{
+public:
+    virtual void dataReceived(Data *samples, Data *times) = 0;
+};
+
+
+
 class EXPORT Connection
 {
 public:
@@ -3814,6 +3828,12 @@ public:
     {
         return new GetMany(this);
     }
+    
+	void registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot);
+    void unregisterStreamListener(DataStreamListener *listener);
+	void startStreaming();
+	void resetConnection();
+ 	void checkDataAvailability();
 
 private:
     void lockLocal();
@@ -3821,9 +3841,13 @@ private:
     void lockGlobal();
     void unlockGlobal();
 
+	std::string mdsipAddrStr;
+	int clevel;
     int sockId;
     Mutex mutex;
     static Mutex globalMutex;
+	std::vector<DataStreamListener *> listenerV;
+	std::vector<int> listenerIdV;
 };
 
 class EXPORT Scope

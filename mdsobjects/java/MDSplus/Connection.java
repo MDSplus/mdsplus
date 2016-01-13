@@ -1,4 +1,5 @@
 package MDSplus;
+import java.util.*;
 
 public class Connection 
 {
@@ -12,7 +13,7 @@ public class Connection
         }
     }
     int sockId;
-    
+    java.lang.String mdsipAddr;
     boolean checkArgs(Data args[])
     {
         for(int i = 0; i < args.length; i++)
@@ -21,12 +22,23 @@ public class Connection
         return true;
     }
     
+    public Connection(){}
+   
+    
     public Connection(java.lang.String mdsipAddr) throws MdsException
     {
+        initialize(mdsipAddr);
+    }
+   
+    public void initialize(java.lang.String mdsipAddr) throws MdsException
+    {
+        this.mdsipAddr = mdsipAddr;
         sockId = connectToMds(mdsipAddr);
         if(sockId < 0)
             throw new MdsException("Cannot connect to "+ mdsipAddr);
     }
+           
+    
     
     protected void finalize()
     {
@@ -220,8 +232,89 @@ public class Connection
         }
     }
     
+///DataStream management
+    Hashtable listenerH = new Hashtable();
+    Hashtable listenerIdH = new Hashtable();
+    Thread listenerThread;
+    public synchronized void registerStreamListener(DataStreamListener listener, java.lang.String expr, java.lang.String tree, int shot) throws MdsException
+    {
+        Data idData = get("MdsObjectsCppShr->registerListener(\""+expr+"\",\""+tree+"\",val("+shot+"))");
+        listenerH.put(new Integer(idData.getInt()), listener);
+        listenerIdH.put(listener, new Integer(idData.getInt()));
+    }
+    public synchronized void unregisterStreamListener(DataStreamListener l)
+    {
+        Integer idInt = (Integer)listenerIdH.get(l);
+        if(idInt == null) return;
+        int id = idInt.intValue();
+        try {
+            get("MdsObjectsCppShr->unregisterListener(val("+id+"))");
+        }catch(Exception exc) 
+        {
+            System.out.println(exc);
+        }
+    }
+    
+    public void startStreaming()
+    {
+        if(listenerThread == null)
+        {
+            listenerThread = new Thread() {
+                public void run()
+                {
+                    checkDataAvailability();
+                }
+            };
+            listenerThread.start();
+        }
+    }
+    
+    public void resetConnection()
+    {
+        disconnectFromMds(sockId);
+        sockId = connectToMds(mdsipAddr);
+    }
     
     
-    
-    
+    void checkDataAvailability()
+    {
+       while(true)
+       {
+            try {
+                  Data serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
+                 Apd apdData = (Apd)Data.deserialize(serData.getByteArray());
+                 Data [] descs = apdData.getDescs();
+                 for(int i = 0; i < descs.length/2; i++)
+                 {
+                     int id = descs[2*i].getInt();
+                     Signal sig = (Signal)descs[2*i+1];
+                     DataStreamListener listener = (DataStreamListener)listenerH.get(new Integer(id));
+                     if(listener != null)
+                         listener.dataReceived(sig.getData(), sig.getDimensionAt(0));
+                 }
+            }catch(MdsException exc)
+            {
+                System.out.println("Error in data stream management: " + exc);
+            }
+       }
+    }
+
+//Test program
+    public static void main(java.lang.String args[])
+    {
+        try {
+            Connection conn = new Connection("roserver.igi.cnr.it");
+            DataStreamListener l1 = new DataStreamListener()
+            {
+                public void dataReceived(Data samples, Data times)
+                {
+                    System.out.println("Listener 1 received data:\nSamples: "+samples+"\nTimes: "+times);
+                }
+            };
+            conn.registerStreamListener(l1, "2*test_0", "test", 1);
+            conn.startStreaming();
+ //           conn.resetConnection();
+        }catch(Exception e){System.out.println(e); }
+    }
 }
+    

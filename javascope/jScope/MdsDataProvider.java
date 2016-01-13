@@ -16,12 +16,12 @@ import java.util.logging.Logger;
 public class MdsDataProvider
     implements DataProvider
 {
-    String provider;
-    String experiment;
+    protected String provider;
+    protected String experiment;
     String default_node;
     String environment_vars;
     private boolean def_node_changed = false;
-    long shot;
+    protected long shot;
     boolean open, connected;
     MdsConnection mds;
     String error;
@@ -405,8 +405,8 @@ public class MdsDataProvider
             this.wd_shot = shot;
             if(checkForAsynchRequest(in_y))
             {
-                this.in_y = "[]";
-                this.in_x = "[]";
+               this.in_y = "[]";
+               this.in_x = "[]";
             }
             else
             {
@@ -439,7 +439,7 @@ public class MdsDataProvider
             {
                 this.in_y = "[]";
                 this.in_x = "[]";
-            }
+             }
             else
             {
                 this.in_y = in_y;
@@ -471,7 +471,9 @@ public class MdsDataProvider
             {
                  asynchSource = getAsynchSource();
                 if(asynchSource != null)
-                     asynchSource.startGeneration(expression.substring("ASYNCH::".length()));
+                {
+                    asynchSource.startGeneration(expression.substring("ASYNCH::".length()));
+                }
                 return true;
              }
             return false;
@@ -880,6 +882,7 @@ public class MdsDataProvider
             
             float y[] = GetFloatArray("("+yExpr+")");
             RealArray xReal = GetRealArray("("+xExpr+";)");
+            if(y == null || xReal == null) return null;
             if(xReal.isLong())
             {
                 isXLong = true;
@@ -1182,7 +1185,7 @@ public class MdsDataProvider
             status = mds.DisconnectFromMds();
     }
     //To be overridden by any DataProvider implementation with added dynamic generation
-    AsynchDataSource getAsynchSource()
+    public jScope.AsynchDataSource getAsynchSource()
     {
         return null;
     }
@@ -1619,6 +1622,8 @@ public class MdsDataProvider
                 error = desc.error;
             switch (desc.dtype)
             {
+                case Descriptor.DTYPE_DOUBLE:
+                    return desc.double_data[0];
                 case Descriptor.DTYPE_FLOAT:
                     return desc.float_data[0];
                 case Descriptor.DTYPE_LONG:

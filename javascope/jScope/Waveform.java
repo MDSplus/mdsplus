@@ -1242,8 +1242,6 @@ public class Waveform
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
-        
-            
         if(xmax != Double.MAX_VALUE && xmin != Double.MIN_VALUE)
         {
             double xrange = xmax - xmin;
@@ -2243,7 +2241,7 @@ public class Waveform
 
   protected double MinXSignal() {
     if (waveform_signal == null) {
-      return 0.;
+       return 0.;
     }
     return waveform_signal.getXmin();
   }
@@ -2455,7 +2453,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
                                          waveform_signal.getYmin());
 
       undo_zoom.addElement(r_prev);
-      waveform_signal.freeze();
+      //waveform_signal.freeze();
     }
     else {
       undo_zoom.removeElement(r);
@@ -2468,6 +2466,8 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
     change_limits = true;
+    if(add_undo)
+        waveform_signal.freeze();
 
   }
 
@@ -2809,7 +2809,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     // to do: code goes here.
   }
   
-  public void signalUpdated(boolean changeLimits)
+  public  void signalUpdated(boolean changeLimits)
   {
       change_limits = changeLimits;
       not_drawn = true;
