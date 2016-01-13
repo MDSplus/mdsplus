@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <mdsobjects.h>
 #include <time.h>
+#include <string.h>
 
 extern "C" {
 EXPORT int registerListener(char *expr, char *tree, int shot);
