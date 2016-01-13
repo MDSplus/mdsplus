@@ -82,8 +82,6 @@ public class Grid
                           double xmin, double ymin, 
                           boolean xlog, boolean ylog)
     {
-
-
         if (ymax < ymin)
             ymax = ymin + 1E-10;
         if (xmax < xmin)
@@ -194,8 +192,6 @@ public class Grid
                           double xmin, double ymin, 
                           boolean xlog, boolean ylog)
     {
-
-
         if (ymax <= ymin)
             ymax = ymin + 1E-10;
         if (xmax <= xmin)
