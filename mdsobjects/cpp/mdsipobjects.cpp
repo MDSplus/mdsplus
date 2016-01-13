@@ -1,7 +1,7 @@
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
-
+#include <string.h>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -15,6 +15,8 @@
 #include <errno.h>
 #include <semaphore.h>
 #endif
+#include <pthread.h>
+
 using namespace MDSplus;
 using namespace std;
 
@@ -154,6 +156,8 @@ Mutex Connection::globalMutex;
 
 Connection::Connection(char *mdsipAddr, int clevel) //mdsipAddr of the form <IP addr>[:<port>]
 {
+	mdsipAddrStr.assign((const char *)mdsipAddr);
+	this->clevel = clevel;
     lockGlobal();
     SetCompressionLevel(clevel);
     sockId = ConnectToMds(mdsipAddr);
@@ -385,6 +389,105 @@ void Connection::setDefault(char *path)
 		throw MdsException(status);
 }
 
+
+void Connection::registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot)
+{
+	char regExpr[64 + strlen(expr) + strlen(tree)];
+	sprintf(regExpr, "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))", expr, tree, shot);
+
+	Data *idData = get(regExpr, NULL, 0);
+	int id = idData->getInt();
+	deleteData(idData);
+	listenerV.push_back(listener);
+	listenerIdV.push_back(id);
+}
+void Connection::unregisterStreamListener(DataStreamListener *listener)
+{
+	int idx;
+	for(idx = 0; idx < listenerV.size(); idx++)
+	{
+		if(listenerV[idx] == listener)
+			break;
+	}
+	if(idx >= listenerV.size())
+	   	return;
+	int id = listenerIdV[idx];
+	char regExpr[64];
+	sprintf(regExpr, "MdsObjectsCppShr->unregisterListener(val(%d))", id);
+	get(regExpr);
+	listenerV.erase(listenerV.begin() + idx);
+	listenerIdV.erase(listenerIdV.begin() + idx);
+}
+
+void Connection::checkDataAvailability()
+{
+	try  
+	{
+		while(true)
+		{
+			Data *serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
+			int numBytes;
+			char *serialized = serData->getByteArray(&numBytes);
+			deleteData(serData);
+			Apd *apdData = (Apd *)deserialize(serialized);
+			delete [] serialized;
+			int numDescs =  apdData->getDimension();
+			Data **descs = apdData->getDscs();
+			for(int i = 0; i < numDescs/2; i++)
+			{
+				int id = descs[2*i]->getInt();
+				Signal *sig = (Signal *)descs[2*i+1];
+				int idx;
+				for(idx = 0; idx < listenerIdV.size(); idx++)
+				{
+					if(listenerIdV[idx] == id)
+					break;
+				}
+				if(idx < listenerV.size())
+				{
+					Data *sigData = sig->getData();
+					Data *sigDim = sig->getDimension();
+					if(((Array *)sigData)->getSize() > 0)
+						listenerV[idx]->dataReceived(sigData, sigDim);
+					deleteData(sigData);
+					deleteData(sigDim);
+				}
+			}
+			deleteData(apdData);
+		}
+	}catch(MdsException &exc){}  //Likely because of a resetConnection call
+}
+
+
+static void *checkDataStream(void *connPtr)
+{
+	Connection *conn = (Connection *)connPtr;
+	conn->checkDataAvailability();
+	return NULL;
+}
+
+void Connection::startStreaming()
+{
+	pthread_t thread;
+	pthread_create(&thread, NULL, checkDataStream, this);
+}
+    
+void Connection::resetConnection()
+{
+    lockGlobal();
+    DisconnectFromMds(sockId);
+    SetCompressionLevel(clevel);
+	char *mdsipAddr = (char *)mdsipAddrStr.c_str();
+    sockId = ConnectToMds(mdsipAddr);
+    unlockGlobal();
+	if(sockId <= 0) {
+		std::string msg("Cannot connect to ");
+		msg += mdsipAddr;
+		throw MdsException(msg.c_str());
+	}
+}
+
+
 void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
 {
 //They are freed by the List descructor
@@ -564,3 +667,4 @@ void PutMany::checkStatus(char *nodeName) {
 		throw MdsException(errMsg.get());
 	}
 }
+
