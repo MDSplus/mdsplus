@@ -47,9 +47,9 @@ class SaveFrame {
 		this->frameTime = frameTime;
 
         hasMetadata = true;
-		this->frameMetadata = frameMetadata; 
-		this->metaSize = metaSize; 
-		this->metaNid = metaNid;  
+		this->frameMetadata = frameMetadata;
+		this->metaSize = metaSize;
+		this->metaNid = metaNid;
 
 		this->treePtr = treePtr;
 		nxt = 0;
@@ -67,9 +67,9 @@ class SaveFrame {
 		this->frameTime = frameTime;
 
         hasMetadata = false;
-		this->frameMetadata = 0; 
-		this->metaSize = 0; 
-		this->metaNid = -1;  
+		this->frameMetadata = 0;
+		this->metaSize = 0;
+		this->metaNid = -1;
 
 		this->treePtr = treePtr;
 		nxt = 0;
@@ -105,27 +105,27 @@ class SaveFrame {
 
 	//check pixel size format
 	    if(pixelSize<=8)
-	    {  
-		    data = new Int8Array((char *)frame, 3, dataDims);  
+	    {
+		    data = new Int8Array((char *)frame, 3, dataDims);
 	#ifdef DEBUG
 		    printf("Pixel Format: 8bit.\n");
-	#endif 
+	#endif
 	    }
 	    else if(pixelSize<=16)
-	    {  
-		    data = new Int16Array((short *)frame, 3, dataDims); 
+	    {
+		    data = new Int16Array((short *)frame, 3, dataDims);
 	#ifdef DEBUG
 		    printf("Pixel Format: 16bit. %d %d %d\n", dataDims[0], dataDims[1], dataDims[2]);
-	#endif 
+	#endif
 	    }
 	    else if(pixelSize<=32)
-	    {  
-		    data = new Int32Array((int *)frame, 3, dataDims); 
+	    {
+		    data = new Int32Array((int *)frame, 3, dataDims);
 	#ifdef DEBUG
 		    printf("Pixel Format: 32bit.\n");
-	#endif 
+	#endif
 	    }
-	
+
 	    if(timebaseNid != -1)  //timebase defined (ext. trigger)
 	    {
 		    TreeNode *timebaseNode;
@@ -133,7 +133,7 @@ class SaveFrame {
 		    Data *time;
 		    Data *dim;
 
-		    try 
+		    try
 		    {
 			    timebaseNode = new TreeNode(timebaseNid, (Tree *)treePtr);
     #ifdef DEBUG
@@ -160,11 +160,11 @@ class SaveFrame {
 		    if(hasMetadata) delete metaNode;
 
 		    if(pixelSize<=8)
-			    delete (char *) frame;  
+			    delete (char *) frame;
 		    else if(pixelSize<=16)
-			    delete (short *)frame; 
+			    delete (short *)frame;
 		    else if(pixelSize<=32)
-			    delete (int *) frame; 
+			    delete (int *) frame;
 
 	    }
 	    else  //timebase NOT defined (int. trigger)
@@ -172,16 +172,16 @@ class SaveFrame {
 		    Data *dim;
 		    Data *time = new Float32(frameTime);
 
-		    try 
-		    {	 
+		    try
+		    {
 		        dim = compileWithArgs("[$1]", (Tree *)treePtr, 1, time);
 		    }
-		    catch(MdsException *exc) 
-		    { 
+		    catch(MdsException *exc)
+		    {
 			    cout << "ERROR CompileWithArgs: " << exc->what() << "\n";
 		    }
 
-		    try 
+		    try
 		    {
 			//cout << "WRITING SEGMENT " << time << dim << data << " " << dataNode->getFullPath() <<"\n";
 
@@ -197,7 +197,7 @@ class SaveFrame {
 			cout << "ERROR WRITING SEGMENT " << exc->what() << "\n";
 		}
 
-		try 
+		try
 		{
 			deleteData(data);
 			deleteData(time);
@@ -206,11 +206,11 @@ class SaveFrame {
 			if(hasMetadata) delete metaNode;
 
 			if(pixelSize<=8)
-				delete (char *) frame;  
+				delete (char *) frame;
 			else if(pixelSize<=16)
-				delete (short *)frame; 
+				delete (short *)frame;
 			else if(pixelSize<=32)
-				delete (int *) frame; 
+				delete (int *) frame;
 		}
 		catch(MdsException *exc)
 		{
@@ -262,22 +262,22 @@ class SaveFrameList
 
     }
 
-    void addFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
+    void addFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid,
         int frameIdx,    void *frameMetadata, int metaSize, int metaNid)
     {
-		SaveFrame *newItem = new SaveFrame(frame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx, 
+		SaveFrame *newItem = new SaveFrame(frame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx,
              frameMetadata,  metaSize,  metaNid);
         addFrame(newItem);
     }
 
-    void addFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
+    void addFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid,
         int frameIdx)
     {
 		SaveFrame *newItem = new SaveFrame(frame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx);
         addFrame(newItem);
     }
 
-    
+
 
     void executeItems()
     {
@@ -304,12 +304,12 @@ class SaveFrameList
                     {
 			            SaveFrame *currItem = saveHead;
 			            saveHead = saveHead->getNext();
-	
+
 #ifdef DEBUG
 			            int nItems = 0;
 			            for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
 			            if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
-#endif	
+#endif
 			            currItem->save();
 			            delete currItem;
                     }
@@ -317,7 +317,7 @@ class SaveFrameList
 			        pthread_exit(NULL);
                 }
             }
-                    
+
 
 
 			while(saveHead == NULL)
@@ -331,12 +331,12 @@ class SaveFrameList
 			}
 			SaveFrame *currItem = saveHead;
 			saveHead = saveHead->getNext();
-	
+
 #ifdef DEBUG
 			int nItems = 0;
 			for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
 			if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
-#endif	
+#endif
 			pthread_mutex_unlock(&mutex);
 			currItem->save();
 			delete currItem;
@@ -352,7 +352,7 @@ class SaveFrameList
 		stopReq = true;
 		pthread_cond_signal(&itemAvailable);
 		if(threadCreated)
-		{	
+		{
 			pthread_join(thread, NULL);
 #ifdef DEBUG
 			printf("SAVE THREAD TERMINATED\n");
@@ -386,7 +386,7 @@ void camStartSaveDeferred(void **retList)
 
 void camStopSave(void *listPtr)
 {
-    if(listPtr) 
+    if(listPtr)
     {
         SaveFrameList *list = (SaveFrameList *)listPtr;
         list->stop();
@@ -402,7 +402,7 @@ void camStopSave(void *listPtr)
 //Open Mdsplus Tree
 int camOpenTree(char *treeName, int shot, void **treePtr)
 {
-    try 
+    try
     {
 	  Tree *tree = new Tree(treeName, shot);
 	  *treePtr = (void *)tree;
@@ -433,7 +433,7 @@ int64_t *frameTime		frame timestamp (used when 'timebaseNid'=-1)
 int pixelSize			pixel depth (es 8 -> gray 8 bit)
 void *treePtr			MdsPlus Tree pointer
 int dataNid			MdsPlus NodeID for the frames
-int timebaseNid			MdsPlus NodeID for the Timebase 
+int timebaseNid			MdsPlus NodeID for the Timebase
 int frameIdx			Frame Index (counter)
 void *frameMetadata		frame metadata pointer
 int metaSize			metadata size
@@ -450,28 +450,28 @@ void camSaveFrame(void *frame, int width, int height, float frameTime, int pixel
 
     if(pixelSize<=8)
     {
-	     bufFrame = new char[frameSize];  
+	     bufFrame = new char[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(char));
     }
     else if(pixelSize<=16)
     {
 	     bufFrame = new short[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(short));
-    } 
+    }
     else if(pixelSize<=32)
     {
-	     bufFrame = new int[frameSize]; 
+	     bufFrame = new int[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(int));
     }
-	
-    bufMdata = new char[metaSize];  
+
+    bufMdata = new char[metaSize];
     memcpy(bufMdata, frameMetadata, metaSize);
 
     SaveFrameList *saveList = (SaveFrameList *)saveListPtr;
     saveList->addFrame(bufFrame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx,  bufMdata,  metaSize,  metaNid);
 }
 
-void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
+void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid,
         int frameIdx, void *saveListPtr)
 {
 
@@ -479,20 +479,20 @@ void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int
     int frameSize = width * height;
     if(pixelSize<=8)
     {
-	     bufFrame = new char[frameSize];  
+	     bufFrame = new char[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(char));
     }
     else if(pixelSize<=16)
     {
 	     bufFrame = new short[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(short));
-    } 
+    }
     else if(pixelSize<=32)
     {
-	     bufFrame = new int[frameSize]; 
+	     bufFrame = new int[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(int));
     }
-	
+
     SaveFrameList *saveList = (SaveFrameList *)saveListPtr;
     saveList->addFrame(bufFrame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx);
 }

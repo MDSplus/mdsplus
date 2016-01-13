@@ -1,4 +1,426 @@
-commit c05d38f5a87a12e89f90707977a6fc1528c376ac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 22a7ac7ada36c9c9e6f3e3e9b77e9046944502b5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: ea469ef 5c33bb0
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Jan 12 00:39:51 2016 +0100
+
+    Merge pull request #295 from zack-vii/aa_cygnet4k
+    
+    zck-cygnet4k-OSError-and-early-return-on-error
+
+commit 5c33bb07ddf836e7543e12f4a331162d4b2661e4
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 11 12:53:14 2016 +0100
+
+    DevPYDEVICE_NOT_FOUND to DevPYDEVICE_CONNECTION_FAILED
+    
+    DevPYDEVICE_NOT_FOUND is reserved for if the class is not found
+
+commit 9e773b360fa47a475bab4f8ce321eb096f4774a6
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 11 12:52:35 2016 +0100
+
+    avoid as exc in except
+
+commit 3257e73b6a21e3af6d161d2b29c60f95eb7db432
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 15:00:00 2015 +0100
+
+    OSError includes WindowsError and works on unix as well
+
+commit b2438e87c66c6788271ad6a40070e32b2128a8b2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 14:41:32 2015 +0100
+
+    cygnet.cpp return on error
+
+commit e73f55d18b464f76e04c7eeb8e5e5f1bcff7ebd8
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 14:38:30 2015 +0100
+
+    removed trailing spaces
+
+commit ea469ef66b585caf949ff493ef57ea86c7c8af4c
+Merge: 7a90c8b bcae411
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 16:59:10 2016 -0500
+
+    Merge pull request #298 from MDSplus/twf-dev-connection-error
+    
+    Add DevDEVICE_CONNECTION_FAILED error
+
+commit bcae4112973fc9f475a1326111bb5b0bf4eff5f6 (refs/remotes/origin/twf-dev-connection-error)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 15:50:01 2016 -0500
+
+    Add DevDEVICE_CONNECTION_FAILED error
+
+commit 7a90c8b08e53a5a470dfe5a69bb5a927a49c1f2a
+Merge: b733bd6 d0eb6b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 14:44:13 2016 -0500
+
+    Merge pull request #287 from MDSplus/twf-add-local-mdsip-plugin-for-testing-mdsip
+    
+    Add local://xxx mdsip plugin. Will make it easier to implement testin…
+
+commit b733bd6581f324a683a28d96eb96cec399452f55
+Merge: bfdaa30 8f0a36d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 14:43:41 2016 -0500
+
+    Merge pull request #296 from zack-vii/aa_python
+    
+    Aa python
+
+commit bfdaa30929d4402c8fa264fcfbd41903d5385ef9
+Merge: 0cf5848 84d306d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 14:42:13 2016 -0500
+
+    Merge pull request #293 from MDSplus/twf-fix-add-py-device
+    
+    Fix hanging when adding python device by using a python tdi fun to ad…
+
+commit 84d306d03d5a0e3b9f2a91dd97e0675c0365bd10 (refs/remotes/origin/twf-fix-add-py-device)
+Merge: 0be6df6 0cf5848
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 11 20:39:47 2016 +0100
+
+    Merge branch 'alpha' into twf-fix-add-py-device
+
+commit 0cf5848a8e2044967c3473c4ecf471b9de737d68
+Merge: 80ebb00 0c7ffa2
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 11 14:09:35 2016 -0500
+
+    Merge pull request #297 from MDSplus/twf-fix-compress-again2
+    
+    Fix handling of 0x8000000 in compression
+
+commit 0c7ffa25da74be805c4f1fab8bebbe5e383899d2 (refs/remotes/origin/twf-fix-compress-again2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 13:50:21 2016 -0500
+
+    Fix handling of 0x8000000 in compression
+
+commit 0be6df6ea6aa0fa2bbaad32e822836305f7644a7
+Merge: a72332b 80ebb00
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 11 17:18:24 2016 +0100
+
+    Merge branch 'alpha' into twf-fix-add-py-device
+
+commit a72332b9da50200ae4bc41e26e1efc26386763fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 10:35:42 2016 -0500
+
+    Fix double back quoting when invoking DevAddPythonDevice.py
+
+commit 8f0a36d1d19e08d3b5b3358d2aad405f61bed55b
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 11 15:08:12 2016 +0100
+
+    fix mdsException for string argument
+    
+    as it is used by MdsIpException in connection.py
+
+commit c36c2982176bb248c5a43d1d111ae4da5207297b
+Author: zack-vii <zack.vii@live.com>
+Date:   Sun Jan 10 23:57:48 2016 +0100
+
+    tidy tree.py
+    
+    no unused packages
+
+commit 80ebb000ff11bedba470a7fa6a1dd803c5680a74
+Merge: 177f88b d363397
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 08:41:38 2016 -0500
+
+    Merge pull request #294 from MDSplus/twf-fix-treenode-array-garbage-collection
+    
+    Fix tree garbage collection by ensuring that TreeNodeArray instances …
+
+commit 177f88bb104cddd47d5fa737c6e3cc2a6ad1ec0a (tag: refs/tags/alpha_release-7-0-205)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Jan 8 23:38:03 2016 -0500
+
+    New release ---- alpha_release-7-0-205
+
+commit d3633972cceb1c5a86fdcfda71d11e5d4bd4b281 (refs/remotes/origin/twf-fix-treenode-array-garbage-collection)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 12:45:20 2016 -0500
+
+    Fix tree garbage collection by ensuring that TreeNodeArray instances created from TreeNode methods include a reference to the tree used to create the TreeNode instance. In this way the tree context will not be garbage collected when the TreeNode instance is destroyed.
+
+commit 8db01c1ad8470c0f9c149adaba3c94517420c661
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 11:51:40 2016 -0500
+
+    Fix hanging when adding python device by using a python tdi fun to add it instead of using the py() tdi fun.
+
+commit ebcec9a55a4e499442953ac1f4f30f9cf74d29ef
+Merge: 1111494 6c361cb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 11:20:18 2016 -0500
+
+    Merge pull request #289 from MDSplus/jas-fix-compress-error-for-FS-minus-zero
+    
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+
+commit 6c361cbab11e7bf2b716dce0191d440a6fd6b283 (refs/remotes/origin/jas-fix-compress-error-for-FS-minus-zero)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jan 7 14:27:48 2016 -0500
+
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+    
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+    non-semantic fix - don't do the new stuff if dtype is FS
+
+commit 111149403b5e8c38e31f0b6e5cd4e7d00869fa80 (tag: refs/tags/alpha_release-7-0-204)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Jan 6 23:37:38 2016 -0500
+
+    New release ---- alpha_release-7-0-204
+
+commit e55e026ad8a43baa52cad42602f361ecc15d5700
+Merge: 33c99fe f928752
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 6 22:45:57 2016 +0100
+
+    Merge pull request #285 from MDSplus/twf-remove-pycall-replace-py-fun-with-python-one
+    
+    Replace the py.fun and mdsmisc->pycall with a Py.py fun to greatly si…
+
+commit f928752790b4f489fe6971ec0e7cdda15d3c0e59 (refs/remotes/origin/twf-remove-pycall-replace-py-fun-with-python-one)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 14:35:40 2016 -0500
+
+    Remove pycall from exports
+
+commit 5280c4b025e14b89b681d73a44a95aae12ff7f91
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 14:08:46 2016 -0500
+
+    Replace the py.fun and mdsmisc->pycall with a Py.py fun to greatly simplify the code
+
+commit 33c99fe2836b801f70c7c5fee73667d74eddc4aa
+Merge: bec5d07 deaddd7
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 6 22:19:05 2016 +0100
+
+    Merge pull request #288 from zack-vii/aa_jtraverser
+    
+    changed colors, nothing critical
+
+commit deaddd7a74aecec708a578a837c12603611e6338
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 11:03:02 2015 +0100
+
+    changed colors
+    
+    not so red if only write_once
+
+commit d0eb6b8b877ec34e63b0cc61fe3e2d7c1dac1eb0 (refs/remotes/origin/twf-add-local-mdsip-plugin-for-testing-mdsip)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 6 08:08:09 2016 -0500
+
+    Add local://xxx mdsip plugin. Will make it easier to implement testing for mdsip server program.
+
+commit bec5d0715c9eb812c4f4ce180b320d0c89732ad5 (tag: refs/tags/alpha_release-7-0-203)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 5 23:34:24 2016 -0500
+
+    New release ---- alpha_release-7-0-203
+
+commit fa8fedaf6788c8a04600a6c4b06d8074333eceb4
+Merge: 7ededd0 9825357
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 11:40:10 2016 -0500
+
+    Merge pull request #283 from MDSplus/jas-make-idl-mdssetevent-data-optional
+    
+    idl events, tdi-events - don't pass string for empty data, handle length of string correctly
+
+commit 98253574c40a5920f314ae1fc0e04f995c8d3a14 (refs/remotes/origin/jas-make-idl-mdssetevent-data-optional)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 5 11:01:36 2016 -0500
+
+    don't pass string for empty data, handle length of string correctly
+
+commit 7ededd07549c1c4c7e4ff840418973b3464fca20 (tag: refs/tags/alpha_release-7-0-202)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Jan 4 23:34:38 2016 -0500
+
+    New release ---- alpha_release-7-0-202
+
+commit 0f29e5aa03bcbcdbefd87ea3d9a2df2b57c0c513
+Merge: 2aca940 50b9fad
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 4 23:31:32 2016 +0100
+
+    Merge pull request #252 from zack-vii/aa_javadevices
+    
+    added windows compiling script and removed vs solution
+
+commit 50b9fad941efea28cd62b5bddfcd7c9d75d3fe40
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Dec 5 01:46:42 2015 +0100
+
+    added windows compiling script and removed vs solution
+    
+    vs is useless without project file
+
+commit 2aca9409c44ef81bab25a08717cbad6a359acc12
+Merge: 09eedef deca31d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 4 16:20:56 2016 -0500
+
+    Merge pull request #281 from MDSplus/twf-python-garbage-collection-again
+    
+    Do not do garbage collection on Tree instances created by obtaining t…
+
+commit 09eedef835e1c79a5547b03583f1df9db593ea66
+Merge: e1f6e15 e6c6efa
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 4 16:20:33 2016 -0500
+
+    Merge pull request #279 from zack-vii/zck_fixnclean_pycall
+    
+    unified the initialisation of python:
+
+commit deca31d233cc6d8e0beffe610fddea99a5ffda03 (refs/remotes/origin/twf-python-garbage-collection-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 4 14:11:32 2016 -0500
+
+    Do not do garbage collection on Tree instances created by obtaining the global tree context
+
+commit e6c6efa91d5b4bc204009a985f44e0b9d0468bba
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 4 13:54:39 2016 +0100
+
+    unified the initialisation of python:
+    
+    - prefer sigaction() over signal()
+    - define PyThreadState
+    - removed unused PyGILState_GetThisThreadState
+    - removed unused PyEval_ReleaseThread
+    - copied and adapted Initialize() to pycall()
+    - do not nullify PyGILState_Ensure on loaderror in loadrtn (would happen
+    on PyString_FromString->PyUnicode_FromString etc.)
+
+commit e1f6e1521a2743b75bf5748470a4e939791cc5e2 (tag: refs/tags/alpha_release-7-0-201)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 30 23:34:20 2015 -0500
+
+    New release ---- alpha_release-7-0-201
+
+commit 844fa4ee40b6af8e43a0769c4f16b3291ea5215e
+Merge: 9ee5c41 4507ae7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 20:28:28 2015 -0500
+
+    Merge pull request #275 from MDSplus/twf-fix-idl-events
+    
+    Fix cleanup of idl mdsevent widgets
+
+commit 9ee5c41e194451f205cfc47135756e7f336bac02
+Merge: 5d59d1e a863cc2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 20:28:09 2015 -0500
+
+    Merge pull request #277 from MDSplus/twf-fix-exceptions
+    
+    Fix MDSExceptions __init__ function
+
+commit a863cc2d8aa15456a1d9ce338ca82bc0c725f438 (refs/remotes/origin/twf-fix-exceptions)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 16:25:35 2015 -0500
+
+    Fix MDSExceptions __init__ function
+
+commit 4507ae7790c9bed41d5713c5ed8809e55d5f5be3 (refs/remotes/origin/twf-fix-idl-events)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 09:15:29 2015 -0500
+
+    Fix cleanup of idl mdsevent widgets
+
+commit 5d59d1e8071ed27e482a7eae8347bc53734f3047 (tag: refs/tags/alpha_release-7-0-200)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Dec 29 23:34:21 2015 -0500
+
+    New release ---- alpha_release-7-0-200
+
+commit 66c98cd4fff609a89170c790577796b89bae8d2a
+Merge: 24c9646 3a4f8f8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 16:34:56 2015 -0500
+
+    Merge pull request #273 from MDSplus/twf-cleanup-compile-warnings-and-old-cvsignores
+    
+    Fix most of the compiler warnings and remove old cvsignore files
+
+commit 24c96466794fa66a529277ef9d44f658aab918e3
+Merge: 470d9ac 412b4fb
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 16:29:50 2015 -0500
+
+    Merge pull request #269 from MDSplus/twf-sanitize-found-bugs
+    
+    Fixes found by compiling with sanitizers
+
+commit 470d9acb06f16296f66ca71837f04ecbc371cc5b
+Merge: dba0c80 e3611f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 16:19:28 2015 -0500
+
+    Merge pull request #274 from MDSplus/fix-make-install-bash-error
+    
+    Fix find command for java directory on make install
+
+commit e3611f446126a73801c4ab0c499399b603adc7dd
+Author: josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 15:51:46 2015 -0500
+
+    Fix find command for java directory on make install
+    
+    The find command in make install was erroring out if the destination root
+    directory java did not exist.  Added punctuation to this line so make will ignore it.
+
+commit dba0c806622eb5878fee3e93e4afb5c6f9409eed
+Merge: d9de3d6 3b83978
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 15:47:19 2015 -0500
+
+    Merge pull request #272 from MDSplus/twf-fix-pycall-and-tdiextpython-interaction
+    
+    Fix pycall and TdiExtPython interaction
+
+commit 3a4f8f86a8d9663919eefbca3d21a8a182dec527 (refs/remotes/origin/twf-cleanup-compile-warnings-and-old-cvsignores)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 14:16:27 2015 -0500
+
+    Fix most of the compiler warnings and remove old cvsignore files
+
+commit 3b83978f32df4c0cac2a4ef9dba05c38cd2dd2ae (refs/remotes/origin/twf-fix-pycall-and-tdiextpython-interaction)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 12:27:17 2015 -0500
+
+    Fix pycall and TdiExtPython interaction
+
+commit d9de3d6ee538334399fa20f67889ded680f5df97 (tag: refs/tags/alpha_release-7-0-199)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 23 23:36:41 2015 -0500
+
+    New release ---- alpha_release-7-0-199
+
+commit 412b4fbbed3ff5c15356e2fced8bae76b6e5f49e (refs/remotes/origin/twf-sanitize-found-bugs)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 11:07:17 2015 -0500
+
+    avoid integer overflow without using advanced gcc builtins
+
+commit c05d38f5a87a12e89f90707977a6fc1528c376ac
 Merge: 196a8ce 01848d1
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Dec 23 10:38:23 2015 -0500
@@ -6,6 +428,12 @@ Date:   Wed Dec 23 10:38:23 2015 -0500
     Merge pull request #268 from MDSplus/twf-add-enable-santitize
     
     Add --enable-sanitizer option to configure
+
+commit 504003c00bbae0b48974eb23b2999bd677d58502
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:49:57 2015 -0500
+
+    Fixes found by compiling with sanitizers
 
 commit 196a8ced8b06cf1b21e4e9f8a0e7c833f85b06bb
 Merge: 4409046 38cf130
@@ -2753,7 +3181,7 @@ Date:   Tue Sep 29 15:01:59 2015 +0200
     
     Dev gm
 
-commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca (refs/remotes/origin/dev-gm)
+commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca
 Merge: 356f704 6641aab
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Sep 29 14:56:14 2015 +0200

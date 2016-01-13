@@ -97,6 +97,9 @@
     <status name="PYDEVICE_NOT_FOUND" value="4128" severity="Error"
             text="Python device class not found."
             facabb="DEV"/>
+    <status name="DEVICE_CONNECTION_FAILED" value="4129" severity="Error"
+            text="Could not connect to device. Maybe it is not connected or turned off."
+            facabb="DEV"/>
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
 	    facnam="RETICON$_" facabb="RETICON"/>

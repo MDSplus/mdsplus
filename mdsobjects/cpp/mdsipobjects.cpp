@@ -1,7 +1,7 @@
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
-
+#include <string.h>
 #include <cstddef>
 #include <iostream>
 #include <string>

@@ -186,13 +186,14 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
       unit = fopen(file.pointer, "rb");
       if (unit) {
 	long flen;
+	size_t rlen;
 	fseek(unit, 0, SEEK_END);
 	flen = ftell(unit);
 	flen = (flen > 0xffff) ? 0xffff : flen;
 	fseek(unit, 0, SEEK_SET);
 	dcs.pointer = (char *)malloc(flen);
 	dcs.length = (unsigned short)flen;
-	fread(dcs.pointer, (size_t) flen, 1, unit);
+	rlen = fread(dcs.pointer, (size_t) flen, 1, unit);
 	fclose(unit);
 	status = TdiCompile(&dcs, out_ptr MDS_END_ARG);
 	free(dcs.pointer);

@@ -5,6 +5,7 @@ from ctypes import CDLL, byref, c_byte, c_short, c_int, c_double, c_void_p, c_ch
 from tempfile import mkstemp
 from time import sleep, time
 from os import close, remove
+from sys import exc_info
 
 class CYGNET4K(Device):
     """Cygnet 4K sCMOS Camera"""
@@ -106,14 +107,14 @@ class CYGNET4K(Device):
         if CYGNET4K.raptorLib is None:
             try:
                 CYGNET4K.raptorLib = CDLL("libRaptor.so")
-            except WindowsError as exc:
-                print('Raptor: '+exc.strerror+'. Using dummy driver.')
+            except OSError:
+                print('Raptor: '+exc_info()[1].strerror+'. Using dummy driver.')
                 CYGNET4K.raptorLib = CYGNET4K._raptorLib()
         if CYGNET4K.mdsLib is None:
             try:
                 CYGNET4K.mdsLib = CDLL("libcammdsutils.so")
-            except WindowsError as exc:
-                print('cammdsutils: '+exc.strerror+'. Using dummy driver.')
+            except OSError:
+                print('cammdsutils: '+exc_info()[1].strerror+'. Using dummy driver.')
                 CYGNET4K.mdsLib = CYGNET4K._mdsLib()
 
     def __init__(self, n):
@@ -157,7 +158,7 @@ class CYGNET4K(Device):
         CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(tmpPath))
         if not CYGNET4K.isOpen:
             print('Could not open camera. No camera connected?.')
-            raise mdsExceptions.DevPYDEVICE_NOT_FOUND
+            raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
         remove(tmpPath)
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
@@ -231,7 +232,7 @@ class CYGNET4K(Device):
             CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(conffile))
             if not CYGNET4K.isOpen:
                 print('Could not open camera. No camera connected?.')
-                raise mdsExceptions.DevPYDEVICE_NOT_FOUND
+                raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
         try:#test open Nodes
             trendTree = str(self.trend_tree.data())
             trendShot = int(self.trend_shot.data())

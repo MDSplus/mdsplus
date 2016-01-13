@@ -7348,8 +7348,6 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_version" >&5
 $as_echo "$ax_cv_c_compiler_version" >&6; }
 
-
-echo "enable_san=$enable_san  GCC=$GCC ax_cv_c_compiler_version = $ax_cv_c_compiler_version"
 if test "$enable_san" = "yes" -a "$GCC" = yes; then
 
 
@@ -7387,7 +7385,6 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
     else enable_san="no"
   fi
 
-   echo "enable_san after version=$enable_san"
    if test "$enable_san" = "yes"; then
        CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
    fi

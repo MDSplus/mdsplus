@@ -33,6 +33,7 @@ MdsIpTunnel = @MAKESHLIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
 MdsIpTCP    = @MAKESHLIBDIR@@LIBPRE@MdsIpTCP@SHARETYPE@
 MdsIpSSH    = @MAKESHLIBDIR@@LIBPRE@MdsIpSSH@SHARETYPE@
 MdsIpHTTP   = @MAKESHLIBDIR@@LIBPRE@MdsIpHTTP@SHARETYPE@
+MdsIpLOCAL  = @MAKESHLIBDIR@@LIBPRE@MdsIpLOCAL@SHARETYPE@
 MdsIpTCPV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpTCPV6@SHARETYPE@
 MdsIpUDT    = @MAKESHLIBDIR@@LIBPRE@MdsIpUDT@SHARETYPE@
 MdsIpUDTV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
@@ -89,6 +90,7 @@ bin_SCRIPTS =
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip_server
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-http
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-local
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-server-ssh
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-server-http
 
@@ -120,6 +122,7 @@ all : $(MAKEFILE_HEADER) \
       $(MdsIpGSI) \
       $(MdsIpSSH) \
       $(MdsIpHTTP) \
+      $(MdsIpLOCAL) \
       $(MDSIPSD) \
       @MAKEETCDIR@mdsip.hosts \
       @MAKELIBDIR@@LIBPRE@MdsIpShr.a
@@ -142,6 +145,7 @@ clean :
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpSSH@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpHTTP@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpLOCAL@SHARETYPE@
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
@@ -163,6 +167,7 @@ install: $(bindir) $(libdir) $(sysconfdir)
 @MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
 	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
 	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
+	$(INSTALL) -m 755 $(MdsIpLOCAL) @libdir@
         ifdef MdsIpGSI
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
         endif
@@ -224,7 +229,7 @@ $(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
 
 @MINGW_TRUE@ LN_TUNNEL=cp @MAKELIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
 @MINGW_FALSE@ LN_TUNNEL=ln -sf @LIBPRE@MdsIpTunnel@SHARETYPE@
-$(MdsIpSSH) $(MdsIpHTTP):
+$(MdsIpSSH) $(MdsIpHTTP) $(MdsIpLOCAL):
 	$(LN_TUNNEL) $@
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts$(WIN)

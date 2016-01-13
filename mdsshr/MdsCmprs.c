@@ -210,30 +210,36 @@ Do this in runs.
   ******************************/
     old = 0;
     for (pn = diff, j = xn; --j >= 0; old = *p32++) {
-      if ((i = *pn++ = *p32 - old) < 0) {
-	if (i == 0x80000000)
-	  i=0;
-	else
-	  i = (-i);
-      }
-      if ((unsigned int)i <= 64) {
-	yy = signif[i];
+      i = *pn++ = *p32 - old;
+      /**** Check for special delta of 0x800000000
+	    which is the largest negative
+	    32-bit value. On some versions of the c
+	    compiler the other <= tests do not work.
+      ***********/
+      if (i == 0x80000000) {
+	yy = 32;
       }
       else {
-	yy = 0;
-	if ((unsigned int)i > 0x1000000) {
-	  i = (unsigned int)i >> 24;
-	  yy += 24;
+	unsigned int delta = (i < 0) ? -1 : i;
+	if (delta <= 64) {
+	  yy = signif[delta];
 	}
-	if ((unsigned int)i > 0x1000) {
-	  i = (int)i >> 12;
-	  yy += 12;
+	else {
+	  yy = 0;
+	  if (delta > 0x1000000) {
+	    delta = delta >> 24;
+	    yy += 24;
+	  }
+	  if (delta > 0x1000) {
+	    delta = delta >> 12;
+	    yy += 12;
+	  }
+	  if (delta > 0x40) {
+	    delta = delta >> 6;
+	    yy += 6;
+	  }
+	  yy += signif[delta];
 	}
-	if ((unsigned int)i > 0x40) {
-	  i = (int)i >> 6;
-	  yy += 6;
-	}
-	yy += signif[i];
       }
       ++tally[yy];
     }

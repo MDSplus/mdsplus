@@ -1037,7 +1037,7 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
     time_out[21] = '0' + (char)(chunks / 1000000);
     time_out[22] = '0' + (char)((chunks % 1000000) / 100000);
   } else
-    strcpy(time_out, "\?\?-\?\?\?-\?\?\?\?  \?\?:\?\?:\?\?.\?\?");
+    strcpy(time_out, "\?\?-\?\?\?-\?\?\?\? \?\?:\?\?:\?\?.\?\?");
   StrCopyR(str, &slen, time_out);
   if (len)
     *len = slen;
@@ -1059,7 +1059,9 @@ EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
     if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
       return StrSTRTOOLON;
     StrGet1Dx(&len, &new);
-    memcpy(new.pointer, out->pointer, out->length);
+    if (out->pointer) {
+      memcpy(new.pointer, out->pointer, out->length);
+    }
     memcpy(new.pointer + out->length, tail->pointer, tail->length);
     StrFree1Dx(out);
     *out = new;

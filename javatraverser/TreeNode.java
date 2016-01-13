@@ -21,9 +21,9 @@ public class TreeNode extends JLabel
     final Color CMSetup   = new Color(0,0,128);
     final Color CMSetupO  = new Color(96,0,128);
     final Color CSSetup   = new Color(128,0,128);
-    final Color CSSetupO  = new Color(192,0,96);
+    final Color CSSetupO  = new Color(128,0,64);
     final Color CNorm     = new Color(0,0,0);
-    final Color CNormO    = new Color(96,0,0);
+    final Color CNormO    = new Color(96,0,96);
     final Color CInclude  = new Color(0,0,0);
     final Color CExclude  = new Color(128,128,128);
     public TreeNode(Node node, String name, Icon icon, boolean isSelected)

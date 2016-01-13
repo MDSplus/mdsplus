@@ -955,8 +955,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
 #ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
 	  char *cmd = (char *)malloc(64 + strlen(filename));
+	  int status;
 	  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  system(cmd);
+	  status = system(cmd);
 	  free(cmd);
 	}
 #endif

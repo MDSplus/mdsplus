@@ -36,15 +36,15 @@ int main(int argc, char **argv)
     TdiExecute((struct descriptor *)&out_unit_other, &out_d, &output_unit MDS_END_ARG);
   } else
     TdiExecute((struct descriptor *)&out_unit_stdout, &output_unit MDS_END_ARG);
-  while (fgets(line_in, MAXEXPR, in) != NULL) {
+  while (fgets(line_in, MAXEXPR-1, in) != NULL) {
     int comment = line_in[0] == '!';
-    int len = strlen(line_in);
+    size_t len = strlen(line_in);
     if (!comment) {
       TdiExecute((struct descriptor *)&reset_output_unit, &output_unit, &ans MDS_END_ARG);
       tdiputs(line_in);
     }
     while (line_in[len - 2] == '\\') {
-      fgets(&line_in[len - 2], MAXEXPR - len + 2, in);
+      char *line = fgets(&line_in[len - 2], MAXEXPR - len + 2, in);
       if (!comment)
 	tdiputs(&line_in[len - 2]);
       len = strlen(line_in);

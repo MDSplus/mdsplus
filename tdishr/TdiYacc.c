@@ -53,8 +53,6 @@
 #include <tdishr_messages.h>
 #include <mds_stdarg.h>
 
-
-
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -1604,14 +1602,18 @@ int yyparse()
 //#line 388 "TdiYacc.y"
     {
       if (*yyval.mark.rptr->pointer == '$') {
-	if (yyval.mark.builtin < 0)
+	if (yyval.mark.builtin < 0) {
 	  yyval.mark.rptr->dtype = DTYPE_IDENT;
-	else if ((TdiRefFunction[yyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_ARG
-		 && !((TdiRefZone.l_status = TdiYacc_ARG(&yyval.mark)) & 1)) {
-	  yyerror(0);
-	} else
+	} else {
+	  if ((TdiRefFunction[yyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_ARG) {
+	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&yyval.mark)) & 1)) {
+	      yyerror(0);
+	    }
+	  } else {
 	    if ((TdiRefFunction[yyval.mark.builtin].token & LEX_M_TOKEN) == (unsigned int)LEX_CONST)
-	  _JUST0(yypvt[-0].mark.builtin, yyval.mark);
+	      _JUST0(yypvt[-0].mark.builtin, yyval.mark);
+	  }
+	}
       } else if (*yyval.mark.rptr->pointer == '_')
 	yyval.mark.rptr->dtype = DTYPE_IDENT;
       else if (TdiLexPath
