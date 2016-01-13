@@ -59,7 +59,7 @@ public class MdsAsynchDataProvider extends MdsDataProvider
         asynchEnabled = asynchEnabled;
     }
     
-    AsynchDataSource getAsynchSource()
+    public AsynchDataSource getAsynchSource()
     {
         return new AsynchWaveData();
     }
