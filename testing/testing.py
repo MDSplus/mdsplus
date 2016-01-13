@@ -46,11 +46,13 @@ class testing():
     def run_nose(self, module_name):
         import nose
         if self.test_format == 'tap':
-            nose.run(argv=[ sys.argv[0], module_name,'--with-tap','--tap-stream'])
+            res = nose.run(argv=[ sys.argv[1], module_name,'--with-tap','--tap-stream','--tap-format=" ---- {short_description} --- {method_name}"'])
         elif self.test_format == 'xml':
-            nose.run(argv=[sys.argv[0], module_name,'--with-xunit'])
+            res = nose.run(argv=[sys.argv[1], module_name,'--with-xunit'])
         else:
-            nose.run(argv=[sys.argv[0], module_name])
+            res = nose.run(argv=[sys.argv[1], module_name,'--verbosity=9'])
+        return res
+        
         
 
 
@@ -88,7 +90,11 @@ if __name__ == '__main__':
     sys.argv[0] = sys.argv[1]
     check_arch(sys.argv[1])
     try:
-        ts.run_nose(sys.argv[1])
+        res = ts.run_nose(sys.argv[1])
+        sys.exit( not res )
+    except SystemExit:
+        raise
     except:
-        ts.skip_test(sys.argv[1],'Unable to run nose tests (python-nose missing?)')
+        ts.skip_test(sys.argv[1],'Unable to run nose tests')
+
 
