@@ -92,7 +92,6 @@ EXPORT void __test_timeout(double seconds);
 void __test_setfork(const int value) { (void)value; }
 int  __setup_parent() { return 0; }
 int  __setup_child()  { return 0; }
-void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 void __test_exit() { exit(0); }
 void __test_timeout(double seconds) { (void)seconds; }
 void __test_init(const char *test_name, const char *file, const int line) {}
@@ -109,17 +108,19 @@ void __test_abort(int code, const char *__msg, const char *__file,
     _Exit(code); 
 }
 
+void __test_assert_fail(const char *file, int line, const char *expr, ...)
+{
+    printf(" TEST: FAIL"
+           "  file: %s ,  line: %d "
+           "  assertion:  (%s) \n", 
+           file,line,expr);
+    fflush(stdout);
+    abort();
+}
+
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
 __THROW __attribute__ ((__noreturn__));
-//{
-//    printf(" TEST: FAIL"
-//           "  file: %s ,  function: %s, line: %d "
-//           "  assertion:  (%s) \n", 
-//           __file,__function,__line,__assertion);
-//    fflush(stdout);
-//    abort();
-//}
 
 
 void __mark_point(const char *__assertion, const char *__file, 
@@ -153,16 +154,16 @@ void __mark_point(const char *__assertion, const char *__file,
 #define TEST_ASSERT(expr) \
     ((expr)				  \
     ? __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
-    : __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION))
+    : __test_assert_fail (__FILE__, __LINE__, __ASSERT_FUNCTION))
 
 #define TEST1(expr)  \
     ((expr)			 \
     ? __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
-    : __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION))
+    : __test_assert_fail (__FILE__, __LINE__, __ASSERT_FUNCTION))
 
 #define TEST0(expr) \
     ((expr)			\
-    ? __assert_fail (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION) \
+    ? __test_assert_fail (__FILE__, __LINE__, __ASSERT_FUNCTION) \
     : __mark_point (__STRING(expr), __FILE__, __LINE__, __ASSERT_FUNCTION)) 
 
 #define BEGIN_TESTING(description) \
