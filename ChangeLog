@@ -1,4 +1,161 @@
-commit 22a7ac7ada36c9c9e6f3e3e9b77e9046944502b5 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit b5c3468e5f590241ffb9f9f5673352dcad040021 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: f9b98e5 83aed7f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 15:14:01 2016 -0500
+
+    Merge pull request #307 from MDSplus/twf-fix-uninitialized-mem
+    
+    Initialize data descriptors to zero in MdsSerialize to prevent refere…
+
+commit 83aed7f82fa4679d0310446ede6c52a70bec3002 (refs/remotes/origin/twf-fix-uninitialized-mem)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 14:42:27 2016 -0500
+
+    Initialize data descriptors to zero in MdsSerialize to prevent references to uninitialized memory errors
+
+commit f9b98e523a7ec299800834979b867f59bfaab030
+Merge: 684db29 ac4c732
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 11:40:41 2016 -0500
+
+    Merge pull request #305 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit 684db29519c2269bf8f53df2ef10ab04ca6e4f4e
+Merge: 2217806 d682a7a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 09:58:49 2016 -0500
+
+    Merge pull request #301 from MDSplus/test_compression
+    
+    Test compression
+
+commit d682a7ae9a28dabf1708eb0faf3a3022cb4095e8 (refs/remotes/origin/test_compression)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Jan 13 09:52:53 2016 -0500
+
+    Use a loop to run compression tests
+    
+    Instead of seperate tests for each potential case, but all of them in
+    testing.COMPRESSION.*  and write them to CMPRS_SIG  in the test tree
+    that is constructed and disposed of in the treeUnitTest
+
+commit 2217806cf24d777b2a62e2a0287f5c6f6952f1cf
+Merge: fb2ff19 8ea1b8c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 08:55:48 2016 -0500
+
+    Merge pull request #300 from MDSplus/twf-fix-compress-again2
+    
+    Fix typo
+
+commit ac4c73202da199a0d3f37c55837e0ece34675769 (refs/remotes/origin/dev-gm)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 14:02:35 2016 +0100
+
+    Added support makefile items
+
+commit a368d5c9c64fec51e5fe030cb0b82d2fc9dca3e1
+Merge: 7285ff5 c6eae89
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 14:01:04 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 7285ff5ec24503d8e5652bdb09c7a5203df8b678
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 14:00:44 2016 +0100
+
+    Data Stream support
+
+commit c6eae8991f880a689139084ff0265267f4ad8e14
+Merge: 6f98f29 fb2ff19
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 13 13:48:10 2016 +0100
+
+    Merge branch 'alpha' into dev-gm
+
+commit 6f98f29b39713b54667f5a6ab624ca30a6d7ac20
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 13:38:28 2016 +0100
+
+    fix strcat dependency
+
+commit 3d50e6b47135eb7c3a550e439687a30ca81be3fa
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 12:12:29 2016 +0100
+
+    fix strlen dependency
+
+commit e3cad1e12ea0960148feb8e3293ae17a36af0512
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 11:34:15 2016 +0100
+
+    resolve conflicts
+
+commit 269649691848a07a22672c25c0ffc2501e965045
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 10:58:19 2016 +0100
+
+    Fix missing double management in GetFloat
+
+commit 0bd9ca80704efa2f08f335a583746ae78ef06b8b
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 10:57:07 2016 +0100
+
+    Added support fun for jScope
+
+commit a71073e0e6f3add9ca60e181ba1079edc3b51235
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 12 14:43:26 2016 -0500
+
+    add tests for compression of 0x80000000  which were failing
+
+commit 3220ea90957057403a1526f28bf347056e9cf414
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 12 13:41:20 2016 -0500
+
+    A model with some data that broke compression before recent fixes
+
+commit 8ea1b8caf0e0dac8f9633f63ee02a24634f7f849 (refs/remotes/origin/twf-fix-compress-again2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 12 12:57:00 2016 -0500
+
+    Fix typo
+
+commit f48826803e9b0e8e7ed04972b5d92363f9193722
+Merge: 20ea2d1 44c6aab
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 18:32:54 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 20ea2d197acd24099c686d2649c6ed2da8df99ed
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 18:32:20 2016 +0100
+
+    Streaming methods
+
+commit e265468d8e09c83232d7cbbb087b597917a13793
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 18:31:42 2016 +0100
+
+    Scroll fixes
+
+commit 44c6aabdb487a25a80ad9e58cb11c489e5277f9a
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 15:15:18 2016 +0100
+
+    C++ datastream interface added
+
+commit fb2ff1928d5b2d1253dccc02043671740c08d8de (tag: refs/tags/alpha_release-7-0-206)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Jan 11 23:36:44 2016 -0500
+
+    New release ---- alpha_release-7-0-206
+
+commit 22a7ac7ada36c9c9e6f3e3e9b77e9046944502b5
 Merge: ea469ef 5c33bb0
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Tue Jan 12 00:39:51 2016 +0100
@@ -97,11 +254,23 @@ Date:   Mon Jan 11 14:09:35 2016 -0500
     
     Fix handling of 0x8000000 in compression
 
-commit 0c7ffa25da74be805c4f1fab8bebbe5e383899d2 (refs/remotes/origin/twf-fix-compress-again2)
+commit 0c7ffa25da74be805c4f1fab8bebbe5e383899d2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jan 11 13:50:21 2016 -0500
 
     Fix handling of 0x8000000 in compression
+
+commit 23462695c35fa7c1021e4fe0736da41beca41903
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 11 18:20:26 2016 +0100
+
+    Fix missing mutex
+
+commit a5ce8304f3ae0d5c4e627f3ecde7d468b8e185ba
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 11 18:15:19 2016 +0100
+
+    Grid fixes for data streaming
 
 commit 0be6df6ea6aa0fa2bbaad32e822836305f7644a7
 Merge: a72332b 80ebb00
@@ -339,6 +508,31 @@ Date:   Wed Dec 30 16:25:35 2015 -0500
 
     Fix MDSExceptions __init__ function
 
+commit 03766b5d690a18f4669076515138e7114fed7dab
+Merge: 827a249 7ef0dc9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:45:19 2015 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 827a2498fd6c317a54058cbeacfbcd59754984d9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:44:50 2015 +0100
+
+    Enable streaming
+
+commit 7ef0dc9ba42ec48fb936e9aa9ed2af4858d6b980
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:42:28 2015 +0100
+
+    Move files
+
+commit 7f6b03dd134e2cfea5a21ba96124ecd7d4f41863
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:39:59 2015 +0100
+
+    Move files
+
 commit 4507ae7790c9bed41d5713c5ed8809e55d5f5be3 (refs/remotes/origin/twf-fix-idl-events)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Dec 30 09:15:29 2015 -0500
@@ -407,6 +601,31 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 29 12:27:17 2015 -0500
 
     Fix pycall and TdiExtPython interaction
+
+commit 7f3d678997915810975e89e88dfbf10687a22223
+Merge: 5218870 506e419
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 29 14:20:43 2015 +0100
+
+    Proceed
+
+commit 5218870c6beb80c8b93fa3e698da446d0aef6c29
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 29 14:19:20 2015 +0100
+
+    Proceed
+
+commit 3dd992d32ff113b523a9fbcc65ce559325027b52
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Dec 28 10:16:56 2015 +0100
+
+    Added streaming support
+
+commit 506e419cd6c0da489847f759fbbf8c2c5f1d9963
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Dec 28 10:16:56 2015 +0100
+
+    Added streaming support
 
 commit d9de3d6ee538334399fa20f67889ded680f5df97 (tag: refs/tags/alpha_release-7-0-199)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
