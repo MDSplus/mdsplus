@@ -16,9 +16,13 @@ TEST_EXTENSIONS = .py
 
 
 TESTS = \
-        test_data.py \
-        test_trees.py
+        dataUnitTest.py \
+        treeUnitTest.py 
+#        threadsUnitTest.py
 
+#        test_trees.py \
+#        test_data.py \
+#
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
 # python will finally introduce the patch to detect if valgrind is running ..

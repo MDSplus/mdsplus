@@ -217,7 +217,7 @@ void __assert_fail (const char *__assertion, const char *__file,
     
     // FIX
     __test_end();
-    _exit(1);
+    abort();    
 }
 
 
@@ -858,8 +858,8 @@ void __test_abort(int code, const char *__msg, const char *__file,
         }                
         break;
     default:
-    case 99:
-        __assert_fail(__msg,__file,__line,__function);        
+    case 99:        
+        __test_assert_fail(__file,__line,__function);        
     }    
     //    __test_exit();
     exit(code);
