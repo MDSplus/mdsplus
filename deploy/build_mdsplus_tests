@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# set -e
+set -e
 # set -o verbose
 
 SCRIPTNAME=$(basename "$0")
@@ -23,10 +23,13 @@ Usage: $SCRIPTNAME [options] [commands]
 
        options
        -------
-       -h|-help|--help)           get this help      
-       -c|-config|--config)       set distribution config file
-       -b|-builddir|--builddir)   set build directory
-       -r|-prefix|--prefix)       set target root directory
+       -h|--help)         get this help      
+       -c|--config)       set distribution config file
+       -s|--srcdir)       set source directory
+       -b|--builddir)     set build directory
+       -p|--prefix)       set target root directory
+       --docker-image)    set docker image to use
+       -v|--verbose)      show script source script
        
 EOF
 }
@@ -34,36 +37,35 @@ EOF
 ## parse cmd parameters:
 while [[ "$1" == -* ]] ; do
 	case "$1" in
-		-h|-help|--help)
+		-h|--help)
 			print_help
 			exit
 			;;
-		-c|-config|--config)
+		-c|--config)
 		        CONFIG_FILE=$2
 			shift 2
 			;;
-		-s|-srcdir|--srcdir)
+		-s|--srcdir)
 		        SRCDIR=$2
 			shift 2
 			;;
-		-b|-builddir|--builddir)
+		-b|--builddir)
 			BUILDDIR=$2
 			shift 2
 			;;
-		-p|-prefix|--prefix)
+		-p|--prefix)
 			MDSPLUS_DIR=$2
 			shift 2
 			;;
-		-docker-image|--docker-image)
+		--docker-image)
 		        DOKER_IMAGE=$2
 			shift 2
 			;;
-	        -v|-verbose|--verbose)
+	        -v|--verbose)
 		        set -o verbose
 			shift
 			;;
 		--)
-			#echo "-- found"
 			shift
 			break
 			;;
@@ -97,6 +99,8 @@ function install_prefix () {
  pushd $1
  # Get the 3rd party software headers etc from github
   wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (tar zxf -)
+ LABVIEW_DIR=${LABVIEW_DIR:=`pwd`/3rd-party-apis-master/labview}
+ IDL_DIR=${IDL_DIR:=`pwd`/3rd-party-apis-master/idl}
  popd
 }
 
@@ -111,27 +115,32 @@ function set_args() {
 
    ## setup configure arguments
    _args_list=''
-   
-   if [ -n "${DOCKER_IMAGE}" ]; then
-    _docker_args="--with-docker-image=${DOCKER_IMAGE}"
-    append _args_list "$_docker_args"
-   fi
 
-   if [ -n "${DEBUG}" ]; then
-    _debug_args="--enable-debug=${DEBUG}"
-    append _args_list "$_debug_args"
-   fi
+   if [ -n "${ARCH}" ]; then
+    [ "${ARCH}" = "x86_64" -o "${ARCH}" = "amd64" ] && bits=64
+    [ "${ARCH}" = "i686" -o "${ARCH}" = "i386" ] && bits=32         
+   fi   
 
-   if [ -n "${VALGRIND_LIB}" ]; then
-    _valgrind_args="--enable-valgrind"
-    append _args_list "$_valgrind_args"
+   if [ -n "${MDSPLUS_DIR}" ]; then
+    append _args_list "--prefix=${MDSPLUS_DIR}"       \
+                      "--exec_prefix=${MDSPLUS_DIR}"  \
+                      "--bindir=${MDSPLUS_DIR}/bin${bits}" \
+                      "--libdir=${MDSPLUS_DIR}/lib${bits}"                      
    fi
    
+   [ -n "${LABVIEW_DIR}"  ]  && append _args_list "--with-labview=${LABVIEW_DIR}"      
+   [ -n "${IDL_DIR}"      ]  && append _args_list "--with-idl=${IDL_DIR}"
+   [ -n "${DOCKER_IMAGE}" ]  && append _args_list "--with-docker-image=${DOCKER_IMAGE}"           
+   [ -n "${DEBUG}"        ]  && append _args_list "--enable-debug=${DEBUG}"
+              
    if [ -n "${JDK_DIR}" ]; then
     _java_args="--with-jdk=${JDK_DIR}"
-    append _args_list "$_java_args"
+    append _args_list "$_java_args" \
+                      "--with-java_target=6"  \
+                      "--with-java_bootclasspath=${SRCDIR}/rt.jar"
+                      
    else
-   # TODO: remove this !
+    # TODO: remove this !
     _java_args="--disable-java"
     append _args_list "$_java_args"
    fi
@@ -141,9 +150,9 @@ function set_args() {
 
 
 
-function build_64()  {
+function build_tests()  {
   echo /////////////////////////////////////////////////////////////////////////
-  echo /// BUILD 64bit  ////////////////////////////////////////////////////////
+  echo /// BUILD MDSPLUS TESTS  ////////////////////////////////////////////////
   echo /////////////////////////////////////////////////////////////////////////
 
    install_prefix ${MDSPLUS_DIR}   
@@ -152,67 +161,21 @@ function build_64()  {
 
    [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
    pushd ${BUILDDIR}
-   ${CONFIGURE} \
-            --prefix=${MDSPLUS_DIR} \
-            --exec_prefix=${MDSPLUS_DIR}  \
-            --bindir=${MDSPLUS_DIR}/bin64 \
-            --libdir=${MDSPLUS_DIR}/lib64 \
-            --with-idl=${MDSPLUS_DIR}/3rd-party-apis-master/idl \
-            --with-labview=${MDSPLUS_DIR}/3rd-party-apis-master/labview \
-            --with-gsi=/usr:gcc64 \
-            --host=x86-64-linux   \
-            --with-java_target=6  \
-            --with-java_bootclasspath=${SRCDIR}/rt.jar \
-            $_args_list \
-            $@;
+   ${CONFIGURE} $_args_list $@
    
    make clean > /dev/null
    $MAKE
    echo 
-   echo " --- MAKING TESTS 64bit --- "
+   echo " --- MAKING TESTS  --- "
    $MAKE -k tests TEST_FORMAT=tap
    echo 
-   echo " --- MAKING TESTS 64bit --- "
+   echo " --- MAKING VALGRIND TESTS --- "
    $MAKE -k tests-valgrind TEST_FORMAT=tap
-
-   popd
-   exit
-};
-
-function build_32()  {
-  echo /////////////////////////////////////////////////////////////////////////
-  echo /// BUILD 32bit  ////////////////////////////////////////////////////////
-  echo /////////////////////////////////////////////////////////////////////////
-   
-   install_prefix ${MDSPLUS_DIR}   
-   set_args _args_list
-   echo "ARGS= $_args_list"
-
-   [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
-   pushd ${BUILDDIR}
-   ${CONFIGURE} \
-            --prefix=${MDSPLUS_DIR} \
-            --exec_prefix=${MDSPLUS_DIR}  \
-            --bindir=${MDSPLUS_DIR}/bin32 \
-            --libdir=${MDSPLUS_DIR}/lib32 \
-            --with-idl=${MDSPLUS_DIR}/3rd-party-apis-master/idl \
-            --with-labview=${MDSPLUS_DIR}/3rd-party-apis-master/labview \
-            --with-gsi=/usr:gcc32 \
-            --host=i686-linux     \
-            --with-java_target=6  \
-            --with-java_bootclasspath=${SRCDIR}/rt.jar \
-            $_args_list \
-            $@;
-
-   make clean > /dev/null
-   $MAKE
    echo 
-   echo " --- MAKING TESTS 32bit --- "
-   $MAKE -k tests TEST_FORMAT=tap
-   echo 
-   echo " --- MAKING TESTS 32bit --- "
-   $MAKE -k tests-valgrind TEST_FORMAT=tap
-
+   if [ -n "${DOCKER_IMAGE}" ]; then
+    echo " --- STOPPING DOCKER CONTAINER --- "
+    $MAKE docker stop
+   fi
    popd
    exit
 };
@@ -220,10 +183,9 @@ function build_32()  {
 
 
 
-echo ///////////////////////////////////////////////////////////////////////////
-echo /// build_redhat_tests ////////////////////////////////////////////////////
-echo ///////////////////////////////////////////////////////////////////////////
-echo 
+# ///////////////////////////////////////////////////////////////////////////
+# /// build_redhat_tests ////////////////////////////////////////////////////
+# ///////////////////////////////////////////////////////////////////////////
 
 eval $1 ${@:2}
 exit
