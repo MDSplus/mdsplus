@@ -46,7 +46,7 @@ class testing():
     def run_nose(self, module_name):
         import nose
         if self.test_format == 'tap':
-            res = nose.run(argv=[ sys.argv[1], module_name,'--with-tap','--tap-stream','--tap-format=" ---- {short_description} --- {method_name}"'])
+            res = nose.run(argv=[ sys.argv[1], module_name,'--with-tap','--tap-stream','--tap-format="{method_name} {short_description}"'])
         elif self.test_format == 'xml':
             res = nose.run(argv=[sys.argv[1], module_name,'--with-xunit'])
         else:
