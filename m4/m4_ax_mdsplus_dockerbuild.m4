@@ -391,7 +391,7 @@ start:
 	                     -e USER=\${USER}
 			     -e DISPLAY=\${DISPLAY}
 			     -e http_proxy=\${http_proxy} 
-			     -e https_proxy=\${https_proxy} 
+			     -e https_proxy=\${https_proxy}			     
 			     -v /tmp/.X11-unix:/tmp/.X11-unix     
 			     -v /etc/resolv.conf:/etc/resolv.conf 
 			     -v \${abs_top_srcdir}:\${abs_top_srcdir} 
