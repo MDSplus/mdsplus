@@ -80,7 +80,7 @@ fi
 
 ## get absoulute paths
 ABS_SRCDIR=$(cd ${SRCDIR}; pwd)
-ABS_BUILDDIR=$(cd ${SRCDIR}; pwd)
+ABS_BUILDDIR=$(cd ${BUILDDIR}; pwd)
 
 ## set commands
 CONFIGURE=${ABS_SRCDIR}/configure
@@ -88,6 +88,7 @@ MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
 ## ensure mdsplusdir is set
 MDSPLUS_DIR=${MDSPLUS_DIR:=${ABS_BUILDDIR}}
+MDSPLUS_DIR=$(cd ${MDSPLUS_DIR}; pwd)
 MDS_PATH=${MDS_PATH:=${ABS_SRCDIR}/tdi}
 
 
@@ -95,51 +96,59 @@ function install_prefix () {
  [ -d $1 ] || mkdir -p $1
  pushd $1
  # Get the 3rd party software headers etc from github
- if [ ! -d 3rd-party-apis-master ]; then
   wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (tar zxf -)
- fi
  popd
 }
 
+# Function to append a string to a indirect expanded variable
+function append() { 
+eval $1="\"${!1} ${@:2}\""
+}
 
-function append() { $1="${$1} $2" }
 
-function set_args() {
+# Function to set configure args from enviroment variables
+function set_args() {      
+
    ## setup configure arguments
+   _args_list=''
+   
    if [ -n "${DOCKER_IMAGE}" ]; then
     _docker_args="--with-docker-image=${DOCKER_IMAGE}"
-    append(_args_list,$_docker_args)
+    append _args_list "$_docker_args"
    fi
 
    if [ -n "${DEBUG}" ]; then
     _debug_args="--enable-debug=${DEBUG}"
-    append(_args_list,$_debug_args)
+    append _args_list "$_debug_args"
    fi
 
    if [ -n "${VALGRIND_LIB}" ]; then
     _valgrind_args="--enable-valgrind"
-    append(_args_list,$_valgrind_args)
+    append _args_list "$_valgrind_args"
    fi
    
    if [ -n "${JDK_DIR}" ]; then
     _java_args="--with-jdk=${JDK_DIR}"
-    append(_args_list,$_java_args)        
+    append _args_list "$_java_args"
    else
    # TODO: remove this !
     _java_args="--disable-java"
-    append(_args_list,$_java_args)        
+    append _args_list "$_java_args"
    fi
+   
+   eval $1="\"${_args_list}\""
 }
 
 
 
-function build_tests()  {
+function build_64()  {
   echo /////////////////////////////////////////////////////////////////////////
   echo /// BUILD 64bit  ////////////////////////////////////////////////////////
   echo /////////////////////////////////////////////////////////////////////////
 
    install_prefix ${MDSPLUS_DIR}   
-   set_args
+   set_args _args_list
+   echo "ARGS= $_args_list"
 
    [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
    pushd ${BUILDDIR}
@@ -154,9 +163,7 @@ function build_tests()  {
             --host=x86-64-linux   \
             --with-java_target=6  \
             --with-java_bootclasspath=${SRCDIR}/rt.jar \
-            ${_java_args}     \
-            ${_valgrind_args} \
-            ${_docker_args}   \
+            $_args_list \
             $@;
    
    make clean > /dev/null
@@ -178,7 +185,8 @@ function build_32()  {
   echo /////////////////////////////////////////////////////////////////////////
    
    install_prefix ${MDSPLUS_DIR}   
-   set_args
+   set_args _args_list
+   echo "ARGS= $_args_list"
 
    [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
    pushd ${BUILDDIR}
@@ -193,9 +201,7 @@ function build_32()  {
             --host=i686-linux     \
             --with-java_target=6  \
             --with-java_bootclasspath=${SRCDIR}/rt.jar \
-            ${_java_args}     \
-            ${_valgrind_args} \
-            ${_docker_args}   \
+            $_args_list \
             $@;
 
    make clean > /dev/null
