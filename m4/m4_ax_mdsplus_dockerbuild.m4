@@ -372,7 +372,9 @@ docker:
 	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
 	echo ;
 else
-docker: ;
+docker:
+	@ \
+	echo " --- docker build setup --- ";
 endif
 
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
