@@ -784,6 +784,7 @@ VALGRIND_HAVE_TOOL_exp_sgcheck
 VALGRIND_HAVE_TOOL_drd
 VALGRIND_HAVE_TOOL_helgrind
 VALGRIND_HAVE_TOOL_memcheck
+VALGRIND_LIB
 VALGRIND_ENABLED
 VALGRIND_ENABLED_FALSE
 VALGRIND_ENABLED_TRUE
@@ -12569,6 +12570,9 @@ fi
 
 	VALGRIND_ENABLED=$enable_valgrind
 
+	VALGRIND_LIB=${VALGRIND_LIB}
+
+
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
 $as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
@@ -12677,6 +12681,7 @@ fi
 
 
 
+
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
 # /// Valgrind check  //////////////////////////////////////////////////////// #
@@ -12691,7 +12696,7 @@ VALGRIND_CHECK_RULES='
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
 # Optional variables
-VALGRIND_LIB             ?= /usr/lib64/valgrind
+# VALGRIND_LIB             ?= ${VALGRIND_LIB}
 
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --num-callers=30 \
@@ -12752,7 +12757,7 @@ endif
 VALGRIND_TESTS_ENVIRONMENT ?=
 VALGRIND_TESTS_ENVIRONMENT += \
 	VALGRIND=$(VALGRIND) \
-	VALGRIND_LIB=$(VALGRIND_LIB) \
+	VALGRIND_LIB=${VALGRIND_LIB} \
 	G_SLICE=always-malloc,debug-blocks \
 	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
 

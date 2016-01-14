@@ -81,6 +81,8 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 	AM_CONDITIONAL([VALGRIND_ENABLED],[test "$enable_valgrind" = "yes" ])
 	AC_SUBST([VALGRIND_ENABLED],[$enable_valgrind])
+	AC_SUBST([VALGRIND_LIB],[${VALGRIND_LIB}])
+
 	AC_MSG_CHECKING([whether to enable Valgrind on the unit tests])
 	AC_MSG_RESULT([$enable_valgrind])
 
@@ -108,6 +110,7 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 
 
+
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
 # /// Valgrind check  //////////////////////////////////////////////////////// #
@@ -122,7 +125,7 @@ VALGRIND_CHECK_RULES='
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
 # Optional variables
-VALGRIND_LIB             ?= /usr/lib64/valgrind
+# VALGRIND_LIB             ?= ${VALGRIND_LIB}
 
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --num-callers=30 \
@@ -184,7 +187,7 @@ endif
 VALGRIND_TESTS_ENVIRONMENT ?=
 VALGRIND_TESTS_ENVIRONMENT += \
 	VALGRIND=$(VALGRIND) \
-	VALGRIND_LIB=$(VALGRIND_LIB) \
+	VALGRIND_LIB=${VALGRIND_LIB} \
 	G_SLICE=always-malloc,debug-blocks \
 	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
 
