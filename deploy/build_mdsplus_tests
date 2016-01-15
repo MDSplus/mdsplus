@@ -130,8 +130,10 @@ function set_args() {
    
    [ -n "${LABVIEW_DIR}"  ]  && append _args_list "--with-labview=${LABVIEW_DIR}"      
    [ -n "${IDL_DIR}"      ]  && append _args_list "--with-idl=${IDL_DIR}"
+   [ -n "${VALGRIND_LIB}" ]  && append _args_list "--with-valgrind-lib=${VALGRIND_LIB}"
    [ -n "${DOCKER_IMAGE}" ]  && append _args_list "--with-docker-image=${DOCKER_IMAGE}"           
    [ -n "${DEBUG}"        ]  && append _args_list "--enable-debug=${DEBUG}"
+
               
    if [ -n "${JDK_DIR}" ]; then
     _java_args="--with-jdk=${JDK_DIR}"

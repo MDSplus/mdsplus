@@ -81,7 +81,15 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 	AM_CONDITIONAL([VALGRIND_ENABLED],[test "$enable_valgrind" = "yes" ])
 	AC_SUBST([VALGRIND_ENABLED],[$enable_valgrind])
-	AC_SUBST([VALGRIND_LIB],[${VALGRIND_LIB}])
+
+
+	AC_ARG_WITH([valgrind-lib],
+	              [AS_HELP_STRING([--with-valgrind-lib], 
+		                      [Set Valgrind lib directory])],
+	              [valgrind_dir=$withval])
+	AS_VAR_SET_IF([VALGRIND_LIB], AS_VAR_SET([valgrind_dir],[${VALGRIND_LIB}]))
+	AC_SUBST([VALGRIND_LIB],[${valgrind_dir}])
+	AM_SUBST_NOTMAKE([VALGRIND_LIB])
 
 	AC_MSG_CHECKING([whether to enable Valgrind on the unit tests])
 	AC_MSG_RESULT([$enable_valgrind])
@@ -109,8 +117,16 @@ AC_DEFUN([AX_VALGRIND_CHECK],[
 
 
 
+dnl 
+dnl  Parsed substitutions
+dnl 
+AS_VAR_READ([VALGRIND_CHECK_RULES_PRE],[
+VALGRIND_LIB             ?= ${VALGRIND_LIB}
+])
 
-
+dnl 
+dnl  Not parsed substitutions
+dnl 
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
 # /// Valgrind check  //////////////////////////////////////////////////////// #
@@ -125,8 +141,6 @@ VALGRIND_CHECK_RULES='
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
 # Optional variables
-# VALGRIND_LIB             ?= ${VALGRIND_LIB}
-
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --num-callers=30 \
                             --trace-children=yes \
@@ -183,11 +197,10 @@ endif
 #
 # Valgrind chain add ons
 #
-
 VALGRIND_TESTS_ENVIRONMENT ?=
 VALGRIND_TESTS_ENVIRONMENT += \
 	VALGRIND=$(VALGRIND) \
-	VALGRIND_LIB=${VALGRIND_LIB} \
+	$(if ${VALGRIND_LIB},VALGRIND_LIB=${VALGRIND_LIB}) \
 	G_SLICE=always-malloc,debug-blocks \
 	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
 
@@ -261,7 +274,7 @@ MOSTLYCLEANFILES += $(valgrind_log_files)
 '
 
 dnl VALGRIND_CHECK_RULES subsituition 
-AC_SUBST([VALGRIND_CHECK_RULES])
+AC_SUBST([VALGRIND_CHECK_RULES],["${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"])
 m4_ifdef([_AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE([VALGRIND_CHECK_RULES])])
 
 ])
@@ -269,6 +282,12 @@ m4_ifdef([_AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE([VALGRIND_CHECK_RULES])])
 
 
 
+# internal utils
+AC_DEFUN([AS_VAR_READ],[
+read -d '' $1 << _as_read_EOF
+$2
+_as_read_EOF
+])
 
 
 
