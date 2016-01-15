@@ -652,9 +652,9 @@ TEST_SUITE_TAP = test-suite.tap
 TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
-        treeUnitTest.py 
+        treeUnitTest.py \
+        threadsUnitTest.py
 
-#        threadsUnitTest.py
 
 #        test_trees.py \
 #        test_data.py \
