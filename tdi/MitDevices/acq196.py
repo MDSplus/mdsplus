@@ -34,7 +34,7 @@ class ACQ196(acq.ACQ):
         import time
         start=time.time()
         msg=None
-
+        print "*************** This is my copy ******************"
         try:
             if self.debugging():
                 print "starting init\n";
@@ -142,29 +142,37 @@ class ACQ196(acq.ACQ):
             print "Time to make init file = %g\n" % (time.time()-start)
             start=time.time()
             self.doInit(fd)
-            fd.close()
-
-            print "Time for board to init = %g\n" % (time.time()-start)
-            return  1
 
         except Exception,e:
+            try:
+                fd.close()
+            except:
+                pass
             if msg != None:
                 print 'error = %s\nmsg = %s\n' %(msg, str(e),)
             else:
                 print "%s\n" % (str(e),)
-            return acq.ACQ.InitializationError
+            raise
+
+        fd.close()
+
+        print "Time for board to init = %g\n" % (time.time()-start)
+        return  1
+
 
     INITFTP=initftp
         
-    def store(self, arg):
+    def store(self, arg='checks'):
         import MitDevices
         import time
+        from MDSplus.mdsExceptions import DevWRONG_TREE
+        from MDSplus.mdsExceptions import DevWRONG_SHOT
+        from MDSplus.mdsExceptions import DevWRONG_PATH
+
         if self.debugging():
             print "Begining store\n"
 
-        if not self.triggered():
-            print "ACQ196 Device not triggered\n"
-            return MitDevices.DevNotTriggered
+        self.checkTrigger()
 
         complete = 0
         tries = 0
@@ -189,15 +197,15 @@ class ACQ196(acq.ACQ):
         if tree != settings['tree'] :
             print "ACQ196 open tree is %s board armed with tree %s\n" % (tree, settings["tree"],)
             if arg != "nochecks" :
-                return acq.ACQ.WrongTree
+               raise DevWRONG_TREE() 
         if path != settings['path'] :
             print "ACQ196 device tree path %s, board armed with path %s\n" % (path, settings["path"],)
             if arg != "nochecks" :
-                return acq.ACQ.WrongPath
+                raise DevWRONG_PATH()
         if shot != int(settings['shot']) :
             print "ACQ196 open shot is %d, board armed with shot %d\n" % (shot, int(settings["shot"]),)
             if arg != "nochecks" :
-                return acq.ACQ.WrongShot
+                raise DevWRONG_SHOT()
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
@@ -270,15 +278,20 @@ class ACQ196(acq.ACQ):
 		if self.debugging():
 		    print "divided clock stored\n"
 
-#        clock = self.clock.record
         clock = self.clock
 #
 # now store each channel
 #
         for chan in range(96):
-            self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
-
+            try:
+                self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
+            except e:
+                print "Error storing channel %d\n%s" % (chan, e,)
+                last_error = e
         self.dataSocketDone()
+        if last_error:
+            raise last_error
+
         return 1
 
     STORE=store

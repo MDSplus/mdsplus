@@ -212,6 +212,48 @@ class DevPYDEVICE_NOT_FOUND(DevException):
   msgnam="PYDEVICE_NOT_FOUND"
 
 
+class DevOFFLINE(DevException):
+  status=662470922
+  message="Device is not on line.  Check network connection"
+  msgnam="OFFLINE"
+
+
+class DevIO_STUCK(DevException):
+  status=662470930
+  message="I/O to Device is stuck. Check network connection and board status."
+  msgnam="IO_STUCK"
+
+
+class DevTRIGGERED_NOT_STORED(DevException):
+  status=662470930
+  message="Device was triggered but not stored."
+  msgnam="TRIGGERED_NOT_STORED"
+
+
+class DevUNKOWN_STATE(DevException):
+  status=662470938
+  message="Device returned unrecognized state string"
+  msgnam="UNKOWN_STATE"
+
+
+class DevWRONG_TREE(DevException):
+  status=662470946
+  message="Attempt to digitizerinto different tree than it was armed with"
+  msgnam="WRONG_TREE"
+
+
+class DevWRONG_PATH(DevException):
+  status=662470954
+  message="Attempt to store digitizer into different path than it was armed with"
+  msgnam="WRONG_PATH"
+
+
+class DevWRONG_SHOT(DevException):
+  status=662470962
+  message="Attempt to store digitizer into different shot than it was armed with"
+  msgnam="WRONG_SHOT"
+
+
 class ReticonException(MDSplusException):
   fac="Reticon"
 
@@ -1092,3 +1134,27 @@ class AcqWRONG_SHOT(AcqException):
   status=662480306
   message="Attempt to store ACQ module into different shot than it was armed with"
   msgnam="WRONG_SHOT"
+
+
+class AcqOFFLINE(AcqException):
+  status=662480314
+  message="ACQ digitizer not accessible on network"
+  msgnam="OFFLINE"
+
+
+class AcqUNKNOWN_STATE(AcqException):
+  status=662480322
+  message="ACQ Digitizer module in unrecognized state"
+  msgnam="UNKNOWN_STATE"
+
+
+class AcqSTUCK(AcqException):
+  status=662480330
+  message="IO to ACQ device stuck, check board status and network connection"
+  msgnam="STUCK"
+
+
+class AcqNOT_STORED(AcqException):
+  status=662480338
+  message="ACQ digitizer is in Stop state but data was not stored.  Do/Method STORE may recover data"
+  msgnam="NOT_STORED"
