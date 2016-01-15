@@ -314,14 +314,14 @@ MitDevices.exports: MitDevices.def
 	$(LINK.c) -o $@ @LINKSHARED@  dc1394_support.o $(LIBDC1394_LIBS) $(LIBS) $(LD_FLAGS)
 
 dc1394_support.o : dc1394_support.c
-	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
+	$(CC) -c -o $@ $(CPPFLAGS) $(CFLAGS) $< $(LIBDC1394_INCS)
 
 @DC1394_SUPPORT2@ : dc1394_support2.o
 	$(LINK.c) -o $@ @LINKSHARED@  dc1394_support2.o $(LIBDC1394_LIBS) $(LIBS) $(LD_FLAGS)
 
 
 dc1394_support2.o : dc1394_support2.c
-	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
+	$(CC) -c -o $@ $(CPPFLAGS) $(CFLAGS) $< $(LIBDC1394_INCS)
 
 
 # TODO: fix touch of source directory
