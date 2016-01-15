@@ -7,11 +7,10 @@
 #define checkString(S)  if (id==S)  return #S ;
 #define checkAltStr(A, S)  if (id==A)  return #S ;
 
-char *MdsDtypeString(int id)
+EXPORT char *MdsDtypeString(const unsigned char id)
 {
   STATIC_THREADSAFE char dtypeString[24];	/* not really threadsafe but should be ok */
 
-  id = id & 0x00FF;
   checkString(DTYPE_MISSING)
       checkString(DTYPE_IDENT)
       checkString(DTYPE_NID)
@@ -85,11 +84,10 @@ char *MdsDtypeString(int id)
   return (dtypeString);
 }
 
-char *MdsClassString(int id)
+EXPORT char *MdsClassString(const unsigned char id)
 {
   STATIC_THREADSAFE char classString[24];	/* not really threadsafe but ok */
 
-  id = id & 0x00FF;
   checkString(CLASS_XD)
       checkString(CLASS_XS)
       checkString(CLASS_R)
@@ -111,7 +109,7 @@ char *MdsClassString(int id)
   return (classString);
 }
 
-char *MdsUsageString(int id)
+EXPORT char *MdsUsageString(const unsigned char id)
 {
   STATIC_THREADSAFE char usageString[24];	/* not really threadsafe but should be ok */
   checkString(TreeUSAGE_ANY)

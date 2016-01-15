@@ -3,10 +3,12 @@
 /*  CMS REPLACEMENT HISTORY, Element BWFILTER.C */
 #include <stdio.h>
 #include	<math.h>
+#include <config.h>
+
 #define	PI 3.14159265359
 #define	max_order 10
 
-int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *out)
+EXPORT int bwfilter(float *w_cut_in, int *order_in, int *num, float *in, float *out)
 {
   int M, N;
   int p, q, order = *order_in;

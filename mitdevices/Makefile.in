@@ -14,8 +14,8 @@ X_PRE_LIBS=@X_PRE_LIBS@
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
 MATH_LIBS=-L@MAKESHLIBDIR@ -lMdsMath
-LIBDC1394_LIBS=-ldc1394 -lraw1394
-LIBDC1394_INCS=-I/usr/include/dc1394 -I/usr/include/libraw1394
+LIBDC1394_LIBS=-ldc1394 -lraw1394 $(THREAD)
+LIBDC1394_INCS=-I$(top_srcdir)/include -I/usr/include/dc1394 -I/usr/include/libraw1394a $(THREAD)
 export @LIBPATH@=@MAKESHLIBDIR@
 DTACQ_FILESYSTEM := $(shell  find ${srcdir}/acq_root_filesystem -print)
 DC := $(shell date)
@@ -314,14 +314,14 @@ MitDevices.exports: MitDevices.def
 	$(LINK.c) -o $@ @LINKSHARED@  dc1394_support.o $(LIBDC1394_LIBS) $(LIBS) $(LD_FLAGS)
 
 dc1394_support.o : dc1394_support.c
-	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
+	$(CC) -c -o $@ $(CPPFLAGS) $(CFLAGS) $< $(LIBDC1394_INCS)
 
 @DC1394_SUPPORT2@ : dc1394_support2.o
 	$(LINK.c) -o $@ @LINKSHARED@  dc1394_support2.o $(LIBDC1394_LIBS) $(LIBS) $(LD_FLAGS)
 
 
 dc1394_support2.o : dc1394_support2.c
-	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
+	$(CC) -c -o $@ $(CPPFLAGS) $(CFLAGS) $< $(LIBDC1394_INCS)
 
 
 # TODO: fix touch of source directory

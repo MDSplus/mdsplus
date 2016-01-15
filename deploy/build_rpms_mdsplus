@@ -46,7 +46,7 @@ def doRequire(info, out, root, require):
             os.write(out,"Requires: %s\n" % pkg)
     else:
         info['reqpkg']=require.attrib['package']
-    os.write(out,"Requires: mdsplus%(BNAME)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
+        os.write(out,"Requires: mdsplus%(BNAME)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % info)
 
 def buildRpms():
     info=dict()

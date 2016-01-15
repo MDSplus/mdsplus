@@ -43,6 +43,7 @@ void XmdsUsageIconsInitialize(Widget w);
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <usagedef.h>
+#include <xmdsshr.h>
 typedef int *DRMHierarchy;
 
 void XmdsUsageIconsInitialize(Widget w);

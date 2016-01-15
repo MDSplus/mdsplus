@@ -54,11 +54,6 @@ extern int TdiDimOf();
 extern int TdiCompile();
 #define MAX_POINTS 1000
 
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax, float *dt)
 {
@@ -334,7 +329,7 @@ static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd *y_xdptr,
 
 #define QUITE_SIMILAR(x,y) ((x)>(y)*(1-1E-10)&&(x)<(y)*(1+1E-10))
 
-struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float *in_xmax)
+EXPORT struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float *in_xmax)
 {
   static struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0, 0);

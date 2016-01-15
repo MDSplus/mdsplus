@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "hv4032_gen.h"
-int hv4032__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int hv4032__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "HV4032");
@@ -70,8 +70,8 @@ int hv4032__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   return (TreeSetDefaultNid(old_nid));
 }
 
-int hv4032__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		      struct descriptor *out_d)
+EXPORT int hv4032__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		      struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -123,7 +123,7 @@ extern int hv4032___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int hv4032__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv4032__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];
@@ -141,7 +141,7 @@ int hv4032__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int hv4032___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int hv4032__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv4032__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];
@@ -159,7 +159,7 @@ int hv4032__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int hv4032___on();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int hv4032__on(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv4032__on(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InOnStruct)
   struct descriptor_xd work_xd[1];
@@ -177,7 +177,7 @@ int hv4032__on(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int hv4032___off();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int hv4032__off(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv4032__off(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InOffStruct)
   struct descriptor_xd work_xd[1];

@@ -251,7 +251,7 @@ static int list_one(h5item * item, struct descriptor *xd)
     list_one(item->brother, xd);
 }
 
-int hdf5list(struct descriptor *xd)
+EXPORT int hdf5list(struct descriptor *xd)
 {
   MdsFree1Dx(xd, 0);
   if (current)
@@ -304,7 +304,7 @@ static int FindItem(char *namein, hid_t * obj, int *item_type)
   return status;
 }
 
-int hdf5read(char *name, struct descriptor_xd *xd)
+EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 {
   hid_t obj, type;
   H5G_stat_t statbuf;
@@ -553,14 +553,14 @@ static void FreeObj(h5item * item)
   free(item);
 }
 
-int hdf5close()
+EXPORT int hdf5close()
 {
   if (current)
     FreeObj(current);
   current = 0;
 }
 
-int hdf5open(char *fname)
+EXPORT int hdf5open(char *fname)
 {
   hid_t fid, gid;
   void *edata;

@@ -365,6 +365,7 @@ if (((quadword *) dpout)->w1 == 0xd37affeb && ((quadword *) dpout)->w2 == 0xe9bd
 #else
   void SendMatValue(CONST mxArray * prhs[], int i, int nrhs, int opt) {
 #endif
+    int mx_type;
     mxArray *outAr[1], *inAr[2];
     int llen, len, j, k, lmax;
     char *cptr, *strptr, *s2trptr;
@@ -473,11 +474,11 @@ if (((quadword *) dpout)->w1 == 0xd37affeb && ((quadword *) dpout)->w2 == 0xe9bd
 #endif
 #endif				/* of DEBUG */
 /* Check type of variable from MATLAB */
-    if (mxIsNumeric(Tarray)
+  mx_type = mxIsNumeric(Tarray);
 #ifdef V4
-	&& !mxIsChar(Tarray)
+	mx_type = (mx_type && !mxIsChar(Tarray));
 #endif
-	) {
+	if (mx_type) {
 /* Check if scalar */
       if (len == 1) {
 #ifdef DEBUG

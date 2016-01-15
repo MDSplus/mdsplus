@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int TreeGetPerf(TREE_IO_PERF * perf)
+EXPORT int TreeGetPerf(TREE_IO_PERF * perf)
 {
   static int initialized = 0;
   static TREE_IO_PERF *p = 0;
@@ -75,7 +75,7 @@ static void Initialize()
   }
 }
 
-int TreePerfZero()
+EXPORT int TreePerfZero()
 {
   if (!INITIALIZED)
     Initialize();
@@ -88,7 +88,7 @@ int TreePerfZero()
   return TreeFAILURE;
 }
 
-int TreePerfWrite(int bytes)
+EXPORT int TreePerfWrite(int bytes)
 {
   if (!INITIALIZED)
     Initialize();
@@ -119,7 +119,7 @@ int TreePerfWrite(int bytes)
   return TreeFAILURE;
 }
 
-int TreePerfRead(int bytes)
+EXPORT int TreePerfRead(int bytes)
 {
   if (!INITIALIZED)
     Initialize();
@@ -150,22 +150,22 @@ int TreePerfRead(int bytes)
   return TreeFAILURE;
 }
 #else
-int TreeGetPerf()
+EXPORT int TreeGetPerf()
 {
   return TreeFAILURE;
 }
 
-int TreePerfRead(int bytes)
+EXPORT int TreePerfRead(int bytes)
 {
   return TreeFAILURE;
 }
 
-int TreePerfWrite(int bytes)
+EXPORT int TreePerfWrite(int bytes)
 {
   return TreeFAILURE;
 }
 
-int TreePerfZero()
+EXPORT int TreePerfZero()
 {
   return TreeFAILURE;
 }

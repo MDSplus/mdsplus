@@ -94,32 +94,32 @@ int l8212_32___store(struct descriptor *niddsc, InStoreStruct * setup)
    All the store routines use one common function which takes the number
    of channels as an argument.
 */
-int l8212_32__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_32__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 32);
 }
 
-int l8212_16__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_16__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 16);
 }
 
-int l8212_08__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_08__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 8);
 }
 
-int l8212_04__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_04__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 4);
 }
 
-extern int CamXandQ();
-extern int CamPiow();
-extern int CamGetStat();
-extern int CamQ();
-extern int CamQrepw();
-extern int CamStopw();
+
+
+
+
+
+
 
 static int FreqToClock(int chans, int noc, int freq_nid, int *clock);
 static int NOCToCode(int chans, int noc, int *noc_code);
@@ -267,9 +267,9 @@ static int L8212__TRIGGER(struct descriptor *niddsc_ptr, InTriggerStruct * setup
 #include <libroutines.h>
 #include <strroutines.h>
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 #pragma extern_model restore
 
 static void L8212$HeaderToPTS(int memories, char *header_ptr, int *pts_ptr);
@@ -611,7 +611,6 @@ static int L8212_SETUP(struct descriptor *niddsc, Widget parent, int chans)
   return status;
 }
 
-extern int TdiText();
 static void mems_changed_proc(Widget w, int *tag, XmScaleCallbackStruct * reason)
 {
   Widget pts_menu = XtNameToWidget(XtParent(w), "pts_menu");
@@ -619,7 +618,7 @@ static void mems_changed_proc(Widget w, int *tag, XmScaleCallbackStruct * reason
       XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "header_menu"));
   static char header[11];
   static struct descriptor_s header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
-  int status = TdiText(header_xd, &header_dsc MDS_END_ARG);
+  int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
   if (status & 1) {
     ChangePts(pts_menu, header, reason->value);
   }
@@ -666,7 +665,7 @@ static void header_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * 
 				*(int *)&reason->data);
   static char header[11];
   static struct descriptor_s header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
-  int status = TdiText(header_xd, &header_dsc MDS_END_ARG);
+  int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
   if (status & 1) {
     XmScaleGetValue(XtNameToWidget(XtParent(XtParent(w)), "mems_scale"), &mems);
     ChangePts(pts_menu, header, mems);
@@ -791,7 +790,7 @@ static void pts_initialize_proc(Widget pts_menu)
       XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(pts_menu), "header_menu"));
   static char header[11];
   static struct descriptor_s header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
-  int status = TdiText(header_xd, &header_dsc MDS_END_ARG);
+  int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
   if (status & 1) {
     XmScaleGetValue(XtNameToWidget(XtParent(pts_menu), "mems_scale"), &mems);
     ChangePts(pts_menu, header, mems);

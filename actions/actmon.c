@@ -644,7 +644,7 @@ static void Phase(LinkedEvent * event)
   phase_d.pointer = (char *)&event->phase;
   if (current_phase != event->phase) {
     if (!(TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
-      StrCopyDx(&phase, &unknown);
+      StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
     PutLog(event->time, "PHASE", (char *)asterisks, (char *)asterisks, phase.pointer);
     current_phase = event->phase;
   }

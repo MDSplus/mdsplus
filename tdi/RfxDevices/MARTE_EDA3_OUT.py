@@ -1,13 +1,12 @@
-import time
-import MARTE_GENERIC
+try:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
+except:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
-class MARTE_EDA3_OUT(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe EDA3_OUT'
+class MARTE_EDA3_OUT(MARTE_GENERIC):
     parNames = ['OutputMapping']
     parValues = [0]
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):
@@ -16,7 +15,7 @@ class MARTE_EDA3_OUT(MARTE_GENERIC.MARTE_GENERIC):
       parts.append({'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text', 'value':parNames[i]})
       parts.append({'path':'.PARAMS:PAR_%03d:TYPE'%(i+1), 'type':'text'})
       parts.append({'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'})
-      parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','value':parValues[i]})
+      parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','value': 0})
 
     for i in range(len(parNames), 256):
       parts.append({'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'})
@@ -34,4 +33,4 @@ class MARTE_EDA3_OUT(MARTE_GENERIC.MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-
+    del(parNames,parValues,i)

@@ -10,7 +10,7 @@
 #
 branch=$1
 url="https://github.com/MDSplus/mdsplus/releases" 
-wget -O /tmp/release_info -q $url
+wget --no-check-certificate -O /tmp/release_info -q $url
 while [ $? ]
 do
   if ( grep ${branch}_release /tmp/release_info > /dev/null )
@@ -20,6 +20,6 @@ do
     break
   else
     url=$(grep Next /tmp/release_info | awk -F\" '{print $(NF-3)}')
-    wget -O /tmp/release_info -q $url
+    wget --no-check-certificate -O /tmp/release_info -q $url
   fi
 done

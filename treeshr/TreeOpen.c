@@ -665,7 +665,7 @@ static char *GetFname(char *tree, int shot)
 {
   int status = 1;
   static char *ans = 0;
-  struct descriptor fname = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d fname = { 0, DTYPE_T, CLASS_D, 0 };
   void *arglist[4];
   char expression[128];
   static void *TdiExecute = 0;
@@ -706,7 +706,7 @@ static void str_shift(char *in, int num)
   *p1 = 0;
 }
 
-char *MaskReplace(char *path_in, char *tree, int shot)
+EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
 {
   char *path = strcpy(malloc(strlen(path_in) + 1), path_in);
   char ShotMask[13];
@@ -1313,7 +1313,7 @@ void TreeFreeDbid(void *dbid)
   }
 }
 
-struct descriptor *TreeFileName(char *tree, int shot)
+EXPORT struct descriptor *TreeFileName(char *tree, int shot)
 {
   static struct descriptor ans_dsc = { 0, DTYPE_T, CLASS_D, 0 };
   int fd;

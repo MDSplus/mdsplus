@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "t4012_gen.h"
-int t4012__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int t4012__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "T4012");
@@ -83,8 +83,8 @@ int t4012__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   return (TreeSetDefaultNid(old_nid));
 }
 
-int t4012__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		     struct descriptor *out_d)
+EXPORT int t4012__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		     struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -136,7 +136,7 @@ extern int t4012___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int t4012__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int t4012__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];
@@ -160,7 +160,7 @@ int t4012__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int t4012___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int t4012__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int t4012__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -178,7 +178,7 @@ int t4012__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr
 extern int t4012___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int t4012__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int t4012__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

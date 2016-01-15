@@ -117,7 +117,7 @@ static XtResource resources[] = {
 
  Executable:                                                                  */
 
-Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   XmdsDigChansPart info = { 4, -1, 0, 0, 1, 2, 3, 1 };
   static String hierarchy_name[] = { "XmdsDigChans.uid" };
@@ -187,7 +187,7 @@ Widget XmdsCreateDigChans(Widget parent, String name, ArgList args, Cardinal arg
   return channels_w;
 }
 
-void XmdsDigChansReset(Widget w)
+EXPORT void XmdsDigChansReset(Widget w)
 {
   Widget rowcol_w = XtNameToWidget(w, "*c_rowcol");
   int i;
@@ -205,7 +205,7 @@ void XmdsDigChansReset(Widget w)
   XmdsResetAllXds(rowcol_w);
 }
 
-int XmdsDigChansPut(Widget w)
+EXPORT int XmdsDigChansPut(Widget w)
 {
   Widget rowcol_w = XtNameToWidget(w, "*c_rowcol");
   int i;
@@ -235,14 +235,14 @@ int XmdsDigChansPut(Widget w)
   return status;
 }
 
-int XmdsDigChansApply(Widget w)
+EXPORT int XmdsDigChansApply(Widget w)
 {
   XtPointer PutOnApply;
   XtVaGetValues(XtNameToWidget(w, "this_is_a_DigChans_widget"), XmNuserData, &PutOnApply, NULL);
   return PutOnApply ? XmdsDigChansPut(w) : 1;
 }
 
-Boolean XmdsIsDigChans(Widget w)
+EXPORT Boolean XmdsIsDigChans(Widget w)
 {
   return XtNameToWidget(w, "this_is_a_DigChans_widget") != 0;
 }

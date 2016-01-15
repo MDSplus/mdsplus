@@ -30,7 +30,7 @@ extern int TdiIntrinsic();
 #endif				/* va_count */
 
 #define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) \
-int Tdi##name ( struct descriptor *first, ... ) \
+extern EXPORT int Tdi##name ( struct descriptor *first, ... ) \
 { \
   int narg; \
   va_list incrmtr; \

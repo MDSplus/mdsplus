@@ -7,7 +7,7 @@
 #include "ec727_gen.h"
 #include "devroutines.h"
 
-extern int TdiCompile();
+
 static int one = 1;
 #define pio(f,a) {if (!((status = DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,&one)) & 1)) return status;}
 #define stop(f,a,n,data) {if (!((status = DevCamChk(CamFStopw(setup->name,a,f,n,data,24,0),&one,0)) & 1)) return status;}
@@ -15,7 +15,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-int ec727___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int ec727___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   pio(24, 0)
@@ -23,7 +23,7 @@ int ec727___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int ec727___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int ec727___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 {
   static DESCRIPTOR(sigdef, "BUILD_SIGNAL(BUILD_WITH_UNITS($,'counts'),*,$[ $ : $ ])");
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(int), DTYPE_L, 0, 1, 0);
@@ -66,7 +66,7 @@ int ec727___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 	raw.pointer = (char *)(cdata + (raw.bounds[0].l));
 	raw.a0 = (char *)cdata;
 	raw.arsize = raw.m[0] * 4;
-	TdiCompile(&sigdef, &raw, &xfer_in_d, &start_d, &end_d, &signal MDS_END_ARG);
+	TdiCompile((struct descriptor *)&sigdef, &raw, &xfer_in_d, &start_d, &end_d, &signal MDS_END_ARG);
 	status = TreePutRecord(c_nid, (struct descriptor *)signal.pointer, 0);
       }
     }

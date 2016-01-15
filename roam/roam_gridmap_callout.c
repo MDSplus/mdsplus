@@ -1,10 +1,18 @@
+#include <globus_common.h>
+#include <gssapi.h>
+#include <globus_gss_assist.h>
+#include <globus_gridmap_callout_error.h>
+#include <stdlib.h>
+
+#ifdef HAVE_GETADDRINFO
+#undef HAVE_GETADDRINFO
+#endif
+#ifdef HAVE_GETPWUID
+#undef HAVE_GETPWUID
+#endif
+
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#include "globus_common.h"
-#include "gssapi.h"
-#include "globus_gss_assist.h"
-#include "globus_gridmap_callout_error.h"
-#include <stdlib.h>
 
 extern int TdiExecute();
 extern int MdsFree1Dx();
@@ -55,7 +63,7 @@ extern int MdsFree1Dx();
 
 int roam_check_access();
 
-globus_result_t roam_gridmap_callout(va_list ap)
+EXPORT globus_result_t roam_gridmap_callout(va_list ap)
 {
   gss_ctx_id_t context;
   char *service;

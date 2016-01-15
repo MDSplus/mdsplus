@@ -45,8 +45,9 @@ char *string;
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <Xm/MessageB.h>
+#include <xmdsshr.h>
 
-void XmdsComplain(Widget parent, char *string)
+EXPORT void XmdsComplain(Widget parent, char *string, ...)
 {
 
   /*------------------------------------------------------------------------------

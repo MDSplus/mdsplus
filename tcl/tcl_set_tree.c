@@ -8,6 +8,7 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <treeshr_messages.h>
+#include <mdsdcl_messages.h>
 
 #include "tcl_p.h"
 
@@ -53,7 +54,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
 	/***************************************************************
 	 * TclSetTree:
 	 **************************************************************/
-int TclSetTree(void *ctx, char **error, char **output)
+EXPORT int TclSetTree(void *ctx, char **error, char **output)
 {
   int sts = MdsdclIVVERB;
   int shot;

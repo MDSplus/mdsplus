@@ -49,7 +49,7 @@ STATIC_THREADSAFE int initialized = 0;
 	/***************************************************************
 	 * TclSetCallbacks:
 	 ***************************************************************/
-void TclSetCallbacks(		/* Returns: void                        */
+EXPORT void TclSetCallbacks(		/* Returns: void                        */
 		      void (*error_out) ()	/* <r> addr of error output routine */
 		      , void (*text_out) ()	/* <r> addr of normal text output routine */
 		      , void (*node_touched) ()	/* <r> addro of "node touched" routine      */
@@ -68,7 +68,7 @@ void TclSetCallbacks(		/* Returns: void                        */
 	/*****************************************************************
 	 * TclNodeTouched:
 	 *****************************************************************/
-void TclNodeTouched(		/* Returns: void                        */
+EXPORT void TclNodeTouched(		/* Returns: void                        */
 		     int nid	/* <r> node id                          */
 		     , NodeTouchType type	/* <r> type of "touch"                  */
     )
@@ -101,7 +101,7 @@ STATIC_ROUTINE void StatusOut(int status)
   AppendOut(MdsGetMsg(status));
 }
 
-void TclSaveOut()
+EXPORT void TclSaveOut()
 {
   if (!initialized) {
     pthread_mutex_init(&saved_output_mutex, 0);
@@ -116,7 +116,7 @@ void TclSaveOut()
   pthread_mutex_unlock(&saved_output_mutex);
 }
 
-int TclOutLen()
+EXPORT int TclOutLen()
 {
   int ans;
   pthread_mutex_lock(&saved_output_mutex);
@@ -125,7 +125,7 @@ int TclOutLen()
   return ans;
 }
 
-int TclGetOut(int free_out, int len_out, char *out)
+EXPORT int TclGetOut(int free_out, int len_out, char *out)
 {
   int len = 0;
   pthread_mutex_lock(&saved_output_mutex);

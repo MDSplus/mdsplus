@@ -15,6 +15,40 @@ has_basestring= 'basestring' in __builtins__
 has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
 
+def load_library(name):
+    import ctypes as C
+    import os
+    import platform
+    if platform.system() == 'Darwin':
+        if not os.getenv('DYLD_LIBRARY_PATH'):
+            if os.getenv('MDSPLUS_DIR'):
+                os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
+            else:
+                os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
+    libnam = None
+    if pyver>(2,5,):
+        from ctypes.util import find_library
+        libnam = find_library(name)
+    if libnam is None:
+        try:
+            return C.CDLL('lib'+name+'.so')
+        except:
+            try:
+                return C.CDLL(name+'.dll')
+            except:
+                try:
+                    return C.CDLL('lib'+name+'.dylib')
+                except:
+                    raise Exception("Error finding library: "+name)
+    else:
+        try:
+            return C.CDLL(libnam)
+        except:
+            try:
+                return C.CDLL(name)
+            except:
+                return C.CDLL(os.path.basename(libnam))
+
 # substitute missing builtins
 if has_long:
     long = long
@@ -69,7 +103,10 @@ def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
         return targ(string)
     if isinstance(string, npscalar):
-        return targ(conv(string.astype(nptarg)))
+        try:
+            return targ(string.astype(nptarg))
+        except:  # might happen on non ansii chars
+            return targ(conv(str(string)))
     if isinstance(string, basestring):
         return targ(conv(string))
     if isinstance(string, nparray):

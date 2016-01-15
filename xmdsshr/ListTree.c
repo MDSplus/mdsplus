@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <config.h>
 #include <Xmds/ListTreeP.h>
 /* #define DEBUG */
 
@@ -316,7 +316,7 @@ ListTreeClassRec listtreeClassRec = {
    }
 };
 
-WidgetClass listtreeWidgetClass = (WidgetClass) & listtreeClassRec;
+EXPORT WidgetClass listtreeWidgetClass = (WidgetClass) & listtreeClassRec;
 
 static void MakePixmap(ListTreeWidget w, Pixinfo * pix)
 {

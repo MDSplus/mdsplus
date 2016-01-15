@@ -158,6 +158,10 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 or 0, depending whether the compiler supports simple visibility
+   declarations. */
+#undef HAVE_VISIBILITY
+
 /* Define to 1 if you have the <vxWorks.h> header file. */
 #undef HAVE_VXWORKS_H
 
@@ -267,6 +271,8 @@
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
+#elif HAVE_VISIBILITY
+# define EXPORT __attribute__((__visibility__("default")))
 #else
 #define EXPORT
 #endif

@@ -42,7 +42,7 @@ static char *urlencode(char *in)
 }
 
 #ifdef XIO
-int roam_check_access(char *host, int https, char *resource, char *permit, char *dn,
+EXPORT int roam_check_access(char *host, int https, char *resource, char *permit, char *dn,
 		      struct descriptor_xd *aux)
 {
   globus_xio_driver_t tcp_driver;
@@ -145,7 +145,7 @@ static int callback(char *ptr, size_t size, size_t nmemb, struct _buf *buf)
   return size * nmemb;
 }
 
-int roam_check_access(char *host, int https, char *resource, char *permit, char *dn,
+EXPORT int roam_check_access(char *host, int https, char *resource, char *permit, char *dn,
 		      struct descriptor_xd *aux)
 {
   CURL *ctx = curl_easy_init();

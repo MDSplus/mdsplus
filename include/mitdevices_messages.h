@@ -40,6 +40,8 @@
 #define DEVCAM_SX               0x277c80ea
 #define DEVCAM_NOSX             0x277c80f2
 #define DEVINV_SETUP            0x277c80fa
+#define DEVPYDEVICE_NOT_FOUND   0x277c8102
+#define DEVDEVICE_CONNECTION_FAILED 0x277c810a
 #define RETICON$_NORMAL               0x277c8199
 #define RETICON$_BAD_FRAMES           0x277c81a2
 #define RETICON$_BAD_FRAME_SELECT     0x277c81aa

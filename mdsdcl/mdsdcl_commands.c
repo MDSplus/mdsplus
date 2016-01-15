@@ -61,7 +61,7 @@ void mdsdclSetPrompt(const char *prompt)
   PROMPT = strdup(prompt);
 }
 
-char *mdsdclGetPrompt()
+EXPORT char *mdsdclGetPrompt()
 {
   if (PROMPT == NULL)
     PROMPT = strdup("Command> ");
@@ -81,7 +81,7 @@ void mdsdclSetDefFile(const char *deffile)
 	/****************************************************************
 	 * mdsdcl_exit:
 	 ****************************************************************/
-int mdsdcl_exit(void *ctx, char *error, char *output)
+EXPORT int mdsdcl_exit(void *ctx, char *error, char *output)
 {
   return MdsdclEXIT;
 }
@@ -99,7 +99,7 @@ static clock_t cpu_start;
 #endif
 static struct timeval TIMER_START_TIME;
 
-int mdsdcl_init_timer(void *ctx, char *error, char *output)
+EXPORT int mdsdcl_init_timer(void *ctx, char *error, char *output)
 {
   gettimeofday(&TIMER_START_TIME, 0);
 #ifdef HAVE_GETRUSAGE
@@ -110,7 +110,7 @@ int mdsdcl_init_timer(void *ctx, char *error, char *output)
   return (1);
 }
 
-int mdsdcl_show_timer(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_show_timer(void *ctx, char **error, char **output)
 {
   struct timeval TIMER_NOW_TIME;
   long int esec = 0;
@@ -154,7 +154,7 @@ int mdsdcl_show_timer(void *ctx, char **error, char **output)
 	/**************************************************************
 	 * mdsdcl_set_prompt:
 	 **************************************************************/
-int mdsdcl_set_prompt(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_set_prompt(void *ctx, char **error, char **output)
 {
   char *prompt = 0;
   int sts;
@@ -173,7 +173,7 @@ int mdsdcl_set_prompt(void *ctx, char **error, char **output)
 	/****************************************************************
 	 * mdsdcl_type:
 	 ****************************************************************/
-int mdsdcl_type(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_type(void *ctx, char **error, char **output)
 {
   char *text = 0;
   cli_get_value(ctx, "P1", &text);
@@ -190,7 +190,7 @@ int mdsdcl_type(void *ctx, char **error, char **output)
          * mdsdcl_set_hyphen:
          ****************************************************************/
 
-int mdsdcl_set_hyphen(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_set_hyphen(void *ctx, char **error, char **output)
 {
   *output = strdup("SET HYPHEN obsolete, no longer supported\n");
   return 1;
@@ -207,7 +207,7 @@ int mdsdclVerify()
   return MDSDCL_VERIFY;
 }
 
-int mdsdcl_set_verify(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_set_verify(void *ctx, char **error, char **output)
 {
   char *verify = 0;
   cli_get_value(ctx, "P1", &verify);
@@ -220,7 +220,7 @@ int mdsdcl_set_verify(void *ctx, char **error, char **output)
 	/****************************************************************
 	 * mdsdcl_define_symbol:
 	 ****************************************************************/
-int mdsdcl_define_symbol(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output)
 {
   int sts;
   char *p;
@@ -257,7 +257,7 @@ int mdsdcl_define_symbol(void *ctx, char **error, char **output)
   return (sts);
 }
 
-int mdsdcl_env(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_env(void *ctx, char **error, char **output)
 {
   int sts;
   char *value;
@@ -304,7 +304,7 @@ int mdsdcl_spawn(void *ctx, char **error, char **output)
 
 static char *history_file = 0;
 
-char *mdsdclGetHistoryFile()
+EXPORT char *mdsdclGetHistoryFile()
 {
   return history_file;
 }
@@ -325,7 +325,7 @@ char *mdsdclGetHistoryFile()
 	 * mdsdcl_set_command:
 	 ****************************************************************/
 
-int mdsdcl_set_command(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output)
 {
   int status = 1;
   char *table = 0;
@@ -386,7 +386,7 @@ int mdsdcl_set_command(void *ctx, char **error, char **output)
 	/**************************************************************
 	 * mdsdcl_wait:
 	 **************************************************************/
-int mdsdcl_wait(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_wait(void *ctx, char **error, char **output)
 {				/* Return:  status                        */
   char *deltatime = 0;
   int status = 1;
@@ -408,7 +408,7 @@ int mdsdcl_wait(void *ctx, char **error, char **output)
   return status;
 }
 
-int mdsdcl_help(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_help(void *ctx, char **error, char **output)
 {
   char *p1 = 0;
   int sts;
@@ -450,7 +450,7 @@ static dclMacroListPtr mdsdclNewMacro(char *name)
   return l;
 }
 
-int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline) (), void *getlineinfo)
+EXPORT int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline) (), void *getlineinfo)
 {
   char *name = 0;
   char *line;
@@ -490,7 +490,7 @@ static void mdsdcl_print_macro(dclMacroListPtr l, int full, char **output)
   }
 }
 
-int mdsdcl_show_macro(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_show_macro(void *ctx, char **error, char **output)
 {
   char *name = 0;
   int full = cli_present(ctx, "FULL");
@@ -558,7 +558,7 @@ static char *getNextLine(getNextLineInfoPtr info)
     return strdup("");
 }
 
-int mdsdcl_do_macro(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
 {
   char *name = 0;
   char *defname = 0;
@@ -690,7 +690,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
   return sts;
 }
 
-int mdsdcl_delete_macro(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_delete_macro(void *ctx, char **error, char **output)
 {
   int status = 1;
   char *name = 0;
@@ -739,7 +739,7 @@ int mdsdcl_delete_macro(void *ctx, char **error, char **output)
   return status;
 }
 
-int mdsdcl_set_stoponfail(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_set_stoponfail(void *ctx, char **error, char **output)
 {
   if (cli_present(ctx, "ON") & 1)
     STOP_ON_FAIL = 1;

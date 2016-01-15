@@ -1,11 +1,10 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_builtin=_mimport('builtin',1)
+_builtin=_mimport('builtin')
 Builtin=_builtin.Builtin
 
 class dPLACEHOLDER(Builtin):

@@ -1,4 +1,6 @@
 #include "mdsip_connections.h"
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef _WIN32
 #define DEFAULT_HOSTFILE "C:\\MDSIP.HOSTS"
@@ -33,7 +35,7 @@ int GetFlags()
   return flags;
 }
 
-int SetFlags(f)
+int SetFlags(int f)
 {
   int old = flags;
   flags = f;

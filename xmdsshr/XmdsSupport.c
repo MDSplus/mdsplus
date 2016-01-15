@@ -57,7 +57,6 @@ extern Boolean PutIfChanged(int nid, struct dsc$descriptor_xd *xd);
 
 extern int XmdsComplain();
 extern int TdiDebug();
-extern int MdsCompareXd();
 /*------------------------------------------------------------------------------
 
  Subroutines referenced:                                                      */
@@ -142,7 +141,7 @@ void TdiComplain(Widget w)
   static struct descriptor get_messages = { 4, DTYPE_L, CLASS_S, (char *)&one };
   TdiDebug(&get_messages, &messages MDS_END_ARG);
   if (messages.length) {
-    StrAppend(&messages, &null);
+    StrAppend(&messages, (struct descriptor *)&null);
     XmdsComplain(w, messages.pointer);
     StrFree1Dx(&messages);
   }

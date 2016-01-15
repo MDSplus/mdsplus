@@ -93,7 +93,7 @@ static XtResource resources[] = {
 
  Executable:                                                                  */
 
-Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   XmdsPathPart info = { -1, 0, 0 };
   Widget w;
@@ -130,7 +130,7 @@ Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcoun
   return w;
 }
 
-Boolean XmdsIsPath(Widget w)
+EXPORT Boolean XmdsIsPath(Widget w)
 {
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);

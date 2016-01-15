@@ -10,13 +10,9 @@
 #include "h908_gen.h"
 #include "devroutines.h"
 
-extern short OpcAdd;
-extern short OpcMultiply;
-extern short OpcValue;
 
-extern int CamXandQ();
-extern int TdiGetLong();
-extern int TdiCompile();
+
+
 
 static int ReadChannel(InStoreStruct * setup, int samps, int chan, short *data_ptr);
 
@@ -28,7 +24,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-int h908___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int h908___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   struct _msetup {
     unsigned pretrig:1;
@@ -47,7 +43,7 @@ int h908___init(struct descriptor *niddsc, InInitStruct * setup)
   msetup.active_chans = setup->active_chans_convert;
   if (msetup.pretrig) {
     int pts;
-    status = TdiGetLong(setup->pts, &pts);
+    status = TdiGetLong((struct descriptor *)setup->pts, &pts);
     if (status & 1) {
       msetup.pts = (pts + 15) / 16;
     } else
@@ -57,21 +53,21 @@ int h908___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-int h908___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int h908___stop(struct descriptor *niddsc, InStopStruct * setup)
 {
   int status;
   pio(25, 0, 0, 16)
       return status;
 }
 
-int h908___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int h908___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16)
       return status;
 }
 
-int h908___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int h908___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status;
   int mstatus;
@@ -167,7 +163,7 @@ int h908___store(struct descriptor *niddsc, InStoreStruct * setup)
 	  raw.a0 = (char *)(raw.pointer - raw.bounds[0].l);
 	  raw.arsize = raw.m[0] * sizeof(short);
 	  return_on_error(TdiCompile
-			  (&sig_exp, &raw, &start_d, &end_d, &trigger, clock, &signal MDS_END_ARG));
+			  ((struct descriptor *)&sig_exp, &raw, &start_d, &end_d, &trigger, clock, &signal MDS_END_ARG));
 	  return_on_error(TreePutRecord(sig_nid, (struct descriptor *)&signal, 0));
 	}
       }

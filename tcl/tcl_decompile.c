@@ -8,6 +8,7 @@
 #include        <mds_stdarg.h>
 #include        <mdsshr.h>
 #include        <treeshr.h>
+#include        <mdsdcl_messages.h>
 
 /***********************************************************************
 * TCL_DECOMPILE.C --
@@ -26,7 +27,7 @@ extern int StrFree1Dx();
 	/****************************************************************
 	 * TclDecompile:
 	 ****************************************************************/
-int TclDecompile(void *ctx, char **error, char **output)
+EXPORT int TclDecompile(void *ctx, char **error, char **output)
 {
   int nid;
   int sts = MdsdclIVVERB;

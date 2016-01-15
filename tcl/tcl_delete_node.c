@@ -57,7 +57,7 @@ static void TouchNodes()
 	 * TclDeleteNode:
 	 * Delete a node
 	 ****************************************************************/
-int TclDeleteNode(void *ctx, char **error, char **output)
+EXPORT int TclDeleteNode(void *ctx, char **error, char **output)
 {
   int count = 0;
   int nids = 0;
