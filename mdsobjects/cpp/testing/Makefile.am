@@ -1,22 +1,25 @@
 SUBDIRS = testutils .
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
+include ../../../testing/testing.am
+
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
+AM_LIBS = -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+
+LDADD = $(TEST_LIBS) testutils/libMdsTestUtils.a @LIBS@ $(AM_LIBS)
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## // TESTS  //////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
-TEST_LIBS = -lMdsTestShr -lm -lrt -lpthread
-
-AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}/testing
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}/testing
-AM_LIBS = -L@MAKESHLIBDIR@ $(TEST_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr 
-
 
 #
-# NOTE: Gnu check must be present in the system and must be found by configure
-# process. If gnu check framework is not installed of not found the tests are
-# left undefined.
+# This is the list of tests to be compiled and executed
 #
-if HAVE_CHECK
 TESTS = \
         buildtest \
         MdsExceptionTest \
@@ -41,26 +44,10 @@ TESTS = \
         MdsEventSuppression \
         MdsEventTest \
         MdsConnectionTest \
-        MdsExpressionCompileTest
+        MdsExpressionCompileTest        
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
-
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-else
-TESTS =
-endif
-
-AM_TESTS_ENVIRONMENT = \
-      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
-      
-LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
-
 
 
 #
@@ -68,23 +55,33 @@ LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 # tests will be performed using the valgrind command below. Insert suppressions
 # files there.
 #
+# NOTE: all Suppression suffixed test are not propely tests but programs that
+# may rise false positives in valgrind memory check so they may be usefull to
+# generate suppressions codes.
+#
 
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --suppressions=valgrind-stdlib.supp      \
-               --suppressions=valgrind-dlerr.supp       \
-               --suppressions=valgrind-connection.supp  \
-               --suppressions=valgrind-treenode.supp    \
-               --dsymutil=yes --leak-check=yes
-endif
+VALGRIND_SUPPRESSIONS_FILES = \
+                              $(srcdir)/valgrind-stdlib.supp      \
+                              $(srcdir)/valgrind-dlerr.supp       \
+                              $(srcdir)/valgrind-connection.supp  \
+                              $(srcdir)/valgrind-treenode.supp 
+
 
 
 #
 # Files produced by tests that must be purged
 #
-
-MOSTLYCLEANFILES = \
+MOSTLYCLEANFILES = *.out \
+                   testing.hosts \
+                   test_node_001.characteristics \
+                   test_node_001.datafile \
+                   test_node_001.tree \
+                   test_node_002.characteristics \
+                   test_node_002.datafile \
+                   test_node_002.tree \
+                   test_node_model.characteristics \
+                   test_node_model.datafile \
+                   test_node_model.tree \
                    test_tree_001.characteristics \
                    test_tree_001.datafile \
                    test_tree_001.tree \
@@ -101,20 +98,16 @@ MOSTLYCLEANFILES = \
                    leaktest_model.datafile \
                    leaktest_model.tree
 
-
-                   
-
-
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-.PHONY: tests
-tests: $(TESTS)
 
-all-local: tests
+all-local: $(TESTS)
+
+clean-local: clean-local-tests
 
 check_PROGRAMS = $(TESTS)
-
+check_SCRIPTS  =
 
 

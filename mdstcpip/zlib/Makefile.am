@@ -1,6 +1,5 @@
 
-
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
 if MINGW
 WIN=.win

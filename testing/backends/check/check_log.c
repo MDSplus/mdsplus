@@ -34,6 +34,8 @@
 #include "check_print.h"
 #include "check_str.h"
 
+#include <sys/time.h> // gettimeofday
+
 /*
  * If a log file is specified to be "-", then instead of
  * opening a file the log output is printed to stdout.
@@ -214,10 +216,9 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
                    come after printing a string, not before.  it's better to add
                    the newline above in CLSTART_S.
                  */
-            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n"
-                         "\n");
+            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n\n");
             srunner_fprint(file, sr, printmode);
-            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n");
+            fprintf(file,"\n -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- \n\n");
                          
         }
         break;
@@ -294,11 +295,12 @@ void xml_lfun(SRunner * sr CK_ATTRIBUTE_UNUSED, FILE * file,
 
         gettimeofday(&inittv, NULL);
         clock_gettime(check_get_clockid(), &ts_start);
-        if(localtime_r((const time_t *)&(inittv.tv_sec), &now) != NULL)
-        {
-            strftime(t, sizeof("yyyy-mm-dd hh:mm:ss"), "%Y-%m-%d %H:%M:%S",
-                     &now);
-        }
+        // TODO: make this working in windows
+        //        if(localtime_r((const time_t *)&(inittv.tv_sec), &now) != NULL)
+        //        {
+        //            strftime(t, sizeof("yyyy-mm-dd hh:mm:ss"), "%Y-%m-%d %H:%M:%S",
+        //                     &now);
+        //        }
     }
 
     switch (evt)
@@ -384,9 +386,17 @@ void tap_lfun(SRunner * sr CK_ATTRIBUTE_UNUSED, FILE * file,
             /* Print the test result to the tap file */
             num_tests_run += 1;
             tr = (TestResult *)obj;
-            fprintf(file, "%s %d - %s:%s:%s: %s\n",
-                    tr->rtype == CK_PASS ? "ok" : "not ok", num_tests_run,
-                    tr->file, tr->tcname, tr->tname, tr->msg);
+            switch (tr->rtype) {
+            case CK_PASS:
+                fprintf(file, "ok %d - %s:%s:%d: %s\n", num_tests_run, tr->tcname, tr->file, tr->line, tr->msg);
+                break;
+            case CK_SKIP:
+                fprintf(file, "ok %d - %s:%s:%d: # SKIP %s\n", num_tests_run, tr->tcname, tr->file, tr->line, tr->msg);
+                break;
+            default:
+                fprintf(file, "not ok %d - %s:%s:%d: %s\n", num_tests_run, tr->tcname, tr->file, tr->line, tr->msg);
+                break;
+            }
             fflush(file);
             break;
         default:
@@ -518,10 +528,11 @@ void srunner_init_logging(SRunner * sr, enum print_output print_mode)
     FILE *f;
 
     sr->loglst = check_list_create();
+    
 #if ENABLE_SUBUNIT
     if(print_mode != CK_SUBUNIT)
 #endif
-        srunner_register_lfun(sr, stdout, 0, stdout_lfun, print_mode);
+//        srunner_register_lfun(sr, stdout, 0, stdout_lfun, print_mode);
 #if ENABLE_SUBUNIT
     else
         srunner_register_lfun(sr, stdout, 0, subunit_lfun, print_mode);

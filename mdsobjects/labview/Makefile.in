@@ -1,5 +1,6 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 LD=@CXX@
 CFLAGS=@CFLAGS@ -I@LV_CINTOOLS@ -fPIC @TARGET_ARCH@
 CXXFLAGS=-Wno-deprecated -fPIC @CFLAGS@ -I@LV_CINTOOLS@ @TARGET_ARCH@ @CXXFLAGS@

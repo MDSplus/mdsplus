@@ -3,11 +3,49 @@ dnl @(#)$RCSfile$ $Revision$
 AC_PREREQ([2.69])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
+AC_CONFIG_SRCDIR([include/mdsdescrip.h])
+
+dnl docker helpers
+DK_SET_DOCKER_BUILD
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
 AM_MAINTAINER_MODE
+
+
+dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
+dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
+dnl 
+dnl * git-directory:  ax_is_release will be 'no' if a '.git' directory exists
+dnl * minor-version:  ax_is_release will be 'no' if the minor version number
+dnl                   in $PACKAGE_VERSION is odd; this assumes
+dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
+dnl * micro-version:  ax_is_release will be 'no' if the micro version number
+dnl                   in $PACKAGE_VERSION is odd; this assumes
+dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
+dnl * always:         ax_is_release will always be 'yes'
+dnl * never:          ax_is_release will always be 'no'
+dnl 
+AX_IS_RELEASE([always])
+
+
+dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
+dnl see: www.gnu.org/software/autoconf-archive/ax_check_enable_debug.html
+dnl 
+dnl Check for the presence of an –enable-debug option to configure, with the 
+dnl specified default value used when the option is not present. Return the 
+dnl value in the variable $ax_enable_debug.
+dnl Specifying ’yes’ adds ’-g -O0’ to the compilation flags for all languages. 
+dnl Specifying ’info’ adds ’-g’ to the compilation flags. Specifying ’profile’ 
+dnl adds ’-g -pg’ to the compilation flags and ’-pg’ to the linking flags. 
+dnl Otherwise, nothing is added. 
+dnl 
+dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no], 
+dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...], 
+dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
+
 
 # Checks for programs.
 AC_PROG_AWK
@@ -46,7 +84,7 @@ AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
-
+ 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
               [AS_HELP_STRING([--disable-shared],
@@ -283,26 +321,6 @@ AC_ARG_WITH([visual_studio],
 AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
 AC_MSG_RESULT([$with_visual_studio])
 
-dnl ////////////////////////////////////////////////////////////////////////////
-dnl ///  TEST TOOLS  ///////////////////////////////////////////////////////////
-dnl ////////////////////////////////////////////////////////////////////////////
-
-PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
-AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
-
-AC_ARG_ENABLE([valgrind],
-              [AS_HELP_STRING([--enable-valgrind],
-                              [Use valgrind when running unit tests])],
-              [AS_VAR_SET([use_valgrind], [yes])],
-              [])
-
-if [[ "$use_valgrind" = "yes" ]]; then
- AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
- if [[ "$HAVE_VALGRIND" = "no" ]]; then
-  AC_MSG_ERROR([Valgrind not found in PATH. ])
- fi
-fi
-AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
 
 
 FORLD=ld
@@ -313,8 +331,7 @@ IDL_LD=""
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
-
-CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I\${top_srcdir}/include -I\${top_builddir}/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
 then
@@ -325,10 +342,10 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-MAKEUIDDIR="\$(top_srcdir)/uid/"
-MAKESHLIBDIR="\$(top_srcdir)/lib/"
-MAKEBINDIR="\$(top_srcdir)/bin/"
-MAKELIBDIR="\$(top_srcdir)/lib/"
+MAKEUIDDIR="\$(top_builddir)/uid/"
+MAKESHLIBDIR="\$(top_builddir)/lib/"
+MAKEBINDIR="\$(top_builddir)/bin/"
+MAKELIBDIR="\$(top_builddir)/lib/"
 EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
@@ -414,9 +431,9 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
        fi
-       MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
+       MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
+       MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"
+       MAKEBINDIR="\$(top_builddir)/${BINDIR}/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
@@ -449,18 +466,18 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            TARGET_ARCH="-m64"
            UILCMD=uil
            uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
+	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
          else
            TARGET_ARCH="-m32"
            UILCMD=uil32
            uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_srcdir)/lib32/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
-           MAKEUIDDIR="\$(top_srcdir)/uid32/"
-           MAKEBINDIR="\$(top_srcdir)/bin32/"
+           MAKELIBDIR="\$(top_builddir)/lib32/"
+           MAKESHLIBDIR="\$(top_builddir)/lib32/"
+           MAKEUIDDIR="\$(top_builddir)/uid32/"
+           MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
        FFLAGS="$FFLAGS -fno-range-check"
@@ -594,7 +611,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
+       MAKESHLIBDIR="\$(top_builddir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
@@ -795,6 +812,9 @@ AC_CHECK_FUNCS(pthread_lock_global_np)
 
 
 
+
+
+
 REMCAM="remcam"
 AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
 if test "$DO_CAMSHR" = yes
@@ -911,7 +931,7 @@ then
 elif ( echo $host | grep "mingw" >/dev/null )
 then
     SYBASE_INC="-DSYBASE"
-    SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
+    SYBASE_LIB="-L\${srcdir} -lntwdblib${SQL_ARCH}"
     SYBASE="SYBASE"
     AC_MSG_RESULT(using Windows mssql)
 elif test "$(echo $SYBASE_LIB | grep '\-L')" = ""
@@ -1003,6 +1023,70 @@ XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  PYTHON   ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: Add version here
+
+dnl Find a Python2 interpreter.  Python versions prior to 2.0 are not
+dnl supported. (2.0 was released on October 16, 2000).
+m4_define([_AM_PYTHON_INTERPRETER_LIST],
+          [python2 python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0])
+AM_PATH_PYTHON([2])
+
+AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+
+AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
+AC_SUBST(PYTHON_ARCHITECTURE)
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  TESTS    ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## MdsTestShr CHECK backend related ##
+AC_CHECK_FUNCS(mkstemp)
+AC_CHECK_FUNCS(fork)
+AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+             [LIBRT="-lrt"],[LIBRT=""])
+
+
+AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
+AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
+
+AC_CHECK_PROG(HAVE_WINECONSOLE, wineconsole, yes,no)
+AM_CONDITIONAL(HAVE_WINECONSOLE, test x"${HAVE_WINECONSOLE}" = x"yes")
+
+AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,
+     [AS_VAR_SET([have_pl_tap_parser],[yes])],
+     [AS_VAR_SET([have_pl_tap_parser],[no])
+      AC_MSG_WARN([No Perl tap module found])
+     ])
+AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
+
+ # this calls valgrind check with args
+ AX_VALGRIND_CHECK
+
+ # selects particular envs for build:host
+ TS_SELECT
+ 
+ ## test chain substitution ## 
+ AC_SUBST(TESTS_ENVIRONMENT)
+ AC_SUBST(LOG_COMPILER)
+ AC_SUBST(LOG_DRIVER)
+ AC_SUBST(PY_LOG_COMPILER)
+ AC_SUBST(PY_LOG_FLAGS)
+ AC_SUBST(PY_LOG_COMPILER_TAP)
+ AC_SUBST(PY_LOG_FLAGS_TAP)
+ AC_SUBST(PY_LOG_COMPILER_XML)
+ AC_SUBST(PY_LOG_FLAGS_XML)
+
+ TS_SET_SKIP_CMD([TESTS_SKIP])
+ AC_SUBST(TESTS_SKIP)
+
+ AC_SUBST(VALGRIND_FLAGS)
+ AC_SUBST(VALGRIND_memcheck_FLAGS)
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -1049,9 +1133,9 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
 
-## ////////////////////////////////////////////////////////////////////////// ##
-## //  CONFIG_H  //////////////////////////////////////////////////////////// ##
-## ////////////////////////////////////////////////////////////////////////// ##
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 dnl Here we define all custom autoheader adds to config.h.in 
 
@@ -1079,10 +1163,6 @@ AH_VERBATIM([_WIN32], [
 
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
-
-
-
-
 
 
 AC_SUBST(CAMSHR)
@@ -1130,6 +1210,7 @@ AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
+AC_SUBST(LIBRT)
 AC_SUBST(LINKSHARED)
 AC_SUBST(LINKJNI)
 AC_SUBST(LINKMODULE)
@@ -1193,7 +1274,6 @@ AC_OUTPUT(Makefile.inc
           javadispatcher/Makefile
           javamds/Makefile 
           javascope/Makefile
-          javascope/docs/Makefile
           javatraverser/Makefile
           javadevices/Makefile
           LabView/Makefile
@@ -1203,14 +1283,16 @@ AC_OUTPUT(Makefile.inc
           mdsdcl/Makefile 
           mdslib/Makefile
           mdslib/docs/Makefile
+          mdslib/testing/Makefile 
           mdslibidl/Makefile 
           mdsobjects/cpp/Makefile
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
           mdsobjects/python/docs/Makefile
+          mdsobjects/python/tests/Makefile
           mdsobjects/java/Makefile
-          mdsobjects/java/docs/Makefile          
+          mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
@@ -1232,10 +1314,12 @@ AC_OUTPUT(Makefile.inc
           setevent/Makefile
           tcl/Makefile 
           tdishr/Makefile 
+          tdishr/testing/Makefile 
           tdic/Makefile
           tditest/Makefile 
           testing/Makefile
-          testing/backends/check/Makefile          
+          testing/backends/check/Makefile
+          testing/selftest/Makefile
           traverser/Makefile 
           treeshr/Makefile 
           wfevent/Makefile 

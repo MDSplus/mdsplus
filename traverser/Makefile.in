@@ -1,5 +1,8 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 X_CFLAGS=@X_CFLAGS@
 CFLAGS=@CFLAGS@ $(X_CFLAGS) @TARGET_ARCH@
 UIL=@UIL@
@@ -42,5 +45,7 @@ install: $(bindir) @uiddir@
 @MAKEBINDIR@traverser : $(OBJECTS)
 	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS) $(LIBS)
 
-@MAKEUIDDIR@traverser.uid : traverser.uil
-	$(UIL) -o $@ traverser.uil
+
+.SUFFIXES: .uid .uil
+@MAKEUIDDIR@traverser.uid : ${srcdir}/traverser.uil
+	$(UIL) -o $@ ${srcdir}/traverser.uil

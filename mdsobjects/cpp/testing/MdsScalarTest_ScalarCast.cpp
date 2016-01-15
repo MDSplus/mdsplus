@@ -85,13 +85,13 @@ int main(int argc, char *argv[])
     TEST1( numeric_cast<int>(1) == 1 );
     TEST1( numeric_cast<int>(INT_MAX) == INT_MAX );
     TEST1( numeric_cast<int>(INT_MIN) == INT_MIN );
-    TEST_EXCEPTION( numeric_cast<int>((long)INT_MAX+1), std::overflow_error );
-    TEST_EXCEPTION( numeric_cast<int>((long)INT_MIN-1), std::underflow_error );
+    TEST_EXCEPTION( numeric_cast<int>((int64_t)INT_MAX+1), std::overflow_error );
+    TEST_EXCEPTION( numeric_cast<int>((int64_t)INT_MIN-1), std::underflow_error );
 
     TEST1( numeric_cast<unsigned int>(0) == 0 );
     TEST1( numeric_cast<unsigned int>(1) == 1 );
     TEST1( numeric_cast<unsigned int>(UINT_MAX) == UINT_MAX );
-    TEST_EXCEPTION( numeric_cast<unsigned int>((long)UINT_MAX + 1), std::overflow_error );
+    TEST_EXCEPTION( numeric_cast<unsigned int>((int64_t)UINT_MAX + 1), std::overflow_error );
     TEST_EXCEPTION( numeric_cast<unsigned int>(-1), std::underflow_error );
 
 

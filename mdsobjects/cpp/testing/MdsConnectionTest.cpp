@@ -1,16 +1,24 @@
+// if windows skip this test .. //
+
 #include <unistd.h>
 #include <fstream>
 #include <sys/types.h>
 #include <signal.h>
-#include <sys/wait.h>
 
+
+#include <sys/wait.h>
 #include <mdsobjects.h>
 
 
-#include "testing.h"
 #include "testutils/testutils.h"
 #include "testutils/unique_ptr.h"
 #include "testutils/MdsIpInstancer.h"
+
+#include "testing.h"
+#ifdef _WIN32
+int main(int argc, char *argv[]) { SKIP_TEST("Connection test requires fork") }
+#else 
+
 
 //
 // TODO: Finish tests with PutMany and GetMany ...
@@ -116,3 +124,5 @@ int main(int argc, char *argv[])
     
     END_TESTING;
 }
+
+#endif

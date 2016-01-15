@@ -87,7 +87,8 @@ int main(int argc, char **argv)
           AC_SUBST($1[]_LIBS,"-l$_combo")           
           break 
         fi
-     done dnl end for
+     done 
+     dnl end for
 
 
      unset _termcap
@@ -96,4 +97,5 @@ int main(int argc, char **argv)
      unset LDFLAGS_save
      unset _combo
   fi
-])dnl
+])
+

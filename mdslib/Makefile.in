@@ -1,17 +1,20 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB_MdsLib=@MAKELIBDIR@MdsLib.dll.a
 @MINGW_TRUE@ IMPLIB_MdsLib_client=@MAKELIBDIR@MdsLib_client.dll.a
-@MINGW_TRUE@ DEF=MdsLib.def
+@MINGW_TRUE@ DEF=${srcdir}/MdsLib.def
 
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
 SOURCES = MdsLib.c
-OBJECTS = $(SOURCES:.c=.o) 
+OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsLib.export
 
-OBJECTS_CLIENT = MdsLib_client.o 
+OBJECTS_CLIENT = MdsLib_client.o
 
 all: @MAKEBINDIR@ @MAKELIBDIR@ \
          @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
@@ -41,7 +44,7 @@ MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 $(MdsLib): $(OBJECTS) $(DEF)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsIpShr -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
 
-@MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS) 
+@MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
@@ -53,12 +56,15 @@ $(MdsLib): $(OBJECTS) $(DEF)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
+MdsLib.o: MdsLib.c 
+	$(COMPILE.c) $< $(OUTPUT_OPTION) -DFILENAME=MdsLib.c
+
 MdsLib_client.o : MdsLib.c
-	$(COMPILE.c) $< $(OUTPUT_OPTION) -D_CLIENT_ONLY
+	$(COMPILE.c) $< $(OUTPUT_OPTION) -DFILENAME=MdsLib.c -D_CLIENT_ONLY
 
 @MAKEBINDIR@dtype_test : dtype_test.c $(MdsLib)
 	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
-
+	
 @MAKEBINDIR@mdslib_ctest : mdslib_ctest.c $(MdsLib)
 	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
 

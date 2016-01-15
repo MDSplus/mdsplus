@@ -38,8 +38,8 @@ class threadTest(TestCase):
         self.assertEqual(numsuccessful,len(threads))
         return
 
-    def runTest(self):
-        self.tenThreads()
+#    def runTest(self):
+#        self.threadTests()
                 
 def suite():
     return TestSuite([threadTest('threadTests')])
