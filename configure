@@ -784,6 +784,7 @@ VALGRIND_HAVE_TOOL_exp_sgcheck
 VALGRIND_HAVE_TOOL_drd
 VALGRIND_HAVE_TOOL_helgrind
 VALGRIND_HAVE_TOOL_memcheck
+VALGRIND_LIB
 VALGRIND_ENABLED
 VALGRIND_ENABLED_FALSE
 VALGRIND_ENABLED_TRUE
@@ -3409,7 +3410,9 @@ docker:
 	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
 	echo ;
 else
-docker: ;
+docker:
+	@ \
+	echo " --- docker build setup --- ";
 endif
 
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
@@ -3660,7 +3663,9 @@ docker:
 	echo " make docker inspect <- get container info (such as ipaddr)"     ; \
 	echo ;
 else
-docker: ;
+docker:
+	@ \
+	echo " --- docker build setup --- ";
 endif
 
 ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
@@ -12544,8 +12549,18 @@ $as_echo "$as_me: WARNING: Could not find valgrind; either install it or reconfi
 
 fi
 
+	# Enable valgrind only in debug mode (WARNING $enable_debug must be used to selec debug mode)
+	if test "$enable_valgrind" = "yes" -a x"$enable_debug" = x"yes"; then :
+  :
+else
 
-	 if test "$enable_valgrind" = "yes"; then
+	        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
+$as_echo "$as_me: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
+		enable_valgrind="no"
+
+fi
+
+	 if test "$enable_valgrind" = "yes" ; then
   VALGRIND_ENABLED_TRUE=
   VALGRIND_ENABLED_FALSE='#'
 else
@@ -12554,6 +12569,9 @@ else
 fi
 
 	VALGRIND_ENABLED=$enable_valgrind
+
+	VALGRIND_LIB=${VALGRIND_LIB}
+
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
 $as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
@@ -12661,6 +12679,9 @@ $as_echo "$ax_cv_valgrind_tool_exp_sgcheck" >&6; }
 fi
 
 
+
+
+
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
 # /// Valgrind check  //////////////////////////////////////////////////////// #
@@ -12675,7 +12696,7 @@ VALGRIND_CHECK_RULES='
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
 # Optional variables
-VALGRIND_LIB             ?= /usr/lib64/valgrind
+# VALGRIND_LIB             ?= ${VALGRIND_LIB}
 
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --num-callers=30 \
@@ -12736,7 +12757,7 @@ endif
 VALGRIND_TESTS_ENVIRONMENT ?=
 VALGRIND_TESTS_ENVIRONMENT += \
 	VALGRIND=$(VALGRIND) \
-	VALGRIND_LIB=$(VALGRIND_LIB) \
+	VALGRIND_LIB=${VALGRIND_LIB} \
 	G_SLICE=always-malloc,debug-blocks \
 	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
 

@@ -87,3 +87,13 @@ $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddi
 
 @DK_DOCKER_TARGETS@
 
+.PHONY: reconfigure
+reconfigure:
+	@ \
+	echo " -- Reconfiguring build with following parameters: -----------"; \
+	echo $(shell $(abs_top_builddir)/config.status --config);              \
+	echo " -------------------------------------------------------------"; \
+	echo ; \
+	$(top_srcdir)/configure $(shell $(abs_top_builddir)/config.status --config);
+	
+

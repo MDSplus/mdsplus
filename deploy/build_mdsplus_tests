@@ -1,0 +1,201 @@
+#!/bin/bash
+
+set -e
+# set -o verbose
+
+SCRIPTNAME=$(basename "$0")
+SCRIPT_DIR=$(dirname "$0")
+
+SRCDIR=${SRCDIR:=${SCRIPT_DIR}/../}
+BUILDDIR=${BUILDDIR:=$(pwd)}
+CONFIG_FILE=${CONFIG_FILE:=/usr/local/bin/build_mdsplus.conf}
+
+# evaluate config file
+if [ -f ${CONFIG_FILE} ]; then 
+ echo "Reading config file: ${CONFIG_FILE}"
+ source ${CONFIG_FILE}
+fi
+
+print_help() {
+cat << EOF
+
+Usage: $SCRIPTNAME [options] [commands]
+
+       options
+       -------
+       -h|--help)         get this help      
+       -c|--config)       set distribution config file
+       -s|--srcdir)       set source directory
+       -b|--builddir)     set build directory
+       -p|--prefix)       set target root directory
+       --docker-image)    set docker image to use
+       -v|--verbose)      show script source script
+       
+EOF
+}
+
+## parse cmd parameters:
+while [[ "$1" == -* ]] ; do
+	case "$1" in
+		-h|--help)
+			print_help
+			exit
+			;;
+		-c|--config)
+		        CONFIG_FILE=$2
+			shift 2
+			;;
+		-s|--srcdir)
+		        SRCDIR=$2
+			shift 2
+			;;
+		-b|--builddir)
+			BUILDDIR=$2
+			shift 2
+			;;
+		-p|--prefix)
+			MDSPLUS_DIR=$2
+			shift 2
+			;;
+		--docker-image)
+		        DOKER_IMAGE=$2
+			shift 2
+			;;
+	        -v|--verbose)
+		        set -o verbose
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		*)
+		        break
+			;;
+	esac
+done
+
+if [ $# -lt 1 ] ; then
+	echo "Incorrect parameters. Use --help for usage instructions."
+	exit 1
+fi
+
+## get absoulute paths
+ABS_SRCDIR=$(cd ${SRCDIR}; pwd)
+ABS_BUILDDIR=$(cd ${BUILDDIR}; pwd)
+
+## set commands
+CONFIGURE=${ABS_SRCDIR}/configure
+MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+
+## ensure mdsplusdir is set
+MDSPLUS_DIR=${MDSPLUS_DIR:=${ABS_BUILDDIR}}
+MDSPLUS_DIR=$(cd ${MDSPLUS_DIR}; pwd)
+MDS_PATH=${MDS_PATH:=${ABS_SRCDIR}/tdi}
+
+
+function install_prefix () {
+ [ -d $1 ] || mkdir -p $1
+ pushd $1
+ # Get the 3rd party software headers etc from github
+  wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (tar zxf -)
+ LABVIEW_DIR=${LABVIEW_DIR:=`pwd`/3rd-party-apis-master/labview}
+ IDL_DIR=${IDL_DIR:=`pwd`/3rd-party-apis-master/idl}
+ popd
+}
+
+# Function to append a string to a indirect expanded variable
+function append() { 
+eval $1="\"${!1} ${@:2}\""
+}
+
+
+# Function to set configure args from enviroment variables
+function set_args() {      
+
+   ## setup configure arguments
+   _args_list=''
+
+   if [ -n "${ARCH}" ]; then
+    [ "${ARCH}" = "x86_64" -o "${ARCH}" = "amd64" ] && bits=64
+    [ "${ARCH}" = "i686" -o "${ARCH}" = "i386" ] && bits=32         
+   fi   
+
+   if [ -n "${MDSPLUS_DIR}" ]; then
+    append _args_list "--prefix=${MDSPLUS_DIR}"       \
+                      "--exec_prefix=${MDSPLUS_DIR}"  \
+                      "--bindir=${MDSPLUS_DIR}/bin${bits}" \
+                      "--libdir=${MDSPLUS_DIR}/lib${bits}"                      
+   fi
+   
+   [ -n "${LABVIEW_DIR}"  ]  && append _args_list "--with-labview=${LABVIEW_DIR}"      
+   [ -n "${IDL_DIR}"      ]  && append _args_list "--with-idl=${IDL_DIR}"
+   [ -n "${DOCKER_IMAGE}" ]  && append _args_list "--with-docker-image=${DOCKER_IMAGE}"           
+   [ -n "${DEBUG}"        ]  && append _args_list "--enable-debug=${DEBUG}"
+              
+   if [ -n "${JDK_DIR}" ]; then
+    _java_args="--with-jdk=${JDK_DIR}"
+    append _args_list "$_java_args" \
+                      "--with-java_target=6"  \
+                      "--with-java_bootclasspath=${SRCDIR}/rt.jar"
+                      
+   else
+    # TODO: remove this !
+    _java_args="--disable-java"
+    append _args_list "$_java_args"
+   fi
+   
+   eval $1="\"${_args_list}\""
+}
+
+
+
+function build_tests()  {
+  echo /////////////////////////////////////////////////////////////////////////
+  echo /// BUILD MDSPLUS TESTS  ////////////////////////////////////////////////
+  echo /////////////////////////////////////////////////////////////////////////
+
+   install_prefix ${MDSPLUS_DIR}   
+   set_args _args_list
+   echo "ARGS= $_args_list"
+
+   [ -d ${BUILDDIR} ] || mkdir -p ${BUILDDIR}
+   pushd ${BUILDDIR}
+   ${CONFIGURE} $_args_list $@
+   
+   make clean > /dev/null
+   $MAKE
+   echo 
+   echo " --- MAKING TESTS  --- "
+   $MAKE -k tests TEST_FORMAT=tap
+   echo 
+   echo " --- MAKING VALGRIND TESTS --- "
+   $MAKE -k tests-valgrind TEST_FORMAT=tap
+   echo 
+   if [ -n "${DOCKER_IMAGE}" ]; then
+    echo " --- STOPPING DOCKER CONTAINER --- "
+    $MAKE docker stop
+   fi
+   popd
+   exit
+};
+
+
+
+
+# ///////////////////////////////////////////////////////////////////////////
+# /// build_redhat_tests ////////////////////////////////////////////////////
+# ///////////////////////////////////////////////////////////////////////////
+
+eval $1 ${@:2}
+exit
+
+
+
+
+
+
+
+
+
+
