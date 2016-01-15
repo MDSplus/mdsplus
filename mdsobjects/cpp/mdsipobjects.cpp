@@ -15,8 +15,9 @@
 #include <errno.h>
 #include <semaphore.h>
 #endif
+#ifndef _MSC_VER
 #include <pthread.h>
-
+#endif
 using namespace MDSplus;
 using namespace std;
 
@@ -466,11 +467,13 @@ static void *checkDataStream(void *connPtr)
 	return NULL;
 }
 
+#ifndef _MSC_VER
 void Connection::startStreaming()
 {
 	pthread_t thread;
 	pthread_create(&thread, NULL, checkDataStream, this);
 }
+#endif
     
 void Connection::resetConnection()
 {
