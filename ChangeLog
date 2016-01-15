@@ -1,4 +1,2965 @@
-commit adf261bac203a4c20cd570f6a5bc8d1413247e05 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit b5c3468e5f590241ffb9f9f5673352dcad040021 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: f9b98e5 83aed7f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 15:14:01 2016 -0500
+
+    Merge pull request #307 from MDSplus/twf-fix-uninitialized-mem
+    
+    Initialize data descriptors to zero in MdsSerialize to prevent refere…
+
+commit 83aed7f82fa4679d0310446ede6c52a70bec3002 (refs/remotes/origin/twf-fix-uninitialized-mem)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 14:42:27 2016 -0500
+
+    Initialize data descriptors to zero in MdsSerialize to prevent references to uninitialized memory errors
+
+commit f9b98e523a7ec299800834979b867f59bfaab030
+Merge: 684db29 ac4c732
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 11:40:41 2016 -0500
+
+    Merge pull request #305 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit 684db29519c2269bf8f53df2ef10ab04ca6e4f4e
+Merge: 2217806 d682a7a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 09:58:49 2016 -0500
+
+    Merge pull request #301 from MDSplus/test_compression
+    
+    Test compression
+
+commit d682a7ae9a28dabf1708eb0faf3a3022cb4095e8 (refs/remotes/origin/test_compression)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Jan 13 09:52:53 2016 -0500
+
+    Use a loop to run compression tests
+    
+    Instead of seperate tests for each potential case, but all of them in
+    testing.COMPRESSION.*  and write them to CMPRS_SIG  in the test tree
+    that is constructed and disposed of in the treeUnitTest
+
+commit 2217806cf24d777b2a62e2a0287f5c6f6952f1cf
+Merge: fb2ff19 8ea1b8c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 13 08:55:48 2016 -0500
+
+    Merge pull request #300 from MDSplus/twf-fix-compress-again2
+    
+    Fix typo
+
+commit ac4c73202da199a0d3f37c55837e0ece34675769 (refs/remotes/origin/dev-gm)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 14:02:35 2016 +0100
+
+    Added support makefile items
+
+commit a368d5c9c64fec51e5fe030cb0b82d2fc9dca3e1
+Merge: 7285ff5 c6eae89
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 14:01:04 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 7285ff5ec24503d8e5652bdb09c7a5203df8b678
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 14:00:44 2016 +0100
+
+    Data Stream support
+
+commit c6eae8991f880a689139084ff0265267f4ad8e14
+Merge: 6f98f29 fb2ff19
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 13 13:48:10 2016 +0100
+
+    Merge branch 'alpha' into dev-gm
+
+commit 6f98f29b39713b54667f5a6ab624ca30a6d7ac20
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 13:38:28 2016 +0100
+
+    fix strcat dependency
+
+commit 3d50e6b47135eb7c3a550e439687a30ca81be3fa
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 12:12:29 2016 +0100
+
+    fix strlen dependency
+
+commit e3cad1e12ea0960148feb8e3293ae17a36af0512
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 11:34:15 2016 +0100
+
+    resolve conflicts
+
+commit 269649691848a07a22672c25c0ffc2501e965045
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 10:58:19 2016 +0100
+
+    Fix missing double management in GetFloat
+
+commit 0bd9ca80704efa2f08f335a583746ae78ef06b8b
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 13 10:57:07 2016 +0100
+
+    Added support fun for jScope
+
+commit a71073e0e6f3add9ca60e181ba1079edc3b51235
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 12 14:43:26 2016 -0500
+
+    add tests for compression of 0x80000000  which were failing
+
+commit 3220ea90957057403a1526f28bf347056e9cf414
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 12 13:41:20 2016 -0500
+
+    A model with some data that broke compression before recent fixes
+
+commit 8ea1b8caf0e0dac8f9633f63ee02a24634f7f849 (refs/remotes/origin/twf-fix-compress-again2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 12 12:57:00 2016 -0500
+
+    Fix typo
+
+commit f48826803e9b0e8e7ed04972b5d92363f9193722
+Merge: 20ea2d1 44c6aab
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 18:32:54 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 20ea2d197acd24099c686d2649c6ed2da8df99ed
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 18:32:20 2016 +0100
+
+    Streaming methods
+
+commit e265468d8e09c83232d7cbbb087b597917a13793
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 18:31:42 2016 +0100
+
+    Scroll fixes
+
+commit 44c6aabdb487a25a80ad9e58cb11c489e5277f9a
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 12 15:15:18 2016 +0100
+
+    C++ datastream interface added
+
+commit fb2ff1928d5b2d1253dccc02043671740c08d8de (tag: refs/tags/alpha_release-7-0-206)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Jan 11 23:36:44 2016 -0500
+
+    New release ---- alpha_release-7-0-206
+
+commit 22a7ac7ada36c9c9e6f3e3e9b77e9046944502b5
+Merge: ea469ef 5c33bb0
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Jan 12 00:39:51 2016 +0100
+
+    Merge pull request #295 from zack-vii/aa_cygnet4k
+    
+    zck-cygnet4k-OSError-and-early-return-on-error
+
+commit 5c33bb07ddf836e7543e12f4a331162d4b2661e4
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 11 12:53:14 2016 +0100
+
+    DevPYDEVICE_NOT_FOUND to DevPYDEVICE_CONNECTION_FAILED
+    
+    DevPYDEVICE_NOT_FOUND is reserved for if the class is not found
+
+commit 9e773b360fa47a475bab4f8ce321eb096f4774a6
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 11 12:52:35 2016 +0100
+
+    avoid as exc in except
+
+commit 3257e73b6a21e3af6d161d2b29c60f95eb7db432
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 15:00:00 2015 +0100
+
+    OSError includes WindowsError and works on unix as well
+
+commit b2438e87c66c6788271ad6a40070e32b2128a8b2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 14:41:32 2015 +0100
+
+    cygnet.cpp return on error
+
+commit e73f55d18b464f76e04c7eeb8e5e5f1bcff7ebd8
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 14:38:30 2015 +0100
+
+    removed trailing spaces
+
+commit ea469ef66b585caf949ff493ef57ea86c7c8af4c
+Merge: 7a90c8b bcae411
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 16:59:10 2016 -0500
+
+    Merge pull request #298 from MDSplus/twf-dev-connection-error
+    
+    Add DevDEVICE_CONNECTION_FAILED error
+
+commit bcae4112973fc9f475a1326111bb5b0bf4eff5f6 (refs/remotes/origin/twf-dev-connection-error)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 15:50:01 2016 -0500
+
+    Add DevDEVICE_CONNECTION_FAILED error
+
+commit 7a90c8b08e53a5a470dfe5a69bb5a927a49c1f2a
+Merge: b733bd6 d0eb6b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 14:44:13 2016 -0500
+
+    Merge pull request #287 from MDSplus/twf-add-local-mdsip-plugin-for-testing-mdsip
+    
+    Add local://xxx mdsip plugin. Will make it easier to implement testin…
+
+commit b733bd6581f324a683a28d96eb96cec399452f55
+Merge: bfdaa30 8f0a36d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 14:43:41 2016 -0500
+
+    Merge pull request #296 from zack-vii/aa_python
+    
+    Aa python
+
+commit bfdaa30929d4402c8fa264fcfbd41903d5385ef9
+Merge: 0cf5848 84d306d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 14:42:13 2016 -0500
+
+    Merge pull request #293 from MDSplus/twf-fix-add-py-device
+    
+    Fix hanging when adding python device by using a python tdi fun to ad…
+
+commit 84d306d03d5a0e3b9f2a91dd97e0675c0365bd10 (refs/remotes/origin/twf-fix-add-py-device)
+Merge: 0be6df6 0cf5848
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 11 20:39:47 2016 +0100
+
+    Merge branch 'alpha' into twf-fix-add-py-device
+
+commit 0cf5848a8e2044967c3473c4ecf471b9de737d68
+Merge: 80ebb00 0c7ffa2
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 11 14:09:35 2016 -0500
+
+    Merge pull request #297 from MDSplus/twf-fix-compress-again2
+    
+    Fix handling of 0x8000000 in compression
+
+commit 0c7ffa25da74be805c4f1fab8bebbe5e383899d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 13:50:21 2016 -0500
+
+    Fix handling of 0x8000000 in compression
+
+commit 23462695c35fa7c1021e4fe0736da41beca41903
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 11 18:20:26 2016 +0100
+
+    Fix missing mutex
+
+commit a5ce8304f3ae0d5c4e627f3ecde7d468b8e185ba
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 11 18:15:19 2016 +0100
+
+    Grid fixes for data streaming
+
+commit 0be6df6ea6aa0fa2bbaad32e822836305f7644a7
+Merge: a72332b 80ebb00
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 11 17:18:24 2016 +0100
+
+    Merge branch 'alpha' into twf-fix-add-py-device
+
+commit a72332b9da50200ae4bc41e26e1efc26386763fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 10:35:42 2016 -0500
+
+    Fix double back quoting when invoking DevAddPythonDevice.py
+
+commit 8f0a36d1d19e08d3b5b3358d2aad405f61bed55b
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 11 15:08:12 2016 +0100
+
+    fix mdsException for string argument
+    
+    as it is used by MdsIpException in connection.py
+
+commit c36c2982176bb248c5a43d1d111ae4da5207297b
+Author: zack-vii <zack.vii@live.com>
+Date:   Sun Jan 10 23:57:48 2016 +0100
+
+    tidy tree.py
+    
+    no unused packages
+
+commit 80ebb000ff11bedba470a7fa6a1dd803c5680a74
+Merge: 177f88b d363397
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 11 08:41:38 2016 -0500
+
+    Merge pull request #294 from MDSplus/twf-fix-treenode-array-garbage-collection
+    
+    Fix tree garbage collection by ensuring that TreeNodeArray instances …
+
+commit 177f88bb104cddd47d5fa737c6e3cc2a6ad1ec0a (tag: refs/tags/alpha_release-7-0-205)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Jan 8 23:38:03 2016 -0500
+
+    New release ---- alpha_release-7-0-205
+
+commit d3633972cceb1c5a86fdcfda71d11e5d4bd4b281 (refs/remotes/origin/twf-fix-treenode-array-garbage-collection)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 12:45:20 2016 -0500
+
+    Fix tree garbage collection by ensuring that TreeNodeArray instances created from TreeNode methods include a reference to the tree used to create the TreeNode instance. In this way the tree context will not be garbage collected when the TreeNode instance is destroyed.
+
+commit 8db01c1ad8470c0f9c149adaba3c94517420c661
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 11:51:40 2016 -0500
+
+    Fix hanging when adding python device by using a python tdi fun to add it instead of using the py() tdi fun.
+
+commit ebcec9a55a4e499442953ac1f4f30f9cf74d29ef
+Merge: 1111494 6c361cb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 8 11:20:18 2016 -0500
+
+    Merge pull request #289 from MDSplus/jas-fix-compress-error-for-FS-minus-zero
+    
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+
+commit 6c361cbab11e7bf2b716dce0191d440a6fd6b283 (refs/remotes/origin/jas-fix-compress-error-for-FS-minus-zero)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jan 7 14:27:48 2016 -0500
+
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+    
+    fix for deltas of 0x80000000 broke compression of DTYPE_FS
+    non-semantic fix - don't do the new stuff if dtype is FS
+
+commit 111149403b5e8c38e31f0b6e5cd4e7d00869fa80 (tag: refs/tags/alpha_release-7-0-204)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Jan 6 23:37:38 2016 -0500
+
+    New release ---- alpha_release-7-0-204
+
+commit e55e026ad8a43baa52cad42602f361ecc15d5700
+Merge: 33c99fe f928752
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 6 22:45:57 2016 +0100
+
+    Merge pull request #285 from MDSplus/twf-remove-pycall-replace-py-fun-with-python-one
+    
+    Replace the py.fun and mdsmisc->pycall with a Py.py fun to greatly si…
+
+commit f928752790b4f489fe6971ec0e7cdda15d3c0e59 (refs/remotes/origin/twf-remove-pycall-replace-py-fun-with-python-one)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 14:35:40 2016 -0500
+
+    Remove pycall from exports
+
+commit 5280c4b025e14b89b681d73a44a95aae12ff7f91
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 14:08:46 2016 -0500
+
+    Replace the py.fun and mdsmisc->pycall with a Py.py fun to greatly simplify the code
+
+commit 33c99fe2836b801f70c7c5fee73667d74eddc4aa
+Merge: bec5d07 deaddd7
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 6 22:19:05 2016 +0100
+
+    Merge pull request #288 from zack-vii/aa_jtraverser
+    
+    changed colors, nothing critical
+
+commit deaddd7a74aecec708a578a837c12603611e6338
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 11:03:02 2015 +0100
+
+    changed colors
+    
+    not so red if only write_once
+
+commit d0eb6b8b877ec34e63b0cc61fe3e2d7c1dac1eb0 (refs/remotes/origin/twf-add-local-mdsip-plugin-for-testing-mdsip)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 6 08:08:09 2016 -0500
+
+    Add local://xxx mdsip plugin. Will make it easier to implement testing for mdsip server program.
+
+commit bec5d0715c9eb812c4f4ce180b320d0c89732ad5 (tag: refs/tags/alpha_release-7-0-203)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 5 23:34:24 2016 -0500
+
+    New release ---- alpha_release-7-0-203
+
+commit fa8fedaf6788c8a04600a6c4b06d8074333eceb4
+Merge: 7ededd0 9825357
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 5 11:40:10 2016 -0500
+
+    Merge pull request #283 from MDSplus/jas-make-idl-mdssetevent-data-optional
+    
+    idl events, tdi-events - don't pass string for empty data, handle length of string correctly
+
+commit 98253574c40a5920f314ae1fc0e04f995c8d3a14 (refs/remotes/origin/jas-make-idl-mdssetevent-data-optional)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jan 5 11:01:36 2016 -0500
+
+    don't pass string for empty data, handle length of string correctly
+
+commit 7ededd07549c1c4c7e4ff840418973b3464fca20 (tag: refs/tags/alpha_release-7-0-202)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Jan 4 23:34:38 2016 -0500
+
+    New release ---- alpha_release-7-0-202
+
+commit 0f29e5aa03bcbcdbefd87ea3d9a2df2b57c0c513
+Merge: 2aca940 50b9fad
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Jan 4 23:31:32 2016 +0100
+
+    Merge pull request #252 from zack-vii/aa_javadevices
+    
+    added windows compiling script and removed vs solution
+
+commit 50b9fad941efea28cd62b5bddfcd7c9d75d3fe40
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Dec 5 01:46:42 2015 +0100
+
+    added windows compiling script and removed vs solution
+    
+    vs is useless without project file
+
+commit 2aca9409c44ef81bab25a08717cbad6a359acc12
+Merge: 09eedef deca31d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 4 16:20:56 2016 -0500
+
+    Merge pull request #281 from MDSplus/twf-python-garbage-collection-again
+    
+    Do not do garbage collection on Tree instances created by obtaining t…
+
+commit 09eedef835e1c79a5547b03583f1df9db593ea66
+Merge: e1f6e15 e6c6efa
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 4 16:20:33 2016 -0500
+
+    Merge pull request #279 from zack-vii/zck_fixnclean_pycall
+    
+    unified the initialisation of python:
+
+commit deca31d233cc6d8e0beffe610fddea99a5ffda03 (refs/remotes/origin/twf-python-garbage-collection-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 4 14:11:32 2016 -0500
+
+    Do not do garbage collection on Tree instances created by obtaining the global tree context
+
+commit e6c6efa91d5b4bc204009a985f44e0b9d0468bba
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Jan 4 13:54:39 2016 +0100
+
+    unified the initialisation of python:
+    
+    - prefer sigaction() over signal()
+    - define PyThreadState
+    - removed unused PyGILState_GetThisThreadState
+    - removed unused PyEval_ReleaseThread
+    - copied and adapted Initialize() to pycall()
+    - do not nullify PyGILState_Ensure on loaderror in loadrtn (would happen
+    on PyString_FromString->PyUnicode_FromString etc.)
+
+commit e1f6e1521a2743b75bf5748470a4e939791cc5e2 (tag: refs/tags/alpha_release-7-0-201)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 30 23:34:20 2015 -0500
+
+    New release ---- alpha_release-7-0-201
+
+commit 844fa4ee40b6af8e43a0769c4f16b3291ea5215e
+Merge: 9ee5c41 4507ae7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 20:28:28 2015 -0500
+
+    Merge pull request #275 from MDSplus/twf-fix-idl-events
+    
+    Fix cleanup of idl mdsevent widgets
+
+commit 9ee5c41e194451f205cfc47135756e7f336bac02
+Merge: 5d59d1e a863cc2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 20:28:09 2015 -0500
+
+    Merge pull request #277 from MDSplus/twf-fix-exceptions
+    
+    Fix MDSExceptions __init__ function
+
+commit a863cc2d8aa15456a1d9ce338ca82bc0c725f438 (refs/remotes/origin/twf-fix-exceptions)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 16:25:35 2015 -0500
+
+    Fix MDSExceptions __init__ function
+
+commit 03766b5d690a18f4669076515138e7114fed7dab
+Merge: 827a249 7ef0dc9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:45:19 2015 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 827a2498fd6c317a54058cbeacfbcd59754984d9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:44:50 2015 +0100
+
+    Enable streaming
+
+commit 7ef0dc9ba42ec48fb936e9aa9ed2af4858d6b980
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:42:28 2015 +0100
+
+    Move files
+
+commit 7f6b03dd134e2cfea5a21ba96124ecd7d4f41863
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Dec 30 17:39:59 2015 +0100
+
+    Move files
+
+commit 4507ae7790c9bed41d5713c5ed8809e55d5f5be3 (refs/remotes/origin/twf-fix-idl-events)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 09:15:29 2015 -0500
+
+    Fix cleanup of idl mdsevent widgets
+
+commit 5d59d1e8071ed27e482a7eae8347bc53734f3047 (tag: refs/tags/alpha_release-7-0-200)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Dec 29 23:34:21 2015 -0500
+
+    New release ---- alpha_release-7-0-200
+
+commit 66c98cd4fff609a89170c790577796b89bae8d2a
+Merge: 24c9646 3a4f8f8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 16:34:56 2015 -0500
+
+    Merge pull request #273 from MDSplus/twf-cleanup-compile-warnings-and-old-cvsignores
+    
+    Fix most of the compiler warnings and remove old cvsignore files
+
+commit 24c96466794fa66a529277ef9d44f658aab918e3
+Merge: 470d9ac 412b4fb
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 16:29:50 2015 -0500
+
+    Merge pull request #269 from MDSplus/twf-sanitize-found-bugs
+    
+    Fixes found by compiling with sanitizers
+
+commit 470d9acb06f16296f66ca71837f04ecbc371cc5b
+Merge: dba0c80 e3611f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 16:19:28 2015 -0500
+
+    Merge pull request #274 from MDSplus/fix-make-install-bash-error
+    
+    Fix find command for java directory on make install
+
+commit e3611f446126a73801c4ab0c499399b603adc7dd
+Author: josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 15:51:46 2015 -0500
+
+    Fix find command for java directory on make install
+    
+    The find command in make install was erroring out if the destination root
+    directory java did not exist.  Added punctuation to this line so make will ignore it.
+
+commit dba0c806622eb5878fee3e93e4afb5c6f9409eed
+Merge: d9de3d6 3b83978
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Dec 29 15:47:19 2015 -0500
+
+    Merge pull request #272 from MDSplus/twf-fix-pycall-and-tdiextpython-interaction
+    
+    Fix pycall and TdiExtPython interaction
+
+commit 3a4f8f86a8d9663919eefbca3d21a8a182dec527 (refs/remotes/origin/twf-cleanup-compile-warnings-and-old-cvsignores)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 14:16:27 2015 -0500
+
+    Fix most of the compiler warnings and remove old cvsignore files
+
+commit 3b83978f32df4c0cac2a4ef9dba05c38cd2dd2ae (refs/remotes/origin/twf-fix-pycall-and-tdiextpython-interaction)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 29 12:27:17 2015 -0500
+
+    Fix pycall and TdiExtPython interaction
+
+commit 7f3d678997915810975e89e88dfbf10687a22223
+Merge: 5218870 506e419
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 29 14:20:43 2015 +0100
+
+    Proceed
+
+commit 5218870c6beb80c8b93fa3e698da446d0aef6c29
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 29 14:19:20 2015 +0100
+
+    Proceed
+
+commit 3dd992d32ff113b523a9fbcc65ce559325027b52
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Dec 28 10:16:56 2015 +0100
+
+    Added streaming support
+
+commit 506e419cd6c0da489847f759fbbf8c2c5f1d9963
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Dec 28 10:16:56 2015 +0100
+
+    Added streaming support
+
+commit d9de3d6ee538334399fa20f67889ded680f5df97 (tag: refs/tags/alpha_release-7-0-199)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 23 23:36:41 2015 -0500
+
+    New release ---- alpha_release-7-0-199
+
+commit 412b4fbbed3ff5c15356e2fced8bae76b6e5f49e (refs/remotes/origin/twf-sanitize-found-bugs)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 11:07:17 2015 -0500
+
+    avoid integer overflow without using advanced gcc builtins
+
+commit c05d38f5a87a12e89f90707977a6fc1528c376ac
+Merge: 196a8ce 01848d1
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Dec 23 10:38:23 2015 -0500
+
+    Merge pull request #268 from MDSplus/twf-add-enable-santitize
+    
+    Add --enable-sanitizer option to configure
+
+commit 504003c00bbae0b48974eb23b2999bd677d58502
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:49:57 2015 -0500
+
+    Fixes found by compiling with sanitizers
+
+commit 196a8ced8b06cf1b21e4e9f8a0e7c833f85b06bb
+Merge: 4409046 38cf130
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:06:45 2015 -0500
+
+    Merge pull request #267 from MDSplus/twf-tree-garbage-collection-again
+    
+    Use _TreeCtx object to handle garbage collection and final closing of…
+
+commit 01848d151b8967f208055e9fb70e9106f7f2e290
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 23 09:06:44 2015 -0500
+
+    Add --enable-sanitizer option to configure
+
+commit 440904638f6e79254bb23bbee8a6d2a81895f0cf (tag: refs/tags/alpha_release-7-0-198)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 21 23:34:03 2015 -0500
+
+    New release ---- alpha_release-7-0-198
+
+commit 38cf130de4d1c514197773f51d1afef1ea5beb7f (refs/remotes/origin/twf-tree-garbage-collection-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 21 12:23:29 2015 -0500
+
+    Remove temporary file
+
+commit 2c188d34f3ba8f67b6e3e78a3e172f92b7941b57
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 21 09:32:51 2015 -0500
+
+    Use _TreeCtx object to handle garbage collection and final closing of tree context
+
+commit fe32d0d0ecf03b68ac0d67233de900cc830c784c
+Merge: ae95c22 f97be58
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 21 08:20:56 2015 -0500
+
+    Merge pull request #266 from zack-vii/PyDoMethod
+    
+    retry with dummy argument only if TypeError occured on method Type
+
+commit f97be58e774ff9e4838f6c623cfa9733729f817a
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Dec 21 11:46:02 2015 +0100
+
+    no 'as exc' for python24
+
+commit 4fb543419fa2f3b44ee6a0e78904611865f49ab8
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 18 15:48:35 2015 +0100
+
+    retry with dummy argument only if TypeError occured on method Type
+    
+    exc.message =
+    method + "() takes exactly 2 argument (1 given)"
+
+commit ae95c22768e3a6d9916b0c70410cf59604ab4ac8 (tag: refs/tags/alpha_release-7-0-197)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Dec 17 23:36:58 2015 -0500
+
+    New release ---- alpha_release-7-0-197
+
+commit 44a6d2a63f000512e01dd5194815adba5cc93bc4
+Merge: 0e20885 90a86d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:51:28 2015 -0500
+
+    Merge pull request #261 from MDSplus/twf-fix-python-tree-refs
+    
+    Twf fix python tree refs
+
+commit 0e20885ae12af243d541d83363af8f9f8a4be56f
+Merge: 0b92731 fdbcad9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:48:24 2015 -0500
+
+    Merge pull request #264 from MDSplus/twf-fix-code-detected-by-new-gcc
+    
+    New gcc on Ubuntu finding errors in the code. This should get MDSplus…
+
+commit 0b927316a24628ff195f4a1ef640173d6ec9a96a
+Merge: 6306e27 f247aa6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:40:45 2015 -0500
+
+    Merge pull request #265 from MDSplus/twf-fix-LibFindImageSymbol
+    
+    fix allocation size error in LibFindImageSymbol_C
+
+commit f247aa66c295b6da98eb655b49838d780989272c (refs/remotes/origin/twf-fix-LibFindImageSymbol)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 14:01:29 2015 -0500
+
+    fix allocation size error in LibFindImageSymbol_C
+
+commit fdbcad9dda5e622caf66ebef3f425853ab59a608 (refs/remotes/origin/twf-fix-code-detected-by-new-gcc)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 17 11:35:40 2015 -0500
+
+    New gcc on Ubuntu finding errors in the code. This should get MDSplus to build but another pull request will be coming with additional fixes uncovered by the new gcc
+
+commit 6306e27a93d197f4dd38b77d893f3823104d3804
+Merge: d9c87d2 44b4e39
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Dec 17 08:19:37 2015 +0100
+
+    Merge pull request #262 from zack-vii/aa_cygnet4k
+    
+    Aa cygnet4k
+
+commit 44b4e3999d0f284fabbf2a0ab17f46e17f6a1810
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 17 04:37:28 2015 +0100
+
+    raise an error if device cannot be opend
+
+commit 318bc6c54a432235f0468be1a949e3d5f001e552
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 18:34:13 2015 +0100
+
+    fixed trendWorker misspelling
+
+commit 2374cb7d6d68afc45d46cb7d31e243e024c37995
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 15:12:13 2015 +0100
+
+    fixed id/idx to dev_id
+
+commit e23fa91b9b1b855cfee06b5de5a412f7802560fb
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 15:04:55 2015 +0100
+
+    wait for store/trend to stop
+    using join thread
+
+commit 52f3209846dab7deeed1290450bb31f092e80cb5
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 11:01:23 2015 +0100
+
+    put ACT_INIT in INIT phase before START
+
+commit 82909758c50492176ede982ff4b83a280afc23ad
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 10 09:08:53 2015 +0100
+
+    ACT_START/STOP for TREND, write_once for ACT*
+
+commit 4d5f4479ca046c7ac8a643343ebbb79c9b533f37
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 9 21:32:39 2015 +0100
+
+    CYGNET4K removed  temperature reading
+    
+    during measurement.
+    it blocks the camera if the frame rate is too high
+    read it before and after instead
+
+commit 74ea8e15253c697d12b476bbd462b09a6fdc48a1
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Dec 5 03:21:39 2015 +0100
+
+    updated CYGNET4KSETUP.java and .form
+    
+    adapted to new Node layout
+
+commit fb00858a16d7983b49d58daf83c15d201d9feca7
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 23:45:20 2015 +0100
+
+    use Device.debug
+
+commit f72f1b5c65e4ac46ca381fc8cad6d844d33a0c80
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 3 22:08:05 2015 +0100
+
+    remove 'return 1' add interrupt loop for trend stopReq
+
+commit 97606a11cba328d225051319dc696e673127146b
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 3 21:16:00 2015 +0100
+
+    wipe node at start_store
+    
+    - preemptive raise of a write_once error
+    - clears node for fresh measurement
+
+commit 4d089398c9d2f3cf8c4a96c0a02cf4b543a6f27e
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Dec 3 19:26:37 2015 +0100
+
+    updated driver typed variable names, retyped
+    
+    - clear structure for IO
+
+commit 7003445c917acabc43bfe86f4c82e82273e7f491
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 21:02:12 2015 +0100
+
+    update to new GIL-locking and include TriggerTime
+    
+    - raise error instead of returning status
+    - included debug
+    - no more pythreadlock stuff
+    include triggertime in cpp
+
+commit 90a86d60128f20c5bee1d2d1c4e2fbe53c0e8161 (refs/remotes/origin/twf-fix-python-tree-refs)
+Merge: fc1bee9 d9c87d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 16:25:29 2015 -0500
+
+    Merge remote-tracking branch 'refs/remotes/origin/alpha' into twf-fix-python-tree-refs
+
+commit fc1bee9891746ea6293dfe4a426495bad0301ab8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 16:20:57 2015 -0500
+
+    Fix tracking of tree instances to make sure all trees get closed after use
+
+commit d9c87d24e298582b8d74537d748d4f813eff4db4
+Merge: 5dbd166 bbe5156
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Dec 16 14:57:08 2015 -0500
+
+    Merge pull request #260 from MDSplus/twf-fix-python-module-name
+    
+    Fix python module name to leave it as MDSplus while the egg is renamed to mdsplus[_branch]-version
+
+commit bbe5156034f77ee56cb3f66c9b67e76ccb329214 (refs/remotes/origin/twf-fix-python-module-name)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 14:33:00 2015 -0500
+
+    leave package name lowercase but still import MDSplus
+
+commit 5dbd16667d44851c90519aedc92c67df71537f7f
+Merge: ae67432 ef80f61
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 10:47:00 2015 -0500
+
+    Merge pull request #258 from MDSplus/twf-feature-exports2
+    
+    Twf feature exports2
+
+commit ae674322ee2837aca4175d2ac5b401d5f0babbf6
+Merge: 4e9cd64 b84c322
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Dec 16 09:19:15 2015 -0500
+
+    Merge pull request #259 from MDSplus/twf-python-package-version-name-fix
+    
+    Make python package namd and version compliant with naming convention…
+
+commit b84c322a31a2160199e52548ee0b8900675999b0 (refs/remotes/origin/twf-python-package-version-name-fix)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 08:43:06 2015 -0500
+
+    Make python package namd and version compliant with naming conventions and rules
+
+commit 4e9cd641b48f01cda51ca1ffab3453238aa01cfd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 08:30:22 2015 -0500
+
+    Remove error printout in LibFindImageSymbol
+
+commit ef80f614e1a77594b60588b408ba7ee20d97f156 (refs/remotes/origin/twf-feature-exports2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 08:27:34 2015 -0500
+
+    remove printout from LibFindimageSymbol
+
+commit ab9ff974254a62783d040d435a448caad680f980
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 16 07:50:52 2015 -0500
+
+    temporarily remove export hiding so this can be merged in safely
+
+commit 8ef0b44c6aae648f3767c9a697820133fade32bd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 15 16:54:10 2015 -0500
+
+    Cannot build with cflag -no-undefined because of the IDL libraries
+
+commit 1df0aa990c53b580160e00613a8c037c5f91490d
+Merge: 4ac65a4 1bc31ba
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 15 11:44:00 2015 -0500
+
+    Merge branch 'twf-feature-exports' of github.com:/MDSplus/mdsplus into twf-feature-exports
+
+commit 4ac65a49919afe908dc26a9b287bf03510819675
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:18:47 2015 -0500
+
+    Add exports to hdf5 library
+
+commit fd05c0e43e1d90b4c6068bf223ea50d5cbedf46a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:27 2015 -0500
+
+    change windows exports files
+
+commit 70c76dd22143193b2097f3a997e928cd40032fb6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:16 2015 -0500
+
+    Fix header file include for windows
+
+commit e685c05d99e9aaf122e1b90b04dc7aa90290674f
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 13 15:43:48 2015 +0100
+
+    Remove useless EXTERN
+
+commit 7876b9cf43ee9bfb89ce91ccc844eea681fc050c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:02:31 2015 -0500
+
+    remove udt exports and export boxsmooth
+
+commit 225d187fb99a7b2be94df91cddbbfaf6bc0c530e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 15:17:59 2015 -0500
+
+    More exports added
+
+commit cdb9698ef15aac840b59ba122350daa9ced4e3a9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 13:12:10 2015 -0500
+
+    Add EXPORT to functions and symbols needed to be exported and add prototypes to some of the C header files
+
+commit f13e30a4e059491360432f4d3feb8c60e54ba6fe (tag: refs/tags/alpha_release-7-0-196)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 14 23:33:14 2015 -0500
+
+    New release ---- alpha_release-7-0-196
+
+commit df557f0e13b1a56b10c70d4290868c74dfee051c
+Merge: 6f08fce a5d0326
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Dec 14 11:37:17 2015 -0500
+
+    Merge pull request #257 from MDSplus/twf-new-find-image-symbol
+    
+    Provide mechanism for LibFindImageSymtol to not require LD_LIBRARY_PA…
+
+commit 6f08fceec104109c449f2c5c09872451319d93e5 (tag: refs/tags/alpha_release-7-0-195)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sun Dec 13 23:42:57 2015 -0500
+
+    New release ---- alpha_release-7-0-195
+
+commit adeda313c981d1e2e12906f937df1eb5aa87efac
+Merge: fb5dc6b c9b00f2
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Sun Dec 13 20:31:17 2015 +0100
+
+    Merge pull request #256 from MDSplus/fix-bnc845
+    
+    Handle malformed STEPS config. very useful since Matlab drops trailing dimensions if they are of length 1
+
+commit c9b00f2ca5e8b5c7655de17f4d46db019f4988c0 (refs/remotes/origin/fix-bnc845)
+Merge: 28a7639 fb5dc6b
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Sun Dec 13 19:37:22 2015 +0100
+
+    Merge branch 'alpha' into fix-bnc845
+
+commit fb5dc6b842068d9a78311be42d0b0703622a4468 (tag: refs/tags/alpha_release-7-0-194)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Dec 11 23:48:44 2015 -0500
+
+    New release ---- alpha_release-7-0-194
+
+commit a5d0326bb896de2c4cbe3def7ae70d19386a62bc (refs/remotes/origin/twf-new-find-image-symbol)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 11 16:07:51 2015 -0500
+
+    Provide mechanism for LibFindImageSymtol to not require LD_LIBRARY_PATH or DYLD_LIBRARY_PATH
+
+commit b0925ba85b95b9423e4c0a8760989928da9a8346
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 11 09:17:49 2015 -0500
+
+    Fix missing default value for wfevent timeout
+
+commit 428a615236e47704fbff9613cf5ce7e4aa12226e (tag: refs/tags/alpha_release-7-0-193)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Dec 10 23:47:44 2015 -0500
+
+    New release ---- alpha_release-7-0-193
+
+commit d6e7ede665445c95cf83426662d2eafd149ca2fe
+Merge: 5422cf3 82226c5
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Dec 10 15:47:11 2015 +0100
+
+    Merge pull request #251 from zack-vii/aa_python_RfxDevices
+    
+    python rfxdevices update
+
+commit 5422cf3029b3236a67e9904d3c14af870ead4c90
+Merge: 847de2f 7749e13
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Dec 10 15:46:45 2015 +0100
+
+    Merge pull request #243 from zack-vii/aa_Include(d)InPulse
+    
+    systematically replaced IncludedInPulse with IncludeInPulse
+
+commit 28a7639d27725e90dc4ab8ea0edb63ab99ff76d4
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Dec 10 14:48:12 2015 +0100
+
+    Handle malformed STEPS config
+
+commit 82226c53fbb51ca198b46bbbff4b454000c5b9b2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 20:35:59 2015 +0100
+
+    changed return error.status to raise error, retrun 1 to return
+    
+    to be in line with the new gil-locking error handling
+
+commit 874d36d663c05e79b219f79d6ded7dcf734c92f5
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 20:12:24 2015 +0100
+
+    removed unused arguments
+
+commit 83de2ab52a9f76e54c177606ec7ff3ebe26c35e3
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 14:10:15 2015 +0100
+
+    removed Int32(1).setTdiVar('_PyReleaseThreadLock')
+
+commit d4a728d43e13c6893891b644c1bdda9b19ad642b
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 19:29:03 2015 +0100
+
+    removed unnecessary arg down passing in MARTE_GENERIC arg->*arg
+    
+    - prepared everything for new gil-lock error argument passing
+    - just replace all (self,*arg) with (self)
+
+commit 59ff8c4322f00ac7f7ee15545ee0013e606fed3f
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 21:07:54 2015 +0100
+
+    replaced return 0 with return mdsExceptions.TclFAILED_ESSENTIAL.status
+    
+    prepares for a quick replacement for new gil-locking errorhandling
+
+commit 6d7582a6036ac16e32b7e26fa06d1dae4b6fe8ba
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 15:57:48 2015 +0100
+
+    added debug from Device class
+    added import check in __init__
+    
+    major speedup loading package due to use of [value]*count
+
+commit 847de2f9daea1493624672ee10627e995e457a0a (tag: refs/tags/alpha_release-7-0-192)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Dec 9 23:47:17 2015 -0500
+
+    New release ---- alpha_release-7-0-192
+
+commit 5419074401cbf686b27527e89df9725bd4b76f7a
+Merge: 71bb02f 2e37e0f
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Dec 9 21:35:33 2015 +0100
+
+    Merge pull request #254 from zack-vii/aa_python_mdsdevice
+    
+    missed a line there
+
+commit 2e37e0f334afaeb052b4a4a1f3a04061f02bd129
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 9 21:14:34 2015 +0100
+
+    fix of recent changes #250
+    
+    you need to add al nodes first to be able to reference then in valueExpr
+
+commit 71bb02f947735847f072a14d0ab4789290281f52
+Merge: 9d27882 054afeb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 9 08:55:08 2015 -0500
+
+    Merge pull request #253 from wmarquesr/alpha
+    
+    Refactoring conditional directives.
+
+commit 9d27882500a7dba1ff8cbf7a5c684a8c21d2eb2e
+Merge: 9b57016 15df2ef
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 9 08:53:01 2015 -0500
+
+    Merge pull request #250 from zack-vii/aa_python_mdsdevice
+    
+    fixed bug in Add of Device class
+
+commit 054afebc8895dc37f4e4566fc8fcb3f1ad41d29b
+Author: Wesley M <wesleymr.27@gmail.com>
+Date:   Tue Dec 8 22:55:19 2015 -0300
+
+    Refactoring conditional directives for alternative if statements and incomplete if conditions..
+
+commit 9b57016159c8c44600928eb09734087b3580aa38 (tag: refs/tags/alpha_release-7-0-191)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 7 23:43:28 2015 -0500
+
+    New release ---- alpha_release-7-0-191
+
+commit 5f8bc5b4725b8f84f6f63c5b3cfbb4827b9677e3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Dec 7 15:53:57 2015 -0500
+
+    Use --no-check-certificate with wget for rhel5
+
+commit e6b21547f33407ae88e8fd50dc30de37b0014eae (tag: refs/tags/alpha_release-7-0-190)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Dec 7 09:50:30 2015 -0500
+
+    New release ---- alpha_release-7-0-190
+
+commit 15df2ef3eef28c993b42e750458ecb85124cb065
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 20:46:32 2015 +0100
+
+    fixed bug in Add of Device class
+    
+    - If path did not start with '.' or ':' nodes of the device could have
+    become siblings of the device
+    - allowes to add devices as member of TreeNodes
+    ! adding a device did only work if path is not in root of tree (could
+    still fail on path)
+
+commit 6a1ebc73fc87e31a639fca386d18d294b14012bd
+Merge: 1f757c8 d76f567
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Fri Dec 4 22:51:52 2015 +0100
+
+    Merge pull request #249 from zack-vii/aa_python_compound
+    
+    it only add a feature that comes in pretty handy when developing devices in python
+
+commit 1f757c874415209980d9620566cbb1704f9a8883
+Merge: 836f8a7 6d210ac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 4 12:44:37 2015 -0500
+
+    Merge pull request #246 from MDSplus/twf-fix-gil-locking
+    
+    Twf fix gil locking
+
+commit 836f8a7c32b49260ad249b645141497570f06021
+Merge: b167063 fe2df61
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 4 08:16:08 2015 -0500
+
+    Merge pull request #248 from zack-vii/aa_python_mdsdevice2
+    
+    update on mdsdevice: include debug, removed another exec
+
+commit 6d210acfe69e02cacc13dfa167ff60f43b7d5ca6 (refs/remotes/origin/twf-fix-gil-locking)
+Merge: 31deeb3 9aa6f7d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Dec 4 08:11:46 2015 -0500
+
+    Merge pull request #247 from zack-vii/gillock
+    
+    Gillock
+
+commit 9aa6f7d36c30d5b1f8217e751c9b820b10bab571
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 12:57:43 2015 +0100
+
+    optimized the exec part
+    
+    - convert input to a string
+    - concatenate list of strings to a list of statements (';'.join)
+    - using a safe environment safe_env instead of global
+
+commit fe2df6122a496b971796eec31e632eddc54d111e
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 11:38:14 2015 +0100
+
+    update on mdsdevice: include debug, removed another exec
+    
+    - debug can now be used by any device (inspired by MitDevices)
+    - options are all attributes and can be looked up without exec
+    - since the the globals for the device generation are taken from import
+    MDSplus at runtime no need for loadglobals.load
+
+commit d76f5676caf9973551fa3c76796eb06e37d60aec
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Dec 4 12:21:32 2015 +0100
+
+    added getClass to Conglom
+    
+    - finds the python class of a device conglomerate
+    - helps to test devices from inside python using >>> dev =
+    node.record.getClass(node)
+
+commit 31deeb3a709d9b8e7c20ac023daca84a3ea117a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Dec 3 13:32:44 2015 -0500
+
+    Fix DoMethod return status handling and fix support for original part name methods on python devices. If no value is returned by PyDoMethod the value will be filled in with the status of the method (i.e. success if no exceptions and the exception status value or 0 if an exception is thrown by the method.
+
+commit 8cdb3917fcb5078a563c144a8444f778ab152848
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 16:01:30 2015 -0500
+
+    Add some line feeds to output messages
+
+commit 45139db10d6515127e6c302d0aeec0f2a8e31a25
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 14:02:20 2015 -0500
+
+    Fix original part name method. TreeDoMethod on python devices needs to handle output descriptors of CLASS_XD or CLASS_D.
+
+commit 2e4562a1f8cf541a7ba8c4bdceb48aa5bca243f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 13:24:00 2015 -0500
+
+    PyDoMethod now returns a list who's first element is the return status and the second element is the return value of the Method. TreeDoMethod copies the answer into the output argument and returns the status as the return value.
+
+commit 2f37699b309bc53f928d9b3b525c51f4ffaef230
+Merge: 8489a56 23d1c56
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 11:18:46 2015 -0500
+
+    Merge PyDoMethod.py changes
+
+commit 8489a56acf90b5ed052b2ab34a642130ce20cdc9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 11:07:41 2015 -0500
+
+    Add new device status return for python device not found. Fix PyDoMethod to handle device methods defined with unused argument parameter. Make PyDoMethod python2.4 compatible.
+
+commit 23d1c56a630dfa53da95c859bfe952ab3b854207
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 2 16:55:49 2015 +0100
+
+    suggestion for final PyDoMethod.py
+    
+    stderr.write works on python2.4
+
+commit 8f272825a326bf32ac73485df7a1b9b08f99802d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 2 10:09:03 2015 -0500
+
+    Cleanup and fixes for PyDoMethod.py
+
+commit 514c6424ddd2d9697c074b1484de7aa103c55fb7
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Dec 2 14:25:08 2015 +0100
+
+    PyDoMethod.py workover
+
+commit b1670637d5e065ae5b0ed4f721aa75b653f53135 (tag: refs/tags/alpha_release-7-0-189)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Dec 1 23:33:09 2015 -0500
+
+    New release ---- alpha_release-7-0-189
+
+commit 4ff25ce2f09b0ded924bf663cef1d82de30fb86c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 1 17:21:04 2015 -0500
+
+    Remove the release thread function. It is no longer needed.
+
+commit 4c714f26985933720266bbed197a12ff4cf52c22
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 1 16:51:49 2015 -0500
+
+    All python execution is now locking GIL
+
+commit f71b0396be7f057252886d42756e27d44d2b7167
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 1 16:48:11 2015 -0500
+
+    Fix python GIL locking and replace PyDoMethod.fun with PyDoMethod.py
+
+commit 1681b4c56982b27f44f17bc6cf8460c691cf010e
+Merge: dad7e6e 07fb206
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Dec 1 20:49:56 2015 +0100
+
+    Merge pull request #234 from zack-vii/aa_python
+    
+    python added alternative for data like get for dict.
+    since it only adds functionality there is no reason not to merge it
+
+commit 07fb206ab20a5ef8f00995624c57a649f3200796
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 12:06:26 2015 +0100
+
+    allow alternative for data()
+    
+    - node.data(<value>) or node.getData(<value>)
+    returns <value> on  _Exceptions.TreeNODATA
+
+commit dad7e6ecebe236f5756beb5117fc4684d4f6feb7
+Merge: 30d922f 2b9d1f3
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Dec 1 19:38:49 2015 +0100
+
+    Merge pull request #245 from zack-vii/aa_char_const_warning
+    
+    char const warning - no syntax error and not changes content wise
+
+commit 7749e13b6def07ed5a7ec94397dbcfdb1e7027a2
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 21:23:14 2015 +0100
+
+    added old exported function names for compatibility
+
+commit 6effffba5895ce618c2377673de7f748392e4d79
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 17:12:52 2015 +0100
+
+    systematically replaced IncludedInPulse with IncludeInPulse
+    
+    Not sure it this should be done, but at least teh treenode.py should be
+    considered. However, in this case also test1.py and treeUnitTest.py must
+    be changed (c.f. #242 and 5ab984a)
+
+commit 2b9d1f311b1813d554bbb34860ac0fc99fbfd6c0
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 10:06:35 2015 +0100
+
+    commented unused lines
+    
+    errorMessage is not used
+
+commit f37ee927a31062575c2a1eba4d4131b13434f84f
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 02:07:28 2015 +0100
+
+    replace malloc+strcpy with strdup
+    
+    these must be char * because of strcpy
+
+commit 93c8634376bea7f0ede1e4cc01a3489977e6ca96
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 01:07:29 2015 +0100
+
+    char const * warning mdsdataobjectswrp.cpp
+
+commit 83c3cb1f8d48b410847befb05b68b0066ebbf92f
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 00:44:06 2015 +0100
+
+    char const * warning
+    
+    char * = <constant string> should be char const * to avoid Warning
+
+commit 30d922f52c2426a7ba64ad0fdee31b84942f3f84 (tag: refs/tags/alpha_release-7-0-188)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 30 23:37:53 2015 -0500
+
+    New release ---- alpha_release-7-0-188
+
+commit e31b3944ec9886a9847cc1fbae7bf13968b7e857
+Merge: 5ab984a fcff9cc
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Dec 1 00:50:57 2015 +0100
+
+    Merge pull request #244 from zack-vii/aa_jtraverser
+    
+    prevent FlagDialog from getting focus
+
+commit fcff9cc55f51ce36bb492d0888b21b3a29dbe712
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Dec 1 00:25:39 2015 +0100
+
+    prevent FlagDialog from getting focus
+    
+    allows fast way of toggling flags:
+    You can navigate through a large number of nodes using arrow-keys and
+    quickly toggle flag with the mouse
+
+commit 5ab984abb8369ee9dd82052a2f5dbb716fd73ae7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 10:48:41 2015 -0500
+
+    Fix for renamed method: setIncludeInPulse. include_in_pulse attribute still refered to setIncludedInPulse.
+
+commit 0cf4e6f3b6bb41a8fa5a56fdf57257d992c83733
+Merge: bcb7529 377fde2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 09:20:20 2015 -0500
+
+    Merge pull request #242 from zack-vii/ss_setInclude(d)InPulse
+    
+    setIncludedInPulse vs include_in_pulse
+
+commit 377fde2668f94b44cdb1ec96f7afb728f501d02e
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 15:05:49 2015 +0100
+
+    setIncludedInPulse vs include_in_pulse
+    
+    should it not be setIncludeInPulse
+    but might be too late now
+
+commit bcb75293bb079817b8052b6667a38841c17008a5
+Merge: e8a2619 3956b31
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 08:40:22 2015 -0500
+
+    Merge pull request #239 from zack-vii/aa_python_mdsdata_help_etc
+    
+    cleanup setHelp, setUnits, setError ...
+
+commit e8a261977f5a69bacaf94e2f82a3cb73a995932a
+Merge: f0e800d 7d70783
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 30 08:40:05 2015 -0500
+
+    Merge pull request #240 from zack-vii/aa_python_tree_node
+    
+    tree shortcut to top
+
+commit 3956b31b07c9aba3468724b56cbdccfb2bc89c01
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 30 10:37:26 2015 +0100
+
+    fixed some comments
+    
+    included rename and removeTag
+
+commit ac6db4ba46ca15e60621ec5c2b9bcbca4d28d365
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 14:44:36 2015 +0100
+
+    return self
+    
+    add return self to all set* of TreeNode class to allow
+    node = tree.getNode(name).setOn(True).setEssential(True).putData(123)
+
+commit 2de1b109ba5dcedc047dcf932d4ce7fbd21d8690
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 13:26:25 2015 +0100
+
+    cleanup setHelp, setUnits, setError ...
+    
+    no need for extra public methods if private once are available
+    removed "_" fom _set* and _get* to replace duplicate set* and get*
+    since _set* and _get* are 'private' methods this should not affect and
+    other module
+
+commit f0e800d6aed2825770ff2b134bd455c643c9f6e5 (tag: refs/tags/alpha_release-7-0-187)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 27 23:36:56 2015 -0500
+
+    New release ---- alpha_release-7-0-187
+
+commit 0c89fa727dfc8c4e956cd7970dc5f6fd639c50af
+Merge: 19ac366 d57f018
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 15:55:13 2015 +0100
+
+    Merge pull request #241 from zack-vii/aa_jtraverser
+    
+    update flag dialog when browsing Tree
+
+commit d57f01890c1c43f58e6c34ef795f67015a5834b6
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 15:44:22 2015 +0100
+
+    update flag dialog when browsing Tree
+    
+    update dialog when using cursor keys on keyboard to browse through tree
+    allows a fast way of checking and setting flags
+
+commit 7d70783d385fb166d50fad3ee9198ae8012ac534
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 14:24:21 2015 +0100
+
+    tree shortcut to top
+    
+    added to __getattr__
+
+commit 19ac366f061f6e933c76242454a1a623895438d7
+Merge: fd18e5c c7221a1
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 13:39:00 2015 +0100
+
+    Merge pull request #238 from zack-vii/aa_mds_cygnet4k
+    
+    mds cygnet4k workover
+
+commit c7221a1b4323117e8a890a323d0cb639eabd5b08
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 13:00:47 2015 +0100
+
+    error handling
+
+commit 013bb6faf5b9287c9c8fdef83e7d0207e9a7c9f5
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 21:54:30 2015 +0100
+
+    trend to structure, added period
+
+commit ad347ae1847ca63ba149641f4ca9981657b7c46c
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 13:54:03 2015 +0100
+
+    comment on dummy libs and banned check lib from init
+
+commit e2305962b96b8bd44ffd6bf5f47913cc40f7b311
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 13:20:25 2015 +0100
+
+    fixed stop_trend, isInit flag, handle write once
+
+commit ac40e36d1097ed260dfc06856e71565e91efecb7
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 15:43:25 2015 +0100
+
+    temper cpp continue
+    
+    - export more function for testing and direct access
+    - added units
+    - turned cmos temp to raw uint16
+    - errorcodes
+    - new node labels
+
+commit 4a51eb7fb0af060fe99a15d6ff7efd7a2bc957ee
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 24 22:53:33 2015 +0100
+
+    temper cpp
+    
+    - reopen Tree before each put for transient tree
+    - cleaned up layout
+    - use fixed times for trend
+    - read temps in full steps of 0.5 secs
+    - uncomment remove(tmpPath)
+    - read temp on each frame
+
+commit 5d308a90b11b053b612da03908954b41afc21625
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 24 13:22:04 2015 +0100
+
+    CYGNET4K dummy and fixes
+    
+    - putRow -> makeSegment (put row generates shape (N,1,) we want (N,))
+    - dummy driver
+    - fix put dimensions
+    - fix time
+    - remove time from epixGetTemp@raptorLib
+    - dyn args
+
+commit 58bd82b671b0764081461b39a4298b409e94a8b7
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 27 18:55:51 2015 +0100
+
+    ACT_IDENT
+    
+    use :ACT_IDENT Node for CAMERA_SERVER
+
+commit 66389b9540f7593c7225062d2083ef5f1fee17d8
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 15:40:51 2015 +0100
+
+    Update cygnet4k to support python3
+    
+    - restructure
+    - reopen Tree before each put for transient tree
+
+commit fd18e5c2329600ae5249a46a63f38cd390ad77b3
+Merge: f40d819 7dc5dcc
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 09:54:29 2015 +0100
+
+    Merge pull request #235 from zack-vii/aa_RfxDevices
+    
+    RfxDevices update
+
+commit f40d81902e770d04510ea8654684ab479e050176
+Merge: 5eb3b56 278690e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 27 09:51:53 2015 +0100
+
+    Merge pull request #237 from zack-vii/aa_jtraverser
+    
+    jTraverser Upgrade
+
+commit 278690eb9b930a602443befe357844a99a7512a2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 03:04:06 2015 +0100
+
+    fixup! colored flags, reactivated tree updates
+
+commit f091685cb785ebeedd95ff523069955510ca516d
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 27 02:36:03 2015 +0100
+
+    colored flags, reactivated tree updates
+    
+    - get current selection instead of curr_node
+    - colorize labels according to Setup, nowrite*, writeOnce,
+    includeInPulse
+    - remove short cut in Node.getIcon to get full capabilities of JTree
+    - hence no need for TreeNode.paint -> constructor
+
+commit 7dc5dcc7a363b22fe6c3fc7b2805643b9c2e662d
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 11 09:25:34 2015 +0100
+
+    _mimport
+    
+    changed the import method
+
+commit e4e585f6f6651ad4811399392379bfcc9607ebaa
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 26 14:18:26 2015 +0100
+
+    Update to support python3
+    
+    reduced verbosity on import
+
+commit 39fbb927abf6fae83a72f1d53cb19099151ca3d4
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 20 16:16:59 2015 +0100
+
+    some rename fix
+
+commit 5eb3b56f86a7994093497fb8cbd763b0e7da3fae (tag: refs/tags/alpha_release-7-0-186)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 25 23:37:12 2015 -0500
+
+    New release ---- alpha_release-7-0-186
+
+commit 805582c6467a7f72e3543ded0b6353d8b4ab5071
+Merge: 8435a6f 3375886
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Nov 25 12:32:56 2015 -0500
+
+    Merge pull request #233 from MDSplus/twf-fix-ssh-plugin-on-windows
+    
+    Fix ssh plugin on windows and support use of putty/plink.exe for ssh …
+
+commit 3375886a9c48443e3feef5801fb8dacde6bdf874 (refs/remotes/origin/twf-fix-ssh-plugin-on-windows)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 25 11:53:21 2015 -0500
+
+    Fix ssh plugin on windows and support use of putty/plink.exe for ssh client.
+
+commit 8435a6f584a2b8c2584b42df37c978ec9c56ad68 (tag: refs/tags/alpha_release-7-0-185)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 24 23:33:26 2015 -0500
+
+    New release ---- alpha_release-7-0-185
+
+commit 9468959bb30af73a5e63d578a51d91262d285aef
+Merge: ea490f2 ecb25f9
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 24 16:00:28 2015 -0500
+
+    Merge pull request #232 from MDSplus/twf-remove-class-files-from-install
+    
+    Remove all class files from the buildroot. They are not needed in the…
+
+commit ea490f28352382724ffdd018cb99b1fd9f1667dd
+Merge: d976229 366264d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Nov 24 15:59:35 2015 -0500
+
+    Merge pull request #231 from MDSplus/twf-fix-ssh-plugin-on-windows
+    
+    Fix tunnel plugins on windows (i.e. ssh)
+
+commit ecb25f933eb3a112e61c4d6282cff7e9bb5e56fb (refs/remotes/origin/twf-remove-class-files-from-install)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 24 15:44:44 2015 -0500
+
+    Remove all class files from the buildroot. They are not needed in the install.
+
+commit 366264d12f0b9e574a33ed4ceb6d3a5da081bcdc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 24 11:30:26 2015 -0500
+
+    Fix tunnel plugins on windows (i.e. ssh)
+
+commit d9762296c2d2f07cb54dd06cfe2d9dbf8ae63dba
+Merge: c2804e7 8fbc2a6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 24 09:56:41 2015 +0100
+
+    Merge pull request #200 from zack-vii/a_jscope_eventupdate_block
+    
+    jScope eventupdate block
+
+commit c2804e7ee102ecb5474cf1d5211d76227b158a98 (tag: refs/tags/alpha_release-7-0-184)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 23 23:33:47 2015 -0500
+
+    New release ---- alpha_release-7-0-184
+
+commit cafed8669063b0b23bdbd6b32eab69ba107f2ea5
+Merge: 354d8aa 5989eca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 12:34:45 2015 -0500
+
+    Merge pull request #230 from MDSplus/twf-gil-locking-fix-for-device-setup
+    
+    1) Only do locking of python GIL when doing setup methods (needed for …
+
+commit 5989ecad26227b7180b1dcf7081bdb7ece1b4149 (refs/remotes/origin/twf-gil-locking-fix-for-device-setup)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 09:40:40 2015 -0500
+
+    1)Only do locking of python GIL when doing setup methods (needed for glade based setups).\n2)Use MdsMisc->PyCall on windows too.\n3) Prevent closing dbid tree context when doing python doMethod.\n4) Fix py function on windows.\n5) Fix tdi py functions for python3.
+
+commit 354d8aa67a4f2a6e09d554fbc9946d4f41b33ff2
+Merge: 9b15db6 3edf09d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 08:41:04 2015 -0500
+
+    Merge pull request #229 from MDSplus/bstandley-fix-thread-handling-in-tree-py
+    
+    Bstandley fix thread handling in tree py
+
+commit 8fbc2a6d943145156c02fe9c09c6eb9abfff3b87
+Merge: 188d4a0 9b15db6
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Mon Nov 23 10:59:44 2015 +0100
+
+    Merge branch 'alpha' into a_jscope_eventupdate_block
+
+commit 3edf09dc81fa06174b7a609342724174a8a7cbdd (refs/remotes/origin/bstandley-fix-thread-handling-in-tree-py)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Sat Nov 21 01:10:24 2015 +0100
+
+    Use a subclass to add attributes to threading.local, remove unnecessary global statements
+
+commit 9d589c9473fd1e3fc632a98342950778398ffb09 (refs/remotes/origin/twf-fix-thread-handling-in-tree-py)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 20 13:52:20 2015 -0500
+
+    Make the thread_data symbol global but not exported in the tree module
+
+commit 9b15db66e4180ed21a9f8422a7cf6714dccf8caa (tag: refs/tags/alpha_release-7-0-183)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Nov 19 23:32:27 2015 -0500
+
+    New release ---- alpha_release-7-0-183
+
+commit db4b68f499601bd448874911a27e24200177db54
+Merge: 8f95b04 2e6b512
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:53:29 2015 -0500
+
+    Merge pull request #218 from zack-vii/a_python_mdsdevice
+    
+    safer mdsdevice
+
+commit 8f95b0410e8f49b2c90ba7f90b1be000f675fcb2
+Merge: 7c4601f cc2b7dd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:50:49 2015 -0500
+
+    Merge pull request #223 from MDSplus/twf-fix-exceptions-for-p3
+    
+    Fix indentation problem which prevents loading module in python3
+
+commit cc2b7dd0e0e0b451b8bd4c6122e2471b2985e819
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:15:25 2015 -0500
+
+    Fix indentation problem which prevents loading module in python3
+
+commit 7c4601f0a10d761b57cd3195d88f0fb64a2c56a3 (tag: refs/tags/alpha_release-7-0-182)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 17 23:34:28 2015 -0500
+
+    New release ---- alpha_release-7-0-182
+
+commit fa3be5d1b0c5f87f3d38148a2a3195496eb9799f
+Merge: 64b6557 0460706
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 14:56:30 2015 -0500
+
+    Merge pull request #211 from MDSplus/fix-bnc845
+    
+    Handle arbitrarily long SCPI replies
+
+commit 2e6b512edad180f6eb7d075d9be33112913baa47
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 17 19:09:35 2015 +0100
+
+    safer mdsdevice
+    
+    - provides a secure environment for eval on valueExpr.
+    all MDSplus modules plus "tree", "path", "head", and "node" are
+    accessible
+
+commit 64b65573c06d61ed9339f909d2c8be4ebd41b087
+Merge: 7d13b59 f1b88d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 08:15:02 2015 -0500
+
+    Merge pull request #216 from zack-vii/aa_python_webscope
+    
+    avoid unsafe functions exec and eval
+
+commit f1b88d965b29eea8b4d6b94a449c7063600768ae
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 19:40:11 2015 +0100
+
+    avoid unsafe functions exec and eval
+    
+    - replaced exec and eval with __import__
+    - fixed error handling : AssertionError: Headers already set!
+
+commit 7d13b594bd3586ade16f2b85d8c83967a554751a
+Merge: 75a5994 84c1ec2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 17 07:55:48 2015 -0500
+
+    Merge pull request #215 from zack-vii/aa_python
+    
+    python support for disabled and compress_segments
+
+commit 84c1ec25655bd294c8015d30b5eae126c6bac715
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 17 12:21:36 2015 +0100
+
+    support for disabled and compress_segments
+    
+    - allows to set theses flags from device definition
+
+commit 75a599469528ba77a75a38ae26303fadfd144711 (tag: refs/tags/alpha_release-7-0-181)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 16 23:38:22 2015 -0500
+
+    New release ---- alpha_release-7-0-181
+
+commit 2422ad2cd4858f468cbb2405a721e501d4de5b32
+Merge: 87a9d52 d9a96ac
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Nov 16 18:07:54 2015 +0100
+
+    Merge pull request #214 from MDSplus/twf-fix-scopeutils
+    
+    Use int64_t instead of long to always use 64-bits. Also fix some comp…
+
+commit d9a96ac97ed961a397f07b17e349d8112ec37a3a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 16 11:36:26 2015 -0500
+
+    Use int64_t instead of long to always use 64-bits. Also fix some compile warnings/errors
+
+commit 87a9d52148e3941e11fd8515a4b96f6fb2491f5d
+Merge: c8a6c02 4c7a69a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 16 08:14:57 2015 -0500
+
+    Merge pull request #213 from MDSplus/twf-exception-compatibility
+    
+    Add compatibility to the older MdsException exception class
+
+commit c8a6c024d3db2749947e23a0892ad6db5d38efbc (tag: refs/tags/alpha_release-7-0-180)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 13 23:38:59 2015 -0500
+
+    New release ---- alpha_release-7-0-180
+
+commit 1bc31ba60225b4db75dd5fe0032c399abd4d5aaa (refs/remotes/origin/twf-feature-exports)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:18:47 2015 -0500
+
+    Add exports to hdf5 library
+
+commit a4356ba121c98b7c6cb62bec64258d51ce23c145
+Merge: 48f2f65 733e4ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 15:01:56 2015 -0500
+
+    Merge pull request #212 from zack-vii/aa_python_mdsarray
+    
+    fix of mdsdtype
+
+commit 4c7a69ad3bb5eefc658ff7b9d2bdfed8dc44654f (refs/remotes/origin/twf-exception-compatibility)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 14:37:39 2015 -0500
+
+    Add compatibility to old MdsException excetpion class
+
+commit 413ed349b01616a1b4705f37f0c1ffd98c6b7eef
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:27 2015 -0500
+
+    change windows exports files
+
+commit 2dfa5d2cf00910f87c779b28ea88f097d95e688a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 13 11:56:16 2015 -0500
+
+    Fix header file include for windows
+
+commit 3555cb8d758de9b63c222db9b01a2f6bb7443971
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 13 15:43:48 2015 +0100
+
+    Remove useless EXTERN
+
+commit 733e4aed3f471ddf805c5405083e25d06d085e6a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 12 21:07:37 2015 +0100
+
+    fix of mdsdtype
+    
+    - Array if 5 chars long
+    - dict contains full name
+
+commit 04607065ff69d41b01198ba2df72e17002f6e756
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Nov 12 17:02:22 2015 +0100
+
+    Handle arbitrarily long SCPI replies
+
+commit 48f2f651d6d7b722cad184e2773eeb23ef9cde83 (tag: refs/tags/alpha_release-7-0-179)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 11 23:38:34 2015 -0500
+
+    New release ---- alpha_release-7-0-179
+
+commit 023dcf65cd504c99367ecc9387a9fa865d75231a
+Merge: 44c369f 1b57996
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 11 16:58:59 2015 +0100
+
+    Merge pull request #210 from zack-vii/aa_python_tree
+    
+    all-uppercase attributes will be redirected to getNode
+
+commit 1b57996999acc3e1445fd453eea37f8083d13e13
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 11 14:51:10 2015 +0100
+
+    all-uppercase attributes will be redirected to getNode
+    
+    all-uppercase attributes will be redirected to getNode
+    - allows a shortcut of node.getNode('DESC') by using node.DESC
+    - much faster way of getting the desired node
+
+commit 44c369f77ad195f0d2143af93245e0c903d69f09 (tag: refs/tags/alpha_release-7-0-178)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 10 23:50:14 2015 -0500
+
+    New release ---- alpha_release-7-0-178
+
+commit 8976a8085c35eebf3f399c27a6c0525d6aeb2772
+Merge: 0991617 76342f6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 10 16:33:38 2015 +0100
+
+    Merge pull request #206 from zack-vii/aa_RFX_MARTE
+    
+    make MARTE Device family python3 ready
+
+commit 76342f6178c7468f71c56a872d54fe26cb6ef764
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 10 16:24:50 2015 +0100
+
+    make Devices python3 ready
+    
+    - less verbose
+    - import only what you need
+    => faster more robust
+
+commit 0991617388992a25334faf6e553a9d1c8e6a7231
+Merge: 35353e4 2996dd7
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 10 09:04:39 2015 +0100
+
+    Merge pull request #205 from zack-vii/aa_jtraverser
+    
+    remove from Tree before deleting from file
+
+commit 35353e4cd77b3163533925b3eedb159124202f4a (tag: refs/tags/alpha_release-7-0-177)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 9 23:40:55 2015 -0500
+
+    New release ---- alpha_release-7-0-177
+
+commit 2996dd77c67869f0ceb8aa4baf4a664b75f2111d
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 20:38:23 2015 +0100
+
+    remove from Tree before deleting from file
+    
+    prevents: "Error expanding tree
+    DatabaseException: %TREE-W-NNF, Node Not Found"
+    - typo
+
+commit cc6fdc425aef64b538078d169f926e6db24fd9fb
+Merge: f22eb8b 82db1c4
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Nov 9 15:51:15 2015 +0100
+
+    Merge pull request #204 from zack-vii/aa_jtraverser
+    
+    fixed status bar on resizing
+
+commit 82db1c438ad1f435f87aa23b5925d3c23af28fd4
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 15:31:45 2015 +0100
+
+    Make over of the Editors
+    
+    - optimized the use of GridLayout and BorderLayout to make make the
+    right data field to resize with the dialog window.
+    - Arguments, PyPrograms, help etc. will expand.
+
+commit af970ab9e0fa82cd03119772813d1f55cff045f1
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 10:02:18 2015 +0100
+
+    disable resizing flags dialog
+
+commit c8c6db00d3fe103fa598c3e8274b81711ea929bc
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 9 09:45:50 2015 +0100
+
+    fixed status bar on resizing
+    
+    - status bar remains a one-liner and the tree pane resizes
+
+commit f22eb8bb93aeae4c3f854f9fe543d48f4d22316d (tag: refs/tags/alpha_release-7-0-176)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Nov 6 23:36:47 2015 -0500
+
+    New release ---- alpha_release-7-0-176
+
+commit 566bcde4b68208a02c1848454593a6574d9699fe
+Merge: 6ac2d4c d5d942b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:37:36 2015 -0500
+
+    Merge pull request #198 from MDSplus/fix-obsucre-compression-bug-alpha
+    
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 6ac2d4c5fe23b2d6334349980843693f006ca75c
+Merge: 4680240 485f1d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:36:47 2015 -0500
+
+    Merge pull request #201 from MDSplus/twf-no-exception-on-treepath-puts
+    
+    Do not raise an Exception in putData if data contains a TreePath refe…
+
+commit 485f1d8243770776fcacee34a20e5ac07a74a293 (refs/remotes/origin/twf-no-exception-on-treepath-puts)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:23:28 2015 -0500
+
+    Do not raise an Exception in putData if data contains a TreePath refernce
+
+commit b639028f2eb13cfd777bbe5ab33e13f707143e54
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 16:02:31 2015 -0500
+
+    remove udt exports and export boxsmooth
+
+commit 4d6a2cc02efbd57a403ae29770c5cb6e5c0dc326
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 15:17:59 2015 -0500
+
+    More exports added
+
+commit 188d4a01a505e949949d013b4220085ba583b9c7
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Nov 6 20:33:06 2015 +0100
+
+    - added a busy check on event dispatching
+    
+    Prevents events from dispatching when busy.
+    Ii caused jScope to freeze if an event occured during loading of a
+    configuration.
+
+commit 790ac68c1a0b6f2e92655c8f05e4fb724fbf2d67
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 13:12:10 2015 -0500
+
+    Add EXPORT to functions and symbols needed to be exported and add prototypes to some of the C header files
+
+commit d5d942be8de17c08c3f35dcbce9e2fe1beb8ae77 (refs/remotes/origin/fix-obsucre-compression-bug-alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 11:31:59 2015 -0500
+
+    Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 4680240191fdb97d026b99b94f4daa4cef7ac3b3
+Merge: 464da9f f28739e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 6 16:03:52 2015 +0100
+
+    Merge pull request #196 from zack-vii/jtraverser
+    
+    Extension of jTraverser's flag editor
+
+commit 464da9faf74f23c4808bc1d2241079d3bc0eea86
+Merge: b3cb2b9 2e863be
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Nov 6 09:12:02 2015 -0500
+
+    Merge pull request #190 from MDSplus/twf-tcl-compress-segments
+    
+    Add compress_segments info with the DIR/FULL command
+
+commit f28739e198626c790fe1a9bdb39b913e1715088e
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 23:55:22 2015 +0100
+
+    extended flag dialog for remaining user defined flags
+    
+    - all 32 flags are available so one can make use of them.
+    - the last bit is the dedicated error bit. and should never be set int(flag)<0 => indicates an error
+
+commit 8ee1bbd5ba114f7209cd86c98fca71e7915d4262
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 03:17:08 2015 +0100
+
+    added status bar for stdout and stderr
+    
+    could replace System.err.println() and System.out.println()
+
+commit b5f3ac0ae4c0f6a7821d5038c5687e5d362adf6a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Nov 5 01:49:14 2015 +0100
+
+    DisplayNci to fully HTML table
+    
+    better layout of the DisplayNci to handle longer flag lines in a aligned
+    table
+
+commit 3146d823ca9afd3d19d97242ffbea467c37f560c
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 18:09:21 2015 +0100
+
+    restructured NodeInfo (expand to all flags)
+    
+    - made field private with getters
+    - modified JavaTrav.c to return flags int
+    - change dclass, dtype, and usage to byte to solve uint vs int issue
+      this fixed teh DType and Class displa on DisplayNci
+    - modified JavaTrav.c to use unsignad char for dclass, dtype, and usage
+    - modified JavaData.c to use unsignad char for dclass, dtype
+
+commit 591b46863816a3968afd2d9cfa02f0aa795589a0
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 11:25:11 2015 +0100
+
+    inner class test
+
+commit ee57cb1e401d47c94a1712540f97b9f1fb144e74
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Nov 3 19:18:12 2015 +0100
+
+    upgraded rename/move
+    
+    - fixed and implemented copy and move of node structures
+    - Ctrl+X cuts, Ctrl+C copies, and Ctrl+V pastes
+
+commit 8e010be8837e0748ec823e1a9c75bad7084b8d43
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 28 20:56:39 2015 +0100
+
+    change the rename dialog ...
+    
+    ... as it is buggy when changing the path
+    - node.rename is more like move as the full path can be changed
+    - node.renameLast is the proper rename method in node
+    - the error dialogs are safer on lower levels
+    - when requesting the node name the trimmed version is either requested
+    or should fit as well
+    - removed "node" from title as it is too long anyway
+
+commit b3cb2b918cc298189012a94ffc5c303e0efaa22c (tag: refs/tags/alpha_release-7-0-175)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Nov 4 23:38:30 2015 -0500
+
+    New release ---- alpha_release-7-0-175
+
+commit 34a4b6b03f2aa7bc0f081ae8194ed963fb9b3b2c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 4 16:58:54 2015 -0500
+
+    Fix external package requirements for rhel releases
+
+commit 5b5c1047c486be8f670ac9261e1265e0ca440855
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 4 14:51:05 2015 +0100
+
+    Added Devices for Tutorial
+
+commit 7e77e8e096d998a4b7d0a357a2b788ecd46a4c91
+Merge: f2c12f5 5ad9b1e
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 4 10:58:05 2015 +0100
+
+    Merge pull request #192 from zack-vii/RfxDevices
+    
+    fixed SyntaxWarning in Mill3.py
+
+commit 5ad9b1e8ba23dd795d21940b931ea8a261c9c618
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Nov 4 10:46:44 2015 +0100
+
+    fixed SyntaxWarning in Mill3.py
+    
+    - fixes SyntaxWarning: import * only allowed at module level
+    - removed unused stuff
+    - completed the commenting out of pymodbus
+    - cleared trailing spaces
+    - removed some empty lines
+
+commit f2c12f52f3bd5e457e480b71367819d02d053a96 (tag: refs/tags/alpha_release-7-0-174)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Nov 3 23:37:59 2015 -0500
+
+    New release ---- alpha_release-7-0-174
+
+commit 2e863be3d75f3a4080c94ce2e8a3798fca8b245a (refs/remotes/origin/twf-tcl-compress-segments)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Nov 3 08:02:01 2015 -0500
+
+    Add compress_segments info with the DIR/FULL command
+
+commit 5a4e71f2acfe4a1605779123214e86c2b78dcaea
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 3 09:56:34 2015 +0100
+
+    Add useful methods
+
+commit 6779d1ba99c44b535de5a871febb8b8249a27add
+Merge: 28720c1 f38c650
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 3 09:20:13 2015 +0100
+
+    Merge pull request #189 from zack-vii/aa_traverser_flagedit
+    
+    jTraverser flag edit dialog
+
+commit 28720c1c6e7bfc9d5519db428f94db3a52f05773 (tag: refs/tags/alpha_release-7-0-173)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Nov 2 23:42:54 2015 -0500
+
+    New release ---- alpha_release-7-0-173
+
+commit f38c65023a1f4dd3c44ba13f8bfd8d3c895bcdb2
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Nov 2 21:40:27 2015 +0100
+
+    finalized set clear flags
+    
+    - copyed correc versions of set and clear flags from tcl_set_node
+    - fixed 1>>idx to 1<<idx
+    - fixed rename dialog on changes of current node
+    - rename now closes if node is changed
+    - flag dialog updates on node changes
+
+commit 32288d99bc22b72e336f3656b211e280ef633718
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Oct 31 14:31:34 2015 +0100
+
+    static dialog class
+    
+    manages updates and closing of rename to avoid errors
+
+commit 6fa02a4e95b26cd06a9021d70c5810891bb4a00f
+Author: zack-vii <zack.vii@live.com>
+Date:   Sat Oct 31 14:30:52 2015 +0100
+
+    fixed JavaTrav return on error to -1
+
+commit 2df15b9466a1fefec7d00528ac6a4d70fcbc518c
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 30 15:05:11 2015 +0100
+
+    added setFlags and getFlags as raw version
+
+commit 9dbecd707f3ee3dec0f73d92be4bed2135d3088a
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 30 11:05:00 2015 +0100
+
+    flag dialog
+    
+    added dialog with checkboxes
+
+commit d82150981c8f50d5b24ef3afc3365201415f4e29
+Merge: a02df8e becad9f
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Nov 2 14:04:40 2015 -0500
+
+    Merge pull request #188 from MDSplus/twf-fix-add-python-device
+    
+    Fix problem with adding python device caused by recursion of deepcopy…
+
+commit becad9f2e29bb522e296bd13ca7aa790e16ab4d6 (refs/remotes/origin/twf-fix-add-python-device)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 2 13:45:13 2015 -0500
+
+    Fix problem with adding python device caused by recursion of deepcopy of TreeNode
+
+commit a02df8edc247efa69627d478dc99f0d286df78a5 (tag: refs/tags/alpha_release-7-0-172)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Oct 30 23:35:46 2015 -0400
+
+    New release ---- alpha_release-7-0-172
+
+commit cbd04237096016f19860c75b776e2d2b92a9c583 (refs/remotes/origin/test-gab)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Oct 30 18:41:00 2015 +0100
+
+    Urgent fixes to cpp TreeNode
+
+commit a18bd65c7ec3c0dd8b4c7f2478e99dbf1e827fb5
+Merge: c4c9468 b06963e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 30 08:01:54 2015 -0400
+
+    Merge pull request #185 from zack-vii/aa_python
+    
+    fixed getMembers and getChildren if empty
+
+commit b06963eb2cb74edec8fc471b2eb162ff648ff3ce
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 30 11:09:26 2015 +0100
+
+    fixed getMembers and getChildren if empty
+    
+    just like getDescendent they should return empty arrays in order to
+    support "for m in getMembers():" constructions
+
+commit c4c946896a11d3e0066f34f029812118f5a9f9ec (tag: refs/tags/alpha_release-7-0-171)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 29 23:36:13 2015 -0400
+
+    New release ---- alpha_release-7-0-171
+
+commit 8b5df966386d388fbeacc5bd8d4c21ac98ecade5
+Merge: 799a5d8 1529773
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 29 14:55:19 2015 -0400
+
+    Merge pull request #183 from zack-vii/aa_python
+    
+    fixed with structure exit
+
+commit 1529773b6133ddbe9a933a7434adb4b08a9f5e9a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 29 19:43:27 2015 +0100
+
+    fixed with structure exit
+    
+    - quit() in any case if edit, write does not close edit session
+    if you want to write you should do it intentionally (manually)
+    just make sure the tree is released.
+
+commit 799a5d8975a54d3be69667c3b935deff7ef9f0f2
+Merge: 078cd6b 334f957
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Oct 29 10:44:58 2015 +0100
+
+    Merge pull request #181 from zack-vii/aa_traverser_dialog_position
+    
+    unified origin for dialogs
+
+commit 078cd6b869942defcc9e1450910cdf97623969cb (tag: refs/tags/alpha_release-7-0-170)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 28 23:38:16 2015 -0400
+
+    New release ---- alpha_release-7-0-170
+
+commit 334f9577fa40b532179a06e628d7966f7d076dd3
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 28 22:35:39 2015 +0100
+
+    unified origin for dialogs
+    
+    - locate all dialogs relative to jTraverser
+    this is for dialogs opened by via menu as well as context menu
+    - save node check and curr_origin by ordering
+
+commit ad8df2c7d8abdf68e465fa5cf7acd8e7ca89fbd8
+Merge: 3c1bc1f f9f018c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Oct 28 10:58:37 2015 +0100
+
+    Merge pull request #179 from zack-vii/aa_cygnetak
+    
+    little cleanup and fixes (ctypes, python3)
+
+commit f9f018cec2a74ee870ffd2adbfff10a68d7f62f2
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 27 18:18:56 2015 +0100
+
+    little cleanup and fixes (ctypes, python3)
+    
+    - removed line 5 ('datetime' is unused)
+    - removed line 72 (inconsequent re-init of 'currTime', c.f. line 71)
+    - ctype.value + int ('currTime' is now ctype)
+    - removed line 118 (currTime is unused)
+    - removed trailing spaces
+    - removed terminating semicolon ';'
+    - removed 'tempIdx' (it is constant and only used in one place)
+    - 'print string' must become 'print(string)' for python3
+
+commit 3c1bc1f9dcb3eb34930dfbb84824d57c1cfda3d3
+Merge: 52ca33e db9c356
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Oct 28 09:39:06 2015 +0100
+
+    Merge pull request #177 from MDSplus/dev-bstandley
+    
+    Simplify new frame detection, upload automatically
+
+commit 52ca33ed2d61cb60349f2a5bb964319c120efd2e (tag: refs/tags/alpha_release-7-0-169)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 27 23:35:17 2015 -0400
+
+    New release ---- alpha_release-7-0-169
+
+commit 8c20d6bde292d38869ba4259e30b117942b424d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 27 15:37:20 2015 -0400
+
+    Quick fix for rhel5 which does not have PTHREAD_MUTEX_RECURSIVE defined.
+
+commit db9c3564be25c2d94db23a9d723311f8fd10afdd (refs/remotes/origin/dev-bstandley)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Tue Oct 27 13:17:06 2015 +0100
+
+    Simplify new frame detection, upload automatically
+
+commit 88391d01e5deb6f34f521be60e24aaaab1c3e5d1 (tag: refs/tags/alpha_release-7-0-168)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Oct 26 23:35:35 2015 -0400
+
+    New release ---- alpha_release-7-0-168
+
+commit 4363f2ec68b6a6d11927a639f66e4c9b71fa6f33
+Merge: a2a9654 865c76a
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Oct 26 16:50:33 2015 -0400
+
+    Merge pull request #173 from MDSplus/twf-fix-tree-cleanup-again
+    
+    Different approach to tree deletion handling. Using weakref failed to…
+
+commit 865c76a7f6b94de02b0dc93bae1a3628c5102a7c (refs/remotes/origin/twf-fix-tree-cleanup-again)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 26 16:42:19 2015 -0400
+
+    fix print in threadUnitTest.py for python3
+
+commit 33cee7571fd9a1f66cfde0068fe7ded438976fb3
+Merge: 0b8df90 a2a9654
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 26 16:23:21 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into twf-fix-tree-cleanup-again
+
+commit a2a9654062bd063f2665ad15ba471fa79a84f18e
+Merge: fdcbb71 3bdadde
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Oct 26 14:32:05 2015 +0100
+
+    Merge pull request #175 from zack-vii/a_jscope_ns
+    
+    jScope nanoseconds support
+
+commit fdcbb712caeb1c63843430194071ff78224390e9
+Merge: b97a61c 07c04a7
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Oct 26 14:31:44 2015 +0100
+
+    Merge pull request #176 from zack-vii/jtraverser
+    
+    tree open Dialog improvement
+
+commit 0b8df908abb57ff5af86a7f132aa95824d0bad64
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 23 14:12:33 2015 -0400
+
+    Fix race condition problems with threaded applications
+
+commit 07c04a7c49f8fc884ef2e0470ec9b3c0f1c02f94
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 23 16:36:23 2015 +0200
+
+    tree open Dialog improvement
+    
+    - combined common comands of if and else case
+    - removed if(curr_origin == null) which prevented Dialog to open
+    occasionally
+    - turned open mode into radio buttons (no edit+readonly)
+    - edit -> edit/new hint on edit is new if shot does not exist
+
+commit 3bdadde1ea9890deb90a8d6c29a91346f44adf6f
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 23 12:31:29 2015 +0200
+
+    jScope nanoseconds support
+    
+    convert to ms if timebase is most likely in ns x>2E13
+    (double) is unnecessary
+    make use of dayMilliSeconds as const
+
+commit b97a61c4da8fb9d1167bb1c258a7bc201e27b9c6 (tag: refs/tags/alpha_release-7-0-167)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 21 23:37:39 2015 -0400
+
+    New release ---- alpha_release-7-0-167
+
+commit e867baf8d6fcefc85b79428740f1dbf56cdc227c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 21 16:33:17 2015 -0400
+
+    Different approach to tree deletion handling. Using weakref failed to work for all cases.
+
+commit 7e35c3813bc6228ce7f0f4446f0afbe7655fa5fd
+Merge: c6ace2d a09e186
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 21 08:10:59 2015 -0400
+
+    Merge pull request #172 from zack-vii/aa_python
+    
+    rewrote _loadglobals
+
+commit c6ace2d695f2bf4727e8f9ddb3315be3d94d627d (tag: refs/tags/alpha_release-7-0-166)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 20 23:35:45 2015 -0400
+
+    New release ---- alpha_release-7-0-166
+
+commit a09e186b6058b990cc66aed70b2a17d477db7f9f
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 20 23:11:11 2015 +0200
+
+    rewrote _loadglobals
+    
+    devides modules into two groups:
+    - normal modules (require MDSplus.module.method)
+    - recursive modules (allow MDSplus.method)
+    
+    reduces the number of toplevel methods
+
+commit e6a5f09d7ace4e99fc2826852205261f0624cbdf
+Merge: 31fe619 a682e1c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 20 16:23:30 2015 -0400
+
+    Merge pull request #170 from zack-vii/aa_python
+    
+    mimport: fix for python 2.4
+
+commit a682e1c726058957f2a100ec0f89629842944409
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 20 21:57:59 2015 +0200
+
+    mimport: fix for python 2.4
+    
+    - added missing second stage in tdibuiltins.constants
+    - relocate tdibuiltins import in _descriptors to prevent circle
+    dependency in tdibuiltins.builtin
+
+commit 31fe6195d6ab8a69e2944d89185389caeb86732b
+Merge: 8f02a8e 2a39095
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 20 14:19:30 2015 -0400
+
+    Merge pull request #168 from zack-vii/aa_python
+    
+    mdsExceptions.statusToException: status to int
+
+commit 2a390951f2ac69b96366a0765f57ac4080dde676
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Oct 20 18:32:10 2015 +0200
+
+    mdsExceptions.statusToException: status to int
+    
+    status cannot be Uint32 as returned by C calls or it will not be found
+    in _statusDict
+
+commit 8f02a8ea0aaf122bb879f6b29f382e11db3c63c4 (tag: refs/tags/alpha_release-7-0-165)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Oct 19 23:35:00 2015 -0400
+
+    New release ---- alpha_release-7-0-165
+
+commit 8f72558e92b533175f7a047a1ecfd4cb74aef877
+Merge: b02ac1d a54a51d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 19 08:14:25 2015 -0400
+
+    Merge pull request #165 from zack-vii/a_python
+    
+    A python
+
+commit b02ac1d562bba692adf2c788cbe7fe99c13d05bd
+Merge: 81fa1db e8e31e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Oct 19 08:10:38 2015 -0400
+
+    Merge pull request #166 from zack-vii/aa_python
+    
+    version numpy to bytes fix
+
+commit e8e31e8c461369493bf5c7be187e23b6fbd23555
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Oct 19 11:29:19 2015 +0200
+
+    version numpy to bytes fix
+    
+    +minor change at setup
+
+commit 81fa1db7e8c1d467606715d0fe7d23182d5ed26e (tag: refs/tags/alpha_release-7-0-164)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Oct 16 23:34:42 2015 -0400
+
+    New release ---- alpha_release-7-0-164
+
+commit a54a51d58322d30f4aa8e218d8d13adee12bf083
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 16 19:55:39 2015 +0200
+
+    weakref unused, mds from _Exceptions
+
+commit 484be3fb5f2ff65a410aa4e8a25c7526c8aa73e5
+Merge: ff9ffd3 a1b2cda
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 16 10:26:04 2015 -0400
+
+    Merge pull request #150 from zack-vii/a_python
+    
+    rearraged import and _mimport
+
+commit ff9ffd3eb82b61e7f2441063a4d3fa2afe36ea1b (tag: refs/tags/alpha_release-7-0-163)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 15 23:37:47 2015 -0400
+
+    New release ---- alpha_release-7-0-163
+
+commit a1b2cda71044ec9d50a8ffb050f6bfea7851c219
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Oct 16 02:26:36 2015 +0200
+
+    try-except-mimport
+
+commit 0212353836e9281ad81f61bcb5e2a4b02f1fe012
+Merge: 7633e29 a1257ad
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 15:56:43 2015 -0400
+
+    Merge pull request #163 from zack-vii/aa_python
+    
+    builin.py   newargs vs. args[1]
+
+commit a1257addb1178a38daa61477b622250f43ed1c0f
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 15 21:37:05 2015 +0200
+
+    builin.py   newargs vs. args[1]
+    
+    either use newargs or assume tuple
+    but il len(args)==1 the old form errors
+
+commit e98773a11c4c2bcf239e7c832c85246d67e25fa6
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 15 20:15:19 2015 +0200
+
+    new _mimport functions
+    
+    all alike and at the topmost position
+
+commit 7633e29014f522f68e5a28f314731b8a0ccf43b6
+Merge: 7200077 b86d43a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 14:42:13 2015 -0400
+
+    Merge pull request #161 from zack-vii/a_python_mathops
+    
+    added _scalar for Float32 and import of mdsdata
+
+commit e31c2647498628d2edba60fa8c2780a84570877d
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 20:28:27 2015 +0200
+
+    rearraged import and _mimport
+    
+    -more straight forward way of importing modules.
+    -maybe not much faster but more consistent ; w/o level
+
+commit b86d43a1220237cf151aecb0b1fce77351aef150
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Oct 15 19:51:36 2015 +0200
+
+    added _scalar for Float32 and import of mdsdata
+    
+    coz they were missing
+
+commit 72000774be1ed0a0190af5f9ad3a71732008cada
+Merge: da2b86b 01bb934
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:36:34 2015 -0400
+
+    Merge pull request #160 from MDSplus/twf-fix-test-for-windows-alpha
+    
+    Do not try deletePulse on shots already open for write access. Ok on …
+
+commit da2b86bfb6bba7b494339459b236970e04c2b150
+Merge: 1568774 d152cec
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:28:05 2015 -0400
+
+    Merge pull request #156 from MDSplus/twf-include-version-info-in-package
+    
+    Fix to inclusion of version info in package. Must restore __init__.py…
+
+commit 15687743d76b879035d7b0d0e74e071020ea8e26
+Merge: e538274 2d9699c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Oct 15 13:27:15 2015 -0400
+
+    Merge pull request #155 from MDSplus/twf-use-weakref-for-active-tree
+    
+    Twf use weakref for active tree
+
+commit 01bb934f1fc9ca1ed82f7e3413e390c85ef56a1b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 13:18:56 2015 -0400
+
+    Do not try deletePulse on shots already open for write access. Ok on linux but not on Windows
+
+commit d152cecf268f716b7d52fbe7738551e7b52e4b86
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 12:21:51 2015 -0400
+
+    Fix to inclusion of version info in package. Must restore __init__.py even if exception occurs during setup
+
+commit 2d9699c779dc75ab7223544f80b7974b309a0289
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 12:11:19 2015 -0400
+
+    Python3 raises an exception in ininstance check if weak reference points to deleted instance
+
+commit 78158ccf866a7600c53b88d42d4268e1ae5a63be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 11:33:40 2015 -0400
+
+    Use a weakref proxy for the Tree._activeTree property to enable proper cleanup of Tree instances
+
+commit e538274c567532a86504fc8a26c16bc6e8ae3883 (tag: refs/tags/alpha_release-7-0-162)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Oct 14 23:40:56 2015 -0400
+
+    New release ---- alpha_release-7-0-162
+
+commit aab091443276833768e45b5ebfcf4e8ee354326f
+Merge: 7008337 8b58cec
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 13:58:42 2015 -0400
+
+    Merge pull request #147 from zack-vii/aaa_python
+    
+    missing level on _mimport
+
+commit 700833703b98de773cef97eb75ec081adf5198fb
+Merge: a57c5a5 1d4e178
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 13:58:18 2015 -0400
+
+    Merge pull request #146 from zack-vii/aa_python
+    
+    _descriptor c_long vs. c_int64
+
+commit a57c5a56750f8ad0bdc5251a778d17e4226949ae
+Merge: 9aab8b6 62a074e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 13:52:38 2015 -0400
+
+    Merge pull request #149 from zack-vii/a_python_mdstypes
+    
+    replace values with symboles
+
+commit 62a074ebcefdee736938f8a5731e2f0912ad7e26
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 19:24:08 2015 +0200
+
+    mdsclasses
+
+commit 8b58cec626b8df92a2440253afd45ac169707233
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 15:54:11 2015 +0200
+
+    missing level on _mimport
+    
+    >is it ever not 1?<
+
+commit 9aab8b6aa7d91089366717e9481f91a6997ceba1 (tag: refs/tags/alpha_release-7-0-161)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Oct 13 23:39:35 2015 -0400
+
+    New release ---- alpha_release-7-0-161
+
+commit 29efb867bfe8554e1166d82086b074b5546caf38
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 01:35:16 2015 +0200
+
+    substitute values with symbols
+    
+    TODO: dtypenames could be created automatically
+
+commit 1d4e178af7fdf4e93bd7d6f9d05be16ddb260f17
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Oct 14 01:32:39 2015 +0200
+
+    _descriptor c_long vs. c_int64
+    
+    we need c_int64 since c_long does not seem to represent pythons long,
+    accurately.
+
+commit 75765f73c649f0e17de720943ac43c73c1a2ad22
+Merge: 0cbf4e2 557469b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 15:20:59 2015 -0400
+
+    Merge pull request #145 from MDSplus/add-configure-to-darens-update
+    
+    Add the output from autoconf incorporating Darren's configure.ac changes
+
+commit 557469b243fc5109ae8c1a7dac674c28bada9ac5 (refs/remotes/origin/add-configure-to-darens-update)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 15:15:02 2015 -0400
+
+    Add the output from autoconf incorporating Darren's configure.ac changes
+
+commit 0cbf4e2f08319ee204eef0fd7575469258d22ed8
+Merge: fc8af71 5b5f3a0
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 15:05:19 2015 -0400
+
+    Merge pull request #138 from dgarnier/macosx_elcapitan
+    
+    MacOSX 10.11 support
+
+commit fc8af71b0618264d953c448be5cff3ec3dc751af
+Merge: 3dd6016 1ec1c96
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 13:48:01 2015 -0400
+
+    Merge pull request #143 from MDSplus/twf-fix-tdiconvert-bug
+    
+    Fix erroneous calls to WideIntToDouble and DoubleToWideInt to pass si…
+
+commit 3dd6016ea6d43185cfde0d27331add565a18717e
+Merge: 182fe6a 3e0c201
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Oct 13 13:38:28 2015 -0400
+
+    Merge pull request #141 from MDSplus/twf-add-version-to-python-package
+    
+    Add version information to the MDSplus python package
+
+commit 1ec1c9622ba0d248e80e20d02d6941e3a4bbef1f (refs/remotes/origin/twf-fix-tdiconvert-bug)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 12:00:40 2015 -0400
+
+    Fix erroneous calls to WideIntToDouble and DoubleToWideInt to pass size argument as number of ints not as number of bytes
+
+commit 3e0c201ce97a6a627d3bbf48188d22876e13da8d (refs/remotes/origin/twf-add-version-to-python-package)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Oct 13 10:38:24 2015 -0400
+
+    Add version information to the MDSplus python package
+
+commit 5b5f3a0f12cf47217526ea2a5aa2c73803059ed7
+Author: Darren Garnier <dgarnier@reinrag.net>
+Date:   Mon Oct 12 20:39:05 2015 -0400
+
+    using @loader_path in library install names so that libraries can find each other on MacOSX 10.11
+
+commit fdb7182cb0a6ad4b8d5ef4e879eec86bf912ce1a
+Author: Darren Garnier <dgarnier@newtonscientificinc.com>
+Date:   Fri Oct 9 16:06:34 2015 -0400
+
+    allow python to load MDSplus libraries without DYLD_LIBRARY_PATH
+
+commit 182fe6a4403f0045d692221aa650ef9e9c234247 (tag: refs/tags/alpha_release-7-0-160)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Oct 8 23:38:45 2015 -0400
+
+    New release ---- alpha_release-7-0-160
+
+commit adf261bac203a4c20cd570f6a5bc8d1413247e05
 Merge: 6ba268a 4841a45
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Oct 8 15:17:59 2015 -0400
@@ -323,7 +3284,7 @@ Date:   Wed Sep 30 10:44:04 2015 -0400
     
     Question about TreeUSAGE_SUBTREE_TOP when querying USAGE_STR NCI
 
-commit 984428e05c7c8d633fad7f246be92c22181a1338 (refs/remotes/origin/dev-bstandley)
+commit 984428e05c7c8d633fad7f246be92c22181a1338
 Author: Brian Standley <brian@brianstandley.com>
 Date:   Wed Sep 30 15:57:29 2015 +0200
 
@@ -439,7 +3400,7 @@ Date:   Tue Sep 29 15:01:59 2015 +0200
     
     Dev gm
 
-commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca (refs/remotes/origin/dev-gm)
+commit 364e40bcd3b30be418cc170321cfc15d93c5d8ca
 Merge: 356f704 6641aab
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Sep 29 14:56:14 2015 +0200

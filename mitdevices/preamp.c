@@ -14,7 +14,7 @@
 
 	Call sequence: 
 
-int PREAMP_ADD(struct descriptor *name,
+EXPORT int PREAMP_ADD(struct descriptor *name,
                      struct descriptor *qualifiers,
                      int                   *head_nid)
 
@@ -45,12 +45,10 @@ int PREAMP_ADD(struct descriptor *name,
 #include <math.h>
 #include "devroutines.h"
 
-extern int TdiCompile();
-
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define INPUT_NID(head_nid,part,i) head_nid + PREAMP_N_##part + i * (PREAMP_N_INPUT_02 - PREAMP_N_INPUT_01)
 
-int preamp___add(int *head_nid)
+EXPORT int preamp___add(int *head_nid)
 {
   int status;
   int i;
@@ -70,7 +68,7 @@ int preamp___add(int *head_nid)
     g2_nid = INPUT_NID((*head_nid), INPUT_01_GAIN2, i);
     offset_nid = INPUT_NID((*head_nid), INPUT_01_OFFSET, i);
     output_nid = INPUT_NID((*head_nid), INPUT_01_OUTPUT, i);
-    TdiCompile(&expression, &offset_dsc, &g1_dsc, &g2_dsc, &output_dsc, &xd MDS_END_ARG);
+    TdiCompile((struct descriptor *)&expression, &offset_dsc, &g1_dsc, &g2_dsc, &output_dsc, &xd MDS_END_ARG);
     status = TreePutRecord(input_nid, (struct descriptor *)&xd, 0);
   }
   return status;
@@ -79,7 +77,7 @@ int preamp___add(int *head_nid)
 static void ask_incaa_proc(Widget w);
 static Boolean ask_incaa_button(Widget w);
 static void ask_incaa_create(Widget w);
-int preamp__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int preamp__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   Widget dbox;
   static String uids[] = { "PREAMP.uid" };
@@ -151,7 +149,7 @@ static Boolean ask_incaa_button(Widget w)
 
 static int one = 1;
 
-int preamp___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int preamp___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int chan;
   int status;

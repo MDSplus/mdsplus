@@ -29,12 +29,12 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
     public ExprEditor(Data data, boolean default_to_string, 
 	int rows, int columns)
     {
-    	boolean quotes_needed;
+    boolean quotes_needed;
 	JScrollPane scroll_pane;
-    	this.rows = rows;
+    this.rows = rows;
 	this.columns = columns;
 	this.default_to_string = default_to_string;
-	if(rows > 1)
+    if(rows > 1)
 	    default_scroll = true;
 	if(data != null)
 	    expr = Tree.dataToString(data);
@@ -54,7 +54,8 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 		expr = expr.substring(1, expr.length() -1);
 	}  
 	else
-	    quotes_added = false; 
+	    quotes_added = false;
+    setLayout(new BorderLayout());
 	if(default_scroll) 
 	{  
 	    text_area = new JTextArea(rows,columns);
@@ -64,7 +65,6 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	    d.width += 20;
 	    scroll_pane = new JScrollPane(text_area); 
 	    scroll_pane.setPreferredSize(d);
-	    setLayout(new BorderLayout());
 	    if(quotes_needed)
 	    {
 		pl = new JPanel();
@@ -83,11 +83,11 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	}
 	else
 	{
-	    if(quotes_needed) add(left);
+	    if(quotes_needed) add(left, BorderLayout.LINE_START);
 	    text_field = new JTextField(columns);
 	    text_field.setText(expr);
-	    add(text_field);
-	    if(quotes_needed) add(right);
+        add(text_field);
+	    if(quotes_needed) add(right, BorderLayout.LINE_END );
 	}
     }
     public void actionPerformed(ActionEvent e)

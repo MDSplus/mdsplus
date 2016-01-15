@@ -8,16 +8,20 @@
 
 #ifdef _WIN32
 #define __THROW
+#define __STRING(x)	#x
 #else
 #include <sys/cdefs.h>
 #endif
 
-#ifdef _WIN32
-#define __STRING(x)	#x
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
+# ifndef EXPORT
+#  ifdef _WIN32
+#   define EXPORT __declspec(dllexport)
+#  elif HAVE_VISIBILITY
+#   define EXPORT __attribute__((__visibility__("default")))
+#  else
+#   define EXPORT
+#  endif
+# endif
 
 
 ////////////////////////////////////////////////////////////////////////////////

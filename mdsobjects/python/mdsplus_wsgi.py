@@ -94,21 +94,21 @@ Currently the following request-types are supported:
 
         var a = eval('new '+req.getResponseHeader('DTYPE')+'(req.response)');
 
-        NOTE: Typed arrays in javascript may not be supported in all browsers yet. 
-                 
+        NOTE: Typed arrays in javascript may not be supported in all browsers yet.
+
     If there is an error then there will be a request header returned called "ERROR" and its value is the error message.
-    
+
   1dsignal - Evaluate an expression and resturn a 1-D array of x values followed by a 1-D array of y values.
 
      URL: http://mywebserver-host/mdsplusWsgi/1dsignal/[tree-name/shot-number]?expr=expression
 
      Similar to the array mode but request headers returned include XDTYPE,XLENGTH,YDTYPE,YLENGTH. The contents returned
      consist of the x axis followed by the y axis. In javascript you would read the data using something like:
-                        
+
         var xlength=req.getResponseHeader('XLENGTH')
         var x = eval('new '+req.getResponseHeader('XDTYPE')+'(req.response,xlength)');
         var y = eval('new '+req.getResponseHeader('YDTYPE')+'(req.response,xlength*x.BYTES_PER_ELEMENT)');
-    
+
         NOTE: Typed arrays in javascript may not be supported in all browsers yet.
 
   treepath - Return tree_path environment variable
@@ -122,8 +122,7 @@ Currently the following request-types are supported:
        example: http://mywebserver-host/mdsplusWsgi/getNid/cmod/-1?node=\ip
 
 """
-from MDSplus import *
-import time
+from MDSplus import Tree
 import os
 import sys
 from cgi import parse_qs
@@ -144,26 +143,23 @@ class application:
         self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
         doername='do'+self.path_parts[0].capitalize()
         try:
-            exec ('from wsgi import '+doername,globals())
-            self.doer=eval(doername)
+            self.doer=__import__('MDSplus.wsgi',fromlist=[doername]).__getattribute__(doername)
         except Exception:
             self.doer=None
 
     def __iter__(self):
         try:
             if self.doer is None:
-                status = '500 BAD_REQUEST'
-                response_headers=[('Content-type','text/text')]
                 self.start('500 BAD_REQUEST',[('Content-type','text/text')])
                 output="Unsupported request type: "+self.path_parts[0]
             else:
                 status, response_headers,output = self.doer(self)
-            self.start(status,response_headers)
+                self.start(status,response_headers)
             yield output
         except Exception:
             import traceback
-            self.start('500 BAD REQUEST',[('Content-Type','text/xml')])
-            yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(traceback.format_exc()),) 
+            self.start('500 BAD REQUEST',[('Content-Type','text/text')])
+            yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(traceback.format_exc()),)
 
 
     def openTree(self,tree,shot):

@@ -21,16 +21,16 @@ public class ProcedureEditor extends JPanel implements Editor
 	GridLayout gl = new GridLayout(2,1);
 	gl.setVgap(0);
 	jp.setLayout(gl);
-	procedure_edit = new LabeledExprEditor(	"Procedure:", new ExprEditor(
+	procedure_edit = new LabeledExprEditor(	"Procedure", new ExprEditor(
 	    this.procedure.getProcedure(), true));
-	language_edit = new LabeledExprEditor(	"Language: ", new ExprEditor(
+	language_edit = new LabeledExprEditor(	"Language", new ExprEditor(
 	    this.procedure.getLanguage(), true));
 	jp.add(procedure_edit);
 	jp.add(language_edit);
 	add(jp, "North");
    	arg_edit = new ArgEditor(this.procedure.getArguments());
 	add(arg_edit, "Center");
-	timeout_edit = new LabeledExprEditor("Timeout: ", new ExprEditor(
+	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor(
 	    this.procedure.getTimeout(), false));
 	add(timeout_edit, "South");
     }

@@ -54,7 +54,7 @@ STATIC_THREADSAFE int (*MDSvfprintf) () = vfprintf;	/* not really threadsafe but
 	/******************************************************************
 	 * MDSprintf:
 	 ******************************************************************/
-int MDSprintf(char const *fmt, ...)
+EXPORT int MDSprintf(char const *fmt, ...)
 {
   va_list ap;
 

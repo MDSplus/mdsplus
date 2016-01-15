@@ -8,12 +8,12 @@
 #include "l2256_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
-extern int CamXandQ();
-extern int CamPioQrepw();
+
+
 static int one = 1;
 #define pio(f,a) {\
  if (!((status = DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,0)) & 1)) return status;}
@@ -25,7 +25,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   pio(9, 0)
@@ -33,14 +33,14 @@ int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int l2256___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l2256___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-int l2256___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l2256___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);

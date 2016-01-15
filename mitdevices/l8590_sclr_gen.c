@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l8590_sclr_gen.h"
-int l8590_sclr__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l8590_sclr__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L8590_SCLR");
@@ -128,8 +128,8 @@ int l8590_sclr__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_pt
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l8590_sclr__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-			  struct descriptor *out_d)
+EXPORT int l8590_sclr__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+			  struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };

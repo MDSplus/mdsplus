@@ -490,10 +490,10 @@ class dataTests(TestCase):
 
         doUnaryArray('zero(100)',Float32Array([range(100)])*0.0)
 
-    def runTest(self):
-        self.basicBinaryOperators()
-        self.mathFunctions()
-        self.tdiFunctions()
+#    def runTest(self):
+#        self.basicBinaryOperators()
+#        self.mathFunctions()
+#        self.tdiFunctions()
         
 
 def suite():

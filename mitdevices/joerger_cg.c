@@ -7,8 +7,8 @@
 #include <mdsshr.h>
 #include "joerger_cg_gen.h"
 #include "devroutines.h"
-extern int TdiSlopeOf();
-extern int TdiCompile();
+
+
 static int one = 1;
 #define pio(f,a,d,q) {unsigned short dv=d;\
  if (!((status = DevCamChk(CamPiow(setup->name,a,f,&dv,16,0),&one,q)) & 1)) return status;}
@@ -41,7 +41,7 @@ static int SetChannel(InInitStruct * setup, struct descriptor *channel_value, in
   if (slope != actslope) {
     static DESCRIPTOR(range, "*:*:$");
     slope = actslope;
-    TdiCompile(&range, &slope_d, &xd MDS_END_ARG);
+    TdiCompile((struct descriptor *)&range, &slope_d, &xd MDS_END_ARG);
     TreePutRecord(nid, (struct descriptor *)&xd, 0);
   }
   nid++;

@@ -1,3 +1,9 @@
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
 from os.path import dirname as _dirname, basename as _basename
 import glob as _g
 
@@ -5,8 +11,16 @@ import glob as _g
 class MDSplusException(Exception):
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __init__(self,status=None):
-    if status is not None:
+    if isinstance(status,int):
       self.status=status
+    else:
+      self.status=-1
+      self.msgnam='UNKNOWN'
+      if isinstance(status,str):
+          self.message=status
+      else:
+          self.message='Unknown exception'
+      self.fac='MDSplus'
     self.severity=self.severities[self.status & 7]
 
   def __str__(self):
@@ -41,17 +55,10 @@ class MDSplusUnknown(MDSplusException):
 
 _modules=_g.glob(_dirname(__file__)+"/*.py")
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
-
 for _m in _modules:
   if '__init__' not in _m:
     _m=_basename(_m)[0:-3]
-    _m=_mimport(_m,1)
+    _m=_mimport(_m)
     for _key in _m.__dict__:
       globals()[_key]=_m.__dict__[_key]
 
@@ -66,6 +73,7 @@ for exception in _all:
     _statusDict[_all[exception].status & -8]=_all[exception]
 
 def statusToException(status):
+  status = int(status)
   if (status & -8) in _statusDict:
     return _statusDict[status & -8](status)
   elif status == 0:

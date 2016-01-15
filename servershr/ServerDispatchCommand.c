@@ -33,7 +33,7 @@ int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$d
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
+EXPORT int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
 			  void (*ast) (), void *astprm, int *retstatus, void (*before_ast) ())
 {
   struct descrip p1, p2;

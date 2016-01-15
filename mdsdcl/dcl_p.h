@@ -88,5 +88,6 @@ extern int mdsdcl_do_help(const char *command, char **error, char **output);
 extern int mdsdclDeltatimeToSeconds(const char *deltatime);
 extern int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
 		      char **output_out, char *(*getline) (), void *getlineinfo);
-
+extern void dclLock();
+extern void dclUnlock();
 #endif

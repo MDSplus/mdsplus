@@ -5,7 +5,7 @@ set -e
 #
 # Get the 3rd party software headers etc from github
 #
-wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+wget -q --no-check-certificate -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
 #
 # make the root to build into
 #

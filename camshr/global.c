@@ -12,8 +12,9 @@
 //-------------------------------------------------------------------------
 
 #include "common.h"
+#include <config.h>
 
-int CTSdbFileIsMapped = FALSE;
-int CRATEdbFileIsMapped = FALSE;
-struct MODULE *CTSdb;
-struct CRATE *CRATEdb;
+EXPORT int CTSdbFileIsMapped = FALSE;
+EXPORT int CRATEdbFileIsMapped = FALSE;
+EXPORT struct MODULE *CTSdb;
+EXPORT struct CRATE *CRATEdb;

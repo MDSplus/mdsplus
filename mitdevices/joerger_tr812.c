@@ -11,11 +11,11 @@
 #include "joerger_tr812_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
-extern int CamXandQ();
+
 
 struct _f0a0 {
   unsigned pretrigger:3;

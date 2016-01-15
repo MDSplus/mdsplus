@@ -29,13 +29,13 @@ TreeThreadStatic *TreeGetThreadStatic()
 
 void *DBID = 0;
 
-void **TreeCtx()
+EXPORT void **TreeCtx()
 {
   TreeThreadStatic *p = TreeGetThreadStatic();
   return (p->privateCtx == 1) ? &p->DBID : &DBID;
 }
 
-int TreeUsePrivateCtx(int onoff)
+EXPORT int TreeUsePrivateCtx(int onoff)
 {
   TreeThreadStatic *p = TreeGetThreadStatic();
   int old = p->privateCtx;
@@ -43,7 +43,7 @@ int TreeUsePrivateCtx(int onoff)
   return old;
 }
 
-int TreeUsingPrivateCtx()
+EXPORT int TreeUsingPrivateCtx()
 {
   TreeThreadStatic *p = TreeGetThreadStatic();
   return p->privateCtx;

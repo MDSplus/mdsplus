@@ -1,15 +1,13 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_mimport('_loadglobals',1).load(globals())
-
-_treeshr=_mimport('_treeshr',1)
-_treenode=_mimport('treenode',1)
-_compound=_mimport('compound',1)
+from os import getenv
+_treeshr=_mimport('_treeshr')
+_treenode=_mimport('treenode')
+_compound=_mimport('compound')
 
 class Device(_treenode.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
@@ -23,7 +21,7 @@ class Device(_treenode.TreeNode):
     when you need to include references to other nodes in the device. Lastly the dict instance may contain an 'options' key whose values are
     node options specified as a tuple of strings. Note if you only specify one option include a trailing comma in the tuple.The "parts" attribute
     is used to implement the Add and PART_NAME and ORIGNAL_PART_NAME methods of the subclass.
-    
+
     You can also include a part_dict class attribute consisting of a dict() instance whose keys are attribute names and whose values are nid
     offsets. If you do not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
     to lowercase and the colons and periods are replaced with underscores. Referencing a part name will return another instance of the same
@@ -31,7 +29,7 @@ class Device(_treenode.TreeNode):
     attributes which is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass names MUST BE UPPERCASE!
 
     Sample usage1::
-    
+
        from MDSplus import Device
 
        class MYDEV(Device):
@@ -80,15 +78,15 @@ class Device(_treenode.TreeNode):
            def store(self,arg):
                from MDSplus import Signal
                self.chan1=Signal(32,None,42)
-               
+
     If you need to reference attributes using computed names you can do something like::
 
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    
+    debug = getenv('DEBUG_DEVICES')
     gtkThread = None
-    
+
     def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):
@@ -130,11 +128,9 @@ class Device(_treenode.TreeNode):
             self.head=node.nid
         super(Device,self).__init__(node.nid,node.tree)
 
-    def ORIGINAL_PART_NAME(self,arg):
+    def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @param arg: Not used. Placeholder for do method argument
-        @type arg: Use None
         @return: Part name of this node
         @rtype: str
         """
@@ -174,7 +170,7 @@ class Device(_treenode.TreeNode):
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
-    def Add(cls,tree,path):
+    def Add(cls,tree,name):
         """Used to add a device instance to an MDSplus tree.
         This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
         For this to work the device class name (uppercase only) and the package name must be returned in the MdsDevices tdi function.
@@ -185,27 +181,33 @@ class Device(_treenode.TreeNode):
         And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
         on (i.e. write_once).
         """
+        parent = tree
+        if isinstance(tree, _treenode.TreeNode): tree = tree.tree
         cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
-        head=tree.addNode(path,'DEVICE')
+        head=parent.addNode(name,'DEVICE')
         head=cls(head)
         head.record=_compound.Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
         head.write_once=True
-        for elt in cls.parts:
-            node=tree.addNode(path+elt['path'],elt['type'])
-        for elt in cls.parts:
-            node=tree.getNode(path+elt['path'])
+        import MDSplus
+        glob = MDSplus.__dict__
+        glob['tree'] = tree
+        glob['path'] = head.path
+        glob['head'] = head
+        for elt in cls.parts:  # first add all nodes
+            node=head.addNode(elt['path'],elt['type'])
+        for elt in cls.parts:  # then you can reference them in valueExpr
+            node=head.getNode(elt['path'])
             if 'value' in elt:
-                node.record=elt['value']
-            if 'valueExpr' in elt:
-                try:
-                    import MDSplus
-                except:
-                    pass
-                node.record=eval(elt['valueExpr'])
+                if Device.debug: print(node,node.usage,elt['value'])
+                node.record = elt['value']
+            elif 'valueExpr' in elt:
+                glob['node'] = node
+                if Device.debug: print(node,node.usage,elt['valueExpr'])
+                node.record = eval(elt['valueExpr'], glob)
             if 'options' in elt:
                 for option in elt['options']:
-                    exec('node.'+option+'=True')
+                    node.__setattr__(option,True)
         _treeshr.TreeEndConglomerate(tree)
     Add=classmethod(Add)
 
@@ -213,19 +215,12 @@ class Device(_treenode.TreeNode):
     def dw_setup(self,*args):
         """Bring up a glade setup interface if one exists in the same package as the one providing the device subclass
 
-        The gtk.main() procedure must be run in a separate thread to avoid locking the main program. If this method
-        is invoked via the Py() TDI function, care must be made to do unlock the python thread lock the first time
-        a gtkMain thread is created. This thread unlocking has to be done in the Py TDI function after the GIL state
-        has been restored. This method sets a public TDI variable, _PyReleaseThreadLock, which is inspected in the Py
-        function and if defined, the Py function will release the thread lock. This locking scheme was arrived at
-        after several days of trial and error and seems to work with at least Python versions 2.4 and 2.6.
+        The gtk.main() procedure must be run in a separate thread to avoid locking the main program.
         """
         try:
             from widgets import MDSplusWidget
-#            from mdsdata import Data
-            from mdsscalar import Int32
             import gtk.glade
-            import os,gtk,inspect,threading#,gobject
+            import os,gtk,inspect,threading
             import sys
             class gtkMain(threading.Thread):
                 def run(self):
@@ -235,7 +230,7 @@ class Device(_treenode.TreeNode):
                     self.content=[]
                 def write(self,string):
                     self.content.append(string)
-                        
+
             gtk.gdk.threads_init()
             out=MyOut()
             sys.stdout = out
@@ -255,8 +250,6 @@ class Device(_treenode.TreeNode):
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()
         if Device.gtkThread is None or not Device.gtkThread.isAlive():
-            if Device.gtkThread is None:
-                Int32(1).setTdiVar("_PyReleaseThreadLock");
             Device.gtkThread=gtkMain()
             Device.gtkThread.start()
         return 1
@@ -268,8 +261,7 @@ class Device(_treenode.TreeNode):
                  if toplevel.get_property('type') == gtk.WINDOW_TOPLEVEL]
         if len(windows) == 1:
             gtk.main_quit()
-            
+
     def waitForSetups(cls):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)
-

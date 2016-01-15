@@ -39,7 +39,7 @@ extern int TdiByte();
 extern int TdiDimOf();
 extern int TdiCvt();
 
-struct descriptor *StepResample(struct descriptor *in_sig, struct descriptor *in_x)
+EXPORT struct descriptor *StepResample(struct descriptor *in_sig, struct descriptor *in_x)
 {
 
 #define return_on_error(func) if (!((status = func)&1)) return (struct descriptor *)&emptyxd;

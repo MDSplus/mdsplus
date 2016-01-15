@@ -77,7 +77,7 @@ int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descript
       }
       TdiThreadStatic()->compiler_recursing = 1;
       if (!TdiRefZone.l_zone)
-	status = LibCreateVmZone(&TdiRefZone.l_zone, 0, 0, 0, 0, 0, 0, 0, 0, 0, &compile_zone);
+	status = LibCreateVmZone(&TdiRefZone.l_zone);
 
 	/****************************************
                   In case we bomb out, probably not needed.

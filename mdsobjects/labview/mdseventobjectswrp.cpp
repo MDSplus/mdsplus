@@ -8,12 +8,12 @@ using namespace std;
 												EVENT
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNameIn, ErrorCluster *error)
+EXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNameIn, ErrorCluster *error)
 {
 	Event *eventPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		eventPtrOut = new Event(const_cast<char *>(evNameIn));
@@ -30,19 +30,19 @@ DLLEXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNam
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_destructor(void **lvEventPtr)
+EXPORT void mdsplus_event_destructor(void **lvEventPtr)
 {
 	Event *eventPtr = reinterpret_cast<Event *>(*lvEventPtr);
 	delete eventPtr;
 	*lvEventPtr = NULL;
 }
 
-DLLEXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
+EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
@@ -58,11 +58,11 @@ DLLEXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error)
+EXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	char const * errorSource = __func__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try {
 		*timeoutOccurred = 0;
 		Event * eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
@@ -79,12 +79,12 @@ DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOu
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred, ErrorCluster *error)
+EXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	*timeoutOccurred = 0;
 	try
 	{
@@ -105,13 +105,13 @@ std::cout << "EVENTO ARRIVATO....\n";
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
@@ -124,7 +124,7 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &e)
@@ -138,13 +138,13 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
 	char const * byteArrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
@@ -160,7 +160,7 @@ std::cout << "EVENTO ARRIVATO....\n";
 			(*lvByteArrHdlOut)->dimSize = static_cast<int32>(byteArrLen);
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 	}
 	catch (const MdsException &e)
 	{
@@ -172,11 +172,11 @@ std::cout << "EVENTO ARRIVATO....\n";
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error)
+EXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		Event::setEvent(const_cast<char *>(evNameIn));
@@ -191,12 +191,12 @@ DLLEXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error)
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error)
 {
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
@@ -212,12 +212,12 @@ DLLEXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvD
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
+EXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
 {
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		int int8ArrLen = static_cast<int>((*lvByteArrHdlIn)->dimSize);
@@ -242,12 +242,12 @@ DLLEXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByt
 												REVENT
  *******************************************************************************************************
 
-DLLEXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evNameIn, ErrorCluster *error)
+EXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evNameIn, ErrorCluster *error)
 {
 	REvent *reventPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		reventPtrOut = new REvent(const_cast<char *>(evNameIn));
@@ -264,18 +264,18 @@ DLLEXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evN
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_destructor(void **lvREventPtr)
+EXPORT void mdsplus_revent_destructor(void **lvREventPtr)
 {
 	REvent *reventPtr = reinterpret_cast<REvent *>(*lvREventPtr);
 	delete reventPtr;
 	*lvREventPtr = NULL;
 }
 
-DLLEXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrOut, ErrorCluster *error)
+EXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrOut, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		REvent * reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
@@ -292,13 +292,13 @@ DLLEXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrO
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	REvent *reventPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
@@ -311,7 +311,7 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 			(*lvStrHdlOut)->cnt = strOutLen;
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &e)
@@ -325,13 +325,13 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
+EXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
 {
 	REvent *reventPtr = NULL;
 	char const * byteArrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
@@ -345,7 +345,7 @@ DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByte
 			(*lvByteArrHdlOut)->dimSize = static_cast<int32>(byteArrLen);
 		}
 		else
-			errorMessage = "NumericArrayResize error";
+			errorMessage = (char *)"NumericArrayResize error";
 	}
 	catch (const MdsException &e)
 	{
@@ -357,13 +357,13 @@ DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByte
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_getTime(const void *lvREventPtr, void **lvUint64PtrOut, ErrorCluster *error)
+EXPORT void mdsplus_revent_getTime(const void *lvREventPtr, void **lvUint64PtrOut, ErrorCluster *error)
 {
 	REvent *reventPtr = NULL;
 	Uint64 *uint64PtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
@@ -381,12 +381,12 @@ DLLEXPORT void mdsplus_revent_getTime(const void *lvREventPtr, void **lvUint64Pt
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_run(const void *lvREventPtr, ErrorCluster *error)
+EXPORT void mdsplus_revent_run(const void *lvREventPtr, ErrorCluster *error)
 {
 	REvent *reventPtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
@@ -402,12 +402,12 @@ DLLEXPORT void mdsplus_revent_run(const void *lvREventPtr, ErrorCluster *error)
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_setEvent(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_revent_setEvent(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error)
 {
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
@@ -423,12 +423,12 @@ DLLEXPORT void mdsplus_revent_setEvent(const char *evNameIn, const void *lvDataP
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error)
+EXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error)
 {
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
@@ -444,12 +444,12 @@ DLLEXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
+EXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
 {
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		int int8ArrLen = static_cast<int>((*lvByteArrHdlIn)->dimSize);
@@ -470,12 +470,12 @@ DLLEXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvBy
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
+EXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
 {
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
+	char const * errorMessage = (char *)"";
 	try
 	{
 		int int8ArrLen = static_cast<int>((*lvByteArrHdlIn)->dimSize);

@@ -1,370 +1,410 @@
-from MDSplus import *
-from numpy import *
-from threading import *
-from ctypes import *
-import datetime
-import time
-import tempfile
-import os
+from MDSplus import mdsExceptions, Device, Data, Tree, Dimension
+from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
+from threading import Thread
+from ctypes import CDLL, byref, c_byte, c_short, c_int, c_double, c_void_p, c_char_p
+from tempfile import mkstemp
+from time import sleep, time
+from os import close, remove
+from sys import exc_info
 
 class CYGNET4K(Device):
-    print 'Cygnet4K'
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Cygnet 4K sCMOS Camera"""
     parts=[
-      {'path':':CONF_FILE', 'type':'text'},
+      {'path':':CONF_FILE', 'type':'text','options':('no_write_shot',)},
       {'path':':COMMENT', 'type':'text'},
-      {'path':':ID', 'type':'numeric', 'value':1},
-      {'path':':EXP_TIME', 'type':'numeric', 'value':1.}, # msec
-      {'path':':BINNING', 'type':'text', 'value':'1x1'},
-      {'path':':ROI_X', 'type':'numeric', 'value':0},
-      {'path':':ROI_Y', 'type':'numeric', 'value':0},
-      {'path':':ROI_WIDTH', 'type':'numeric', 'value':2048},
-      {'path':':ROI_HEIGHT', 'type':'numeric', 'value':2048},
-      {'path':':FRAME_SYNC', 'type':'text', 'value':'EXTERNAL RISING'},
-      {'path':':FRAME_FREQ', 'type':'numeric', 'value':10.}, # Hz
-      {'path':':FRAME_CLOCK', 'type':'numeric'},
-      {'path':':TRIG_TIME', 'type':'numeric', 'value':0.},
-      {'path':':DURATION', 'type':'numeric', 'value':1.},
-      {'path':':CMOS_TEMP', 'type':'numeric'},
-      {'path':':PCB_TEMP', 'type':'numeric'},
-      {'path':':USE_TREND', 'type':'numeric', 'value':0},
-      {'path':':TREND_NAME', 'type':'text'},
-      {'path':':TREND_SHOT', 'type':'numeric'},
-      {'path':':TREND_PCB', 'type':'text'},
-      {'path':':TREND_CMOS', 'type':'text'},
-      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
-    parts.append({'path':':INIT_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
-    parts.append({'path':':START_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_store',head))",
-	  'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_store',head))",
-	  'options':('no_write_shot')})
-    parts.append({'path':':START_MON_T','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_temp_monitor',head))",
-	  'options':('no_write_shot',)})
-    parts.append({'path':':STOP_MON_T','type':'action',
-	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_temp_monitor',head))",
-	  'options':('no_write_shot')})
-    print 'Cygnet4K added'
- 
+      {'path':':DEVICE_ID', 'type':'numeric', 'valueExpr':"Int32(1)",'options':('no_write_shot',)},
+      {'path':':TRIGGER_TIME', 'type':'numeric', 'valueExpr':"Float64(0).setUnits('s')",'options':('no_write_shot',)},
+      {'path':':DURATION', 'type':'numeric', 'valueExpr':"Float64(3).setUnits('s')",'options':('no_write_shot',)},
+      {'path':':EXPOSURE', 'type':'numeric', 'valueExpr':"Float64(90).setUnits('ms')",'options':('no_write_shot',)}, # msec
+      {'path':':FRAME_MODE', 'type':'text', 'value':'EXTERNAL RISING','options':('no_write_shot',)},
+      {'path':':FRAME_RATE', 'type':'numeric', 'valueExpr':"Float64(10).setUnits('Hz')",'options':('no_write_shot',)}, # Hz
+      {'path':':TREND', 'type':'structure'},
+      {'path':':TREND:TREE', 'type':'text','options':('no_write_shot',)},
+      {'path':':TREND:SHOT', 'type':'numeric','options':('no_write_shot',)},
+      {'path':':TREND:PCB', 'type':'text','options':('no_write_shot',)},
+      {'path':':TREND:CMOS', 'type':'text','options':('no_write_shot',)},
+      {'path':':TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
+      {'path':':TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start_trend',head))",'options':('no_write_shot','write_once')},
+      {'path':':TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_trend',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACT_IDENT', 'type':'text','value':'CAMERA_SERVER','options':('no_write_shot',)},
+      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',40,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start_store',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'stop_store',head))",'options':('no_write_shot','write_once')},
+      {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
+      {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
+      {'path':':TEMP_CMOS', 'type':'numeric','options':('no_write_model','write_once')},
+      {'path':':TEMP_PCB', 'type':'numeric','options':('no_write_model','write_once')},
+      {'path':':FRAMES', 'type':'signal','options':('no_write_model','write_once')},
+    ]
+    raptorLib = None
+    mdsLib = None
+    isOpen = False
+    isInitialized = {}
+    trendworkers = {}
+    workers = {}
+    handels = {}
 
-####Asynchronous temp readout internal class
-    class AsynchTemp(Thread):
-      
-      def configure(self, device, id, mdsLib, raptorLib, hasTrend, trendPcbNode, trendCmosNode):
-        self.device = device
-        self.id = id
-        self.mdsLib = mdsLib
-        self.raptorLib = raptorLib
-        self.hasTrend = hasTrend
-        self.trendPcbNode = trendPcbNode
-        self.trendCmosNode = trendCmosNode
-        self.stopReq = False
- 
-      def run(self):
-        pcbTemp = c_float(0)
-        cmosTemp = c_float(0)
-        currTime = c_long(0)
-        currTime = 0
-        tempIdx = 0;
-        startTime = time.time() * 1000
-        while (not self.stopReq):
-          self.raptorLib.epixGetTemp(c_int(1), c_int(tempIdx), byref(pcbTemp), byref(cmosTemp), byref(currTime))
-          self.device.pcb_temp.putRow(1024, Float32(pcbTemp), Uint64(currTime))
-          self.device.cmos_temp.putRow(1024, Float32(cmosTemp), Uint64(currTime))
-          if (self.hasTrend):
-            self.trendPcbNode.putRow(1024, Float32(pcbTemp), Uint64(currTime + startTime))
-            self.trendCmosNode.putRow(1024, Float32(cmosTemp), Uint64(currTime + startTime))
-          time.sleep(0.5)
-        return 0
+    """dummy drivers for testing"""
+    class _mdsLib(object):
+        def __init__(self):
+            self.tree = None
+        def camOpenTree(self, char_p_name, int_shot, ref_treePtr):
+            try:
+                self.tree = Tree(char_p_name.value,int_shot.value)
+                ref_treePtr._obj.value = self.tree.ctx.value
+                return 1
+            except:
+                return -1
+        def camStartSaveDeferred(self,*argin):
+            return 1
+        def camStopSave(self,*argin):
+            return 1
 
-      def stop(self):
-        self.stopReq = True
-############################################################
+    class _raptorLib(object):
+        def __init__(self):
+            self.clock = time()
+            self.t0 = 0
+        def epixClose(self):
+            return 1
+        def epixOpen(self,char_p_tmpPath):
+            return 1
+        def epixSetConfiguration(self, iID, float_frameRate, int_codedTrigMode):
+            self.float_frameRate = float_frameRate
+            return 1
+        def epixGetConfiguration(self,iID, ref_binning, ref_sRoiXSize, ref_sRoiXOffset, ref_sRoiYSize, ref_sRoiYOffset):
+            ref_binning._obj.value = 0x00
+            ref_sRoiXSize._obj.value = 2048
+            ref_sRoiXOffset._obj.value = 0
+            ref_sRoiYSize._obj.value = 2048
+            ref_sRoiYOffset._obj.value = 0
+            return 1
+        def epixStartVideoCapture(self,iID):
+            return 1
+        def epixCaptureFrame(self, iID, iFramesNid, dTriggerTime, iTimeoutMs, pTree, pList, piBufIdx, piFrameIdx, piBaseTicks, pdCurrTime):
+            for i in range(100):
+                now = time()
+                if(piFrameIdx._obj.value == 0):
+                    self.t0 = now;
+                pdCurrTime._obj.value = now - self.t0 + dTriggerTime.value
+                if now-self.clock>1./self.float_frameRate.value:
+                    self.clock = now
+                    piFrameIdx._obj.value = piFrameIdx._obj.value+1
+                    if Device.debug:
+                        print("FRAME %d READ AT TIME %f" % (piFrameIdx._obj.value, pdCurrTime._obj.value))
+                    return 1
+                sleep(0.005)
+            return 0
+        def epixStopVideoCapture(self,iID):
+            return 1
+        def getPCBTemp(self,iID):
+            return int((36+((time()*1000) % 10)/10.)*16)
+        def getCMOSTemp(self,iID):
+            return int(1700+((time()*1000) % 100))
+    """dummy drivers for testing - end"""
 
+    @staticmethod  # allows it to be called eg in python for direct interaction
+    def checkLibraries():
+        if CYGNET4K.raptorLib is None:
+            try:
+                CYGNET4K.raptorLib = CDLL("libRaptor.so")
+            except OSError:
+                print('Raptor: '+exc_info()[1].strerror+'. Using dummy driver.')
+                CYGNET4K.raptorLib = CYGNET4K._raptorLib()
+        if CYGNET4K.mdsLib is None:
+            try:
+                CYGNET4K.mdsLib = CDLL("libcammdsutils.so")
+            except OSError:
+                print('cammdsutils: '+exc_info()[1].strerror+'. Using dummy driver.')
+                CYGNET4K.mdsLib = CYGNET4K._mdsLib()
 
-####Asynchronous readout internal class       
-    class AsynchStore(Thread):
-      frameIdx = 0
-      stopReq = False
-   
-    
-      def configure(self, device, id, mdsLib, raptorLib, xPixels, yPixels, duration):
-        self.device = device
-        self.id = id
-        self.mdsLib = mdsLib
-        self.raptorLib = raptorLib
-        self.xPixels = xPixels
-        self.yPixels = yPixels
-        self.duration = duration
+    def __init__(self, n):
+        super(CYGNET4K,self).__init__(n)
+        self.trendworker = None
+        self.worker = None
+        self.handle = None
 
-
-      def run(self):
-        treePtr = c_void_p(0)
-        status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
-        if status == -1:
-          Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
-          return 0
-                
-        listPtr = c_void_p(0);
-        self.mdsLib.camStartSaveDeferred(byref(listPtr))
-#        self.mdsLib.camStartSave(byref(listPtr))
-
-
-        currTime = 0.0
-        frameIdx = c_int(0)
-        baseTicks = c_int(-1)
-        timeoutMs = c_int(500)
-        bufIdx = c_int(-1)
-        timebaseNid = self.device.frame_clock.getNid()
-        framesNid = self.device.frames.getNid()
-        measuredTimes = []
-        currDuration = c_float(0)
-        prevTime = self.device.trig_time.data()
-        stopped = False
-
-        self.raptorLib.epixStartVideoCapture(c_int(self.id))
-#        print('  capture started')
-#        ts = time.time()
-        while not self.stopReq:
-          if(self.duration <= 0 or currDuration < self.duration):
-            self.raptorLib.epixCaptureFrame(c_int(self.id), frameIdx, bufIdx, baseTicks, c_int(self.xPixels), c_int(self.yPixels), c_int(framesNid), c_int(timebaseNid), treePtr, listPtr, timeoutMs, byref(frameIdx), byref(bufIdx), byref(baseTicks), byref(currDuration))
-            currTime = self.device.trig_time.data() + currDuration.value
-            if currTime > prevTime:
-#              print('  %0.3f since start of capture' % (time.time() - ts))
-              measuredTimes.append(currTime)
-              prevTime = currTime
-              if(self.duration > 0 and currDuration >= self.duration):
-                self.raptorLib.epixStopVideoCapture(c_int(self.id));
-                self.device.frame_clock.putData(Float32Array(measuredTimes))
-                stopped = True
-            else: 
-              time.sleep(0.005) # I think it should be a relatively short sleep so we do not miss any frames. --Brian
-
-#Finished storing frames, stop camera integration and store measured frame times
-        if (not stopped):
-          self.raptorLib.epixStopVideoCapture(c_int(self.id));
-          self.device.frame_clock.putData(Float32Array(measuredTimes))
-        self.mdsLib.camStopSave(listPtr)        
-        return 0
-
-
-      def stop(self):
-        self.stopReq = True
-#end class AsynchStore
-
-
-
-
-###save worker###  
-    def saveWorker(self):
-      global raptorWorkers
-      global raptorWorkerNids
-      try:
-        raptorWorkers
-      except:
-        raptorWorkerNids = []
-        raptorWorkers = []
-      try:
-        idx = raptorWorkerNids.index(self.getNid())
-        try:
-          raptorWorkers[idx].stopReq = True
-        except:
-          pass
-        raptorWorkers[idx] = self.worker
-      except:
-        raptorWorkerNids.append(self.getNid())
-        raptorWorkers.append(self.worker)
-        return
-      return
-
-
-###restore worker###   
-    def restoreWorker(self):
-      global raptorWorkers    
-      global raptorWorkerNids
-      try:
-        idx = raptorWorkerNids.index(self.getNid())
-        self.worker = raptorWorkers[idx]
-      except:
-        print 'Cannot restore worker!!'
-
-###save temperature worker###  
-    def saveTempWorker(self):
-      global raptorTempWorkers
-      global raptorTempWorkerNids
-      try:
-        raptorTempWorkers
-      except:
-        raptorTempWorkerNids = []
-        raptorTempWorkers = []
-      try:
-        idx = raptorTempWorkerNids.index(self.getNid())
-        try:
-          raptorTempWorkers[idx].stopReq = True
-        except:
-          pass
-        raptorTempWorkers[idx] = self.worker
-      except:
-        raptorTempWorkerNids.append(self.getNid())
-        raptorTempWorkers.append(self.tempWorker)
-        return
-      return
-
-
-###restore temperature worker###   
-    def restoreTempWorker(self):
-      global raptorTempWorkers    
-      global raptorempWorkerNids
-      try:
-        idx = raptorTempWorkerNids.index(self.getNid())
-        self.tempWorker = raptorTempWorkers[idx]
-      except:
-        print 'Cannot restore worker!!'
-
-##Check for libraries
-    def checkLibraries(self):
-      global raptorLib
-      global mdsLib
-      try:
-        raptorLib
-      except:
-        raptorLib = CDLL("libRaptor.so")
-      try:
-        mdsLib
-      except:
-        mdsLib = CDLL("libcammdsutils.so")
-
-##Adjust config file
     def genconf(self):
-      confPath = self.conf_file.data()
-      exposure = self.exp_time.data()
-      if exposure < 0     : exposure = 0.0     # must avoid negative numbers
-      if exposure > 13000 : exposure = 13000.0 # tested with a (80 MHz) config file specifiying 10s exposures at 0.1Hz, so this is a safe limit at 60MHz
-      exp_clks = '%08X' % int(exposure * 60e3)
-      byte_str = [exp_clks[0:2], exp_clks[2:4], exp_clks[4:6], exp_clks[6:8]]
-      print(byte_str)
-      line0 = '    0x124F0450,     0x53060D50,     0x06D402E0,     0xE0530650,     0x5000ED02,     0x02E05306,     0x0650' + byte_str[0] + 'EE,     0xEF02E053,     \n'
-      line1 = '    0x530650' + byte_str[1] + ',     0x' + byte_str[2] + 'F002E0,     0xE0530650,     0x50' + byte_str[3] + 'F102,     0x02E05306,     0x06502FDD,     0xDE02E053,     0x530650AF,     \n'
+        confPath = self.conf_file.data()
+        exposure = float(self.exposure.data())
+        if exposure < 0.     : exposure = 0.     # must avoid negative numbers
+        if exposure > 13000. : exposure = 13000. # tested with a (80 MHz) config file specifiying 10s exposures at 0.1Hz, so this is a safe limit at 60MHz
+        if Device.debug: print("EXPOSURE (SET): %f" % exposure)
+        exp_clks = '%08X' % int(exposure * 60e3)
+        byte_str = [exp_clks[0:2], exp_clks[2:4], exp_clks[4:6], exp_clks[6:8]]
+        if Device.debug: print(byte_str)
+        line0 = '    0x124F0450,     0x53060D50,     0x06D402E0,     0xE0530650,     0x5000ED02,     0x02E05306,     0x0650' + byte_str[0] + 'EE,     0xEF02E053,     \n'
+        line1 = '    0x530650' + byte_str[1] + ',     0x' + byte_str[2] + 'F002E0,     0xE0530650,     0x50' + byte_str[3] + 'F102,     0x02E05306,     0x06502FDD,     0xDE02E053,     0x530650AF,     \n'
+        fh, abs_path = mkstemp()
+        with open(abs_path, 'w') as adjusted:
+            with open(confPath) as original:
+                for line in original:
+                    if   line.startswith('    0x124F04') : adjusted.write(line0)
+                    elif line.startswith('    0x530650') : adjusted.write(line1)
+                    else                                 : adjusted.write(line)
+        close(fh)
+        return abs_path
 
-      fh, abs_path = tempfile.mkstemp()
-      with open(abs_path, 'w') as adjusted:
-        with open(confPath) as original:
-          for line in original:
-            if   line.startswith('    0x124F04') : adjusted.write(line0)
-            elif line.startswith('    0x530650') : adjusted.write(line1)
-            else                                 : adjusted.write(line)
-      os.close(fh)
-      return abs_path
+    """methods for action nodes"""
 
-##########init############################################################################    
-    def init(self,arg):
-      global raptorLib
-      global mdsLib
-      self.frames.setCompressOnPut(False)	
-      self.checkLibraries()
-      tmpPath = self.genconf()
-      xPixels = c_int(0)
-      yPixels = c_int(0)
-      raptorLib.epixClose() # as config file is dynamically generated we want to force a re-open
-      raptorLib.epixOpen(c_char_p(tmpPath), byref(xPixels), byref(yPixels))
-#      os.remove(tmpPath) # should uncomment this line at some point --Brian
-      idx = self.id.data();
-      if idx <= 0:
-        print 'Wrong value of Device Id, must be greater than 0'
-        return 0
-      frameRate = self.frame_freq.data();
-      exposure = self.exp_time.data()
-      trigMode = self.frame_sync.data()
-      codedTrigMode = 0
-      if(trigMode == 'EXTERNAL RISING'): 
-        codedTrigMode = 0xC0
-      if(trigMode == 'EXTERNAL FALLING'): 
-        codedTrigMode = 0x40
-      if(trigMode == 'INTEGRATE THEN READ'): 
-        codedTrigMode = 0x0C
-      if(trigMode == 'FIXED FRAME RATE'): 
-        codedTrigMode = 0x0E
-      print "EXPOSURE: ", exposure
-      raptorLib.epixSetConfiguration(c_int(idx), c_float(frameRate), c_float(exposure), c_int(codedTrigMode))
-      PCBTemperature = c_float(0)
-      CMOSTemperature = c_float(0)
-      binning = c_int(0)
-      roiXSize = c_int(0)
-      roiXOffset = c_int(0)
-      roiYSize = c_int(0)
-      roiYOffset = c_int(0)
-
-      raptorLib.epixGetConfiguration(c_int(idx), byref(PCBTemperature), byref(CMOSTemperature), byref(binning), byref(roiXSize), byref(roiXOffset), byref(roiYSize), byref(roiYOffset))
-      if(binning == 0x00):
-        self.binning.putData('1x1')
-      if(binning == 0x11):
-        self.binning.putData('2x2')
-      if(binning == 0x22):
-        self.binning.putData('4x4')
-      self.roi_x.putData(Int32(roiXOffset))
-      self.roi_width.putData(Int32(roiXSize))
-      self.roi_y.putData(Int32(roiYOffset))
-      self.roi_height.putData(Int32(roiYSize))
-
-      return 1
-		
-##########start store############################################################################   
-    def start_store(self, arg):
-      global raptorLib
-      global mdsLib
-      self.checkLibraries()
-      self.worker = self.AsynchStore()        
-      self.worker.daemon = True 
-      self.worker.stopReq = False
-      self.worker.configure(self, self.id.data(), mdsLib, raptorLib, self.roi_width.data(), self.roi_height.data(), self.duration.data())
-      self.saveWorker()
-      self.worker.start()
-
-      return 1
-
-##########stop store############################################################################   
-    def stop_store(self,arg):
-      self.restoreWorker()
-      self.worker.stop()
-      self.worker.join()
-      return 1
-
-##########start store############################################################################   
-    def start_temp_monitor(self, arg):
-      global raptorLib
-      global mdsLib
-      self.checkLibraries()
-      self.tempWorker = self.AsynchTemp()        
-      self.tempWorker.daemon = True 
-      self.tempWorker.stopReq = False
-      useTrend = self.use_trend.data()
-      if (useTrend == 1):
-        trendName = self.trend_name.data()
-        trendShot = self.trend_shot.data()
-        trendPcbName = self.trend_pcb.data()
-        trendCmosName = self.trend_cmos.data()
+    def init(self):
+        dev_id = int(self.device_id.data())
+        if dev_id < 0:
+            print('Wrong value of Device Id, must be greater than 0.')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        CYGNET4K.checkLibraries()
+        tmpPath = self.genconf()
+        CYGNET4K.raptorLib.epixClose() # as config file is dynamically generated we want to force a re-open
+        CYGNET4K.isOpen = False
+        CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(tmpPath))
+        if not CYGNET4K.isOpen:
+            print('Could not open camera. No camera connected?.')
+            raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+        remove(tmpPath)
+        frameRate = self.frame_rate.data()
+        trigMode = self.frame_mode.data()
+        codedTrigMode = 0
+        if Device.debug: print('TriggerMode: %s' % trigMode)
+        if(trigMode == 'EXTERNAL RISING'):
+            codedTrigMode = 0xC0
+        elif(trigMode == 'EXTERNAL FALLING'):
+            codedTrigMode = 0x40
+        elif(trigMode == 'INTEGRATE THEN READ'):
+            codedTrigMode = 0x0C
+        elif(trigMode == 'FIXED FRAME RATE'):
+            codedTrigMode = 0x0E
+        else:
+            raise mdsExceptions.DevBAD_MODE
+        CYGNET4K.raptorLib.epixSetConfiguration(c_int(dev_id), c_double(frameRate), c_byte(codedTrigMode))
+        cBinning    = c_byte(0)
+        sRoiXSize   = c_short(0)
+        sRoiXOffset = c_short(0)
+        sRoiYSize   = c_short(0)
+        sRoiYOffset = c_short(0)
+        CYGNET4K.raptorLib.epixGetConfiguration(c_int(dev_id), byref(cBinning), byref(sRoiXSize), byref(sRoiXOffset), byref(sRoiYSize), byref(sRoiYOffset))
+        CYGNET4K.isInitialized[dev_id] = True
+        if(cBinning.value == 0x00):
+            binning= '1x1'
+        elif(binning.value == 0x11):
+            binning = '2x2'
+        elif(binning.value == 0x22):
+            binning = '4x4'
+        else:
+            binning = '%x' % binning.value
+        if Device.debug: print('binning %s' % binning)
+        sRoiRect = Uint16Array([sRoiXOffset.value,sRoiYOffset.value,sRoiXSize.value,sRoiYSize.value])
+        sRoiRect.help = '[x,y,width,height]'
         try:
-          trendTree = Tree(trendName, trendShot)
-          trendPcbNode = trendTree.getNode(trendPcbName)
-          trendCmosNode = trendTree.getNode(trendCmosName)
+            self.binning.record = binning
+            self.roi_rect.record = sRoiRect
+        except mdsExceptions.TreeNOOVERWRITE:
+            if not (self.binning.data() == binning) and all(self.roi_rect.data() == sRoiRect):
+                print('Re-initialization error: Parameter mismatch!')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+
+    def start_store(self):
+        dev_id = int(self.device_id.data())
+        if dev_id < 0:
+            print('Wrong value of Device Id, must be greater than 0.')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        if not CYGNET4K.isInitialized.get(dev_id,False):
+            print('Device not initialized: Run init first.')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        self.frames.deleteData()  # checks if we can write
+        self.worker = self.AsynchStore()
+        self.worker.configure(self, dev_id)
+        self.saveWorker()
+        self.worker.start()
+
+    def stop_store(self):
+        if not self.restoreWorker():
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        self.worker.stop()
+        self.worker.join()
+
+    def start_trend(self):
+        dev_id = int(self.device_id.data())
+        if dev_id < 0:
+            print('Wrong value of Device Id, must be greater than 0')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        CYGNET4K.checkLibraries()
+        if not CYGNET4K.isOpen:
+            conffile = self.conf_file.data()
+            CYGNET4K.isOpen = 0<=CYGNET4K.raptorLib.epixOpen(c_char_p(conffile))
+            if not CYGNET4K.isOpen:
+                print('Could not open camera. No camera connected?.')
+                raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+        try:#test open Nodes
+            trendTree = str(self.trend_tree.data())
+            trendShot = int(self.trend_shot.data())
+            try:
+                trendPcb = str(self.trend_pcb.data())
+            except:
+                trendPcb = None
+            try:
+                trendCmos = str(self.trend_cmos.data())
+            except:
+                trendCmos = None
         except:
-          print 'Cannot access nodes of temperature trend tree'
-          useTrend = 0
-          trendPcbNode = 0
-          trendCmosNode = 0
-      self.tempWorker.configure(self, self.id.data(), mdsLib, raptorLib, useTrend, trendPcbNode, trendCmosNode)
-      self.saveTempWorker()
-      self.tempWorker.start()
+            print('Check TREND_TREE and TREND_SHOT.')
+            raise mdsExceptions.TreeNODATA
+        self.trendWorker = self.AsynchTrend()
+        self.trendWorker.configure(self, dev_id, trendTree, trendShot, trendPcb, trendCmos)
+        self.saveTrendWorker()
+        self.trendWorker.start()
 
-      return 1
+    def stop_trend(self):
+        if not self.restoreTrendWorker():
+            raise mdsExceptions.TclFAILED_ESSENTIAL
+        self.trendWorker.stop()
+        self.trendWorker.join()
 
-##########stop store############################################################################   
-    def stop_temp_monitor(self,arg):
-      self.restoreTempWorker()
-      self.tempWorker.stop()
-      return 1
+    """worker related methods and classes"""
+
+    def saveWorker(self):
+        if self.nid in CYGNET4K.workers.keys():
+            try:
+                CYGNET4K.workers[self.nid].stop()
+            except:
+                pass
+        CYGNET4K.workers[self.nid] = self.worker
+
+    def restoreWorker(self):
+        if self.nid in CYGNET4K.workers.keys():
+            self.worker = CYGNET4K.workers[self.nid]
+            return True
+        print('Cannot restore worker!!\nMaybe no worker has been started.')
+        return False
+
+    def saveTrendWorker(self):
+        if self.nid in CYGNET4K.trendworkers.keys():
+            try:
+                CYGNET4K.trendworkers[self.nid].stop()
+            except:
+                pass
+        CYGNET4K.trendworkers[self.nid] = self.trendworker
+
+    def restoreTrendWorker(self):
+        if self.nid in CYGNET4K.trendworkers.keys():
+            self.trendworker = CYGNET4K.trendworkers[self.nid]
+            return True
+        print('Cannot restore worker!!\nMaybe no worker has been started.')
+        return False
+
+
+    class AsynchStore(Thread):
+        def configure(self, device, dev_id):
+            self.device = device
+            self.dev_id = dev_id
+            self.framesNid = device.frames.nid
+            self.duration = float(device.duration.data())
+            self.stopReq = False
+            self.daemon = True
+            self.triggerTime = float(device.trigger_time.data(0))
+
+        def run(self):
+            """prepare capturing"""
+            pTree = c_void_p(0)
+            status = CYGNET4K.mdsLib.camOpenTree(c_char_p(self.device.tree.name), c_int(self.device.tree.shot), byref(pTree))
+            if status == -1:
+                Data.execute('DevLogErr($1,$2)', self.device.nid, 'Cannot open tree')
+                raise mdsExceptions.TreeFOPENW
+            pList = c_void_p(0)
+            CYGNET4K.mdsLib.camStartSaveDeferred(byref(pList)) # alt: camStartSave
+            iID = c_int(self.dev_id)
+            iFramesNid = c_int(self.framesNid)
+            dTriggerTime = c_double(self.triggerTime)
+            iTimeoutMs = c_int(500)
+            iBufIdx = c_int(-1)
+            iFrameIdx = c_int(0)
+            iBaseTicks = c_int(-1)
+            dCurrTime = c_double(0)
+            piBufIdx = byref(iBufIdx)
+            piFrameIdx = byref(iFrameIdx)
+            piBaseTicks = byref(iBaseTicks)
+            pdCurrTime = byref(dCurrTime)
+            """capture temps before"""
+            pcbTemp =  [CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.,None]
+            cmosTemp = [CYGNET4K.raptorLib.epixGetCMOSTemp(iID)   ,None]
+            """start capturing frames"""
+            CYGNET4K.raptorLib.epixStartVideoCapture(iID)
+            while (not self.stopReq) and (self.duration < 0 or dCurrTime.value < self.duration):
+                CYGNET4K.raptorLib.epixCaptureFrame(iID, iFramesNid, dTriggerTime, iTimeoutMs, pTree, pList, piBufIdx, piFrameIdx, piBaseTicks, pdCurrTime)
+            """Finished storing frames, stop camera integration and store measured frame times"""
+            CYGNET4K.raptorLib.epixStopVideoCapture(iID)
+            """capture temps after"""
+            pcbTemp[1]  = CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.
+            cmosTemp[1] = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
+            self.device.temp_pcb.record  = Float32Array(pcbTemp)
+            self.device.temp_cmos.record = Int16Array(cmosTemp)
+            """transfer data to tree"""
+            CYGNET4K.mdsLib.camStopSave(pList)
+            print('done')
+
+        def stop(self):
+            self.stopReq = True
+
+
+    class AsynchTrend(Thread):
+        def configure(self, device, dev_id, trendTree, trendShot, trendPcb, trendCmos):
+            self.device = device
+            self.dev_id = dev_id
+            self.period = float(device.trend_period.data())
+            self.tree = trendTree
+            self.shot = trendShot
+            self.pcb = trendPcb
+            self.cmos = trendCmos
+            self.stopReq = False
+            self.daemon = True
+
+        def run(self):
+            try:#test open Nodes
+                tree = Tree(self.tree, self.shot)
+                try:
+                    tree.getNode(self.pcb)
+                except Exception as exc:
+                    print(exc)
+                    self.pcb = None
+                try:
+                    tree.getNode(self.cmos)
+                except Exception as exc:
+                    print(exc)
+                    self.cmos = None
+            except Exception as exc:
+                print(exc)
+                print('Cannot access trend tree. Check TREND:TREE and TREND_SHOT.')
+                raise mdsExceptions.TreeTNF
+            if self.pcb is None and self.cmos is None:
+                print('Cannot access any node for trend. Check TREND:PCB, TREND:CMOS on. Nodes must exist on %s.' % repr(tree))
+                raise mdsExceptions.TreeNNF
+            if self.pcb is None:
+                print('Cannot access node for pcb trend. Check TREND:PCB. Continue with cmos trend.')
+            elif self.cmos is None:
+                print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
+            iID = c_int(self.dev_id)
+            print('started trend on dev %d writing to %s - %s and %s every %fs' % (self.dev_id,self.tree,self.pcb,self.cmos,self.period))
+            while (not self.stopReq):
+                timeTillNextMeasurement = self.period-(time() % self.period)
+                if timeTillNextMeasurement>0.6:
+                    sleep(.5)  # listen to stopReq
+                else:
+                    sleep(timeTillNextMeasurement);  # wait remaining period unit self.period
+                    currTime = int(int(time()/self.period+.1)*self.period*1000);  # currTime in steps of self.period
+                    try:
+                        if self.shot==0:
+                            if Tree.getCurrent(self.tree) != tree.shot:
+                                tree = Tree(self.tree, self.shot)
+                        if self.pcb is not None:
+                            pcbTemp = CYGNET4K.raptorLib.epixGetPCBTemp(iID)/16.
+                            tree.getNode(self.pcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
+                        if self.cmos is not None:
+                            cmosTemp = CYGNET4K.raptorLib.epixGetCMOSTemp(iID)
+                            tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
+                        if Device.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
+                    except Exception as exc:
+                        print(exc)
+                        print('failure during temperature readout')
+                    sleep(0.01)
+            print('done')
+
+        def stop(self):
+            self.stopReq = True

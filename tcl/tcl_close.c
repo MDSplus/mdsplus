@@ -21,7 +21,7 @@
 	 * TclClose:
 	 * Close tree file(s).
 	 ***************************************************************/
-int TclClose(void *ctx, char **error, char **output)
+EXPORT int TclClose(void *ctx, char **error, char **output)
 {
   int sts;
   char *exp = 0;

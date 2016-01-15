@@ -44,7 +44,7 @@
 #ifdef SRB
 #define SRB_SOCKET 12345	/* this is the socket value used to indicate that
 				   this file is an an SRB file.  Positive so that
-				   other MDSPlus checks pass, but a value that 
+				   other MDSPlus checks pass, but a value that
 				   otherwise will not occur */
 #include "srbUio.h"
 #endif
@@ -198,6 +198,7 @@ STATIC_ROUTINE void MdsIpFree(void *ptr)
 
 STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
 {
+  int host_in_directive;
   struct _host_list *hostchk;
   struct _host_list **nextone;
   STATIC_THREADSAFE int (*rtn) (char *) = 0;
@@ -220,12 +221,12 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
     if (dbid && hostchk->dbid != dbid)
       continue;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-    if (((getaddr_status == 0) ? memcmp(&sockaddr, &hostchk->sockaddr,
-					sizeof(sockaddr)) : strcmp(hostchk->host, host)) == 0)
+    host_in_directive = (((getaddr_status == 0) ? memcmp(&sockaddr, &hostchk->sockaddr,
+					sizeof(sockaddr)) : strcmp(hostchk->host, host)) == 0);
 #else
-    if (strcmp(hostchk->host, host) == 0)
+    host_in_directive = (strcmp(hostchk->host, host) == 0);
 #endif
-    {
+    if (host_in_directive){
       hostchk->time = time(0);
       if (inc_count)
 	hostchk->connections++;

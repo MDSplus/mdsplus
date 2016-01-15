@@ -50,7 +50,7 @@ libMdsTestUtils_a_SOURCES = $(_SOURCES)
 # This library aims to provide the test symbols for the MdsCall object check
 #
 libMdsTestDummy.so: testutils.cpp
-	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 	
 MOSTLYCLEANFILES = libMdsTestDummy.so
 

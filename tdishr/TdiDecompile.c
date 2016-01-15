@@ -115,12 +115,12 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
       max((unsigned int)1, a_ptr->length);
   int j, status;
 
-  status = StrAppend(out_ptr, &LEFT_BRACKET);
+  status = StrAppend(out_ptr, (struct descriptor *)&LEFT_BRACKET);
   if (level > 0)
     for (j = n; --j >= 0 && status & 1;) {
       status = tdi_vector(in_ptr, level - 1, item_ptr_ptr, out_ptr);
       if (j > 0 && status & 1)
-	status = StrAppend(out_ptr, &COMMA_SPACE);
+	status = StrAppend(out_ptr, (struct descriptor *)&COMMA_SPACE);
   } else {
     struct descriptor one = *in_ptr;
     int length = a_ptr->length;
@@ -150,12 +150,12 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 	  break;
 	}
       if (++j < n && status & 1)
-	status = StrAppend(out_ptr, &COMMA);
+	status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
     }
     *item_ptr_ptr = pitem;
   }
   if (status & 1)
-    status = StrAppend(out_ptr, &RIGHT_BRACKET);
+    status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_BRACKET);
   return status;
 }
 
@@ -363,12 +363,12 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
         Watch null pointer.
         ******************/
   if (!in_ptr)
-    return StrAppend(out_ptr, &STAR);
+    return StrAppend(out_ptr, (struct descriptor *)&STAR);
 
   dtype = in_ptr->dtype;
   switch (in_ptr->class) {
   default:
-    status = StrAppend(out_ptr, &CLASS);
+    status = StrAppend(out_ptr, (struct descriptor *)&CLASS);
     if (status & 1)
       status = TdiSingle(in_ptr->class, out_ptr);
     break;
@@ -379,7 +379,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   case CLASS_D:
     switch (dtype) {
     default:
-      status = StrAppend(out_ptr, &DTYPE);
+      status = StrAppend(out_ptr, (struct descriptor *)&DTYPE);
       if (status & 1)
 	status = TdiSingle(dtype, out_ptr);
       break;
@@ -399,7 +399,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	}
 	n1c = n1 < n2 ? '\'' : '\"';
 	QUOTE.pointer = &n1c;
-	status = StrAppend(out_ptr, &QUOTE);
+	status = StrAppend(out_ptr, (struct descriptor *)&QUOTE);
 	cptr = in_ptr->pointer;
 	for (j = in_ptr->length; --j >= 0; cptr++) {
 	  if (*cptr == n1c)
@@ -447,17 +447,17 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	      break;
 	    }
 	  if (status & 1 && (t2.length = (unsigned short)(cptr - t2.pointer)) > 0)
-	    status = StrAppend(out_ptr, &t2);
+	    status = StrAppend(out_ptr, (struct descriptor *)&t2);
 	  t2.pointer = cptr + 1;
 	  c0[0] = '\\';
 	  if (status & 1)
-	    status = StrAppend(out_ptr, &cdsc);
+	    status = StrAppend(out_ptr,(struct descriptor *) &cdsc);
 	  cdsc.length = 2;
 	}
 	if (status & 1 && (t2.length = (unsigned short)(cptr - t2.pointer)) > 0)
-	  status = StrAppend(out_ptr, &t2);
+	  status = StrAppend(out_ptr, (struct descriptor *)&t2);
 	if (status & 1)
-	  status = StrAppend(out_ptr, &QUOTE);
+	  status = StrAppend(out_ptr, (struct descriptor *)&QUOTE);
 	break;
       }
 
@@ -467,7 +467,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       if (status & 1)
 	status = noblanks(&cdsc);
       if (status & 1)
-	status = StrAppend(out_ptr, &cdsc);
+	status = StrAppend(out_ptr, (struct descriptor *)&cdsc);
       break;
     case DTYPE_B:
     case DTYPE_W:
@@ -533,7 +533,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       cdsc.length = (unsigned short)((in_ptr->length - 1) * 8 * .30103 + 6.8);
       status = closeup((char)TdiREF_CAT[dtype].fname[0], in_ptr, &cdsc);
       if (status & 1)
-	status = StrAppend(out_ptr, &cdsc);
+	status = StrAppend(out_ptr, (struct descriptor *)&cdsc);
       break;
 
     case DTYPE_DC:
@@ -544,7 +544,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_FTC:
       {
 	struct descriptor temp = *in_ptr;
-	StrAppend(out_ptr, &CMPLX);
+	StrAppend(out_ptr, (struct descriptor *)&CMPLX);
 	switch (temp.dtype) {
 	case DTYPE_DC:
 	  temp.dtype = DTYPE_D;
@@ -567,10 +567,10 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	}
 	temp.length /= 2;
 	Tdi0Decompile(&temp, P_ARG, out_ptr);
-	StrAppend(out_ptr, &COMMA);
+	StrAppend(out_ptr, (struct descriptor *)&COMMA);
 	temp.pointer += temp.length;
 	Tdi0Decompile(&temp, P_ARG, out_ptr);
-	StrAppend(out_ptr, &RIGHT_PAREN);
+	StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
 	status = 1;
 	break;
       }
@@ -583,12 +583,12 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
                 *****************/
     case DTYPE_MISSING:
       if (in_ptr->class != CLASS_XD)
-	status = StrAppend(out_ptr, &MISSING);
+	status = StrAppend(out_ptr, (struct descriptor *)&MISSING);
       break;
     case DTYPE_IDENT:
       t2 = *in_ptr;
       t2.dtype = DTYPE_T;
-      status = StrAppend(out_ptr, &t2);
+      status = StrAppend(out_ptr, (struct descriptor *)&t2);
       break;
 
 		/*********
@@ -599,7 +599,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	char *path = TreeGetMinimumPath(0, *(int *)in_ptr->pointer);
 	if (path != NULL) {
 	  DESCRIPTOR_FROM_CSTRING(path_d, path);
-	  status = StrAppend(out_ptr, &path_d);
+	  status = StrAppend(out_ptr, (struct descriptor *)&path_d);
 	  TreeFree(path);
 	} else
 	  status = TreeFAILURE;
@@ -621,10 +621,10 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	  status = TreeFAILURE;
 	if (status & 1) {
 	  DESCRIPTOR_FROM_CSTRING(path_d, path);
-	  status = StrAppend(out_ptr, &path_d);
+	  status = StrAppend(out_ptr, (struct descriptor *)&path_d);
 	  TreeFree(path);
 	} else
-	  status = StrAppend(out_ptr, in_ptr);
+	  status = StrAppend(out_ptr, (struct descriptor *)in_ptr);
       }
       break;
     case DTYPE_EVENT:
@@ -638,7 +638,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	char outstr[256];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
 	out.length = sprintf(outstr, "Pointer(%p)", *(void **)in_ptr->pointer);
-	status = StrAppend(out_ptr, &out);
+	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
     }
@@ -704,7 +704,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	struct descriptor text = { 0, DTYPE_T, CLASS_S, 0 };
 	text.length = (unsigned short)strlen(bptr);
 	text.pointer = bptr;
-	status = StrAppend(out_ptr, &text);
+	status = StrAppend(out_ptr, (struct descriptor *)&text);
       }
 
 		/*****************************************
@@ -712,16 +712,16 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
                 *****************************************/
       if (a_ptr->aflags.bounds) {
 	more = 1;
-	status = StrAppend(out_ptr, &SET_RANGE);
+	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if (status & 1)
 	    status = TdiSingle(a_ptr->m[dimct + 2 * j], out_ptr);
 	  if (status & 1)
-	    status = StrAppend(out_ptr, &COLON);
+	    status = StrAppend(out_ptr, (struct descriptor *)&COLON);
 	  if (status & 1)
 	    status = TdiSingle(a_ptr->m[dimct + 2 * j + 1], out_ptr);
 	  if (status & 1)
-	    status = StrAppend(out_ptr, &COMMA);
+	    status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
 	}
       }
 
@@ -729,12 +729,12 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
                 Specify shape of array. SET_RANGE(size, ...
                 ******************************************/
       else if (more) {
-	status = StrAppend(out_ptr, &SET_RANGE);
+	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if (status & 1)
 	    status = TdiSingle(coeff ? a_ptr->m[j] : count, out_ptr);
 	  if (status & 1)
-	    status = StrAppend(out_ptr, &COMMA);
+	    status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
 	}
       }
 
@@ -747,15 +747,15 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	if (status & 1)
 	  status = Tdi0Decompile(&one, P_ARG, out_ptr);
 	if (status & 1)
-	  status = StrAppend(out_ptr, &MORE);
+	  status = StrAppend(out_ptr, (struct descriptor *)&MORE);
       } else {
 	char *pitem = (char *)a_ptr->pointer;
 	status = tdi_vector((struct descriptor *)a_ptr, dimct - 1, &pitem, out_ptr);
       }
       if (more && status & 1)
-	status = StrAppend(out_ptr, &RIGHT_PAREN);
+	status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
       if (bptr && status & 1)
-	status = StrAppend(out_ptr, &RIGHT_PAREN);
+	status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
     }
     break;
   }				/*switch class */

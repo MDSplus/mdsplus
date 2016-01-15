@@ -37,12 +37,13 @@
 #include <Xmds/XmdsXdBoxP.h>
 static void LoadDialog(Widget shell, Widget xdbw);
 extern void XmdsXdBoxLoad();
+#include <xmdsshr.h>
 /****************************************************
   Routine to create a Popup Xd Widget.  Use
   resources originalXd, and buttonCallback to setup
   the initial widget.
 ****************************************************/
-Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
 
   /*------------------------------------------------------------------------------

@@ -6,6 +6,7 @@ import java.rmi.RemoteException.*;
 import javax.swing.tree.*;
 import java.awt.*;
 
+
 public class Node
 {
     RemoteTree experiment;
@@ -16,15 +17,15 @@ public class Node
     Node[] sons;
     Node[] members;
     boolean is_member;
-    JLabel tree_label = null;
-    NodeBeanInfo bean_info = null;
+    JLabel tree_label;
+    NodeBeanInfo bean_info;
     Tree hierarchy;
-    static Node copiedNode = null;
+    static Node copiedNode;
     boolean needsOnCheck = true;
-    boolean is_on = false;
+    boolean is_on;
+    private DefaultMutableTreeNode treenode;
 
-    public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException,
-        RemoteException
+    public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException, RemoteException
     {
         this.experiment = experiment;
         this.hierarchy = hierarchy;
@@ -39,25 +40,21 @@ public class Node
         members = new Node[0];
     }
 
-    public Node(RemoteTree experiment, Tree hierarchy, Node parent,
-                boolean is_member, NidData nid)
+    public Node(RemoteTree experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
     {
         this.experiment = experiment;
         this.hierarchy = hierarchy;
-        this.nid = nid;
         this.parent = parent;
-        try
-        {
-            info = experiment.getInfo(nid, Tree.context);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error getting info " + e);
-        }
+        this.is_member = is_member;
+        this.nid = nid;
+        try{info = experiment.getInfo(nid, Tree.context);}
+        catch (Exception exc){jTraverser.stderr("Error getting info", exc);}
         sons = new Node[0];
         members = new Node[0];
-
     }
+
+    public void setTreeNode(DefaultMutableTreeNode treenode){this.treenode = treenode;}
+    public DefaultMutableTreeNode getTreeNode(){return treenode;}
 
     void setOnUnchecked()
     {
@@ -83,11 +80,14 @@ public class Node
             info = experiment.getInfo(nid, Tree.context);
             tree_label = null;
         }
-        catch (Exception e)
-        {
-            System.out.println("Error getting info " + e);
-        }
+        catch (Exception exc){jTraverser.stderr("Error getting info", exc);}
     }
+
+    public void updateCell()
+    {
+        ;
+    }
+
 
     public void updateData() throws DatabaseException, RemoteException
     {
@@ -131,27 +131,15 @@ public class Node
 
     public void turnOn()
     {
-        try
-        {
-            experiment.setOn(nid, true, Tree.context);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error turning on " + e.getMessage());
-        }
+        try{experiment.setOn(nid, true, Tree.context);}
+        catch (Exception exc){jTraverser.stderr("Error turning on", exc);}
         setOnUnchecked();
     }
 
     public void turnOff()
     {
-        try
-        {
-            experiment.setOn(nid, false, Tree.context);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error turning on " + e.getMessage());
-        }
+        try{experiment.setOn(nid, false, Tree.context);}
+        catch (Exception exc){jTraverser.stderr("Error turning off", exc);}
         setOnUnchecked();
     }
 
@@ -167,7 +155,6 @@ public class Node
                                           "Error executing message",
                                           JOptionPane.WARNING_MESSAGE);
         }
-
     }
 
     public void setData(Data data) throws DatabaseException, RemoteException
@@ -184,14 +171,63 @@ public class Node
 
     public NodeInfo getInfo() throws DatabaseException, RemoteException
     {
-        if (info == null)
+        try{
             info = experiment.getInfo(nid, Tree.context);
+        }
+        catch (Exception exc){jTraverser.stderr("Error checking info",exc);}
         return info;
     }
 
-    public void setInfo(NodeInfo info) throws DatabaseException,
-        RemoteException
+    public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
+
+    public final Node[] getSons(){return sons;}
+    public final Node[] getMembers(){return members;}
+    public final String toString(){return getName();}
+    // info interface
+    public final byte getDType(){return info.getDType();}
+    public final byte getDClass(){return info.getDClass();}
+    public final byte getUsage(){return info.getUsage();}
+    public final int getOwner() {return info.getOwner();}
+    public final int getLength() {return info.getLength();}
+    public final int getConglomerateNids() {return info.getConglomerateNids(); }
+    public final int getConglomerateElt() { return info.getConglomerateElt();}
+    public final String getDate(){return info.getDate();}
+    public final String getName(){return info.getName();}
+    public final String getFullPath(){return info.getFullPath();}
+    public final String getMinPath(){return info.getMinPath();}
+    public final String getPath(){return info.getPath();}
+    public final boolean isState(){return info.isState();}
+    public final boolean isParentState(){return info.isParentState();}
+    public final boolean isEssential(){return info.isEssential();}
+    public final boolean isCached(){return info.isCached();}
+    public final boolean isVersion(){return info.isVersion();}
+    public final boolean isSegmented(){return info.isSegmented();}
+    public final boolean isSetup(){return info.isSetup();}
+    public final boolean isWriteOnce(){return info.isWriteOnce();}
+    public final boolean isCompressible(){return info.isCompressible();}
+    public final boolean isDoNotCompress(){return info.isDoNotCompress();}
+    public final boolean isCompressOnPut(){return info.isCompressOnPut();}
+    public final boolean isNoWriteModel(){return info.isNoWriteModel();}
+    public final boolean isNoWriteShot(){return info.isNoWriteShot();}
+    public final boolean isPathReference(){return info.isPathReference();}
+    public final boolean isNidReference(){return info.isNidReference();}
+    public final boolean isCompressSegments(){return info.isCompressSegments();}
+    public final boolean isIncludeInPulse(){return info.isIncludeInPulse();}
+
+    public final void setFlag(byte idx) throws DatabaseException, RemoteException
     {
+        experiment.setFlags(nid, 1<<idx);
+        info.setFlags(experiment.getFlags(nid));
+    }
+    public void clearFlag(byte idx) throws DatabaseException, RemoteException
+    {
+        experiment.clearFlags(nid, 1<<idx);
+        info.setFlags(experiment.getFlags(nid));
+    }
+    public int getFlags()
+    {   try{info.setFlags(experiment.getFlags(nid));}
+        catch(Exception exc){jTraverser.stderr("Error updating flags",exc);}
+        return info.getFlags();
     }
 
     public boolean isOn()
@@ -203,10 +239,7 @@ public class Node
             {
                 is_on = experiment.isOn(nid, Tree.context);
             }
-            catch (Exception e)
-            {
-                System.out.println("Error checking state " + e);
-            }
+            catch (Exception exc){jTraverser.stderr("Error checking state",exc);}
         }
         return is_on;
     }
@@ -251,8 +284,7 @@ public class Node
                     return;
                 }
                 catch (Exception e)
-                {
-                    
+                {                   
              		try {
                 		experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
             		}catch(Exception exc) {
@@ -265,7 +297,6 @@ public class Node
                     	return;
                 	}
 				}
-
             }
         }
         JOptionPane.showMessageDialog(null, "Missing model in descriptor",
@@ -280,23 +311,17 @@ public class Node
         {
             curr_nid = experiment.getDefault(Tree.context);
         }
-        catch (Exception e)
-        {
-            System.out.println("Error getting default " + e);
+        catch (Exception exc){
+            jTraverser.stderr("Error getting default", exc);
             return false;
         }
         return curr_nid.datum == nid.datum;
     }
 
-    public int getUsage()
-    {
-        return info.usage;
-    }
-
     public NodeBeanInfo getBeanInfo()
     {
         if (bean_info == null)
-            bean_info = new NodeBeanInfo(experiment, info.usage, info.name);
+            bean_info = new NodeBeanInfo(experiment, getUsage(), getName());
         return bean_info;
     }
 
@@ -312,48 +337,9 @@ public class Node
         }
     }
 
-    public void setTags(String[] tags) throws DatabaseException,
-        RemoteException
+    public void setTags(String[] tags) throws DatabaseException, RemoteException
     {
         experiment.setTags(nid, tags, Tree.context);
-    }
-
-    public String getFullPath()
-    {
-        if (info == null)
-            try
-            {
-                info = experiment.getInfo(nid, Tree.context);
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error getting NCI " + e);
-            }
-        return info.getFullPath();
-    }
-
-    public String getName()
-    {
-        if (info == null)
-            try
-            {
-                info = experiment.getInfo(nid, Tree.context);
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error getting NCI " + e);
-            }
-        return info.getName();
-    }
-
-    public Node[] getSons()
-    {
-        return sons;
-    }
-
-    public Node[] getMembers()
-    {
-        return members;
     }
 
     public Node addNode(int usage, String name) throws DatabaseException,
@@ -445,68 +431,73 @@ public class Node
 
     public int startDelete()
     {
-        NidData[] nids =
-            {
-            nid};
+        NidData[] nids ={nid};
         try
         {
             return experiment.startDelete(nids, Tree.context).length;
         }
-        catch (Exception e)
-        {
-            System.out.println("Starting delete: " + e.getMessage());
-        }
+        catch (Exception exc){jTraverser.stderr("Error starting delete", exc);}
         return 0;
     }
 
     public void executeDelete()
     {
-        NidData[] nids =
-            {
-            nid};
+        NidData[] nids = {nid};
         try
         {
             experiment.executeDelete(Tree.context);
         }
-        catch (Exception e)
+        catch (Exception exc){jTraverser.stderr("Error executing delete", exc);}
+    }
+
+
+    boolean move(Node newParent){return changePath(newParent, getName());}
+    boolean rename(String newName){return changePath(parent, newName);}
+    private boolean changePath(Node newParent, String newName)
+    {
+        if ((newParent==parent) && (newName==getName())) return false; // nothing to do
+        if(newName.length() > 12 || newName.length() == 0)
+	    {
+	        JOptionPane.showMessageDialog(FrameRepository.frame, "Node name lengh must be between 1 and 12 characters",
+		    "Error renaming node: "+newName.length(), JOptionPane.WARNING_MESSAGE);
+            return false;
+	    }
+	    try
         {
-            System.out.println("Error executing delete: " + e.getMessage());
+            String sep = is_member ? ":" : "."; 
+            experiment.renameNode(nid, newParent.getFullPath()+sep+newName, Tree.context);
+            info = experiment.getInfo(nid, Tree.context);
         }
-    }
-
-    void rename(String new_name) throws DatabaseException, RemoteException
-    {
-        experiment.renameNode(nid, new_name, Tree.context);
-        info = experiment.getInfo(nid, Tree.context);
-    }
-
-    void renameLast(String newName) throws Exception
-    {
-        String prevName = getFullPath();
-        int curr;
-        for (curr = prevName.length() - 1;
-             curr > 0 && prevName.charAt(curr) != ':' &&
-             prevName.charAt(curr) != '.'; curr--);
-        String newFullName = prevName.substring(0, curr + 1) + newName;
-        rename(newFullName);
+        catch(Exception exc)
+		{
+            JOptionPane.showMessageDialog(FrameRepository.frame, "Error changing node path: "+ exc,
+		    "Error changing node path", JOptionPane.WARNING_MESSAGE);
+            return false;
+		}
+        if (newParent!=parent)
+        {    
+            parent = newParent;
+	        DefaultTreeModel tree_model = (DefaultTreeModel)Tree.curr_tree.getModel();
+	        tree_model.removeNodeFromParent(getTreeNode());
+            Tree.addNodeToParent(getTreeNode(),parent.getTreeNode());
+        }
+        return true;
     }
 
     private ImageIcon loadIcon(String gifname)
     {
         String base = System.getProperty("icon_base");
-//      return (base == null) ? new ImageIcon(ClassLoader.getSystemResource(gifname)) : new ImageIcon(base + "/" + gifname);
-        return (base == null) ?
-            new ImageIcon(getClass().getClassLoader().getResource(gifname)) :
-            new ImageIcon(base + "/" + gifname);
+        if (base == null)
+            return new ImageIcon(getClass().getClassLoader().getResource(gifname));
+        else
+            return new ImageIcon(base + "/" + gifname);
     }
 
-    public JLabel getIcon()
+    public JLabel getIcon(boolean isSelected)
     {
         if (info == null)return null;
-        if (tree_label != null)
-            return tree_label;
         ImageIcon icon = null;
-        switch (info.usage)
+        switch (getUsage())
         {
             case NodeInfo.USAGE_NONE:
                 icon = loadIcon("structure.gif");
@@ -546,21 +537,11 @@ public class Node
                 icon = loadIcon("compound.gif");
                 break;
         }
-
-        if (is_member)
-            tree_label = new TreeNode(this, ": " + info.name, icon);
-        else
-            tree_label = new TreeNode(this, info.name, icon);
+        tree_label = new TreeNode(this, getName(), icon, isSelected);
         return tree_label;
     }
 
-    public String toString()
-    {
-        return getName();
-    }
-
-    static public void pasteSubtree(Node fromNode, Node toNode,
-                                    boolean isMember)
+    static public void pasteSubtree(Node fromNode, Node toNode, boolean isMember)
     {
         DefaultMutableTreeNode savedTreeNode = Tree.getCurrTreeNode();
         try
@@ -571,16 +552,15 @@ public class Node
             //collect names used so far
             int idx = 0;
             for (int i = 0; i < toNode.sons.length; i++)
-                usedNames[idx++] = toNode.sons[i].getName().trim();
+                usedNames[idx++] = toNode.sons[i].getName();
             for (int i = 0; i < toNode.members.length; i++)
-                usedNames[idx++] = toNode.members[i].getName().trim();
+                usedNames[idx++] = toNode.members[i].getName();
 
             if (fromNode.getUsage() == NodeInfo.USAGE_DEVICE)
             {
                 ConglomData conglom = (ConglomData) fromNode.getData();
                 Node newNode = Tree.addDevice( (isMember ? ":" : ".") +
-                                              getUniqueName(fromNode.getName().
-                    trim(), usedNames),
+                                              getUniqueName(fromNode.getName(), usedNames),
                                               conglom.getModel().getString(),
                                               toNode);
                 newNode.expand();
@@ -590,8 +570,7 @@ public class Node
             {
                 Node newNode = Tree.addNode(fromNode.getUsage(),
                                             (isMember ? ":" : ".") +
-                                            getUniqueName(fromNode.getName().
-                    trim(), usedNames), toNode);
+                                            getUniqueName(fromNode.getName(), usedNames), toNode);
                 if (newNode == null)return;
                 newNode.expand();
                 try
@@ -629,10 +608,7 @@ public class Node
             fromNode.expand();
             toNode.expand();
         }
-        catch (Exception exc)
-        {
-            System.err.println("Error expanding nodes: " + exc);
-        }
+        catch (Exception exc){jTraverser.stderr("Error expanding nodes", exc);}
         try
         {
             Data data = fromNode.getData();
@@ -642,8 +618,7 @@ public class Node
                     toNode.setData(data);
             }
         }
-        catch (Throwable exc)
-        {}
+        catch (Throwable exc){}
         for (int i = 0; i < fromNode.sons.length; i++)
             copySubtreeContent(fromNode.sons[i], toNode.sons[i]);
         for (int i = 0; i < fromNode.members.length; i++)

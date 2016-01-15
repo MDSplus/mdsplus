@@ -15,7 +15,7 @@
 
 	Call sequence: 
 
-int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
+EXPORT int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
 ---------------------------------------------------------------------------
 
  	Description:
@@ -30,7 +30,7 @@ struct _table {
   float value;
 };
 
-int GenDeviceCvtFloatCode(code_ptr, value, table, dimension)
+EXPORT int GenDeviceCvtFloatCode(code_ptr, value, table, dimension)
 short *code_ptr;
 float value;
 struct _table table[];

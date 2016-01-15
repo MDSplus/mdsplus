@@ -21,6 +21,7 @@ typedef const LPBYTE LPCBYTE;
 #include <sqldb.h>
 #define dbloginfree dbfreelogin
 #endif
+#include <config.h>
 static LOGINREC *loginrec = 0;
 static DBPROCESS *dbproc = 0;
 
@@ -121,18 +122,18 @@ static int Msg_Handler(DBPROCESS * dbproc, DBINT msgno, int msgstate, int severi
   return 0;			/* try to continue */
 }
 
-int GetDBStatus()
+EXPORT int GetDBStatus()
 {
   return DBSTATUS;
 }
 
-char *GetDBMsgText()
+EXPORT char *GetDBMsgText()
 {
   return DBMSGTEXT;
 }
 
 /*------------------------------DISCONNECT-----------------------------------*/
-void Logout_Sybase()
+EXPORT void Logout_Sybase()
 {
   if (loginrec)
     dbloginfree(loginrec), loginrec = 0;
@@ -141,7 +142,7 @@ void Logout_Sybase()
 }
 
 /*------------------------------CONNECT--------------------------------------*/
-int Login_Sybase(char *host, char *user, char *pass)
+EXPORT int Login_Sybase(char *host, char *user, char *pass)
 {
 
 #ifdef RETRY_CONNECTS
@@ -200,7 +201,7 @@ int Login_Sybase(char *host, char *user, char *pass)
 }
 
 /*------------------------------DYNAMIC--------------------------------------*/
-int SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
+EXPORT int SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
 int (*USER_GETS) ();		/*routine to fill markers       */
 int (*USER_PUTS) ();		/*routine to store selctions    */
 char *ptext;			/*text string address           */

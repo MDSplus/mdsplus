@@ -1074,7 +1074,7 @@ static int setup_device(Widget parent, int nid)
     static int c_nid;
     static DESCRIPTOR_NID(nid_dsc, &c_nid);
     int conglomerate_elt;
-    static struct descriptor model = { 0, DTYPE_T, CLASS_D, 0 };
+    static struct descriptor_d model = { 0, DTYPE_T, CLASS_D, 0 };
     static int head_nid;
     c_nid = nid;
     conglomerate_elt = ReadInt(getnci, &nid_dsc MDS_END_ARG);
@@ -1085,10 +1085,10 @@ static int setup_device(Widget parent, int nid)
       /*      static DESCRIPTOR(const prefix, "DECW$SYSTEM_DEFAULTS:"); */
       static DESCRIPTOR(const postfix, ".uid\0");
       static DESCRIPTOR(const zero, "\0");
-      StrTrim(&model, &model, 0);
-      StrUpcase(&model, &model);
-      StrConcat(&filename, &model, &postfix MDS_END_ARG);
-      StrAppend(&model, &zero MDS_END_ARG);
+      StrTrim((struct descriptor *)&model, (struct descriptor *)&model, 0);
+      StrUpcase((struct descriptor *)&model, (struct descriptor *)&model);
+      StrConcat(&filename, (struct descriptor *)&model, (struct descriptor *)&postfix MDS_END_ARG);
+      StrAppend(&model, (struct descriptor *)&zero);
       status = XmdsDeviceSetup(parent, &c_nid, &filename.pointer, 1, model.pointer, NULL, 0, 0);
       switch (status) {
       case MrmSUCCESS:

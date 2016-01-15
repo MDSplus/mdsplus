@@ -34,15 +34,13 @@ def gen_include(root,file,faclist,msglistm,f_test):
 #     python gen_devices.py
 ########################################################
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-MDSplusException=_mimport('__init__',1).MDSplusException
-
+MDSplusException=_mimport('__init__').MDSplusException
 """ % file)
     for f in root.getiterator('facility'):
         facnam = f.get('name')

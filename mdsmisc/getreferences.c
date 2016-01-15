@@ -9,7 +9,7 @@ static void FillRefs(struct descriptor *src, int *ans, int *idx);
 static int GetNid(struct descriptor *dsc);
 
 static EMPTYXD(src);
-int GetReferenceCount(int *nid)
+EXPORT int GetReferenceCount(int *nid)
 {
   int cnt = 0;
   int status = TreeGetRecord(*nid, &src);
@@ -19,7 +19,7 @@ int GetReferenceCount(int *nid)
   return cnt;
 }
 
-void GetReferences(int *nid, int *ans)
+EXPORT void GetReferences(int *nid, int *ans)
 {
   int idx = 0;
   FillRefs((struct descriptor *)&src, ans, &idx);

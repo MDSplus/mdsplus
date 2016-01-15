@@ -4166,7 +4166,7 @@ MDSplus.mdsdata.Data.getByte	MDSplus.mdsdata.Data-class.html#getByte
 MDSplus.treenode.TreeNode.beginTimestampedSegment	MDSplus.treenode.TreeNode-class.html#beginTimestampedSegment
 MDSplus.treenode.TreeNode.addDevice	MDSplus.treenode.TreeNode-class.html#addDevice
 MDSplus.mdsdata.Data.__floordiv__	MDSplus.mdsdata.Data-class.html#__floordiv__
-MDSplus.treenode.TreeNode.isIncludedInPulse	MDSplus.treenode.TreeNode-class.html#isIncludedInPulse
+MDSplus.treenode.TreeNode.isIncludeInPulse	MDSplus.treenode.TreeNode-class.html#isIncludeInPulse
 MDSplus.mdsdata.Data.__lt__	MDSplus.mdsdata.Data-class.html#__lt__
 MDSplus.mdsdata.Data.__sub__	MDSplus.mdsdata.Data-class.html#__sub__
 MDSplus.mdsdata.Data.getIntArray	MDSplus.mdsdata.Data-class.html#getIntArray
@@ -4232,7 +4232,7 @@ MDSplus.mdsdata.Data.value_of	MDSplus.mdsdata.Data-class.html#value_of
 MDSplus.treenode.TreeNode.getMember	MDSplus.treenode.TreeNode-class.html#getMember
 MDSplus.mdsdata.Data.error	MDSplus.mdsdata.Data-class.html#error
 MDSplus.mdsdata.Data.mayHaveChanged	MDSplus.mdsdata.Data-class.html#mayHaveChanged
-MDSplus.treenode.TreeNode.setIncludedInPulse	MDSplus.treenode.TreeNode-class.html#setIncludedInPulse
+MDSplus.treenode.TreeNode.setIncludeInPulse	MDSplus.treenode.TreeNode-class.html#setIncludeInPulse
 MDSplus.treenode.TreeNode.deleteData	MDSplus.treenode.TreeNode-class.html#deleteData
 MDSplus.mdsdata.Data.__ge__	MDSplus.mdsdata.Data-class.html#__ge__
 MDSplus.treenode.TreeNode.delete	MDSplus.treenode.TreeNode-class.html#delete
@@ -5973,7 +5973,7 @@ MDSplus.mdsdata.Data.getByte	MDSplus.mdsdata.Data-class.html#getByte
 MDSplus.treenode.TreeNode.beginTimestampedSegment	MDSplus.treenode.TreeNode-class.html#beginTimestampedSegment
 MDSplus.treenode.TreeNode.addDevice	MDSplus.treenode.TreeNode-class.html#addDevice
 MDSplus.mdsdata.Data.__floordiv__	MDSplus.mdsdata.Data-class.html#__floordiv__
-MDSplus.treenode.TreeNode.isIncludedInPulse	MDSplus.treenode.TreeNode-class.html#isIncludedInPulse
+MDSplus.treenode.TreeNode.isIncludeInPulse	MDSplus.treenode.TreeNode-class.html#isIncludeInPulse
 MDSplus.mdsdata.Data.__lt__	MDSplus.mdsdata.Data-class.html#__lt__
 MDSplus.mdsdata.Data.__sub__	MDSplus.mdsdata.Data-class.html#__sub__
 MDSplus.mdsdata.Data.getIntArray	MDSplus.mdsdata.Data-class.html#getIntArray
@@ -6040,7 +6040,7 @@ MDSplus.treenode.TreeNode.getMember	MDSplus.treenode.TreeNode-class.html#getMemb
 MDSplus.treenode.CachedTreeNode.getCachePolicy	MDSplus.treenode.CachedTreeNode-class.html#getCachePolicy
 MDSplus.mdsdata.Data.error	MDSplus.mdsdata.Data-class.html#error
 MDSplus.mdsdata.Data.mayHaveChanged	MDSplus.mdsdata.Data-class.html#mayHaveChanged
-MDSplus.treenode.TreeNode.setIncludedInPulse	MDSplus.treenode.TreeNode-class.html#setIncludedInPulse
+MDSplus.treenode.TreeNode.setIncludeInPulse	MDSplus.treenode.TreeNode-class.html#setIncludeInPulse
 MDSplus.treenode.TreeNode.deleteData	MDSplus.treenode.TreeNode-class.html#deleteData
 MDSplus.mdsdata.Data.__ge__	MDSplus.mdsdata.Data-class.html#__ge__
 MDSplus.treenode.TreeNode.delete	MDSplus.treenode.TreeNode-class.html#delete
@@ -6154,7 +6154,7 @@ MDSplus.mdsdata.Data.getByte	MDSplus.mdsdata.Data-class.html#getByte
 MDSplus.treenode.TreeNode.beginTimestampedSegment	MDSplus.treenode.TreeNode-class.html#beginTimestampedSegment
 MDSplus.treenode.TreeNode.addDevice	MDSplus.treenode.TreeNode-class.html#addDevice
 MDSplus.mdsdata.Data.__floordiv__	MDSplus.mdsdata.Data-class.html#__floordiv__
-MDSplus.treenode.TreeNode.isIncludedInPulse	MDSplus.treenode.TreeNode-class.html#isIncludedInPulse
+MDSplus.treenode.TreeNode.isIncludeInPulse	MDSplus.treenode.TreeNode-class.html#isIncludeInPulse
 MDSplus.mdsdata.Data.__lt__	MDSplus.mdsdata.Data-class.html#__lt__
 MDSplus.mdsdata.Data.__sub__	MDSplus.mdsdata.Data-class.html#__sub__
 MDSplus.mdsdata.Data.getIntArray	MDSplus.mdsdata.Data-class.html#getIntArray
@@ -6220,7 +6220,7 @@ MDSplus.mdsdata.Data.value_of	MDSplus.mdsdata.Data-class.html#value_of
 MDSplus.treenode.TreeNode.getMember	MDSplus.treenode.TreeNode-class.html#getMember
 MDSplus.mdsdata.Data.error	MDSplus.mdsdata.Data-class.html#error
 MDSplus.mdsdata.Data.mayHaveChanged	MDSplus.mdsdata.Data-class.html#mayHaveChanged
-MDSplus.treenode.TreeNode.setIncludedInPulse	MDSplus.treenode.TreeNode-class.html#setIncludedInPulse
+MDSplus.treenode.TreeNode.setIncludeInPulse	MDSplus.treenode.TreeNode-class.html#setIncludeInPulse
 MDSplus.treenode.TreeNode.deleteData	MDSplus.treenode.TreeNode-class.html#deleteData
 MDSplus.mdsdata.Data.__ge__	MDSplus.mdsdata.Data-class.html#__ge__
 MDSplus.treenode.TreeNode.delete	MDSplus.treenode.TreeNode-class.html#delete
@@ -6445,7 +6445,7 @@ MDSplus.mdsdata.Data.getByte	MDSplus.mdsdata.Data-class.html#getByte
 MDSplus.treenode.TreeNode.beginTimestampedSegment	MDSplus.treenode.TreeNode-class.html#beginTimestampedSegment
 MDSplus.treenode.TreeNode.addDevice	MDSplus.treenode.TreeNode-class.html#addDevice
 MDSplus.mdsdata.Data.__floordiv__	MDSplus.mdsdata.Data-class.html#__floordiv__
-MDSplus.treenode.TreeNode.isIncludedInPulse	MDSplus.treenode.TreeNode-class.html#isIncludedInPulse
+MDSplus.treenode.TreeNode.isIncludeInPulse	MDSplus.treenode.TreeNode-class.html#isIncludeInPulse
 MDSplus.mdsdata.Data.__lt__	MDSplus.mdsdata.Data-class.html#__lt__
 MDSplus.mdsdata.Data.__sub__	MDSplus.mdsdata.Data-class.html#__sub__
 MDSplus.mdsdata.Data.getIntArray	MDSplus.mdsdata.Data-class.html#getIntArray
@@ -6510,7 +6510,7 @@ MDSplus.mdsdata.Data.value_of	MDSplus.mdsdata.Data-class.html#value_of
 MDSplus.treenode.TreeNode.getMember	MDSplus.treenode.TreeNode-class.html#getMember
 MDSplus.mdsdata.Data.error	MDSplus.mdsdata.Data-class.html#error
 MDSplus.mdsdata.Data.mayHaveChanged	MDSplus.mdsdata.Data-class.html#mayHaveChanged
-MDSplus.treenode.TreeNode.setIncludedInPulse	MDSplus.treenode.TreeNode-class.html#setIncludedInPulse
+MDSplus.treenode.TreeNode.setIncludeInPulse	MDSplus.treenode.TreeNode-class.html#setIncludeInPulse
 MDSplus.treenode.TreeNode.deleteData	MDSplus.treenode.TreeNode-class.html#deleteData
 MDSplus.mdsdata.Data.__ge__	MDSplus.mdsdata.Data-class.html#__ge__
 MDSplus.treenode.TreeNode.delete	MDSplus.treenode.TreeNode-class.html#delete
