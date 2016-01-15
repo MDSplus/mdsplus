@@ -990,6 +990,7 @@ with_xml_exec_prefix
 enable_xmltest
 with_x
 enable_valgrind
+with_valgrind_lib
 with_winebottle
 enable_doxygen_doc
 enable_doxygen_dot
@@ -1708,6 +1709,7 @@ Optional Packages:
   --with-xml-prefix=PFX   Prefix where libxml is installed (optional)
   --with-xml-exec-prefix=PFX Exec prefix where libxml is installed (optional)
   --with-x                use the X Window System
+  --with-valgrind-lib     Set Valgrind lib directory
   --with-winebottle       specify bottle
 
 Some influential environment variables:
@@ -12570,7 +12572,19 @@ fi
 
 	VALGRIND_ENABLED=$enable_valgrind
 
-	VALGRIND_LIB=${VALGRIND_LIB}
+
+
+
+# Check whether --with-valgrind-lib was given.
+if test "${with_valgrind_lib+set}" = set; then :
+  withval=$with_valgrind_lib; valgrind_dir=$withval
+fi
+
+	if ${VALGRIND_LIB+:} false; then :
+  valgrind_dir=${VALGRIND_LIB}
+fi
+	VALGRIND_LIB=${valgrind_dir}
+
 
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
@@ -12681,6 +12695,12 @@ fi
 
 
 
+read -d '' VALGRIND_CHECK_RULES_PRE << _as_read_EOF
+
+VALGRIND_LIB             ?= ${VALGRIND_LIB}
+
+_as_read_EOF
+
 
 VALGRIND_CHECK_RULES='
 # //////////////////////////////////////////////////////////////////////////// #
@@ -12696,8 +12716,6 @@ VALGRIND_CHECK_RULES='
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
 # Optional variables
-# VALGRIND_LIB             ?= ${VALGRIND_LIB}
-
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --num-callers=30 \
                             --trace-children=yes \
@@ -12753,11 +12771,10 @@ endif
 #
 # Valgrind chain add ons
 #
-
 VALGRIND_TESTS_ENVIRONMENT ?=
 VALGRIND_TESTS_ENVIRONMENT += \
 	VALGRIND=$(VALGRIND) \
-	VALGRIND_LIB=${VALGRIND_LIB} \
+	$(if ${VALGRIND_LIB},VALGRIND_LIB=${VALGRIND_LIB}) \
 	G_SLICE=always-malloc,debug-blocks \
 	G_DEBUG=fatal-warnings,fatal-criticals,gc-friendly
 
@@ -12830,6 +12847,7 @@ MOSTLYCLEANFILES ?=
 MOSTLYCLEANFILES += $(valgrind_log_files)
 '
 
+VALGRIND_CHECK_RULES="${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"
 
 
 
