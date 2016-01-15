@@ -32,7 +32,7 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
+EXPORT int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
 {
   struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
   char *cstring = "";

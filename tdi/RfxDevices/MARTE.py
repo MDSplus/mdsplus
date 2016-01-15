@@ -1,13 +1,10 @@
-# -*- coding: iso-8859-1 -*-
-from MDSplus import *
-import time
-import MARTE_GENERIC
+try:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
+except:
+    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
 
-class MARTE(MARTE_GENERIC.MARTE_GENERIC):
-    print 'MARTe'
-    parts = []
-    for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
-      parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
+class MARTE(MARTE_GENERIC):
+    parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':0})
     for i in range(256):
@@ -26,4 +23,4 @@ class MARTE(MARTE_GENERIC.MARTE_GENERIC):
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:X'%(i+1), 'type':'numeric'})
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d:Y'%(i+1), 'type':'numeric'})
-    print 'PARTS FATTE!!!'
+    del(i)

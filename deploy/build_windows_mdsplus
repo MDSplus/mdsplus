@@ -7,7 +7,7 @@ cleanup() {
 set -e
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
-wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+wget -q --no-check-certificate -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
 export JNI_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk
 export JNI_MD_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk/win32
 cd /buildsrc

@@ -7,7 +7,7 @@
 
 //MDSplus specific time conversion. It is the number of nanoseconds 1 day before time 0.
 
-void MdsFloatToTime(double floatTime, uint64_t * outTime)
+EXPORT void MdsFloatToTime(double floatTime, uint64_t * outTime)
 {
   int64_t baseTime;
   int64_t currTime;
@@ -18,7 +18,7 @@ void MdsFloatToTime(double floatTime, uint64_t * outTime)
   *outTime = (uint64_t) (baseTime + currTime);
 }
 
-void MdsFloatToDelta(double floatTime, uint64_t * outTime)
+EXPORT void MdsFloatToDelta(double floatTime, uint64_t * outTime)
 {
   int64_t currTime;
 
@@ -26,7 +26,7 @@ void MdsFloatToDelta(double floatTime, uint64_t * outTime)
   *outTime = currTime;
 }
 
-void MdsTimeToFloat(uint64_t inTime, float *outFloat)
+EXPORT void MdsTimeToFloat(uint64_t inTime, float *outFloat)
 {
   int64_t baseTime, currTime;
 
@@ -36,7 +36,7 @@ void MdsTimeToFloat(uint64_t inTime, float *outFloat)
   *outFloat = (float)((double)currTime * 1E-9);
 }
 
-void MdsTimeToDouble(uint64_t inTime, double *outFloat)
+EXPORT void MdsTimeToDouble(uint64_t inTime, double *outFloat)
 {
   int64_t baseTime, currTime;
 

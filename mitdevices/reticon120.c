@@ -13,10 +13,6 @@
 #include "reticon120_gen.h"
 #include "devroutines.h"
 
-extern int TdiNe();
-extern int TdiGetLong();
-extern int TdiEq();
-
 static void Reset();
 static int Apply();
 static void PopupPixels();
@@ -29,7 +25,7 @@ static int four = 4;
 #define ReturnOnError(f,retstatus) if (!((status = f) & 1)) return retstatus
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
-int reticon120___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int reticon120___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
   static float periods[] = { .5, 1, 2, 4, 8, 26, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
   static int intervals[] = { 1, 2, 4, 8, 16, 32, 64 };
@@ -96,7 +92,7 @@ int reticon120___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int reticon120__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int reticon120__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "RETICON120.uid" };
   static int nid;
@@ -224,7 +220,7 @@ static void PopupPixels(Widget w)
   XtManageChild(XtParent(XtNameToWidget(XtParent(w), "*pixel_menu")));
 }
 
-int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
   int status;
   float period;
@@ -357,7 +353,7 @@ int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   return status;
 }
 
-int reticon120___trigger(struct descriptor_s *niddsc_ptr, InTriggerStruct * setup)
+EXPORT int reticon120___trigger(struct descriptor_s *niddsc_ptr, InTriggerStruct * setup)
 {
   int status;
   Piow(setup->name, 25, 0, 0, 16);	/* trigger the module */

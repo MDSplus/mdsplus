@@ -32,10 +32,10 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-int MdsCompareXd(struct descriptor *dsc1_ptr, struct descriptor *dsc2_ptr)
+EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descriptor *dsc2_ptr)
 {
-  struct descriptor *d1 = dsc1_ptr;
-  struct descriptor *d2 = (struct descriptor *)dsc2_ptr;
+  const struct descriptor *d1 = dsc1_ptr;
+  const struct descriptor *d2 = dsc2_ptr;
   int status;
 /**************************
   Strip off any extrainous
@@ -43,9 +43,9 @@ int MdsCompareXd(struct descriptor *dsc1_ptr, struct descriptor *dsc2_ptr)
   the inputs.
 ***************************/
   while (d1 && d1->dtype == DTYPE_DSC)
-    d1 = (struct descriptor *)d1->pointer;
+    d1 = (const struct descriptor *)d1->pointer;
   while (d2 && d2->dtype == DTYPE_DSC)
-    d2 = (struct descriptor *)d2->pointer;
+    d2 = (const struct descriptor *)d2->pointer;
   if (d1 && d2) {
     if (d1->dtype == d2->dtype) {
       switch (d1->class) {

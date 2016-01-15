@@ -17,7 +17,7 @@
 #include <mdsshr.h>
 #include "gen_device.h"
 
-int GenDeviceFree(CommonInStruct * in_struct)
+EXPORT int GenDeviceFree(CommonInStruct * in_struct)
 {
   int i, status = 1;
   for (i = 0; (status & 1) && (i < in_struct->num_xds); i++)

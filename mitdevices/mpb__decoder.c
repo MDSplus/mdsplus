@@ -17,12 +17,7 @@
 #include <mds_stdarg.h>
 #include "mpb__decoder_gen.h"
 #include "devroutines.h"
-
-extern int TdiGetFloat();
-extern int TdiExecute();
-extern int TdiEvaluate();
-extern int TdiCompile();
-extern int CamPiow();
+#include <mds_gendevice.h>
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (a) : (b))
@@ -187,7 +182,7 @@ static int OctaIsSet(unsigned int *base, int bit);
 static int GetSetup(int chan_nid, DecoderSetup * regs);
 static int GetPseudoDevNid(struct descriptor_xd *pseudo_xd, int *dev_nid);
 
-int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
   int status;
   static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
@@ -397,7 +392,7 @@ static int GetEventNum(char *name, unsigned int *mask)
   int status;
   name_dsc.length = strlen(name);
   name_dsc.pointer = name;
-  status = TdiExecute(&expr, &name_dsc, &xd MDS_END_ARG);
+  status = TdiExecute((struct descriptor *)&expr, &name_dsc, &xd MDS_END_ARG);
   if (status & 1) {
     unsigned char event = *(unsigned char *)xd.pointer->pointer;
     mask[event / 32] |= 1 << (event % 32);
@@ -405,7 +400,7 @@ static int GetEventNum(char *name, unsigned int *mask)
   return status & 1;
 }
 
-int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "MPB__DECODER.uid" };
   Widget w;
@@ -630,7 +625,7 @@ static int GetFloat(Widget w, int headnid, int channel, int offset, float *answe
     char name[40];
     char *parts[] = { "", "_mode", "_p1", "_p2", "_p3", "_p4", "_p5" };
     sprintf(name, "*c%d%s", channel, parts[offset]);
-    return TdiGetFloat(XmdsExprFieldGetXd(XtNameToWidget(w, name)), answer);
+    return TdiGetFloat((struct descriptor *)XmdsExprFieldGetXd(XtNameToWidget(w, name)), answer);
   }
 }
 
@@ -645,7 +640,7 @@ static int GetInt(Widget w, int headnid, int channel, int offset, int *answer)
     char *parts[] = { "", "_mode", "_p1", "_p2", "_p3", "_p4", "_p5" };
     ansdsc.pointer = (char *)answer;
     sprintf(name, "*c%d%s", channel, parts[offset]);
-    return TdiEvaluate(XmdsNidOptionMenuGetXd(XtNameToWidget(w, name)), &ansdsc MDS_END_ARG);
+    return TdiEvaluate((struct descriptor *)XmdsNidOptionMenuGetXd(XtNameToWidget(w, name)), &ansdsc MDS_END_ARG);
   }
 }
 
@@ -657,7 +652,7 @@ static int GetEvent(int *ref_nid, unsigned int *event_mask)
   static DESCRIPTOR(expression, "BYTE_UNSIGNED(DATA(EVENT_LOOKUP($)))");
   int status;
   nid_dsc.pointer = (char *)ref_nid;
-  status = TdiExecute(&expression, &nid_dsc, &xd MDS_END_ARG);
+  status = TdiExecute((struct descriptor *)&expression, &nid_dsc, &xd MDS_END_ARG);
   if (status & 1) {
     if (xd.pointer->class == CLASS_A) {
       struct descriptor_a *array = (struct descriptor_a *)xd.pointer;
@@ -733,8 +728,8 @@ static int ClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_ou
     static DESCRIPTOR_FLOAT(dt2_dsc, &dt2);
     static DESCRIPTOR_FLOAT(dt3_dsc, &dt3);
     snid = nid + MPB__DECODER_N_START_TIME;
-    TdiCompile(&range, &snid_dsc, &dt1_dsc, &dt2_dsc, edges_r MDS_END_ARG);
-    TdiCompile(&range, &snid_dsc, &dt3_dsc, &dt2_dsc, edges_f MDS_END_ARG);
+    TdiCompile((struct descriptor *)&range, &snid_dsc, &dt1_dsc, &dt2_dsc, edges_r MDS_END_ARG);
+    TdiCompile((struct descriptor *)&range, &snid_dsc, &dt3_dsc, &dt2_dsc, edges_f MDS_END_ARG);
     MdsFree1Dx(edges, 0);
     *setup_out = setup;
     status = GetEvent(&event_nid, event_mask);
@@ -809,8 +804,8 @@ static int GatedClockGetSetup(Widget w, int nid, int channel, DecoderSetup * set
     static DESCRIPTOR_FLOAT(dt2_dsc, &dt2);
     static DESCRIPTOR_FLOAT(dt3_dsc, &dt3);
     gnid = ChannelNid(nid, channel, CHANNEL_P3);
-    TdiCompile(&output_exp, &gate, &dt1_dsc, &dt2_dsc, edges_r MDS_END_ARG);
-    TdiCompile(&output_exp, &gate, &dt3_dsc, &dt2_dsc, edges_f MDS_END_ARG);
+    TdiCompile((struct descriptor *)&output_exp, &gate, &dt1_dsc, &dt2_dsc, edges_r MDS_END_ARG);
+    TdiCompile((struct descriptor *)&output_exp, &gate, &dt3_dsc, &dt2_dsc, edges_f MDS_END_ARG);
     MdsFree1Dx(edges, 0);
     *setup_out = setup;
     status = GetEvent(&event_nid, event_mask);
@@ -898,9 +893,9 @@ static int GateGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_out
     static DESCRIPTOR_FLOAT(dt1_dsc, &dt1);
     static DESCRIPTOR_FLOAT(dt2_dsc, &dt2);
     snid = ChannelNid(nid, channel, CHANNEL_P3);
-    TdiCompile(&single_exp, &snid_dsc, &dt1_dsc, edges_r MDS_END_ARG);
-    TdiCompile(&single_exp, &snid_dsc, &dt2_dsc, edges_f MDS_END_ARG);
-    TdiCompile(&double_exp, &snid_dsc, &dt1_dsc, &dt2_dsc, edges MDS_END_ARG);
+    TdiCompile((struct descriptor *)&single_exp, &snid_dsc, &dt1_dsc, edges_r MDS_END_ARG);
+    TdiCompile((struct descriptor *)&single_exp, &snid_dsc, &dt2_dsc, edges_f MDS_END_ARG);
+    TdiCompile((struct descriptor *)&double_exp, &snid_dsc, &dt1_dsc, &dt2_dsc, edges MDS_END_ARG);
     *setup_out = setup;
     if (trigger_mode == TM_EVENT_TRIGGER)
       event_nid = ChannelNid(nid, channel, CHANNEL_P4);
@@ -981,10 +976,10 @@ static int DualClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setu
     start_low_v = !setup.start_high;
     gnid = ChannelNid(nid, channel, CHANNEL_P3);
     rising = 1;
-    TdiCompile(&output_exp, &start, &dt1, &dt2, &start_low, &gate, &rising_dsc,
+    TdiCompile((struct descriptor *)&output_exp, &start, &dt1, &dt2, &start_low, &gate, &rising_dsc,
 	       edges_r MDS_END_ARG);
     rising = 0;
-    TdiCompile(&output_exp, &start, &dt1, &dt2, &start_low, &gate, &rising_dsc,
+    TdiCompile((struct descriptor *)&output_exp, &start, &dt1, &dt2, &start_low, &gate, &rising_dsc,
 	       edges_f MDS_END_ARG);
     MdsFree1Dx(edges, 0);
     *setup_out = setup;

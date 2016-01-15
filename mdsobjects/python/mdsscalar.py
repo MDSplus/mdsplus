@@ -1,14 +1,15 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-import numpy as _np
-_dtypes=_mimport('_mdsdtypes',1)
-_data=_mimport('mdsdata',1)
-_ver=_mimport('version',1)
+import numpy as _N
+
+_dtypes=_mimport('_mdsdtypes')
+_data=_mimport('mdsdata')
+_array=_mimport('mdsarray')
+_ver=_mimport('version')
 
 def makeScalar(value):
     if isinstance(value,_ver.basestring):
@@ -16,10 +17,10 @@ def makeScalar(value):
     if isinstance(value,Scalar):
         from copy import deepcopy
         return deepcopy(value)
-    if isinstance(value,_np.generic):
-        if isinstance(value,(_np.string_, _np.unicode_)):  # includes numpy.bytes_
+    if isinstance(value,_N.generic):
+        if isinstance(value,(_N.string_, _N.unicode_)):  # includes _N.bytes_
             return String(value)
-        if isinstance(value,_np.bool_):
+        if isinstance(value,_N.bool_):
             return makeScalar(int(value))
         return globals()[value.__class__.__name__.capitalize()](value)
     if isinstance(value,_ver.long):
@@ -31,18 +32,17 @@ def makeScalar(value):
     if isinstance(value,bool):
         return Int8(int(value))
     if isinstance(value,complex):
-        return Complex128(_np.complex128(value))
-    if isinstance(value,_np.complex64):
+        return Complex128(_N.complex128(value))
+    if isinstance(value,_N.complex64):
         return Complex64(value)
-    if isinstance(value,_np.complex128):
+    if isinstance(value,_N.complex128):
         return Complex128(value)
     raise TypeError('Cannot make Scalar out of '+str(type(value)))
 
 class Scalar(_data.Data):
     def __new__(cls,value=0):
         try:
-            _array=_mimport('mdsarray',1)
-            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _np.ndarray):
+            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
                return _array.__dict__[cls.__name__+'Array'](value)
         except:
             pass
@@ -52,9 +52,9 @@ class Scalar(_data.Data):
         if self.__class__.__name__ == 'Scalar':
             raise TypeError("cannot create 'Scalar' instances")
         if self.__class__.__name__ == 'String':
-            self._value = _np.str_(_ver.tostr(value))
+            self._value = _N.str_(_ver.tostr(value))
             return
-        self._value = _np.__dict__[self.__class__.__name__.lower()](value)
+        self._value = _N.__dict__[self.__class__.__name__.lower()](value)
 
     def __getattr__(self,name):
         if name.startswith("__array"):

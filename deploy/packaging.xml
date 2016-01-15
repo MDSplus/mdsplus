@@ -769,7 +769,7 @@ make clean &gt;/dev/null
 
    </install_script>
  </raspberrypi>
- <external_packages platforms="rhel,fc">
+ <external_packages platforms="el,fc">
    <python-devel/>
    <setuptools package="python-setuptools"/>
    <numpy/>

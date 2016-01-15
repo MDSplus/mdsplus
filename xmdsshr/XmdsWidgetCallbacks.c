@@ -50,6 +50,7 @@ void XmdsManageWindow(Widget w);
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
+#include <xmdsshr.h>
 
 static Widget FindShellChild(Widget w)
 {

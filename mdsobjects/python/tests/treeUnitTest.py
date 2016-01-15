@@ -78,6 +78,9 @@ class treeTests(TestCase):
         for i in range(10):
             node=pytreesub_top.addNode('child%02d' % (i,),'structure')
             node.addDevice('dt200_%02d' % (i,),'dt200')
+        node = pytree_top.addNode('SIG_CMPRS', 'signal')
+        node.compress_on_put = True
+
         pytree.write()
         pytreesub.write()
 
@@ -185,7 +188,7 @@ class treeTests(TestCase):
         self.assertEqual(ip.essential,ip.isEssential())
         mhdtree=self.pytree2.getNode('\\PYTREESUB::TOP')
         self.assertEqual(mhdtree.include_in_pulse,True)
-        self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludedInPulse())
+        self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludeInPulse())
         self.assertEqual(ip.length,int(Data.execute('getnci($,"LENGTH")',ip)))
         self.assertEqual(ip.length,ip.getLength())
         self.assertEqual(ip.no_write_shot,False)
@@ -226,12 +229,20 @@ class treeTests(TestCase):
         self.assertEqual(ip.getSegment(0),None)
         return
 
+    def testCompression(self):
+        testing = Tree('testing', -1)
+        for node in testing.getNodeWild(".compression:*"):
+            self.pytree.SIG_CMPRS.record=node.record
+            self.assertTrue((self.pytree.SIG_CMPRS.record == node.record).all(), 
+                             msg="Error writing compressed signal%s"%node)
+        return
+
     def finish(self):
-        self.pytree.deletePulse(self.shot+1)
-        self.pytree.deletePulse(self.shot)
+        del(self.pytree)
+        del(self.pytree2)
         _gc.collect()
-        #        import subprocess
-        #        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
+#        import subprocess
+#        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
 
     def runTest(self):
         self.editTrees()
@@ -241,6 +252,7 @@ class treeTests(TestCase):
         self.nodeLinkage()
         self.nciInfo()
         self.getData()
+        self.testCompression()
         self.finish()
 
 def suite():

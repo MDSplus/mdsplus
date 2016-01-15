@@ -1,43 +1,17 @@
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
 import ctypes as _C
-from ctypes.util import find_library as _find_library
-import os as _os
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+_ver=_mimport('version')
+_desc=_mimport('_descriptor')
+_mdsshr=_mimport('_mdsshr')
+_Exceptions=_mimport('mdsExceptions')
 
-_ver=_mimport('version',1)
-_desc=_mimport('_descriptor',1)
-_mdsshr=_mimport('_mdsshr',1)
-_mdsExceptions=_mimport('mdsExceptions',1)
-def _load_library(name):
-    libnam = None
-    if _ver.pyver>(2,5,):
-        libnam = _find_library(name)
-    if libnam is None:
-        try:
-            return _C.CDLL('lib'+name+'.so')
-        except:
-            try:
-                return _C.CDLL(name+'.dll')
-            except:
-                try:
-                    return _C.CDLL('lib'+name+'.dylib')
-                except:
-                    raise Exception("Error finding library: "+name)
-    else:
-        try:
-            return _C.CDLL(libnam)
-        except:
-            try:
-                return _C.CDLL(name)
-            except:
-                return _C.CDLL(_os.path.basename(libnam))
-
-_mdsdcl=_load_library('Mdsdcl')
+_mdsdcl=_ver.load_library('Mdsdcl')
 _mdsdcl_do_command_dsc=_mdsdcl.mdsdcl_do_command_dsc
 _mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _C.POINTER(_desc.descriptor_xd), _C.POINTER(_desc.descriptor_xd)]
 
@@ -66,7 +40,7 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False):
       out_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
     status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     if (status & 1) == 0 and raise_exception:
-      raise _mdsExceptions.statusToException(status)
+      raise _Exceptions.statusToException(status)
     if return_out and return_error:
       return (xd_output.value,xd_error.value)
     elif return_out:
@@ -118,4 +92,3 @@ def cts(command,return_out=False,return_error=False,raise_exception=False):
     """
     dcl('set command cts',raise_exception=True)
     return dcl(command,return_out,return_error,raise_exception)
-

@@ -129,6 +129,7 @@ $(install_DIRS):
 
 .PHONY: install
 install: $(install_DIRS)
+	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
 	tar -C ${top_srcdir} -cf - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)

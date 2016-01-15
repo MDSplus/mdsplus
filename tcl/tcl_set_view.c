@@ -24,7 +24,7 @@
 	/****************************************************************
 	 * TclSetView:
 	 ****************************************************************/
-int TclSetView(void *ctx, char **error, char **output)
+EXPORT int TclSetView(void *ctx, char **error, char **output)
 {
   int status;
   int64_t viewDate = -1;

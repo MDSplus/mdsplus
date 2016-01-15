@@ -5,6 +5,7 @@
 #include <sys/timeb.h>
 #include <signal.h>
 #include <pthread.h>
+#include <config.h>
 
 #define MAX_CAMERAS 8
 #define FLAG_VALUE 0xDEADBEEF
@@ -70,7 +71,7 @@ static DC1394Capture Cameras[MAX_CAMERAS];
 static void *AcquireFrames(void *arg);
 void dc1394Done(void *arg);
 
-int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode, int shutter,
+EXPORT int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode, int shutter,
 	       int gain, int trig_on, int mode, int frame_rate, int debug)
 {
   char dev_name[32];		/* /dev/video1394/n  where 0 >= n < MAX_CAMERAS */
@@ -376,7 +377,7 @@ static void *AcquireFrames(void *arg)
   return;
 }
 
-int dc1394ReadFrames(int cam, char *data)
+EXPORT int dc1394ReadFrames(int cam, char *data)
 {
   if (first) {
     fprintf(stderr, "***********************\nIn ReadFrames but first is set ! - returning 0\n");
@@ -406,7 +407,7 @@ int dc1394ReadFrames(int cam, char *data)
   return (1);
 }
 
-int dc1394ReadTimes(int cam, double *data)
+EXPORT int dc1394ReadTimes(int cam, double *data)
 {
   if (first) {
     fprintf(stderr, "***********************\nIn ReadTimes but first is set ! - returning 0\n");
@@ -430,7 +431,7 @@ int dc1394ReadTimes(int cam, double *data)
     return 1;
 }
 
-int dc1394NumFrames(int cam)
+EXPORT int dc1394NumFrames(int cam)
 {
   if (first) {
     fprintf(stderr, "***********************\nIn NumFrames but first is set ! - returning 0\n");
@@ -449,7 +450,7 @@ int dc1394NumFrames(int cam)
   return (Cameras[cam].next_frame);
 }
 
-void dc1394Done(void *arg)
+EXPORT void dc1394Done(void *arg)
 {
   int cam = (int)arg;
   /* clean up any active daq */
@@ -491,7 +492,7 @@ void dc1394Done(void *arg)
   return;
 }
 
-void dc1394Cleanup(void *arg)
+EXPORT void dc1394Cleanup(void *arg)
 {
   int cam = (int)arg;
   void *status = NULL;
@@ -504,7 +505,7 @@ void dc1394Cleanup(void *arg)
   }
 }
 
-extern int dc1394LoadImage()
+EXPORT int dc1394LoadImage()
 {
   fprintf(stderr, "dc1394_support.so now loaded \n");
   return (1);

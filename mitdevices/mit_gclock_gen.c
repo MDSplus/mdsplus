@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "mit_gclock_gen.h"
-int mit_gclock__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int mit_gclock__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "MIT_GCLOCK");
@@ -49,8 +49,8 @@ int mit_gclock__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_pt
   return (TreeSetDefaultNid(old_nid));
 }
 
-int mit_gclock__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-			  struct descriptor *out_d)
+EXPORT int mit_gclock__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+			  struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };

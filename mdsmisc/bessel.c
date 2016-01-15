@@ -115,7 +115,7 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 //#include "definitions.h"
 #include "bessel.h"
 #include "filter.h"
-
+#include <config.h>
 #define STEP_ROOT	1E-1
 #define TOLERANCE	1E-8
 
@@ -155,7 +155,7 @@ static int ConvertCoord(float x, float y, float *out_r, float *out_theta)
 }
 */
 
-double BessJ0(double x)
+EXPORT double BessJ0(double x)
 {
   double result, y, ax, z, xx;
   static double
@@ -200,7 +200,7 @@ double BessJ0(double x)
   return result;
 }
 
-double BessJ1(double x)
+EXPORT double BessJ1(double x)
 {
   double result, y, ax, z, xx;
   static double
@@ -248,7 +248,7 @@ double BessJ1(double x)
   return result;
 }
 
-double BessJn(int n, double x)
+EXPORT double BessJn(int n, double x)
 {
   int iacc = 40;
   static double bigno = 1E10, bigni = 1E-10;
@@ -310,7 +310,7 @@ double BessJn(int n, double x)
   return bessj;
 }
 
-double BessJnD(int n, double x)
+EXPORT double BessJnD(int n, double x)
 {
 /*  Computes Jn'(x) using relations:
 	2 * Jn'(x) = Jn-1(x) - Jn+1(x)
@@ -323,7 +323,7 @@ double BessJnD(int n, double x)
     return (BessJn(n - 1, x) - BessJn(n + 1, x)) / 2;
 }
 
-void BessRoots()
+EXPORT void BessRoots()
 {
   char filename[256];
   int idx, root_idx;
@@ -394,7 +394,7 @@ static double Bisection(int n, double x1, double x2, double y1, double y2)
   }
 }
 
-double **Bessel(int mc_max, int ms_max, int l_max, int num_chords, double *p, double *fi)
+EXPORT double **Bessel(int mc_max, int ms_max, int l_max, int num_chords, double *p, double *fi)
 {
   int ms, mc, l, c, num_cols, curr_col, m, n, m_max;
   double **w, **w_temp, inv_cos, sum, curr_val;
@@ -448,7 +448,7 @@ double **Bessel(int mc_max, int ms_max, int l_max, int num_chords, double *p, do
   return w;
 }
 
-double **BesselStartRebuild(double r, int mc_max, int ms_max, int l_max)
+EXPORT double **BesselStartRebuild(double r, int mc_max, int ms_max, int l_max)
 {
   double **j_temp;
   int m_max, m, l;
@@ -467,7 +467,7 @@ double **BesselStartRebuild(double r, int mc_max, int ms_max, int l_max)
   return j_temp;
 }
 
-double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, double **j_temp, int mode,
+EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, double **j_temp, int mode,
 			  int is_cosine)
 {
   double result = 0;
@@ -486,7 +486,7 @@ double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, double *
   return result;
 }
 
-double BesselRebuild(double r, double theta, double *a, int mc_max, int ms_max, int l_max,
+EXPORT double BesselRebuild(double r, double theta, double *a, int mc_max, int ms_max, int l_max,
 		     double **j_temp)
 {
   double result = 0, sum;
@@ -507,7 +507,7 @@ double BesselRebuild(double r, double theta, double *a, int mc_max, int ms_max, 
   return result;
 }
 
-void BesselEndRebuild(double **j_temp, int mc_max, int ms_max)
+EXPORT void BesselEndRebuild(double **j_temp, int mc_max, int ms_max)
 /* free temporary storage */
 {
   int m, m_max;
@@ -520,7 +520,7 @@ void BesselEndRebuild(double **j_temp, int mc_max, int ms_max)
 
 static double bess_delay;
 
-Complex *BessCRoots(int n, double *g)
+EXPORT Complex *BessCRoots(int n, double *g)
 {
   int n_poles, i, j;
   Complex *poles;
@@ -559,7 +559,7 @@ Complex *BessCRoots(int n, double *g)
   return poles;
 }
 
-Filter *BessInvar(float *fp, float *fs, float *ap, float *as, float *fc, float *delay, int *out_n)
+EXPORT Filter *BessInvar(float *fp, float *fs, float *ap, float *as, float *fc, float *delay, int *out_n)
 /* Unlike Butterworth and Chebyshev filters, fs is the maximum frequency at which we want an error of as in phase */
 {
   bess_delay = *delay;

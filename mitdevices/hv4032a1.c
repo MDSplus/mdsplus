@@ -13,7 +13,7 @@
 extern int hv4032a1___get_settings(struct descriptor *niddsc, InGet_settingsStruct * setup);
 extern int GenDeviceFree();
 
-int hv4032a1__get_settings(struct descriptor *niddsc_ptr, struct descriptor *meth, int max_chans,
+EXPORT int hv4032a1__get_settings(struct descriptor *niddsc_ptr, struct descriptor *meth, int max_chans,
 			   int *settings)
 {
   int status = 1;

@@ -11,7 +11,7 @@
 #else
 #include <pwd.h>
 #endif
-struct descriptor *whoami()
+EXPORT struct descriptor *whoami()
 {
   static struct descriptor ans = { 0, DTYPE_T, CLASS_S, 0 };
   if (ans.pointer == 0) {

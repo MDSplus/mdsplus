@@ -74,6 +74,7 @@ public class MdsConnection
             public void run()
             {
                 setName("Process Mds Event Thread");
+                if (jScopeFacade.busy()) return;
                 if( eventName != null )
                         dispatchUpdateEvent(eventName);
                 else

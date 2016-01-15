@@ -19,7 +19,7 @@
 	/***************************************************************
 	 * TclWrite:
 	 ***************************************************************/
-int TclWrite(void *ctx, char **error, char **output)
+EXPORT int TclWrite(void *ctx, char **error, char **output)
 {
   int sts;
   char *exp = 0;

@@ -32,7 +32,7 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerStartServer(char *server)
+EXPORT int ServerStartServer(char *server)
 {
   return ServerConnect(server);
 }

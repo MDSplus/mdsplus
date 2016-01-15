@@ -32,7 +32,7 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerStopServer(char *server)
+EXPORT int ServerStopServer(char *server)
 {
   return ServerSendMessage(0, server, SrvStop, 0, 0, 0, 0, 0, 0);
 }

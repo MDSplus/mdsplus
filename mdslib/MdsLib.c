@@ -1054,7 +1054,7 @@ static int dtype_length(struct descriptor *d)
 
 
 #if !defined(_CLIENT_ONLY)
-int *cdescr(int dtype, void *data, ...)
+extern EXPORT int *cdescr(int dtype, void *data, ...)
 {
   void *arglist[MAXARGS];
   va_list incrmtr;
@@ -1321,7 +1321,7 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
   }
 }
 #else				/* FORTRAN_ENTRY_POINTS */
-int MdsOpen(char *tree, int *shot)
+extern EXPORT int MdsOpen(char *tree, int *shot)
 {
   return ___MdsOpen(tree, shot);
 }
@@ -1371,12 +1371,12 @@ static int ___MdsSetSocket(int *newsocket)
   return oldsocket;
 }
 
-int MdsSetSocket(SOCKET * newsocket)
+extern EXPORT int MdsSetSocket(SOCKET * newsocket)
 {
   return ___MdsSetSocket(newsocket);
 }
 
-int MdsClose(char *tree, int *shot)
+extern EXPORT int MdsClose(char *tree, int *shot)
 {
   return ___MdsClose(tree, shot);
 }
@@ -1420,7 +1420,7 @@ static int ___MdsClose(char *tree, int *shot)
   return status;
 }
 
-int MdsSetDefault(char *node)
+extern EXPORT int MdsSetDefault(char *node)
 {
   return ___MdsSetDefault(node);
 }
@@ -1465,7 +1465,7 @@ static int ___MdsSetDefault(char *node)
   return status;
 }
 
-void MdsDisconnect()
+extern EXPORT void MdsDisconnect()
 {
   ___MdsDisconnect();
 }
@@ -1476,7 +1476,7 @@ static void ___MdsDisconnect()
   mdsSocket = INVALID_SOCKET;	   /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
 }
 
-SOCKET MdsConnect(char *host)
+extern EXPORT SOCKET MdsConnect(char *host)
 {
   return ___MdsConnect(host);
 }
@@ -1494,13 +1494,13 @@ static SOCKET ___MdsConnect(char *host)
 #endif
 
 #if !defined(FORTRAN_ENTRY_POINTS) || defined(descr)
-int descr(int *dtype, void *data, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6,
+extern EXPORT int descr(int *dtype, void *data, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6,
 	  int *dim7, int *dim8, int *dim9)
 {
   return va_descr(dtype, data, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
 }
 
-int descr2(int *dtype, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6, int *dim7,
+extern EXPORT int descr2(int *dtype, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6, int *dim7,
 	   int *dim8, int *dim9)
 {
   return va_descr2(dtype, dim1, dim2, dim3, dim4, dim5, dim6, dim7, dim8, dim9);
@@ -1508,7 +1508,7 @@ int descr2(int *dtype, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, in
 #endif
 
 #if !defined(FORTRAN_ENTRY_POINTS) || defined(MdsValue)
-int MdsValue(char *expression,
+extern EXPORT int MdsValue(char *expression,
 	     int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07,
 	     int *a08, int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15,
 	     int *a16, int *a17, int *a18, int *a19, int *a20, int *a21, int *a22, int *a23,
@@ -1536,7 +1536,7 @@ int MdsValue(char *expression,
 		     a90, a91, a92, a93, a94, a95, a96, a97, a98, a99);
 }
 
-int MdsValue2(char *expression,
+extern EXPORT int MdsValue2(char *expression,
 	      int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07,
 	      int *a08, int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15,
 	      int *a16, int *a17, int *a18, int *a19, int *a20, int *a21, int *a22, int *a23,
@@ -1566,7 +1566,7 @@ int MdsValue2(char *expression,
 
 #endif
 #if !defined(FORTRAN_ENTRY_POINTS) || defined(MdsPut)
-int MdsPut(char *node, char *expression,
+extern EXPORT int MdsPut(char *node, char *expression,
 	   int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07, int *a08,
 	   int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15, int *a16, int *a17,
 	   int *a18, int *a19, int *a20, int *a21, int *a22, int *a23, int *a24, int *a25, int *a26,
@@ -1593,7 +1593,7 @@ int MdsPut(char *node, char *expression,
 		   a90, a91, a92, a93, a94, a95, a96, a97, a98, a99);
 }
 
-int MdsPut2(char *node, char *expression,
+extern EXPORT int MdsPut2(char *node, char *expression,
 	    int *a00, int *a01, int *a02, int *a03, int *a04, int *a05, int *a06, int *a07,
 	    int *a08, int *a09, int *a10, int *a11, int *a12, int *a13, int *a14, int *a15,
 	    int *a16, int *a17, int *a18, int *a19, int *a20, int *a21, int *a22, int *a23,
@@ -1836,42 +1836,42 @@ static int ___MdsSetDefault(char *node);
 static int ___MdsSetSocket(int *newsocket);
 
 #ifdef FortranMdsConnect
-SOCKET FortranMdsConnect(char *host)
+extern EXPORT SOCKET FortranMdsConnect(char *host)
 {
   return ___MdsConnect(host);
 }
 #endif
 
 #ifdef FortranMdsDisconnect
-void FortranMdsDisconnect()
+extern EXPORT void FortranMdsDisconnect()
 {
   ___MdsDisconnect();
 }
 #endif
 
 #ifdef FortranMdsSetSocket
-int FortranMdsSetSocket(int *newsocket)
+extern EXPORT int FortranMdsSetSocket(int *newsocket)
 {
   return ___MdsSetSocket(newsocket);
 }
 #endif
 
 #ifdef FortranMdsClose
-int FortranMdsClose(char *tree, int *shot)
+extern EXPORT int FortranMdsClose(char *tree, int *shot)
 {
   return ___MdsClose(tree, shot);
 }
 #endif
 
 #ifdef FortranMdsSetDefault
-int FortranMdsSetDefault(char *node)
+extern EXPORT int FortranMdsSetDefault(char *node)
 {
   return ___MdsSetDefault(node);
 }
 #endif
 
 #ifdef FortranMdsOpen
-int FortranMdsOpen(char *tree, int *shot)
+extern EXPORT int FortranMdsOpen(char *tree, int *shot)
 {
   return ___MdsOpen(tree, shot);
 }

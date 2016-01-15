@@ -69,6 +69,7 @@ int XmdsInitialize( )
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>
 #ifndef _NO_XDS
+#include <xmdsshr.h>
 #include <Xmds/XmdsCallbacks.h>
 #include <Xmds/XmdsDigChans.h>
 #include <Xmds/XmdsDisplay.h>
@@ -91,7 +92,7 @@ int XmdsInitialize( )
 #include <Xmds/XmdsWaveform.h>
 
 
-void XmdsInitialize()
+EXPORT extern void XmdsInitialize()
 {
 #ifndef _NO_XDS
   static MrmRegisterArg callbacks[] = {

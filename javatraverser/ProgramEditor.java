@@ -15,13 +15,16 @@ public class ProgramEditor extends JPanel implements Editor
 	{
 	    this.program = new ProgramData(null, null);
 	}
-	setLayout(new BorderLayout());
-	program_edit = new LabeledExprEditor("Program: ", new ExprEditor(
+	program_edit = new LabeledExprEditor("Program", new ExprEditor(
 	    this.program.getProgram(), true));
-	add(program_edit, "North");
-	timeout_edit = new LabeledExprEditor("Timeout: ", new ExprEditor( 
+	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor( 
 	    this.program.getTimeout(), false));
-	add(timeout_edit, "South");
+    JPanel jp =new JPanel();
+	jp.setLayout(new GridLayout(2,1));
+	jp.add(program_edit);
+	jp.add(timeout_edit);
+	setLayout(new BorderLayout());
+    add(jp, BorderLayout.NORTH);
     }
     
     public void reset()

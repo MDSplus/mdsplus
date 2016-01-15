@@ -8,7 +8,7 @@
 #include "l8590_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcValue;
+//extern unsigned short OpcValue;
 
 static int one = 1;
 static int zero = 0;
@@ -20,7 +20,7 @@ static int zero = 0;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-int l8590___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8590___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
   int status;
   pio(setup->name, 9, 0, 0);
@@ -41,7 +41,7 @@ static int ReadSetup(struct descriptor *key_ptr,
 static int ReadChannel(struct descriptor_s *key_d_ptr,
 		       int *max_samps_ptr, int *chan_ptr, int *samples_ptr, short *data_ptr);
 
-int l8590___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8590___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
   int samples = 0;
   int status;

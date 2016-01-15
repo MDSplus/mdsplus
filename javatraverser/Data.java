@@ -12,9 +12,8 @@ public abstract class Data implements Serializable
         try {
 	    System.loadLibrary("JavaMds");
 	    }catch(Exception e) {System.out.println("Cannot load library " + e); }
-    }
-*/    int dclass;
-    int dtype;
+    }*/
+    byte dclass, dtype;
     Vector data_listeners = new Vector();
     public Data()
     {
@@ -27,10 +26,10 @@ public abstract class Data implements Serializable
 //              System.loadLibrary("TreeShr");
 //              System.loadLibrary("TdiShr");
               System.loadLibrary("JavaMds");
-	        }catch(Throwable e)
+	        }catch(Exception exc)
                 {
-                  System.out.println("Load library "+e);
-                  e.printStackTrace();
+                  jTraverser.stderr("Error loading library", exc);
+                  exc.printStackTrace();
                 }
 	    }
     }
@@ -83,50 +82,59 @@ public abstract class Data implements Serializable
     abstract boolean isAtomic();
 
 
-    public static final int DTYPE_BU = 2;
-    public static final int DTYPE_WU = 3;
-    public static final int DTYPE_LU = 4;
-    public static final int DTYPE_QU = 5;
-    public static final int DTYPE_OU = 25;
-    public static final int DTYPE_B = 6;
-    public static final int DTYPE_W = 7;
-    public static final int DTYPE_L = 8;
-    public static final int DTYPE_Q = 9;
-    public static final int DTYPE_O = 26;
-    public static final int DTYPE_FLOAT = 52;
-    public static final int DTYPE_DOUBLE = 53;
-    public static final int DTYPE_FTC = 55;
-    public static final int DTYPE_T = 14;
-    public static final int DTYPE_IDENT = 191;
-    public static final int DTYPE_NID = 192;
-    public static final int DTYPE_PATH = 193;
-    public static final int DTYPE_PARAM = 194;
-    public static final int DTYPE_SIGNAL = 195;
-    public static final int DTYPE_DIMENSION = 196;
-    public static final int DTYPE_WINDOW = 197;
-    public static final int DTYPE_SLOPE = 198;
-    public static final int DTYPE_FUNCTION = 199;
-    public static final int DTYPE_CONGLOM = 200;
-    public static final int DTYPE_RANGE = 201;
-    public static final int DTYPE_ACTION = 202;
-    public static final int DTYPE_DISPATCH = 203;
-    public static final int DTYPE_PROGRAM = 204;
-    public static final int DTYPE_ROUTINE = 205;
-    public static final int DTYPE_PROCEDURE = 206;
-    public static final int DTYPE_METHOD = 207;
-    public static final int DTYPE_DEPENDENCY = 208;
-    public static final int DTYPE_CONDITION = 209;
-    public static final int DTYPE_EVENT = 210;
-    public static final int DTYPE_WITH_UNITS = 211;
-    public static final int DTYPE_CALL = 212;
-    public static final int DTYPE_WITH_ERROR = 213;
+    public static final byte DTYPE_BU = 2;
+    public static final byte DTYPE_WU = 3;
+    public static final byte DTYPE_LU = 4;
+    public static final byte DTYPE_QU = 5;
+    public static final byte DTYPE_OU = 25;
+    public static final byte DTYPE_B = 6;
+    public static final byte DTYPE_W = 7;
+    public static final byte DTYPE_L = 8;
+    public static final byte DTYPE_Q = 9;
+    public static final byte DTYPE_O = 26;
+    public static final byte DTYPE_FLOAT = 52;
+    public static final byte DTYPE_DOUBLE = 53;
+    public static final byte DTYPE_FSC = 54;
+    public static final byte DTYPE_FTC = 55;
+    public static final byte DTYPE_F = 10;
+    public static final byte DTYPE_D = 11;
+    public static final byte DTYPE_G = 27;
+    public static final byte DTYPE_H = 28;
+    public static final byte DTYPE_T = 14;
+    public static final byte DTYPE_POINTER = 51;
+    public static final byte DTYPE_DSC = 24;
+    public static final byte DTYPE_IDENT = -65; //191
+    public static final byte DTYPE_NID = -64; //192
+    public static final byte DTYPE_PATH = -63; //193
+    public static final byte DTYPE_PARAM = -62; //194
+    public static final byte DTYPE_SIGNAL = -61; //195
+    public static final byte DTYPE_DIMENSION = -60; //196
+    public static final byte DTYPE_WINDOW = -59; //197
+    public static final byte DTYPE_SLOPE = -58; //198
+    public static final byte DTYPE_FUNCTION = -57; //199
+    public static final byte DTYPE_CONGLOM = -56; //200
+    public static final byte DTYPE_RANGE = -55; //201
+    public static final byte DTYPE_ACTION = -54; //202
+    public static final byte DTYPE_DISPATCH = -53; //203
+    public static final byte DTYPE_PROGRAM = -52; //204
+    public static final byte DTYPE_ROUTINE = -51; //205
+    public static final byte DTYPE_PROCEDURE = -50; //206
+    public static final byte DTYPE_METHOD = -49; //207
+    public static final byte DTYPE_DEPENDENCY = -48; //208
+    public static final byte DTYPE_CONDITION = -47; //209
+    public static final byte DTYPE_EVENT = -46; //210
+    public static final byte DTYPE_WITH_UNITS = -45; //211
+    public static final byte DTYPE_CALL = -44; //212
+    public static final byte DTYPE_WITH_ERROR = -43; //213
+    public static final byte DTYPE_LIST = -42;//214
+    public static final byte DTYPE_TUPLE = -41;//215
+    public static final byte DTYPE_DICTIONARY = -40;//216
 
-
-    public static final int CLASS_S = 1;
-    public static final int CLASS_D = 2;
-    public static final int CLASS_A = 4;
-    public static final int CLASS_R = 194;
-    public static final int CLASS_APD = 196;
+    public static final byte CLASS_S = 1;
+    public static final byte CLASS_D = 2;
+    public static final byte CLASS_A = 4;
+    public static final byte CLASS_R = -62; //194
+    public static final byte CLASS_APD = -60; //196
 }
 
 

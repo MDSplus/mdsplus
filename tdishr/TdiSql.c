@@ -35,10 +35,6 @@
 #include <mds_stdarg.h>
 #include <config.h>
 #ifdef HAVE_SYBASE
-#ifdef __VMS
-#include <dvidef.h>		/*for line width */
-#include <starlet.h>
-#endif
 #include <ctype.h>
 
 #ifdef  __ALPHA			/**---AXP---**/
@@ -444,35 +440,6 @@ int rblob;
 				       SYBCHAR, (unsigned char *)ddate,
 				       sizeof(ddate) - 1);
 
-#ifdef VMS
-	    quadword big_time;
-	    struct dsc$descriptor_s date_dsc = { 22, DSC$K_DTYPE_T, DSC$K_CLASS_S, (char *)ddate };
-	    len = sizeof(d_null);
-	    dtype = DTYPE_FT;
-	    ddate[20] = '.';
-	    ddate[3] = ddate[0];
-	    ddate[0] = ddate[4];
-	    ddate[4] = toupper(ddate[1]);
-	    ddate[1] = ddate[5];
-	    ddate[5] = toupper(ddate[2]);
-	    ddate[2] = '-';
-	    ddate[6] = '-';
-	    if (status < 0) {
-	      buf = (char *)&d_null;
-	      break;
-	    }
-	    status = sys$bintim(&date_dsc, &big_time);
-	    if (status & 1) {
-	      double t1;
-	      double t2;
-	      t1 = (double)big_time.l1 * pow(2e0, 32e0);
-	      t2 = (double)big_time.l0;
-	      d_ans = (t1 + t2) / 86400e7;
-	      buf = (char *)&d_ans;
-	    } else
-	      buf = (char *)&d_null;
-	    break;
-#else
 	    STATIC_CONSTANT char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
 	    STATIC_CONSTANT int day[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304,
 	      334
@@ -508,7 +475,6 @@ int rblob;
 	    d_ans = (double)(yr * 365 + day[mo] + da + leap - 678941);
 	    d_ans += (double)(th + 1000 * (se + 60 * (mi + 60 * hr))) / 86400000.;
 	    buf = (char *)&d_ans;
-#endif
 #else
 	    d_ans = d_null;
 	    if (bufs[j].len == 8) {
@@ -632,8 +598,8 @@ int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_
   int status = 1;
   int rows = 0;
   ARGLIST user_args = { 0 };
-  struct descriptor dtext = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor dq_text = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d dtext = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d dq_text = { 0, DTYPE_T, CLASS_D, 0 };
   struct descriptor drows = { sizeof(rows), DTYPE_L, CLASS_S, 0 };
   STATIC_CONSTANT DESCRIPTOR(zero, "\0");
   drows.pointer = (char *)&rows;
@@ -731,12 +697,6 @@ int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_
     if (status & 1)
       status = TDISQL_LINK("USERSQL_SET", &USERSQL_SET);
   }
-#ifdef __VMS
-  if (width == 0) {
-    STATIC_CONSTANT DESCRIPTOR(output_device, "SYS$OUTPUT");
-    LibGetDvi(&DVI$_DEVBUFSIZ, 0, &output_device, &width, 0, 0);
-  }
-#endif
   width = width > 0 ? width : 132;
   if (status & 1)
     status = TdiData(list[0], &dtext MDS_END_ARG);

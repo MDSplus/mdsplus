@@ -7,15 +7,13 @@
 #     python gen_devices.py
 ########################################################
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-MDSplusException=_mimport('__init__',1).MDSplusException
-
+MDSplusException=_mimport('__init__').MDSplusException
 
 
 class DevException(MDSplusException):
@@ -206,6 +204,18 @@ class DevINV_SETUP(DevException):
   status=662470906
   message="device was not properly set up"
   msgnam="INV_SETUP"
+
+
+class DevPYDEVICE_NOT_FOUND(DevException):
+  status=662470914
+  message="Python device class not found."
+  msgnam="PYDEVICE_NOT_FOUND"
+
+
+class DevDEVICE_CONNECTION_FAILED(DevException):
+  status=662470922
+  message="Could not connect to device. Maybe it is not connected or turned off."
+  msgnam="DEVICE_CONNECTION_FAILED"
 
 
 class ReticonException(MDSplusException):

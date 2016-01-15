@@ -485,7 +485,6 @@ public class MultiWaveform
             return;
 
         Signal s;
-
         for (int i = 0; i < signals.size(); i++)
         {
             s = (Signal) signals.elementAt(i);
@@ -671,17 +670,37 @@ public class MultiWaveform
         waveform_signal = new Signal( (Signal) signals.elementAt(i));
 
         
-        for (i = 1; i < signals.size(); i++)
+        //Check if any of the elements of signals vector refers to absolute time. 
+        //In this case set minimum and maximum X value of reference waveform_signal to its limits
+        boolean anyLongX = false;
+        for (i = 0; i < signals.size(); i++)
         {
             if ( (Signal) signals.elementAt(i) == null)
+                continue;
+            if(((Signal) signals.elementAt(i)).isLongX())
+            {
+                anyLongX = true;
+                waveform_signal.setXLimits(((Signal) signals.elementAt(i)).getXmin(), 
+                        waveform_signal.getXmax(), Signal.AT_CREATION);
+                break;
+            }
+        }       
+        for (i = 0; i < signals.size(); i++)
+        {
+            if ( (Signal) signals.elementAt(i) == null)
+                continue;
+            //Avoid introducing 0 as limits for absolute times
+            if(anyLongX && !((Signal) signals.elementAt(i)).isLongX())
                 continue;
             if (waveform_signal.getXmax() < ((Signal) signals.elementAt(i)).getXmax())
                 waveform_signal.setXLimits(waveform_signal.getXmin(), 
                         ((Signal) signals.elementAt(i)).getXmax(), Signal.AT_CREATION);
  //                       ((Signal) signals.elementAt(i)).getXmax(), Signal.SIMPLE);
             if(waveform_signal.getXmin() > ((Signal) signals.elementAt(i)).getXmin())
+            {
                 waveform_signal.setXLimits(((Signal) signals.elementAt(i)).getXmin(), 
                         waveform_signal.getXmax(), Signal.AT_CREATION);
+            }
  //                       waveform_signal.getXmax(), Signal.SIMPLE);
             
             if (waveform_signal.getYmax() <
@@ -1395,10 +1414,10 @@ public class MultiWaveform
            }
            else
             {
-                if ( ( (Signal) signals.elementAt(i)).getXmin() < waveform_signal.getXmin())
+                if (!( (Signal) signals.elementAt(i)).xLimitsInitialized() || ( (Signal) signals.elementAt(i)).getXmin() < waveform_signal.getXmin())
                     waveform_signal.setXLimits( ( (Signal) signals.elementAt(i)).getXmin(),waveform_signal.getXmax(), Signal.SIMPLE);
 
-                if( ((Signal) signals.elementAt(i)).getXmax() > waveform_signal.getXmax())
+                if(!( (Signal) signals.elementAt(i)).xLimitsInitialized() || ( (Signal) signals.elementAt(i)).getXmax() > waveform_signal.getXmax())
                     waveform_signal.setXLimits( waveform_signal.getXmin(),( (Signal) signals.elementAt(i)).getXmax(), Signal.SIMPLE);
                  if ( ( (Signal) signals.elementAt(i)).getYmin() <
                     waveform_signal.getYmin())
@@ -1571,6 +1590,57 @@ public class MultiWaveform
         super.SetMode(mod);
     }
     
+    //Inherits from parent in order to force UpdateLimits
+    public  void signalUpdated(boolean changeLimits)
+    {
+      change_limits = changeLimits;
+      not_drawn = true;
+    //Check if any of the elements of signals vector refers to absolute time. 
+    //In this case set minimum and maximum X value of reference waveform_signal to its limits
+        boolean anyLongX = false;
+        for (int i = 1; i < signals.size(); i++)
+        {
+            if ( (Signal) signals.elementAt(i) == null)
+                continue;
+            if(((Signal) signals.elementAt(i)).isLongX())
+            {
+                anyLongX = true;
+                waveform_signal.setXLimits(((Signal) signals.elementAt(i)).getXmin(), 
+                        waveform_signal.getXmax(), Signal.AT_CREATION);
+                break;
+            }
+        }       
+        
+       for (int i = 1; i < signals.size(); i++)
+       {
+            if ( (Signal) signals.elementAt(i) == null)
+                continue;
+           //Avoid introducing 0 as limits for absolute times
+            if(anyLongX && !((Signal) signals.elementAt(i)).isLongX())
+                continue;
+             if (waveform_signal.getXmax() < ((Signal) signals.elementAt(i)).getXmax())
+                waveform_signal.setXLimits(waveform_signal.getXmin(), 
+                        ((Signal) signals.elementAt(i)).getXmax(), Signal.SIMPLE);
+ //                       ((Signal) signals.elementAt(i)).getXmax(), Signal.SIMPLE);
+            if(waveform_signal.getXmin() > ((Signal) signals.elementAt(i)).getXmin())
+                waveform_signal.setXLimits(((Signal) signals.elementAt(i)).getXmin(), 
+                        waveform_signal.getXmax(), Signal.SIMPLE);
+ //                       waveform_signal.getXmax(), Signal.SIMPLE);
+            
+            if (waveform_signal.getYmax() <
+                ( (Signal) signals.elementAt(i)).getYmax())
+                waveform_signal.setYmax( ( (Signal) signals.elementAt(i)).
+                                        getYmax(), Signal.SIMPLE);
+//                                        getYmax(), Signal.SIMPLE);
+             if (waveform_signal.getYmin() >
+                ( (Signal) signals.elementAt(i)).getYmin())
+                waveform_signal.setYmin( ( (Signal) signals.elementAt(i)).
+                                        getYmin(), Signal.SIMPLE);
+ //                                       getYmin(), Signal.SIMPLE);
+      }
+
+      repaint();
+    }
 
 
 }

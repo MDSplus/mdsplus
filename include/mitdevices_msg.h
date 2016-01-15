@@ -175,7 +175,7 @@
 
 #ifdef MSG_LIBRARY
 
-int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
+EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 {
   static struct msg {
     int sts;

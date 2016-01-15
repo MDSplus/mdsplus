@@ -21,7 +21,7 @@
 	/****************************************************************
 	 * TclSetDefault:
 	 ****************************************************************/
-int TclSetDefault(void *ctx, char **error, char **output)
+EXPORT int TclSetDefault(void *ctx, char **error, char **output)
 {
   int nid;
   int sts;
@@ -45,7 +45,7 @@ int TclSetDefault(void *ctx, char **error, char **output)
 	/***************************************************************
 	 * TclShowDefault:
 	 ***************************************************************/
-int TclShowDefault(void *ctx, char **error, char **output)
+EXPORT int TclShowDefault(void *ctx, char **error, char **output)
 {				/* Returns: status                        */
   char *p;
   int nid;

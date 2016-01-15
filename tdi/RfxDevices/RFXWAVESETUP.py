@@ -1,9 +1,7 @@
-from MDSplus import *
+from MDSplus import mdsExceptions, Device
 
 class RFXWAVESETUP(Device):
-    print 'RFXWaveSetup'
     """Generic Wavefor configuration mdsplus device"""
-    parts=[]
     parts=[{'path':':COMMENT','type':'text'}]
     for i in range(1,7):
          parts.append({'path':'.WAVE_%d'%(i),'type':'structure'})

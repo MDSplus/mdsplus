@@ -9,16 +9,8 @@
 #include "l8828_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcDble;
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
-
+#include <camdef.h>
 extern int DevCamChk();
-extern int CamPiow();
-extern int CamFStopw();
-extern int CamQrepw();
-extern int CamXandQ();
 
 static int one = 1;
 static int zero = 0;
@@ -41,7 +33,7 @@ typedef struct {
   unsigned user:1;
 } L8828Control;
 
-int l8828___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l8828___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   L8828Control ctrl;
   float freq;
@@ -59,14 +51,14 @@ int l8828___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int l8828___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l8828___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-int l8828___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8828___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)

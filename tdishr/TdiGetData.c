@@ -321,7 +321,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
         Useful internal and external function.
         C only: status = TdiGetFloat(&in_dsc, &float)
 */
-int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
+extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 {
   int status = 1;
 
@@ -390,7 +390,7 @@ int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
         Useful internal and external function.
         C only: status = TdiGetLong(&in_dsc, &long)
 */
-int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
+extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 {
   int status = 1;
 
@@ -458,7 +458,7 @@ int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
         Useful internal and external function.
         C only: status = TdiGetNid(&in_dsc, &nid)
 */
-int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
+extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -693,7 +693,7 @@ int Tdi1Validation(int opcode, int narg, struct descriptor *list[], struct descr
 }
 
 static int use_get_record_fun = 1;
-int TdiGetRecord(int nid, struct descriptor_xd *out)
+EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
 {
   int status;
   static int use_fun = 1;

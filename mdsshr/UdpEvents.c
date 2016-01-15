@@ -223,6 +223,7 @@ static void getMulticastAddr(char const *eventName, char *retIp)
 int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), void *astprm,
 		   int *eventid)
 {
+  int check_bind_in_directive;
   struct sockaddr_in serverAddr;
 #ifdef _WIN32
   char flag = 1;
@@ -298,11 +299,11 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
     return 0;
   }
 #ifdef _WIN32
-  if (bind(udpSocket, (SOCKADDR *) & serverAddr, sizeof(serverAddr)) != 0)
+  check_bind_in_directive = (bind(udpSocket, (SOCKADDR *) & serverAddr, sizeof(serverAddr)) != 0);
 #else
-  if (bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0)
+  check_bind_in_directive = (bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0);
 #endif
-  {
+  if (check_bind_in_directive){
     perror("Cannot bind socket\n");
     return 0;
   }
@@ -448,7 +449,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   if (UdpEventGetInterface(&interface_addr)) {
     status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF, interface_addr, sizeof(*interface_addr));
     free(interface_addr);
-  } 
+  }
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     perror("Error sending UDP message!\n");
 #ifdef _WIN32
@@ -505,4 +506,3 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
 - buf (buf len chars)
 
 ***********************/
-

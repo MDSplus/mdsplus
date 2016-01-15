@@ -40,7 +40,7 @@ static char *Server(char *out, char *srv)
   return out;
 }
 
-int ServerDispatchClose(void *vtable)
+EXPORT int ServerDispatchClose(void *vtable)
 {
   char server[33];
   DispatchTable *table = (DispatchTable *) vtable;

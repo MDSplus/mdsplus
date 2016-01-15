@@ -102,7 +102,7 @@ void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan)
   routines.  Writes out the information specified by the user for
   a channel.
 ******************************************************************/
-void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
+EXPORT void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
 {
   char input_name[12];
   Widget input_w;
@@ -119,7 +119,7 @@ void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
   }
 }
 
-int XmdsWidgetToNumber(Widget w, String prefix)
+EXPORT int XmdsWidgetToNumber(Widget w, String prefix)
 {
   Widget widg;
   int number = -1;

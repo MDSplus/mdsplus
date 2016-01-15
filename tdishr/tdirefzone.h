@@ -43,30 +43,30 @@ struct marker {
 #define MAKE_S(dtype_in,bytes,out)\
 	{int dsc_size = sizeof(struct descriptor_s);\
 	int vm_size = dsc_size + (bytes);\
-		LibGetVm(&vm_size,&(out),&TdiRefZone.l_zone);\
-		((struct descriptor *)(out))->length = bytes;\
-		((struct descriptor *)(out))->dtype = dtype_in;\
-		((struct descriptor *)(out))->class = CLASS_S;\
-		((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
+	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
+	((struct descriptor *)(out))->length = bytes;		\
+	((struct descriptor *)(out))->dtype = dtype_in;		\
+	((struct descriptor *)(out))->class = CLASS_S;			\
+	((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
 
 #define MAKE_XD(dtype_in,bytes,out)\
 	{int dsc_size = sizeof(struct descriptor_xd);\
 	int vm_size = dsc_size + (bytes);\
-		LibGetVm(&vm_size,&(out),&TdiRefZone.l_zone);\
-		((struct descriptor_xd *)(out))->l_length = bytes;\
-		((struct descriptor_xd *)(out))->length = 0;\
-		((struct descriptor_xd *)(out))->dtype = dtype_in;\
-		((struct descriptor_xd *)(out))->class = CLASS_XD;\
-		((struct descriptor_xd *)(out))->pointer = (struct descriptor *)((char *)(out) + dsc_size);}
+	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
+	((struct descriptor_xd *)(out))->l_length = bytes;		\
+	((struct descriptor_xd *)(out))->length = 0;			\
+	((struct descriptor_xd *)(out))->dtype = dtype_in;		\
+	((struct descriptor_xd *)(out))->class = CLASS_XD;		\
+	((struct descriptor_xd *)(out))->pointer = (struct descriptor *)((char *)(out) + dsc_size);}
 
 #define MAKE_R(ndesc,dtype_in,bytes,out)\
 	{int dsc_size = sizeof($RECORD(ndesc));\
 	int vm_size = dsc_size + (bytes);\
-		LibGetVm(&vm_size,&(out),&TdiRefZone.l_zone);\
-		((struct descriptor *)(out))->length = bytes;\
-		((struct descriptor *)(out))->dtype = dtype_in;\
-		((struct descriptor *)(out))->class = CLASS_R;\
-		((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
+	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
+	((struct descriptor *)(out))->length = bytes;		\
+	((struct descriptor *)(out))->dtype = dtype_in;		\
+	((struct descriptor *)(out))->class = CLASS_R;			\
+	((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
 
 	/**********************************************
 	Give an extra semicolon. Must be able to unput.

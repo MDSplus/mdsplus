@@ -597,7 +597,7 @@ int ServerBadSocket(int socket)
   return !(status == 0);
 }
 
-int ServerDisconnect(char *server_in)
+EXPORT int ServerDisconnect(char *server_in)
 {
   int status = 0;
   char *srv = TranslateLogical(server_in);
@@ -640,7 +640,7 @@ int ServerDisconnect(char *server_in)
   return (status);
 }
 
-int ServerConnect(char *server_in)
+EXPORT int ServerConnect(char *server_in)
 {
   int conid = -1;
   char *srv = TranslateLogical(server_in);

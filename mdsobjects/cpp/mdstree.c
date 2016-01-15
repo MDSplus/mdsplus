@@ -10,11 +10,6 @@
 #ifndef _WIN32
 #include <mdstypes.h>
 #endif
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 extern void *convertDataToDsc(void *data);
 extern void *convertFromDsc(void *dscPtr, void *tree);
@@ -91,7 +86,7 @@ int deleteTreeData(void *dbid, int nid)
 void convertTime(int *time, char *retTime)
 {
   char timeStr[512];
-  int retLen;
+  unsigned short retLen;
   struct descriptor time_dsc = { 511, DTYPE_T, CLASS_S, timeStr };
 
   LibSysAscTim(&retLen, &time_dsc, time);
@@ -258,7 +253,7 @@ int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc)
   return status;
 }
 
-extern int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times)
+int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
@@ -268,7 +263,7 @@ extern int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t
   return status;
 }
 
-extern int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times,
+int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times,
 				      int rowsFilled)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;

@@ -18,7 +18,7 @@
 	 * TclAddTag:
 	 * Add a tag name to a node
 	 *****************************************************************/
-int TclAddTag(void *ctx, char **error, char **output)
+EXPORT int TclAddTag(void *ctx, char **error, char **output)
 {				/* Return: status                 */
   int nid;
   int sts;

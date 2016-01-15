@@ -20,7 +20,15 @@ public class TreeNodeArray
         for(int i = 0; i < nids.length; i++)
             treeNodes[i] = new TreeNode(nids[i], tree);
     }
-        
+    public int size()
+    {
+	if(treeNodes == null) return 0;
+	return treeNodes.length;
+    }
+    public TreeNode getElementAt(int idx)
+    {
+	return treeNodes[idx];
+    }   
     public java.lang.String [] getPath() throws MdsException
     {
         java.lang.String path[] = new java.lang.String[treeNodes.length];

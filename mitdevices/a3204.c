@@ -14,8 +14,7 @@ static int one = 1;
 #define pio(f,a,dv) {int d = dv;\
  if (!((status = DevCamChk(CamPiow(setup->name,a,f,&dv,16,0),&one,&one)) & 1)) return status;}
 extern int DevCamChk();
-extern int CamPiow();
-extern int TdiCompile();
+
 
 static int InitChannel(InInitStruct * setup, int chan, int gain, float offset)
 {
@@ -32,7 +31,7 @@ static int InitChannel(InInitStruct * setup, int chan, int gain, float offset)
   return status;
 }
 
-int a3204___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int a3204___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   status = InitChannel(setup, 0, setup->input_1_gain_convert, setup->input_1_offset);
@@ -68,7 +67,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
     pio(1, chan, ctl)
 	offset = ctl * 10. / 2048.0 - 10.0;
     out_nid_d.pointer = (char *)&output_nid;
-    SignalError(TdiCompile(&expression, &out_nid_d, &offset_d, &gain_d, &value MDS_END_ARG));
+    SignalError(TdiCompile((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &value MDS_END_ARG));
     SignalError(TreePutRecord(input_nid, (struct descriptor *)&value, 0));
     if (TreeIsOn(filter_on_nid) & 1)
       SignalError(TreePutRecord(filter_on_nid, filter, 0));
@@ -76,7 +75,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
   return status;
 }
 
-int a3204___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int a3204___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status;
   int i;

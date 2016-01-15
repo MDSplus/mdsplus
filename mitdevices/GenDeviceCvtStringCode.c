@@ -16,7 +16,7 @@
 
 	Call sequence: 
 
-int GEN_DEVICE$CVT_STRING_CODE( )
+EXPORT int GEN_DEVICE$CVT_STRING_CODE( )
 
 ------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ struct _table {
   short code;
   char *string;
 };
-int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr, struct _table *table)
+EXPORT int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr, struct _table *table)
 {
 
 /*------------------------------------------------------------------------------

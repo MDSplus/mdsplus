@@ -4,6 +4,7 @@
 #include <dcl.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <mdsdcl_messages.h>
 
 #include "tcl_p.h"
 
@@ -20,7 +21,7 @@
 	 * TclRename:
 	 * Rename a node or subtree.
 	 ***************************************************************/
-int TclRename(void *ctx, char **error, char **output)
+EXPORT int TclRename(void *ctx, char **error, char **output)
 {
   int nid;
   int sts = MdsdclIVVERB;

@@ -113,10 +113,10 @@ typedef struct {
 }
 
 #define OperateWideOne(type,size,is_signed) \
- double a = WideIntToDouble(in1p,size,is_signed);\
- double b = WideIntToDouble(in2p,size,is_signed);\
- double ans = (b != 0) ? a/b : (double)0.0;\
- DoubleToWideInt(&ans,size,outp++);
+  double a = WideIntToDouble(in1p,size/sizeof(int),is_signed);	\
+  double b = WideIntToDouble(in2p,size/sizeof(int),is_signed);	\
+  double ans = (b != 0) ? a/b : (double)0.0;			\
+  DoubleToWideInt(&ans,size/sizeof(int),outp++);
 
 #define OperateWide(type,size,is_signed) \
 { type *in1p = (type *)in1->pointer;\

@@ -92,6 +92,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
   TREE_INFO *tree_info;
   NCI_ITM *itm_ptr;
   NCI nci;
+  int putnci=0;
 /*------------------------------------------------------------------------------
 
  Executable:
@@ -115,11 +116,14 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 
       case NciSET_FLAGS:
 	nci.flags |= *(unsigned int *)itm_ptr->pointer;
+	putnci=1;
 	break;
       case NciCLEAR_FLAGS:
 	nci.flags &= ~(*(unsigned int *)itm_ptr->pointer);
+	putnci=1;
 	break;
       case NciSTATUS:
+	putnci=1;
 	nci.status = *(unsigned int *)itm_ptr->pointer;
 	break;
       case NciUSAGE:
@@ -132,28 +136,28 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 **************************************************/
 
 	  if (!(IS_OPEN_FOR_EDIT(dblist)))
-	    return TreeNOEDIT;
+	    status = TreeNOEDIT;
 
 	  node_ptr = nid_to_node(dblist, nid_ptr);
 	  if (node_ptr->usage != *(unsigned char *)itm_ptr->pointer) {
 	    node_ptr->usage = *(unsigned char *)itm_ptr->pointer;
 	    dblist->modified = 1;
 	  }
-	  return TreeNORMAL;
+	  status = TreeNORMAL;
 	}
       default:
 	status = TreeILLEGAL_ITEM;
 	break;
       }
     }
-    if (status & 1)
+    if ((status & 1) && putnci)
       status = TreePutNci(tree_info, node_number, &nci, 1);
     TreeUnLockNci(tree_info, 0, node_number);
   }
   return status;
 }
 
-int TreeSetNciItm(int nid, int code, int value)
+EXPORT int TreeSetNciItm(int nid, int code, int value)
 {
   NCI_ITM itm[] = { {0, 0, 0, 0}, {0, 0, 0, 0} };
   itm[0].buffer_length = (short)sizeof(int);
@@ -255,8 +259,10 @@ int TreeGetNciLw(TREE_INFO * info, int node_num, NCI * nci)
 	if (status & 1 && deleted) {
 	  status = TreeReopenNci(info);
 	} else {
-	  if (!(status & 1))
+	  if (!(status & 1)) {
+	    TreeUnLockNci(info, 0, node_num);
 	    return status;
+	  }
 	  MDS_IO_LSEEK(info->nci_file->put, node_num * sizeof(nci_bytes), SEEK_SET);
 	  status =
 	      (MDS_IO_READ(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
@@ -700,7 +706,8 @@ STATIC_THREADSAFE int NCIMutex_initialized;
 
 int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 {
-  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
+  int status;
+  status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
 			   nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
   LockMdsShrMutex(&NCIMutex, &NCIMutex_initialized);
   return status;
@@ -708,7 +715,8 @@ int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 
 int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum)
 {
-  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
+  int status;
+  status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
 			   MDS_IO_LOCK_NONE, 0);
   UnlockMdsShrMutex(&NCIMutex);
   return status;
