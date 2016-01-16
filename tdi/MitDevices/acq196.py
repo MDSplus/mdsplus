@@ -34,7 +34,6 @@ class ACQ196(acq.ACQ):
         import time
         start=time.time()
         msg=None
-        print "*************** This is my copy ******************"
         try:
             if self.debugging():
                 print "starting init\n";

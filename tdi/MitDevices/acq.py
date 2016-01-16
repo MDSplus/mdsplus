@@ -88,9 +88,16 @@ class ACQ(MDSplus.Device):
         return post_trig
 
     def getBoardIp(self):
-        boardip=str(self.node.record)
+        from MDSplus.mdsExceptions import DevNO_NAME_SPECIFIED
+        from MDSplus.mdsExceptions import TreeNODATA
+        try:
+            boardip=str(self.node.record)
+        except TreeNODATA,e:
+            raise DevNO_NAME_SPECIFIED()
+        except Exception,e:
+            raise            
         if len(boardip) == 0 :
-            raise Exception, "boardid record empty"
+            raise DevNO_NAME_SPECIFIED()
         return boardip
 
     def dataSocketDone(self):
@@ -202,19 +209,19 @@ class ACQ(MDSplus.Device):
                 s.close()
             time.sleep(3)
                   
+#
+# Let this function raise an error that will be 
+# Thrown all the way out of the device method
+#
     def getMyIp(self):
         import socket
 
         s=socket.socket()
-	try:
-            s.connect((self.getBoardIp(),54545))
-            hostip = s.getsockname()[0]
-            state=s.recv(100)[0:-1]
-            if self.debugging():
-                print "getMyIp  read /%s/\n" % (state,)
-	except Exception,e:
-	    hostip = ""
-	    print "could not connect to board to verify local IP address\n%s\n" %(e,)
+        s.connect((self.getBoardIp(),54545))
+        hostip = s.getsockname()[0]
+        state=s.recv(100)[0:-1]
+        if self.debugging():
+            print "getMyIp  read /%s/\n" % (state,)
         s.close()
 	return hostip
 
