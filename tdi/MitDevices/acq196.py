@@ -171,61 +171,18 @@ class ACQ196(acq.ACQ):
             print "Begining store\n"
 
         self.checkTrigger()
+        self.loadSettings()
+        self.checkTreeAndShot(arg)
+        self.storeStatusCommands()
 
-        complete = 0
-        tries = 0
-        settings = None
-        while not complete and tries < 10 :
-            try:
-                tries = tries + 1
-                settings = self.loadSettings()
-                complete=1
-            except Exception,e:
-                if self.debugging():
-                    print "ACQ196 Error loading settings\n%s\n" %(e,)
-        if settings == None :
-            print "after %d tries could not load settings\n" % (tries,)
-            return acq.ACQ.SettingsNotLoaded
-        
-        path = self.local_path
-        tree = self.local_tree
-        shot = self.tree.shot
-        if self.debugging() :
-            print "xml is loaded\n"
-        if tree != settings['tree'] :
-            print "ACQ196 open tree is %s board armed with tree %s\n" % (tree, settings["tree"],)
-            if arg != "nochecks" :
-               raise DevWRONG_TREE() 
-        if path != settings['path'] :
-            print "ACQ196 device tree path %s, board armed with path %s\n" % (path, settings["path"],)
-            if arg != "nochecks" :
-                raise DevWRONG_PATH()
-        if shot != int(settings['shot']) :
-            print "ACQ196 open shot is %d, board armed with shot %d\n" % (shot, int(settings["shot"]),)
-            if arg != "nochecks" :
-                raise DevWRONG_SHOT()
-        status = []
-        cmds = self.status_cmds.record
-        for cmd in cmds:
-            cmd = cmd.strip()
-            if self.debugging():
-                print "about to append answer for /%s/\n" % (cmd,)
-                print "   which is /%s/\n" %(settings[cmd],)
-            status.append(settings[cmd])
-            if self.debugging():
-                print "%s returned %s\n" % (cmd, settings[cmd],)
-        if self.debugging():
-            print "about to write board_status signal"
-        self.board_status.record = MDSplus.Signal(cmds, None, status)
-
-        numSampsStr = settings['getNumSamples']
-        preTrig = self.getPreTrig(numSampsStr)
-        postTrig = self.getPostTrig(numSampsStr)
+        preTrig = self.getPreTrig()
+        postTrig = self.getPostTrig()
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
-        vin1 = settings['get.vin 1:32']
-        vin2 = settings['get.vin 33:64']
-        vin3 = settings['get.vin 65:96']
+
+        vin1 = self.settings['get.vin 1:32']
+        vin2 = self.settings['get.vin 33:64']
+        vin3 = self.settings['get.vin 65:96']
         active_chan = int(self.active_chan)
 	if active_chan == 96 :
             vins = eval('MDSplus.makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
@@ -234,19 +191,18 @@ class ACQ196(acq.ACQ):
 	        vins = eval('MDSplus.makeArray([%s, %s])' % (vin1, vin2,))
 	    else :
                 vins = eval('MDSplus.makeArray([%s])' % (vin1,))
-
         if self.debugging():
             print "got the vins "
             print vins
         self.ranges.record = vins
-        chanMask = settings['getChannelMask'].split('=')[-1]
+        chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
         clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
         if self.debugging():
             print "clock_src = %s\n" % (clock_src,)
         if clock_src == 'INT_CLOCK' :
-            intClock = float(settings['getInternalClock'].split()[1])
+            intClock = float(self.settings['getInternalClock'].split()[1])
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:

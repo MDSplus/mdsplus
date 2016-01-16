@@ -77,13 +77,13 @@ class ACQ(MDSplus.Device):
             self.debug=os.getenv("DEBUG_DEVICES")
 	return(self.debug)
 
-    def getPreTrig(self,str) :
-	parts = str.split('=')
+    def getPreTrig(self) :
+	parts = self.settings['getNumSamples'].split('=')
         pre_trig = int(parts[2].split(' ')[0])
 	return pre_trig
 
-    def getPostTrig(self,str) :
-        parts = str.split('=')
+    def getPostTrig(self) :
+        parts = self.settings['getNumSamples'].split('=')
         post_trig = int(parts[3].split(' ')[0])
         return post_trig
 
@@ -156,6 +156,61 @@ class ACQ(MDSplus.Device):
 	if self.debugging():
 	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
+
+    def loadSettings(self):
+        tries = 0
+        self.settings = None
+        last_error = None
+        while self.settings == None and tries < 10 :
+            try:
+                tries = tries + 1
+                self.settings = self.readSettings()
+                complete=1
+            except Exception,e:
+                last_error=e
+                if self.debugging():
+                    print "ACQ196 Error loading settings\n%s\n" %(e,)
+        if self.settings == None :
+            print "after %d tries could not load settings\n" % (tries,)
+            raise last_error
+
+    def checkTreeAndShot(self, arg='checks'):
+        from MDSplus.mdsExceptions import DevWRONG_TREE
+        from MDSplus.mdsExceptions import DevWRONG_SHOT
+        from MDSplus.mdsExceptions import DevWRONG_PATH
+
+        path = self.local_path
+        tree = self.local_tree
+        shot = self.tree.shot
+        if self.debugging() :
+            print "xml is loaded\n"
+        if tree != self.settings['tree'] :
+            print "ACQ Device open tree is %s board armed with tree %s\n" % (tree, self.settings["tree"],)
+            if arg != "nochecks" :
+               raise DevWRONG_TREE() 
+        if path != self.settings['path'] :
+            print "ACQ device tree path %s, board armed with path %s\n" % (path, self.settings["path"],)
+            if arg != "nochecks" :
+                raise DevWRONG_PATH()
+        if shot != int(self.settings['shot']) :
+            print "ACQ open shot is %d, board armed with shot %d\n" % (shot, int(self.settings["shot"]),)
+            if arg != "nochecks" :
+                raise DevWRONG_SHOT()
+
+    def storeStatusCommands(self):
+        status = []
+        cmds = self.status_cmds.record
+        for cmd in cmds:
+            cmd = cmd.strip()
+            if self.debugging():
+                print "about to append answer for /%s/\n" % (cmd,)
+                print "   which is /%s/\n" %(self.settings[cmd],)
+            status.append(self.settings[cmd])
+            if self.debugging():
+                print "%s returned %s\n" % (cmd, self.settings[cmd],)
+        if self.debugging():
+            print "about to write board_status signal"
+        self.board_status.record = MDSplus.Signal(cmds, None, status)
 
     def checkTrigger(self):
         from MDSplus.mdsExceptions import DevNOT_TRIGGERED
@@ -363,7 +418,7 @@ class ACQ(MDSplus.Device):
                 if self.debugging():
                     print "set.route %s in %s out %s\n" %(line, wire, bus,)
 
-    def loadSettings(self):
+    def readSettings(self):
         settingsfd = tempfile.TemporaryFile()
         ftp = ftplib.FTP(self.getBoardIp())
         ftp.login('dt100', 'dt100')
