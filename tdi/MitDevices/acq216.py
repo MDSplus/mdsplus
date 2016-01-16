@@ -172,82 +172,36 @@ class ACQ216(acq.ACQ):
 
     INITFTP=initftp
         
-    def store(self, arg):
-        import MitDevices
-        import time
+    def store(self, arg='checks'):
+
         if self.debugging():
             print "Begining store\n"
-	self.data_socket=-1
-        if not self.triggered():
-            print "ACQ216 Device not triggered\n"
-            return MitDevices.DevNotTriggered
 
-        complete = 0
-        tries = 0
-        settings = None
-        while not complete and tries < 10 :
-            try:
-                tries = tries + 1
-                settings = self.loadSettings()
-                complete=1
-            except Exception,e:
-                if self.debugging():
-                    print "ACQ216 Error loading settings\n%s\n" %(e,)
-        if settings == None :
-            print "after %d tries could not load settings\n" % (tries,)
-            return acq.ACQ.SettingsNotLoaded
-        
-        path = self.local_path
-        tree = self.local_tree
-        shot = self.tree.shot
-        if self.debugging() :
-            print "xml is loaded\n"
-        if tree != settings['tree'] :
-            print "ACQ216 open tree is %s board armed with tree %s\n" % (tree, settings["tree"],)
-            if arg != "nochecks" :
-                return acq.ACQ.WrongTree
-        if path != settings['path'] :
-            print "ACQ216 device tree path %s, board armed with path %s\n" % (path, settings["path"],)
-            if arg != "nochecks" :
-                return acq.ACQ.WrongPath
-        if shot != int(settings['shot']) :
-            print "ACQ216 open shot is %d, board armed with shot %d\n" % (shot, int(settings["shot"]),)
-            if arg != "nochecks" :
-                return acq.ACQ.WrongShot
-        status = []
-        cmds = self.status_cmds.record
-        for cmd in cmds:
-            cmd = cmd.strip()
-            if self.debugging():
-                print "about to append answer for /%s/\n" % (cmd,)
-                print "   which is /%s/\n" %(settings[cmd],)
-            status.append(settings[cmd])
-            if self.debugging():
-                print "%s returned %s\n" % (cmd, settings[cmd],)
-        if self.debugging():
-            print "about to write board_status signal"
-        self.board_status.record = MDSplus.Signal(cmds, None, status)
+        self.checkTrigger()
+        self.loadSettings()
+        self.checkTreeAndShot(arg)
+        self.storeStatusCommands()
 
-        numSampsStr = settings['getNumSamples']
-        preTrig = self.getPreTrig(numSampsStr)
-        postTrig = self.getPostTrig(numSampsStr)
+        preTrig = self.getPreTrig()
+        postTrig = self.getPostTrig()
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
-        vin1 = settings['get.vin']
+
+        vin1 = self.settings['get.vin']
         vins = eval('MDSplus.makeArray([%s,])' % (vin1,))
 
         if self.debugging():
             print "got the vins "
             print vins
         self.ranges.record = vins
-        chanMask = settings['getChannelMask'].split('=')[-1]
+        chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
         clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
         if self.debugging():
             print "clock_src = %s\n" % (clock_src,)
         if clock_src == 'INT_CLOCK' :
-            intClock = float(settings['getInternalClock'].split()[1])
+            intClock = float(self.settings['getInternalClock'].split()[1])
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:
@@ -257,10 +211,18 @@ class ACQ216(acq.ACQ):
 #
 # now store each channel
 #
+        last_error=None
         for chan in range(16):
-            self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
+            try:
+                self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
+            except e:
+                print "Error storing channel %d\n%s" % (chan, e,)
+                last_error = e
 
         self.dataSocketDone()
+        if last_error:
+            raise last_error
+
         return 1
 
     STORE=store
