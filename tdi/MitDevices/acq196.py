@@ -162,10 +162,6 @@ class ACQ196(acq.ACQ):
     INITFTP=initftp
         
     def store(self, arg='checks'):
-        import time
-        from MDSplus.mdsExceptions import DevWRONG_TREE
-        from MDSplus.mdsExceptions import DevWRONG_SHOT
-        from MDSplus.mdsExceptions import DevWRONG_PATH
 
         if self.debugging():
             print "Begining store\n"
