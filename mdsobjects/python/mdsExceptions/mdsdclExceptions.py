@@ -26,10 +26,12 @@ class MdsdclSUCCESS(MdsdclException):
   msgnam="SUCCESS"
 
 
+
 class MdsdclEXIT(MdsdclException):
   status=134348817
   message="Normal exit"
   msgnam="EXIT"
+
 
 
 class MdsdclERROR(MdsdclException):
@@ -38,10 +40,12 @@ class MdsdclERROR(MdsdclException):
   msgnam="ERROR"
 
 
+
 class MdsdclNORMAL(MdsdclException):
   status=134349609
   message="Normal successful completion"
   msgnam="NORMAL"
+
 
 
 class MdsdclPRESENT(MdsdclException):
@@ -50,10 +54,12 @@ class MdsdclPRESENT(MdsdclException):
   msgnam="PRESENT"
 
 
+
 class MdsdclIVVERB(MdsdclException):
   status=134349626
   message="No such command"
   msgnam="IVVERB"
+
 
 
 class MdsdclABSENT(MdsdclException):
@@ -62,10 +68,12 @@ class MdsdclABSENT(MdsdclException):
   msgnam="ABSENT"
 
 
+
 class MdsdclNEGATED(MdsdclException):
   status=134349640
   message="Entity is present but negated"
   msgnam="NEGATED"
+
 
 
 class MdsdclNOTNEGATABLE(MdsdclException):
@@ -74,10 +82,12 @@ class MdsdclNOTNEGATABLE(MdsdclException):
   msgnam="NOTNEGATABLE"
 
 
+
 class MdsdclIVQUAL(MdsdclException):
   status=134349658
   message="Invalid qualifier"
   msgnam="IVQUAL"
+
 
 
 class MdsdclPROMPT_MORE(MdsdclException):
@@ -86,10 +96,12 @@ class MdsdclPROMPT_MORE(MdsdclException):
   msgnam="PROMPT_MORE"
 
 
+
 class MdsdclTOO_MANY_PRMS(MdsdclException):
   status=134349674
   message="Too many parameters specified"
   msgnam="TOO_MANY_PRMS"
+
 
 
 class MdsdclTOO_MANY_VALS(MdsdclException):
@@ -98,7 +110,9 @@ class MdsdclTOO_MANY_VALS(MdsdclException):
   msgnam="TOO_MANY_VALS"
 
 
+
 class MdsdclMISSING_VALUE(MdsdclException):
   status=134349690
   message="Qualifier value needed"
   msgnam="MISSING_VALUE"
+

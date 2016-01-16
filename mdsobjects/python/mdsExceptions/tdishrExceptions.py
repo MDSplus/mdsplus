@@ -26,10 +26,12 @@ class TdiBREAK(TdiException):
   msgnam="BREAK"
 
 
+
 class TdiCASE(TdiException):
   status=265519120
   message="CASE was not in SWITCH statement"
   msgnam="CASE"
+
 
 
 class TdiCONTINUE(TdiException):
@@ -38,10 +40,12 @@ class TdiCONTINUE(TdiException):
   msgnam="CONTINUE"
 
 
+
 class TdiEXTRANEOUS(TdiException):
   status=265519136
   message="Some characters were unused, bad number maybe"
   msgnam="EXTRANEOUS"
+
 
 
 class TdiRETURN(TdiException):
@@ -50,10 +54,12 @@ class TdiRETURN(TdiException):
   msgnam="RETURN"
 
 
+
 class TdiABORT(TdiException):
   status=265519154
   message="Program requested abort"
   msgnam="ABORT"
+
 
 
 class TdiBAD_INDEX(TdiException):
@@ -62,10 +68,12 @@ class TdiBAD_INDEX(TdiException):
   msgnam="BAD_INDEX"
 
 
+
 class TdiBOMB(TdiException):
   status=265519170
   message="Bad punctuation, could not compile the text"
   msgnam="BOMB"
+
 
 
 class TdiEXTRA_ARG(TdiException):
@@ -74,10 +82,12 @@ class TdiEXTRA_ARG(TdiException):
   msgnam="EXTRA_ARG"
 
 
+
 class TdiGOTO(TdiException):
   status=265519186
   message="GOTO target label not found"
   msgnam="GOTO"
+
 
 
 class TdiINVCLADSC(TdiException):
@@ -86,10 +96,12 @@ class TdiINVCLADSC(TdiException):
   msgnam="INVCLADSC"
 
 
+
 class TdiINVCLADTY(TdiException):
   status=265519202
   message="Invalid mixture of storage class and data type"
   msgnam="INVCLADTY"
+
 
 
 class TdiINVDTYDSC(TdiException):
@@ -98,10 +110,12 @@ class TdiINVDTYDSC(TdiException):
   msgnam="INVDTYDSC"
 
 
+
 class TdiINV_OPC(TdiException):
   status=265519218
   message="Invalid operator code in a function"
   msgnam="INV_OPC"
+
 
 
 class TdiINV_SIZE(TdiException):
@@ -110,10 +124,12 @@ class TdiINV_SIZE(TdiException):
   msgnam="INV_SIZE"
 
 
+
 class TdiMISMATCH(TdiException):
   status=265519234
   message="Shape of arguments does not match"
   msgnam="MISMATCH"
+
 
 
 class TdiMISS_ARG(TdiException):
@@ -122,10 +138,12 @@ class TdiMISS_ARG(TdiException):
   msgnam="MISS_ARG"
 
 
+
 class TdiNDIM_OVER(TdiException):
   status=265519250
   message="Number of dimensions is over the allowed 8"
   msgnam="NDIM_OVER"
+
 
 
 class TdiNO_CMPLX(TdiException):
@@ -134,10 +152,12 @@ class TdiNO_CMPLX(TdiException):
   msgnam="NO_CMPLX"
 
 
+
 class TdiNO_OPC(TdiException):
   status=265519266
   message="No support for this function, today"
   msgnam="NO_OPC"
+
 
 
 class TdiNO_OUTPTR(TdiException):
@@ -146,10 +166,12 @@ class TdiNO_OUTPTR(TdiException):
   msgnam="NO_OUTPTR"
 
 
+
 class TdiNO_SELF_PTR(TdiException):
   status=265519282
   message="No $VALUE is defined for signal or validation"
   msgnam="NO_SELF_PTR"
+
 
 
 class TdiNOT_NUMBER(TdiException):
@@ -158,10 +180,12 @@ class TdiNOT_NUMBER(TdiException):
   msgnam="NOT_NUMBER"
 
 
+
 class TdiNULL_PTR(TdiException):
   status=265519298
   message="Null pointer where value needed"
   msgnam="NULL_PTR"
+
 
 
 class TdiRECURSIVE(TdiException):
@@ -170,10 +194,12 @@ class TdiRECURSIVE(TdiException):
   msgnam="RECURSIVE"
 
 
+
 class TdiSIG_DIM(TdiException):
   status=265519314
   message="Signal dimension does not match data shape"
   msgnam="SIG_DIM"
+
 
 
 class TdiSYNTAX(TdiException):
@@ -182,10 +208,12 @@ class TdiSYNTAX(TdiException):
   msgnam="SYNTAX"
 
 
+
 class TdiTOO_BIG(TdiException):
   status=265519330
   message="Conversion of number lost significant digits"
   msgnam="TOO_BIG"
+
 
 
 class TdiUNBALANCE(TdiException):
@@ -194,10 +222,12 @@ class TdiUNBALANCE(TdiException):
   msgnam="UNBALANCE"
 
 
+
 class TdiUNKNOWN_VAR(TdiException):
   status=265519346
   message="Unknown/undefined variable name"
   msgnam="UNKNOWN_VAR"
+
 
 
 class TdiSTRTOOLON(TdiException):
@@ -206,7 +236,9 @@ class TdiSTRTOOLON(TdiException):
   msgnam="STRTOOLON"
 
 
+
 class TdiTIMEOUT(TdiException):
   status=265519364
   message="task did not complete in alotted time"
   msgnam="TIMEOUT"
+

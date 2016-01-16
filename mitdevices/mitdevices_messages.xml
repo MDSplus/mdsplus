@@ -97,15 +97,12 @@
     <status name="PYDEVICE_NOT_FOUND" value="4128" severity="Error"
             text="Python device class not found."
             facabb="DEV"/>
-    <status name="OFFLINE" value ="4129" severity="Error"
-            text="Device is not on line.  Check network connection"
+    <status name="PYDEVICE_NOT_FOUND" value ="4129" severity="Error"
+            text="Device support not found."
             facabb="DEV"/>
     <status name="IO_STUCK" value ="4130" severity="Error"
            text="I/O to Device is stuck. Check network connection and board status."
            facabb="DEV"/>
-    <status name="TRIGGERED_NOT_STORED" value ="4130" severity="Error"
-          text="Device was triggered but not stored."
-          facabb="DEV"/>
     <status name="UNKOWN_STATE" value ="4131" severity="Error"
           text="Device returned unrecognized state string"
           facabb="DEV"/>
@@ -118,6 +115,12 @@
     <status name="WRONG_SHOT" value="4134" severity="Error"
           text="Attempt to store digitizer into different shot than it was armed with"
           facabb="DEV"/>
+    <status name="OFFLINE" value ="4135" severity="Error"
+            text="Device is not on line.  Check network connection"
+            facabb="DEV"/>
+    <status name="TRIGGERED_NOT_STORED" value ="4136" severity="Error"
+           text="Device was triggered but not stored."
+           facabb="DEV"/>
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
 	    facnam="RETICON$_" facabb="RETICON"/>

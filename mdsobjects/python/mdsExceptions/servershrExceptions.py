@@ -26,10 +26,12 @@ class ServerNOT_DISPATCHED(ServerException):
   msgnam="NOT_DISPATCHED"
 
 
+
 class ServerINVALID_DEPENDENCY(ServerException):
   status=266436626
   message="action dependency cannot be evaluated"
   msgnam="INVALID_DEPENDENCY"
+
 
 
 class ServerCANT_HAPPEN(ServerException):
@@ -38,10 +40,12 @@ class ServerCANT_HAPPEN(ServerException):
   msgnam="CANT_HAPPEN"
 
 
+
 class ServerINVSHOT(ServerException):
   status=266436642
   message="invalid shot number, cannot dispatch actions in model"
   msgnam="INVSHOT"
+
 
 
 class ServerABORT(ServerException):
@@ -50,7 +54,9 @@ class ServerABORT(ServerException):
   msgnam="ABORT"
 
 
+
 class ServerPATH_DOWN(ServerException):
   status=266436674
   message="Path to server lost"
   msgnam="PATH_DOWN"
+

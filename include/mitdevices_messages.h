@@ -41,13 +41,14 @@
 #define DEVCAM_NOSX             0x277c80f2
 #define DEVINV_SETUP            0x277c80fa
 #define DEVPYDEVICE_NOT_FOUND   0x277c8102
-#define DEVOFFLINE              0x277c810a
+#define DEVPYDEVICE_NOT_FOUND   0x277c810a
 #define DEVIO_STUCK             0x277c8112
-#define DEVTRIGGERED_NOT_STORED 0x277c8112
 #define DEVUNKOWN_STATE         0x277c811a
 #define DEVWRONG_TREE           0x277c8122
 #define DEVWRONG_PATH           0x277c812a
 #define DEVWRONG_SHOT           0x277c8132
+#define DEVOFFLINE              0x277c813a
+#define DEVTRIGGERED_NOT_STORED 0x277c8142
 #define RETICON$_NORMAL               0x277c8199
 #define RETICON$_BAD_FRAMES           0x277c81a2
 #define RETICON$_BAD_FRAME_SELECT     0x277c81aa

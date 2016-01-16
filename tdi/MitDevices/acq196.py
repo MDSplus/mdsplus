@@ -163,7 +163,6 @@ class ACQ196(acq.ACQ):
     INITFTP=initftp
         
     def store(self, arg='checks'):
-        import MitDevices
         import time
         from MDSplus.mdsExceptions import DevWRONG_TREE
         from MDSplus.mdsExceptions import DevWRONG_SHOT
@@ -282,6 +281,7 @@ class ACQ196(acq.ACQ):
 #
 # now store each channel
 #
+        last_error=None
         for chan in range(96):
             try:
                 self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)

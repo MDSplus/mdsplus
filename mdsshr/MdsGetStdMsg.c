@@ -1954,10 +1954,10 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVOFFLINE */
+/* DEVPYDEVICE_NOT_FOUND */
       case 0x277c8108:
-        {static const char *text="Device is not on line.  Check network connection";
-        static const char *msgnam="OFFLINE";
+        {static const char *text="Device support not found.";
+        static const char *msgnam="PYDEVICE_NOT_FOUND";
         *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
@@ -1968,16 +1968,6 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x277c8110:
         {static const char *text="I/O to Device is stuck. Check network connection and board status.";
         static const char *msgnam="IO_STUCK";
-        *fac_out = FAC_DEV;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* DEVTRIGGERED_NOT_STORED */
-      case 0x277c8110:
-        {static const char *text="Device was triggered but not stored.";
-        static const char *msgnam="TRIGGERED_NOT_STORED";
         *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
@@ -2018,6 +2008,26 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x277c8130:
         {static const char *text="Attempt to store digitizer into different shot than it was armed with";
         static const char *msgnam="WRONG_SHOT";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVOFFLINE */
+      case 0x277c8138:
+        {static const char *text="Device is not on line.  Check network connection";
+        static const char *msgnam="OFFLINE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVTRIGGERED_NOT_STORED */
+      case 0x277c8140:
+        {static const char *text="Device was triggered but not stored.";
+        static const char *msgnam="TRIGGERED_NOT_STORED";
         *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
