@@ -77,6 +77,14 @@ class ACQ(MDSplus.Device):
             self.debug=os.getenv("DEBUG_DEVICES")
 	return(self.debug)
 
+    def getInt(self, node, cls):
+        try:
+            ans = int(node)
+        except, Exception, e:
+            print "ACQ error reading %s erro is\n%s" %(node, e,)
+            raise cls()
+        return ans
+
     def getPreTrig(self) :
 	parts = self.settings['getNumSamples'].split('=')
         pre_trig = int(parts[2].split(' ')[0])

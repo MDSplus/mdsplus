@@ -124,7 +124,24 @@
     <status name="NO_NAME_SPECIFIED" value ="4137" severity="Error"
           text="Device name must be specifed - pleas fill it in."
           facabb="DEV"/>
-
+    <status name="BAD_ACTIVE_CHAN" value ="4138" severity="Error"
+          text="Active channels either not available or invalid"
+          facabb="DEV"/>
+    <status name="BAD_TRIG_SRC" value ="4139" severity="Error"
+         text="Trigger source either not available or invalid"
+         facabb="DEV"/>
+    <status name="BAD_CLOCK_SRC" value ="4140" severity="Error"
+         text="Clock source either not available or invalid"
+         facabb="DEV"/>
+    <status name="BAD_PRE_TRIG" value ="4141" severity="Error"
+        text="Pre trigger samples either not available or invalid"
+        facabb="DEV"/>
+    <status name="BAD_POST_TRIG" value ="4142" severity="Error"
+        text="Clock source either not available or invalid"
+        facabb="DEV"/>
+    <status name="BAD_CLOCK_FREQ" value ="4143" severity="Error"
+        text="Clock frequency either not available or invalid"
+        facabb="DEV"/>
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
 	    facnam="RETICON$_" facabb="RETICON"/>

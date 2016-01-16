@@ -33,63 +33,72 @@ class ACQ216(acq.ACQ):
         """
         import tempfile
         import time
+        from MDSplus.mdsExceptions import DevBAD_ACTIVE_CHAN
+        from MDSplus.mdsExceptions import DevBAD_TRIG_SRC
+        from MDSplus.mdsExceptions import DevBAD_CLOCK_SRC
+        from MDSplus.mdsExceptions import DevBAD_PRE_TRIG
+        from MDSplus.mdsExceptions import DevBAD_POST_TRIG
+        from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
+
         start=time.time()
-        msg=None
+
+        if self.debugging():
+            print "starting init\n";
+        path = self.local_path
+        tree = self.local_tree
+        shot = self.tree.shot
+
+        active_chan = self.getInt(self.active_chan, DevBAD_ACTIVE_CHAN)
+        if active_chan not in (4,8,16) :
+            raise DevBAD_ACTIVE_CHAN
+        if self.debugging():
+            print "have active chan\n";
 
         try:
-            if self.debugging():
-                print "starting init\n";
-            path = self.local_path
-            tree = self.local_tree
-            shot = self.tree.shot
-            msg="Must specify active chans as int in (4,8,16)"
-
-            active_chan = int(self.active_chan)
-            msg=None
-            if active_chan not in (4,8,16) :
-                print "active chans must be in (4,8,16)"
-                active_chan = 16
-            if self.debugging():
-                print "have active chan\n";
-
-            msg="Could not read trigger source"
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
-            if self.debugging():
-                print "have trig_src\n";
-            msg="Could not read clock source"
+        except Exception, e:
+            print "trigger source error: %s" %(e,)
+            raise DevBAD_TRIG_SRC
+        if self.debugging():
+            print "have trig_src\n";
+
+        try:
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-            if self.debugging():
-                print "have clock src\n";
+        except:
+            print "clock source error: %s" %(e,)
+            raise DevBAD_CLOCK_SRC
+        if self.debugging():
+            print "have clock src\n";
+
+        try:
+            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+        except:
+            clock_out=None
+
+        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)
+        if self.debugging():
+            print "have pre trig\n";
+
+        post_trig = self.getInt(self.active_chan, DevBAD_POST_TRIG)
+        if self.debugging():
+            print "have post trig\n";
+
+        if clock_src == "INT_CLOCK":
+            clock_freq = self.getInt(self.clock_freq,DevBAD_CLOCK_FREQ)
+            clock_div = 1
+        else :
             try:
-                clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+                clock_div = int(self.clock_div)
             except:
-                clock_out=None
-            msg="Must specify pre trigger samples"
-            pre_trig=int(self.pre_trig.data()*1024)
-            if self.debugging():
-                print "have pre trig\n";
-            msg="Must specify post trigger samples"
-            post_trig=int(self.post_trig.data()*1024)
-            if self.debugging():
-                print "have post trig\n";
-            msg=None
-            if clock_src == "INT_CLOCK":
-                msg="Must specify clock frequency in clock_freq node for internal clock"
-                clock_freq = int(self.clock_freq)
                 clock_div = 1
-                msg=None
-            else :
-                try:
-                    clock_div = int(self.clock_div)
-                except:
-                    clock_div = 1
-            if self.debugging():
-                print "have the settings\n";
+         if self.debugging():
+             print "have the settings\n";
 
 
 #
 # now create the post_shot ftp command file
 #
+        try:
             fd = tempfile.TemporaryFile()
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
@@ -157,18 +166,21 @@ class ACQ216(acq.ACQ):
 
             print "Time to make init file = %g\n" % (time.time()-start)
             start=time.time()
-            self.doInit(fd)
-            fd.close()
 
-            print "Time for board to init = %g\n" % (time.time()-start)
-            return  1
+            self.doInit(fd)
 
         except Exception,e:
-            if msg != None:
-                print 'error = %s\nmsg = %s\n' %(msg, str(e),)
-            else:
-                print "%s\n" % (str(e),)
-            return acq.ACQ.InitializationError
+            try:
+                fd.close()
+            except:
+                pass 
+
+            raise
+
+        fd.close()
+       
+        print "Time for board to init = %g\n" % (time.time()-start)
+        return  1
 
     INITFTP=initftp
         
