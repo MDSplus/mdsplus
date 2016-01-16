@@ -2034,6 +2034,16 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* DEVNO_NAME_SPECIFIED */
+      case 0x277c8148:
+        {static const char *text="Device name must be specifed - pleas fill it in.";
+        static const char *msgnam="NO_NAME_SPECIFIED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* RETICONNORMAL */
       case 0x277c8198:
         {static const char *text="successful completion";

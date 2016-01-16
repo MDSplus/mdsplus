@@ -121,6 +121,10 @@
     <status name="TRIGGERED_NOT_STORED" value ="4136" severity="Error"
            text="Device was triggered but not stored."
            facabb="DEV"/>
+    <status name="NO_NAME_SPECIFIED" value ="4137" severity="Error"
+          text="Device name must be specifed - pleas fill it in."
+          facabb="DEV"/>
+
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
 	    facnam="RETICON$_" facabb="RETICON"/>

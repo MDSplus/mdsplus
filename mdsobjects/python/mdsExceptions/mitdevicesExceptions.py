@@ -300,6 +300,13 @@ class DevTRIGGERED_NOT_STORED(DevException):
 
 
 
+class DevNO_NAME_SPECIFIED(DevException):
+  status=662470986
+  message="Device name must be specifed - pleas fill it in."
+  msgnam="NO_NAME_SPECIFIED"
+
+
+
 class ReticonException(MDSplusException):
   fac="Reticon"
 

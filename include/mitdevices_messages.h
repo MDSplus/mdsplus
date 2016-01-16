@@ -49,6 +49,7 @@
 #define DEVWRONG_SHOT           0x277c8132
 #define DEVOFFLINE              0x277c813a
 #define DEVTRIGGERED_NOT_STORED 0x277c8142
+#define DEVNO_NAME_SPECIFIED    0x277c814a
 #define RETICON$_NORMAL               0x277c8199
 #define RETICON$_BAD_FRAMES           0x277c81a2
 #define RETICON$_BAD_FRAME_SELECT     0x277c81aa
