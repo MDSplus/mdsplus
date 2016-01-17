@@ -75,8 +75,6 @@ class ACQFMC (acqsuper.ACQSUPER) :
     _sys_port      = 4220
     _data_port     = 53000
     _sys_cmds      = ['fpga_version', 'software_version']
-    _mod_cmds      = ['MANUFACTURER', 'PART_NUM', 'SERIAL', 'adc_18b', 'data32']
-    _arm_delay     = 0.5
     _store_retries = 5
 
     def syscmd (self, cmd) : print(self._uutcmd(0,                      cmd))
@@ -93,61 +91,73 @@ class ACQFMC (acqsuper.ACQSUPER) :
         uut_sys = UUT(self._get_board_addr(), self._sys_port,                          debug=self._debugging())
         uut_mod = UUT(self._get_board_addr(), self._sys_port + self._get_board_site(), debug=self._debugging())
 
-        self._uutcmd(0, 'set_arm')
+        uut_mod.send('shot=%d' % (self.tree.shot - 1,), no_reply=True)
+        uut_sys.send('set_arm')
         time.sleep(self._arm_delay)
-        uut_mod.send('shot=%d' % self.tree.shot, no_reply=True)
 
-        state = int(self._uutcmd(0, 'state').split(' ')[0])
+        state = int(uut_sys.send('state').split(' ')[0])
         if state != 1 and state != 2 :
-            print('warning: not armed')
+            print('warning: not armed after %d seconds' % self._arm_delay)
             raise MDSplus.mdsExceptions.AcqINITIALIZATION_ERROR
 
-    def init (self) :
-        start = time.time()
-        print('Beginning initialization via unified command interface -- %s.' % ('system contoller and module' if self.sys_ctrl.data() == 1 else 'module only'))
+    SYSCMD   = syscmd
+    MODCMD   = modcmd
+    GETSTATE = getstate
+    DISARM   = disarm
+    ARM      = arm
 
-        config = self._get_config()
+    def _uutcmd (self, site, cmd) :
+        board_addr = self._get_board_addr()
+        uut = UUT(board_addr, self._sys_port + site, self._debugging())
+        return uut.send(cmd)
 
-        clkdiv = 10**(7 - int(math.log10(config['clock_freq'])))
-        mbclk  = int(config['clock_freq'] * clkdiv)
+    def _get_board_site (self) :
+        site = int(self.site.record)
+        if site < 1 or site > 6 :
+            print('error: site out of range, should be 1-6')
+            raise MDSplus.mdsExceptions.DevINV_SETUP
+        return site
 
-        if mbclk > 33e6 :
-            clkdiv /= 4
-            mbclk = int(config['clock_freq'] * clkdiv)
+    def _zclk (self, mbclk_min, mbclk_max, freq) :
 
-        if self._debugging() : print('clkdiv = %d, mbclk = %d' % (clkdiv, mbclk))
-        if clkdiv < 1 or mbclk < 4e6 or mbclk > 33e6 :
-            print('error: could not find a valid mbclk/clkdiv pair')
+        if freq > mbclk_max :
+            print('error: requested frequency too high')
             raise MDSplus.mdsExceptions.DevBAD_FREQ
 
-        sys_cmds = [
-          'set_abort',
-          'SIG:FP:TRG=INPUT',
-          'SIG:SRC:TRG:0=EXT',
-          'SIG:ZCLK_SRC=INT33M',
-          'SYS:CLK:FPMUX=ZCLK',
-          'SIG:CLK_MB:SET=%d' % mbclk,
-          'SIG:SRC:CLK:1=MCLK',
-          'transient PRE=%d POST=%d OSAM=1 SOFT_TRIGGER=0' % (config['pre_trig'] * 1000, config['post_trig'] * 1000),
-        ]
-        mod_cmds = [
-          'trg=%d,%d,%d' % (1, int(config['trig_src'][-1]),  config['trig_edge']  != 'FALLING'),
-          'clk=%d,%d,%d' % (1, int(config['clock_src'][-1]), config['clock_edge'] != 'FALLING'),
-          'clkdiv=%d'    % clkdiv,
-        ]
+        clkdiv = int(math.ceil(mbclk_min/freq))
+        mbclk  = int(freq * clkdiv)
 
-        log = self._do_init(sys_cmds, mod_cmds)
-        print('Initialization via unified command interface succeeded in %g seconds.' % (time.time() - start))
+        if self._debugging() : print('zclk(): mbclk = %d, clkdiv = %d' % (mbclk, clkdiv))
+        return (mbclk, clkdiv)
 
-        samples = (config['pre_trig'] + config['post_trig']) * 1000 * config['active_chan']
-        print('Estimated memory required: %0.1f Mbytes (out of %d total)' % (samples * 2 / 1048576, config['daq_mem']))
+    def _do_init (self, sys_cmds, mod_cmds) :
 
-        self.uut_log.record = log
-        return 1
+        board_addr = self._get_board_addr()
+        board_site = self._get_board_site()
+        uut_sys = UUT(board_addr, self._sys_port,              debug=self._debugging())
+        uut_mod = UUT(board_addr, self._sys_port + board_site, debug=self._debugging())
+        log = ''
 
-    def store (self) :
-        start = time.time()
-        print('Beginning upload via channel sockets.')
+        # system info (read-only) and config
+        if self.sys_ctrl.data() == 1 :
+            for cmd in self._sys_cmds :
+                ans = uut_sys.send(cmd)
+                log += 'site 0: "%s" -> %s\n' % (cmd, ans)
+            for cmd in sys_cmds :
+                ans = uut_sys.send(cmd)
+                log += 'site 0: "%s" -> %s\n' % (cmd, ans)
+
+        # module info (read-only) and config
+        for cmd in self._mod_cmds :
+            ans = uut_mod.send(cmd)
+            log += 'site %d: "%s" -> %s\n' % (board_site, cmd, ans)
+        for cmd in mod_cmds :
+            ans = uut_mod.send(cmd, no_reply=True)
+            log += 'site %d: "%s" -> %s\n' % (board_site, cmd, ans)
+
+        return log
+
+    def _pre_store (self) :
 
         board_addr = self._get_board_addr()
         board_site = self._get_board_site()
@@ -196,63 +206,9 @@ class ACQFMC (acqsuper.ACQSUPER) :
         offset = 0
         for i in range(1, board_site) :
             offset += int(uut_sys.send('get.site %d NCHAN' % i))
-        if self._debugging() : print('channel offset = %d' % offset)
+        if self._debugging() : print('pre_store(): channel offset = %d' % offset)
 
-        # read gains and store data
-        for n in range(int(uut_mod.send('NCHAN'))) :
-            volts = float(uut_mod.send('GAIN:%02d' % (n + 1,)).split(' ')[1].strip('V'))
-            if self._debugging() : print('channel %d range = %0.2fV' % (n + 1, volts))
-            self._store_channel(n + 1, offset, pre_trig, post_trig, self.clock, [0 - volts, volts])
-
-        print('Upload via channel sockets returned in %g seconds.' % (time.time() - start))
-        return 1
-
-    SYSCMD   = syscmd
-    MODCMD   = modcmd
-    GETSTATE = getstate
-    DISARM   = disarm
-    ARM      = arm
-    INIT     = init
-    STORE    = store
-
-    def _uutcmd (self, site, cmd) :
-        board_addr = self._get_board_addr()
-        uut = UUT(board_addr, self._sys_port + site, self._debugging())
-        return uut.send(cmd)
-
-    def _get_board_site (self) :
-        site = int(self.site.record)
-        if site < 1 or site > 6 :
-            print('error: site out of range, should be 1-6')
-            raise MDSplus.mdsExceptions.DevINV_SETUP
-        return site
-
-    def _do_init (self, sys_cmds, mod_cmds) :
-
-        board_addr = self._get_board_addr()
-        board_site = self._get_board_site()
-        uut_sys = UUT(board_addr, self._sys_port,              debug=self._debugging())
-        uut_mod = UUT(board_addr, self._sys_port + board_site, debug=self._debugging())
-        log = ''
-
-        # system info (read-only) and config
-        if self.sys_ctrl.data() == 1 :
-            for cmd in self._sys_cmds :
-                ans = uut_sys.send(cmd)
-                log += 'site 0: "%s" -> %s\n' % (cmd, ans)
-            for cmd in sys_cmds :
-                ans = uut_sys.send(cmd)
-                log += 'site 0: "%s" -> %s\n' % (cmd, ans)
-
-        # module info (read-only) and config
-        for cmd in self._mod_cmds :
-            ans = uut_mod.send(cmd)
-            log += 'site %d: "%s" -> %s\n' % (board_site, cmd, ans)
-        for cmd in mod_cmds :
-            ans = uut_mod.send(cmd, no_reply=True)
-            log += 'site %d: "%s" -> %s\n' % (board_site, cmd, ans)
-
-        return log
+        return (pre_trig, post_trig, offset)
 
     def _store_channel (self, chan, chan_offset, pre_trig, post_trig, clock_node, vin) :
         if self._debugging() : print('store_channel(): working on channel %d (+%d)' % (chan, chan_offset))
