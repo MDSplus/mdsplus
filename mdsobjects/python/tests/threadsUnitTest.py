@@ -10,7 +10,7 @@ class threadJob(Thread):
     def run(self):
         """Run test1.test() function"""
         Tree.usePrivateCtx()
-        #self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
+#        self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
         self.result=TestResult()
         self.test.suite().run(self.result)
 
@@ -32,14 +32,19 @@ class threadTest(TestCase):
         for t in threads:
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful=numsuccessful+1
+                numsuccessful=numsuccessful+1                
             else:
                 print( t.result )
+        print("successful: ")
+        print(numsuccessful)
         self.assertEqual(numsuccessful,len(threads))
         return
 
-#    def runTest(self):
-#        self.threadTests()
-                
+    def runTest(self):
+        self.threadTests()
+        return
+            
+
 def suite():
-    return TestSuite([threadTest('threadTests')])
+    tests = ['threadTests']
+    return TestSuite(map(threadTest, tests))

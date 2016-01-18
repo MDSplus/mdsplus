@@ -20,10 +20,6 @@ TESTS = \
         treeUnitTest.py \
         threadsUnitTest.py
 
-#        test_trees.py \
-#        test_data.py \
-#
-
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
 # python will finally introduce the patch to detect if valgrind is running ..
 # take a look at the file for details. You can also disable this if you are
