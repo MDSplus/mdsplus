@@ -1304,7 +1304,7 @@ jScope panels outside java application */
 JNIEnv *env = 0;
 static jobject jobjects[MAX_WINDOWS];
 
-int createWindow(char *name, int idx, int enableLiveUpdate)
+EXPORT int createWindow(char *name, int idx, int enableLiveUpdate)
 {
   jint res;
   jclass cls;
@@ -1370,7 +1370,7 @@ int createWindow(char *name, int idx, int enableLiveUpdate)
   return idx;
 }
 
-int clearWindow(char *name, int idx)
+EXPORT int clearWindow(char *name, int idx)
 {
   jclass cls;
   jmethodID mid;
@@ -1409,7 +1409,7 @@ int clearWindow(char *name, int idx)
   return 0;
 }
 
-int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_points, int row,
+EXPORT int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_points, int row,
 		       int column, char *colour, char *name, int inter, int marker)
 {
   jstring jname, jcolour;
@@ -1467,13 +1467,13 @@ int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_point
   return 0;
 }
 
-void addSignal(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
+EXPORT void addSignal(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
 	       char *colour, char *name)
 {
   addSignalWithParam(obj_idx, x, y, xType, num_points, row, column, name, colour, 1, 0);
 }
 
-int showWindow(int obj_idx, int x, int y, int width, int height)
+EXPORT int showWindow(int obj_idx, int x, int y, int width, int height)
 {
   jclass cls;
   jmethodID mid;
@@ -1497,7 +1497,7 @@ int showWindow(int obj_idx, int x, int y, int width, int height)
   return 0;
 }
 
-int removeAllSignals(int obj_idx, int x, int y)
+EXPORT int removeAllSignals(int obj_idx, int x, int y)
 {
   jclass cls;
   jmethodID mid;
@@ -1521,7 +1521,7 @@ int removeAllSignals(int obj_idx, int x, int y)
   return 0;
 }
 
-void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int x, int y)
+EXPORT void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int x, int y)
 {
   jint res;
   jclass cls;

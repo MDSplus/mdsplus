@@ -7,7 +7,6 @@ public class NodeEditor extends JPanel
     Node node;
     Tree tree;
     TreeDialog frame;
-    
 
     public void setTree(Tree tree)
     {

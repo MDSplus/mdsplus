@@ -1,12 +1,15 @@
-try:
-    exec("from ..compound import Function as _Function")
-except:
+def _mimport(name, level=1):
     try:
-        from compound import Function as _Function
+        return __import__(name, globals(), level=level)
     except:
-        from MDSplus.compound import Function as _Function
+        try:
+            return __import__(name, globals())
+        except:
+            return __import__('MDSplus.'+name,globals())
 
-class Builtin(_Function):
+_compound=_mimport('compound',2)
+
+class Builtin(_compound.Function):
     _dtype=199
     min_args = None
     max_args = None
@@ -22,11 +25,11 @@ class Builtin(_Function):
             else:
                 newargs=args[1:]
             if isinstance(args[0],str) and args[0].upper() in klass.builtins_by_name:
-                ans = klass.builtins_by_name[args[0].upper()](args=args[1])
+                ans = klass.builtins_by_name[args[0].upper()](args=newargs)
                 ans.from_builtin=True
                 return ans
             elif args[0] in klass.builtins_by_opcode:
-                ans = klass.builtins_by_opcode[args[0]](args=args[1])
+                ans = klass.builtins_by_opcode[args[0]](args=newargs)
                 ans.from_builtin=True
                 return ans
         return super(Builtin,klass).__new__(klass)
@@ -41,7 +44,7 @@ class Builtin(_Function):
             args=args[1]
         elif 'args' in kwargs:
             args=kwargs['args']
-        opcode=self.name
+#        opcode=self.name
         if self.min_args is not None and len(args) < self.min_args:
             raise Exception("Builtin: %s requires at least %d arguments, %d provided" % (self.name,self.min_args,len(args)))
         if self.max_args is not None and len(args) > self.max_args:

@@ -77,20 +77,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <config.h>
 #include "filter.h"
 
 #define N_POINTS_TEST 500	/* NEVER less than 100 */
 
 static void NormalizeFilter(Filter * filter);
 
-void DoFilter(Filter * filter, float *in, float *out, int *n_s)
+EXPORT void DoFilter(Filter * filter, float *in, float *out, int *n_s)
 {
   int start_idx = 0, delta_idx = 1, out_s;
   out_s = *n_s;
   DoFilterResample(filter, in, out, n_s, &start_idx, &delta_idx, &out_s);
 }
 
-void DoFilterResample(Filter * filter, float *in, float *out, int *n_s, int *start_idx,
+EXPORT void DoFilterResample(Filter * filter, float *in, float *out, int *n_s, int *start_idx,
 		      int *delta_idx, int *max_out_samples)
 {
   int i, j, curr_sample, k_num, k_den, n_samples, start, delta, *curr_idx, out_idx, idx;
@@ -166,7 +167,7 @@ void DoFilterResample(Filter * filter, float *in, float *out, int *n_s, int *sta
     out[0] = in[start];
 }
 
-void DoFilterResampleVME(Filter * filter, short *in, float *out, int *n_s, int *start_idx,
+EXPORT void DoFilterResampleVME(Filter * filter, short *in, float *out, int *n_s, int *start_idx,
 			 int *delta_idx, int *max_out_samples, int step_raw)
 {
   int i, j, k, curr_sample, k_num, k_den, n_samples, start, delta, *curr_idx, out_idx, idx;
@@ -242,7 +243,7 @@ void DoFilterResampleVME(Filter * filter, short *in, float *out, int *n_s, int *
     out[0] = in[start];
 }
 
-void TestFilter(Filter * filter, float fc, int n_points, float *module, float *phase)
+EXPORT void TestFilter(Filter * filter, float fc, int n_points, float *module, float *phase)
 {
   float curr_f, step_f;
   int i, j, k, idx;
@@ -320,7 +321,7 @@ void TestFilter(Filter * filter, float fc, int n_points, float *module, float *p
   }
 }
 
-void FreeFilter(Filter * filter)
+EXPORT void FreeFilter(Filter * filter)
 {
   int i;
 
@@ -349,7 +350,7 @@ static void NormalizeFilter(Filter * filter)
 }
 
 //Prepare the description of a butterworth 
-Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
+EXPORT Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
 {
   Filter *outFilter;
   float zero = 0;
@@ -361,7 +362,7 @@ Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
 //Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
 
 //Initialize then data structures whichb are required for real-time filtering
-void initializeRunTimeFilter(RunTimeFilter * rtf)
+EXPORT void initializeRunTimeFilter(RunTimeFilter * rtf)
 {
   RunTimeFilter *runTimeFilter = (RunTimeFilter *) rtf;
   memset(runTimeFilter->oldX, 0, MAX_FILTER_BUF * sizeof(double));
@@ -370,7 +371,7 @@ void initializeRunTimeFilter(RunTimeFilter * rtf)
 }
 
 /* Perform step filtering */
-double getFiltered(double in, Filter * flt, RunTimeFilter * rtf)
+EXPORT double getFiltered(double in, Filter * flt, RunTimeFilter * rtf)
 {
   int i, j;
   double totOut = 0, currOut;
@@ -409,3 +410,4 @@ double getFiltered(double in, Filter * flt, RunTimeFilter * rtf)
   runFilter->idx = idx;
   return totOut;
 }
+

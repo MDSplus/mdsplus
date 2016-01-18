@@ -87,7 +87,7 @@ static XtResource resources[] = {
 
  Executable:                                                                  */
 
-Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   XmdsDisplayPart info = { -1, 0 };
   Widget w;
@@ -128,7 +128,7 @@ Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argc
   return w;
 }
 
-Boolean XmdsIsDisplay(Widget w)
+EXPORT Boolean XmdsIsDisplay(Widget w)
 {
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);

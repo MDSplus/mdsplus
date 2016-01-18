@@ -1,45 +1,21 @@
-import ctypes as _C
-from ctypes.util import find_library as _find_library
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
 import numpy as _N
-import os as _os
+import ctypes as _C
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
-_ver=_mimport('version',1)
-_desc=_mimport('_descriptor',1)
+_ver=_mimport('version')
+_array=_mimport('mdsarray')
+_data=_mimport('mdsdata')
+_Exceptions=_mimport('mdsExceptions')
+_desc=_mimport('_descriptor')
+_apd=_mimport('apd')
 
-class MdsshrException(Exception):
-    pass
 
-def _load_library(name):
-    libnam = None
-    if _ver.pyver>(2,5,):
-        libnam = _find_library(name)
-    if libnam is None:
-        try:
-            return _C.CDLL('lib'+name+'.so')
-        except:
-            try:
-                return _C.CDLL(name+'.dll')
-            except:
-                try:
-                    return _C.CDLL('lib'+name+'.dylib')
-                except:
-                    raise MdsshrException("Error finding library: "+name)
-    else:
-        try:
-            return _C.CDLL(libnam)
-        except:
-            try:
-                return _C.CDLL(name)
-            except:
-                return _C.CDLL(_os.path.basename(libnam))
-
-_mdsshr=_load_library('MdsShr')
+_mdsshr=_ver.load_library('MdsShr')
 __MdsGetMsg=_mdsshr.MdsGetMsg
 __MdsGetMsg.argtypes=[_C.c_int32]
 __MdsGetMsg.restype=_C.c_char_p
@@ -51,6 +27,9 @@ __MDSEventCan=_mdsshr.MDSEventCan
 __MDSEventCan.argtypes=[_C.c_int32,]
 __MDSEvent=_mdsshr.MDSEvent
 __MDSEvent.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p]
+
+class MdsshrException(_Exceptions.MDSplusException):
+    pass
 
 class MdsInvalidEvent(MdsshrException):
     pass
@@ -68,10 +47,9 @@ def MDSEventCan(eventid):
     """
     status=__MDSEventCan(eventid)
     if ((status & 1)==0):
-        raise _mdsExceptions.statusToException(status)
+        raise _Exceptions.statusToException(status)
 
 def MDSWfeventTimed(event,timeout):
-    _array=_mimport('mdsarray',1)
     buffer=_N.uint8(0).repeat(repeats=4096)
     numbytes=_C.c_int32(0)
     status=__MDSWfeventTimed(_ver.tobytes(event),len(buffer),buffer.ctypes.data,numbytes,timeout)
@@ -83,12 +61,12 @@ def MDSWfeventTimed(event,timeout):
     elif (status == 0):
         raise MdsTimeout("Event %s timed out." % (_ver.tostr(event),))
     else:
-        raise _mdsExceptions.statusToException(status)
+        raise _Exceptions.statusToException(status)
 
 def MDSEvent(event,buffer):
     status=__MDSEvent(_ver.tobytes(event),len(buffer),buffer.ctypes.data)
     if not ((status & 1) == 1):
-        raise _mdsExceptions.statusToException(status)
+        raise _Exceptions.statusToException(status)
 
 def MdsGetMsg(status,default=None):
     status=int(status)
@@ -104,17 +82,17 @@ def MdsSerializeDscOut(desc):
     if (status & 1) == 1:
       return xd.value
     else:
-      raise _mdsExceptions.statusToException(status)
+      raise _Exceptions.statusToException(status)
 
 def MdsSerializeDscIn(bytes):
     if len(bytes) == 0:  # short cut if setevent did not send array
-        return _mimport('apd',1).List([])
+        return _apd.List([])
     xd=_desc.descriptor_xd()
     status=_mdsshr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.pointer(xd))
     if (status & 1) == 1:
       return xd.value
     else:
-      raise _mdsExceptions.statusToException(status)
+      raise _Exceptions.statusToException(status)
 
 def MdsDecompress(value):
     xd=_desc.descriptor_xd()
@@ -122,7 +100,7 @@ def MdsDecompress(value):
     if (status & 1) == 1:
         return xd.value
     else:
-        raise _mdsExceptions.statusToException(status)
+        raise _Exceptions.statusToException(status)
 
 
 def MdsCopyDxXd(desc):
@@ -133,13 +111,12 @@ def MdsCopyDxXd(desc):
     if (status & 1) == 1:
         return xd
     else:
-        raise _mdsExceptions.statusToException(status)
+        raise _Exceptions.statusToException(status)
 
 #def MdsCompareXd(value1,value2):
 #    return MdsShr.MdsCompareXd(_C.pointer(descriptor(value1)),_C.pointer(descriptor(value2)))
 
 def MdsCompareXd(value1,value2):
-    _desc=_mimport('_descriptor',1)
     if not isinstance(value1,_desc.descriptor):
         value1=_desc.descriptor(value1)
     if not isinstance(value2,_desc.descriptor):
@@ -150,7 +127,6 @@ def MdsFree1Dx(value):
     _mdsshr.MdsFree1Dx(_C.pointer(value),_C.c_void_p(0))
 
 def DateToQuad(date):
-    _data=_mimport('mdsdata',1)
     ans=_C.c_ulonglong(0)
     status = __LibConvertDateString(_ver.bytes(date),ans)
     if not (status & 1):
@@ -189,7 +165,6 @@ try:  # should not be done
         @return: event data
         @rtype: Uint8Array
         """
-        _array=_mimport('mdsarray',1)
         dlen=_C.c_int32(0)
         bptr=_C.c_void_p(0)
         status=__MDSGetEventQueue(eventid,timeout,dlen,bptr)
@@ -210,4 +185,4 @@ try:  # should not be done
         else:
             raise MdsshrException("Unknown error - status=%d" % (status,))
 except:
-    print('error: _mdsshr.py,l.214')
+    print('error: _mdsshr.py,l.189')

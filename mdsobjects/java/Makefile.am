@@ -22,6 +22,7 @@ MDSplus/Condition.java\
 MDSplus/Connection.java\
 MDSplus/Conglom.java\
 MDSplus/Data.java\
+MDSplus/DataStreamListener.java\
 MDSplus/Dependency.java\
 MDSplus/Dictionary.java\
 MDSplus/Dimension.java\

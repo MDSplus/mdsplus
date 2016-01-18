@@ -184,13 +184,13 @@ static int Verbose = 0;
 //-----------------------------------------------------------
 // helper routines
 //-----------------------------------------------------------
-int CamVerbose(int mode)
+EXPORT int CamVerbose(int mode)
 {
   Verbose = mode;
   return 1;
 }
 
-int CamQ(TranslatedIosb * iosb)	// CAM$Q_SCSI()
+EXPORT int CamQ(TranslatedIosb * iosb)	// CAM$Q_SCSI()
 {
   TranslatedIosb *iosb_use;
   iosb_use = (iosb) ? iosb : &LastIosb;
@@ -204,7 +204,7 @@ int CamQ(TranslatedIosb * iosb)	// CAM$Q_SCSI()
 }
 
 //-----------------------------------------------------------
-int CamX(TranslatedIosb * iosb)	// CAM$X_SCSI()
+EXPORT int CamX(TranslatedIosb * iosb)	// CAM$X_SCSI()
 {
   TranslatedIosb *iosb_use;
   iosb_use = (iosb) ? iosb : &LastIosb;
@@ -219,7 +219,7 @@ int CamX(TranslatedIosb * iosb)	// CAM$X_SCSI()
 }
 
 //-----------------------------------------------------------
-int CamXandQ(TranslatedIosb * iosb)	// CAM$XANDQ_SCSI()
+EXPORT int CamXandQ(TranslatedIosb * iosb)	// CAM$XANDQ_SCSI()
 {
   TranslatedIosb *iosb_use;
   iosb_use = (iosb) ? iosb : &LastIosb;
@@ -237,7 +237,7 @@ int CamXandQ(TranslatedIosb * iosb)	// CAM$XANDQ_SCSI()
 }
 
 //-----------------------------------------------------------
-int CamBytcnt(TranslatedIosb * iosb)	// CAM$BYTCNT_SCSI()
+EXPORT int CamBytcnt(TranslatedIosb * iosb)	// CAM$BYTCNT_SCSI()
 {
   TranslatedIosb *iosb_use;
   iosb_use = (iosb) ? iosb : &LastIosb;
@@ -253,7 +253,7 @@ int CamBytcnt(TranslatedIosb * iosb)	// CAM$BYTCNT_SCSI()
 }
 
 //-----------------------------------------------------------
-int CamStatus(TranslatedIosb * iosb)	// CAM$STATUS_SCSI()
+EXPORT int CamStatus(TranslatedIosb * iosb)	// CAM$STATUS_SCSI()
 {
   TranslatedIosb *iosb_use;
   iosb_use = (iosb) ? iosb : &LastIosb;
@@ -265,7 +265,7 @@ int CamStatus(TranslatedIosb * iosb)	// CAM$STATUS_SCSI()
 }
 
 //-----------------------------------------------------------
-int CamGetStat(TranslatedIosb * iosb)	// CAM$GET_STAT_SCSI()
+EXPORT int CamGetStat(TranslatedIosb * iosb)	// CAM$GET_STAT_SCSI()
 {
   *iosb = LastIosb;
 //printf("CamGetStatus(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);  // [2002.12.13]
@@ -274,7 +274,7 @@ int CamGetStat(TranslatedIosb * iosb)	// CAM$GET_STAT_SCSI()
 }
 
 //-----------------------------------------------------------
-int CamError(int xexp, int qexp, TranslatedIosb * iosb)
+EXPORT int CamError(int xexp, int qexp, TranslatedIosb * iosb)
 {
   int xexp_use;
   int qexp_use;
@@ -307,7 +307,7 @@ int CamError(int xexp, int qexp, TranslatedIosb * iosb)
 //      10 bytes length, so that's what we give it.
 //-----------------------------------------------------------
 #define	CallSingleIo( pname, dmode )                \
-int Cam##pname(                                     \
+EXPORT int Cam##pname(                                     \
 				char			*Name,              \
 				BYTE			A,                  \
 				BYTE			F,                  \
@@ -342,7 +342,7 @@ int Cam##pname(                                     \
 // possibly enhanced modes
 //-----------------------------------------------------------
 #define	CallMultiIo( pname, dmode, enhanced )       \
-int Cam##pname(                                     \
+EXPORT int Cam##pname(                                     \
 				char			*Name,              \
 				BYTE			A,                  \
 				BYTE			F,                  \
@@ -1176,7 +1176,7 @@ static int NOT_SUPPORTED()
   return FAILURE;
 }
 
-int CamSetMAXBUF(char *Name, int new)
+EXPORT int CamSetMAXBUF(char *Name, int new)
 {
   int scsiDevice, enhanced, online;
   CamKey Key;
@@ -1194,7 +1194,7 @@ int CamSetMAXBUF(char *Name, int new)
   }
 }
 
-int CamGetMAXBUF(char *Name)
+EXPORT int CamGetMAXBUF(char *Name)
 {
   int scsiDevice, enhanced, online;
   CamKey Key;

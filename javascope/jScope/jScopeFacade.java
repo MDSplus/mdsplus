@@ -111,10 +111,13 @@ public class jScopeFacade
     static int num_scope = 0;
     private String config_file;
     static DataServerItem[] server_ip_list;
-    ServerDialog server_diag = null;
+    ServerDialog server_diag;
     static boolean not_sup_local = false;
     private boolean executing_update = false;
     private JFrame main_scope;
+
+    private static jScopeFacade win;
+    public static boolean busy(){return win.executing_update;}
 
     DocPrintJob prnJob = null;
   //  PageFormat pageFormat;
@@ -2907,8 +2910,6 @@ remove 28/06/2005
         String file = null;
         String propertiesFile = null;
  
-        jScopeFacade win = null;
-
         Properties props = System.getProperties();
         String debug = props.getProperty("debug");
         if (debug != null && debug.equals("true"))
@@ -3355,7 +3356,8 @@ class ServerDialog
         "ASCIIDataProvider",
         "T2DataProvider",
         "LocalDataProvider",
-        "MdsAsynchDataProvider"};
+        "MdsAsynchDataProvider",
+        "MDSplus.MdsStreamingDataProvider"};
 
     ServerDialog(JFrame _dw, String title)
     {

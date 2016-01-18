@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <config.h>
 
 struct descriptor {
   unsigned short length;
@@ -32,7 +32,7 @@ int RemoteServerId()
 static int CamSingle(char *routine, char *name, int a, int f, void *data, int mem, short *iosb);
 
 #define MakeSingle(locnam,remnam) \
-int locnam(char *name, int a, int f, void *data, int mem, short *iosb) \
+EXPORT int locnam(char *name, int a, int f, void *data, int mem, short *iosb) \
 { \
   return CamSingle(#remnam,name,a,f,data,mem,iosb); \
 }

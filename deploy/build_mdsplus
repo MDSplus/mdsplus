@@ -57,7 +57,7 @@ case "$1" in
 	else
 	    mkdir -p /buildsrc
 	    cd /buildsrc
-	    wget -q -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -
+	    wget -q --no-check-certificate -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -
 	    mv mdsplus-${tag}/* ./
 	fi
 	export $(echo $tag | awk -F- '{print "BRANCH="$1" MAJOR="$2" MINOR="$3" RELEASE="$4" NF="NF;}')
@@ -104,7 +104,7 @@ case "$1" in
 	else
 	    mkdir -p /buildsrc;
 	    cd /buildsrc
-	    wget -q -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -;
+	    wget -q --no-check-certificate -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -;
 	    mv mdsplus-${tag}/* ./
 	    export PATH=/buildsrc/deploy:$PATH
 	    build_it $@

@@ -148,7 +148,7 @@ STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */ int arg,
   char *path = TreeGetPath(*pin);
   if (path != NULL) {
     unsigned short len = (unsigned short)strlen(path);
-    StrCopyR(pout, &len, path);
+    StrCopyR((struct descriptor *)pout, &len, path);
     TreeFree(path);
     status = 1;
   }
@@ -163,7 +163,7 @@ STATIC_ROUTINE int fixup_path(struct descriptor *pin, int arg, struct descriptor
   MdsFree(pathin);
   if (path != NULL) {
     unsigned short len = (unsigned short)strlen(path);
-    StrCopyR(pout, &len, path);
+    StrCopyR((struct descriptor *)pout, &len, path);
     TreeFree(path);
     status = 1;
   }
@@ -175,8 +175,9 @@ int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor
   int status = 1;
   void *ctx;
   int reset_ctx = 0;
-  int nid, shot, stat1;
-  struct descriptor def = { 0, DTYPE_T, CLASS_D, 0 }, expt = def;
+  int nid, shot;
+  unsigned short stat1;
+  struct descriptor_d def = { 0, DTYPE_T, CLASS_D, 0 }, expt = def;
   unsigned char omits[] = { DTYPE_PATH, 0 };
 
 	/**********************
@@ -192,7 +193,7 @@ int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor
 	switch (xd.pointer->dtype) {
 	case DTYPE_T:
 	case DTYPE_PATH:
-	  status = StrCopyDx(&def, xd.pointer);
+	  status = StrCopyDx((struct descriptor *)&def, xd.pointer);
 	  break;
 	default:
 	  status = TdiINVDTYDSC;
@@ -207,16 +208,16 @@ int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor
       status = TreeGetDbi(def_itm);
       if (def_itm[0].pointer == NULL) {
 	STATIC_CONSTANT DESCRIPTOR(top, "\\TOP");
-	StrCopyDx(&def, &top);
+	StrCopyDx((struct descriptor *)&def, (struct descriptor *)&top);
 	status = 1;
       } else {
 	unsigned short len = (unsigned short)strlen((char *)def_itm[0].pointer);
-	StrCopyR(&def, &len, def_itm[0].pointer);
+	StrCopyR((struct descriptor *)&def, &len, def_itm[0].pointer);
 	TreeFree(def_itm[0].pointer);
       }
       if (status & 1) {
-	stat1 = StrPosition(&def, &coloncolon, 0) + 1;
-	status = StrRight(&def, &def, &stat1);
+	stat1 = StrPosition((struct descriptor *)&def, (struct descriptor *)&coloncolon, 0) + 1;
+	status = StrRight((struct descriptor *)&def, (struct descriptor *)&def, &stat1);
       }
       if (status & 1)
 	*def.pointer = '\\';
@@ -244,7 +245,7 @@ int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor
 	status = TreeGetDbi(expt_itm);
 	if (expt_itm[0].pointer) {
 	  unsigned short len = (unsigned short)strlen((char *)expt_itm[0].pointer);
-	  StrCopyR(&expt, &len, expt_itm[0].pointer);
+	  StrCopyR((struct descriptor *)&expt, &len, expt_itm[0].pointer);
 	  TreeFree(expt_itm[0].pointer);
 	}
       }
@@ -254,7 +255,7 @@ int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor
                 Allow some rel paths.
                 *********************/
     if (status & 1) {
-      char *tree = MdsDescrToCstring(&expt);
+      char *tree = MdsDescrToCstring((struct descriptor *)&expt);
       ctx = TreeSwitchDbid(0);
       reset_ctx = 1;
       status = TreeOpen(tree, shot, 1);
@@ -262,7 +263,7 @@ int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor
     }
   }
   if (narg > 1) {
-    char *path = MdsDescrToCstring(&def);
+    char *path = MdsDescrToCstring((struct descriptor *)&def);
     if (status & 1)
       status = TreeSetDefault(path, &nid);
     MdsFree(path);

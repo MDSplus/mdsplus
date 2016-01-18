@@ -14,7 +14,7 @@ class mdsclasses:
         self.mdsclass=mdsclass
 
     def __str__(self):
-        names={1:'CLASS_S',2:'CLASS_D',4:'CLASS_A',192:'CLASS_XD',193:'CLASS_XS',194:'CLASS_R',195:'CLASS_CA',196:'CLASS_APD'}
+        names={CLASS_S:'CLASS_S',CLASS_D:'CLASS_D',CLASS_A:'CLASS_A',CLASS_XD:'CLASS_XD',CLASS_XS:'CLASS_XS',CLASS_R:'CLASS_R',CLASS_CA:'CLASS_CA',CLASS_APD:'CLASS_APD'}
         if (self.mdsclass in names):
             return names[self.mdsclass]
         else:

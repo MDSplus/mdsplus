@@ -17,8 +17,8 @@ TEST_EXTENSIONS = .py
 
 TESTS = \
         dataUnitTest.py \
-        treeUnitTest.py 
-#        threadsUnitTest.py
+        treeUnitTest.py \
+        threadsUnitTest.py
 
 #        test_trees.py \
 #        test_data.py \

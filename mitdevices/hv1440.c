@@ -114,8 +114,8 @@ Assumptions:
 #include "hv1440_gen.h"
 #include "devroutines.h"
 
-extern int CamQ();
-extern int TdiCompile();
+
+
 
 static int GetPodSettings(int nid, int *settings);
 static int one = 1;
@@ -151,7 +151,7 @@ static int one = 1;
 #define HV1440_K_MAX_PODS       16
 #define HV1440_K_CHANS_PER_POD  16
 
-int hv1440___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int hv1440___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int pods[HV1440_K_MAX_PODS];
   int status = 1;
@@ -221,7 +221,7 @@ static int GetPodSettings(int nid, int *settings)
   return status & 1;
 }
 
-int hv1440___on(struct descriptor *niddsc, InOnStruct * setup)
+EXPORT int hv1440___on(struct descriptor *niddsc, InOnStruct * setup)
 {
   int status = 1;
   send_hv(0, 0, 4, 6);
@@ -229,7 +229,7 @@ int hv1440___on(struct descriptor *niddsc, InOnStruct * setup)
   return 1;
 }
 
-int hv1440___off(struct descriptor *niddsc, InOffStruct * setup)
+EXPORT int hv1440___off(struct descriptor *niddsc, InOffStruct * setup)
 {
   int status = 1;
   send_hv(0, 0, 0, 6);
@@ -237,7 +237,7 @@ int hv1440___off(struct descriptor *niddsc, InOffStruct * setup)
   return 1;
 }
 
-int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int count;
   int need_pod = 0;
@@ -312,7 +312,7 @@ int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
   settings_dsc.arsize = sizeof(float) * need_pod * HV1440_K_CHANS_PER_POD;
   if (need_pod) {
     int readout_nid = setup->head_nid + HV1440_N_READOUT;
-    return_on_error(TdiCompile(&out_dsc, &settings_dsc, &out_xd MDS_END_ARG), status);
+    return_on_error(TdiCompile((struct descriptor *)&out_dsc, &settings_dsc, &out_xd MDS_END_ARG), status);
     return_on_error(TreePutRecord(readout_nid, (struct descriptor *)&out_xd, 0), status);
     MdsFree1Dx(&out_xd, 0);
   }

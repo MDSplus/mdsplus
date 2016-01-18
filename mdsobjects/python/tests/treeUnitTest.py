@@ -10,13 +10,34 @@ import random
 import gc as _gc
 import os,time
 
+
+import tempfile
+_tmpdir=tempfile.mkdtemp()
+
+def setUpModule():    
+    print ("Creating trees in %s" % (_tmpdir,))
+    if "TEST_DISTRIBUTED_TREES" in os.environ:
+        hostpart="localhost::"
+    else:
+        hostpart=""
+    os.environ["pytree_path"]=hostpart+_tmpdir
+    os.environ["pytreesub_path"]=os.environ["pytree_path"]
+    if os.getenv("testing_path") == None:
+      os.environ['testing_path']="%s/../../../trees"%(os.path.dirname(os.path.realpath(__file__)),)
+  
+def tearDownModule():
+    import shutil
+    shutil.rmtree(_tmpdir)
+    
+
+
+
 class treeTests(TestCase):
 
     shot=0
 
     def setUp(self):
         from threading import Lock
-        import tempfile
         l=Lock()
         l.acquire()
         try:
@@ -25,19 +46,10 @@ class treeTests(TestCase):
                 treeTests.shot=treeTests.shot+2
         finally:
             l.release()
-        self.tmpdir=tempfile.mkdtemp()
-        print ("Creating trees in %s" % (self.tmpdir,))
-        if "TEST_DISTRIBUTED_TREES" in os.environ:
-            hostpart="localhost::"
-        else:
-            hostpart=""
-        os.environ["pytree_path"]=hostpart+self.tmpdir
-        os.environ["pytreesub_path"]=os.environ["pytree_path"]
+        
         
     def tearDown(self):
-        import shutil
-        shutil.rmtree(self.tmpdir)
-
+        pass
 
     def editTrees(self):
         pytree=Tree('pytree',self.shot,'new')
@@ -78,6 +90,9 @@ class treeTests(TestCase):
         for i in range(10):
             node=pytreesub_top.addNode('child%02d' % (i,),'structure')
             node.addDevice('dt200_%02d' % (i,),'dt200')
+        node = pytree_top.addNode('SIG_CMPRS', 'signal')
+        node.compress_on_put = True
+
         pytree.write()
         pytreesub.write()
 
@@ -185,7 +200,7 @@ class treeTests(TestCase):
         self.assertEqual(ip.essential,ip.isEssential())
         mhdtree=self.pytree2.getNode('\\PYTREESUB::TOP')
         self.assertEqual(mhdtree.include_in_pulse,True)
-        self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludedInPulse())
+        self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludeInPulse())
         self.assertEqual(ip.length,int(Data.execute('getnci($,"LENGTH")',ip)))
         self.assertEqual(ip.length,ip.getLength())
         self.assertEqual(ip.no_write_shot,False)
@@ -226,22 +241,31 @@ class treeTests(TestCase):
         self.assertEqual(ip.getSegment(0),None)
         return
 
-    def finish(self):
-        self.pytree.deletePulse(self.shot+1)
-        self.pytree.deletePulse(self.shot)
-        _gc.collect()
-        #        import subprocess
-        #        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
+    def getCompression(self):
+        testing = Tree('testing', -1)
+        for node in testing.getNodeWild(".compression:*"):
+            self.pytree.SIG_CMPRS.record=node.record
+            self.assertTrue((self.pytree.SIG_CMPRS.record == node.record).all(), 
+                             msg="Error writing compressed signal%s"%node)
+        return
 
-    def runTest(self):
-        self.editTrees()
-        self.openTrees()
-        self.getNode()
-        self.setDefault()
-        self.nodeLinkage()
-        self.nciInfo()
-        self.getData()
-        self.finish()
+    def finish(self):
+        del(self.pytree)
+        del(self.pytree2)
+        _gc.collect()
+#        import subprocess
+#        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
+
+#    def runTest(self):
+#        self.editTrees()
+#        self.openTrees()
+#        self.getNode()
+#        self.setDefault()
+#        self.nodeLinkage()
+#        self.nciInfo()
+#        self.getData()
+#        self.getCompression()
+#        self.finish()
 
 def suite():
     return treeTests()

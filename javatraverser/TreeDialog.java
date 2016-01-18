@@ -13,6 +13,8 @@ class TreeDialog extends JFrame
 	in_use = true;
 	getContentPane().add(editor);
 	node_editor = editor;
+    if (editor instanceof DisplayNci)
+        setResizable(false);
     }
     public final boolean inUse() {return in_use; }
     public final NodeEditor getEditor() {return node_editor; }
@@ -25,8 +27,6 @@ class TreeDialog extends JFrame
     {
 	if(!isVisible())
 	    return;
-	//Point origin = getLocationOnScreen();
-	//setLocation(origin);
 	pack();
     }
     public final void setUsed(boolean used)

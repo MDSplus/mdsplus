@@ -1,14 +1,17 @@
-import numpy
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+import numpy as _N
 
-_dtypes=_mimport('_mdsdtypes',1)
-_ver=_mimport('version',1)
+_dtypes=_mimport('_mdsdtypes')
+_ver=_mimport('version')
+_Exceptions=_mimport('mdsExceptions')
+
+MDSplusException = _Exceptions.MDSplusException
+MdsException = MDSplusException
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -45,13 +48,13 @@ def getDimension(item,idx=0):
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
-    return _mimport('_tdishr',1).TdiCompile('data($)',(item,)).evaluate().value
+    return _tdishr.TdiCompile('data($)',(item,)).evaluate().value
 
 def decompile(item):
     """Returns the item converted to a string
     @rtype: string"""
 
-    return _mimport('_tdishr',1).TdiDecompile(item)
+    return _tdishr.TdiDecompile(item)
 
 def evaluate(item,):
     """Return evaluation of mdsplus object"""
@@ -69,19 +72,16 @@ def rawPart(item):
 
 def makeData(value):
     """Convert a python object to a MDSobject Data object"""
-    _apd=_mimport('apd',1)
-    _array=_mimport('mdsarray',1)
-    _scalar=_mimport('mdsscalar',1)
     if value is None:
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,(numpy.generic,int,float,complex,_ver.basestring,_ver.long)):
+    if isinstance(value,(_N.generic,int,float,complex,_ver.basestring,_ver.long)):
         return _scalar.makeScalar(value)
     if isinstance(value,(tuple,list)):
         apd = _apd.Apd(tuple(value),_dtypes.DTYPE_LIST)
         return _apd.List(apd)
-    if isinstance(value,numpy.ndarray):
+    if isinstance(value,_N.ndarray):
         return _array.makeArray(value)
     if isinstance(value,dict):
         return _apd.Dictionary(value)
@@ -119,6 +119,10 @@ class Data(object):
         """Return raw part of object
         @rtype: Data"""
         return Data.execute('raw_of($)',self)
+    def units_of(self):
+        """Return units of object
+        @rtype: Data"""
+        return Data.execute('units_of($)',self)
 
     def getDimensionAt(self,idx=0):
         """Return dimension of object
@@ -129,85 +133,79 @@ class Data(object):
 
     dim_of=getDimensionAt
 
-    def _getUnits(self):
-        return Data.execute('units($)',self)
-
-    def _setUnits(self,units):
+    def getUnits(self):
+        """Return the TDI evaluation of UNITS_OF(this).
+        EmptyData is returned if no units defined.
+        @rtype: Data"""
+        return Data.execute('units_of($)',self)
+    def setUnits(self,units):
+        """Set the units of the Data instance.
+        @type: String
+        @rtype: original type"""
         if units is None:
             if hasattr(self,'_units'):
                 delattr(self,'_units')
         else:
             self._units=units
-        return
+        return self
+    units=property(getUnits,setUnits)
 
-    units=property(_getUnits,_setUnits)
-    """
-    The units of the Data instance.
-    @type: String
-    """
-
-    def _getError(self):
+    def getError(self):
+        """Get the error field.
+        Returns EmptyData if no error defined.
+        @rtype: Data"""
         return Data.execute('error_of($)',self)
 
-    def _setError(self,error):
+    def setError(self,error):
+        """Set the Error field for this Data instance.
+        @type: Data
+        @rtype: original type"""
         if error is None:
             if hasattr(self,'_error'):
                 delattr(self,'_error')
         else:
             self._error=error
-        return
+        return self
 
-    error=property(_getError,_setError)
-    """
-    The error vector to associate with the data.
-    @type: Data
-    """
+    error=property(getError,setError)
 
-    def _getHelp(self):
+    def getHelp(self):
+        """Returns the result of TDI GET_HELP(this).
+        Returns EmptyData if no help field defined.
+        @rtype: Data"""
         return Data.execute('help_of($)',self)
 
-    def _setHelp(self,help):
+    def setHelp(self,help):
+        """Set the Help  field for this Data instance.
+        @rtype: original type
+        """
         if help is None:
             if hasattr(self,'_help'):
                 delattr(self,'_help')
         else:
             self._help=help
-        return
+        return self
 
-    help=property(_getHelp,_setHelp)
-    """
-    The help string associated with the data.
-    @type: String
-    """
+    help=property(getHelp,setHelp)
 
-    def _getValidation(self):
+    def getValidation(self):
         return Data.execute('validation_of($)',self)
 
-    def _setValidation(self,validation):
+    def setValidation(self,validation):
+        """A validation procedure for the data.
+        Currently no built-in utilities make use of this validation property.
+        One could envision storing an expression which tests the data and returns
+        a result.
+        @type: Data
+        @rtype: original type"""
         if validation is None:
             if hasattr(self,'_validation'):
                 delattr(self,'_validation')
         else:
             self._validation=validation
-        return
-
-    def setValidation(self,validation):
-        self._setValidation(validation)
         return self
 
-    validation=property(_getValidation,_setValidation)
-    """
-    A validation procedure for the data.
-    Currently no built-in utilities make use of this validation property.
-    One could envision storing an expression which tests the data and returns
-    a result.
-    @type: Data
-    """
-
-    def units_of(self):
-        """Return units part of the object
-        @rtype: Data"""
-        return Data.execute('units_of($)',self)
+    validation=property(getValidation,setValidation)
 
     def push_dollar_value(self):
         """Set $value for expression evaluation
@@ -231,8 +229,6 @@ class Data(object):
         Return boolean
         @rtype: Bool
         """
-        _array=_mimport('mdsarray',1)
-        _compound=_mimport('compound',1)
         if isinstance(self,_array.Array):
             return self._value!=0
         elif isinstance(self,_compound.Compound) and hasattr(self,'value_of'):
@@ -292,8 +288,6 @@ class Data(object):
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        _array=_mimport('mdsarray',1)
-        _compound=_mimport("compound",1)
         if isinstance(y,slice):
             y=_compound.Range(y.start,y.stop,y.step)
         ans = Data.execute('$[$]',self,y)
@@ -326,7 +320,7 @@ class Data(object):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
-        return int(_mimport('_tdishr',1).TdiCompile('size($)',(self,)).data())
+        return int(_tdishr.TdiCompile('size($)',(self,)).data())
 
     def __long__(self):
         """Convert this object to python long
@@ -453,7 +447,6 @@ class Data(object):
         """Return descriptor for passing data to MDSplus library routines.
         @rtype: descriptor
         """
-        _descriptor=_mimport('_descriptor',1)
         return _descriptor.descriptor(self)
 
     descriptor=property(_getDescriptor)
@@ -468,7 +461,7 @@ class Data(object):
         @return: Return True if the value and this Data object contain the same data
         @rtype: Bool
         """
-        status = _mimport('_mdsshr',1).MdsCompareXd(self,value)
+        status = _mdsshr.MdsCompareXd(self,value)
         if status == 1:
             return True
         else:
@@ -479,13 +472,13 @@ class Data(object):
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
-        return _mimport('_tdishr',1).TdiCompile(expr,args)
+        return _tdishr.TdiCompile(expr,args)
     compile=staticmethod(compile)
 
     def execute(expr,*args):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
-        return _mimport('_tdishr',1).TdiExecute(expr,args)
+        return _tdishr.TdiExecute(expr,args)
     execute=staticmethod(execute)
 
     def setTdiVar(self,tdivarname):
@@ -503,9 +496,8 @@ class Data(object):
         @type tdivarname: string
         @rtype: Data"""
         try:
-#            _compound=_mimport('compound',1)
 #            return _compound.Function(opcode='public',args=(str(tdivarname),)).evaluate()
-            return _mimport('_tdishr',1).TdiExecute('public '+str(tdivarname))
+            return _tdishr.TdiExecute('public '+str(tdivarname))
         except:
             return None
     getTdiVar=staticmethod(getTdiVar)
@@ -514,7 +506,7 @@ class Data(object):
         """Return string representation
         @rtype: string
         """
-        return _mimport('_tdishr',1).TdiDecompile(self)
+        return _tdishr.TdiDecompile(self)
 
     __str__=decompile
     """String: x.__str__() <==> str(x)
@@ -524,11 +516,16 @@ class Data(object):
     """Representation"""
 
 
-    def data(self):
+    def data(self,*altvalue):
         """Return primitimive value of the data.
         @rtype: Scalar,Array
         """
-        return self.execute("data($)",(self,)).value
+        try:
+            return self.execute("data($)",(self,)).value
+        except _Exceptions.TreeNODATA:
+            if len(altvalue)==1:
+                return altvalue[0]
+            raise
 
     def _getDescrPtr(self):
         """Return pointer to descriptor of inself as an int
@@ -543,12 +540,12 @@ class Data(object):
         """Return the result of TDI evaluate(this).
         @rtype: Data
         """
-        return _mimport('_tdishr',1).TdiEvaluate(self)
+        return _tdishr.TdiEvaluate(self)
 
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        _scalar=_mimport('mdsscalar',1)
+        _scalar=_mimport('mdsscalar')
         return isinstance(x,_scalar.Scalar)
     _isScalar=staticmethod(_isScalar)
 
@@ -694,33 +691,10 @@ class Data(object):
         """
         return str(Data.execute('text($)',self))
 
-    def getUnits(self):
-        """Return the TDI evaluation of UNITS_OF(this). EmptyData is returned if no units
-        defined.
-        @rtype: Data
-        """
-        return self.units
-
-    def getHelp(self):
-        """Returns the result of TDI GET_HELP(this). Returns EmptyData if no help field
-        defined.
-        @rtype: Data
-        """
-        return self.help
-
-    def getError(self):
-        """Get the error field. Returns EmptyData if no error defined.
-        @rtype: Data
-        """
-        return self.error
-
     def hasNodeReference(self):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
-        _compound=_mimport('compound',1)
-        _apd=_mimport('apd',1)
-        _treenode=_mimport('treenode',1)
         if isinstance(self,_treenode.TreeNode) or isinstance(self,_treenode.TreePath):
             return True
         elif isinstance(self,_compound.Compound):
@@ -732,27 +706,6 @@ class Data(object):
                 if isinstance(arg,Data) and arg.hasNodeReference():
                     return True
         return False
-
-    def setUnits(self,units):
-        """Set units
-        @rtype: original type
-        """
-        self.units=units
-        return self
-
-    def setHelp(self,help):
-        """Set the Help  field for this Data instance.
-        @rtype: original type
-        """
-        self.help=help
-        return self
-
-    def setError(self,error):
-        """Set the Error field for this Data instance.
-        @rtype: original type
-        """
-        self.error=error
-        return self
 
     def mayHaveChanged(self):
         """return true if the represented data could have been changed since the last time
@@ -774,7 +727,7 @@ class Data(object):
         @rtype: None
         """
         if scope is None:
-            scope=_mimport('scope',1).Scope(title)
+            scope=_scope.Scope(title)
         scope.plot(self,self.dim_of(0),row,col)
         scope.show()
 
@@ -788,8 +741,7 @@ class Data(object):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        _array=_mimport('mdsarray',1)
-        return _array.Uint8Array(_mimport('_mdsshr',1).MdsSerializeDscOut(self))
+        return _array.Uint8Array(_mdsshr.MdsSerializeDscOut(self))
         return Data.execute('SerializeOut($)',self)
 
     def deserialize(data):
@@ -798,7 +750,7 @@ class Data(object):
         @type data: Uint8Array
         @rtype: Data
         """
-        return _mimport('_mdsshr',1).MdsSerializeDscIn(data)
+        return _mdsshr.MdsSerializeDscIn(data)
     deserialize=staticmethod(deserialize)
 
     def makeData(value):
@@ -822,3 +774,14 @@ class EmptyData(Data):
        return None
 
     value=property(_getValue)
+
+
+_descriptor=_mimport('_descriptor')
+_tdishr=_mimport('_tdishr')
+_mdsshr=_mimport('_mdsshr')
+_apd=_mimport('apd')
+_compound=_mimport('compound')
+_array=_mimport('mdsarray')
+_scalar=_mimport('mdsscalar')
+_scope=_mimport('scope')
+_treenode=_mimport('treenode')

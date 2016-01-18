@@ -8,9 +8,9 @@
 #include "l4202_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcValue;
+//extern unsigned short OpcValue;
 
-extern int CamXandQ();
+
 static int one = 1;
 static int zero = 0;
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
@@ -19,7 +19,7 @@ static int zero = 0;
 #define stop(name,f,a,c,d)  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 24, 0), &one, 0),status)
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-int l4202___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l4202___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   int tries;
@@ -61,7 +61,7 @@ int l4202___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-int l4202___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l4202___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   struct {
     unsigned first:12;

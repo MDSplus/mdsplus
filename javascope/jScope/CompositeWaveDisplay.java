@@ -192,10 +192,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                     d = new Date();
                     end1 = d.getTime();
 
-                    System.out.println("Num Messages  " + obj.length);
-                    System.out.println("Elab Object   " + (end - start) + " ms per msg " + (end - start) /(float)obj.length );
-                    System.out.println("Display Wave  " + (end1 - end));
-
                     synchronized (this) {
                         if (suspend) {
                             wave_container.updateWaveforms();

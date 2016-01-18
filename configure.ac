@@ -58,6 +58,14 @@ AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
 
+# Always do the visibility check but don't set AM_CFLAGS on Windows.
+# This way things get set properly even on Windows.
+AC_MSG_RESULT([before VISIBILITY])
+gl_VISIBILITY
+AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
+#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
+#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
+#fi
 
 #FIXME: Remove this when Makefile.inc goes away
 AS_CASE(["$MKDIR_P"],
@@ -123,6 +131,26 @@ AC_ARG_ENABLE([java],
                               [Do not build java libraries and applications])],
               [],
               [AS_VAR_SET([enable_java], [yes])])
+
+# Add address sanitizer options to flags, if requested. Only useful for GCC
+# version 4.8 and later.
+AC_ARG_ENABLE([sanitizer],
+  [AS_HELP_STRING(
+    [--enable-sanitizer],
+    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
+  )],
+  [enable_san="$enableval"],
+  [enable_san="no"]
+)
+
+AX_COMPILER_VERSION
+if test "$enable_san" = "yes" -a "$GCC" = yes; then
+   AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
+                       [enable_san="yes"], [enable_san="no"] )
+   if test "$enable_san" = "yes"; then
+       CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
+   fi
+fi
 
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
@@ -413,7 +441,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
        FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";       
+       LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        SHARETYPE=".dll"
@@ -461,7 +489,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
        FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";       
+       LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        TAR_EXCLUDE="--exclude";
@@ -529,8 +557,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch 
-       -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -558,7 +585,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64";
+	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64 -install_name @loader_path/../lib/\$(@F) -headerpad_max_install_names";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
@@ -1127,6 +1154,8 @@ AH_VERBATIM([_LL_CONSTANTS], [
 AH_VERBATIM([_WIN32], [
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
+#elif HAVE_VISIBILITY
+# define EXPORT __attribute__((__visibility__("default")))
 #else
 #define EXPORT
 #endif

@@ -9,16 +9,16 @@
 #include "l8818_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcDble;
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcDble;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
 extern int DevCamChk();
-extern int CamPiow();
-extern int CamFStopw();
-extern int CamQrepw();
-extern int CamXandQ();
+
+
+
+
 
 static int one = 1;
 
@@ -40,7 +40,7 @@ typedef struct {
   unsigned user:1;
 } L8818Control;
 
-int l8818___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l8818___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   L8818Control ctrl;
   float freq;
@@ -58,14 +58,14 @@ int l8818___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int l8818___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l8818___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-int l8818___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8818___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)

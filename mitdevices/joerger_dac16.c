@@ -14,7 +14,7 @@ static int one = 1;
 #define pio24(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0))
 
 extern int DevCamChk();
-extern int CamPiow();
+
 int joerger_dac16___init(struct descriptor *nid_dsc, InInitStruct * setup)
 {
   int i;

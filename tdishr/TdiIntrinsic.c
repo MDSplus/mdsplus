@@ -110,7 +110,7 @@ STATIC_ROUTINE void add(char *text)
   new.length = (unsigned short)strlen(text);
   new.pointer = text;
   if (message->length + new.length < MAXMESS)
-    StrAppend(message, &new);
+    StrAppend(message, (struct descriptor *)&new);
 }
 
 STATIC_ROUTINE void numb(int count)
@@ -144,7 +144,7 @@ int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_
   numb(out_ptr->length);
   add(" partial text: ");
   if (out_ptr->length < MAXLINE - 70)
-    StrAppend(message, out_ptr);
+    StrAppend(message, (struct descriptor *)out_ptr);
   else {
     *((char *)out_ptr->pointer + MAXLINE - 70) = '\0';
     add((char *)out_ptr->pointer);
@@ -184,7 +184,7 @@ int TRACE(int opcode, int narg, struct descriptor *list[], struct descriptor_xd 
   for (j = 0; j < narg;) {
     if (Tdi0Decompile(list[j], PREC_COMMA, &text) & 1) {
       if (message->length - now + text.length < MAXLINE - 2)
-	StrAppend(message, &text);
+	StrAppend(message, (struct descriptor *)&text);
       else {
 	*(text.pointer + MAXFRAC) = '\0';
 	add(text.pointer);
@@ -308,13 +308,13 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       else
 	dsc_ptr = (struct descriptor *)&tmp;
       if (dsc_ptr == 0)
-	stat1 = StrFree1Dx(out_ptr);
+	stat1 = StrFree1Dx((struct descriptor_d *)out_ptr);
       else
 	switch (dsc_ptr->class) {
 	case CLASS_S:
 	case CLASS_D:
 	  if (out_ptr->length != dsc_ptr->length) {
-	    stat1 = StrGet1Dx(&dsc_ptr->length, out_ptr);
+	    stat1 = StrGet1Dx(&dsc_ptr->length, (struct descriptor_d *)out_ptr);
 	  }
 	  if (stat1 & 1) {
 	    out_ptr->dtype = dsc_ptr->dtype;

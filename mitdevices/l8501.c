@@ -11,13 +11,6 @@
 #include <xmdsshr.h>
 #include "devroutines.h"
 
-extern unsigned short OpcSubtract;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcAdd;
-extern unsigned short OpcDivide;
-extern unsigned short OpcVector;
-extern unsigned short OpcDble;
-
 #define GET_FREQ_IDX(index, nid_idx) \
   { int nid = setup->head_nid + nid_idx; \
   return_on_error(DevFloat(&nid, &freq),status);\
@@ -30,7 +23,7 @@ static int one = 1;
 #define pio(a,f,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0),status)
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-int l8501___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8501___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 {
   static float freqs[] = { 0.02, 0.05,
     0.1, 0.2, 0.5,
@@ -143,7 +136,7 @@ int l8501___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int l8501___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8501___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 {
   static float one_thous = 1.E-3;
   static DESCRIPTOR_FLOAT(one_thousandth, &one_thous);
@@ -368,7 +361,7 @@ int l8501___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 
 static int Check(Widget w);
 
-int l8501__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8501__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "L8501.uid" };
   static int nid;
@@ -394,14 +387,14 @@ static int Check(Widget w)
   static DESCRIPTOR_LONG(mode_d, &mode);
   struct descriptor_xd *xd;
   if ((xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*mode"))) &&
-      (TdiData(xd, &mode_d MDS_END_ARG) & 1) &&
+      (TdiData((struct descriptor *)xd, &mode_d MDS_END_ARG) & 1) &&
       (mode == 1 || mode == 2) &&
       (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq1")))
-      && (TdiData(xd, &freq1_d MDS_END_ARG) & 1)
+      && (TdiData((struct descriptor *)xd, &freq1_d MDS_END_ARG) & 1)
       && (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq2")))
-      && (TdiData(xd, &freq2_d MDS_END_ARG) & 1)
+      && (TdiData((struct descriptor *)xd, &freq2_d MDS_END_ARG) & 1)
       && (xd = XmdsNidOptionMenuGetXd(XtNameToWidget(XtParent(w), "*freq3")))
-      && (TdiData(xd, &freq3_d MDS_END_ARG) & 1) && (freq1 < .2 || freq2 < .2 || freq3 < .2)
+      && (TdiData((struct descriptor *)xd, &freq3_d MDS_END_ARG) & 1) && (freq1 < .2 || freq2 < .2 || freq3 < .2)
       && (freq1 > 2000. || freq2 > 2000. || freq3 > 2000.)) {
     status = 0;
     XmdsComplain(w,

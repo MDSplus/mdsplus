@@ -51,13 +51,7 @@ Calls TDI$DATA for INCAA CADF.
 #include <treeshr.h>
 #include <mds_stdarg.h>
 
-extern int TdiData();
-extern int TdiLong();
-extern int TdiCvt();
-extern int TdiEvaluate();
-extern int TdiConcat();
-
-int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *setting_d_ptr)
+EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *setting_d_ptr)
 {
 /*------------------------------------------------------------------------------
 
@@ -103,7 +97,7 @@ int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *setting_d_ptr
       char zero = 0;
       struct descriptor null_str = { 1, DTYPE_T, CLASS_S, 0 };
       null_str.pointer = &zero;
-      status = TdiConcat(setting_d_ptr, &null_str, setting_d_ptr MDS_END_ARG);
+      status = TdiConcat((struct descriptor *)setting_d_ptr, &null_str, setting_d_ptr MDS_END_ARG);
     }
     break;
   case DevMODINT:

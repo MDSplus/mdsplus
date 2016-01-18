@@ -25,11 +25,6 @@ static int fast = 1;
 
 extern int DevCamChk();
 extern int DevLong();
-extern int CamPiow();
-extern int CamStopw();
-extern int CamFStopw();
-extern int CamBytcnt();
-extern int TdiCompile();
 
 typedef struct {
   unsigned clock_speed:3;
@@ -45,7 +40,7 @@ typedef struct {
   unsigned:15;
 } StatusRegister;
 
-int a14___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int a14___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
   int pts;
@@ -79,7 +74,7 @@ int a14___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-int a14___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int a14___stop(struct descriptor *niddsc, InStopStruct * setup)
 {
   int status;
   int zero = 0;
@@ -87,7 +82,7 @@ int a14___stop(struct descriptor *niddsc, InStopStruct * setup)
       return status;
 }
 
-int a14___start(struct descriptor *niddsc, InStartStruct * setup)
+EXPORT int a14___start(struct descriptor *niddsc, InStartStruct * setup)
 {
   int status;
   int zero = 0;
@@ -148,9 +143,7 @@ static int getMemoryPointer(InStoreStruct * setup)
   return memptr;
 }
 
-extern int OpcAdd, OpcMultiply, OpcValue;
-
-int a14___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int a14___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status = 1;
   static long zero = 0;
@@ -294,20 +287,20 @@ int a14___store(struct descriptor *niddsc, InStoreStruct * setup)
 	      static const int clock_divides[] = { 1, 2, 4, 10, 20, 40, 100, 1 };
 	      int clock_divide_l = clock_divides[sr.clock_speed];
 	      DESCRIPTOR_LONG(clock_divide, &clock_divide_l);
-	      TdiCompile(&post_ext, &start_d, &end_d, &trigger_nid_dsc, setup->ext_clock_in,
+	      TdiCompile((struct descriptor *)&post_ext, &start_d, &end_d, &trigger_nid_dsc, setup->ext_clock_in,
 			 (sr.mode == 0) ? &zero_d : &one_d, &clock_divide, &dimension MDS_END_ARG);
 	    } else
-	      TdiCompile(&post_int, &start_d, &end_d, &trigger_nid_dsc, &dt_dsc,
+	      TdiCompile((struct descriptor *)&post_int, &start_d, &end_d, &trigger_nid_dsc, &dt_dsc,
 			 (sr.mode == 0) ? &zero_d : &one_d, &dimension MDS_END_ARG);
 	    break;
 	  case 3:
 	    if (setup->dimension)
 	      MdsCopyDxXd(setup->dimension, &dimension);
 	    else if (setup->ext_clock_in)
-	      TdiCompile(&burst_time_ext, &trigger_nid_dsc, &pts_dsc, setup->ext_clock_in,
+	      TdiCompile((struct descriptor *)&burst_time_ext, &trigger_nid_dsc, &pts_dsc, setup->ext_clock_in,
 			 &clock_divide_dsc, &dimension MDS_END_ARG);
 	    else
-	      TdiCompile(&burst_time_int, &trigger_nid_dsc, &pts_dsc, &dt_dsc,
+	      TdiCompile((struct descriptor *)&burst_time_int, &trigger_nid_dsc, &pts_dsc, &dt_dsc,
 			 &dimension MDS_END_ARG);
 	    break;
 	  default:

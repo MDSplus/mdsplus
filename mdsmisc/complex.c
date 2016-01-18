@@ -14,8 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "complex.h"
+#include <config.h>
 
-Complex AddC(Complex c1, Complex c2)
+EXPORT Complex AddC(Complex c1, Complex c2)
 {
   //This ckeck is required to avoid floating point underflow!!
   if (fabs(c1.re) < 1E-30)
@@ -32,7 +33,7 @@ Complex AddC(Complex c1, Complex c2)
   return ris;
 }
 
-Complex SubC(Complex c1, Complex c2)
+EXPORT Complex SubC(Complex c1, Complex c2)
 {
   Complex ris;
 //This ckeck is required to avoid floating point underflow!!
@@ -49,7 +50,7 @@ Complex SubC(Complex c1, Complex c2)
   return ris;
 }
 
-Complex MulC(Complex c1, Complex c2)
+EXPORT Complex MulC(Complex c1, Complex c2)
 {
   Complex ris;
 
@@ -68,7 +69,7 @@ Complex MulC(Complex c1, Complex c2)
   return ris;
 }
 
-Complex DivC(Complex c1, Complex c2)
+EXPORT Complex DivC(Complex c1, Complex c2)
 {
   Complex ris;
   double den;
@@ -91,7 +92,7 @@ Complex DivC(Complex c1, Complex c2)
   return ris;
 }
 
-Complex ExpC(Complex c)
+EXPORT Complex ExpC(Complex c)
 {
   Complex ris;
   //This ckeck is required to avoid floating point underflow!!
@@ -104,7 +105,7 @@ Complex ExpC(Complex c)
   return ris;
 }
 
-double Mod2(Complex c)
+EXPORT double Mod2(Complex c)
 {
   //This ckeck is required to avoid floating point underflow!!
   if (fabs(c.re) < 1E-30)

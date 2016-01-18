@@ -1,18 +1,13 @@
-import sys
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
+def _mimport(name, level=1):
     try:
-      return __import__(name,globals())
+        return __import__(name, globals(), level=level)
     except:
-      return __import__('MDSplus.'+name,globals())
-else:
-  def _mimport(name,level):
-    try:
-      return __import__(name,globals(),{},[],level)
-    except ValueError:
-      return __import__(name,globals())
+        try:
+            return __import__(name, globals())
+        except:
+            return __import__('MDSplus.'+name,globals())
 
-_builtin=_mimport('builtin',1)
+_builtin=_mimport('builtin')
 Builtin=_builtin.Builtin
 
 _scalar=_mimport('mdsscalar',2)

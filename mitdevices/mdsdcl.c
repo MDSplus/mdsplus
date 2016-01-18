@@ -12,7 +12,6 @@
 #include <xmdsshr.h>
 #include "mdsdcl_gen.h"
 
-extern int TdiExecute();
 
 extern int mdsdcl_do_command();
 static int Apply();
@@ -20,7 +19,7 @@ static void Reset();
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct * setup)
+EXPORT int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct * setup)
 {
   int status;
   char *line;
@@ -37,7 +36,7 @@ int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct * setup)
   return status;
 }
 
-int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "MDSDCL.uid" };
   static int nid;
@@ -130,8 +129,8 @@ static void Reset(Widget w)
   nid = (intptr_t) user_data;
   XmListDeselectAllItems(list_w);
   XmListDeleteAllItems(list_w);
-  TdiExecute(&initial, &cli MDS_END_ARG);
-  while ((status = TdiExecute(&clis, &cli MDS_END_ARG) & 1 && cli.length > 0
+  TdiExecute((struct descriptor *)&initial, &cli MDS_END_ARG);
+  while ((status = TdiExecute((struct descriptor *)&clis, &cli MDS_END_ARG) & 1 && cli.length > 0
 	  && strlen(cli.pointer) > 0)) {
     XmString item;
     item = XmStringCreateSimple(cli.pointer);

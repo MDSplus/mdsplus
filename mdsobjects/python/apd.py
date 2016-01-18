@@ -1,15 +1,14 @@
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
 import copy as _copy
-import numpy as _np
+import numpy as _N
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
-
-_data=_mimport('mdsdata',1)
-_scalar=_mimport('mdsscalar',1)
+_data=_mimport('mdsdata')
+_scalar=_mimport('mdsscalar')
 
 class Apd(_data.Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
@@ -24,7 +23,7 @@ class Apd(_data.Data):
             if isinstance(desc,_data.Data) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
-    
+
     def __fixTreeReferences__(self,tree):
         ans=_copy.deepcopy(self)
         descs=list(ans.descs)
@@ -33,7 +32,7 @@ class Apd(_data.Data):
                 descs[idx]=descs[idx].__fixTreeReferences__(tree)
         ans.descs=tuple(descs)
         return ans
-    
+
     def __init__(self,descs,dtype=0):
         """Initializes a Apd instance
         """
@@ -47,7 +46,7 @@ class Apd(_data.Data):
     def __len__(self):
         """Return the number of descriptors in the apd"""
         return len(self.descs)
-    
+
     def __getitem__(self,idx):
         """Return descriptor(s) x.__getitem__(idx) <==> x[idx]
         @rtype: Data|tuple
@@ -68,7 +67,7 @@ class Apd(_data.Data):
         l[idx]=value
         self.descs=tuple(l)
         return None
-   
+
     def getDescs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
@@ -126,7 +125,7 @@ class Dictionary(dict,Apd):
             if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(tree):
                 ans[key]=value.__fixTreeReferences__(tree)
         return ans
-    
+
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,dict):
@@ -137,11 +136,11 @@ class Dictionary(dict,Apd):
                     key=value[idx]
                     if isinstance(key,_scalar.Scalar):
                         key=key.value
-                    if isinstance(key,_np.string_):
+                    if isinstance(key,_N.string_):
                         key=str(key)
-                    elif isinstance(key,_np.int32):
+                    elif isinstance(key,_N.int32):
                         key=int(key)
-                    elif isinstance(key,_np.float32) or isinstance(key,_np.float64):
+                    elif isinstance(key,_N.float32) or isinstance(key,_N.float64):
                         key=float(key)
                     val=value[idx+1]
                     if isinstance(val,Apd):
@@ -170,7 +169,7 @@ class Dictionary(dict,Apd):
         for key,val in self.items():
             d.setdefault(key,val.data())
         return d
-        
+
     def toApd(self):
         apd=Apd(tuple(),self.mdsdtype)
         for key,val in self.items():
@@ -180,7 +179,7 @@ class Dictionary(dict,Apd):
 
     def __str__(self):
         return dict.__str__(self)
- 
+
 class List(list,Apd):
     """list class"""
 
@@ -198,7 +197,7 @@ class List(list,Apd):
             if isinstance(ans[idx],_data.Data) and ans[idx].__hasBadTreeReferences__(tree):
                 ans[idx]=ans[idx].__fixTreeReferences__(tree)
         return ans
-    
+
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd) or isinstance(value,list) or isinstance(value,tuple):
@@ -215,4 +214,3 @@ class List(list,Apd):
 
     def __str__(self):
         return list.__str__(self)
- 

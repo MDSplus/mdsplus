@@ -21,16 +21,11 @@
 static void Load(Widget w);
 static unsigned int Input(InStoreStruct * setup, int code);
 static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglist,
-		      int (*routine) ());
+		      int (*routine) (struct descriptor *,...));
 static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned short *buffer,
 		       int *samples_read, int *nid, float *calib);
 
-extern unsigned short OpcSubtract;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
 extern int DevWait(float);
-extern int CamQ();
-extern int TdiData();
 
 #define T28XX_N_HEAD              0
 #define T28XX_K_NODES_PER_INP     4
@@ -63,7 +58,7 @@ static int one = 1;
 static time_t start_time;
 static time_t max_time = -1;
 
-int t4012___init(struct descriptor *nid, InInitStruct * setup)
+EXPORT int t4012___init(struct descriptor *nid, InInitStruct * setup)
 {
   int try;
   int status;
@@ -159,7 +154,7 @@ int t4012___init(struct descriptor *nid, InInitStruct * setup)
   return status;
 }
 
-int t4012___trigger(struct descriptor *nid, InTriggerStruct * setup)
+EXPORT int t4012___trigger(struct descriptor *nid, InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0);
@@ -172,7 +167,7 @@ static float freqs[] =
     { 2E-7, 5E-7, 1E-6, 2E-6, 5E-6, 1E-5, 2E-5, 5E-5, 1E-4, 2E-4, 5E-4, 1E-3, 2E-3, 5E-3, 1E-2,
 2E-2, 5E-2, 1E-1 };
 
-int t4012___store(int *niddsc, InStoreStruct * setup)
+EXPORT int t4012___store(int *niddsc, InStoreStruct * setup)
 {
   int channels;
   int pts;
@@ -400,7 +395,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
 }
 
 static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglist,
-		      int (*routine) ())
+		      int (*routine) (struct descriptor *,...))
 {
   int try;
   int status;
@@ -427,7 +422,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
   return status;
 }
 
-int t4012__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int t4012__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "T4012.uid" };
   static int nid;

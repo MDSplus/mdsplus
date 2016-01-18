@@ -13,6 +13,7 @@
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
+#include "mdsshrp.h"
 
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <sys/types.h>
@@ -37,7 +38,7 @@ STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void 
 STATIC_ROUTINE void initializeRemote(int receive_events);
 STATIC_CONSTANT int TIMEOUT = 0;
 
-int MDSSetEventTimeout(int seconds)
+EXPORT int MDSSetEventTimeout(int seconds)
 {
   int old_timeout = TIMEOUT;
   TIMEOUT = seconds;
@@ -282,12 +283,12 @@ STATIC_ROUTINE void MDSWfevent_ast(void *astparam, int data_len, char *data)
   SetEvent(event->event);
 }
 
-int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
+EXPORT int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
 {
   return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
 }
 
-int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
+EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
 {
   int eventid;
   int status;
@@ -364,7 +365,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data)
   UnlockMdsShrMutex(&eqMutex);
 }
 
-int MDSQueueEvent(char const *evname, int *eventid)
+EXPORT int MDSQueueEvent(char const *evname, int *eventid)
 {
   int status;
   struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
@@ -389,7 +390,7 @@ int MDSQueueEvent(char const *evname, int *eventid)
   return status;
 }
 
-int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
+EXPORT int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
 {
   struct eventQueueHeader *qh;
   int waited = 0;
@@ -1114,12 +1115,12 @@ STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
   pthread_mutex_unlock(&t->mutex);
 }
 
-int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
+EXPORT int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
 {
   return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
 }
 
-int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
+EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
 {
   int eventid = -1;
   int status;
@@ -1221,7 +1222,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data)
   UnlockMdsShrMutex(&eqMutex);
 }
 
-int MDSQueueEvent(char const *evname, int *eventid)
+EXPORT int MDSQueueEvent(char const *evname, int *eventid)
 {
   int status;
   struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
@@ -1247,7 +1248,7 @@ int MDSQueueEvent(char const *evname, int *eventid)
   return status;
 }
 
-int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
+EXPORT int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
 {
   struct eventQueueHeader *qh;
   int waited = 0;
@@ -1409,7 +1410,7 @@ int RemoteMDSEvent(char const *evname_in, int data_len, char *data)
 
 #endif
 
-int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), void *astprm,
+EXPORT int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), void *astprm,
 		int *eventid)
 {
   char *eventName = malloc(strlen(eventNameIn) + 1);
@@ -1428,7 +1429,7 @@ int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), v
   return status;
 }
 
-int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
+EXPORT int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
 {
   char *eventName = alloca(strlen(eventNameIn) + 1);
   unsigned int i, j;
@@ -1445,7 +1446,7 @@ int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
   return status;
 }
 
-int MDSEventCan(int id)
+EXPORT int MDSEventCan(int id)
 {
   int status;
   if (getenv("mds_event_server"))

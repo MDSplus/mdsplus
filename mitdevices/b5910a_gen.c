@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "b5910a_gen.h"
-int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "B5910A");
@@ -90,8 +90,8 @@ int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   return (TreeSetDefaultNid(old_nid));
 }
 
-int b5910a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		      struct descriptor *out_d)
+EXPORT int b5910a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		      struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -149,7 +149,7 @@ extern int b5910a___init();
 #define free_xd_array { int i; for(i=0; i<7;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int b5910a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int b5910a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[7];

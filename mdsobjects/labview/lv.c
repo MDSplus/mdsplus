@@ -16,6 +16,7 @@
 #include <mdsdescrip.h>
 #include <libroutines.h>
 #include <stdio.h>
+#include <mdsshr.h>
 
 #pragma pack(1)
 
@@ -80,7 +81,7 @@ static void Initialize()
   printf("CIAO SONO INITIALIZE\n");
   if (!LVDSNewHandle) {
     status = LibFindImageSymbol(&LVMemoryManager_10Name, &DSNewHandleName, &LVDSNewHandle);
-    printf("FIND IMAGE SYMBOL status: %s %s\n", MdsGetMsg(status));
+    printf("FIND IMAGE SYMBOL status: %d %s\n", status, MdsGetMsg(status));
   }
   if (!LVMoveBlock)
     LibFindImageSymbol(&LVRT_10Name, &MoveBlockName, &LVMoveBlock);

@@ -1,19 +1,21 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_mdsshr=_mimport('_mdsshr',1)
-_mdsExceptions=_mimport('mdsExceptions',1)
-_ver=_mimport('version',1)
+import ctypes as _C
 
-TdiShr=_mdsshr._load_library('TdiShr')
+_descriptor = _mimport('_descriptor')
+_mdsshr=_mimport('_mdsshr')
+_Exceptions=_mimport('mdsExceptions')
+_tree=_mimport('tree')
+_ver=_mimport('version')
+_treeshr=_mimport('_treeshr')
+
+TdiShr=_ver.load_library('TdiShr')
 
 def _TdiShrFun(function,errormessage,expression,args=None):
-    import ctypes as C
-    _descriptor = _mimport('_descriptor',1)
     descriptor = _descriptor.descriptor
     def parseArguments(args):
         if args is None:
@@ -22,24 +24,16 @@ def _TdiShrFun(function,errormessage,expression,args=None):
             if args:
                 if isinstance(args[0],tuple):
                     return(parseArguments(args[0]))
-            return([C.pointer(descriptor(arg)) for arg in args])
+            return([_C.pointer(descriptor(arg)) for arg in args])
         raise TypeError('Arguments must be passed as a tuple')
     xd = _descriptor.descriptor_xd()
-    arguments = [C.pointer(descriptor(expression))]+parseArguments(args)+[C.pointer(xd),C.c_void_p(-1)]
-    Tree = _mimport('tree',1).Tree
-    Tree.lock()
-    try:
-        tree = Tree.getActiveTree()
-        if tree is not None:
-            tree.restoreContext()
-        status = function(*arguments)
-    finally:
-        Tree.unlock()
+    arguments = [_C.pointer(descriptor(expression))]+parseArguments(args)+[_C.pointer(xd),_C.c_void_p(-1)]
+    status = function(*arguments)
     if (status & 1 != 0):
         return xd.value
     else:
-        raise _mdsExceptions.statusToException(status)
-       
+        raise _Exceptions.statusToException(status)
+
 def TdiCompile(expression,args=None):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
     return _TdiShrFun(TdiShr.TdiCompile,"Error compiling",expression,args)

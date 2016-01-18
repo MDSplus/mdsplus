@@ -366,7 +366,7 @@ static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error, char *
 	/****************************************************************
 	 * TclShowData:
 	 ****************************************************************/
-int TclShowData(void *ctx, char **error, char **output)
+EXPORT int TclShowData(void *ctx, char **error, char **output)
 {
   int nid;
   int sts;

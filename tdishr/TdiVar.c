@@ -95,7 +95,7 @@ typedef struct {
   int count;
 } user_type;
 
-STATIC_CONSTANT struct descriptor EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 STATIC_CONSTANT struct descriptor EMPTDY_S = { 0, DTYPE_T, CLASS_S, 0 };
 STATIC_CONSTANT struct descriptor_xd NULL_XD = { 0, 0, 0, 0, 0 };
 
@@ -153,7 +153,7 @@ STATIC_ROUTINE int allocate(struct descriptor *key_ptr,
     LibCreateVmZone(&block_ptr->head_zone);
     LibCreateVmZone(&block_ptr->data_zone);
   }
-  status = LibGetVm(&len, node_ptr_ptr, &block_ptr->head_zone);
+  status = LibGetVm(&len, (void *) node_ptr_ptr, &block_ptr->head_zone);
   if (status & 1) {
     node_type *node_ptr = *node_ptr_ptr;
     node_ptr->xd = EMPTY_XD;
@@ -174,7 +174,8 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 				struct descriptor *key_ptr,
 				node_type ** node_ptr_ptr, block_type ** block_ptr_ptr)
 {
-  struct descriptor key_dsc, name_dsc;
+  struct descriptor key_dsc;
+  struct descriptor_d name_dsc;
   node_type *node_ptr;
   block_type *block_ptr;
   int code, status = 1;
@@ -198,7 +199,7 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	key_dsc.class = CLASS_S;
 	if (search & 4) {
 	  if (search & 1) {
-	    status = LibLookupTree(&private->head, &key_dsc, compare, &node_ptr);
+	    status = LibLookupTree((void *)&private->head, (void *)&key_dsc, compare, (void **)&node_ptr);
 	    if (status & 1) {
 	      if (node_ptr->xd.class != 0) {
 		break;
@@ -208,7 +209,7 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	    }
 	  }
 	  if (search & 2) {
-	    status = LibLookupTree(&_public.head, &key_dsc, compare, &node_ptr);
+	    status = LibLookupTree((void *)&_public.head, (void *)&key_dsc, compare, (void **)&node_ptr);
 	    if (status & 1) {
 	      if (node_ptr->xd.class != 0) {
 		block_ptr = &_public;
@@ -267,7 +268,7 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	  status =
 	      TdiFindIdent(search, (struct descriptor_r *)&name_dsc,
 			   &key_dsc, &node_ptr, &block_ptr);
-	StrFree1Dx(&name_dsc);
+	StrFree1Dx((struct descriptor_d *)&name_dsc);
       } else
 	status = TdiINV_OPC;
       break;
@@ -315,7 +316,7 @@ int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr)
   struct descriptor key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr;
-  struct descriptor upstr = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d upstr = { 0, DTYPE_T, CLASS_D, 0 };
   int size = 0, status;
   STATIC_CONSTANT int zero = 0;
   if (ident_ptr->dtype == DTYPE_DSC)
@@ -326,10 +327,10 @@ int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr)
         Find where we should place the stuff.
         ************************************/
   status = TdiFindIdent(3, ident_ptr, &key_dsc, 0, &block_ptr);
-  StrUpcase(&upstr, &key_dsc);
+  StrUpcase((struct descriptor *)&upstr, &key_dsc);
   if (status & 1)
     status =
-	LibInsertTree(&block_ptr->head, &upstr, &zero, compare, allocate, &node_ptr, block_ptr);
+      LibInsertTree((void **)&block_ptr->head, &upstr, &zero, compare, allocate, (void *)&node_ptr, block_ptr);
   StrFree1Dx(&upstr);
   if (status & 1) {
     if (node_ptr->xd.class == 0)
@@ -363,18 +364,18 @@ STATIC_ROUTINE int wild(int (*doit) (),
   LockTdiMutex(&lock, &lock_initialized);
   user.block_ptr = block_ptr;
   if (narg == 0 || list[0] == 0)
-    status = LibTraverseTree(&block_ptr->head, doit, &user);
+    status = LibTraverseTree((void **)&block_ptr->head, doit, &user);
   else
     for (j = 0; status & 1 && j < narg; ++j) {
       status = TdiFindIdent(3, (struct descriptor_r *)list[j], &user.match, 0, &user.block_ptr);
       if (status & 1)
 	status = StrUpcase(&user.match, &user.match);
       if (status & 1) {
-	if (StrPosition(&user.match, &star, 0)
-	    || StrPosition(&user.match, &percent, 0)) {
-	  status = LibTraverseTree(&user.block_ptr->head, doit, &user);
+	if (StrPosition(&user.match, (struct descriptor *)&star, 0)
+	    || StrPosition(&user.match, (struct descriptor *)&percent, 0)) {
+	  status = LibTraverseTree((void **)&user.block_ptr->head, doit, &user);
 	} else {
-	  status = LibLookupTree(&user.block_ptr->head, &user.match, compare, &node_ptr);
+	  status = LibLookupTree((void **)&user.block_ptr->head, (void *)&user.match, compare, (void **)&node_ptr);
 	  if (status & 1)
 	    status = (*doit) (node_ptr, &user);
 	  else if (status == LibKEYNOTFOU)
@@ -383,7 +384,7 @@ STATIC_ROUTINE int wild(int (*doit) (),
       }
     }
   if (user.match.class == CLASS_D)
-    StrFree1Dx(&user.match);
+    StrFree1Dx((struct descriptor_d *)&user.match);
   if (status & 1)
     status = TdiPutLong(&user.count, out_ptr);
   UnlockTdiMutex(&lock);
@@ -409,7 +410,7 @@ STATIC_ROUTINE int free_one(node_type * node_ptr, user_type * user_ptr)
     status = StrMatchWild(&node_ptr->name_dsc, &user_ptr->match);
   if (status & 1) {
     if (node_ptr->xd.l_length)
-      status = LibFreeVm(&node_ptr->xd.l_length, &node_ptr->xd.pointer, &block_ptr->data_zone);
+      status = LibFreeVm(&node_ptr->xd.l_length, (void *)&node_ptr->xd.pointer, &block_ptr->data_zone);
     node_ptr->xd = NULL_XD;
     user_ptr->count++;
   } else
@@ -427,7 +428,7 @@ STATIC_ROUTINE int free_all(node_type ** pnode)
   block_type *private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
 
   if ((*pnode)->xd.l_length)
-    status = LibFreeVm(&(*pnode)->xd.l_length, &(*pnode)->xd.pointer, &private->data_zone);
+    status = LibFreeVm(&(*pnode)->xd.l_length, (void *)&(*pnode)->xd.pointer, &private->data_zone);
   if ((*pnode)->left) {
     stat2 = free_all(&((*pnode)->left));
     if (status & 1)
@@ -439,7 +440,7 @@ STATIC_ROUTINE int free_all(node_type ** pnode)
       status = stat2;
   }
   len = sizeof(struct link) - 1 + (*pnode)->name_dsc.length;
-  stat2 = LibFreeVm(&len, pnode, &private->head_zone);
+  stat2 = LibFreeVm(&len, (void *)pnode, &private->head_zone);
   *pnode = 0;
   if (status & 1)
     status = stat2;
@@ -475,7 +476,7 @@ int Tdi1Allocated(int opcode, int narg, struct descriptor *list[], struct descri
   LockTdiMutex(&lock, &lock_initialized);
   status = TdiFindIdent(3, (struct descriptor_r *)list[0], &key_dsc, 0, &block_ptr);
   if (status & 1)
-    status = LibLookupTree(&block_ptr->head, &key_dsc, compare, &node_ptr);
+    status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
   found = status & 1;
   if (found)
     found = node_ptr->xd.class != 0;
@@ -500,7 +501,7 @@ int Tdi1Present(int opcode, int narg, struct descriptor *list[], struct descript
   LockTdiMutex(&lock, &lock_initialized);
   status = TdiFindIdent(3, (struct descriptor_r *)list[0], &key_dsc, 0, &block_ptr);
   if (status & 1)
-    status = LibLookupTree(&block_ptr->head, &key_dsc, compare, &node_ptr);
+    status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
   found = status & 1;
   if (found) ;
   else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR)
@@ -664,7 +665,7 @@ int TdiDoFun(struct descriptor *ident_ptr,
   private->head = old_head;
   *new_narg = old_narg;
   if (status == TdiUNKNOWN_VAR)
-    status = TdiExtPython(ident_ptr, nactual, actual_arg_ptr, out_ptr);
+    status = TdiExtPython(ident_ptr, nactual, (struct descriptor **)actual_arg_ptr, out_ptr);
   return status;
 }
 
@@ -771,7 +772,7 @@ int Tdi1Private(int opcode, int narg, struct descriptor *list[], struct descript
   node_type *node_ptr;
   block_type *private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
 
-  status = LibLookupTree(&private->head, list[0], compare, &node_ptr);
+  status = LibLookupTree((void **)&private->head, (void *)list[0], compare, (void **)&node_ptr);
   if (status & 1)
     status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
   else if (status == LibKEYNOTFOU)
@@ -789,7 +790,7 @@ int Tdi1Public(int opcode, int narg, struct descriptor *list[], struct descripto
   node_type *node_ptr;
   LockTdiMutex(&lock, &lock_initialized);
 
-  status = LibLookupTree(&_public.head, list[0], compare, &node_ptr);
+  status = LibLookupTree((void **)&_public.head, (void *)list[0], compare, (void **)&node_ptr);
   if (status & 1)
     status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
   else if (status == LibKEYNOTFOU)
@@ -878,7 +879,7 @@ int Tdi1ResetPublic(int opcode, int narg, struct descriptor *list[], struct desc
 STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
 {
   int status;
-  struct descriptor tmp = EMPTY_D;
+  struct descriptor_d tmp = EMPTY_D;
   struct descriptor_r *rptr = (struct descriptor_r *)node_ptr->xd.pointer;
 
   if (node_ptr->xd.class == 0)
@@ -932,7 +933,7 @@ int Tdi1ShowPublic(int opcode, int narg, struct descriptor *list[], struct descr
   return status;
 }
 
-int TdiSaveContext(void *ptr[6])
+extern EXPORT int TdiSaveContext(void *ptr[6])
 {
   block_type *_private;
   LockTdiMutex(&lock, &lock_initialized);
@@ -947,7 +948,7 @@ int TdiSaveContext(void *ptr[6])
   return 1;
 }
 
-int TdiDeleteContext(void *ptr[6])
+extern EXPORT int TdiDeleteContext(void *ptr[6])
 {
   if (ptr[1])
     LibDeleteVmZone(&ptr[1]);
@@ -963,7 +964,7 @@ int TdiDeleteContext(void *ptr[6])
 /*-------------------------------------------------------------
         Restore variable context
 */
-int TdiRestoreContext(void *ptr[6])
+extern EXPORT int TdiRestoreContext(void *ptr[6])
 {
   block_type *_private;
   LockTdiMutex(&lock, &lock_initialized);

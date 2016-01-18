@@ -26,8 +26,8 @@ static int zero = 0;
 #define IsOn(nid) (((status = TreeIsOn(nid)) == TreeON) || (status == TreePARENT_OFF))
 
 extern int DevCamChk();
-extern int CamPiow();
-extern int TdiCompile();
+
+
 
 static int InitChannel(InInitStruct * setup, int chan, int gain, int mult, float offset)
 {
@@ -51,7 +51,7 @@ static int InitChannel(InInitStruct * setup, int chan, int gain, int mult, float
   return status;
 }
 
-int l8100___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l8100___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status;
 
@@ -99,7 +99,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
 	offset = 5.5 - off / 4096. * 11.;
     out_nid_d.pointer = (char *)&output_nid;
     SignalError(TdiCompile
-		(&expression, &out_nid_d, &offset_d, &gain_d, &mult_d, &value MDS_END_ARG));
+		((struct descriptor *)&expression, &out_nid_d, &offset_d, &gain_d, &mult_d, &value MDS_END_ARG));
     SignalError(TreePutRecord(input_nid, (struct descriptor *)&value, 0));
     if (IsOn(filter_on_nid))
       SignalError(TreePutRecord(filter_on_nid, filter, 0));
@@ -107,7 +107,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
   return status;
 }
 
-int l8100___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l8100___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status;
   status = StoreChannel(setup, 0);

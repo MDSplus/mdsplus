@@ -89,10 +89,10 @@ The data is dumped into the 4302 memory modules without using the hardware
 #include <mdsshr.h>
 #include "fera_gen.h"
 #include "devroutines.h"
-extern int CamPiow();
-extern int CamStopw();
-extern int TdiExecute();
-extern int TdiCompile();
+
+
+
+
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */
@@ -114,7 +114,7 @@ static int NElements(int nid);
 static char *ArrayRef(int nid, int num);
 static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int clock_nid, int nid);
 
-int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
 
   int status = 1;
@@ -170,7 +170,7 @@ int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int fera___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int fera___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
 
   int mem_status = 1;
@@ -280,12 +280,12 @@ static int NElements(int nid)
   nid_dsc.pointer = (char *)&nid;
   if (last_nid != nid) {
     last_nid = 0;
-    status = TdiExecute(&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
   }
   if (status & 1) {
     static DESCRIPTOR(size_expr, "SIZE(_TextArray)");
     last_nid = nid;
-    status = TdiExecute(&size_expr, &num_dsc MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&size_expr, &num_dsc MDS_END_ARG);
   }
   return (status & 1) ? num : 0;
 }
@@ -302,13 +302,13 @@ static char *ArrayRef(int nid, int num)
   nid_dsc.pointer = (char *)&nid;
   if (last_nid != nid) {
     last_nid = 0;
-    status = TdiExecute(&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);
   }
   if (status & 1) {
     static DESCRIPTOR(subscript_expr, "_TextArray[$]//\"\\0\"");
     struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
     num_dsc.pointer = (char *)&num;
-    status = TdiExecute(&subscript_expr, &num_dsc, &empty_string MDS_END_ARG);
+    status = TdiExecute((struct descriptor *)&subscript_expr, &num_dsc, &empty_string MDS_END_ARG);
   }
   return ((status & 1) == 0) ? 0 : empty_string.pointer;
 }
@@ -330,7 +330,7 @@ static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int cloc
   a_dsc.m[1] = chans;
   clock_nid_dsc.pointer = (char *)&clock_nid;
   num_dsc.pointer = (char *)&max_chan_num;
-  status = TdiCompile(&expr, &a_dsc, &clock_nid_dsc, &num_dsc, &output_xd MDS_END_ARG);
+  status = TdiCompile((struct descriptor *)&expr, &a_dsc, &clock_nid_dsc, &num_dsc, &output_xd MDS_END_ARG);
   if (status & 1) {
     status = TreePutRecord(nid, (struct descriptor *)&output_xd, 0);
     MdsFree1Dx(&output_xd, 0);

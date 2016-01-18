@@ -7,7 +7,7 @@ cleanup() {
 set -e
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
-wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+wget -q --no-check-certificate -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
 export JNI_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk
 export JNI_MD_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk/win32
 cd /buildsrc
@@ -75,11 +75,13 @@ then
     #
     # Strange command needed because of winexe behavior when running without a terminal
     #
-    cat < /dev/null | winexe --debug-stderr -U ${WINBLD_USER} -d 0 //${WINBLD_HOST} "cmd /c ${topsrcdir}/deploy/winbld"
+    # cat < /dev/null | winexe --debug-stderr -U ${WINBLD_USER} -d 0 //${WINBLD_HOST} "cmd /c ${topsrcdir}/deploy/winbld.bat"
+    echo curl http://${WINBLD_HOST}:8080${topsrcdir}/deploy/winbld.bat
+    curl http://${WINBLD_HOST}:8080${topsrcdir}/deploy/winbld.bat
     # see if files are there
     ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null
-    rsync -av --include="*/" --include="*.lib" --include="MdsObectsCppShr-VS.dll" --exclude="*" /winbld/${tmpdir}/bin_x86* /buildroot/
-    VS_SwITCH=-DVisualStudio
+    rsync -av --include="*/" --include="*.lib" --include="MdsObjectsCppShr-VS.dll" --exclude="*" /winbld/${tmpdir}/bin_x86* /buildroot/
+    VS_SWITCH=-DVisualStudio
 fi
 if [ -d /installer ]
 then
