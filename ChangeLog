@@ -1,4 +1,43 @@
-commit b5c3468e5f590241ffb9f9f5673352dcad040021 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit b185a7cf6c0e25ff8cce9b152f32104de82c1e1e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 02fa3cf b52c61d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 15 11:22:12 2016 -0500
+
+    Merge pull request #313 from MDSplus/twf-fix-windows-VS-build
+    
+    Twf fix windows vs build
+
+commit b52c61d8353b3302d5a29dea82b3a258126bf424 (refs/remotes/origin/twf-fix-windows-VS-build)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 15 09:50:52 2016 -0500
+
+    Fix typos to include the VS dll in the installer
+
+commit 9591530bf7c902a6825c80dd790a05e21a1b7a03
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 14 17:08:50 2016 -0500
+
+    fix script name
+
+commit bbb1d78d6ab5f4ad1a7a0a7f2bc1d4f881f414bc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 14 16:28:57 2016 -0500
+
+    fix script name
+
+commit 90bb7bb697f52b27ad008193ee56e0acdfdd0edc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 14 15:34:20 2016 -0500
+
+    Use a waitress wsgi server on windows to execute the visual studio build commands instead of using obsolete winexe command
+
+commit 02fa3cfd14dff9d2ba7f7a3da5f8f5dc65316b66 (tag: refs/tags/alpha_release-7-0-207)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Jan 13 23:37:22 2016 -0500
+
+    New release ---- alpha_release-7-0-207
+
+commit b5c3468e5f590241ffb9f9f5673352dcad040021
 Merge: f9b98e5 83aed7f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 13 15:14:01 2016 -0500
@@ -50,7 +89,7 @@ Date:   Wed Jan 13 08:55:48 2016 -0500
     
     Fix typo
 
-commit ac4c73202da199a0d3f37c55837e0ece34675769 (refs/remotes/origin/dev-gm)
+commit ac4c73202da199a0d3f37c55837e0ece34675769
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Jan 13 14:02:35 2016 +0100
 
