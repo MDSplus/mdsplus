@@ -15,16 +15,8 @@ import tempfile
 _tmpdir=tempfile.mkdtemp()
 
 def setUpModule():    
-    print ("Creating trees in %s" % (_tmpdir,))
-    if "TEST_DISTRIBUTED_TREES" in os.environ:
-        hostpart="localhost::"
-    else:
-        hostpart=""
-    os.environ["pytree_path"]=hostpart+_tmpdir
-    os.environ["pytreesub_path"]=os.environ["pytree_path"]
-    if os.getenv("testing_path") == None:
-      os.environ['testing_path']="%s/../../../trees"%(os.path.dirname(os.path.realpath(__file__)),)
-  
+    pass
+
 def tearDownModule():
     import shutil
     shutil.rmtree(_tmpdir)
@@ -46,10 +38,20 @@ class treeTests(TestCase):
                 treeTests.shot=treeTests.shot+2
         finally:
             l.release()
+        print ("Creating trees in %s" % (_tmpdir,))
+        if "TEST_DISTRIBUTED_TREES" in os.environ:
+            hostpart="localhost::"
+        else:
+            hostpart=""
+        os.environ["pytree_path"]=hostpart+_tmpdir
+        os.environ["pytreesub_path"]=os.environ["pytree_path"]
+        if os.getenv("testing_path") == None:
+            os.environ['testing_path']="%s/../../../trees"%(os.path.dirname(os.path.realpath(__file__)),)
         
         
     def tearDown(self):
         pass
+
 
     def editTrees(self):
         pytree=Tree('pytree',self.shot,'new')
@@ -256,16 +258,16 @@ class treeTests(TestCase):
 #        import subprocess
 #        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
 
-#    def runTest(self):
-#        self.editTrees()
-#        self.openTrees()
-#        self.getNode()
-#        self.setDefault()
-#        self.nodeLinkage()
-#        self.nciInfo()
-#        self.getData()
-#        self.getCompression()
-#        self.finish()
+    def runTest(self):
+        self.editTrees()
+        self.openTrees()
+        self.getNode()
+        self.setDefault()
+        self.nodeLinkage()
+        self.nciInfo()
+        self.getData()
+        self.getCompression()
+        self.finish()
 
 def suite():
     return treeTests()

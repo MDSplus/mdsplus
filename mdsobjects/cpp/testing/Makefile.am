@@ -46,14 +46,12 @@ TESTS = \
         MdsConnectionTest \
         MdsExpressionCompileTest        
 
-#    this code must be launched with mdsip server active ..
-#    MdsConnectionSuppression
-
-
+# set VALGRIND_TESTS to select a subset of tests performed under valgrind if
+# the variable is unset all TESTS are added.
 #
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
+# VALGRIND_TESTS = 
+
+# Valgrind suppressions:
 #
 # NOTE: all Suppression suffixed test are not propely tests but programs that
 # may rise false positives in valgrind memory check so they may be usefull to
@@ -65,7 +63,6 @@ VALGRIND_SUPPRESSIONS_FILES = \
                               $(srcdir)/valgrind-dlerr.supp       \
                               $(srcdir)/valgrind-connection.supp  \
                               $(srcdir)/valgrind-treenode.supp 
-
 
 
 #

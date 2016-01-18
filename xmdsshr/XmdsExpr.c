@@ -410,7 +410,7 @@ EXPORT void XmdsExprFieldRegister()
 
 EXPORT void XmdsExprRegister()
 {
-  MrmRegisterClass(1, "XmdsExprWidget", "XmdsCreateExpr", XmdsCreateExpr, xmdsExprWidgetClass);
+  MrmRegisterClass(1, "XmdsExprWidget", "XmdsCreateExpr", (Widget (*)(void))XmdsCreateExpr, xmdsExprWidgetClass);
 }
 
 EXPORT void XmdsExprFieldReset(Widget w)

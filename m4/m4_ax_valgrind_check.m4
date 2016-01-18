@@ -140,6 +140,7 @@ VALGRIND_CHECK_RULES='
 #  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
+
 # Optional variables
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --num-callers=30 \
@@ -169,6 +170,12 @@ VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.su
                             
 
 VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
+
+
+valgrind__test_logs1      = $(if ${VALGRIND_TESTS},${VALGRIND_TESTS},${TESTS})
+valgrind__test_logs2      = $(valgrind__test_logs1:=.log)
+VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_logs2:${ext}.log=.log))
+
 
 # Internal use
 valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
@@ -228,8 +235,10 @@ tests-valgrind:
 	)
 
 tests-valgrind-tool:
+	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
+	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
 	@ \
-	$(MAKE) -k check-TESTS \
+	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(PY_LOG_COMPILER)" \
@@ -246,8 +255,10 @@ tests-valgrind-suppressions:
 	)
 
 tests-valgrind-suppressions-tool:
+	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
+	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
 	@ \
-	$(MAKE) -k check-TESTS \
+	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \

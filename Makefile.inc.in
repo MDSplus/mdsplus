@@ -94,6 +94,6 @@ reconfigure:
 	echo $(shell $(abs_top_builddir)/config.status --config);              \
 	echo " -------------------------------------------------------------"; \
 	echo ; \
+	cd '$(top_builddir)' && \
 	$(top_srcdir)/configure $(shell $(abs_top_builddir)/config.status --config);
 	
-

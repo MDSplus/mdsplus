@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <sys/unistd.h>
 
+#include <string.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -20,12 +22,11 @@
 #include <check_log.h>
 #include <check_print.h>
 
-#include "testing.h"
 
 // Check for HAVE_CHECK and HAVE_FORK //
 #include <config.h>
 
-#include <string.h>
+#include "testing.h"
 
 #ifdef _WIN32
 // TODO: should we use Fibers here 
