@@ -98,7 +98,6 @@ class ACQFMC (acqsuper.ACQSUPER) :
         state = int(uut_sys.send('state').split(' ')[0])
         if state != 1 and state != 2 :
             print('warning: not armed after %d seconds' % self._arm_delay)
-            raise MDSplus.mdsExceptions.AcqINITIALIZATION_ERROR
 
     SYSCMD   = syscmd
     MODCMD   = modcmd

@@ -21,7 +21,7 @@ class ACQ480 (acqfmc.ACQFMC) :
         parts.append({'path': ':INPUT_%02d:INC'      % (i + 1,), 'type': 'numeric', 'options': ('no_write_shot')})
 
     _mod_cmds  = ['MANUFACTURER', 'PART_NUM', 'SERIAL']
-    _arm_delay = 10
+    _arm_delay = 5
 
     def init (self) :
         start = time.time()
