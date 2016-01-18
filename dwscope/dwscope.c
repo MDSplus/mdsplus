@@ -356,7 +356,7 @@ int main(int argc, String * argv)
   XmdsInitialize();
 
   MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass", "XmdsCreateWaveform",
-		   XmdsCreateWaveform, xmdsWaveformWidgetClass);
+		   (Widget (*)(void))XmdsCreateWaveform, xmdsWaveformWidgetClass);
   MrmRegisterNames(register_list, XtNumber(register_list));
   TopWidget =
       XtVaAppInitialize(&AppContext, "DwScope", options, XtNumber(options), &argc, argv,
