@@ -3,9 +3,7 @@ from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
 from threading import Thread
 from ctypes import CDLL, byref, c_ushort, c_uint32, c_int, c_char_p, c_long, c_double, create_string_buffer
-from tempfile import mkstemp
 from time import sleep, time
-from os import close, remove
 from sys import exc_info
 from platform import uname
 
@@ -442,27 +440,6 @@ class CYGNET4K(Device):
         if CYGNET4K.xclib is None:
             CYGNET4K.xclib = CYGNET4K._xclib(dev_id)
 
-    def genconf(self):
-        confPath = self.conf_file.data("")
-        exposure = float(self.exposure.data())
-        if exposure < 0.     : exposure = 0.     # must avoid negative numbers
-        if exposure > 13000. : exposure = 13000. # tested with a (80 MHz) config file specifiying 10s exposures at 0.1Hz, so this is a safe limit at 60MHz
-        if Device.debug: print("EXPOSURE (SET): %f" % exposure)
-        exp_clks = '%08X' % int(exposure * 60e3)
-        byte_str = [exp_clks[0:2], exp_clks[2:4], exp_clks[4:6], exp_clks[6:8]]
-        if Device.debug>3: print(byte_str)
-        line0 = '    0x124F0450,     0x53060D50,     0x06D402E0,     0xE0530650,     0x5000ED02,     0x02E05306,     0x0650' + byte_str[0] + 'EE,     0xEF02E053,     \n'
-        line1 = '    0x530650' + byte_str[1] + ',     0x' + byte_str[2] + 'F002E0,     0xE0530650,     0x50' + byte_str[3] + 'F102,     0x02E05306,     0x06502FDD,     0xDE02E053,     0x530650AF,     \n'
-        fh, abs_path = mkstemp()
-        with open(abs_path, 'w') as adjusted:
-            with open(confPath) as original:
-                for line in original:
-                    if   line.startswith('    0x124F04') : adjusted.write(line0)
-                    elif line.startswith('    0x530650') : adjusted.write(line1)
-                    else                                 : adjusted.write(line)
-        close(fh)
-        return abs_path
-
     """methods for action nodes"""
 
     def init(self):
@@ -471,10 +448,8 @@ class CYGNET4K(Device):
             print('Wrong value for DEVICE_ID, must not be negative.')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary(dev_id)
-        tmpPath = self.genconf()
         self.xclib.epixClose() # as config file is dynamically generated we want to force a re-open
-        self.xclib.epixOpen(tmpPath)
-        remove(tmpPath)
+        self.xclib.epixOpen(self.conf_file.data(""))
         if not CYGNET4K.isOpen:
             print('Could not open camera. No camera connected?.')
             raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
