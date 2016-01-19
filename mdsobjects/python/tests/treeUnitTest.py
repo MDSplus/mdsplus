@@ -223,6 +223,24 @@ class treeTests(TestCase):
                              msg="Error writing compressed signal%s"%node)
         return
 
+    def segments(self):
+        signal=self.pytree.SIG01
+        signal.record=None
+        signal.do_not_compress=True
+        signal.compress_segments=False
+        for i in range(200000):
+            signal.putRow(100,Range(1,10).data(),DateToQuad("now"))
+        print signal.fullpath
+        pth=Data.execute('getenv("pytree_path")')
+        Data.execute('setenv("pytree_path='+'/tmp;'+str(pth)+'")')
+        self.pytree.createPulse(100)
+        #tcl('compress/override pytree/shot=100')
+        tcl('set tree pytree/shot=100')
+        tcl('dir/full \pytree::top:sig01')
+        #self.assertEqual(signal.length,1456000)
+        #self.assertEqual(signal.getNumSegments(),20)
+
+
     def finish(self):
         del(self.pytree)
         del(self.pytree2)

@@ -211,7 +211,9 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	      status =
 		  TreePutDsc(info_ptr, nid, descriptor_ptr,
 			     &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-			     &attributes.facility_length[STANDARD_RECORD_FACILITY]);
+			     &attributes.facility_length[STANDARD_RECORD_FACILITY], (compress_utility
+						 || (nci->flags & NciM_COMPRESS_ON_PUT))
+				  && !(nci->flags & NciM_DO_NOT_COMPRESS));
 	      if (status & 1) {
 		attributes.facility_offset[SEGMENTED_RECORD_FACILITY] = -1;
 		attributes.facility_length[SEGMENTED_RECORD_FACILITY] = 0;
