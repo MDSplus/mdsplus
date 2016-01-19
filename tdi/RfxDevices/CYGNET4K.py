@@ -42,9 +42,6 @@ class CYGNET4K(Device):
                  'EXTERNAL FALLING':   0b01000000,
                  'INTEGRATE THEN READ':0b00001100,
                  'FIXED FRAME RATE':   0b00001110}
-    binningModes = {0x00: '1x1',
-                    0x11: '2x2',
-                    0x22: '4x4'}
 
     class _xclib(CDLL):
         serialErr = {
@@ -76,14 +73,14 @@ class CYGNET4K(Device):
         def setID(self,ID):
             self.unitMap = 1<<(ID-1)
 
-        def store(self,node):
+        def storeFrames(self,node):
             for frm,dim in zip(self.Frames,self.Times):
                 data = Int16Array(array(frm,'int16').reshape([1,self.PixelsX,self.PixelsY]))
                 dims = Float32Array([dim]).setUnits('s')
                 if Device.debug: print(node,dim,data.shape)
                 node.makeSegment(dim,dim,dims,data)
 
-        def epixClose(self):
+        def closeDevice(self):
             self.pxd_PIXCIclose();
             CYGNET4K.isOpen = False;
 
@@ -91,7 +88,7 @@ class CYGNET4K(Device):
             print(self.pxd_mesgErrorCode(status))
             self.pxd_mesgFault(0xFF)
 
-        def epixOpen(self,formatFile=""):
+        def openDevice(self,formatFile=""):
             """configFile includes exposure time which seems to take precedence over later serial commands"""
             if CYGNET4K.isOpen: return True
             if Device.debug:
@@ -113,7 +110,7 @@ class CYGNET4K(Device):
             self.PixelsToRead = self.PixelsX * self.PixelsY
             if Device.debug:
                 print("number of boards:   %d" % self.nUnits)
-                print("buffer memory size: %.3f MB" % (self.memSize[0]/1048576.))
+                print("buffer memory size: %.1f MB" % (self.memSize[0]/1048576.))
                 print("frame buffers:      %d" % self.nBuffer)
                 print("image resolution:   %d x %d" % (self.PixelsX, self.PixelsY))
                 print("colors:             %d" % self.Colors)
@@ -121,10 +118,10 @@ class CYGNET4K(Device):
             ticku = (c_uint32*2)()
             if self.pxd_infoSysTicksUnits(ticku) == 0:
                 self.secPerTick = ticku[0] / ticku[1] * 1E-6;
-                if Device.debug: print("Microseconds per tick: %f" % (self.secPerTick * 1E6))
+                if Device.debug: print("Microseconds per tick: %.1f" % (self.secPerTick * 1E6))
             return True
 
-        def epixStartVideoCapture(self):
+        def startVideoCapture(self):
             status = self.pxd_goLive(self.unitMap, c_long(1))
             if status<0:
                 self.printErrorMsg(status)
@@ -137,36 +134,35 @@ class CYGNET4K(Device):
             self.Frames = []
             self.Times = []
 
-        def epixCaptureFrame(self, TriggerTime):
+        def captureFrame(self, TriggerTime, Armed):
             currCaptured = self.pxd_capturedFieldCount(self.unitMap);
             if currCaptured != self.lastCaptured:  # A new frame arrived
                 currBuffer = self.pxd_capturedBuffer(self.unitMap);
                 currTicks = self.pxd_buffersSysTicks(self.unitMap, currBuffer)  # get internal clock of that buffer
-                print("%d -> %d @ %d\n" % (self.lastCaptured, currCaptured, currTicks))
                 if len(self.Frames) == 0:  # first frame
                     self.baseTicks = currTicks;
                 currTime = (currTicks - (self.baseTicks)) * self.secPerTick + TriggerTime;
                 self.lastCaptured = currCaptured;
                 usFrame = (c_ushort*self.PixelsToRead)()  # allocate frame
                 PixelsRead = self.pxd_readushort(self.unitMap, c_long(currBuffer), 0, 0, self.PixelsX, self.PixelsY, byref(usFrame), self.PixelsToRead, c_char_p("Grey"))  # get frame
-                if Device.debug: print("FRAME %d READ AT TIME %f" % (len(self.Frames),currTime))
                 if PixelsRead != self.PixelsToRead:
                     print('ERROR READ USHORT')
                     if PixelsRead < 0: self.printErrorMsg(PixelsRead)
                     else: print("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
-                    return 0
+                    return False
+                if Device.debug: print("FRAME %d READ AT TIME %f" % (len(self.Frames),currTime))
                 self.Frames.append(usFrame)
                 self.Times.append(currTime)
                 return True
             else:  # No new frame
                 return False
 
-        def epixStopVideoCapture(self):
+        def stopVideoCapture(self):
             self.pxd_goUnLive(self.unitMap)
             self.running = False
             if Device.debug: print("Video capture stopped.")
 
-        def serialIO(self, writeBuf, BytesToRead=None):
+        def serialIO(self, writeBuf, BytesToRead=0):
             BytesToWrite = len(writeBuf)
             check = 0
             for i in range(BytesToWrite): check ^= ord(writeBuf[i])
@@ -204,15 +200,15 @@ class CYGNET4K(Device):
                 byte = chr((value>>shift) & 0xFF)
                 shift -= 8
                 if useExtReg:  # set addr of extended register
-                    self.serialIO(b'\x53\xE0\x02\xF3'+addr+b'\x50', 0);
+                    self.serialIO(b'\x53\xE0\x02\xF3'+addr+b'\x50');
                     addr = b'\xF4'
-                self.serialIO(b'\x53\xE0\x02'+addr+byte+b'\x50', 0);
+                self.serialIO(b'\x53\xE0\x02'+addr+byte+b'\x50');
             return self
 
         def resetMicro(self):
             """Will trap Micro causing watchdog and reset of firmware."""
             # The camera will give no response to this command
-            self.serialIO(b'\x55\x99\x66\x11\x50\EB')
+            self.serialIO(b'\x55\x99\x66\x11\x50\EB', None)
             return self
 
         def setSystemState(self,chksum,ack,FPGArst,FPGAcom):
@@ -248,10 +244,9 @@ class CYGNET4K(Device):
             # Frame rate updated on LSB write
             return self.setValue(b'\xED\xEE\xEF\xF0\xF1', int(6E4*exposureMs))
 
-        def setTrigMode(self, *args):
+        def setTrigMode(self, byte):
             """
-            setTrigMode(triggerMode)
-            setTrigMode(raising,ext,abort,cont,fixed,snap)
+            setTrigMode(byte)
             raising Bit 7 = 1 to enable rising edge, = 0 falling edge Ext trigger (Default=1)
             ext     Bit 6 = 1 to enable External trigger (Default=0)
             abort   Bit 3 = 1 to Abort current exposure, self-clearing bit (Default=0)
@@ -259,14 +254,18 @@ class CYGNET4K(Device):
             fixed   Bit 1 = 1 to enable Fixed frame rate, 0 for continuous ITR (Default=0)
             snap    Bit 0 = 1 for snapshot, self-clearing bit (Default=0)
             """
-            if len(args) == 1:
-                byte = args[0]
-            else:
-                shift = [7,6,3,2,1,0]
-                byte = 0
-                for i in range(6):
-                    if args[i]: byte |= 1<<shift[i]
             return self.setValue(b'\xD4',byte)
+
+        def setTrigModeP(self, raising, ext, abort, cont, fixed, snap):
+            """setTrigModeP(raising,ext,abort,cont,fixed,snap)"""
+            byte = 0
+            if raising: byte |= 1<<7
+            if ext:     byte |= 1<<6
+            if abort:   byte |= 1<<3
+            if cont:    byte |= 1<<2
+            if fixed:   byte |= 1<<1
+            if snap:    byte |= 1<<0
+            return self.setTrigMode(byte)
 
         def setDigitalVideoGain(self, gain):
             """set digital video gain"""
@@ -301,17 +300,21 @@ class CYGNET4K(Device):
         '''Query Commands'''
 
         def getSystemStatus(self):
-            byte = self.serialIO(b'\x49\x50',1)
+            """get system status byte"""
+            return  ord(self.serialIO(b'\x49\x50',1)[0])
+
+        def getSystemStatusP(self):
+            """get system status as dict"""
+            byte = self.getSystemStatus()
             return {
-            'chksum':bool(byte & 1<<6),
-            'ack':bool(byte & 1<<4),
+            'chksum':  bool(byte & 1<<6),
+            'ack':     bool(byte & 1<<4),
             'FPGAboot':bool(byte & 1<<2),
             'FPGAhold':bool(byte & 1<<1),
             'FPGAcomm':bool(byte & 1<<0)}
 
         def getByte(self,n=1):
             return ord(self.serialIO(b'\x53\xE1\x01\x50', n)[0])
-
 
         def getValue(self, addrlist, rc=1, useExtReg=False):
             value = 0
@@ -329,7 +332,7 @@ class CYGNET4K(Device):
 
         def getFpgaCtrlReg(self):
             """TECenabled = getFpgaCtrlReg()"""
-            return bool(self.serialIO(b'\x00') & 1)
+            return bool(ord(self.serialIO(b'\x00')[0]) & 1)
 
         def getFrameRate(self):
             """get frameRate in Hz"""
@@ -343,14 +346,16 @@ class CYGNET4K(Device):
             """get digital video gain"""
             return self.getValue(b'\xD5\xD6',2)/512.
 
-        def epixGetPCBTemp(self):
-            self.setValue(b'0x70',0)
+        def getPcbTemp(self):
+            """get temperature of pc board in degC"""
+            self.setValue(b'\x70',0)
             value = self.getByte() & 0xF
-            self.setValue(b'0x71',0)
+            self.setValue(b'\x71',0)
             value = value<<8 | self.getByte()
             return value/16.
 
-        def epixGetCMOSTemp(self):
+        def getCmosTemp(self):
+            """get temperature of CMOS chip (raw word)"""
             return self.getValue(b'\x7E\x7F',1,True)
 
         def getMicroVersion(self):
@@ -362,24 +367,50 @@ class CYGNET4K(Device):
             return self.getValue(b'\x7E'),self.getValue(b'\x7F')
 
         def getTrigMode(self):
+            """
+            get trigger mode byte
+            raising Bit 7 = 1 to enable rising edge, = 0 falling edge Ext trigger (Default=1)
+            ext     Bit 6 = 1 to enable External trigger (Default=0)
+            abort   Bit 3 = 1 to Abort current exposure, self-clearing bit (Default=0)
+            cont    Bit 2 = 1 to start continuous seq'., 0 to stop (Default=1)
+            fixed   Bit 1 = 1 to enable Fixed frame rate, 0 for continuous ITR (Default=0)
+            snap    Bit 0 = 1 for snapshot, self-clearing bit (Default=0)
+            """
             return self.getValue(b'\xD4')
 
+        def getTrigModeP(self):
+            """get trigger mode as dict"""
+            byte = self.getTrigMode()
+            return {
+            'raising': bool(byte & 1<<7),
+            'ext':     bool(byte & 1<<6),
+            'abort':   bool(byte & 1<<3),
+            'cont':    bool(byte & 1<<2),
+            'fixed':   bool(byte & 1<<1),
+            'snap':    bool(byte & 1<<0)}
+
         def getBinning(self):
-            return self.getValue(b'\xDB')
+            """n = getBinning(), => binning: nxn"""
+            return 1<<(self.getValue(b'\xDB')&3)
 
         def getRoiXSize(self):
+            """get width of ROI"""
             return self.getValue(b'\xD7\xD8')
 
         def getRoiXOffset(self):
+            """get X offset of ROI"""
             return self.getValue(b'\xD9\xDA')
 
         def getRoiYSize(self):
+            """get height of ROI"""
             return self.getValue(b'\x01\x02',1,True)
 
         def getRoiYOffset(self):
+            """get Y offset of ROI"""
             return self.getValue(b'\x03\x04',1,True)
 
         def getUnitSerialNumber(self):
+            """word = getUnitSerialNumber()"""
             self.serialIO(b'\x53\xAE\x05\x01\x00\x00\x02\x00\x50')
             word = self.serialIO(b'\x53\xAF\x02\x50',2)
             return ord(word[0]) | ord(word[1])<<8
@@ -407,27 +438,19 @@ class CYGNET4K(Device):
             data = map(ord,self.serialIO(b'\x53\xAF\x04\x50',2)[0:4])
             return data[0]|data[1]<<8,data[2]|data[3]<<8
 
-        def epixSetConfiguration(self, exposure, frameRate, trigMode):
-            if Device.debug: print('TriggerMode: %s' % trigMode)
-            try:    trigMode = CYGNET4K.trigModes[trigMode.upper()]
-            except: raise mdsExceptions.DevBAD_MODE
+        def setConfiguration(self, exposure, frameRate, trigMode):
             self.setExposure(exposure)
             self.setFrameRate(frameRate)
             self.setTrigMode(trigMode)
 
-        def epixGetConfiguration(self):
+        def getConfiguration(self):
             self.binning    = self.getBinning()
             self.roiXSize   = self.getRoiXSize()
             self.roiXOffset = self.getRoiXOffset()
             self.roiYSize   = self.getRoiYSize()
             self.roiYOffset = self.getRoiYOffset()
             self.exposure   = self.getExposure()
-            self.frameRate   = self.getFrameRate()
-            if Device.debug: print("EXPOSURE READ AS %f" % self.exposure)
-
-        def epixGetTemp(self):
-            self.pcbTemp  = self.epixGetPCBTemp()
-            self.cmosTemp = self.epixGetCMOSTemp()
+            self.frameRate  = self.getFrameRate()
 
     isInitialized = {}
     trendworkers = {}
@@ -443,39 +466,43 @@ class CYGNET4K(Device):
     """methods for action nodes"""
 
     def init(self):
+        def validate(node,value):
+            node.write_once = node.no_write_shot = False
+            node.record = node.record.setValidation(value)
+            node.write_once = node.no_write_shot = True
+
         dev_id = int(self.device_id.data())
         if dev_id<0:
             print('Wrong value for DEVICE_ID, must not be negative.')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary(dev_id)
-        self.xclib.epixClose() # as config file is dynamically generated we want to force a re-open
-        self.xclib.epixOpen(self.conf_file.data(""))
+        self.xclib.closeDevice()  # as config file might have changed we re-open
+        self.xclib.openDevice(self.conf_file.data(""))  # use config file if defined else ""
         if not CYGNET4K.isOpen:
             print('Could not open camera. No camera connected?.')
             raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
         exposure = self.exposure.data()
         frameRate = self.frame_rate.data()
         trigMode = self.frame_mode.data()
-        self.xclib.epixSetConfiguration(exposure,frameRate, trigMode)
-        self.xclib.epixGetConfiguration()
+        if Device.debug: print('TriggerMode: %s' % trigMode)
+        try:    trigMode = CYGNET4K.trigModes[trigMode.upper()]
+        except: raise mdsExceptions.DevBAD_MODE
+        self.xclib.setConfiguration(exposure,frameRate,trigMode)
+        self.xclib.setConfiguration()
         CYGNET4K.isInitialized[dev_id] = True
-        binning = CYGNET4K.binningModes[self.xclib.binning]
-        if Device.debug: print('binning %s' % binning)
-        roiRect = Uint16Array([self.xclib.roiXOffset,self.xclib.roiYOffset,self.xclib.roiXSize,self.xclib.roiYSize])
-        roiRect.help = '[x,y,width,height]'
+        roiRect = (self.xclib.roiXOffset,self.xclib.roiYOffset,self.xclib.roiXSize,self.xclib.roiYSize)
+        binning = '%dx%d' % (self.xclib.binning,self.xclib.binning)
+        if Device.debug:
+            print('binning:    %s' % binning)
+            print('ROI:        [%d, %d, %d, %d]' % roiRect)
+            print('exposure:   %f ms' % self.xclib.exposure)
+            print('int. clock: %f Hz' % self.xclib.exposure)
+        roiRect = Uint16Array(roiRect).setHelp('[x,y,width,height]')
         try:
             self.binning.record = binning
             self.roi_rect.record = roiRect
-            self.exposure.write_once = False
-            self.exposure.no_write_shot = False
-            self.exposure.record = self.exposure.record.setValidation(self.xclib.exposure)
-            self.exposure.no_write_shot = True
-            self.exposure.write_once = True
-            self.frame_rate.write_once = False
-            self.frame_rate.no_write_shot = False
-            self.frame_rate.record = self.frame_rate.record.setValidation(self.xclib.frameRate)
-            self.frame_rate.no_write_shot = True
-            self.frame_rate.write_once = True
+            validate(self.exposure,self.xclib.exposure)
+            validate(self.frame_rate,self.xclib.frameRate)
         except mdsExceptions.TreeNOOVERWRITE:
             if not (self.binning.data() == binning) and all(self.roi_rect.data() == roiRect):
                 print('Re-initialization error: Parameter mismatch!')
@@ -489,7 +516,7 @@ class CYGNET4K(Device):
         if not CYGNET4K.isInitialized.get(dev_id,False):
             print("Device not initialized: Run 'init' first.")
             raise mdsExceptions.DevException
-        self.frames.deleteData()  # checks if we can write
+        self.frames.deleteData()  # check if we can write
         self.worker = self.AsynchStore()
         self.worker.configure(self)
         self.saveWorker()
@@ -512,11 +539,11 @@ class CYGNET4K(Device):
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary(dev_id)
         if not CYGNET4K.isOpen:
-            self.xclib.epixOpen()
+            self.xclib.openDevice()
             if not CYGNET4K.isOpen:
                 print('Could not open camera. No camera connected?.')
                 raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
-        try:#test open Nodes
+        try:  # test open Nodes
             trendTree = str(self.trend_tree.data())
             trendShot = int(self.trend_shot.data())
             try:
@@ -584,21 +611,20 @@ class CYGNET4K(Device):
 
         def run(self):
             """capture temps before"""
-            self.pcbTemp =  [CYGNET4K.xclib.epixGetPCBTemp(),None]
-            self.cmosTemp = [CYGNET4K.xclib.epixGetCMOSTemp()   ,None]
+            self.pcbTemp =  [CYGNET4K.xclib.getPcbTemp(),None]
+            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp()   ,None]
             """start capturing frames"""
-            CYGNET4K.xclib.epixStartVideoCapture()
+            CYGNET4K.xclib.startVideoCapture()
             while (not self.stopReq) and (self.duration < 0 or self.currTime < self.duration):
-                if not CYGNET4K.xclib.epixCaptureFrame(self.triggerTime):
+                if not CYGNET4K.xclib.captureFrame(self.triggerTime):
                     sleep(0.002)
             """Finished storing frames, stop camera integration and store measured frame times"""
-            CYGNET4K.xclib.epixStopVideoCapture()
+            CYGNET4K.xclib.stopVideoCapture()
             """capture temps after"""
-            self.pcbTemp[1]  = CYGNET4K.xclib.epixGetPCBTemp()
-            self.cmosTemp[1] = CYGNET4K.xclib.epixGetCMOSTemp()
+            self.pcbTemp[1]  = CYGNET4K.xclib.getPcbTemp()
+            self.cmosTemp[1] = CYGNET4K.xclib.getCmosTemp()
             self.stopReq = False
             self.store()  # already start upload to save time
-
 
         def stop(self):
             self.stopReq = True
@@ -611,10 +637,9 @@ class CYGNET4K(Device):
 
         def store(self):
             """transfer data to tree"""
-            #CYGNET4K.xclib.checkframes(self.device)
             self.device.temp_pcb.record  = Float32Array(self.pcbTemp)
             self.device.temp_cmos.record = Int16Array(self.cmosTemp)
-            CYGNET4K.xclib.store(self.device.frames)
+            CYGNET4K.xclib.storeFrames(self.device.frames)
             print('done')
 
     class AsynchTrend(Thread):
@@ -629,7 +654,7 @@ class CYGNET4K(Device):
             self.daemon = True
 
         def run(self):
-            try:#test open Nodes
+            try:  # test open Nodes
                 tree = Tree(self.tree, self.shot)
                 try:
                     tree.getNode(self.pcb)
@@ -665,10 +690,10 @@ class CYGNET4K(Device):
                             if Tree.getCurrent(self.tree) != tree.shot:
                                 tree = Tree(self.tree, self.shot)
                         if self.pcb is not None:
-                            pcbTemp = CYGNET4K.xclib.epixGetPCBTemp()
+                            pcbTemp = CYGNET4K.xclib.getPcbTemp()
                             tree.getNode(self.pcb).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Float32Array(pcbTemp).setUnits('oC'),-1)
                         if self.cmos is not None:
-                            cmosTemp = CYGNET4K.xclib.epixGetCMOSTemp()
+                            cmosTemp = CYGNET4K.xclib.getCmosTemp()
                             tree.getNode(self.cmos).makeSegment(currTime,currTime,Dimension(None,Uint64Array(currTime)),Uint16Array(cmosTemp),-1)
                         if Device.debug: print(tree.tree,tree.shot,currTime,pcbTemp,cmosTemp)
                     except Exception:
