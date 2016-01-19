@@ -6,6 +6,8 @@ from mdsscalar import Uint32
 from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
+from _mdsshr import DateToQuad
+from mdsdcl import tcl
 import random
 import gc as _gc
 import time
@@ -228,25 +230,18 @@ class treeTests(TestCase):
         signal.record=None
         signal.do_not_compress=True
         signal.compress_segments=False
-        for i in range(200000):
-            signal.putRow(100,Range(1,10).data(),DateToQuad("now"))
+        for i in range(2000):
+            signal.putRow(100,Range(1,1000).data(),DateToQuad("now"))
         print signal.fullpath
-        pth=Data.execute('getenv("pytree_path")')
-        Data.execute('setenv("pytree_path='+'/tmp;'+str(pth)+'")')
         self.pytree.createPulse(100)
-        #tcl('compress/override pytree/shot=100')
-        tcl('set tree pytree/shot=100')
-        tcl('dir/full \pytree::top:sig01')
-        #self.assertEqual(signal.length,1456000)
-        #self.assertEqual(signal.getNumSegments(),20)
+        tcl('compress/override pytree/shot=100')
+        self.assertEqual((signal.record==Tree('pytree',100).SIG01.record).all(),True)
 
 
     def finish(self):
         del(self.pytree)
         del(self.pytree2)
         _gc.collect()
-#        import subprocess
-#        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
 
     def runTest(self):
         self.editTrees()
@@ -257,6 +252,7 @@ class treeTests(TestCase):
         self.nciInfo()
         self.getData()
         self.testCompression()
+        self.segments()
         self.finish()
 
 def suite():
