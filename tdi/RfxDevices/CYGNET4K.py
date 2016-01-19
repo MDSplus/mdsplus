@@ -4,8 +4,12 @@ from numpy import array
 from threading import Thread
 from ctypes import CDLL, byref, c_ushort, c_uint32, c_int, c_char_p, c_long, c_double, create_string_buffer
 from time import sleep, time
-from sys import exc_info
+from sys import exc_info, version_info
 from platform import uname
+if version_info[0]<3:
+    from Queue import Queue
+else:
+    from queue import Queue
 
 
 class CYGNET4K(Device):
@@ -51,11 +55,31 @@ class CYGNET4K(Device):
         '0x53':'ETX_I2C_ERR',
         '0x54':'ETX_UNKNOWN_CMD',
         '0x55':'ETX_DONE_LOW'}
+        STREAM = True
         DRIVERPARMS = ''
         FORMAT = 'DEFAULT'
         isOpen = False
         isInitSerial = False
-        secPerTick = 1E-3;
+        queue = None
+        stream = None
+        secPerTick = 4E-3;
+
+        class _streamer(Thread):
+            """a thread class that will stream frames to MDSplus tree"""
+            def __init__ (self, queue, node):
+                Thread.__init__ (self)
+                self.queue = queue
+                self.node = node
+                self.daemon = True
+
+            def run(self):
+                while True:  # run until None is send
+                    frameset = self.queue.get()
+                    if frameset is None: break
+                    self.storeFrame(self.node,frameset[0],frameset[1])
+                    self.queue.task_done()
+                self.queue.task_done()
+                if Device.debug: print('done')
 
         def __init__(self,ID=1):
             self.setID(ID)
@@ -70,23 +94,17 @@ class CYGNET4K(Device):
         def __del__(self):
             if self.isOpen:
                 self.pxd_PIXCIclose()
+
         def setID(self,ID):
             self.unitMap = 1<<(ID-1)
-
-        def storeFrames(self,node):
-            for frm,dim in zip(self.Frames,self.Times):
-                data = Int16Array(array(frm,'int16').reshape([1,self.PixelsX,self.PixelsY]))
-                dims = Float32Array([dim]).setUnits('s')
-                if Device.debug: print(node,dim,data.shape)
-                node.makeSegment(dim,dim,dims,data)
-
-        def closeDevice(self):
-            self.pxd_PIXCIclose();
-            CYGNET4K.isOpen = False;
 
         def printErrorMsg(self,status):
             print(self.pxd_mesgErrorCode(status))
             self.pxd_mesgFault(0xFF)
+
+        def closeDevice(self):
+            self.pxd_PIXCIclose();
+            CYGNET4K.isOpen = False;
 
         def openDevice(self,formatFile=""):
             """configFile includes exposure time which seems to take precedence over later serial commands"""
@@ -121,7 +139,11 @@ class CYGNET4K(Device):
                 if Device.debug: print("Microseconds per tick: %.1f" % (self.secPerTick * 1E6))
             return True
 
-        def startVideoCapture(self):
+        def startVideoCapture(self,node):
+            if CYGNET4K.STREAM:
+                self.queue = Queue()
+                self.stream = self.streamer(self.queue,node)
+                self.stream.start()
             status = self.pxd_goLive(self.unitMap, c_long(1))
             if status<0:
                 self.printErrorMsg(status)
@@ -134,11 +156,12 @@ class CYGNET4K(Device):
             self.Frames = []
             self.Times = []
 
-        def captureFrame(self, TriggerTime, Armed):
+        def captureFrame(self, TriggerTime):
             currCaptured = self.pxd_capturedFieldCount(self.unitMap);
             if currCaptured != self.lastCaptured:  # A new frame arrived
                 currBuffer = self.pxd_capturedBuffer(self.unitMap);
                 currTicks = self.pxd_buffersSysTicks(self.unitMap, currBuffer)  # get internal clock of that buffer
+                if Device.debug>3: print("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks))
                 if len(self.Frames) == 0:  # first frame
                     self.baseTicks = currTicks;
                 currTime = (currTicks - (self.baseTicks)) * self.secPerTick + TriggerTime;
@@ -151,14 +174,32 @@ class CYGNET4K(Device):
                     else: print("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
                     return False
                 if Device.debug: print("FRAME %d READ AT TIME %f" % (len(self.Frames),currTime))
-                self.Frames.append(usFrame)
-                self.Times.append(currTime)
+                if CYGNET4K.STREAM:
+                    self.queue.put((currTime,usFrame))
+                else:
+                    self.Times.append(currTime)
+                    self.Frames.append(usFrame)
                 return True
             else:  # No new frame
                 return False
 
+        def storeFrames(self,node):
+            if CYGNET4K.STREAM:
+                self.stream.join()
+            else:
+                for dim,frame in zip(self.Times,self.Frames):
+                    self.storeFrame(node,dim,frame)
+
+        def storeFrame(self,node,dim,frame):
+            dims = Float32Array([dim]).setUnits('s')
+            data = Int16Array(array(frame,'int16').reshape([1,self.PixelsX,self.PixelsY]))
+            if Device.debug: print('storeFrame',node.minpath,dim,data.shape)
+            node.makeSegment(dim,dim,dims,data)
+
         def stopVideoCapture(self):
             self.pxd_goUnLive(self.unitMap)
+            if CYGNET4K.STREAM:
+                self.queue.put(None)  # invoke stream closure
             self.running = False
             if Device.debug: print("Video capture stopped.")
 
