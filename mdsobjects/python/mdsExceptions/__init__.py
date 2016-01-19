@@ -13,14 +13,13 @@ class MDSplusException(Exception):
   def __init__(self,status=None):
     if isinstance(status,int):
       self.status=status
-    else:
+    if not hasattr(self,'status'):
       self.status=-1
       self.msgnam='UNKNOWN'
-      if isinstance(status,str):
-          self.message=status
-      else:
-          self.message='Unknown exception'
+      self.message='Unknown exception'
       self.fac='MDSplus'
+    if isinstance(status,str):
+      self.message=status
     self.severity=self.severities[self.status & 7]
 
   def __str__(self):

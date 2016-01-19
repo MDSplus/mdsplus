@@ -26,10 +26,12 @@ class LibINSVIRMEM(LibException):
   msgnam="INSVIRMEM"
 
 
+
 class LibINVARG(LibException):
   status=1409588
   message="Invalid argument"
   msgnam="INVARG"
+
 
 
 class LibINVSTRDES(LibException):
@@ -38,10 +40,12 @@ class LibINVSTRDES(LibException):
   msgnam="INVSTRDES"
 
 
+
 class LibKEYNOTFOU(LibException):
   status=1409788
   message="Key not found"
   msgnam="KEYNOTFOU"
+
 
 
 class LibNOTFOU(LibException):
@@ -50,16 +54,19 @@ class LibNOTFOU(LibException):
   msgnam="NOTFOU"
 
 
+
 class LibQUEWASEMP(LibException):
   status=1409772
   message="Queue was empty"
   msgnam="QUEWASEMP"
 
 
+
 class LibSTRTRU(LibException):
   status=1409041
   message="String truncated"
   msgnam="STRTRU"
+
 
 
 class StrException(MDSplusException):
@@ -72,10 +79,12 @@ class StrMATCH(StrException):
   msgnam="MATCH"
 
 
+
 class StrNOMATCH(StrException):
   status=2392584
   message="Strings do not match"
   msgnam="NOMATCH"
+
 
 
 class StrNOELEM(StrException):
@@ -84,16 +93,19 @@ class StrNOELEM(StrException):
   msgnam="NOELEM"
 
 
+
 class StrINVDELIM(StrException):
   status=2392592
   message="Not enough delimited characters"
   msgnam="INVDELIM"
 
 
+
 class StrSTRTOOLON(StrException):
   status=2392180
   message="String too long"
   msgnam="STRTOOLON"
+
 
 
 class SsException(MDSplusException):
@@ -104,3 +116,4 @@ class SsINTOVF(SsException):
   status=1148
   message="Integer overflow"
   msgnam="INTOVF"
+
