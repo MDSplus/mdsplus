@@ -42,8 +42,8 @@ class CYGNET4K(Device):
       {'path':':TEMP_PCB', 'type':'numeric','options':('no_write_model','write_once')},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model','write_once')},
     ]
-    trigModes = {'EXTERNAL RISING':    0b11000000,
-                 'EXTERNAL FALLING':   0b01000000,
+    trigModes = {'EXTERNAL RISING':    0b11001000,
+                 'EXTERNAL FALLING':   0b01001000,
                  'INTEGRATE THEN READ':0b00001100,
                  'FIXED FRAME RATE':   0b00001110}
 
@@ -56,7 +56,7 @@ class CYGNET4K(Device):
         '0x54':'ETX_UNKNOWN_CMD',
         '0x55':'ETX_DONE_LOW'}
         STREAM = True
-        DRIVERPARMS = ''
+        DRIVERPARMS = '-XU 1'  # allow other applications to share use of imaging boards previously opened for use by the first application
         FORMAT = 'DEFAULT'
         isOpen = False
         isInitSerial = False
@@ -66,23 +66,21 @@ class CYGNET4K(Device):
 
         class _streamer(Thread):
             """a thread class that will stream frames to MDSplus tree"""
-            def __init__ (self, queue, node):
+            def __init__ (self, node):
                 Thread.__init__ (self)
-                self.queue = queue
                 self.node = node
                 self.daemon = True
 
             def run(self):
                 while True:  # run until None is send
-                    frameset = self.queue.get()
+                    frameset = CYGNET4K.xclib.queue.get()
                     if frameset is None: break
-                    self.storeFrame(self.node,frameset[0],frameset[1])
-                    self.queue.task_done()
-                self.queue.task_done()
+                    CYGNET4K.xclib.storeFrame(self.node,frameset[0],frameset[1])
+                    CYGNET4K.xclib.queue.task_done()
+                CYGNET4K.xclib.queue.task_done()
                 if Device.debug: print('done')
 
-        def __init__(self,ID=1):
-            self.setID(ID)
+        def __init__(self):
             try:
                 postfix = uname()[4]
                 name = '_'.join(['xclib']+[postfix])+'.so'
@@ -140,21 +138,21 @@ class CYGNET4K(Device):
             return True
 
         def startVideoCapture(self,node):
-            if CYGNET4K.STREAM:
+            if CYGNET4K.xclib.STREAM:
                 self.queue = Queue()
-                self.stream = self.streamer(self.queue,node)
+                self.stream = self._streamer(node)
                 self.stream.start()
+            else:
+                self.queue = []
             status = self.pxd_goLive(self.unitMap, c_long(1))
             if status<0:
                 self.printErrorMsg(status)
                 raise mdsExceptions.DevException
-            self.running = False
-            if Device.debug: print("Video capture started.")
             self.lastCaptured = self.pxd_capturedFieldCount(self.unitMap)
             self.currTime = 0
-            self.FrameIdx = 0
-            self.Frames = []
-            self.Times = []
+            self.Frames = 0
+            self.running = True
+            if Device.debug: print("Video capture started. Warning! Camera still takes a few seconds to arm.")
 
         def captureFrame(self, TriggerTime):
             currCaptured = self.pxd_capturedFieldCount(self.unitMap);
@@ -162,7 +160,7 @@ class CYGNET4K(Device):
                 currBuffer = self.pxd_capturedBuffer(self.unitMap);
                 currTicks = self.pxd_buffersSysTicks(self.unitMap, currBuffer)  # get internal clock of that buffer
                 if Device.debug>3: print("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks))
-                if len(self.Frames) == 0:  # first frame
+                if self.Frames == 0:  # first frame
                     self.baseTicks = currTicks;
                 currTime = (currTicks - (self.baseTicks)) * self.secPerTick + TriggerTime;
                 self.lastCaptured = currCaptured;
@@ -173,22 +171,22 @@ class CYGNET4K(Device):
                     if PixelsRead < 0: self.printErrorMsg(PixelsRead)
                     else: print("pxd_readushort error: %d != %d" % (PixelsRead, self.PixelsToRead))
                     return False
-                if Device.debug: print("FRAME %d READ AT TIME %f" % (len(self.Frames),currTime))
-                if CYGNET4K.STREAM:
+                if Device.debug: print("FRAME %d READ AT TIME %f" % (self.Frames,currTime))
+                if isinstance(self.queue,Queue):
                     self.queue.put((currTime,usFrame))
                 else:
-                    self.Times.append(currTime)
-                    self.Frames.append(usFrame)
+                    self.queue.append((currTime,usFrame))
+                self.Frames += 1
                 return True
             else:  # No new frame
                 return False
 
         def storeFrames(self,node):
-            if CYGNET4K.STREAM:
+            if CYGNET4K.xclib.STREAM:
                 self.stream.join()
             else:
-                for dim,frame in zip(self.Times,self.Frames):
-                    self.storeFrame(node,dim,frame)
+                for frameset in self.queue:
+                    self.storeFrame(node,frameset[0],frameset[1])
 
         def storeFrame(self,node,dim,frame):
             dims = Float32Array([dim]).setUnits('s')
@@ -198,7 +196,7 @@ class CYGNET4K(Device):
 
         def stopVideoCapture(self):
             self.pxd_goUnLive(self.unitMap)
-            if CYGNET4K.STREAM:
+            if isinstance(self.queue,Queue):
                 self.queue.put(None)  # invoke stream closure
             self.running = False
             if Device.debug: print("Video capture stopped.")
@@ -223,9 +221,9 @@ class CYGNET4K(Device):
                 self.printErrorMsg(BytesRead)
                 raise mdsExceptions.DevException  # error
             if BytesToRead is None: return  # no response e.g. for resetMicro
-            BytesToRead += 10
+            BytesToRead += 11  # ack (+ chk)
             cReadBuf = create_string_buffer(BytesToRead)  # ETX and optional check sum
-            sleep(0.005)
+            sleep(0.001)
             BytesRead = self.pxd_serialRead(self.unitMap, 0, cReadBuf, BytesToRead)
             if BytesRead < 0:
                 print("ERROR IN SERIAL READ\n");
@@ -500,9 +498,9 @@ class CYGNET4K(Device):
     xclib = None
 
     @staticmethod
-    def loadLibrary(dev_id):
+    def loadLibrary():
         if CYGNET4K.xclib is None:
-            CYGNET4K.xclib = CYGNET4K._xclib(dev_id)
+            CYGNET4K.xclib = CYGNET4K._xclib()
 
     """methods for action nodes"""
 
@@ -516,9 +514,10 @@ class CYGNET4K(Device):
         if dev_id<0:
             print('Wrong value for DEVICE_ID, must not be negative.')
             raise mdsExceptions.DevINV_SETUP
-        CYGNET4K.loadLibrary(dev_id)
-        self.xclib.closeDevice()  # as config file might have changed we re-open
-        self.xclib.openDevice(self.conf_file.data(""))  # use config file if defined else ""
+        CYGNET4K.loadLibrary()
+        CYGNET4K.xclib.setID(dev_id)
+        CYGNET4K.xclib.closeDevice()  # as config file might have changed we re-open
+        CYGNET4K.xclib.openDevice(self.conf_file.data(""))  # use config file if defined else ""
         if not CYGNET4K.isOpen:
             print('Could not open camera. No camera connected?.')
             raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
@@ -528,28 +527,28 @@ class CYGNET4K(Device):
         if Device.debug: print('TriggerMode: %s' % trigMode)
         try:    trigMode = CYGNET4K.trigModes[trigMode.upper()]
         except: raise mdsExceptions.DevBAD_MODE
-        self.xclib.setConfiguration(exposure,frameRate,trigMode)
-        self.xclib.setConfiguration()
+        CYGNET4K.xclib.setConfiguration(exposure,frameRate,trigMode)
+        CYGNET4K.xclib.getConfiguration()
         CYGNET4K.isInitialized[dev_id] = True
-        roiRect = (self.xclib.roiXOffset,self.xclib.roiYOffset,self.xclib.roiXSize,self.xclib.roiYSize)
-        binning = '%dx%d' % (self.xclib.binning,self.xclib.binning)
+        roiRect = (CYGNET4K.xclib.roiXOffset,CYGNET4K.xclib.roiYOffset,CYGNET4K.xclib.roiXSize,CYGNET4K.xclib.roiYSize)
+        binning = '%dx%d' % (CYGNET4K.xclib.binning,CYGNET4K.xclib.binning)
         if Device.debug:
             print('binning:    %s' % binning)
             print('ROI:        [%d, %d, %d, %d]' % roiRect)
-            print('exposure:   %f ms' % self.xclib.exposure)
-            print('int. clock: %f Hz' % self.xclib.exposure)
+            print('exposure:   %f ms' % CYGNET4K.xclib.exposure)
+            print('int. clock: %f Hz' % CYGNET4K.xclib.frameRate)
         roiRect = Uint16Array(roiRect).setHelp('[x,y,width,height]')
         try:
             self.binning.record = binning
             self.roi_rect.record = roiRect
-            validate(self.exposure,self.xclib.exposure)
-            validate(self.frame_rate,self.xclib.frameRate)
+            validate(self.exposure,CYGNET4K.xclib.exposure)
+            validate(self.frame_rate,CYGNET4K.xclib.frameRate)
         except mdsExceptions.TreeNOOVERWRITE:
             if not (self.binning.data() == binning) and all(self.roi_rect.data() == roiRect):
                 print('Re-initialization error: Parameter mismatch!')
                 raise mdsExceptions.DevINV_SETUP
 
-    def start(self):
+    def start(self,stream=None):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
             print('Wrong value of DEVICE_ID, must be greater than 0.')
@@ -557,6 +556,8 @@ class CYGNET4K(Device):
         if not CYGNET4K.isInitialized.get(dev_id,False):
             print("Device not initialized: Run 'init' first.")
             raise mdsExceptions.DevException
+        if stream is not None:
+            CYGNET4K.xclib.STREAM = bool(int(stream))
         self.frames.deleteData()  # check if we can write
         self.worker = self.AsynchStore(self)
         self.saveWorker()
@@ -570,19 +571,23 @@ class CYGNET4K(Device):
     def store(self):
         if not self.restoreWorker():
             raise mdsExceptions.DevException
-        self.worker.join()  # wait for it to complete
+        self.worker.join(int(CYGNET4K.xclib.Frames+3))  # wait for it to complete
+        if self.worker.isAlive():  # error on timeout
+            raise mdsExceptions.mitdevicesExceptions.DevException
 
     def trend_start(self):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
             print('Wrong value for DEVICE_ID, must be greater than 0')
             raise mdsExceptions.DevINV_SETUP
-        CYGNET4K.loadLibrary(dev_id)
+        CYGNET4K.loadLibrary()
+        CYGNET4K.xclib.setID(dev_id)
         if not CYGNET4K.isOpen:
-            self.xclib.openDevice()
+            CYGNET4K.xclib.openDevice()
             if not CYGNET4K.isOpen:
                 print('Could not open camera. No camera connected?.')
                 raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+            CYGNET4K.xclib.setID(dev_id)
         try:  # test open Nodes
             trendTree = str(self.trend_tree.data())
             trendShot = int(self.trend_shot.data())
@@ -652,9 +657,9 @@ class CYGNET4K(Device):
         def run(self):
             """capture temps before"""
             self.pcbTemp =  [CYGNET4K.xclib.getPcbTemp(),None]
-            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp()   ,None]
+            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp(),None]
             """start capturing frames"""
-            CYGNET4K.xclib.startVideoCapture()
+            CYGNET4K.xclib.startVideoCapture(self.device.frames)
             while (not self.stopReq) and (self.duration < 0 or self.currTime < self.duration):
                 if not CYGNET4K.xclib.captureFrame(self.triggerTime):
                     sleep(0.002)
