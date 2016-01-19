@@ -2044,6 +2044,66 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* DEVBAD_ACTIVE_CHAN */
+      case 0x277c8150:
+        {static const char *text="Active channels either not available or invalid";
+        static const char *msgnam="BAD_ACTIVE_CHAN";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_TRIG_SRC */
+      case 0x277c8158:
+        {static const char *text="Trigger source either not available or invalid";
+        static const char *msgnam="BAD_TRIG_SRC";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_CLOCK_SRC */
+      case 0x277c8160:
+        {static const char *text="Clock source either not available or invalid";
+        static const char *msgnam="BAD_CLOCK_SRC";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_PRE_TRIG */
+      case 0x277c8168:
+        {static const char *text="Pre trigger samples either not available or invalid";
+        static const char *msgnam="BAD_PRE_TRIG";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_POST_TRIG */
+      case 0x277c8170:
+        {static const char *text="Clock source either not available or invalid";
+        static const char *msgnam="BAD_POST_TRIG";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_CLOCK_FREQ */
+      case 0x277c8178:
+        {static const char *text="Clock frequency either not available or invalid";
+        static const char *msgnam="BAD_CLOCK_FREQ";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* RETICONNORMAL */
       case 0x277c8198:
         {static const char *text="successful completion";

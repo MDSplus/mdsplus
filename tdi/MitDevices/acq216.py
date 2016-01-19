@@ -75,11 +75,11 @@ class ACQ216(acq.ACQ):
         except:
             clock_out=None
 
-        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)
+        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)*1024
         if self.debugging():
             print "have pre trig\n";
 
-        post_trig = self.getInt(self.active_chan, DevBAD_POST_TRIG)
+        post_trig = self.getInt(self.active_chan, DevBAD_POST_TRIG)*1024
         if self.debugging():
             print "have post trig\n";
 
@@ -91,8 +91,8 @@ class ACQ216(acq.ACQ):
                 clock_div = int(self.clock_div)
             except:
                 clock_div = 1
-         if self.debugging():
-             print "have the settings\n";
+        if self.debugging():
+            print "have the settings\n";
 
 
 #

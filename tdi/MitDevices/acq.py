@@ -79,8 +79,8 @@ class ACQ(MDSplus.Device):
 
     def getInt(self, node, cls):
         try:
-            ans = int(node)
-        except, Exception, e:
+            ans = int(node.record)
+        except Exception, e:
             print "ACQ error reading %s erro is\n%s" %(node, e,)
             raise cls()
         return ans

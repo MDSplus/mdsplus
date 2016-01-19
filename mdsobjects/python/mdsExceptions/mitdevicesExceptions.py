@@ -307,6 +307,48 @@ class DevNO_NAME_SPECIFIED(DevException):
 
 
 
+class DevBAD_ACTIVE_CHAN(DevException):
+  status=662470994
+  message="Active channels either not available or invalid"
+  msgnam="BAD_ACTIVE_CHAN"
+
+
+
+class DevBAD_TRIG_SRC(DevException):
+  status=662471002
+  message="Trigger source either not available or invalid"
+  msgnam="BAD_TRIG_SRC"
+
+
+
+class DevBAD_CLOCK_SRC(DevException):
+  status=662471010
+  message="Clock source either not available or invalid"
+  msgnam="BAD_CLOCK_SRC"
+
+
+
+class DevBAD_PRE_TRIG(DevException):
+  status=662471018
+  message="Pre trigger samples either not available or invalid"
+  msgnam="BAD_PRE_TRIG"
+
+
+
+class DevBAD_POST_TRIG(DevException):
+  status=662471026
+  message="Clock source either not available or invalid"
+  msgnam="BAD_POST_TRIG"
+
+
+
+class DevBAD_CLOCK_FREQ(DevException):
+  status=662471034
+  message="Clock frequency either not available or invalid"
+  msgnam="BAD_CLOCK_FREQ"
+
+
+
 class ReticonException(MDSplusException):
   fac="Reticon"
 

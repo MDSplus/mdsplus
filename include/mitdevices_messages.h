@@ -50,6 +50,12 @@
 #define DEVOFFLINE              0x277c813a
 #define DEVTRIGGERED_NOT_STORED 0x277c8142
 #define DEVNO_NAME_SPECIFIED    0x277c814a
+#define DEVBAD_ACTIVE_CHAN      0x277c8152
+#define DEVBAD_TRIG_SRC         0x277c815a
+#define DEVBAD_CLOCK_SRC        0x277c8162
+#define DEVBAD_PRE_TRIG         0x277c816a
+#define DEVBAD_POST_TRIG        0x277c8172
+#define DEVBAD_CLOCK_FREQ       0x277c817a
 #define RETICON$_NORMAL               0x277c8199
 #define RETICON$_BAD_FRAMES           0x277c81a2
 #define RETICON$_BAD_FRAME_SELECT     0x277c81aa

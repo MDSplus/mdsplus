@@ -32,126 +32,125 @@ class ACQ196(acq.ACQ):
         """
         import tempfile
         import time
+
+        from MDSplus.mdsExceptions import DevBAD_ACTIVE_CHAN
+        from MDSplus.mdsExceptions import DevBAD_TRIG_SRC
+        from MDSplus.mdsExceptions import DevBAD_CLOCK_SRC
+        from MDSplus.mdsExceptions import DevBAD_PRE_TRIG
+        from MDSplus.mdsExceptions import DevBAD_POST_TRIG
+        from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
+
         start=time.time()
-        msg=None
+        if self.debugging():
+            print "starting init\n";
+        path = self.local_path
+        tree = self.local_tree
+        shot = self.tree.shot
+        if self.debugging():
+            print 'ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
+
+        active_chan = self.getInt(self.active_chan, DevBAD_ACTIVE_CHAN)
+        if active_chan not in (32,64,96) :
+            raise DevBAD_ACTIVE_CHAN
+        if self.debugging():
+            print "have active chan\n";
+
         try:
-            if self.debugging():
-                print "starting init\n";
-            path = self.local_path
-            tree = self.local_tree
-            shot = self.tree.shot
-            if self.debugging():
-               print 'ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
-            msg="Must specify active chans as int in (32,64,96)"
-
-            active_chan = int(self.active_chan)
-            msg=None
-            if active_chan not in (32,64,96) :
-                print "active chans must be in (32, 64, 96 )"
-                active_chan = 96
-            if self.debugging():
-                print "have active chan\n";
-
-            msg="Could not read trigger source"
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
-            if self.debugging():
-                print "have trig_src\n";
-            msg="Could not read clock source"
+        except Exception, e:
+            print "trigger source error: %s" %(e,)
+            raise DevBAD_TRIG_SRC
+        if self.debugging():
+            print "have trig_src\n";
+
+        try:
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-            if self.debugging():
-                print "have clock src\n";
+        except:
+            print "clock source error: %s" %(e,)
+            raise DevBAD_CLOCK_SRC
+        if self.debugging():
+            print "have clock src\n";
+
+        try:
+            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+        except:
+            clock_out=None
+
+        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)*1024
+        if self.debugging():
+            print "have pre trig\n";
+
+        post_trig = self.getInt(self.active_chan, DevBAD_POST_TRIG)*1024
+        if self.debugging():
+            print "have post trig\n";
+
+        if clock_src == "INT_CLOCK":
+            clock_freq = self.getInt(self.clock_freq,DevBAD_CLOCK_FREQ)
+            clock_div = 1
+        else :
             try:
-                clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+                clock_div = int(self.clock_div)
             except:
-                clock_out=None
-            msg="Must specify pre trigger samples"
-            pre_trig=int(self.pre_trig.data()*1024)
-            if self.debugging():
-                print "have pre trig\n";
-            msg="Must specify post trigger samples"
-            post_trig=int(self.post_trig.data()*1024)
-            if self.debugging():
-                print "have post trig\n";
-            msg=None
-            if clock_src == "INT_CLOCK":
-                msg="Must specify clock frequency in clock_freq node for internal clock"
-                clock_freq = int(self.clock_freq)
                 clock_div = 1
-                msg=None
-            else :
-                try:
-                    clock_div = int(self.clock_div)
-                except:
-                    clock_div = 1
-            if self.debugging():
-                print "have the settings\n";
+        if self.debugging():
+            print "have the settings\n";
 
 
 #
 # now create the post_shot ftp command file
 #
 #            fd = tempfile.TemporaryFile()
-	    fd = tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
-	    if self.debugging():
-		print 'opened temporary file %s\n'% fd.name
-            self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
-            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
-            if clock_src == 'INT_CLOCK':
-                if clock_out == None:
-                    if self.debugging():
-                        print "internal clock no clock out\n"
-                    fd.write("acqcmd setInternalClock %d\n" % clock_freq)
-                else:
-                    clock_out_num_str = clock_out[-1]
-                    clock_out_num = int(clock_out_num_str)
-                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
-                    if self.debugging():
-                        print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
-                    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-                    fd.write(setDIOcmd)         
+        fd = tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
+        if self.debugging():
+            print 'opened temporary file %s\n'% fd.name
+        self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
+        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+        if clock_src == 'INT_CLOCK':
+            if clock_out == None:
+                if self.debugging():
+                    print "internal clock no clock out\n"
+                fd.write("acqcmd setInternalClock %d\n" % clock_freq)
             else:
+                clock_out_num_str = clock_out[-1]
+                clock_out_num = int(clock_out_num_str)
+                setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                if self.debugging():
+                    print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
+                fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
+                fd.write(setDIOcmd)         
+        else:
  #               if (clock_div != 1) :
  #                   fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
  #               else:
  #                   fd.write("acqcmd setExternalClock %s\n" % clock_src)
-                if (clock_out != None) :
-                    clock_out_num_str = clock_out[-1]
-                    clock_out_num = int(clock_out_num_str)
-                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
-                    fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
-                    fd.write(setDIOcmd)
-                else:
-                    fd.write("acqcmd setExternalClock %s %d\n" % (clock_src, clock_div,))
+            if (clock_out != None) :
+                clock_out_num_str = clock_out[-1]
+                clock_out_num = int(clock_out_num_str)
+                setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
+                fd.write(setDIOcmd)
+            else:
+                fd.write("acqcmd setExternalClock %s %d\n" % (clock_src, clock_div,))
 #
 # set the channel mask 2 times
 #
-            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+        fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
 #
 #  set the pre_post mode last
 #
-            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
+        fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             
-            self.addGenericXMLStuff(fd)
+        self.addGenericXMLStuff(fd)
 
-            fd.write("xmlcmd 'get.vin 1:32'>> $settingsf\n")
-            fd.write("xmlcmd 'get.vin 33:64'>> $settingsf\n")
-            fd.write("xmlcmd 'get.vin 65:96'>> $settingsf\n")
-            self.finishXMLStuff(fd, auto_store)
+        fd.write("xmlcmd 'get.vin 1:32'>> $settingsf\n")
+        fd.write("xmlcmd 'get.vin 33:64'>> $settingsf\n")
+        fd.write("xmlcmd 'get.vin 65:96'>> $settingsf\n")
+        self.finishXMLStuff(fd, auto_store)
 
-            print "Time to make init file = %g\n" % (time.time()-start)
-            start=time.time()
-            self.doInit(fd)
-
-        except Exception,e:
-            try:
-                fd.close()
-            except:
-                pass
-            if msg != None:
-                print 'error = %s\nmsg = %s\n' %(msg, str(e),)
-            else:
-                print "%s\n" % (str(e),)
-            raise
+        print "Time to make init file = %g\n" % (time.time()-start)
+        start=time.time()
+        self.doInit(fd)
 
         fd.close()
 
@@ -162,7 +161,6 @@ class ACQ196(acq.ACQ):
     INITFTP=initftp
         
     def store(self, arg='checks'):
-
         if self.debugging():
             print "Begining store\n"
 
@@ -179,7 +177,7 @@ class ACQ196(acq.ACQ):
         vin1 = self.settings['get.vin 1:32']
         vin2 = self.settings['get.vin 33:64']
         vin3 = self.settings['get.vin 65:96']
-        active_chan = int(self.active_chan)
+        active_chan = int(self.active_chan.record)
 	if active_chan == 96 :
             vins = eval('MDSplus.makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
 	else :
