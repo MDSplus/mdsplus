@@ -508,32 +508,5 @@
      <status name="NO_SAMPLES" value="5297" severity="Error"
 	    text="Module did not acquire any samples"
 	    facnam="DT196B$_" facabb="DT196B"/>
-     <status name="INITIALIZATION_ERROR" value="5298" severity="Error"
-	    text="Error during module initialization"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="SETTINGS_NOT_LOADED" value="5299" severity="Error"
-	    text="settings not loaded"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="WRONG_TREE" value="5300" severity="Error"
-	    text="Attempt to store ACQ module into different tree than it was armed with"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="WRONG_PATH" value="5301" severity="Error"
-	    text="Attempt to store ACQ module into different path than it was armed with"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="WRONG_SHOT" value="5302" severity="Error"
-	    text="Attempt to store ACQ module into different shot than it was armed with"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="OFFLINE" value="5303" severity="Error"
-            text="ACQ digitizer not accessible on network"
-            facnam="ACQ$_" facabb="ACQ"/>
-     <status name="UNKNOWN_STATE" value="5304" severity="Error"
-            text="ACQ Digitizer module in unrecognized state"
-            facnam="ACQ$_" facabb="ACQ"/>
-     <status name="STUCK" value="5305" severity="Error"
-            text="IO to ACQ device stuck, check board status and network connection"
-            facnam="ACQ$_" facabb="ACQ"/>
-     <status name="NOT_STORED" value="5306" severity="Error"
-            text="ACQ digitizer is in Stop state but data was not stored.  Do/Method STORE may recover data"
-            facnam="ACQ$_" facabb="ACQ"/>
    </facility>
 </messages>

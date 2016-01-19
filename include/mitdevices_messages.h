@@ -178,12 +178,3 @@
 #define DSP2904$_CHANNEL_READ_ERROR   0x277ca4ea
 #define PY$_UNHANDLED_EXCEPTION  0x277ca53a
 #define DT196B$_NO_SAMPLES           0x277ca58a
-#define ACQ$_INITIALIZATION_ERROR 0x277ca592
-#define ACQ$_SETTINGS_NOT_LOADED  0x277ca59a
-#define ACQ$_WRONG_TREE           0x277ca5a2
-#define ACQ$_WRONG_PATH           0x277ca5aa
-#define ACQ$_WRONG_SHOT           0x277ca5b2
-#define ACQ$_OFFLINE              0x277ca5ba
-#define ACQ$_UNKNOWN_STATE        0x277ca5c2
-#define ACQ$_STUCK                0x277ca5ca
-#define ACQ$_NOT_STORED           0x277ca5d2

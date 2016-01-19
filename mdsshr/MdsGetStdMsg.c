@@ -37,7 +37,6 @@ static const char *FAC_H908 = "H908";
 static const char *FAC_DSP2904 = "DSP2904";
 static const char *FAC_PY = "PY";
 static const char *FAC_DT196B = "DT196B";
-static const char *FAC_ACQ = "ACQ";
 
 
 int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
@@ -3319,96 +3318,6 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         {static const char *text="Module did not acquire any samples";
         static const char *msgnam="NO_SAMPLES";
         *fac_out = FAC_DT196B;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQINITIALIZATION_ERROR */
-      case 0x277ca590:
-        {static const char *text="Error during module initialization";
-        static const char *msgnam="INITIALIZATION_ERROR";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQSETTINGS_NOT_LOADED */
-      case 0x277ca598:
-        {static const char *text="settings not loaded";
-        static const char *msgnam="SETTINGS_NOT_LOADED";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQWRONG_TREE */
-      case 0x277ca5a0:
-        {static const char *text="Attempt to store ACQ module into different tree than it was armed with";
-        static const char *msgnam="WRONG_TREE";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQWRONG_PATH */
-      case 0x277ca5a8:
-        {static const char *text="Attempt to store ACQ module into different path than it was armed with";
-        static const char *msgnam="WRONG_PATH";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQWRONG_SHOT */
-      case 0x277ca5b0:
-        {static const char *text="Attempt to store ACQ module into different shot than it was armed with";
-        static const char *msgnam="WRONG_SHOT";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQOFFLINE */
-      case 0x277ca5b8:
-        {static const char *text="ACQ digitizer not accessible on network";
-        static const char *msgnam="OFFLINE";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQUNKNOWN_STATE */
-      case 0x277ca5c0:
-        {static const char *text="ACQ Digitizer module in unrecognized state";
-        static const char *msgnam="UNKNOWN_STATE";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQSTUCK */
-      case 0x277ca5c8:
-        {static const char *text="IO to ACQ device stuck, check board status and network connection";
-        static const char *msgnam="STUCK";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQNOT_STORED */
-      case 0x277ca5d0:
-        {static const char *text="ACQ digitizer is in Stop state but data was not stored.  Do/Method STORE may recover data";
-        static const char *msgnam="NOT_STORED";
-        *fac_out = FAC_ACQ;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
