@@ -390,7 +390,7 @@ void Connection::setDefault(char *path)
 		throw MdsException(status);
 }
 
-
+#ifndef _MSC_VER
 void Connection::registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot)
 {
 	char regExpr[64 + strlen(expr) + strlen(tree)];
@@ -419,7 +419,7 @@ void Connection::unregisterStreamListener(DataStreamListener *listener)
 	listenerV.erase(listenerV.begin() + idx);
 	listenerIdV.erase(listenerIdV.begin() + idx);
 }
-
+#endif
 void Connection::checkDataAvailability()
 {
 	try  
