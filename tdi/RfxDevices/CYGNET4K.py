@@ -51,12 +51,12 @@ class CYGNET4K(Device):
         '0x53':'ETX_I2C_ERR',
         '0x54':'ETX_UNKNOWN_CMD',
         '0x55':'ETX_DONE_LOW'}
-
         DRIVERPARMS = ''
         FORMAT = 'DEFAULT'
         isOpen = False
         isInitSerial = False
         secPerTick = 1E-3;
+
         def __init__(self,ID=1):
             self.setID(ID)
             try:
@@ -517,8 +517,7 @@ class CYGNET4K(Device):
             print("Device not initialized: Run 'init' first.")
             raise mdsExceptions.DevException
         self.frames.deleteData()  # check if we can write
-        self.worker = self.AsynchStore()
-        self.worker.configure(self)
+        self.worker = self.AsynchStore(self)
         self.saveWorker()
         self.worker.start()
 
@@ -557,8 +556,7 @@ class CYGNET4K(Device):
         except:
             print('Check TREND_TREE and TREND_SHOT.')
             raise mdsExceptions.TreeNODATA
-        self.trendWorker = self.AsynchTrend()
-        self.trendWorker.configure(self, trendTree, trendShot, trendPcb, trendCmos)
+        self.trendWorker = self.AsynchTrend(self, trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
         self.trendWorker.start()
 
@@ -602,7 +600,8 @@ class CYGNET4K(Device):
 
 
     class AsynchStore(Thread):
-        def configure(self, device):
+        def __init__(self, device):
+            Thread.__init__(self)
             self.device = device
             self.duration = float(device.duration.data())
             self.stopReq = False
@@ -643,7 +642,8 @@ class CYGNET4K(Device):
             print('done')
 
     class AsynchTrend(Thread):
-        def configure(self, device, trendTree, trendShot, trendPcb, trendCmos):
+        def __init__(self, device, trendTree, trendShot, trendPcb, trendCmos):
+            Thread.__init__(self)
             self.device = device
             self.period = float(device.trend_period.data())
             self.tree = trendTree
