@@ -1,4 +1,25 @@
-commit 7e11c842260497726b82a382227cfcc05b3e4d20 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 296038c77f8d5622c687eb0a6bebce14df0d588c (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: f850237 8736806
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 19 09:13:05 2016 -0500
+
+    Merge pull request #314 from MDSplus/twf-fix-stable-windows-build-script
+    
+    Fix build of Windows installer
+
+commit 8736806f62dd86d0b909ae28f1dd69d6701a0277 (refs/remotes/origin/twf-fix-stable-windows-build-script)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 15 11:23:20 2016 -0500
+
+    Fix build of Windows installer
+
+commit f850237f2de97224ab0a35761f2dfb84fba7f775 (tag: refs/tags/stable_release-7-0-61)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Dec 11 19:11:13 2015 -0500
+
+    New release ---- stable_release-7-0-61
+
+commit 7e11c842260497726b82a382227cfcc05b3e4d20
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Dec 11 09:17:49 2015 -0500
 
