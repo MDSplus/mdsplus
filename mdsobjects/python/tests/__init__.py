@@ -9,6 +9,8 @@ from unittest import TestCase,TestSuite,TextTestRunner,TestResult
 from tests.treeUnitTest import treeTests
 from tests.threadsUnitTest import suite as threadsSuite
 from tests.dataUnitTest import suite as dataSuite
+from tests.exceptionUnitTest import exceptionTests
+
 import os
 import time
 import warnings
@@ -65,6 +67,7 @@ def test_all(*arg):
     if os.getenv('TEST_THREADS') is not None:
         tests.append(threadsSuite())
     tests.append(dataSuite())
+    tests.append(exceptionTests())
     tests.append(TestSuite([cleanup('cleanup')]))
     return TestSuite(tests)
 
