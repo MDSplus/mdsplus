@@ -6,7 +6,7 @@ void XmdsInitialize()
 {
   xmdsWaveformWidgetClass = (WidgetClass) & xmdsWaveformClassRec;
   MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass", "XmdsCreateWaveform",
-		   XmdsCreateWaveform, xmdsWaveformWidgetClass);
+		   (Widget (*)(void))XmdsCreateWaveform, xmdsWaveformWidgetClass);
 }
 
 void XmdsResetAllXds()

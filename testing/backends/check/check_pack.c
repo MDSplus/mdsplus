@@ -30,11 +30,20 @@
 #include "check_impl.h"
 #include "check_pack.h"
 
-#ifndef HAVE_PTHREAD
+#include <pthread.h>
+
+#ifndef HAVE_PTHREAD_H
 #define pthread_mutex_lock(arg)
 #define pthread_mutex_unlock(arg)
-#define pthread_cleanup_push(f,a) {
-#define pthread_cleanup_pop(e) }
+
+#ifndef pthread_cleanup_push
+# define pthread_cleanup_push(f,a) {
+#endif
+
+#ifndef pthread_cleanup_pop
+# define pthread_cleanup_pop(e) }
+#endif
+
 #endif
 
 /* Maximum size for one message in the message stream. */
@@ -268,18 +277,20 @@ static int pack_fail(char **buf, FailMsg * fmsg)
     char *ptr;
     int len;
 
-    len = 4 + 4 + (fmsg->msg ? strlen(fmsg->msg) : 0);
+    len = 4 + 4 + (fmsg->msg ? strlen(fmsg->msg) : 0) + 4;
     *buf = ptr = (char *)emalloc(len);
 
     pack_type(&ptr, CK_MSG_FAIL);
     pack_str(&ptr, fmsg->msg);
-
+    pack_int(&ptr, fmsg->rtype);
+    
     return len;
 }
 
 static void upack_fail(char **buf, FailMsg * fmsg)
 {
     fmsg->msg = upack_str(buf);
+    fmsg->rtype = upack_int(buf);
 }
 
 static void check_type(int type, const char *file, int line)
@@ -288,7 +299,7 @@ static void check_type(int type, const char *file, int line)
         eprintf("Bad message type arg %d", file, line, type);
 }
 
-#ifdef HAVE_PTHREAD
+#ifdef HAVE_PTHREAD_H
 static pthread_mutex_t ck_mutex_lock = PTHREAD_MUTEX_INITIALIZER;
 static void ppack_cleanup(void *mutex)
 {
@@ -366,6 +377,7 @@ static int get_result(char *buf, RcvMsg * rmsg)
         if(rmsg->msg == NULL)
         {
             rmsg->msg = strdup(fmsg->msg);
+            rmsg->rtype = fmsg->rtype;
             rmsg->failctx = rmsg->lastctx;
         }
         else

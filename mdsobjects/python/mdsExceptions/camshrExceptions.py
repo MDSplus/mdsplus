@@ -26,10 +26,12 @@ class CamDONE_Q(CamException):
   msgnam="DONE_Q"
 
 
+
 class CamDONE_NOQ(CamException):
   status=134316049
   message="I/O completed with X=1, Q=0"
   msgnam="DONE_NOQ"
+
 
 
 class CamDONE_NOX(CamException):
@@ -38,10 +40,12 @@ class CamDONE_NOX(CamException):
   msgnam="DONE_NOX"
 
 
+
 class CamSERTRAERR(CamException):
   status=134322178
   message="serial transmission error on highway"
   msgnam="SERTRAERR"
+
 
 
 class CamSCCFAIL(CamException):
@@ -50,7 +54,9 @@ class CamSCCFAIL(CamException):
   msgnam="SCCFAIL"
 
 
+
 class CamOFFLINE(CamException):
   status=134322282
   message="crate is offline"
   msgnam="OFFLINE"
+

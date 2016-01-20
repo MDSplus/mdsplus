@@ -27,6 +27,22 @@ do
 	    echo stdtests: Inserting \"$stdtests\" into the test list.
             set -- $stdtests $@;;
 	
+
+	    # 
+	    # This builds tap target in each testing directory and generates a
+	    # file named test-suite.tap that collates all results.
+	    #
+	    # NOTE: this tool is under development ...
+	    #
+	tap_results)
+	    echo ""
+	    export MDSPLUS_DIR=/buildroot/usr/local/mdsplus
+	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
+    	    export MDS_PATH=${MDSPLUS_DIR}/tdi
+            export TEST_FORMAT=tap
+	    make tests
+	    ;;
+		
 	pytest)
 	    #
 	    # Set up environment variables to run the pytest
@@ -55,6 +71,7 @@ do
 	    pushd ${MDSPLUS_DIR}/mdsobjects/python
 	    valgrind --error-exitcode=1 python setup.py test
 	    popd;;
+	   
 
         *)
 	    echo "Unknown test '$test' specified. Skipping.";;

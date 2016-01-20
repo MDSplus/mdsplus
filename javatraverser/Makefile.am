@@ -21,6 +21,8 @@ endif
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 java_JAVA = $(SOURCES)
 
+GIFS = $(addprefix ${srcdir}/,$(_GIFS))
+
 # Build the final jar
 java_DATA = jTraverser.jar DeviceBeans.jar TreeServer_Stub.class
 
@@ -31,7 +33,7 @@ jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
 	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(GIFS)
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	$(JAR) c0fm $@ DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
+	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
 
 # Giant list of source files follow
 
@@ -187,7 +189,7 @@ SOURCES = \
 	LoadFile.java \
 	StoreFile.java
 
-GIFS = \
+_GIFS = \
 	DeviceApply.gif    \
 	DeviceButtons.gif  \
 	DeviceCancel.gif   \

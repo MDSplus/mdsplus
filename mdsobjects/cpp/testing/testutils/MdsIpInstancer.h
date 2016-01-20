@@ -12,9 +12,11 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/time.h>
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -26,10 +28,6 @@ extern "C" int mdsip_main(int argc, char **argv);
 
 
 namespace testing {
-
-
-
-
 class MdsIpInstancer {
         
     struct HostFile {        
@@ -150,10 +148,6 @@ private:
     
  
 };
-
-
-
-
 } // testing
 
 #endif // MDSIPMAIN_H

@@ -1,4 +1,3 @@
-# SUBDIRS = .
 
 include ../../docs/config/doxygen.am
 

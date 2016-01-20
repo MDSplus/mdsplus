@@ -24,7 +24,6 @@ MDSplus/Conglom.java\
 MDSplus/Data.java\
 MDSplus/DataStreamListener.java\
 MDSplus/Dependency.java\
-MDSplus/Device.java\
 MDSplus/Dictionary.java\
 MDSplus/Dimension.java\
 MDSplus/Dispatch.java\

@@ -1,85 +1,84 @@
-
 SUBDIRS = backends/check .
 
-include ${top_srcdir}/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-AM_DEFAULT_SOURCE_EXT = .c
-
-AM_CFLAGS = -I${top_srcdir}/include -Ibackends
-AM_CXXFLAGS = 
-AM_LIBS = 
-
-#
-# NOTE: Gnu check must be present in the system and must be found by configure
-# process. If gnu check framework is not installed of not found the tests are
-# left undefined.
-#
-TESTS = \
-        example \
-        example2
-
-
-
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
-
-
-#AM_TESTS_ENVIRONMENT = export LD_LIBRARY_PATH=@MAKESHLIBDIR@      
-LDADD = ${top_srcdir}/testing/backends/check/libCheck.a -lm -lrt -lpthread $(AM_LIBS)
-# LDADD = libMdsTest.a 
-
-
-
-
-
-#
-# VALGRIND: If valgrind was enabled by configuration entry the execution of
-# tests will be performed using the valgrind command below. Insert suppressions
-# files there.
-#
-
-if USE_VALGRIND
-LOG_COMPILER = valgrind
-AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-               --dsymutil=yes --leak-check=yes
-endif
-
-
-
-bin_PROGRAMS = example3
-example3_SOURCES = example3.cpp
+AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
+AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
            
-
 #
-# Static Test library
+# Static Base library
 #
 noinst_LIBRARIES = libMdsTest.a
-libMdsTest_a_SOURCES = testing.c
+libMdsTest_a_CFLAGS = -D_TESTING
+libMdsTest_a_SOURCES = base_backend.c
+
+#
+# only check backend for now
+#
+noinst_LIBRARIES += libMdsTestBackend.a
+libMdsTestBackend_a_CFLAGS = -D_TESTING -I${srcdir}/backends/check $(AM_CFLAGS)
+libMdsTestBackend_a_SOURCES = check_backend.c
 
 #
 # Shared library
 #
+# @MINGW_TRUE@ DEF=${srcdir}/MdsTestShr.def
+@MINGW_TRUE@ MAKE_IMPLIB_MdsTestShr=-Wl,--out-implib,@MAKELIBDIR@MdsTestShr.dll.a
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
-$(MdsTestShr): backends/check/libCheck.a
-	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LINK_MDSIPSHR) $(LIBS)
+$(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
+	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
 
-.PHONY: tests
-tests: $(TESTS) 
+TEST_SUBDIRS = \
+               mdsobjects/python/tests \
+               mdslib/testing \
+               mdsobjects/cpp/testing
+#              testing/selftest
+
+TEST_OUTDIR    ?= ${top_builddir}/testing
 
 
-all-local: $(MdsTestShr) tests
+
+.PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
+tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_SUBDIRS))
+clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_SUBDIRS))
+$(tests_DIRS):
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+
+$(clean_DIRS):
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
+
+$(tests_valgrind_DIRS):	
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
+
+$(tests_valgrind_suppressions_DIRS):
+	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+
+
+.PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
+tests: $(tests_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *.tap,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind: $(tests_valgrind_DIRS)
+	@ \
+	echo " -------- CUT HERE for Jenkins  --------------- "; \
+	echo $(addsuffix *-valgrind-*.xml,$(TEST_SUBDIRS)); \
+	echo " ---------------------------------------------- "
+
+tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
+
+tests-clean: $(clean_DIRS)
+
+
+all-local: $(MdsTestShr)
 
 clean-local:
-	$(RM) $(MdsTestShr)
-
-
-
-check_PROGRAMS = $(TESTS)
+	-$(RM) $(MdsTestShr)
 
 
 

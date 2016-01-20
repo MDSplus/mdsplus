@@ -1,11 +1,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <ncidef.h>
 #include <usagedef.h>
 #include <hdf5.h>
+
+
 
 static int d_status = EXIT_SUCCESS;
 
@@ -405,7 +408,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	  hid_t st_id;
 	  if (slen < 0) {
 	    printf("Badly formed string attribute\n");
-	    return;
+	    return 0;
 	  }
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  if (H5Tis_variable_str(type)) {

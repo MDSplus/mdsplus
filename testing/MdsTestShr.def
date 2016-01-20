@@ -1,0 +1,11 @@
+LIBRARY MdsTestShr
+EXPORTS
+;
+__test_setfork
+__test_init
+__test_end
+__setup_parent
+__setup_child
+__test_assert_fail
+__mark_point
+__test_exit

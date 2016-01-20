@@ -25,7 +25,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <check_stdint.h>
+//#include <check_stdint.h>
 
 /*
    Macros and functions starting with _ (underscore) are internal and
@@ -788,6 +788,7 @@ enum test_result
 {
     CK_TEST_RESULT_INVALID,     /**< Default value; should not encounter this */
     CK_PASS,                    /**< Test passed */
+    CK_SKIP,
     CK_FAILURE,                 /**< Test completed but failed */
     CK_ERROR                    /**< Test failed to complete
                                    (unexpected signal or non-zero early exit) */

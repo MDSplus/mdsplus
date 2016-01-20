@@ -1,10 +1,13 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 CFLAGS=@CFLAGS@ @SRBINCLUDE@ $(THREAD)
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@ @SOCKETLIB@ $(THREAD)
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TreeShr.dll.a
-@MINGW_TRUE@ DEF=TreeShr.def
+@MINGW_TRUE@ DEF=${srcdir}/TreeShr.def
 
 SOURCES = \
 dummies.c \

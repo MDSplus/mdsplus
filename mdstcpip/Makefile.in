@@ -1,9 +1,13 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
+
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH = @srcdir@
 
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 @MINGW_TRUE@ WIN=.win
-@MINGW_TRUE@ DEF=mdsipshr.def
+@MINGW_TRUE@ DEF=${srcdir}/mdsipshr.def
 
 COMPRESSION_SOURCES = zlib/adler32.c \
                       zlib/compress.c \
@@ -21,10 +25,10 @@ COMPRESSION_OBJECTS = $(COMPRESSION_SOURCES:.c=.o)
 
 COMPRESSION_SWITCH=
 
-CFLAGS += $(THREAD) $(COMPRESSION_SWITCH) -Iudt4/src -Iudt4/udtc
+CFLAGS += $(THREAD) $(COMPRESSION_SWITCH) -I@srcdir@/udt4/src -I@srcdir@/udt4/udtc
 LDFLAGS += $(THREAD)
 
-CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/src -Iudt4/udtc @CFLAGS@ @CXXFLAGS@
+CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing $(CFLAGS) @CXXFLAGS@
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @SOCKETLIB@
 
 MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@ $(IMPLIB_MdsIpShr)
@@ -74,6 +78,7 @@ UDT4_SOURCES = udt4/src/api.cpp udt4/src/buffer.cpp udt4/src/cache.cpp udt4/src/
 	udt4/src/common.cpp udt4/src/core.cpp udt4/src/epoll.cpp udt4/src/list.cpp udt4/src/md5.cpp \
 	udt4/src/packet.cpp udt4/src/queue.cpp udt4/src/window.cpp\
 	udt4/udtc/udtc.cpp
+UDT4_DIRS = @builddir@/udt4/src @builddir@/udt4/udtc	
 UDT4_OBJECTS=$(UDT4_SOURCES:.cpp=.o)
 UDT_OBJECTS = IoRoutinesUdt.o  $(UDT4_OBJECTS)
 UDTV6_OBJECTS = IoRoutinesUdtV6.o $(UDT4_OBJECTS)
@@ -221,10 +226,15 @@ $(MdsIpTCP): $(TCP_OBJECTS) $(MdsIpShr)
 $(MdsIpTCPV6): $(TCPV6_OBJECTS) $(MdsIpShr)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(TCPV6_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
 
-$(MdsIpUDT): $(UDT_OBJECTS) $(MdsIpShr)
+.PHONY: $(UDT4_DIRS)
+$(UDT4_DIRS):
+	$(MKDIR_P) @builddir@/udt4/src
+	$(MKDIR_P) @builddir@/udt4/udtc
+	
+$(MdsIpUDT): $(UDT4_DIRS) $(UDT_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDT_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
-$(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
+$(MdsIpUDTV6): $(UDT4_DIRS) $(UDTV6_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
 @MINGW_TRUE@ LN_TUNNEL=cp @MAKELIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@

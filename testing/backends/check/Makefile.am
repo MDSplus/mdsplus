@@ -1,14 +1,13 @@
-SUBDIRS = lib .
+include @top_builddir@/Makefile.inc
 
-include ${top_srcdir}/Makefile.inc
+LIBS = -L@MAKESHLIBDIR@ @LIBS@ @LIBM@ @SOCKETLIB@ @LIBDL@
+
+AM_CFLAGS = $(TARGET_ARCH)
+AM_CXXFLAGS = $(TARGET_ARCH)
+AM_LDFLAGS = $(LIBS)
+
 
 AM_DEFAULT_SOURCE_EXT = .c
-
-AM_CFLAGS =
-AM_CXXFLAGS = 
-AM_LIBS = 
-
-
 _SOURCES = \
         check_error.c \
 	check_list.c	\
@@ -18,8 +17,10 @@ _SOURCES = \
 	check_print.c	\
 	check_run.c	\
 	check_str.c \
-	check.c \
-	test_backend.c
+	check.c 
+	
+#\
+#	test_backend.c
 
 
 #
@@ -27,8 +28,10 @@ _SOURCES = \
 #
 noinst_LIBRARIES = libCheck.a
 libCheck_a_SOURCES = $(_SOURCES)
+libCheck_a_CFLAGS = $(AM_CFLAGS) $(CFLAGS)
 
 
 
 bin_PROGRAMS = build_test
+build_test_CFLAGS = $(AM_CFLAGS) $(CFLAGS)
 build_test_LDADD = libCheck.a -lm -lpthread

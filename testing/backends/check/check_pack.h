@@ -44,6 +44,7 @@ typedef struct LocMsg
 
 typedef struct FailMsg
 {
+    int  rtype;
     char *msg;
 } FailMsg;
 
@@ -70,6 +71,7 @@ typedef struct RcvMsg
     int test_line;
     char *msg;
     int duration;
+    int rtype;
 } RcvMsg;
 
 void rcvmsg_free(RcvMsg * rmsg);

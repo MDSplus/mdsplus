@@ -31,10 +31,10 @@ $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 jScope.jar: colors1.tbl
-	$(MKDIR_P) jdocs
-	cp $(SUBDOCS) ./jdocs
-	$(JAR) c0f $@ $(TOPDOCS) $(JSCOPE_CLASS) jdocs $<
-	rm -Rf jdocs
+	$(MKDIR_P) @builddir@/jdocs
+	cp $(addprefix @srcdir@/,$(SUBDOCS)) @builddir@/jdocs
+	$(JAR) c0f $@ $(addprefix @srcdir@/,$(TOPDOCS)) $(JSCOPE_CLASS) @builddir@/jdocs $<
+	rm -Rf @builddir@/jdocs
 
 WaveDisplay.jar:
 	$(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
