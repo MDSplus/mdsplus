@@ -82,6 +82,7 @@ class %(fac)s%(msgnam)s(%(fac)sException):
   status=%(status)d
   message="%(message)s"
   msgnam="%(msgnam)s"
+
 """ % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text})
             msglist.append({'msgnum':hex(msgn_nosev),'text':text,
                             'fac':facnam,'msgnam':msgnam,

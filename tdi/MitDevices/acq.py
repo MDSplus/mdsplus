@@ -9,7 +9,6 @@ from xml.marshal.generic import dumps, loads, load
 import MDSplus
 import acq200, transport
 
-
 class ACQ(MDSplus.Device):
     """
     Abstract class to subclass the d-tacq acqxxx device types.  Contains
@@ -67,41 +66,46 @@ class ACQ(MDSplus.Device):
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAITFTP',head))",
          'options':('no_write_shot',)}]
 
-#
-#  ACQ specific error codes
-#  defined in includes/mitdevices_msg.h
-#
-    InitializationError = 0x277CA592
-    SettingsNotLoaded = 0x277CA59A
-    WrongTree = 0x277CA5A2
-    WrongPath = 0x277CA5AA
-    WrongShot = 0x277CA5B2
-
     debug=None
     data_socket = -1
 
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi', ' ']
-    
+    max_tries = 45
 
     def debugging(self):
 	if self.debug == None :
             self.debug=os.getenv("DEBUG_DEVICES")
 	return(self.debug)
 
-    def getPreTrig(self,str) :
-	parts = str.split('=')
+    def getInt(self, node, cls):
+        try:
+            ans = int(node.record)
+        except Exception, e:
+            print "ACQ error reading %s erro is\n%s" %(node, e,)
+            raise cls()
+        return ans
+
+    def getPreTrig(self) :
+	parts = self.settings['getNumSamples'].split('=')
         pre_trig = int(parts[2].split(' ')[0])
 	return pre_trig
 
-    def getPostTrig(self,str) :
-        parts = str.split('=')
+    def getPostTrig(self) :
+        parts = self.settings['getNumSamples'].split('=')
         post_trig = int(parts[3].split(' ')[0])
         return post_trig
 
     def getBoardIp(self):
-        boardip=str(self.node.record)
+        from MDSplus.mdsExceptions import DevNO_NAME_SPECIFIED
+        from MDSplus.mdsExceptions import TreeNODATA
+        try:
+            boardip=str(self.node.record)
+        except TreeNODATA,e:
+            raise DevNO_NAME_SPECIFIED()
+        except Exception,e:
+            raise            
         if len(boardip) == 0 :
-            raise Exception, "boardid record empty"
+            raise DevNO_NAME_SPECIFIED()
         return boardip
 
     def dataSocketDone(self):
@@ -153,13 +157,74 @@ class ACQ(MDSplus.Device):
 	        self.data_socket=-1
 	        return self.readRawData(chan, pre, start, end, inc, True)
 	    else:
-		 raise Exception(e)
+		 raise
 	except Exception, e:
 	    print "ACQ error reading channel %d\n, %s\n" % (chan, e,)
-	    raise e
+	    raise
 	if self.debugging():
 	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
+
+    def loadSettings(self):
+        tries = 0
+        self.settings = None
+        last_error = None
+        while self.settings == None and tries < 10 :
+            try:
+                tries = tries + 1
+                self.settings = self.readSettings()
+                complete=1
+            except Exception,e:
+                last_error=e
+                if self.debugging():
+                    print "ACQ196 Error loading settings\n%s\n" %(e,)
+        if self.settings == None :
+            print "after %d tries could not load settings\n" % (tries,)
+            raise last_error
+
+    def checkTreeAndShot(self, arg='checks'):
+        from MDSplus.mdsExceptions import DevWRONG_TREE
+        from MDSplus.mdsExceptions import DevWRONG_SHOT
+        from MDSplus.mdsExceptions import DevWRONG_PATH
+
+        path = self.local_path
+        tree = self.local_tree
+        shot = self.tree.shot
+        if self.debugging() :
+            print "xml is loaded\n"
+        if tree != self.settings['tree'] :
+            print "ACQ Device open tree is %s board armed with tree %s\n" % (tree, self.settings["tree"],)
+            if arg != "nochecks" :
+               raise DevWRONG_TREE() 
+        if path != self.settings['path'] :
+            print "ACQ device tree path %s, board armed with path %s\n" % (path, self.settings["path"],)
+            if arg != "nochecks" :
+                raise DevWRONG_PATH()
+        if shot != int(self.settings['shot']) :
+            print "ACQ open shot is %d, board armed with shot %d\n" % (shot, int(self.settings["shot"]),)
+            if arg != "nochecks" :
+                raise DevWRONG_SHOT()
+
+    def storeStatusCommands(self):
+        status = []
+        cmds = self.status_cmds.record
+        for cmd in cmds:
+            cmd = cmd.strip()
+            if self.debugging():
+                print "about to append answer for /%s/\n" % (cmd,)
+                print "   which is /%s/\n" %(self.settings[cmd],)
+            status.append(self.settings[cmd])
+            if self.debugging():
+                print "%s returned %s\n" % (cmd, self.settings[cmd],)
+        if self.debugging():
+            print "about to write board_status signal"
+        self.board_status.record = MDSplus.Signal(cmds, None, status)
+
+    def checkTrigger(self):
+        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
+
+        if not self.triggered() :
+            raise DevNOT_TRIGGERED()
 
     def triggered(self):
         import time
@@ -207,19 +272,19 @@ class ACQ(MDSplus.Device):
                 s.close()
             time.sleep(3)
                   
+#
+# Let this function raise an error that will be 
+# Thrown all the way out of the device method
+#
     def getMyIp(self):
         import socket
 
         s=socket.socket()
-	try:
-            s.connect((self.getBoardIp(),54545))
-            hostip = s.getsockname()[0]
-            state=s.recv(100)[0:-1]
-            if self.debugging():
-                print "getMyIp  read /%s/\n" % (state,)
-	except Exception,e:
-	    hostip = ""
-	    print "could not connect to board to verify local IP address\n%s\n" %(e,)
+        s.connect((self.getBoardIp(),54545))
+        hostip = s.getsockname()[0]
+        state=s.recv(100)[0:-1]
+        if self.debugging():
+            print "getMyIp  read /%s/\n" % (state,)
         s.close()
 	return hostip
 
@@ -282,6 +347,10 @@ class ACQ(MDSplus.Device):
         fd.flush()
         fd.seek(0,0)
 
+#
+#  storeChannel method, stores the data for one channel of an ACQxxx device.
+#    allows caller to catch any errors raised by MDSplus construction or IO
+#
     def storeChannel(self, chan, chanMask, preTrig, postTrig, clock, vins):
         if self.debugging():
             print "working on channel %d" % chan
@@ -308,20 +377,17 @@ class ACQ(MDSplus.Device):
 
                 if self.debugging():
                     print "about to readRawData(%d, preTrig=%d, start=%d, end=%d, inc=%d)" % (chan+1, preTrig, start, end, inc)
-                try:
-                    buf = self.readRawData(chan+1, preTrig, start, end, inc, False)
-                    if self.debugging():
-                        print "readRawData returned %s\n" % (type(buf),)
-                    if inc == 1:
-                        dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trig_src ), clock)
-                    else:
-                        dim = MDSplus.Dimension(MDSplus.Window(start/inc, end/inc, self.trig_src ), MDSplus.Range(None, None, clock.evaluate().getDelta()*inc))
-                    dat = MDSplus.Data.compile(
+                buf = self.readRawData(chan+1, preTrig, start, end, inc, False)
+                if self.debugging():
+                    print "readRawData returned %s\n" % (type(buf),)
+                if inc == 1:
+                    dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trig_src ), clock)
+                else:
+                    dim = MDSplus.Dimension(MDSplus.Window(start/inc, end/inc, self.trig_src ), MDSplus.Range(None, None, clock.evaluate().getDelta()*inc))
+                dat = MDSplus.Data.compile(
                         'build_signal(build_with_units((($1+ ($2-$1)*($value - -32768)/(32767 - -32768 ))), "V") ,build_with_units($3,"Counts"),$4)',
                         vins[chan*2], vins[chan*2+1], buf,dim) 
-                    exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
-                except Exception, e:
-                    print "error processing channel %d\n%s\n" %(chan+1, e,)
+                exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
 
     def startInitializationFile(self, fd, trig_src, pre_trig, post_trig):
         host = self.getMyIp()
@@ -360,7 +426,7 @@ class ACQ(MDSplus.Device):
                 if self.debugging():
                     print "set.route %s in %s out %s\n" %(line, wire, bus,)
 
-    def loadSettings(self):
+    def readSettings(self):
         settingsfd = tempfile.TemporaryFile()
         ftp = ftplib.FTP(self.getBoardIp())
         ftp.login('dt100', 'dt100')
@@ -373,12 +439,16 @@ class ACQ(MDSplus.Device):
             settings = load(settingsfd)
         except Exception,e:
             settingsfd.close()
-	    raise Exception, "Could not parse XML settings\n%s" %(e,)
+	    raise
         settingsfd.close()
         if self.debugging():
             print "The settings are loaded\n"
         return settings
     
+#
+# Do not return status let caller catch (or not)
+# exceptions
+#
     def doInit(self,fd):
         """Tell the board to arm"""
         import socket
@@ -391,7 +461,7 @@ class ACQ(MDSplus.Device):
             ftp.storlines("STOR /tmp/initialize",fd)
         except Exception,e:
             print "Error sending arm commands via ftp to %s\n%s\n" % (self.getBoardIp(), e,)
-            return
+            raise
         s=socket.socket()
         try:
             s.settimeout(10.)
@@ -399,28 +469,35 @@ class ACQ(MDSplus.Device):
             s.send("initialize")
         except Exception,e:
             status=0
+            s.close()
             print "Error sending doInit: %s" % (str(e),)
+            raise
         s.close()
         if self.debugging():
             print "finishing doInit"
-        return status
 
-    def waitftp(self, arg) :
+    def waitftp(self) :
         import time
+        from MDSplus.mdsExceptions import DevOFFLINE
+        from MDSplus.mdsExceptions import DevNOT_TRIGGERED 
+        from MDSplus.mdsExceptions import DevIO_STUCK
+        from MDSplus.mdsExceptions import DevTRIGGERED_NOT_STORED 
+        from MDSplus.mdsExceptions import DevUNKOWN_STATE
+
         """Wait for board to finish digitizing and storing the data"""
         state = self.getBoardState()
 	tries = 0
-	while (state == "ACQ32:4 ST_POSTPROCESS" or state == "Ready" ) and tries < 90 :
+	while (state == "ACQ32:4 ST_POSTPROCESS" or state == "Ready" ) and tries < self.max_tries :
 	    tries = tries + 1
 	    state = self.getBoardState()
 	    time.sleep(2)
 
 	if state == 'off-line' :
-	    return 662470754  # device not triggered - change to offline
+	    raise DevOFFLINE()
 	if state == "ACQ32:1 ST_ARM" or state == "ACQ32:2 ST_RUN" :
-            return 662470754  # device not triggered - change to offline
+            raise DevNOT_TRIGGERED()
 	if state == "ACQ32:4 ST_POSTPROCESS" :
-            return 662470754  # device not triggered - change to stuck
+            raise DevIO_STUCK()
 	if state == "ACQ32:0 ST_STOP" or state == "Ready":
             for chan in range(int(self.active_chan), 0, -1):
                 chan_node = self.__getattr__('input_%2.2d' % (chan,))
@@ -432,14 +509,14 @@ class ACQ(MDSplus.Device):
 		return 1
 	    else:
 		print "Triggered, but data not stored !"
-                return 0  # should be triggered but not stored
+                raise DevTRIGGERED_NOT_STORED()
 	else:
 	    print "ACQxxx UNKNOWN BOARD state /%s/\n" % (state,)
-	    return 662470754  # device not triggered - change to unknown state
+	    raise DevUNKOWN_STATE()
 
     WAITFTP=waitftp
 
-    def trigger(self, arg):
+    def trigger(self):
         if self.debugging():
             print "starting trigger"
         boardip = self.getBoardIp()
@@ -506,12 +583,12 @@ class ACQ(MDSplus.Device):
         return 1
     ACQ2SH=acq2sh
 
-    def getnumsamples(self, arg):
+    def getnumsamples(self):
         self.acqcmd('getNumSamples')
         return 1
     GETNUMSAMPLES=getnumsamples
     
-    def getstate(self, arg):
+    def getstate(self):
         self.acqcmd('getState')
         return 1
     GETSTATE=getstate
