@@ -3,7 +3,7 @@ from unittest import TestCase,TestSuite
 class exceptionTests(TestCase):
 
     def defaultErrorValues(self):
-        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
+        from mdsExceptions import DevNOT_TRIGGERED
         err = DevNOT_TRIGGERED()
         self.assertEquals(err.status, 662470754)
         self.assertEquals(err.severity, 'E')
@@ -12,7 +12,7 @@ class exceptionTests(TestCase):
         self.assertEquals(str(err), '%DEV-E-NOT_TRIGGERED, device was not triggered,  check wires and triggering device')
 
     def customErrorString(self):
-        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
+        from mdsExceptions import DevNOT_TRIGGERED
         err = DevNOT_TRIGGERED('This is a custom error string')
         self.assertEquals(err.status, 662470754)
         self.assertEquals(err.severity, 'E')
@@ -21,7 +21,7 @@ class exceptionTests(TestCase):
         self.assertEquals(str(err), '%DEV-E-NOT_TRIGGERED, This is a custom error string')
 
     def tclErrors(self):
-        from MDSplus.mdsExceptions import TclNORMAL
+        from mdsExceptions import TclNORMAL
         err = TclNORMAL()
         self.assertEquals(err.status, 2752521)
         self.assertEquals(err.severity, 'S') 
