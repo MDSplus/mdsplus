@@ -15,8 +15,9 @@
 #include <errno.h>
 #include <semaphore.h>
 #endif
+#ifndef _MSC_VER
 #include <pthread.h>
-
+#endif
 using namespace MDSplus;
 using namespace std;
 
@@ -389,7 +390,7 @@ void Connection::setDefault(char *path)
 		throw MdsException(status);
 }
 
-
+#ifndef _MSC_VER
 void Connection::registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot)
 {
 	char regExpr[64 + strlen(expr) + strlen(tree)];
@@ -418,7 +419,7 @@ void Connection::unregisterStreamListener(DataStreamListener *listener)
 	listenerV.erase(listenerV.begin() + idx);
 	listenerIdV.erase(listenerIdV.begin() + idx);
 }
-
+#endif
 void Connection::checkDataAvailability()
 {
 	try  
@@ -466,11 +467,13 @@ static void *checkDataStream(void *connPtr)
 	return NULL;
 }
 
+#ifndef _MSC_VER
 void Connection::startStreaming()
 {
 	pthread_t thread;
 	pthread_create(&thread, NULL, checkDataStream, this);
 }
+#endif
     
 void Connection::resetConnection()
 {

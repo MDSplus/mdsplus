@@ -26,10 +26,12 @@ class TreeALREADY_OFF(TreeException):
   msgnam="ALREADY_OFF"
 
 
+
 class TreeALREADY_ON(TreeException):
   status=265388083
   message="Node is already ON"
   msgnam="ALREADY_ON"
+
 
 
 class TreeALREADY_OPEN(TreeException):
@@ -38,10 +40,12 @@ class TreeALREADY_OPEN(TreeException):
   msgnam="ALREADY_OPEN"
 
 
+
 class TreeALREADY_THERE(TreeException):
   status=265388168
   message="Node is already in the tree"
   msgnam="ALREADY_THERE"
+
 
 
 class TreeBADRECORD(TreeException):
@@ -50,10 +54,12 @@ class TreeBADRECORD(TreeException):
   msgnam="BADRECORD"
 
 
+
 class TreeBOTH_OFF(TreeException):
   status=265388184
   message="Both this node and its parent are off"
   msgnam="BOTH_OFF"
+
 
 
 class TreeBUFFEROVF(TreeException):
@@ -62,10 +68,12 @@ class TreeBUFFEROVF(TreeException):
   msgnam="BUFFEROVF"
 
 
+
 class TreeCONGLOMFULL(TreeException):
   status=265388322
   message="Current conglomerate is full"
   msgnam="CONGLOMFULL"
+
 
 
 class TreeCONGLOM_NOT_FULL(TreeException):
@@ -74,10 +82,12 @@ class TreeCONGLOM_NOT_FULL(TreeException):
   msgnam="CONGLOM_NOT_FULL"
 
 
+
 class TreeCONTINUING(TreeException):
   status=265390435
   message="Operation continuing: note following error"
   msgnam="CONTINUING"
+
 
 
 class TreeDUPTAG(TreeException):
@@ -86,10 +96,12 @@ class TreeDUPTAG(TreeException):
   msgnam="DUPTAG"
 
 
+
 class TreeEDITTING(TreeException):
   status=265388434
   message="Tree file open for edit: operation not permitted"
   msgnam="EDITTING"
+
 
 
 class TreeILLEGAL_ITEM(TreeException):
@@ -98,10 +110,12 @@ class TreeILLEGAL_ITEM(TreeException):
   msgnam="ILLEGAL_ITEM"
 
 
+
 class TreeILLPAGCNT(TreeException):
   status=265388242
   message="Illegal page count, error mapping tree file"
   msgnam="ILLPAGCNT"
+
 
 
 class TreeINVDFFCLASS(TreeException):
@@ -110,10 +124,12 @@ class TreeINVDFFCLASS(TreeException):
   msgnam="INVDFFCLASS"
 
 
+
 class TreeINVDTPUSG(TreeException):
   status=265388426
   message="Attempt to store datatype which conflicts with the designated usage of this node"
   msgnam="INVDTPUSG"
+
 
 
 class TreeINVPATH(TreeException):
@@ -122,10 +138,12 @@ class TreeINVPATH(TreeException):
   msgnam="INVPATH"
 
 
+
 class TreeINVRECTYP(TreeException):
   status=265388354
   message="Record type invalid for requested operation"
   msgnam="INVRECTYP"
+
 
 
 class TreeINVTREE(TreeException):
@@ -134,10 +152,12 @@ class TreeINVTREE(TreeException):
   msgnam="INVTREE"
 
 
+
 class TreeMAXOPENEDIT(TreeException):
   status=265388250
   message="Too many files open for edit"
   msgnam="MAXOPENEDIT"
+
 
 
 class TreeNEW(TreeException):
@@ -146,10 +166,12 @@ class TreeNEW(TreeException):
   msgnam="NEW"
 
 
+
 class TreeNMN(TreeException):
   status=265388128
   message="No More Nodes"
   msgnam="NMN"
+
 
 
 class TreeNMT(TreeException):
@@ -158,10 +180,12 @@ class TreeNMT(TreeException):
   msgnam="NMT"
 
 
+
 class TreeNNF(TreeException):
   status=265388144
   message="Node Not Found"
   msgnam="NNF"
+
 
 
 class TreeNODATA(TreeException):
@@ -170,10 +194,12 @@ class TreeNODATA(TreeException):
   msgnam="NODATA"
 
 
+
 class TreeNODNAMLEN(TreeException):
   status=265388362
   message="Node name too long (12 chars max)"
   msgnam="NODNAMLEN"
+
 
 
 class TreeNOEDIT(TreeException):
@@ -182,10 +208,12 @@ class TreeNOEDIT(TreeException):
   msgnam="NOEDIT"
 
 
+
 class TreeNOLOG(TreeException):
   status=265388458
   message="Experiment pathname (xxx_path) not defined"
   msgnam="NOLOG"
+
 
 
 class TreeNOMETHOD(TreeException):
@@ -194,10 +222,12 @@ class TreeNOMETHOD(TreeException):
   msgnam="NOMETHOD"
 
 
+
 class TreeNOOVERWRITE(TreeException):
   status=265388418
   message="Write-once node: overwrite not permitted"
   msgnam="NOOVERWRITE"
+
 
 
 class TreeNORMAL(TreeException):
@@ -206,10 +236,12 @@ class TreeNORMAL(TreeException):
   msgnam="NORMAL"
 
 
+
 class TreeNOTALLSUBS(TreeException):
   status=265388067
   message="Main tree opened but not all subtrees found/or connected"
   msgnam="NOTALLSUBS"
+
 
 
 class TreeNOTCHILDLESS(TreeException):
@@ -218,10 +250,12 @@ class TreeNOTCHILDLESS(TreeException):
   msgnam="NOTCHILDLESS"
 
 
+
 class TreeNOT_IN_LIST(TreeException):
   status=265388482
   message="Tree being opened was not in the list"
   msgnam="NOT_IN_LIST"
+
 
 
 class TreeNOTMEMBERLESS(TreeException):
@@ -230,10 +264,12 @@ class TreeNOTMEMBERLESS(TreeException):
   msgnam="NOTMEMBERLESS"
 
 
+
 class TreeNOTOPEN(TreeException):
   status=265388266
   message="No tree file currently open"
   msgnam="NOTOPEN"
+
 
 
 class TreeNOTSON(TreeException):
@@ -242,10 +278,12 @@ class TreeNOTSON(TreeException):
   msgnam="NOTSON"
 
 
+
 class TreeNOT_CONGLOM(TreeException):
   status=265388386
   message="Head node of conglomerate does not contain a DTYPE_CONGLOM record"
   msgnam="NOT_CONGLOM"
+
 
 
 class TreeNOT_OPEN(TreeException):
@@ -254,10 +292,12 @@ class TreeNOT_OPEN(TreeException):
   msgnam="NOT_OPEN"
 
 
+
 class TreeNOWRITEMODEL(TreeException):
   status=265388442
   message="Data for this node can not be written into the MODEL file"
   msgnam="NOWRITEMODEL"
+
 
 
 class TreeNOWRITESHOT(TreeException):
@@ -266,10 +306,12 @@ class TreeNOWRITESHOT(TreeException):
   msgnam="NOWRITESHOT"
 
 
+
 class TreeNO_CONTEXT(TreeException):
   status=265388099
   message="There is no active search to end"
   msgnam="NO_CONTEXT"
+
 
 
 class TreeOFF(TreeException):
@@ -278,10 +320,12 @@ class TreeOFF(TreeException):
   msgnam="OFF"
 
 
+
 class TreeON(TreeException):
   status=265388107
   message="Node is ON"
   msgnam="ON"
+
 
 
 class TreeOPEN(TreeException):
@@ -290,10 +334,12 @@ class TreeOPEN(TreeException):
   msgnam="OPEN"
 
 
+
 class TreeOPEN_EDIT(TreeException):
   status=265388123
   message="Tree is OPEN for edit"
   msgnam="OPEN_EDIT"
+
 
 
 class TreePARENT_OFF(TreeException):
@@ -302,10 +348,12 @@ class TreePARENT_OFF(TreeException):
   msgnam="PARENT_OFF"
 
 
+
 class TreeREADERR(TreeException):
   status=265388474
   message="Error reading record for node"
   msgnam="READERR"
+
 
 
 class TreeREADONLY(TreeException):
@@ -314,10 +362,12 @@ class TreeREADONLY(TreeException):
   msgnam="READONLY"
 
 
+
 class TreeRESOLVED(TreeException):
   status=265388049
   message="Indirect reference successfully resolved"
   msgnam="RESOLVED"
+
 
 
 class TreeSUCCESS(TreeException):
@@ -326,10 +376,12 @@ class TreeSUCCESS(TreeException):
   msgnam="SUCCESS"
 
 
+
 class TreeTAGNAMLEN(TreeException):
   status=265388370
   message="Tagname too long (max 24 chars)"
   msgnam="TAGNAMLEN"
+
 
 
 class TreeTNF(TreeException):
@@ -338,10 +390,12 @@ class TreeTNF(TreeException):
   msgnam="TNF"
 
 
+
 class TreeTREENF(TreeException):
   status=265388160
   message="Tree Not Found"
   msgnam="TREENF"
+
 
 
 class TreeUNRESOLVED(TreeException):
@@ -350,10 +404,12 @@ class TreeUNRESOLVED(TreeException):
   msgnam="UNRESOLVED"
 
 
+
 class TreeUNSPRTCLASS(TreeException):
   status=265388314
   message="Unsupported descriptor class"
   msgnam="UNSPRTCLASS"
+
 
 
 class TreeUNSUPARRDTYPE(TreeException):
@@ -362,10 +418,12 @@ class TreeUNSUPARRDTYPE(TreeException):
   msgnam="UNSUPARRDTYPE"
 
 
+
 class TreeWRITEFIRST(TreeException):
   status=265388378
   message="Tree has been modified:  write or quit first"
   msgnam="WRITEFIRST"
+
 
 
 class TreeFAILURE(TreeException):
@@ -374,10 +432,12 @@ class TreeFAILURE(TreeException):
   msgnam="FAILURE"
 
 
+
 class TreeLOCK_FAILURE(TreeException):
   status=265392050
   message="Error locking file, perhaps NFSLOCKING not enabled on this system"
   msgnam="LOCK_FAILURE"
+
 
 
 class TreeFILE_NOT_FOUND(TreeException):
@@ -386,10 +446,12 @@ class TreeFILE_NOT_FOUND(TreeException):
   msgnam="FILE_NOT_FOUND"
 
 
+
 class TreeCANCEL(TreeException):
   status=265391232
   message="User canceled operation"
   msgnam="CANCEL"
+
 
 
 class TreeNOSEGMENTS(TreeException):
@@ -398,10 +460,12 @@ class TreeNOSEGMENTS(TreeException):
   msgnam="NOSEGMENTS"
 
 
+
 class TreeINVDTYPE(TreeException):
   status=265392066
   message="Invalid datatype for data segment"
   msgnam="INVDTYPE"
+
 
 
 class TreeINVSHAPE(TreeException):
@@ -410,10 +474,12 @@ class TreeINVSHAPE(TreeException):
   msgnam="INVSHAPE"
 
 
+
 class TreeINVSHOT(TreeException):
   status=265392090
   message="Invalid shot number - must be -1 (model), 0 (current), or Positive"
   msgnam="INVSHOT"
+
 
 
 class TreeINVTAG(TreeException):
@@ -422,10 +488,12 @@ class TreeINVTAG(TreeException):
   msgnam="INVTAG"
 
 
+
 class TreeNOPATH(TreeException):
   status=265392114
   message="No 'treename'_path environment variable defined. Cannot locate tree files."
   msgnam="NOPATH"
+
 
 
 class TreeTREEFILEREADERR(TreeException):
@@ -434,10 +502,12 @@ class TreeTREEFILEREADERR(TreeException):
   msgnam="TREEFILEREADERR"
 
 
+
 class TreeMEMERR(TreeException):
   status=265392130
   message="Memory allocation error."
   msgnam="MEMERR"
+
 
 
 class TreeNOCURRENT(TreeException):
@@ -446,10 +516,12 @@ class TreeNOCURRENT(TreeException):
   msgnam="NOCURRENT"
 
 
+
 class TreeFOPENW(TreeException):
   status=265392146
   message="Error opening file for read-write."
   msgnam="FOPENW"
+
 
 
 class TreeFOPENR(TreeException):
@@ -458,10 +530,12 @@ class TreeFOPENR(TreeException):
   msgnam="FOPENR"
 
 
+
 class TreeFCREATE(TreeException):
   status=265392162
   message="Error creating new file."
   msgnam="FCREATE"
+
 
 
 class TreeCONNECTFAIL(TreeException):
@@ -470,10 +544,12 @@ class TreeCONNECTFAIL(TreeException):
   msgnam="CONNECTFAIL"
 
 
+
 class TreeNCIWRITE(TreeException):
   status=265392178
   message="Error writing node characterisitics to file."
   msgnam="NCIWRITE"
+
 
 
 class TreeDELFAIL(TreeException):
@@ -482,10 +558,12 @@ class TreeDELFAIL(TreeException):
   msgnam="DELFAIL"
 
 
+
 class TreeRENFAIL(TreeException):
   status=265392194
   message="Error renaming file."
   msgnam="RENFAIL"
+
 
 
 class TreeEMPTY(TreeException):
@@ -494,10 +572,12 @@ class TreeEMPTY(TreeException):
   msgnam="EMPTY"
 
 
+
 class TreePARSEERR(TreeException):
   status=265392210
   message="Invalid node search string."
   msgnam="PARSEERR"
+
 
 
 class TreeNCIREAD(TreeException):
@@ -506,10 +586,12 @@ class TreeNCIREAD(TreeException):
   msgnam="NCIREAD"
 
 
+
 class TreeNOVERSION(TreeException):
   status=265392226
   message="No version available."
   msgnam="NOVERSION"
+
 
 
 class TreeDFREAD(TreeException):
@@ -518,10 +600,12 @@ class TreeDFREAD(TreeException):
   msgnam="DFREAD"
 
 
+
 class TreeCLOSEERR(TreeException):
   status=265392242
   message="Error closing temporary tree file."
   msgnam="CLOSEERR"
+
 
 
 class TreeMOVEERROR(TreeException):
@@ -530,7 +614,9 @@ class TreeMOVEERROR(TreeException):
   msgnam="MOVEERROR"
 
 
+
 class TreeOPENEDITERR(TreeException):
   status=265392258
   message="Error reopening new treefile for write access."
   msgnam="OPENEDITERR"
+

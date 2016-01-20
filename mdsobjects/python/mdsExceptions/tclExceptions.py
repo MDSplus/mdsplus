@@ -26,7 +26,9 @@ class TclNORMAL(TclException):
   msgnam="NORMAL"
 
 
+
 class TclFAILED_ESSENTIAL(TclException):
   status=2752528
   message="Essential action failed"
   msgnam="FAILED_ESSENTIAL"
+
