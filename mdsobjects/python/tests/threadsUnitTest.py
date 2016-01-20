@@ -3,7 +3,7 @@ from threading import Thread,enumerate
 from tree import Tree
 import tests.treeUnitTest as treeUnitTest
 import tests.dataUnitTest as dataUnitTest
-
+import os
 
 class threadJob(Thread):
     """Thread to execute the treeTests"""
@@ -19,7 +19,8 @@ class threadTest(TestCase):
     def threadTests(self):
         numsuccessful=0
         threads=list()
-        for i in range(10):
+        if "do_threads" in os.environ:
+          for i in range(10):
             t=threadJob()
             t.shot=i*2+3
             t.test=treeUnitTest
@@ -27,9 +28,9 @@ class threadTest(TestCase):
             d=threadJob()
             d.test=dataUnitTest
             threads.append(d)
-        for t in threads:
+          for t in threads:
             t.start()
-        for t in threads:
+          for t in threads:
             t.join()
             if t.result.wasSuccessful():
                 numsuccessful=numsuccessful+1                
