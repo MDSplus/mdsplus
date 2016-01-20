@@ -23,5 +23,4 @@ int main(int argc, char *argv[])
     TEST1(obj.A() == 0);
     
     END_TESTING;
-    return 0;
 }

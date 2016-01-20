@@ -1,7 +1,11 @@
 #@(#)$RCSfile$ $Revision$
 # @configure_input@
 
-include Makefile.inc
+include @top_builddir@/Makefile.inc
+
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH=@srcdir@
 
 JAVA_APS = javamds \
 	   javascope \
@@ -54,6 +58,7 @@ PARTS = \
 	@HDF5_APS@ \
 	@LV@ \
 	LabView \
+	testing \
 	@MACOSX@
 @MINGW_TRUE@ PARTS += icons
 
@@ -66,14 +71,34 @@ DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 $(PARTS): $(DIRECTORIES)
 	$(MAKE) -C $@
 
+.PHONY: docs
+docs:
+	$(MAKE) -C docs install
+
+.PHONY: tests
+tests:
+	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests
+
+.PHONY: tests-valgrind
+tests-valgrind:
+	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-valgrind
+
+
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
 .PHONY: clean
-clean: $(clean_DIRS)
+clean: $(clean_DIRS) clean_TESTS clean_DOCS
 
 .PHONY: $(clean_DIRS)
 $(clean_DIRS):
 	$(MAKE) -C $(@:clean_%=%) clean
+
+.PHONY: $(clean_TESTS)
+clean_TESTS:
+	$(MAKE) -C testing tests-clean
+
+clean_DOCS:
+	$(MAKE) -C docs clean
 
 .PHONY: full_clean
 full_clean: ./devscripts/rm_if clean
@@ -107,9 +132,10 @@ install: $(install_DIRS)
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
-	tar cf - $(MISC_PARTS) | (cd $(exec_prefix); tar xf -)
+	tar -C ${top_srcdir} -cf - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
+	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
-	$(INSTALL) MDSplus-License.txt MDSplus-License.rtf $(exec_prefix)
+	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 # Interdependent directories:

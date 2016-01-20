@@ -5,7 +5,9 @@
 #define MDS_WINDOWS
 
 // Workarounds for the broken windows compilers
-#define NOMINMAX
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
 #define __func__ __FUNCTION__
 
 #elif defined (__APPLE__)

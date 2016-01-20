@@ -1,4 +1,3 @@
-SUBDIRS = .
 
 CLEANFILES = *.log *.idx *.out *.toc *.aux
 

@@ -5,6 +5,10 @@
 #include "testutils/unique_ptr.h"
 #include "mdsplus/AutoPointer.hpp"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using namespace MDSplus;
 using namespace testing;
 
@@ -89,9 +93,16 @@ using namespace testing;
 int main(int argc, char *argv[])
 {
     BEGIN_TESTING(Tree);
-    
+
+#ifdef _WIN32    
+    _putenv_s("test_tree_path",".");
+    _putenv_s("test_tree2_path",".");
+#else
     setenv("test_tree_path",".",true);
-    setenv("test_tree2_path",".",true);
+    setenv("test_tree2_path",".",true);    
+#endif
+
+    
     
     
     ////////////////////////////////////////////////////////////////////////////////

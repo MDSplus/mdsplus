@@ -1,0 +1,159 @@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+TEST_CFLAGS = -I${top_srcdir}/testing
+TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+
+# ///  select test form env variable  //////////////////////////////////////// #
+
+TEST_BUILDTYPE  = local
+TEST_FORMAT    ?= tap
+
+.PHONY: tap xml log
+tap: $(TEST_SUITE_TAP)
+xml: $(TEST_SUITE_XML)
+log: $(TEST_SUITE_LOG)
+
+
+.PHONY: rebuild-tests
+rebuild-tests:
+	@ \
+	rm -f *.$(OBJEXT); \
+	rm -f $(check_PROGRAMS); \
+	if [ -n "$${VALGRIND_BUILD}" ]; then \
+	 echo "building clean tests for valgrind"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all; \
+	else \
+	 echo "building tests using D_TESTING set"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	fi;
+
+.PHONY: tests
+tests:
+	@echo "Making tests ... "; \
+	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+@VALGRIND_CHECK_RULES@ 
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+LOG_DRIVER          ?= @LOG_DRIVER@
+TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
+LOG_COMPILER        ?= @LOG_COMPILER@
+PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
+PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
+
+## PY_ARCH_TEST = $(shell $(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@)
+## PY_ARCH_TEST = yes
+## PY_LOG_COMPILER     = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER@,@TESTS_SKIP@)
+## PY_LOG_FLAGS        = @PY_LOG_FLAGS@
+## PY_LOG_COMPILER_TAP = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER_TAP@,@TESTS_SKIP@)
+## PY_LOG_FLAGS_TAP    = @PY_LOG_FLAGS_TAP@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+TEST_BUILD_TAP = test-build.tap
+TEST_SUITE_TAP = test-suite.tap
+
+
+$(TEST_BUILD_TAP): rebuild-tests
+	@ \
+	echo "Try to build targets one by one"; \
+	echo "TAP version 13" > $@; \
+	count=0; \
+	for i in $(check_PROGRAMS); do \
+	  if ! $(MAKE) -q $$i; then \
+	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	    { ((count++)); \
+	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
+	    }; \
+	  fi; \
+	done; \
+	echo "1..$${count}" >> $@;
+
+
+.PHONY: $(TEST_SUITE_TAP)
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+if HAVE_PL_TAP_PARSER
+	@ \
+	echo "Run tests with tap result"; \
+	export TEST_FORMAT="tap"; \
+	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS; \
+	\
+	## collate test-build.tap \
+	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+	else suite="$@"; \
+	fi; \
+	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
+	  || exit 1
+else
+	@ \
+	echo "Run tests without collating results"; \
+	export TEST_FORMAT="tap"; \
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+	
+endif
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LOG  ///////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: add log output
+## $(TEST_SUITE_LOG):
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  XML  ///////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: add xml output
+$(TEST_SUITE_XML):
+
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  clean  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+.PHONY: clean-local-tests
+clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
+
+
+
+
+.PHONY: tests-envdump
+tests-envdump:
+	@echo; \
+	echo ----------------------------------------------------------------; \
+	echo TESTS_ENVIRONMENT = ;\
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	 echo "     $${_i}"; \
+	done;
+
+
+
+if HAVE_WINE
+wineconsole:
+	@ \
+	echo "--------------------------------------------------------------"; \
+	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
+	echo "--------------------------------------------------------------"; \
+	${TESTS_ENVIRONMENT} wineconsole
+endif

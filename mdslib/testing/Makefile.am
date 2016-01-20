@@ -1,0 +1,46 @@
+
+include @top_builddir@/Makefile.inc
+include ../../testing/testing.am
+
+
+AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
+AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
+AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
+LDADD = $(TEST_LIBS) @LIBS@ -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## // TESTS  //////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+TEST_EXTENSIONS = .py .pl
+AM_DEFAULT_SOURCE_EXT = .c
+
+TESTS = \
+        dtype_test
+        
+#        mdslib_ctest
+
+
+
+#
+# Files produced by tests that must be purged
+#
+MOSTLYCLEANFILES = *.out
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## // TARGETS  ////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+ 
+print_shell:
+	@echo "SHELL = ${SHELL}"
+
+
+all-local: $(TESTS)
+clean-local: clean-local-tests
+
+check_PROGRAMS = $(TESTS)
+check_SCRIPTS  = 
+
+
