@@ -34,6 +34,12 @@ int RemCamQ(unsigned short *iosb_in)
   return ((iosb[0] & 1) && (iosb[2] & 2));
 }
 
+int RemCamStatus(unsigned char *iosb_in)
+{
+  unsigned short *iosb = iosb_in ? iosb_in : RemCamLastIosb;
+  return (int)iosb[7];
+}
+
 int RemCamGetStat(unsigned short *iosb_in)
 {
   memcpy(iosb_in, RemCamLastIosb, sizeof(RemCamLastIosb));
