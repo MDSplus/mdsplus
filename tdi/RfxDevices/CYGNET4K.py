@@ -144,7 +144,7 @@ class CYGNET4K(Device):
                 self.stream.start()
             else:
                 self.queue = []
-            status = self.pxd_goLive(self.unitMap, c_long(1))
+            status = self.pxd_goLivePair(self.unitMap, c_long(1), c_long(2))
             if status<0:
                 self.printErrorMsg(status)
                 raise mdsExceptions.DevException
