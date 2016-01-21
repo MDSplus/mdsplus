@@ -649,7 +649,7 @@ AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
 
 # Stuff that only non-automake dirs need
-AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
+AC_SUBST([MAKEETCDIR], ["\$(top_builddir)/etc/"])
 
 dnl Check for 0xnnnnll (long long constants)
 AC_LANG_SAVE
@@ -1051,6 +1051,46 @@ AC_CHECK_FUNCS(fork)
 AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
              [LIBRT="-lrt"],[LIBRT=""])
 
+
+# check that struct timespec is defined in time.h. If not, we need to
+# define it in libcompat.h. Note the optional inclusion of pthread.h.
+# On MinGW and MinGW-w64, the pthread.h file contains the timespec
+# definition.
+AC_CHECK_MEMBERS([struct timespec.tv_sec, struct timespec.tv_nsec], [], [AC_DEFINE_UNQUOTED(STRUCT_TIMESPEC_DEFINITION_MISSING, 1, "Need to define the timespec structure")], [
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+])
+
+# check that struct itimerspec is defined in time.h. If not, we need to
+# define it in libcompat.h.  Note the optional inclusion of pthread.h.
+# On MinGW and MinGW-w64, the pthread.h file contains the itimerspec
+# definition.
+AC_CHECK_MEMBERS([struct itimerspec.it_interval, struct itimerspec.it_value], [], [AC_DEFINE_UNQUOTED(STRUCT_ITIMERSPEC_DEFINITION_MISSING, 1, "Need to define the itimerspec structure")], [
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+])
+
+# The following two checks will attempt to include pthread.h. The
+# reason is MinGW and MinGW-w64 have been known to put the time
+# related definitions in the pthread headers. Without include
+# pthread.h, these checks may mistakenly fail to find the
+# definitions.
+AC_CHECK_TYPE(clockid_t, [], [AC_DEFINE([clockid_t], [int], [clockid_t])], [
+AC_INCLUDES_DEFAULT
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+])
+AC_CHECK_TYPE(timer_t, [], [AC_DEFINE([timer_t], [int], [timer_t])], [
+AC_INCLUDES_DEFAULT
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+])
 
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")

@@ -47,25 +47,13 @@
 
 
 
-#ifdef _WIN32
+# ifndef __ASSERT_FUNCTION
 #  if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #   define __ASSERT_FUNCTION	__func__
 #  else
 #   define __ASSERT_FUNCTION	((const char *) 0)
 #  endif
-#else
-# ifndef __ASSERT_FUNCTION
-#  if defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4)
-#    define __ASSERT_FUNCTION	__PRETTY_FUNCTION__
-#  else
-#   if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
-#    define __ASSERT_FUNCTION	__func__
-#   else
-#    define __ASSERT_FUNCTION	((const char *) 0)
-#   endif
-#  endif
 # endif
-#endif
 
 #if defined __cplusplus 
 extern "C" {
@@ -76,7 +64,7 @@ extern "C" {
 // Assertion fail declaration as found in assert.h //
 EXPORT void __assert_fail (const char *__assertion, const char *__file,
                            unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
+ __attribute__ ((__noreturn__));
 
 EXPORT void __mark_point(const char *__assertion, const char *__file, 
                          unsigned int __line, const char *__function);
@@ -124,7 +112,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
+ __attribute__ ((__noreturn__));
 
 
 void __mark_point(const char *__assertion, const char *__file, 

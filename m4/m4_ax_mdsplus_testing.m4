@@ -134,6 +134,7 @@ dnl correctly call the test chain.
 dnl The test chain is composed by: [tests_env] [log_driver] [log_compiler] [test_flags]
 dnl
 AC_DEFUN([TS_SELECT],[
+ AS_VAR_SET([ENABLE_TESTS])
  AS_VAR_SET([TESTS_ENVIRONMENT])
  AS_VAR_SET([LOG_COMPILER])
  AS_VAR_SET([LOG_FLAGS])
@@ -171,6 +172,7 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
  #
  [*linux*:*mingw*],
  [
+   AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->mingw")
    AS_VAR_SET_IF([HAVE_WINE],,[AC_CHECK_PROG(HAVE_WINE,wine,yes,no)])
    AS_VAR_IF([HAVE_WINE],[yes],
@@ -202,6 +204,7 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
  #
  [*linux*:*linux*],
  [
+   AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->linux")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
@@ -213,14 +216,17 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
  #
  [*],
  [
-   AC_MSG_WARN("Tests may not be supported for this host!")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
+   # in all other platform tests are disabled for now
+   AS_VAR_SET([ENABLE_TESTS],[no])
  ])
 
 # MACOS: add --dsymutil=yes to valgrind
+
+
+# Set ENABLE_TESTS
+  AC_SUBST([ENABLE_TESTS])
+  AM_CONDITIONAL([ENABLE_TESTS],[test x"${ENABLE_TESTS}" = x"yes"])
+  m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([ENABLE_TESTS])])
 
 
 ])
