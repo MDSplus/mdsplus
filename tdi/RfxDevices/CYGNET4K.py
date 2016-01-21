@@ -56,7 +56,8 @@ class CYGNET4K(Device):
         '0x54':'ETX_UNKNOWN_CMD',
         '0x55':'ETX_DONE_LOW'}
         STREAM = True
-        DRIVERPARMS = '-XU 1'  # allow other applications to share use of imaging boards previously opened for use by the first application
+        devide_id = 1
+        DRIVERPARMS = '-XU 1 -DM %d'  # allow other applications to share use of imaging boards previously opened for use by the first application
         FORMAT = 'DEFAULT'
         isOpen = False
         running = False
@@ -94,9 +95,6 @@ class CYGNET4K(Device):
             if self.isOpen:
                 self.pxd_PIXCIclose()
 
-        def setID(self,ID):
-            self.unitMap = 1<<(ID-1)
-
         def printErrorMsg(self,status):
             print(self.pxd_mesgErrorCode(status))
             self.pxd_mesgFault(0xFF)
@@ -105,12 +103,14 @@ class CYGNET4K(Device):
             self.pxd_PIXCIclose();
             CYGNET4K.isOpen = False;
 
-        def openDevice(self,formatFile=""):
+        def openDevice(self,dev_id,formatFile=""):
             """configFile includes exposure time which seems to take precedence over later serial commands"""
-            if CYGNET4K.isOpen: return True
+            if CYGNET4K.isOpen: return self.device_id==int(dev_id)
+            self.device_id = int(dev_id)
+            DRIVERPARMS = self.DRIVERPARMS % (1<<(dev_id-1))
             if Device.debug:
-                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % (self.DRIVERPARMS))
-            status = self.pxd_PIXCIopen(c_char_p(self.DRIVERPARMS), c_char_p(self.FORMAT), c_char_p(formatFile))
+                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % ())
+            status = self.pxd_PIXCIopen(c_char_p(DRIVERPARMS), c_char_p(self.FORMAT), c_char_p(formatFile))
             if status<0:
                 self.printErrorMsg(status)
                 CYGNET4K.isOpen = False
@@ -146,15 +146,15 @@ class CYGNET4K(Device):
                 self.stream.start()
             else:
                 self.queue = []
-            status = self.pxd_goLivePair(self.unitMap, c_long(1), c_long(2))
+            status = self.pxd_goLivePair(1, c_long(1), c_long(2))
             if status<0:
                 self.printErrorMsg(status)
                 raise mdsExceptions.DevException
-            self.lastCaptured = self.pxd_capturedFieldCount(self.unitMap)
+            self.lastCaptured = self.pxd_capturedFieldCount(1)
             self.currTime = 0
             self.Frames = 0
             for i in range(10):
-                self.running = not self.pxd_goneLive(self.unitMap,0)==0
+                self.running = not self.pxd_goneLive(1,0)==0
                 if self.running: break
                 else:            sleep(1)
             if self.running:
@@ -164,17 +164,17 @@ class CYGNET4K(Device):
                 raise mdsExceptions.DevException
 
         def captureFrame(self, TriggerTime):
-            currCaptured = self.pxd_capturedFieldCount(self.unitMap);
+            currCaptured = self.pxd_capturedFieldCount(1);
             if currCaptured != self.lastCaptured:  # A new frame arrived
-                currBuffer = self.pxd_capturedBuffer(self.unitMap);
-                currTicks = self.pxd_buffersSysTicks(self.unitMap, currBuffer)  # get internal clock of that buffer
+                currBuffer = self.pxd_capturedBuffer(1);
+                currTicks = self.pxd_buffersSysTicks(1, currBuffer)  # get internal clock of that buffer
                 if Device.debug>3: print("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks))
                 if self.Frames == 0:  # first frame
                     self.baseTicks = currTicks;
                 currTime = (currTicks - (self.baseTicks)) * self.secPerTick + TriggerTime;
                 self.lastCaptured = currCaptured;
                 usFrame = (c_ushort*self.PixelsToRead)()  # allocate frame
-                PixelsRead = self.pxd_readushort(self.unitMap, c_long(currBuffer), 0, 0, self.PixelsX, self.PixelsY, byref(usFrame), self.PixelsToRead, c_char_p("Grey"))  # get frame
+                PixelsRead = self.pxd_readushort(1, c_long(currBuffer), 0, 0, self.PixelsX, self.PixelsY, byref(usFrame), self.PixelsToRead, c_char_p("Grey"))  # get frame
                 if PixelsRead != self.PixelsToRead:
                     print('ERROR READ USHORT')
                     if PixelsRead < 0: self.printErrorMsg(PixelsRead)
@@ -204,7 +204,7 @@ class CYGNET4K(Device):
             node.makeSegment(dim,dim,dims,data)
 
         def stopVideoCapture(self):
-            self.pxd_goUnLive(self.unitMap)
+            self.pxd_goUnLive(1)
             if isinstance(self.queue,Queue):
                 self.queue.put(None)  # invoke stream closure
             self.running = False
@@ -216,7 +216,7 @@ class CYGNET4K(Device):
             for i in range(BytesToWrite): check ^= ord(writeBuf[i])
             writeBuf += chr(check)
             if not self.isInitSerial:
-                status = self.pxd_serialConfigure(self.unitMap, 0, c_double(115200.), 8, 0, 1, 0, 0, 0)
+                status = self.pxd_serialConfigure(1, 0, c_double(115200.), 8, 0, 1, 0, 0, 0)
                 if status<0:
                     print("ERROR CONFIGURING SERIAL CAMERALINK PORT")
                     self.printErrorMsg(status)
@@ -224,7 +224,7 @@ class CYGNET4K(Device):
                 self.isInitSerial = True
                 sleep(0.02)
             if Device.debug>3: print('serial write: '+' '.join(['%02x' % ord(c) for c  in writeBuf]),BytesToRead)
-            BytesRead = self.pxd_serialWrite(self.unitMap, 0, c_char_p(writeBuf), BytesToWrite+1)
+            BytesRead = self.pxd_serialWrite(1, 0, c_char_p(writeBuf), BytesToWrite+1)
             if BytesRead < 0:
                 print("ERROR IN SERIAL WRITE");
                 self.printErrorMsg(BytesRead)
@@ -233,7 +233,7 @@ class CYGNET4K(Device):
             BytesToRead += 11  # ack (+ chk)
             cReadBuf = create_string_buffer(BytesToRead)  # ETX and optional check sum
             sleep(0.001)
-            BytesRead = self.pxd_serialRead(self.unitMap, 0, cReadBuf, BytesToRead)
+            BytesRead = self.pxd_serialRead(1, 0, cReadBuf, BytesToRead)
             if BytesRead < 0:
                 print("ERROR IN SERIAL READ\n");
                 self.printErrorMsg(BytesRead)
@@ -520,13 +520,12 @@ class CYGNET4K(Device):
             node.write_once = node.no_write_shot = True
 
         dev_id = int(self.device_id.data())
-        if dev_id<0:
-            print('Wrong value for DEVICE_ID, must not be negative.')
+        if dev_id<=0:
+            print('Wrong value for DEVICE_ID, must be a positive integer.')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary()
-        CYGNET4K.xclib.setID(dev_id)
         CYGNET4K.xclib.closeDevice()  # as config file might have changed we re-open
-        CYGNET4K.xclib.openDevice(self.conf_file.data(""))  # use config file if defined else ""
+        CYGNET4K.xclib.openDevice(dev_id,self.conf_file.data(""))  # use config file if defined else ""
         if not CYGNET4K.isOpen:
             print('Could not open camera. No camera connected?.')
             raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
@@ -598,9 +597,8 @@ class CYGNET4K(Device):
             print('Wrong value for DEVICE_ID, must be greater than 0')
             raise mdsExceptions.DevINV_SETUP
         CYGNET4K.loadLibrary()
-        CYGNET4K.xclib.setID(dev_id)
         if not CYGNET4K.isOpen:
-            CYGNET4K.xclib.openDevice()
+            CYGNET4K.xclib.openDevice(dev_id)
             if not CYGNET4K.isOpen:
                 print('Could not open camera. No camera connected?.')
                 raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
