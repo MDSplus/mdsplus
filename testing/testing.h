@@ -55,7 +55,7 @@
 #  endif
 #else
 # ifndef __ASSERT_FUNCTION
-#  if defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4)
+#  if defined __cplusplus && __GNUC_PREREQ (2, 6)
 #    define __ASSERT_FUNCTION	__PRETTY_FUNCTION__
 #  else
 #   if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
