@@ -296,16 +296,10 @@
 #endif
 
 
-/* clockid_t */
-#undef clockid_t
-
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
-
-/* timer_t */
-#undef timer_t
 
 

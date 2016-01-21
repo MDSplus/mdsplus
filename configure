@@ -13538,41 +13538,6 @@ _ACEOF
 fi
 
 
-# The following two checks will attempt to include pthread.h. The
-# reason is MinGW and MinGW-w64 have been known to put the time
-# related definitions in the pthread headers. Without include
-# pthread.h, these checks may mistakenly fail to find the
-# definitions.
-ac_fn_c_check_type "$LINENO" "clockid_t" "ac_cv_type_clockid_t" "
-$ac_includes_default
-#if defined(HAVE_PTHREAD)
-#include <pthread.h>
-#endif /* HAVE_PTHREAD */
-
-"
-if test "x$ac_cv_type_clockid_t" = xyes; then :
-
-else
-
-$as_echo "#define clockid_t int" >>confdefs.h
-
-fi
-
-ac_fn_c_check_type "$LINENO" "timer_t" "ac_cv_type_timer_t" "
-$ac_includes_default
-#if defined(HAVE_PTHREAD)
-#include <pthread.h>
-#endif /* HAVE_PTHREAD */
-
-"
-if test "x$ac_cv_type_timer_t" = xyes; then :
-
-else
-
-$as_echo "#define timer_t int" >>confdefs.h
-
-fi
-
 
 # Extract the first word of "wine", so it can be a program name with args.
 set dummy wine; ac_word=$2
