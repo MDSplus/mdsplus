@@ -45,7 +45,10 @@ SOURCES	= \
 		ScsiSystemStatus.c		 \
 		turn_crate_on_off_line.c \
 		unlock_file.c            \
-		xlate_logicalname.c
+		xlate_logicalname.c \
+		RemCamMulti.c \
+		RemCamSingle.c \
+		RemCamIosb.c
 
 OBJECTS =	$(SOURCES:.c=.o)
 

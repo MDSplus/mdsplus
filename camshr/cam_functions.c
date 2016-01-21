@@ -45,6 +45,7 @@
 #include <string.h>
 
 #include <scsi/sg.h>
+#include <dlfcn.h>
 
 #include <camdef.h>
 #include <mdsshr_messages.h>
@@ -176,6 +177,13 @@ static int Jorway73ATranslateIosb(int datacmd, int reqbytcnt, J73ASenseData * se
 				  int scsi_status);
 static int KsTranslateIosb(RequestSenseData * sense, int scsi_status);
 
+static int isRemote = -1;
+static int checkRemote() {
+  if (isRemote == -1) {
+    isRemote = getenv("camac_server") ? 1 : 0;
+  }
+  return isRemote;
+}
 //-----------------------------------------------------------
 // local, global
 //-----------------------------------------------------------
@@ -184,115 +192,156 @@ static int Verbose = 0;
 //-----------------------------------------------------------
 // helper routines
 //-----------------------------------------------------------
+extern int RemCamVerbose();
+extern int RemCamQ();
+extern int RemCamX();
+extern int RemCamXandQ();
+extern int RemCamGetStat();
+extern int RemCamError();
+extern int RemCamStatus();
+extern int RemCamBytcnt();
+
 EXPORT int CamVerbose(int mode)
 {
-  Verbose = mode;
-  return 1;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+	  return RemCamVerbose(mode);
+  } else {
+    Verbose = mode;
+    return 1;
+  }
 }
 
 EXPORT int CamQ(TranslatedIosb * iosb)	// CAM$Q_SCSI()
 {
-  TranslatedIosb *iosb_use;
-  iosb_use = (iosb) ? iosb : &LastIosb;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+	  return RemCamQ(iosb);
+  }
+  else {
+    TranslatedIosb *iosb_use;
+    iosb_use = (iosb) ? iosb : &LastIosb;
 
-  if (MSGLVL(DETAILS))
-    printf("CamQ(): using %s %p  CamQ()=%d\n", (iosb) ? "iosb" : "&LastIosb", iosb, iosb_use->q);
+    if (MSGLVL(DETAILS))
+      printf("CamQ(): using %s %p  CamQ()=%d\n", (iosb) ? "iosb" : "&LastIosb", iosb, iosb_use->q);
 //printf("CamQ(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);          // [2002.12.13]
 //printf("CamQ(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt);      // [2002.12.13]
 //printf("CamQ(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);               // [2002.12.13]
-  return iosb_use->q;
+    return iosb_use->q;
+  }
 }
 
 //-----------------------------------------------------------
 EXPORT int CamX(TranslatedIosb * iosb)	// CAM$X_SCSI()
 {
-  TranslatedIosb *iosb_use;
-  iosb_use = (iosb) ? iosb : &LastIosb;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+	  return RemCamX(iosb);
+  } else {
+    TranslatedIosb *iosb_use;
+    iosb_use = (iosb) ? iosb : &LastIosb;
 
-  if (MSGLVL(DETAILS))
-    printf("CamX(): using %s %p  CamX()=%d\n", (iosb) ? "iosb" : "&LastIosb", iosb, iosb_use->x);
+    if (MSGLVL(DETAILS))
+      printf("CamX(): using %s %p  CamX()=%d\n", (iosb) ? "iosb" : "&LastIosb", iosb, iosb_use->x);
 
 //printf("CamX(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);          // [2002.12.13]
 //printf("CamX(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt);      // [2002.12.11]
 //printf("CamX(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);               // [2002.12.13]
-  return iosb_use->x;
+    return iosb_use->x;
+  }
 }
 
 //-----------------------------------------------------------
 EXPORT int CamXandQ(TranslatedIosb * iosb)	// CAM$XANDQ_SCSI()
 {
-  TranslatedIosb *iosb_use;
-  iosb_use = (iosb) ? iosb : &LastIosb;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+	  return RemCamXandQ(iosb);
+  } else {
+    TranslatedIosb *iosb_use;
+    iosb_use = (iosb) ? iosb : &LastIosb;
 
-  if (MSGLVL(DETAILS))
-    printf("CamXandQ(): using %s %p  %s .x=%d .q=%d  CamXandQ()=%d\n",
-	   (iosb) ? "iosb" : "&LastIosb",
-	   iosb,
-	   (iosb) ? "iosb" : "&LastIosb", iosb_use->x, iosb_use->q, iosb_use->x && iosb_use->q);
-
+    if (MSGLVL(DETAILS))
+      printf("CamXandQ(): using %s %p  %s .x=%d .q=%d  CamXandQ()=%d\n",
+	     (iosb) ? "iosb" : "&LastIosb",
+	     iosb,
+	     (iosb) ? "iosb" : "&LastIosb", iosb_use->x, iosb_use->q, iosb_use->x && iosb_use->q);
+    
 //printf("CamXnQ(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);                // [2002.12.13]
 //printf("CamXnQ(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt);    // [2002.12.13]
 //printf("CamXnQ(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);     // [2002.12.13]
-  return iosb_use->x && iosb_use->q;
+    return iosb_use->x && iosb_use->q;
+  }
 }
 
 //-----------------------------------------------------------
 EXPORT int CamBytcnt(TranslatedIosb * iosb)	// CAM$BYTCNT_SCSI()
 {
-  TranslatedIosb *iosb_use;
-  iosb_use = (iosb) ? iosb : &LastIosb;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+	  return RemCamBytcnt(iosb);
+  } else {
+    TranslatedIosb *iosb_use;
+    iosb_use = (iosb) ? iosb : &LastIosb;
 
-  if (MSGLVL(DETAILS))
-    printf("CamBytcnt(): using %s %p  CamBytcnt()=%d\n",
+    if (MSGLVL(DETAILS))
+      printf("CamBytcnt(): using %s %p  CamBytcnt()=%d\n",
 	   (iosb) ? "iosb" : "&LastIosb", iosb, iosb_use->bytcnt);
 
-//printf("CamBytcnt(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);             // [2002.12.13]
-//printf("CamBytcnt(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt); // [2002.12.13]
-//printf("CamBytcnt(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);  // [2002.12.13]
-  return ((int)iosb_use->bytcnt) | (((int)iosb_use->lbytcnt) << 16);
+    //printf("CamBytcnt(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);             // [2002.12.13]
+    //printf("CamBytcnt(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt); // [2002.12.13]
+    //printf("CamBytcnt(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);  // [2002.12.13]
+    return ((int)iosb_use->bytcnt) | (((int)iosb_use->lbytcnt) << 16);
+  }
 }
 
 //-----------------------------------------------------------
 EXPORT int CamStatus(TranslatedIosb * iosb)	// CAM$STATUS_SCSI()
 {
-  TranslatedIosb *iosb_use;
-  iosb_use = (iosb) ? iosb : &LastIosb;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+	  return RemCamStatus(iosb);
+  } else {
+    TranslatedIosb *iosb_use;
+    iosb_use = (iosb) ? iosb : &LastIosb;
 
-//printf("CamStatus(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);             // [2002.12.13]
-//printf("CamStatus(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt); // [2002.12.13]
-//printf("CamStatus(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);  // [2002.12.13]
-  return iosb_use->status;
+    //printf("CamStatus(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);             // [2002.12.13]
+    //printf("CamStatus(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt); // [2002.12.13]
+    //printf("CamStatus(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);  // [2002.12.13]
+    return iosb_use->status;
+  }
 }
 
 //-----------------------------------------------------------
 EXPORT int CamGetStat(TranslatedIosb * iosb)	// CAM$GET_STAT_SCSI()
 {
-  *iosb = LastIosb;
-//printf("CamGetStatus(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);  // [2002.12.13]
-//printf("CamGetStatus(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);       // [2002.12.13]
-  return 1;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+    return RemCamGetStat(iosb);
+  } else {
+    *iosb = LastIosb;
+    //printf("CamGetStatus(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);  // [2002.12.13]
+    //printf("CamGetStatus(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);       // [2002.12.13]
+    return 1;
+  }
 }
 
 //-----------------------------------------------------------
 EXPORT int CamError(int xexp, int qexp, TranslatedIosb * iosb)
 {
-  int xexp_use;
-  int qexp_use;
-  TranslatedIosb *iosb_use;
-
-  if (MSGLVL(DETAILS))
-    printf("CamError(): xexp:%d qexp:%d\n", xexp, qexp);
-
-  xexp_use = xexp ? xexp : 0;
-  qexp_use = qexp ? qexp : 0;
-  iosb_use = iosb ? iosb : &LastIosb;
-
-  iosb_use->err = !iosb_use->x && !iosb_use->q;
-
-  if (MSGLVL(DETAILS))
-    printf("CamError(): x:%d q:%d iosb->err %d\n", xexp_use, qexp_use, iosb_use->err);
-
-  return iosb_use->err;
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+    return RemCamError(xexp, qexp, iosb);
+  } else {
+    int xexp_use;
+    int qexp_use;
+    TranslatedIosb *iosb_use;
+    
+    if (MSGLVL(DETAILS))
+      printf("CamError(): xexp:%d qexp:%d\n", xexp, qexp);
+    
+    xexp_use = xexp ? xexp : 0;
+    qexp_use = qexp ? qexp : 0;
+    iosb_use = iosb ? iosb : &LastIosb;
+    
+    iosb_use->err = !iosb_use->x && !iosb_use->q;
+    
+    if (MSGLVL(DETAILS))
+      printf("CamError(): x:%d q:%d iosb->err %d\n", xexp_use, qexp_use, iosb_use->err);
+    return iosb_use->err;
+  }
 }
 
 //-----------------------------------------------------------
@@ -319,6 +368,10 @@ EXPORT int Cam##pname(                                     \
 	int 		status;              				\
 	CamKey		Key;                                \
         static  int debug=-1; \
+	\
+	if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) { \
+	  return RemCam##pname(Name, A, F, Data, Mem, iosb); \
+	}\
                                                     \
         if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
         if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, data=%d, mem=%d\n",Name,A,F,Data ? *(int *)Data : -1,Mem); \
@@ -356,6 +409,10 @@ EXPORT int Cam##pname(                                     \
 	CamKey		Key;                                \
                                                     \
         static  int debug=-1; \
+                                                    \
+	if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) { \
+	  return RemCam##pname(Name, A, F, Count, Data, Mem, iosb);	\
+	}\
                                                     \
         if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
         if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, Count=%d, data=%p, mem=%d\n",Name,A,F,Count,Data,Mem); \
@@ -1178,36 +1235,44 @@ static int NOT_SUPPORTED()
 
 EXPORT int CamSetMAXBUF(char *Name, int new)
 {
-  int scsiDevice, enhanced, online;
-  CamKey Key;
-  int status = CamAssign(Name, &Key);
-  if (status & 1) {
-    char dev_name[7];
-    sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
-    if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
-      return -1;
-    } else
-      return SGSetMAXBUF(scsiDevice, new);
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+    return RemCamSetMAXBUF(Name, new);
   } else {
-    printf("Module: %s not defined\n", Name);
-    return -1;
+    int scsiDevice, enhanced, online;
+    CamKey Key;
+    int status = CamAssign(Name, &Key);
+    if (status & 1) {
+      char dev_name[7];
+      sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
+      if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
+	return -1;
+      } else
+	return SGSetMAXBUF(scsiDevice, new);
+    } else {
+      printf("Module: %s not defined\n", Name);
+      return -1;
+    }
   }
 }
 
 EXPORT int CamGetMAXBUF(char *Name)
 {
-  int scsiDevice, enhanced, online;
-  CamKey Key;
-  int status = CamAssign(Name, &Key);
-  if (status & 1) {
-    char dev_name[7];
+  if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) {
+    return RemCamGetMAXBUF(Name);
+  } else {
+    int scsiDevice, enhanced, online;
+    CamKey Key;
+    int status = CamAssign(Name, &Key);
+    if (status & 1) {
+      char dev_name[7];
     sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
     if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
       return -1;
     } else
       return SGGetMAXBUF(scsiDevice);
-  } else {
-    printf("Module: %s not defined\n", Name);
-    return -1;
+    } else {
+      printf("Module: %s not defined\n", Name);
+      return -1;
+    }
   }
 }
