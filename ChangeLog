@@ -1,4 +1,53 @@
-commit 792e1fe536355edc0892e5b7cda1b0c3d13eeaa4 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 054a5c35163e1b79daa2124172ef0f8f0f4bbd96 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 20 17:09:15 2016 -0500
+
+    disable thread tests until problem is solved
+
+commit ba3145738a2decd4ec15e028a6a2c7fb20d46717
+Merge: 3aba7cf 5197a0c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 20 10:55:03 2016 -0500
+
+    Merge pull request #324 from MDSplus/feature-testing
+    
+    Feature testing
+
+commit 5197a0cbc0a87bd1e70e36d9a63e7585316c331d (refs/remotes/origin/feature-testing)
+Merge: 0ef062a 69e9f23
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Wed Jan 20 15:08:44 2016 +0100
+
+    Merge pull request #323 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
+commit 69e9f2335a140556fdb857308b1d6908e1df5059
+Merge: 6055e79 3aba7cf
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jan 20 14:21:23 2016 +0100
+
+    Merge branch 'alpha' into andrea-testing
+
+commit 6055e79f9c23e533899f0d49e4a6800f759b1ac7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jan 20 14:19:53 2016 +0100
+
+    clean Connection comment
+
+commit bb9e84a10a9ddbaf12ce88dd8fa16206166c8ec6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jan 20 14:19:34 2016 +0100
+
+    for now let config.h be installed with the other headers.
+
+commit 3aba7cf7d9f5eff14927b82712669917c4a047e2 (tag: refs/tags/alpha_release-7-0-209)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 19 23:36:00 2016 -0500
+
+    New release ---- alpha_release-7-0-209
+
+commit 792e1fe536355edc0892e5b7cda1b0c3d13eeaa4
 Merge: 6784768 2a1bef4
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 19 16:26:11 2016 -0500
@@ -45,6 +94,55 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 19 09:21:00 2016 -0500
 
     Do not add streaming support for VS dll
+
+commit 0ef062aac0e3bcdf9713cc947e7fe1fa5fd876cd
+Merge: 4e715da da9824b
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Mon Jan 18 20:28:52 2016 +0100
+
+    Merge pull request #319 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
+commit da9824bcbcca7563cb6a05f47af2cc0d46356c12
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 18 18:07:27 2016 +0100
+
+    add VALGRIND_TESTS variable to select a subset of tests performed in valgrind
+
+commit 124d8439d81625b7baf6557cd977174a8f165e65
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 18 18:06:35 2016 +0100
+
+    remove some warnings
+
+commit bdb76458e0e0e9b9c6f371e7690e484f61b2ee40
+Merge: c6b56d4 1cf5b4f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 18 15:02:43 2016 +0100
+
+    Merge branch 'alpha' into andrea-testing
+
+commit c6b56d4854a604c3a4af2e5f7f994e84f61dda5b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 18 14:55:46 2016 +0100
+
+    nose apparently requires runTest
+
+commit 7004e39f446aa6f4caf3e4da39128890a0586c05
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 18 14:52:54 2016 +0100
+
+    force reconfigure to be executed in top builddir
+
+commit 4e715da54fa747c42b95db64470f56ad1506a27d
+Merge: 996aa04 5a343e7
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Mon Jan 18 09:25:57 2016 +0100
+
+    Merge pull request #318 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
 
 commit 9f06944bf0d37d3bdd5af1ec5a8e663462924eec
 Author: Josh Stillerman <jas@psfc.mit.edu>
@@ -107,11 +205,48 @@ Date:   Fri Jan 15 15:02:16 2016 -0500
 
     use Raise in devices instead of returning status
 
+commit 5a343e7fd967bc9d98ca55a7dc5b1cd7f9259111
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 19:08:56 2016 +0100
+
+    fix skip for windows
+
+commit 12df2d78fe516d6a2ddb4eaf4fe3a13700d99b7e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 18:57:41 2016 +0100
+
+    fixed missing $(CPPFLAGS) to reach configure.h
+
+commit b0d379d577787bb15a4d4ee1498a05c27336fd13
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 18:07:19 2016 +0100
+
+    skipping Call test for now...
+
+commit 40be3ef60f642f3fb31b4a078ed839512edf5905
+Merge: 812ef76 b185a7c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 17:52:35 2016 +0100
+
+    Merge branch 'alpha' into andrea-testing
+
 commit 68110fe6e42e98c0cc2c5bb2df9328691fd3f944
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 15 11:45:18 2016 -0500
 
     Do not use pthreads if building VS dll.
+
+commit 812ef7667ea2630acd9f1cc8d246b7e146eca3a8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 17:40:42 2016 +0100
+
+    fix python tests for merged alpha
+
+commit 0e76932314d5399bc54a6e0e04944aa4b3a538b3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 17:39:49 2016 +0100
+
+    removed EXPORT redeclaration
 
 commit ca67dc27f86636e52db3820f058440d2381e3425
 Author: Josh Stillerman <jas@psfc.mit.edu>
@@ -134,6 +269,71 @@ Date:   Fri Jan 15 09:50:52 2016 -0500
 
     Fix typos to include the VS dll in the installer
 
+commit 7cc3d313ca34a8b262452e8286c84c4fffff94f8
+Merge: 996aa04 02fa3cf
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 12:36:39 2016 +0100
+
+    Merge branch 'alpha' into andrea-testing
+    
+    # Conflicts:
+    #	LabView/Makefile.in
+    #	actions/Makefile.in
+    #	configure
+    #	configure.ac
+    #	deploy/build_windows_mdsplus
+    #	docs/Makefile.in
+    #	dwscope/Makefile.in
+    #	icons/Makefile.in
+    #	javaclient/Makefile.in
+    #	javadevices/Makefile.in
+    #	javadispatcher/Makefile.in
+    #	javascope/Makefile.in
+    #	javatraverser/Makefile.in
+    #	macosx/Makefile.in
+    #	manpages/Makefile.in
+    #	mdslib/docs/Makefile.in
+    #	mdsobjects/cpp/docs/Makefile.in
+    #	mdsobjects/cpp/testing/Makefile.in
+    #	mdsobjects/cpp/testing/MdsTreeNodeTest.cpp
+    #	mdsobjects/cpp/testing/testutils/Makefile.in
+    #	mdsobjects/java/Makefile.in
+    #	mdsobjects/java/docs/Makefile.in
+    #	mdsobjects/python/docs/Makefile.in
+    #	mdsobjects/python/setup.py
+    #	mdsobjects/python/tests/__init__.py
+    #	mdsobjects/python/tests/treeUnitTest.py
+    #	mdsshr/docs/Makefile.in
+    #	mdstcpip/docs/Makefile.in
+    #	mdstcpip/docs/img/Makefile.in
+    #	mdstcpip/zlib/Makefile.in
+    #	rpm/Makefile.in
+    #	scripts/Makefile.in
+    #	setevent/Makefile.in
+    #	testing/Makefile.in
+    #	testing/backends/check/Makefile.in
+    #	wfevent/Makefile.in
+
+commit 996aa042842b9aa86444daaaf50c8f59d14ea7e6
+Merge: 7c33613 495c4a4
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 11:47:46 2016 +0100
+
+    Merge branch 'andrea-testing' into feature-testing
+
+commit 7c33613fb2a11996944578b1d20366c1c08ff613
+Merge: 2510a3c c8381be
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 11:46:57 2016 +0100
+
+    Merge branch 'feature-testing' of https://github.com/mdsplus/mdsplus into feature-testing
+
+commit 495c4a4ec40bcf09754779837cff5cd7ba0a1e95
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 15 11:42:23 2016 +0100
+
+    clean up valgrind_lib variable
+
 commit 9591530bf7c902a6825c80dd790a05e21a1b7a03
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 14 17:08:50 2016 -0500
@@ -151,6 +351,97 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 14 15:34:20 2016 -0500
 
     Use a waitress wsgi server on windows to execute the visual studio build commands instead of using obsolete winexe command
+
+commit c8381be3012bd402a89d6d86393d05d93f996bfc
+Merge: 33239d9 3f73519
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Jan 14 19:45:05 2016 +0100
+
+    Merge pull request #311 from AndreaRigoni/andrea-testing
+    
+    adds VALGRIND_LIB into Makefile variables
+
+commit 3f73519fc9f3a683d4eeb5c26be2aaf369efb8f3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 19:42:19 2016 +0100
+
+    adds VALGRIND_LIB into Makefile variables
+
+commit 33239d924994570808a7911c30fae763be9653a3
+Merge: 4096282 853fb81
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Jan 14 18:24:56 2016 +0100
+
+    Merge pull request #309 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
+commit 853fb813d1a15e5aeafa9db3e191aa3e977f6acd
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 18:22:09 2016 +0100
+
+    add reconfigure target (to configure again with previous parameters)
+
+commit 49b3e41150ce92e3732823954c61a9dd62d68f24
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 18:21:01 2016 +0100
+
+    cleanup test script
+
+commit 8e8d3ee832585c9a42cc99cab71362d974f27e4f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 18:20:26 2016 +0100
+
+    check for enable_debug in valgrind
+
+commit a73d57912f0445591b062b0e6296671a6b772718
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 18:19:17 2016 +0100
+
+    fix "nothing to be done for docker"
+
+commit e278ff997a183b7a001f21224a508d28911fb041
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 18:19:00 2016 +0100
+
+    common script for tests
+
+commit 2510a3c3c9c5958879f587921d9640eb4a10517c
+Merge: 8f9bc11 4096282
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 12:33:20 2016 +0100
+
+    Merge branch 'feature-testing' of https://github.com/mdsplus/mdsplus into feature-testing
+
+commit 8f9bc1140e92c5463d2578e59271721f6944958e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 12:17:05 2016 +0100
+
+    clean out format message
+
+commit 409628219493f031f6cd76c021ed5c425e5c488c
+Merge: 6b4c790 9e14e0b
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Jan 14 11:17:28 2016 +0100
+
+    Merge pull request #308 from AndreaRigoni/andrea-testing
+    
+    fix for append args to configure
+
+commit 9e14e0bc076ad92e11002017465502e250dad276
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 14 10:53:56 2016 +0100
+
+    fix for append args to configure
+
+commit 6b4c79027ca69eb3d361e427feb214a5e0f39814
+Merge: 1bef99e ca89e3e
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Jan 14 09:20:01 2016 +0100
+
+    Merge pull request #306 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
 
 commit 02fa3cfd14dff9d2ba7f7a3da5f8f5dc65316b66 (tag: refs/tags/alpha_release-7-0-207)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -172,6 +463,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 13 14:42:27 2016 -0500
 
     Initialize data descriptors to zero in MdsSerialize to prevent references to uninitialized memory errors
+
+commit ca89e3e601766677ad6855c173ef1f1598bc5b0b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jan 13 17:44:05 2016 +0100
+
+    fixed python tests to match the ones in alpha
 
 commit f9b98e523a7ec299800834979b867f59bfaab030
 Merge: 684db29 ac4c732
@@ -253,6 +550,12 @@ Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Jan 13 11:34:15 2016 +0100
 
     resolve conflicts
+
+commit 2f4d62fb18cd67ab50e79ebe9c0a74e61bbcb1ac
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jan 13 11:07:19 2016 +0100
+
+    changed __assert_fail  to   __test_assert_fail
 
 commit 269649691848a07a22672c25c0ffc2501e965045
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -497,6 +800,39 @@ Date:   Fri Jan 8 11:20:18 2016 -0500
     
     fix for deltas of 0x80000000 broke compression of DTYPE_FS
 
+commit e96514913634c12c8fdfd53a650a1ffcb3a6b402
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 8 15:15:48 2016 +0100
+
+    fir compile problem
+
+commit 1bef99e80e64ee267af3e4e4d4b444c0932d1506
+Merge: 2d4a523 a08f8e8
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Fri Jan 8 13:42:19 2016 +0100
+
+    Merge pull request #291 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
+commit a08f8e8aefe429edd4cd7a3d2f64f6b3941d09fe
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 8 12:38:45 2016 +0100
+
+    AWK can be selected from env (valgrind suppression must be generated from gawk only)
+
+commit fdba7fd0a7195b7abb74837bcad433e0b2d39df7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 8 12:37:28 2016 +0100
+
+    remved sshd daemon from docker start (it must be launched manually or in docker image)
+
+commit f60fc62dabe0ac3fc320080b9ca897814932f19f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 8 10:02:24 2016 +0100
+
+    fix exit code...
+
 commit 6c361cbab11e7bf2b716dce0191d440a6fd6b283 (refs/remotes/origin/jas-fix-compress-error-for-FS-minus-zero)
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Jan 7 14:27:48 2016 -0500
@@ -505,6 +841,36 @@ Date:   Thu Jan 7 14:27:48 2016 -0500
     
     fix for deltas of 0x80000000 broke compression of DTYPE_FS
     non-semantic fix - don't do the new stuff if dtype is FS
+
+commit 66fcaafedde73cbf825267e8de36cf7389e588ad
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 7 17:56:18 2016 +0100
+
+    fix dokerbuild (only bash supported, as printf %q is not posix)
+
+commit f7b63f7b54d36b59a6e04eb84c5557a1640e6a00
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 7 17:55:09 2016 +0100
+
+    fix library order
+
+commit f6282f40bef8c54fb6a9c01a28cbdc8308221fc6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 7 17:54:29 2016 +0100
+
+    do not stop test execution on fail
+
+commit e2c195a7643cad2c293e68577dac720c74eb1695
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 7 12:21:36 2016 +0100
+
+    do not kill make process if valgrind fails
+
+commit 29dbd987085415aa78e3945ed2f49d0b9a92a30e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 7 12:21:05 2016 +0100
+
+    pass make agruments in docker exporting MAKEFLAGS and MFLAGS
 
 commit 111149403b5e8c38e31f0b6e5cd4e7d00869fa80 (tag: refs/tags/alpha_release-7-0-204)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -668,6 +1034,15 @@ Date:   Wed Dec 30 16:25:35 2015 -0500
 
     Fix MDSExceptions __init__ function
 
+commit 2d4a523597146392c0815b6d1862613c2fee98c5
+Merge: 43be058 122b2fc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 30 13:22:21 2015 -0500
+
+    Merge pull request #276 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
 commit 03766b5d690a18f4669076515138e7114fed7dab
 Merge: 827a249 7ef0dc9
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -693,11 +1068,95 @@ Date:   Wed Dec 30 17:39:59 2015 +0100
 
     Move files
 
+commit 122b2fc4bd7c755216372f90bb007ed2c51cf5f4
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 17:23:57 2015 +0100
+
+    added missing clean rule in testutils
+
+commit 0ffd77feb31ac3dc9409b44072c172c1061c45cf
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 17:08:12 2015 +0100
+
+    removed subdirs trick (did not work)
+
+commit a11601da011d4fa57d7e7e04ca2be9ee50611b3a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 17:02:49 2015 +0100
+
+    fix make 32 before 64 as 64 is the only working host for python tests
+
+commit 10f106707c0b323800931327de28f2f8eef6ca12
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 17:02:20 2015 +0100
+
+    fix loop in clean subdirs
+
+commit 076a540a4763ba5c8ef4ed08a63114f8006b1a4c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 16:38:35 2015 +0100
+
+    fix missing clean of testutils from cleaning of tests
+
+commit 69aad3f02e6a50cb54a55db1ededc6be40dcfc67
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 16:37:18 2015 +0100
+
+    fix skip if no wine present
+
+commit 503f895769a9fdc5f18389984ddd00e40d93ae37
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 15:29:42 2015 +0100
+
+    restored previous deploy
+
+commit ac71be76b374ba16b13f9d0591815f779202ed5b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 15:29:20 2015 +0100
+
+    grant error exit code if compiled without tests library
+
+commit acdb2b8cb5e61330e124742618651712c4d24896
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 15:28:21 2015 +0100
+
+    Fix cpp test optimizer failure
+
 commit 4507ae7790c9bed41d5713c5ed8809e55d5f5be3 (refs/remotes/origin/twf-fix-idl-events)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Dec 30 09:15:29 2015 -0500
 
     Fix cleanup of idl mdsevent widgets
+
+commit 6b4afb1abe5906e0da7d85de425084acc3459cc9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 13:38:11 2015 +0100
+
+    check for perl tap parser module to collate test results
+
+commit 5a0a563fe76cec8e7be28eecb29ec800e13eb1e2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 12:10:47 2015 +0100
+
+    update deploy scripts
+
+commit 306b97297ac693ce25a64011db2626a1ce5f62d9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 12:08:03 2015 +0100
+
+    fix assert_function macro missing in -O2
+
+commit c3e3e7a64b36f14ad804bd8f4ba9782553cbee6b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 10:58:04 2015 +0100
+
+    remove for loop in tests subdirs
+
+commit 0a07e8b6652d9ec890433ac85fce7aaea8cca1c8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 30 08:56:08 2015 +0100
+
+    search for python2 only
 
 commit 5d59d1e8071ed27e482a7eae8347bc53734f3047 (tag: refs/tags/alpha_release-7-0-200)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -756,11 +1215,29 @@ Date:   Tue Dec 29 14:16:27 2015 -0500
 
     Fix most of the compiler warnings and remove old cvsignore files
 
+commit a689727c469fba67be77a68cbf69014fa38916ba
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 29 19:05:47 2015 +0100
+
+    removed check for interactive shell (not working)
+
+commit ce6970174d64d72270cf6c492954fc3f135a7ff6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 29 18:44:30 2015 +0100
+
+    fix for dshell in non interactive tty
+
 commit 3b83978f32df4c0cac2a4ef9dba05c38cd2dd2ae (refs/remotes/origin/twf-fix-pycall-and-tdiextpython-interaction)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 29 12:27:17 2015 -0500
 
     Fix pycall and TdiExtPython interaction
+
+commit 039e39d33613b39606d06e7457008db0c42f692a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 29 18:21:21 2015 +0100
+
+    fix tests for windows
 
 commit 7f3d678997915810975e89e88dfbf10687a22223
 Merge: 5218870 506e419
@@ -775,6 +1252,12 @@ Date:   Tue Dec 29 14:19:20 2015 +0100
 
     Proceed
 
+commit 4dd2704138148400c22bccbf27e451aabf098eab
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Dec 28 18:39:00 2015 +0100
+
+    fixed test env for mingw, removed NDEBUG ifdef in testing
+
 commit 3dd992d32ff113b523a9fbcc65ce559325027b52
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Dec 28 10:16:56 2015 +0100
@@ -786,6 +1269,42 @@ Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Dec 28 10:16:56 2015 +0100
 
     Added streaming support
+
+commit de8035cc3fee3096427662ecafcb178647e05ea0
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 24 13:25:24 2015 +0100
+
+    fix wrong number of arguments
+
+commit 66bf1a7957007bb955cf56d38753abe08074cf7e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 24 13:18:36 2015 +0100
+
+    add skip to unfinished tests
+
+commit 04cb31f96d52685fa217e21e21975c16eabbd780
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 24 13:18:29 2015 +0100
+
+    removes dummy leak
+
+commit 223a12e869afab00fbe2a0bc04d91de42553e145
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 24 13:11:59 2015 +0100
+
+    fix wrong skip message argument
+
+commit f5ebd1da250683b759981b5fc18bc3656dc83348
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 24 12:20:53 2015 +0100
+
+    fix missing exit value
+
+commit 6c4b3a38a46f6ff3d391990fa5736f21cb581a7c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 24 11:31:14 2015 +0100
+
+    testing.py wrapper to do pre-checks
 
 commit d9de3d6ee538334399fa20f67889ded680f5df97 (tag: refs/tags/alpha_release-7-0-199)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -862,6 +1381,12 @@ Date:   Mon Dec 21 11:46:02 2015 +0100
 
     no 'as exc' for python24
 
+commit 6d813da81638d84fd3754637a6a82f9bfd386af0
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 18 17:16:41 2015 +0100
+
+    removed clean from tests target
+
 commit 4fb543419fa2f3b44ee6a0e78904611865f49ab8
 Author: zack-vii <zack.vii@live.com>
 Date:   Fri Dec 18 15:48:35 2015 +0100
@@ -870,6 +1395,12 @@ Date:   Fri Dec 18 15:48:35 2015 +0100
     
     exc.message =
     method + "() takes exactly 2 argument (1 given)"
+
+commit 9a742a21ddcd62bdf3351f2ecdbcd5232c5060f6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 18 15:15:51 2015 +0100
+
+    python check
 
 commit ae95c22768e3a6d9916b0c70410cf59604ab4ac8 (tag: refs/tags/alpha_release-7-0-197)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -1084,11 +1615,290 @@ Date:   Wed Dec 16 08:27:34 2015 -0500
 
     remove printout from LibFindimageSymbol
 
+commit b91deb2a842f91e68e2f60988d2788e86b32aff0
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 16 13:54:21 2015 +0100
+
+    makes docker working also in maintainer mode
+
 commit ab9ff974254a62783d040d435a448caad680f980
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Dec 16 07:50:52 2015 -0500
 
     temporarily remove export hiding so this can be merged in safely
+
+commit 25ff8b342ced64069fb5848a0215b2e90d445b7a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 16 11:58:59 2015 +0100
+
+    adds pid in valgrind log output!
+
+commit 777b314535b0c0305e9addcff18ba57861938337
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 18:58:55 2015 +0100
+
+    change check-valgrind targets to tests-valgrind
+
+commit 4907aa8154bc76de52ed0cf0cec9c02847b96cea
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 18:18:02 2015 +0100
+
+    clean up
+
+commit cdba20ee73abd997026c8bae1bb8c7cf8ce3547d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 17:25:14 2015 +0100
+
+    clean up
+
+commit 587e754b32dbc78cebab6050baaa8f406444d616
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 17:24:31 2015 +0100
+
+    add enable-valgrind by default
+
+commit 286bf22fa081432b4126d138091f1754a98e99b3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 14:48:09 2015 +0100
+
+    removed mostlyclean-compile (not present in mingw)
+
+commit 5d1757f82ceb22612a773ffdea46481a8a9c6313
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 14:33:24 2015 +0100
+
+    make mostlyclean-compile to clear tests object before rebuild-tests
+
+commit 07da80528a0d65f7f758b8b31c1a5ca48559f2a0
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 13:03:11 2015 +0100
+
+    fix semicolon
+
+commit bd462d992fd80bd72cae5279f69a122a78892728
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 12:35:11 2015 +0100
+
+    adds rebuild-tests target to make valgtrind rebuild before tests
+
+commit 3daeae028ff197634a4ed75ef2e200f03eefd8de
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 12:33:58 2015 +0100
+
+    more comments
+
+commit 7d160ee2ae2e1bd17aa474668353557abd5f9435
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Dec 15 09:53:27 2015 +0100
+
+    fix valgrind python tests (python calls compiler command internally)
+    fix SKIP command for mingw tests
+
+commit 3501ee560ac69431dea0a6bf5d27500c9d7fe943
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Dec 14 16:32:59 2015 +0100
+
+    more compact BEGIN_TESTING
+
+commit 07a86672cb28165c128debc64da7b4e297858ee1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Dec 14 16:32:09 2015 +0100
+
+    Fix valgrind for Python
+
+commit 1b06770477a78cb8af4e4902e254a8845718c5c6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 11 18:56:00 2015 +0100
+
+    undo previous commit
+
+commit 1c0921fced2967ca5b3ccbc3cccd4e07d4b513d8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 11 17:06:50 2015 +0100
+
+    revert the rules of parent child to make valgrind working with silet-child-process
+
+commit a6e11af74ddb34d473be015efe0077105684f032
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 9 18:15:50 2015 +0100
+
+    disable only fork for valgrind
+
+commit 6c2ab6a594e33308997aa4fa2172ad7997b52576
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 9 17:42:13 2015 +0100
+
+    removed phony
+
+commit af1cd4ea072dbe8475051ff962a4d6013ed210a6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 9 16:44:39 2015 +0100
+
+    adds phony to build-tests.tap
+
+commit bb1c60c5a49455112f1d90ebd069affe5d05ccc7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 9 16:00:09 2015 +0100
+
+    removed test-suite.tap removal by clean target
+
+commit ca4cef64836e39965257440f4d61d984d58ea22f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 9 15:59:29 2015 +0100
+
+    fix uil source for VPATH
+
+commit 5865c33e3d54771958f0a31902e90fe5ea5d3371
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 9 15:19:48 2015 +0100
+
+    removed ONESHELL (it breaks the dshell command).
+
+commit c21b71f61010083122ee786dda9badbb654b3ad1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Dec 7 19:13:44 2015 +0100
+
+    makes stop removing the container
+
+commit 429f909c2a491580b93420f31f071aa3cab6b75c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Dec 7 15:15:56 2015 +0100
+
+    workaround for malformed xml due to fork adding VALGRIND_BUILD=yes to avoid D_TESTING
+
+commit 101f69974f9848788dddada8ed3c74cc041d3073
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 4 18:42:06 2015 +0100
+
+    expose VALGRIND_TOOLS as env option
+
+commit 17a3962b1b46d9da9eca4563463e0f6affaff946
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 4 18:38:57 2015 +0100
+
+    try child-silent-after-fork=yes to fix xml output
+
+commit b3c78a771b45d40570af139b865c2593ceb202c9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 4 18:32:13 2015 +0100
+
+    fix shift again
+
+commit b7f98b5cb439ddf0bc833ae95a9cf5b6b4c7f48c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 4 17:08:54 2015 +0100
+
+    always pull image
+
+commit 966228508a04433e164d70377cf118247a64d759
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 4 15:47:50 2015 +0100
+
+    fix wipe out of two arguments
+
+commit 019b835744e83aa72c61614c62e4b03ab9d1bb9e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Dec 4 14:43:10 2015 +0100
+
+    add debug control via configure.ac
+    add build_redhat_tests to make test builds easy
+
+commit 0173388543df05aa5bc889d60a4a117b1ae8fc1c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 3 10:40:57 2015 +0100
+
+    fix using tap default testing target for valgrind
+    add valgrind tool suffix to test-suit.tap file
+
+commit 9819baef0e5fa629c34cc904b06b2898423445e9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Dec 3 09:00:54 2015 +0100
+
+    temporanely commenting out the pytests in valgrind
+
+commit 93ae6d88535e6f7b61479d088a5f402ebdc0a4d2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Dec 2 18:19:20 2015 +0100
+
+    fixes valgrind for different tools
+
+commit 72f9a8a0a9745c4a2bff09ed9a2855729290b84c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 30 18:14:32 2015 +0100
+
+    removed test in compression .. TODO: see why and apply tests again
+
+commit f7be009449ae2780cb612cbc554e4912ab70f4f3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 30 18:11:28 2015 +0100
+
+    replaced long with int64_t for 32bit case
+
+commit 522508c248aa8d12ebbba78197dfa8d6a4bb57ba
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 30 18:10:30 2015 +0100
+
+    fix problem in optimized 32bit version
+
+commit fdd7215cef5b1de12a4916758237b27c7430199a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 27 19:00:21 2015 +0100
+
+    add inspect to docker
+
+commit 4cc379bd939ae47e279b3d5a9a599e916226fd40
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 27 18:33:17 2015 +0100
+
+    docker fixes
+
+commit 28837ecffe2beefacbeee301fa6d09f35676201c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 27 14:44:30 2015 +0100
+
+    write dshell script for docker build
+
+commit b3367dc361040a0e5fe197b51fc2318ec0dbfe7d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 27 11:12:33 2015 +0100
+
+    fix SKIP test log compiler string..
+
+commit a0ab0c1195e54d80f9121e8daface8524b0df8fd
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Nov 26 18:22:32 2015 +0100
+
+    adds testing during docker build
+
+commit 17d4be4a3673ab1f35a40dc246b07ddc106844bf
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Nov 26 18:10:06 2015 +0100
+
+    sets MDS_PATH and MDSPLUS_DIR during tests ...
+
+commit 67a57e81b7a4fc67581508aa5356ff11f69d932f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Nov 24 19:15:10 2015 +0100
+
+    add with-docker-url
+
+commit 90358712a30447e3514e5bf82bee117284d49e09
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Nov 24 16:06:28 2015 +0100
+
+    adds perl check m4
+
+commit 55157268f9ef9be1b4b1db03415b837984cb3a5d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Nov 24 11:22:11 2015 +0100
+
+    no exit on error test and nosetests flags
+
+commit e1ade747b6f03fd06cb71e31837691794f6e362d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 23 17:48:26 2015 +0100
+
+    try to do tests after build ...
 
 commit 8ef0b44c6aae648f3767c9a697820133fade32bd
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1935,6 +2745,15 @@ Date:   Mon Nov 23 09:40:40 2015 -0500
 
     1)Only do locking of python GIL when doing setup methods (needed for glade based setups).\n2)Use MdsMisc->PyCall on windows too.\n3) Prevent closing dbid tree context when doing python doMethod.\n4) Fix py function on windows.\n5) Fix tdi py functions for python3.
 
+commit 43be058e07c9d845cef08b2b4cc6a3ef3fbf5e00
+Merge: 98f3a91 2645624
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 23 08:42:41 2015 -0500
+
+    Merge pull request #225 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
 commit 354d8aa67a4f2a6e09d554fbc9946d4f41b33ff2
 Merge: 9b15db6 3edf09d
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1950,6 +2769,12 @@ Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Mon Nov 23 10:59:44 2015 +0100
 
     Merge branch 'alpha' into a_jscope_eventupdate_block
+
+commit 26456246d11895473be9417a691e17d5df4a005e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 23 09:02:41 2015 +0100
+
+    fix for new tests target
 
 commit 3edf09dc81fa06174b7a609342724174a8a7cbdd (refs/remotes/origin/bstandley-fix-thread-handling-in-tree-py)
 Author: Brian Standley <brian@brianstandley.com>
@@ -1968,6 +2793,22 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Thu Nov 19 23:32:27 2015 -0500
 
     New release ---- alpha_release-7-0-183
+
+commit cf411d2ea74a266e822d25eb3cc5c2b7e4fa0891
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Nov 19 19:45:28 2015 +0100
+
+    adds final copy of tap suites into ${top_builddir}/testing
+    so that Jenkins can reach them mapping testing directory.
+
+commit 98f3a914ee5da019550b12dce91a285d314402f1
+Merge: b0b3acf 84891cd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 19 11:55:02 2015 -0500
+
+    Merge pull request #221 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
 
 commit db4b68f499601bd448874911a27e24200177db54
 Merge: 8f95b04 2e6b512
@@ -1993,6 +2834,37 @@ Date:   Thu Nov 19 11:15:25 2015 -0500
 
     Fix indentation problem which prevents loading module in python3
 
+commit 3be96c0c57ce8b250a3b74e259d0d92cbaf98754
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Nov 19 15:52:39 2015 +0100
+
+    add doublequote escape function
+
+commit 84891cd0f184b6b105b52b25e3572e5a1c38f6c9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Nov 19 12:37:45 2015 +0100
+
+    fixes problem in configure arguments when docker image is requested
+
+commit 71ae2f409c6eedfc905310683e02fd675f7fcb99
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Nov 18 18:26:48 2015 +0100
+
+    - fix user in docker shell
+    - remove default enable valgrind
+
+commit 65d6b5086edc5872a0b4c9172f351b0d30bf947b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Nov 18 17:10:07 2015 +0100
+
+    fix I forgot to run bootstrap
+
+commit cc725c511a0a9602977fafa437ad52661433cb99
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Nov 18 16:22:33 2015 +0100
+
+    - adds m4_valgrind  (use VALGRIND_TOOL env to set active tool)
+
 commit 7c4601f0a10d761b57cd3195d88f0fb64a2c56a3 (tag: refs/tags/alpha_release-7-0-182)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Nov 17 23:34:28 2015 -0500
@@ -2017,6 +2889,12 @@ Date:   Tue Nov 17 19:09:35 2015 +0100
     - provides a secure environment for eval on valueExpr.
     all MDSplus modules plus "tree", "path", "head", and "node" are
     accessible
+
+commit f3b6239460364d12a670e91e24aa386dcc5a90a6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Nov 17 17:06:48 2015 +0100
+
+    - adds some target using docker in MAKECMDGOALS
 
 commit 64b65573c06d61ed9339f909d2c8be4ebd41b087
 Merge: 7d13b59 f1b88d9
@@ -2109,6 +2987,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 13 14:37:39 2015 -0500
 
     Add compatibility to old MdsException excetpion class
+
+commit add56f7e8d59548b4aca64abfbafd50f16af4aa8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 13 18:50:05 2015 +0100
+
+    docker integration first attempt (UNSTABLE!!)
 
 commit 413ed349b01616a1b4705f37f0c1ffd98c6b7eef
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -2218,6 +3102,12 @@ Date:   Mon Nov 9 20:38:23 2015 +0100
     DatabaseException: %TREE-W-NNF, Node Not Found"
     - typo
 
+commit 823f881e82a9f20f4073f58a9d003e623a328586
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 9 15:57:39 2015 +0100
+
+    moves PY_LOG_COMPILER selection in testing.m4 script
+
 commit cc6fdc425aef64b538078d169f926e6db24fd9fb
 Merge: f22eb8b 82db1c4
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
@@ -2250,6 +3140,21 @@ Date:   Mon Nov 9 09:45:50 2015 +0100
     fixed status bar on resizing
     
     - status bar remains a one-liner and the tree pane resizes
+
+commit b0b3acf44200de65ac711f19b98beabd502c6cf1
+Merge: 81beb57 0c30bfd
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Mon Nov 9 09:29:12 2015 +0100
+
+    Merge pull request #203 from AndreaRigoni/andrea-testing
+    
+    fix missing file
+
+commit 0c30bfd2a464d6e24e49c6f8f6afda2493b609d1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Nov 9 09:28:05 2015 +0100
+
+    fix missing file
 
 commit f22eb8bb93aeae4c3f854f9fe543d48f4d22316d (tag: refs/tags/alpha_release-7-0-176)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -2309,11 +3214,38 @@ Date:   Fri Nov 6 13:12:10 2015 -0500
 
     Add EXPORT to functions and symbols needed to be exported and add prototypes to some of the C header files
 
+commit 81beb573d23b1c7b7bdbcb149ce002bcbe2ef888
+Merge: f1efb05 5a9e63e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 6 12:24:18 2015 -0500
+
+    Merge pull request #199 from AndreaRigoni/andrea-external-build
+    
+    Andrea external build
+
+commit 5a9e63e49ae1c1457afb4f3fe333096c4c85de30 (refs/remotes/origin/andrea-external-build)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 18:01:08 2015 +0100
+
+    correct msg in SKIP exit code
+
+commit 79c01e578ba98055ef73db85fc6d2be59fa3ef27
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 17:53:57 2015 +0100
+
+    fix problem dumping results with TEST_FORK(0)
+
 commit d5d942be8de17c08c3f35dcbce9e2fe1beb8ae77 (refs/remotes/origin/fix-obsucre-compression-bug-alpha)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 6 11:31:59 2015 -0500
 
     Fix obscure bug when delta value = 0x8000000 during compression
+
+commit 9105bab94bce469ac05f41874d696d17c9a32d00
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 17:28:01 2015 +0100
+
+    adds test timeout feature
 
 commit 4680240191fdb97d026b99b94f4daa4cef7ac3b3
 Merge: 464da9f f28739e
@@ -2323,6 +3255,24 @@ Date:   Fri Nov 6 16:03:52 2015 +0100
     Merge pull request #196 from zack-vii/jtraverser
     
     Extension of jTraverser's flag editor
+
+commit cddea748aedbd06522e86e328e47f987d104dbbf
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 15:54:02 2015 +0100
+
+    sync .in files
+
+commit fcf8094edc83200eb2874ad7633023073dba83d6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 15:53:18 2015 +0100
+
+    adds a clean step before tests
+
+commit 58c9cab977e148fab76fe88989c90118d78e718f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 15:52:24 2015 +0100
+
+    adds SKIP and ABORT test commands
 
 commit 464da9faf74f23c4808bc1d2241079d3bc0eea86
 Merge: b3cb2b9 2e863be
@@ -2401,6 +3351,19 @@ Date:   Wed Oct 28 20:56:39 2015 +0100
     or should fit as well
     - removed "node" from title as it is too long anyway
 
+commit 25773e6beaa2924e81676fa7c61c6c17ac87b753
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Nov 6 10:18:09 2015 +0100
+
+    - fix problem in stdout redirection (thanks Cesare)
+    - adds skip (but to be continued)
+
+commit beb67dbc243b32ddffb33800730501413351d0ba
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Nov 5 16:46:10 2015 +0100
+
+    Adds Gabriele tree node test for Tree path bug fix.
+
 commit b3cb2b918cc298189012a94ffc5c303e0efaa22c (tag: refs/tags/alpha_release-7-0-175)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Nov 4 23:38:30 2015 -0500
@@ -2412,6 +3375,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 4 16:58:54 2015 -0500
 
     Fix external package requirements for rhel releases
+
+commit 2418c0ffae8a773c7e24052939271aed312a1f18
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Nov 4 17:22:55 2015 +0100
+
+    add valgrind support in testing.m4
 
 commit 5b5c1047c486be8f670ac9261e1265e0ca440855
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -2440,11 +3409,23 @@ Date:   Wed Nov 4 10:46:44 2015 +0100
     - cleared trailing spaces
     - removed some empty lines
 
+commit 31dff9406258097bde3a4d48e3c3086d285a9657
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Nov 4 09:09:48 2015 +0100
+
+    removes some echos from testing.m4
+
 commit f2c12f52f3bd5e457e480b71367819d02d053a96 (tag: refs/tags/alpha_release-7-0-174)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Nov 3 23:37:59 2015 -0500
 
     New release ---- alpha_release-7-0-174
+
+commit 4b343929befdb4f3190d5801b1ce6232a20bac9a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Nov 3 16:54:32 2015 +0100
+
+    adds testing.m4 for tests env selection
 
 commit 2e863be3d75f3a4080c94ce2e8a3798fca8b245a (refs/remotes/origin/twf-tcl-compress-segments)
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -2557,6 +3538,12 @@ Date:   Fri Oct 30 11:09:26 2015 +0100
     
     just like getDescendent they should return empty arrays in order to
     support "for m in getMembers():" constructions
+
+commit 50fa7858d39a9558b62b8ce8de789d17053cc7bd
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Oct 30 11:03:04 2015 +0100
+
+    adds WINEPATH and tests under wine .. (TODO: improve tests env selection)
 
 commit c4c946896a11d3e0066f34f029812118f5a9f9ec (tag: refs/tags/alpha_release-7-0-171)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -2733,6 +3720,25 @@ Date:   Fri Oct 23 12:31:29 2015 +0200
     (double) is unnecessary
     make use of dayMilliSeconds as const
 
+commit 07f9507e2259557a6a305e8340a582a7277eb7f7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 22 18:11:06 2015 +0200
+
+    fix big problem in MdsTestShr (setjmp can not be used in a returned function).
+    Moved to a context switching approach for unix, and simple exit for windows..
+
+commit 564a4328abfbed8a6fc16523c75fc599e07fbcd3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 22 18:07:45 2015 +0200
+
+    adds implib for MdsTestShr.dll
+
+commit 679f12edb95e30613ad45dcd17ef9381497159b3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 22 13:27:23 2015 +0200
+
+    fixing windows compile for tests ..
+
 commit b97a61c4da8fb9d1167bb1c258a7bc201e27b9c6 (tag: refs/tags/alpha_release-7-0-167)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Oct 21 23:37:39 2015 -0400
@@ -2744,6 +3750,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 21 16:33:17 2015 -0400
 
     Different approach to tree deletion handling. Using weakref failed to work for all cases.
+
+commit 222dddb406f322c84ebc88646e5446556368d6da
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Oct 21 14:12:35 2015 +0200
+
+    fix mingw required for a lib in srcdir in external build
 
 commit 7e35c3813bc6228ce7f0f4446f0afbe7655fa5fd
 Merge: c6ace2d a09e186
@@ -2815,6 +3827,42 @@ Date:   Mon Oct 19 23:35:00 2015 -0400
 
     New release ---- alpha_release-7-0-165
 
+commit d2e42d9319d5b5fe1d832588e55a5e5f4a3b0188
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 19 17:38:15 2015 +0200
+
+    fix for mingw external build
+
+commit 361714d2aaef9c07e9a8a40f2b2c53485b531d2c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 19 15:54:43 2015 +0200
+
+    adds -I${builddir}/include directory to reach config.h when in external build
+
+commit 77690737a9f50689b246523dd4c5439bf7f4520b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 19 15:18:07 2015 +0200
+
+    fix for mingw external build
+
+commit 6f01379376674c36fb7764f990f30f0b593dbb80
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 19 15:03:32 2015 +0200
+
+    fix install from external directory
+
+commit 240044c0ebc284ee76260a99dca1e90c4ccaf025
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 19 14:41:19 2015 +0200
+
+    build MDSplus in a separate directory
+
+commit a6b138ccb1f01df4cc24c3054aeaf79475aa6fdf
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 19 14:37:44 2015 +0200
+
+    remove unneeded java class for Device (does not compile anymore)
+
 commit 8f72558e92b533175f7a047a1ecfd4cb74aef877
 Merge: b02ac1d a54a51d
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -2861,6 +3909,27 @@ Date:   Fri Oct 16 10:26:04 2015 -0400
     Merge pull request #150 from zack-vii/a_python
     
     rearraged import and _mimport
+
+commit f1efb0557445e3dd33e2d32582c31ff27290f466
+Merge: 477303c aeb1784
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 16 09:24:37 2015 -0400
+
+    Merge pull request #164 from MDSplus/twf-add-python-arch-test
+    
+    Twf add python arch test
+
+commit aeb1784a24a14e44771aab299ea73d32736bb250 (refs/remotes/origin/twf-add-python-arch-test)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 16 08:04:03 2015 -0400
+
+    Fix python tests using setup.py
+
+commit 49ba1d91ea76414774b141f275248a1a2b35522f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 16 08:03:27 2015 -0400
+
+    Add python arch compatibility for macosx
 
 commit ff9ffd3eb82b61e7f2441063a4d3fa2afe36ea1b (tag: refs/tags/alpha_release-7-0-163)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -2909,6 +3978,12 @@ Date:   Thu Oct 15 14:42:13 2015 -0400
     
     added _scalar for Float32 and import of mdsdata
 
+commit 8817a2039b3fdec6e266817e57d7d4877b80c53b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 14:38:41 2015 -0400
+
+    Add a python script that can be used to test for compatibility of the python program and the MDSplus libraries used for testing
+
 commit e31c2647498628d2edba60fa8c2780a84570877d
 Author: zack-vii <zack.vii@live.com>
 Date:   Wed Oct 14 20:28:27 2015 +0200
@@ -2935,6 +4010,15 @@ Date:   Thu Oct 15 13:36:34 2015 -0400
     
     Do not try deletePulse on shots already open for write access. Ok on …
 
+commit 477303ccf9638e9768e45bd67878363d1eeb8446
+Merge: 8caeee8 0fe3b88
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 13:34:33 2015 -0400
+
+    Merge pull request #158 from AndreaRigoni/andrea-testing
+    
+    adds some AC_tests on python
+
 commit da2b86bfb6bba7b494339459b236970e04c2b150
 Merge: 1568774 d152cec
 Author: Josh Stillerman <jas@psfc.mit.edu>
@@ -2959,6 +4043,12 @@ Date:   Thu Oct 15 13:18:56 2015 -0400
 
     Do not try deletePulse on shots already open for write access. Ok on linux but not on Windows
 
+commit 0fe3b88e976983f607407334f1e106cad18d83a2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 15 19:00:45 2015 +0200
+
+    adds some AC_tests on python
+
 commit d152cecf268f716b7d52fbe7738551e7b52e4b86
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 15 12:21:51 2015 -0400
@@ -2976,6 +4066,21 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Oct 15 11:33:40 2015 -0400
 
     Use a weakref proxy for the Tree._activeTree property to enable proper cleanup of Tree instances
+
+commit 8caeee8fd5ee42c668c9a09d191779e29c78d5be
+Merge: 30a2c6d 5215adc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 15 08:10:37 2015 -0400
+
+    Merge pull request #152 from AndreaRigoni/andrea-testing
+    
+    adds exit status from testing tap target
+
+commit 5215adc4dc82de191d2e3eb19f628ff0ae908c3e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 15 12:16:17 2015 +0200
+
+    adds exit status from testing tap target
 
 commit e538274c567532a86504fc8a26c16bc6e8ae3883 (tag: refs/tags/alpha_release-7-0-162)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -3016,6 +4121,27 @@ Date:   Wed Oct 14 19:24:08 2015 +0200
 
     mdsclasses
 
+commit 30a2c6d78c209960e2eebf2b41fcee1c45caf43d
+Merge: bd0d09f 7d0edff
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Wed Oct 14 17:40:07 2015 +0200
+
+    Merge pull request #148 from MDSplus/twf-feature-testing-topdir-make
+    
+    Add docs and tests toplevel makefile targets and clean do clean on do…
+
+commit 7d0edffbba142285c4a6115b2625ef5cd4e9c529
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 11:37:03 2015 -0400
+
+    Fix PHONE typoes
+
+commit 3546018256cd580d7b677705102924401e0082a8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 14 11:09:08 2015 -0400
+
+    Add docs and tests toplevel makefile targets and clean do clean on docs and tests
+
 commit 8b58cec626b8df92a2440253afd45ac169707233
 Author: zack-vii <zack.vii@live.com>
 Date:   Wed Oct 14 15:54:11 2015 +0200
@@ -3023,6 +4149,18 @@ Date:   Wed Oct 14 15:54:11 2015 +0200
     missing level on _mimport
     
     >is it ever not 1?<
+
+commit bd0d09fc36096dead46f405f77a61e92f37047f5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Oct 14 14:15:32 2015 +0200
+
+    fix missing TARGET_ARCH flags in automake generated Makefiles
+
+commit bf1996b93eac6fb9b8950e79f96d06392c459757
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Oct 14 14:08:16 2015 +0200
+
+    accepts for 1.13 of automake (seems to be enough)
 
 commit 9aab8b6aa7d91089366717e9481f91a6997ceba1 (tag: refs/tags/alpha_release-7-0-161)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -3113,11 +4251,89 @@ Date:   Fri Oct 9 16:06:34 2015 -0400
 
     allow python to load MDSplus libraries without DYLD_LIBRARY_PATH
 
+commit 7b365fa3634908ee7fa7a2fcdda34172fe704d38
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 12 17:32:37 2015 +0200
+
+    fix do_test
+
+commit 410bc8f04667f617e150014ee903e0d7f20b9b46
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 12 17:20:14 2015 +0200
+
+    - keeps building on test errors
+    - adds deploy option to test tap results
+
+commit 1a5bc4027d02c342275ab85526da9d11fdd18675
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 12 15:48:51 2015 +0200
+
+    Test build result for each test target
+
+commit 5204c5ad8f47852528fa3d9bc2732c5c15683b16
+Merge: a66a661 487d3c6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 12 12:28:31 2015 +0200
+
+    - Merge branch 'twf-nosetests-work' into feature-testing
+    - Adds py tests to testing
+
+commit 487d3c6395d898bf386771034374d92ca9ad917b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 9 16:31:21 2015 -0400
+
+    Enable nosetests in the python directory
+
+commit 59fb4fab99ca3d1c04e9dd7312d0bb3b84f363bd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 9 16:00:30 2015 -0400
+
+    fixup tests to be compatible with both nosetests and setuptools
+
+commit 577441cb12b98ca7e0175944e6c34d6a5e331566
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 9 15:56:21 2015 -0400
+
+    fixup tests to be compatible with both nosetests and setuptools
+
+commit a66a66128ffb574669509087eb1a486f4ac643c6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Oct 9 15:34:25 2015 +0200
+
+    - fix Makefile.am in testing directories to use testing.am
+    - adds all before tap to make locally in target directories
+
+commit d26d82c45e7c8a86d01fd560183607da33423f83
+Merge: c855536 a0231e2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Oct 9 15:11:23 2015 +0200
+
+    Merge branch 'twf-nosetests-work' into feature-testing
+
+commit c8555364de877cc8ee80776e962b525261f6bb7a
+Merge: 002bd35 182fe6a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Oct 9 15:10:56 2015 +0200
+
+    Merge branch 'alpha' into feature-testing
+
+commit a0231e2aa97d693d6da57edba7f5f137b461de38
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 9 08:39:13 2015 -0400
+
+    Fix tests for nosetests
+
 commit 182fe6a4403f0045d692221aa650ef9e9c234247 (tag: refs/tags/alpha_release-7-0-160)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Thu Oct 8 23:38:45 2015 -0400
 
     New release ---- alpha_release-7-0-160
+
+commit 4633f867d38d7d0740889811dd5f872da7d57914
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Oct 8 16:43:44 2015 -0400
+
+    Add nosetests compatibility
 
 commit adf261bac203a4c20cd570f6a5bc8d1413247e05
 Merge: 6ba268a 4841a45
@@ -3148,6 +4364,13 @@ Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Oct 8 10:56:33 2015 -0400
 
     Trying to make sure WNOHANG is in alpha
+
+commit 002bd3544cb7ba52c8b878a485662a867ab58efe
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Oct 8 16:25:19 2015 +0200
+
+    - changed check adapter
+    - adds python tests using nosetests and tap.py
 
 commit b517bc51fb8ade00cef4554d31efc108054f6cd8
 Merge: 5714083 b00343c
@@ -3205,6 +4428,36 @@ Date:   Tue Oct 6 17:20:19 2015 +0200
     
     otherwise it will not be installed by
     python setup.py install
+
+commit 176ab4132d75f20bbaa7b3c33082288c6f28347c
+Merge: adf2c5f e3a830d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Oct 6 09:32:09 2015 +0200
+
+    Merge branch 'alpha' into andrea
+
+commit adf2c5fa4291f98aba4618673a601ed231c98dba
+Merge: ca982ba 220b819
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Oct 6 09:29:41 2015 +0200
+
+    Merge branch 'alpha' of https://github.com/AndreaRigoni/mdsplus into andrea
+    
+    # Conflicts:
+    #	configure
+    #	configure.ac
+
+commit ca982ba7b88233d2ac193a9632d9ad3a55e2cf6a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 5 17:59:14 2015 +0200
+
+    first experiments to redirecting output in tests
+
+commit b9c97eeb74e439fa3a017483c81f34ffe069bb49
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Oct 5 17:58:21 2015 +0200
+
+    makes Capital first letter for headers in testutils
 
 commit e3a830d527a6c4e0c89659ac52e5c6c556d14355 (tag: refs/tags/alpha_release-7-0-157)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -3788,6 +5041,12 @@ Date:   Mon Sep 21 10:06:05 2015 -0400
     
     version tobytes on connection and tree
 
+commit 02d3ea34b9078ecbb6b32e9d812d6db79bae5fb3 (refs/remotes/origin/feature-mdsobjects-testing)
+Author: root <root@localhost.localdomain>
+Date:   Sat Sep 19 09:33:44 2015 +0200
+
+     fix compile fail
+
 commit 31ecd99d6ff3acbb834d75a0233894a0cb48359c (tag: refs/tags/alpha_release-7-0-153)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Sep 18 23:05:47 2015 -0400
@@ -3834,6 +5093,18 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Sep 18 12:32:19 2015 -0400
 
     Add mdsshr docs
+
+commit 4a2aa3158f76d57807d6c8526c7e83111c229318
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Sep 18 18:26:46 2015 +0200
+
+    missing example3 to show how add cpp files to c testing env
+
+commit 908f028e7971f6e2d8907f3c1159011990673b77
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Sep 18 18:20:22 2015 +0200
+
+    adding early testing infrastructure ..
 
 commit bb239d2290e5f52dd7e854b1b67b1527e5bd30b6
 Author: Tom Fredian <twf@psfc.mit.edu>
