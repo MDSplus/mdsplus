@@ -776,6 +776,9 @@ PY_LOG_COMPILER
 LOG_DRIVER
 LOG_COMPILER
 TESTS_ENVIRONMENT
+ENABLE_TESTS_FALSE
+ENABLE_TESTS_TRUE
+ENABLE_TESTS
 HAVE_WINEPATH
 HAVE_WINEBOOT
 NOSETESTS
@@ -14140,6 +14143,7 @@ VALGRIND_CHECK_RULES="${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"
 
  # selects particular envs for build:host
 
+ ENABLE_TESTS=
  TESTS_ENVIRONMENT=
  LOG_COMPILER=
  LOG_FLAGS=
@@ -14333,6 +14337,7 @@ fi
  #
  *linux*:*mingw*) :
 
+   ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->mingw"
    if ${HAVE_WINE+:} false; then :
 
@@ -14703,6 +14708,7 @@ fi
  #
  *linux*:*linux*) :
 
+   ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->linux"
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
@@ -14714,18 +14720,28 @@ fi
  #
  *) :
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tests may not be supported for this host!\"" >&5
-$as_echo "$as_me: WARNING: \"Tests may not be supported for this host!\"" >&2;}
-   as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
-   as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
-   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
+   # in all other platform tests are disabled for now
+   ENABLE_TESTS=no
   ;; #(
   *) :
      ;;
 esac
 
 # MACOS: add --dsymutil=yes to valgrind
+
+
+# Set ENABLE_TESTS
+
+   if test x"${ENABLE_TESTS}" = x"yes"; then
+  ENABLE_TESTS_TRUE=
+  ENABLE_TESTS_FALSE='#'
+else
+  ENABLE_TESTS_TRUE='#'
+  ENABLE_TESTS_FALSE=
+fi
+
+
+
 
 
 
@@ -17027,6 +17043,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then
   as_fn_error $? "conditional \"VALGRIND_ENABLED\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_TESTS_TRUE}" && test -z "${ENABLE_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_CUTE_DOXYGEN_TRUE}" && test -z "${HAVE_CUTE_DOXYGEN_FALSE}"; then
