@@ -64,7 +64,7 @@ extern "C" {
 // Assertion fail declaration as found in assert.h //
 EXPORT void __assert_fail (const char *__assertion, const char *__file,
                            unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
+ __attribute__ ((__noreturn__));
 
 EXPORT void __mark_point(const char *__assertion, const char *__file, 
                          unsigned int __line, const char *__function);
@@ -112,7 +112,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 
 void __assert_fail (const char *__assertion, const char *__file,
                     unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
+ __attribute__ ((__noreturn__));
 
 
 void __mark_point(const char *__assertion, const char *__file, 
