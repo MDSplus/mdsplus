@@ -1074,23 +1074,6 @@ AC_CHECK_MEMBERS([struct itimerspec.it_interval, struct itimerspec.it_value], []
 #endif /* HAVE_PTHREAD */
 ])
 
-# The following two checks will attempt to include pthread.h. The
-# reason is MinGW and MinGW-w64 have been known to put the time
-# related definitions in the pthread headers. Without include
-# pthread.h, these checks may mistakenly fail to find the
-# definitions.
-AC_CHECK_TYPE(clockid_t, [], [AC_DEFINE([clockid_t], [int], [clockid_t])], [
-AC_INCLUDES_DEFAULT
-#if defined(HAVE_PTHREAD)
-#include <pthread.h>
-#endif /* HAVE_PTHREAD */
-])
-AC_CHECK_TYPE(timer_t, [], [AC_DEFINE([timer_t], [int], [timer_t])], [
-AC_INCLUDES_DEFAULT
-#if defined(HAVE_PTHREAD)
-#include <pthread.h>
-#endif /* HAVE_PTHREAD */
-])
 
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
