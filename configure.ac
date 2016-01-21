@@ -649,7 +649,7 @@ AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
 
 # Stuff that only non-automake dirs need
-AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
+AC_SUBST([MAKEETCDIR], ["\$(top_builddir)/etc/"])
 
 dnl Check for 0xnnnnll (long long constants)
 AC_LANG_SAVE

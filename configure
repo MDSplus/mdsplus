@@ -9607,7 +9607,7 @@ _ACEOF
 
 
 # Stuff that only non-automake dirs need
-MAKEETCDIR="\$(top_srcdir)/etc/"
+MAKEETCDIR="\$(top_builddir)/etc/"
 
 
 
@@ -14739,7 +14739,6 @@ else
   ENABLE_TESTS_TRUE='#'
   ENABLE_TESTS_FALSE=
 fi
-
 
 
 
