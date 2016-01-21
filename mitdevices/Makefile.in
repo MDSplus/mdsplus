@@ -325,7 +325,7 @@ dc1394_support2.o : dc1394_support2.c
 
 
 @MAKESHLIBDIR@acq_root_filesystem.tgz : $(DTACQ_FILESYSTEM)
-	( tar -C ${srcdir}/acq_root_filesystem --exclude=ffs -cvzf $@  . ;
+	( tar -C ${srcdir}/acq_root_filesystem --exclude=ffs -cvzf $@  . ; \
 	  tar -C ${srcdir}/acq_root_filesystem -cvzf $@_ffs ffs/user )
 
 @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs : $(DTACQ_FILESYSTEM)
