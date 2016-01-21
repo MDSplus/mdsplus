@@ -59,6 +59,7 @@ class CYGNET4K(Device):
         DRIVERPARMS = '-XU 1'  # allow other applications to share use of imaging boards previously opened for use by the first application
         FORMAT = 'DEFAULT'
         isOpen = False
+        running = False
         isInitSerial = False
         queue = None
         stream = None
@@ -115,6 +116,7 @@ class CYGNET4K(Device):
                 CYGNET4K.isOpen = False
                 return False
             if Device.debug: print("Open OK")
+            self.running = False
             CYGNET4K.isOpen = True
             self.nUnits  = self.pxd_infoUnits()
             self.memSize = [self.pxd_infoMemsize(c_int(1<<i)) for i in range(self.nUnits)]
@@ -151,8 +153,15 @@ class CYGNET4K(Device):
             self.lastCaptured = self.pxd_capturedFieldCount(self.unitMap)
             self.currTime = 0
             self.Frames = 0
-            self.running = True
-            if Device.debug: print("Video capture started. Warning! Camera still takes a few seconds to arm.")
+            for i in range(10):
+                self.running = not self.pxd_goneLive(self.unitMap,0)==0
+                if self.running: break
+                else:            sleep(1)
+            if self.running:
+                if Device.debug: print("Video capture started.")
+            else:
+                print('Timeout!')
+                raise mdsExceptions.DevException
 
         def captureFrame(self, TriggerTime):
             currCaptured = self.pxd_capturedFieldCount(self.unitMap);
@@ -562,18 +571,26 @@ class CYGNET4K(Device):
         self.worker = self.AsynchStore(self)
         self.saveWorker()
         self.worker.start()
+        for i in range(10):
+            if self.worker.running: return
+            else:                   sleep(.3)
+        raise mdsExceptions.DevException
 
     def stop(self):
         if not self.restoreWorker():
             raise mdsExceptions.DevException
         self.worker.stop()
+        for i in range(10):
+            if self.worker.running: sleep(.3)
+            else:                   return
+        raise mdsExceptions.DevException
 
     def store(self):
         if not self.restoreWorker():
             raise mdsExceptions.DevException
         self.worker.join(int(CYGNET4K.xclib.Frames+3))  # wait for it to complete
         if self.worker.isAlive():  # error on timeout
-            raise mdsExceptions.mitdevicesExceptions.DevException
+            raise mdsExceptions.DevException
 
     def trend_start(self):
         dev_id = int(self.device_id.data())
@@ -605,12 +622,18 @@ class CYGNET4K(Device):
         self.trendWorker = self.AsynchTrend(self, trendTree, trendShot, trendPcb, trendCmos)
         self.saveTrendWorker()
         self.trendWorker.start()
+        for i in range(10):
+            if self.trendWorker.running: return
+            else:                        sleep(.3)
+        raise mdsExceptions.DevException
 
     def trend_stop(self):
         if not self.restoreTrendWorker():
             raise mdsExceptions.DevException
         self.trendWorker.stop()
-        self.trendWorker.join()
+        self.trendWorker.join(3)  # wait for it to complete
+        if self.trendWorker.isAlive():  # error on timeout
+            raise mdsExceptions.DevException
 
     """worker related methods and classes"""
 
@@ -652,33 +675,29 @@ class CYGNET4K(Device):
             self.duration = float(device.duration.data())
             self.stopReq = False
             self.daemon = True
+            self.running = False
             self.triggerTime = float(device.trigger_time.data(0))
 
         def run(self):
             """capture temps before"""
-            self.pcbTemp =  [CYGNET4K.xclib.getPcbTemp(),None]
-            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp(),None]
+            self.pcbTemp =  [CYGNET4K.xclib.getPcbTemp(),0.]
+            self.cmosTemp = [CYGNET4K.xclib.getCmosTemp(),0.]
             """start capturing frames"""
             CYGNET4K.xclib.startVideoCapture(self.device.frames)
+            self.running = CYGNET4K.xclib.running
             while (not self.stopReq) and (self.duration < 0 or self.currTime < self.duration):
                 if not CYGNET4K.xclib.captureFrame(self.triggerTime):
                     sleep(0.002)
             """Finished storing frames, stop camera integration and store measured frame times"""
             CYGNET4K.xclib.stopVideoCapture()
+            self.running = CYGNET4K.xclib.running
             """capture temps after"""
             self.pcbTemp[1]  = CYGNET4K.xclib.getPcbTemp()
             self.cmosTemp[1] = CYGNET4K.xclib.getCmosTemp()
-            self.stopReq = False
             self.store()  # already start upload to save time
 
         def stop(self):
             self.stopReq = True
-            i = 10
-            while self.stopReq and i>0:
-                i-=1
-                sleep(.3)
-            if self.stopReq:
-                raise mdsExceptions.DevException
 
         def store(self):
             """transfer data to tree"""
@@ -698,6 +717,7 @@ class CYGNET4K(Device):
             self.cmos = trendCmos
             self.stopReq = False
             self.daemon = True
+            self.running = False
 
         def run(self):
             try:  # test open Nodes
@@ -724,6 +744,7 @@ class CYGNET4K(Device):
             elif self.cmos is None:
                 print('Cannot access node for cmos trend. Check TREND:CMOS. Continue with pcb trend.')
             print('started trend writing to %s - %s and %s every %fs' % (self.tree,self.pcb,self.cmos,self.period))
+            self.running = True
             while (not self.stopReq):
                 timeTillNextMeasurement = self.period-(time() % self.period)
                 if timeTillNextMeasurement>0.6:
@@ -746,14 +767,8 @@ class CYGNET4K(Device):
                         print(exc_info()[1])
                         print('failure during temperature readout')
                     sleep(0.01)
-            self.stopReq = False
+            self.running = False
             print('done')
 
         def stop(self):
             self.stopReq = True
-            i = 10
-            while self.stopReq and i>0:
-                i-=1
-                sleep(.3)
-            if self.stopReq:
-                raise mdsExceptions.DevException
