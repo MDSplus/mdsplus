@@ -1,4 +1,103 @@
-commit 054a5c35163e1b79daa2124172ef0f8f0f4bbd96 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit a2fb8d70e1be203a6ce72dc03574bda7f3781994 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 0e845e2 0c96e4b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 21 15:53:27 2016 -0500
+
+    Merge pull request #328 from MDSplus/jas-fix-mac-ssh-thread-error
+    
+    Fix infinite loop on mac because start of search of connectionList ha…
+
+commit 0c96e4bbf38ff764f13def236bdcdacd8c92a57e
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jan 21 14:26:30 2016 -0500
+
+    Fix infinite loop on mac because start of search of connectionList has same flag (0) as end of connectionList
+    
+    On the mac (why not on linux ?)
+    
+    IoRoutinesTunnel.c asks to look through the connections for for the tunnel process.
+    In the following example this is an infinite loop, since the ctx starts with 0 and
+    after the 1st process that is found (it does not satisfy the rest of the boolean) ctx is
+    0 again.  This causes it to start over.
+    
+    Worse, since this signal handler starts with disabling signals, you can not even ^C out of it:
+    
+    '''
+    fake listner thread for debugging
+    '''
+    import multiprocessing as mp
+    import threading, Queue, traceback
+    import time
+    from weakref import WeakKeyDictionary
+    import __future__
+    
+    import MDSplus
+    from  MDSplus import Connection
+    use_event_listener = True
+    
+    class EventListenerProc(mp.Process):
+       def __init__(self, task_queue, result_queue, *args, **kargs):
+           super(EventListenerProc, self).__init__(*args, **kargs)
+           self.task_queue = task_queue
+           self.result_queue = result_queue
+    
+       def run(self, *args, **kargs):
+           while True:
+               try:
+                  jobcode, jobparam = self.task_queue.get(True)#True, 0.1)
+               except:
+                  continue
+                  pass
+               ### jobset
+               ###   (jobcode, jobparam)
+               ###    jobcode : 'wait' : launch thread if it is not waiting
+               ###    jobcode : 'exit' : exit loop
+               ###    jobcode : 'send' :  when event is recieved
+               if jobcode == 'wait':
+                    pass
+               elif jobcode == 'exit':
+                   break
+               elif jobcode == 'disconnect':
+                   pass
+               else:
+                   pass
+    
+    class EventListener(threading.Thread):
+       def __init__(self, *args, **kargs):
+           super(EventListener, self).__init__(*args, **kargs)
+           self.queue = mp.Queue()   ## queue to receive message
+           self.task_queue = mp.JoinableQueue()
+           self.listener_proc = EventListenerProc(self.task_queue,
+                                                  self.queue)
+           self.listener_proc.start()
+       def run(self, *args, **kargs):
+           while True:
+               event_name = self.queue.get(True)
+               if event_name == 'stop':
+                   #globals()['listener_thread'] = None
+                   return
+               mds_event_listener_lock.acquire()
+               check = False
+               ## do nothing
+               mds_event_listener_lock.release()
+    
+    if __name__ == '__main__':
+       server = 'ssh://cmodws86.psfc.mit.edu'  # this makes a dead-lokc
+       c = Connection(server)
+    
+       listener_thread = EventListener()
+       listener_thread.task_queue.put(('exit', ''), False)
+       listener_thread.queue.put('stop')
+    
+       print 'good bye'
+
+commit 0e845e23347d60058dd6addea1c7e7cbff02b2e0 (tag: refs/tags/alpha_release-7-0-210)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Jan 20 23:47:57 2016 -0500
+
+    New release ---- alpha_release-7-0-210
+
+commit 054a5c35163e1b79daa2124172ef0f8f0f4bbd96
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 20 17:09:15 2016 -0500
 
@@ -13,7 +112,7 @@ Date:   Wed Jan 20 10:55:03 2016 -0500
     
     Feature testing
 
-commit 5197a0cbc0a87bd1e70e36d9a63e7585316c331d (refs/remotes/origin/feature-testing)
+commit 5197a0cbc0a87bd1e70e36d9a63e7585316c331d
 Merge: 0ef062a 69e9f23
 Author: Andrea Rigoni <andrea.rgn@gmail.com>
 Date:   Wed Jan 20 15:08:44 2016 +0100

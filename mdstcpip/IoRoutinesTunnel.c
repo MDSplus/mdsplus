@@ -118,7 +118,7 @@ static void ChildSignalHandler(int num)
   sigprocmask(SIG_BLOCK, &set, &oldset);
   /* wait for child */
   while ((pid = waitpid((pid_t) - 1, &status, WNOHANG)) > 0) {
-    void *ctx = 0;
+    void *ctx = (void *)-1;
     int id;
     char *info_name;
     void *info;

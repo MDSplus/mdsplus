@@ -55,7 +55,7 @@ int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
   Connection *c, *next;
   int ans;
   lock_connection_list();
-  next = (*ctx != 0) ? (Connection *) * ctx : ConnectionList;
+  next = (*ctx != (void *)-1) ? (Connection *) * ctx : ConnectionList;
   for (c = ConnectionList; c && c != next; c = c->next) ;
   if (c) {
     *ctx = c->next;
@@ -91,7 +91,7 @@ static void exitHandler(void)
 static void exitHandler(void)
 {
   int id;
-  void *ctx = 0;
+  void *ctx = (void *)-1;
   while ((id = NextConnection(&ctx, 0, 0, 0)) != -1) {
     DisconnectConnection(id);
     ctx = 0;
