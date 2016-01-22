@@ -6,6 +6,8 @@ from mdsscalar import Uint32
 from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
+from _mdsshr import DateToQuad
+from mdsdcl import tcl
 import random
 import gc as _gc
 import os,time
@@ -251,12 +253,23 @@ class treeTests(TestCase):
                              msg="Error writing compressed signal%s"%node)
         return
 
+    def segments(self):
+        signal=self.pytree.SIG01
+        signal.record=None
+        signal.do_not_compress=True
+        signal.compress_segments=False
+        for i in range(2000):
+            signal.putRow(100,Range(1,1000).data(),DateToQuad("now"))
+        print signal.fullpath
+        self.pytree.createPulse(100)
+        tcl('compress/override pytree/shot=100')
+        self.assertEqual((signal.record==Tree('pytree',100).SIG01.record).all(),True)
+
+
     def finish(self):
         del(self.pytree)
         del(self.pytree2)
         _gc.collect()
-#        import subprocess
-#        subprocess.Popen('/usr/sbin/lsof /tmp',shell=True)
 
     def runTest(self):
         self.editTrees()
@@ -266,7 +279,7 @@ class treeTests(TestCase):
         self.nodeLinkage()
         self.nciInfo()
         self.getData()
-        self.getCompression()
+        self.segments()
         self.finish()
 
 def suite():
