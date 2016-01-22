@@ -649,7 +649,7 @@ AC_CHECK_SIZEOF(long long)
 AC_CHECK_SIZEOF(_int64)
 
 # Stuff that only non-automake dirs need
-AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
+AC_SUBST([MAKEETCDIR], ["\$(top_builddir)/etc/"])
 
 dnl Check for 0xnnnnll (long long constants)
 AC_LANG_SAVE
@@ -1050,6 +1050,29 @@ AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
 AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
              [LIBRT="-lrt"],[LIBRT=""])
+
+
+# check that struct timespec is defined in time.h. If not, we need to
+# define it in libcompat.h. Note the optional inclusion of pthread.h.
+# On MinGW and MinGW-w64, the pthread.h file contains the timespec
+# definition.
+AC_CHECK_MEMBERS([struct timespec.tv_sec, struct timespec.tv_nsec], [], [AC_DEFINE_UNQUOTED(STRUCT_TIMESPEC_DEFINITION_MISSING, 1, "Need to define the timespec structure")], [
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+])
+
+# check that struct itimerspec is defined in time.h. If not, we need to
+# define it in libcompat.h.  Note the optional inclusion of pthread.h.
+# On MinGW and MinGW-w64, the pthread.h file contains the itimerspec
+# definition.
+AC_CHECK_MEMBERS([struct itimerspec.it_interval, struct itimerspec.it_value], [], [AC_DEFINE_UNQUOTED(STRUCT_ITIMERSPEC_DEFINITION_MISSING, 1, "Need to define the itimerspec structure")], [
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+])
 
 
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)

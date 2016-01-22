@@ -776,6 +776,9 @@ PY_LOG_COMPILER
 LOG_DRIVER
 LOG_COMPILER
 TESTS_ENVIRONMENT
+ENABLE_TESTS_FALSE
+ENABLE_TESTS_TRUE
+ENABLE_TESTS
 HAVE_WINEPATH
 HAVE_WINEBOOT
 NOSETESTS
@@ -2486,6 +2489,63 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_check_type
+
+# ac_fn_c_check_member LINENO AGGR MEMBER VAR INCLUDES
+# ----------------------------------------------------
+# Tries to find if the field MEMBER exists in type AGGR, after including
+# INCLUDES, setting cache variable VAR accordingly.
+ac_fn_c_check_member ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2.$3" >&5
+$as_echo_n "checking for $2.$3... " >&6; }
+if eval \${$4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (sizeof ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  eval "$4=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$4
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_member
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -9547,7 +9607,7 @@ _ACEOF
 
 
 # Stuff that only non-automake dirs need
-MAKEETCDIR="\$(top_srcdir)/etc/"
+MAKEETCDIR="\$(top_builddir)/etc/"
 
 
 
@@ -13382,6 +13442,103 @@ fi
 
 
 
+# check that struct timespec is defined in time.h. If not, we need to
+# define it in libcompat.h. Note the optional inclusion of pthread.h.
+# On MinGW and MinGW-w64, the pthread.h file contains the timespec
+# definition.
+ac_fn_c_check_member "$LINENO" "struct timespec" "tv_sec" "ac_cv_member_struct_timespec_tv_sec" "
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+
+"
+if test "x$ac_cv_member_struct_timespec_tv_sec" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_TIMESPEC_TV_SEC 1
+_ACEOF
+
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define STRUCT_TIMESPEC_DEFINITION_MISSING 1
+_ACEOF
+
+fi
+ac_fn_c_check_member "$LINENO" "struct timespec" "tv_nsec" "ac_cv_member_struct_timespec_tv_nsec" "
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+
+"
+if test "x$ac_cv_member_struct_timespec_tv_nsec" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_TIMESPEC_TV_NSEC 1
+_ACEOF
+
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define STRUCT_TIMESPEC_DEFINITION_MISSING 1
+_ACEOF
+
+fi
+
+
+# check that struct itimerspec is defined in time.h. If not, we need to
+# define it in libcompat.h.  Note the optional inclusion of pthread.h.
+# On MinGW and MinGW-w64, the pthread.h file contains the itimerspec
+# definition.
+ac_fn_c_check_member "$LINENO" "struct itimerspec" "it_interval" "ac_cv_member_struct_itimerspec_it_interval" "
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+
+"
+if test "x$ac_cv_member_struct_itimerspec_it_interval" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_ITIMERSPEC_IT_INTERVAL 1
+_ACEOF
+
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define STRUCT_ITIMERSPEC_DEFINITION_MISSING 1
+_ACEOF
+
+fi
+ac_fn_c_check_member "$LINENO" "struct itimerspec" "it_value" "ac_cv_member_struct_itimerspec_it_value" "
+#include <time.h>
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
+#endif /* HAVE_PTHREAD */
+
+"
+if test "x$ac_cv_member_struct_itimerspec_it_value" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_ITIMERSPEC_IT_VALUE 1
+_ACEOF
+
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define STRUCT_ITIMERSPEC_DEFINITION_MISSING 1
+_ACEOF
+
+fi
+
+
+
 # Extract the first word of "wine", so it can be a program name with args.
 set dummy wine; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -13951,6 +14108,7 @@ VALGRIND_CHECK_RULES="${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"
 
  # selects particular envs for build:host
 
+ ENABLE_TESTS=
  TESTS_ENVIRONMENT=
  LOG_COMPILER=
  LOG_FLAGS=
@@ -14144,6 +14302,7 @@ fi
  #
  *linux*:*mingw*) :
 
+   ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->mingw"
    if ${HAVE_WINE+:} false; then :
 
@@ -14514,6 +14673,7 @@ fi
  #
  *linux*:*linux*) :
 
+   ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->linux"
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
@@ -14525,18 +14685,27 @@ fi
  #
  *) :
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tests may not be supported for this host!\"" >&5
-$as_echo "$as_me: WARNING: \"Tests may not be supported for this host!\"" >&2;}
-   as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
-   as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
-   as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
+   # in all other platform tests are disabled for now
+   ENABLE_TESTS=no
   ;; #(
   *) :
      ;;
 esac
 
 # MACOS: add --dsymutil=yes to valgrind
+
+
+# Set ENABLE_TESTS
+
+   if test x"${ENABLE_TESTS}" = x"yes"; then
+  ENABLE_TESTS_TRUE=
+  ENABLE_TESTS_FALSE='#'
+else
+  ENABLE_TESTS_TRUE='#'
+  ENABLE_TESTS_FALSE=
+fi
+
+
 
 
 
@@ -16838,6 +17007,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then
   as_fn_error $? "conditional \"VALGRIND_ENABLED\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_TESTS_TRUE}" && test -z "${ENABLE_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_CUTE_DOXYGEN_TRUE}" && test -z "${HAVE_CUTE_DOXYGEN_FALSE}"; then

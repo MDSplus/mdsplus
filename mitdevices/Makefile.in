@@ -324,14 +324,12 @@ dc1394_support2.o : dc1394_support2.c
 	$(CC) -c -o $@ $(CPPFLAGS) $(CFLAGS) $< $(LIBDC1394_INCS)
 
 
-# TODO: fix touch of source directory
 @MAKESHLIBDIR@acq_root_filesystem.tgz : $(DTACQ_FILESYSTEM)
-	echo $(DC) > ${srcdir}/acq_root_filesystem/ffs/user/MitFilesDate  
-	( tar -C ${srcdir}/acq_root_filesystem --exclude=ffs -cvzf $@  . ; tar -C ${srcdir}/acq_root_filesystem -cvzf $@_ffs ffs/user )
+	( tar -C ${srcdir}/acq_root_filesystem --exclude=ffs -cvzf $@  . ; \
+	  tar -C ${srcdir}/acq_root_filesystem -cvzf $@_ffs ffs/user )
 
-# TODO: fix touch of source directory
 @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs : $(DTACQ_FILESYSTEM)
-	echo $(DC) > ${srcdir}/acq_root_filesystem/ffs/user/MitFilesDate
+#	echo $(DC) > ${srcdir}/acq_root_filesystem/ffs/user/MitFilesDate
 	( tar -C ${srcdir}/acq_root_filesystem -cvzf $@ ffs/user )
 
 @MAKEBINDIR@dtaq_update_board.sh : dtaq_update_board.sh

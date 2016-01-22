@@ -131,6 +131,18 @@
 /* "Define if you have the strsep routine" */
 #undef HAVE_STRSEP
 
+/* Define to 1 if `it_interval' is a member of `struct itimerspec'. */
+#undef HAVE_STRUCT_ITIMERSPEC_IT_INTERVAL
+
+/* Define to 1 if `it_value' is a member of `struct itimerspec'. */
+#undef HAVE_STRUCT_ITIMERSPEC_IT_VALUE
+
+/* Define to 1 if `tv_nsec' is a member of `struct timespec'. */
+#undef HAVE_STRUCT_TIMESPEC_TV_NSEC
+
+/* Define to 1 if `tv_sec' is a member of `struct timespec'. */
+#undef HAVE_STRUCT_TIMESPEC_TV_SEC
+
 /* "Define if you have the sybase includes (freetds)" */
 #undef HAVE_SYBASE
 
@@ -218,6 +230,12 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* "Need to define the itimerspec structure" */
+#undef STRUCT_ITIMERSPEC_DEFINITION_MISSING
+
+/* "Need to define the timespec structure" */
+#undef STRUCT_TIMESPEC_DEFINITION_MISSING
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
