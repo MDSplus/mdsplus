@@ -56,7 +56,7 @@ class CYGNET4K(Device):
         '0x54':'ETX_UNKNOWN_CMD',
         '0x55':'ETX_DONE_LOW'}
         STREAM = True
-        devide_id = 1
+        device_id = 1
         DRIVERPARMS = '-XU 1 -DM %d'  # allow other applications to share use of imaging boards previously opened for use by the first application
         FORMAT = 'DEFAULT'
         isOpen = False
@@ -109,7 +109,7 @@ class CYGNET4K(Device):
             self.device_id = int(dev_id)
             DRIVERPARMS = self.DRIVERPARMS % (1<<(dev_id-1))
             if Device.debug:
-                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % ())
+                print("Opening EPIX(R) PIXCI(R) Frame Grabber\nDevice parameters: '%s'" % (DRIVERPARMS,))
             status = self.pxd_PIXCIopen(c_char_p(DRIVERPARMS), c_char_p(self.FORMAT), c_char_p(formatFile))
             if status<0:
                 self.printErrorMsg(status)
@@ -150,7 +150,7 @@ class CYGNET4K(Device):
             if status<0:
                 self.printErrorMsg(status)
                 raise mdsExceptions.DevException
-            self.lastCaptured = self.pxd_capturedFieldCount(1)
+            self.lastCaptured = self.pxd_capturedBuffer(1)
             self.currTime = 0
             self.Frames = 0
             for i in range(10):
@@ -164,9 +164,9 @@ class CYGNET4K(Device):
                 raise mdsExceptions.DevException
 
         def captureFrame(self, TriggerTime):
-            currCaptured = self.pxd_capturedFieldCount(1);
+            currBuffer = self.pxd_capturedBuffer(1)
+            currCaptured = self.pxd_buffersFieldCount(1,currBuffer)
             if currCaptured != self.lastCaptured:  # A new frame arrived
-                currBuffer = self.pxd_capturedBuffer(1);
                 currTicks = self.pxd_buffersSysTicks(1, currBuffer)  # get internal clock of that buffer
                 if Device.debug>3: print("%d -> %d @ %d" % (self.lastCaptured, currCaptured, currTicks))
                 if self.Frames == 0:  # first frame
@@ -259,7 +259,10 @@ class CYGNET4K(Device):
             self.serialIO(b'\x55\x99\x66\x11\x50\EB', None)
             return self
 
-        def setSystemState(self,chksum,ack,FPGArst,FPGAcom):
+        def setSystemState(self,byte):
+            self.serialIO(b'\x4F'+chr(byte)+b'\x50')
+            return self
+        def setSystemStateP(self,chksum,ack,FPGArst,FPGAcom):
             """
             setSystemState(chksum,ack,FPGAreset,FPGAcomms)
             chksum  Bit 6 = 1 to enable check sum mode
@@ -272,8 +275,7 @@ class CYGNET4K(Device):
             if ack:     byte |= 1<<4
             if FPGArst: byte |= 1<<1
             if FPGAcom: byte |= 1<<0
-            self.serialIO(b'\x4F'+chr(byte)+b'\x50')
-            return self
+            return self.setSystemState(byte)
 
         def setFpgaCtrlReg(self,enableTEC):
             """setFpgaCtrlReg(enableTEC)"""
@@ -347,13 +349,13 @@ class CYGNET4K(Device):
 
         '''Query Commands'''
 
-        def getSystemStatus(self):
-            """get system status byte"""
+        def getSystemState(self):
+            """get system state byte"""
             return  ord(self.serialIO(b'\x49\x50',1)[0])
 
-        def getSystemStatusP(self):
-            """get system status as dict"""
-            byte = self.getSystemStatus()
+        def getSystemStateP(self):
+            """get system state as dict"""
+            byte = self.getSystemState()
             return {
             'chksum':  bool(byte & 1<<6),
             'ack':     bool(byte & 1<<4),
