@@ -118,6 +118,10 @@ class CYGNET4K(Device):
             if Device.debug: print("Open OK")
             self.running = False
             CYGNET4K.isOpen = True
+            self.serialUseAck = self.serialUseChk = True
+            status = self.getSystemStateP()
+            self.serialUseAck = status['ack']
+            self.serialUseChk = status['chksum']
             self.nUnits  = self.pxd_infoUnits()
             self.memSize = [self.pxd_infoMemsize(c_int(1<<i)) for i in range(self.nUnits)]
             self.nBuffer = self.pxd_imageZdim()
@@ -224,21 +228,22 @@ class CYGNET4K(Device):
                 self.isInitSerial = True
                 sleep(0.02)
             if Device.debug>3: print('serial write: '+' '.join(['%02x' % ord(c) for c  in writeBuf]),BytesToRead)
+            while self.pxd_serialRead(1, 0, create_string_buffer(1), 1): pass
             BytesRead = self.pxd_serialWrite(1, 0, c_char_p(writeBuf), BytesToWrite+1)
             if BytesRead < 0:
                 print("ERROR IN SERIAL WRITE");
                 self.printErrorMsg(BytesRead)
                 raise mdsExceptions.DevException  # error
             if BytesToRead is None: return  # no response e.g. for resetMicro
-            BytesToRead += 11  # ack (+ chk)
-            cReadBuf = create_string_buffer(BytesToRead)  # ETX and optional check sum
+            EOC = int(self.serialUseAck)+int(self.serialUseChk)
+            cReadBuf = create_string_buffer(BytesToRead+EOC)  # ETX and optional check sum
             sleep(0.001)
-            BytesRead = self.pxd_serialRead(1, 0, cReadBuf, BytesToRead)
+            BytesRead = self.pxd_serialRead(1, 0, cReadBuf, BytesToRead+EOC)
             if BytesRead < 0:
                 print("ERROR IN SERIAL READ\n");
                 self.printErrorMsg(BytesRead)
-            if Device.debug: print("SERIAL READ: %d of %d" % (BytesRead, BytesToRead))
-            return cReadBuf.raw
+            if Device.debug: print("SERIAL READ: %d of %d" % (BytesRead-EOC, BytesToRead))
+            return cReadBuf.raw[0:BytesToRead]
 
         '''Set Commands'''
 
