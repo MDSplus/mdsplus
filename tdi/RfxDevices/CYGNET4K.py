@@ -235,15 +235,20 @@ class CYGNET4K(Device):
                 self.printErrorMsg(BytesRead)
                 raise mdsExceptions.DevException  # error
             if BytesToRead is None: return  # no response e.g. for resetMicro
-            EOC = int(self.serialUseAck)+int(self.serialUseChk)
-            cReadBuf = create_string_buffer(BytesToRead+EOC)  # ETX and optional check sum
-            sleep(0.001)
-            BytesRead = self.pxd_serialRead(1, 0, cReadBuf, BytesToRead+EOC)
-            if BytesRead < 0:
-                print("ERROR IN SERIAL READ\n");
-                self.printErrorMsg(BytesRead)
-            if Device.debug: print("SERIAL READ: %d of %d" % (BytesRead-EOC, BytesToRead))
-            return cReadBuf.raw[0:BytesToRead]
+            EOC = int(self.serialUseAck)+int(self.serialUseChk)  # ETX and optional check sum
+            expected = BytesToRead+EOC
+            cReadBuf = create_string_buffer(expected)
+            timeout = time()+.01;out=[]
+            while timeout>time() and expected>0:
+                BytesRead = self.pxd_serialRead(1, 0, cReadBuf, expected)
+                if BytesRead < 0:
+                    print("ERROR IN SERIAL READ\n");
+                    self.printErrorMsg(BytesRead)
+                    raise mdsExceptions.DevDEVICE_CONNECTION_FAILED
+                out+= cReadBuf.raw[0:BytesRead]
+                expected-= BytesRead
+            if Device.debug: print("SERIAL READ: %d of %d" % (len(out)-EOC, BytesToRead))
+            return out[0:BytesToRead]
 
         '''Set Commands'''
 
