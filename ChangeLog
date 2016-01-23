@@ -1,4 +1,57 @@
-commit a2fb8d70e1be203a6ce72dc03574bda7f3781994 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 1d97bd1caf02cbf9147cf979c272e2aad346b9e0 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: a1f1ff9 16f779e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 22 09:35:57 2016 -0500
+
+    Merge pull request #321 from MDSplus/twf-add-compress-segments
+    
+    Twf add compress segments
+
+commit a1f1ff9e9992ef1ca1afa84302530d9ef162e5c2
+Merge: 0a9fb40 7a21938
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 22 09:35:16 2016 -0500
+
+    Merge pull request #325 from MDSplus/jas-test-exceptions
+    
+    Jas test exceptions
+
+commit 0a9fb406949033ab86671ec253c64c550f946107
+Merge: 8c152d9 02e4c95
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Fri Jan 22 13:38:58 2016 +0100
+
+    Merge pull request #330 from MDSplus/feature-testing
+    
+    Feature testing
+
+commit 02e4c956359de3e8324751ad02cba0de7909dbc2 (refs/remotes/origin/feature-testing)
+Merge: 723dad7 8c152d9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 22 09:18:05 2016 +0100
+
+    Merge branch 'alpha' into feature-testing
+
+commit 723dad789956add82c0df1313a46105239465609
+Merge: b8cd809 0a2a2c5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 22 09:16:49 2016 +0100
+
+    Merge branch 'andrea-testing' into feature-testing
+
+commit 0a2a2c5a95d6326ea964dd8f63c2826ce000577f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jan 22 09:15:58 2016 +0100
+
+    adds __THROW again
+
+commit 8c152d9598fb8b571e86aebf4f598098832bd414 (tag: refs/tags/alpha_release-7-0-211)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Jan 21 23:46:43 2016 -0500
+
+    New release ---- alpha_release-7-0-211
+
+commit a2fb8d70e1be203a6ce72dc03574bda7f3781994
 Merge: 0e845e2 0c96e4b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 21 15:53:27 2016 -0500
@@ -91,6 +144,78 @@ Date:   Thu Jan 21 14:26:30 2016 -0500
     
        print 'good bye'
 
+commit b8cd809897f56ab6ac44d8753529502acede1055
+Merge: f1272d2 0ad05dd
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Jan 21 18:38:47 2016 +0100
+
+    Merge pull request #327 from AndreaRigoni/andrea-testing
+    
+    came back as it does not work in mingw ...
+
+commit 0ad05dda8b098ea17523bce8102fbfa4102154eb
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 18:34:42 2016 +0100
+
+    came back as it does not work in mingw ...
+
+commit f1272d2e989702397342132738a72fb66858e290
+Merge: 5197a0c d876a32
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 21 12:01:21 2016 -0500
+
+    Merge pull request #326 from AndreaRigoni/andrea-testing
+    
+    Andrea testing
+
+commit d876a32c426ac6adcb1cc561b12aa66f964e7989
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 17:37:46 2016 +0100
+
+    fix missing \
+
+commit 7520be639cee100256734dbd3f357fa7c362ae11
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 17:28:14 2016 +0100
+
+    fix MitFilesDate from being added to srcdir
+
+commit ea4c808e2f8b0a4c754bf1db7df88305eeed2cf7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 16:47:03 2016 +0100
+
+    fix touching /etc in srcdir
+
+commit c232d2e9511f2291bbf024d037304859e5bad5d4
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 16:27:38 2016 +0100
+
+    disable all tests for unsupported platforms (and macos at the moment).
+
+commit 2905e345f2f51ff0f37d0b60b5a392421f5eba21
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 12:24:01 2016 +0100
+
+    removed __throw for macos
+
+commit d601c1e4c395b2092c192f481439627ffd130c9f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 12:16:52 2016 +0100
+
+    fix for mac
+
+commit 352b44b67da14884f9dd95fd792c9a21881852b5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 11:51:19 2016 +0100
+
+    fix for mac
+
+commit 44785602390bfc775ad76bd2f00fb7b8e40d3e08
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jan 21 11:12:19 2016 +0100
+
+    add def missing used by check in macosx
+
 commit 0e845e23347d60058dd6addea1c7e7cbff02b2e0 (tag: refs/tags/alpha_release-7-0-210)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Jan 20 23:47:57 2016 -0500
@@ -103,6 +228,19 @@ Date:   Wed Jan 20 17:09:15 2016 -0500
 
     disable thread tests until problem is solved
 
+commit 16f779e35162951f4f94dcb6e40c0c22b748d1fe (refs/remotes/origin/twf-add-compress-segments)
+Merge: 7c60fb6 ba31457
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 20 15:43:48 2016 -0500
+
+    Merge in alpha to original pull request
+
+commit 7a21938220f746e050c478da8cc81c0bc37273ad (refs/remotes/origin/jas-test-exceptions)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Jan 20 15:21:30 2016 -0500
+
+    don't import from MDSplus - it is not there
+
 commit ba3145738a2decd4ec15e028a6a2c7fb20d46717
 Merge: 3aba7cf 5197a0c
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -111,6 +249,19 @@ Date:   Wed Jan 20 10:55:03 2016 -0500
     Merge pull request #324 from MDSplus/feature-testing
     
     Feature testing
+
+commit 5e445a980e3731b0714e53fdd69da4c187c46e70
+Merge: 97f7c50 3aba7cf
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Jan 20 10:08:56 2016 -0500
+
+    Merge branch 'alpha' into jas-test-exceptions
+
+commit 97f7c50a314a69c51f4c005b0089bc3e6212a9b0
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Jan 20 10:06:41 2016 -0500
+
+    a few simple tests for exceptions
 
 commit 5197a0cbc0a87bd1e70e36d9a63e7585316c331d
 Merge: 0ef062a 69e9f23
@@ -178,6 +329,18 @@ Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Tue Jan 19 14:33:57 2016 -0500
 
     signal errors when they happen
+
+commit 7c60fb67f31f02a358265a619bf432320ff4d886
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 19 12:49:38 2016 -0500
+
+    Add compressed segment testing
+
+commit 402d981bc00e843dd20b0ec176f4f066ec38d13e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 19 12:18:54 2016 -0500
+
+    Add the ability of TCL> COMPRESS tree/SHOT=shotnumber to compress segments
 
 commit 678476838b1277977bdcd6d579d8febed7832372
 Merge: 1cf5b4f 2b00275
