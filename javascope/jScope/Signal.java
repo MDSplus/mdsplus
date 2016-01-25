@@ -278,6 +278,10 @@ public class Signal implements WaveDataListener
     protected String zlabel;
     protected String title;
 
+    //Legend associated with this signal
+    private String legend = null;
+    
+    
     //True if signal is resampled on server side to
     //reduce net load
     private boolean full_load = false;
@@ -3073,7 +3077,10 @@ public class Signal implements WaveDataListener
     }
     
     
-    
+    public void legendUpdated(String name)
+    {
+        setLegend(name);
+    }
     
     public  void dataRegionUpdated(double []regX, float []regY, double resolution)
     {
@@ -3267,6 +3274,12 @@ public class Signal implements WaveDataListener
        }
         pendingUpdatesV.clear();
     }
+    
+    public void setLegend(String legend)
+    {
+        this.legend = legend;
+    }
+    public String getLegend() { return legend;}
     
     void fireSignalUpdated(boolean changeLimits)
     {

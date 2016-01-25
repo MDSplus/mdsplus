@@ -312,6 +312,11 @@ public class jScopeMultiWave
             wi.in_y[i];
         String er = (wi.w_error != null && wi.w_error[i] != null) ? " ERROR " :
             "";
+        
+        //If the legend is defined in the signal, override it
+        if (signals.size() > i && ((Signal) signals.elementAt(i)).getLegend() != null)
+            return ((Signal) signals.elementAt(i)).getLegend();
+        
         if (wi.shots != null)
         {
             s = name + " " + wi.shots[i] + er;
@@ -323,6 +328,7 @@ public class jScopeMultiWave
 
         if (signals.size() > i)
         {
+            s += ((Signal) signals.elementAt(i)).getName();
             Signal sign = (Signal) signals.elementAt(i);
             if (sign != null && sign.getType() == Signal.TYPE_2D)
             {
