@@ -5,6 +5,12 @@ import tests.treeUnitTest as treeUnitTest
 import tests.dataUnitTest as dataUnitTest
 import os
 
+treeUnitTest.tearDownModule=None
+
+def tearDownMOdule():
+    import shutil
+    shutil.rmtree(treeUnitTest._tmpdir)
+
 class threadJob(Thread):
     """Thread to execute the treeTests"""
     def run(self):
