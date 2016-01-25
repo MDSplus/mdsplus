@@ -107,6 +107,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
 	$(top_srcdir)/m4/m4_ax_is_release.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_directories.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
 	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
