@@ -24,10 +24,14 @@ cd /buildsrc
 
 $MAKE clean > /dev/null
 $MAKE
-echo 
-echo " --- MAKING TESTS 64bit --- "
-$MAKE -k tests TEST_FORMAT=tap
-echo 
+chmod a+rwx /buildsrc
+if ( echo "$@" | grep wine > /dev/null )
+then
+  echo
+  echo " --- MAKING TESTS 64bit --- "
+  $MAKE -k tests TEST_FORMAT=tap
+  echo
+fi 
 $MAKE install
 
 ./configure --prefix=/buildroot \
