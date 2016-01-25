@@ -16728,6 +16728,68 @@ esac
 
 
 
+prefix=$(cd ${prefix}; pwd)
+
+
+
+if test "x$exec_prefix" = x"NONE"; then :
+  exec_prefix="${prefix}"
+fi
+
+if test "x$bindir" = x"\${exec_prefix}/bin"; then :
+  bindir="${exec_prefix}/bin"
+fi
+
+if test "x$sbindir" = x"\${exec_prefix}/sbin"; then :
+  sbindir="${exec_prefix}/sbin"
+fi
+
+if test "x$libexecdir" = x"\${exec_prefix}/libexec"; then :
+  libexecdir="${exec_prefix}/libexec"
+fi
+
+if test "x$datarootdir" = x"\${prefix}/share"; then :
+  datarootdir="${prefix}/share"
+fi
+
+if test "x$datadir" = x"\${datarootdir}"; then :
+  datadir="${datarootdir}"
+fi
+
+if test "x$sysconfdir" = x"\${prefix}/etc"; then :
+  sysconfdir="${prefix}/etc"
+fi
+
+if test "x$sharedstatedir" = x"\${prefix}/com"; then :
+  sharedstatedir="${exec_prefix}/com"
+fi
+
+if test "x$localstatedir" = x"\${prefix}/var"; then :
+  localstatedir="${prefix}/var"
+fi
+
+if test "x$includedir" = x"\${prefix}/include"; then :
+  includedir="${prefix}/include"
+fi
+
+
+
+if test "x$libdir" = x"\${exec_prefix}/lib"; then :
+  libdir="${exec_prefix}/lib"
+fi
+
+if test "x$localedir" = x"\${datarootdir}/locale"; then :
+  localedir="${datarootdir}/locale"
+fi
+
+if test "x$mandir" = x"\${datarootdir}/man"; then :
+  mandir="${datarootdir}/man"
+fi
+
+
+
+
+
 
 
 
@@ -16821,7 +16883,7 @@ ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rpm/mdsipd.xinetd rpm/mdsipsd.xinetd scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17710,6 +17772,8 @@ do
     "rpm/Makefile") CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;
     "rpm/envsyms") CONFIG_FILES="$CONFIG_FILES rpm/envsyms" ;;
     "rpm/post_install_script") CONFIG_FILES="$CONFIG_FILES rpm/post_install_script" ;;
+    "rpm/mdsipd.xinetd") CONFIG_FILES="$CONFIG_FILES rpm/mdsipd.xinetd" ;;
+    "rpm/mdsipsd.xinetd") CONFIG_FILES="$CONFIG_FILES rpm/mdsipsd.xinetd" ;;
     "scripts/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
     "servershr/Makefile") CONFIG_FILES="$CONFIG_FILES servershr/Makefile" ;;
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;
@@ -18452,6 +18516,9 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
+
+
 
 
 ac_config_commands="$ac_config_commands default-1"

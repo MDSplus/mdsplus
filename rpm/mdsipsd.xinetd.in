@@ -10,8 +10,8 @@ service mdsips
         instances       = UNLIMITED
         per_source      = UNLIMITED
         user            = root
-        server          = /usr/local/mdsplus/bin/mdsipsd
-        server_args     = mdsips /var/log/mdsplus/mdsipsd
+        server          = @bindir@/mdsipsd
+        server_args     = mdsips @localstatedir@/log/mdsplus/mdsipsd
         log_on_failure  += HOST
         log_on_success  += HOST
 }

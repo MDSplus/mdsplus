@@ -1188,6 +1188,9 @@ dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
 
+dnl define custom direcotries substitution
+AX_MDSPLUS_DIRECTORIES
+
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
@@ -1332,6 +1335,8 @@ AC_OUTPUT(Makefile.inc
           rpm/Makefile
           rpm/envsyms
           rpm/post_install_script
+          rpm/mdsipd.xinetd
+          rpm/mdsipsd.xinetd
           scripts/Makefile
           servershr/Makefile 
           setevent/Makefile
@@ -1350,6 +1355,9 @@ AC_OUTPUT(Makefile.inc
           xtreeshr/Makefile
           icons/Makefile
 )
+
+
+
 
 AC_OUTPUT_COMMANDS(make depend)
 if test "$JAVA_APS" = ""
