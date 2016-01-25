@@ -16728,8 +16728,6 @@ esac
 
 
 
-prefix=$(cd ${prefix}; pwd)
-
 
 
 if test "x$exec_prefix" = x"NONE"; then :

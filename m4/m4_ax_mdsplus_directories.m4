@@ -28,10 +28,6 @@ dnl AC_SUBST([mandir],         ['${datarootdir}/man'])dnl
 
 AC_DEFUN([AX_MDSPLUS_DIRECTORIES],[
 
-dnl Fix prefix with abs path
-AS_VAR_SET([prefix],[$(cd ${prefix}; pwd)])
-
-
 
 AS_VAR_IF([exec_prefix],["NONE"], 
   AS_VAR_SET([exec_prefix],["${prefix}"]))
