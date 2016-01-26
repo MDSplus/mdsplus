@@ -1,4 +1,98 @@
-commit 1d97bd1caf02cbf9147cf979c272e2aad346b9e0 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit d537512b4976947c8525ed4b2d2e7df9f2866627 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: e03cb84 13a6e68
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 25 13:26:18 2016 -0500
+
+    Merge pull request #334 from AndreaRigoni/andrea-xinetd
+    
+    Andrea xinetd
+
+commit e03cb841e1f079ee622ee10a6a3cf4b3f9450a02
+Merge: a4529da ca77a04
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 25 13:24:29 2016 -0500
+
+    Merge pull request #312 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit a4529da91fc8ceba0317f079e0d10ad7449e2370
+Merge: 861083c 8780c9c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Jan 25 12:32:52 2016 -0500
+
+    Merge pull request #332 from MDSplus/jas-fix-cp7452-methods
+    
+    remove extra device arguments
+
+commit 13a6e685215defcb604a0b2bc302258f050b08e3
+Merge: a801f15 71ad2dd
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 25 17:17:26 2016 +0100
+
+    Merge branch 'andrea-xinetd' of https://github.com/AndreaRigoni/mdsplus into andrea-xinetd
+
+commit a801f15981038cff7a325154d2f917985c81d79d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 25 17:13:14 2016 +0100
+
+    Fix $prefix should be entered absolute
+
+commit b77ca10bd2d2ba160017adc0c0e2f9e58848f78f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 25 15:52:10 2016 +0100
+
+    add ax_mdsplus_directories to avoid nested $prefix declarations
+
+commit 71ad2dd16ab4585dab54219caac3e64d8ef5e5d4
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 25 17:13:14 2016 +0100
+
+    Fix $prefix should be entered absolute
+
+commit 6e3e15ffc9715d8f6e58eebc2a3fcd6a20842952
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jan 25 15:52:10 2016 +0100
+
+    add ax_mdsplus_directories to avoid nested $prefix declarations
+
+commit 861083c1fb19c25fbc6393075103654ea368c4be
+Merge: f62c0ca 1d3cd6d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 25 09:40:20 2016 -0500
+
+    Merge pull request #329 from MDSplus/twf-combine-remcam-into-camshr
+    
+    Twf combine remcam into camshr
+
+commit f62c0cab5f43297fc20f6e502b5bbc00a4fd2f9f
+Merge: bbd8054 c1e4ecd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 25 09:40:03 2016 -0500
+
+    Merge pull request #331 from MDSplus/twf-fix-python-thread-test
+    
+    Fix the python threads test by disabling the tearDownModule of the tr…
+
+commit bbd8054267188fa847321ef6c3d9a7c2a1f3bec3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 25 09:03:52 2016 -0500
+
+    Only do wine tests if 'wine' is passed as an argument
+
+commit 7a125004b09b230a5b7bfcabab8700449e6b97c2 (tag: refs/tags/alpha_release-7-0-212)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Jan 22 23:45:47 2016 -0500
+
+    New release ---- alpha_release-7-0-212
+
+commit 8780c9c158cec53e014c14150e72b5099e29042c (refs/remotes/origin/jas-fix-cp7452-methods)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 22 15:59:49 2016 -0500
+
+    remove extra device arguments
+
+commit 1d97bd1caf02cbf9147cf979c272e2aad346b9e0
 Merge: a1f1ff9 16f779e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 22 09:35:57 2016 -0500
@@ -51,6 +145,12 @@ Date:   Thu Jan 21 23:46:43 2016 -0500
 
     New release ---- alpha_release-7-0-211
 
+commit c1e4ecd8256a5475b562697f2b7fae73fc328b25 (refs/remotes/origin/twf-fix-python-thread-test)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 21 17:28:22 2016 -0500
+
+    Fix the python threads test by disabling the tearDownModule of the tree tests which removes the tmp directory and instead complete that at the end of the threads test. There was a race condition caused and the tmp directory was being deleted before all the threads were done doing the treeUnitTests.
+
 commit a2fb8d70e1be203a6ce72dc03574bda7f3781994
 Merge: 0e845e2 0c96e4b
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -59,6 +159,18 @@ Date:   Thu Jan 21 15:53:27 2016 -0500
     Merge pull request #328 from MDSplus/jas-fix-mac-ssh-thread-error
     
     Fix infinite loop on mac because start of search of connectionList ha…
+
+commit 1d3cd6dacdf2e38790503348558984fc6b19edf3 (refs/remotes/origin/twf-combine-remcam-into-camshr)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 21 14:46:11 2016 -0500
+
+    Link CamShr to MdsIpShr for remote
+
+commit f8bab6bd5bcd308ed599fda0510820370b4e5216
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 21 14:30:16 2016 -0500
+
+    Add RemCamStatus
 
 commit 0c96e4bbf38ff764f13def236bdcdacd8c92a57e
 Author: Josh Stillerman <jas@psfc.mit.edu>
@@ -143,6 +255,12 @@ Date:   Thu Jan 21 14:26:30 2016 -0500
        listener_thread.queue.put('stop')
     
        print 'good bye'
+
+commit 285c401095f6b024332f58d5c76338f95079003c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 21 14:20:09 2016 -0500
+
+    Move remcam functionality into CamShr
 
 commit b8cd809897f56ab6ac44d8753529502acede1055
 Merge: f1272d2 0ad05dd
@@ -530,6 +648,19 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 15 09:50:52 2016 -0500
 
     Fix typos to include the VS dll in the installer
+
+commit ca77a044f06e930a7b4d557052767cfc55120f46 (refs/remotes/origin/dev-gm)
+Merge: 4c87cfc ac4c732
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jan 15 13:32:03 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 4c87cfc8ed7e0efdd30b21453dd2a3fcc16628d7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jan 15 13:30:41 2016 +0100
+
+    Added dynamic labels
 
 commit 7cc3d313ca34a8b262452e8286c84c4fffff94f8
 Merge: 996aa04 02fa3cf
