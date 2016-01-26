@@ -28,22 +28,36 @@ MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 $(MdsTestShr): backends/check/libCheck.a libMdsTestBackend.a
 	$(CXX) $(TARGET_ARCH) $(CXXFLAGS) $(OUTPUT_OPTION) @LINKSHARED@ -Wl,-whole-archive $^ -Wl,-no-whole-archive $(LDFLAGS) $(LIBS) $(MAKE_IMPLIB_MdsTestShr)
 
+all-local: $(MdsTestShr)
 
-TEST_SUBDIRS = \
+clean-local:
+	-$(RM) $(MdsTestShr)
+
+
+
+
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+TEST_DIRS ?= \
                mdsobjects/python/tests \
                mdslib/testing \
                mdsobjects/cpp/testing
 #              testing/selftest
 
-TEST_OUTDIR    ?= ${top_builddir}/testing
+TEST_OUTDIR  ?= ${top_builddir}/testing
 
 
 
 .PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
-tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_SUBDIRS))
-clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_SUBDIRS))
-tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_SUBDIRS))
-tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_SUBDIRS))
+tests_DIRS  = $(addprefix tests__$(top_builddir)/, $(TEST_DIRS))
+clean_DIRS  = $(addprefix clean__$(top_builddir)/, $(TEST_DIRS))
+tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_DIRS))
+tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_DIRS))
 $(tests_DIRS):
 	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
 
@@ -61,24 +75,19 @@ $(tests_valgrind_suppressions_DIRS):
 tests: $(tests_DIRS)
 	@ \
 	echo " -------- CUT HERE for Jenkins  --------------- "; \
-	echo $(addsuffix *.tap,$(TEST_SUBDIRS)); \
+	echo $(addsuffix *.tap,$(TEST_DIRS)); \
 	echo " ---------------------------------------------- "
 
 tests-valgrind: $(tests_valgrind_DIRS)
 	@ \
 	echo " -------- CUT HERE for Jenkins  --------------- "; \
-	echo $(addsuffix *-valgrind-*.xml,$(TEST_SUBDIRS)); \
+	echo $(addsuffix *-valgrind-*.xml,$(TEST_DIRS)); \
 	echo " ---------------------------------------------- "
 
 tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
 
 tests-clean: $(clean_DIRS)
 
-
-all-local: $(MdsTestShr)
-
-clean-local:
-	-$(RM) $(MdsTestShr)
 
 
 
