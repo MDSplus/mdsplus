@@ -260,7 +260,7 @@ class treeTests(TestCase):
         signal.compress_segments=False
         for i in range(2000):
             signal.putRow(100,Range(1,1000).data(),DateToQuad("now"))
-        print signal.fullpath
+        print (signal.fullpath)
         self.pytree.createPulse(100)
         tcl('compress/override pytree/shot=100')
         self.assertEqual((signal.record==Tree('pytree',100).SIG01.record).all(),True)

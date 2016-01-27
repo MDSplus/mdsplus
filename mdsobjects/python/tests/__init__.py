@@ -49,6 +49,10 @@ class cleanup(TestCase):
 def test_all(*arg):
     import tempfile
     import os
+    import sys
+    if 'waitdbg' in os.environ:
+      print("Hit return after gdb is connected\n")
+      sys.stdin.readline()
     dir=tempfile.mkdtemp()
     print ("Creating trees in %s" % (dir,))
     cleanup.dir=dir
@@ -58,7 +62,6 @@ def test_all(*arg):
         hostpart="localhost::"
     os.environ['pytree_path']=hostpart+dir
     os.environ['pytreesub_path']=hostpart+dir
-    print os.environ['pytree_path']
     if os.getenv("testing_path") == None:
       os.environ['testing_path']="%s/../../../trees"%(os.path.dirname(os.path.realpath(__file__)),)
 
