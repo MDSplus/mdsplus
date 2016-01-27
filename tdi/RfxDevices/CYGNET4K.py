@@ -60,7 +60,6 @@ class CYGNET4K(Device):
         DRIVERPARMS = '-XU 1 -DM %d'  # allow other applications to share use of imaging boards previously opened for use by the first application
         FORMAT = 'DEFAULT'
         isOpen = False
-        running = False
         isInitSerial = False
         queue = None
         stream = None
@@ -80,7 +79,6 @@ class CYGNET4K(Device):
                     CYGNET4K.xclib.storeFrame(self.node,frameset[0],frameset[1])
                     CYGNET4K.xclib.queue.task_done()
                 CYGNET4K.xclib.queue.task_done()
-                if Device.debug: print('done')
 
         def __init__(self):
             try:
@@ -116,7 +114,6 @@ class CYGNET4K(Device):
                 CYGNET4K.isOpen = False
                 return False
             if Device.debug: print("Open OK")
-            self.running = False
             CYGNET4K.isOpen = True
             self.serialUseAck = self.serialUseChk = True
             status = self.getSystemStateP()
@@ -144,6 +141,9 @@ class CYGNET4K(Device):
             return True
 
         def startVideoCapture(self,node):
+            if self.goneLive:
+                print('Cannot go live again. Re-init first!')
+                raise mdsExceptions.DevException
             if CYGNET4K.xclib.STREAM:
                 self.queue = Queue()
                 self.stream = self._streamer(node)
@@ -158,14 +158,17 @@ class CYGNET4K(Device):
             self.currTime = 0
             self.Frames = 0
             for i in range(10):
-                self.running = not self.pxd_goneLive(1,0)==0
-                if self.running: break
-                else:            sleep(1)
-            if self.running:
+                if self.goneLive: break
+                else:            sleep(.3)
+            if self.goneLive:
                 if Device.debug: print("Video capture started.")
             else:
                 print('Timeout!')
                 raise mdsExceptions.DevException
+
+        def _goneLive(self):
+            return not self.pxd_goneLive(1,0)==0
+        goneLive = property(_goneLive)
 
         def captureFrame(self, TriggerTime):
             currBuffer = self.pxd_capturedBuffer(1)
@@ -195,7 +198,7 @@ class CYGNET4K(Device):
                 return False
 
         def storeFrames(self,node):
-            if CYGNET4K.xclib.STREAM:
+            if isinstance(self.queue,Queue):
                 self.stream.join()
             else:
                 for frameset in self.queue:
@@ -211,7 +214,6 @@ class CYGNET4K(Device):
             self.pxd_goUnLive(1)
             if isinstance(self.queue,Queue):
                 self.queue.put(None)  # invoke stream closure
-            self.running = False
             if Device.debug: print("Video capture stopped.")
 
         def serialIO(self, writeBuf, BytesToRead=0):
@@ -703,17 +705,19 @@ class CYGNET4K(Device):
             self.cmosTemp = [CYGNET4K.xclib.getCmosTemp(),0.]
             """start capturing frames"""
             CYGNET4K.xclib.startVideoCapture(self.device.frames)
-            self.running = CYGNET4K.xclib.running
+            self.running = True
             while (not self.stopReq) and (self.duration < 0 or self.currTime < self.duration):
                 if not CYGNET4K.xclib.captureFrame(self.triggerTime):
                     sleep(0.002)
             """Finished storing frames, stop camera integration and store measured frame times"""
             CYGNET4K.xclib.stopVideoCapture()
-            self.running = CYGNET4K.xclib.running
+            self.running = False
             """capture temps after"""
             self.pcbTemp[1]  = CYGNET4K.xclib.getPcbTemp()
             self.cmosTemp[1] = CYGNET4K.xclib.getCmosTemp()
+            print('storing')
             self.store()  # already start upload to save time
+            print('run done')
 
         def stop(self):
             self.stopReq = True
@@ -723,7 +727,6 @@ class CYGNET4K(Device):
             self.device.temp_pcb.record  = Float32Array(self.pcbTemp)
             self.device.temp_cmos.record = Int16Array(self.cmosTemp)
             CYGNET4K.xclib.storeFrames(self.device.frames)
-            print('done')
 
     class AsynchTrend(Thread):
         def __init__(self, device, trendTree, trendShot, trendPcb, trendCmos):
