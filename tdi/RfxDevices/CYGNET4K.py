@@ -267,24 +267,27 @@ class CYGNET4K(Device):
         def setSystemState(self,byte):
             self.serialIO(b'\x4F'+chr(byte)+b'\x50')
             return self
-        def setSystemStateP(self,chksum,ack,FPGArst,FPGAcom):
+        def setSystemStateP(self,chksum,ack,FPGAboot,FPGAcom):
             """
             setSystemState(chksum,ack,FPGAreset,FPGAcomms)
-            chksum  Bit 6 = 1 to enable check sum mode
-            ack     Bit 4 = 1 to enable command ack
-            FPGArst Bit 1 = 0 to Hold FPGA in RESET
-            FPGAcom Bit 0 = 1 to enable comms to FPGA EPROM
+            chksum   Bit 6 = 1 to enable check sum mode
+            ack      Bit 4 = 1 to enable command ack
+            FPGAboot Bit 1 = 0 to Hold FPGA in RESET; do not boot
+            FPGAcom  Bit 0 = 1 to enable comms to FPGA EPROM
             """
             byte = 0
-            if chksum:  byte |= 1<<6
-            if ack:     byte |= 1<<4
-            if FPGArst: byte |= 1<<1
-            if FPGAcom: byte |= 1<<0
+            if chksum:   byte |= 1<<6
+            if ack:      byte |= 1<<4
+            if FPGAboot: byte |= 1<<1
+            if FPGAcom:  byte |= 1<<0
             return self.setSystemState(byte)
 
-        def setFpgaCtrlReg(self,enableTEC):
-            """setFpgaCtrlReg(enableTEC)"""
-            return self.setValue(b'\x00',1 if enableTEC else 0)
+        def setFpgaCtrlReg(self,byte):
+            """setFpgaCtrlReg(byte)"""
+            return self.setValue(b'\x00',byte)
+        def setFpgaCtrlRegP(self,enableTEC):
+            """setFpgaCtrlRegP(enableTEC)"""
+            return self.setFpgaCtrlReg(1 if enableTEC else 0)
 
         def setFrameRate(self, frameRate):
             """set the frame rate in Hz"""
@@ -386,8 +389,12 @@ class CYGNET4K(Device):
             return value
 
         def getFpgaCtrlReg(self):
-            """TECenabled = getFpgaCtrlReg()"""
-            return bool(ord(self.serialIO(b'\x00')[0]) & 1)
+            """byte = getFpgaCtrlReg()"""
+            """TEC bit 0 = 1 enabled"""
+            return self.getValue(b'\x00')
+        def getFpgaCtrlRegP(self):
+            """status = getFpgaCtrlRegP()"""
+            return {'TEC':bool(self.getFpgaCtrlReg & 1<<0)}
 
         def getFrameRate(self):
             """get frameRate in Hz"""
@@ -464,6 +471,7 @@ class CYGNET4K(Device):
             """get Y offset of ROI"""
             return self.getValue(b'\x03\x04',1,True)
 
+        ''' currently unsupported: returns error code 0x53 ETX_I2C_ERR
         def getUnitSerialNumber(self):
             """word = getUnitSerialNumber()"""
             self.serialIO(b'\x53\xAE\x05\x01\x00\x00\x02\x00\x50')
@@ -492,6 +500,7 @@ class CYGNET4K(Device):
             self.serialIO(b'\x53\xAE\x05\x01\x00\x00\x10\x00\x50')
             data = map(ord,self.serialIO(b'\x53\xAF\x04\x50',2)[0:4])
             return data[0]|data[1]<<8,data[2]|data[3]<<8
+        '''
 
         def setConfiguration(self, exposure, frameRate, trigMode):
             self.setExposure(exposure)
