@@ -1,4 +1,25 @@
-commit d537512b4976947c8525ed4b2d2e7df9f2866627 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 42acef05b9d2821c2bf55afa68839659fa02522d (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: e1768ec c6d6978
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 26 12:15:53 2016 -0500
+
+    Merge pull request #336 from AndreaRigoni/andrea-test_dirs
+    
+    add possible user defined TEST_DIRS to select tests subdirectories
+
+commit c6d697832a9c64fc1c94d8e0eaaf3c022a27ace9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Jan 26 16:16:28 2016 +0100
+
+    add possible user defined TEST_DIRS to select tests subdirectories
+
+commit e1768ec36239aaa2cc0c2a528c3bb984c3b43350 (tag: refs/tags/alpha_release-7-0-213)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 26 09:13:38 2016 -0500
+
+    New release ---- alpha_release-7-0-213
+
+commit d537512b4976947c8525ed4b2d2e7df9f2866627
 Merge: e03cb84 13a6e68
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jan 25 13:26:18 2016 -0500
