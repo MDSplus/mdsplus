@@ -154,7 +154,7 @@ class CYGNET4K(Device):
             if status<0:
                 self.printErrorMsg(status)
                 raise mdsExceptions.DevException
-            self.lastCaptured = self.pxd_capturedBuffer(1)
+            self.lastCaptured = self.pxd_buffersFieldCount(1,self.pxd_capturedBuffer(1))
             self.currTime = 0
             self.Frames = 0
             for i in range(10):
