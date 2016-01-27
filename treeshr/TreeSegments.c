@@ -2661,7 +2661,7 @@ static int DataCopy(TREE_INFO * info_in, TREE_INFO * info_out, int64_t offset_in
 }
 
 static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT_HEADER *header, SEGMENT_INFO *sinfo, int compress) {
-  int status;
+  int status = 1;
   if (compress) {
     int length;
     EMPTYXD(data_xd);
@@ -2693,11 +2693,13 @@ static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT
 	length = sinfo->dimension_length;
       }
       status = DataCopy(info_in, info_out, sinfo->dimension_offset, length, &sinfo->dimension_offset);
-      length = rowlen * sinfo->rows;
-      status = DataCopy(info_in, info_out, sinfo->data_offset, length, &sinfo->data_offset);
+      if (status & 1) {
+        length = rowlen * sinfo->rows;
+        status = DataCopy(info_in, info_out, sinfo->data_offset, length, &sinfo->data_offset);
+      }
     }
   }
-  if (sinfo->start_offset > 0) {
+  if ((status & 1) && (sinfo->start_offset > 0)) {
     status = DataCopy(info_in, info_out, sinfo->start_offset, sinfo->start_length, &sinfo->start_offset);
     if (status & 1) {
       if (sinfo->end_offset > 0) {
