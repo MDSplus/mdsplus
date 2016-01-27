@@ -2683,20 +2683,18 @@ static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT
 	status = DataCopy(info_in, info_out, sinfo->dimension_offset, sinfo->dimension_length,
 			  &sinfo->dimension_offset);
     } else {
-      if (status & 1) {
-	int rowlen = header->length, i;
-	for (i = 0; i < header->dimct - 1; i++) {
-	  rowlen = rowlen * header->dims[i];
-	}
-	if (sinfo->dimension_length == 0) {
-	  length = sinfo->rows * sizeof(int64_t);
-	} else {
-	  length = sinfo->dimension_length;
-	}
-	status = DataCopy(info_in, info_out, sinfo->dimension_offset, length, &sinfo->dimension_offset);
-	length = rowlen * sinfo->rows;
-	status = DataCopy(info_in, info_out, sinfo->data_offset, length, &sinfo->data_offset);
+      int rowlen = header->length, i;
+      for (i = 0; i < header->dimct - 1; i++) {
+	rowlen = rowlen * header->dims[i];
       }
+      if (sinfo->dimension_length == 0) {
+	length = sinfo->rows * sizeof(int64_t);
+      } else {
+	length = sinfo->dimension_length;
+      }
+      status = DataCopy(info_in, info_out, sinfo->dimension_offset, length, &sinfo->dimension_offset);
+      length = rowlen * sinfo->rows;
+      status = DataCopy(info_in, info_out, sinfo->data_offset, length, &sinfo->data_offset);
     }
   }
   if (sinfo->start_offset > 0) {
