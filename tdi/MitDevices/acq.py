@@ -1,4 +1,3 @@
-import os
 import numpy
 import array
 import ftplib
@@ -70,9 +69,10 @@ class ACQ(MDSplus.Device):
     data_socket = -1
 
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi', ' ']
-    max_tries = 45
+    max_tries = 120
 
     def debugging(self):
+        import os
 	if self.debug == None :
             self.debug=os.getenv("DEBUG_DEVICES")
 	return(self.debug)
@@ -182,27 +182,25 @@ class ACQ(MDSplus.Device):
             print "after %d tries could not load settings\n" % (tries,)
             raise last_error
 
-    def checkTreeAndShot(self, arg='checks'):
+    def checkTreeAndShot(self, arg1='checks', arg2='checks'):
         from MDSplus.mdsExceptions import DevWRONG_TREE
         from MDSplus.mdsExceptions import DevWRONG_SHOT
         from MDSplus.mdsExceptions import DevWRONG_PATH
 
-        path = self.local_path
-        tree = self.local_tree
-        shot = self.tree.shot
-        if self.debugging() :
-            print "xml is loaded\n"
-        if tree != self.settings['tree'] :
-            print "ACQ Device open tree is %s board armed with tree %s\n" % (tree, self.settings["tree"],)
-            if arg != "nochecks" :
-               raise DevWRONG_TREE() 
-        if path != self.settings['path'] :
-            print "ACQ device tree path %s, board armed with path %s\n" % (path, self.settings["path"],)
-            if arg != "nochecks" :
+        if arg1 == "checks" or arg2 == "checks":
+            path = self.local_path
+            tree = self.local_tree
+            shot = self.tree.shot
+            if self.debugging() :
+                print "xml is loaded\n"
+            if tree != self.settings['tree'] :
+                print "ACQ Device open tree is %s board armed with tree %s\n" % (tree, self.settings["tree"],)
+                raise DevWRONG_TREE() 
+            if path != self.settings['path'] :
+                print "ACQ device tree path %s, board armed with path %s\n" % (path, self.settings["path"],)
                 raise DevWRONG_PATH()
-        if shot != int(self.settings['shot']) :
-            print "ACQ open shot is %d, board armed with shot %d\n" % (shot, int(self.settings["shot"]),)
-            if arg != "nochecks" :
+            if shot != int(self.settings['shot']) :
+                print "ACQ open shot is %d, board armed with shot %d\n" % (shot, int(self.settings["shot"]),)
                 raise DevWRONG_SHOT()
 
     def storeStatusCommands(self):
@@ -220,11 +218,20 @@ class ACQ(MDSplus.Device):
             print "about to write board_status signal"
         self.board_status.record = MDSplus.Signal(cmds, None, status)
 
-    def checkTrigger(self):
+    def checkTrigger(self, arg1, arg2):
+        from time import sleep
         from MDSplus.mdsExceptions import DevNOT_TRIGGERED
-
-        if not self.triggered() :
-            raise DevNOT_TRIGGERED()
+        state = self.getBoardState()
+        if state == "ACQ32:0 ST_STOP" or (state == "ACQ32:4 ST_POSTPROCESS" and (arg1 == "auto" or arg2 == "auto")):
+            return
+        if arg1 != "auto" and arg2 != "auto" :
+            tries = 0
+            while state == "ACQ32:4 ST_POSTPROCESS" and tries < 120:
+                tries +=1
+                sleep(1)
+                state=self.getBoardState()
+            if state != "ACQ32:0 ST_STOP" :
+                raise DevNOT_TRIGGERED()
 
     def triggered(self):
         import time
@@ -242,36 +249,50 @@ class ACQ(MDSplus.Device):
         state = self.getBoardState()
         if self.debugging():
             print "get state after loop returned %s\n" % (state,)
-        if state != "Ready" :
+        if state != "ACQ32:0 ST_STOP" :
             print "ACQ196 device not triggered /%s/\n"% (self.getBoardState(),)
             return 0  
         return 1
 
     def getBoardState(self):
-        """Get the current state"""
-        import socket,time
-	for tries in range(5):
-            s=socket.socket()
-	    s.settimeout(5.) 
-            state="Unknown"
-            try:
-                s.connect((self.getBoardIp(),54545))
-                state=s.recv(100)[0:-1]
-	        if self.debugging():
-		    print "getBoardState  returning /%s/\n" % (state,)
-                s.close()
-                return state
-            except socket.error, e:
-		print "Error getting board state - offline: %s" % (str(e),)
-		state = "off-line"
-                s.close()
-		return state
-            except Exception,e:
-                print "Error getting board state: %s" % (str(e),)
-	        state = "off-line"
-                s.close()
-            time.sleep(3)
-                  
+        boardip = self.getBoardIp()
+
+        try:
+            UUT = acq200.Acq200(transport.factory(boardip))
+        except:
+            print "could not connect to the board %s"% (boardip,)
+        try:
+            a = UUT.uut.acqcmd('getState')
+        except:
+            print "could not send getState to the board"
+            return 'unkown'
+        return "ACQ32:%s"%a
+
+#    def getBoardState(self):
+#        """Get the current state"""
+#        import socket,time
+#	for tries in range(5):
+#            s=socket.socket()
+#	    s.settimeout(5.) 
+#            state="Unknown"
+#            try:
+#                s.connect((self.getBoardIp(),54545))
+#                state=s.recv(100)[0:-1]
+#	        if self.debugging():
+#		    print "getBoardState  returning /%s/\n" % (state,)
+#                s.close()
+#                return state
+#            except socket.error, e:
+#		print "Error getting board state - offline: %s" % (str(e),)
+#		state = "off-line"
+#                s.close()
+#		return state
+#            except Exception,e:
+#                print "Error getting board state: %s" % (str(e),)
+#	        state = "off-line"
+#                s.close()
+#            time.sleep(3)
+#                  
 #
 # Let this function raise an error that will be 
 # Thrown all the way out of the device method
@@ -332,20 +353,19 @@ class ACQ(MDSplus.Device):
         if auto_store != None :
             if self.debugging():
                 fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
-            fd.write("touch /tmp/ready\n")
             fd.write("mdsConnect %s\n" %self.getMyIp())
             fd.write("mdsOpen %s %d\n" %(self.local_tree, self.tree.shot,))
-            fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out),_out'\n" %( self.local_path, ))
+            fd.write("mdsValue 'tcl(\"\"do /meth %s autostore\"\", _out),_out'\n" %( self.local_path, ))
             if self.debugging():
                 fd.write("mdsValue 'write(*,_out)'\n")
             fd.write("mdsClose\n")
             fd.write("mdsDisconnect\n")
-            fd.write("rm /tmp/ready\n")
 
         fd.write("EOF\n")
         fd.write("chmod a+x /etc/postshot.d/postshot.sh\n")
         fd.flush()
         fd.seek(0,0)
+        self.auto_store=auto_store
 
 #
 #  storeChannel method, stores the data for one channel of an ACQxxx device.
@@ -487,7 +507,7 @@ class ACQ(MDSplus.Device):
         """Wait for board to finish digitizing and storing the data"""
         state = self.getBoardState()
 	tries = 0
-	while (state == "ACQ32:4 ST_POSTPROCESS" or state == "Ready" ) and tries < self.max_tries :
+	while (state == "ACQ32:4 ST_POSTPROCESS") and tries < self.max_tries :
 	    tries = tries + 1
 	    state = self.getBoardState()
 	    time.sleep(2)
@@ -499,7 +519,7 @@ class ACQ(MDSplus.Device):
 	if state == "ACQ32:4 ST_POSTPROCESS" :
             raise DevIO_STUCK()
 	if state == "ACQ32:0 ST_STOP" or state == "Ready":
-            for chan in range(int(self.active_chan), 0, -1):
+            for chan in range(int(self.active_chan.record), 0, -1):
                 chan_node = self.__getattr__('input_%2.2d' % (chan,))
                 if chan_node.on :
                     max_chan = chan_node
@@ -592,3 +612,8 @@ class ACQ(MDSplus.Device):
         self.acqcmd('getState')
         return 1
     GETSTATE=getstate
+
+    def autostore(self):
+        self.store("auto")
+        return 1
+    AUTOSTORE=autostore

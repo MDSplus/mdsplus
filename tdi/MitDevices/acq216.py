@@ -79,7 +79,7 @@ class ACQ216(acq.ACQ):
         if self.debugging():
             print "have pre trig\n";
 
-        post_trig = self.getInt(self.active_chan, DevBAD_POST_TRIG)*1024
+        post_trig = self.getInt(self.post_trig, DevBAD_POST_TRIG)*1024
         if self.debugging():
             print "have post trig\n";
 
@@ -184,14 +184,13 @@ class ACQ216(acq.ACQ):
 
     INITFTP=initftp
         
-    def store(self, arg='checks'):
-
+    def store(self, arg1='checks', arg2='noauto'):
         if self.debugging():
             print "Begining store\n"
 
-        self.checkTrigger()
+        self.checkTrigger(arg1, arg2)
         self.loadSettings()
-        self.checkTreeAndShot(arg)
+        self.checkTreeAndShot(arg1, arg2)
         self.storeStatusCommands()
 
         preTrig = self.getPreTrig()
