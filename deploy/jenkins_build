@@ -8,10 +8,10 @@ case ${JOB_NAME} in
     *build_fc*|*build_rhel*)
 	case ${BUILD_TYPE} in
 	    test|release)
-		if [ ${BuILD_TYPE} = "release" ]
+		if [ "${BuILD_TYPE}" = "release" ]
 		then
 		    source ${SRCDIR}/release.conf;
-		    if [ ${BuILD_TYPE} = "release" -a -r ${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}x ]
+		    if [ "${BuILD_TYPE}" = "release" -a -r ${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}x ]
 		    then
 			exit 0;
 		    fi;
