@@ -1,0 +1,150 @@
+#!/bin/bash
+set -o verbose
+set -e
+source ${SRCDIR}/jenkins_build.conf
+export DOCKER_CONTAINER=$JOB_NAME
+export DOCKER_IMAGE=$JOB_NAME
+case ${JOB_NAME} in
+    *build_fc*|*build_rhel*)
+	case ${BUILD_TYPE} in
+	    test|release)
+		if [ ${BuILD_TYPE} = "release" ]
+		then
+		    source ${SRCDIR}/release.conf;
+		    if [ ${BuILD_TYPE} = "release" -a -r ${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}x ]
+		    then
+			exit 0;
+		    fi;
+		fi;
+		MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
+		mkdir -p ${WORKSPACE}/64;
+		pushd ${WORKSPACE}/64;
+		mkdir -p ./buildroot;
+		MDSPLUS_DIR=$(pwd)/buildroot;
+		MDS_PATH=${MDSPLUS_DIR}/tdi;
+		${SRCDIR}/configure  \
+			 --prefix=${MDSPLUS_DIR} \
+			 --exec_prefix=${MDSPLUS_DIR} \
+			 --bindir=${MDSPLUS_DIR}/bin64 \
+			 --libdir=${MDSPLUS_DIR}/lib64 \
+			 --with-gsi=/usr:gcc64 \
+			 --with-labview=${SRCDIR}/3rd-party-apis/labview \
+			 --with-idl=${SRCDIR}/3rd-party-apis/idl \
+			 --with-jdk=${JDK_DIR} \
+			 --with-java_target=6 \
+			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
+			 --enable-debug --host=x86_64-linux;
+		$MAKE;
+		$MAKE install;
+		$MAKE -k tests TEST_FORMAT=tap;
+		$MAKE -k tests-valgrind TEST_FORMAT=tap;
+		popd;
+		mkdir -p ${WORKSPACE}/32;
+		pushd ${WORKSPACE}/32;
+		mkdir -p ./buildroot;
+		MDSPLUS_DIR=$(pwd)/buildroot;
+		MDS_PATH=${MDSPLUS_DIR}/tdi;
+		${SRCDIR}/configure \
+			 --prefix=${MDSPLUS_DIR} \
+			 --exec_prefix=${MDSPLUS_DIR} \
+			 --bindir=${MDSPLUS_DIR}/bin32 \
+			 --libdir=${MDSPLUS_DIR}/lib32 \
+			 --with-gsi=/usr:gcc32 \
+			 --with-labview=${SRCDIR}/3rd-party-apis/labview \
+			 --with-idl=${SRCDIR}/3rd-party-apis/idl \
+			 --with-jdk=${JDK_DIR} \
+			 --with-gsi=/usr:gcc32 \
+			 --with-java_target=6 \
+			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
+			 --enable-debug --host=i686-linux;
+		$MAKE;
+		$MAKE install;
+		$MAKE -k tests TEST_FORMAT=tap;
+		$MAKE -k tests-valgrind TEST_FORMAT=tap;
+		popd;
+		if [ "${BUILD_TYPE}" = "release" ]
+		then
+		    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
+		    mkdir -p ${WORKSPACE}/64;
+		    mkdir -p ${WORKSPACE}/32;
+		    pushd ${WORKSPACE}/64;
+		    MDSPLUS_DIR=${WORKSPACE}/usr/local/mdsplus;
+		    ${SRCDIR}/configure \
+			     --prefix=${MDSPLUS_DIR} \
+			     --exec_prefix=${MDSPLUS_DIR} \
+			     --bindir=${MDSPLUS_DIR}/bin64 \
+			     --libdir=${MDSPLUS_DIR}/lib64 \
+			     --with-labview=${SRCDIR}/3rd-party-apis/labview \
+			     --with-gsi=/usr:gcc64 \
+			     --with-idl=${SRCDIR}/3rd-party-apis/idl \
+			     --with-jdk=${JDK_DIR} \
+			     --with-java_target=6 \
+			     --with-java_bootclasspath=${SRCDIR}/rt.jar \
+			     --host=x86_64-linux;
+		    $MAKE;
+		    $MAKE install;
+		    popd;
+		    pushd ${WORKSPACE}/32;
+		    ${SRCDIR}/configure --with-docker-image=${DOCKER_IMAGE} \
+			     --prefix=${MDSPLUS_DIR} \
+			     --exec_prefix=${MDSPLUS_DIR} \
+			     --bindir=${MDSPLUS_DIR}/bin32 \
+			     --libdir=${MDSPLUS_DIR}/lib32 \
+			     --with-gsi=/usr:gcc64 \
+			     --with-labview=${SRCDIR}/3rd-party-apis/labview \
+			     --with-idl=${SRCDIR}/3rd-party-apis/idl \
+			     --with-jdk=${JDK_DIR} \
+			     --with-java_target=6 \
+			     --with-java_bootclasspath=${SRCDIR}/rt.jar \
+			     --host=i686-linux;
+		    $MAKE;
+		    $MAKE install;
+		    popd ; 
+		fi;;
+	    *) echo "Unknown build type";;
+	esac;;
+    *) echo "Unknown job";;
+esac
+exit 0
+
+
+
+
+
+
+
+if [ -d /installer ]
+then
+    echo "Building rpms"
+    mkdir -p /buildroot/etc/yum.repos.d
+    mkdir -p /buildroot/etc/pki/rpm-gpg/
+    mkdir -p /installer/BUILD /installer/BUILDROOT /installer/SPECS /installer/RPMS /installer/SRPMS
+    cp deploy/RPM-GPG-KEY-MDSplus /buildroot/etc/pki/rpm-gpg/
+    outfile=/buildroot/etc/yum.repos.d/mdsplus${BNAME}.repo
+    echo [MDSplus${BNAME}] > $outfile
+    echo "name=MDSplus${BNAME}" >> $outfile
+    echo "baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS" >> $outfile
+    echo "enabled=1" >> $outfile
+    cat - >> $outfile <<EOF
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+metadata_expire=300
+EOF
+    build_rpms_mdsplus
+    #
+    # If everything went successfully then make a marker file indicating
+    # that an installer has been built for this release.
+    #
+    touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+fi
+
+if [ -d /EGGS ]
+then
+    #
+    # If an /EGGS directory is available build python distribution eggs
+    # which will be used by easy_install.
+    #
+    build_eggs
+fi
+
+    
