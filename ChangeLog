@@ -1,4 +1,166 @@
-commit 42acef05b9d2821c2bf55afa68839659fa02522d (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 6b15013af669e7cdc8f51fde771dd9997b494025 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: e8f9e96 0631aa0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 08:25:46 2016 -0500
+
+    Merge pull request #339 from MDSplus/jas-fix-device-autostore
+    
+    add autostore method for use by boards connecting back and asking for…
+
+commit e8f9e96fe8aede33a67daf9d7af9417c2edaef3d
+Merge: 1faadab ae63c18
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 08:23:57 2016 -0500
+
+    Merge pull request #337 from MDSplus/twf-fix-compress
+    
+    Remove test of uninitialized status variable when doing compress/clea…
+
+commit 0631aa0eabb75176a99ae40263aa100ad0f49135 (refs/remotes/origin/jas-fix-device-autostore)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Jan 27 17:36:18 2016 -0500
+
+    add autostore method for use by boards connecting back and asking for store to be done
+    
+    When checking for a trigger if the store method is being done by the user:
+    i.e. do /meth store
+    the code must wait for the board to complete its post processing step
+    
+    When the board is doing a store, this is part of the post processing step, but performed
+    after the board has done its other 'system' post processing.  The store method used in this
+    case needs to count a 'I'm post processing' response from the board as OK
+
+commit 1faadabd230b0b6285c7e0c7ee28feba0acc2bde
+Merge: 3fe3263 3e384bb
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Jan 27 23:34:57 2016 +0100
+
+    Merge pull request #338 from zack-vii/aa_cygnet4k
+    
+    cygnet4k
+
+commit 3e384bbb455ea89124d3ef424f5afca3d42f0a36
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Jan 27 20:51:16 2016 +0100
+
+    fixed running flags
+
+commit b9ca55fc1c0a2ae856f2979c77a9bb360f343f53
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Jan 27 20:19:51 2016 +0100
+
+    fixed initial lastCaptured
+    
+    should be based on buffer
+
+commit 650fa9530a0b2bb971f71b99bd3ae6e6df0d2ef1
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Jan 22 17:23:42 2016 +0100
+
+    await serial message with timeout to increase speed of serial
+    
+    eventually for parallel temperature reading during capturing
+
+commit 9e79d40ae28875f6612d4d73680ae212a14d5557
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Jan 27 18:39:08 2016 +0100
+
+    Manufacturer Data is not supported by cams
+
+commit c2c4fc49c7b85b536415798197edcbbcbd25ffb9
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Jan 22 16:37:57 2016 +0100
+
+    serial workover
+
+commit e1aed6cec73416b5244e75f639dbd414d7fc6271
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Jan 22 16:37:36 2016 +0100
+
+    fixes spelling etc
+
+commit 4ec7e3b48a784ed07571cf08c46b90e5a57e312b
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Jan 22 00:17:07 2016 +0100
+
+    simplify unitmap by using -DM param
+
+commit 06da008d68845c5c52a80947110b198415dcf2af
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Jan 22 00:15:21 2016 +0100
+
+    check if camera is ready and return error on timeouts
+
+commit 1ce6c678aa79574ebecffa3693225a28f596639a
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jan 21 23:41:44 2016 +0100
+
+    use double buffering
+    
+    use pxd_goLivePair
+
+commit 7ce1a05ae8243be7437e66970596e4371bc84cd8
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Jan 19 21:08:52 2016 +0100
+
+    added streaming capabilities
+    and fix devID for trend
+
+commit 580d6aeab0ed88c634086b3fb6ae5f56523b1f3b
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Jan 19 13:57:55 2016 +0100
+
+    added streaming capabilities
+
+commit dcec72a70777b91015dca309850d4918903d7a87
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Jan 19 12:38:05 2016 +0100
+
+    include configure in __init__
+
+commit 480221e8a5f40d0915bc51092758d320265a02ba
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Jan 19 10:09:51 2016 +0100
+
+    some clean up, rename epix, comments
+
+commit 6ebbd107f53ab5755df652317f0f5fa84c288ac7
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Jan 19 10:14:04 2016 +0100
+
+    you should not need to set exposure in config file
+
+commit 9fc6a384031f62ba8c35ae79c7650c1e2d77014d
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Jan 19 15:12:00 2016 +0100
+
+    include raptor and mds Lib in python
+
+commit 3fe32631aaef77d8a06d817b0a5ab39096575ece
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 27 14:33:20 2016 -0500
+
+    Fix print statements in tests to be python3 compatible
+
+commit ae63c18d65bba4431715231c96dbfb02884391c2 (refs/remotes/origin/twf-fix-compress)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 27 08:35:55 2016 -0500
+
+    Add more status checking to compression of segments
+
+commit dce4775ae0c28999b0d7f95c45932297c832d4d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 27 08:23:38 2016 -0500
+
+    Remove test of uninitialized status variable when doing compress/clean of segmented data
+
+commit ba91981de97aa7a4813899f232520b4ef7f336d4 (tag: refs/tags/alpha_release-7-0-214)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 26 23:43:03 2016 -0500
+
+    New release ---- alpha_release-7-0-214
+
+commit 42acef05b9d2821c2bf55afa68839659fa02522d
 Merge: e1768ec c6d6978
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 26 12:15:53 2016 -0500
