@@ -3,7 +3,7 @@ set -o verbose
 set -e
 source ${SRCDIR}/jenkins_build.conf
 export DOCKER_CONTAINER=$JOB_NAME
-export DOCKER_IMAGE=$JOB_NAME
+export DOCKER_IMAGE=mdsplus/docker:$JOB_NAME
 case ${JOB_NAME} in
     *build_fc*|*build_rhel*)
 	case ${BUILD_TYPE} in
