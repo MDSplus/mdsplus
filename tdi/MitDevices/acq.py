@@ -77,7 +77,7 @@ class ACQ(MDSplus.Device):
             self.debug=os.getenv("DEBUG_DEVICES")
 	return(self.debug)
 
-    def getInt(self, node, cls):
+    def getInteger(self, node, cls):
         try:
             ans = int(node.record)
         except Exception, e:
@@ -348,7 +348,6 @@ class ACQ(MDSplus.Device):
 
     def finishXMLStuff(self, fd, auto_store):
         fd.write("xmlfinish >> $settingsf\n")
-        fd.write("touch /tmp/ready\n")
             
         if auto_store != None :
             if self.debugging():
@@ -416,7 +415,6 @@ class ACQ(MDSplus.Device):
         fd.write("tree=%s\n"%(self.local_tree,))
         fd.write("shot=%s\n"%(self.tree.shot,))
         fd.write("path='%s'\n"%(self.local_path,))
-        fd.write("rm -f /tmp/ready\n")
 
         for i in range(6):
             line = 'D%1.1d' % i
@@ -495,6 +493,42 @@ class ACQ(MDSplus.Device):
         s.close()
         if self.debugging():
             print "finishing doInit"
+
+    def storeClock(self):
+        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+        if self.debugging():
+            print "clock_src = %s\n" % (clock_src,)
+        try:
+            clock_div = int(self.clock_div)
+        except:
+            clock_div = 1
+        if self.debugging():
+           print "clock div is %d\n" % (clock_div,)
+        
+        if clock_src == 'INT_CLOCK' :
+            intClock = float(self.settings['getInternalClock'].split()[1])
+            delta=1.0/float(intClock)
+            self.clock.record = MDSplus.Range(None, None, delta)
+        else:
+            if self.debugging():
+                print "it is external clock\n"
+            if clock_div == 1 :
+                self.clock.record = self.clock_src
+            else:
+                if self.debugging():
+                    print "external clock with divider %d  clock source is %s\n" % ( clock_div, clock_src,)
+                clk = self.clock_src
+                try :
+                    while type(clk) != MDSplus.compound.Range :
+                        clk = clk.record
+                    if self.debugging():
+                        print "I found the Range record - now writing the clock with the divide\n"
+                    self.clock.record = MDSplus.Range(clk.getBegin(), clk.getEnding(), clk.getDelta()*clock_div)
+                except:
+                    print "could not find Range record for clock to construct divided clock storing it as undivided\n"
+                    self.clock.record  = clock_src
+                if self.debugging():
+                    print "divided clock stored\n"
 
     def waitftp(self) :
         import time
