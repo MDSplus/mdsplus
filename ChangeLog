@@ -1,4 +1,25 @@
-commit 6b15013af669e7cdc8f51fde771dd9997b494025 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 613f34599b163416329365090e161bf34ea50c83 (HEAD -> refs/heads/alpha, tag: refs/tags/twfbld_release-8-0-1, refs/remotes/origin/alpha)
+Merge: 1254a3d 0c00103
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 10:11:51 2016 -0500
+
+    Merge pull request #340 from MDSplus/jas-matlab-remove-prints
+    
+    missing trailing ';' on some lines causes extra text output
+
+commit 0c0010376ef0763e5349e7e65233ef925d278ae4 (refs/remotes/origin/jas-matlab-remove-prints)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jan 28 10:08:50 2016 -0500
+
+    missing trailing ';' on some lines causes extra text output
+
+commit 1254a3d3a527fa252e17c8093baa3e1d3cd0941c (tag: refs/tags/alpha_release-7-0-215)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Jan 28 09:06:38 2016 -0500
+
+    New release ---- alpha_release-7-0-215
+
+commit 6b15013af669e7cdc8f51fde771dd9997b494025
 Merge: e8f9e96 0631aa0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 28 08:25:46 2016 -0500
