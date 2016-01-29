@@ -250,40 +250,7 @@ AC_ARG_WITH([labview],
             [],
             [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR],
                                           [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
-				     	  [with_labview=${srcdir}/3rd-party-apis/labview],
-                                     	  [with_labview=no])])])
-AS_CASE([$with_labview],
-        [no], [],
-        [yes], [AC_MSG_ERROR([Labview location required])],
-        [LV_CINTOOLS="$with_labview/cintools"
-         LV="mdsobjects/labview"])
-AC_MSG_RESULT([$with_labview])
-
-AC_MSG_CHECKING([whether to enable profiled code])
-AC_ARG_ENABLE([gcc_profiling],
-              [AS_HELP_STRING([--enable-gcc_profiling],
-                              [enable gcc profiling])],
-              [],
-              [with_gcc_profiling=no])
-AS_CASE([$with_gcc_profiling],
-        [yes], [GCCPROF="-pg"],
-        [no], [GCCPROF=""],
-        [AC_MSG_ERROR([--enable-gcc_profiling does not take an argument])])
-AC_MSG_RESULT([$with_gcc_profiling])
-
-AC_MSG_CHECKING([for idl])
-AC_ARG_WITH([idl],
-            [AS_HELP_STRING([--with-idl=idl-top-dir],
-                            [specify location of idl such as /usr/local/itt/idl])],
-            [],
-            [with_idl=yes])
-AS_CASE([$with_idl],
-        [yes], [AS_VAR_SET_IF([IDL_DIR],[with_idl=$IDL_DIR],
-                              [AS_IF([test -r /usr/local/itt/idl], [with_idl=/usr/local/itt/idl],
-                                     [test -r /usr/local/itt/idl], [with_idl=/usr/local/rsi/idl],
-                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
-				     [with_idl=${top_srcdir}/3rd-party-apis/idl],
-                                     [with_idl=no])])])
+[with_idl=no])])])
 AS_CASE([$with_idl],
         [no], [IDL_DIR=""],
         [IDL_INC="-I$with_idl/external"

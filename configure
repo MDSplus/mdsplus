@@ -8765,7 +8765,6 @@ else
   with_idl=/usr/local/itt/idl
 elif test -r /usr/local/itt/idl; then :
   with_idl=/usr/local/rsi/idl
-<<<<<<< HEAD
   with_idl=${srcdir}/3rd-party-apis/idl
 else
   with_idl=no
