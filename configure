@@ -8707,7 +8707,7 @@ else
   with_labview=$LABVIEW_DIR
 else
   if ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview; then :
-  with_labview=\${top_srcdir}/3rd-party-apis/labview
+  with_labview=\${srcdir}/3rd-party-apis/labview
 else
   with_labview=no
 fi
@@ -8766,7 +8766,7 @@ else
 elif test -r /usr/local/itt/idl; then :
   with_idl=/usr/local/rsi/idl
 elif ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl; then :
-  with_idl=\${top_srcdir}/3rd-party-apis/idl
+  with_idl=\${srcdir}/3rd-party-apis/idl
 else
   with_idl=no
 fi
