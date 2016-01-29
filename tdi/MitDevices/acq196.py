@@ -49,7 +49,7 @@ class ACQ196(acq.ACQ):
         if self.debugging():
             print 'ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
 
-        active_chan = self.getInt(self.active_chan, DevBAD_ACTIVE_CHAN)
+        active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
         if active_chan not in (32,64,96) :
             raise DevBAD_ACTIVE_CHAN
         if self.debugging():
@@ -76,22 +76,20 @@ class ACQ196(acq.ACQ):
         except:
             clock_out=None
 
-        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)*1024
+        pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
         if self.debugging():
             print "have pre trig\n";
 
-        post_trig = self.getInt(self.post_trig, DevBAD_POST_TRIG)*1024
+        post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
         if self.debugging():
             print "have post trig\n";
 
         if clock_src == "INT_CLOCK":
-            clock_freq = self.getInt(self.clock_freq,DevBAD_CLOCK_FREQ)
+            clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
+        try:
+            clock_div = int(self.clock_div)
+        except:
             clock_div = 1
-        else :
-            try:
-                clock_div = int(self.clock_div)
-            except:
-                clock_div = 1
         if self.debugging():
             print "have the settings\n";
 
@@ -119,10 +117,6 @@ class ACQ196(acq.ACQ):
                 fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                 fd.write(setDIOcmd)         
         else:
- #               if (clock_div != 1) :
- #                   fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
- #               else:
- #                   fd.write("acqcmd setExternalClock %s\n" % clock_src)
             if (clock_out != None) :
                 clock_out_num_str = clock_out[-1]
                 clock_out_num = int(clock_out_num_str)
@@ -192,40 +186,8 @@ class ACQ196(acq.ACQ):
         chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-        if self.debugging():
-            print "clock_src = %s\n" % (clock_src,)
-        if clock_src == 'INT_CLOCK' :
-            intClock = float(self.settings['getInternalClock'].split()[1])
-            delta=1./float(intClock)
-            self.clock.record = MDSplus.Range(None, None, delta)
-        else:
-	    if self.debugging():
-		print "it is external clock\n"
-	    try:
-		clock_div = int(self.clock_div)
-	    except:
-		clock_div = 1
-	    if self.debugging():
-		print "clock div is %d\n" % (clock_div,)
-	    if clock_div == 1 :
-        	self.clock.record = self.clock_src
-	    else:
-		if self.debugging():
-		    print "external clock with divider %d  clock source is %s\n" % ( clock_div, clock_src,)
-		clk = self.clock_src
-		try : 
-		    while type(clk) != MDSplus.compound.Range :
-			clk = clk.record
-		    if self.debugging():
-			print "I found the Range record - now writing the clock with the divide\n"
-                    self.clock.record = MDSplus.Range(clk.getBegin(), clk.getEnding(), clk.getDelta()*clock_div)
-		except:
-		    print "could not find Range record for clock to construct divided clock storing it as undivided\n"
-		    self.clock.record  = clock_src
-		if self.debugging():
-		    print "divided clock stored\n"
 
+        self.storeClock()
         clock = self.clock
 #
 # now store each channel

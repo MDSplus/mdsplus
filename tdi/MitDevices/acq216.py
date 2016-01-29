@@ -48,7 +48,7 @@ class ACQ216(acq.ACQ):
         tree = self.local_tree
         shot = self.tree.shot
 
-        active_chan = self.getInt(self.active_chan, DevBAD_ACTIVE_CHAN)
+        active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
         if active_chan not in (4,8,16) :
             raise DevBAD_ACTIVE_CHAN
         if self.debugging():
@@ -75,16 +75,16 @@ class ACQ216(acq.ACQ):
         except:
             clock_out=None
 
-        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)*1024
+        pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
         if self.debugging():
             print "have pre trig\n";
 
-        post_trig = self.getInt(self.post_trig, DevBAD_POST_TRIG)*1024
+        post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
         if self.debugging():
             print "have post trig\n";
 
         if clock_src == "INT_CLOCK":
-            clock_freq = self.getInt(self.clock_freq,DevBAD_CLOCK_FREQ)
+            clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
             clock_div = 1
         else :
             try:
@@ -134,10 +134,6 @@ class ACQ216(acq.ACQ):
                     fd.write(setDIOcmd)
 		    fd.write(setRoutecmd)         
             else:
- #               if (clock_div != 1) :
- #                   fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
- #               else:
- #                   fd.write("acqcmd setExternalClock %s\n" % clock_src)
                 if (clock_out != None) :
                     clock_out_num_str = clock_out[-1]
                     clock_out_num = int(clock_out_num_str)
@@ -208,17 +204,10 @@ class ACQ216(acq.ACQ):
         chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-        if self.debugging():
-            print "clock_src = %s\n" % (clock_src,)
-        if clock_src == 'INT_CLOCK' :
-            intClock = float(self.settings['getInternalClock'].split()[1])
-            delta=1./float(intClock)
-            self.clock.record = MDSplus.Range(None, None, delta)
-        else:
-            self.clock.record = self.clock_src
 
-        clock = self.clock.record
+        self.storeClock()
+        clock = self.clock
+
 #
 # now store each channel
 #

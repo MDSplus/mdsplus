@@ -48,7 +48,7 @@ class ACQ132(acq.ACQ):
         if self.debugging():
             print 'ACQ132 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
 
-        active_chan = self.getInt(self.active_chan, DevBAD_ACTIVE_CHAN)
+        active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
         if active_chan not in (8,16,32) :
             raise DevBAD_ACTIVE_CHAN
         if self.debugging():
@@ -75,15 +75,15 @@ class ACQ132(acq.ACQ):
         except:
             clock_out=None
 
-        pre_trig = self.getInt(self.pre_trig, DevBAD_PRE_TRIG)*1024
+        pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
         if self.debugging():
             print "have pre trig\n";
 
-        post_trig = self.getInt(self.post_trig, DevBAD_POST_TRIG)*1024
+        post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
         if self.debugging():
             print "have post trig\n";
 
-        clock_freq = self.getInt(self.clock_freq,DevBAD_CLOCK_FREQ)
+        clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
         try:
             clock_div = int(self.clock_div)
         except:
