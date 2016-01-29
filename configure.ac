@@ -250,7 +250,7 @@ AC_ARG_WITH([labview],
             [],
             [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR],
                                           [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
-				     	  [with_labview=\${srcdir}/3rd-party-apis/labview],
+				     	  [with_labview=${srcdir}/3rd-party-apis/labview],
                                      	  [with_labview=no])])])
 AS_CASE([$with_labview],
         [no], [],
@@ -281,13 +281,8 @@ AS_CASE([$with_idl],
         [yes], [AS_VAR_SET_IF([IDL_DIR],[with_idl=$IDL_DIR],
                               [AS_IF([test -r /usr/local/itt/idl], [with_idl=/usr/local/itt/idl],
                                      [test -r /usr/local/itt/idl], [with_idl=/usr/local/rsi/idl],
-<<<<<<< HEAD
                                      [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
-				     [with_idl=\${top_srcdir}/3rd-party-apis/idl],
-=======
-                                     [conf/update_submodules && test -r 3rd-party-apis/idl],
-				     [with_idl=$(pwd)/3rd-party-apis/idl],
->>>>>>> Add 3rd-party-apis
+				     [with_idl=${top_srcdir}/3rd-party-apis/idl],
                                      [with_idl=no])])])
 AS_CASE([$with_idl],
         [no], [IDL_DIR=""],
