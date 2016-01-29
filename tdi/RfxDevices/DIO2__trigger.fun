@@ -62,8 +62,11 @@ write(*, _c);
 
 	if(_remote)
 	{
-		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
+               _sock = MdsConnect(_ip_addr);
+               if (_sock == -1) {
+                   DevLogErr(_nid, "Error connecting to board "//_ip_addr);
+                   abort();
+               }
 	       _status = MdsValue('DIO2HWTrigger(0, $1, $2)', _board_id, _channel_mask);
 		MdsDisconnect();
 		if(_status == 0)
