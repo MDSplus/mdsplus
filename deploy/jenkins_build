@@ -11,7 +11,7 @@ case ${JOB_NAME} in
 		if [ "${BuILD_TYPE}" = "release" ]
 		then
 		    source ${SRCDIR}/release.conf;
-		    if [ "${BuILD_TYPE}" = "release" -a -r ${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}x ]
+		    if [ "${BuILD_TYPE}" = "release" -a -r ${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE} ]
 		    then
 			exit 0;
 		    fi;
@@ -33,8 +33,12 @@ case ${JOB_NAME} in
 			 --enable-debug --host=x86_64-linux;
 		$MAKE;
 		$MAKE install;
-		$MAKE -k tests TEST_FORMAT=tap;
-		$MAKE -k tests-valgrind TEST_FORMAT=tap;
+		if ( $MAKE -k tests TEST_FORMAT=tap && $MAKE -k tests-valgrind TEST_FORMAT=tap )
+		then
+		    tests_passed=yes
+		else
+		    tests_passed=no
+		fi
 		popd;
 		mkdir -p ${WORKSPACE}/32;
 		pushd ${WORKSPACE}/32;
@@ -52,8 +56,13 @@ case ${JOB_NAME} in
 			 --enable-debug --host=i686-linux;
 		$MAKE;
 		$MAKE install;
-		$MAKE -k tests TEST_FORMAT=tap;
-		$MAKE -k tests-valgrind TEST_FORMAT=tap;
+		if ( ! ($MAKE -k tests TEST_FORMAT=tap && \
+			   $MAKE -k tests-valgrind TEST_FORMAT=tap \
+			   && test "tests_passed" = "yes" ) )
+		then
+		    echo "Failed tests"
+		    exit 1
+		fi     
 		popd;
 		if [ "${BUILD_TYPE}" = "release" ]
 		then
