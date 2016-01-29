@@ -248,7 +248,10 @@ AC_ARG_WITH([labview],
             [AS_HELP_STRING([--with-labview=labview-top-dir],
                             [specify location of labview such as /usr/local/natinst/Labview])],
             [],
-            [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR], [with_labview=no])])
+            [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR],
+                                          [AS_IF([conf/update_submodules && test -r 3rd-party-apis/labview],
+				     	  [with_labview=$(pwd)/3rd-party-apis/labview],
+                                     	  [with_labview=no])])])
 AS_CASE([$with_labview],
         [no], [],
         [yes], [AC_MSG_ERROR([Labview location required])],
@@ -275,34 +278,18 @@ AC_ARG_WITH([idl],
             [],
             [with_idl=yes])
 AS_CASE([$with_idl],
-        [yes], [AS_VAR_SET_IF([IDL_DIR],
-                              [with_idl=$IDL_DIR],
+        [yes], [AS_VAR_SET_IF([IDL_DIR],[with_idl=$IDL_DIR],
                               [AS_IF([test -r /usr/local/itt/idl], [with_idl=/usr/local/itt/idl],
                                      [test -r /usr/local/itt/idl], [with_idl=/usr/local/rsi/idl],
+                                     [conf/update_submodules && test -r 3rd-party-apis/idl],
+				     [with_idl=$(pwd)/3rd-party-apis/idl],
                                      [with_idl=no])])])
 AS_CASE([$with_idl],
-        [no], [],
+        [no], [IDL_DIR=""],
         [IDL_INC="-I$with_idl/external"
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets"])
 AC_MSG_RESULT([$with_idl])
-
-dnl FIXME: Remove this hack
-AS_VAR_IF([with_idl], [no], [IDL_DIR=""], [IDL_DIR=$with_idl])
-
-AC_ARG_WITH([python_include],
-            [AS_HELP_STRING([--with-python_include=python-include-directory],
-                            [specify location of Python.h])],
-            [],
-            [AS_VAR_SET_IF([PYTHON_INCLUDE_DIR],
-                           [AS_VAR_SET([with_python_include], [$PYTHON_INCLUDE_DIR])],
-                           [])])
-PYTHON_INCLUDE_DIR=$with_python_include
-OLD_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
-AC_CHECK_HEADER(Python.h,,PYTHON_INCLUDE_DIR="")
-CPPFLAGS="$OLD_CPPFLAGS"
-
 
 AC_MSG_CHECKING([for mingw])
 AS_CASE([$host],
@@ -404,7 +391,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        else
          FFLAGS="$FFLAGS -PIC";
        fi
-       IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        jni_inc_dir="${JDK_DIR}/include";
@@ -1397,7 +1383,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test "$IDL_DIR" = ""
+if test "$with_idl" = "no"
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
