@@ -1,4 +1,51 @@
-commit 613f34599b163416329365090e161bf34ea50c83 (HEAD -> refs/heads/alpha, tag: refs/tags/twfbld_release-8-0-1, refs/remotes/origin/alpha)
+commit d4bc6c80fab48c3bab4568454fd464734e48f846 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 8ab665a 2306ce6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 14:43:58 2016 -0500
+
+    Merge pull request #342 from MDSplus/jas-dont-call-local-method-getInt
+    
+    Change acq.getInt to acq.getInteger so it does not conflict with the …
+
+commit 8ab665a3254d98d8016ebd3b83efec1e1b95b881
+Merge: 6d5b565 08b6477
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 14:43:19 2016 -0500
+
+    Merge pull request #341 from MDSplus/jas-fix-dio2-trigger
+    
+    the ,1 after the ipaddress in the connect is breaking things
+
+commit 2306ce61d0deb5e5fc5d0d776b37b88a67fd5716 (refs/remotes/origin/jas-dont-call-local-method-getInt)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 29 12:01:42 2016 -0500
+
+    Change acq.getInt to acq.getInteger so it does not conflict with the Data method
+    
+    Fix clock divide on acq216 and acq196
+    ACQ132 STILL NEEDS TO BE LOOKED AT
+    
+    Move clock storage (with divider) to the super class
+
+commit 08b64772cedc4d9d25fe95e4daf52efc01268911 (refs/remotes/origin/jas-fix-dio2-trigger)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 29 08:58:14 2016 -0500
+
+    execute mdsconnect in-line,  check return socket
+
+commit 6d5b5653258cc1bd07d87a1d96186ddbc5d1a27f (tag: refs/tags/alpha_release-7-0-216)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Jan 28 23:35:32 2016 -0500
+
+    New release ---- alpha_release-7-0-216
+
+commit de5652c171abf71a63141a84750741d94c99405b
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jan 28 11:18:50 2016 -0500
+
+    the ,1 after the ipaddress in the connect is breaking things
+
+commit 613f34599b163416329365090e161bf34ea50c83 (tag: refs/tags/twfbld_release-8-0-1)
 Merge: 1254a3d 0c00103
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 28 10:11:51 2016 -0500
