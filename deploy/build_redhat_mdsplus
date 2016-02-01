@@ -10,6 +10,16 @@ wget -q --no-check-certificate -O - https://github.com/MDSplus/3rd-party-apis/ar
 # make the root to build into
 #
 mkdir -p /buildroot
+#
+# Define MDSPLUS_VERSION environment variable which is used for the python
+# setup.py
+#
+if [ -z "$BNAME" ]
+then
+  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+else
+  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
+fi
 
 #
 # In the source directory build and install both 64-bit and 32-bit applications.
@@ -54,16 +64,6 @@ make -k tests
 make install
 
 
-#
-# Define MDSPLUS_VERSION environment variable which is used for the python
-# setup.py
-#
-if [ -z "$BNAME" ]
-then
-  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
-else
-  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
-fi
 
 #
 # Build the debug version of code for testing
