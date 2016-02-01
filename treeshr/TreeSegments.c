@@ -2936,7 +2936,6 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
     else
       open_status = 1;
     if (!(open_status & 1)) {
-      TreeUnLockNci(info_ptr, 0, nidx);
       return open_status;
     }
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
@@ -2975,7 +2974,6 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	status = TreeFAILURE;
       }
     }
-    TreeUnLockNci(info_ptr, 0, nidx);
   }
   return status;
 }
