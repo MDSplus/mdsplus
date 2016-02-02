@@ -5,10 +5,18 @@
 
 set -o verbose
 
-cd /buildroot/usr/local/mdsplus/mdsobjects/python
-python setup.py bdist_egg --dist-dir=/EGGS
+if [ -z "$EGGS_DIR" ]
+then
+    export EGGS_DIR="/EGGS"
+fi
+if [ -z "$BUILDROOT" ]
+then
+    export BUILDROOT="/buildroot"
+fi
+cd ${BUILDROOT}/usr/local/mdsplus/mdsobjects/python
+python setup.py bdist_egg --dist-dir=${EGGS_DIR}
 if [ -r /usr/bin/python3 ]
 then
-  python3 setup.py bdist_egg --dist-dir=/EGGS
+  python3 setup.py bdist_egg --dist-dir=${EGGS_DIR}
 fi
 
