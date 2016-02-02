@@ -125,33 +125,32 @@ case ${JOB_NAME} in
 		    $MAKE;
 		    $MAKE install;
 		    popd ; 
-		    echo "Building rpms"
-		    mkdir -p ${WORKSPACE}/etc/yum.repos.d
-		    mkdir -p ${WORKSPACE}/etc/pki/rpm-gpg/
-		    export INSTALLER_DIR=${SRCDIR}/dist/${DIST}
-		    export BUILDDIR=${WORKSPACE}
-		    export EGGS_DIR=${SRCDIR}/dist/EGGS
-		    mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS
-		    cp deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/
-		    outfile=${WORKSPACE}/etc/yum.repos.d/mdsplus${BNAME}.repo
-		    echo [MDSplus${BNAME}] > $outfile
-		    echo "name=MDSplus${BNAME}" >> $outfile
-		    echo "baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS" >> $outfile
-		    echo "enabled=1" >> $outfile
+		    echo "Building rpms";
+		    mkdir -p ${WORKSPACE}/etc/yum.repos.d;
+		    mkdir -p ${WORKSPACE}/etc/pki/rpm-gpg/;
+		    export INSTALLER_DIR=${SRCDIR}/dist/${DIST};
+		    export BUILDDIR=${WORKSPACE};
+		    export EGGS_DIR=${SRCDIR}/dist/EGGS;
+		    mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
+		    cp deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/;
+		    outfile=${WORKSPACE}/etc/yum.repos.d/mdsplus${BNAME}.repo;
+		    echo [MDSplus${BNAME}] > $outfile;
+		    echo "name=MDSplus${BNAME}" >> $outfile;
+		    echo "baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS" >> $outfile;
+		    echo "enabled=1" >> $outfile;
 		    cat - >> $outfile <<EOF
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
-		    ;
-		    ${SRCDIR}/deploy/build_rpms_mdsplus
+		    ${SRCDIR}/deploy/build_rpms_mdsplus;
 		    #
 		    # If everything went successfully then make a marker file indicating
 		    # that an installer has been built for this release.
 		    #
-		    touch ${INSTALLER_DIR}/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+		    touch ${INSTALLER_DIR}/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE};
 
-		    ${SRCDIR}/deploy/build_eggs
+		    ${SRCDIR}/deploy/build_eggs;
 		fi;;
 	    *release*)
 		branch=${GIT_BRANCH:7};
