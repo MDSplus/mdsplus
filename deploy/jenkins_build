@@ -92,9 +92,10 @@ case ${JOB_NAME} in
 		then
 		    if [ "$BRANCH" = "stable" ]
 		    then
-			export BNAME=""
+			export BNAME="";
 		    else
-			export BNAME="-"${BRANCH}
+			export BNAME="-"${BRANCH};
+		    fi;
 		    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
 		    mkdir -p ${WORKSPACE}/64;
 		    mkdir -p ${WORKSPACE}/32;
