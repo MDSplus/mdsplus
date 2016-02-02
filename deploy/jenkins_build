@@ -97,6 +97,27 @@ case ${JOB_NAME} in
 		    $MAKE install;
 		    popd ; 
 		fi;;
+	    *release*)
+		branch=${GIT_BRANCH:7};
+		release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
+		major=$(echo $release_tag | cut -f2 -d-);
+		minor=$(echo $release_tag | cut -f3 -d-);
+		release=$(echo $release_tag | cut -f4 -d-);
+		if [ "$(git rev-list -n 1 $release_tag)" != "${GIT_COMMIT}" ]
+		then
+		    let release=$release+1;
+		    release_tag=${branch}_release-${major}-${minor}-${release};
+		    git log --decorate=full > ChangeLog;
+		fi;
+		cat - <<EOF > jenkins_build.conf
+BRANCH=${branch}
+RELEASE_TAG=${release_tag}
+MAJOR=${major}
+MINOR=${minor}
+RELEASE=${release}
+BUILD_TYPE=release
+EOF
+		;;
 	    *) echo "Unknown build type";;
 	esac;;
     *) echo "Unknown job";;
@@ -144,3 +165,24 @@ then
 fi
 
     
++ branch=twfbld
+++ git tag
+++ grep twfbld_release
+++ sort -V
+++ awk '{line=$0} END{print line}'
++ release_tag=twfbld_release-8-0-1
+++ echo twfbld_release-8-0-1
+++ cut -f2 -d-
++ major=8
+++ echo twfbld_release-8-0-1
+++ cut -f3 -d-
++ minor=0
+++ echo twfbld_release-8-0-1
+++ cut -f4 -d-
++ release=1
+++ git rev-list -n 1 twfbld_release-8-0-1
++ '[' 613f34599b163416329365090e161bf34ea50c83 '!=' 5d14617662df5d623f49927c70e2a0a57c7227f9 ']'
++ let release=1+1
++ release_tag=twfbld_release-8-0-2
++ git log --decorate=full
++ cat -
