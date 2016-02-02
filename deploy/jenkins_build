@@ -58,7 +58,7 @@ case ${JOB_NAME} in
 		$MAKE install;
 		set +e;
 		$MAKE -k tests TEST_FORMAT=tap;
-		tests_tab32=$?;
+		tests_tap32=$?;
 		$MAKE -k tests-valgrind TEST_FORMAT=tap;
 		tests_valgrind32=$?;
 		set -e;
