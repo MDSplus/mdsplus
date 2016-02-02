@@ -177,9 +177,6 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   yyscan_t yyscanner;
   YY_BUFFER_STATE cmd_state;
   int result,status=MdsdclIVVERB;
-  dclLock();
-  dcl_lex_init(&yyscanner);
-  cmd_state = dcl__scan_string (command, yyscanner);
   if (error && *error) {
     free(*error);
     *error = 0;
@@ -188,8 +185,13 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
     free(*output);
     *error = 0;
   }
-
+  dclLock();
+  dcl_lex_init(&yyscanner);
+  cmd_state = dcl__scan_string (command, yyscanner);
   result=yyparse (yyloc_param, yyscanner, &dclcmd, error);
+  dcl__delete_buffer (cmd_state, yyscanner);
+  dcl_lex_destroy(yyscanner);
+  dclUnlock();
   if (result==0) {
     if (dclcmd) {
       dclcmd->command_line=strdup(command);
@@ -197,9 +199,6 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
     } else
       status = 1;
   }
-  dcl__delete_buffer (cmd_state, yyscanner);
-  dcl_lex_destroy(yyscanner);
-  dclUnlock();
   return status;
 }
   
