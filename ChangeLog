@@ -1,4 +1,31 @@
-commit d4bc6c80fab48c3bab4568454fd464734e48f846 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 1b1bae8a77b7b374e811f2d8e2bbf86a85899e64 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 1 15:34:04 2016 -0500
+
+    Add some .gitignore files to ignore some files created if building inside the source directory tree
+
+commit 507cc6fe0c84b46295a23db5e39647af1679d653
+Merge: 689b816 e638696
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 1 13:23:24 2016 -0500
+
+    Merge pull request #343 from MDSplus/twf-fix-python-release-env
+    
+    Fix python release handling by defining the MDSPLUS_VERSION environme…
+
+commit e638696da54849e33f0f9606ce98714687841972 (refs/remotes/origin/twf-fix-python-release-env)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 1 12:45:50 2016 -0500
+
+    Fix python release handling by defining the MDSPLUS_VERSION environment variable earlier in the build script for redhat release. Without this fix the version of the python package is always verion 1.0
+
+commit 689b8167677ec2d0281e208021ddde44d921345b (tag: refs/tags/alpha_release-7-0-217)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Jan 29 23:35:38 2016 -0500
+
+    New release ---- alpha_release-7-0-217
+
+commit d4bc6c80fab48c3bab4568454fd464734e48f846
 Merge: 8ab665a 2306ce6
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 29 14:43:58 2016 -0500
