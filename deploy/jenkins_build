@@ -129,11 +129,11 @@ case ${JOB_NAME} in
 		    echo "Building rpms";
 		    mkdir -p ${WORKSPACE}/etc/yum.repos.d;
 		    mkdir -p ${WORKSPACE}/etc/pki/rpm-gpg/;
-		    export INSTALLER_DIR=${SRCDIR}/dist/${DIST};
+		    export INSTALLER_DIR=/mdsplus/pre-dist/${JOB_NAME:6};
 		    export BUILDDIR=${WORKSPACE};
 		    export EGGS_DIR=${SRCDIR}/dist/EGGS;
 		    mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
-		    cp deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/;
+		    cp ${SRCDIR}/deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/;
 		    outfile=${WORKSPACE}/etc/yum.repos.d/mdsplus${BNAME}.repo;
 		    echo [MDSplus${BNAME}] > $outfile;
 		    echo "name=MDSplus${BNAME}" >> $outfile;
