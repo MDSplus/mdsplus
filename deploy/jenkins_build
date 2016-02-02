@@ -17,8 +17,8 @@ case ${JOB_NAME} in
 		    fi;
 		fi;
 		MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
-		mkdir -p ${WORKSPACE}/64;
-		pushd ${WORKSPACE}/64;
+		mkdir -p ${WORKSPACE}/64test;
+		pushd ${WORKSPACE}/64test;
 		mkdir -p ./buildroot;
 		MDSPLUS_DIR=$(pwd)/buildroot;
 		MDS_PATH=${MDSPLUS_DIR}/tdi;
@@ -40,8 +40,8 @@ case ${JOB_NAME} in
 		tests_valgrind64=$?
 		set -e
 		popd;
-		mkdir -p ${WORKSPACE}/32;
-		pushd ${WORKSPACE}/32;
+		mkdir -p ${WORKSPACE}/32test;
+		pushd ${WORKSPACE}/32test;
 		mkdir -p ./buildroot;
 		MDSPLUS_DIR=$(pwd)/buildroot;
 		MDS_PATH=${MDSPLUS_DIR}/tdi;
@@ -97,9 +97,9 @@ case ${JOB_NAME} in
 			export BNAME="-"${BRANCH};
 		    fi;
 		    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
-		    mkdir -p ${WORKSPACE}/64;
-		    mkdir -p ${WORKSPACE}/32;
-		    pushd ${WORKSPACE}/64;
+		    mkdir -p ${WORKSPACE}/64rel;
+		    mkdir -p ${WORKSPACE}/32rel;
+		    pushd ${WORKSPACE}/64rel;
 		    MDSPLUS_DIR=${WORKSPACE}/usr/local/mdsplus;
 		    ${SRCDIR}/configure \
 			     --prefix=${MDSPLUS_DIR} \
@@ -113,7 +113,7 @@ case ${JOB_NAME} in
 		    $MAKE;
 		    $MAKE install;
 		    popd;
-		    pushd ${WORKSPACE}/32;
+		    pushd ${WORKSPACE}/32rel;
 		    ${SRCDIR}/configure --with-docker-image=${DOCKER_IMAGE} \
 			     --prefix=${MDSPLUS_DIR} \
 			     --exec_prefix=${MDSPLUS_DIR} \
