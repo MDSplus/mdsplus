@@ -33,12 +33,12 @@ case ${JOB_NAME} in
 			 --enable-debug --host=x86_64-linux;
 		$MAKE;
 		$MAKE install;
-		if ( $MAKE -k tests TEST_FORMAT=tap && $MAKE -k tests-valgrind TEST_FORMAT=tap )
-		then
-		    tests_passed=yes
-		else
-		    tests_passed=no
-		fi
+		set +e
+		$MAKE -k tests TEST_FORMAT=tap
+		tests_tap64=$?
+		$MAKE -k tests-valgrind TEST_FORMAT=tap
+		tests_valgrind64=$?
+		set -e
 		popd;
 		mkdir -p ${WORKSPACE}/32;
 		pushd ${WORKSPACE}/32;
@@ -56,14 +56,38 @@ case ${JOB_NAME} in
 			 --enable-debug --host=i686-linux;
 		$MAKE;
 		$MAKE install;
-		if ( ! ($MAKE -k tests TEST_FORMAT=tap && \
-			   $MAKE -k tests-valgrind TEST_FORMAT=tap \
-			   && test "tests_passed" = "yes" ) )
-		then
-		    echo "Failed tests"
-		    exit 1
-		fi     
+		set +e;
+		$MAKE -k tests TEST_FORMAT=tap;
+		tests_tab32=$?;
+		$MAKE -k tests-valgrind TEST_FORMAT=tap;
+		tests_valgrind32=$?;
+		set -e;
 		popd;
+		failed=0;
+		if [ "$tests_tap64" != "0" ]
+		then
+		    echo "64-bit tap tests failed!!!";
+		    failed=1;
+		fi;
+		if [ "$tests_valgrind64" != "0" ]
+		then
+		    echo "64-bit valgrind tests failed!!!";
+		    failed=1;
+		fi;
+		if [ "$tests_tap32" != "0" ]
+		then
+		    echo "32-bit tap tests failed!!!";
+		    failed=1;
+		fi;
+		if [ "$tests_valgrind32" != "0" ]
+		then
+		    echo "32-bit valgrind tests failed!!!";
+		    failed=1;
+		fi;
+		if [ "$failed" != "0" ]
+		then
+		    exit 1;
+		fi;
 		if [ "${BUILD_TYPE}" = "release" ]
 		then
 		    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
