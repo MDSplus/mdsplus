@@ -191,6 +191,8 @@ case ${JOB_NAME} in
 	fi;
 	if [ do_tests ]
 	then
+	    echo "BUILD_TYPE = ${BUILD_TYPE} Should not get here unless it contains test"
+	    exit 1;
 	    test_64;
 	    test_32;
 	    check_tests;
