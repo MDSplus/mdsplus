@@ -1,171 +1,201 @@
 #!/bin/bash
-set -o verbose
+
 set -e
+MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
+if [ "$BRANCH" = "stable" ]; then export BNAME=""; else export BNAME="-"${BRANCH}; fi;
+if [ -z "$DIST" ]; then DIST=${JOB_NAME:6}; fi;
+if [ -z "$DISTDIR" ]; then DISTDIR=/mdsplus/pre-dist; fi
+DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+
+test_64 () {
+    mkdir -p ${WORKSPACE}/64test;
+    pushd ${WORKSPACE}/64test;
+    mkdir -p ./buildroot;
+    MDSPLUS_DIR=$(pwd)/buildroot;
+    MDS_PATH=${MDSPLUS_DIR}/tdi;
+    ${SRCDIR}/configure  \
+	     --prefix=${MDSPLUS_DIR} \
+	     --exec_prefix=${MDSPLUS_DIR} \
+	     --bindir=${MDSPLUS_DIR}/bin64 \
+	     --libdir=${MDSPLUS_DIR}/lib64 \
+	     --with-gsi=/usr:gcc64 \
+	     --with-java_target=6 \
+	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
+	     --enable-debug --host=x86_64-linux;
+    if ( ! $MAKE && $MAKE install )
+    then
+	$MAKE docker stop;
+	exit 1;
+    fi;
+    $MAKE -k tests TEST_FORMAT=tap;
+    tests_tap64=$?;
+    $MAKE -k tests-valgrind TEST_FORMAT=tap;
+    tests_valgrind64=$?;
+    $MAKE docker stop;
+    set -e;
+    popd;
+}
+
+test_32() {
+    mkdir -p ${WORKSPACE}/32test;
+    pushd ${WORKSPACE}/32test;
+    mkdir -p ./buildroot;
+    MDSPLUS_DIR=$(pwd)/buildroot;
+    MDS_PATH=${MDSPLUS_DIR}/tdi;
+    ${SRCDIR}/configure \
+	     --prefix=${MDSPLUS_DIR} \
+	     --exec_prefix=${MDSPLUS_DIR} \
+	     --bindir=${MDSPLUS_DIR}/bin32 \
+	     --libdir=${MDSPLUS_DIR}/lib32 \
+	     --with-gsi=/usr:gcc32 \
+	     --with-java_target=6 \
+	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
+	     --enable-debug --host=i686-linux;
+    if ( ! $MAKE && $MAKE install )
+    then
+	$MAKE docker stop;
+	exit 1;
+    fi;
+    set +e;
+    $MAKE -k tests TEST_FORMAT=tap;
+    tests_tap32=$?;
+    $MAKE -k tests-valgrind TEST_FORMAT=tap;
+    tests_valgrind32=$?;
+    $MAKE docker stop;
+    set -e;
+    popd;
+}
+
+check_tests() {
+    failed=0;
+    if [ "$tests_tap64" = "1" ]
+    then
+	echo "64-bit tap tests failed!!!";
+	failed=1;
+    fi;
+    if [ "$tests_valgrind64" = "1" ]
+    then
+	echo "64-bit valgrind tests failed!!!";
+	failed=1;
+    fi;
+    if [ "$tests_tap32" = "1" ]
+    then
+	echo "32-bit tap tests failed!!!";
+	failed=1;
+    fi;
+    if [ "$tests_valgrind32" = "1" ]
+    then
+	echo "32-bit valgrind tests failed!!!";
+	failed=1;
+    fi;
+    if [ "$failed" = "1" ]
+    then
+	exit 1;
+    fi;
+}
+
+build_64 () {
+    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
+    mkdir -p ${WORKSPACE}/64rel;
+    pushd ${WORKSPACE}/64rel;
+    MDSPLUS_DIR=${WORKSPACE}/usr/local/mdsplus;
+    ${SRCDIR}/configure \
+	     --prefix=${MDSPLUS_DIR} \
+	     --exec_prefix=${MDSPLUS_DIR} \
+	     --bindir=${MDSPLUS_DIR}/bin64 \
+	     --libdir=${MDSPLUS_DIR}/lib64 \
+	     --with-gsi=/usr:gcc64 \
+	     --with-java_target=6 \
+	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
+	     --host=x86_64-linux;
+    if ( ! $MAKE && $MAKE install )
+    then
+	$MAKE docker stop;
+	exit 1;
+    fi;
+    $MAKE docker stop
+    popd;
+}
+
+build_32 () {
+    mkdir -p ${WORKSPACE}/32rel;
+    pushd ${WORKSPACE}/32rel;
+    ${SRCDIR}/configure --with-docker-image=${DOCKER_IMAGE} \
+	     --prefix=${MDSPLUS_DIR} \
+	     --exec_prefix=${MDSPLUS_DIR} \
+	     --bindir=${MDSPLUS_DIR}/bin32 \
+	     --libdir=${MDSPLUS_DIR}/lib32 \
+	     --with-gsi=/usr:gcc64 \
+	     --with-java_target=6 \
+	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
+	     --host=i686-linux;
+    if ( ! $MAKE && $MAKE install )
+    then
+	$MAKE  docker stop;
+	exit 1;
+    fi
+    $MAKE docker stop;
+    popd ; 
+}
+
+build_rpms () {
+    echo "Building rpms";
+    mkdir -p ${WORKSPACE}/etc/yum.repos.d;
+    mkdir -p ${WORKSPACE}/etc/pki/rpm-gpg/;
+    export INSTALLER_DIR=${DISTDIR}/${DIST};
+    mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
+    cp ${SRCDIR}/deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/;
+    cat - > ${WORKSPACE}/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
+[MDSplus${BNAME}]
+name=MDSplus${BNAME}
+baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+metadata_expire=300
+EOF
+    docker run --rm --entrypoint=/bin/bash -v ${SRCDIR}:/source -v ${INSTALLER_DIR}:/installer \
+	   -v ${WORKSPACE}:/buildroot -i <<EOF
+source /source/jenkins_build.conf
+/source/deploy/build_rpms_mdsplus;
+EOF
+}
+
+build_eggs() {
+    export BUILDDIR=${WORKSPACE};
+    export EGGS_DIR=${DISTDIR}/EGGS;
+    mkdir -p ${EGGS_DIR}
+    ${SRCDIR}/deploy/build_eggs;
+}
+
 case ${JOB_NAME} in
     *build_fc*|*build_rhel*)
 	source ${SRCDIR}/jenkins_build.conf
 	export DOCKER_IMAGE=mdsplus/docker:$JOB_NAME
 	case ${BUILD_TYPE} in
-	    test|release)
-		if [ "${BuILD_TYPE}" = "release" ]
+	    test|test_release)
+		if [ "${BuILD_TYPE}" = "test_release" ]
 		then
 		    source ${SRCDIR}/release.conf;
-		    if [ "${BuILD_TYPE}" = "release" -a -r ${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE} ]
+		    if [ "${BuILD_TYPE}" = "release" -a -r ${DIST_TAG_FILE} ]
 		    then
 			exit 0;
 		    fi;
 		fi;
-		MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
-		mkdir -p ${WORKSPACE}/64test;
-		pushd ${WORKSPACE}/64test;
-		mkdir -p ./buildroot;
-		MDSPLUS_DIR=$(pwd)/buildroot;
-		MDS_PATH=${MDSPLUS_DIR}/tdi;
-		${SRCDIR}/configure  \
-			 --prefix=${MDSPLUS_DIR} \
-			 --exec_prefix=${MDSPLUS_DIR} \
-			 --bindir=${MDSPLUS_DIR}/bin64 \
-			 --libdir=${MDSPLUS_DIR}/lib64 \
-			 --with-gsi=/usr:gcc64 \
-			 --with-java_target=6 \
-			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
-			 --enable-debug --host=x86_64-linux;
-		if ( ! $MAKE && $MAKE install )
+		test_64;
+		test_32;
+		check_tests;
+		if [ "${BUILD_TYPE}" = "test_release" ]
 		then
-		    $MAKE docker stop;
-		    exit 1;
-		fi;
-		$MAKE -k tests TEST_FORMAT=tap;
-		tests_tap64=$?;
-		$MAKE -k tests-valgrind TEST_FORMAT=tap;
-		tests_valgrind64=$?;
-		$MAKE docker stop;
-		set -e;
-		popd;
-		mkdir -p ${WORKSPACE}/32test;
-		pushd ${WORKSPACE}/32test;
-		mkdir -p ./buildroot;
-		MDSPLUS_DIR=$(pwd)/buildroot;
-		MDS_PATH=${MDSPLUS_DIR}/tdi;
-		${SRCDIR}/configure \
-			 --prefix=${MDSPLUS_DIR} \
-			 --exec_prefix=${MDSPLUS_DIR} \
-			 --bindir=${MDSPLUS_DIR}/bin32 \
-			 --libdir=${MDSPLUS_DIR}/lib32 \
-			 --with-gsi=/usr:gcc32 \
-			 --with-java_target=6 \
-			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
-			 --enable-debug --host=i686-linux;
-		if ( ! $MAKE && $MAKE install )
-		then
-		    $MAKE docker stop;
-		    exit 1;
-		fi;
-		set +e;
-		$MAKE -k tests TEST_FORMAT=tap;
-		tests_tap32=$?;
-		$MAKE -k tests-valgrind TEST_FORMAT=tap;
-		tests_valgrind32=$?;
-		$MAKE docker stop;
-		set -e;
-		popd;
-		failed=0;
-		if [ "$tests_tap64" != "0" ]
-		then
-		    echo "64-bit tap tests failed!!!";
-		    failed=1;
-		fi;
-		if [ "$tests_valgrind64" != "0" ]
-		then
-		    echo "64-bit valgrind tests failed!!!";
-		    failed=1;
-		fi;
-		if [ "$tests_tap32" != "0" ]
-		then
-		    echo "32-bit tap tests failed!!!";
-		    failed=1;
-		fi;
-		if [ "$tests_valgrind32" != "0" ]
-		then
-		    echo "32-bit valgrind tests failed!!!";
-		    failed=1;
-		fi;
-		if [ "$failed" != "0" ]
-		then
-		    exit 1;
-		fi;
-		if [ "${BUILD_TYPE}" = "release" ]
-		then
-		    if [ "$BRANCH" = "stable" ]
-		    then
-			export BNAME="";
-		    else
-			export BNAME="-"${BRANCH};
-		    fi;
-		    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
-		    mkdir -p ${WORKSPACE}/64rel;
-		    mkdir -p ${WORKSPACE}/32rel;
-		    pushd ${WORKSPACE}/64rel;
-		    MDSPLUS_DIR=${WORKSPACE}/usr/local/mdsplus;
-		    ${SRCDIR}/configure \
-			     --prefix=${MDSPLUS_DIR} \
-			     --exec_prefix=${MDSPLUS_DIR} \
-			     --bindir=${MDSPLUS_DIR}/bin64 \
-			     --libdir=${MDSPLUS_DIR}/lib64 \
-			     --with-gsi=/usr:gcc64 \
-			     --with-java_target=6 \
-			     --with-java_bootclasspath=${SRCDIR}/rt.jar \
-			     --host=x86_64-linux;
-		    if ( ! $MAKE && $MAKE install )
-		    then
-			$MAKE docker stop;
-			exit 1;
-		    fi;
-		    $MAKE docker stop
-		    popd;
-		    pushd ${WORKSPACE}/32rel;
-		    ${SRCDIR}/configure --with-docker-image=${DOCKER_IMAGE} \
-			     --prefix=${MDSPLUS_DIR} \
-			     --exec_prefix=${MDSPLUS_DIR} \
-			     --bindir=${MDSPLUS_DIR}/bin32 \
-			     --libdir=${MDSPLUS_DIR}/lib32 \
-			     --with-gsi=/usr:gcc64 \
-			     --with-java_target=6 \
-			     --with-java_bootclasspath=${SRCDIR}/rt.jar \
-			     --host=i686-linux;
-		    if ( ! $MAKE && $MAKE install )
-		    then
-			$MAKE  docker stop;
-			exit 1;
-		    fi
-		    $MAKE docker stop;
-		    popd ; 
-		    echo "Building rpms";
-		    mkdir -p ${WORKSPACE}/etc/yum.repos.d;
-		    mkdir -p ${WORKSPACE}/etc/pki/rpm-gpg/;
-		    export INSTALLER_DIR=/mdsplus/pre-dist/${JOB_NAME:6};
-		    export BUILDDIR=${WORKSPACE};
-		    export EGGS_DIR=${SRCDIR}/dist/EGGS;
-		    mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
-		    cp ${SRCDIR}/deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/;
-		    outfile=${WORKSPACE}/etc/yum.repos.d/mdsplus${BNAME}.repo;
-		    echo [MDSplus${BNAME}] > $outfile;
-		    echo "name=MDSplus${BNAME}" >> $outfile;
-		    echo "baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS" >> $outfile;
-		    echo "enabled=1" >> $outfile;
-		    cat - >> $outfile <<EOF
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
-metadata_expire=300
-EOF
-		    ${SRCDIR}/deploy/build_rpms_mdsplus;
+		    build_64;
+		    build_32;
+		    build_rpms;
 		    #
 		    # If everything went successfully then make a marker file indicating
 		    # that an installer has been built for this release.
 		    #
-		    touch ${INSTALLER_DIR}/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE};
-
-		    ${SRCDIR}/deploy/build_eggs;
+		    touch ${DIST_TAG_FILE};
+		    build_eggs;
 		fi;;
 	    *) echo "Unknown build type";;
 	esac;;
