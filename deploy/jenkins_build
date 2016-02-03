@@ -216,12 +216,12 @@ case ${JOB_NAME} in
 	    git log --decorate=full > ChangeLog;
 	fi;
 	cat - <<EOF > jenkins_build.conf
-BRANCH=${branch}
-RELEASE_TAG=${release_tag}
-MAJOR=${major}
-MINOR=${minor}
-RELEASE=${release}
-BUILD_TYPE=$1
+export BRANCH=${branch}
+export RELEASE_TAG=${release_tag}
+export MAJOR=${major}
+export MINOR=${minor}
+export RELEASE=${release}
+export BUILD_TYPE=$1
 EOF
 	;;
     *) echo "Unknown job";;
