@@ -154,7 +154,7 @@ EOF
     docker run --rm --entrypoint=/bin/bash -v ${SRCDIR}:/source -v ${INSTALLER_DIR}:/installer \
 	   -v ${WORKSPACE}:/buildroot -i ${DOCKER_IMAGE}<<EOF
 source /source/jenkins_build.conf
-/source/deploy/build_rpms_mdsplus;
+env dist /source/deploy/build_rpms_mdsplus;
 EOF
 }
 
