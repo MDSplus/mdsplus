@@ -3,9 +3,6 @@
 set -e
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
 if [ "$BRANCH" = "stable" ]; then export BNAME=""; else export BNAME="-"${BRANCH}; fi;
-if [ -z "$DIST" ]; then DIST=${JOB_NAME:6}; fi;
-if [ -z "$DISTDIR" ]; then DISTDIR=/mdsplus/pre-dist; fi
-DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
 
 test_64 () {
     mkdir -p ${WORKSPACE}/64test;
@@ -168,38 +165,45 @@ build_eggs() {
     ${SRCDIR}/deploy/build_eggs;
 }
 
+do_tests() {
+    if [ "$(echo ${BUILD_TYPE} | grep -c test)" = "1" ]; then exit 0; else exit 1; fi;
+}
+
+do_release() {
+    if [ "$(echo ${BUILD_TYPE} | grep -c release)" = "1" ]; then exit 0; else exit 1; fi;
+}
+
+
 case ${JOB_NAME} in
     *build_fc*|*build_rhel*)
-	source ${SRCDIR}/jenkins_build.conf
 	export DOCKER_IMAGE=mdsplus/docker:$JOB_NAME
-	case ${BUILD_TYPE} in
-	    test|test_release)
-		if [ "${BuILD_TYPE}" = "test_release" ]
-		then
-		    source ${SRCDIR}/release.conf;
-		    if [ "${BuILD_TYPE}" = "release" -a -r ${DIST_TAG_FILE} ]
-		    then
-			exit 0;
-		    fi;
-		fi;
-		test_64;
-		test_32;
-		check_tests;
-		if [ "${BUILD_TYPE}" = "test_release" ]
-		then
-		    build_64;
-		    build_32;
-		    build_rpms;
-		    #
-		    # If everything went successfully then make a marker file indicating
-		    # that an installer has been built for this release.
-		    #
-		    touch ${DIST_TAG_FILE};
-		    build_eggs;
-		fi;;
-	    *) echo "Unknown build type";;
-	esac;;
-    *release*)
+	source ${SRCDIR}/jenkins_build.conf
+	if [ do_release ]
+	then
+	    if [ -z "$DIST" ]; then DIST=${JOB_NAME:6}; fi;
+	    if [ -z "$DISTDIR" ]; then DISTDIR=/mdsplus/pre-dist; fi
+	    DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+	fi
+	if [ do_release && test -r ${DIST_TAG_FILE } )
+	then
+	    echo "Release already built. Nothing more to do."
+	    exit 0;
+	fi;
+	if [ do_tests ]
+	then
+	    test_64;
+	    test_32;
+	    check_tests;
+	fi;
+	if [ do_release ]
+	then
+	    build_64;
+	    build_32;
+	    build_rpms;
+	    touch ${DIST_TAG_FILE};
+	    build_eggs;
+	fi;;
+    *release*|*test*)
 	branch=${GIT_BRANCH:7};
 	release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
 	major=$(echo $release_tag | cut -f2 -d-);
@@ -217,7 +221,7 @@ RELEASE_TAG=${release_tag}
 MAJOR=${major}
 MINOR=${minor}
 RELEASE=${release}
-BUILD_TYPE=release
+BUILD_TYPE=$1
 EOF
 	;;
     *) echo "Unknown job";;
