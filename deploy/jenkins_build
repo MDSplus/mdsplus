@@ -184,7 +184,7 @@ case ${JOB_NAME} in
 	    if [ -z "$DISTDIR" ]; then DISTDIR=/mdsplus/pre-dist; fi
 	    DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
 	fi
-	if ( do_release && test -r ${DIST_TAG_FILE} )
+	if ( (do_release) && test -r ${DIST_TAG_FILE} )
 	then
 	    echo "Release already built. Nothing more to do."
 	    exit 0;
