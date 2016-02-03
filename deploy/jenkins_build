@@ -39,7 +39,7 @@ case ${JOB_NAME} in
 		tests_tap64=$?;
 		$MAKE -k tests-valgrind TEST_FORMAT=tap;
 		tests_valgrind64=$?;
-		$MAKE docker stop;;
+		$MAKE docker stop;
 		set -e;
 		popd;
 		mkdir -p ${WORKSPACE}/32test;
