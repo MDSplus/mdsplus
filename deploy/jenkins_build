@@ -178,26 +178,24 @@ case ${JOB_NAME} in
     *build_fc*|*build_rhel*)
 	export DOCKER_IMAGE=mdsplus/docker:$JOB_NAME
 	source ${SRCDIR}/jenkins_build.conf
-	if [ do_release ]
+	if ( do_release )
 	then
 	    if [ -z "$DIST" ]; then DIST=${JOB_NAME:6}; fi;
 	    if [ -z "$DISTDIR" ]; then DISTDIR=/mdsplus/pre-dist; fi
 	    DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
 	fi
-	if [ do_release -a -r ${DIST_TAG_FILE} ]
+	if ( do_release && test -r ${DIST_TAG_FILE} )
 	then
 	    echo "Release already built. Nothing more to do."
 	    exit 0;
 	fi;
-	if [ do_tests ]
+	if ( do_tests )
 	then
-	    echo "BUILD_TYPE = ${BUILD_TYPE} Should not get here unless it contains test"
-	    exit 1;
 	    test_64;
 	    test_32;
 	    check_tests;
 	fi;
-	if [ do_release ]
+	if ( do_release )
 	then
 	    build_64;
 	    build_32;
