@@ -1,0 +1,3 @@
+[submodule "3rd-party-apis"]
+	path = 3rd-party-apis
+	url = https://github.com/MDSplus/3rd-party-apis.git

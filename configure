@@ -987,7 +987,6 @@ with_srb
 with_labview
 enable_gcc_profiling
 with_idl
-with_python_include
 with_visual_studio
 enable_d3d
 with_readline
@@ -1708,8 +1707,6 @@ Optional Packages:
                           specify location of labview such as
                           /usr/local/natinst/Labview
   --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
-  --with-python_include=python-include-directory
-                          specify location of Python.h
   --with-visual-studio    directory tree containing visual studio compiler,
                           includes and libs
   --with-readline=READLINE_DIR
@@ -8709,7 +8706,11 @@ else
   if ${LABVIEW_DIR+:} false; then :
   with_labview=$LABVIEW_DIR
 else
+  if ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview; then :
+  with_labview=\${top_srcdir}/3rd-party-apis/labview
+else
   with_labview=no
+fi
 fi
 fi
 
@@ -8764,6 +8765,8 @@ else
   with_idl=/usr/local/itt/idl
 elif test -r /usr/local/itt/idl; then :
   with_idl=/usr/local/rsi/idl
+elif ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl; then :
+  with_idl=\${top_srcdir}/3rd-party-apis/idl
 else
   with_idl=no
 fi
@@ -8773,7 +8776,7 @@ fi ;; #(
 esac
 case $with_idl in #(
   no) :
-     ;; #(
+    IDL_DIR="" ;; #(
   *) :
     IDL_INC="-I$with_idl/external"
          IDLMDSEVENT="idlmdsevent"
@@ -8781,36 +8784,6 @@ case $with_idl in #(
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
 $as_echo "$with_idl" >&6; }
-
-if test "x$with_idl" = xno; then :
-  IDL_DIR=""
-else
-  IDL_DIR=$with_idl
-fi
-
-
-# Check whether --with-python_include was given.
-if test "${with_python_include+set}" = set; then :
-  withval=$with_python_include;
-else
-  if ${PYTHON_INCLUDE_DIR+:} false; then :
-  with_python_include=$PYTHON_INCLUDE_DIR
-fi
-fi
-
-PYTHON_INCLUDE_DIR=$with_python_include
-OLD_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
-ac_fn_c_check_header_mongrel "$LINENO" "Python.h" "ac_cv_header_Python_h" "$ac_includes_default"
-if test "x$ac_cv_header_Python_h" = xyes; then :
-
-else
-  PYTHON_INCLUDE_DIR=""
-fi
-
-
-CPPFLAGS="$OLD_CPPFLAGS"
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mingw" >&5
 $as_echo_n "checking for mingw... " >&6; }
@@ -8944,7 +8917,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        else
          FFLAGS="$FFLAGS -PIC";
        fi
-       IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        jni_inc_dir="${JDK_DIR}/include";
@@ -18583,7 +18555,7 @@ $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
 fi
-if test "$IDL_DIR" = ""
+if test "$with_idl" = "no"
 then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
