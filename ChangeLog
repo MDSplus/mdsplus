@@ -1,8 +1,44 @@
-commit 1b1bae8a77b7b374e811f2d8e2bbf86a85899e64 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 7b27b7c013ed6447aac7fb9acb3242ebc414e74d (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 7e7e6a1 74f90bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 14:33:17 2016 -0500
+
+    Merge pull request #344 from MDSplus/twf-fix-excess-TreeUnLockNci-call
+    
+    Fix wrong calls to TreeUnLockNci in _TReeGetSegmentInfo. Nci's are lo…
+
+commit 7e7e6a176ba406b65ac8eb793b03da006ffa413b
+Merge: d0a8f88 0c7d9c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 11:59:55 2016 -0500
+
+    Merge pull request #345 from MDSplus/twf-fix-labview-install-in-builddir
+    
+    Use top_srcdir in tar command for labview directories so you can make…
+
+commit 0c7d9c02b3d80db21b6c05aa31a8702c34f304c7 (refs/remotes/origin/twf-fix-labview-install-in-builddir)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 10:56:10 2016 -0500
+
+    Use top_srcdir in tar command for labview directories so you can make install when building in a different directory.
+
+commit d0a8f887f39bc714a321b21e6ed06e83e519b46d (tag: refs/tags/alpha_release-7-0-218)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Feb 2 08:45:51 2016 -0500
+
+    New release ---- alpha_release-7-0-218
+
+commit 1b1bae8a77b7b374e811f2d8e2bbf86a85899e64
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 1 15:34:04 2016 -0500
 
     Add some .gitignore files to ignore some files created if building inside the source directory tree
+
+commit 74f90bfe609c74f91f0c89fb7fd16d7356547d10 (refs/remotes/origin/twf-fix-excess-TreeUnLockNci-call)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 1 15:17:22 2016 -0500
+
+    Fix wrong calls to TreeUnLockNci in _TReeGetSegmentInfo. Nci's are long locked during write operations. This bug showed up in the valgrind tests.
 
 commit 507cc6fe0c84b46295a23db5e39647af1679d653
 Merge: 689b816 e638696
