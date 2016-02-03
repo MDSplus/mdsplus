@@ -153,19 +153,21 @@ EOF
 
 		    ${SRCDIR}/deploy/build_eggs;
 		fi;;
-	    *release*)
-		branch=${GIT_BRANCH:7};
-		release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
-		major=$(echo $release_tag | cut -f2 -d-);
-		minor=$(echo $release_tag | cut -f3 -d-);
-		release=$(echo $release_tag | cut -f4 -d-);
-		if [ "$(git rev-list -n 1 $release_tag)" != "${GIT_COMMIT}" ]
-		then
-		    let release=$release+1;
-		    release_tag=${branch}_release-${major}-${minor}-${release};
-		    git log --decorate=full > ChangeLog;
-		fi;
-		cat - <<EOF > jenkins_build.conf
+	    *) echo "Unknown build type";;
+	esac;;
+    *release*)
+	branch=${GIT_BRANCH:7};
+	release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
+	major=$(echo $release_tag | cut -f2 -d-);
+	minor=$(echo $release_tag | cut -f3 -d-);
+	release=$(echo $release_tag | cut -f4 -d-);
+	if [ "$(git rev-list -n 1 $release_tag)" != "${GIT_COMMIT}" ]
+	then
+	    let release=$release+1;
+	    release_tag=${branch}_release-${major}-${minor}-${release};
+	    git log --decorate=full > ChangeLog;
+	fi;
+	cat - <<EOF > jenkins_build.conf
 BRANCH=${branch}
 RELEASE_TAG=${release_tag}
 MAJOR=${major}
@@ -173,9 +175,7 @@ MINOR=${minor}
 RELEASE=${release}
 BUILD_TYPE=release
 EOF
-		;;
-	    *) echo "Unknown build type";;
-	esac;;
+	;;
     *) echo "Unknown job";;
 esac
 exit 0
