@@ -4,7 +4,6 @@ set -e
 case ${JOB_NAME} in
     *build_fc*|*build_rhel*)
 	source ${SRCDIR}/jenkins_build.conf
-	export DOCKER_CONTAINER=$JOB_NAME
 	export DOCKER_IMAGE=mdsplus/docker:$JOB_NAME
 	case ${BUILD_TYPE} in
 	    test|release)
@@ -31,14 +30,17 @@ case ${JOB_NAME} in
 			 --with-java_target=6 \
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=x86_64-linux;
-		$MAKE;
-		$MAKE install;
-		set +e
-		$MAKE -k tests TEST_FORMAT=tap
-		tests_tap64=$?
-		$MAKE -k tests-valgrind TEST_FORMAT=tap
-		tests_valgrind64=$?
-		set -e
+		if ( ! $MAKE && $MAKE install )
+		then
+		    $MAKE docker stop;
+		    exit 1;
+		fi;
+		$MAKE -k tests TEST_FORMAT=tap;
+		tests_tap64=$?;
+		$MAKE -k tests-valgrind TEST_FORMAT=tap;
+		tests_valgrind64=$?;
+		$MAKE docker stop;;
+		set -e;
 		popd;
 		mkdir -p ${WORKSPACE}/32test;
 		pushd ${WORKSPACE}/32test;
@@ -54,13 +56,17 @@ case ${JOB_NAME} in
 			 --with-java_target=6 \
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=i686-linux;
-		$MAKE;
-		$MAKE install;
+		if ( ! $MAKE && $MAKE install )
+		then
+		    $MAKE docker stop;
+		    exit 1;
+		fi;
 		set +e;
 		$MAKE -k tests TEST_FORMAT=tap;
 		tests_tap32=$?;
 		$MAKE -k tests-valgrind TEST_FORMAT=tap;
 		tests_valgrind32=$?;
+		$MAKE docker stop;
 		set -e;
 		popd;
 		failed=0;
@@ -110,8 +116,12 @@ case ${JOB_NAME} in
 			     --with-java_target=6 \
 			     --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			     --host=x86_64-linux;
-		    $MAKE;
-		    $MAKE install;
+		    if ( ! $MAKE && $MAKE install )
+		    then
+			$MAKE docker stop;
+			exit 1;
+		    fi;
+		    $MAKE docker stop
 		    popd;
 		    pushd ${WORKSPACE}/32rel;
 		    ${SRCDIR}/configure --with-docker-image=${DOCKER_IMAGE} \
@@ -123,8 +133,12 @@ case ${JOB_NAME} in
 			     --with-java_target=6 \
 			     --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			     --host=i686-linux;
-		    $MAKE;
-		    $MAKE install;
+		    if ( ! $MAKE && $MAKE install )
+		    then
+			$MAKE  docker stop;
+			exit 1;
+		    fi
+		    $MAKE docker stop;
 		    popd ; 
 		    echo "Building rpms";
 		    mkdir -p ${WORKSPACE}/etc/yum.repos.d;
