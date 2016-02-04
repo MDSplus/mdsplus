@@ -719,6 +719,7 @@ void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLe
     len = bufLen;
   if (len > 0)
     memcpy(dateBuf, dateDsc.pointer, len);
+  dateBuf[len-1]='\0';
   StrFree1Dx(&dateDsc);
   *retLen = len;
 }
