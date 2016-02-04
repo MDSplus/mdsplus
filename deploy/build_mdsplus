@@ -35,6 +35,15 @@
 # release tag will be fetched and expanded into /buildsrc and builds it using
 # the build_it command defined by the build.conf script for that docker
 # image.
+#
+# If there is a /source/jenkins_build.conf file then this is a jenkins build
+# so use the jenkins_build script instead.
+#
+if [ -r /mdsplus/source/jenkins_build.conf ]
+then
+    /mdsplus/source/deploy/jenkins_build
+    exit $?
+fi
 echo build_mdsplus called with args: $@
 source build.conf
 set -e

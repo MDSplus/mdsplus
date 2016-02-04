@@ -1,66 +1,64 @@
 #!/bin/bash
 
-set -e
-MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
-if [ "$BRANCH" = "stable" ]; then export BNAME=""; else export BNAME="-"${BRANCH}; fi;
 
 test_64 () {
-    mkdir -p ${WORKSPACE}/64test;
-    pushd ${WORKSPACE}/64test;
-    mkdir -p ./buildroot;
-    MDSPLUS_DIR=$(pwd)/buildroot;
-    MDS_PATH=${MDSPLUS_DIR}/tdi;
-    ${SRCDIR}/configure  \
-	     --prefix=${MDSPLUS_DIR} \
-	     --exec_prefix=${MDSPLUS_DIR} \
-	     --bindir=${MDSPLUS_DIR}/bin64 \
-	     --libdir=${MDSPLUS_DIR}/lib64 \
-	     --with-gsi=/usr:gcc64 \
-	     --with-java_target=6 \
-	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	     --enable-debug --host=x86_64-linux;
-    if ( ! $MAKE && $MAKE install )
+    set -e
+    set -o verbose
+    if [ -r /mdsplus/workspace/tests ]
     then
-	$MAKE docker stop;
-	exit 1;
+	MDSPLUS_DIR=/mdsplus/workspace/tests/64/buildroot;
+	MDS_PATH=${MDSPLUS_DIR}/tdi;
+	mkdir -p ${MDSPLUS_DIR};
+	pushd /mdsplus/workspace/tests/64;
+	/mdsplus/source/configure  \
+	    --prefix=${MDSPLUS_DIR} \
+	    --exec_prefix=${MDSPLUS_DIR} \
+	    --bindir=${MDSPLUS_DIR}/bin64 \
+	    --libdir=${MDSPLUS_DIR}/lib64 \
+	    --with-gsi=/usr:gcc64 \
+	    --with-java_target=6 \
+	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --enable-debug --host=x86_64-linux;
+	$MAKE
+	$MAKE install
+	set +e
+	$MAKE -k tests TEST_FORMAT=tap;
+	export tests_tap64=$?;
+	$MAKE -k tests-valgrind TEST_FORMAT=tap;
+	export tests_valgrind64=$?;
+	set -e;
+	popd;
     fi;
-    $MAKE -k tests TEST_FORMAT=tap;
-    tests_tap64=$?;
-    $MAKE -k tests-valgrind TEST_FORMAT=tap;
-    tests_valgrind64=$?;
-    $MAKE docker stop;
-    set -e;
-    popd;
 }
 
 test_32() {
-    mkdir -p ${WORKSPACE}/32test;
-    pushd ${WORKSPACE}/32test;
-    mkdir -p ./buildroot;
-    MDSPLUS_DIR=$(pwd)/buildroot;
-    MDS_PATH=${MDSPLUS_DIR}/tdi;
-    ${SRCDIR}/configure \
-	     --prefix=${MDSPLUS_DIR} \
-	     --exec_prefix=${MDSPLUS_DIR} \
-	     --bindir=${MDSPLUS_DIR}/bin32 \
-	     --libdir=${MDSPLUS_DIR}/lib32 \
-	     --with-gsi=/usr:gcc32 \
-	     --with-java_target=6 \
-	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	     --enable-debug --host=i686-linux;
-    if ( ! $MAKE && $MAKE install )
+    set -e
+    set -o verbose
+    if [ -r /mdsplus/workspace/tests ]
     then
-	$MAKE docker stop;
-	exit 1;
+	MDSPLUS_DIR=/mdsplus/workspace/tests/32/buildroot;
+	MDS_PATH=${MDSPLUS_DIR}/tdi;
+	mkdir -p ${MDSPLUS_DIR};
+	pushd /mdsplus/workspace/tests/32;
+	/mdsplus/source/configure \
+	    --prefix=${MDSPLUS_DIR} \
+	    --exec_prefix=${MDSPLUS_DIR} \
+	    --bindir=${MDSPLUS_DIR}/bin32 \
+	    --libdir=${MDSPLUS_DIR}/lib32 \
+	    --with-gsi=/usr:gcc32 \
+	    --with-java_target=6 \
+	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --enable-debug --host=i686-linux;
+	$MAKE
+	$MAKE install
+	set +e;
+	$MAKE -k tests TEST_FORMAT=tap;
+	export tests_tap32=$?;
+	$MAKE -k tests-valgrind TEST_FORMAT=tap;
+	export tests_valgrind32=$?;
+	set -e;
+	popd;
     fi;
-    set +e;
-    $MAKE -k tests TEST_FORMAT=tap;
-    tests_tap32=$?;
-    $MAKE -k tests-valgrind TEST_FORMAT=tap;
-    tests_valgrind32=$?;
-    $MAKE docker stop;
-    set -e;
-    popd;
 }
 
 check_tests() {
@@ -92,57 +90,68 @@ check_tests() {
 }
 
 build_64 () {
-    mkdir -p ${WORKSPACE}/usr/local/mdsplus;
-    mkdir -p ${WORKSPACE}/64rel;
-    pushd ${WORKSPACE}/64rel;
-    MDSPLUS_DIR=${WORKSPACE}/usr/local/mdsplus;
-    ${SRCDIR}/configure \
-	     --prefix=${MDSPLUS_DIR} \
-	     --exec_prefix=${MDSPLUS_DIR} \
-	     --bindir=${MDSPLUS_DIR}/bin64 \
-	     --libdir=${MDSPLUS_DIR}/lib64 \
-	     --with-gsi=/usr:gcc64 \
-	     --with-java_target=6 \
-	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	     --host=x86_64-linux;
-    if ( ! $MAKE && $MAKE install )
+    set -e
+    set -o verbose
+    if [ -r /mdsplus/workspace/release ]
     then
-	$MAKE docker stop;
-	exit 1;
+	MDSPLUS_DIR=/mdsplus/workspace/release/usr/local/mdsplus;
+	mkdir -p ${MDSPLUS_DIR};
+	mkdir -p /mdsplus/workspace/release/64;
+	pushd /mdsplus/workspace/release/64;
+	/mdsplus/source/configure \
+	    --prefix=${MDSPLUS_DIR} \
+	    --exec_prefix=${MDSPLUS_DIR} \
+	    --bindir=${MDSPLUS_DIR}/bin64 \
+	    --libdir=${MDSPLUS_DIR}/lib64 \
+	    --with-gsi=/usr:gcc64 \
+	    --with-java_target=6 \
+	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --host=x86_64-linux;
+	$MAKE
+	$MAKE install
+	popd;
     fi;
-    $MAKE docker stop
-    popd;
 }
 
 build_32 () {
-    mkdir -p ${WORKSPACE}/32rel;
-    pushd ${WORKSPACE}/32rel;
-    ${SRCDIR}/configure --with-docker-image=${DOCKER_IMAGE} \
-	     --prefix=${MDSPLUS_DIR} \
-	     --exec_prefix=${MDSPLUS_DIR} \
-	     --bindir=${MDSPLUS_DIR}/bin32 \
-	     --libdir=${MDSPLUS_DIR}/lib32 \
-	     --with-gsi=/usr:gcc64 \
-	     --with-java_target=6 \
-	     --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	     --host=i686-linux;
-    if ( ! $MAKE && $MAKE install )
+    set -e
+    set -o verbose
+    if [ -r /mdsplus/workspace/release ]
     then
-	$MAKE  docker stop;
-	exit 1;
-    fi
-    $MAKE docker stop;
-    popd ; 
+	MDSPLUS_DIR=/mdsplus/workspace/release/usr/local/mdsplus;
+	mkdir -p ${MDSPLUS_DIR};
+	mkdir -p /mdsplus/workspace/release/32;
+	pushd /mdsplus/workspace/release/32;
+	/mdsplus/source/configure  \
+	    --prefix=${MDSPLUS_DIR} \
+	    --exec_prefix=${MDSPLUS_DIR} \
+	    --bindir=${MDSPLUS_DIR}/bin32 \
+	    --libdir=${MDSPLUS_DIR}/lib32 \
+	    --with-gsi=/usr:gcc64 \
+	    --with-java_target=6 \
+	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --host=i686-linux;
+	$MAKE
+	$MAKE install
+	popd ;
+    fi;
 }
 
 build_rpms () {
-    echo "Building rpms";
-    mkdir -p ${WORKSPACE}/etc/yum.repos.d;
-    mkdir -p ${WORKSPACE}/etc/pki/rpm-gpg/;
-    export INSTALLER_DIR=${DISTDIR}/${DIST};
-    mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
-    cp ${SRCDIR}/deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/etc/pki/rpm-gpg/;
-    cat - > ${WORKSPACE}/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
+    set -e
+    set -o verbose
+    if [ -r /mdsplus/installer ]
+    then
+	export HOME=/mdsplus/source
+        export DISTDIR=/mdsplus/installer/${DIST}
+	export BUILDROOT=/mdsplus/workspace/release
+	echo "Building rpms";
+	mkdir -p /mdsplus/workspace/release/etc/yum.repos.d;
+	mkdir -p /mdsplus/workspace/release/etc/pki/rpm-gpg/;
+	export INSTALLER_DIR=/mdsplus/installer/${DIST};
+	mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
+	cp /mdsplus/source/deploy/RPM-GPG-KEY-MDSplus /mdsplus/workspace/release/etc/pki/rpm-gpg/;
+	cat - > /mdsplus/workspace/release/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]
 name=MDSplus${BNAME}
 baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS
@@ -151,19 +160,20 @@ gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
-    docker run --rm --entrypoint=/bin/bash -v ${SRCDIR}:/source -v ${INSTALLER_DIR}:/installer \
-	   -v ${WORKSPACE}:/buildroot -i ${DOCKER_IMAGE}<<EOF
-source /source/jenkins_build.conf
-export DIST
-/source/deploy/build_rpms_mdsplus;
-EOF
+	pushd /mdsplus/source
+	/mdsplus/source/deploy/build_rpms_mdsplus;
+	popd
+    fi;
 }
 
 build_eggs() {
-    export BUILDDIR=${WORKSPACE};
-    export EGGS_DIR=${DISTDIR}/EGGS;
-    mkdir -p ${EGGS_DIR}
-    ${SRCDIR}/deploy/build_eggs;
+    if [ -r /mdsplus/installer ]
+    then
+	export BUILDDIR=/mdsplus/workspace;
+	export EGGS_DIR=/mdsplus/installer/EGGS;
+	mkdir -p ${EGGS_DIR}
+	/mdsplus/source/deploy/build_eggs;
+    fi;
 }
 
 do_tests() {
@@ -174,49 +184,83 @@ do_release() {
     if [ "$(echo ${BUILD_TYPE} | grep -c release)" = "1" ]; then exit 0; else exit 1; fi;
 }
 
-
-case ${JOB_NAME} in
-    *build_fc*|*build_rhel*)
-	export DOCKER_IMAGE=mdsplus/docker:$JOB_NAME
-	source ${SRCDIR}/jenkins_build.conf
-	if ( do_release )
+set -e
+set -o verbose
+if [ -r /mdsplus/workspace -a -r /mdsplus/source -a -r /mdsplus/source/jenkins_build.conf ]
+then
+    source build.conf
+    MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
+    source /mdsplus/source/jenkins_build.conf
+    if [ -r /mdsplus/workspace/release ]
+    then
+	if [ "$BRANCH" = "stable" ]; then export BNAME=""; else export BNAME="-"${BRANCH}; fi;
+	DIST_TAG_FILE=/mdsplus/installer/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+	export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+	if [ -r $DIST_TAG_FILE ]
 	then
-	    if [ -z "$DIST" ]; then DIST=${JOB_NAME:6}; fi;
-	    if [ -z "$DISTDIR" ]; then DISTDIR=/mdsplus/pre-dist; fi
-	    DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+	    echo "This release is already complete. Nothing else to do."
+	    exit 0
 	fi
-	if ( (do_release) && test -r ${DIST_TAG_FILE} )
-	then
-	    echo "Release already built. Nothing more to do."
-	    exit 0;
-	fi;
-	if ( do_tests )
-	then
-	    test_64;
-	    test_32;
-	    check_tests;
-	fi;
-	if ( do_release )
-	then
-	    build_64;
-	    build_32;
-	    build_rpms;
-	    touch ${DIST_TAG_FILE};
-	    build_eggs;
-	fi;;
-    *release*|*test*)
-	branch=${GIT_BRANCH:7};
-	release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
-	major=$(echo $release_tag | cut -f2 -d-);
-	minor=$(echo $release_tag | cut -f3 -d-);
-	release=$(echo $release_tag | cut -f4 -d-);
-	if [ "$(git rev-list -n 1 $release_tag)" != "${GIT_COMMIT}" ]
-	then
-	    let release=$release+1;
-	    release_tag=${branch}_release-${major}-${minor}-${release};
-	    git log --decorate=full > ChangeLog;
-	fi;
-	cat - <<EOF > jenkins_build.conf
+    fi
+    case ${DIST_TYPE} in
+	 redhat)
+	     set -e;
+	     test_64;
+	     test_32;
+	     check_tests;
+	     build_64;
+	     build_32;
+	     build_rpms;
+	     build_eggs;;
+	 *)
+	     echo Unknown DIST_TYPE: ${DIST_TYPE}
+	     exit 1;;
+    esac
+    if [ -r /mdsplus/release ]
+    then
+	touch $DIST_TAG_FILE
+    fi
+else
+    case ${JOB_NAME} in
+	build*)
+	    docker pull mdsplus/docker:${JOB_NAME}
+	    source ${SRCDIR}/jenkins_build.conf
+	    if ( do_release )
+	    then
+		mkdir -p ${WORKSPACE}/release
+		if [ -z "${DIST_DIR}" ]
+		then
+		    DIST_DIR=/mdsplus/pre-dist
+		fi
+		installer_volume="-v ${DIST_DIR}:/mdsplus/installer"		
+	    fi
+	    if ( do_tests )
+	    then
+		mkdir -p ${WORKSPACE}/tests
+	    fi;
+	    docker run --rm \
+		   -u $(id -u):$(id -g) \
+		   -v ${SRCDIR}:/mdsplus/source \
+		   -v ${WORKSPACE}:/mdsplus/workspace \
+		   ${installer_volume} \
+		   mdsplus/docker:${JOB_NAME};;
+	*release*)
+	    branch=${GIT_BRANCH:7};
+	    release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
+	    major=$(echo $release_tag | cut -f2 -d-);
+	    minor=$(echo $release_tag | cut -f3 -d-);
+	    release=$(echo $release_tag | cut -f4 -d-);
+	    if [ "$(git rev-list -n 1 $release_tag)" != "${GIT_COMMIT}" ]
+	    then
+		let release=$release+1;
+		release_tag=${branch}_release-${major}-${minor}-${release};
+		git log --decorate=full > ChangeLog;
+	    fi;
+	    if [ ! -z "$2" ]
+	    then
+		tar zxf $2
+	    fi
+	    cat - <<EOF > ${WORKSPACE}jenkins_build.conf
 export BRANCH=${branch}
 export RELEASE_TAG=${release_tag}
 export MAJOR=${major}
@@ -224,70 +268,12 @@ export MINOR=${minor}
 export RELEASE=${release}
 export BUILD_TYPE=$1
 EOF
-	;;
-    *) echo "Unknown job";;
-esac
-exit 0
-
-
-
-
-
-
-
-if [ -d /installer ]
-then
-    echo "Building rpms"
-    mkdir -p /buildroot/etc/yum.repos.d
-    mkdir -p /buildroot/etc/pki/rpm-gpg/
-    mkdir -p /installer/BUILD /installer/BUILDROOT /installer/SPECS /installer/RPMS /installer/SRPMS
-    cp deploy/RPM-GPG-KEY-MDSplus /buildroot/etc/pki/rpm-gpg/
-    outfile=/buildroot/etc/yum.repos.d/mdsplus${BNAME}.repo
-    echo [MDSplus${BNAME}] > $outfile
-    echo "name=MDSplus${BNAME}" >> $outfile
-    echo "baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS" >> $outfile
-    echo "enabled=1" >> $outfile
-    cat - >> $outfile <<EOF
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
-metadata_expire=300
-EOF
-    build_rpms_mdsplus
-    #
-    # If everything went successfully then make a marker file indicating
-    # that an installer has been built for this release.
-    #
-    touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+	    ;;
+	*test*)
+	    echo "export BUILD_TYPE=$1" > ${WORKSPACE}jenkins_build.conf
+	    ;;
+	*) echo "Unknown job";
+	   exit 1;
+	   ;;
+    esac
 fi
-
-if [ -d /EGGS ]
-then
-    #
-    # If an /EGGS directory is available build python distribution eggs
-    # which will be used by easy_install.
-    #
-    build_eggs
-fi
-
-    
-+ branch=twfbld
-++ git tag
-++ grep twfbld_release
-++ sort -V
-++ awk '{line=$0} END{print line}'
-+ release_tag=twfbld_release-8-0-1
-++ echo twfbld_release-8-0-1
-++ cut -f2 -d-
-+ major=8
-++ echo twfbld_release-8-0-1
-++ cut -f3 -d-
-+ minor=0
-++ echo twfbld_release-8-0-1
-++ cut -f4 -d-
-+ release=1
-++ git rev-list -n 1 twfbld_release-8-0-1
-+ '[' 613f34599b163416329365090e161bf34ea50c83 '!=' 5d14617662df5d623f49927c70e2a0a57c7227f9 ']'
-+ let release=1+1
-+ release_tag=twfbld_release-8-0-2
-+ git log --decorate=full
-+ cat -
