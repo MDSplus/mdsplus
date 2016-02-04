@@ -221,9 +221,15 @@ then
 	touch $DIST_TAG_FILE
     fi
 else
-    case ${JOB_NAME} in
+    case $1 in
 	build*)
-	    docker pull mdsplus/docker:${JOB_NAME}
+	    if [ -z $2 ]
+	    then
+		echo "You must supply a docker image name to use to build with"
+		exit 1
+	    fi
+	    DOCKER_IMAGE=$2
+	    docker pull ${DOCKER_IMAGE}
 	    source ${SRCDIR}/jenkins_build.conf
 	    if ( do_release )
 	    then
@@ -243,8 +249,8 @@ else
 		   -v ${SRCDIR}:/mdsplus/source \
 		   -v ${WORKSPACE}:/mdsplus/workspace \
 		   ${installer_volume} \
-		   mdsplus/docker:${JOB_NAME};;
-	*release*)
+		   ${DOCKER_IMAGE};;
+	release)
 	    branch=${GIT_BRANCH:7};
 	    release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
 	    major=$(echo $release_tag | cut -f2 -d-);
@@ -256,9 +262,9 @@ else
 		release_tag=${branch}_release-${major}-${minor}-${release};
 		git log --decorate=full > ChangeLog;
 	    fi;
-	    if [ ! -z "$2" ]
+	    if [ ! -z "$3" ]
 	    then
-		tar zxf $2
+		tar -C ${WORKSPACE} -zxf $3
 	    fi
 	    cat - <<EOF > ${WORKSPACE}jenkins_build.conf
 export BRANCH=${branch}
@@ -266,13 +272,13 @@ export RELEASE_TAG=${release_tag}
 export MAJOR=${major}
 export MINOR=${minor}
 export RELEASE=${release}
-export BUILD_TYPE=$1
+export BUILD_TYPE=$2
 EOF
 	    ;;
-	*test*)
+	test)
 	    echo "export BUILD_TYPE=$1" > ${WORKSPACE}jenkins_build.conf
 	    ;;
-	*) echo "Unknown job";
+	*) echo "Unknown option";
 	   exit 1;
 	   ;;
     esac
