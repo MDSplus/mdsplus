@@ -15,6 +15,7 @@ _Exceptions=_mimport('mdsExceptions')
 _scalar=_mimport('mdsscalar')
 _tree=_mimport('tree')
 _treeshr=_mimport('_treeshr')
+_mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
 
 
@@ -276,10 +277,8 @@ class TreeNode(_data.Data):
         _tree.Tree.lock()
         try:
             self.restoreContext()
-            cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
-            status = _data.Data.compile(cmd).evaluate()
-            if not (status & 1):
-              raise _Exceptions.statusToException(status)
+            cmd='set node %s%s%s'% (self.fullpath,switch,qualifier)
+            _mdsdcl.tcl(cmd,raise_exception=True)
         finally:
             _tree.Tree.unlock()
 
