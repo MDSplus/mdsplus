@@ -266,7 +266,7 @@ else
 	    then
 		tar -C ${WORKSPACE} -zxf $3
 	    fi
-	    cat - <<EOF > ${WORKSPACE}jenkins_build.conf
+	    cat - <<EOF > ${WORKSPACE}/jenkins_build.conf
 export BRANCH=${branch}
 export RELEASE_TAG=${release_tag}
 export MAJOR=${major}
