@@ -1,4 +1,55 @@
-commit 7b27b7c013ed6447aac7fb9acb3242ebc414e74d (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit c946c040fda53135891ad49fef7a131806ed6002 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: b1ca4bd 2b5c27f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 15:12:25 2016 -0500
+
+    Merge pull request #346 from MDSplus/twf-fix-locking-mdsdcl
+    
+    Reduce period of locking to avoid recursive locking issues discovered…
+
+commit b1ca4bd82b1e6098bf1651c54a79f2aa9b29b762
+Merge: 7f7e6d4 5db950f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 14:08:09 2016 -0500
+
+    Merge pull request #347 from MDSplus/twf-fix-string-termination-from-descriptor
+    
+    Add trailing null to ascii time string when copying string from descr…
+
+commit 7f7e6d4e0cbe5980d7ad43f9f5616515809277bc
+Merge: 6eae0ae 49bf3e1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 14:07:50 2016 -0500
+
+    Merge pull request #348 from MDSplus/twf-add-3rd-party-api-submodule
+    
+    Add 3rd-party-apis as a submodule
+
+commit 49bf3e1b63ebed3a957dd202e3878bc32927b5d8 (refs/remotes/origin/twf-add-3rd-party-api-submodule)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:51:49 2016 -0500
+
+    Add 3rd-party-apis as a submodule
+
+commit 5db950f44482fdce9d89ee70cdc3e31811c877ba (refs/remotes/origin/twf-fix-string-termination-from-descriptor)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:29:40 2016 -0500
+
+    Add trailing null to ascii time string when copying string from descriptor
+
+commit 2b5c27f3bb6b4c40847cea03f6eb45f9fb11b637 (refs/remotes/origin/twf-fix-locking-mdsdcl)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:05:09 2016 -0500
+
+    Reduce period of locking to avoid recursive locking issues discovered by valgrind
+
+commit 6eae0ae7aedfba5eff352907b840808de9c3817f (tag: refs/tags/alpha_release-7-0-219)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Feb 2 23:33:37 2016 -0500
+
+    New release ---- alpha_release-7-0-219
+
+commit 7b27b7c013ed6447aac7fb9acb3242ebc414e74d
 Merge: 7e7e6a1 74f90bf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Feb 2 14:33:17 2016 -0500
