@@ -153,12 +153,12 @@ class ACQ216(acq.ACQ):
                 print "trig_src = %s\n" % (trig_src,)
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             if self.debugging():
-                print "pre-post all set now the xml and commands\n"
+                print "pre-post all set now the JSON and commands\n"
 
-            self.addGenericXMLStuff(fd)
+            self.addGenericJSON(fd)
 
-            fd.write("xmlcmd 'get.vin'>> $settingsf\n")
-            self.finishXMLStuff(fd, auto_store)
+            fd.write("add_cmd 'get.vin'>> $settingsf\n")
+            self.finishJSON(fd, auto_store)
 
             print "Time to make init file = %g\n" % (time.time()-start)
             start=time.time()

@@ -3,7 +3,7 @@ import array
 import ftplib
 import tempfile
 import socket
-from xml.marshal.generic import dumps, loads, load 
+import json
 
 import MDSplus
 import acq200, transport
@@ -192,7 +192,7 @@ class ACQ(MDSplus.Device):
             tree = self.local_tree
             shot = self.tree.shot
             if self.debugging() :
-                print "xml is loaded\n"
+                print "json is loaded\n"
             if tree != self.settings['tree'] :
                 print "ACQ Device open tree is %s board armed with tree %s\n" % (tree, self.settings["tree"],)
                 raise DevWRONG_TREE() 
@@ -309,45 +309,55 @@ class ACQ(MDSplus.Device):
         s.close()
 	return hostip
 
-    def addGenericXMLStuff(self, fd):
-        fd.write(". /usr/local/bin/xmlfunctions.sh\n")
-        fd.write("settingsf=/tmp/settings.xml\n")
-        fd.write("xmlstart > $settingsf\n")
-        fd.write('xmlcmd "echo $tree" tree >> $settingsf\n')
-        fd.write('xmlcmd "echo $shot" shot >> $settingsf\n')
-        fd.write('xmlcmd "echo $path" path >> $settingsf\n')
-            
+    def addGenericJSON(self, fd):
+        fd.write(r"""
+begin_json() {   echo "{"; }
+end_json() {   echo "\"done\" : \"done\"  }"; }
+add_term() {   echo " \"$1\" : \"$2\", "; }
+add_acqcmd() { add_term "$1" "`acqcmd $1`"; }
+add_cmd() { add_term "$1" "`$1`"; }
+settingsf=/tmp/settings.json
+begin_json > $settingsf
+add_term tree $tree >> $settingsf
+add_term shot $shot >> $settingsf
+add_term path $path >> $settingsf
+""")
         cmds = self.status_cmds.record
         for cmd in cmds:
             cmd = cmd.strip()
             if self.debugging():
-                print "adding xmlcmd '%s' >> $settingsf/ to the file.\n"%(cmd,)
-            fd.write("xmlcmd '%s' >> $settingsf\n"%(cmd,))
-        fd.write("cat - > /etc/postshot.d/postshot.sh <<EOF\n")
-        fd.write(". /usr/local/bin/xmlfunctions.sh\n")
-        fd.write("settingsf=/tmp/settings.xml\n")
-        fd.write("xmlacqcmd getNumSamples >> $settingsf\n")
-        fd.write("xmlacqcmd getChannelMask >> $settingsf\n")
-        fd.write("xmlacqcmd getInternalClock >> $settingsf\n")
-        fd.write("xmlcmd date >> $settingsf\n")
-        fd.write("xmlcmd hostname >> $settingsf\n")
-        fd.write("xmlcmd 'sysmon -T 0' >> $settingsf\n")
-        fd.write("xmlcmd 'sysmon -T 1' >> $settingsf\n")
-        fd.write("xmlcmd get.channelMask >> $settingsf\n")
-        fd.write("xmlcmd get.channel_mask >> $settingsf\n")
-        fd.write("xmlcmd get.d-tacq.release >> $settingsf\n")
-        fd.write("xmlcmd get.event0 >> $settingsf\n")
-        fd.write("xmlcmd get.event1 >> $settingsf\n")
-        fd.write("xmlcmd get.extClk  >> $settingsf\n")
-        fd.write("xmlcmd get.ext_clk >> $settingsf\n")
-        fd.write("xmlcmd get.int_clk_src >> $settingsf\n")
-        fd.write("xmlcmd get.modelspec >> $settingsf\n")
-        fd.write("xmlcmd get.numChannels >> $settingsf\n")
-        fd.write("xmlcmd get.pulse_number >> $settingsf\n")
-        fd.write("xmlcmd get.trig >> $settingsf\n")
-
-    def finishXMLStuff(self, fd, auto_store):
-        fd.write("xmlfinish >> $settingsf\n")
+                print "adding cmd '%s' >> $settingsf/ to the file.\n"%(cmd,)
+            fd.write("add_cmd '%s' >> $settingsf\n"%(cmd,))
+        fd.write(r"""
+cat - > /etc/postshot.d/postshot.sh <<EOF
+begin_json() {   echo "{"; }
+end_json() {   echo "\"done\" : \"done\"  }"; }
+add_term() {   echo " \"\$1\" : \"\$2\", "; }
+add_acqcmd() { add_term "\$1" "\`acqcmd \$1\`"; }
+add_cmd() { add_term "\$1" "\`\$1\`"; }
+settingsf=/tmp/settings.json
+add_acqcmd getNumSamples >> $settingsf
+add_acqcmd getChannelMask >> $settingsf
+add_acqcmd getInternalClock >> $settingsf
+add_cmd date >> $settingsf
+add_cmd hostname >> $settingsf
+add_cmd 'sysmon -T 0' >> $settingsf
+add_cmd 'sysmon -T 1' >> $settingsf
+add_cmd get.channelMask >> $settingsf
+add_cmd get.channel_mask >> $settingsf
+add_cmd get.d-tacq.release >> $settingsf
+add_cmd get.event0 >> $settingsf
+add_cmd get.event1 >> $settingsf
+add_cmd get.extClk  >> $settingsf
+add_cmd get.ext_clk >> $settingsf
+add_cmd get.int_clk_src >> $settingsf
+add_cmd get.modelspec >> $settingsf
+add_cmd get.numChannels >> $settingsf
+add_cmd get.pulse_number >> $settingsf
+add_cmd get.trig >> $settingsf
+""")
+    def finishJSON(self, fd, auto_store):
+        fd.write("end_json >> $settingsf\n")
             
         if auto_store != None :
             if self.debugging():
@@ -448,13 +458,13 @@ class ACQ(MDSplus.Device):
         settingsfd = tempfile.TemporaryFile()
         ftp = ftplib.FTP(self.getBoardIp())
         ftp.login('dt100', 'dt100')
-        ftp.retrlines("RETR /tmp/settings.xml", lambda s, w=settingsfd.write: w(s+"\n"))
+        ftp.retrlines("RETR /tmp/settings.json", lambda s, w=settingsfd.write: w(s+"\n"))
         settingsfd.seek(0,0)
         if self.debugging():
             print "got the settings\n"
             
         try :
-            settings = load(settingsfd)
+            settings = json.load(settingsfd)
         except Exception,e:
             settingsfd.close()
 	    raise

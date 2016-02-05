@@ -135,12 +135,12 @@ class ACQ196(acq.ACQ):
 #
         fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             
-        self.addGenericXMLStuff(fd)
+        self.addGenericJSON(fd)
 
-        fd.write("xmlcmd 'get.vin 1:32'>> $settingsf\n")
-        fd.write("xmlcmd 'get.vin 33:64'>> $settingsf\n")
-        fd.write("xmlcmd 'get.vin 65:96'>> $settingsf\n")
-        self.finishXMLStuff(fd, auto_store)
+        fd.write("add_cmd 'get.vin 1:32'>> $settingsf\n")
+        fd.write("add_cmd 'get.vin 33:64'>> $settingsf\n")
+        fd.write("add_cmd 'get.vin 65:96'>> $settingsf\n")
+        self.finishJSON(fd, auto_store)
 
         print "Time to make init file = %g\n" % (time.time()-start)
         start=time.time()
