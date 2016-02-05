@@ -1,35 +1,45 @@
 #!/bin/bash
-
 print_help() {
     cat - <<EOF
 $0
 
-    This script is used for testing and building MDSplus releases from jenkins.
-Normally one jenkins job is used to trigger the builds of many other jobs to
-either test MDSplus or build releases on various computing platforms using
-docker containers.
+    This script is used for testing and building MDSplus
+releases from jenkins. Normally one jenkins job is used
+to trigger the builds of many other jobs to either test
+MDSplus or build releases on various computing platforms
+using docker containers.
 
     The trigger job would use a command such as:
 
-    $0 --trigger [--tap] [--valgrind] [--release] [--keys directory] [--distdir directory] [--verbose]
+    $0 --trigger [--tap] [--valgrind] [--release] 
+         [--keys directory] [--distdir directory]
+         [--verbose]
 
-    The --tap and --valgrind options will tell the build jobs to build MDSplus from sources 
-and perform tests on the compiled code. The --release option will tell the build jobs
-to build release versions of MDSplus and put the installers in a subdirectory of the directory
-specified with the --distdir option. The --keys option is for specifying a directory which
-has a .gnupg subdirectory containing signing keys to use when making packages. If the --keys option
-is not specified the packages will not be signed. After issuing this command the trigger job should
-use the "Trigger/call builds on other projects" jenkins plugin to trigger the platform build jobs
-passing predefined parameters. If just doing testing a SRCDIR parameter must be defined with a value
-of $WORKSPACE. This tells the build job where to get the source code and configuration parameters
-for its build operations. If performing a release you must also pass the GIT_BRANCH parameter.
+    The --tap and --valgrind options will tell the build
+jobs to build MDSplus from sources and perform tests on
+the compiled code. The --release option will tell the build
+jobs to build release versions of MDSplus and put the
+installers in a subdirectory of the directory specified with
+the --distdir option. The --keys option is for specifying a
+directory which has a .gnupg subdirectory containing signing
+keys to use when making packages. If the --keys option is not
+specified the packages will not be signed. After issuing this
+command the trigger job should use the "Trigger/call builds
+on other projects" jenkins plugin to trigger the platform
+build jobs passing predefined parameters. If just doing
+testing a SRCDIR parameter must be defined with a value
+of $WORKSPACE. This tells the build job where to get the
+source code and configuration parameters for its build
+operations. If performing a release you must also pass the
+GIT_BRANCH parameter.
 
      The build jobs would use a command such as:
 
      $0 --build docker-image
 
-All the build options are passed from the trigger job using the SRCDIR parameter which informs
-the build job where to find the source and options for the build.
+All the build options are passed from the trigger job using
+the SRCDIR parameter which informs the build job where to find
+ the source and options for the build.
 
 EOF
 }
@@ -129,7 +139,10 @@ test_64 () {
 
 test_32() {
     set -e
-    set -o verbose
+    if [ "$VERBOSE" = "yes" ]
+    then
+       set -o verbose
+    fi
     if [ -r /mdsplus/workspace/tests ]
     then
 	MDSPLUS_DIR=/mdsplus/workspace/tests/32/buildroot;
@@ -222,7 +235,10 @@ build_64 () {
 
 build_32 () {
     set -e
-    set -o verbose
+    if [ "$VERBOSE" = "yes" ]
+    then
+	set -o verbose
+    fi
     if [ -r /mdsplus/workspace/release ]
     then
 	MDSPLUS_DIR=/mdsplus/workspace/release/usr/local/mdsplus;
@@ -246,7 +262,10 @@ build_32 () {
 
 build_rpms () {
     set -e
-    set -o verbose
+    if [ "$VERBOSE" = "yes" ]
+    then
+	set -o verbose
+    fi
     if [ -r /mdsplus/installer ]
     then
         export DISTDIR=/mdsplus/installer/${DIST}
@@ -301,7 +320,6 @@ then
     fi
     case ${DIST_TYPE} in
 	 redhat)
-	     set -e;
 	     test_64;
 	     test_32;
 	     check_tests;
@@ -318,7 +336,7 @@ then
 	touch $DIST_TAG_FILE
     fi
 else
-    parse_cmd
+    parse_cmd $@
     case "$OP" in
 	BUILD)
 	    if [ -z "$WORKSPACE" ]
@@ -386,7 +404,7 @@ else
 		if [ "$(git rev-list -n 1 $RELEASE_TAG)" != "${GIT_COMMIT}" ]
 		then
 		    let RELEASE=$RELEASE+1;
-		    $RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASE};
+		    RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASE};
 		    git log --decorate=full > ChangeLog;
 		fi;
 		if [ ! -z "$SIGN_KEYS" ]
