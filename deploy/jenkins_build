@@ -396,14 +396,14 @@ else
 	    then
 		signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
 	    fi
-	    docker run --name="${JOB_NAME}:${JOB_NUMBER}" \
+	    docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
 		   -u $(id -u):$(id -g) \
 		   -v ${SRCDIR}:/mdsplus/source \
 		   -v ${WORKSPACE}:/mdsplus/workspace \
 		   ${installer_volume} \
 		   ${sign_keys} \
 		   ${DOCKER_IMAGE};
-	    docker rm "${JOB_NAME}:${JOB_NUMBER}";;
+	    docker rm "${JOB_NAME}${BUILD_NUMBER}";;
 	TRIGGER)
 	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
