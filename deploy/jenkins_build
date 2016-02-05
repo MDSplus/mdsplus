@@ -62,39 +62,39 @@ parse_cmd() {
 		print_help
 		exit 0;;
 	    --build)
-		export OP="BUILD"
-		export DOCKER_IMAGE=$2
+		OP="BUILD"
+		DOCKER_IMAGE=$2
 		shift 2;;
 	    -s|--srcdir)
-		export SRCDIR=$2
+		SRCDIR=$2
 		shift 2;;
 	    -b|--builddir)
-		export BUILDDIR=$2
+		BUILDDIR=$2
 		shift 2;;
 	    --trigger)
-		export OP="TRIGGER"
+		OP="TRIGGER"
 		shift 1;;
 	    --test)
-		export TESTS=yes
+		TESTS=yes
 		shift 1;;
 	    --valgrind)
-		export VALGRIND_TESTS=$(parse_valgrind $2)
+		VALGRIND_TESTS=$(parse_valgrind $2)
 		shift 2;;
 	    --release)
-		export MAKE_RELEASE=yes
+		MAKE_RELEASE=yes
 		shift 1;;
 	    --keys)
-		export SIGN_KEYS=$2
+		SIGN_KEYS=$2
 		shift 2;;
 	    -v|--verbose)
-		export VERBOSE=yes
+		VERBOSE=yes
 		shift
 		;;
 	    --distdir)
-		export DISTDIR=$2
+		DISTDIR=$2
 		shift 2;;
 	    --workspace)
-		export WORKSPACE=$2
+		WORKSPACE=$2
 		shift 2;;
 	    *)
 		break
@@ -439,6 +439,7 @@ export MAJOR=${MAJOR}
 export MINOR=${MINOR}
 export RELEASE=${RELEASE}
 export VERBOSE=${VERBOSE}
+export DISTDIR=${DISTDIR}
 EOF
 	    ;;
 	*) echo "Unknown option";
