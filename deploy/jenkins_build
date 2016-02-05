@@ -1,9 +1,95 @@
 #!/bin/bash
 
+print_help() {
+    cat - <<EOF
+$0
+
+    This script is used for testing and building MDSplus releases from jenkins.
+Normally one jenkins job is used to trigger the builds of many other jobs to
+either test MDSplus or build releases on various computing platforms using
+docker containers.
+
+    The trigger job would use a command such as:
+
+    $0 --trigger [--tap] [--valgrind] [--release] [--keys directory] [--distdir directory] [--verbose]
+
+    The --tap and --valgrind options will tell the build jobs to build MDSplus from sources 
+and perform tests on the compiled code. The --release option will tell the build jobs
+to build release versions of MDSplus and put the installers in a subdirectory of the directory
+specified with the --distdir option. The --keys option is for specifying a directory which
+has a .gnupg subdirectory containing signing keys to use when making packages. If the --keys option
+is not specified the packages will not be signed. After issuing this command the trigger job should
+use the "Trigger/call builds on other projects" jenkins plugin to trigger the platform build jobs
+passing predefined parameters. If just doing testing a SRCDIR parameter must be defined with a value
+of $WORKSPACE. This tells the build job where to get the source code and configuration parameters
+for its build operations. If performing a release you must also pass the GIT_BRANCH parameter.
+
+     The build jobs would use a command such as:
+
+     $0 --build docker-image
+
+All the build options are passed from the trigger job using the SRCDIR parameter which informs
+the build job where to find the source and options for the build.
+
+EOF
+parse_cmd() {
+    while [[ "$1" == -* ]] ; do
+	case "$1" in
+	    -h|--help)
+		print_help
+		exit 0;;
+	    --build)
+		OP="BUILD"
+		DOCKER_IMAGE=$2
+		shift 2;;
+	    -s|--srcdir)
+		SRCDIR=$2
+		shift 2;;
+	    -b|--builddir)
+		BUILDDIR=$2
+		shift 2;;
+	    --trigger)
+		OP="TRIGGER"
+		shift 1;;
+	    --tap)
+		TAP_TESTS=yes
+		shift 1;;
+	    --valgrind)
+		VALGRIND_TESTS=yes
+		shift 1;;
+	    --release)
+		MAKE_RELEASE=yes
+		shift 1;;
+	    --keys)
+		SIGN_KEYS=$2
+		shift 2;;
+	    -v|--verbose)
+		VERBOSE=yes
+		shift
+		;;
+	    --distdir)
+		DISTDIR=$2
+		shift 2;;
+	    --workspace)
+		WORKSPACE=$2
+		shift 2;;
+	    *)
+		break
+		;;
+	esac
+    done
+    if [ $# -ne 0 ] ; then
+	echo "Incorrect parameters. Use --help for usage instructions."
+	exit 1
+    fi
+}
 
 test_64 () {
     set -e
-    set -o verbose
+    if [ "$VERBOSE" = "yes"]
+    then
+	set -o verbose
+    fi
     if [ -r /mdsplus/workspace/tests ]
     then
 	MDSPLUS_DIR=/mdsplus/workspace/tests/64/buildroot;
@@ -22,10 +108,18 @@ test_64 () {
 	$MAKE
 	$MAKE install
 	set +e
-	$MAKE -k tests TEST_FORMAT=tap;
-	export tests_tap64=$?;
-	$MAKE -k tests-valgrind TEST_FORMAT=tap;
-	export tests_valgrind64=$?;
+	tests_tap64=0
+	if [ "TAP_TESTS" = "yes" ]
+	then
+	    $MAKE -k tests TEST_FORMAT=tap;
+	    export tests_tap64=$?;
+	fi
+	tests_valgrind64=0
+	if [ "VALGRIND_TESTS" = "yes" ]
+	then
+	    $MAKE -k tests-valgrind TEST_FORMAT=tap;
+	    export tests_valgrind64=$?;
+	fi
 	set -e;
 	popd;
     fi;
@@ -52,10 +146,18 @@ test_32() {
 	$MAKE
 	$MAKE install
 	set +e;
-	$MAKE -k tests TEST_FORMAT=tap;
-	export tests_tap32=$?;
-	$MAKE -k tests-valgrind TEST_FORMAT=tap;
-	export tests_valgrind32=$?;
+	tests_tap32=0
+	if [ "$TAP_TESTS" = "yes" ]
+	then
+	    $MAKE -k tests TEST_FORMAT=tap;
+	    export tests_tap32=$?;
+	fi
+	tests_valgrind32=0
+	if [ "$VALGRIND_TESTS" = "yes" ]
+	then
+	    $MAKE -k tests-valgrind TEST_FORMAT=tap;
+	    export tests_valgrind32=$?;
+	fi
 	set -e;
 	popd;
     fi;
@@ -63,22 +165,22 @@ test_32() {
 
 check_tests() {
     failed=0;
-    if [ "$tests_tap64" = "1" ]
+    if [ "$tests_tap64" != "0" ]
     then
 	echo "64-bit tap tests failed!!!";
 	failed=1;
     fi;
-    if [ "$tests_valgrind64" = "1" ]
+    if [ "$tests_valgrind64" != "0" ]
     then
 	echo "64-bit valgrind tests failed!!!";
 	failed=1;
     fi;
-    if [ "$tests_tap32" = "1" ]
+    if [ "$tests_tap32" != "0" ]
     then
 	echo "32-bit tap tests failed!!!";
 	failed=1;
     fi;
-    if [ "$tests_valgrind32" = "1" ]
+    if [ "$tests_valgrind32" != "0" ]
     then
 	echo "32-bit valgrind tests failed!!!";
 	failed=1;
@@ -91,7 +193,10 @@ check_tests() {
 
 build_64 () {
     set -e
-    set -o verbose
+    if [ "$VERBOSE" = "yes" ]
+    then
+	set -o verbose
+    fi
     if [ -r /mdsplus/workspace/release ]
     then
 	MDSPLUS_DIR=/mdsplus/workspace/release/usr/local/mdsplus;
@@ -142,7 +247,6 @@ build_rpms () {
     set -o verbose
     if [ -r /mdsplus/installer ]
     then
-	export HOME=/mdsplus/source
         export DISTDIR=/mdsplus/installer/${DIST}
 	export BUILDROOT=/mdsplus/workspace/release
 	echo "Building rpms";
@@ -176,24 +280,15 @@ build_eggs() {
     fi;
 }
 
-do_tests() {
-    if [ "$(echo ${BUILD_TYPE} | grep -c test)" = "1" ]; then exit 0; else exit 1; fi;
-}
-
-do_release() {
-    if [ "$(echo ${BUILD_TYPE} | grep -c release)" = "1" ]; then exit 0; else exit 1; fi;
-}
 
 set -e
-set -o verbose
-if [ -r /mdsplus/workspace -a -r /mdsplus/source -a -r /mdsplus/source/jenkins_build.conf ]
+if [ -f /.dockerinit ]
 then
     source build.conf
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
     source /mdsplus/source/jenkins_build.conf
     if [ -r /mdsplus/workspace/release ]
     then
-	if [ "$BRANCH" = "stable" ]; then export BNAME=""; else export BNAME="-"${BRANCH}; fi;
 	DIST_TAG_FILE=/mdsplus/installer/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
 	export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
 	if [ -r $DIST_TAG_FILE ]
@@ -221,62 +316,94 @@ then
 	touch $DIST_TAG_FILE
     fi
 else
-    case $1 in
-	build*)
-	    if [ -z $2 ]
+    parse_cmd
+    case "$OP" in
+	BUILD)
+	    if [ -z "$WORKSPACE" ]
 	    then
-		echo "You must supply a docker image name to use to build with"
-		exit 1
+		WORKSPACE=$(pwd)
 	    fi
-	    DOCKER_IMAGE=$2
+	    if [ -z "$DOCKER_IMAGE" ]
+	    then
+		echo "Docker image not specified"
+		print_help
+		exit 1;
+	    fi
 	    docker pull ${DOCKER_IMAGE}
+	    if [ -z "$SRCDIR" ]
+	    then
+		echo "Source directory not specified"
+		print_help
+		exit 1;
+	    fi
 	    source ${SRCDIR}/jenkins_build.conf
-	    if ( do_release )
+	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
 		mkdir -p ${WORKSPACE}/release
-		if [ -z "${DIST_DIR}" ]
+		if [ -z "${DISTDIR}" ]
 		then
-		    DIST_DIR=/mdsplus/pre-dist
+		    echo "Distribution directory not specified"
+		    print_help
+		    exit 1;
 		fi
-		installer_volume="-v ${DIST_DIR}:/mdsplus/installer"		
+		installer_volume="-v ${DISTDIR}:/mdsplus/installer"
+	    else
+		rm -Rf ${WORKSPACE}/release
 	    fi
-	    if ( do_tests )
+	    if [ "$TAP_TESTS" = "yes" -o "$VALGRIND_TESTS" = "yes" ]
 	    then
 		mkdir -p ${WORKSPACE}/tests
+	    else
+		rm -Rf ${WORKSPACE}/tests
 	    fi;
+	    if [ ! -z "$SIGN_KEYS" ]
+	    then
+		signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
+	    fi
 	    docker run --rm \
 		   -u $(id -u):$(id -g) \
 		   -v ${SRCDIR}:/mdsplus/source \
 		   -v ${WORKSPACE}:/mdsplus/workspace \
 		   ${installer_volume} \
+		   ${sign_keys} \
 		   ${DOCKER_IMAGE};;
-	release)
-	    branch=${GIT_BRANCH:7};
-	    release_tag=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
-	    major=$(echo $release_tag | cut -f2 -d-);
-	    minor=$(echo $release_tag | cut -f3 -d-);
-	    release=$(echo $release_tag | cut -f4 -d-);
-	    if [ "$(git rev-list -n 1 $release_tag)" != "${GIT_COMMIT}" ]
+	TRIGGER)
+	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
-		let release=$release+1;
-		release_tag=${branch}_release-${major}-${minor}-${release};
-		git log --decorate=full > ChangeLog;
-	    fi;
-	    if [ ! -z "$3" ]
-	    then
-		tar -C ${WORKSPACE} -zxf $3
+		BRANCH=${GIT_BRANCH:7};
+		RELEASE_TAG=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
+		MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
+		MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
+		RELEASE=$(echo $RELEASE_TAG | cut -f4 -d-);
+		if [ "$BRANCH" = "stable" ]
+		then
+		    BNAME=""
+		else
+		    BNAME="-${BRANCH}"
+		fi
+		if [ "$(git rev-list -n 1 $RELEASE_TAG)" != "${GIT_COMMIT}" ]
+		then
+		    let RELEASE=$RELEASE+1;
+		    $RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASE};
+		    git log --decorate=full > ChangeLog;
+		fi;
+		if [ ! -z "$SIGN_KEYS" ]
+		then
+		   signkeys="export SIGN_KEYS=$SIGN_KEYS"
+		fi;
 	    fi
 	    cat - <<EOF > ${WORKSPACE}/jenkins_build.conf
-export BRANCH=${branch}
-export RELEASE_TAG=${release_tag}
-export MAJOR=${major}
-export MINOR=${minor}
-export RELEASE=${release}
-export BUILD_TYPE=$2
+export MAKE_RELEASE=$MAKE_RELEASE
+export TAP_TESTS=$TAP_TESTS
+export VALGRIND_TESTS=$VALGRIND_TESTS
+export BRANCH=${BRANCH}
+export BNAME=${BNAME}
+export RELEASE_TAG=${RELEASE_TAG}
+export MAJOR=${MAJOR}
+export MINOR=${MINOR}
+export RELEASE=${RELEASE}
+export VERBOSE=${VERBOSE}
 EOF
-	    ;;
-	test)
-	    echo "export BUILD_TYPE=$1" > ${WORKSPACE}jenkins_build.conf
 	    ;;
 	*) echo "Unknown option";
 	   exit 1;
