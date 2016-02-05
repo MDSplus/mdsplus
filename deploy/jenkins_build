@@ -11,11 +11,13 @@ using docker containers.
 
     The trigger job would use a command such as:
 
-    $0 --trigger [--tap] [--valgrind] [--release] 
+    $0 --trigger [--test] 
+         [--valgrind comma-list-of-tests-or-"all"] 
+         [--release] 
          [--keys directory] [--distdir directory]
          [--verbose]
 
-    The --tap and --valgrind options will tell the build
+    The --test and --valgrind options will tell the build
 jobs to build MDSplus from sources and perform tests on
 the compiled code. The --release option will tell the build
 jobs to build release versions of MDSplus and put the
@@ -44,6 +46,15 @@ the SRCDIR parameter which informs the build job where to find
 EOF
 }
 
+parse_valgrind() {
+    IFS=',' read -ra ARR <<< "$1"
+    VGTESTS=""
+    for i in "${ARR[@]}"; do
+	VGTESTS="${i} ${VGTESTS}"
+    done
+    echo ${VGTESTS}
+}
+
 parse_cmd() {
     while [[ "$1" == -* ]] ; do
 	case "$1" in
@@ -63,12 +74,12 @@ parse_cmd() {
 	    --trigger)
 		export OP="TRIGGER"
 		shift 1;;
-	    --tap)
-		export TAP_TESTS=yes
+	    --test)
+		export TESTS=yes
 		shift 1;;
 	    --valgrind)
-		export VALGRIND_TESTS=yes
-		shift 1;;
+		export VALGRIND_TESTS=$(parse_valgrind $2)
+		shift 2;;
 	    --release)
 		export MAKE_RELEASE=yes
 		shift 1;;
@@ -120,17 +131,18 @@ test_64 () {
 	$MAKE
 	$MAKE install
 	set +e
-	tests_tap64=0
-	if [ "TAP_TESTS" = "yes" ]
-	then
-	    $MAKE -k tests TEST_FORMAT=tap;
-	    export tests_tap64=$?;
-	fi
+	$MAKE -k tests TEST_FORMAT=tap;
+	tests_64=$?;
 	tests_valgrind64=0
-	if [ "VALGRIND_TESTS" = "yes" ]
+	if [ ! -z "${VALGRIND_TESTS}" ]
 	then
-	    $MAKE -k tests-valgrind TEST_FORMAT=tap;
-	    export tests_valgrind64=$?;
+	    if [[ "${VALGRIND_TESTS}" == *"all"* ]]
+	    then
+		$MAKE -k tests-valgrind TEST_FORMAT=tap
+	    else
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VALGRIND_TESTS}" TEST_FORMAT=tap;
+	    fi
+	    tests_valgrind64=$?;
 	fi
 	set -e;
 	popd;
@@ -161,17 +173,18 @@ test_32() {
 	$MAKE
 	$MAKE install
 	set +e;
-	tests_tap32=0
-	if [ "$TAP_TESTS" = "yes" ]
-	then
-	    $MAKE -k tests TEST_FORMAT=tap;
-	    export tests_tap32=$?;
-	fi
+	$MAKE -k tests TEST_FORMAT=tap;
+	tests_32=$?;
 	tests_valgrind32=0
-	if [ "$VALGRIND_TESTS" = "yes" ]
+	if [ ! -z "${VALGRIND_TESTS}" ]
 	then
-	    $MAKE -k tests-valgrind TEST_FORMAT=tap;
-	    export tests_valgrind32=$?;
+	    if [[ "${VALGRIND_TESTS}" == *"all"* ]]
+	    then
+		$MAKE -k tests-valgrind TEST_FORMAT=tap
+	    else
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VALGRIND_TESTS}" TEST_FORMAT=tap;
+	    fi
+	    tests_valgrind32=$?;
 	fi
 	set -e;
 	popd;
@@ -180,9 +193,9 @@ test_32() {
 
 check_tests() {
     failed=0;
-    if [ "$tests_tap64" != "0" ]
+    if [ "$tests_64" != "0" ]
     then
-	echo "64-bit tap tests failed!!!";
+	echo "64-bit tests failed!!!";
 	failed=1;
     fi;
     if [ "$tests_valgrind64" != "0" ]
@@ -190,9 +203,9 @@ check_tests() {
 	echo "64-bit valgrind tests failed!!!";
 	failed=1;
     fi;
-    if [ "$tests_tap32" != "0" ]
+    if [ "$tests_32" != "0" ]
     then
-	echo "32-bit tap tests failed!!!";
+	echo "32-bit tests failed!!!";
 	failed=1;
     fi;
     if [ "$tests_valgrind32" != "0" ]
@@ -319,17 +332,20 @@ then
 	fi
     fi
     case ${DIST_TYPE} in
-	 redhat)
-	     test_64;
-	     test_32;
-	     check_tests;
-	     build_64;
-	     build_32;
-	     build_rpms;
-	     build_eggs;;
-	 *)
-	     echo Unknown DIST_TYPE: ${DIST_TYPE}
-	     exit 1;;
+	redhat)
+	    if [ "${TESTS}" = "yes" ]
+	    then
+		test_64;
+		test_32;
+		check_tests;
+	    fi
+	    build_64;
+	    build_32;
+	    build_rpms;
+	    build_eggs;;
+	*)
+	    echo Unknown DIST_TYPE: ${DIST_TYPE}
+	    exit 1;;
     esac
     if [ -r /mdsplus/release ]
     then
@@ -370,7 +386,7 @@ else
 	    else
 		rm -Rf ${WORKSPACE}/release
 	    fi
-	    if [ "$TAP_TESTS" = "yes" -o "$VALGRIND_TESTS" = "yes" ]
+	    if [ "$TESTS" = "yes" -o "$VALGRIND_TESTS" != "" ]
 	    then
 		mkdir -p ${WORKSPACE}/tests
 	    else
@@ -414,8 +430,8 @@ else
 	    fi
 	    cat - <<EOF > ${WORKSPACE}/jenkins_build.conf
 export MAKE_RELEASE=$MAKE_RELEASE
-export TAP_TESTS=$TAP_TESTS
-export VALGRIND_TESTS=$VALGRIND_TESTS
+export TESTS=$TESTS
+export VALGRIND_TESTS="$VALGRIND_TESTS"
 export BRANCH=${BRANCH}
 export BNAME=${BNAME}
 export RELEASE_TAG=${RELEASE_TAG}
