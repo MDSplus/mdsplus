@@ -403,7 +403,7 @@ else
 		   ${installer_volume} \
 		   ${sign_keys} \
 		   ${DOCKER_IMAGE};
-	    docker rm "${JOB_NAME}:${JOB_NUMBER}"
+	    docker rm "${JOB_NAME}:${JOB_NUMBER}";;
 	TRIGGER)
 	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
