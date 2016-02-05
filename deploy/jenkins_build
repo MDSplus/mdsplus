@@ -32,6 +32,7 @@ All the build options are passed from the trigger job using the SRCDIR parameter
 the build job where to find the source and options for the build.
 
 EOF
+}
 parse_cmd() {
     while [[ "$1" == -* ]] ; do
 	case "$1" in
