@@ -33,6 +33,7 @@ the build job where to find the source and options for the build.
 
 EOF
 }
+
 parse_cmd() {
     while [[ "$1" == -* ]] ; do
 	case "$1" in
@@ -40,39 +41,39 @@ parse_cmd() {
 		print_help
 		exit 0;;
 	    --build)
-		OP="BUILD"
-		DOCKER_IMAGE=$2
+		export OP="BUILD"
+		export DOCKER_IMAGE=$2
 		shift 2;;
 	    -s|--srcdir)
-		SRCDIR=$2
+		export SRCDIR=$2
 		shift 2;;
 	    -b|--builddir)
-		BUILDDIR=$2
+		export BUILDDIR=$2
 		shift 2;;
 	    --trigger)
-		OP="TRIGGER"
+		export OP="TRIGGER"
 		shift 1;;
 	    --tap)
-		TAP_TESTS=yes
+		export TAP_TESTS=yes
 		shift 1;;
 	    --valgrind)
-		VALGRIND_TESTS=yes
+		export VALGRIND_TESTS=yes
 		shift 1;;
 	    --release)
-		MAKE_RELEASE=yes
+		export MAKE_RELEASE=yes
 		shift 1;;
 	    --keys)
-		SIGN_KEYS=$2
+		export SIGN_KEYS=$2
 		shift 2;;
 	    -v|--verbose)
-		VERBOSE=yes
+		export VERBOSE=yes
 		shift
 		;;
 	    --distdir)
-		DISTDIR=$2
+		export DISTDIR=$2
 		shift 2;;
 	    --workspace)
-		WORKSPACE=$2
+		export WORKSPACE=$2
 		shift 2;;
 	    *)
 		break
