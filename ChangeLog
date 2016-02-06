@@ -1,4 +1,19 @@
-commit c946c040fda53135891ad49fef7a131806ed6002 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit f1620c18b1bd5cd2451c8b62caf4b3a9f1aac809 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 66c61e9 d25f6a5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 15:03:01 2016 -0500
+
+    Merge pull request #349 from MDSplus/jas-use-json-in-acq-devices
+    
+    Switch the acq devices to use json instead of XML
+
+commit 66c61e94e717f946d3b4a72969b146a6ed1567d8 (tag: refs/tags/alpha_release-7-0-220)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Feb 4 23:33:41 2016 -0500
+
+    New release ---- alpha_release-7-0-220
+
+commit c946c040fda53135891ad49fef7a131806ed6002
 Merge: b1ca4bd 2b5c27f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 4 15:12:25 2016 -0500
@@ -24,6 +39,12 @@ Date:   Thu Feb 4 14:07:50 2016 -0500
     Merge pull request #348 from MDSplus/twf-add-3rd-party-api-submodule
     
     Add 3rd-party-apis as a submodule
+
+commit d25f6a52cc93c11acadfb698cafbbc4661d4a4fb (refs/remotes/origin/jas-use-json-in-acq-devices)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Feb 4 09:20:11 2016 -0500
+
+    Switch the acq devices to use json instead of XML
 
 commit 49bf3e1b63ebed3a957dd202e3878bc32927b5d8 (refs/remotes/origin/twf-add-3rd-party-api-submodule)
 Author: Tom Fredian <twf@psfc.mit.edu>
