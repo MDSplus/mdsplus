@@ -75,6 +75,7 @@ static void *handleMessage(void *arg)
   int thisNameLen;
 
   struct EventInfo *eventInfo = (struct EventInfo *)arg;
+  int socket = eventInfo->socket;
   thisNameLen = strlen(eventInfo->eventName);
   while (1) {
 #ifdef _WIN32
@@ -90,7 +91,7 @@ static void *handleMessage(void *arg)
       continue;
     }
 #else
-    if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
+    if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, (socklen_t *) & addrSize)) < 0) {
       perror("Error receiving UDP messages\n");
       continue;
