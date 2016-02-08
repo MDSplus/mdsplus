@@ -713,14 +713,22 @@ void *deserializeData(char const *serialized)
 void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
 {
   struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
-  short len;
+  short len=0;
   int status = LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)timePtr);
-  if (len > bufLen)
-    len = bufLen;
-  if (len > 0)
-    memcpy(dateBuf, dateDsc.pointer, len);
-  dateBuf[len-1]='\0';
-  StrFree1Dx(&dateDsc);
+  if (status & 1) {
+    if (len > (bufLen-1))
+      len = bufLen-1;
+    if (len > 0)
+      memcpy(dateBuf, dateDsc.pointer, len);
+    if (len >= 0)
+      dateBuf[len]='\0';
+    StrFree1Dx(&dateDsc);
+  }
+  else {
+   if (bufLen > 0)
+     dateBuf[0]='\0';
+   len=0;
+  }
   *retLen = len;
 }
 
