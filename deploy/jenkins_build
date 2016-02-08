@@ -109,7 +109,7 @@ parse_cmd() {
 
 test_64 () {
     set -e
-    if [ "$VERBOSE" = "yes"]
+    if [ "$VERBOSE" = "yes" ]
     then
 	set -o verbose
     fi
