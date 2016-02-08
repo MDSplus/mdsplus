@@ -78,7 +78,7 @@ parse_cmd() {
 		TESTS=yes
 		shift 1;;
 	    --valgrind)
-		VALGRIND_TESTS=$(parse_valgrind $2)
+		VG_TESTS=$(parse_valgrind $2)
 		shift 2;;
 	    --release)
 		MAKE_RELEASE=yes
@@ -134,13 +134,13 @@ test_64 () {
 	$MAKE -k tests TEST_FORMAT=tap;
 	tests_64=$?;
 	tests_valgrind64=0
-	if [ ! -z "${VALGRIND_TESTS}" ]
+	if [ ! -z "${VG_TESTS}" ]
 	then
-	    if [[ "${VALGRIND_TESTS}" == *"all"* ]]
+	    if [[ "${VG_TESTS}" == *"all"* ]]
 	    then
 		$MAKE -k tests-valgrind TEST_FORMAT=tap
 	    else
-		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VALGRIND_TESTS}" TEST_FORMAT=tap;
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" TEST_FORMAT=tap;
 	    fi
 	    tests_valgrind64=$?;
 	fi
@@ -176,13 +176,13 @@ test_32() {
 	$MAKE -k tests TEST_FORMAT=tap;
 	tests_32=$?;
 	tests_valgrind32=0
-	if [ ! -z "${VALGRIND_TESTS}" ]
+	if [ ! -z "${VG_TESTS}" ]
 	then
-	    if [[ "${VALGRIND_TESTS}" == *"all"* ]]
+	    if [[ "${VG_TESTS}" == *"all"* ]]
 	    then
 		$MAKE -k tests-valgrind TEST_FORMAT=tap
 	    else
-		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VALGRIND_TESTS}" TEST_FORMAT=tap;
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" TEST_FORMAT=tap;
 	    fi
 	    tests_valgrind32=$?;
 	fi
@@ -386,7 +386,7 @@ else
 	    else
 		rm -Rf ${WORKSPACE}/release
 	    fi
-	    if [ "$TESTS" = "yes" -o "$VALGRIND_TESTS" != "" ]
+	    if [ "$TESTS" = "yes" -o "$VG_TESTS" != "" ]
 	    then
 		mkdir -p ${WORKSPACE}/tests
 	    else
@@ -432,7 +432,7 @@ else
 	    cat - <<EOF > ${WORKSPACE}/jenkins_build.conf
 export MAKE_RELEASE=$MAKE_RELEASE
 export TESTS=$TESTS
-export VALGRIND_TESTS="$VALGRIND_TESTS"
+export VG_TESTS="$VG_TESTS"
 export BRANCH=${BRANCH}
 export BNAME=${BNAME}
 export RELEASE_TAG=${RELEASE_TAG}
