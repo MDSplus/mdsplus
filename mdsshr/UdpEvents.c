@@ -97,6 +97,8 @@ static void *handleMessage(void *arg)
       continue;
     }
 #endif
+    if (recBytes == 0)
+      return 0;
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
