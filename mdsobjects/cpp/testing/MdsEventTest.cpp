@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     
     
     {
-        std::string str("test string to be compared");
+        static std::string str("test string to be compared");
         
         if(fork()) {
             RawEvent ev((char *)"test_event",str.c_str());
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
     
     
     { // DATA EVENT //
-        unique_ptr<String> str = new String("test string to be compared");
+        static unique_ptr<String> str = new String("test string to be compared");
         
         if(fork()) {
             DataEvent ev((char *)"test_event",str->clone());
