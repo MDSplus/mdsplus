@@ -63,20 +63,21 @@ struct EventInfo {
 
 ***********************/
 
-static void *handleMessage(void *arg)
+static void *handleMessage(void *info)
 {
   int recBytes;
   char recBuf[MAX_MSG_LEN];
   struct sockaddr clientAddr;
   int addrSize = sizeof(clientAddr);
-  int nameLen, bufLen;
+  size_t bufLen,nameLen;
   char *eventName;
   char *currPtr;
-  int thisNameLen;
-
-  struct EventInfo *eventInfo = (struct EventInfo *)arg;
+  struct EventInfo *eventInfo = (struct EventInfo *)info;
   int socket = eventInfo->socket;
-  thisNameLen = strlen(eventInfo->eventName);
+  size_t thisNameLen = strlen(eventInfo->eventName);
+  char *name=strcpy(alloca(thisNameLen+1),eventInfo->eventName);
+  void *arg = eventInfo->arg;
+  void (*astadr) (void *, int, char *) = eventInfo->astadr;
   while (1) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -98,7 +99,7 @@ static void *handleMessage(void *arg)
     }
 #endif
     if (recBytes == 0)
-      return 0;
+      continue;
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
@@ -112,9 +113,9 @@ static void *handleMessage(void *arg)
     currPtr += sizeof(int);
     if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
       continue;
-    if (strncmp(eventInfo->eventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
+    if (strncmp(name, eventName, nameLen))   /*** check to see if this message matches the event name ***/
       continue;
-    eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
+    astadr(arg, bufLen, currPtr);
   }
   return 0;
 }
