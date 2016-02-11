@@ -165,7 +165,6 @@ VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_
 
 VALGRIND_SUPPRESSIONS_PY ?=
 VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
-                            $(VALGRIND_SUPPRESSIONS) \
                             $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
                             
 
