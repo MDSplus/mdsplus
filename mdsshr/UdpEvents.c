@@ -74,8 +74,10 @@ static void *handleMessage(void *arg)
   char *currPtr;
   int thisNameLen;
   int status;
-
   struct EventInfo *eventInfo = memcpy(alloca(sizeof(struct EventInfo)),arg,sizeof(struct EventInfo));
+  int oldstate;
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldstate);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldstate);
   thisNameLen = strlen(eventInfo->eventName);
   eventInfo->eventName = strcpy(alloca(thisNameLen+1),eventInfo->eventName);
   status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
@@ -97,11 +99,14 @@ static void *handleMessage(void *arg)
 #else
     if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, (socklen_t *) & addrSize)) < 0) {
-      return 0;
+      int retval=0;
+      pthread_exit(&retval);
     }
 #endif
-    if (recBytes == 0)
-      return 0;
+    if (recBytes == 0) {
+      int retval=0;
+      pthread_exit(&retval);
+    }
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
@@ -395,7 +400,7 @@ int MDSUdpEventCan(int eventid)
     shutdown(currInfo->socket, 2);
     closesocket(currInfo->socket);
 #endif
-    pthread_cancel(currInfo->thread);
+    //    pthread_cancel(currInfo->thread);
     releaseEventInfo(currInfo);
     return 1;
   } else
