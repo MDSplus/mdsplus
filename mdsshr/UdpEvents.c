@@ -100,6 +100,8 @@ static void *handleMessage(void *arg)
       return 0;
     }
 #endif
+    if (recBytes == 0)
+      return 0;
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
@@ -393,6 +395,7 @@ int MDSUdpEventCan(int eventid)
     shutdown(currInfo->socket, 2);
     closesocket(currInfo->socket);
 #endif
+    pthread_cancel(currInfo->thread);
     releaseEventInfo(currInfo);
     return 1;
   } else
