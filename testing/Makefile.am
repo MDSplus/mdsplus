@@ -45,6 +45,7 @@ clean-local:
 
 TEST_DIRS ?= \
                mdsobjects/python/tests \
+               mdsshr/testing \
                mdslib/testing \
                mdsobjects/cpp/testing
 #              testing/selftest
