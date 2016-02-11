@@ -63,21 +63,24 @@ struct EventInfo {
 
 ***********************/
 
-static void *handleMessage(void *info)
+static void *handleMessage(void *arg)
 {
   int recBytes;
   char recBuf[MAX_MSG_LEN];
   struct sockaddr clientAddr;
   int addrSize = sizeof(clientAddr);
-  size_t bufLen,nameLen;
+  int nameLen, bufLen;
   char *eventName;
   char *currPtr;
-  struct EventInfo *eventInfo = (struct EventInfo *)info;
-  int socket = eventInfo->socket;
-  size_t thisNameLen = strlen(eventInfo->eventName);
-  char *name=strcpy(alloca(thisNameLen+1),eventInfo->eventName);
-  void *arg = eventInfo->arg;
-  void (*astadr) (void *, int, char *) = eventInfo->astadr;
+  int thisNameLen;
+  int status;
+
+  struct EventInfo *eventInfo = memcpy(alloca(sizeof(struct EventInfo)),arg,sizeof(struct EventInfo));
+  thisNameLen = strlen(eventInfo->eventName);
+  eventInfo->eventName = strcpy(alloca(thisNameLen+1),eventInfo->eventName);
+  status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
+  status=pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
+  
   while (1) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -92,14 +95,11 @@ static void *handleMessage(void *info)
       continue;
     }
 #else
-    if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
+    if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, (socklen_t *) & addrSize)) < 0) {
-      perror("Error receiving UDP messages\n");
-      continue;
+      return 0;
     }
 #endif
-    if (recBytes == 0)
-      continue;
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
@@ -113,9 +113,9 @@ static void *handleMessage(void *info)
     currPtr += sizeof(int);
     if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
       continue;
-    if (strncmp(name, eventName, nameLen))   /*** check to see if this message matches the event name ***/
+    if (strncmp(eventInfo->eventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
       continue;
-    astadr(arg, bufLen, currPtr);
+    eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
   }
   return 0;
 }
@@ -386,8 +386,8 @@ int MDSUdpEventCan(int eventid)
 {
   struct EventInfo *currInfo = getEventInfo(eventid);
   if (currInfo) {
-    pthread_cancel(currInfo->thread);
 #ifndef _WIN32
+    shutdown(currInfo->socket, SHUT_RDWR);
     close(currInfo->socket);
 #else
     shutdown(currInfo->socket, 2);
