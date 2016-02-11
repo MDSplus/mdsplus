@@ -17,7 +17,6 @@ public:
         
     void run()
     {
-        size_t bufSize;
         char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         std::cout << "RECEIVED EVENT " << name << " AT " << date.string << "\n";
@@ -57,9 +56,9 @@ public:
     
     void run()
     {        
-        char *name = getName();                                 //Get the name of the event
+        char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
-        unique_ptr<Data> data = getData();                      //Get data
+        unique_ptr<Data> data = getData();                          //Get data
         std::cout << "RECEIVED EVENT " << name << " AT " << date.string 
                   << " WITH DATA  " << AutoString(data->getString()).string 
                   << "\n";
@@ -78,13 +77,13 @@ int main(int argc, char *argv[])
     setenv("UDP_EVENTS","yes",1);
     
     {        
-        if(fork()) {
-            NullEvent ev((char *)"test_event");
+        if(fork()) {            
+            NullEvent ev("test_event");
             ev.wait();
         } 
         else {            
             sleep(1);
-            NullEvent::setEvent((char*)"test_event");
+            Event::setEvent("test_event");
             exit(0);
         }            
     }
@@ -94,14 +93,14 @@ int main(int argc, char *argv[])
         static std::string str("test string to be compared");
         
         if(fork()) {
-            RawEvent ev((char *)"test_event",str.c_str());
+            RawEvent ev("test_event",str.c_str());
             size_t buf_len = 0;
             const char *buf = ev.waitRaw(&buf_len);
             TEST1( std::string(str) == std::string(buf) );
         }
         else {            
             sleep(1);            
-            NullEvent::setEventRaw((char*)"test_event",str.size(),(char*)str.c_str());
+            Event::setEventRaw("test_event",str.size(),(char*)str.c_str());
             exit(0);
         }
     }
@@ -111,13 +110,14 @@ int main(int argc, char *argv[])
         static unique_ptr<String> str = new String("test string to be compared");
         
         if(fork()) {
-            DataEvent ev((char *)"test_event",str->clone());
+            DataEvent ev("test_event",str->clone());
             unique_ptr<Data> data = ev.waitData();
             TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );            
         }
         else {                        
-            sleep(1);            
-            NullEvent::setEvent((char*)"test_event",str);
+            sleep(1);
+            Event::setEvent("test_event",str);
+            exit(0);
         }
     }    
     
