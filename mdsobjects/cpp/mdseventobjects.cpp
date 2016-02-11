@@ -15,7 +15,7 @@ extern "C" {
 	int MDSUdpEvent(char *eventNameIn, int bufLen, char *buf);
 	int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 	int MDSEventCan(int id);
-	int MDSEvent(char *eventNameIn, int bufLen, char *buf);
+	int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
 	void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
 	void MdsEventRemoveListener(void *eventId);
 	int MdsEventTrigger(char *name, char *buf, int size);
@@ -55,7 +55,7 @@ Data *Event::getData()
 }
 
 
-Event::Event(char *evName)
+Event::Event(const char *evName)
 {
 	std::size_t size = std::string(evName).size();
 	eventName = new char[size + 1];
@@ -73,7 +73,7 @@ Event::~Event()
 		disconnectFromEvents();
 }
 
-void Event::setEvent(char *evName, Data *evData)
+void Event::setEvent(const char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
@@ -81,7 +81,7 @@ void Event::setEvent(char *evName, Data *evData)
     delete[] buf;
 }
 
-void Event::setEventRaw(char *evName, int bufLen, char *buf)
+void Event::setEventRaw(const char *evName, int bufLen, char *buf)
 {
 //	MDSUdpEvent(evName, bufLen, buf);
 	MDSEvent(evName, bufLen, buf);
