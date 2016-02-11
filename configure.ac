@@ -1275,6 +1275,7 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
+          mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
           mdstcpip/Makefile 
