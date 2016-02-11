@@ -3638,7 +3638,7 @@ public:
     bool waitingEvent;
     int64_t eventTime;
     
-    Event(char *evName);
+    Event(const char *evName);
     
     virtual ~Event();
 
@@ -3685,16 +3685,16 @@ public:
     }
 
     virtual void run() {
-        notify();
+        //  notify();
     }
     
     void notify() {
         condition.notify();        
     }
 
-    static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
-    static void setEventRaw(char *evName, int bufLen, char *buf);
-    static void setEvent(char *evName, Data *evData);
+    static void setEvent(const char *evName) { setEventRaw(evName, 0, NULL); }
+    static void setEventRaw(const char *evName, int bufLen, char *buf);
+    static void setEvent(const char *evName, Data *evData);
     //To keep them compatible with python
     static void setevent(char *evName) {setEvent(evName); }
     static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
