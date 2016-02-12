@@ -51,23 +51,21 @@ class ACQ196(acq.ACQ):
 
         active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
         if active_chan not in (32,64,96) :
-            raise DevBAD_ACTIVE_CHAN
+            raise DevBAD_ACTIVE_CHAN()
         if self.debugging():
             print "have active chan\n";
 
         try:
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
         except Exception, e:
-            print "trigger source error: %s" %(e,)
-            raise DevBAD_TRIG_SRC
+            raise DevBAD_TRIG_SRC(str(e))
         if self.debugging():
             print "have trig_src\n";
 
         try:
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-        except:
-            print "clock source error: %s" %(e,)
-            raise DevBAD_CLOCK_SRC
+        except Exception, e:
+            raise DevBAD_CLOCK_SRC(str(e))
         if self.debugging():
             print "have clock src\n";
 
