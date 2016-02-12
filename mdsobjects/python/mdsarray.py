@@ -128,6 +128,12 @@ class Array(_data.Data):
     def __deepcopy__(self,memo=None):
         return self.__copy__()
 
+    def __len__(self):
+        """Length: x.__len__() <==> len(x)
+        @rtype: Data
+        """
+        return len(self.data())
+    
     def getElementAt(self,itm):
         return _data.makeData(self._value[itm])
 
