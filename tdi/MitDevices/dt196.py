@@ -9,8 +9,6 @@ from time import sleep, time
 import os
 import numpy
 import array
-from xml.marshal.generic import dumps, loads, load 
-
 
 class DT196(Device):
     """
@@ -272,6 +270,11 @@ class DT196(Device):
     INITFTP=initftp
         
     def storeftp(self, arg):
+
+        try:
+            from xml.marshal.generic import load
+        except:
+            print "you must install PyXML to use this deprecated device.  Please switch to acq216 device type"
 
         debug=os.getenv("DEBUG_DEVICES")
 
