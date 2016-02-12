@@ -1,4 +1,16 @@
-commit f1620c18b1bd5cd2451c8b62caf4b3a9f1aac809 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 346374d6693a38a743d831bf333fe998c1bba567 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 16:34:45 2016 -0500
+
+    distribute mdsplus python as tar files on pypi
+
+commit 77cdba2c58ae08fc5a6d6147bbc97d310099f214 (tag: refs/tags/alpha_release-7-0-221)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Feb 5 23:33:41 2016 -0500
+
+    New release ---- alpha_release-7-0-221
+
+commit f1620c18b1bd5cd2451c8b62caf4b3a9f1aac809
 Merge: 66c61e9 d25f6a5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Feb 5 15:03:01 2016 -0500
