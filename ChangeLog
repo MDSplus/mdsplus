@@ -1,4 +1,40 @@
-commit 296038c77f8d5622c687eb0a6bebce14df0d588c (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 2709aa9c0a24d4e8a2946bd752ea096b6eb870fe (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: d22fed6 8c50e4e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 13:01:22 2016 -0500
+
+    Merge pull request #353 from MDSplus/twf-fix-len-array
+    
+    Fix len(Array) to use len(array.data())
+
+commit d22fed6770fb7fa416106907ae7e4696c04dd81f
+Merge: ca61881 931e015
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 13:00:16 2016 -0500
+
+    Merge pull request #355 from MDSplus/twf-switch-to-tgz-for-pip
+    
+    Switch to tgz format for distributions for pip
+
+commit 931e015c74516b4fab0a0e18219d417b921b0a0f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 11:36:08 2016 -0500
+
+    Switch to tgz format for distributions for pip
+
+commit 8c50e4e142765b269208c5da184ec33e8671e169 (refs/remotes/origin/twf-fix-len-array)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 10:56:49 2016 -0500
+
+    Fix len(Array) to use len(array.data())
+
+commit ca618810e62d4ebdc3c4c049a0f434ef8c3aa205 (tag: refs/tags/stable_release-7-0-62)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Jan 19 19:06:00 2016 -0500
+
+    New release ---- stable_release-7-0-62
+
+commit 296038c77f8d5622c687eb0a6bebce14df0d588c
 Merge: f850237 8736806
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 19 09:13:05 2016 -0500
