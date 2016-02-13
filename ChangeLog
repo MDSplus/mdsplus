@@ -1,8 +1,59 @@
-commit 346374d6693a38a743d831bf333fe998c1bba567 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 7353d804a05d02d17b474ca77a1a519b996d431a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: b297360 5206aad
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 13:18:01 2016 -0500
+
+    Merge pull request #350 from MDSplus/jas-use-exception-instances
+    
+    change exceptions from class references to instances.
+
+commit b297360a48cc601d291dfcb9b6d158aee490bff9
+Merge: a5244f6 d7b8b80
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 13:16:25 2016 -0500
+
+    Merge pull request #356 from MDSplus/jas-only-import-pyxml-when-needed
+    
+    put the import of xml.marshal (from PyXML) in a try block for these o…
+
+commit a5244f6e69fbab460e384224b5ef23dd9574b7d3
+Merge: 510d3d0 ad69567
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 13:00:53 2016 -0500
+
+    Merge pull request #354 from MDSplus/twf-fix-len-array-alpha
+    
+    Fix len(Array)
+
+commit d7b8b8093c6da89389064729f6fbf7bef9cabeaf
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Feb 12 11:42:50 2016 -0500
+
+    put the import of xml.marshal (from PyXML) in a try block for these obsolete devices
+
+commit ad695673970585d23bec90fa49566ba573eceead (refs/remotes/origin/twf-fix-len-array-alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 12 11:03:05 2016 -0500
+
+    Fix len(Array)
+
+commit 510d3d0305bab484272db3ea031d8cb7c79ff828 (tag: refs/tags/alpha_release-7-0-222)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Feb 11 23:25:52 2016 -0500
+
+    New release ---- alpha_release-7-0-222
+
+commit 346374d6693a38a743d831bf333fe998c1bba567
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 11 16:34:45 2016 -0500
 
     distribute mdsplus python as tar files on pypi
+
+commit 5206aad4096b0b2e7bd724d8e48ca63dd84f8e94 (refs/remotes/origin/jas-use-exception-instances)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Feb 8 11:09:46 2016 -0500
+
+    change exceptions from class references to instances.
 
 commit 77cdba2c58ae08fc5a6d6147bbc97d310099f214 (tag: refs/tags/alpha_release-7-0-221)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
