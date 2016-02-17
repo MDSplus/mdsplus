@@ -109,6 +109,7 @@ parse_cmd() {
 
 test_64 () {
     set -e
+    ulimit -c unlimited
     if [ "$VERBOSE" = "yes" ]
     then
 	set -o verbose
@@ -151,6 +152,7 @@ test_64 () {
 
 test_32() {
     set -e
+    ulimit -c unlimited
     if [ "$VERBOSE" = "yes" ]
     then
        set -o verbose
