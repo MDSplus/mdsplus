@@ -1,4 +1,31 @@
-commit 7353d804a05d02d17b474ca77a1a519b996d431a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 00e56cf540d992f3d80744d0108a3822b38a79a9 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 8471433 b7275ab
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Feb 17 11:37:43 2016 -0500
+
+    Merge pull request #359 from MDSplus/twf-fix-uid-clean
+    
+    Remove uid's during clean and link dwscope_remote to libXmdsShr.a
+
+commit b7275abd19a711522c8fd84b4ecb10e69c53e17b (refs/remotes/origin/twf-fix-uid-clean)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 10:38:12 2016 -0500
+
+    Add math library after static libXmdsShr.a
+
+commit 88350b2f1c91748550d2ec565b01de0d89130756
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 10:23:48 2016 -0500
+
+    Remove uid's during clean and link dwscope_remote to libXmdsShr.a
+
+commit 8471433a237316bf7f2c7e49e524c107d860089b (tag: refs/tags/alpha_release-7-0-223)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Feb 12 23:24:05 2016 -0500
+
+    New release ---- alpha_release-7-0-223
+
+commit 7353d804a05d02d17b474ca77a1a519b996d431a
 Merge: b297360 5206aad
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Feb 12 13:18:01 2016 -0500
