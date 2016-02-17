@@ -26,7 +26,7 @@ dwscope_LDADD = $(LDADD) -lMdsShr -lTdiShr -lTreeShr -lXmdsShr
 
 bin_PROGRAMS += dwscope_remote
 dwscope_remote_SOURCES = $(dwscope_SOURCES) RemoteDummies.c
-dwscope_remote_LDADD = $(LDADD) -lMdsIpShr @MAKESHLIBDIR@/libXmdsShr.a
+dwscope_remote_LDADD = $(LDADD) -lMdsIpShr @MAKESHLIBDIR@/libXmdsShr.a -lm
 
 bin_PROGRAMS += dwpad
 dwpad_SOURCES = dwpad.c dwscopesubs.c
