@@ -68,9 +68,9 @@ parse_cmd() {
 	    -s|--srcdir)
 		SRCDIR=$2
 		shift 2;;
-	    -b|--builddir)
-		BUILDDIR=$2
-		shift 2;;
+#	    -b|--builddir)
+#		BUILDDIR=$2
+#		shift 2;;
 	    --trigger)
 		OP="TRIGGER"
 		shift 1;;
@@ -113,20 +113,20 @@ test_64 () {
     then
 	set -o verbose
     fi
-    if [ -r /mdsplus/workspace/tests ]
+    if [ -r ${WORKSPACE}/tests ]
     then
-	MDSPLUS_DIR=/mdsplus/workspace/tests/64/buildroot;
+	MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot;
 	MDS_PATH=${MDSPLUS_DIR}/tdi;
 	mkdir -p ${MDSPLUS_DIR};
-	pushd /mdsplus/workspace/tests/64;
-	/mdsplus/source/configure  \
+	pushd ${WORKSPACE}/tests/64;
+	${SRCDIR}/configure  \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
 	    --bindir=${MDSPLUS_DIR}/bin64 \
 	    --libdir=${MDSPLUS_DIR}/lib64 \
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
-	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
 	    --enable-debug --host=x86_64-linux;
 	$MAKE
 	$MAKE install
@@ -155,20 +155,20 @@ test_32() {
     then
        set -o verbose
     fi
-    if [ -r /mdsplus/workspace/tests ]
+    if [ -r ${WORKSPACE}/tests ]
     then
-	MDSPLUS_DIR=/mdsplus/workspace/tests/32/buildroot;
+	MDSPLUS_DIR=${WORKSPACE}/tests/32/buildroot;
 	MDS_PATH=${MDSPLUS_DIR}/tdi;
 	mkdir -p ${MDSPLUS_DIR};
-	pushd /mdsplus/workspace/tests/32;
-	/mdsplus/source/configure \
+	pushd ${WORKSPACE}/tests/32;
+	${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
 	    --bindir=${MDSPLUS_DIR}/bin32 \
 	    --libdir=${MDSPLUS_DIR}/lib32 \
 	    --with-gsi=/usr:gcc32 \
 	    --with-java_target=6 \
-	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
 	    --enable-debug --host=i686-linux;
 	$MAKE
 	$MAKE install
@@ -225,20 +225,20 @@ build_64 () {
     then
 	set -o verbose
     fi
-    if [ -r /mdsplus/workspace/release ]
+    if [ -r ${WORKSPACE}/release ]
     then
-	MDSPLUS_DIR=/mdsplus/workspace/release/usr/local/mdsplus;
+	MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
 	mkdir -p ${MDSPLUS_DIR};
-	mkdir -p /mdsplus/workspace/release/64;
-	pushd /mdsplus/workspace/release/64;
-	/mdsplus/source/configure \
+	mkdir -p ${WORKSPACE}/release/64;
+	pushd ${WORKSPACE}/release/64;
+	${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
 	    --bindir=${MDSPLUS_DIR}/bin64 \
 	    --libdir=${MDSPLUS_DIR}/lib64 \
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
-	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
 	    --host=x86_64-linux;
 	$MAKE
 	$MAKE install
@@ -252,20 +252,20 @@ build_32 () {
     then
 	set -o verbose
     fi
-    if [ -r /mdsplus/workspace/release ]
+    if [ -r ${WORKSPACE}/release ]
     then
-	MDSPLUS_DIR=/mdsplus/workspace/release/usr/local/mdsplus;
+	MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
 	mkdir -p ${MDSPLUS_DIR};
-	mkdir -p /mdsplus/workspace/release/32;
-	pushd /mdsplus/workspace/release/32;
-	/mdsplus/source/configure  \
+	mkdir -p ${WORKSPACE}/release/32;
+	pushd ${WORKSPACE}/release/32;
+	${SRCDIR}/configure  \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
 	    --bindir=${MDSPLUS_DIR}/bin32 \
 	    --libdir=${MDSPLUS_DIR}/lib32 \
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
-	    --with-java_bootclasspath=/mdsplus/source/rt.jar \
+	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
 	    --host=i686-linux;
 	$MAKE
 	$MAKE install
@@ -279,17 +279,17 @@ build_rpms () {
     then
 	set -o verbose
     fi
-    if [ -r /mdsplus/installer ]
+    if [ -r ${DISTDIR} ]
     then
-        export DISTDIR=/mdsplus/installer/${DIST}
-	export BUILDROOT=/mdsplus/workspace/release
+        export DISTDIR=${DISTDIR}/${DIST}
+	export BUILDROOT=${WORKSPACE}/release
 	echo "Building rpms";
-	mkdir -p /mdsplus/workspace/release/etc/yum.repos.d;
-	mkdir -p /mdsplus/workspace/release/etc/pki/rpm-gpg/;
-	export INSTALLER_DIR=/mdsplus/installer/${DIST};
+	mkdir -p ${WORKSPACE}/release/etc/yum.repos.d;
+	mkdir -p ${WORKSPACE}/release/etc/pki/rpm-gpg/;
+	export INSTALLER_DIR=${DISTDIR};
 	mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
-	cp /mdsplus/source/deploy/RPM-GPG-KEY-MDSplus /mdsplus/workspace/release/etc/pki/rpm-gpg/;
-	cat - > /mdsplus/workspace/release/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
+	cp ${SRCDIR}/deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/release/etc/pki/rpm-gpg/;
+	cat - > ${WORKSPACE}/release/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]
 name=MDSplus${BNAME}
 baseurl=http://www.mdsplus.org/dist/${DIST}/${BRANCH}/RPMS
@@ -298,19 +298,19 @@ gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
-	pushd /mdsplus/source
-	/mdsplus/source/deploy/build_rpms_mdsplus;
+	pushd ${SRCDIR}
+	${SRCDIR}/deploy/build_rpms_mdsplus;
 	popd
     fi;
 }
 
 build_eggs() {
-    if [ -r /mdsplus/installer ]
+    if [ -r ${DISTDIR} ]
     then
-	export BUILDDIR=/mdsplus/workspace;
-	export EGGS_DIR=/mdsplus/installer/EGGS;
+	export BUILDDIR=${WORKSPACE};
+	export EGGS_DIR=${DISTDIR}/EGGS;
 	mkdir -p ${EGGS_DIR}
-	/mdsplus/source/deploy/build_eggs;
+	${SRCDIR}/deploy/build_eggs;
     fi;
 }
 
@@ -320,10 +320,11 @@ if [ -f /.dockerinit ]
 then
     source build.conf
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
+    # note: the TRIGGER ${WORKSPACE} is /mdsplus/source in jenkins current configuration
     source /mdsplus/source/jenkins_build.conf
-    if [ -r /mdsplus/workspace/release ]
+    if [ -r ${WORKSPACE}/release ]
     then
-	DIST_TAG_FILE=/mdsplus/installer/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+	DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
 	export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
 	if [ -r $DIST_TAG_FILE ]
 	then
@@ -382,7 +383,7 @@ else
 		    print_help
 		    exit 1;
 		fi
-		installer_volume="-v ${DISTDIR}:/mdsplus/installer"
+		installer_volume="-v ${DISTDIR}:${DISTDIR}"
 	    else
 		rm -Rf ${WORKSPACE}/release
 	    fi
@@ -398,8 +399,8 @@ else
 	    fi
 	    docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
 		   -u $(id -u):$(id -g) \
-		   -v ${SRCDIR}:/mdsplus/source \
-		   -v ${WORKSPACE}:/mdsplus/workspace \
+		   -v ${SRCDIR}:${SRCDIR} \
+		   -v ${WORKSPACE}:${WORKSPACE} \
 		   ${installer_volume} \
 		   ${sign_keys} \
 		   ${DOCKER_IMAGE};
