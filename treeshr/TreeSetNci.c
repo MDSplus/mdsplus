@@ -144,6 +144,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 	    dblist->modified = 1;
 	  }
 	  status = TreeNORMAL;
+          break;
 	}
       default:
 	status = TreeILLEGAL_ITEM;
