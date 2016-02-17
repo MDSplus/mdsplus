@@ -513,6 +513,7 @@ actions_SOURCES = actions.c
 actmon_SOURCES = actmon.c
 actmon_LDADD = $(LDADD) -lMdsIpShr -lMdsServerShr
 uid_DATA = actions.uid actmon.uid
+MOSTLYCLEANFILES = $(uid_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -752,6 +753,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 

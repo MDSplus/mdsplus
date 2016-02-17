@@ -22,3 +22,5 @@ uid_DATA = actions.uid actmon.uid
 %.uid: %.uil
 	@UIL@ -I$(top_srcdir)/include -o $@ $<
 
+MOSTLYCLEANFILES = $(uid_DATA)
+
