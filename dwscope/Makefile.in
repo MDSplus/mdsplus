@@ -16,7 +16,6 @@
 
 
 
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -120,19 +119,6 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-AR = ar
-ARFLAGS = cru
-AM_V_AR = $(am__v_AR_@AM_V@)
-am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
-am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 = 
-libXmdsWC_a_AR = $(AR) $(ARFLAGS)
-libXmdsWC_a_LIBADD =
-am__dirstamp = $(am__leading_dot)dirstamp
-am_libXmdsWC_a_OBJECTS =  \
-	../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.$(OBJEXT)
-libXmdsWC_a_OBJECTS = $(am_libXmdsWC_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(datadir)" "$(DESTDIR)$(uiddir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -141,7 +127,7 @@ dwpad_OBJECTS = $(am_dwpad_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-dwpad_DEPENDENCIES = $(am__DEPENDENCIES_2) libXmdsWC.a
+dwpad_DEPENDENCIES = $(am__DEPENDENCIES_2)
 am_dwscope_OBJECTS = dwscope-dwscope.$(OBJEXT) \
 	dwscope-dwscopesubs.$(OBJEXT) dwscope-evaluate.$(OBJEXT)
 dwscope_OBJECTS = $(am_dwscope_OBJECTS)
@@ -150,7 +136,8 @@ am__objects_1 = dwscope.$(OBJEXT) dwscopesubs.$(OBJEXT) \
 	evaluate.$(OBJEXT)
 am_dwscope_remote_OBJECTS = $(am__objects_1) RemoteDummies.$(OBJEXT)
 dwscope_remote_OBJECTS = $(am_dwscope_remote_OBJECTS)
-dwscope_remote_DEPENDENCIES = $(am__DEPENDENCIES_2) libXmdsWC.a
+dwscope_remote_DEPENDENCIES = $(am__DEPENDENCIES_2) \
+	@MAKESHLIBDIR@/libXmdsShr.a
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -211,10 +198,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libXmdsWC_a_SOURCES) $(dwpad_SOURCES) $(dwscope_SOURCES) \
+SOURCES = $(dwpad_SOURCES) $(dwscope_SOURCES) \
 	$(dwscope_remote_SOURCES)
-DIST_SOURCES = $(libXmdsWC_a_SOURCES) $(dwpad_SOURCES) \
-	$(dwscope_SOURCES) $(dwscope_remote_SOURCES)
+DIST_SOURCES = $(dwpad_SOURCES) $(dwscope_SOURCES) \
+	$(dwscope_remote_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -537,7 +524,7 @@ AM_CFLAGS = $(TARGET_ARCH)
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm
 @RPATHLINK_TRUE@AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@
-LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
+LDADD = -L@MAKESHLIBDIR@ $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
 #MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
@@ -545,19 +532,15 @@ data_DATA = dwscope_setup.ps
 
 # Scripts that are copied directly
 bin_SCRIPTS = ScopePrinters dwscopePrint
-
-# Helper libs
-noinst_LIBRARIES = libXmdsWC.a
-libXmdsWC_a_SOURCES = ../xmdsshr/XmdsWidgetCallbacks.c
-libXmdsWC_a_CPPFLAGS = $(AM_CPPFLAGS) -D_NO_XDS
 dwscope_SOURCES = dwscope.c dwscopesubs.c evaluate.c
 dwscope_CPPFLAGS = $(AM_CPPFLAGS) -D_LOCAL_ACCESS
-dwscope_LDADD = $(LDADD) -lMdsShr -lTdiShr -lTreeShr
-dwscope_remote_SOURCES = $(dwscope_SOURCES) $(XMDSSRC) RemoteDummies.c
-dwscope_remote_LDADD = $(LDADD) libXmdsWC.a -lMdsIpShr
-dwpad_SOURCES = dwpad.c dwscopesubs.c $(XMDSSRC)
-dwpad_LDADD = $(LDADD) libXmdsWC.a
+dwscope_LDADD = $(LDADD) -lMdsShr -lTdiShr -lTreeShr -lXmdsShr
+dwscope_remote_SOURCES = $(dwscope_SOURCES) RemoteDummies.c
+dwscope_remote_LDADD = $(LDADD) -lMdsIpShr @MAKESHLIBDIR@/libXmdsShr.a
+dwpad_SOURCES = dwpad.c dwscopesubs.c
+dwpad_LDADD = $(LDADD) -lXmdsShr
 uid_DATA = dwscope.uid dwpad.uid
+MOSTLYCLEANFILES = $(uid_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -591,23 +574,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-../xmdsshr/$(am__dirstamp):
-	@$(MKDIR_P) ../xmdsshr
-	@: > ../xmdsshr/$(am__dirstamp)
-../xmdsshr/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ../xmdsshr/$(DEPDIR)
-	@: > ../xmdsshr/$(DEPDIR)/$(am__dirstamp)
-../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.$(OBJEXT):  \
-	../xmdsshr/$(am__dirstamp) \
-	../xmdsshr/$(DEPDIR)/$(am__dirstamp)
-
-libXmdsWC.a: $(libXmdsWC_a_OBJECTS) $(libXmdsWC_a_DEPENDENCIES) $(EXTRA_libXmdsWC_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libXmdsWC.a
-	$(AM_V_AR)$(libXmdsWC_a_AR) libXmdsWC.a $(libXmdsWC_a_OBJECTS) $(libXmdsWC_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libXmdsWC.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -700,12 +666,10 @@ uninstall-binSCRIPTS:
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ../xmdsshr/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RemoteDummies.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwpad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dwscope-dwscope.Po@am__quote@
@@ -730,20 +694,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.o: ../xmdsshr/XmdsWidgetCallbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXmdsWC_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.o -MD -MP -MF ../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Tpo -c -o ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.o `test -f '../xmdsshr/XmdsWidgetCallbacks.c' || echo '$(srcdir)/'`../xmdsshr/XmdsWidgetCallbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Tpo ../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../xmdsshr/XmdsWidgetCallbacks.c' object='../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXmdsWC_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.o `test -f '../xmdsshr/XmdsWidgetCallbacks.c' || echo '$(srcdir)/'`../xmdsshr/XmdsWidgetCallbacks.c
-
-../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.obj: ../xmdsshr/XmdsWidgetCallbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXmdsWC_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.obj -MD -MP -MF ../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Tpo -c -o ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.obj `if test -f '../xmdsshr/XmdsWidgetCallbacks.c'; then $(CYGPATH_W) '../xmdsshr/XmdsWidgetCallbacks.c'; else $(CYGPATH_W) '$(srcdir)/../xmdsshr/XmdsWidgetCallbacks.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Tpo ../xmdsshr/$(DEPDIR)/libXmdsWC_a-XmdsWidgetCallbacks.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../xmdsshr/XmdsWidgetCallbacks.c' object='../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXmdsWC_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.obj `if test -f '../xmdsshr/XmdsWidgetCallbacks.c'; then $(CYGPATH_W) '../xmdsshr/XmdsWidgetCallbacks.c'; else $(CYGPATH_W) '$(srcdir)/../xmdsshr/XmdsWidgetCallbacks.c'; fi`
 
 dwscope-dwscope.o: dwscope.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-dwscope.o -MD -MP -MF $(DEPDIR)/dwscope-dwscope.Tpo -c -o dwscope-dwscope.o `test -f 'dwscope.c' || echo '$(srcdir)/'`dwscope.c
@@ -913,7 +863,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(DATA)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(datadir)" "$(DESTDIR)$(uiddir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -938,25 +888,23 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../xmdsshr/$(DEPDIR)/$(am__dirstamp)
-	-rm -f ../xmdsshr/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../xmdsshr/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1002,7 +950,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../xmdsshr/$(DEPDIR) ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1024,20 +972,19 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-binSCRIPTS install-data install-data-am \
-	install-dataDATA install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip install-uidDATA \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-binSCRIPTS \
-	uninstall-dataDATA uninstall-uidDATA
+	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binPROGRAMS install-binSCRIPTS install-data \
+	install-data-am install-dataDATA install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	install-uidDATA installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-binSCRIPTS uninstall-dataDATA uninstall-uidDATA
 
 .PRECIOUS: Makefile
 
