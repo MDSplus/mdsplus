@@ -3,6 +3,7 @@ include @top_builddir@/Makefile.inc
 srcdir = @srcdir@
 builddir = @builddir@
 VPATH = @srcdir@
+
 X_CFLAGS=@X_CFLAGS@
 CFLAGS=@CFLAGS@ $(X_CFLAGS)
 UIL=@UIL@
@@ -49,6 +50,7 @@ all:    @MAKEUIDDIR@ \
         @MAKEUIDDIR@XmdsInput.uid \
         @MAKEUIDDIR@XmdsXdBox.uid \
 	@MAKELIBDIR@ \
+	libXmdsWidgetCallbacks.a \
         @MAKELIBDIR@libXmdsShr.a \
 	@MAKESHLIBDIR@libXmdsShr@SHARETYPE@
 
@@ -58,6 +60,7 @@ depend:
 clean :
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
+	@ $(RM) libXmdsWidgetCallbacks.a
 	@ $(RM) @MAKELIBDIR@libXmdsShr.a
 	@ $(RM) @MAKESHLIBDIR@libXmdsShr@SHARETYPE@
 	@ $(RM) @MAKEUIDDIR@xmdsuil.wmd
@@ -96,6 +99,11 @@ install: $(libdir) @uiddir@
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
+libXmdsWidgetCallbacks.a : XmdsWidgetCallbacks.o
+	$(AR) -cr $@ $^
+	@RANLIB@ $@
+
+
 @MAKELIBDIR@xmdsuil.wmd : $(WMD_RULE)
 
 @MAKEBINDIR@wmdcreate: wmldbcreate-xmdsshr.c UilConst.h
@@ -103,4 +111,5 @@ install: $(libdir) @uiddir@
 
 UilConst.h : xmdsuil.wml 
 	$(WML) 
+
 
