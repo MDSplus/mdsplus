@@ -400,8 +400,10 @@ else
 	    docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
 		   -u $(id -u):$(id -g) \
 		   -v ${SRCDIR}:${SRCDIR} \
-		   -v ${WORKSPACE}:${WORKSPACE} \
+		   -v ${WORKSPACE}:${WORKSPACE} \		   
 		   ${installer_volume} \
+		   -e WORKSPACE:${WORKSPACE} \
+		   -e SRCDIR:${SRCDIR} \
 		   ${sign_keys} \
 		   ${DOCKER_IMAGE};
 	    docker rm "${JOB_NAME}${BUILD_NUMBER}";;

@@ -39,9 +39,10 @@
 # If there is a /source/jenkins_build.conf file then this is a jenkins build
 # so use the jenkins_build script instead.
 #
-if [ -r /mdsplus/source/jenkins_build.conf ]
+SRCDIR=${SRCDIR:=/mdsplus/source}
+if [ -r ${SRCDIR}/jenkins_build.conf ]
 then
-    /mdsplus/source/deploy/jenkins_build
+    ${SRCDIR}/deploy/jenkins_build
     exit $?
 fi
 echo build_mdsplus called with args: $@
