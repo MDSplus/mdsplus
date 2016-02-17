@@ -403,8 +403,8 @@ else
 		   -v ${SRCDIR}:/mdsplus/source \
 		   -v ${WORKSPACE}:${WORKSPACE} \
 		   ${installer_volume} \
-		   -e WORKSPACE:${WORKSPACE} \
-		   -e SRCDIR:${SRCDIR} \
+		   -e "WORKSPACE=${WORKSPACE}" \
+		   -e "SRCDIR=${SRCDIR}" \
 		   ${sign_keys} \
 		   ${DOCKER_IMAGE};
 	    docker rm "${JOB_NAME}${BUILD_NUMBER}";;
