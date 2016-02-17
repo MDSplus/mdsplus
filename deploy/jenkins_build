@@ -225,13 +225,11 @@ build_64 () {
     then
 	set -o verbose
     fi
-    if [ -r ${WORKSPACE}/release ]
-    then
-	MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
-	mkdir -p ${MDSPLUS_DIR};
-	mkdir -p ${WORKSPACE}/release/64;
-	pushd ${WORKSPACE}/release/64;
-	${SRCDIR}/configure \
+    MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
+    mkdir -p ${MDSPLUS_DIR};
+    mkdir -p ${WORKSPACE}/release/64;
+    pushd ${WORKSPACE}/release/64;
+    ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
 	    --bindir=${MDSPLUS_DIR}/bin64 \
@@ -240,10 +238,9 @@ build_64 () {
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
 	    --host=x86_64-linux;
-	$MAKE
-	$MAKE install
-	popd;
-    fi;
+    $MAKE
+    $MAKE install
+    popd;
 }
 
 build_32 () {
@@ -252,13 +249,11 @@ build_32 () {
     then
 	set -o verbose
     fi
-    if [ -r ${WORKSPACE}/release ]
-    then
-	MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
-	mkdir -p ${MDSPLUS_DIR};
-	mkdir -p ${WORKSPACE}/release/32;
-	pushd ${WORKSPACE}/release/32;
-	${SRCDIR}/configure  \
+    MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
+    mkdir -p ${MDSPLUS_DIR};
+    mkdir -p ${WORKSPACE}/release/32;
+    pushd ${WORKSPACE}/release/32;
+    ${SRCDIR}/configure  \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
 	    --bindir=${MDSPLUS_DIR}/bin32 \
@@ -267,10 +262,9 @@ build_32 () {
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
 	    --host=i686-linux;
-	$MAKE
-	$MAKE install
-	popd ;
-    fi;
+    $MAKE
+    $MAKE install
+    popd ;
 }
 
 build_rpms () {
@@ -279,7 +273,7 @@ build_rpms () {
     then
 	set -o verbose
     fi
-    if [ -r ${DISTDIR} ]
+    if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
         export DISTDIR=${DISTDIR}/${DIST}
 	export BUILDROOT=${WORKSPACE}/release
@@ -305,7 +299,7 @@ EOF
 }
 
 build_eggs() {
-    if [ -r ${DISTDIR} ]
+    if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
 	export BUILDDIR=${WORKSPACE};
 	export EGGS_DIR=${DISTDIR}/EGGS;
@@ -340,10 +334,13 @@ then
 		test_32;
 		check_tests;
 	    fi
-	    build_64;
-	    build_32;
-	    build_rpms;
-	    build_eggs;;
+            if [ -r ${WORKSPACE}/release ]
+            then
+	      build_64;
+	      build_32;
+	      build_rpms;
+	      build_eggs;
+            fi;;
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
 	    exit 1;;
