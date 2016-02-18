@@ -397,7 +397,8 @@ else
 		signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
 	    fi
 	    docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
-		   -u $(id -u):$(id -g) \
+		   --pid=host \
+                   -u $(id -u):$(id -g) \
 		   -v ${SRCDIR}:${SRCDIR} \
 		   -v ${SRCDIR}:/mdsplus/source \
 		   -v ${WORKSPACE}:${WORKSPACE} \
