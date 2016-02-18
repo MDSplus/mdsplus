@@ -1,4 +1,31 @@
-commit 2709aa9c0a24d4e8a2946bd752ea096b6eb870fe (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit a2f86fbcb5620daa1b3c68862cfa7fba3056d120 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 54c1176 d0ebadb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 11:47:42 2016 -0500
+
+    Merge pull request #362 from MDSplus/twf-fix-motif-update-stable
+    
+    Twf fix motif update stable
+
+commit d0ebadb63884bbe2a546e9e5d007d5a12e8121dc (refs/remotes/origin/twf-fix-motif-update-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 11:31:53 2016 -0500
+
+    Only remove uid symlink when removing the motif package not when updating
+
+commit 7e310672b3c3561cecaf743dc6172724bd304f84
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 11:30:39 2016 -0500
+
+    Only remove uid symlink when removing the motif package not when updating
+
+commit 54c1176fa0063aed78248b9c9973d25cb50950b8 (tag: refs/tags/stable_release-7-0-63)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Feb 12 18:02:16 2016 -0500
+
+    New release ---- stable_release-7-0-63
+
+commit 2709aa9c0a24d4e8a2946bd752ea096b6eb870fe
 Merge: d22fed6 8c50e4e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Feb 12 13:01:22 2016 -0500
