@@ -75,15 +75,16 @@ int main(int argc, char *argv[])
     SKIP_TEST("Event test requires fork")
 #   else 
     setenv("UDP_EVENTS","yes",1);
-    
+    char *evname = (char *)alloca(30);
+    sprintf(evname,"test_event_%d",getpid());    
     {        
         if(fork()) {            
-            NullEvent ev("test_event");
+            NullEvent ev(evname);
             ev.wait();
         } 
         else {            
             sleep(1);
-            Event::setEvent("test_event");
+            Event::setEvent(evname);
             exit(0);
         }            
     }
@@ -93,14 +94,14 @@ int main(int argc, char *argv[])
         static std::string str("test string to be compared");
         
         if(fork()) {
-            RawEvent ev("test_event",str.c_str());
+            RawEvent ev(evname,str.c_str());
             size_t buf_len = 0;
             const char *buf = ev.waitRaw(&buf_len);
             TEST1( std::string(str) == std::string(buf) );
         }
         else {            
             sleep(1);            
-            Event::setEventRaw("test_event",str.size(),(char*)str.c_str());
+            Event::setEventRaw(evname,str.size(),(char*)str.c_str());
             exit(0);
         }
     }
@@ -110,13 +111,13 @@ int main(int argc, char *argv[])
         static unique_ptr<String> str = new String("test string to be compared");
         
         if(fork()) {
-            DataEvent ev("test_event",str->clone());
+            DataEvent ev(evname,str->clone());
             unique_ptr<Data> data = ev.waitData();
             TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );            
         }
         else {                        
             sleep(1);
-            Event::setEvent("test_event",str);
+            Event::setEvent(evname,str);
             exit(0);
         }
     }    
