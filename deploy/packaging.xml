@@ -226,7 +226,7 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
     </postinst>
     <prerm>
 
-if [ -h __INSTALL_PREFIX__/mdsplus/uid ]
+if [ "$1" = "0" -a -h __INSTALL_PREFIX__/mdsplus/uid ]
 then
   rm -f __INSTALL_PREFIX__/mdsplus/uid
 fi
