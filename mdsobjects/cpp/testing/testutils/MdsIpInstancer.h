@@ -61,11 +61,16 @@ public:
     {
         // build lazy singleton instance //
         m_host_file.get_instance();
-                
-        // get first available port //
-//        while( !available(m_port,m_protocol) ) {
-//            m_port = 8000 + rand() % 1000;
-//        }
+
+        // get first available port //        
+        m_port += getpid()%1000;
+        int offset = 0;
+        while(!available(m_port,m_protocol) && offset<10 ) {
+            m_port += offset++ * 1000;
+        }
+        if(offset==10) 
+            throw std::out_of_range("any port found within 10 tries");
+        
         
         m_pid = fork();
         if(m_pid<0) {
@@ -143,6 +148,10 @@ private:
         addr.sin_port = htons(port);
         addr.sin_addr.s_addr = htonl(INADDR_ANY); //inet_addr("0.0.0.0")
         int error = bind(sock, (struct sockaddr*) &addr, sizeof(addr));
+        if(!error) {
+            shutdown(sock,2);
+            close(sock);
+        }
         return error == 0;
     }
     

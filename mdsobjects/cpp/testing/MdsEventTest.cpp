@@ -59,10 +59,12 @@ public:
         char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         unique_ptr<Data> data = getData();                          //Get data
-        std::cout << "RECEIVED EVENT " << name << " AT " << date.string 
-                  << " WITH DATA  " << AutoString(data->getString()).string 
-                  << "\n";
-        TEST1( AutoString(test_data->getString()).string == AutoString(data->getString()).string );
+        if(data) {
+            std::cout << "RECEIVED EVENT " << name << " AT " << date.string 
+                      << " WITH DATA  " << AutoString(data->getString()).string 
+                      << "\n";
+            TEST1( AutoString(test_data->getString()).string == AutoString(data->getString()).string );
+        }
     }
 };
 
@@ -83,7 +85,7 @@ int main(int argc, char *argv[])
             ev.wait();
         } 
         else {            
-            sleep(1);
+            usleep(100000);
             Event::setEvent(evname);
             exit(0);
         }            
@@ -100,7 +102,7 @@ int main(int argc, char *argv[])
             TEST1( std::string(str) == std::string(buf) );
         }
         else {            
-            sleep(1);            
+            usleep(100000);
             Event::setEventRaw(evname,str.size(),(char*)str.c_str());
             exit(0);
         }
@@ -116,7 +118,7 @@ int main(int argc, char *argv[])
             TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );            
         }
         else {                        
-            sleep(1);
+            usleep(100000);
             Event::setEvent(evname,str);
             exit(0);
         }
