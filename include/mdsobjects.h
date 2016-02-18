@@ -3632,69 +3632,44 @@ public:
 
 class EXPORT Event {
 public:
-    char *eventName;
+    std::string eventName;
     std::string eventBuf;
     int eventId;
     bool waitingEvent;
     int64_t eventTime;
     
-    Event(const char *evName);
+    Event(const char *name);
     
-    virtual ~Event();
+    ~Event();
 
-    char const * getRaw(std::size_t * size) {
-        *size = eventBuf.length();
-        return eventBuf.c_str();
-    }
+    const char * getRaw(std::size_t * size) const;
+    
+    Data * getData() const;
 
-    Uint64 *getTime() {
-        return new Uint64(eventTime);
-    }
+    Uint64 *getTime() const;
 
-    char *getName() {
-        return eventName;
-    }
+    const char *getName() const;
 
-    Data *getData();
-
-    void wait() {
-        condition.wait();
-    }
-
-    void wait(std::size_t secs) {
-        if (condition.waitTimeout(secs * 1000) == false)
-            throw MdsException("Timeout Occurred");
-    }
-
-    Data *waitData() {
-        wait();
-        return getData();
-    }
-
-    Data *waitData(std::size_t secs) {
-        wait(secs);
-        return getData();
-    }
-
-    void abort() {
-    }
-
-    char const * waitRaw(std::size_t * size) {
-        wait();
-        return getRaw(size);
-    }
-
-    virtual void run() {
-        //  notify();
+    void wait(std::size_t secs = 0);
+        
+    Data *waitData(std::size_t secs = 0) { 
+        wait(secs); return getData();  
     }
     
-    void notify() {
-        condition.notify();        
+    char const * waitRaw(std::size_t * size, std::size_t secs = 0) {
+        wait(secs); return getRaw(size); 
     }
+
+    void abort() {}
+    
+    virtual void run() { notify(); }
+    
+    void notify();
 
     static void setEvent(const char *evName) { setEventRaw(evName, 0, NULL); }
     static void setEventRaw(const char *evName, int bufLen, char *buf);
     static void setEvent(const char *evName, Data *evData);
+    
     //To keep them compatible with python
     static void setevent(char *evName) {setEvent(evName); }
     static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
@@ -3707,8 +3682,11 @@ protected:
 
 private:
     Event() {}
+    //    Event(const Event &) {} 
     ConditionVar condition;
 };
+
+
 
 
 
