@@ -985,7 +985,6 @@ with_java_bootclasspath
 with_gsi
 with_srb
 with_labview
-enable_gcc_profiling
 with_idl
 with_visual_studio
 enable_d3d
@@ -1670,7 +1669,6 @@ Optional Features:
   --disable-java          Do not build java libraries and applications
   --enable-sanitizer      Enable memory error detection using address
                           sanitizer [default=no]
-  --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
   --disable-xmltest       Do not try to compile and run a test LIBXML program
   --enable-valgrind       Whether to enable Valgrind on the unit tests
@@ -8703,16 +8701,24 @@ $as_echo_n "checking for labview... " >&6; }
 if test "${with_labview+set}" = set; then :
   withval=$with_labview;
 else
-  if ${LABVIEW_DIR+:} false; then :
+  with_labview=yes
+fi
+
+
+case $with_labview in #(
+  yes) :
+    if ${LABVIEW_DIR+:} false; then :
   with_labview=$LABVIEW_DIR
 else
   if ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview; then :
-  with_labview=${srcdir}/3rd-party-apis/labview
+  with_labview=\${top_srcdir}/3rd-party-apis/labview
 else
   with_labview=no
 fi
-fi
-fi
+fi ;; #(
+  *) :
+     ;;
+esac
 
 case $with_labview in #(
   no) :
@@ -8723,31 +8729,10 @@ case $with_labview in #(
     LV_CINTOOLS="$with_labview/cintools"
          LV="mdsobjects/labview" ;;
 esac
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_labview" >&5
 $as_echo "$with_labview" >&6; }
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable profiled code" >&5
-$as_echo_n "checking whether to enable profiled code... " >&6; }
-# Check whether --enable-gcc_profiling was given.
-if test "${enable_gcc_profiling+set}" = set; then :
-  enableval=$enable_gcc_profiling;
-else
-  with_gcc_profiling=no
-fi
-
-case $with_gcc_profiling in #(
-  yes) :
-    GCCPROF="-pg" ;; #(
-  no) :
-    GCCPROF="" ;; #(
-  *) :
-    as_fn_error $? "--enable-gcc_profiling does not take an argument" "$LINENO" 5 ;;
-esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_gcc_profiling" >&5
-$as_echo "$with_gcc_profiling" >&6; }
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for idl" >&5
-$as_echo_n "checking for idl... " >&6; }
 
 # Check whether --with-idl was given.
 if test "${with_idl+set}" = set; then :
@@ -8755,6 +8740,7 @@ if test "${with_idl+set}" = set; then :
 else
   with_idl=yes
 fi
+
 
 case $with_idl in #(
   yes) :
@@ -8765,7 +8751,8 @@ else
   with_idl=/usr/local/itt/idl
 elif test -r /usr/local/itt/idl; then :
   with_idl=/usr/local/rsi/idl
-  with_idl=${srcdir}/3rd-party-apis/idl
+elif ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl; then :
+  with_idl=\${top_srcdir}/3rd-party-apis/idl
 else
   with_idl=no
 fi
@@ -8773,6 +8760,7 @@ fi ;; #(
   *) :
      ;;
 esac
+
 case $with_idl in #(
   no) :
     IDL_DIR="" ;; #(
@@ -8781,6 +8769,7 @@ case $with_idl in #(
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets" ;;
 esac
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
 $as_echo "$with_idl" >&6; }
 

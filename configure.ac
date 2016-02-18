@@ -248,14 +248,48 @@ AC_ARG_WITH([labview],
             [AS_HELP_STRING([--with-labview=labview-top-dir],
                             [specify location of labview such as /usr/local/natinst/Labview])],
             [],
-            [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR],
-                                          [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
-[with_idl=no])])])
+            [with_labview=yes])
+
+AS_CASE([$with_labview],
+        [yes],
+        [AS_VAR_SET_IF([LABVIEW_DIR],
+            [with_labview=$LABVIEW_DIR],
+            [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
+                   [with_labview=\${top_srcdir}/3rd-party-apis/labview],
+                   [with_labview=no])])])
+
+AS_CASE([$with_labview],
+        [no], [],
+        [yes], [AC_MSG_ERROR([Labview location required])],
+        [LV_CINTOOLS="$with_labview/cintools"
+         LV="mdsobjects/labview"])
+
+AC_MSG_RESULT([$with_labview])
+
+AC_ARG_WITH([idl],
+            [AS_HELP_STRING([--with-idl=idl-top-dir],
+                            [specify location of idl such as /usr/local/itt/idl])],
+            [],
+            [with_idl=yes])
+
+AS_CASE([$with_idl],
+        [yes], 
+        [AS_VAR_SET_IF([IDL_DIR],
+           [with_idl=$IDL_DIR],
+           [AS_IF([test -r /usr/local/itt/idl], 
+               [with_idl=/usr/local/itt/idl],
+               [test -r /usr/local/itt/idl], 
+               [with_idl=/usr/local/rsi/idl],
+               [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
+               [with_idl=\${top_srcdir}/3rd-party-apis/idl],
+               [with_idl=no])])])
+
 AS_CASE([$with_idl],
         [no], [IDL_DIR=""],
         [IDL_INC="-I$with_idl/external"
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets"])
+
 AC_MSG_RESULT([$with_idl])
 
 AC_MSG_CHECKING([for mingw])
