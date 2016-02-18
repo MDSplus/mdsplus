@@ -1,4 +1,25 @@
-commit 00e56cf540d992f3d80744d0108a3822b38a79a9 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 19d7cb631909bdc8609bb18efeaef59e3d0e6756 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: c7c40b5 b38b1bd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 16:49:13 2016 -0500
+
+    Merge pull request #360 from MDSplus/twf-fix-set-usage
+    
+    Fix set usage by breaking from switch statement
+
+commit b38b1bd15a31227cd32dad486feab05ad3ade592
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 15:16:02 2016 -0500
+
+    Fix set usage by breaking from switch statement
+
+commit c7c40b58f0fc1a7c97af85f5f2736d4c53387442 (tag: refs/tags/alpha_release-7-0-224)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Feb 17 12:11:03 2016 -0500
+
+    New release ---- alpha_release-7-0-224
+
+commit 00e56cf540d992f3d80744d0108a3822b38a79a9
 Merge: 8471433 b7275ab
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Feb 17 11:37:43 2016 -0500
