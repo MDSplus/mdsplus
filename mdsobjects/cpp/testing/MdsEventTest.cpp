@@ -17,7 +17,7 @@ public:
         
     void run()
     {
-        char *name = getName();                                     //Get the name of the event
+        const char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         std::cout << "RECEIVED EVENT " << name << " AT " << date.string << "\n";
     }    
@@ -36,7 +36,7 @@ public:
     void run()
     {
         size_t bufSize;
-        char *name = getName();                                     //Get the name of the event
+        const char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         const char *str = getRaw(&bufSize);                         //Get raw data
         std::cout << "RECEIVED EVENT " << name << " AT " << date.string << " WITH RAW  " << str << "\n";
@@ -56,7 +56,7 @@ public:
     
     void run()
     {        
-        char *name = getName();                                     //Get the name of the event
+        const char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         unique_ptr<Data> data = getData();                          //Get data
         if(data) {
