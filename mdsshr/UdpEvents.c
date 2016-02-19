@@ -167,7 +167,7 @@ static int pushEvent(pthread_t thread, int socket) {
 static EventList *popEvent(int eventid) {
   LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
   EventList *ev,*ev_prev;
-  for (ev=EVENTLIST,ev_prev=0; ev && ev->eventid != eventid; ev=ev->next);
+  for (ev=EVENTLIST,ev_prev=0; ev && ev->eventid != eventid; ev_prev=ev,ev=ev->next);
   if (ev) {
     if (ev_prev) {
       ev_prev->next = ev->next;
