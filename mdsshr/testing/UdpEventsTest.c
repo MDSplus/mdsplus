@@ -49,6 +49,7 @@ int main(int argc, char **args)
     BEGIN_TESTING(UdpEvents); 
     int status;
     int i,iterations,ev_id;
+    char *eventname = alloca(100);
     if (argc < 2) {
         iterations=3;
     } else {
@@ -57,8 +58,7 @@ int main(int argc, char **args)
     }
     
     for (i=0;i<iterations;i++) {
-        char *eventname = malloc(100);
-        sprintf(eventname,"ev_test_%d",i);
+        sprintf(eventname,"ev_test_%d_%d",i,getpid());
 
         status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
         TEST0( status%1 );        
@@ -69,24 +69,24 @@ int main(int argc, char **args)
         wait();        
         status = MDSEventCan(ev_id);
         TEST0( status%1 );
-        wait();        
-        free(eventname);
+        wait();
     }
     TEST1(astCount == 2*iterations);
     
 
     // Testing two listening events //
     int id1,id2;
-    status = MDSEventAst("test_event", eventAstFirst, "first", &id1);
-    status = MDSEventAst("test_event", eventAstSecond, "second", &id2);        
+    sprintf(eventname, "test_event_%e", getpid());
+    status = MDSEventAst(eventname, eventAstFirst, "first", &id1);
+    status = MDSEventAst(eventname, eventAstSecond, "second", &id2);        
     wait();
-    status = MDSEvent("test_event",0,0);    
+    status = MDSEvent(eventname,0,0);    
     wait();
     printf("first = %d, second = %d\n",first,second);
     TEST1(first);
     TEST1(second);
     status = MDSEventCan(id1);
-    //    status = MDSEventCan(id2);
+    status = MDSEventCan(id2);
     
     END_TESTING;
 }
