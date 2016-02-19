@@ -71,6 +71,9 @@ parse_cmd() {
 #	    -b|--builddir)
 #		BUILDDIR=$2
 #		shift 2;;
+	    --tag_release)
+		OP="TAG_RELEASE"
+		shift 1;;
 	    --trigger)
 		OP="TRIGGER"
 		shift 1;;
@@ -447,7 +450,7 @@ export VERBOSE=${VERBOSE}
 export DISTDIR=${DISTDIR}
 EOF
 	    ;;
-	tag_release)
+	TAG_RELEASE)
 	    set -e
 	    if ( test -r ${WORKSPACE}/jenkins_build.conf && \
 		source ${WORKSPACE}/jenkins_build.conf && \
