@@ -115,7 +115,7 @@ EXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
-		strOut = eventPtr->getName();
+		strOut = strdup(eventPtr->getName());
 		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 		if (!errorCode)
