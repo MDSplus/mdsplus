@@ -77,10 +77,12 @@ int main(int argc, char *argv[])
     SKIP_TEST("Event test requires fork")
 #   else 
     setenv("UDP_EVENTS","yes",1);
-    char *evname = (char *)alloca(30);
-    sprintf(evname,"test_event_%d",getpid());    
-    {        
-        if(fork()) {            
+    static char evname[100] = "empty";
+    if(strcmp(evname,"empty") == 0)
+        sprintf(evname,"event_test_%d",getpid());
+
+    { // NULL EVENT //
+        if(fork()) {
             NullEvent ev(evname);
             ev.wait();
         } 
@@ -92,7 +94,7 @@ int main(int argc, char *argv[])
     }
     
     
-    {
+    { // RAW EVENT //
         static std::string str("test string to be compared");
         
         if(fork()) {
