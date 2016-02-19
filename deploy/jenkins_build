@@ -452,18 +452,19 @@ EOF
 	    ;;
 	TAG_RELEASE)
 	    set -e
-	    if ( test -r ${WORKSPACE}/jenkins_build.conf && \
-		source ${WORKSPACE}/jenkins_build.conf && \
-		test "${RELEASE}" != "" )
+	    if ( test -r ${WORKSPACE}/jenkins_build.conf &&
+		source ${WORKSPACE}/jenkins_build.conf &&
+		test "${RELEASE_TAG}" != "" )
 	    then
 		git tag -a ${RELEASE_TAG} -m "New release of ${BRANCH} branch of MDSplus. Version mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE}";
 		git push --follow-tags;
 	    else
-		echo <<EOF
+		cat <<EOF
 Invalid command option. tag_release is only avaliable after 
 a valid $0 trigger --release has been executed.
 EOF
-	    fi
+		exit 1;
+	    fi;;
 	*) echo "Unknown option";
 	   exit 1;
 	   ;;
