@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
             ev.wait();
         } 
         else {            
-            usleep(100000);
+            sleep(1);
             Event::setEvent(evname);
             exit(0);
         }            
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
             TEST1( std::string(str) == std::string(buf) );
         }
         else {            
-            usleep(100000);
+            sleep(1);
             Event::setEventRaw(evname,str.size(),(char*)str.c_str());
             exit(0);
         }
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
             TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );            
         }
         else {                        
-            usleep(100000);
+            sleep(1);
             Event::setEvent(evname,str);
             exit(0);
         }
