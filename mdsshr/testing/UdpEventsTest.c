@@ -76,7 +76,7 @@ int main(int argc, char **args)
 
     // Testing two listening events //
     int id1,id2;
-    sprintf(eventname, "test_event_%e", getpid());
+    sprintf(eventname, "test_event_%d", getpid());
     status = MDSEventAst(eventname, eventAstFirst, "first", &id1);
     status = MDSEventAst(eventname, eventAstSecond, "second", &id2);        
     wait();
