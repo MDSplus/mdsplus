@@ -1,4 +1,31 @@
-commit 19d7cb631909bdc8609bb18efeaef59e3d0e6756 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 9551f955491c09dd6db95931e7ad8416bbae80a2 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 11:38:32 2016 -0500
+
+    Ignore files created by building and running tests
+
+commit 08fdb2fc09130550bbf13c256f2e3b69151a1b3f
+Merge: 231f9d3 921326a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 11:32:12 2016 -0500
+
+    Merge pull request #361 from MDSplus/twf-fix-motif-update
+    
+    Only remove uid symlink if removing the package entirely from the system
+
+commit 921326a5974eca0f4d0822a9f08b981efd09575a (refs/remotes/origin/twf-fix-motif-update)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 10:30:18 2016 -0500
+
+    Only remove uid symlink if removing the package entirely from the system
+
+commit 231f9d3e04a02c465ea1e762c700675b5bd95064 (tag: refs/tags/alpha_release-7-0-225)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Feb 17 23:23:49 2016 -0500
+
+    New release ---- alpha_release-7-0-225
+
+commit 19d7cb631909bdc8609bb18efeaef59e3d0e6756
 Merge: c7c40b5 b38b1bd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 17 16:49:13 2016 -0500
