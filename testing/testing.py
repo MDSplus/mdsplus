@@ -6,7 +6,7 @@ import sys,os
 
 
 class testing():    
-    from unittest import TestCase,TestSuite,SkipTest
+    from unittest import TestCase,TestSuite
     test_format = os.getenv('TEST_FORMAT','tap')
 
     def check_module(self, module_name ):
