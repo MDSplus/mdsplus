@@ -1,4 +1,25 @@
-commit 9551f955491c09dd6db95931e7ad8416bbae80a2 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 95fccdc1d77f24f74e738afe72c9ec030ec2c7eb (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 943d8da 41e7497
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Feb 19 16:50:50 2016 -0500
+
+    Merge pull request #366 from MDSplus/twf-fix-idl-dsql
+    
+    Add fix for deprecated cstring_to_dsc routine
+
+commit 41e7497bc8a8cb7e509fdfeb73504af8202e8320 (refs/remotes/origin/twf-fix-idl-dsql)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 16:45:26 2016 -0500
+
+    Add fix for deprecated cstring_to_dsc routine
+
+commit 943d8da91bea7fa57dfe7dfc5eecb0b825a44f78 (tag: refs/tags/alpha_release-7-0-226)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Feb 18 23:24:01 2016 -0500
+
+    New release ---- alpha_release-7-0-226
+
+commit 9551f955491c09dd6db95931e7ad8416bbae80a2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 18 11:38:32 2016 -0500
 
