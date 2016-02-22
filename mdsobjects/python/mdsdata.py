@@ -137,7 +137,7 @@ class Data(object):
         """Return the TDI evaluation of UNITS_OF(this).
         EmptyData is returned if no units defined.
         @rtype: Data"""
-        return Data.execute('units_of($)',self)
+        return Data.execute('units($)',self)
     def setUnits(self,units):
         """Set the units of the Data instance.
         @type: String
