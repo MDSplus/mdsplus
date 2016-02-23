@@ -17,7 +17,7 @@
 
 
 #define new_unique_event_name(str) \
-    _new_unique_event_name("event_%s_%d_%d",__FILE__,__LINE__,getpid())
+    _new_unique_event_name("%s_%d_%d",str,__LINE__,getpid())
 static char * _new_unique_event_name(const char *prefix, ...) {
     char buffer[300];
     va_list args;
@@ -31,17 +31,9 @@ static int astCount = 0;
 void eventAst(void *arg, int len, char *buf) {
     printf("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
-           (char *)arg);    
-    astCount++;    
-}
-
-void * set_event(void* arg) {
-    char *eventName = strdup((const char*)arg);
-    sleep(1);    
-    MDSUdpEvent(eventName,strlen(eventName),eventName);
-    printf("set_event: %s\n",eventName);
-    fflush(stdout);
-    free(eventName);
+           (char *)arg);
+    astCount++;
+    pthread_exit(0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,20 +55,25 @@ static void getMulticastAddr(char const *eventName, char *retIp);
 //  test functions  ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
+///
+/// \brief test_initialize test static void initialize();
+///
 void test_initialize() {
     BEGIN_TESTING(UdpEvents initialize);
     initialize();
-    SKIP_TEST("not implemented yet");
+//    SKIP_TEST("not implemented yet");
     END_TESTING;
 }
 
+
+///
+/// \brief test_handleMessage tests static void *handleMessage(void *info_in);
+///
 void test_handleMessage() {
     BEGIN_TESTING(UdpEvents handleMessage);
-        
-    
-    //    char * eventName = new_unique_event_name("test_event");
-    char * eventName = strdup("event");
+            
+    char * eventName = new_unique_event_name("test_event");
+    //    char * eventName = strdup("event");
     struct sockaddr_in serverAddr;
 #   ifdef _WIN32
     char flag = 1;
@@ -119,29 +116,84 @@ void test_handleMessage() {
     TEST0(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0);
   
     currInfo = (struct EventInfo *)malloc(sizeof(struct EventInfo));
-    currInfo->eventName = eventName;
+    currInfo->eventName = strdup(eventName);
     currInfo->socket = udpSocket;
     currInfo->arg = eventName;
     currInfo->astadr = &eventAst;
     
-//    pthread_t thread;
-//    pthread_create(&thread,NULL,set_event,"event");    
-//    printf("event name: %s\n",eventName);
-//    fflush(stdout);
-//    handleMessage(currInfo);
-//    pthread_join(thread,NULL);
+    pthread_t thread;
+    pthread_create(&thread,NULL,handleMessage,currInfo);
+    usleep(200000);
+    MDSUdpEvent(eventName,strlen(eventName),eventName);    
+    pthread_join(thread,NULL);
     
-    free(currInfo->eventName);
-    free(currInfo);
+    free (eventName);    
+    //    free(currInfo->eventName);
+    //    free(currInfo);
     //    *eventid = pushEvent(thread, udpSocket);
     
     END_TESTING;
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  PUSH AND POP  //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+static struct _list_el { 
+    pthread_t thread;
+    int id;
+} list[10];
+
+static void *_push_handler(void *arg) {
+    struct _list_el *li = (struct _list_el *)arg;
+    li->id = pushEvent(li->thread,0);
+    return NULL;
+}
+
+void test_pushEvent() {
+    BEGIN_TESTING(UpdEvents pushEvent);
+    printf("pushEvent test\n");    
+    int i;
+    for(i=0; i<10; ++i)
+        pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
+    for(i=0; i<10; ++i)
+        pthread_join(list[i].thread,0);
+    END_TESTING
+}
+
+static void *_pop_handler(void *arg) {
+    struct _list_el *li = (struct _list_el *)arg;
+    EventList *ev = popEvent(li->id);
+    free(ev);
+    return NULL;
+}
+
+void test_popEvent() {
+    BEGIN_TESTING(UpdEvents popEvent);
+    printf("popEvent test\n");    
+    int i;
+    for(i=0; i<10; ++i)
+        pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
+    for(i=0; i<10; ++i)
+        pthread_join(list[i].thread,0);
+    END_TESTING
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  MAIN   /////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+
 int main(int argc, char *argv[])
 {    
     test_initialize();
     test_handleMessage();
+    test_pushEvent();
+    test_popEvent();
+    pthread_exit(NULL);
     return 0;
 }

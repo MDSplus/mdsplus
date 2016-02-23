@@ -17,7 +17,7 @@ AM_DEFAULT_SOURCE_EXT = .c
 
 TESTS = \
         UdpEventsTest \
-        UdpEventTestParts
+        UdpEventsTestStatics       
 
 
 
