@@ -206,7 +206,7 @@ void test_Uint64Array() {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-bool test_Float32() {
+void test_Float32() {
 
     float value = 123.2368;
 
@@ -227,8 +227,7 @@ void test_Float32Array() {
 
     deleteData(data);
 }
-
-bool test_Float64() {
+void test_Float64() {
 
     double value = 123.2368;
 
