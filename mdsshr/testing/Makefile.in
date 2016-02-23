@@ -93,7 +93,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-TESTS = UdpEventsTest$(EXEEXT) UdpEventTestParts$(EXEEXT)
+TESTS = UdpEventsTest$(EXEEXT) UdpEventsTestStatics$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsshr/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -122,16 +122,16 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = UdpEventsTest$(EXEEXT) UdpEventTestParts$(EXEEXT)
-UdpEventTestParts_SOURCES = UdpEventTestParts.c
-UdpEventTestParts_OBJECTS = UdpEventTestParts.$(OBJEXT)
-UdpEventTestParts_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-UdpEventTestParts_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__EXEEXT_1 = UdpEventsTest$(EXEEXT) UdpEventsTestStatics$(EXEEXT)
 UdpEventsTest_SOURCES = UdpEventsTest.c
 UdpEventsTest_OBJECTS = UdpEventsTest.$(OBJEXT)
 UdpEventsTest_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
 UdpEventsTest_DEPENDENCIES = $(am__DEPENDENCIES_1)
+UdpEventsTestStatics_SOURCES = UdpEventsTestStatics.c
+UdpEventsTestStatics_OBJECTS = UdpEventsTestStatics.$(OBJEXT)
+UdpEventsTestStatics_LDADD = $(LDADD)
+UdpEventsTestStatics_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -160,8 +160,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = UdpEventTestParts.c UdpEventsTest.c
-DIST_SOURCES = UdpEventTestParts.c UdpEventsTest.c
+SOURCES = UdpEventsTest.c UdpEventsTestStatics.c
+DIST_SOURCES = UdpEventsTest.c UdpEventsTestStatics.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -739,13 +739,13 @@ $(am__aclocal_m4_deps):
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
-UdpEventTestParts$(EXEEXT): $(UdpEventTestParts_OBJECTS) $(UdpEventTestParts_DEPENDENCIES) $(EXTRA_UdpEventTestParts_DEPENDENCIES) 
-	@rm -f UdpEventTestParts$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(UdpEventTestParts_OBJECTS) $(UdpEventTestParts_LDADD) $(LIBS)
-
 UdpEventsTest$(EXEEXT): $(UdpEventsTest_OBJECTS) $(UdpEventsTest_DEPENDENCIES) $(EXTRA_UdpEventsTest_DEPENDENCIES) 
 	@rm -f UdpEventsTest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(UdpEventsTest_OBJECTS) $(UdpEventsTest_LDADD) $(LIBS)
+
+UdpEventsTestStatics$(EXEEXT): $(UdpEventsTestStatics_OBJECTS) $(UdpEventsTestStatics_DEPENDENCIES) $(EXTRA_UdpEventsTestStatics_DEPENDENCIES) 
+	@rm -f UdpEventsTestStatics$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(UdpEventsTestStatics_OBJECTS) $(UdpEventsTestStatics_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -753,8 +753,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UdpEventTestParts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UdpEventsTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UdpEventsTestStatics.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -972,9 +972,9 @@ UdpEventsTest.log: UdpEventsTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-UdpEventTestParts.log: UdpEventTestParts$(EXEEXT)
-	@p='UdpEventTestParts$(EXEEXT)'; \
-	b='UdpEventTestParts'; \
+UdpEventsTestStatics.log: UdpEventsTestStatics$(EXEEXT)
+	@p='UdpEventsTestStatics$(EXEEXT)'; \
+	b='UdpEventsTestStatics'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
