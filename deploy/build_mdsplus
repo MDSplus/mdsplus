@@ -78,7 +78,7 @@ case "$1" in
 	    export BRANCH=${BRANCH:0:${#BRANCH}-8}
 	fi
 	export PATH=/buildsrc/deploy:$PATH
-	build_it $@
+	build_it $@ 2>&1
 	;;
     build_latest_release)
 	shift 1
@@ -107,7 +107,7 @@ case "$1" in
 	    wget -q --no-check-certificate -O - https://github.com/MDSplus/mdsplus/archive/${tag}.tar.gz | tar zxf -;
 	    mv mdsplus-${tag}/* ./
 	    export PATH=/buildsrc/deploy:$PATH
-	    build_it $@
+	    build_it $@ 2>&1
 	fi
 	;;
     *)
