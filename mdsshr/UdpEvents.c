@@ -390,10 +390,12 @@ int MDSUdpEventCan(int eventid)
 int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
 {
   char multiIp[64];
+  uint32_t buflen_net_order = htonl(bufLen);
   int udpSocket;
   struct sockaddr_in sin;
   char *msg=0, *currPtr;
-  int msgLen, nameLen, actBufLen;
+  int msgLen, nameLen = strlen(eventName), actBufLen;
+  uint32_t namelen_net_order = htonl(nameLen);
   int status;
   struct hostent *hp = (struct hostent *)NULL;
   unsigned short port;
@@ -424,14 +426,18 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   msgLen = 4 + nameLen + 4 + actBufLen;
   msg = malloc(msgLen);
   currPtr = msg;
-  *((unsigned int *)currPtr) = htonl(nameLen);
-  currPtr += 4;
+
+  memcpy(currPtr, &namelen_net_order, sizeof(namelen_net_order));
+  currPtr += sizeof(buflen_net_order);
+
   memcpy(currPtr, eventName, nameLen);
   currPtr += nameLen;
 
-  *((unsigned int *)currPtr) = htonl(bufLen);
-  currPtr += 4;
-  memcpy(currPtr, buf, bufLen);
+  memcpy(currPtr, &buflen_net_order, sizeof(buflen_net_order));
+  currPtr += sizeof(buflen_net_order);
+
+  if (buf && bufLen > 0)
+    memcpy(currPtr, buf, bufLen);
 
   LockMdsShrMutex(&sendEventMutex, &sendEventMutex_initialized);
   if (UdpEventGetTtl(&ttl))

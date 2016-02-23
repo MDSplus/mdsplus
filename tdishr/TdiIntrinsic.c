@@ -318,7 +318,8 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
 	  }
 	  if (stat1 & 1) {
 	    out_ptr->dtype = dsc_ptr->dtype;
-	    _MOVC3(out_ptr->length, dsc_ptr->pointer, (char *)out_ptr->pointer);
+	    if ((out_ptr->length > 0) && (dsc_ptr != NULL))
+	      _MOVC3(out_ptr->length, dsc_ptr->pointer, (char *)out_ptr->pointer);
 	  }
 	  break;
 	default:
