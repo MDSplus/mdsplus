@@ -2392,7 +2392,11 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
                     {
                         var timesDataType = this.getResponseHeader('TIMES_DATATYPE');
                         var timesLength = parseInt(this.getResponseHeader('TIMES_LENGTH'));
-                        this.framePanel.times = eval('new ' + timesDataType + '(this.response, frameLength * frameData.BYTES_PER_ELEMENT, timesLength)');
+                        try {
+                             var tempBuf = eval('new Int8Array(this.response, frameLength * frameData.BYTES_PER_ELEMENT, timesLength*8)');
+                             this.framePanel.times = new Float64Array(tempBuf);
+//                            this.framePanel.times = eval('new ' + timesDataType + '(this.response, frameLength * frameData.BYTES_PER_ELEMENT, timesLength)');
+                        }catch(err) {alert(err);}
                     }
                     this.framePanel.labels = new Object();
                     if(this.framePanel.labelExprs.title != undefined)
