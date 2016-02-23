@@ -52,7 +52,9 @@ TEST_DIRS ?= \
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 
-
+print:
+	@echo $(tests_DIRS)
+	@echo "$(MAKE) $(AM_MAKEFLAGS)"
 
 .PHONY: $(tests_DIRS) $(clean_DIRS) $(tests_valgrind_DIRS) $(tests_valgrind_suppressions_DIRS)
 tests_DIRS  = $(addprefix tests__$(top_builddir)/, $(TEST_DIRS))
@@ -60,30 +62,23 @@ clean_DIRS  = $(addprefix clean__$(top_builddir)/, $(TEST_DIRS))
 tests_valgrind_DIRS = $(addprefix tests_valgrind__$(top_builddir)/, $(TEST_DIRS))
 tests_valgrind_suppressions_DIRS = $(addprefix tests_valgrind_suppressions__$(top_builddir)/, $(TEST_DIRS))
 $(tests_DIRS):
-	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
-
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+	
 $(clean_DIRS):
-	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
+	@-$(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 
 $(tests_valgrind_DIRS):	
-	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
 
 $(tests_valgrind_suppressions_DIRS):
-	-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+	@-$(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind_suppressions__%=%) tests-valgrind-suppressions
+
 
 
 .PHONY: tests tests-valgrind tests-valgrind-suppressions tests-clean
 tests: $(tests_DIRS)
-	@ \
-	echo " -------- CUT HERE for Jenkins  --------------- "; \
-	echo $(addsuffix *.tap,$(TEST_DIRS)); \
-	echo " ---------------------------------------------- "
 
 tests-valgrind: $(tests_valgrind_DIRS)
-	@ \
-	echo " -------- CUT HERE for Jenkins  --------------- "; \
-	echo $(addsuffix *-valgrind-*.xml,$(TEST_DIRS)); \
-	echo " ---------------------------------------------- "
 
 tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
 
