@@ -1,4 +1,25 @@
-commit 95fccdc1d77f24f74e738afe72c9ec030ec2c7eb (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 84fce3039cd452dbe6dee9a6639a6378e6e8a952 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: b0751fc 68c23c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 22 14:31:11 2016 -0500
+
+    Merge pull request #368 from MDSplus/twf-fix-units
+    
+    Have to use units() not units_of() to find units. units_of just retur…
+
+commit 68c23c081a33f30d957809649c7f9d6a2a6c43ee (refs/remotes/origin/twf-fix-units)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 22 13:47:23 2016 -0500
+
+    Have to use units() not units_of() to find units. units_of just returns the units of an MDSplus data item while units() tries to find units by looking at properties of the data which might reference other nodes whose data contains the units.
+
+commit b0751fc8353d346e9cb115b2c0ce4576f27660fe (tag: refs/tags/alpha_release-7-0-227)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sat Feb 20 23:24:18 2016 -0500
+
+    New release ---- alpha_release-7-0-227
+
+commit 95fccdc1d77f24f74e738afe72c9ec030ec2c7eb
 Merge: 943d8da 41e7497
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri Feb 19 16:50:50 2016 -0500
