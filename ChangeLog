@@ -1,4 +1,40 @@
-commit 84fce3039cd452dbe6dee9a6639a6378e6e8a952 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 93ea4773a359dfe8c63379f7ee8a0b90aacb51bd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 55ffe5d 7e6fd8d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 23 13:20:15 2016 -0500
+
+    Merge pull request #370 from MDSplus/twf-attempt-to-fix-unrecognized-input-header-errors-from-docker
+    
+    Due to a known bug in docker when threaded applications output to bot…
+
+commit 7e6fd8dabd31a1dd5ea472e44eefe70b5914a144 (refs/remotes/origin/twf-attempt-to-fix-unrecognized-input-header-errors-from-docker)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 23 11:45:39 2016 -0500
+
+    Due to a known bug in docker when threaded applications output to both stdout and stderr docker often crashes with an unrecognized input header error. A reported workaround is to pipe stderr through stdout.
+
+commit 55ffe5d6f3d027fe282600d06a74740e62f13c2b
+Merge: d3a3e0c 98af8d0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 23 09:32:40 2016 -0500
+
+    Merge pull request #369 from MDSplus/dev-gm
+    
+    fix frames in WebScope
+
+commit 98af8d01b6a549b4c50fb512662e46fda6002598 (refs/remotes/origin/dev-gm)
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Tue Feb 23 14:57:35 2016 +0100
+
+    fix frames
+
+commit d3a3e0c509a00e322d0b2e51b1456b0cb07c8517 (tag: refs/tags/alpha_release-7-0-228)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Feb 22 23:24:15 2016 -0500
+
+    New release ---- alpha_release-7-0-228
+
+commit 84fce3039cd452dbe6dee9a6639a6378e6e8a952
 Merge: b0751fc 68c23c0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 22 14:31:11 2016 -0500
@@ -1215,7 +1251,7 @@ Date:   Fri Jan 15 09:50:52 2016 -0500
 
     Fix typos to include the VS dll in the installer
 
-commit ca77a044f06e930a7b4d557052767cfc55120f46 (refs/remotes/origin/dev-gm)
+commit ca77a044f06e930a7b4d557052767cfc55120f46
 Merge: 4c87cfc ac4c732
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Jan 15 13:32:03 2016 +0100
