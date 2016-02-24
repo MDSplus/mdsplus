@@ -61,6 +61,8 @@ static void getMulticastAddr(char const *eventName, char *retIp);
 void test_initialize() {
     BEGIN_TESTING(UdpEvents initialize);
     initialize();
+    initialize();
+    initialize();
 //    SKIP_TEST("not implemented yet");
     END_TESTING;
 }
@@ -68,7 +70,12 @@ void test_initialize() {
 
 ///
 /// \brief test_handleMessage tests static void *handleMessage(void *info_in);
-///
+/// handleMessage is the start function of the waiting thread .. it loops over
+/// the receive action from socket and eventually triggers the Ast function if
+/// the event matches the proper name. This tests mimics the UdpEventAst
+/// fucntion but it doesn't detach the waiting thread, this seems to prevent
+/// memory allocation errors in valgrind.
+/// 
 void test_handleMessage() {
     BEGIN_TESTING(UdpEvents handleMessage);
             
@@ -154,10 +161,9 @@ static void *_push_handler(void *arg) {
 void test_pushEvent() {
     BEGIN_TESTING(UpdEvents pushEvent);
     printf("pushEvent test\n");    
-    int i;
-    for(i=0; i<10; ++i)
+    for(int i=0; i<10; ++i)
         pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
-    for(i=0; i<10; ++i)
+    for(int i=0; i<10; ++i)
         pthread_join(list[i].thread,0);
     END_TESTING
 }
@@ -171,13 +177,42 @@ static void *_pop_handler(void *arg) {
 
 void test_popEvent() {
     BEGIN_TESTING(UpdEvents popEvent);
-    printf("popEvent test\n");    
-    int i;
-    for(i=0; i<10; ++i)
+    printf("popEvent test\n");        
+    for(int i=0; i<10; ++i)
         pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
-    for(i=0; i<10; ++i)
+    for(int i=0; i<10; ++i)
         pthread_join(list[i].thread,0);
     END_TESTING
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Suppression  ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+static void * _thread_action(void *arg) {
+    (void)arg;
+    int status;
+    status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
+    status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
+    while(1) {
+        // do nothing .. //
+    }
+    return NULL;
+}
+
+void test_pthread_cancel_Suppresstion() {
+    pthread_t thread[10];
+    for(int i=0; i<10; ++i) { 
+        pthread_create(&thread[i],NULL,_thread_action,NULL);
+        pthread_detach(thread[i]);
+    }
+    usleep(10000);
+    for(int i=0; i<10; ++i) {
+        while( pthread_cancel(thread[i]) != 0 );
+    }
 }
 
 
@@ -194,6 +229,10 @@ int main(int argc, char *argv[])
     test_handleMessage();
     test_pushEvent();
     test_popEvent();
-    pthread_exit(NULL);
+    
+    // generate a suppression for pthread_cancel valgrind issue //
+    test_pthread_cancel_Suppresstion();
+    
+
     return 0;
 }

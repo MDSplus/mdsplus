@@ -20,6 +20,9 @@ TESTS = \
         UdpEventsTestStatics       
 
 
+VALGRIND_SUPPRESSIONS_FILES = \
+                              $(srcdir)/valgrind-mdsshr.supp
+
 
 #
 # Files produced by tests that must be purged
