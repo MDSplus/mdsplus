@@ -83,11 +83,15 @@ void CloseDataSources();
 #include <Xmds/XmdsWaveform.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <pthread.h>
 #ifndef _toupper
 #define _toupper(c)	(((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
 
 extern void EventUpdate(XtPointer client_data, int *source, XtInputId * id);
+
+extern pthread_mutex_t event_mutex;
+
 
 #if defined(_LOCAL_ACCESS)
 #include <mdsdescrip.h>
@@ -311,7 +315,9 @@ void SetupEvent(String event, Boolean * received, int *id)
     *id = 0;
   }
   if (strlen(event)) {
+    pthread_mutex_lock(&event_mutex);
     MDSEventAst(event, EventAst, received, id);
+    pthread_mutex_unlock(&event_mutex);
   }
 }
 
@@ -321,12 +327,15 @@ void SetupEventInput(XtAppContext app_context, Widget w)
   this_widget = w;
 }
 #else
+
 static int event_pipe[2];
 static void EventAst(void *astparam, int dlen, char *data)
 {
   Boolean *received = (Boolean *) astparam;
   char buf[1];
+  pthread_mutex_lock(&event_mutex);
   *received = 1;
+  pthread_mutex_unlock(&event_mutex);
   write(event_pipe[1], buf, 1);
 }
 
@@ -337,7 +346,9 @@ void SetupEvent(String event, Boolean * received, int *id)
     *id = 0;
   }
   if (strlen(event)) {
+    pthread_mutex_lock(&event_mutex);
     MDSEventAst(event, EventAst, received, id);
+    pthread_mutex_unlock(&event_mutex);
   }
 }
 
