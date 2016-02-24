@@ -1222,6 +1222,7 @@ remove 28/06/2005
                 ( (MdsWaveInterface) w.wi).FromFile(pr,
                     "Scope.plot_" + (r + 1) + "_" + (c + 1) , cmd);
                 ( (MdsWaveInterface) w.wi).mapColorIndex(colorMapping);
+                SetWaveParams(w);
                 k++;
             }
         }
