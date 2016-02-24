@@ -13956,7 +13956,8 @@ VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_lo
 # Internal use
 valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
                      $(TEST_LOGS:.log=-valgrind-*.log) \
-                     $(TEST_LOGS:.log=-valgrind-*.xml)
+                     $(TEST_LOGS:.log=-valgrind-*.xml) \
+                     $(TEST_LOGS:.log=-valgrind-*.supp)
 
 valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
 
@@ -14012,6 +14013,15 @@ tests-valgrind:
 tests-valgrind-tool:
 	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
 	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
+	@ echo ""; \
+	  echo "---------------------------------------------------------------------------"; \
+	  echo " vagrind $(VALGRIND_TOOL) "; \
+	  echo " active tool options   :  $(valgrind_$(VALGRIND_TOOL)_flags) "; \
+	  echo " active valgrind flags : $(VALGRIND_FLAGS) "; \
+	  echo " active suppressions   : "; \
+	  for supp in $(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY); do \
+	    echo "        $${supp}"; \
+	  done;
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \

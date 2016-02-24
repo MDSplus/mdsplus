@@ -59,10 +59,8 @@ TESTS = \
 #
 
 VALGRIND_SUPPRESSIONS_FILES = \
-                              $(srcdir)/valgrind-stdlib.supp      \
-                              $(srcdir)/valgrind-dlerr.supp       \
-                              $(srcdir)/valgrind-connection.supp  \
-                              $(srcdir)/valgrind-treenode.supp 
+                              $(top_srcdir)/mdsshr/testing/valgrind-mdsshr.supp \
+                              $(srcdir)/valgrind-mdsobjects-cpp.supp
 
 
 #

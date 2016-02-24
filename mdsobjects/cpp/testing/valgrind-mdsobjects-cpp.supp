@@ -1,4 +1,7 @@
 
+#
+# Connection
+#
 {
    <insert_a_suppression_name_here>
    Memcheck:Addr1
@@ -30,7 +33,7 @@
    fun:calloc
    fun:allocate_dtv
    fun:_dl_allocate_tls
-   fun:pthread_create@@GLIBC_2.2.5
+   fun:pthread_create*
 }
 
 {
@@ -54,4 +57,43 @@
    fun:xmalloc
    fun:set_default_locale
 }
+
+#
+# dlerr
+#
+{
+   suppression for dlerror
+   Memcheck:Addr4
+   fun:LibFindImageSymbol_C
+   fun:LibFindImageSymbol
+   fun:TreeCallHook
+}
+
+#
+# stdlib
+#
+{
+   string suppression
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:_Znwm
+   fun:allocate
+   fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
+   fun:_ZNSs12_S_constructIPKcEEPcT_S3_RKSaIcESt20forward_iterator_tag.part.29
+   fun:_S_construct_aux<char const*>
+   fun:_S_construct<char const*>
+   fun:_ZNSsC1EPKcRKSaIcE
+}
+
+#
+# TreeNode
+#
+{
+   supression for overloaded new operator
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:_ZN7MDSplus8TreeNodenwEm
+}
+
 

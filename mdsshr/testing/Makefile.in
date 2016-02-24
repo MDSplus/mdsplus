@@ -695,6 +695,9 @@ AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
 LDADD = $(TEST_LIBS) @LIBS@ -lMdsShr
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
+VALGRIND_SUPPRESSIONS_FILES = \
+                              $(srcdir)/valgrind-mdsshr.supp
+
 
 #
 # Files produced by tests that must be purged

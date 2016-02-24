@@ -7,16 +7,29 @@
 #include <sys/syscall.h>
 #include <time.h>
 
+#include <stdarg.h>
+
 #include "testing.h"
 
 
-
+///
+/// thread safe print in stdout
+///
+static pthread_mutex_t printf_locked_mutex;
+void printf_locked(const char *format,...) {
+    va_list args;
+    va_start(args, format);
+    pthread_mutex_lock(&printf_locked_mutex);
+    vprintf(format, args);
+    pthread_mutex_unlock(&printf_locked_mutex);
+    va_end(args);
+}
 
 
 static int astCount = 0;
 
 void eventAst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf_locked("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);    
     astCount++;
@@ -28,14 +41,14 @@ void eventAst(void *arg, int len, char *buf) {
 static int first = 0,second = 0;
 
 void eventAstFirst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf_locked("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);    
     first=1;
 }
 
 void eventAstSecond(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf_locked("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);    
     second=1;
@@ -50,6 +63,8 @@ static void wait() {
 
 int main(int argc, char **args)
 {
+    pthread_mutex_init(&printf_locked_mutex, NULL);
+    
     BEGIN_TESTING(UdpEvents); 
     int status;
     int i,iterations,ev_id;
