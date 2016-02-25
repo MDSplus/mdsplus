@@ -160,10 +160,11 @@ static void *_push_handler(void *arg) {
 
 void test_pushEvent() {
     BEGIN_TESTING(UpdEvents pushEvent);
-    printf("pushEvent test\n");    
-    for(int i=0; i<10; ++i)
+    printf("pushEvent test\n");
+    int i;
+    for(i=0; i<10; ++i)
         pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
-    for(int i=0; i<10; ++i)
+    for(i=0; i<10; ++i)
         pthread_join(list[i].thread,0);
     END_TESTING
 }
@@ -177,10 +178,11 @@ static void *_pop_handler(void *arg) {
 
 void test_popEvent() {
     BEGIN_TESTING(UpdEvents popEvent);
-    printf("popEvent test\n");        
-    for(int i=0; i<10; ++i)
+    printf("popEvent test\n");
+    int i;
+    for(i=0; i<10; ++i)
         pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
-    for(int i=0; i<10; ++i)
+    for(i=0; i<10; ++i)
         pthread_join(list[i].thread,0);
     END_TESTING
 }
@@ -205,12 +207,13 @@ static void * _thread_action(void *arg) {
 
 void test_pthread_cancel_Suppresstion() {
     pthread_t thread[10];
-    for(int i=0; i<10; ++i) { 
+    int i;
+    for(i=0; i<10; ++i) { 
         pthread_create(&thread[i],NULL,_thread_action,NULL);
         pthread_detach(thread[i]);
     }
     usleep(10000);
-    for(int i=0; i<10; ++i) {
+    for(i=0; i<10; ++i) {
         while( pthread_cancel(thread[i]) != 0 );
     }
 }
