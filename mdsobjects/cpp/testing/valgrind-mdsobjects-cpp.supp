@@ -121,7 +121,7 @@
 }
 {
    removes all UDT namespace leaks
-   Memcheck:*
+   Memcheck:Leak
    ...
    fun:_ZN*UDT*   
 }
@@ -141,7 +141,7 @@
 }
 {
    removes all UDT namespace leaks
-   Memcheck:*
+   Memcheck:Leak
    ...
    fun:_ZN9CRcvQueue*
 }
