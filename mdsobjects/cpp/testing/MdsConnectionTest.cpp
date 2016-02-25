@@ -34,7 +34,7 @@ using namespace testing;
 void test_tree_open(const char *prot) 
 {
     MdsIpInstancer mdsip(prot);
-    usleep(500);
+    usleep(5000);
     
     // get address form instancer for the specified protocol //
     std::string addr = mdsip.getAddress();    
