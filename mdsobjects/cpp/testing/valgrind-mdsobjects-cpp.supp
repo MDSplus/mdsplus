@@ -16,30 +16,30 @@
    obj:/usr/lib/libc-2.21.so
 }
 
+#   match-leak-kinds: definite
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: definite
    fun:_Znwm
    fun:_ZN10CUDTUnited9newSocketEii
    fun:_ZN4CUDT6socketEiii
    fun:_ZN3UDT6socketEiii
 }
 
+#   match-leak-kinds: possible
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    fun:allocate_dtv
    fun:_dl_allocate_tls
    fun:pthread_create*
 }
 
+#   match-leak-kinds: possible
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:_Znam
    fun:_ZN10CUnitQueue4initEiii
    fun:_ZN9CRcvQueue4initEiiiiP8CChannelP6CTimer
@@ -49,10 +49,10 @@
    fun:_ZN3UDT7connectEiPK8sockaddri
 }
 
+#   match-leak-kinds: definite
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: definite
    fun:malloc
    fun:xmalloc
    fun:set_default_locale
@@ -72,10 +72,10 @@
 #
 # stdlib
 #
+#   match-leak-kinds: possible
 {
    string suppression
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:_Znwm
    fun:allocate
    fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
