@@ -468,9 +468,9 @@ EOF
 	    fi
 	    if ( test "${RELEASE_TAG}" != "" )
 	    then
-		comment="New release of ${BRANCH} branch of MDSplus. \n" \
-		"Version mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE}"
-		git tag -f -a -m  ${comment} ${RELEASE_TAG};
+		comment=$(echo "New release of ${BRANCH} branch of MDSplus." \
+		               "Version mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE}");
+		git tag -f -a -m  "${comment}" ${RELEASE_TAG};
 		git push --follow-tags origin ${BRANCH};
 	    else
 		cat <<EOF
