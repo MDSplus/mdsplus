@@ -97,3 +97,58 @@
 }
 
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  UDT  ////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# UDT suppressions for race conditions
+# we don't care of udt internal issues
+# ! FOR NOW !
+#
+# UDT 
+{
+   removes all UDT namespace races
+   Helgrind:Race
+   ...
+   fun:_ZN*UDT*
+}
+{
+   removes all UDT namespace drd
+   drd:ConflictingAccess
+   ...
+   fun:_ZN*UDT*   
+}
+{
+   removes all UDT namespace leaks
+   Memcheck:*
+   ...
+   fun:_ZN*UDT*   
+}
+#
+# RcvQueue 
+{
+   removes all UDT namespace races
+   Helgrind:Race
+   ...
+   fun:_ZN9CRcvQueue*
+}
+{
+   removes all UDT namespace drd
+   drd:ConflictingAccess
+   ...
+   fun:_ZN9CRcvQueue*
+}
+{
+   removes all UDT namespace leaks
+   Memcheck:*
+   ...
+   fun:_ZN9CRcvQueue*
+}
+
+
+
+
+
+
+
