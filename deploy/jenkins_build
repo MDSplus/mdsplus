@@ -138,8 +138,6 @@ test_64 () {
 	$MAKE
 	$MAKE install
 	set +e
-	$MAKE -k tests TEST_FORMAT=tap;
-	tests_64=$?;
 	tests_valgrind64=0
 	if [ ! -z "${VG_TESTS}" ]
 	then
@@ -151,6 +149,8 @@ test_64 () {
 	    fi
 	    tests_valgrind64=$?;
 	fi
+	$MAKE -k tests TEST_FORMAT=tap;
+	tests_64=$?;
 	set -e;
 	popd;
     fi;
@@ -181,8 +181,6 @@ test_32() {
 	$MAKE
 	$MAKE install
 	set +e;
-	$MAKE -k tests TEST_FORMAT=tap;
-	tests_32=$?;
 	tests_valgrind32=0
 	if [ ! -z "${VG_TESTS}" ]
 	then
@@ -194,6 +192,8 @@ test_32() {
 	    fi
 	    tests_valgrind32=$?;
 	fi
+	$MAKE -k tests TEST_FORMAT=tap;
+	tests_32=$?;
 	set -e;
 	popd;
     fi;
