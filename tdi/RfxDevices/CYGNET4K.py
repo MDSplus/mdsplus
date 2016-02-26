@@ -1,3 +1,4 @@
+__version__=(2016,02,26,12,42)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -69,24 +70,14 @@ class CYGNET4K(Device):
             """a thread class that will stream frames to MDSplus tree"""
             def __init__ (self, node):
                 Thread.__init__ (self)
-                self.path = node.path
-                self.expt = node.tree.tree
-                self.shot = node.tree.shot
-                self.tree = Tree(self.expt,self.shot)
-                self.node = self.tree.getNode(self.path)
+                self.node = node
                 self.daemon = True
 
             def run(self):
                 while True:  # run until None is send
                     frameset = CYGNET4K.xclib.queue.get()
                     if frameset is None: break
-                    try: # try to store
-                        CYGNET4K.xclib.storeFrame(self.node,frameset[0],frameset[1])
-                    except mdsExceptions.TreeNOT_OPEN: # if tree got closed by mdsip server try reopening it
-                        print('_streamer Error TreeNOT_OPEN')
-                        self.tree = Tree(self.expt,self.shot)
-                        self.node = self.tree.getNode(self.path)
-                        CYGNET4K.xclib.storeFrame(self.node,frameset[0],frameset[1])
+                    CYGNET4K.xclib.storeFrame(self.node,frameset[0],frameset[1])
                     CYGNET4K.xclib.queue.task_done()
                 CYGNET4K.xclib.queue.task_done()
 
@@ -617,12 +608,15 @@ class CYGNET4K(Device):
             else:                   return
         raise mdsExceptions.DevException
 
-    def store(self):
+    def store(self,timeout=None):
         if not self.restoreWorker():
             raise mdsExceptions.DevException
-        self.worker.join(int(CYGNET4K.xclib.Frames*3+3))  # wait for it to complete
-        if self.worker.isAlive():  # error on timeout
-            raise mdsExceptions.DevException
+        if (timeout is None):
+            self.worker.join() # wait w/o timeout
+        else:
+            self.worker.join(float(timeout))  # wait for it to complete
+            if self.worker.isAlive():  # error on timeout
+                raise mdsExceptions.DevException
 
     def trend_start(self):
         dev_id = int(self.device_id.data())
