@@ -654,13 +654,15 @@ TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
         treeUnitTest.py \
-        threadsUnitTest.py
+        threadsUnitTest.py \
+        segmentsUnitTest.py
 
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 VALGRIND_TESTS = \
                  dataUnitTest.py \
-                 treeUnitTest.py
+                 treeUnitTest.py \
+                 segmentsUnitTest.py
 
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
