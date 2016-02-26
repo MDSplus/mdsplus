@@ -1148,7 +1148,9 @@ remove 28/06/2005
         {
             reversed = new Boolean(prop).booleanValue();
         }
-
+        else
+            reversed = false;
+            
         def_vals.xmax = pr.getProperty(prompt + ".global_1_1.xmax");
 
         def_vals.xmin = pr.getProperty(prompt + ".global_1_1.xmin");
