@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase,TestSuite
-from MDSplus import *
+
+from tree import Tree
+from mdsdata import *
+from mdsscalar import *
+from mdsarray import *
+
+import numpy as np
+import random
 import os
 import sys
-from numpy import array
-import math
-import numpy as np
-import subprocess
-import  random
+
 
 
 import tempfile
