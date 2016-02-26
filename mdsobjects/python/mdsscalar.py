@@ -208,6 +208,10 @@ class String(Scalar):
         """Add: x.__add__(y) <==> x+y
         @rtype: Data"""
         return self.execute('$//$',self,y)
+    def __contains__(self,y):
+        """Contains: x.__contains__(y) <==> y in x
+        @rtype: Bool"""
+        return str(self._value).find(str(y)) != -1
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
