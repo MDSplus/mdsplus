@@ -1,4 +1,40 @@
-commit de40d6e69883f926fd1999d9b8fd15b6c2868257 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit c1bdb948410f5b57376e7acbc1517085314af5dd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 84d29fc f09b63d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 09:20:52 2016 -0500
+
+    Merge pull request #376 from MDSplus/dev-gm
+    
+    Fix again reversed field
+
+commit f09b63d538327fefaad5e2ba14a149e7604d0824 (refs/remotes/origin/dev-gm)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 26 14:50:55 2016 +0100
+
+    Fix reversed field
+
+commit 84d29fca8b8c571d4cd8af4bfedc58d65e7c806f
+Merge: 491942c c059397
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 08:22:32 2016 -0500
+
+    Merge pull request #375 from MDSplus/brst-python-in-method
+    
+    Add __contains__ method to mdsscalar.String
+
+commit c0593979b567179da245a7fc28beb1b5334a743d
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Fri Feb 26 12:02:56 2016 +0100
+
+    Add __contains__ method to mdsscalar.String
+
+commit 491942cc4f8b57b5d74bf119acadc0f91f8a2854 (tag: refs/tags/alpha_release-7-0-230)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Feb 24 23:24:16 2016 -0500
+
+    New release ---- alpha_release-7-0-230
+
+commit de40d6e69883f926fd1999d9b8fd15b6c2868257
 Merge: 627f95d 9c8781b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 24 13:28:02 2016 -0500
@@ -7,7 +43,7 @@ Date:   Wed Feb 24 13:28:02 2016 -0500
     
     Fix saved reversed flag
 
-commit 9c8781b6f3bdabc29720297ad4c1037f44e28d76 (refs/remotes/origin/dev-gm)
+commit 9c8781b6f3bdabc29720297ad4c1037f44e28d76
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Feb 24 18:33:47 2016 +0100
 
