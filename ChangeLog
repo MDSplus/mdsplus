@@ -1,4 +1,16 @@
-commit c1bdb948410f5b57376e7acbc1517085314af5dd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit b10de1a6b50ec1f82028927ba1de996bcf6e2af2 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sat Feb 27 15:03:13 2016 -0500
+
+    Fix removal of old mdsplus python module on update. Package was renamed to all lowercase so removel procudure was no longer working.
+
+commit 5fc42f06c434c5d219d6fcc55e7a74ad0bbd9557 (tag: refs/tags/alpha_release-7-0-231)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Feb 26 23:24:22 2016 -0500
+
+    New release ---- alpha_release-7-0-231
+
+commit c1bdb948410f5b57376e7acbc1517085314af5dd
 Merge: 84d29fc f09b63d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Feb 26 09:20:52 2016 -0500
