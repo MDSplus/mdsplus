@@ -611,10 +611,9 @@ class TreeNode(_data.Data):
         """
         if path[0] == '\\':
             return self.tree.getNode(path)
-        else:
-            if path[0] != ':' and path[0] != '.':
-                path=':'+path
-            return self.tree.getNode(self.fullpath+path)
+        elif not path[0]  in ':.':
+            path=':'+path
+        return self.tree.getNode(self.fullpath+path)
 
     def getNodeName(self):
         """Return node name
@@ -630,15 +629,11 @@ class TreeNode(_data.Data):
         @return: node matching path
         @rtype: TreeNodeArray
         """
-        ans = None
         if path[0] == '\\':
-            ans = self.tree.getNode(path)
-        else:
-            if path[0] != ':' and path[0] != '.':
-                path=':'+path
-            ans = self.tree.getNodeWild(self.fullpath+path)
-        if ans is not None:
-            ans.tree = self.tree
+            return self.tree.getNodeWild(path)
+        elif not path[0]  in ':.':
+            path  = ':' + path
+        return self.tree.getNodeWild(self.fullpath+path)
 
     def getNumChildren(self):
         """Return number of children nodes.
