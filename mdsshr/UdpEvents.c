@@ -73,6 +73,7 @@ extern void InitializeEventSettings();
 static void *handleMessage(void *info_in)
 {
   struct EventInfo *info = (struct EventInfo *)info_in;
+  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
   int socket = info->socket;
   size_t thisNameLen = strlen(info->eventName);
   char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
@@ -90,6 +91,7 @@ static void *handleMessage(void *info_in)
   status=pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
   free(info->eventName);
   free(info);
+  UnlockMdsShrMutex(&eventIdMutex);
   
   while (1) {
 #ifdef _WIN32
