@@ -144,12 +144,15 @@ AC_ARG_ENABLE([sanitizer],
 )
 
 AX_COMPILER_VERSION
-if test "$enable_san" = "yes" -a "$GCC" = yes; then
+if test "$enable_san" != "no" -a "$GCC" = yes; then
    AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
                        [enable_san="yes"], [enable_san="no"] )
    if test "$enable_san" = "yes"; then
-       CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
+       CFLAGS="$CFLAGS -fsanitize=address -fno-omit-frame-pointer"
+       AS_VAR_SET([SANITIZE_LIBS],[-lasan])
    fi
+   dnl   AM_CONDITIONAL([SANITIZE_ADDRESS], test x"${enable_san}" = x"yes")
+   dnl   AC_SUBST([SANITIZE_ADDRESS],${enable_san})
 fi
 
 dnl AC_ARG_ENABLE([universal],
@@ -1174,9 +1177,12 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
-
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES
+
+
+AS_VAR_SET([LIBS],["${SANITIZE_LIBS} ${LIBS}"])
+AC_SUBST([LIBS])
 
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
