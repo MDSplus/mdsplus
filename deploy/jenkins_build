@@ -237,6 +237,10 @@ test_32() {
 	then
 	    IFS=',' read -ra ARR <<< "$SAN_TESTS"
 	    for test in "${ARR[@]}"; do
+		if [ "$test" = "thread" ]; then
+		    echo "No 32-bit support for sanitize=thread. Skipping."
+		    break
+		fi
 		MDSPLUS_DIR=${WORKSPACE}/tests/32-san-${test}/buildroot;
 		MDS_PATH=${MDSPLUS_DIR}/tdi;
 		mkdir -p ${MDSPLUS_DIR};
