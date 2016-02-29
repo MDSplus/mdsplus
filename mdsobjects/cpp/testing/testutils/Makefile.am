@@ -10,8 +10,8 @@ AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -I${top_srcdir}
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ -I${top_srcdir}
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
 
-AM_LIBS = -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
-LDADD = @LIBS@ $(AM_LIBS)
+AM_LIBS = $(LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+LDADD = $(AM_LIBS)
 
 library_includedir = $(includedir)/mdsplus/testutils
 library_include_HEADERS = \
