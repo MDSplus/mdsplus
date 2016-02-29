@@ -176,9 +176,13 @@ test_64 () {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=x86_64-linux \
 			 --enable-sanitize-${test}
+		if [ "$?" != 0 ]; then
+		    echo "Error during configure with sanitizer. Skipping test"
+		    break
+		fi
 		$MAKE
 		$MAKE install
-		$MAKE -k tests
+		$MAKE -k tests TEST_FORMAT=tap 2>&1;
 		test_64_san_${test}=$?
 		popd
 	    done
@@ -247,6 +251,10 @@ test_32() {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=i686-linux \
 			 --enable-sanitize-${test}
+		if [ "$?" != "0" ]; then
+		    echo "Error with configure and sanitizer. Skipping test."
+		    break
+		fi
 		$MAKE
 		$MAKE install
 		$MAKE -k tests
