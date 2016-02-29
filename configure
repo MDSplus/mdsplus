@@ -8403,7 +8403,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_version" >&5
 $as_echo "$ax_cv_c_compiler_version" >&6; }
 
-if test "$enable_san" = "yes" -a "$GCC" = yes; then
+if test "$enable_san" != "no" -a "$GCC" = yes; then
 
 
 
@@ -8441,9 +8441,10 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
   fi
 
    if test "$enable_san" = "yes"; then
-       CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
+       CFLAGS="$CFLAGS -fsanitize=address -fno-omit-frame-pointer"
+       SANITIZE_LIBS=-lasan
    fi
-fi
+      fi
 
 
 
@@ -16704,7 +16705,6 @@ esac
 
 
 
-
 if test "x$exec_prefix" = x"NONE"; then :
   exec_prefix="${prefix}"
 fi
@@ -16760,6 +16760,10 @@ if test "x$mandir" = x"\${datarootdir}/man"; then :
 fi
 
 
+
+
+
+LIBS="${SANITIZE_LIBS} ${LIBS}"
 
 
 
