@@ -47,8 +47,8 @@ class treeTests(TestCase):
             hostpart=""
         os.environ["pytree_path"]=hostpart+_tmpdir
         os.environ["pytreesub_path"]=os.environ["pytree_path"]
-        if os.getenv("testing_path") == None:
-            os.environ['testing_path']="%s/../../../trees"%(os.path.dirname(os.path.realpath(__file__)),)
+        if 'testing_path' not in os.environ:
+            os.environ['testing_path']="%s/trees"%(os.path.dirname(os.path.realpath(__file__)),)
         
         
     def tearDown(self):
