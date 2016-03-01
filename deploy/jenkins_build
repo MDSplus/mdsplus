@@ -148,7 +148,7 @@ test_64 () {
 	    then
 		$MAKE -k tests-valgrind TEST_FORMAT=tap 2>&1;
 	    else
-		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" TEST_FORMAT=ta 2>&1;
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" 2>&1;
 	    fi
 	    tests_valgrind64=$?;
 	fi
@@ -182,7 +182,7 @@ test_64 () {
 		fi
 		$MAKE
 		$MAKE install
-		$MAKE -k tests TEST_FORMAT=tap 2>&1;
+		$MAKE -k tests TEST_FORMAT=log  VALGRIND_BUILD=yes 2>&1;
 		test_64_san_${test}=$?
 		popd
 	    done
@@ -223,7 +223,7 @@ test_32() {
 	    then
 		$MAKE -k tests-valgrind TEST_FORMAT=tap 2>&1;
 	    else
-		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" TEST_FORMAT=tap 2>&1;
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" 2>&1;
 	    fi
 	    tests_valgrind32=$?;
 	fi
@@ -261,7 +261,7 @@ test_32() {
 		fi
 		$MAKE
 		$MAKE install
-		$MAKE -k tests
+		$MAKE -k tests TEST_FORMAT=log VALGRIND_BUILD=yes
 		test_32_san_${test}=$?
 		popd
 	    done
