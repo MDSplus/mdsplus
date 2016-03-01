@@ -62,6 +62,10 @@ class treeTests(TestCase):
         for i in range(10):
             node=pytreesub_top.addNode('child%02d' % (i,),'structure')
             node.addDevice('dt200_%02d' % (i,),'dt200')
+
+        node = pytree_top.addNode('SIG_CMPRS', 'signal')
+        node.compress_on_put = True
+
         pytree.write()
         pytreesub.write()
 
@@ -210,6 +214,15 @@ class treeTests(TestCase):
         self.assertEqual(ip.getSegment(0),None)
         return
 
+    def getCompression(self):
+        testing = Tree('testing', -1)
+        for node in testing.getNodeWild(".compression:*"):
+            c_node = self.pytree.getNode('SIG_CMPRS')
+            c_node.record=node.record
+            self.assertTrue((c_node.record == node.record).all(), 
+                             msg="Error writing compressed signal%s"%node)
+        return
+
     def finish(self):
         del(self.pytree)
         del(self.pytree2)
@@ -224,6 +237,7 @@ class treeTests(TestCase):
         self.nodeLinkage()
         self.nciInfo()
         self.getData()
+        self.getCompression()
         self.finish()
 
 def suite():
