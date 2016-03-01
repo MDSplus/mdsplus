@@ -134,26 +134,32 @@ AC_ARG_ENABLE([java],
 
 # Add address sanitizer options to flags, if requested. Only useful for GCC
 # version 4.8 and later.
-AC_ARG_ENABLE([sanitizer],
+AC_ARG_ENABLE([sanitize-address],
   [AS_HELP_STRING(
-    [--enable-sanitizer],
+    [--enable-sanitize-address],
     [Enable memory error detection using address sanitizer @<:@default=no@:>@]
   )],
-  [enable_san="$enableval"],
-  [enable_san="no"]
+  [enable_san_a="$enableval"],
+  [enable_san_a="no"]
 )
 
-AX_COMPILER_VERSION
-if test "$enable_san" != "no" -a "$GCC" = yes; then
-   AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
-                       [enable_san="yes"], [enable_san="no"] )
-   if test "$enable_san" = "yes"; then
-       CFLAGS="$CFLAGS -fsanitize=address -fno-omit-frame-pointer"
-       AS_VAR_SET([SANITIZE_LIBS],[-lasan])
-   fi
-   dnl   AM_CONDITIONAL([SANITIZE_ADDRESS], test x"${enable_san}" = x"yes")
-   dnl   AC_SUBST([SANITIZE_ADDRESS],${enable_san})
-fi
+AC_ARG_ENABLE([sanitize-undefined],
+  [AS_HELP_STRING(
+    [--enable-sanitize-undefined],
+    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
+  )],
+  [enable_san_u="$enableval"],
+  [enable_san_u="no"]
+)
+
+AC_ARG_ENABLE([sanitize-thread],
+  [AS_HELP_STRING(
+    [--enable-sanitize-address],
+    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
+  )],
+  [enable_san_t="$enableval"],
+  [enable_san_t="no"]
+)
 
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
@@ -1145,6 +1151,56 @@ DX_PS_FEATURE(OFF)
 ## refers to ax_prog_doxygen.m4 macro expansion 
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
+## /////////////////////////////////////////////////
+## /// Sanitized Options - must be after other
+## /// Automake tests as they effect various library
+## /// checks etc.
+## /////////////////////////////////////////////////
+
+let sanitizers=0
+if test "$enable_san_a" = "yes"; then let sanitizers=$sanitizers+1; fi
+if test "$enable_san_t" = "yes"; then let sanitizers=$sanitizers+1; fi
+if test "$enable_san_u" = "yes"; then let sanitizers=$sanitizers+1; fi
+
+if test $sanitizers -gt 1; then
+  echo "Only one sanitizer can be enabled at a time. Disabling sanitizers."
+  enable_san_a="no"
+  enable_san_t="no"
+  enable_san_u="no"
+elif test $sanitizers -eq 1; then
+
+  AX_COMPILER_VERSION
+  AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
+		   [enable_sanitizing="yes"], [enable_sanitizing="no"] )
+
+  if test "$enable_sanitizing" = "yes" -a "$GCC" = "yes"; then
+     if test "$enable_san_a" = "yes"; then
+       FFLAGS="$FFLAGS"	    
+       CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
+       CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
+       LIBS="-lasan ${LIBS}"
+     fi;
+
+     if test "$enable_san_t" = "yes"; then
+       FFLAGS="$FFLAGS"
+       CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
+       CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
+       LIBS="-ltsan ${LIBS}"
+     fi;
+   
+     if test "$enable_san_u" = "yes"; then
+       FFLAGS="$FFLAGS"
+       CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
+       CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
+       LIBS="-lubsan ${LIBS}"
+     fi;
+  else
+    echo "gcc version 4.8.0 or higher required for sanitizers"
+  fi;	 
+fi
+
+
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
@@ -1177,12 +1233,9 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
+
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES
-
-
-AS_VAR_SET([LIBS],["${SANITIZE_LIBS} ${LIBS}"])
-AC_SUBST([LIBS])
 
 AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)

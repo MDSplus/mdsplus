@@ -573,20 +573,25 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // init logger NORMAL by default //
         srunner_init_logging(runner, print_mode);        
         
+        // format of the tests output //
         char *format = getenv("TEST_FORMAT");
-        if(format) { 
-            
-            // stdout redirected to file //
-            FILE *newout = switchStdout(NULL);
-            
+        
+        // to preserve the output format the stdout must be redirected. If no
+        // env is defined the result will be null and stdout will be
+        // suppressed. The log format preserves the normal stdout as no special
+        // formatting is needed.        
+        char *stdout_file = getenv("TEST_STDOUT_FILE");
+        
+        if(format) {
             if( !strcmp(format,"log") || !strcmp(format,"LOG"))            
-                srunner_register_lfun(runner, newout, 0, lfile_lfun, print_mode);
+                srunner_register_lfun(runner, stdout, 0, lfile_lfun, print_mode);
             else if( !strcmp(format,"tap") || !strcmp(format,"TAP"))            
-                srunner_register_lfun(runner, newout, 0, tap_lfun, print_mode);
+                srunner_register_lfun(runner, switchStdout(stdout_file), 0, tap_lfun, print_mode);
             else if( !strcmp(format,"xml") || !strcmp(format,"XML"))            
-                srunner_register_lfun(runner, newout, 0, xml_lfun, print_mode);
+                srunner_register_lfun(runner, switchStdout(stdout_file), 0, xml_lfun, print_mode);
         }
         else {
+            // default to log format //
             srunner_register_lfun(runner, stdout, 0, stdout_lfun, print_mode);            
         }
         
@@ -596,10 +601,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // send runner start event //
         log_srunner_start(runner);    
         log_suite_start(runner,suite);    
-        
-        // set fork //
-        //        set_fork_status(srunner_fork_status(runner));
-        
+                
         // set up message pipe in check_msg //
         setup_messaging(); 
         

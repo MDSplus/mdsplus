@@ -68,6 +68,9 @@ parse_cmd() {
 	    -s|--srcdir)
 		SRCDIR=$2
 		shift 2;;
+	    --sanitize)
+		SAN_TESTS=$2
+		shift 2;;
 #	    -b|--builddir)
 #		BUILDDIR=$2
 #		shift 2;;
@@ -145,14 +148,46 @@ test_64 () {
 	    then
 		$MAKE -k tests-valgrind TEST_FORMAT=tap 2>&1;
 	    else
-		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" TEST_FORMAT=ta 2>&1;
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" 2>&1;
 	    fi
 	    tests_valgrind64=$?;
 	fi
 	$MAKE -k tests TEST_FORMAT=tap 2>&1;
 	tests_64=$?;
-	set -e;
 	popd;
+	test_64_san_address=0
+	test_64_san_thread=0
+	test_64_san_undefined=0
+	if [ "$SAN_TESTS" != "" ]
+	then
+	    IFS=',' read -ra ARR <<< "$SAN_TESTS"
+	    for test in "${ARR[@]}"; do
+		MDSPLUS_DIR=${WORKSPACE}/tests/64-san-${test}/buildroot;
+		MDS_PATH=${MDSPLUS_DIR}/tdi;
+		mkdir -p ${MDSPLUS_DIR};
+		pushd ${WORKSPACE}/tests/64-san-${test};
+		${SRCDIR}/configure \
+			 --prefix=${MDSPLUS_DIR} \
+			 --exec_prefix=${MDSPLUS_DIR} \
+			 --bindir=${MDSPLUS_DIR}/bin64 \
+			 --libdir=${MDSPLUS_DIR}/lib64 \
+			 --with-gsi=/usr:gcc64 \
+			 --with-java_target=6 \
+			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
+			 --enable-debug --host=x86_64-linux \
+			 --enable-sanitize-${test}
+		if [ "$?" != 0 ]; then
+		    echo "Error during configure with sanitizer. Skipping test"
+		    break
+		fi
+		$MAKE
+		$MAKE install
+		$MAKE -k tests TEST_FORMAT=log  VALGRIND_BUILD=yes 2>&1;
+		test_64_san_${test}=$?
+		popd
+	    done
+	fi;
+	set -e;
     fi;
 }
 
@@ -188,14 +223,50 @@ test_32() {
 	    then
 		$MAKE -k tests-valgrind TEST_FORMAT=tap 2>&1;
 	    else
-		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" TEST_FORMAT=tap 2>&1;
+		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" 2>&1;
 	    fi
 	    tests_valgrind32=$?;
 	fi
 	$MAKE -k tests TEST_FORMAT=tap 2>&1;
 	tests_32=$?;
-	set -e;
 	popd;
+	test_32_san_address=0
+	test_32_san_thread=0
+	test_32_san_undefined=0
+	if [ "$SAN_TESTS" != "" ]
+	then
+	    IFS=',' read -ra ARR <<< "$SAN_TESTS"
+	    for test in "${ARR[@]}"; do
+		if [ "$test" = "thread" ]; then
+		    echo "No 32-bit support for sanitize=thread. Skipping."
+		    break
+		fi
+		MDSPLUS_DIR=${WORKSPACE}/tests/32-san-${test}/buildroot;
+		MDS_PATH=${MDSPLUS_DIR}/tdi;
+		mkdir -p ${MDSPLUS_DIR};
+		pushd ${WORKSPACE}/tests/32-san-${test};
+		${SRCDIR}/configure \
+			 --prefix=${MDSPLUS_DIR} \
+			 --exec_prefix=${MDSPLUS_DIR} \
+			 --bindir=${MDSPLUS_DIR}/bin32 \
+			 --libdir=${MDSPLUS_DIR}/lib32 \
+			 --with-gsi=/usr:gcc32 \
+			 --with-java_target=6 \
+			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
+			 --enable-debug --host=i686-linux \
+			 --enable-sanitize-${test}
+		if [ "$?" != "0" ]; then
+		    echo "Error with configure and sanitizer. Skipping test."
+		    break
+		fi
+		$MAKE
+		$MAKE install
+		$MAKE -k tests TEST_FORMAT=log VALGRIND_BUILD=yes
+		test_32_san_${test}=$?
+		popd
+	    done
+	fi;
+	set -e;
     fi;
 }
 
@@ -221,6 +292,17 @@ check_tests() {
 	echo "32-bit valgrind tests failed!!!";
 	failed=1;
     fi;
+    IFS=',' read -ra ARR <<< "address,thread,undefined"
+    for arch in 32 64; do
+	 for test in address thread undefined; do
+ 	     eval "status=\$test_${arch}_san_${test}"
+	     if [ "$status" != "0" ]
+             then
+		 echo "${arch}-bit --enable-sanitize-${test} failed"
+		 failed=1;
+	     fi
+	 done;
+    done;
     if [ "$failed" = "1" ]
     then
 	exit 1;
@@ -448,6 +530,7 @@ else
 export MAKE_RELEASE=$MAKE_RELEASE
 export TESTS=$TESTS
 export VG_TESTS="$VG_TESTS"
+export SAN_TESTS="$SAN_TESTS"
 export BRANCH=${BRANCH}
 export BNAME=${BNAME}
 export RELEASE_TAG=${RELEASE_TAG}

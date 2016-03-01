@@ -12,7 +12,7 @@ X_PRE_LIBS=@X_PRE_LIBS@
 @MINGW_FALSE@ XLIBS = $(X_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS)
 @MINGW_TRUE@ DEF=${srcdir}/idlmdsevent.def
 
-LIBS=$(XLIBS) @LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr
+LIBS=@LIBS@ $(XLIBS) @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr
 
 SOURCES = \
 mdsevent.c 
