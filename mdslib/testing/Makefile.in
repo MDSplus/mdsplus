@@ -688,7 +688,7 @@ TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-LDADD = $(TEST_LIBS) @LIBS@ -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
+LDADD = @LIBS@ $(TEST_LIBS) -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
@@ -1175,7 +1175,7 @@ rebuild-tests:
 	fi;
 
 .PHONY: tests
-tests:
+tests: rebuild-tests
 	@echo "Making tests ... "; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
@@ -1195,7 +1195,7 @@ LOG_COMPILER        ?= @LOG_COMPILER@
 PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
 PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 
-$(TEST_BUILD_TAP): rebuild-tests
+$(TEST_BUILD_TAP):
 	@ \
 	echo "Try to build targets one by one"; \
 	echo "TAP version 13" > $@; \
@@ -1226,6 +1226,8 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 @HAVE_PL_TAP_PARSER_FALSE@	echo "Run tests without collating results"; \
 @HAVE_PL_TAP_PARSER_FALSE@	export TEST_FORMAT="tap"; \
 @HAVE_PL_TAP_PARSER_FALSE@	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+
+# $(TEST_SUITE_LOG): 
 
 $(TEST_SUITE_XML):
 
