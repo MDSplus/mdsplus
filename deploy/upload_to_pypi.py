@@ -12,7 +12,9 @@ for branch in ['alpha','stable']:
    print(cmd)
    p=subprocess.Popen("%s/deploy/get_latest_release %s" % (os.environ['WORKSPACE'],branch),stdout=subprocess.PIPE,shell=True)
    release_tag=p.stdout.readlines()[0][0:-1]
-   p.wait()
+   status = p.wait()
+   if status != 0:
+      sys.exit(status)
    branch=release_tag.split('_')[0]
    v=release_tag.split('_')[1].split('-')
    major=v[1]
@@ -33,10 +35,12 @@ for branch in ['alpha','stable']:
    info['release_tag']=release_tag
    info['branch']=branch
    info['workspace']=os.environ['WORKSPACE']
-   subprocess.Popen("""
+   status = subprocess.Popen("""
 rm -Rf %(workspace)s/%(branch)s
 git clone %(workspace)s -b %(release_tag)s %(branch)s
 """ % info,shell=True).wait()
+   if status != 0:
+      sys.exit(status)
 
    f=open('%(branch)s/mdsobjects/python/setup.py' % info,'w')
    f.write("""
@@ -83,8 +87,10 @@ All of the MDSplus data types such as signal are represented as python classes.
 )
 """ % info)
    f.close()
-   subprocess.Popen("""
+   status=subprocess.Popen("""
 #python setup.py bdist_egg upload
 python setup.py sdist upload
-   """,shell=True,cwd='%(workspace)s/%(branch)s/mdsobjects/python' % info)
+   """,shell=True,cwd='%(workspace)s/%(branch)s/mdsobjects/python' % info).wait()
+   if status != 0:
+      sys.exit(status)
 
