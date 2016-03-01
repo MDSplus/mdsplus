@@ -15,6 +15,7 @@ _Exceptions=_mimport('mdsExceptions')
 _scalar=_mimport('mdsscalar')
 _tree=_mimport('tree')
 _treeshr=_mimport('_treeshr')
+_mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
 
 
@@ -276,10 +277,8 @@ class TreeNode(_data.Data):
         _tree.Tree.lock()
         try:
             self.restoreContext()
-            cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
-            status = _data.Data.compile(cmd).evaluate()
-            if not (status & 1):
-              raise _Exceptions.statusToException(status)
+            cmd='set node %s%s%s'% (self.fullpath,switch,qualifier)
+            _mdsdcl.tcl(cmd,raise_exception=True)
         finally:
             _tree.Tree.unlock()
 
@@ -612,10 +611,9 @@ class TreeNode(_data.Data):
         """
         if path[0] == '\\':
             return self.tree.getNode(path)
-        else:
-            if path[0] != ':' and path[0] != '.':
-                path=':'+path
-            return self.tree.getNode(self.fullpath+path)
+        elif not path[0]  in ':.':
+            path=':'+path
+        return self.tree.getNode(self.fullpath+path)
 
     def getNodeName(self):
         """Return node name
@@ -631,15 +629,11 @@ class TreeNode(_data.Data):
         @return: node matching path
         @rtype: TreeNodeArray
         """
-        ans = None
         if path[0] == '\\':
-            ans = self.tree.getNode(path)
-        else:
-            if path[0] != ':' and path[0] != '.':
-                path=':'+path
-            ans = self.tree.getNodeWild(self.fullpath+path)
-        if ans is not None:
-            ans.tree = self.tree
+            return self.tree.getNodeWild(path)
+        elif not path[0]  in ':.':
+            path  = ':' + path
+        return self.tree.getNodeWild(self.fullpath+path)
 
     def getNumChildren(self):
         """Return number of children nodes.
