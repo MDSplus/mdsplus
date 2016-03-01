@@ -1,4 +1,25 @@
-commit a2f86fbcb5620daa1b3c68862cfa7fba3056d120 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 26bd6a4d91ec80dab1b4bb7c326135a396b12dc3 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: a904703 b6303bc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 11:19:38 2016 -0500
+
+    Merge pull request #390 from MDSplus/jas-move-cmprs-0x80000000-fix-to-stable
+    
+    Fix handling of 0x8000000 in compression
+
+commit b6303bce7d71bf6660f7d08b23f6df4b9e3462fa (refs/remotes/origin/jas-move-cmprs-0x80000000-fix-to-stable)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 1 10:53:19 2016 -0500
+
+    Fix handling of 0x8000000 in compression
+
+commit a9047036102e6b120dd61e8c38107178578b6894 (tag: refs/tags/stable_release-7-0-64)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Feb 18 18:02:13 2016 -0500
+
+    New release ---- stable_release-7-0-64
+
+commit a2f86fbcb5620daa1b3c68862cfa7fba3056d120
 Merge: 54c1176 d0ebadb
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 18 11:47:42 2016 -0500
