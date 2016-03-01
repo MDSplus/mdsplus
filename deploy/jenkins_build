@@ -182,7 +182,7 @@ test_64 () {
 		fi
 		$MAKE
 		$MAKE install
-		$MAKE -k tests TEST_FORMAT=log 2>&1;
+		$MAKE -k tests TEST_FORMAT=log  VALGRIND_BUILD=yes 2>&1;
 		test_64_san_${test}=$?
 		popd
 	    done
