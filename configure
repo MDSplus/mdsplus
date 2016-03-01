@@ -13033,7 +13033,7 @@ _print_valgrind_hello = \
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(MAKE) VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
@@ -13054,7 +13054,7 @@ tests-valgrind-tool:
 
 tests-valgrind-suppressions:
 	@ \
-	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(MAKE) VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
