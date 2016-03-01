@@ -261,7 +261,7 @@ test_32() {
 		fi
 		$MAKE
 		$MAKE install
-		$MAKE -k tests TEST_FORMAT=log
+		$MAKE -k tests TEST_FORMAT=log VALGRIND_BUILD=yes
 		test_32_san_${test}=$?
 		popd
 	    done
