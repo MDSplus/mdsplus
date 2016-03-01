@@ -33,7 +33,7 @@ rebuild-tests:
 	fi;
 
 .PHONY: tests
-tests:
+tests: rebuild-tests
 	@echo "Making tests ... "; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
@@ -70,7 +70,7 @@ TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 
 
-$(TEST_BUILD_TAP): rebuild-tests
+$(TEST_BUILD_TAP):
 	@ \
 	echo "Try to build targets one by one"; \
 	echo "TAP version 13" > $@; \
@@ -113,7 +113,7 @@ endif
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 ## TODO: add log output
-## $(TEST_SUITE_LOG):
+# $(TEST_SUITE_LOG): 
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##

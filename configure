@@ -16728,21 +16728,24 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
 
   if test "$enable_sanitizing" = "yes" -a "$GCC" = "yes"; then
      if test "$enable_san_a" = "yes"; then
-       FFLAGS="-lasan $FFLAGS"
-       CFLAGS="-fsanitize=address -lasan -fno-omit-frame-pointer $CFLAGS";
-       CXXFLAGS="-fsanitize=address -lasan -fno-omit-frame-pointer $CXXFLAGS";
+       FFLAGS="$FFLAGS"
+       CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
+       CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
+       LIBS="-lasan ${LIBS}"
      fi;
 
      if test "$enable_san_t" = "yes"; then
-       FFLAGS="-ltsan $FFLAGS"
-       CFLAGS=" -fsanitize=thread  -ltsan -fno-omit-frame-pointer $CFLAGS";
-       CXXFLAGS="-fsanitize=thread -ltsan -fno-omit-frame-pointer $CXXFLAGS";
+       FFLAGS="$FFLAGS"
+       CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
+       CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
+       LIBS="-ltsan ${LIBS}"
      fi;
 
      if test "$enable_san_u" = "yes"; then
-       FFLAGS="-lubsan $FFLAGS"
-       CFLAGS="-fsanitize=undefined -lubsan -fno-omit-frame-pointer $CFLAGS";
-       CXXFLAGS="-fsanitize=undefined -lubsan -fno-omit-frame-pointer $CXXFLAGS";
+       FFLAGS="$FFLAGS"
+       CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
+       CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
+       LIBS="-lubsan ${LIBS}"
      fi;
   else
     echo "gcc version 4.8.0 or higher required for sanitizers"
