@@ -280,6 +280,7 @@ class treeTests(TestCase):
         self.nciInfo()
         self.getData()
         self.segments()
+        self.getCompression()
         self.finish()
 
 def suite():
