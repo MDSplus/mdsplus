@@ -262,7 +262,10 @@ class Data(object):
     def __eq__(self,y):
         """Equals: x.__eq__(y) <==> x==y
         @rtype: Bool"""
-        return Data.execute('$ == $',self,y).bool()
+        try:
+            return Data.execute('$ == $',self,y).bool()
+        except:
+            return False
 
     def __hasBadTreeReferences__(self,tree):
         return False
