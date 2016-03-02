@@ -15715,10 +15715,11 @@ if test "$enable_san_t" = "yes"; then let sanitizers=$sanitizers+1; fi
 if test "$enable_san_u" = "yes"; then let sanitizers=$sanitizers+1; fi
 
 if test $sanitizers -gt 1; then
-  echo "Only one sanitizer can be enabled at a time. Disabling sanitizers."
+  echo "Only one sanitizer can be enabled at a time."
   enable_san_a="no"
   enable_san_t="no"
   enable_san_u="no"
+  exit 1
 elif test $sanitizers -eq 1; then
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler vendor" >&5
@@ -16728,27 +16729,151 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
 
   if test "$enable_sanitizing" = "yes" -a "$GCC" = "yes"; then
      if test "$enable_san_a" = "yes"; then
-       FFLAGS="$FFLAGS"
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _init in -lasan" >&5
+$as_echo_n "checking for _init in -lasan... " >&6; }
+if ${ac_cv_lib_asan__init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lasan  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _init ();
+int
+main ()
+{
+return _init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_asan__init=yes
+else
+  ac_cv_lib_asan__init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_asan__init" >&5
+$as_echo "$ac_cv_lib_asan__init" >&6; }
+if test "x$ac_cv_lib_asan__init" = xyes; then :
+
        CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
-       LIBS="-lasan ${LIBS}"
+       LIBS="-lasan ${LIBS}";
+else
+  echo "Address sanitize not available."; exit 111;
+fi
+
      fi;
 
      if test "$enable_san_t" = "yes"; then
-       FFLAGS="$FFLAGS"
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _init in -ltsan" >&5
+$as_echo_n "checking for _init in -ltsan... " >&6; }
+if ${ac_cv_lib_tsan__init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ltsan  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _init ();
+int
+main ()
+{
+return _init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_tsan__init=yes
+else
+  ac_cv_lib_tsan__init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_tsan__init" >&5
+$as_echo "$ac_cv_lib_tsan__init" >&6; }
+if test "x$ac_cv_lib_tsan__init" = xyes; then :
+
        CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-ltsan ${LIBS}"
+else
+  echo "Thread sanitize not available."; exit 111;
+fi
+
      fi;
 
      if test "$enable_san_u" = "yes"; then
-       FFLAGS="$FFLAGS"
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _init in -lubsan" >&5
+$as_echo_n "checking for _init in -lubsan... " >&6; }
+if ${ac_cv_lib_ubsan__init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lubsan  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _init ();
+int
+main ()
+{
+return _init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ubsan__init=yes
+else
+  ac_cv_lib_ubsan__init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ubsan__init" >&5
+$as_echo "$ac_cv_lib_ubsan__init" >&6; }
+if test "x$ac_cv_lib_ubsan__init" = xyes; then :
+
        CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
-       LIBS="-lubsan ${LIBS}"
+       LIBS="-lubsan ${LIBS}";
+else
+  echo "Undefined sanitize not available."; exit 111;
+fi
+
      fi;
   else
-    echo "gcc version 4.8.0 or higher required for sanitizers"
+    echo "gcc version 4.8.0 or higher required for sanitizers";
+    exit 111;
   fi;
 fi
 
