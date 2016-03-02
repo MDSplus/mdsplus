@@ -3631,16 +3631,11 @@ public:
 /// 
 
 class EXPORT Event {
-public:
-    std::string eventName;
-    std::string eventBuf;
-    int eventId;
-    bool waitingEvent;
-    int64_t eventTime;
+public:    
     
     Event(const char *name);
     
-    ~Event();
+    virtual ~Event();
 
     const char * getRaw(std::size_t * size) const;
     
@@ -3650,6 +3645,12 @@ public:
 
     const char *getName() const;
 
+    void start();
+    
+    void stop();
+    
+    bool isStarted() const;
+    
     void wait(std::size_t secs = 0);
         
     Data *waitData(std::size_t secs = 0) { 
@@ -3659,12 +3660,8 @@ public:
     char const * waitRaw(std::size_t * size, std::size_t secs = 0) {
         wait(secs); return getRaw(size); 
     }
-
-    void abort() {}
     
-    virtual void run() { notify(); }
-    
-    void notify();
+    virtual void run() {}    
 
     static void setEvent(const char *evName) { setEventRaw(evName, 0, NULL); }
     static void setEventRaw(const char *evName, int bufLen, char *buf);
@@ -3675,14 +3672,22 @@ public:
     static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
     static void setevent(char *evName, Data *evData);
 
-protected:
-    
+
+protected:    
+    void notify();
     virtual void connectToEvents();
     virtual void disconnectFromEvents();
 
-private:
-    Event() {}
-    //    Event(const Event &) {} 
+private:    
+    Event() {}    
+    Event(const Event &){}
+    friend void eventAst(void *arg, int len, char *buf);    
+    
+    
+    std::string eventName;
+    std::string eventBuf;
+    int eventId;
+    int64_t eventTime;
     ConditionVar condition;
 };
 
