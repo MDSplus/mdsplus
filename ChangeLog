@@ -1,4 +1,44 @@
-commit 26bd6a4d91ec80dab1b4bb7c326135a396b12dc3 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 5788215498aa1301b8699f59244032fad19a6864 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: 76bd487 f15a574
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 14:59:13 2016 -0500
+
+    Merge pull request #392 from MDSplus/jas-add-compression-tests-to-stable
+    
+    add the compression testing to stable branch
+
+commit f15a57408eea57799bddbc1b773bd758d25b7e5c
+Merge: ca676a0 76bd487
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 14:04:08 2016 -0500
+
+    Merge branch 'stable' into jas-add-compression-tests-to-stable
+
+commit ca676a095b490c30b7841b9208470950abd0c92c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 13:56:19 2016 -0500
+
+    Fix uninitialized array descriptor in MdsSerialize.c
+
+commit 76bd4875d0684d3d77fa5c10b1cd19335bdd0124 (tag: refs/tags/stable_release-7-0-65)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 1 18:03:19 2016 -0500
+
+    New release ---- stable_release-7-0-65
+
+commit 9986514bc9466082f3f4bc287fe45f3acf9ce504 (refs/remotes/origin/jas-add-compression-tests-to-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 17:15:58 2016 -0500
+
+    Move testing trees to subdirectory of tests
+
+commit 5111baece07fe26c889e40e77c1f44eba1611639
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 1 13:02:52 2016 -0500
+
+    add the compression testing to stable branch
+
+commit 26bd6a4d91ec80dab1b4bb7c326135a396b12dc3
 Merge: a904703 b6303bc
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 1 11:19:38 2016 -0500
