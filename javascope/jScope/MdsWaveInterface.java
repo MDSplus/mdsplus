@@ -958,6 +958,8 @@ Fix bug : shot expression must be always evaluated.
                 return "yz(x)";
             case Signal.MODE_IMAGE:
                 return "Image";
+            case Signal.MODE_CONTOUR:
+                return "Contour";
         }
         return "";
     }
@@ -970,6 +972,8 @@ Fix bug : shot expression must be always evaluated.
             return Signal.MODE_YZ;
         if (mode.equals("Image"))
             return Signal.MODE_IMAGE;
+        if(mode.equals("Contour")) 
+            return Signal.MODE_CONTOUR;
         return 0;
     }
 
