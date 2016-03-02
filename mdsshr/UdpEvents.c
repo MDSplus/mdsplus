@@ -369,7 +369,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
   pthread_create(&thread, 0, handleMessage, (void *)currInfo);
-  pthread_detach(thread);
+//  pthread_detach(thread);
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
@@ -380,7 +380,8 @@ int MDSUdpEventCan(int eventid)
   if (ev) {
     shutdown(ev->socket, SHUT_RDWR);
     close(ev->socket);
-    pthread_cancel(ev->thread);
+//    pthread_cancel(ev->thread);
+    pthread_join(ev->thread,0);    
     free(ev);
     return 1;
   } else {

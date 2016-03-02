@@ -2,7 +2,7 @@
 #include <unistd.h>
 
 #include <mdsobjects.h>
-
+#include <mdsplus/Mutex.hpp>
 
 #include "testing.h"
 #include "testutils/testutils.h"
@@ -10,13 +10,51 @@
 
 using namespace MDSplus;
 using namespace testing;
+namespace mds = MDSplus;
 
-class NullEvent : public Event {
+#define MDS_LOCK_SCOPE(mutex) MDSplus::AutoLock al(mutex); (void)al
+
+class Lockable
+{
 public:
-    NullEvent(const char *name) : Event((char*)name) {}
-        
+
+    Lockable(const Lockable &) : m_mutex(new mds::Mutex) { }
+    Lockable() : m_mutex(new mds::Mutex) {}
+    ~Lockable() {
+        delete m_mutex;
+    }
+
+    void lock() const { m_mutex->lock(); }
+    void unlock() const { m_mutex->unlock(); }
+    mds::Mutex & mutex() const { return *m_mutex; }
+    operator mds::Mutex &() const { return *m_mutex; }
+
+private:
+    mds::Mutex *m_mutex;
+};
+
+
+
+
+
+
+class NullEvent : public Event, Lockable
+{
+public:
+    NullEvent(const char *name) : 
+        Event((char*)name)        
+    {
+        start();
+    }
+    
+    ~NullEvent()
+    {
+        stop();
+    }
+    
     void run()
     {
+        MDS_LOCK_SCOPE(*this);
         const char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         std::cout << "RECEIVED EVENT " << name << " AT " << date.string << "\n";
@@ -24,17 +62,25 @@ public:
 };
 
 
-class RawEvent:public Event
+class RawEvent : public Event, Lockable
 {
     std::string test_str;
 public:
     RawEvent(const char *name, std::string str) : 
         Event((char *)name),
         test_str(str)
-    {}
+    {
+        start();
+    }
+    
+    ~RawEvent() 
+    {
+        stop();
+    }
     
     void run()
     {
+        MDS_LOCK_SCOPE(*this);
         size_t bufSize;
         const char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
@@ -45,17 +91,26 @@ public:
 };
 
 
-class DataEvent:public Event
+class DataEvent : public Event, Lockable
 {
     unique_ptr<Data> test_data;
 public:
     DataEvent(const char *name, Data *data) : 
         Event((char *)name),
         test_data(data)
-    {}
+    {
+        start();
+    }
+    
+    ~DataEvent() 
+    {
+        stop();
+    }
+    
     
     void run()
-    {        
+    {   
+        MDS_LOCK_SCOPE(*this);
         const char *name = getName();                                     //Get the name of the event
         AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         unique_ptr<Data> data = getData();                          //Get data
@@ -67,7 +122,6 @@ public:
         }
     }
 };
-
 
 
 int main(int argc, char *argv[])
@@ -116,7 +170,7 @@ int main(int argc, char *argv[])
         
         if(fork()) {
             DataEvent ev(evname,str->clone());
-            unique_ptr<Data> data = ev.waitData();
+            unique_ptr<Data> data = ev.waitData();            
             TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );            
         }
         else {                        
