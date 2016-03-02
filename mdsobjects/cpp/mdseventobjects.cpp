@@ -1,4 +1,5 @@
 #include "mdsobjects.h"
+#include <unistd.h>
 
 #include <string>
 
@@ -19,29 +20,33 @@ int MdsEventTrigger(char *name, char *buf, int size);
 int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
-extern "C" void eventAst(void *arg, int len, char *buf)
-{
+static pthread_mutex_t _local_m = PTHREAD_MUTEX_INITIALIZER;
+
+namespace MDSplus {
+void eventAst(void *arg, int len, char *buf)
+{   
     Event *ev = (Event *)arg;
     ev->eventBuf.assign(buf, len);
-    ev->eventTime = convertAsciiToTime("now");
-    ev->run(); 
+    ev->eventTime = convertAsciiToTime("now");    
+    ev->run();
+    
+    // notify all waiting threads //
     ev->notify();
 }
+} // MDSplus
 
-// NOTE: what is this for?
-extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
-{
-    eventAst(arg, len, buf);
-}
 
 
 void Event::connectToEvents()
 {
-    MDSEventAst(this->getName(), eventAst, this, &eventId);
+    if ( !MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId) )
+        throw MdsException("failed to connect to event listener");
 }
+
 void Event::disconnectFromEvents()
-{
-    MDSEventCan(eventId);
+{    
+    if( !MDSEventCan(eventId) )
+        throw MdsException("failed to close event listener");
 }
 
 
@@ -49,15 +54,11 @@ Event::Event(const char *name) :
     eventName(name),
     eventTime(convertAsciiToTime("now")),
     eventId(-1)
-{    
-    connectToEvents();
-}
-
+{}
 
 Event::~Event()
 {
-    if(eventId != -1)
-        disconnectFromEvents();
+    stop();
 }
 
 Data * Event::getData() const
@@ -79,15 +80,34 @@ Uint64 *Event::getTime() const
 
 const char *Event::getName() const
 {
-     return eventName.c_str();
+    return eventName.c_str();
+}
+
+void Event::start()
+{
+    connectToEvents();
+}
+
+void Event::stop()
+{
+    if(eventId > -1) {
+        disconnectFromEvents();
+        eventId = -1;
+    }
+}
+
+bool Event::isStarted() const
+{
+    return eventId > -1;
 }
 
 
 void Event::wait(size_t secs)
 {
+    if( !isStarted() ) start();
     if (secs == 0) condition.wait();
     else if (condition.waitTimeout(secs * 1000) == false)
-        throw MdsException("Timeout Occurred");
+        throw MdsException("Timeout Occurred");    
 }
 
 void Event::notify()
