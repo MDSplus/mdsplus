@@ -54,6 +54,11 @@ def test_all(*arg):
         hostpart=""
     else:
         hostpart="localhost::" 
+    os.environ['pytree_path']=hostpart+dir
+    os.environ['pytreesub_path']=hostpart+dir
+    if os.getenv("testing_path") == None:
+      os.environ['testing_path']="%s/trees"%(os.path.dirname(os.path.realpath(__file__)),)
+
     Data.execute('setenv("pytree_path='+hostpart+dir.replace('\\','\\\\')+'")')
     Data.execute('setenv("pytreesub_path='+hostpart+dir.replace('\\','\\\\')+'")')
     print (Data.execute('getenv("pytree_path")'))
