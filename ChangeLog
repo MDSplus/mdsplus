@@ -1,4 +1,65 @@
-commit 1da4df3357de9e29e79646daffac6dba0323e264 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 75d16cce6ce3e3dee6ccaf441c8e4546961010d8 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 5f0de29 f4d6ae6
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Mar 2 01:53:26 2016 +0100
+
+    Merge pull request #389 from MDSplus/dev-gm
+    
+    Added forgotten Contour management
+
+commit f4d6ae6d54508b013cba4a727b162f45b978c4e1 (refs/remotes/origin/dev-gm)
+Merge: 3a5dcbd 5f0de29
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Mar 1 22:39:45 2016 +0100
+
+    Merge branch 'alpha' into dev-gm
+
+commit 5f0de29d4ea1b7ebb87a087998192278c4422268
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:19:57 2016 -0500
+
+    Exit upload_to_pypi with status
+
+commit ffbe4d5d34106bae2327518756608fa6dbb56520
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:00:23 2016 -0500
+
+    Add tempory upload script to use with pypi
+
+commit a5e8a2cfa428e5043c4f45875e8420f5766d3dc9
+Merge: b8d3267 147ce30
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 08:57:40 2016 -0500
+
+    Merge pull request #387 from zack-vii/aa_python
+    
+    python tcl replacement and getNodeWild fix on TreeNode
+
+commit 3a5dcbde13fe256869c4d669764a3ecb309a7354
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 1 14:34:07 2016 +0100
+
+    Added forgotten Contour management
+
+commit 147ce30812e3f5c87d7278ad2aa118c5708d374a
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Feb 29 20:01:56 2016 +0100
+
+    fix GetNodeWild behaviour for absolute paths
+
+commit c990e10ff8e9725942fc328e763eabfbcd6e3442
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Feb 4 11:29:50 2016 +0100
+
+    _setNode use mdsdcl
+
+commit b8d3267b36244b116dafd437b9e4b6088dc00626 (tag: refs/tags/alpha_release-7-0-233)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Feb 29 23:24:17 2016 -0500
+
+    New release ---- alpha_release-7-0-233
+
+commit 1da4df3357de9e29e79646daffac6dba0323e264
 Merge: 2da9bd2 c6232bb
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 29 13:28:19 2016 -0500
@@ -46,7 +107,7 @@ Date:   Fri Feb 26 09:20:52 2016 -0500
     
     Fix again reversed field
 
-commit f09b63d538327fefaad5e2ba14a149e7604d0824 (refs/remotes/origin/dev-gm)
+commit f09b63d538327fefaad5e2ba14a149e7604d0824
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Feb 26 14:50:55 2016 +0100
 
