@@ -181,7 +181,8 @@ test_64 () {
 		elif [ "$?" = 0 ]; then
 		    $MAKE
 		    $MAKE install
-		    $MAKE -k tests TEST_FORMAT=log  VALGRIND_BUILD=yes 2>&1;
+		    $MAKE -k tests TEST_FORMAT=log 2>&1;
+		fi
 		test_64_san_${test}=$?
 		popd
 	    done
@@ -254,13 +255,14 @@ test_32() {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=i686-linux \
 			 --enable-sanitize-${test}
-		if [ "$?" != "0" ]; then
-		    echo "Error with configure and sanitizer. Skipping test."
+			 --enable-sanitize-${test}
+		if [ "$?" == 111 ]; then
 		    break
+		elif [ "$?" = 0 ]; then
+		    $MAKE
+		    $MAKE install
+		    $MAKE -k tests TEST_FORMAT=log 2>&1;
 		fi
-		$MAKE
-		$MAKE install
-		$MAKE -k tests TEST_FORMAT=log VALGRIND_BUILD=yes
 		test_32_san_${test}=$?
 		popd
 	    done
