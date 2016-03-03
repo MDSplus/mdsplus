@@ -2672,7 +2672,9 @@ static int CopySegment(TREE_INFO *info_in, TREE_INFO *info_out, int nid, SEGMENT
       if (status & 1) {
 	sinfo->rows = length + 0x80000000;
 	status = TreePutDsc(info_out, nid, dim_xd.pointer, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
+	MdsFree1Dx(&dim_xd,0);
       }
+      MdsFree1Dx(&data_xd,0);
     }
   } else {
     int length;
