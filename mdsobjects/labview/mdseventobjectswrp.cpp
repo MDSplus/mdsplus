@@ -36,7 +36,7 @@ EXPORT void mdsplus_event_destructor(void **lvEventPtr)
 	delete eventPtr;
 	*lvEventPtr = NULL;
 }
-
+/*
 EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
@@ -57,7 +57,7 @@ EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-
+*/
 EXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;

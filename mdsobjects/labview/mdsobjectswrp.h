@@ -238,7 +238,7 @@ extern "C" {
 					int *timeoutOccurred, ErrorCluster * error);
   EXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred,
 				    ErrorCluster * error);
-  EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster * error);
+  // EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster * error);
   EXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut,
 				       ErrorCluster * error);
   EXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteArrHdlOut,
