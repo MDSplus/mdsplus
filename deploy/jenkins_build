@@ -506,7 +506,7 @@ else
 	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
 		BRANCH=${GIT_BRANCH:7};
-		RELEASE_TAG=$(git tag | grep ${branch}_release | sort -V | awk '{line=$0} END{print line}');
+		RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
 		MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
 		MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
 		RELEASE=$(echo $RELEASE_TAG | cut -f4 -d-);
