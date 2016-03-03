@@ -1397,6 +1397,7 @@ AC_OUTPUT(Makefile.inc
           testing/selftest/Makefile
           traverser/Makefile 
           treeshr/Makefile 
+          treeshr/testing/Makefile 
           wfevent/Makefile 
           xmdsshr/Makefile
           xtreeshr/Makefile
