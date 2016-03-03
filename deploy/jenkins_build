@@ -178,13 +178,17 @@ test_64 () {
 			 --enable-debug --host=x86_64-linux \
 			 --enable-sanitize-${test}
 		if [ "$?" == 111 ]; then
+		    echo "Sanitizer ${test} not supported. Skipping."
 		    break
 		elif [ "$?" = 0 ]; then
 		    $MAKE
 		    $MAKE install
 		    $MAKE -k tests TEST_FORMAT=log 2>&1;
+		    let test_64_san_${test}=$?
+		else
+		    echo "configure returned status $?"
+		    let test_64_san_${test}=$?
 		fi
-		test_64_san_${test}=$?
 		popd
 	    done
 	fi;
@@ -258,13 +262,17 @@ test_32() {
 			 --enable-debug --host=i686-linux \
 			 --enable-sanitize-${test}
 		if [ "$?" == 111 ]; then
+		    echo "Sanitizer ${test} not supported. Skipping."
 		    break
 		elif [ "$?" = 0 ]; then
 		    $MAKE
 		    $MAKE install
 		    $MAKE -k tests TEST_FORMAT=log 2>&1;
+		    let test_32_san_${test}=$?
+		else
+		    echo "Configure returned a status 0f $?"
+		    let test_32_san_${test}=$?
 		fi
-		test_32_san_${test}=$?
 		popd
 	    done
 	fi;
