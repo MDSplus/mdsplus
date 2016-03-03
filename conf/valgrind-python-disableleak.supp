@@ -16,38 +16,77 @@
 # http://bugs.python.org/issue2422
 # https://bugs.kde.org/show_bug.cgi?id=266386
 #
-
 {
-   /conf/valgrind-python-disableleak.supp
-   Memcheck:Leak
-   fun:malloc
-   fun:PyObject_Malloc
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Addr4
+   fun:PyObject_Free
 }
-
 {
-   /conf/valgrind-python-disableleak.supp
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value4
+   fun:PyObject_Free
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value8
+   fun:PyObject_Free
+}
+{
+   ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value
    Memcheck:Cond
-   obj:/usr/sbin/ldconfig
+   fun:PyObject_Free
 }
 
+
 {
-   /conf/valgrind-python-disableleak.supp
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Addr4
+   fun:PyObject_Realloc
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value4
+   fun:PyObject_Realloc
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value8
+   fun:PyObject_Realloc
+}
+{
+   ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value
+   Memcheck:Cond
+   fun:PyObject_Realloc
+}
+
+
+#
+# Possible lost memory blocks that must 
+#
+{
+   <insert_a_suppression_name_here>
    Memcheck:Leak
    fun:malloc
+   fun:_PyObject_GC_Malloc
+   fun:_PyObject_GC_NewVar
 }
-
 {
-   /conf/valgrind-python-disableleak.supp
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:PyObject_Realloc
+   fun:_PyObject_GC_Resize
+}
+{
+   <insert_a_suppression_name_here>
    Memcheck:Leak
    fun:realloc
+   fun:_PyObject_GC_Resize
 }
-
 {
-   /conf/valgrind-python-disableleak.supp
+   <insert_a_suppression_name_here>
    Memcheck:Leak
-   fun:calloc
+   fun:malloc
+   fun:PyString_FromStringAndSize
 }
-
-
-
 
