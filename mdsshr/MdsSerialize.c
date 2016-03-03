@@ -81,7 +81,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 			       unsigned int *b_out, unsigned int *b_in)
 {
   unsigned int status = 1, bytes_out = 0, bytes_in = 0, i, j, size_out, size_in;
-  if (in_ptr && (in_ptr[0] || in_ptr[1] || in_ptr[2] || in_ptr[3]))
+  if (in_ptr && (in_ptr[0] || in_ptr[1] || in_ptr[2] || in_ptr[3])) {
     switch (class()) {
     case CLASS_S:
     case CLASS_D:
@@ -420,6 +420,15 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
       status = LibINVSTRDES;
       break;
     }
+  } else {
+    struct descriptor *po = (struct descriptor *)out_dsc_ptr;
+    static struct descriptor empty = {0,DTYPE_DSC,CLASS_S,0};
+    if (po) {
+      memcpy(po, &empty, sizeof(empty));
+    }
+    bytes_out = align(sizeof(empty), sizeof(void *));
+    bytes_in = sizeof(int);
+  }
   *b_out = bytes_out;
   *b_in = bytes_in;
   return status;
@@ -688,6 +697,14 @@ STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigne
 	    }
 	    bytes_out += size_out;
 	    bytes_in += size_in;
+	  } else {
+	    if (out_ptr) {
+	      int poffset = 0;
+	      LoadInt(poffset, dscptr + (j * 4));
+	      out_ptr += sizeof(int);
+	    }
+	    bytes_out += sizeof(int);
+	    bytes_in += sizeof(void *);
 	  }
 	}
       }
@@ -841,8 +858,10 @@ STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *le
 	  if (dsc_ptr && *dsc_ptr) {
 	    status = PointerToOffset(*dsc_ptr, length);
 	    *dsc_ptr = (struct descriptor *)((char *)*dsc_ptr - ((char *)a_ptr - (char *)0));
-	  } else
+	  } else {
 	    status = 1;
+	    *dsc_ptr = 0;
+	  }
 	}
 	if (status & 1) {
 	  a_ptr->pointer = a_ptr->pointer - ((char *)a_ptr - (char *)0);
