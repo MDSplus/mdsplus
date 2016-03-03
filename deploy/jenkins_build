@@ -176,7 +176,7 @@ test_64 () {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=x86_64-linux \
 			 --enable-sanitize-${test}
-		if [ "$?" == 111 ]; then"
+		if [ "$?" == 111 ]; then
 		    break
 		elif [ "$?" = 0 ]; then
 		    $MAKE
