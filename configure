@@ -646,6 +646,7 @@ SOCKETLIB
 SHARETYPEMOD
 SHARETYPEJNI
 SHARETYPE
+ENABLE_SANITIZE
 REMCAMLIB
 REMCAM
 NSLLIB
@@ -715,6 +716,8 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+ENABLE_SANITIZE_FALSE
+ENABLE_SANITIZE_TRUE
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
 DX_COND_latex_TRUE
@@ -15709,6 +15712,8 @@ esac
 ## /// checks etc.
 ## /////////////////////////////////////////////////
 
+ENABLE_SANITIZE=
+
 let sanitizers=0
 if test "$enable_san_a" = "yes"; then let sanitizers=$sanitizers+1; fi
 if test "$enable_san_t" = "yes"; then let sanitizers=$sanitizers+1; fi
@@ -16767,6 +16772,7 @@ fi
 $as_echo "$ac_cv_lib_asan__init" >&6; }
 if test "x$ac_cv_lib_asan__init" = xyes; then :
 
+       ENABLE_SANITIZE=address;
        CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-lasan ${LIBS}";
@@ -16815,6 +16821,7 @@ fi
 $as_echo "$ac_cv_lib_tsan__init" >&6; }
 if test "x$ac_cv_lib_tsan__init" = xyes; then :
 
+       ENABLE_SANITIZE=thread;
        CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-ltsan ${LIBS}"
@@ -16863,6 +16870,7 @@ fi
 $as_echo "$ac_cv_lib_ubsan__init" >&6; }
 if test "x$ac_cv_lib_ubsan__init" = xyes; then :
 
+       ENABLE_SANITIZE=undefined;
        CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-lubsan ${LIBS}";
@@ -16875,6 +16883,14 @@ fi
     echo "gcc version 4.8.0 or higher required for sanitizers";
     exit 111;
   fi;
+fi
+
+ if test -n ${ENABLE_SANITIZE}; then
+  ENABLE_SANITIZE_TRUE=
+  ENABLE_SANITIZE_FALSE='#'
+else
+  ENABLE_SANITIZE_TRUE='#'
+  ENABLE_SANITIZE_FALSE=
 fi
 
 
@@ -16951,6 +16967,7 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
+
 
 
 
@@ -17291,6 +17308,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${DX_COND_latex_TRUE}" && test -z "${DX_COND_latex_FALSE}"; then
   as_fn_error $? "conditional \"DX_COND_latex\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_SANITIZE_TRUE}" && test -z "${ENABLE_SANITIZE_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_SANITIZE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
