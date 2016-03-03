@@ -13,20 +13,23 @@ include ../../../testing/testing.am
 
 TEST_EXTENSIONS = .py
 
-
-
-TESTS = \
+if ENABLE_SANITIZE
+ # PY_LOG_FLAGS += "skip_sanitize"
+ TESTS =
+else
+ TESTS = \
         dataUnitTest.py \
         treeUnitTest.py \
         threadsUnitTest.py \
         segmentsUnitTest.py
+ #      simulateSegfault.py 
 
-# if VALGRIND_TESTS is defined this list is executed with valgrind
-VALGRIND_TESTS = \
+ # if VALGRIND_TESTS is defined this list is executed with valgrind
+ VALGRIND_TESTS = \
                  dataUnitTest.py \
                  treeUnitTest.py \
                  segmentsUnitTest.py
-
+endif
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
 # python will finally introduce the patch to detect if valgrind is running ..

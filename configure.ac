@@ -1157,6 +1157,8 @@ DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 ## /// checks etc.
 ## /////////////////////////////////////////////////
 
+AS_VAR_SET([ENABLE_SANITIZE])
+
 let sanitizers=0
 if test "$enable_san_a" = "yes"; then let sanitizers=$sanitizers+1; fi
 if test "$enable_san_t" = "yes"; then let sanitizers=$sanitizers+1; fi
@@ -1173,10 +1175,11 @@ elif test $sanitizers -eq 1; then
   AX_COMPILER_VERSION
   AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
 		   [enable_sanitizing="yes"], [enable_sanitizing="no"] )
-
+		   
   if test "$enable_sanitizing" = "yes" -a "$GCC" = "yes"; then
      if test "$enable_san_a" = "yes"; then
        AC_CHECK_LIB(asan,_init,[
+       ENABLE_SANITIZE=address;
        CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-lasan ${LIBS}";],[echo "Address sanitize not available."; exit 111;])
@@ -1184,6 +1187,7 @@ elif test $sanitizers -eq 1; then
 
      if test "$enable_san_t" = "yes"; then
        AC_CHECK_LIB(tsan,_init,[
+       ENABLE_SANITIZE=thread;
        CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-ltsan ${LIBS}"],[echo "Thread sanitize not available."; exit 111;])
@@ -1191,6 +1195,7 @@ elif test $sanitizers -eq 1; then
    
      if test "$enable_san_u" = "yes"; then
        AC_CHECK_LIB(ubsan,_init,[
+       ENABLE_SANITIZE=undefined;
        CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
        LIBS="-lubsan ${LIBS}";],[echo "Undefined sanitize not available."; exit 111;])
@@ -1201,6 +1206,7 @@ elif test $sanitizers -eq 1; then
   fi;	 
 fi
 
+AM_CONDITIONAL([ENABLE_SANITIZE],[test -n ${ENABLE_SANITIZE}])
 
 
 
@@ -1308,6 +1314,7 @@ AC_SUBST(NEED_SEMUN)
 AC_SUBST(NSLLIB)
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
+AC_SUBST(ENABLE_SANITIZE)
 AC_SUBST(SHARETYPE)
 AC_SUBST(SHARETYPEJNI)
 AC_SUBST(SHARETYPEMOD)

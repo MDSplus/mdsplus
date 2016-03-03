@@ -93,6 +93,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@ENABLE_SANITIZE_FALSE@TESTS = dataUnitTest.py treeUnitTest.py \
+@ENABLE_SANITIZE_FALSE@	threadsUnitTest.py segmentsUnitTest.py
 check_PROGRAMS =
 subdir = mdsobjects/python/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -400,6 +402,7 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_SANITIZE = @ENABLE_SANITIZE@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 F77 = @F77@
@@ -651,18 +654,10 @@ TEST_SUITE_TAP = test-suite.tap
 #PY_LOG_COMPILER=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER@,${TESTS_SKIP})
 #PY_LOG_COMPILER_TAP=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER_TAP@,${TESTS_SKIP})
 TEST_EXTENSIONS = .py
-TESTS = \
-        dataUnitTest.py \
-        treeUnitTest.py \
-        threadsUnitTest.py \
-        segmentsUnitTest.py
-
-
-# if VALGRIND_TESTS is defined this list is executed with valgrind
-VALGRIND_TESTS = \
-                 dataUnitTest.py \
-                 treeUnitTest.py \
-                 segmentsUnitTest.py
+@ENABLE_SANITIZE_FALSE@VALGRIND_TESTS = \
+@ENABLE_SANITIZE_FALSE@                 dataUnitTest.py \
+@ENABLE_SANITIZE_FALSE@                 treeUnitTest.py \
+@ENABLE_SANITIZE_FALSE@                 segmentsUnitTest.py
 
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
@@ -1135,6 +1130,11 @@ tests-envdump:
 @HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
+
+@ENABLE_SANITIZE_TRUE@ # PY_LOG_FLAGS += "skip_sanitize"
+@ENABLE_SANITIZE_FALSE@ #      simulateSegfault.py 
+
+@ENABLE_SANITIZE_FALSE@ # if VALGRIND_TESTS is defined this list is executed with valgrind
 
 #nose_test:
 #	@ export TEST_FORMAT=${TEST_FORMAT}; \
