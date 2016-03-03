@@ -1163,10 +1163,11 @@ if test "$enable_san_t" = "yes"; then let sanitizers=$sanitizers+1; fi
 if test "$enable_san_u" = "yes"; then let sanitizers=$sanitizers+1; fi
 
 if test $sanitizers -gt 1; then
-  echo "Only one sanitizer can be enabled at a time. Disabling sanitizers."
+  echo "Only one sanitizer can be enabled at a time."
   enable_san_a="no"
   enable_san_t="no"
   enable_san_u="no"
+  exit 1
 elif test $sanitizers -eq 1; then
 
   AX_COMPILER_VERSION
@@ -1175,27 +1176,28 @@ elif test $sanitizers -eq 1; then
 
   if test "$enable_sanitizing" = "yes" -a "$GCC" = "yes"; then
      if test "$enable_san_a" = "yes"; then
-       FFLAGS="$FFLAGS"	    
+       AC_CHECK_LIB(asan,_init,[
        CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
-       LIBS="-lasan ${LIBS}"
+       LIBS="-lasan ${LIBS}";],[echo "Address sanitize not available."; exit 111;])
      fi;
 
      if test "$enable_san_t" = "yes"; then
-       FFLAGS="$FFLAGS"
+       AC_CHECK_LIB(tsan,_init,[
        CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
-       LIBS="-ltsan ${LIBS}"
+       LIBS="-ltsan ${LIBS}"],[echo "Thread sanitize not available."; exit 111;])
      fi;
    
      if test "$enable_san_u" = "yes"; then
-       FFLAGS="$FFLAGS"
+       AC_CHECK_LIB(ubsan,_init,[
        CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
-       LIBS="-lubsan ${LIBS}"
+       LIBS="-lubsan ${LIBS}";],[echo "Undefined sanitize not available."; exit 111;])
      fi;
   else
-    echo "gcc version 4.8.0 or higher required for sanitizers"
+    echo "gcc version 4.8.0 or higher required for sanitizers";
+    exit 111;
   fi;	 
 fi
 
