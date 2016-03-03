@@ -405,6 +405,7 @@ build_eggs() {
 
 
 set -e
+set -o verbose
 if [ -f /.dockerinit ]
 then
     source build.conf
