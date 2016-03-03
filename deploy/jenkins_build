@@ -119,10 +119,11 @@ parse_cmd() {
 test_64 () {
     set -e
     ulimit -c unlimited
-    if [ "$VERBOSE" = "yes" ]
-    then
-	set -o verbose
-    fi
+    set -o verbose
+#    if [ "$VERBOSE" = "yes" ]
+#    then
+#	set -o verbose
+#    fi
     if [ -r ${WORKSPACE}/tests ]
     then
 	MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot;
@@ -193,11 +194,12 @@ test_64 () {
 
 test_32() {
     set -e
+    set -o verbose
     ulimit -c unlimited
-    if [ "$VERBOSE" = "yes" ]
-    then
-       set -o verbose
-    fi
+#    if [ "$VERBOSE" = "yes" ]
+#    then
+#       set -o verbose
+#    fi
     if [ -r ${WORKSPACE}/tests ]
     then
 	MDSPLUS_DIR=${WORKSPACE}/tests/32/buildroot;
@@ -255,7 +257,6 @@ test_32() {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=i686-linux \
 			 --enable-sanitize-${test}
-			 --enable-sanitize-${test}
 		if [ "$?" == 111 ]; then
 		    break
 		elif [ "$?" = 0 ]; then
@@ -312,10 +313,11 @@ check_tests() {
 
 build_64 () {
     set -e
-    if [ "$VERBOSE" = "yes" ]
-    then
-	set -o verbose
-    fi
+    set -o verbose
+#    if [ "$VERBOSE" = "yes" ]
+#    then
+#	set -o verbose
+#    fi
     MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p ${WORKSPACE}/release/64;
@@ -336,10 +338,11 @@ build_64 () {
 
 build_32 () {
     set -e
-    if [ "$VERBOSE" = "yes" ]
-    then
-	set -o verbose
-    fi
+    set -o verbose
+#    if [ "$VERBOSE" = "yes" ]
+#    then
+#	set -o verbose
+#    fi
     MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p ${WORKSPACE}/release/32;
@@ -360,10 +363,11 @@ build_32 () {
 
 build_rpms () {
     set -e
-    if [ "$VERBOSE" = "yes" ]
-    then
-	set -o verbose
-    fi
+    set -o verbose
+#    if [ "$VERBOSE" = "yes" ]
+#    then
+#	set -o verbose
+#    fi
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
         export DISTDIR=${DISTDIR}/${DIST}
