@@ -88,6 +88,8 @@ def run():
 
 if __name__ == '__main__':
     import inspect
+    if sys.argv[1] = 'skip_sanitize' OR os.environ['ENABLE_SANITIZE']:
+        ts.skip_test(sys.argv[2],'Skipped tests that was compiled with sanitize options')
     sys.argv[0] = sys.argv[1]
     check_arch(sys.argv[1])
     try:
