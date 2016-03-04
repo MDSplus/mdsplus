@@ -2200,5 +2200,12 @@ public class MdsDataProvider
             return longArray;
         }
 
+        
     }
+    public String getProvider()
+    {
+        return provider;
+    }
+
 }
+
