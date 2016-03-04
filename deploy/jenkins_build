@@ -177,10 +177,11 @@ test_64 () {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=x86_64-linux \
 			 --enable-sanitize-${test}
-		if [ "$?" == 111 ]; then
+		status=$?
+		if [ "$status" == 111 ]; then
 		    echo "Sanitizer ${test} not supported. Skipping."
 		    break
-		elif [ "$?" = 0 ]; then
+		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
 		    $MAKE -k tests TEST_FORMAT=log 2>&1;
@@ -261,10 +262,11 @@ test_32() {
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=i686-linux \
 			 --enable-sanitize-${test}
-		if [ "$?" == 111 ]; then
+		status=$?
+		if [ "$status" == 111 ]; then
 		    echo "Sanitizer ${test} not supported. Skipping."
 		    break
-		elif [ "$?" = 0 ]; then
+		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
 		    $MAKE -k tests TEST_FORMAT=log 2>&1;
