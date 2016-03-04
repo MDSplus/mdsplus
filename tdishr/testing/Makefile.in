@@ -559,7 +559,8 @@ PYTHON_VERSION = @PYTHON_VERSION@
 PY_LOG_COMPILER = @PY_LOG_COMPILER@
 PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
 PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
-PY_LOG_FLAGS = @PY_LOG_FLAGS@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(shell ${_check_sanitize_ldd} && echo \
+	--skip;)
 PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
 PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
 RANLIB = @RANLIB@
@@ -1194,6 +1195,26 @@ LOG_COMPILER        ?= @LOG_COMPILER@
 PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
 PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 
+#
+# Disable python tests if sanitize tools were used during compile. 
+# 
+# Python is unable to load the sanitizer libraries in proper order so we want
+# to skip pyhon tests at all when sanitizer is selected or when the sanitizer
+# libraries has been compiled in mds targets. In the following the
+# ENABLE_SANITIZER conditional checks for current configuration eventually
+# adding --skip option to the log compiler. Then we looks inside the linked
+# libraries of MdsTestShr to see if sanitize libraries are present.
+# 
+
+define _check_sanitize_ldd 
+ ( found="no"; \
+   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libasan.so  > /dev/null && found="yes"; \
+   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libtsan.so  > /dev/null && found="yes"; \
+   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libubsan.so > /dev/null && found="yes"; \
+   test -n "@ENABLE_SANITIZE@" && found="yes"; \
+   test $${found} = "yes" )
+endef
+
 $(TEST_BUILD_TAP):
 	@ \
 	echo "Try to build targets one by one"; \
@@ -1225,8 +1246,6 @@ $(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 @HAVE_PL_TAP_PARSER_FALSE@	echo "Run tests without collating results"; \
 @HAVE_PL_TAP_PARSER_FALSE@	export TEST_FORMAT="tap"; \
 @HAVE_PL_TAP_PARSER_FALSE@	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-
-# $(TEST_SUITE_LOG): 
 
 $(TEST_SUITE_XML):
 

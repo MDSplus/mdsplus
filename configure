@@ -16885,14 +16885,13 @@ fi
   fi;
 fi
 
- if test -n ${ENABLE_SANITIZE}; then
+ if test -n "${ENABLE_SANITIZE}"; then
   ENABLE_SANITIZE_TRUE=
   ENABLE_SANITIZE_FALSE='#'
 else
   ENABLE_SANITIZE_TRUE='#'
   ENABLE_SANITIZE_FALSE=
 fi
-
 
 
 
