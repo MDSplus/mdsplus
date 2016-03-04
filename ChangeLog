@@ -1,4 +1,126 @@
-commit 1da4df3357de9e29e79646daffac6dba0323e264 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 557432e127497894d13b4446d5fe8273bb0381c1 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 4053de8 effe6c8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 11:51:40 2016 -0500
+
+    Merge pull request #391 from MDSplus/jas-actually-call-compression-tests
+    
+    actually call the compression tests
+
+commit effe6c866f3fc293a6b99be6cfe8232883ea27b4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 11:06:17 2016 -0500
+
+    Fix uninitialize memory problems
+
+commit 4053de820519e84eb1b07acc0929cad15a6f616c
+Merge: b48cca7 78df2bf
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Mar 2 16:01:39 2016 +0100
+
+    Merge pull request #393 from zack-vii/aa_cygnet4k
+    
+    cygnet4k update on store timeout workaround
+
+commit 78df2bff00f162a6f04a2d37672e02805a6a15b1
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Feb 26 12:50:29 2016 +0100
+
+    no default timeout on store
+
+commit 6481745f25ba1cd9f49dc794c6a4cb2f0dbe3daf
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Feb 25 11:04:25 2016 +0100
+
+    streamer can reopen tree when it has been closed by mdsip
+
+commit b48cca73d8fbb0b020f1888e4e70b6081a97a9bf (tag: refs/tags/alpha_release-7-0-234)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 1 23:24:30 2016 -0500
+
+    New release ---- alpha_release-7-0-234
+
+commit 75d16cce6ce3e3dee6ccaf441c8e4546961010d8
+Merge: 5f0de29 f4d6ae6
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Mar 2 01:53:26 2016 +0100
+
+    Merge pull request #389 from MDSplus/dev-gm
+    
+    Added forgotten Contour management
+
+commit f4d6ae6d54508b013cba4a727b162f45b978c4e1 (refs/remotes/origin/dev-gm)
+Merge: 3a5dcbd 5f0de29
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Mar 1 22:39:45 2016 +0100
+
+    Merge branch 'alpha' into dev-gm
+
+commit 6b3da4a67efb98f6f7bff9684acbbf97669b10f4 (refs/remotes/origin/jas-actually-call-compression-tests)
+Merge: ce5e8fd 5f0de29
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 16:02:42 2016 -0500
+
+    Merge branch 'alpha' into jas-actually-call-compression-tests
+
+commit ce5e8fd8dc081ac3573106d7484ed4fe62f3682f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:58:14 2016 -0500
+
+    Move testing tree to subdirectory of tests
+
+commit 5f0de29d4ea1b7ebb87a087998192278c4422268
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:19:57 2016 -0500
+
+    Exit upload_to_pypi with status
+
+commit ffbe4d5d34106bae2327518756608fa6dbb56520
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:00:23 2016 -0500
+
+    Add tempory upload script to use with pypi
+
+commit e7c1872afa08508205fa39c0f7c56eb66b914d06
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 1 13:05:22 2016 -0500
+
+    actually call the compression tests
+
+commit a5e8a2cfa428e5043c4f45875e8420f5766d3dc9
+Merge: b8d3267 147ce30
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 08:57:40 2016 -0500
+
+    Merge pull request #387 from zack-vii/aa_python
+    
+    python tcl replacement and getNodeWild fix on TreeNode
+
+commit 3a5dcbde13fe256869c4d669764a3ecb309a7354
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 1 14:34:07 2016 +0100
+
+    Added forgotten Contour management
+
+commit 147ce30812e3f5c87d7278ad2aa118c5708d374a
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Feb 29 20:01:56 2016 +0100
+
+    fix GetNodeWild behaviour for absolute paths
+
+commit c990e10ff8e9725942fc328e763eabfbcd6e3442
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Feb 4 11:29:50 2016 +0100
+
+    _setNode use mdsdcl
+
+commit b8d3267b36244b116dafd437b9e4b6088dc00626 (tag: refs/tags/alpha_release-7-0-233)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Feb 29 23:24:17 2016 -0500
+
+    New release ---- alpha_release-7-0-233
+
+commit 1da4df3357de9e29e79646daffac6dba0323e264
 Merge: 2da9bd2 c6232bb
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 29 13:28:19 2016 -0500
@@ -46,7 +168,7 @@ Date:   Fri Feb 26 09:20:52 2016 -0500
     
     Fix again reversed field
 
-commit f09b63d538327fefaad5e2ba14a149e7604d0824 (refs/remotes/origin/dev-gm)
+commit f09b63d538327fefaad5e2ba14a149e7604d0824
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Feb 26 14:50:55 2016 +0100
 
