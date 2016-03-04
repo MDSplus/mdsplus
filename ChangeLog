@@ -1,4 +1,100 @@
-commit 93ea4773a359dfe8c63379f7ee8a0b90aacb51bd (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 1da4df3357de9e29e79646daffac6dba0323e264 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 2da9bd2 c6232bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 13:28:19 2016 -0500
+
+    Merge pull request #378 from MDSplus/twf-fix-None-in-List
+    
+    Twf fix none in list
+
+commit 2da9bd22fe5c52615a542578ffd231e10cf89f55 (tag: refs/tags/alpha_release-7-0-232)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sat Feb 27 23:24:35 2016 -0500
+
+    New release ---- alpha_release-7-0-232
+
+commit b10de1a6b50ec1f82028927ba1de996bcf6e2af2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sat Feb 27 15:03:13 2016 -0500
+
+    Fix removal of old mdsplus python module on update. Package was renamed to all lowercase so removel procudure was no longer working.
+
+commit 5fc42f06c434c5d219d6fcc55e7a74ad0bbd9557 (tag: refs/tags/alpha_release-7-0-231)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Feb 26 23:24:22 2016 -0500
+
+    New release ---- alpha_release-7-0-231
+
+commit c6232bb1f8a4ed680ece65737087d35444fa5930 (refs/remotes/origin/twf-fix-None-in-List)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 14:22:09 2016 -0500
+
+    Fix __eq__ on MDSplus types to return False if comparing unlike object types instead of raising an exception
+
+commit 75171c51e4268d532375bb29f3fa1476e6f90d4f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 14:01:42 2016 -0500
+
+    Fix inserting None in a List item
+
+commit c1bdb948410f5b57376e7acbc1517085314af5dd
+Merge: 84d29fc f09b63d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 09:20:52 2016 -0500
+
+    Merge pull request #376 from MDSplus/dev-gm
+    
+    Fix again reversed field
+
+commit f09b63d538327fefaad5e2ba14a149e7604d0824 (refs/remotes/origin/dev-gm)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 26 14:50:55 2016 +0100
+
+    Fix reversed field
+
+commit 84d29fca8b8c571d4cd8af4bfedc58d65e7c806f
+Merge: 491942c c059397
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 08:22:32 2016 -0500
+
+    Merge pull request #375 from MDSplus/brst-python-in-method
+    
+    Add __contains__ method to mdsscalar.String
+
+commit c0593979b567179da245a7fc28beb1b5334a743d
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Fri Feb 26 12:02:56 2016 +0100
+
+    Add __contains__ method to mdsscalar.String
+
+commit 491942cc4f8b57b5d74bf119acadc0f91f8a2854 (tag: refs/tags/alpha_release-7-0-230)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Feb 24 23:24:16 2016 -0500
+
+    New release ---- alpha_release-7-0-230
+
+commit de40d6e69883f926fd1999d9b8fd15b6c2868257
+Merge: 627f95d 9c8781b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 13:28:02 2016 -0500
+
+    Merge pull request #372 from MDSplus/dev-gm
+    
+    Fix saved reversed flag
+
+commit 9c8781b6f3bdabc29720297ad4c1037f44e28d76
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Feb 24 18:33:47 2016 +0100
+
+    Fix saved reversed flag
+
+commit 627f95d8e6af6b6a8a15dba09bcc94b4ee42dc6f (tag: refs/tags/alpha_release-7-0-229)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Feb 23 23:24:12 2016 -0500
+
+    New release ---- alpha_release-7-0-229
+
+commit 93ea4773a359dfe8c63379f7ee8a0b90aacb51bd
 Merge: 55ffe5d 7e6fd8d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Feb 23 13:20:15 2016 -0500
@@ -22,7 +118,7 @@ Date:   Tue Feb 23 09:32:40 2016 -0500
     
     fix frames in WebScope
 
-commit 98af8d01b6a549b4c50fb512662e46fda6002598 (refs/remotes/origin/dev-gm)
+commit 98af8d01b6a549b4c50fb512662e46fda6002598
 Author: Mdsplus <mdsplus@spilds.rfx.local>
 Date:   Tue Feb 23 14:57:35 2016 +0100
 
