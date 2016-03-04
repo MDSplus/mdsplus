@@ -117,13 +117,15 @@ static void *handleMessage(void *info_in)
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
-    nameLen = ntohl(*((unsigned int *)currPtr));
+    memcpy(&nameLen,currPtr,sizeof(nameLen));
+    nameLen = ntohl(nameLen);
     if (nameLen != thisNameLen)
       continue;
     currPtr += sizeof(int);
     eventName = currPtr;
     currPtr += nameLen;
-    bufLen = ntohl(*((unsigned int *)currPtr));
+    bufLen = memcpy(&bufLen, currPtr, sizeof(bufLen));
+    bufLen = ntohl(bufLen);
     currPtr += sizeof(int);
     if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
       continue;
