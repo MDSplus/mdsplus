@@ -110,25 +110,25 @@
 {
    removes all UDT namespace races
    Helgrind:Race
-   ...
+#   ...
    fun:_ZN*UDT*
 }
 {
    removes all UDT namespace drd
    drd:ConflictingAccess
-   ...
+#   ...
    fun:_ZN*UDT*   
 }
 {
    removes all UDT namespace leaks
    Memcheck:Leak
-   ...
+#   ...
    fun:_ZN*UDT*   
 }
 {
    removes all UDT namespace leaks
    Memcheck:Param
-   ...
+#   ...
    fun:_ZN*UDT*   
 }
 #
@@ -136,25 +136,25 @@
 {
    removes all UDT namespace races
    Helgrind:Race
-   ...
+#   ...
    fun:_ZN9CRcvQueue*
 }
 {
    removes all UDT namespace drd
    drd:ConflictingAccess
-   ...
+#   ...
    fun:_ZN9CRcvQueue*
 }
 {
    removes all UDT namespace leaks
    Memcheck:Leak
-   ...
+#   ...
    fun:_ZN9CRcvQueue*
 }
 {
    removes all UDT namespace leaks
    Memcheck:Param
-   ...
+#   ...
    fun:_ZN9CRcvQueue*
 }
 
