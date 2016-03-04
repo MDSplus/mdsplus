@@ -124,7 +124,7 @@ static void *handleMessage(void *info_in)
     currPtr += sizeof(int);
     eventName = currPtr;
     currPtr += nameLen;
-    bufLen = memcpy(&bufLen, currPtr, sizeof(bufLen));
+    memcpy(&bufLen, currPtr, sizeof(bufLen));
     bufLen = ntohl(bufLen);
     currPtr += sizeof(int);
     if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
