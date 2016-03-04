@@ -119,7 +119,7 @@ parse_cmd() {
 test_64 () {
     set -e
     ulimit -c unlimited
-    set -o verbose
+    set -xv
 #    if [ "$VERBOSE" = "yes" ]
 #    then
 #	set -o verbose
@@ -413,7 +413,7 @@ build_eggs() {
 
 
 set -e
-set -o verbose
+set -xv
 if [ -f /.dockerinit ]
 then
     source build.conf
