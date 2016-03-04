@@ -1206,8 +1206,7 @@ elif test $sanitizers -eq 1; then
   fi;	 
 fi
 
-AM_CONDITIONAL([ENABLE_SANITIZE],[test -n ${ENABLE_SANITIZE}])
-
+AM_CONDITIONAL([ENABLE_SANITIZE],[test -n "${ENABLE_SANITIZE}"])
 
 
 # //////////////////////////////////////////////////////////////////////////// #
