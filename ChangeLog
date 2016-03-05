@@ -1,4 +1,39 @@
-commit 557432e127497894d13b4446d5fe8273bb0381c1 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit dc1e83f030102d86b0c727c38f468134636a347f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 3bbecc1 e0f64f6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 10:51:53 2016 -0500
+
+    Merge pull request #404 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit e0f64f67635a37b0e87bbf94ae2ce7fe9b94e15f (refs/remotes/origin/dev-gm)
+Merge: 831406a 3bbecc1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 09:52:12 2016 -0500
+
+    Merge branch 'alpha' into dev-gm
+
+commit 831406ad07b8ad2c2fdcf4443560ba96e5034025
+Merge: 2a5caf4 f4d6ae6
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 4 10:15:37 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 2a5caf4dd2ae22dfd9d2ac57cc2c9350822fe36e
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 4 10:14:08 2016 +0100
+
+    Added MdsStreamingDataProvider
+
+commit 3bbecc185a720aba4d90022ae9f7842843738473 (tag: refs/tags/alpha_release-7-0-235)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Mar 2 23:24:28 2016 -0500
+
+    New release ---- alpha_release-7-0-235
+
+commit 557432e127497894d13b4446d5fe8273bb0381c1
 Merge: 4053de8 effe6c8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 2 11:51:40 2016 -0500
@@ -49,7 +84,7 @@ Date:   Wed Mar 2 01:53:26 2016 +0100
     
     Added forgotten Contour management
 
-commit f4d6ae6d54508b013cba4a727b162f45b978c4e1 (refs/remotes/origin/dev-gm)
+commit f4d6ae6d54508b013cba4a727b162f45b978c4e1
 Merge: 3a5dcbd 5f0de29
 Author: zack-vii <zack-vii@users.noreply.github.com>
 Date:   Tue Mar 1 22:39:45 2016 +0100
