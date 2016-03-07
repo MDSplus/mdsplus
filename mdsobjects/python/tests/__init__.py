@@ -63,7 +63,7 @@ def test_all(*arg):
     os.environ['pytree_path']=hostpart+dir
     os.environ['pytreesub_path']=hostpart+dir
     if os.getenv("testing_path") == None:
-      os.environ['testing_path']="%s/../../../trees"%(os.path.dirname(os.path.realpath(__file__)),)
+      os.environ['testing_path']="%s/trees"%(os.path.dirname(os.path.realpath(__file__)),)
 
     tests=list()
     tests.append(treeTests())

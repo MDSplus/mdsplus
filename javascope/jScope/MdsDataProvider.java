@@ -982,7 +982,8 @@ public class MdsDataProvider
         public void getDataAsync(double lowerBound, double upperBound, int numPoints)
         {
  //           System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
-            updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
+            if(updateWorker != null) 
+                updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
         }
     } //END Inner Class SimpleWaveData
 
