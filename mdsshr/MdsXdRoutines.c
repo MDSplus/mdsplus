@@ -239,7 +239,8 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	  po->pointer =
 	      (char *)po + align((char *)po - (char *)0 + dscsize,
 				 align_size) - ((char *)po - (char *)0);
-	  _MOVC3(pi->arsize, pi->pointer, po->pointer);
+	  if (pi->arsize > 0 && pi->pointer != NULL )
+	    _MOVC3(pi->arsize, pi->pointer, po->pointer);
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
