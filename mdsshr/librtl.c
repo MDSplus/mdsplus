@@ -1008,7 +1008,7 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
 {
   char *time_str;
   char time_out[24]={0};
-  unsigned short slen = sizeof(time_out);
+  unsigned short slen = sizeof(time_out)-1;
   time_t bintim = LibCvtTim(time_in, 0);
   int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
   time_str = ctime(&bintim);
