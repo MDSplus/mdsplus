@@ -1,4 +1,23 @@
-commit dc1e83f030102d86b0c727c38f468134636a347f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit d6346c2fbb66c1eebe90b12e944d9e5d34ba6ece (HEAD -> refs/heads/alpha)
+Merge: 533eed5 e9fa3a5
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Mar 7 22:55:08 2016 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit e9fa3a5360d1242353ce1f011691e2859776620d (refs/remotes/origin/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 7 11:19:04 2016 +0100
+
+    Add missing files for compilation
+
+commit 533eed5b7c49942827a498eb367d62a68079b918 (tag: refs/tags/alpha_release-7-0-236)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 4 23:24:19 2016 -0500
+
+    New release ---- alpha_release-7-0-236
+
+commit dc1e83f030102d86b0c727c38f468134636a347f
 Merge: 3bbecc1 e0f64f6
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 4 10:51:53 2016 -0500
@@ -7,7 +26,7 @@ Date:   Fri Mar 4 10:51:53 2016 -0500
     
     Dev gm
 
-commit e0f64f67635a37b0e87bbf94ae2ce7fe9b94e15f (refs/remotes/origin/dev-gm)
+commit e0f64f67635a37b0e87bbf94ae2ce7fe9b94e15f
 Merge: 831406a 3bbecc1
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 4 09:52:12 2016 -0500
