@@ -46,6 +46,7 @@ MDSplus/Int8.java\
 MDSplus/Int8Array.java\
 MDSplus/List.java\
 MDSplus/MdsException.java\
+MDSplus/MdsStreamingDataProvider.java\
 MDSplus/Method.java\
 MDSplus/Procedure.java\
 MDSplus/Program.java\
