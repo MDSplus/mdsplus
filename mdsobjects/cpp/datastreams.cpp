@@ -279,7 +279,7 @@ EXPORT void unregisterListener(int listenerId)
 MDSplus::Data *getNewSamplesSerialized()
 {
 	//First loop: check whether any data is available
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_lock(&mutex);
 	bool dataAvailable = false;
 	for(int idx = 0; idx < streamInfoV.size(); idx++)
 	{
