@@ -7,7 +7,6 @@ def _mimport(name, level=1):
 import sys as _sys
 
 _mdsshr=_mimport('_mdsshr')
-_tdishr=_mimport('_tdishr')
 _array=_mimport('mdsarray')
 _compound=_mimport('compound')
 _data=_mimport('mdsdata')
@@ -357,7 +356,7 @@ class TreeNode(_data.Data):
         @type idx: int
         @rtype: None
         """
-        _tdishr.TreeBeginTimestampedSegment(self,array,idx)
+        _treeshr.TreeBeginTimestampedSegment(self,array,idx)
 
     def compare(self,value):
         """Returns True if this node contains the same data as specified in the value argument
