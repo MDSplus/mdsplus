@@ -1,11 +1,69 @@
-commit d6346c2fbb66c1eebe90b12e944d9e5d34ba6ece (HEAD -> refs/heads/alpha)
+commit d20392a2753c2bfe641bb0065fc59452fcdff513 (HEAD -> refs/heads/alpha)
+Merge: 48f4aae dc50682
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 8 22:55:07 2016 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit dc50682e2d84265b742e1acf5e8ad422e06dccdc (refs/remotes/origin/alpha)
+Merge: cbf9287 e3ecb6a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 15:45:32 2016 -0500
+
+    Merge pull request #408 from MDSplus/twf-fix-beginTimestampedSegment-py
+    
+    Fix typo in treenode.py referencing _tdishr instead of _treeshr for T…
+
+commit e3ecb6a3f70b4072497940ecfc1d8555d5811b2b (refs/remotes/origin/twf-fix-beginTimestampedSegment-py)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 15:17:44 2016 -0500
+
+    Fix typo in treenode.py referencing _tdishr instead of _treeshr for TreeBeginTimestampedSegment
+
+commit cbf928765a807a0126ef327cc1ee48ae5bfd0105
+Merge: 42c2d83 2392533
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 12:01:39 2016 -0500
+
+    Merge pull request #407 from MDSplus/twf-fix-libsysasctim
+    
+    Fix length of string returned by LibSysAscTim
+
+commit 2392533f53304b02800cd179991ed4cf95932737
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 10:52:55 2016 -0500
+
+    Fix length of string returned by LibSysAscTim
+
+commit 42c2d83ff011ea0154db21e5132ff08b126c36a7
+Merge: e9fa3a5 ddd2b7e
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Tue Mar 8 12:23:39 2016 +0100
+
+    Merge pull request #406 from MDSplus/dev-gm
+    
+    Fix mutex lock
+
+commit ddd2b7e00afbdd55365d0ed3ce891be5b75570ba (refs/remotes/origin/dev-gm)
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Tue Mar 8 10:43:44 2016 +0100
+
+    Fix mutex lock
+
+commit 48f4aae086c5ac7a83dcbe66bcd58bccad458870 (tag: refs/tags/alpha_release-7-0-237)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Mar 7 23:24:26 2016 -0500
+
+    New release ---- alpha_release-7-0-237
+
+commit d6346c2fbb66c1eebe90b12e944d9e5d34ba6ece
 Merge: 533eed5 e9fa3a5
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Mar 7 22:55:08 2016 -0500
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
-commit e9fa3a5360d1242353ce1f011691e2859776620d (refs/remotes/origin/alpha)
+commit e9fa3a5360d1242353ce1f011691e2859776620d
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Mar 7 11:19:04 2016 +0100
 
