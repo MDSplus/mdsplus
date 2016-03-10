@@ -30,7 +30,6 @@ public class MARTE_DEVICESetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
         jPanel6 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
         jPanel1 = new javax.swing.JPanel();
@@ -143,12 +142,6 @@ public class MARTE_DEVICESetup extends DeviceSetup {
         jPanel5.add(deviceField2);
 
         jPanel2.add(jPanel5);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Trigger time: ");
-        deviceField3.setOffsetNid(1087);
-        deviceField3.setTextOnly(true);
-        jPanel6.add(deviceField3);
 
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Num. Parameters: ");
@@ -563,7 +556,6 @@ public class MARTE_DEVICESetup extends DeviceSetup {
     private DeviceField deviceField27;
     private DeviceField deviceField28;
     private DeviceField deviceField29;
-    private DeviceField deviceField3;
     private DeviceField deviceField30;
     private DeviceField deviceField31;
     private DeviceField deviceField32;
