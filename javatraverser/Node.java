@@ -598,7 +598,7 @@ public class Node
                                           "Error copying subtree",
                                           JOptionPane.WARNING_MESSAGE);
         }
-        Tree.setCurrTreeNode(savedTreeNode);
+        Tree.setCurrentNode(savedTreeNode);
     }
 
     public static void copySubtreeContent(Node fromNode, Node toNode)
