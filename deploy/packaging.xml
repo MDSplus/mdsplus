@@ -586,7 +586,12 @@ fi
     <include file="/etc/yum.repos.d/mdsplus%(rflavor)s.repo"/>
     <include file="/etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus"/>
     <postinst type="rpm">dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2&gt;/dev/null)</postinst>
-    <postrm type="rpm">nohup rpm -e gpg-pubkey-b09cb563 &gt;dev/null 2&gt;&amp;1 &amp;</postrm>
+    <postrm type="rpm">
+if [ "$1" == "0" ]
+then
+  nohup rpm -e gpg-pubkey-b09cb563 &gt;dev/null 2&gt;&amp;1 &amp;
+fi
+    </postrm>
   </package>
 
  </packages>
