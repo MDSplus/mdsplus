@@ -1,11 +1,46 @@
-commit d20392a2753c2bfe641bb0065fc59452fcdff513 (HEAD -> refs/heads/alpha)
+commit a06898221a3ec5bdec7b612fce3155a54514bb31 (HEAD -> refs/heads/alpha)
+Merge: 285d716 213d389
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 11 22:55:06 2016 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 213d389a6db1d36170aedc523a9bb042ace66bd8 (refs/remotes/origin/alpha)
+Merge: dc50682 3303206
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 08:01:49 2016 -0500
+
+    Merge pull request #409 from MDSplus/dev-gm
+    
+    Fix MARTE_DEVICE deviceButtons
+
+commit 330320681f46bcaec73f2a67a4318b5902e1375b (refs/remotes/origin/dev-gm)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 10 14:44:43 2016 +0100
+
+    Fix compilation error
+
+commit c0534415a350248120aceb2aad8cc8ba0448ae95
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 10 13:49:47 2016 +0100
+
+    Fix MARTE_DEVICE deviceButtons
+    More info on device apply error
+
+commit 285d71624ae27ad6248b6437e037d088a9f2fd27 (tag: refs/tags/alpha_release-7-0-238)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 8 23:24:34 2016 -0500
+
+    New release ---- alpha_release-7-0-238
+
+commit d20392a2753c2bfe641bb0065fc59452fcdff513
 Merge: 48f4aae dc50682
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Mar 8 22:55:07 2016 -0500
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
-commit dc50682e2d84265b742e1acf5e8ad422e06dccdc (refs/remotes/origin/alpha)
+commit dc50682e2d84265b742e1acf5e8ad422e06dccdc
 Merge: cbf9287 e3ecb6a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 8 15:45:32 2016 -0500
@@ -44,7 +79,7 @@ Date:   Tue Mar 8 12:23:39 2016 +0100
     
     Fix mutex lock
 
-commit ddd2b7e00afbdd55365d0ed3ce891be5b75570ba (refs/remotes/origin/dev-gm)
+commit ddd2b7e00afbdd55365d0ed3ce891be5b75570ba
 Author: Mdsplus <mdsplus@spilds.rfx.local>
 Date:   Tue Mar 8 10:43:44 2016 +0100
 
