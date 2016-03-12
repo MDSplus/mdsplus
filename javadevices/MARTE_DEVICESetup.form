@@ -65,14 +65,6 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
-            <Component class="DeviceField" name="deviceField3">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Trigger time: "/>
-                <Property name="offsetNid" type="int" value="1087"/>
-                <Property name="textOnly" type="boolean" value="true"/>
-              </Properties>
-            </Component>
             <Component class="DeviceField" name="deviceField4">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
