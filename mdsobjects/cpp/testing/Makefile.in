@@ -109,7 +109,8 @@ TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_java_home.m4 \
+	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
@@ -685,6 +686,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
+JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVA_APS = @JAVA_APS@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
