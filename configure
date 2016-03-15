@@ -8455,6 +8455,9 @@ fi
 # ///  JDK   ///////////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+if ${JDK_DIR+:} false; then :
+  JAVA_HOME=${JDK_DIR}
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JAVA_HOME" >&5
 $as_echo_n "checking for JAVA_HOME... " >&6; }
 # We used a fake loop so that we can use "break" when the result is found.
@@ -8614,14 +8617,7 @@ done
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAVA_HOME" >&5
 $as_echo "$JAVA_HOME" >&6; }
 
-if ${JDK_DIR+:} false; then :
-
-else
-  if ${JAVA_HOME+:} false; then :
-  JDK_DIR=${JAVA_HOME}
-fi
-
-fi
+JDK_DIR=${JAVA_HOME}
 
 
 # Check whether --with-jdk was given.

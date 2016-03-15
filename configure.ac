@@ -175,11 +175,10 @@ dnl AC_MSG_RESULT([$enable_java])
 # //////////////////////////////////////////////////////////////////////////// #
 
 dnl This is a workaround to maintain both JAVA_HOME and JDK_DIR env
+AS_VAR_SET_IF([JDK_DIR],
+              [AS_VAR_SET([JAVA_HOME],[${JDK_DIR}])])
 AC_CHECK_JAVA_HOME
-AS_VAR_SET_IF([JDK_DIR],,
-              [AS_VAR_SET_IF([JAVA_HOME],
-                             [AS_VAR_SET([JDK_DIR],[${JAVA_HOME}])])
-              ])
+AS_VAR_SET([JDK_DIR],[${JAVA_HOME}])
 
 AC_ARG_WITH([jdk],
             [AS_HELP_STRING([--with-jdk=JDKDIR],
