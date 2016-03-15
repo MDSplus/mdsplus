@@ -142,6 +142,18 @@
     <status name="BAD_CLOCK_FREQ" value ="4143" severity="Error"
         text="Clock frequency either not available or invalid"
         facabb="DEV"/>
+
+    <status name="TRIGGER_FAILED" value ="4144" severity="Error"
+        text="Device trigger method failed"
+        facabb="DEV"/>
+    <status name="ERROR_READING_CHANNEL" value ="4145" severity="Error"
+        text="Error reading data for channel from device"
+        facabb="DEV"/>
+    <status name="ERROR_DOING_INIT" value ="4146" severity="Error"
+        text="Error sending ARM command to device"
+        facabb="DEV"/>
+
+
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
 	    facnam="RETICON$_" facabb="RETICON"/>
@@ -508,5 +520,17 @@
      <status name="NO_SAMPLES" value="5297" severity="Error"
 	    text="Module did not acquire any samples"
 	    facnam="DT196B$_" facabb="DT196B"/>
+    <status name="CANNOT_LOAD_SETTINGS" value="5300" severity="Error"
+          text="Error loading settings from XML"
+          facabb="DEV"/>
+    <status name="CANNOT_GET_BOARD_STATE" value="5301" severity="Error"
+          text="Cannot retrieve state of daq board"
+          facabb="DEV"/>
+    <status name="ACQCMD_FAILED" value="5302" severity="Error"
+          text="Error executing acqcmd on daq board"
+          facabb="DEV"/>
+    <status name="ACQ2SH_FAILED" value="5303" severity="Error"
+          text="Error executing acq2sh command on daq board"
+          facabb="DEV"/>
    </facility>
 </messages>
