@@ -40,7 +40,6 @@ class ACQ196(acq.ACQ):
         from MDSplus.mdsExceptions import DevBAD_POST_TRIG
         from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
 
-        print "this is the local one"
         start=time.time()
         if self.debugging():
             print "starting init\n";
