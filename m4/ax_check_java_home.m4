@@ -58,18 +58,20 @@ AC_DEFUN([AX_CHECK_JAVA_HOME],
 while true
 do
   # If the user defined JAVA_HOME, don't touch it.
-  AS_VAR_SET_IF([JAVA_HOME],[break])
+  test -n "${JAVA_HOME}" && break
 
   # On Mac OS X 10.5 and following, run /usr/libexec/java_home to get
   # the value of JAVA_HOME to use.
   # (http://developer.apple.com/library/mac/#qa/qa2001/qa1170.html).
   JAVA_HOME=`/usr/libexec/java_home 2>/dev/null`
-  AS_VAR_SET_IF([JAVA_HOME],[break])  
+  test -n "${JAVA_HOME}" && break
 
   AC_PATH_PROG([JAVAC_PATH_NAME], [javac])
-  AS_VAR_SET_IF([JAVAC_PATH_NAME],[JAVA_HOME=`echo ${JAVAC_PATH_NAME} \
-                 | sed "s/\(.*\)[[/]]bin[[/]]java.*/\1/"`])
-  AS_VAR_SET_IF([JAVA_HOME],[break])  
+  AC_CHECK_TOOL([READLINK],[readlink])
+  test -n "${READLINK}" && AS_VAR_SET([JAVAC_PATH_NAME],[`${READLINK} -f ${JAVAC_PATH_NAME}`])
+  test -f ${JAVAC_PATH_NAME} && JAVA_HOME=`echo "${JAVAC_PATH_NAME}" \
+                                           | sed "s/\(.*\)[[/]]bin[[/]]java.*/\1/"`
+  test -n "${JAVA_HOME}" && break
   
 
   AC_MSG_NOTICE([Could not compute JAVA_HOME])
