@@ -1,11 +1,96 @@
-commit a06898221a3ec5bdec7b612fce3155a54514bb31 (HEAD -> refs/heads/alpha)
+commit 948e794940fd95881d8ab70cf45d03e57b9e310e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: ef97f2d 51f925a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 15 17:13:16 2016 -0400
+
+    Merge pull request #415 from MDSplus/jas-add-more-device-errors
+    
+    acq devices (and python devices in general) need to raise errors that actmon can display
+
+commit 51f925a5ab622627093158ae7ce7262cff1dcb38 (refs/remotes/origin/jas-add-more-device-errors)
+Merge: f21ab46 ef97f2d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 15 17:02:50 2016 -0400
+
+    Merge branch 'alpha' into jas-add-more-device-errors
+
+commit f21ab46c8889d47791d80078560b8ea2b731bb81
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 15 16:46:18 2016 -0400
+
+    remove debug print
+
+commit e5cb0f4dc12a637ce39a78ccff551aacc2009bb5
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 15 16:32:21 2016 -0400
+
+    acq devices (and python devices in general) need to raise errors that actmon can display
+    
+    When actions are dispatched if the error does not have a 'status' (ours do, but in general Execptions do not)
+    PyDoMethod.py sets the status to zero.
+    
+    when actmon notices that a dispatched action has failed it trys to make a string from the action's status,
+    which is an integer filled in with the returned status from TreeDoMethod.
+    
+    So acq.py was raising errors from Non MDSplus things, which were being displayed as 0 - NO MESSAGE For code 0
+    Now acq.py raises errors which have MDSplus status and strings so ACTMON should be more informative.
+
+commit ef97f2d405541f2f40056a72374de03bcac7a913
+Merge: c3e5f46 55e6b89
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Tue Mar 15 18:55:48 2016 +0100
+
+    Merge pull request #414 from AndreaRigoni/find-java-home
+    
+    Find java home
+
+commit 55e6b8905902d6565bb29f12fe9b253c452ee627
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 18:28:59 2016 +0100
+
+    make JDK_DIR the primary env to look for
+
+commit b7a0394e5cdcfcbf063c26a646d036c1d617bcf6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 18:17:20 2016 +0100
+
+    added readlink
+
+commit e16f7d2d93661247fe12b0050578a33560fc8d4e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 16:07:20 2016 +0100
+
+    adds check for JAVA_HOME eventually set JDK_DIR to JAVA_HOME
+
+commit c3e5f46138164f2766410e7f5aa1072b0bc59a1f
+Merge: baada92 5bf68d6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 15 11:44:24 2016 +0100
+
+    Merge pull request #412 from AndreaRigoni/fix_javaobjects_makefile_in
+    
+    add missing MdsStreamingDataprovider.java from Makefile.am
+
+commit 5bf68d6dba92fb82f60661d4e0936e633b5717d1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 11:37:00 2016 +0100
+
+    add missing MdsStreamingDataprovider.java from Makefile.am
+
+commit baada92bd6e7bbb3fb5211771e708e99a2652530 (tag: refs/tags/alpha_release-7-0-239)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 11 23:24:28 2016 -0500
+
+    New release ---- alpha_release-7-0-239
+
+commit a06898221a3ec5bdec7b612fce3155a54514bb31
 Merge: 285d716 213d389
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Mar 11 22:55:06 2016 -0500
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
-commit 213d389a6db1d36170aedc523a9bb042ace66bd8 (refs/remotes/origin/alpha)
+commit 213d389a6db1d36170aedc523a9bb042ace66bd8
 Merge: dc50682 3303206
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 11 08:01:49 2016 -0500
