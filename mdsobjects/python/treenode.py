@@ -621,18 +621,20 @@ class TreeNode(_data.Data):
         """
         return self.node_name
 
-    def getNodeWild(self,path):
+    def getNodeWild(self,path,*usage):
         """Return tree nodes where path is relative to this node
         @param path: Path relative to this node
         @type path: str
         @return: node matching path
         @rtype: TreeNodeArray
         """
-        if path[0] == '\\':
-            return self.tree.getNodeWild(path)
-        elif not path[0]  in ':.':
-            path  = ':' + path
-        return self.tree.getNodeWild(self.fullpath+path)
+        try:
+            olddef=self.tree.default
+            self.tree.default=self
+            ans = self.tree.getNodeWild(path,*usage)
+        finally:
+            self.tree.default=olddef
+        return ans
 
     def getNumChildren(self):
         """Return number of children nodes.
