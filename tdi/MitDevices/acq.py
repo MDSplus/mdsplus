@@ -307,17 +307,22 @@ class ACQ(MDSplus.Device):
 #
     def getMyIp(self):
         import socket
-
-        s=socket.socket()
-        s.connect((self.getBoardIp(),54545))
-        hostip = s.getsockname()[0]
-        state=s.recv(100)[0:-1]
-        if self.debugging():
-            print "getMyIp  read /%s/\n" % (state,)
-        s.close()
+        from MDSplus.mdsExceptions import DevOFFLINE
+        try:
+            s=socket.socket()
+            s.connect((self.getBoardIp(),54545))
+            hostip = s.getsockname()[0]
+            state=s.recv(100)[0:-1]
+            if self.debugging():
+                print "getMyIp  read /%s/\n" % (state,)
+            s.close()
+        except Exception, e:
+            raise DevOFFLINE(str(e))
 	return hostip
 
     def addGenericJSON(self, fd):
+        if self.debugging():
+            print "starting addGenericJson"
         fd.write(r"""
 begin_json() {   echo "{"; }
 end_json() {   echo "\"done\" : \"done\"  }"; }
@@ -365,6 +370,8 @@ add_cmd get.pulse_number >> $settingsf
 add_cmd get.trig >> $settingsf
 """)
     def finishJSON(self, fd, auto_store):
+        if self.debugging():
+            print "starting finishJSON"
         fd.write("end_json >> $settingsf\n")
             
         if auto_store != None :
@@ -427,6 +434,8 @@ add_cmd get.trig >> $settingsf
                 exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
 
     def startInitializationFile(self, fd, trig_src, pre_trig, post_trig):
+	if self.debugging():
+            print "starting startInitialization"
         host = self.getMyIp()
         fd.write("acqcmd setAbort\n")
         fd.write("host=%s\n"%(host,))
@@ -499,7 +508,7 @@ add_cmd get.trig >> $settingsf
             ftp.storlines("STOR /tmp/initialize",fd)
         except Exception,e:
             print "Error sending arm commands via ftp to %s\n%s\n" % (self.getBoardIp(), e,)
-            raise
+            raise DevERROR_DOING_INIT(str(e))
         s=socket.socket()
         try:
             s.settimeout(10.)
