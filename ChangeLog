@@ -1,4 +1,40 @@
-commit 948e794940fd95881d8ab70cf45d03e57b9e310e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 6c913ebe4064449254cc3a01544a6a1f7308090e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: c42fd0a 9811d92
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 17 10:52:23 2016 -0400
+
+    Merge pull request #418 from MDSplus/jas-more-device-errors
+    
+    do not raise generic errors from device methods - actmon can not disp…
+
+commit 9811d92374f7af2d8f72530323b45ad0e23fadf3 (refs/remotes/origin/jas-more-device-errors)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 17 10:23:49 2016 -0400
+
+    do not raise generic errors from device methods - actmon can not display them
+
+commit c42fd0a4817f31be1dad6dda18a28a04c89c8652
+Merge: 3d47aab ca52a32
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 17 10:15:17 2016 -0400
+
+    Merge pull request #416 from MDSplus/twf-fix-TreeNode-getNodeWild
+    
+    Change TreeNode.getNodeWild to set default to node and use wildcard s…
+
+commit ca52a3294a27e399c638a753db5a7a8f277047f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 17 08:39:35 2016 -0400
+
+    Change TreeNode.getNodeWild to set default to node and use wildcard spec as provided. Also support usage selection.
+
+commit 3d47aabc3875213c9feab219b2d5be048637501c (tag: refs/tags/alpha_release-7-0-240)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 15 23:24:35 2016 -0400
+
+    New release ---- alpha_release-7-0-240
+
+commit 948e794940fd95881d8ab70cf45d03e57b9e310e
 Merge: ef97f2d 51f925a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 15 17:13:16 2016 -0400
