@@ -769,8 +769,8 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     EMPTYXD(xd);
     EMPTYXD(yXd);
     EMPTYXD(xXd);
-    struct descriptor xMinD = {sizeof(float), DTYPE_QU, CLASS_S, (char *)inXMin};
-    struct descriptor xMaxD = {sizeof(float), DTYPE_QU, CLASS_S, (char *)inXMax};
+    struct descriptor xMinD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMin};
+    struct descriptor xMaxD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
     struct descriptor xExpr = {strlen(inX), DTYPE_T, CLASS_S, inX};
     struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
