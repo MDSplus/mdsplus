@@ -50,6 +50,14 @@ class Connection(object):
                      _dtypes.DTYPE_L:_scalar.Int32,_dtypes.DTYPE_Q:_scalar.Int64,_dtypes.DTYPE_FLOAT:_scalar.Float32,
                      _dtypes.DTYPE_DOUBLE:_scalar.Float64,_dtypes.DTYPE_T:_scalar.String}
 
+    def __enter__(self):
+        """ Used for with statement. """
+    	return self
+    
+    def __exit__(self, type, value, traceback):
+        """ Cleanup for with statement. """
+        DisconnectFromMds(self.socket)
+
     def __inspect__(self,value):
         """Internal routine used in determining characteristics of the value"""
         d=descriptor(value)
