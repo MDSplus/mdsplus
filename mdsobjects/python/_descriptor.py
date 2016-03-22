@@ -309,9 +309,9 @@ class descriptor(_C.Structure):
     def __str__(self):
         if (self.length == 4):
             if (self.dtype == _dtypes.DTYPE_F):
-                _tdishr.CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
+                _tdishr._CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                 val=_C.c_float(0)
-                _tdishr.CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_FS)
+                _tdishr._CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_FS)
                 ptrstr=", value="+_ver.tostr(val.value)
             else:
                 ptrstr=", value="+_ver.tostr(_C.cast(self.pointer,_C.POINTER(_C.c_uint)).contents.value)
@@ -355,26 +355,26 @@ class descriptor(_C.Structure):
             try:
                 return _scalar.makeScalar(_dtypes.mdsdtypes(self.dtype).toNumpy()(_C.cast(self.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype())).contents.value))
             except TypeError:
-                CvtConvertFloat=_tdishr.CvtConvertFloat
+                _CvtConvertFloat=_tdishr._CvtConvertFloat
                 if (self.dtype == _dtypes.DTYPE_F):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
+                    _CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
-                    CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
+                    _CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
                     return _scalar.makeScalar(_N.float32(val.value))
                 if (self.dtype == _dtypes.DTYPE_G):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
+                    _CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
-                    CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_G,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
+                    _CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_G,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
                     return _scalar.makeScalar(_N.float32(val.value))
                 if (self.dtype == _dtypes.DTYPE_D):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_double),_C.c_int32,_C.POINTER(_C.c_double),_C.c_int32]
+                    _CvtConvertFloat.argtypes=[_C.POINTER(_C.c_double),_C.c_int32,_C.POINTER(_C.c_double),_C.c_int32]
                     val=_C.c_double(0)
-                    CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_double)),_dtypes.DTYPE_D,_C.pointer(val),_dtypes.DTYPE_NATIVE_DOUBLE)
+                    _CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_double)),_dtypes.DTYPE_D,_C.pointer(val),_dtypes.DTYPE_NATIVE_DOUBLE)
                     return _scalar.makeScalar(_N.float64(val.value))
                 if (self.dtype == _dtypes.DTYPE_FC):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
+                    _CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
-                    CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
+                    _CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
                     raise Exception("_dtypes.DTYPE_FC is not yet supported")
                     return _scalar.makeScalar(_N.float32(val.value))
                 if (self.dtype == _dtypes.DTYPE_DC):

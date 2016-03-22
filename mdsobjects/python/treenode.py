@@ -22,7 +22,7 @@ _ver=_mimport('version')
 class TreeNodeException(_Exceptions.MDSplusException):
   pass
 
-nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
+_nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                  'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                  'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
                  'ERROR_ON_PUT','ESSENTIAL','FULLPATH','GET_FLAGS','INCLUDE_IN_PULSE',
@@ -36,7 +36,7 @@ nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR'
                  'USAGE_NUMERIC','USAGE_STR','USAGE_STRUCTURE','USAGE_SUBTREE','USAGE_TASK',
                  'USAGE_TEXT','USAGE_WINDOW','VERSIONS','WRITE_ONCE','COMPRESS_SEGMENTS')
 
-usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
+_usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
              'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,'SUBTREE':11,'COMPOUND_DATA':12,'SUBTREE':-1}
 
 class TreeNode(_data.Data):
@@ -168,7 +168,7 @@ class TreeNode(_data.Data):
             return self.getLocalTree()
         if name == 'local_path':
             return self.getLocalPath()
-        if name.upper() in nciAttributes:
+        if name.upper() in _nciAttributes:
             if name == 'mclass':
                 name='class';
             _tree.Tree.lock()
@@ -254,7 +254,7 @@ class TreeNode(_data.Data):
             self.setUsage(value)
         elif name=="tag":
             self.addTag(value)
-        elif name.upper() in nciAttributes:
+        elif name.upper() in _nciAttributes:
             raise AttributeError('Attribute %s is read only' %(name,))
         elif name == "nid":
             raise AttributeError('Attribute nid is read only')
@@ -312,9 +312,9 @@ class TreeNode(_data.Data):
         @rtype: TreeNode
         """
         try:
-            usagenum=usage_table[usage.upper()]
+            usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(usage_table.keys()),))
+            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
         name=str(name).upper()
         if name[0]==':' or name[0]=='.':
             name=str(self.fullpath)+name
@@ -1115,9 +1115,9 @@ class TreeNode(_data.Data):
         @rtype: original type
         """
         try:
-            usagenum=usage_table[usage.upper()]
+            usagenum=_usage_table[usage.upper()]
         except KeyError:
-            raise KeyError('Invalid usage specified. Use one of %s' % (str(usage_table.keys()),))
+            raise KeyError('Invalid usage specified. Use one of %s' % (str(_usage_table.keys()),))
         _treeshr.TreeSetUsage(self.tree.ctx,self.nid,usagenum)
         return self
 

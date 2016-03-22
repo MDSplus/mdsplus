@@ -58,7 +58,7 @@ def TreeGetPath(n):
     ans=_C.cast(p,_C.c_char_p).value
     ans = _ver.tostr(ans)
     if not p is None:
-        TreeFree(p)
+        _TreeFree(p)
     return ans
 
 def TreeFindNodeTags(n):
@@ -69,7 +69,7 @@ def TreeFindNodeTags(n):
         tag_ptr=__TreeFindNodeTags(n.tree.ctx,n.nid,_C.pointer(ctx))
         try:
             tags.append(_ver.tostr(_C.cast(tag_ptr,_C.c_char_p).value.rstrip()))
-            TreeFree(tag_ptr)
+            _TreeFree(tag_ptr)
         except:
             done=True
     tags = _array.makeArray(tags).astype(_ver.npstr)
@@ -77,7 +77,7 @@ def TreeFindNodeTags(n):
 
 
 def TreeFindNodeWild(tree, wild, *usage):
-    usage_table=_treenode.usage_table
+    usage_table=_treenode._usage_table
     if len(usage) == 0:
         usage_mask=0xFFFF
     else :
@@ -269,7 +269,7 @@ def TreeWriteTree(tree,name,shot):
         raise _Exceptions.statusToException(status)
 
 def TreeAddNode(tree,name,usage):
-    usage_table=_treenode.usage_table
+    usage_table=_treenode._usage_table
     nid=_C.c_int32(0)
     try:
         usagenum=usage_table[usage.upper()]
@@ -621,8 +621,8 @@ __TreeClose=__TreeShr._TreeClose
 __TreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32]
 __TreeFindNode=__TreeShr._TreeFindNode
 __TreeFindNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int32)]
-TreeFreeDbid=__TreeShr.TreeFreeDbid
-TreeFreeDbid.argtypes=[_C.c_void_p]
+_TreeFreeDbid=__TreeShr.TreeFreeDbid
+_TreeFreeDbid.argtypes=[_C.c_void_p]
 __TreeGetPath=__TreeShr._TreeGetPath
 __TreeGetPath.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeGetPath.restype=_C.c_void_p
@@ -641,20 +641,20 @@ __TreeGetDbi=__TreeShr._TreeGetDbi
 __TreeGetDbi.argtypes=[_C.c_void_p,_C.c_void_p]
 __TreeSetDbi=__TreeShr._TreeSetDbi
 __TreeSetDbi.argtypes=[_C.c_void_p,_C.c_void_p]
-TreeFindTagEnd=__TreeShr.TreeFindTagEnd
-TreeFindTagEnd.argtypes=[_C.POINTER(_C.c_void_p)]
-TreeFree=__TreeShr.TreeFree
-TreeFree.argtypes=[_C.c_void_p]
+_TreeFindTagEnd=__TreeShr.TreeFindTagEnd
+_TreeFindTagEnd.argtypes=[_C.POINTER(_C.c_void_p)]
+_TreeFree=__TreeShr.TreeFree
+_TreeFree.argtypes=[_C.c_void_p]
 __TreeSwitchDbid=__TreeShr.TreeSwitchDbid
 __TreeSwitchDbid.argtypes=[_C.c_void_p]
 __TreeSwitchDbid.restype=_C.c_void_p
-TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
-TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
+_TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
+_TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
 
-TreeCleanDatafile=__TreeShr._TreeCleanDatafile
-TreeCleanDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
-TreeCompressDatafile=__TreeShr._TreeCompressDatafile
-TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+_TreeCleanDatafile=__TreeShr._TreeCleanDatafile
+_TreeCleanDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+_TreeCompressDatafile=__TreeShr._TreeCompressDatafile
+_TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
 
 __TreeDeletePulseFile=__TreeShr._TreeDeletePulseFile
 __TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32]
@@ -690,8 +690,8 @@ __TreeDeleteNodeInitialize=__TreeShr._TreeDeleteNodeInitialize
 __TreeDeleteNodeInitialize.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(_C.c_int32),_C.c_int32]
 __TreeDeleteNodeExecute=__TreeShr._TreeDeleteNodeExecute
 __TreeDeleteNodeExecute.argtypes=[_C.c_void_p]
-TreeGetCurrentShotId=__TreeShr.TreeGetCurrentShotId
-TreeGetCurrentShotId.argtypes=[_C.c_char_p]
+_TreeGetCurrentShotId=__TreeShr.TreeGetCurrentShotId
+_TreeGetCurrentShotId.argtypes=[_C.c_char_p]
 __TreeSetCurrentShotId=__TreeShr.TreeSetCurrentShotId
 __TreeSetCurrentShotId.argtypes=[_C.c_char_p,_C.c_int32]
 __TreeSetViewDate=__TreeShr.TreeSetViewDate

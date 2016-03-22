@@ -13,7 +13,7 @@ _tree=_mimport('tree')
 _ver=_mimport('version')
 _treeshr=_mimport('_treeshr')
 
-TdiShr=_ver.load_library('TdiShr')
+_TdiShr=_ver.load_library('TdiShr')
 
 def _TdiShrFun(function,errormessage,expression,args=None):
     descriptor = _descriptor.descriptor
@@ -36,22 +36,22 @@ def _TdiShrFun(function,errormessage,expression,args=None):
 
 def TdiCompile(expression,args=None):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    return _TdiShrFun(TdiShr.TdiCompile,"Error compiling",expression,args)
+    return _TdiShrFun(_TdiShr.TdiCompile,"Error compiling",expression,args)
 
 def TdiExecute(expression,args=None):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    return _TdiShrFun(TdiShr.TdiExecute,"Error executing",expression,args)
+    return _TdiShrFun(_TdiShr.TdiExecute,"Error executing",expression,args)
 
 def TdiDecompile(expression):
     """Decompile a TDI expression. Format: TdiDecompile(tdi_expression)"""
-    return _ver.tostr(_TdiShrFun(TdiShr.TdiDecompile,"Error decompiling",expression))
+    return _ver.tostr(_TdiShrFun(_TdiShr.TdiDecompile,"Error decompiling",expression))
 
 def TdiEvaluate(expression):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
-    return _TdiShrFun(TdiShr.TdiEvaluate,"Error evaluating",expression)
+    return _TdiShrFun(_TdiShr.TdiEvaluate,"Error evaluating",expression)
 
 def TdiData(expression):
     """Return primiitive data type. Format: TdiData(value)"""
-    return _TdiShrFun(TdiShr.TdiData,"Error converting to data",expression)
+    return _TdiShrFun(_TdiShr.TdiData,"Error converting to data",expression)
 
-CvtConvertFloat=TdiShr.CvtConvertFloat
+_CvtConvertFloat=_TdiShr.CvtConvertFloat
