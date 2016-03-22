@@ -10,6 +10,7 @@ from tests.treeUnitTest import treeTests
 from tests.threadsUnitTest import suite as threadsSuite
 from tests.dataUnitTest import suite as dataSuite
 from tests.exceptionUnitTest import exceptionTests
+from _mdsshr import setenv,getenv
 
 import os
 import time
@@ -50,7 +51,7 @@ def test_all(*arg):
     import tempfile
     import os
     import sys
-    if 'waitdbg' in os.environ:
+    if getenv('waitdbg') is not None:
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
     dir=tempfile.mkdtemp()
@@ -60,10 +61,10 @@ def test_all(*arg):
         hostpart=""
     else:
         hostpart="localhost::"
-    os.environ['pytree_path']=hostpart+dir
-    os.environ['pytreesub_path']=hostpart+dir
-    if os.getenv("testing_path") == None:
-      os.environ['testing_path']="%s/trees"%(os.path.dirname(os.path.realpath(__file__)),)
+    setenv('pytree_path',hostpart+dir)
+    setenv('pytreesub_path',hostpart+dir)
+    if getenv("testing_path") is None:
+      setenv('testing_path',"%s/trees"%(os.path.dirname(os.path.realpath(__file__)),))
 
     tests=list()
     tests.append(treeTests())
