@@ -1409,7 +1409,10 @@ AC_OUTPUT(Makefile.inc
           scripts/Makefile
           servershr/Makefile 
           setevent/Makefile
-          tcl/Makefile 
+          tcl/Makefile
+	  tdi/MitDevices/_version.py
+	  tdi/RfxDevices/_version.py
+	  tdi/W7xDevices/_version.py
           tdishr/Makefile 
           tdishr/testing/Makefile 
           tdic/Makefile

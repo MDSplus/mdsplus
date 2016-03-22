@@ -6,6 +6,27 @@ RfxDevices
 @license: GNU GPL
 =======
 """
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
+try:
+    _mvers=_mimport('_version')
+    __version__=_mvers.version
+    __doc__=__doc__+"Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s\n" % (_mvers.version,
+                                                                              _mvers.branch,
+                                                                              _mvers.commit,
+                                                                              _mvers.release_tag)
+    __doc__=__doc__+"Release: %s\n" % _mvers.release_date
+    branch=_mvers.branch
+    commit=_mvers.commit
+    release_tag=_mvers.release_tag
+    del _mvers
+except:
+    __version__='Unknown'
+
 from MDSplus import Device as _debug
 if _debug.debug: 
     from sys import stdout as _stdout
