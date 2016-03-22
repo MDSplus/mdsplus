@@ -437,6 +437,7 @@ then
 	    fi
             if [ -r ${WORKSPACE}/release ]
             then
+              RELEASE_DATE="$(date +"%B %e, %Y")"
 	      build_64;
 	      build_32;
 	      build_rpms;

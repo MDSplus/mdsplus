@@ -1240,6 +1240,11 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
+RELEASE_MAJOR=$MAJOR
+RELEASE_MINOR=$MINOR
+RELEASE_RELEASE=$RELEASE
+RELEASE_BRANCH=$GIT_BRANCH
+RELEASE_COMMIT=$GIT_COMMIT
 
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES
@@ -1311,6 +1316,13 @@ AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(NEED_SEMUN)
 AC_SUBST(NSLLIB)
+AC_SUBST(RELEASE_MAJOR)
+AC_SUBST(RELEASE_MINOR)
+AC_SUBST(RELEASE_RELEASE)
+AC_SUBST(RELEASE_COMMIT)
+AC_SUBST(RELEASE_BRANCH)
+AC_SUBST(RELEASE_TAG)
+AC_SUBST(RELEASE_DATE)
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
 AC_SUBST(ENABLE_SANITIZE)
@@ -1360,7 +1372,8 @@ AC_OUTPUT(Makefile.inc
           manpages/Makefile
           macosx/Makefile
           math/Makefile 
-          mdsdcl/Makefile 
+          mdsdcl/Makefile
+	  mdsdcl/mdsdcl_show_version.c
           mdslib/Makefile
           mdslib/docs/Makefile
           mdslib/testing/Makefile 
@@ -1369,6 +1382,7 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
+	  mdsobjects/python/_version.py
           mdsobjects/python/docs/Makefile
           mdsobjects/python/tests/Makefile
           mdsobjects/java/Makefile

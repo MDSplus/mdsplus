@@ -16,5 +16,5 @@ def load(gbls):
                   '_treeshr','_descriptor','connection','mdsdcl'):
         loadmod_full(mod,gbls)
     for mod in ('mdsExceptions', 'tdibuiltins'):
-        loadmod(mod, gbls)
+        loadmod_full(mod, gbls)
 
