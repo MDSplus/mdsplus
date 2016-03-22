@@ -56,7 +56,7 @@ write(*, "1 _dev_name ", _dev_name);
 	{
 
 
-		_connected = if_error(MdsValue( "_connected" ) == 1, 1, 0);
+		_connected = ( Mdsvalue( "_connected == 1") != * );
 
  
 write(*,  _connected );
@@ -76,7 +76,7 @@ write(*,  _connected );
 			abort();MdsDisconnect
 		}
 */		
-	    _status = MdsValue('HMSPECTRO->HMSpectroArm( $1 )', _dev_name);
+	    	_status = MdsValue('HMSPECTRO->HMSpectroArm( $1 )', _dev_name);
 		if( _status != _HMSPECTRO_SUCCESS )
 		{
 			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
@@ -101,7 +101,7 @@ write(*,  _connected );
     	DevLogErr(_nid, _msg );	
 		abort();
 	}
-
+write(*, "Fine arm action");
 	return (1);
 
 }
