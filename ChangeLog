@@ -1,4 +1,47 @@
-commit 6c913ebe4064449254cc3a01544a6a1f7308090e (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 94c7730a3a9a58e29e112d54cdd5c10e4a33840f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 93da615 e012752
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 14:48:12 2016 -0400
+
+    Merge pull request #421 from MDSplus/dev-gm
+    
+    Fix wrong memory size for time context limits
+
+commit e01275256180efae94bf48ea594aa42e46f3641e (refs/remotes/origin/dev-gm)
+Merge: 3b97394 93da615
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 14:47:24 2016 -0400
+
+    Merge branch 'alpha' into dev-gm
+
+commit 93da61555585395f77b93097589658fa43c01409
+Merge: a2f80eb 6ebe6d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 14:46:07 2016 -0400
+
+    Merge pull request #422 from MDSplus/twf-fix-upload_to_pypi
+    
+    Check for package already on pypi before attempting to build and load
+
+commit 6ebe6d23af6ed17f868da7889a717c66a47a03da (refs/remotes/origin/twf-fix-upload_to_pypi)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 13:34:38 2016 -0400
+
+    Check for package already on pypi before attempting to build and load
+
+commit 3b97394462076319369c8de1cec2b34f92b51afa
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 18 17:05:28 2016 +0100
+
+    Fix wrong memory size for time context limits
+
+commit a2f80eb6ebb748c3530947377731f79300c17c62 (tag: refs/tags/alpha_release-7-0-241)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Mar 17 23:24:28 2016 -0400
+
+    New release ---- alpha_release-7-0-241
+
+commit 6c913ebe4064449254cc3a01544a6a1f7308090e
 Merge: c42fd0a 9811d92
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 17 10:52:23 2016 -0400
@@ -135,7 +178,7 @@ Date:   Fri Mar 11 08:01:49 2016 -0500
     
     Fix MARTE_DEVICE deviceButtons
 
-commit 330320681f46bcaec73f2a67a4318b5902e1375b (refs/remotes/origin/dev-gm)
+commit 330320681f46bcaec73f2a67a4318b5902e1375b
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Mar 10 14:44:43 2016 +0100
 
