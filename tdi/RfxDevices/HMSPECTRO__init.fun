@@ -1,6 +1,3 @@
-
-
-
 public fun HMSPECTRO__init(as_is _nid, optional _method)
 {
 
@@ -39,6 +36,7 @@ public fun HMSPECTRO__init(as_is _nid, optional _method)
  		abort();
     }
 
+write(*, "HMSPECTRO INIT");
 write(*, "_dev_name ", _dev_name);
 
     DevNodeCvt(_nid, _N_TYPE, _DevicesType, _DevicesCode, _type = _INVALID);
@@ -122,12 +120,26 @@ write(*, "_trig_edge ", _trig_edge);
 
 write(*, "_gain ", _gain);
 
-    _integ_time = if_error(data(DevNodeRef(_nid, _N_INTEG_TIME)), _INVALID);
-    if( _integ_time == _INVALID)
+    _integ_t = if_error(data(DevNodeRef(_nid, _N_INTEG_TIME)), _INVALID);
+
+    if ( size ( _integ_t ) > 1 )
+    {
+	_integ_t = data( _integ_t );
+	_integ_time = _integ_t[ size(_integ_t ) - 1 ];
+    }
+    else
+    {
+	_integ_time = _integ_t;
+    }
+
+    if( _integ_time == _INVALID )
     {
     	DevLogErr(_nid, "Invalid integration time specification");
- 		abort();
+        abort();
     }
+
+
+
     _integration_time = LONG( _integ_time * 1000000 );
 
 write(*, "_integration_time ", _integration_time);
@@ -159,7 +171,7 @@ write(*, "_integration_time ", _integration_time);
 		}
 		_delta = _integ_time;
 
-    }
+        }
 	else
 	{
 		_trig_time = 0;
@@ -168,23 +180,43 @@ write(*, "_integration_time ", _integration_time);
 
 write(*, "_trig_time ", _trig_time);
 
-    _num_scan = if_error(data(DevNodeRef(_nid, _N_NUM_SCAN)), _INVALID);
-    if( _num_scan == _INVALID || _num_scan <= 0)
+    _num_s = if_error(data(DevNodeRef(_nid, _N_NUM_SCAN)), _INVALID);
+
+write(*, "_num_scan ", _num_s);
+
+    if ( size (_num_s) > 1 )
     {
-    	DevLogErr(_nid, "Invalid scan number specification");
- 		abort();
+	_num_s = data( _num_s );
+	_num_scan = _num_s[ size(_num_s ) - 1 ];
+    }
+    else
+    {
+	_num_scan = _num_s;
     }
 
 write(*, "_num_scan ", _num_scan);
 
 
+    if( _num_scan == _INVALID || _num_scan <= 0 )
+    {
+    	DevLogErr(_nid, "Invalid scan number specification");
+ 	abort();
+    }
+
+
+write(*, "_num_scan ", _num_scan);
+
 	if(_remote != 0)
 	{
 
-		_connected = if_error(Mdsvalue( "_connected == 1") , 1, 0);
+		_connected = ( Mdsvalue( "_connected == 1") != * );
 
 		if( ! _connected )
 		{
+			/*
+			* Disconnection is required in case of mdsip server broken connection
+			*/
+			MdsDisconnect();
 
 			_cmd = 'MdsConnect("'//_ip_addr//'")';
 			_status = execute(_cmd);
@@ -194,12 +226,9 @@ write(*, "_num_scan ", _num_scan);
 				abort();
 			}
 
-			MdsValue("public _connected = 1" );
-			_connected = 1;
+			_connected = ( MdsValue("public _connected = 1" ) != * );
 
 write(*, " connected ", allocated( _connected ), _connected );
-
-
 
 /*
 			MdsDisconnect();
