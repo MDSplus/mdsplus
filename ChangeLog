@@ -1,4 +1,25 @@
-commit 5788215498aa1301b8699f59244032fad19a6864 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 14b55f637b7017d543a6e929e3e043b9b23743dd (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: d06a2f3 7a8d4da
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 09:34:32 2016 -0400
+
+    Merge pull request #425 from MDSplus/twf-add-with-connection-py-stable
+    
+    Add with statement support to Connection
+
+commit 7a8d4da89d677deca23521cd082b0107ee0900ed
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 08:37:40 2016 -0400
+
+    Add with statement support to Connection
+
+commit d06a2f3d27b57ad74af4f82d3ff25fdaf8407fac (tag: refs/tags/stable_release-7-0-66)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Mar 2 18:02:25 2016 -0500
+
+    New release ---- stable_release-7-0-66
+
+commit 5788215498aa1301b8699f59244032fad19a6864
 Merge: 76bd487 f15a574
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 2 14:59:13 2016 -0500
