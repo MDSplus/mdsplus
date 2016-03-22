@@ -349,6 +349,27 @@ class DevBAD_CLOCK_FREQ(DevException):
 
 
 
+class DevTRIGGER_FAILED(DevException):
+  status=662471042
+  message="Device trigger method failed"
+  msgnam="TRIGGER_FAILED"
+
+
+
+class DevERROR_READING_CHANNEL(DevException):
+  status=662471050
+  message="Error reading data for channel from device"
+  msgnam="ERROR_READING_CHANNEL"
+
+
+
+class DevERROR_DOING_INIT(DevException):
+  status=662471058
+  message="Error sending ARM command to device"
+  msgnam="ERROR_DOING_INIT"
+
+
+
 class ReticonException(MDSplusException):
   fac="Reticon"
 
@@ -1316,4 +1337,32 @@ class Dt196bNO_SAMPLES(Dt196bException):
   status=662480266
   message="Module did not acquire any samples"
   msgnam="NO_SAMPLES"
+
+
+
+class DevCANNOT_LOAD_SETTINGS(DevException):
+  status=662480290
+  message="Error loading settings from XML"
+  msgnam="CANNOT_LOAD_SETTINGS"
+
+
+
+class DevCANNOT_GET_BOARD_STATE(DevException):
+  status=662480298
+  message="Cannot retrieve state of daq board"
+  msgnam="CANNOT_GET_BOARD_STATE"
+
+
+
+class DevACQCMD_FAILED(DevException):
+  status=662480306
+  message="Error executing acqcmd on daq board"
+  msgnam="ACQCMD_FAILED"
+
+
+
+class DevACQ2SH_FAILED(DevException):
+  status=662480314
+  message="Error executing acq2sh command on daq board"
+  msgnam="ACQ2SH_FAILED"
 

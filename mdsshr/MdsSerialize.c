@@ -86,7 +86,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
     case CLASS_S:
     case CLASS_D:
       {
-	struct descriptor in;
+	struct descriptor in = {0};
 	struct descriptor *po = (struct descriptor *)out_dsc_ptr;
 	set_length(in.length);
 	in.dtype = dtype();
@@ -119,7 +119,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
     case CLASS_XS:
     case CLASS_XD:
       {
-	struct descriptor_xs in;
+	struct descriptor_xs in = {0};
 	struct descriptor_xs *po = (struct descriptor_xs *)out_dsc_ptr;
 	in.length = 0;
 	in.dtype = dtype();
@@ -137,7 +137,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 
     case CLASS_R:
       {
-	struct descriptor_r pi_tmp;
+	struct descriptor_r pi_tmp = {0};
 	struct descriptor_r *pi = &pi_tmp;
 	struct descriptor_r *po = (struct descriptor_r *)out_dsc_ptr;
 	set_length(pi_tmp.length);
@@ -189,7 +189,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
       {
 	int dsc_size;
 	int align_size;
-	array_coeff a_tmp;
+	array_coeff a_tmp = {0};
 	array_coeff *pi = &a_tmp;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
 	set_length(a_tmp.length);
@@ -276,7 +276,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
     **************************************/
     case CLASS_APD:
       {
-	array_coeff a_tmp;
+	array_coeff a_tmp = {0};
 	array_coeff *pi = &a_tmp;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
 	//      struct descriptor **pdi = (struct descriptor **)pi->pointer;
@@ -349,7 +349,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 
     case CLASS_CA:
       {
-	array_coeff a_tmp;
+	array_coeff a_tmp = {0};
 	array_coeff *pi = &a_tmp;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
 	//struct descriptor **pdi = (struct descriptor **)pi->pointer;

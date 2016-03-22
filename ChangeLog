@@ -1,4 +1,437 @@
-commit 1da4df3357de9e29e79646daffac6dba0323e264 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 94c7730a3a9a58e29e112d54cdd5c10e4a33840f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 93da615 e012752
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 14:48:12 2016 -0400
+
+    Merge pull request #421 from MDSplus/dev-gm
+    
+    Fix wrong memory size for time context limits
+
+commit e01275256180efae94bf48ea594aa42e46f3641e (refs/remotes/origin/dev-gm)
+Merge: 3b97394 93da615
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 14:47:24 2016 -0400
+
+    Merge branch 'alpha' into dev-gm
+
+commit 93da61555585395f77b93097589658fa43c01409
+Merge: a2f80eb 6ebe6d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 14:46:07 2016 -0400
+
+    Merge pull request #422 from MDSplus/twf-fix-upload_to_pypi
+    
+    Check for package already on pypi before attempting to build and load
+
+commit 6ebe6d23af6ed17f868da7889a717c66a47a03da (refs/remotes/origin/twf-fix-upload_to_pypi)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 13:34:38 2016 -0400
+
+    Check for package already on pypi before attempting to build and load
+
+commit 3b97394462076319369c8de1cec2b34f92b51afa
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 18 17:05:28 2016 +0100
+
+    Fix wrong memory size for time context limits
+
+commit a2f80eb6ebb748c3530947377731f79300c17c62 (tag: refs/tags/alpha_release-7-0-241)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Mar 17 23:24:28 2016 -0400
+
+    New release ---- alpha_release-7-0-241
+
+commit 6c913ebe4064449254cc3a01544a6a1f7308090e
+Merge: c42fd0a 9811d92
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 17 10:52:23 2016 -0400
+
+    Merge pull request #418 from MDSplus/jas-more-device-errors
+    
+    do not raise generic errors from device methods - actmon can not disp…
+
+commit 9811d92374f7af2d8f72530323b45ad0e23fadf3 (refs/remotes/origin/jas-more-device-errors)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 17 10:23:49 2016 -0400
+
+    do not raise generic errors from device methods - actmon can not display them
+
+commit c42fd0a4817f31be1dad6dda18a28a04c89c8652
+Merge: 3d47aab ca52a32
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 17 10:15:17 2016 -0400
+
+    Merge pull request #416 from MDSplus/twf-fix-TreeNode-getNodeWild
+    
+    Change TreeNode.getNodeWild to set default to node and use wildcard s…
+
+commit ca52a3294a27e399c638a753db5a7a8f277047f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 17 08:39:35 2016 -0400
+
+    Change TreeNode.getNodeWild to set default to node and use wildcard spec as provided. Also support usage selection.
+
+commit 3d47aabc3875213c9feab219b2d5be048637501c (tag: refs/tags/alpha_release-7-0-240)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 15 23:24:35 2016 -0400
+
+    New release ---- alpha_release-7-0-240
+
+commit 948e794940fd95881d8ab70cf45d03e57b9e310e
+Merge: ef97f2d 51f925a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 15 17:13:16 2016 -0400
+
+    Merge pull request #415 from MDSplus/jas-add-more-device-errors
+    
+    acq devices (and python devices in general) need to raise errors that actmon can display
+
+commit 51f925a5ab622627093158ae7ce7262cff1dcb38 (refs/remotes/origin/jas-add-more-device-errors)
+Merge: f21ab46 ef97f2d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 15 17:02:50 2016 -0400
+
+    Merge branch 'alpha' into jas-add-more-device-errors
+
+commit f21ab46c8889d47791d80078560b8ea2b731bb81
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 15 16:46:18 2016 -0400
+
+    remove debug print
+
+commit e5cb0f4dc12a637ce39a78ccff551aacc2009bb5
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 15 16:32:21 2016 -0400
+
+    acq devices (and python devices in general) need to raise errors that actmon can display
+    
+    When actions are dispatched if the error does not have a 'status' (ours do, but in general Execptions do not)
+    PyDoMethod.py sets the status to zero.
+    
+    when actmon notices that a dispatched action has failed it trys to make a string from the action's status,
+    which is an integer filled in with the returned status from TreeDoMethod.
+    
+    So acq.py was raising errors from Non MDSplus things, which were being displayed as 0 - NO MESSAGE For code 0
+    Now acq.py raises errors which have MDSplus status and strings so ACTMON should be more informative.
+
+commit ef97f2d405541f2f40056a72374de03bcac7a913
+Merge: c3e5f46 55e6b89
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Tue Mar 15 18:55:48 2016 +0100
+
+    Merge pull request #414 from AndreaRigoni/find-java-home
+    
+    Find java home
+
+commit 55e6b8905902d6565bb29f12fe9b253c452ee627
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 18:28:59 2016 +0100
+
+    make JDK_DIR the primary env to look for
+
+commit b7a0394e5cdcfcbf063c26a646d036c1d617bcf6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 18:17:20 2016 +0100
+
+    added readlink
+
+commit e16f7d2d93661247fe12b0050578a33560fc8d4e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 16:07:20 2016 +0100
+
+    adds check for JAVA_HOME eventually set JDK_DIR to JAVA_HOME
+
+commit c3e5f46138164f2766410e7f5aa1072b0bc59a1f
+Merge: baada92 5bf68d6
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 15 11:44:24 2016 +0100
+
+    Merge pull request #412 from AndreaRigoni/fix_javaobjects_makefile_in
+    
+    add missing MdsStreamingDataprovider.java from Makefile.am
+
+commit 5bf68d6dba92fb82f60661d4e0936e633b5717d1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 15 11:37:00 2016 +0100
+
+    add missing MdsStreamingDataprovider.java from Makefile.am
+
+commit baada92bd6e7bbb3fb5211771e708e99a2652530 (tag: refs/tags/alpha_release-7-0-239)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 11 23:24:28 2016 -0500
+
+    New release ---- alpha_release-7-0-239
+
+commit a06898221a3ec5bdec7b612fce3155a54514bb31
+Merge: 285d716 213d389
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 11 22:55:06 2016 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 213d389a6db1d36170aedc523a9bb042ace66bd8
+Merge: dc50682 3303206
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 08:01:49 2016 -0500
+
+    Merge pull request #409 from MDSplus/dev-gm
+    
+    Fix MARTE_DEVICE deviceButtons
+
+commit 330320681f46bcaec73f2a67a4318b5902e1375b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 10 14:44:43 2016 +0100
+
+    Fix compilation error
+
+commit c0534415a350248120aceb2aad8cc8ba0448ae95
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 10 13:49:47 2016 +0100
+
+    Fix MARTE_DEVICE deviceButtons
+    More info on device apply error
+
+commit 285d71624ae27ad6248b6437e037d088a9f2fd27 (tag: refs/tags/alpha_release-7-0-238)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 8 23:24:34 2016 -0500
+
+    New release ---- alpha_release-7-0-238
+
+commit d20392a2753c2bfe641bb0065fc59452fcdff513
+Merge: 48f4aae dc50682
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 8 22:55:07 2016 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit dc50682e2d84265b742e1acf5e8ad422e06dccdc
+Merge: cbf9287 e3ecb6a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 15:45:32 2016 -0500
+
+    Merge pull request #408 from MDSplus/twf-fix-beginTimestampedSegment-py
+    
+    Fix typo in treenode.py referencing _tdishr instead of _treeshr for T…
+
+commit e3ecb6a3f70b4072497940ecfc1d8555d5811b2b (refs/remotes/origin/twf-fix-beginTimestampedSegment-py)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 15:17:44 2016 -0500
+
+    Fix typo in treenode.py referencing _tdishr instead of _treeshr for TreeBeginTimestampedSegment
+
+commit cbf928765a807a0126ef327cc1ee48ae5bfd0105
+Merge: 42c2d83 2392533
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 12:01:39 2016 -0500
+
+    Merge pull request #407 from MDSplus/twf-fix-libsysasctim
+    
+    Fix length of string returned by LibSysAscTim
+
+commit 2392533f53304b02800cd179991ed4cf95932737
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 10:52:55 2016 -0500
+
+    Fix length of string returned by LibSysAscTim
+
+commit 42c2d83ff011ea0154db21e5132ff08b126c36a7
+Merge: e9fa3a5 ddd2b7e
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Tue Mar 8 12:23:39 2016 +0100
+
+    Merge pull request #406 from MDSplus/dev-gm
+    
+    Fix mutex lock
+
+commit ddd2b7e00afbdd55365d0ed3ce891be5b75570ba
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Tue Mar 8 10:43:44 2016 +0100
+
+    Fix mutex lock
+
+commit 48f4aae086c5ac7a83dcbe66bcd58bccad458870 (tag: refs/tags/alpha_release-7-0-237)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Mar 7 23:24:26 2016 -0500
+
+    New release ---- alpha_release-7-0-237
+
+commit d6346c2fbb66c1eebe90b12e944d9e5d34ba6ece
+Merge: 533eed5 e9fa3a5
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Mar 7 22:55:08 2016 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit e9fa3a5360d1242353ce1f011691e2859776620d
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 7 11:19:04 2016 +0100
+
+    Add missing files for compilation
+
+commit 533eed5b7c49942827a498eb367d62a68079b918 (tag: refs/tags/alpha_release-7-0-236)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 4 23:24:19 2016 -0500
+
+    New release ---- alpha_release-7-0-236
+
+commit dc1e83f030102d86b0c727c38f468134636a347f
+Merge: 3bbecc1 e0f64f6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 10:51:53 2016 -0500
+
+    Merge pull request #404 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit e0f64f67635a37b0e87bbf94ae2ce7fe9b94e15f
+Merge: 831406a 3bbecc1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 09:52:12 2016 -0500
+
+    Merge branch 'alpha' into dev-gm
+
+commit 831406ad07b8ad2c2fdcf4443560ba96e5034025
+Merge: 2a5caf4 f4d6ae6
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 4 10:15:37 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit 2a5caf4dd2ae22dfd9d2ac57cc2c9350822fe36e
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 4 10:14:08 2016 +0100
+
+    Added MdsStreamingDataProvider
+
+commit 3bbecc185a720aba4d90022ae9f7842843738473 (tag: refs/tags/alpha_release-7-0-235)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Mar 2 23:24:28 2016 -0500
+
+    New release ---- alpha_release-7-0-235
+
+commit 557432e127497894d13b4446d5fe8273bb0381c1
+Merge: 4053de8 effe6c8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 11:51:40 2016 -0500
+
+    Merge pull request #391 from MDSplus/jas-actually-call-compression-tests
+    
+    actually call the compression tests
+
+commit effe6c866f3fc293a6b99be6cfe8232883ea27b4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 11:06:17 2016 -0500
+
+    Fix uninitialize memory problems
+
+commit 4053de820519e84eb1b07acc0929cad15a6f616c
+Merge: b48cca7 78df2bf
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Mar 2 16:01:39 2016 +0100
+
+    Merge pull request #393 from zack-vii/aa_cygnet4k
+    
+    cygnet4k update on store timeout workaround
+
+commit 78df2bff00f162a6f04a2d37672e02805a6a15b1
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Feb 26 12:50:29 2016 +0100
+
+    no default timeout on store
+
+commit 6481745f25ba1cd9f49dc794c6a4cb2f0dbe3daf
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Feb 25 11:04:25 2016 +0100
+
+    streamer can reopen tree when it has been closed by mdsip
+
+commit b48cca73d8fbb0b020f1888e4e70b6081a97a9bf (tag: refs/tags/alpha_release-7-0-234)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 1 23:24:30 2016 -0500
+
+    New release ---- alpha_release-7-0-234
+
+commit 75d16cce6ce3e3dee6ccaf441c8e4546961010d8
+Merge: 5f0de29 f4d6ae6
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Wed Mar 2 01:53:26 2016 +0100
+
+    Merge pull request #389 from MDSplus/dev-gm
+    
+    Added forgotten Contour management
+
+commit f4d6ae6d54508b013cba4a727b162f45b978c4e1
+Merge: 3a5dcbd 5f0de29
+Author: zack-vii <zack-vii@users.noreply.github.com>
+Date:   Tue Mar 1 22:39:45 2016 +0100
+
+    Merge branch 'alpha' into dev-gm
+
+commit 6b3da4a67efb98f6f7bff9684acbbf97669b10f4 (refs/remotes/origin/jas-actually-call-compression-tests)
+Merge: ce5e8fd 5f0de29
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 16:02:42 2016 -0500
+
+    Merge branch 'alpha' into jas-actually-call-compression-tests
+
+commit ce5e8fd8dc081ac3573106d7484ed4fe62f3682f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:58:14 2016 -0500
+
+    Move testing tree to subdirectory of tests
+
+commit 5f0de29d4ea1b7ebb87a087998192278c4422268
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:19:57 2016 -0500
+
+    Exit upload_to_pypi with status
+
+commit ffbe4d5d34106bae2327518756608fa6dbb56520
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 15:00:23 2016 -0500
+
+    Add tempory upload script to use with pypi
+
+commit e7c1872afa08508205fa39c0f7c56eb66b914d06
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 1 13:05:22 2016 -0500
+
+    actually call the compression tests
+
+commit a5e8a2cfa428e5043c4f45875e8420f5766d3dc9
+Merge: b8d3267 147ce30
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 08:57:40 2016 -0500
+
+    Merge pull request #387 from zack-vii/aa_python
+    
+    python tcl replacement and getNodeWild fix on TreeNode
+
+commit 3a5dcbde13fe256869c4d669764a3ecb309a7354
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 1 14:34:07 2016 +0100
+
+    Added forgotten Contour management
+
+commit 147ce30812e3f5c87d7278ad2aa118c5708d374a
+Author: zack-vii <zack.vii@live.com>
+Date:   Mon Feb 29 20:01:56 2016 +0100
+
+    fix GetNodeWild behaviour for absolute paths
+
+commit c990e10ff8e9725942fc328e763eabfbcd6e3442
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Feb 4 11:29:50 2016 +0100
+
+    _setNode use mdsdcl
+
+commit b8d3267b36244b116dafd437b9e4b6088dc00626 (tag: refs/tags/alpha_release-7-0-233)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Feb 29 23:24:17 2016 -0500
+
+    New release ---- alpha_release-7-0-233
+
+commit 1da4df3357de9e29e79646daffac6dba0323e264
 Merge: 2da9bd2 c6232bb
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 29 13:28:19 2016 -0500
@@ -46,7 +479,7 @@ Date:   Fri Feb 26 09:20:52 2016 -0500
     
     Fix again reversed field
 
-commit f09b63d538327fefaad5e2ba14a149e7604d0824 (refs/remotes/origin/dev-gm)
+commit f09b63d538327fefaad5e2ba14a149e7604d0824
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Feb 26 14:50:55 2016 +0100
 

@@ -100,10 +100,8 @@ class ACQ(MDSplus.Device):
         from MDSplus.mdsExceptions import TreeNODATA
         try:
             boardip=str(self.node.record)
-        except TreeNODATA,e:
-            raise DevNO_NAME_SPECIFIED()
         except Exception,e:
-            raise            
+            raise DevNO_NAME_SPECIFIED(str(e))
         if len(boardip) == 0 :
             raise DevNO_NAME_SPECIFIED()
         return boardip
@@ -131,6 +129,7 @@ class ACQ(MDSplus.Device):
             self.connectAndFlushData()
 
     def readRawData(self, chan, pre, start, end, inc, retrying) :
+        from MDSplus.mdsExceptions import DevERROR_READING_CHANNEL
 	if self.debugging():
 	    print " starting readRawData(chan=%d, pre=%d. start=%d, end=%d, inc=%d)\n" %(chan,pre, start, end, inc,)
 	try:
@@ -160,12 +159,13 @@ class ACQ(MDSplus.Device):
 		 raise
 	except Exception, e:
 	    print "ACQ error reading channel %d\n, %s\n" % (chan, e,)
-	    raise
+	    raise DevERROR_READING_CHANNEL(str(e))
 	if self.debugging():
 	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
 
     def loadSettings(self):
+        from MDSplus.mdsExceptions import DevCANNOT_LOAD_SETTINGS
         tries = 0
         self.settings = None
         last_error = None
@@ -180,7 +180,7 @@ class ACQ(MDSplus.Device):
                     print "ACQ196 Error loading settings\n%s\n" %(e,)
         if self.settings == None :
             print "after %d tries could not load settings\n" % (tries,)
-            raise last_error
+            raise DevCANNOT_LOAD_SETTINGS(str(last_error))
 
     def checkTreeAndShot(self, arg1='checks', arg2='checks'):
         from MDSplus.mdsExceptions import DevWRONG_TREE
@@ -255,18 +255,26 @@ class ACQ(MDSplus.Device):
         return 1
 
     def getBoardState(self):
+        from MDSplus.mdsExceptions import DevCANNOT_GET_BOARD_STATE
         boardip = self.getBoardIp()
-
-        try:
-            UUT = acq200.Acq200(transport.factory(boardip))
-        except:
-            print "could not connect to the board %s"% (boardip,)
-        try:
-            a = UUT.uut.acqcmd('getState')
-        except:
-            print "could not send getState to the board"
+        last_error = None
+        for t in range(10):
+            try:
+                UUT = acq200.Acq200(transport.factory(boardip))
+            except Exception, e:
+                print "could not connect to the board %s"% (boardip,)
+                last_error=e
+            try:
+                if not UUT == None:
+                    a = UUT.uut.acqcmd('getState')
+                    return "ACQ32:%s"%a
+            except Exception,e:
+                print "could not send getState to the board try %d"%t
+                last_error = e
+        if not last_error == None:
+            raise DevCANNOT_GET_BOARD_STATE(str(last_error))
+        else:
             return 'unkown'
-        return "ACQ32:%s"%a
 
 #    def getBoardState(self):
 #        """Get the current state"""
@@ -299,17 +307,22 @@ class ACQ(MDSplus.Device):
 #
     def getMyIp(self):
         import socket
-
-        s=socket.socket()
-        s.connect((self.getBoardIp(),54545))
-        hostip = s.getsockname()[0]
-        state=s.recv(100)[0:-1]
-        if self.debugging():
-            print "getMyIp  read /%s/\n" % (state,)
-        s.close()
+        from MDSplus.mdsExceptions import DevOFFLINE
+        try:
+            s=socket.socket()
+            s.connect((self.getBoardIp(),54545))
+            hostip = s.getsockname()[0]
+            state=s.recv(100)[0:-1]
+            if self.debugging():
+                print "getMyIp  read /%s/\n" % (state,)
+            s.close()
+        except Exception, e:
+            raise DevOFFLINE(str(e))
 	return hostip
 
     def addGenericJSON(self, fd):
+        if self.debugging():
+            print "starting addGenericJson"
         fd.write(r"""
 begin_json() {   echo "{"; }
 end_json() {   echo "\"done\" : \"done\"  }"; }
@@ -357,6 +370,8 @@ add_cmd get.pulse_number >> $settingsf
 add_cmd get.trig >> $settingsf
 """)
     def finishJSON(self, fd, auto_store):
+        if self.debugging():
+            print "starting finishJSON"
         fd.write("end_json >> $settingsf\n")
             
         if auto_store != None :
@@ -419,6 +434,8 @@ add_cmd get.trig >> $settingsf
                 exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
 
     def startInitializationFile(self, fd, trig_src, pre_trig, post_trig):
+	if self.debugging():
+            print "starting startInitialization"
         host = self.getMyIp()
         fd.write("acqcmd setAbort\n")
         fd.write("host=%s\n"%(host,))
@@ -480,6 +497,8 @@ add_cmd get.trig >> $settingsf
     def doInit(self,fd):
         """Tell the board to arm"""
         import socket
+        from MDSplus.mdsExceptions import DevERROR_DOING_INIT
+
         if self.debugging():
 	    print "starting doInit"
         status=1
@@ -489,7 +508,7 @@ add_cmd get.trig >> $settingsf
             ftp.storlines("STOR /tmp/initialize",fd)
         except Exception,e:
             print "Error sending arm commands via ftp to %s\n%s\n" % (self.getBoardIp(), e,)
-            raise
+            raise DevERROR_DOING_INIT(str(e))
         s=socket.socket()
         try:
             s.settimeout(10.)
@@ -499,7 +518,7 @@ add_cmd get.trig >> $settingsf
             status=0
             s.close()
             print "Error sending doInit: %s" % (str(e),)
-            raise
+            raise DevERROR_DOING_INIT(str(e))
         s.close()
         if self.debugging():
             print "finishing doInit"
@@ -581,68 +600,62 @@ add_cmd get.trig >> $settingsf
     WAITFTP=waitftp
 
     def trigger(self):
+        from MDSplus.mdsExceptions import DevTRIGGER_FAILED
+
         if self.debugging():
             print "starting trigger"
-        boardip = self.getBoardIp()
         try:
+            boardip = self.getBoardIp()
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
-        except:
-            print "could not read trigger source"
-            return 0
-        if self.debugging() :
-            print "executing trigger on board %s, trig_src is %s."% (boardip, trig_src,)
-        trig_src = trig_src[2:]
+            if self.debugging() :
+                print "executing trigger on board %s, trig_src is %s."% (boardip, trig_src,)
+            trig_src = trig_src[2:]
         
-        try:
             UUT = acq200.Acq200(transport.factory(boardip))
-        except:
-            print "could not connect to the board %s"% (boardip,)
-        try:
             route = UUT.uut.acq2sh('get.route D%s'%(trig_src,))
+
             d1 = UUT.uut.acq2sh('set.route d%s in fpga out'%(trig_src,))
             d2 = UUT.uut.acq2sh('set.dtacq dio_bit %s P'%(trig_src,))
             d3 = UUT.uut.acq2sh('set.route %s' %(route,))
             d4 = UUT.uut.acq2sh('set.dtacq dio_bit %s -'%(trig_src,))
             
-        except:
-            print "could not send command to the board"
-        if self.debugging():
-            print "got back: %s\n" % (route,)
-	    print "     and: %s\n" % (d1,)
-	    print "     and: %s\n" % (d2,)
-	    print "     and: %s\n" % (d3,)
-	    print "     and: %s\n" % (d4,)
+            if self.debugging():
+                print "got back: %s\n" % (route,)
+	        print "     and: %s\n" % (d1,)
+	        print "     and: %s\n" % (d2,)
+	        print "     and: %s\n" % (d3,)
+	        print "     and: %s\n" % (d4,)
+        except Exception, e:
+            print "Error doing Trigger method"
+            raise DevTRIGGER_FAILED(str(e))
         return 1
     TRIGGER=trigger
 
     def acqcmd(self, arg):
+        from MDSplus.mdsExceptions import DevACQCMD_FAILED
+
         boardip = self.getBoardIp()
         
         try:
             UUT = acq200.Acq200(transport.factory(boardip))
-        except:
-            print "could not connect to the board %s"% (boardip,)
-        try:
             a = UUT.uut.acqcmd(str(arg))
-        except:
+        except Exception, e:
             print "could not send %s to the board" %(str(arg),)
-            return 0
+            raise DevACQCMD_FAILED(str(e))
         print "%s  %s -> %s"%(boardip, arg, a,)
         return 1
     ACQCMD=acqcmd
 
     def acq2sh(self, arg):
+        from MDSplus.mdsExceptions import DevACQ2SH_FAILED
         boardip = self.getBoardIp()
         
         try:
             UUT = acq200.Acq200(transport.factory(boardip))
-        except:
-            print "could not connect to the board %s"% (boardip,)
-        try:
             a = UUT.uut.acq2sh(str(arg))
-        except:
-            print "could not send %s to the board" %(str(arg),)
-            return 0
+        except Exception, e:
+            print "could not connect to the board %s"% (boardip,)
+            raise DevACQ2SH_FAILED(str(e))
         print "%s  %s -> %s"%(boardip, arg, a,)
         return 1
     ACQ2SH=acq2sh
