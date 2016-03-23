@@ -116,6 +116,21 @@ parse_cmd() {
     fi
 }
 
+add_sanitize_supp()
+{
+    if [ "$1" = "thread" ]
+    then
+	export TSAN_OPTIONS=suppressions=$(pwd)/mdsobjects/cpp/testing/MdsConnectionTest.supp
+    elif [ "$1" = "address" ]
+    then
+	export ASAN_OPTIONS=suppressions=$(pwd)/mdsobjects/cpp/testing/MdsConnectionTest.supp
+    elif [ "$1" = "undefined" ]
+    then
+	export UBSAN_OPTIONS=suppressions=$(pwd)/mdsobjects/cpp/testing/MdsConnectionTest.supp
+    fi
+}
+
+
 test_64 () {
     set -e
     ulimit -c unlimited
@@ -184,6 +199,7 @@ test_64 () {
 		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
+		    add_sanitize_supp ${test} # temporary fix
 		    $MAKE -k tests TEST_FORMAT=log 2>&1;
 		    let test_64_san_${test}=$?
 		else
@@ -269,6 +285,7 @@ test_32() {
 		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
+		    add_sanitize_supp ${test} # temporary fix
 		    $MAKE -k tests TEST_FORMAT=log 2>&1;
 		    let test_32_san_${test}=$?
 		else
@@ -284,37 +301,48 @@ test_32() {
 
 check_tests() {
     failed=0;
-    if [ "$tests_64" != "0" ]
+    if [ -z "$ARCH" -o "$ARCH" = "x86_64" ]
     then
-	echo "64-bit tests failed!!!";
-	failed=1;
+	if [ "$tests_64" != "0" ]
+	then
+	    echo "64-bit tests failed!!!";
+	    failed=1;
+	fi;
+	if [ "$tests_valgrind64" != "0" ]
+	then
+	    echo "64-bit valgrind tests failed!!!";
+	    failed=1;
+	fi;
+	for test in address thread undefined; do
+ 	    eval "status=\$test_64_san_${test}"
+	    if [ "$status" != "0" ]
+            then
+		echo "64-bit --enable-sanitize-${test} failed"
+		failed=1;
+	    fi
+	done;
     fi;
-    if [ "$tests_valgrind64" != "0" ]
+    if [ -z "$ARCH" -o "$ARCH" = "i386" ]
     then
-	echo "64-bit valgrind tests failed!!!";
-	failed=1;
-    fi;
-    if [ "$tests_32" != "0" ]
-    then
-	echo "32-bit tests failed!!!";
-	failed=1;
-    fi;
-    if [ "$tests_valgrind32" != "0" ]
-    then
-	echo "32-bit valgrind tests failed!!!";
-	failed=1;
-    fi;
-    IFS=',' read -ra ARR <<< "address,thread,undefined"
-    for arch in 32 64; do
-	 for test in address thread undefined; do
- 	     eval "status=\$test_${arch}_san_${test}"
-	     if [ "$status" != "0" ]
-             then
-		 echo "${arch}-bit --enable-sanitize-${test} failed"
-		 failed=1;
-	     fi
-	 done;
-    done;
+	if [ ! -z "$tests_32" -a "$tests_32" != "0" ]
+	then
+	    echo "32-bit tests failed!!!";
+	    failed=1;
+	fi;
+	if [ "$tests_valgrind32" != "0" ]
+	then
+	    echo "32-bit valgrind tests failed!!!";
+	    failed=1;
+	fi;
+	for test in address thread undefined; do
+ 	    eval "status=\$test_32_san_${test}"
+	    if [ "$status" != "0" ]
+            then
+		echo "32-bit --enable-sanitize-${test} failed"
+		failed=1;
+	    fi
+	done;
+    fi
     if [ "$failed" = "1" ]
     then
 	exit 1;
@@ -443,6 +471,27 @@ then
 	      build_rpms;
 	      build_eggs;
             fi;;
+	debian)
+	    if [ "${TESTS}" = "yes" ]
+	    then
+		if [ "$ARCH" = "i386" ]
+		then
+		    test_32;
+		else
+		    test_64;
+		fi
+		check_tests;
+	    fi
+	    if [ -r ${WORKSPACE}/release ]
+	    then
+		if [ "$ARCH" = "i386" ]
+		then
+		    build_32;
+		else
+		    build_64;
+		fi
+		build_debs;
+		build_eggs;
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
 	    exit 1;;
