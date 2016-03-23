@@ -492,6 +492,7 @@ then
 		fi
 		build_debs;
 		build_eggs;
+	    fi;;
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
 	    exit 1;;
