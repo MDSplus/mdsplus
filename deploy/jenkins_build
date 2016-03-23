@@ -120,13 +120,13 @@ add_sanitize_supp()
 {
     if [ "$1" = "thread" ]
     then
-	export TSAN_OPTIONS=suppressions=$(SRCDIR)/mdsobjects/cpp/testing/MdsConnectionTest.supp
+	export TSAN_OPTIONS=suppressions=${SRCDIR}/mdsobjects/cpp/testing/MdsConnectionTest.supp
     elif [ "$1" = "address" ]
     then
-	export ASAN_OPTIONS=suppressions=$(SRCDIR)/mdsobjects/cpp/testing/MdsConnectionTest.supp
+	export ASAN_OPTIONS=suppressions=${SRCDIR}/mdsobjects/cpp/testing/MdsConnectionTest.supp
     elif [ "$1" = "undefined" ]
     then
-	export UBSAN_OPTIONS=suppressions=$(SRCDIR)/mdsobjects/cpp/testing/MdsConnectionTest.supp
+	export UBSAN_OPTIONS=suppressions=${SRCDIR}/mdsobjects/cpp/testing/MdsConnectionTest.supp
     fi
 }
 
