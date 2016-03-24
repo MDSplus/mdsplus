@@ -1182,6 +1182,7 @@ elif test $sanitizers -eq 1; then
        ENABLE_SANITIZE=address;
        CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
+       SAN_OPTION="ASAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
        LIBS="-lasan ${LIBS}";],[echo "Address sanitize not available."; exit 111;])
      fi;
 
@@ -1190,6 +1191,7 @@ elif test $sanitizers -eq 1; then
        ENABLE_SANITIZE=thread;
        CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
+       SAN_OPTION="TSAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
        LIBS="-ltsan ${LIBS}"],[echo "Thread sanitize not available."; exit 111;])
      fi;
    
@@ -1198,12 +1200,14 @@ elif test $sanitizers -eq 1; then
        ENABLE_SANITIZE=undefined;
        CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
+       SAN_OPTION="UBSAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
        LIBS="-lubsan ${LIBS}";],[echo "Undefined sanitize not available."; exit 111;])
      fi;
   else
     echo "gcc version 4.8.0 or higher required for sanitizers";
     exit 111;
   fi;	 
+  TESTS_ENVIRONMENT="$TESTS_ENVIRONMENT $SAN_OPTION"
 fi
 
 AM_CONDITIONAL([ENABLE_SANITIZE],[test -n "${ENABLE_SANITIZE}"])

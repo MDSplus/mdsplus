@@ -16782,6 +16782,7 @@ if test "x$ac_cv_lib_asan__init" = xyes; then :
        ENABLE_SANITIZE=address;
        CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
+       SAN_OPTION="ASAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
        LIBS="-lasan ${LIBS}";
 else
   echo "Address sanitize not available."; exit 111;
@@ -16831,6 +16832,7 @@ if test "x$ac_cv_lib_tsan__init" = xyes; then :
        ENABLE_SANITIZE=thread;
        CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
+       SAN_OPTION="TSAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
        LIBS="-ltsan ${LIBS}"
 else
   echo "Thread sanitize not available."; exit 111;
@@ -16880,6 +16882,7 @@ if test "x$ac_cv_lib_ubsan__init" = xyes; then :
        ENABLE_SANITIZE=undefined;
        CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
        CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
+       SAN_OPTION="UBSAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
        LIBS="-lubsan ${LIBS}";
 else
   echo "Undefined sanitize not available."; exit 111;
@@ -16890,6 +16893,7 @@ fi
     echo "gcc version 4.8.0 or higher required for sanitizers";
     exit 111;
   fi;
+  TESTS_ENVIRONMENT="$TESTS_ENVIRONMENT $SAN_OPTION"
 fi
 
  if test -n "${ENABLE_SANITIZE}"; then
