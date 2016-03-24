@@ -103,6 +103,149 @@ int TreeMakeSegment(int nid, struct descriptor *start, struct descriptor *end,
   return _TreeMakeSegment(*TreeCtx(), nid, start, end, dimension, initialValue, idx, rows_filled);
 }
 
+int TreeGetSegmentTimesXd(int nid, int *nsegs, struct descriptor_xd *start_list, struct descriptor_xd *end_list)
+{
+  return _TreeGetSegmentTimesXd(*TreeCtx(), nid, nsegs, start_list, end_list);
+}
+
+int _TreeGetSegmentTimesXd(void *dbid, int nid, int *nsegs, struct descriptor_xd *start_list, struct descriptor_xd *end_list)
+{
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  NID *nid_ptr = (NID *) & nid;
+  int status = TreeFAILURE;
+  int open_status;
+  TREE_INFO *info_ptr;
+  int nidx;
+  NODE *node_ptr;
+  if (!(IS_OPEN(dblist)))
+    return TreeNOT_OPEN;
+  node_ptr = nid_to_node(dblist, nid_ptr);
+  if (!node_ptr)
+    return TreeNNF;
+  if (dblist->remote) {
+    printf("Segmented records are not supported using thick client mode\n");
+    return 0;
+  }
+  nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
+  if (info_ptr) {
+    NCI local_nci;
+    int64_t saved_viewdate;
+    EXTENDED_ATTRIBUTES attributes;
+    SEGMENT_HEADER segment_header;
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciW(info_ptr, nidx, &local_nci, 0);
+    if (!(status & 1))
+      return status;
+    if (info_ptr->data_file == 0)
+      open_status = TreeOpenDatafileR(info_ptr);
+    else
+      open_status = 1;
+    if (!(open_status & 1)) {
+      return open_status;
+    }
+    if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
+	((TreeGetExtendedAttributes
+	  (info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1) == 0)) {
+      status = TreeFAILURE;
+    } else if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY] == 0 ||
+	       ((GetSegmentHeader
+		 (info_ptr, attributes.facility_offset[SEGMENTED_RECORD_FACILITY],
+		  &segment_header) & 1) == 0)) {
+      status = TreeFAILURE;
+    } else {
+      SEGMENT_INDEX index;
+      int numsegs = segment_header.idx + 1;
+      int idx;
+      DESCRIPTOR_APD(start_apd, DTYPE_LIST, malloc(numsegs * sizeof(void *)), numsegs);
+      DESCRIPTOR_APD(end_apd, DTYPE_LIST, malloc(numsegs * sizeof(void *)), numsegs);
+      struct descriptor_xd **start_xds = (struct descriptor_xd **)start_apd.pointer;
+      struct descriptor_xd **end_xds = (struct descriptor_xd **)end_apd.pointer;
+      *nsegs = numsegs;
+      status = GetSegmentIndex(info_ptr, segment_header.index_offset, &index);
+      for (idx = numsegs - 1; (status & 1) && idx >= 0; idx--) {
+	EMPTYXD(xd);
+	start_xds[idx]=memcpy(malloc(sizeof(struct descriptor_xd)),&xd,
+			      sizeof(struct descriptor_xd));
+	end_xds[idx]=memcpy(malloc(sizeof(struct descriptor_xd)),&xd,
+			    sizeof(struct descriptor_xd));
+	struct descriptor_xd *start_xd = ((struct descriptor_xd **)start_apd.pointer)[idx];
+	struct descriptor_xd *end_xd = ((struct descriptor_xd **)end_apd.pointer)[idx];
+	int index_idx = idx % SEGMENTS_PER_INDEX;
+	SEGMENT_INFO *sinfo = &index.segment[index_idx];
+	if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
+	  /* It's a timestamped segment */
+	  int64_t startval;
+	  int64_t endval;
+	  struct descriptor startdsc = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)&startval};
+	  struct descriptor enddsc = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)&endval};
+	  if (sinfo->rows < 0 || !(sinfo->start == 0 && sinfo->end == 0)) {
+	    /* Valid start and end in segment info */
+	    startval = sinfo->start;
+	    endval = sinfo->end;
+	  } else {
+	    /* Current segment so use timestmps in segment */
+	    int length = sizeof(int64_t) * sinfo->rows;
+	    char *buffer = malloc(length), *bptr;
+	    int64_t timestamp;
+	    int deleted = 1;
+	    while (status & 1 && deleted) {
+	      status =
+		  (MDS_IO_READ_X
+		   (info_ptr->data_file->get, sinfo->dimension_offset, buffer, length,
+		    &deleted) == length) ? TreeSUCCESS : TreeFAILURE;
+	      if (status & 1 && deleted)
+		status = TreeReopenDatafile(info_ptr);
+	    }
+	    if (status & 1) {
+	      startval = swapquad(buffer);
+	      for (bptr = buffer + length - sizeof(int64_t);
+		   bptr > buffer && ((timestamp = swapquad(bptr)) == 0); bptr -= sizeof(int64_t)) ;
+	      if (bptr > buffer) {
+		endval = timestamp;
+	      } else {
+		endval = 0;
+	      }
+	    } else {
+	      startval = 0;
+	      endval = 0;
+	    }
+	    free(buffer);
+	  }
+	  MdsCopyDxXd(&startdsc,start_xd);
+	  MdsCopyDxXd(&enddsc,end_xd);
+	} else {
+	  if (sinfo->start != -1) {
+	    struct descriptor startdsc = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)&sinfo->start};
+	    MdsCopyDxXd(&startdsc,start_xd);
+	  } else if (sinfo->start_length > 0 && sinfo->start_offset > 0) {
+	    status = TreeGetDsc(info_ptr, nid, sinfo->start_offset, sinfo->start_length, start_xd);
+	  }
+	  if (sinfo->end != -1) {
+	    struct descriptor enddsc = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)&sinfo->end};
+	    MdsCopyDxXd(&enddsc,end_xd);
+	  } else if (sinfo->end_length > 0 && sinfo->end_offset > 0) {
+	    status = TreeGetDsc(info_ptr, nid, sinfo->end_offset, sinfo->end_length, end_xd);
+	  }
+	}
+	if (index_idx == 0 && idx > 0) {
+	  status = GetSegmentIndex(info_ptr, index.previous_offset, &index);
+	}
+      }
+      MdsCopyDxXd((struct descriptor *)&start_apd,start_list);
+      MdsCopyDxXd((struct descriptor *)&end_apd,end_list);
+      for (idx=0;idx<numsegs;idx++) {
+	MdsFree1Dx(start_xds[idx],0);
+        free(start_xds[idx]);
+	MdsFree1Dx(end_xds[idx],0);
+        free(end_xds[idx]);
+      }
+      free(start_apd.pointer);
+      free(end_apd.pointer);
+    }
+  }
+  return status;
+}
+
 int TreeGetSegmentTimes(int nid, int *nsegs, uint64_t ** times)
 {
   return _TreeGetSegmentTimes(*TreeCtx(), nid, nsegs, times);
