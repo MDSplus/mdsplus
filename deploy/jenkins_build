@@ -284,7 +284,7 @@ test_32() {
 
 check_tests() {
     failed=0;
-    if [ -z "$ARCH" -o "$ARCH" = "x86_64" ]
+    if [ -z "$ARCH" -o "$ARCH" = "x86_64" -o "$ARCH" = "amd64" ]
     then
 	if [ "$tests_64" != "0" ]
 	then
@@ -305,7 +305,7 @@ check_tests() {
 	    fi
 	done;
     fi;
-    if [ -z "$ARCH" -o "$ARCH" = "i386" ]
+    if [ -z "$ARCH" -o "$ARCH" = "i386" -o "$ARCH" = "i686" ]
     then
 	if [ ! -z "$tests_32" -a "$tests_32" != "0" ]
 	then
