@@ -76,6 +76,10 @@ def buildDebs():
         info['BUILDROOT']=os.environ['BUILDROOT']
     else:
         info['buildroot']='/buildroot'
+    if 'SRCDIR' in os.environ:
+        info['srcdir']=os.environ['SRCDIR']
+    else:
+        info['srcdir']='.'
     info['BRANCH']=os.environ['BRANCH']
     info['flavor']=info['BRANCH']
     info['major']=int(os.environ['MAJOR'])
@@ -88,7 +92,7 @@ def buildDebs():
     else:
         info['BNAME']="-%s" % info['BRANCH']
     info['rflavor']=info['BNAME']
-    tree=ET.parse('deploy/packaging.xml')
+    tree=ET.parse('%(srcdir)/deploy/packaging.xml' % info)
     root=tree.getroot()
     debs=list()
     for package in root.getiterator('package'):
