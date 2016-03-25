@@ -497,8 +497,10 @@ then
 		else
 		    build_64;
 		fi
-		ln -sf ${WORKSPACE}/release /buildroot
-		build_debs;
+		if [ "$LAST_IMAGE" = "yes" ];then
+		    BUILDROOT=${WORKSPACE}/release
+		    build_debs;
+		fi
 		build_eggs;
 	    fi;;
 	*)
@@ -553,30 +555,41 @@ else
 		print_help
 		exit 1;
 	    fi
-	    docker pull ${DOCKER_IMAGE}
-	    if [ "$TESTS" = "yes" -o "$VG_TESTS" != "" ]
-	    then
-		mkdir -p ${WORKSPACE}/tests
-	    else
-		rm -Rf ${WORKSPACE}/tests
-	    fi;
-	    if [ ! -z "$SIGN_KEYS" ]
-	    then
-		signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
-	    fi
-	    docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
-		   --pid=host \
-		   -t \
-                   -u $(id -u):$(id -g) \
-		   -v ${SRCDIR}:${SRCDIR} \
-		   -v ${SRCDIR}:/mdsplus/source \
-		   -v ${WORKSPACE}:${WORKSPACE} \
-		   ${installer_volume} \
-		   -e "WORKSPACE=${WORKSPACE}" \
-		   -e "SRCDIR=${SRCDIR}" \
-		   ${sign_keys} \
-		   ${DOCKER_IMAGE};
-	    docker rm "${JOB_NAME}${BUILD_NUMBER}";;
+	    IFS=',' read -ra DI_ARR <<< "$1"
+	    let images=0
+            for DOCKER_IMAGE in "${DI_ARR[@]}"; do
+		let images=images+1
+		if [ images -eq ${#DI_ARR[@]} ]; then
+		    LAST_IMAGE=yes;
+		else
+		    LAST_IMAGE=no;
+		fi;
+		docker pull ${DOCKER_IMAGE}
+		if [ "$TESTS" = "yes" -o "$VG_TESTS" != "" ]
+		then
+		    mkdir -p ${WORKSPACE}/tests
+		else
+		    rm -Rf ${WORKSPACE}/tests
+		fi;
+		if [ ! -z "$SIGN_KEYS" ]
+		then
+		    signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
+		fi
+		docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
+		       --pid=host \
+		       -t \
+                       -u $(id -u):$(id -g) \
+		       -v ${SRCDIR}:${SRCDIR} \
+		       -v ${SRCDIR}:/mdsplus/source \
+		       -v ${WORKSPACE}:${WORKSPACE} \
+		       ${installer_volume} \
+		       -e "WORKSPACE=${WORKSPACE}" \
+		       -e "SRCDIR=${SRCDIR}" \
+		       -e "LAST_IMAGE=${LAST_IMAGE}" \
+		       ${sign_keys} \
+		       ${DOCKER_IMAGE};
+		docker rm "${JOB_NAME}${BUILD_NUMBER}";;
+	    done;
 	TRIGGER)
 	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
