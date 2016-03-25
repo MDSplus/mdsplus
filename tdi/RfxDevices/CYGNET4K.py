@@ -1,3 +1,4 @@
+__version__=(2016,02,26,12,42)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -607,12 +608,15 @@ class CYGNET4K(Device):
             else:                   return
         raise mdsExceptions.DevException
 
-    def store(self):
+    def store(self,timeout=None):
         if not self.restoreWorker():
             raise mdsExceptions.DevException
-        self.worker.join(int(CYGNET4K.xclib.Frames+3))  # wait for it to complete
-        if self.worker.isAlive():  # error on timeout
-            raise mdsExceptions.DevException
+        if (timeout is None):
+            self.worker.join() # wait w/o timeout
+        else:
+            self.worker.join(float(timeout))  # wait for it to complete
+            if self.worker.isAlive():  # error on timeout
+                raise mdsExceptions.DevException
 
     def trend_start(self):
         dev_id = int(self.device_id.data())

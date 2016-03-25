@@ -2103,6 +2103,36 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* DEVTRIGGER_FAILED */
+      case 0x277c8180:
+        {static const char *text="Device trigger method failed";
+        static const char *msgnam="TRIGGER_FAILED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVERROR_READING_CHANNEL */
+      case 0x277c8188:
+        {static const char *text="Error reading data for channel from device";
+        static const char *msgnam="ERROR_READING_CHANNEL";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVERROR_DOING_INIT */
+      case 0x277c8190:
+        {static const char *text="Error sending ARM command to device";
+        static const char *msgnam="ERROR_DOING_INIT";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* RETICONNORMAL */
       case 0x277c8198:
         {static const char *text="successful completion";
@@ -3318,6 +3348,46 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         {static const char *text="Module did not acquire any samples";
         static const char *msgnam="NO_SAMPLES";
         *fac_out = FAC_DT196B;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVCANNOT_LOAD_SETTINGS */
+      case 0x277ca5a0:
+        {static const char *text="Error loading settings from XML";
+        static const char *msgnam="CANNOT_LOAD_SETTINGS";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVCANNOT_GET_BOARD_STATE */
+      case 0x277ca5a8:
+        {static const char *text="Cannot retrieve state of daq board";
+        static const char *msgnam="CANNOT_GET_BOARD_STATE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVACQCMD_FAILED */
+      case 0x277ca5b0:
+        {static const char *text="Error executing acqcmd on daq board";
+        static const char *msgnam="ACQCMD_FAILED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVACQ2SH_FAILED */
+      case 0x277ca5b8:
+        {static const char *text="Error executing acq2sh command on daq board";
+        static const char *msgnam="ACQ2SH_FAILED";
+        *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
