@@ -72,6 +72,10 @@ def doRequire(info, out, root, require):
 
 def buildDebs():
     info=dict()
+    if 'BUILDROOT' in os.environ:
+        info['BUILDROOT']=os.environ['BUILDROOT']
+    else:
+        info['buildroot']='/buildroot'
     info['BRANCH']=os.environ['BRANCH']
     info['flavor']=info['BRANCH']
     info['major']=int(os.environ['MAJOR'])
@@ -111,9 +115,9 @@ def buildDebs():
                 excludes.append("/usr/local/mdsplus/lib/*.a")
             if package.find("include_staticlibs") is not None:
                 includes.append("/usr/local/mdsplus/lib/*.a")
-            files=getPackageFiles("/buildroot/",includes,excludes)
+            files=getPackageFiles(info['buildroot'],includes,excludes)
             for f in files:
-                info['file']=f[len("/buildroot/")-1:].replace(' ','\\ ').replace('$','\\$')\
+                info['file']=f[len("%(buildroot)s/"%info)-1:].replace(' ','\\ ').replace('$','\\$')\
                         .replace('(','\\(').replace(')','\\)')
                 if subprocess.Popen("""
 set -o verbose
@@ -121,7 +125,7 @@ set -e
 dn=$(dirname %(file)s)
 mkdir -p %(tmpdir)s/DEBIAN
 mkdir -p "%(tmpdir)s/${dn}"
-cp -av /buildroot/%(file)s "%(tmpdir)s/${dn}/"
+cp -av %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
 """ % info,shell=True).wait() != 0:
                     raise Exception("Error building deb")
                 sys.stdout.flush()
