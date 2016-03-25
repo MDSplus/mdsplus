@@ -555,7 +555,7 @@ else
 		print_help
 		exit 1;
 	    fi
-	    IFS=',' read -ra DI_ARR <<< "$1"
+	    IFS=',' read -ra DI_ARR <<< "$DOCKER_IMAGE"
 	    images=0
             for DOCKER_IMAGE in "${DI_ARR[@]}"; do
 		let images=images+1
