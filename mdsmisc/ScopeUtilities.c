@@ -9,6 +9,152 @@
 #include <tdishr.h>
 #define MAX_LIMIT 1E10
 
+static int recIsSegmented(struct descriptor *dsc);
+
+static int getSegmentedNid(char *expr)
+{
+    EMPTYXD(xd);
+    struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
+    int status, segNid;
+
+    status = TdiCompile(&exprD, &xd MDS_END_ARG);
+    if(!(status & 1)) return 0;
+    segNid = recIsSegmented(xd.pointer);
+    MdsFree1Dx(&xd, 0);
+    return segNid;
+}
+
+#define NUM_SEGMENTS_THRESHOLD 10
+#define NUM_SAMPLES_THRESHOLD 10000000
+
+/**
+* Make an estimation of the number of samples in the specified interval. -1 is returned when
+* when online minmax reasampling is deemed not necessary. If the number  
+**/
+
+static int estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSamples, double *estimatedDuration)
+{
+	int nid, numSegments, status, startIdx, endIdx;
+	struct descriptor minD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*) xMin};
+	struct descriptor maxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*) xMax};
+	struct descriptor **startEndTimes;
+	int64_t startTime, endTime, currStartTime, currEndTime;
+	char dtype, dimct;
+	int dims[64];
+	int nextRow, segmentSamples, numActSegments, segmentIdx;
+	EMPTYXD(retStartXd);
+	EMPTYXD(retEndXd);
+	double startSig, endSig;
+
+	nid = getSegmentedNid(sigName);
+	if(nid == 0) return -1;
+	status = TreeGetNumSegments(nid, &numSegments);
+	if(!(status & 1))
+		return -1;
+	if(xMin != NULL || xMax != NULL)
+	{
+		if(xMin)
+			MdsFloatToTime(*xMin, &startTime);
+		if(xMax)
+			MdsFloatToTime(*xMax, &endTime);
+		if(numSegments < NUM_SEGMENTS_THRESHOLD) 
+			return -1;
+		//startEndTimes = malloc(2 * numSegments * sizeof(struct descriptor *));
+		//status = TreeGetSegmentTimes(nid, &numSegments, &startEndTimes);
+		//if(!(status & 1)) return -1;
+		startIdx = 0;
+		if(!xMin)     //If no start time specified, take all initial segments
+			startIdx = 0;
+		else
+		{
+			while(startIdx < numSegments)
+			{	
+//				XTreeConvertToLongTime(startEndTimes[2*startIdx] , &currStartTime);
+				status = TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
+				if(!(status & 1)) return status;
+				status = XTreeConvertToLongTime(retStartXd.pointer, &currStartTime);
+				MdsFree1Dx(&retStartXd, 0);
+				MdsFree1Dx(&retEndXd, 0);
+
+				if(currStartTime > startTime) //First overlapping segment
+					break;
+				startIdx++;
+			}
+		}
+		if(startIdx == numSegments) //All segments antecedent to start time
+		{
+			return -1;
+		}
+		if(!xMax)
+			endIdx = numSegments - 1;
+		else
+		{
+			segmentIdx = startIdx;
+			while(segmentIdx < numSegments)
+			{
+//				XTreeConvertToLongTime(startEndTimes[2*startIdx+1] , &currEndTime);
+				status = TreeGetSegmentLimits(nid, segmentIdx, &retStartXd, &retEndXd);
+				if(!(status & 1)) return status;
+				status = XTreeConvertToLongTime(retEndXd.pointer, &currEndTime);
+				MdsFree1Dx(&retStartXd, 0);
+				MdsFree1Dx(&retEndXd, 0);
+				if(currEndTime >= endTime) //Last overlapping segment
+				{
+					break;
+				}
+				segmentIdx++;
+			}
+			if(segmentIdx == numSegments) //No segment (section) after end
+				endIdx = numSegments - 1;
+			else
+				endIdx = segmentIdx;
+		}
+		//TreeFree(startEndTimes);
+		numActSegments = endIdx - startIdx + 1;
+	}
+	else
+	{
+		startIdx = 0;
+		numActSegments = numSegments;
+		endIdx = numSegments - 1;
+	}
+	status = TreeGetSegmentInfo(nid, startIdx, &dtype, &dimct, dims, &nextRow);
+	if(!(status & 1)) 
+		return -1;
+	segmentSamples = dims[dimct - 1];
+//Cpmpute duration 
+	status = TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
+  	if(status & 1) status = TdiData((struct descriptor *)&retStartXd, &retStartXd MDS_END_ARG);
+	if(status & 1) status = TdiFloat((struct descriptor *)&retStartXd, &retStartXd MDS_END_ARG);
+  	if (!(status & 1))
+    	return -1;
+  	if (retStartXd.pointer->dtype == DTYPE_DOUBLE)
+		startSig = *(double *)retStartXd.pointer->pointer;
+	else
+		startSig = *(float *)retStartXd.pointer->pointer;
+	MdsFree1Dx(&retStartXd, 0);
+	MdsFree1Dx(&retEndXd, 0);
+	status = TreeGetSegmentLimits(nid, endIdx, &retStartXd, &retEndXd);
+  	if(status & 1) status = TdiData((struct descriptor *)&retEndXd, &retEndXd MDS_END_ARG);
+	if(status & 1) status = TdiFloat((struct descriptor *)&retEndXd, &retEndXd MDS_END_ARG);
+  	if (!(status & 1))
+    	return -1;
+  	if (retEndXd.pointer->dtype == DTYPE_DOUBLE)
+		endSig = *(double *)retEndXd.pointer->pointer;
+	else
+		endSig = *(float *)retEndXd.pointer->pointer;
+	MdsFree1Dx(&retStartXd, 0);
+	MdsFree1Dx(&retEndXd, 0);
+	*estimatedDuration = endSig - startSig;
+	return segmentSamples * numActSegments;
+}
+
+
+
+
+
+
+
 static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution);
 
 static void swap4(char *buf)
@@ -386,8 +532,8 @@ static int recIsSegmented(struct descriptor *dsc)
 	 	nid = *(int *)dsc->pointer;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
-		    return TRUE; 
-		return FALSE;
+		    return nid; 
+		return 0;
 	    }
 	    else if(dsc->dtype == DTYPE_PATH)
 	    {
@@ -398,25 +544,26 @@ static int recIsSegmented(struct descriptor *dsc)
 		if(status & 1)
 		    status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
-		    return TRUE; 
-		return FALSE;
+		    return nid; 
+		return 0;
 	    }
 	    else
-		return FALSE;
+		return 0;
 	case CLASS_A:
-	    return FALSE;
+	    return 0;
 	case CLASS_XD:
-	    if(!((struct descriptor_xd *)dsc)->pointer) return FALSE;
+	    if(!((struct descriptor_xd *)dsc)->pointer) return 0;
 	    return recIsSegmented(((struct descriptor_xd *)dsc)->pointer);
 	case CLASS_R:
 	    rDsc = (struct descriptor_r *)dsc;
 	    for(i = 0; i < rDsc->ndesc; i++)
 	    {
-		if(rDsc->dscptrs[i] && recIsSegmented(rDsc->dscptrs[i]))
-		    return TRUE;
+			int nid;
+			if(rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
+		    	return nid;
 	    }
-	    return FALSE;
-	default: return FALSE;
+	    return 0;
+	default: return 0;
     }
 }
 	
@@ -425,13 +572,13 @@ EXPORT int IsSegmented(char *expr)
 {
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-    int status, isSegmented;
+    int status, segNid;
 
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
-    isSegmented = recIsSegmented(xd.pointer);
+    segNid = recIsSegmented(xd.pointer);
     MdsFree1Dx(&xd, 0);
-    return isSegmented;
+    return segNid != 0;
 }
     
 EXPORT int TestGetHelp(char *expr)
@@ -495,19 +642,59 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     float retInterval;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
+	double delta;
+	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
+	float *currXMin, *currXMax;
+	int estimatedSamples, estimatedSegmentSamples;
+	double estimatedDuration;
 
-//printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
+printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
 
+	if(*inXMin < -1E20)
+		currXMin = 0;
+	else
+		currXMin = inXMin;
+	if(*inXMax > 1E20)
+		currXMax = 0;
+	else
+		currXMax = inXMax;
 
-//Set limits if any
-    if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
-	status = TreeSetTimeContext(NULL, NULL, NULL);
-    else if(xMin <= -MAX_LIMIT)
-	status = TreeSetTimeContext(NULL, &xMaxD, NULL);
-    else if(xMax >= MAX_LIMIT)
-	status = TreeSetTimeContext(&xMinD, NULL, NULL);
-    else
-	status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
+	estimatedSamples = estimateNumSamples(inY, currXMin, currXMax, &estimatedSegmentSamples, &estimatedDuration);
+printf("Estimated Samples: %d\n", estimatedSamples);
+printf("Estimated Durations: %f\n", estimatedDuration);
+	if(estimatedSamples > NUM_SAMPLES_THRESHOLD)
+	{
+//First guess on delta  GAB DA QUA PER CAPIRE COME METTERE IL DELTA
+		delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD; 
+//Now delta represents the number of samples to be compressed in a min-max mair
+		if(delta > estimatedSegmentSamples/10.)
+			delta = estimatedSegmentSamples/10.;
+//In any case don't make it too big in respect of the single segment size (at minimum 10 samples )pairs) per segment
+		delta *= (estimatedDuration/estimatedSamples);
+//Convert from samples to time interval
+printf("DELTA: %f\n", delta);
+		if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
+			status = TreeSetTimeContext(NULL, NULL, &deltaD);
+		else if(xMin <= -MAX_LIMIT)
+			status = TreeSetTimeContext(NULL, &xMaxD, &deltaD);
+		else if(xMax >= MAX_LIMIT)
+			status = TreeSetTimeContext(&xMinD, NULL, &deltaD);
+		else
+			status = TreeSetTimeContext(&xMinD, &xMaxD, &deltaD);
+	}
+	else
+	{
+	//Set limits if any
+		if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
+			status = TreeSetTimeContext(NULL, NULL, NULL);
+		else if(xMin <= -MAX_LIMIT)
+			status = TreeSetTimeContext(NULL, &xMaxD, NULL);
+		else if(xMax >= MAX_LIMIT)
+			status = TreeSetTimeContext(&xMinD, NULL, NULL);
+		else
+			status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
+	}
+
 
 //Get Y
     status = TdiCompile(&yExpr, &xd MDS_END_ARG);
@@ -1088,21 +1275,31 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     struct descriptor_a *xArrD, *yArrD;
     float *y;
     float retInterval;
+	float *currXMin, *currXMax;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
+	int estimatedSamples;
+	double delta;
+	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
+printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+	if(*inXMin < 1E20)
+		currXMin = 0;
+	else
+		currXMin = inXMin;
+	if(*inXMax > 1E20)
+		currXMax = 0;
+	else
+		currXMax = inXMax;
 
-//printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
-
-
-//Set limits if any
-    if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
-	status = TreeSetTimeContext(NULL, NULL, NULL);
-    else if(xMin <= -MAX_LIMIT)
-	status = TreeSetTimeContext(NULL, &xMaxD, NULL);
-    else if(xMax >= MAX_LIMIT)
-	status = TreeSetTimeContext(&xMinD, NULL, NULL);
-    else
-	status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
+	//Set limits if any
+	if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
+		status = TreeSetTimeContext(NULL, NULL, NULL);
+	else if(xMin <= -MAX_LIMIT)
+		status = TreeSetTimeContext(NULL, &xMaxD, NULL);
+	else if(xMax >= MAX_LIMIT)
+		status = TreeSetTimeContext(&xMinD, NULL, NULL);
+	else
+		status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
 
 //Set correct name for xExpr
     xExpr.pointer = malloc(strlen(sigName) + strlen("DIM_OF()") + 1);
@@ -1304,7 +1501,7 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
-//printf("GetXYWave(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+printf("GetXYWaveLongTimes(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 
 
 //Set limits 

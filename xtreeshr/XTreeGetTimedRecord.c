@@ -59,6 +59,13 @@ EXPORT int XTreeTestTimedAccessFlag()
   return timedAccessFlag;
 }
 
+
+
+
+
+
+
+
 EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD,
 				struct descriptor *endD, struct descriptor *minDeltaD,
 				struct descriptor_xd *outSignal)
@@ -67,6 +74,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD,
   int actNumSegments, currSegIdx;
   int i, nameLen;
   char resampleFunName[MAX_FUN_NAMELEN], squishFunName[MAX_FUN_NAMELEN];
+  char resampleMode[MAX_FUN_NAMELEN];
 
   struct descriptor resampleFunNameD = { 0, DTYPE_T, CLASS_S, resampleFunName };
   struct descriptor squishFunNameD = { 0, DTYPE_T, CLASS_S, squishFunName };
@@ -111,6 +119,19 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD,
     MdsFree1Dx(&xd, 0);
   } else
     squishFunName[0] = 0;
+
+  status =
+      (dbid) ? _TreeGetXNci(dbid, nid, "ResampleMode", &xd) : TreeGetXNci(nid, "ResampleMode", &xd);
+  if (status & 1 && xd.pointer)	//If a user defined fun exists
+  {
+    nameLen = xd.pointer->length;
+    if (nameLen >= MAX_FUN_NAMELEN)
+      nameLen = MAX_FUN_NAMELEN - 1;
+    memcpy(resampleMode, xd.pointer->pointer, nameLen);
+    resampleMode[nameLen] = 0;
+    MdsFree1Dx(&xd, 0);
+  } else
+    resampleMode[0] = 0;
 
 // Not Necessary using TreeGetSegments
 /*
@@ -290,7 +311,11 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD,
       status = TdiEvaluate(&resampleFunD, &resampledXds[currSegIdx] MDS_END_ARG);
       printf("%s\n", MdsGetMsg(status));
     } else {
-      status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD,
+		if(!strcmp(resampleMode, "MinMax"))
+      		status = XTreeMinMaxResample((struct descriptor_signal *)&currSignalD, startD, endD,
+				    minDeltaD, &resampledXds[currSegIdx]);
+		else
+      		status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD,
 				    minDeltaD, &resampledXds[currSegIdx]);
     }
     if (!(status & 1)) {
