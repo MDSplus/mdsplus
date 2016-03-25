@@ -40,6 +40,32 @@ class MdsTimeout(MdsshrException):
 class MdsNoMoreEvents(MdsshrException):
     pass
 
+def getenv(name):
+    """get environment variable value
+    @param name: name of environment variable
+    @type name: str
+    @return: value of environment variable or None if not defined
+    @rtype: str or None
+    """
+    tl=_mdsshr.TranslateLogical
+    tl.restype=_C.c_char_p
+    try:
+        ans=tl(str(name))
+    except:
+        ans=""
+    return ans
+
+def setenv(name,value):
+    """set environment variable
+    @param name: name of the environment variable
+    @type name: str
+    @param value: value of the environment variable
+    @type value: str
+    """
+    pe=_mdsshr.MdsPutEnv
+    pe("=".join([str(name),str(value)]))
+
+
 def MDSEventCan(eventid):
     """Cancel an event callback
     @param eventid: event id returned from original eventAst call
