@@ -3,7 +3,7 @@ from threading import Thread,enumerate
 from tree import Tree
 import tests.treeUnitTest as treeUnitTest
 import tests.dataUnitTest as dataUnitTest
-import os
+from _mdsshr import getenv
 
 treeUnitTest.tearDownModule=None
 
@@ -25,7 +25,7 @@ class threadTest(TestCase):
     def threadTests(self):
         numsuccessful=0
         threads=list()
-        if "do_threads" in os.environ:
+        if getenv("do_threads") is not None:
           for i in range(10):
             t=threadJob()
             t.shot=i*2+3

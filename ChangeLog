@@ -1,4 +1,114 @@
-commit 94c7730a3a9a58e29e112d54cdd5c10e4a33840f (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 60362b81a06497a345b5f6a092ce41a8efe52f18 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 4eff315 ea0c597
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 16:53:17 2016 -0400
+
+    Merge pull request #411 from MDSplus/twf-fix-repo-rpm
+    
+    Fix the repo rpm to only remove the signing key if the repo is being …
+
+commit ea0c597c6c28c5d4db2ade4830d2c9768c594939 (refs/remotes/origin/twf-fix-repo-rpm)
+Merge: d36e5b2 4eff315
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 15:55:30 2016 -0400
+
+    Merge branch 'alpha' into twf-fix-repo-rpm
+
+commit 4eff315303f91fd8cdd281bde218b3801a29a704
+Merge: 8dafaca 264b4d2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 15:55:07 2016 -0400
+
+    Merge pull request #420 from MDSplus/twf-fix-environ-adding-getenv-setenv
+    
+    Add getenv and setenv to MDSplus module and use it for tests. os.envi…
+
+commit d36e5b253c5a5a3d00154e5b409b0aff264fe29a
+Merge: 441ee16 8dafaca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 15:28:33 2016 -0400
+
+    Merge branch 'alpha' into twf-fix-repo-rpm
+
+commit 264b4d2aa3392f46403a0e3127ee1d93fda779c8
+Merge: 2913547 8dafaca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 15:28:01 2016 -0400
+
+    Merge branch 'alpha' into twf-fix-environ-adding-getenv-setenv
+
+commit 8dafacacbedc821f49552a1a047ba7ee88eef8f0
+Merge: 6fd58fd 418475b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 15:00:39 2016 -0400
+
+    Merge pull request #426 from MDSplus/twf-fix-py-package-removal
+    
+    Fix python package removal
+
+commit 441ee169dcbddc06150ce53f8f21074b084f567e
+Merge: 3f26900 6fd58fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 14:59:57 2016 -0400
+
+    Merge branch 'alpha' into twf-fix-repo-rpm
+
+commit 418475b3fe0412da6ecf8ab50f8c51c015f15d37
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 14:31:27 2016 -0400
+
+    Fix python package removal
+
+commit 6fd58fd169ffa9a050a9cd6e34e89f7cf326cdab
+Merge: c1b59cc 4e00ef7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 09:34:47 2016 -0400
+
+    Merge pull request #424 from MDSplus/twf-add-with-connection-py
+    
+    Add with statement support to Connection
+
+commit 4e00ef722ba87a34de2d6eaf58b88b23b8fe44da (refs/remotes/origin/twf-add-with-connection-py)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 08:37:40 2016 -0400
+
+    Add with statement support to Connection
+
+commit c1b59cc9974e1a902a5849d6f922b195fc940495 (refs/remotes/origin/huge-signals)
+Merge: 9432502 44e3c9f
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Tue Mar 22 12:39:44 2016 +0100
+
+    Merge pull request #423 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit 44e3c9f198596a14ae5ccea51ca0e5359cfcb0d3 (refs/remotes/origin/dev-gm)
+Merge: 4aaec30 24d48c8
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 22 12:34:48 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/mdsplus into dev-gm
+
+commit 4aaec3069627bc3ae3908063c1f70b4b950c77b5
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 22 12:32:32 2016 +0100
+
+    HMSPECTRO updated
+
+commit 24d48c8275b6197c8fe082522c857dc32852bd85
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 22 12:32:32 2016 +0100
+
+    HMSPECTRO updated
+
+commit 9432502e0efec4fa73a16f0b92dda9c88e0a62d5 (tag: refs/tags/alpha_release-7-0-242)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 18 23:24:29 2016 -0400
+
+    New release ---- alpha_release-7-0-242
+
+commit 94c7730a3a9a58e29e112d54cdd5c10e4a33840f
 Merge: 93da615 e012752
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 18 14:48:12 2016 -0400
@@ -7,7 +117,7 @@ Date:   Fri Mar 18 14:48:12 2016 -0400
     
     Fix wrong memory size for time context limits
 
-commit e01275256180efae94bf48ea594aa42e46f3641e (refs/remotes/origin/dev-gm)
+commit e01275256180efae94bf48ea594aa42e46f3641e
 Merge: 3b97394 93da615
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 18 14:47:24 2016 -0400
@@ -34,6 +144,12 @@ Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Mar 18 17:05:28 2016 +0100
 
     Fix wrong memory size for time context limits
+
+commit 2913547fcc5bc5c14ce5abff998e6c722d88d977 (refs/remotes/origin/twf-fix-environ-adding-getenv-setenv)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 18 08:55:36 2016 -0400
+
+    Add getenv and setenv to MDSplus module and use it for tests. os.environ does not sync with C environment variables on Windows.
 
 commit a2f80eb6ebb748c3530947377731f79300c17c62 (tag: refs/tags/alpha_release-7-0-241)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -168,6 +284,12 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Mar 11 22:55:06 2016 -0500
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 3f26900b0bbbc03fae219a126c1335714e73c67e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 08:32:01 2016 -0500
+
+    Fix the repo rpm to only remove the signing key if the repo is being removed and not if it is just being updated.
 
 commit 213d389a6db1d36170aedc523a9bb042ace66bd8
 Merge: dc50682 3303206
