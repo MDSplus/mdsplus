@@ -498,9 +498,9 @@ then
 		    build_64;
 		fi
 		if [ "$LAST_IMAGE" = "yes" ];then
-		    BUILDROOT=${WORKSPACE}/release
+		    BUILDROOT=${WORKSPACE}/release;
 		    build_debs;
-		fi
+		fi;
 		build_eggs;
 	    fi;;
 	*)
@@ -588,8 +588,8 @@ else
 		       -e "LAST_IMAGE=${LAST_IMAGE}" \
 		       ${sign_keys} \
 		       ${DOCKER_IMAGE};
-		docker rm "${JOB_NAME}${BUILD_NUMBER}";;
-	    done;
+		docker rm "${JOB_NAME}${BUILD_NUMBER}";
+	    done;;
 	TRIGGER)
 	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
