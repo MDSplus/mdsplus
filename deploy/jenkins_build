@@ -424,6 +424,30 @@ build_eggs() {
     fi;
 }
 
+build_debs() {
+    echo "Building debian packages"
+    mkdir -p /tmp/repo/conf
+    mkdir -p /tmp/repo/db
+    mkdir -p /tmp/repo/dists
+    mkdir -p /tmp/repo/pool
+    mkdir -p /tmp/${BNAME}/DEBS/amd64
+    mkdir -p /tmp/${BNAME}/DEBS/i386
+    mkdir -p /tmp{BNAME}/DEBS/noarch
+    cat - <<EOF > /tmp/repo/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: ${MAJOR}.${MINOR}.${RELEASE}
+Architectures: i386 amd64 source
+Components: alpha stable local
+Description: MDSplus packages
+EOF
+    if [ -d /root/.gnupg ]
+    then 
+      echo "SignWith: MDSplus" >> /tmp/repo/conf/distributions
+    fi
+    build_debs_mdsplus
+}
 
 set -e
 set -xv
@@ -473,6 +497,7 @@ then
 		else
 		    build_64;
 		fi
+		ln -sf ${WORKSPACE}/release /buildroot
 		build_debs;
 		build_eggs;
 	    fi;;
