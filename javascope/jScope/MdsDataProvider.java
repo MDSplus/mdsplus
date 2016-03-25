@@ -1027,10 +1027,6 @@ public class MdsDataProvider
                 this.simpleWaveData = simpleWaveData;
                 this.isXLong = isXLong;
                 this.updateTime = updateTime;
-System.out.println(updateLowerBound);
-System.out.println(updateUpperBound);
-if(updateLowerBound == updateUpperBound)
-    System.out.println("BOMBA");
             }
         }
         boolean enabled = true;
