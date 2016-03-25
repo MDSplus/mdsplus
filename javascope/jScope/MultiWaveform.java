@@ -479,7 +479,7 @@ public class MultiWaveform
         change_limits = true;
     }
 
-    public void setXlimits(float xmin, float xmax)
+    public void setXlimits(double xmin, double xmax)
     {
         if (signals == null)
             return;

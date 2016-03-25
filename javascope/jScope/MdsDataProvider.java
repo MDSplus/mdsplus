@@ -416,13 +416,24 @@ public class MdsDataProvider
             var_idx+=2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
+                Vector args = new Vector();
+                String fixedY = in_y;
+                fixedY.replaceAll("\\\\", "\\\\\\\\");
+                args.addElement(new Descriptor(null, fixedY));
                 try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
-                }
+
+ /*                   
+ //                   int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+ //                   if(numSegments[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+ */               }
                 catch(Exception exc)
                 {
                     error = null;
@@ -449,13 +460,20 @@ public class MdsDataProvider
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
+                Vector args = new Vector();
+                args.addElement(new Descriptor(null, in_y));
                 try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    if(retData[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+/*                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
                     if(numSegments[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
+*/                }catch(Exception exc)
                 {
                     error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
@@ -874,7 +892,7 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-                 //System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
@@ -1009,6 +1027,10 @@ public class MdsDataProvider
                 this.simpleWaveData = simpleWaveData;
                 this.isXLong = isXLong;
                 this.updateTime = updateTime;
+System.out.println(updateLowerBound);
+System.out.println(updateUpperBound);
+if(updateLowerBound == updateUpperBound)
+    System.out.println("BOMBA");
             }
         }
         boolean enabled = true;
