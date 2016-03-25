@@ -92,7 +92,7 @@ def buildDebs():
     else:
         info['BNAME']="-%s" % info['BRANCH']
     info['rflavor']=info['BNAME']
-    tree=ET.parse('%(srcdir)/deploy/packaging.xml' % info)
+    tree=ET.parse('%(srcdir)s/deploy/packaging.xml' % info)
     root=tree.getroot()
     debs=list()
     for package in root.getiterator('package'):

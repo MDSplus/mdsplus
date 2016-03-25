@@ -184,7 +184,7 @@ test_64 () {
 		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
-		    $MAKE -k tests TEST_FORMAT=log 2>&1;
+		    $MAKE -k tests TEST_FORMAT=tap 2>&1;
 		    let test_64_san_${test}=$?
 		else
 		    echo "configure returned status $?"
