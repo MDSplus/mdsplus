@@ -432,7 +432,7 @@ build_debs() {
     mkdir -p /tmp/repo/pool
     mkdir -p /tmp/${BNAME}/DEBS/amd64
     mkdir -p /tmp/${BNAME}/DEBS/i386
-    mkdir -p /tmp{BNAME}/DEBS/noarch
+    mkdir -p /tmp/${BNAME}/DEBS/noarch
     cat - <<EOF > /tmp/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
