@@ -446,7 +446,7 @@ EOF
     then 
       echo "SignWith: MDSplus" >> /tmp/repo/conf/distributions
     fi
-    build_debs_mdsplus
+    ${SRCDIR}/deploy/build_debs_mdsplus
 }
 
 set -e
