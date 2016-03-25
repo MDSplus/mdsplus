@@ -439,7 +439,7 @@ Label: MDSplus
 Codename: MDSplus
 Version: ${MAJOR}.${MINOR}.${RELEASE}
 Architectures: i386 amd64 source
-Components: alpha stable local
+Components: alpha stable local twfbld
 Description: MDSplus packages
 EOF
     if [ -d /root/.gnupg ]
