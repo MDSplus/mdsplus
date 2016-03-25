@@ -559,7 +559,7 @@ else
 	    images=0
             for DOCKER_IMAGE in "${DI_ARR[@]}"; do
 		let images=images+1
-		if [ images -eq ${#DI_ARR[@]} ]; then
+		if [ $images -eq ${#DI_ARR[@]} ]; then
 		    LAST_IMAGE=yes;
 		else
 		    LAST_IMAGE=no;
