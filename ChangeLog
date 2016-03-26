@@ -1,4 +1,51 @@
-commit 60362b81a06497a345b5f6a092ce41a8efe52f18 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 89aec2584d145c4713a39290151f9796a44e02b7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: ddeb637 a14769a
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 25 15:29:56 2016 +0100
+
+    Merge pull request #428 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit a14769a53e5cfbf8cc3efcccedffd52b7c31b900 (refs/remotes/origin/dev-gm)
+Merge: 5313641 ddeb637
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Fri Mar 25 14:28:42 2016 +0100
+
+    Merge branch 'alpha' into dev-gm
+
+commit 53136410595146d4570a46120620ad14f35ba4e2
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Fri Mar 25 14:16:25 2016 +0100
+
+    Remove debug message
+
+commit 27db66ace6b8c10cb9e0fc4fbc966392b928de06
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Fri Mar 25 14:10:12 2016 +0100
+
+    Fix missed uodates
+
+commit 6a344db909ea09dee54a5e123a59f361e0160240
+Merge: ba21f0e 44e3c9f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 25 14:03:53 2016 +0100
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+
+commit ba21f0ea4ea0a8d92dc818350de64128ad83e1a5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 25 14:03:11 2016 +0100
+
+    Fix missed updates
+
+commit ddeb6370decfed4a831ebce6444533852e002147 (tag: refs/tags/alpha_release-7-0-243)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 22 23:24:33 2016 -0400
+
+    New release ---- alpha_release-7-0-243
+
+commit 60362b81a06497a345b5f6a092ce41a8efe52f18
 Merge: 4eff315 ea0c597
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 22 16:53:17 2016 -0400
@@ -74,7 +121,7 @@ Date:   Tue Mar 22 08:37:40 2016 -0400
 
     Add with statement support to Connection
 
-commit c1b59cc9974e1a902a5849d6f922b195fc940495 (refs/remotes/origin/huge-signals)
+commit c1b59cc9974e1a902a5849d6f922b195fc940495
 Merge: 9432502 44e3c9f
 Author: Andrea Rigoni <andrea.rgn@gmail.com>
 Date:   Tue Mar 22 12:39:44 2016 +0100
@@ -83,7 +130,7 @@ Date:   Tue Mar 22 12:39:44 2016 +0100
     
     Dev gm
 
-commit 44e3c9f198596a14ae5ccea51ca0e5359cfcb0d3 (refs/remotes/origin/dev-gm)
+commit 44e3c9f198596a14ae5ccea51ca0e5359cfcb0d3
 Merge: 4aaec30 24d48c8
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Mar 22 12:34:48 2016 +0100
