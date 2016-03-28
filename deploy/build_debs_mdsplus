@@ -213,7 +213,7 @@ mkdir -p %(installer_dir)s/%(flavor)s/DEBS/i386
 mkdir -p %(installer_dir)s/%(flavor)s/DEBS/noarch
 
 """ % info,shell=True).wait() != 0:
-        raise Exception("Problem copying repo info")
+            raise Exception("Problem copying repo info")
     for debfile in debs:
         info["debfile"]=debfile["deb"]
         info["arch"]=debfile["arch"]
