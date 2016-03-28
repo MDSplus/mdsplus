@@ -72,6 +72,10 @@ def doRequire(info, out, root, require):
 
 def buildDebs():
     info=dict()
+    if "INSTALLER_DIR" in os.environ:
+        info['installer_dir']=os.environ['DISTDIR']
+    else:
+        info['installer_dir']='/installer'
     if 'BUILDROOT' in os.environ:
         info['BUILDROOT']=os.environ['BUILDROOT']
     else:
@@ -185,27 +189,27 @@ reprepro -V --waitforlock 20 -b /tmp/repo -C %(flavor)s includedeb MDSplus %(deb
 
 set -o verbose
 set -e
-mkdir -p /installer/repo/conf
-cp -f /tmp/repo/conf/distributions /installer/repo/conf/
-mkdir -p /installer/repo/db
-mkdir -p /installer/repo/dists
-mkdir -p /installer/repo/pool
-mkdir -p /installer/%(flavor)s/DEBS/amd64
-mkdir -p /installer/%(flavor)s/DEBS/i386
-mkdir -p /installer/%(flavor)s/DEBS/noarch
+mkdir -p %(installer_dir)s/repo/conf
+cp -f /tmp/repo/conf/distributions %(installer_dir)s/repo/conf/
+mkdir -p %(installer_dir)s/repo/db
+mkdir -p %(installer_dir)s/repo/dists
+mkdir -p %(installer_dir)s/repo/pool
+mkdir -p %(installer_dir)s/%(flavor)s/DEBS/amd64
+mkdir -p %(installer_dir)s/%(flavor)s/DEBS/i386
+mkdir -p %(installer_dir)s/%(flavor)s/DEBS/noarch
 
 """ % info,shell=True).wait() != 0:
         raise Exception("Problem copying repo info")
     for debfile in debs:
         info["debfile"]=debfile["deb"]
         info["arch"]=debfile["arch"]
-        info["ndebfile"]=info["debfile"].replace("/tmp","/installer")
+        info["ndebfile"]=info["debfile"].replace("/tmp","%(installer_dir)s")
         if subprocess.Popen("""
 
 set -o verbose
 set -e
 cp %(debfile)s %(ndebfile)s
-reprepro -V --waitforlock 20 -b /installer/repo -C %(flavor)s includedeb MDSplus %(ndebfile)s
+reprepro -V --waitforlock 20 -b %(installer_dir)s/repo -C %(flavor)s includedeb MDSplus %(ndebfile)s
 
 """ % info,shell=True).wait() != 0:
                 raise Exception("Error loading %(debfile)s into repository" % info)
