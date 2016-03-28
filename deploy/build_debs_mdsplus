@@ -77,7 +77,7 @@ def buildDebs():
     else:
         info['installer_dir']='/installer'
     if 'BUILDROOT' in os.environ:
-        info['BUILDROOT']=os.environ['BUILDROOT']
+        info['buildroot']=os.environ['BUILDROOT']
     else:
         info['buildroot']='/buildroot'
     if 'SRCDIR' in os.environ:
