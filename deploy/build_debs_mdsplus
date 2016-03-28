@@ -73,7 +73,7 @@ def doRequire(info, out, root, require):
 def buildDebs():
     info=dict()
     if "INSTALLER_DIR" in os.environ:
-        info['installer_dir']=os.environ['DISTDIR']
+        info['installer_dir']=os.environ['INSTALLER_DIR']
     else:
         info['installer_dir']='/installer'
     if 'BUILDROOT' in os.environ:
@@ -185,7 +185,21 @@ reprepro -V --waitforlock 20 -b /tmp/repo -C %(flavor)s includedeb MDSplus %(deb
         except:
             subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
             raise
-    if subprocess.Popen("""
+        print("""
+
+set -o verbose
+set -e
+mkdir -p %(installer_dir)s/repo/conf
+cp -f /tmp/repo/conf/distributions %(installer_dir)s/repo/conf/
+mkdir -p %(installer_dir)s/repo/db
+mkdir -p %(installer_dir)s/repo/dists
+mkdir -p %(installer_dir)s/repo/pool
+mkdir -p %(installer_dir)s/%(flavor)s/DEBS/amd64
+mkdir -p %(installer_dir)s/%(flavor)s/DEBS/i386
+mkdir -p %(installer_dir)s/%(flavor)s/DEBS/noarch
+
+""" % info)
+        if subprocess.Popen("""
 
 set -o verbose
 set -e
