@@ -89,6 +89,9 @@ parse_cmd() {
 	    --release)
 		MAKE_RELEASE=yes
 		shift 1;;
+	    --publish)
+		PUBLISH_RELEASE=yes
+		shift 1;;
 	    --keys)
 		SIGN_KEYS=$2
 		shift 2;;
@@ -413,6 +416,11 @@ EOF
     fi;
 }
 
+build_rpm_repo() {
+    export INSTALLER_DIR=${DISTDIR}/${DIST}
+    createrepo -q ${INSTALLER_DIR}/RPMS
+}
+
 build_eggs() {
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
@@ -427,16 +435,24 @@ build_debs() {
     echo "Building debian packages"
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
-        export INSTALLER_DIR=${DISTDIR}/${DIST}
-	export BUILDROOT=${WORKSPACE}/release
-	mkdir -p /tmp/repo/conf
-	mkdir -p /tmp/repo/db
-	mkdir -p /tmp/repo/dists
-	mkdir -p /tmp/repo/pool
-	mkdir -p /tmp/${BNAME}/DEBS/amd64
-	mkdir -p /tmp/${BNAME}/DEBS/i386
-	mkdir -p /tmp/${BNAME}/DEBS/noarch
-	cat - <<EOF > /tmp/repo/conf/distributions
+        INSTALLER_DIR=${DISTDIR}/${DIST}
+	BUILDROOT=${WORKSPACE}/release
+	mkdir -p ${installer_dir}/${BRANCH}/DEBS/amd64
+	mkdir -p ${installer_dir}/${BRANCH}/DEBS/i386
+	mkdir -p ${installer_dir}/${BRANCH}/DEBS/noarch
+	${SRCDIR}/deploy/build_debs_mdsplus
+    fi
+}
+
+build_deb_repo() {
+    echo "Building debian repository"
+    INSTALLER_DIR=${DISTDIR}/${DIST}
+    rm -Rf ${INSTALLER_DIR}/repo
+    mkdir -p ${INSTALLER_DIR}/repo/conf
+    mkdir -p ${INSTALLER_DIR}/repo/db
+    mkdir -p ${INSTALLER_DIR}/repo/dists
+    mkdir -p ${INSTALLER_DIR}/repo/pool
+    cat - <<EOF > ${INSTALLER_DIR}/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
@@ -445,13 +461,14 @@ Architectures: i386 amd64 source
 Components: alpha stable local twfbld
 Description: MDSplus packages
 EOF
-	if [ -d /root/.gnupg ]
-	then 
-	    echo "SignWith: MDSplus" >> /tmp/repo/conf/distributions
-	fi
-	${SRCDIR}/deploy/build_debs_mdsplus
+    if [ -d /root/.gnupg ]
+    then 
+	echo "SignWith: MDSplus" >> ${INSTALLER_DIR}/repo/conf/distributions
     fi
+    find ${INSTALLER_DIR}/${BRANCH}/DEBS -name "*${MAJOR}\.${MINOR}\.${RELEASE}_*" -exec \
+	 reprepro -V --waitforlock 20 -b ${INSTALLER_DIR}/repo -C ${BRANCH} includedeb MDSplus %(debfile)s{} \;
 }
+
 
 set -e
 set -xv
@@ -461,10 +478,9 @@ then
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
     # note: the TRIGGER ${WORKSPACE} is /mdsplus/source in jenkins current configuration
     source /mdsplus/source/jenkins_build.conf
-    if [ -r ${WORKSPACE}/release ]
+    if [ "$PUBLISH_RELEASE" = "yes" ]
     then
 	DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
-	export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
     fi
     case ${DIST_TYPE} in
 	redhat)
@@ -474,13 +490,15 @@ then
 		test_32;
 		check_tests;
 	    fi
-            if [ -r ${WORKSPACE}/release ]
+            if [ "${MAKE_RELEASE}" = "yes" ]
             then
               RELEASE_DATE="$(date +"%B %e, %Y")"
 	      build_64;
 	      build_32;
 	      build_rpms;
-	      build_eggs;
+	    fi
+	    if [ "${PUBLISH_RELEASE}" = "yes" ]
+	       build_rpm_repo;
             fi;;
 	debian)
 	    if [ "${TESTS}" = "yes" ]
@@ -493,7 +511,7 @@ then
 		fi
 		check_tests;
 	    fi
-	    if [ -r ${WORKSPACE}/release ]
+	    if [ ${MAKE_RELEASE} ]
 	    then
 		if [ "$ARCH" = "i386" ]
 		then
@@ -505,7 +523,9 @@ then
 		    BUILDROOT=${WORKSPACE}/release;
 		    build_debs;
 		fi;
-		build_eggs;
+	    fi
+	    if [ ${MAKE_RELEASE} ]
+	       build_deb_repo;
 	    fi;;
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
@@ -530,18 +550,18 @@ else
 		exit 1;
 	    fi
 	    source ${SRCDIR}/jenkins_build.conf
+	    if [ "$MAKE_RELEASE" = "yes" -o "$PUBLISH_RELEASE" = "yes" ]
+	    then
+		DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+		if ( test -r $DIST_TAG_FILE &&
+			   test "$(cat $DIST_TAG_FILE)" = "${GIT_COMMIT}" )
+		then
+		    echo "This release is already complete. Nothing else to do."
+		    exit 0
+		fi
+	    fi
 	    if [ "$MAKE_RELEASE" = "yes" ]
 	    then
-		if [ -r ${WORKSPACE}/release ]
-		then
-		    DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
-		    if ( test -r $DIST_TAG_FILE &&
-			 test "$(cat $DIST_TAG_FILE)" = "${GIT_COMMIT}" )
-		    then
-			echo "This release is already complete. Nothing else to do."
-			exit 0
-		    fi
-		fi
 		mkdir -p ${WORKSPACE}/release
 		if [ -z "${DISTDIR}" ]
 		then
@@ -550,8 +570,6 @@ else
 		    exit 1;
 		fi
 		installer_volume="-v ${DISTDIR}:${DISTDIR}"
-	    else
-		rm -Rf ${WORKSPACE}/release
 	    fi
 	    if [ -z "$DOCKER_IMAGE" ]
 	    then
@@ -621,6 +639,7 @@ else
 	    fi
 	    cat - <<EOF > ${WORKSPACE}/jenkins_build.conf
 export MAKE_RELEASE=$MAKE_RELEASE
+export PUBLISH_RELEASE=$PUBLISH_RELEASE
 export TESTS=$TESTS
 export VG_TESTS="$VG_TESTS"
 export SAN_TESTS="$SAN_TESTS"
@@ -635,6 +654,27 @@ export DISTDIR=${DISTDIR}
 export GIT_COMMIT=${GIT_COMMIT}
 EOF
 	    ;;
+	
+	UPLOAD_TO_PYPI)
+	    if ( test -r ${WORKSPACE}/jenkins_build.conf )
+            then
+		source ${WORKSPACE}/jenkins_build.conf
+	    fi
+	    if ( test "${RELEASE_TAG}" != "" )
+	    then
+		./configure
+		for package in mdsobjects/python tdi/MitDevices tdi/RfxDevices tdi/W7xDevices; do
+		    cd ${WORKSPACE}${package}
+		    python setup.py sdist upload
+		done
+	    else
+		cat <<EOF
+Invalid command option. tag_release is only avaliable after 
+a valid $0 trigger --release has been executed.
+EOF
+		exit 1;
+	    fi;;
+	    
 	TAG_RELEASE)
 	    set -e
             set -o verbose
