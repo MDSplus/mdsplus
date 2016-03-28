@@ -175,40 +175,13 @@ set -o verbose
 set -e
 dpkg-deb --build %(tmpdir)s %(debfile)s
 """ % info,shell=True).wait() != 0:
-                raise Exception("Problem building package or repository")
+                raise Exception("Problem building package")
             sys.stdout.flush()
             subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
             debs.append({"deb":info["debfile"],"arch":info["arch"]})
         except:
             subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
             raise
-        if subprocess.Popen("""
-
-set -o verbose
-set -e
-mkdir -p %(installer_dir)s/repo/conf
-mkdir -p %(installer_dir)s/repo/db
-mkdir -p %(installer_dir)s/repo/dists
-mkdir -p %(installer_dir)s/repo/pool
-mkdir -p %(installer_dir)s/%(flavor)s/DEBS/amd64
-mkdir -p %(installer_dir)s/%(flavor)s/DEBS/i386
-mkdir -p %(installer_dir)s/%(flavor)s/DEBS/noarch
-
-""" % info,shell=True).wait() != 0:
-            raise Exception("Problem copying repo info")
-    for debfile in debs:
-        info["debfile"]=debfile["deb"]
-        info["arch"]=debfile["arch"]
-       if subprocess.Popen("""
-
-set -o verbose
-set -e -x
-reprepro -V --waitforlock 20 -b %(installer_dir)s/repo -C %(flavor)s includedeb MDSplus %(debfile)s
-
-""" % info,shell=True).wait() != 0:
-            raise Exception("Error loading %(debfile)s into repository" % info)
-        sys.stdout.flush()
-    print("Completed deployment")
     sys.stdout.flush()
 
 buildDebs()
