@@ -469,7 +469,7 @@ EOF
 	echo "SignWith: MDSplus" >> ${INSTALLER_DIR}/repo/conf/distributions
     fi
     find ${INSTALLER_DIR}/${BRANCH}/DEBS -name "*${MAJOR}\.${MINOR}\.${RELEASE}_*" -exec \
-	 reprepro -V --waitforlock 20 -b ${INSTALLER_DIR}/repo -C ${BRANCH} includedeb MDSplus %(debfile)s {} \;
+	 reprepro -V --waitforlock 20 -b ${INSTALLER_DIR}/repo -C ${BRANCH} includedeb MDSplus {} \;
 }
 
 
