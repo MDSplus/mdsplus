@@ -501,6 +501,7 @@ then
 	      build_rpms;
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
+	       then
 	       build_rpm_repo;
             fi;;
 	debian)
@@ -528,6 +529,7 @@ then
 		fi;
 	    fi
 	    if [ ${MAKE_RELEASE} ]
+	    then
 	       build_deb_repo;
 	    fi;;
 	*)
