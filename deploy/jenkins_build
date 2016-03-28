@@ -424,25 +424,15 @@ build_rpm_repo() {
     createrepo -q ${INSTALLER_DIR}/RPMS
 }
 
-build_eggs() {
-    if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
-    then
-	export BUILDROOT=${WORKSPACE}/release;
-	export EGGS_DIR=${DISTDIR}/EGGS;
-	mkdir -p ${EGGS_DIR}
-	${SRCDIR}/deploy/build_eggs;
-    fi;
-}
-
 build_debs() {
     echo "Building debian packages"
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
         INSTALLER_DIR=${DISTDIR}/${DIST}
 	BUILDROOT=${WORKSPACE}/release
-	mkdir -p ${installer_dir}/${BRANCH}/DEBS/amd64
-	mkdir -p ${installer_dir}/${BRANCH}/DEBS/i386
-	mkdir -p ${installer_dir}/${BRANCH}/DEBS/noarch
+	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/amd64
+	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/i386
+	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/noarch
 	${SRCDIR}/deploy/build_debs_mdsplus
     fi
 }
