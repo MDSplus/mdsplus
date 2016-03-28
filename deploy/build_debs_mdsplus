@@ -203,7 +203,7 @@ mkdir -p %(installer_dir)s/%(flavor)s/DEBS/noarch
     for debfile in debs:
         info["debfile"]=debfile["deb"]
         info["arch"]=debfile["arch"]
-        info["ndebfile"]=info["debfile"].replace("/tmp","%(installer_dir)s")
+        info["ndebfile"]=info["debfile"].replace("/tmp","%(installer_dir)s" % info)
         if subprocess.Popen("""
 
 set -o verbose
