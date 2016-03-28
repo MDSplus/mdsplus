@@ -77,6 +77,9 @@ parse_cmd() {
 	    --tag_release)
 		OP="TAG_RELEASE"
 		shift 1;;
+	    --upload_to_pypi)
+		OP="UPLOAD_TO_PYPI"
+		shift 1;;
 	    --trigger)
 		OP="TRIGGER"
 		shift 1;;
