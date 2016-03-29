@@ -1,4 +1,16 @@
-commit 14b55f637b7017d543a6e929e3e043b9b23743dd (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 3d43fa314c72bde5b4717fd67cb52b0934fb10b1 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 09:37:10 2016 -0400
+
+    Fix tab/space problem for py3 in Connection
+
+commit b8b830a5a60c84ec2ce164f4d08c6047c4551213 (tag: refs/tags/stable_release-7-0-67)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 22 18:02:24 2016 -0400
+
+    New release ---- stable_release-7-0-67
+
+commit 14b55f637b7017d543a6e929e3e043b9b23743dd
 Merge: d06a2f3 7a8d4da
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 22 09:34:32 2016 -0400
