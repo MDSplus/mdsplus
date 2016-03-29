@@ -604,7 +604,14 @@ then
 	       build_deb_repo;
 	    fi;;
 	windows)
-	    
+	    if [ "${MAKE_RELEASE}" = "yes" ]
+	    then
+		build_windows;
+	    fi
+	    if [ "${PUBLISH_RELEASE}" = "yes" ]
+	    then
+		publish_windows;
+	    fi;;
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
 	    exit 1;;
