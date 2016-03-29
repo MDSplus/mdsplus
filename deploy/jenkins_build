@@ -510,7 +510,6 @@ then
 		    build_64;
 		fi
 		build_debs;
-		fi;
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
 	    then
