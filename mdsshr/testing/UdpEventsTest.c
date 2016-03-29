@@ -66,7 +66,7 @@ void eventAstSecond(void *arg, int len, char *buf) {
 
 
 static void wait() {
-    static const struct timespec tspec = {0,1000000};
+    static const struct timespec tspec = {0,10000000};
     nanosleep(&tspec,0);
 }
 
