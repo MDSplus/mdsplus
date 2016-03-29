@@ -71,9 +71,6 @@ parse_cmd() {
 	    --sanitize)
 		SAN_TESTS=$2
 		shift 2;;
-#	    -b|--builddir)
-#		BUILDDIR=$2
-#		shift 2;;
 	    --tag_release)
 		OP="TAG_RELEASE"
 		shift 1;;
@@ -124,12 +121,7 @@ parse_cmd() {
 
 test_64 () {
     set -e
-    ulimit -c unlimited
     set -xv
-#    if [ "$VERBOSE" = "yes" ]
-#    then
-#	set -o verbose
-#    fi
     if [ -r ${WORKSPACE}/tests ]
     then
 	MDSPLUS_DIR=${WORKSPACE}/tests/64/buildroot;
@@ -468,6 +460,10 @@ set -xv
 if [ -f /.dockerinit ]
 then
     source build.conf
+    if [ "$(echo ${DIST} | grep -c 32)" = "1" -o "$(echo ${DIST} | grep -c 64)" = "1" ]
+    then
+	DIST=${DIST:0:-3}
+    fi
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"};
     # note: the TRIGGER ${WORKSPACE} is /mdsplus/source in jenkins current configuration
     source /mdsplus/source/jenkins_build.conf
@@ -491,7 +487,7 @@ then
 	      build_rpms;
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
-	       then
+	    then
 	       build_rpm_repo;
             fi;;
 	debian)
@@ -505,7 +501,7 @@ then
 		fi
 		check_tests;
 	    fi
-	    if [ ${MAKE_RELEASE} ]
+	    if [ "${MAKE_RELEASE}" = "yes" ]
 	    then
 		if [ "$ARCH" = "i386" ]
 		then
@@ -513,12 +509,10 @@ then
 		else
 		    build_64;
 		fi
-		if [ "$LAST_IMAGE" = "yes" ];then
-		    BUILDROOT=${WORKSPACE}/release;
-		    build_debs;
+		build_debs;
 		fi;
 	    fi
-	    if [ ${MAKE_RELEASE} ]
+	    if [ "${PUBLISH_RELEASE}" = "yes" ]
 	    then
 	       build_deb_repo;
 	    fi;;
@@ -581,6 +575,10 @@ else
 		else
 		    LAST_IMAGE=no;
 		fi;
+		if [ ${LAST_IMAGE} = "no" -a ${PUBLISH_RELEASE} ]
+		then
+		    continue
+		fi
 		docker pull ${DOCKER_IMAGE}
 		if [ "$TESTS" = "yes" -o "$VG_TESTS" != "" ]
 		then
