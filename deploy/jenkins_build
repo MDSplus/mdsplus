@@ -637,6 +637,7 @@ else
 	    source ${SRCDIR}/jenkins_build.conf
 	    if [ "$MAKE_RELEASE" = "yes" -o "$PUBLISH_RELEASE" = "yes" ]
 	    then
+		installer_volume="-v ${DISTDIR}:${DISTDIR}"
 		DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
 		if ( test -r $DIST_TAG_FILE &&
 			   test "$(cat $DIST_TAG_FILE)" = "${GIT_COMMIT}" )
@@ -654,7 +655,6 @@ else
 		    print_help
 		    exit 1;
 		fi
-		installer_volume="-v ${DISTDIR}:${DISTDIR}"
 	    fi
 	    if [ -z "$DOCKER_IMAGE" ]
 	    then
