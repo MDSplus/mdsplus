@@ -43,7 +43,7 @@ class Connection(object):
 
     def __enter__(self):
         """ Used for with statement. """
-    	return self
+        return self
     
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. """
