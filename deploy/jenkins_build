@@ -420,8 +420,8 @@ build_debs() {
     echo "Building debian packages"
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
-        INSTALLER_DIR=${DISTDIR}/${DIST}
-	BUILDROOT=${WORKSPACE}/release
+        export INSTALLER_DIR=${DISTDIR}/${DIST}
+	export BUILDROOT=${WORKSPACE}/release
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/amd64
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/i386
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/noarch
@@ -454,6 +454,94 @@ EOF
 	 reprepro -V --waitforlock 20 -b ${INSTALLER_DIR}/repo -C ${BRANCH} includedeb MDSplus {} \;
 }
 
+windows_cleanup() {
+    rm -Rf /winbld/${tmpdir}
+}
+
+build_windows() {
+    set -e
+    MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
+
+    JNI_INCLUDE_DIR=${SRCDIR}/3rd-party-apis-master/windows-jdk
+    JNI_MD_INCLUDE_DIR=${SRCDIR}/3rd-party-apis-master/windows-jdk/win32
+    MDSPLUS_DIR=${WORKSPACE}/buildroot;
+    MDS_PATH=${MDSPLUS_DIR}/tdi;
+    mkdir -p ${WORKSPACE}/64;
+    mkdir -p ${MDSPLUS_DIR};
+    pushd ${WORKSPACE}/64;
+    ${SRCDIR}/configure  \
+	     --prefix=${MDSPLUS_DIR} \
+	     --exec_prefix=${MDSPLUS_DIR} \
+	     --bindir=${MDSPLUS_DIR}/bin_x86_64 \
+	     --libdir=${MDSPLUS_DIR}/bin_x86_64 \
+	     --host=x86_64-w64-mingw32 \
+	     --with-labview=${SRCDIR}/3rd-party-apis-master/labview \
+	     --with-java_target=6 \
+	     --with-java_bootclasspath=${SRCDIR}/rt.jar
+    $MAKE
+    $MAKE install
+    if [ "${TESTS}" = "yes" ]
+    then
+	  echo " --- MAKING TESTS 64bit --- "
+	  $MAKE -k tests TEST_FORMAT=tap
+    fi
+    mkdir -p ${MDSPLUS_DIR};
+    mkdir -p ${WORKSPACE}/32;
+    pushd ${WORKSPACE}/32;
+    ${SRCDIR}/configure  \
+	     --prefix=${MDSPLUS_DIR} \
+	     --exec_prefix=${MDSPLUS_DIR} \
+	     --bindir=${MDSPLUS_DIR}/bin_x86 \
+	     --libdir=${MDSPLUS_DIR}/bin_x86 \
+	     --host=i686-w64-mingw32 \
+	     --with-labview=${SRCDIR}/3rd-party-apis-master/labview \
+	     --with-java_target=6 \
+	     --with-java_bootclasspath=${SRCDIR}/rt.jar
+    $MAKE
+    $MAKE install
+    if [ "${TESTS}" = "yes" ]
+    then
+	  echo " --- MAKING TESTS 32bit --- "
+	  $MAKE -k tests TEST_FORMAT=tap
+    fi
+    cd /winbld
+    tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
+    trap cleanup EXIT
+    topsrcdir=${WINBLD_REMDIR}/${tmpdir}
+    cd ${tmpdir}
+    rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${SRCDIR}/ ./
+    rsync -a ${SRCDIR}/mdsobjects/cpp ${SRCDIR}/mdsobjects/MdsObjects* ${SRCDIR}/mdsobjects/VS-* ./mdsobjects/
+    rsync -a ${SRCDIR}/deploy/winbld.bat ./deploy/
+    rsync -a ${MDSPLUS_DIR}/bin_* ./
+    echo curl http://${WINBLD_HOST}:8080${topsrcdir}/deploy/winbld.bat
+    curl http://${WINBLD_HOST}:8080${topsrcdir}/deploy/winbld.bat
+    # see if files are there
+    ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null
+    rsync -av --include="*/" --include="*.lib" --include="MdsObjectsCppShr-VS.dll" --exclude="*" /winbld/${tmpdir}/bin_x86* ${MDSPLUS_DIR}/
+    mkdir -p ${DISTDIR}/winbld
+    pushd ${MDSPLUS_DIR}
+    tar zcf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz .
+    popd
+}
+
+publish_windows() {
+    INSTALLER_DIR=${DISTDIR}/${DIST}
+    mkdir -p ${INSTALLER_DIR}
+    tar zxf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz
+    makensis -DMAJOR=${MAJOR} -DMINOR=${MINOR} -DRELEASE=${RELEASE} -DFLAVOR=${BNAME} -NOCD \
+             -DOUTDIR=${INSTALLER_DIR} -DVisualStudio ${SRCDIR}/deploy/mdsplus.nsi
+    if [ -d /certs ]
+    then
+	echo mdsplus | signcode -spc /certs/mdsplus.spc \
+				-v /certs/mdsplus.pvk \
+				-a sha1 \
+				-$ individual \
+				-n MDSplus  \
+				-i http://www.mdsplus.org/ \
+				-t http://timestamp.verisign.com/scripts/timestamp.dll \
+				-tr 10 ${INSTALLER_DIR}/MDSplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}.exe
+    fi
+}
 
 set -e
 set -xv
@@ -515,6 +603,8 @@ then
 	    then
 	       build_deb_repo;
 	    fi;;
+	windows)
+	    
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
 	    exit 1;;
