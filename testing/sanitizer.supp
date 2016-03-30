@@ -1,2 +1,4 @@
 leak:libMdsIpUDT
 race:libMdsIpUDT
+
+leak:libpython*

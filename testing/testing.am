@@ -42,40 +42,28 @@ tests: rebuild-tests
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@VALGRIND_CHECK_RULES@ 
+@VALGRIND_CHECK_RULES@
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-LOG_DRIVER          ?= @LOG_DRIVER@
-TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
-LOG_COMPILER        ?= @LOG_COMPILER@
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
-PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
+if ENABLE_SANITIZE
+  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
+  TESTS_ENVIRONMENT += ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1
+  TESTS_ENVIRONMENT += LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH}
+  TESTS_ENVIRONMENT += TEST_TIMEUNIT=5
+endif
 
-#
-# Disable python tests if sanitize tools were used during compile. 
-# 
-# Python is unable to load the sanitizer libraries in proper order so we want
-# to skip pyhon tests at all when sanitizer is selected or when the sanitizer
-# libraries has been compiled in mds targets. In the following the
-# ENABLE_SANITIZER conditional checks for current configuration eventually
-# adding --skip option to the log compiler. Then we looks inside the linked
-# libraries of MdsTestShr to see if sanitize libraries are present.
-# 
+# // check if libpath is correct or skip python tests
+if ENABLE_SANITIZE 
+  _check_sanitize_ldd = \
+   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+  PY_LOG_FLAGS += $(shell ${_check_sanitize_ldd} || echo --skip;)
+endif
 
-define _check_sanitize_ldd 
- ( found="no"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libasan.so  > /dev/null && found="yes"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libtsan.so  > /dev/null && found="yes"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libubsan.so > /dev/null && found="yes"; \
-   test -n "@ENABLE_SANITIZE@" && found="yes"; \
-   test $${found} = "yes" )
-endef
-
-PY_LOG_FLAGS += $(shell ${_check_sanitize_ldd} && echo --skip;)
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -84,7 +72,6 @@ PY_LOG_FLAGS += $(shell ${_check_sanitize_ldd} && echo --skip;)
 
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
-
 
 $(TEST_BUILD_TAP):
 	@ \
@@ -153,6 +140,10 @@ clean-local-tests:
 
 
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
 tests-envdump:

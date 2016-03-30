@@ -94,6 +94,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1 \
+@ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
+@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
+@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || echo --skip;)
 TESTS = $(am__EXEEXT_1) $(PY_TESTS) $(am__EXEEXT_2)
 bin_PROGRAMS = example3$(EXEEXT) example_assert$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
@@ -114,6 +118,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/m4_ax_sanitize_check.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/visibility.m4 \
 	$(top_srcdir)/configure.ac
@@ -135,19 +140,19 @@ error_test_SOURCES = error_test.c
 error_test_OBJECTS = error_test.$(OBJEXT)
 error_test_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-error_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+error_test_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 example2_SOURCES = example2.c
 example2_OBJECTS = example2.$(OBJEXT)
 example2_LDADD = $(LDADD)
-example2_DEPENDENCIES = $(am__DEPENDENCIES_1)
+example2_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_example3_OBJECTS = example3.$(OBJEXT)
 example3_OBJECTS = $(am_example3_OBJECTS)
 example3_LDADD = $(LDADD)
-example3_DEPENDENCIES = $(am__DEPENDENCIES_1)
+example3_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 example4_SOURCES = example4.c
 example4_OBJECTS = example4.$(OBJEXT)
 example4_LDADD = $(LDADD)
-example4_DEPENDENCIES = $(am__DEPENDENCIES_1)
+example4_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 example_assert_SOURCES = example_assert.c
 example_assert_OBJECTS = example_assert.$(OBJEXT)
 example_assert_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -155,31 +160,35 @@ example_assert_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 fork_fail_SOURCES = fork_fail.c
 fork_fail_OBJECTS = fork_fail.$(OBJEXT)
 fork_fail_LDADD = $(LDADD)
-fork_fail_DEPENDENCIES = $(am__DEPENDENCIES_1)
+fork_fail_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 fork_success_SOURCES = fork_success.c
 fork_success_OBJECTS = fork_success.$(OBJEXT)
 fork_success_LDADD = $(LDADD)
-fork_success_DEPENDENCIES = $(am__DEPENDENCIES_1)
+fork_success_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 leak_test_SOURCES = leak_test.c
 leak_test_OBJECTS = leak_test.$(OBJEXT)
 leak_test_LDADD = $(LDADD)
-leak_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+leak_test_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 skip_test_SOURCES = skip_test.c
 skip_test_OBJECTS = skip_test.$(OBJEXT)
 skip_test_LDADD = $(LDADD)
-skip_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+skip_test_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 test_options_SOURCES = test_options.c
 test_options_OBJECTS = test_options.$(OBJEXT)
 test_options_LDADD = $(LDADD)
-test_options_DEPENDENCIES = $(am__DEPENDENCIES_1)
+test_options_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 timeout_fail_SOURCES = timeout_fail.c
 timeout_fail_OBJECTS = timeout_fail.$(OBJEXT)
 timeout_fail_LDADD = $(LDADD)
-timeout_fail_DEPENDENCIES = $(am__DEPENDENCIES_1)
+timeout_fail_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 timeout_success_SOURCES = timeout_success.c
 timeout_success_OBJECTS = timeout_success.$(OBJEXT)
 timeout_success_LDADD = $(LDADD)
-timeout_success_DEPENDENCIES = $(am__DEPENDENCIES_1)
+timeout_success_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -517,6 +526,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
+ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
+ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 F77 = @F77@
@@ -627,12 +638,7 @@ PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 PY_LOG_COMPILER = @PY_LOG_COMPILER@
-PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
-PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
-PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(shell ${_check_sanitize_ldd} && echo \
-	--skip;)
-PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
-PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(am__append_2)
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -663,7 +669,7 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
-TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
 TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
@@ -759,6 +765,12 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
 
+# // check if libpath is correct or skip python tests
+@ENABLE_SANITIZE_TRUE@_check_sanitize_ldd = \
+@ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+@ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -767,7 +779,7 @@ TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-LDADD = $(TEST_LIBS)
+LDADD = ${LIBS} $(TEST_LIBS)
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 C_TESTS = \
@@ -1477,37 +1489,13 @@ tests: rebuild-tests
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@VALGRIND_CHECK_RULES@ 
+@VALGRIND_CHECK_RULES@
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-LOG_DRIVER          ?= @LOG_DRIVER@
-TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
-LOG_COMPILER        ?= @LOG_COMPILER@
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
-PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
-
-#
-# Disable python tests if sanitize tools were used during compile. 
-# 
-# Python is unable to load the sanitizer libraries in proper order so we want
-# to skip pyhon tests at all when sanitizer is selected or when the sanitizer
-# libraries has been compiled in mds targets. In the following the
-# ENABLE_SANITIZER conditional checks for current configuration eventually
-# adding --skip option to the log compiler. Then we looks inside the linked
-# libraries of MdsTestShr to see if sanitize libraries are present.
-# 
-
-define _check_sanitize_ldd 
- ( found="no"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libasan.so  > /dev/null && found="yes"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libtsan.so  > /dev/null && found="yes"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libubsan.so > /dev/null && found="yes"; \
-   test -n "@ENABLE_SANITIZE@" && found="yes"; \
-   test $${found} = "yes" )
-endef
+@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
 
 $(TEST_BUILD_TAP):
 	@ \
@@ -1551,6 +1539,10 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
 tests-envdump:
