@@ -93,6 +93,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1 \
+@ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
+@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
+@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || echo --skip;)
 TESTS = TreeDeleteNodeTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = treeshr/testing
@@ -112,6 +116,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/m4_ax_sanitize_check.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/visibility.m4 \
 	$(top_srcdir)/configure.ac
@@ -447,6 +452,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
+ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
+ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 F77 = @F77@
@@ -557,12 +564,7 @@ PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 PY_LOG_COMPILER = @PY_LOG_COMPILER@
-PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
-PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
-PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(shell ${_check_sanitize_ldd} && echo \
-	--skip;)
-PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
-PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(am__append_2)
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
@@ -593,7 +595,7 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
-TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
 TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
@@ -688,6 +690,12 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
+
+# // check if libpath is correct or skip python tests
+@ENABLE_SANITIZE_TRUE@_check_sanitize_ldd = \
+@ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+@ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -1195,37 +1203,13 @@ tests: rebuild-tests
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@VALGRIND_CHECK_RULES@ 
+@VALGRIND_CHECK_RULES@
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-LOG_DRIVER          ?= @LOG_DRIVER@
-TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
-LOG_COMPILER        ?= @LOG_COMPILER@
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
-PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
-
-#
-# Disable python tests if sanitize tools were used during compile. 
-# 
-# Python is unable to load the sanitizer libraries in proper order so we want
-# to skip pyhon tests at all when sanitizer is selected or when the sanitizer
-# libraries has been compiled in mds targets. In the following the
-# ENABLE_SANITIZER conditional checks for current configuration eventually
-# adding --skip option to the log compiler. Then we looks inside the linked
-# libraries of MdsTestShr to see if sanitize libraries are present.
-# 
-
-define _check_sanitize_ldd 
- ( found="no"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libasan.so  > /dev/null && found="yes"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libtsan.so  > /dev/null && found="yes"; \
-   ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep libubsan.so > /dev/null && found="yes"; \
-   test -n "@ENABLE_SANITIZE@" && found="yes"; \
-   test $${found} = "yes" )
-endef
+@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
 
 $(TEST_BUILD_TAP):
 	@ \
@@ -1269,6 +1253,10 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
 tests-envdump:

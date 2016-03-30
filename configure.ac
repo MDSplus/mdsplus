@@ -1084,9 +1084,16 @@ AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,
      ])
 AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 
- # this calls valgrind check with args
+ # check for valgrind
  AX_VALGRIND_CHECK
 
+ # check for sanitizer
+ AX_ENABLE_SANITIZE([ENABLE_SANITIZE],
+                    [AS_VAR_SET([CPPFLAGS],["${sanitize_flags} $CPPFLAGS"])
+                     AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
+                    [echo "${enable_sanitize} sanitizer not available."; exit 111;])
+
+ 
  # selects particular envs for build:host
  TS_SELECT
  
@@ -1096,11 +1103,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
  AC_SUBST(LOG_DRIVER)
  AC_SUBST(PY_LOG_COMPILER)
  AC_SUBST(PY_LOG_FLAGS)
- AC_SUBST(PY_LOG_COMPILER_TAP)
- AC_SUBST(PY_LOG_FLAGS_TAP)
- AC_SUBST(PY_LOG_COMPILER_XML)
- AC_SUBST(PY_LOG_FLAGS_XML)
-
+ 
  TS_SET_SKIP_CMD([TESTS_SKIP])
  AC_SUBST(TESTS_SKIP)
 
@@ -1157,60 +1160,9 @@ DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 ## /// checks etc.
 ## /////////////////////////////////////////////////
 
-AS_VAR_SET([ENABLE_SANITIZE])
 
-let sanitizers=0
-if test "$enable_san_a" = "yes"; then let sanitizers=$sanitizers+1; fi
-if test "$enable_san_t" = "yes"; then let sanitizers=$sanitizers+1; fi
-if test "$enable_san_u" = "yes"; then let sanitizers=$sanitizers+1; fi
 
-if test $sanitizers -gt 1; then
-  echo "Only one sanitizer can be enabled at a time."
-  enable_san_a="no"
-  enable_san_t="no"
-  enable_san_u="no"
-  exit 1
-elif test $sanitizers -eq 1; then
 
-  AX_COMPILER_VERSION
-  AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
-		   [enable_sanitizing="yes"], [enable_sanitizing="no"] )
-		   
-  if test "$enable_sanitizing" = "yes" -a "$GCC" = "yes"; then
-     if test "$enable_san_a" = "yes"; then
-       AC_CHECK_LIB(asan,_init,[
-       ENABLE_SANITIZE=address;
-       CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CFLAGS";
-       CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXFLAGS";
-       SAN_OPTION="ASAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
-       LIBS="-lasan ${LIBS}";],[echo "Address sanitize not available."; exit 111;])
-     fi;
-
-     if test "$enable_san_t" = "yes"; then
-       AC_CHECK_LIB(tsan,_init,[
-       ENABLE_SANITIZE=thread;
-       CFLAGS=" -fsanitize=thread -fno-omit-frame-pointer $CFLAGS";
-       CXXFLAGS="-fsanitize=thread -fno-omit-frame-pointer $CXXFLAGS";
-       SAN_OPTION="TSAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
-       LIBS="-ltsan ${LIBS}"],[echo "Thread sanitize not available."; exit 111;])
-     fi;
-   
-     if test "$enable_san_u" = "yes"; then
-       AC_CHECK_LIB(ubsan,_init,[
-       ENABLE_SANITIZE=undefined;
-       CFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CFLAGS";
-       CXXFLAGS="-fsanitize=undefined -fno-omit-frame-pointer $CXXFLAGS";
-       SAN_OPTION="UBSAN_OPTIONS=suppressions=\$(top_srcdir)/testing/sanitizer.supp"
-       LIBS="-lubsan ${LIBS}";],[echo "Undefined sanitize not available."; exit 111;])
-     fi;
-  else
-    echo "gcc version 4.8.0 or higher required for sanitizers";
-    exit 111;
-  fi;	 
-  TESTS_ENVIRONMENT="$TESTS_ENVIRONMENT $SAN_OPTION"
-fi
-
-AM_CONDITIONAL([ENABLE_SANITIZE],[test -n "${ENABLE_SANITIZE}"])
 
 
 # //////////////////////////////////////////////////////////////////////////// #

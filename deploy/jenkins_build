@@ -174,7 +174,7 @@ test_64 () {
 			 --with-java_target=6 \
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=x86_64-linux \
-			 --enable-sanitize-${test}
+			 --enable-sanitize=${test}
 		status=$?
 		if [ "$status" == 111 ]; then
 		    echo "Sanitizer ${test} not supported. Skipping."
@@ -259,7 +259,7 @@ test_32() {
 			 --with-java_target=6 \
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
 			 --enable-debug --host=i686-linux \
-			 --enable-sanitize-${test}
+			 --enable-sanitize=${test}
 		status=$?
 		if [ "$status" == 111 ]; then
 		    echo "Sanitizer ${test} not supported. Skipping."
@@ -298,7 +298,7 @@ check_tests() {
  	    eval "status=\$test_64_san_${test}"
 	    if [ "$status" != "0" ]
             then
-		echo "64-bit --enable-sanitize-${test} failed"
+		echo "64-bit --enable-sanitize=${test} failed"
 		failed=1;
 	    fi
 	done;
@@ -319,7 +319,7 @@ check_tests() {
  	    eval "status=\$test_32_san_${test}"
 	    if [ "$status" != "0" ]
             then
-		echo "32-bit --enable-sanitize-${test} failed"
+		echo "32-bit --enable-sanitize=${test} failed"
 		failed=1;
 	    fi
 	done;
