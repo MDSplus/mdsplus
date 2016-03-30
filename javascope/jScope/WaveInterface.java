@@ -1314,52 +1314,6 @@ public class WaveInterface
             return null;
         }
      
-        try
-        {
-            wd = dp.GetWaveData(in_y[curr_wave]);
-            yDimension = wd.getNumDimension();
-            if (yDimension == 2)
-                zlabel = wd.GetZLabel();
-        }
-        catch (Exception exc)
-        {
-            yDimension = 1;
-        }
-        
-        if (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() > 0)
-        {
- //         dimension = 1;
-            try
-            {
-                xwd = dp.GetWaveData(in_x[curr_wave]);
-                xDimension = xwd.getNumDimension();
-           }
-            catch (Exception exc)
-            {
-                xDimension = 1;
-            }
-/*
-            if (dp.ErrorString() != null)
-            {
-                curr_error = dp.ErrorString();
-                return null;
-            }       
-*/
-        }
-        
- 
-        if (dp.ErrorString() != null)
-        {
-            curr_error = dp.ErrorString();
-            return null;
-        }
-        
-        if ( xDimension > 2 || yDimension > 2 )
-        {
-            curr_error = "Can't display signal with more than two X or Y Dimensions ";
-            return null;
-        }
-
         if ( in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0 )
         {
 

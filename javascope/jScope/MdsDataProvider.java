@@ -687,39 +687,14 @@ public class MdsDataProvider
                     yExpr =  in_y;
                     xExpr = in_x;
                 }
-            }
-//             try   {
-/*                 
-                String setTimeContext;
-                if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
-                    setTimeContext = "SetTimeContext(*,*,*);";
-                else if(xmin == -Double.MAX_VALUE)
-                {
-                    if(isLong)
-                        setTimeContext = "SetTimeContext(*, QUADWORD("+(long)xmax+"Q), *);";
-                    else
-                         setTimeContext = "SetTimeContext(*, "+xmax+", *);";
-               }
-               else if(xmax == Double.MAX_VALUE)
-               {
-                    if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),*, *);";
-                    else
-                         setTimeContext = "SetTimeContext("+xmin+",*, *);";
-               }
-                else
-                {
-                    if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),QUADWORD("+(long)xmax+"Q), *);";
-                    else
-                         setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
-               }
- */                
-            
+            }            
             
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
-                args.addElement(new Descriptor(null, xExpr));
+                if(in_x == null)
+                    args.addElement(new Descriptor(null, ""));
+                else
+                    args.addElement(new Descriptor(null, xExpr));
                 
                 if(isLong)
                 {
@@ -735,7 +710,7 @@ public class MdsDataProvider
                 byte[] retData;
                 int nSamples;
                 try {
-           //If the requeated number of mounts is Integer.MAX_VALUE, force the old way of getting data
+           //If the requeated number of points is Integer.MAX_VALUE, force the old way of getting data
                     if(numPoints == Integer.MAX_VALUE)
                         throw new Exception("Use Old Method for getting data");
                     if(isLong)
