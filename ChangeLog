@@ -1,4 +1,16 @@
-commit 89aec2584d145c4713a39290151f9796a44e02b7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 2cfa9b752ae21930c7aa03c2af834dfae83adea7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 09:37:28 2016 -0400
+
+    Fix tab/space problem for py3 in Connection
+
+commit 4f22ea85249713e9663f98772c4955052a8e1b6a (tag: refs/tags/alpha_release-7-0-244)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Mar 25 23:24:22 2016 -0400
+
+    New release ---- alpha_release-7-0-244
+
+commit 89aec2584d145c4713a39290151f9796a44e02b7
 Merge: ddeb637 a14769a
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Mar 25 15:29:56 2016 +0100
