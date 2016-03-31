@@ -182,8 +182,7 @@ cp -f /tmp/repo/conf/distributions /installer/repo/conf/
 mkdir -p /installer/repo/db
 mkdir -p /installer/repo/dists
 mkdir -p /installer/repo/pool
-mkdir -p /installer/%(flavor)s/DEBS/amd64
-mkdir -p /installer/%(flavor)s/DEBS/i386
+mkdir -p /installer/%(flavor)s/DEBS/%(arch)s
 mkdir -p /installer/%(flavor)s/DEBS/noarch
 
 """ % info,shell=True).wait() != 0:

@@ -85,7 +85,7 @@ fi
 
 if [ -d /installer ]
 then
-    if [ "$arch" = "armhf" ]
+    if [ "$ARCH" = "armhf" ]
     then
 	arches=armhf
     else
