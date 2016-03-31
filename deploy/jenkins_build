@@ -751,10 +751,16 @@ EOF
 	    fi
 	    if ( test "${RELEASE_TAG}" != "" )
 	    then
-		./configure
+		mkdir ${WORKSPACE}/pypi
+		pushd ${WORKSPACE}/pypi
+		${WORKSPACE}/configure
+		popd
 		for package in mdsobjects/python tdi/MitDevices tdi/RfxDevices tdi/W7xDevices; do
-		    cd ${WORKSPACE}/${package}
+		    pushd ${WORKSPACE}/${package}
+		    cp ${WORKSPACE}/pypi/${package}/_version.py ./
 		    python setup.py sdist upload
+		    rm _version.py
+		    popd
 		done
 	    else
 		cat <<EOF
