@@ -401,35 +401,8 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
-            this.wd_experiment = experiment;
-            this.wd_shot = shot;
-            if(checkForAsynchRequest(in_y))
-            {
-               this.in_y = "[]";
-               this.in_x = "[]";
-            }
-            else
-            {
-                this.in_y = in_y;
-            }
-            v_idx = var_idx;
-            var_idx+=2;
-            if(segmentMode == SEGMENTED_UNKNOWN)
-            {
-                try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
-                        segmentMode = SEGMENTED_YES;
-                    else
-                        segmentMode = SEGMENTED_NO;
-                }
-                catch(Exception exc)
-                {
-                    error = null;
-                    segmentMode = SEGMENTED_UNKNOWN;
-                }
-            }
-         }
+            this(in_y,null,experiment,shot);
+        }
 
         public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
         {
@@ -445,13 +418,17 @@ public class MdsDataProvider
                 this.in_y = in_y;
                 this.in_x = in_x;
             }
-           v_idx = var_idx;
+            v_idx = var_idx;
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
+                Vector args = new Vector();
+                String fixedY = in_y;
+                fixedY.replaceAll("\\", "\\\\");
+                args.addElement(new Descriptor(null, fixedY));
                 try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
