@@ -1,4 +1,16 @@
-commit fd8cc064906cd0f47bf377b4cb9f3691094d07ec (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit fe056456694c79f1fb7ad7b4bd5a6c3d70076f8c (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 15:06:32 2016 -0400
+
+    fix raspberrypi repo
+
+commit 90b99ad94ec7fe9f18a04229993200ee652a0f9f (tag: refs/tags/alpha_release-7-0-246)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Mar 31 13:04:58 2016 -0400
+
+    New release ---- alpha_release-7-0-246
+
+commit fd8cc064906cd0f47bf377b4cb9f3691094d07ec
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 31 12:33:22 2016 -0400
 
