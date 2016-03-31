@@ -702,7 +702,7 @@ else
 		docker rm "${JOB_NAME}${BUILD_NUMBER}";
 	    done;;
 	TRIGGER)
-	    if [ "$MAKE_RELEASE" = "yes" ]
+	    if [ "$MAKE_RELEASE" = "yes" -o "$PUBLISH_RELEASE" = "yes" ]
 	    then
 		BRANCH=${GIT_BRANCH:7};
 		RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
