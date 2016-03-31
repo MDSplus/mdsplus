@@ -800,7 +800,7 @@ public class Waveform
           //July 2014 in order to force resolution adjustment
           try {
             waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
-            setXlimits((double)MinXSignal(), (double)MaxXSignal());
+            setXlimits((float)MinXSignal(), (float)MaxXSignal());
           }catch(Exception exc)
           {
               System.out.println(exc);
@@ -2203,7 +2203,7 @@ public class Waveform
     change_limits = true;
   }
 
-  public void setXlimits(double xmin, double xmax) {
+  public void setXlimits(float xmin, float xmax) {
     if (waveform_signal == null) {
       return;
     }
@@ -2461,7 +2461,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
           waveform_signal.unfreeze();
     }
     //GABRIELE AUGUST 2014
-    setXlimits((double)r.start_xs, (double)r.end_xs);
+    setXlimits((float)r.start_xs, (float)r.end_xs);
     waveform_signal.setXLimits( r.start_xs, r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
