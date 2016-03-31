@@ -389,12 +389,12 @@ build_rpms () {
 #    fi
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
-        export INSTALLER_DIR=${DISTDIR}/${DIST}
+        export INSTALLER_DIR=${DISTDIR}/${DIST}/${BRANCH}
 	export BUILDROOT=${WORKSPACE}/release
 	echo "Building rpms";
 	mkdir -p ${WORKSPACE}/release/etc/yum.repos.d;
 	mkdir -p ${WORKSPACE}/release/etc/pki/rpm-gpg/;
-	mkdir -p ${INSTALLER_DIR}/BUILD ${INSTALLER_DIR}/BUILDROOT ${INSTALLER_DIR}/SPECS ${INSTALLER_DIR}/RPMS ${INSTALLER_DIR}/SRPMS;
+	mkdir -p ${INSTALLER_DIR}/RPMS;
 	cp ${SRCDIR}/deploy/RPM-GPG-KEY-MDSplus ${WORKSPACE}/release/etc/pki/rpm-gpg/;
 	cat - > ${WORKSPACE}/release/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]
@@ -412,7 +412,7 @@ EOF
 }
 
 build_rpm_repo() {
-    export INSTALLER_DIR=${DISTDIR}/${DIST}
+    export INSTALLER_DIR=${DISTDIR}/${DIST}/${BRANCH}
     createrepo -q ${INSTALLER_DIR}/RPMS
 }
 
@@ -753,7 +753,7 @@ EOF
 	    then
 		./configure
 		for package in mdsobjects/python tdi/MitDevices tdi/RfxDevices tdi/W7xDevices; do
-		    cd ${WORKSPACE}${package}
+		    cd ${WORKSPACE}/${package}
 		    python setup.py sdist upload
 		done
 	    else
