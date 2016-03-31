@@ -1,4 +1,57 @@
-commit 2cfa9b752ae21930c7aa03c2af834dfae83adea7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit fd8cc064906cd0f47bf377b4cb9f3691094d07ec (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 12:33:22 2016 -0400
+
+    Fix raspberrypi repo
+
+commit 3f3371213a044ea18fec38ee95d4b960eb2fa9a9
+Merge: 6e25735 a5399af
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 09:55:02 2016 -0400
+
+    Merge pull request #433 from zack-vii/cleanup_428
+    
+    fixedY replaceAll is not in-place
+
+commit a5399af3b597b336542d71bff8020997a4053b44
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 31 15:16:42 2016 +0200
+
+    fixedY replaceAll is not in-place
+    
+    and regexpr requires another level of \escape
+
+commit 6e2573563cc1407fef40b2ba0dd7de4ef4ee9d2d
+Merge: a17e212 bfb448c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 09:10:20 2016 -0400
+
+    Merge pull request #432 from zack-vii/cleanup_428
+    
+    Cleanup 428
+
+commit bfb448c9d4fcd78273d50895c4257b512929ac46
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 31 14:43:45 2016 +0200
+
+    clean 428
+
+commit 6d688f6b9da328fe5856a0b09eeaa0718fcc9f43
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 31 14:40:59 2016 +0200
+
+    Revert "Merge pull request #428 from MDSplus/dev-gm"
+    
+    This reverts commit 89aec2584d145c4713a39290151f9796a44e02b7, reversing
+    changes made to ddeb6370decfed4a831ebce6444533852e002147.
+
+commit a17e2125f9cf1027069a0f6090e9db7505a95875 (tag: refs/tags/alpha_release-7-0-245)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 29 23:18:00 2016 -0400
+
+    New release ---- alpha_release-7-0-245
+
+commit 2cfa9b752ae21930c7aa03c2af834dfae83adea7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 29 09:37:28 2016 -0400
 
@@ -19,7 +72,7 @@ Date:   Fri Mar 25 15:29:56 2016 +0100
     
     Dev gm
 
-commit a14769a53e5cfbf8cc3efcccedffd52b7c31b900 (refs/remotes/origin/dev-gm)
+commit a14769a53e5cfbf8cc3efcccedffd52b7c31b900
 Merge: 5313641 ddeb637
 Author: Mdsplus <mdsplus@spilds.rfx.local>
 Date:   Fri Mar 25 14:28:42 2016 +0100
