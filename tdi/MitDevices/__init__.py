@@ -25,6 +25,7 @@ from dt196a     import DT196A
 from dt196b     import DT196B
 from dt216      import DT216
 from dt216a     import DT216A
+from raspi	import RASPI
 from timeSignature import timeSignatureAnalyze, timeSignature
 import acq200
 import transport
