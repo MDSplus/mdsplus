@@ -124,9 +124,9 @@ class RASPI(MDSplus.Device):
         if not compressed:
             img = np.fromfile(filename, dtype=np.uint8)
             img=img.reshape(num_frames, height, width, 3)
-            self.r_frames.record = np.ascontiguousarray(img[:,:,:,0])
-            self.g_frames.record = np.ascontiguousarray(img[:,:,:,1])
-            self.b_frames.record = np.ascontiguousarray(img[:,:,:,2])
+            self.r_frames.record = img[:,:,:,0]
+            self.g_frames.record = img[:,:,:,1]
+            self.b_frames.record = img[:,:,:,2]
         else:
             ans = None
             count = 0
@@ -145,13 +145,13 @@ class RASPI(MDSplus.Device):
             if self.debugging:
                 print "shape is ", ans.shape
                 print ans[:,:,:,0][0]
-            self.r_frames.record=np.ascontiguousarray(ans[:,:,:,0])
+            self.r_frames.record=ans[:,:,:,0]
             if self.debugging:
                 print "write g"
-            self.g_frames.record=np.ascontiguousarray(ans[:,:,:,1])
+            self.g_frames.record=ans[:,:,:,1]
             if self.debugging:
                 print "write b"
-            self.b_frames.record=np.ascontiguousarray(ans[:,:,:,2])
+            self.b_frames.record=ans[:,:,:,2]
             if self.debugging:
                 print "write frames record"
         self.frames.record = MDSplus.Data.compile("MAKE_SIGNAL(RASPI_RGB($,$,$), *, $)", self.r_frames, self.g_frames, self.b_frames, self.times)
