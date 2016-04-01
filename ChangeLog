@@ -1,4 +1,16 @@
-commit 3d43fa314c72bde5b4717fd67cb52b0934fb10b1 (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 3e8ef5b240a3b07622028f9eba95b6d0d348893e (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 08:26:45 2016 -0400
+
+    Fix for raspberrypi builds
+
+commit 853629652b43dbab47b6a8a974c0b989bacd39f6 (tag: refs/tags/stable_release-7-0-68)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 29 18:02:26 2016 -0400
+
+    New release ---- stable_release-7-0-68
+
+commit 3d43fa314c72bde5b4717fd67cb52b0934fb10b1
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 29 09:37:10 2016 -0400
 
