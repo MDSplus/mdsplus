@@ -95,6 +95,7 @@ int main(int argc, char **args)
 
         status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
         TEST0( status%1 );        
+        wait();
         status = MDSEvent(eventname,0,0);
         TEST0( status%1 );        
         status = MDSEvent(eventname,0,0);
