@@ -303,7 +303,7 @@ check_tests() {
 	    fi
 	done;
     fi;
-    if [ -z "$ARCH" -o "$ARCH" = "i386" -o "$ARCH" = "i686" ]
+    if [ -z "$ARCH" -o "$ARCH" = "i386" -o "$ARCH" = "i686" -o "$ARCH" = "armhf" ]
     then
 	if [ ! -z "$tests_32" -a "$tests_32" != "0" ]
 	then
@@ -422,8 +422,7 @@ build_debs() {
     then
         export INSTALLER_DIR=${DISTDIR}/${DIST}
 	export BUILDROOT=${WORKSPACE}/release
-	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/amd64
-	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/i386
+	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/${ARCH}
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/noarch
 	${SRCDIR}/deploy/build_debs_mdsplus
     fi
@@ -432,6 +431,12 @@ build_debs() {
 build_deb_repo() {
     echo "Building debian repository"
     INSTALLER_DIR=${DISTDIR}/${DIST}
+    if [ "$ARCH" = "armhf" ]
+    then
+	arches=armhf
+    else
+	arches="amd64 i386"
+    fi
     rm -Rf ${INSTALLER_DIR}/repo
     mkdir -p ${INSTALLER_DIR}/repo/conf
     mkdir -p ${INSTALLER_DIR}/repo/db
@@ -442,7 +447,7 @@ Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
 Version: ${MAJOR}.${MINOR}.${RELEASE}
-Architectures: i386 amd64 source
+Architectures: ${arches}
 Components: alpha stable local twfbld
 Description: MDSplus packages
 EOF
@@ -581,7 +586,7 @@ then
 	debian)
 	    if [ "${TESTS}" = "yes" ]
 	    then
-		if [ "$ARCH" = "i386" ]
+		if [ "$ARCH" = "i386" -o "$ARCH" = "armhf" ]
 		then
 		    test_32;
 		else
@@ -591,7 +596,7 @@ then
 	    fi
 	    if [ "${MAKE_RELEASE}" = "yes" ]
 	    then
-		if [ "$ARCH" = "i386" ]
+		if [ "$ARCH" = "i386" -o "$ARCH" = "armhf" ]
 		then
 		    build_32;
 		else

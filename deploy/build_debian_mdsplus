@@ -85,17 +85,28 @@ fi
 
 if [ -d /installer ]
 then
+    if [ "$ARCH" = "armhf" ]
+    then
+	arches=armhf
+    else
+	arches="amd64 i386"
+    fi
     echo "Building debian packages"
-    mkdir -p /installer/${BRANCH}/DEBS/amd64
-    mkdir -p /installer/${BRANCH}/DEBS/i386
-    mkdir -p /installer/${BRANCH}/DEBS/noarch
-    mkdir -p /installer/repo/conf/distributions
-    cat - <<EOF > /installer/repo/conf/distributions
+    mkdir -p /tmp/repo/conf
+    mkdir -p /tmp/repo/db
+    mkdir -p /tmp/repo/dists
+    mkdir -p /tmp/repo/pool
+    for archnam in $arches
+    do
+	mkdir -p /tmp/${BNAME}/DEBS/${archnam}
+    done
+    mkdir -p /tmp{BNAME}/DEBS/noarch
+    cat - <<EOF > /tmp/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
 Version: ${MAJOR}.${MINOR}.${RELEASE}
-Architectures: i386 amd64 source
+Architectures: ${arches}
 Components: alpha stable local
 Description: MDSplus packages
 EOF
