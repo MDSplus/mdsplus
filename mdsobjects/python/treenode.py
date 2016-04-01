@@ -139,19 +139,13 @@ class TreeNode(_data.Data):
             except:
                 pass
         name = name.lower()
+        if name in self.__dict__.keys():
+            return self.__dict__[name]
         if name == 'nid':
             try:
-                return self.__dict__['nid']
-            except KeyError:
-                try:
-                    return self.tree.getNode(self.tree_path)
-                except:
-                    return None
-            return self.tree.getNode(str(self))
-        try:
-            return self.__dict__[name]
-        except:
-            pass
+                return self.tree.getNode(self.tree_path)
+            except:
+                return None
         if name == 'record':
             return self.getData()
         if name == 'tags':
