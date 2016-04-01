@@ -4,7 +4,7 @@ set -e
 #
 # Get the 3rd party software headers etc from github
 #
-wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+wget -q --no-check-certificate -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
 #
 # make the root to build into
 #
@@ -85,20 +85,28 @@ fi
 
 if [ -d /installer ]
 then
+    if [ "$ARCH" = "armhf" ]
+    then
+	arches=armhf
+    else
+	arches="amd64 i386"
+    fi
     echo "Building debian packages"
     mkdir -p /tmp/repo/conf
     mkdir -p /tmp/repo/db
     mkdir -p /tmp/repo/dists
     mkdir -p /tmp/repo/pool
-    mkdir -p /tmp/${BNAME}/DEBS/amd64
-    mkdir -p /tmp/${BNAME}/DEBS/i386
+    for archnam in $arches
+    do
+	mkdir -p /tmp/${BNAME}/DEBS/${archnam}
+    done
     mkdir -p /tmp{BNAME}/DEBS/noarch
     cat - <<EOF > /tmp/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
 Version: ${MAJOR}.${MINOR}.${RELEASE}
-Architectures: i386 amd64 source
+Architectures: ${arches}
 Components: alpha stable local
 Description: MDSplus packages
 EOF
