@@ -11,23 +11,26 @@ class RASPI(MDSplus.Device):
 
     parts = [
         {'path':':COMMENT','type':'text'},
-        {'path':':COMPRESSED','type':'numeric','value':0,'options':('no_write_shot',)},
+        {'path':':COMPRESSED','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':KEEP','type':'numeric','value':0,'options':('no_write_shot',)},
         {'path':':DIRECTORY','type':'text','value':'/usr/local/cmod/codes/raspicam/','options':('no_write_shot',)},
         {'path':':TRIGGER','type':'numeric','options':('no_write_shot',)},
-        {'path':':WIDTH','type':'numeric','value':640,'options':('no_write_shot',)},
-        {'path':':HEIGHT','type':'numeric','value':480,'options':('no_write_shot',)},
+        {'path':':WIDTH','type':'numeric','value':1920,'options':('no_write_shot',)},
+        {'path':':HEIGHT','type':'numeric','value':1080,'options':('no_write_shot',)},
         {'path':':FPS','type':'numeric','value':30,'options':('no_write_shot',)},
-        {'path':':EXPOSURE','type':'numeric','value':15,'options':('no_write_shot',)},
-        {'path':':BRIGHTNESS','type':'numeric','value':10,'options':('no_write_shot',)},
-        {'path':':CONTRAST','type':'numeric','value':3,'options':('no_write_shot',)},
+        {'path':':EXPOSURE','type':'numeric','value':10000,'options':('no_write_shot',)},
+        {'path':':BRIGHTNESS','type':'numeric','value':50,'options':('no_write_shot',)},
+        {'path':':CONTRAST','type':'numeric','value':30,'options':('no_write_shot',)},
         {'path':':NUM_FRAMES','type':'numeric','value':60,'options':('no_write_model','write_once',)},
         {'path':':TIMES','type':'axis', 'options':('write_once',)},
-        {'path':':FRAMES','type':'signal','options':('no_write_model','write_once',)},
-        {'path':':COEFFS','type':'numeric','value':MDSplus.Float32Array([.3,.3,.3]),'options':('no_write_shot',)},
-        {'path':':FRAMES_SIG','type':'signal','options':('write_once',)},
+        {'path':':R_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
+        {'path':':G_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
+        {'path':':B_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
+        {'path':':FRAMES','type':'signal','options':('no_write_model','write_once',)},        
+        {'path':':R_COEFF','type':'numeric','value':.3,'options':('no_write_shot',)},
+        {'path':':G_COEFF','type':'numeric','value':.3,'options':('no_write_shot',)},
+        {'path':':B_COEFF','type':'numeric','value':.3,'options':('no_write_shot',)},
         {'path':':INTENSITY','type':'signal','options':('write_once',)},
-        {'path':':INTENS_SIG','type':'signal','options':('write_once',)},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
          'options':('no_write_shot',)},
@@ -116,12 +119,14 @@ class RASPI(MDSplus.Device):
         filename = "%s.%s"%(self.fileName(), ('h264' if compressed else 'rgb'), )
         if self.debugging:
             print "raspicam: reading %s"%filename
-        self.times.record = MDSplus.Data.compile('$1 : $1+($2-1)/$3 : $3', self.trigger, self.num_frames, self.fps)
-        self.intensity.record = MDSplus.Data.compile("$1['r',*,*,*]*$2[0]+$1['g',*,*,*]*$2[2]+$1['b',*,*,*]*$2[2]", self.frames, self.coeffs)
+        self.times.record = MDSplus.Data.compile('$1 : $1+($2-1)/float($3) : 1./$3', self.trigger, self.num_frames, self.fps)
+        self.intensity.record = MDSplus.Data.compile("MAKE_SIGNAL($*$+$*$+$*$,*,$)",self.r_frames, self.r_coeff, self.g_frames, self.g_coeff, self.b_frames, self.b_coeff, self.times)
         if not compressed:
             img = np.fromfile(filename, dtype=np.uint8)
             img=img.reshape(num_frames, height, width, 3)
-            self.frames.record = MDSplus.Signal(img, None, [ 'r' ,'g' , 'b' ], MDSplus.Range(0, width-1), MDSplus.Range(0, height-1), self.times)
+            self.r_frames.record = np.ascontiguousarray(img[:,:,:,0])
+            self.g_frames.record = np.ascontiguousarray(img[:,:,:,1])
+            self.b_frames.record = np.ascontiguousarray(img[:,:,:,2])
         else:
             ans = None
             count = 0
@@ -134,9 +139,22 @@ class RASPI(MDSplus.Device):
                     ans[i,:,:,:] = im
             except Exception, e:
                 print e
+            if self.debugging:
+                print "chop the answer to the number of frames"
             ans = ans[0:i-1,:,:,:]
-            ans=ans.reshape(i-1, height, width, 3)
-            self.frames.record = MDSplus.Signal(ans, None, [ 'r' ,'g' , 'b' ], MDSplus.Range(0, width-1), MDSplus.Range(0, height-1), self.times)
+            if self.debugging:
+                print "shape is ", ans.shape
+                print ans[:,:,:,0][0]
+            self.r_frames.record=np.ascontiguousarray(ans[:,:,:,0])
+            if self.debugging:
+                print "write g"
+            self.g_frames.record=np.ascontiguousarray(ans[:,:,:,1])
+            if self.debugging:
+                print "write b"
+            self.b_frames.record=np.ascontiguousarray(ans[:,:,:,2])
+            if self.debugging:
+                print "write frames record"
+        self.frames.record = MDSplus.Data.compile("MAKE_SIGNAL(RASPI_RGB($,$,$), *, $)", self.r_frames, self.g_frames, self.b_frames, self.times)
         if self.keep.record == 0:
             os.remove(filename)
         return 1
