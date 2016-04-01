@@ -562,7 +562,7 @@ then
     source /mdsplus/source/jenkins_build.conf
     if [ "$PUBLISH_RELEASE" = "yes" ]
     then
-	DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+	DIST_TAG_FILE=${DISTDIR}/${DIST}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
     fi
     case ${DIST_TYPE} in
 	redhat)
@@ -581,7 +581,8 @@ then
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
 	    then
-	       build_rpm_repo;
+		build_rpm_repo;
+		echo ${GIT_COMMIT} > ${DIST_TAG_FILE}
             fi;;
 	debian)
 	    if [ "${TESTS}" = "yes" ]
@@ -606,8 +607,9 @@ then
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
 	    then
-	       build_deb_repo;
-	    fi;;
+		build_deb_repo;
+		echo ${GIT_COMMIT} > ${DIST_TAG_FILE}
+ 	    fi;;
 	windows)
 	    if [ "${MAKE_RELEASE}" = "yes" ]
 	    then
@@ -616,15 +618,12 @@ then
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
 	    then
 		publish_windows;
-	    fi;;
+		echo ${GIT_COMMIT} > ${DIST_TAG_FILE}
+ 	    fi;;
 	*)
 	    echo Unknown DIST_TYPE: ${DIST_TYPE}
 	    exit 1;;
     esac
-    if [ -r /mdsplus/release ]
-    then
-	echo ${GIT_COMMIT} > $DIST_TAG_FILE
-    fi
 else
     parse_cmd $@
     case "$OP" in
@@ -643,12 +642,13 @@ else
 	    if [ "$MAKE_RELEASE" = "yes" -o "$PUBLISH_RELEASE" = "yes" ]
 	    then
 		installer_volume="-v ${DISTDIR}:${DISTDIR}"
-		DIST_TAG_FILE=${DISTDIR}/${DIST}/${BRANCH}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
-		if ( test -r $DIST_TAG_FILE &&
-			   test "$(cat $DIST_TAG_FILE)" = "${GIT_COMMIT}" )
+		DIST_TAG_FILE=${DISTDIR}/${DIST}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+		if [ "$(cat ${DIST_TAG_FILE} 2>/dev/null)" = "${GIT_COMMIT}" ]
 		then
 		    echo "This release is already complete. Nothing else to do."
 		    exit 0
+		else
+		    rm -f ${DISTDIR}:${DISTDIR}/mdsplus-${BRANCH}-*.*-*
 		fi
 	    fi
 	    if [ "$MAKE_RELEASE" = "yes" ]
