@@ -1,4 +1,4 @@
-from MDSplus import Int32
+from MDSplus import Int32, Device
 from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND
 from sys import stderr,exc_info
 
@@ -7,9 +7,13 @@ def PyDoMethod(n,method,*args):
     model = str(c.model)
     method = str(method)
     safe_env = {}
-    qualifiers = c.qualifiers.value.tolist()
-    if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
-    exec(compile(qualifiers,'<string>','exec')) in safe_env
+    try:
+        mod = Device.importPyDeviceModule(model)
+        safe_env[model]=mod.__dict__[model]
+    except:
+        qualifiers = c.qualifiers.value.tolist()
+        if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
+        exec(compile(qualifiers,'<string>','exec')) in safe_env
     if not model in safe_env:
         stderr.write("Python device implementation not found for %s after doing %s\n\n" % (model,qualifiers))
         return [Int32(DevPYDEVICE_NOT_FOUND.status),None]
@@ -23,6 +27,7 @@ def PyDoMethod(n,method,*args):
             return [Int32(1),methodobj(*args)]
         except TypeError:
             exc = exc_info()[1]
+            print exc
             if exc.message.startswith(method+'()'):
                 print('Your device method %s.%s requires at least one argument.' % (model,method))
                 print('No argument has been provided as it is probably not required by the method.')
