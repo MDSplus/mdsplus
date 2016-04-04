@@ -323,7 +323,10 @@ class Device(_treenode.TreeNode):
                             pass
                         finally:
                             sys.path.remove(dp)
-        return _mdsdata.Data.execute(str(ans))
+        if len(ans) == 0:
+            return None
+        else:
+            return _mdsdata.Data.execute(str(ans))
 
 
     findPyDevices=staticmethod(findPyDevices)
