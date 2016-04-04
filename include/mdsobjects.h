@@ -3123,7 +3123,14 @@ public:
     // NOTE: [andrea] there are missed members ( vs java impl )
     /// Begin a new data segment
     void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
+	/// Begin and fill a new data segment
     void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
+
+	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples) 
+    void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
+
+	//Begin and fill a new data segment. At the same time make a resampled version
+    void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
 
     /// Write (part of) data segment
     void putSegment(Array *data, int ofs);

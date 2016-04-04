@@ -70,10 +70,12 @@ extern "C" {
 	int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
 	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
+	int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
 	int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
 	int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+
 }
 
 #define MAX_ARGS 512
@@ -956,6 +958,97 @@ void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialDat
 	if(!(status & 1))
 		throw MdsException(status);
 }
+
+
+void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
+{
+	const int RES_FACTOR = 100;
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = initialData->getFloatArray(&numRows);
+	float *resSamples = new float[2* numRows/RES_FACTOR]; //It has top keep minimum and maximum
+	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	{
+		float minVal = arrSamples[i];
+		float maxVal = minVal;
+		for(int j = 0; j < RES_FACTOR; j++)
+		{
+			if(arrSamples[i+j] < minVal)
+				minVal = arrSamples[i+j];
+			if(arrSamples[i+j] > maxVal)
+				maxVal = arrSamples[i+j];
+		}
+		resSamples[2*i/RES_FACTOR] = minVal;
+		resSamples[2*i/RES_FACTOR+1] = maxVal;
+	}
+	Array *resData = new Float32Array(resSamples, 2* numRows/RES_FACTOR);
+	char dimExpr[64];
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR/2,numRows);
+	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
+	resampledNode->makeSegment(start, end, resDim, resData);
+	MDSplus::deleteData(resDim);
+	MDSplus::deleteData(resData);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	int numSegments = getNumSegments();
+	if(numSegments == 0)  //Set XNCI only when writing the first segment
+	{
+		String *resModeD = new String("MinMax");
+		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
+		MDSplus::deleteData(resModeD);
+		Data *resSamplesD = new Int32(RES_FACTOR/2);
+		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
+		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
+		MDSplus::deleteData(resSamplesD);
+	}
+	makeSegment(start, end, time, initialData);
+}
+		
+
+void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
+{
+	const int RES_FACTOR = 100;
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = initialData->getFloatArray(&numRows);
+	float *resSamples = new float[numRows/RES_FACTOR]; 
+	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	{
+		float avgVal = arrSamples[i];
+		for(int j = 0; j < RES_FACTOR; j++)
+		{
+			avgVal += arrSamples[i+j];
+		}
+		avgVal /= RES_FACTOR;
+		resSamples[i/RES_FACTOR] = avgVal;
+	}
+	Array *resData = new Float32Array(resSamples, numRows/RES_FACTOR);
+	char dimExpr[64];
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR,numRows);
+	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
+	resampledNode->makeSegment(start, end, resDim, resData);
+	MDSplus::deleteData(resDim);
+	MDSplus::deleteData(resData);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	int numSegments = getNumSegments();
+	if(numSegments == 0)  //Set XNCI only when writing the first segment
+	{
+		String *resModeD = new String("Resample");
+		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
+		Data *resSamplesD = new Int32(RES_FACTOR);
+		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
+		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
+		MDSplus::deleteData(resSamplesD);
+	}
+	makeSegment(start, end, time, initialData);
+}
+		
+
+
+
 
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {

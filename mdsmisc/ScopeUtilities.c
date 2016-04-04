@@ -32,7 +32,7 @@ static int getSegmentedNid(char *expr)
 * when online minmax reasampling is deemed not necessary. If the number  
 **/
 
-static int estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSamples, double *estimatedDuration)
+static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSegmentSamples, double *estimatedDuration)
 {
 	int nid, numSegments, status, startIdx, endIdx;
 	struct descriptor minD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*) xMin};
@@ -146,7 +146,8 @@ static int estimateNumSamples(char *sigName, float *xMin, float *xMax, int *esti
 	MdsFree1Dx(&retStartXd, 0);
 	MdsFree1Dx(&retEndXd, 0);
 	*estimatedDuration = endSig - startSig;
-	return segmentSamples * numActSegments;
+	*estimatedSegmentSamples = segmentSamples;
+	return segmentSamples * (int64_t)numActSegments;
 }
 
 
@@ -525,6 +526,7 @@ static int recIsSegmented(struct descriptor *dsc)
     char *path;
     struct descriptor_r *rDsc;
     if(!dsc) return FALSE;
+
     switch (dsc->class) {
 	case CLASS_S:
 	    if(dsc->dtype == DTYPE_NID)
@@ -573,7 +575,6 @@ EXPORT int IsSegmented(char *expr)
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
     int status, segNid;
-
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
     segNid = recIsSegmented(xd.pointer);
@@ -591,7 +592,7 @@ EXPORT int TestGetHelp(char *expr)
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
     help = recGetHelp(xd.pointer);
-    if(help) printf("%s\n", help);
+//    if(help) printf("%s\n", help);
     MdsFree1Dx(&xd, 0);
     return 1;
 }
@@ -606,7 +607,7 @@ EXPORT int TestGetUnits(char *expr)
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
     units = recGetUnits(xd.pointer, 0);
-    if(units) printf("%s\n", units);
+//    if(units) printf("%s\n", units);
     MdsFree1Dx(&xd, 0);
     return 1;
 }
@@ -619,10 +620,12 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     EMPTYXD(xd);
     EMPTYXD(yXd);
     EMPTYXD(xXd);
+    EMPTYXD(evaluatedXd);
     struct descriptor xMinD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMin};
     struct descriptor xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
     struct descriptor xExpr = {strlen(inX), DTYPE_T, CLASS_S, inX};
+	struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
     struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
     char *err;
     char swap;
@@ -645,10 +648,10 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	double delta;
 	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
 	float *currXMin, *currXMax;
-	int estimatedSamples, estimatedSegmentSamples;
+	int64_t estimatedSamples, estimatedSegmentSamples;
 	double estimatedDuration;
 
-printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
 
 	if(*inXMin < -1E20)
 		currXMin = 0;
@@ -660,11 +663,12 @@ printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSam
 		currXMax = inXMax;
 
 	estimatedSamples = estimateNumSamples(inY, currXMin, currXMax, &estimatedSegmentSamples, &estimatedDuration);
-printf("Estimated Samples: %d\n", estimatedSamples);
-printf("Estimated Durations: %f\n", estimatedDuration);
+//printf("Estimated Samples: %d\n", estimatedSamples);
+//printf("Estimated SegmentSamples: %d\n", estimatedSegmentSamples);
+//printf("Estimated Durations: %f\n", estimatedDuration);
 	if(estimatedSamples > NUM_SAMPLES_THRESHOLD)
 	{
-//First guess on delta  GAB DA QUA PER CAPIRE COME METTERE IL DELTA
+//First guess on delta  G
 		delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD; 
 //Now delta represents the number of samples to be compressed in a min-max mair
 		if(delta > estimatedSegmentSamples/10.)
@@ -672,7 +676,6 @@ printf("Estimated Durations: %f\n", estimatedDuration);
 //In any case don't make it too big in respect of the single segment size (at minimum 10 samples )pairs) per segment
 		delta *= (estimatedDuration/estimatedSamples);
 //Convert from samples to time interval
-printf("DELTA: %f\n", delta);
 		if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
 			status = TreeSetTimeContext(NULL, NULL, &deltaD);
 		else if(xMin <= -MAX_LIMIT)
@@ -700,11 +703,12 @@ printf("DELTA: %f\n", delta);
     status = TdiCompile(&yExpr, &xd MDS_END_ARG);
     if(status & 1)
     {
-//Get title and yLabel, if any
-    	title = recGetHelp(xd.pointer);
-	yLabel = recGetUnits(xd.pointer, 0);
-//get Data
-	status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
+	//Get title and yLabel, if any
+		title = recGetHelp(xd.pointer);
+		yLabel = recGetUnits(xd.pointer, 0);
+	//get Data
+		status = TdiEvaluate((struct descriptor *)&xd, &evaluatedXd MDS_END_ARG);
+		if(status & 1) status = TdiData((struct descriptor *)&evaluatedXd, &yXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
@@ -716,7 +720,16 @@ printf("DELTA: %f\n", delta);
 	return &retXd;
     } 
 //Get X
-    status = TdiCompile(&xExpr, &xd MDS_END_ARG);
+	if(*inX) //If an explicit expression for X has been given
+	{
+		MdsFree1Dx(&evaluatedXd, 0);
+    	status = TdiCompile(&xExpr, &xd MDS_END_ARG);
+	}
+	else
+	{
+    	status = TdiCompile(&dimExpr, &evaluatedXd, &xd MDS_END_ARG);
+		MdsFree1Dx(&evaluatedXd, 0);
+	}
     if(status & 1)
     {
 //Get xLabel, if any
@@ -956,6 +969,8 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     EMPTYXD(xd);
     EMPTYXD(yXd);
     EMPTYXD(xXd);
+    EMPTYXD(evaluatedXd);
+	struct  descriptor dimExpr = {strlen("DIM_OF($)"), DTYPE_T, CLASS_S, (char *)"DIM_OF($)"};
     struct descriptor xMinD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMin};
     struct descriptor xMaxD = {sizeof(int64_t), DTYPE_QU, CLASS_S, (char *)inXMax};
     struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
@@ -994,41 +1009,55 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     	status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
 
 //Get Y
+
+
+
     status = TdiCompile(&yExpr, &xd MDS_END_ARG);
     if(status & 1)
     {
 //Get title and yLabel, if any
     	title = recGetHelp(xd.pointer);
-	yLabel = recGetUnits(xd.pointer, 0);
+		yLabel = recGetUnits(xd.pointer, 0);
 //get Data
-	status = TdiData((struct descriptor *)&xd, &yXd MDS_END_ARG);
+		status = TdiEvaluate((struct descriptor *)&xd, &evaluatedXd MDS_END_ARG);
+		if(status & 1) status = TdiData((struct descriptor *)&evaluatedXd, &yXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
-	err = MdsGetMsg(status);
-	errD.length = strlen(err);
-	errD.pointer = err;
-	MdsCopyDxXd(&errD, &retXd);
-	return &retXd;
+		err = MdsGetMsg(status);
+		errD.length = strlen(err);
+		errD.pointer = err;
+		MdsCopyDxXd(&errD, &retXd);
+		return &retXd;
     } 
 //Get X
-    status = TdiCompile(&xExpr, &xd MDS_END_ARG);
+ 
+	if(*inX) //If an explicit expression for X has been given
+	{
+		MdsFree1Dx(&evaluatedXd, 0);
+    	status = TdiCompile(&xExpr, &xd MDS_END_ARG);
+	}
+	else
+	{
+    	status = TdiCompile(&dimExpr, &evaluatedXd, &xd MDS_END_ARG);
+		MdsFree1Dx(&evaluatedXd, 0);
+	}
     if(status & 1)
     {
 //Get xLabel, if any
-	xLabel = recGetUnits(xd.pointer, 1);
+		xLabel = recGetUnits(xd.pointer, 1);
 //get Data
-	status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
+		status = TdiData((struct descriptor *)&xd, &xXd MDS_END_ARG);
     }
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
-	err = MdsGetMsg(status);
-	errD.length = strlen(err);
-	errD.pointer = err;
-	MdsCopyDxXd(&errD, &retXd);
-	return &retXd;
+		err = MdsGetMsg(status);
+		errD.length = strlen(err);
+		errD.pointer = err;
+		MdsCopyDxXd(&errD, &retXd);
+		return &retXd;
     }
 //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
 // Y converted to float, X to int64_t or float or double
@@ -1281,7 +1310,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
 	int estimatedSamples;
 	double delta;
 	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
-printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 	if(*inXMin < 1E20)
 		currXMin = 0;
 	else
@@ -1501,7 +1530,7 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
-printf("GetXYWaveLongTimes(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYWaveLongTimes(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 
 
 //Set limits 
