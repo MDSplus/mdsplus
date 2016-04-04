@@ -22,17 +22,19 @@ class RASPI(MDSplus.Device):
         {'path':':BRIGHTNESS','type':'numeric','value':50,'options':('no_write_shot',)},
         {'path':':CONTRAST','type':'numeric','value':30,'options':('no_write_shot',)},
         {'path':':NUM_FRAMES','type':'numeric','value':60,'options':('no_write_model','write_once',)},
+        {'path':':XTR_RVD','type':'text','value':'--ISO 800 --bitrate 25000000','options':('no_write_shot',)},
+        {'path':':XTR_V4L','type':'text','value':' ','options':('no_write_shot',)},
         {'path':':TIMES','type':'axis', 'options':('write_once',)},
         {'path':':R_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
         {'path':':G_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
         {'path':':B_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
         {'path':':FRAMES','type':'signal','options':('no_write_model','write_once',)},        
-        {'path':':R_COEFF','type':'numeric','value':.3,'options':('no_write_shot',)},
-        {'path':':G_COEFF','type':'numeric','value':.3,'options':('no_write_shot',)},
-        {'path':':B_COEFF','type':'numeric','value':.3,'options':('no_write_shot',)},
+        {'path':':R_COEFF','type':'numeric','value':.299,'options':('no_write_shot',)},
+        {'path':':G_COEFF','type':'numeric','value':.587,'options':('no_write_shot',)},
+        {'path':':B_COEFF','type':'numeric','value':.114,'options':('no_write_shot',)},
         {'path':':INTENSITY','type':'signal','options':('write_once',)},
         {'path':':INIT_ACTION','type':'action',
-         'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
+         'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
          'options':('no_write_shot',)},
         {'path':':STORE_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('DATA_SERVER','STORE',50,None),Method(None,'STORE',head))",
@@ -79,18 +81,21 @@ class RASPI(MDSplus.Device):
         width=int(self.width)
         height=int(self.height)
         fps=int(self.fps)
+        extra_raspivid = str(self.xtr_rvd.record)
+        extra_v4l2_ctl = str(self.xtr_v4l.record)
+
         self.debugging = os.getenv("DEBUG_DEVICES")
         cmds = []
         if compressed:
             cmds = [
                 "/usr/local/bin/trig.py\n", 
-                "raspivid -w %d -h %d -fps %d -t %d -ss %d -br %d -co %d -o %s.h264\n" % (width, height, fps, int(float(num_frames)/fps*1000), exposure, brightness, contrast, self.fileName())]
+                "raspivid -w %d -h %d -fps %d -t %d -ss %d -br %d -co %d %s -o %s.h264\n" % (width, height, fps, int(float(num_frames)/fps*1000), exposure, brightness, contrast, extra_raspivid, self.fileName())]
             print cmds
         else:
             cmds = [
                 "v4l2-ctl --set-fmt-video=width=%d,height=%d,pixelformat=2 --set-ctrl=exposure_time_absolute=%d,brightness=%d,contrast=%d,auto_exposure=1,white_balance_auto_preset=3\n"%(width, height, exposure, brightness, contrast,),
                 "/usr/local/bin/trig.py\n", 
-                "v4l2-ctl --stream-mmap=%d --stream-count=%d --stream-to=%s.rgb\n" % (num_frames, num_frames, self.fileName())]
+                "v4l2-ctl --stream-mmap=%d --stream-count=%d %s --stream-to=%s.rgb\n" % (num_frames, num_frames, extra_v4l2_ctl, self.fileName())]
 
 	RASPI.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)
         for cmd in cmds:
