@@ -4,10 +4,14 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-from os import getenv
+import os as _os
+from os import getenv as _getenv
 _treeshr=_mimport('_treeshr')
 _treenode=_mimport('treenode')
 _compound=_mimport('compound')
+_ident=_mimport('ident')
+_mdsarray=_mimport('mdsarray')
+_mdsdata=_mimport('mdsdata')
 
 class Device(_treenode.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
@@ -84,7 +88,7 @@ class Device(_treenode.TreeNode):
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    debug = getenv('DEBUG_DEVICES')
+    debug = _getenv('DEBUG_DEVICES')
     gtkThread = None
 
     def __class_init__(cls):
@@ -185,9 +189,17 @@ class Device(_treenode.TreeNode):
         if isinstance(tree, _treenode.TreeNode): tree = tree.tree
         cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
+        if isinstance(name,_ident.Ident):
+            name=name.data()
         head=parent.addNode(name,'DEVICE')
         head=cls(head)
-        head.record=_compound.Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
+        try:
+            import_string="from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__)
+        except:
+            import_string=None
+                                                 
+                                                                
+        head.record=_compound.Conglom('__python__',cls.__name__,None,import_string)
         head.write_once=True
         import MDSplus
         glob = MDSplus.__dict__
@@ -265,3 +277,59 @@ class Device(_treenode.TreeNode):
     def waitForSetups(cls):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)
+
+
+    def importPyDeviceModule(name):
+        """Find a device support module with a case insensitive lookup of
+        'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
+
+        import __builtin__
+        import sys
+        check_name=name.lower()+".py"
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.lower() == check_name:
+                            sys.path.insert(0,dp)
+                            try:
+                                ans=__builtin__.__import__(fname[:-3])
+                            finally:
+                                sys.path.remove(dp)
+                            return ans
+    importPyDeviceModule=staticmethod(importPyDeviceModule)
+
+    def findPyDevices():
+        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        ans=list()
+        import __builtin__
+        import sys
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.endswith('.py'):
+                            sys.path.insert(0,dp)
+                            try:
+                                devnam=fname[:-3].upper()
+                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
+                                ans.append(devnam+'\0')
+                                ans.append('\0')
+                            except:
+                                pass
+                            finally:
+                                sys.path.remove(dp)
+        if len(ans) == 0:
+            return None
+        else:
+            return _mdsdata.Data.execute(str(ans))
+
+
+    findPyDevices=staticmethod(findPyDevices)
+
