@@ -1,4 +1,31 @@
-commit 9807eccdd2835f3ea12eefd5cd89ca229358d52d (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit b115207c9a1320661e64a1f9534d6efc02a08faf (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 1a67450 f49e54e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 4 15:28:49 2016 -0400
+
+    Merge pull request #437 from MDSplus/jas-raspi-update
+    
+    add generic extra string args, fix init action
+
+commit f49e54ee286c562e64bd9434e27462d38a859c71 (refs/remotes/origin/jas-raspi-update)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 14:02:24 2016 -0400
+
+    fix the default r,g,b gains
+
+commit 49d084af9265f362d9a01f68323cd51bcbc18ccc
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 09:55:10 2016 -0400
+
+    add generic extra string args, fix init action
+
+commit 1a67450496057c2525adfd7b9f8ff39b06b3d7f5 (tag: refs/tags/alpha_release-7-0-248)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Apr 1 23:24:26 2016 -0400
+
+    New release ---- alpha_release-7-0-248
+
+commit 9807eccdd2835f3ea12eefd5cd89ca229358d52d
 Merge: 332e363 43a8c6a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Apr 1 16:42:02 2016 -0400
