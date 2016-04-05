@@ -292,7 +292,7 @@ static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t * in
 							break;
 						case DTYPE_L:
 							for (i = 0; i < numDataItems; i++) {
-								uint currData, minData, maxData;
+								unsigned int currData, minData, maxData;
 								minData = maxData = ((int *)(&data[(prevTimebaseIdx) * itemSize]))[i];
 								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
 								{
