@@ -1,6 +1,6 @@
 import MDSplus
 
-class RASPI(MDSplus.Device):
+class RASPICAM(MDSplus.Device):
     """
     Device class to support raspberry pi cameras.
 
@@ -47,7 +47,7 @@ class RASPI(MDSplus.Device):
         if dir[-1] == '/':
             dir = dir[:-1]
         if self.debugging:
-            print "raspi:  dir is %s"%dir
+            print "raspicam:  dir is %s"%dir
         return "%s/%s_%d_%s"%(dir,self.local_tree,self.tree.shot,self.local_path.replace('.', '_').replace(':', '_').replace('\\', '_'),)
 
     def init(self):
@@ -67,9 +67,9 @@ class RASPI(MDSplus.Device):
         import os
         import subprocess
 
-        if RASPI.subproc :
+        if RASPICAM.subproc :
             try:
-                RASPI.subproc.terminate()
+                RASPICAM.subproc.terminate()
             except:
                 pass
 
@@ -88,21 +88,21 @@ class RASPI(MDSplus.Device):
         cmds = []
         if compressed:
             cmds = [
-                "/usr/local/bin/trig.py\n", 
+                "sudo /usr/local/bin/trig.py\n", 
                 "raspivid -w %d -h %d -fps %d -t %d -ss %d -br %d -co %d %s -o %s.h264\n" % (width, height, fps, int(float(num_frames)/fps*1000), exposure, brightness, contrast, extra_raspivid, self.fileName())]
             print cmds
         else:
             cmds = [
                 "v4l2-ctl --set-fmt-video=width=%d,height=%d,pixelformat=2 --set-ctrl=exposure_time_absolute=%d,brightness=%d,contrast=%d,auto_exposure=1,white_balance_auto_preset=3\n"%(width, height, exposure, brightness, contrast,),
-                "/usr/local/bin/trig.py\n", 
+                "sudo usr/local/bin/trig.py\n", 
                 "v4l2-ctl --stream-mmap=%d --stream-count=%d %s --stream-to=%s.rgb\n" % (num_frames, num_frames, extra_v4l2_ctl, self.fileName())]
 
-	RASPI.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)
+	RASPICAM.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)
         for cmd in cmds:
             if self.debugging:
                 print cmd
-            RASPI.subproc.stdin.write(cmd)
-        RASPI.subproc.stdin.flush()
+            RASPICAM.subproc.stdin.write(cmd)
+        RASPICAM.subproc.stdin.flush()
         return 1
 
     INIT=init
