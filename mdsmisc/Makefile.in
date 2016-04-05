@@ -45,7 +45,7 @@ install: $(libdir)
 	fi;
 
 @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXTreeShr
 
 @MAKELIBDIR@@LIBPRE@MdsMisc.a : $(OBJECTS)
 	$(AR) -cr $@ $^
