@@ -1,4 +1,5 @@
 from MDSplus import Data, Tree, Device
+from MDSplus.mdsExceptions import DevPYDEVICE_NOT_FOUND
 import sys
 def DevAddPythonDevice(path, model):
     """Add a python device to the tree by:
@@ -19,7 +20,6 @@ def DevAddPythonDevice(path, model):
             mod.__dict__[model].Add(Tree(), path)
             return 1
         except:
-            raise
             print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
             return 0
         
@@ -33,13 +33,9 @@ def DevAddPythonDevice(path, model):
             package = models[idx+1].data()
             package = package[0:package.find('\0')]
             if model == modname:
-                try:
-                    __import__(package).__dict__[model].Add(Tree(), path)
-                    return 1
-                except:
-                    print ("Error adding device instance of %s from %s: %s" % (modname, package, sys.exc_info()[1]))
-                    return 0
+                __import__(package).__dict__[model].Add(Tree(), path)
+                return 1
         except:
             pass
-    return 0
+    return DevPYDEVICE_NOT_FOUND.status
     

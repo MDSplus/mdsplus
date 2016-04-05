@@ -286,19 +286,20 @@ class Device(_treenode.TreeNode):
         import __builtin__
         import sys
         check_name=name.lower()+".py"
-        path=_os.environ["MDS_PYDEVICE_PATH"]
-        parts=path.split(';')
-        for part in parts:
-            w=_os.walk(part)
-            for dp,dn,fn in w:
-                for fname in fn:
-                    if fname.lower() == check_name:
-                        sys.path.insert(0,dp)
-                        try:
-                            ans=__builtin__.__import__(fname[:-3])
-                        finally:
-                            sys.path.remove(dp)
-                        return ans
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.lower() == check_name:
+                            sys.path.insert(0,dp)
+                            try:
+                                ans=__builtin__.__import__(fname[:-3])
+                            finally:
+                                sys.path.remove(dp)
+                            return ans
     importPyDeviceModule=staticmethod(importPyDeviceModule)
 
     def findPyDevices():
@@ -306,23 +307,24 @@ class Device(_treenode.TreeNode):
         ans=list()
         import __builtin__
         import sys
-        path=_os.environ["MDS_PYDEVICE_PATH"]
-        parts=path.split(';')
-        for part in parts:
-            w=_os.walk(part)
-            for dp,dn,fn in w:
-                for fname in fn:
-                    if fname.endswith('.py'):
-                        sys.path.insert(0,dp)
-                        try:
-                            devnam=fname[:-3].upper()
-                            device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
-                            ans.append(devnam+'\0')
-                            ans.append('\0')
-                        except:
-                            pass
-                        finally:
-                            sys.path.remove(dp)
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.endswith('.py'):
+                            sys.path.insert(0,dp)
+                            try:
+                                devnam=fname[:-3].upper()
+                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
+                                ans.append(devnam+'\0')
+                                ans.append('\0')
+                            except:
+                                pass
+                            finally:
+                                sys.path.remove(dp)
         if len(ans) == 0:
             return None
         else:
