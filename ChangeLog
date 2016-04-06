@@ -1,4 +1,114 @@
-commit b115207c9a1320661e64a1f9534d6efc02a08faf (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8281793899555bb0af1a2117b46359bd0b132caf (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: eea9483 2c2a94a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 12:42:18 2016 -0400
+
+    Merge pull request #438 from MDSplus/twf-add-pydevice-path-devices
+    
+    Twf add pydevice path devices
+
+commit 2c2a94a071056b4d6090bfa73e9b467429f9c3a6 (refs/remotes/origin/twf-add-pydevice-path-devices)
+Merge: f80d3e6 eea9483
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 12:01:37 2016 -0400
+
+    Merge branch 'alpha' into twf-add-pydevice-path-devices
+
+commit eea94838fa352861da5cc04741c3fc770a6313de
+Merge: 9005d7f 869f0a2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 12:01:20 2016 -0400
+
+    Merge pull request #439 from MDSplus/jas-rename-raspi
+    
+    rename raspi to raspicam, add sudo to trig
+
+commit 869f0a25fc363f6675c43d0bbf4710e6aa2334d4 (refs/remotes/origin/jas-rename-raspi)
+Merge: f0be044 9005d7f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:47:35 2016 -0400
+
+    Merge branch 'alpha' into jas-rename-raspi
+
+commit 9005d7ff4e0b573a01c315a9e48dd9caece1db94
+Merge: 04ec163 badfd9d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:47:10 2016 -0400
+
+    Merge pull request #441 from MDSplus/huge-signals
+    
+    Huge signals
+
+commit f80d3e6b935cb0e18dae4787b8ac5ea93633cf88
+Merge: 6331c2b eef45cf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:37:07 2016 -0400
+
+    Merge branch 'twf-add-pydevice-path-devices' of github.com:/MDSplus/mdsplus into twf-add-pydevice-path-devices
+
+commit 6331c2b0f25b43c717034ae942a370f8dc31af7b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:34:50 2016 -0400
+
+    Avoid error message from trying to add C-base device before python devices
+
+commit eef45cf3fc2c06b5df8f0732aceb0e156acd34f5
+Merge: 0c796f2 04ec163
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:14:07 2016 -0400
+
+    Merge branch 'alpha' into twf-add-pydevice-path-devices
+
+commit 0c796f2de43d77785bda6f5725de19866f4c3a25
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:13:12 2016 -0400
+
+    Fix add of C-based device support and more cleanup of device add
+
+commit badfd9d7217b1f13ca4a1bd21eec7da17e26934f (refs/remotes/origin/huge-signals)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Apr 5 14:19:29 2016 +0200
+
+    Remove uint
+
+commit 6f4824bbeb071ce499efd88eac94f57a210f0059
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Apr 4 15:13:09 2016 +0200
+
+    Added support for huge signals
+
+commit 6ad3d9762c35d770a1cde4987657771b5665f1e4
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 25 09:03:12 2016 +0100
+
+    Handle huge signals
+
+commit 57446ddc53b50b9f2db433dfb509f7a6815b6ce4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 24 13:58:17 2016 -0400
+
+    Add TreeGetSegmentTimesXd
+
+commit 04ec163332cb62a26db0db39e5d541a6741e05d3 (tag: refs/tags/alpha_release-7-0-249)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Apr 4 23:24:31 2016 -0400
+
+    New release ---- alpha_release-7-0-249
+
+commit f0be0442c5336a94cf6fae88f50d516204ed813a
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 16:32:50 2016 -0400
+
+    change the device name in __init__
+    :
+
+commit 642a8abff57290045dcc868b460d5ab9356e2370
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 16:12:45 2016 -0400
+
+    rename raspi to raspicam, add sudo to trig
+
+commit b115207c9a1320661e64a1f9534d6efc02a08faf
 Merge: 1a67450 f49e54e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Apr 4 15:28:49 2016 -0400
@@ -6,6 +116,18 @@ Date:   Mon Apr 4 15:28:49 2016 -0400
     Merge pull request #437 from MDSplus/jas-raspi-update
     
     add generic extra string args, fix init action
+
+commit 9bf8ad3160bbfa7525776d1a1c6d3c89c8f8ab9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 4 14:40:39 2016 -0400
+
+    Support no pydevice devices
+
+commit f7f19d814e2251828f854104558ccd48a1b05334
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 4 14:32:59 2016 -0400
+
+    Add support for devices in MDS_PYDEVICE_PATH search list
 
 commit f49e54ee286c562e64bd9434e27462d38a859c71 (refs/remotes/origin/jas-raspi-update)
 Author: Josh Stillerman <jas@psfc.mit.edu>
