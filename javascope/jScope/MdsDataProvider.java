@@ -401,8 +401,46 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
-            this(in_y,null,experiment,shot);
-        }
+            this.wd_experiment = experiment;
+            this.wd_shot = shot;
+            if(checkForAsynchRequest(in_y))
+            {
+               this.in_y = "[]";
+               this.in_x = "[]";
+            }
+            else
+            {
+                this.in_y = in_y;
+            }
+            v_idx = var_idx;
+            var_idx+=2;
+            if(segmentMode == SEGMENTED_UNKNOWN)
+            {
+                Vector args = new Vector();
+                String fixedY = in_y;
+                fixedY.replaceAll("\\\\", "\\\\\\\\");
+                args.addElement(new Descriptor(null, fixedY));
+                try {
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    if(retData[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+
+ /*                   
+ //                   int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+ //                   if(numSegments[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+ */               }
+                catch(Exception exc)
+                {
+                    error = null;
+                    segmentMode = SEGMENTED_UNKNOWN;
+                }
+            }
+         }
 
         public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
         {
@@ -418,7 +456,7 @@ public class MdsDataProvider
                 this.in_y = in_y;
                 this.in_x = in_x;
             }
-            v_idx = var_idx;
+           v_idx = var_idx;
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
@@ -431,7 +469,12 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
+/*                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+                    if(numSegments[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+*/                }catch(Exception exc)
                 {
                     error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
@@ -960,6 +1003,10 @@ public class MdsDataProvider
                 this.simpleWaveData = simpleWaveData;
                 this.isXLong = isXLong;
                 this.updateTime = updateTime;
+System.out.println(updateLowerBound);
+System.out.println(updateUpperBound);
+if(updateLowerBound == updateUpperBound)
+    System.out.println("BOMBA");
             }
         }
         boolean enabled = true;
@@ -2159,4 +2206,3 @@ public class MdsDataProvider
     }
 
 }
-
