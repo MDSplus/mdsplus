@@ -1641,6 +1641,18 @@ public class MultiWaveform
 
       repaint();
     }
-
-
+/*
+    void freeze()
+    {
+        for(int i = 0; i < signals.size(); i++)
+            ( (Signal) signals.elementAt(i)).freeze();
+        waveform_signal.freeze();
+    }
+   void unfreeze()
+    {
+        for(int i = 0; i < signals.size(); i++)
+            ( (Signal) signals.elementAt(i)).unfreeze();
+        waveform_signal.unfreeze();
+    }
+*/
 }

@@ -1393,7 +1393,11 @@ public class WaveInterface
             out_signal.setMode1D( (int) mode1D[curr_wave]);
  
         if (wd != null)
-            title = wd.GetTitle();
+        {
+            try {
+                title = wd.GetTitle();
+            }catch(Exception exc){}
+        }
 
 
         if (up_err != null && low_err != null)
@@ -1404,8 +1408,10 @@ public class WaveInterface
 
         if (wd != null)
         {
-             xlabel = wd.GetXLabel();
-             ylabel = wd.GetYLabel();
+            try {
+                xlabel = wd.GetXLabel();
+                ylabel = wd.GetYLabel();
+            }catch(Exception exc){}
         }
         out_signal.setLabels(title, xlabel, ylabel, zlabel);
         return out_signal;

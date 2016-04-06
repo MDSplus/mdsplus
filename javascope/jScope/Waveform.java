@@ -2458,7 +2458,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     else {
       undo_zoom.removeElement(r);
       if(undo_zoom.size() == 0)
-          waveform_signal.unfreeze();
+          unfreeze();
     }
     //GABRIELE AUGUST 2014
     setXlimits((double)r.start_xs, (double)r.end_xs);
@@ -2467,7 +2467,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
     change_limits = true;
     if(add_undo)
-        waveform_signal.freeze();
+        freeze();
 
   }
 
@@ -2480,7 +2480,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
         return;
       }
       waveform_signal.Autoscale();
-      waveform_signal.unfreeze();
+      unfreeze();
     }
     ReportChanges();
   }
@@ -2543,7 +2543,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     }
     waveform_signal.ResetScales();
     undo_zoom.clear();
-    waveform_signal.unfreeze();
+    unfreeze();
     ReportChanges();
   }
 
@@ -2815,4 +2815,15 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       not_drawn = true;
       repaint();
   }
+  
+  void freeze()
+  {
+      waveform_signal.freeze();
+  }
+ void unfreeze()
+  {
+      waveform_signal.unfreeze();
+  }
+  
+  
 }
