@@ -38,7 +38,7 @@ public class Signal implements WaveDataListener
     static final int FUSO = 0;
 
     
-    boolean debug = true;
+    boolean debug = false;
  
     /**
      * String vector of markers name.
