@@ -417,8 +417,7 @@ public class MdsDataProvider
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
                 Vector args = new Vector();
-                String fixedY = in_y;
-                fixedY.replaceAll("\\\\", "\\\\\\\\");
+                String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
                     byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
