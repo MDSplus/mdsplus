@@ -109,28 +109,36 @@ class Device(_treenode.TreeNode):
 
     def __new__(cls,node):
         """Create class instance. Initialize part_dict class attribute if necessary.
-        @param node: Not used
+        @param node: Node of device
         @type node: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
         if cls.__name__ == 'Device':
+            try:
+                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
+                model=str(head.record.model)
+                return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
+            except:
+                pass
             raise TypeError("Cannot create instances of Device class")
-        cls.__class_init__();
-        return super(Device,cls).__new__(cls)
+        else:
+            cls.__class_init__();
+            return super(Device,cls).__new__(cls,node)
 
-    def __init__(self,node):
+    def __init__(self,node,tree=None):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
         @rtype: None
         """
-        try:
-            self.nids=node.conglomerate_nids.nid_number
-            self.head=int(self.nids[0])
-        except Exception:
-            self.head=node.nid
-        super(Device,self).__init__(node.nid,node.tree)
+        if isinstance(node,_treenode.TreeNode):
+            try:
+                self.nids=node.conglomerate_nids.nid_number
+                self.head=int(self.nids[0])
+            except Exception:
+                self.head=node.nid
+            super(Device,self).__init__(node.nid,node.tree)
 
     def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
