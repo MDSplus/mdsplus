@@ -44,7 +44,6 @@ TclShowData
 TclShowDB
 TclShowDefault
 TclDispatch_show_server
-TclShowVersion
 TclShowVersions
 TclDispatch_start_server
 TclDispatch_stop_server
