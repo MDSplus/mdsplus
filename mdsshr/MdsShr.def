@@ -91,3 +91,6 @@ libgetvm
 libgetvm_
 LibFindImageSymbol_C
 MdsGetStdMsg
+UdpEventGetLoop
+InitializeEventSettings
+
