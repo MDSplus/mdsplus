@@ -1,6 +1,7 @@
 #include <config.h>
 #ifdef _WIN32
 #include <ws2tcpip.h>
+#define SHUT_RDWR SD_BOTH
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
