@@ -467,8 +467,8 @@ build_windows() {
     set -e
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
-    JNI_INCLUDE_DIR=${SRCDIR}/3rd-party-apis-master/windows-jdk
-    JNI_MD_INCLUDE_DIR=${SRCDIR}/3rd-party-apis-master/windows-jdk/win32
+    JNI_INCLUDE_DIR=${SRCDIR}/3rd-party-apis/windows-jdk
+    JNI_MD_INCLUDE_DIR=${SRCDIR}/3rd-party-apis/windows-jdk/win32
     MDSPLUS_DIR=${WORKSPACE}/buildroot;
     MDS_PATH=${MDSPLUS_DIR}/tdi;
     mkdir -p ${WORKSPACE}/64;
@@ -480,7 +480,7 @@ build_windows() {
 	     --bindir=${MDSPLUS_DIR}/bin_x86_64 \
 	     --libdir=${MDSPLUS_DIR}/bin_x86_64 \
 	     --host=x86_64-w64-mingw32 \
-	     --with-labview=${SRCDIR}/3rd-party-apis-master/labview \
+	     --with-labview=${SRCDIR}/3rd-party-apis/labview \
 	     --with-java_target=6 \
 	     --with-java_bootclasspath=${SRCDIR}/rt.jar
     $MAKE
@@ -499,7 +499,7 @@ build_windows() {
 	     --bindir=${MDSPLUS_DIR}/bin_x86 \
 	     --libdir=${MDSPLUS_DIR}/bin_x86 \
 	     --host=i686-w64-mingw32 \
-	     --with-labview=${SRCDIR}/3rd-party-apis-master/labview \
+	     --with-labview=${SRCDIR}/3rd-party-apis/labview \
 	     --with-java_target=6 \
 	     --with-java_bootclasspath=${SRCDIR}/rt.jar
     $MAKE
