@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #ifdef _WIN32
+#include <windows.h>
 #define syscall(__NR_gettid) GetCurrentThreadId()
 #else
 #include <sys/syscall.h>

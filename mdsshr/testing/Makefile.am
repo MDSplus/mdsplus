@@ -6,7 +6,7 @@ include ../../testing/testing.am
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-LDADD = @LIBS@ $(TEST_LIBS) -lMdsShr
+LDADD = @LIBS@ $(TEST_LIBS) @SOCKETLIB@ -lMdsShr
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
