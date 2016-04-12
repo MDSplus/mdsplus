@@ -712,6 +712,10 @@ else
 		then
 		    signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
 		fi
+		if [ ! -z "$WINBLD" ]
+		then
+		    winbld_volume="-v ${WINBLD):/winbld
+                fi
 		docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
 		       --pid=host \
 		       -t \
@@ -720,6 +724,7 @@ else
 		       -v ${SRCDIR}:/mdsplus/source \
 		       -v ${WORKSPACE}:${WORKSPACE} \
 		       ${installer_volume} \
+                       ${winbld_volume} \
 		       -e "WORKSPACE=${WORKSPACE}" \
 		       -e "SRCDIR=${SRCDIR}" \
 		       -e "LAST_IMAGE=${LAST_IMAGE}" \
