@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #ifdef _WIN32
+#include <winsock2.h>
 #include <windows.h>
 #define syscall(__NR_gettid) GetCurrentThreadId()
 #else
