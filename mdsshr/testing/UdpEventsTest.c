@@ -4,7 +4,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#ifdef _WIN32
+#define syscall(__NR_gettid) GetCurrentThreadId()
+#else
 #include <sys/syscall.h>
+#endif
 #include <time.h>
 
 #include <stdarg.h>

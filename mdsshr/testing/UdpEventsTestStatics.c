@@ -1,6 +1,10 @@
 #include <unistd.h>
 #include <stdarg.h>
-#include <syscall.h>
+#ifdef _WIN32
+#define syscall(__NR_gettid) GetCurrentThreadId()
+#else
+#include <sys/syscall.h>
+#endif
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>

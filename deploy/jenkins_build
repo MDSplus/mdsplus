@@ -465,6 +465,8 @@ windows_cleanup() {
 
 build_windows() {
     set -e
+    tests_64=0
+    tests_32=0
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
     JNI_INCLUDE_DIR=${SRCDIR}/3rd-party-apis/windows-jdk
@@ -487,8 +489,11 @@ build_windows() {
     $MAKE install
     if [ "${TESTS}" = "yes" ]
     then
+	  set +e
 	  echo " --- MAKING TESTS 64bit --- "
 	  $MAKE -k tests TEST_FORMAT=tap
+	  tests_64=$?
+	  set -e
     fi
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p ${WORKSPACE}/32;
@@ -506,8 +511,11 @@ build_windows() {
     $MAKE install
     if [ "${TESTS}" = "yes" ]
     then
+	  set +e
 	  echo " --- MAKING TESTS 32bit --- "
 	  $MAKE -k tests TEST_FORMAT=tap
+	  tests_32=$?
+	  set -e
     fi
     cd /winbld
     tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
@@ -527,9 +535,22 @@ build_windows() {
     pushd ${MDSPLUS_DIR}
     tar zcf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz .
     popd
+    tests_failed=0
+    if [ "$tests_64" != "0" ]
+    then
+	tests_failed=1
+	echo "64-bit tests failed"
+    fi
+    if [ "$tests_32" != "0" ]
+    then
+	tests_failed=1
+	echo "64-bit tests failed"
+    fi
+    exit $tests_failed
 }
 
 publish_windows() {
+    set -e
     INSTALLER_DIR=${DISTDIR}/${DIST}
     mkdir -p ${INSTALLER_DIR}
     tar zxf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz
