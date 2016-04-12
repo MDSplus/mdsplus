@@ -1,4 +1,25 @@
-commit 8281793899555bb0af1a2117b46359bd0b132caf (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 80349067817e23e07e28dd7974c6fca674a853ac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 73aad37 a335710
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 11 12:58:49 2016 -0400
+
+    Merge pull request #443 from MDSplus/twf-treenode-to-pydevice
+    
+    TreeNode instance creation returns a pydevice if node is a pydevice d…
+
+commit a33571087bf4eb6d0097b8700d4c7e8d6b0a28d4 (refs/remotes/origin/twf-treenode-to-pydevice)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 11 11:18:10 2016 -0400
+
+    TreeNode instance creation returns a pydevice if node is a pydevice device type.
+
+commit 73aad370b14f60b4bcfd178ce972bcfb7f70ce58 (tag: refs/tags/alpha_release-7-0-250)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Apr 5 23:24:31 2016 -0400
+
+    New release ---- alpha_release-7-0-250
+
+commit 8281793899555bb0af1a2117b46359bd0b132caf
 Merge: eea9483 2c2a94a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Apr 5 12:42:18 2016 -0400
