@@ -451,7 +451,7 @@ Architectures: ${arches}
 Components: alpha stable local twfbld
 Description: MDSplus packages
 EOF
-    if [ -d /root/.gnupg ]
+    if [ -d ${HOME}/.gnupg ]
     then 
 	echo "SignWith: MDSplus" >> ${INSTALLER_DIR}/repo/conf/distributions
     fi
@@ -573,6 +573,7 @@ set -e
 set -xv
 if [ -f /.dockerinit ]
 then
+    export HOME=${WORKSPACE}
     source build.conf
     if [ "$(echo ${DIST} | grep -c 32)" = "1" -o "$(echo ${DIST} | grep -c 64)" = "1" ]
     then
@@ -710,7 +711,7 @@ else
 		fi;
 		if [ ! -z "$SIGN_KEYS" ]
 		then
-		    signkeys="-v ${SIGN_KEYS}/.gnupg:/root/.gnupg"
+		    signkeys="-v ${SIGN_KEYS}/.gnupg:${WORKSPACE}/.gnupg"
 		fi
 		if [ ! -z "$WINBLD" ]
 		then
