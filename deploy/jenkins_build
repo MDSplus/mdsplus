@@ -520,7 +520,7 @@ build_windows() {
     popd
     cd /winbld
     tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
-#    trap windows_cleanup EXIT
+    trap windows_cleanup EXIT
     topsrcdir=${WINBLD_REMDIR}/${tmpdir}
     cd ${tmpdir}
     rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${SRCDIR}/ ./
@@ -727,6 +727,7 @@ else
 		       ${installer_volume} \
                        ${winbld_volume} \
                        -e "WINBLD_HOST=${WINBLD_HOST}" \
+		       -e "WINBLD_REMDIR=${WINBLD_REMDIR}" \
 		       -e "WORKSPACE=${WORKSPACE}" \
 		       -e "SRCDIR=${SRCDIR}" \
 		       -e "LAST_IMAGE=${LAST_IMAGE}" \
