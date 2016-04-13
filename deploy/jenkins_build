@@ -524,6 +524,7 @@ build_windows() {
     topsrcdir=${WINBLD_REMDIR}/${tmpdir}
     cd ${tmpdir}
     rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${SRCDIR}/ ./
+    rsync -am ${WORKSPACE}/64/include/config.h ./include/
     rsync -a ${SRCDIR}/mdsobjects/cpp ${SRCDIR}/mdsobjects/MdsObjects* ${SRCDIR}/mdsobjects/VS-* ./mdsobjects/
     rsync -a ${SRCDIR}/deploy/winbld.bat ./deploy/
     rsync -a ${MDSPLUS_DIR}/bin_* ./
