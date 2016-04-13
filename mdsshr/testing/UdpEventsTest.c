@@ -82,7 +82,10 @@ int main(int argc, char **args)
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
     
-    BEGIN_TESTING(UdpEvents); 
+    BEGIN_TESTING(UdpEvents);
+#ifdef _WIN32
+    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
+#endif
     int status;
     int i,iterations,ev_id;
     char *eventname = alloca(100);

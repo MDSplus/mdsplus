@@ -66,6 +66,9 @@ static void getMulticastAddr(char const *eventName, char *retIp);
 ///
 void test_initialize() {
     BEGIN_TESTING(UdpEvents initialize);
+#ifdef _WIN32
+    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
+#endif
     initialize();
     initialize();
     initialize();
@@ -84,6 +87,9 @@ void test_initialize() {
 /// 
 void test_handleMessage() {
     BEGIN_TESTING(UdpEvents handleMessage);
+#ifdef _WIN32
+    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
+#endif
             
     char * eventName = new_unique_event_name("test_event");
     //    char * eventName = strdup("event");
@@ -166,6 +172,9 @@ static void *_push_handler(void *arg) {
 
 void test_pushEvent() {
     BEGIN_TESTING(UpdEvents pushEvent);
+#ifdef _WIN32
+    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
+#endif
     printf("pushEvent test\n");
     int i;
     for(i=0; i<10; ++i)
@@ -184,6 +193,9 @@ static void *_pop_handler(void *arg) {
 
 void test_popEvent() {
     BEGIN_TESTING(UpdEvents popEvent);
+#ifdef _WIN32
+    SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
+#endif
     printf("popEvent test\n");
     int i;
     for(i=0; i<10; ++i)
