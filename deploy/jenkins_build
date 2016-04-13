@@ -716,7 +716,7 @@ else
 		if [ ! -z "$WINBLD" ]
 		then
 		    winbld_volume="-v ${WINBLD}:/winbld"
-		    winbld_host=" -e "WINBLD_HOST=${WINBLD_HOST}"
+		    winbld_host='-e "WINBLD_HOST=${WINBLD_HOST}"'
                 fi
 		docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
 		       --pid=host \
