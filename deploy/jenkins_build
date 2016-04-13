@@ -519,7 +519,7 @@ build_windows() {
     fi
     cd /winbld
     tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
-    trap cleanup EXIT
+    trap windows_cleanup EXIT
     topsrcdir=${WINBLD_REMDIR}/${tmpdir}
     cd ${tmpdir}
     rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" ${SRCDIR}/ ./
@@ -716,7 +716,6 @@ else
 		if [ ! -z "$WINBLD" ]
 		then
 		    winbld_volume="-v ${WINBLD}:/winbld"
-		    winbld_host='-e "WINBLD_HOST=${WINBLD_HOST}"'
                 fi
 		docker run --name="${JOB_NAME}${BUILD_NUMBER}" \
 		       --pid=host \
@@ -727,7 +726,7 @@ else
 		       -v ${WORKSPACE}:${WORKSPACE} \
 		       ${installer_volume} \
                        ${winbld_volume} \
-                       ${winbld_host} \
+                       -e "WINBLD_HOST=${WINBLD_HOST}" \
 		       -e "WORKSPACE=${WORKSPACE}" \
 		       -e "SRCDIR=${SRCDIR}" \
 		       -e "LAST_IMAGE=${LAST_IMAGE}" \
