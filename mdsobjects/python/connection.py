@@ -1,5 +1,6 @@
 import ctypes as _C
 import numpy as _N
+from threading import RLock as _RLock
 
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
@@ -149,6 +150,7 @@ class Connection(object):
       if self.socket == -1:
         raise Exception("Error connecting to %s" % (hostspec,))
       self.hostspec=hostspec
+      self.lock=_RLock()
 
     def __del__(self):
         DisconnectFromMds(self.socket)
@@ -256,19 +258,23 @@ class Connection(object):
         @return: result of evaluating the expression on the remote server
         @rtype: Scalar or Array
         """
-        if 'arglist' in kwargs:
+        try:
+          self.lock.acquire()
+          if 'arglist' in kwargs:
             args=kwargs['arglist']
-        num=len(args)+1
-        idx=0
-        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp.encode()))
-        if not ((status & 1)==1):
+          num=len(args)+1
+          idx=0
+          status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp.encode()))
+          if not ((status & 1)==1):
             raise MdsException(MdsGetMsg(status))
-        #self.__sendArg__(exp,idx,num)
-        for arg in args:
+          #self.__sendArg__(exp,idx,num)
+          for arg in args:
             idx=idx+1
             self.__sendArg__(arg,idx,num)
-        return self.__getAnswer__()
-    
+          ans = self.__getAnswer__()
+        finally:
+          self.lock.release()
+        return ans
 
     def setDefault(self,path):
         """Change the current default tree location on the remote server
