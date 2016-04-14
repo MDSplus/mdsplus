@@ -1,4 +1,25 @@
-commit 3e8ef5b240a3b07622028f9eba95b6d0d348893e (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit 706416e91e8d2133ebd0c74ff152d39d129e984f (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Merge: cb0169b 4589dd6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 11:34:40 2016 -0400
+
+    Merge pull request #446 from MDSplus/twf-py-connection-thread-locking-stable
+    
+    Add thread locking to the get method of a Connection object which wil…
+
+commit 4589dd607d4baabb22d0a1fdc99f5244eef4587a (refs/remotes/origin/twf-py-connection-thread-locking-stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 11:13:13 2016 -0400
+
+    Add thread locking to the get method of a Connection object which will enable multiple threads to use a single connection object safely.
+
+commit cb0169b48fe82ca733d091f75f307e1d07174605 (tag: refs/tags/stable_release-7-0-69)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Apr 1 18:02:24 2016 -0400
+
+    New release ---- stable_release-7-0-69
+
+commit 3e8ef5b240a3b07622028f9eba95b6d0d348893e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Apr 1 08:26:45 2016 -0400
 
