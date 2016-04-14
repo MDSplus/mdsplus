@@ -10,6 +10,7 @@ from tests.treeUnitTest import treeTests
 from tests.threadsUnitTest import suite as threadsSuite
 from tests.dataUnitTest import suite as dataSuite
 from tests.exceptionUnitTest import exceptionTests
+from tests.connectionUnitTest import suite as connectionsSuite
 from _mdsshr import setenv,getenv
 
 import os
@@ -72,6 +73,7 @@ def test_all(*arg):
         tests.append(threadsSuite())
     tests.append(dataSuite())
     tests.append(exceptionTests())
+    tests.append(connectionsSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
     return TestSuite(tests)
 

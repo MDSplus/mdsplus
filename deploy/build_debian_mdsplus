@@ -79,6 +79,7 @@ if (( "$#" ))
 then
     echo Doing tests: $@
     export LIBDIR=lib
+    export BINDIR=bin
     chmod a+x ./deploy/do_tests
     ./deploy/do_tests $@
 fi

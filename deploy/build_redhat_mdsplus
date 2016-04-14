@@ -96,6 +96,7 @@ make install
  then
     echo Doing tests: $@
     export LIBDIR=lib64
+    export BINDIR=bin64
     chmod a+x ./deploy/do_tests
     ./deploy/do_tests $@
  fi

@@ -144,7 +144,10 @@ class Connection(object):
       self.lock=_RLock()
 
     def __del__(self):
-        _DisconnectFromMds(self.socket)
+        try:
+            _DisconnectFromMds(self.socket)
+        except:
+            pass
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
