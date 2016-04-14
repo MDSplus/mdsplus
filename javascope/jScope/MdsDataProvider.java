@@ -401,8 +401,45 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
-            this(in_y,null,experiment,shot);
-        }
+            this.wd_experiment = experiment;
+            this.wd_shot = shot;
+            if(checkForAsynchRequest(in_y))
+            {
+               this.in_y = "[]";
+               this.in_x = "[]";
+            }
+            else
+            {
+                this.in_y = in_y;
+            }
+            v_idx = var_idx;
+            var_idx+=2;
+            if(segmentMode == SEGMENTED_UNKNOWN)
+            {
+                Vector args = new Vector();
+                String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
+                args.addElement(new Descriptor(null, fixedY));
+                try {
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
+                    if(retData[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+
+ /*                   
+ //                   int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+ //                   if(numSegments[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+ */               }
+                catch(Exception exc)
+                {
+                    error = null;
+                    segmentMode = SEGMENTED_UNKNOWN;
+                }
+            }
+         }
 
         public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
         {
@@ -418,7 +455,7 @@ public class MdsDataProvider
                 this.in_y = in_y;
                 this.in_x = in_x;
             }
-            v_idx = var_idx;
+           v_idx = var_idx;
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
@@ -431,7 +468,12 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
+/*                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+                    if(numSegments[0] > 0)
+                        segmentMode = SEGMENTED_YES;
+                    else
+                        segmentMode = SEGMENTED_NO;
+*/                }catch(Exception exc)
                 {
                     error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
@@ -686,39 +728,14 @@ public class MdsDataProvider
                     yExpr =  in_y;
                     xExpr = in_x;
                 }
-            }
-//             try   {
-/*                 
-                String setTimeContext;
-                if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
-                    setTimeContext = "SetTimeContext(*,*,*);";
-                else if(xmin == -Double.MAX_VALUE)
-                {
-                    if(isLong)
-                        setTimeContext = "SetTimeContext(*, QUADWORD("+(long)xmax+"Q), *);";
-                    else
-                         setTimeContext = "SetTimeContext(*, "+xmax+", *);";
-               }
-               else if(xmax == Double.MAX_VALUE)
-               {
-                    if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),*, *);";
-                    else
-                         setTimeContext = "SetTimeContext("+xmin+",*, *);";
-               }
-                else
-                {
-                    if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),QUADWORD("+(long)xmax+"Q), *);";
-                    else
-                         setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
-               }
- */                
-            
+            }            
             
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
-                args.addElement(new Descriptor(null, xExpr));
+                if(in_x == null)
+                    args.addElement(new Descriptor(null, ""));
+                else
+                    args.addElement(new Descriptor(null, xExpr));
                 
                 if(isLong)
                 {
@@ -734,7 +751,7 @@ public class MdsDataProvider
                 byte[] retData;
                 int nSamples;
                 try {
-           //If the requeated number of mounts is Integer.MAX_VALUE, force the old way of getting data
+           //If the requeated number of points is Integer.MAX_VALUE, force the old way of getting data
                     if(numPoints == Integer.MAX_VALUE)
                         throw new Exception("Use Old Method for getting data");
                     if(isLong)
@@ -850,7 +867,7 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-                 //System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
@@ -2184,4 +2201,3 @@ public class MdsDataProvider
     }
 
 }
-
