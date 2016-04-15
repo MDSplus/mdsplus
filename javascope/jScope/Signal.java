@@ -546,6 +546,7 @@ public class Signal implements WaveDataListener
         this.data = data;
         this.x_data = x_data;
         
+        
         try {
             checkData(saved_xmin, saved_xmax);
             
@@ -555,11 +556,11 @@ public class Signal implements WaveDataListener
                 saved_xmax = this.xmax;
             
            
-            data.addWaveDataListener(this);
         }catch(Exception exc)
         {
             System.out.println("Signal exception: " + exc);
         }
+        data.addWaveDataListener(this);
    }
     
     public Signal(WaveData data, double xmin, double xmax)
@@ -2014,7 +2015,10 @@ public class Signal implements WaveDataListener
     
     void checkData(double xMin, double xMax) throws Exception
     {
-        int numDimensions = data.getNumDimension();
+        int numDimensions;
+        try {
+            numDimensions = data.getNumDimension();
+        }catch(Exception exc){numDimensions = 1;}
         if(numDimensions == 1)
         {
             type = TYPE_1D;
@@ -2453,7 +2457,7 @@ public class Signal implements WaveDataListener
 
     public void setXLimits(double xmin, double xmax, int mode)
     {
-        if(freezeMode != NOT_FREEZED) //If adding samples when freezed
+/*        if(freezeMode != NOT_FREEZED) //If adding samples when freezed
         {
             if(xmin >= this.xmin && xmax <= this.xmax)
             {
@@ -2462,7 +2466,7 @@ public class Signal implements WaveDataListener
             }
             return;
         }    
-            
+ */           
         xLimitsInitialized = true;
         if(xmin != -Double.MAX_VALUE)
         {
@@ -3086,7 +3090,8 @@ public class Signal implements WaveDataListener
     {
         
         if(regX == null || regX.length == 0) return;
-        if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
+        if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size() +
+                " new data len:"+regX.length + " XMIN:"+regX[0]+"  XMAX: "+regX[regX.length-1]);
         if(freezeMode != NOT_FREEZED) //If zooming in ANY part of the signal
         {
              pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true, regX[0], regX[regX.length - 1]));
@@ -3146,11 +3151,18 @@ public class Signal implements WaveDataListener
             pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true));
             return;
         }
-        if(freezeMode == FREEZED_SCROLL) //If zooming the end of the signal do the update keeing the width of the zoomed region
+/*        if(freezeMode == FREEZED_SCROLL) //If zooming the end of the signal do the update keeing the width of the zoomed region
         {
             double delta = regX[regX.length - 1] - regX[0];
             xmin += delta;
             xmax += delta;  
+        }
+*/        
+        if(freezeMode == FREEZED_SCROLL) //If zooming the end of the signal do the update keeing the width of the zoomed region
+        {
+            double delta = xmax - xmin;
+            xmax = regX[regX.length - 1];
+            xmin = xmax - delta;
         }
         
         if(xLong == null) //First data chunk
@@ -3201,8 +3213,8 @@ public class Signal implements WaveDataListener
             }
             if(regX[0] >= xLong[xLong.length - 1]) //Data are being appended
             {
+                double delta =  newX[newX.length - 1] - xmax;
                 resolutionManager.appendRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
-                double delta =  newX[newX.length - 1] - x[x.length-1];
                 if(freezeMode == FREEZED_SCROLL)
                 {
                     xmax += delta;
