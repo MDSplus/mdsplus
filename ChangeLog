@@ -1,4 +1,46 @@
-commit 80349067817e23e07e28dd7974c6fca674a853ac (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 415bf693324d7766321d95b4adb7dd6e20005497 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: e58a6c4 0f94b40
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 16:47:05 2016 -0400
+
+    Merge pull request #448 from MDSplus/twf-add-connection-tests
+    
+    Add connection tests to python test suite
+
+commit 0f94b402bb3ad823d01f2cafbc4ef2c63688eba2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 15:48:59 2016 -0400
+
+    Add MDSplus bin directory when running tests
+
+commit e457e662b2bd377aa49f685beecbaeb686b82e3d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 13:43:07 2016 -0400
+
+    Add connection tests to python test suite
+
+commit e58a6c49c2ed8fad5125cc279aa1a03161bf959b
+Merge: 1e025fb c6fa2d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 13:40:54 2016 -0400
+
+    Merge pull request #447 from MDSplus/twf-py-connection-thread-locking-alpha
+    
+    Add thread locking to the get method of a Connection object which wil…
+
+commit c6fa2d8821cf3b62e97999b7d6f7c57b1edc023d (refs/remotes/origin/twf-py-connection-thread-locking-alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 11:17:53 2016 -0400
+
+    Add thread locking to the get method of a Connection object which will enable multiple threads to use a single connection object safely.
+
+commit 1e025fbe93fc6a8acd80dfc470bc70937488a136 (tag: refs/tags/alpha_release-7-0-251)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Apr 11 23:24:19 2016 -0400
+
+    New release ---- alpha_release-7-0-251
+
+commit 80349067817e23e07e28dd7974c6fca674a853ac
 Merge: 73aad37 a335710
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Apr 11 12:58:49 2016 -0400
