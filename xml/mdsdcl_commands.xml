@@ -8,7 +8,7 @@
     DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
     DELETE/MACRO   - Delete a defined command macro.
     DO/MACRO       - Execute a macro.
-    ENV            - Define and environment variable.
+    ENV            - Define an environment variable.
     EXIT           - Exit the command interpreter utility. (same as QUIT)
     HELP           - Help on available commands.
     INIT TIMER     - Initialize a timer.
