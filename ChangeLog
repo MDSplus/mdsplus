@@ -1,4 +1,369 @@
-commit 2cfa9b752ae21930c7aa03c2af834dfae83adea7 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 415bf693324d7766321d95b4adb7dd6e20005497 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: e58a6c4 0f94b40
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 16:47:05 2016 -0400
+
+    Merge pull request #448 from MDSplus/twf-add-connection-tests
+    
+    Add connection tests to python test suite
+
+commit 0f94b402bb3ad823d01f2cafbc4ef2c63688eba2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 15:48:59 2016 -0400
+
+    Add MDSplus bin directory when running tests
+
+commit e457e662b2bd377aa49f685beecbaeb686b82e3d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 13:43:07 2016 -0400
+
+    Add connection tests to python test suite
+
+commit e58a6c49c2ed8fad5125cc279aa1a03161bf959b
+Merge: 1e025fb c6fa2d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 13:40:54 2016 -0400
+
+    Merge pull request #447 from MDSplus/twf-py-connection-thread-locking-alpha
+    
+    Add thread locking to the get method of a Connection object which wil…
+
+commit c6fa2d8821cf3b62e97999b7d6f7c57b1edc023d (refs/remotes/origin/twf-py-connection-thread-locking-alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 14 11:17:53 2016 -0400
+
+    Add thread locking to the get method of a Connection object which will enable multiple threads to use a single connection object safely.
+
+commit 1e025fbe93fc6a8acd80dfc470bc70937488a136 (tag: refs/tags/alpha_release-7-0-251)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Apr 11 23:24:19 2016 -0400
+
+    New release ---- alpha_release-7-0-251
+
+commit 80349067817e23e07e28dd7974c6fca674a853ac
+Merge: 73aad37 a335710
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 11 12:58:49 2016 -0400
+
+    Merge pull request #443 from MDSplus/twf-treenode-to-pydevice
+    
+    TreeNode instance creation returns a pydevice if node is a pydevice d…
+
+commit a33571087bf4eb6d0097b8700d4c7e8d6b0a28d4 (refs/remotes/origin/twf-treenode-to-pydevice)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 11 11:18:10 2016 -0400
+
+    TreeNode instance creation returns a pydevice if node is a pydevice device type.
+
+commit 73aad370b14f60b4bcfd178ce972bcfb7f70ce58 (tag: refs/tags/alpha_release-7-0-250)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Apr 5 23:24:31 2016 -0400
+
+    New release ---- alpha_release-7-0-250
+
+commit 8281793899555bb0af1a2117b46359bd0b132caf
+Merge: eea9483 2c2a94a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 12:42:18 2016 -0400
+
+    Merge pull request #438 from MDSplus/twf-add-pydevice-path-devices
+    
+    Twf add pydevice path devices
+
+commit 2c2a94a071056b4d6090bfa73e9b467429f9c3a6 (refs/remotes/origin/twf-add-pydevice-path-devices)
+Merge: f80d3e6 eea9483
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 12:01:37 2016 -0400
+
+    Merge branch 'alpha' into twf-add-pydevice-path-devices
+
+commit eea94838fa352861da5cc04741c3fc770a6313de
+Merge: 9005d7f 869f0a2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 12:01:20 2016 -0400
+
+    Merge pull request #439 from MDSplus/jas-rename-raspi
+    
+    rename raspi to raspicam, add sudo to trig
+
+commit 869f0a25fc363f6675c43d0bbf4710e6aa2334d4 (refs/remotes/origin/jas-rename-raspi)
+Merge: f0be044 9005d7f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:47:35 2016 -0400
+
+    Merge branch 'alpha' into jas-rename-raspi
+
+commit 9005d7ff4e0b573a01c315a9e48dd9caece1db94
+Merge: 04ec163 badfd9d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:47:10 2016 -0400
+
+    Merge pull request #441 from MDSplus/huge-signals
+    
+    Huge signals
+
+commit f80d3e6b935cb0e18dae4787b8ac5ea93633cf88
+Merge: 6331c2b eef45cf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:37:07 2016 -0400
+
+    Merge branch 'twf-add-pydevice-path-devices' of github.com:/MDSplus/mdsplus into twf-add-pydevice-path-devices
+
+commit 6331c2b0f25b43c717034ae942a370f8dc31af7b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:34:50 2016 -0400
+
+    Avoid error message from trying to add C-base device before python devices
+
+commit eef45cf3fc2c06b5df8f0732aceb0e156acd34f5
+Merge: 0c796f2 04ec163
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:14:07 2016 -0400
+
+    Merge branch 'alpha' into twf-add-pydevice-path-devices
+
+commit 0c796f2de43d77785bda6f5725de19866f4c3a25
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 5 10:13:12 2016 -0400
+
+    Fix add of C-based device support and more cleanup of device add
+
+commit badfd9d7217b1f13ca4a1bd21eec7da17e26934f (refs/remotes/origin/huge-signals)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Apr 5 14:19:29 2016 +0200
+
+    Remove uint
+
+commit 6f4824bbeb071ce499efd88eac94f57a210f0059
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Apr 4 15:13:09 2016 +0200
+
+    Added support for huge signals
+
+commit 6ad3d9762c35d770a1cde4987657771b5665f1e4
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 25 09:03:12 2016 +0100
+
+    Handle huge signals
+
+commit 57446ddc53b50b9f2db433dfb509f7a6815b6ce4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 24 13:58:17 2016 -0400
+
+    Add TreeGetSegmentTimesXd
+
+commit 04ec163332cb62a26db0db39e5d541a6741e05d3 (tag: refs/tags/alpha_release-7-0-249)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Apr 4 23:24:31 2016 -0400
+
+    New release ---- alpha_release-7-0-249
+
+commit f0be0442c5336a94cf6fae88f50d516204ed813a
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 16:32:50 2016 -0400
+
+    change the device name in __init__
+    :
+
+commit 642a8abff57290045dcc868b460d5ab9356e2370
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 16:12:45 2016 -0400
+
+    rename raspi to raspicam, add sudo to trig
+
+commit b115207c9a1320661e64a1f9534d6efc02a08faf
+Merge: 1a67450 f49e54e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 4 15:28:49 2016 -0400
+
+    Merge pull request #437 from MDSplus/jas-raspi-update
+    
+    add generic extra string args, fix init action
+
+commit 9bf8ad3160bbfa7525776d1a1c6d3c89c8f8ab9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 4 14:40:39 2016 -0400
+
+    Support no pydevice devices
+
+commit f7f19d814e2251828f854104558ccd48a1b05334
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 4 14:32:59 2016 -0400
+
+    Add support for devices in MDS_PYDEVICE_PATH search list
+
+commit f49e54ee286c562e64bd9434e27462d38a859c71 (refs/remotes/origin/jas-raspi-update)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 14:02:24 2016 -0400
+
+    fix the default r,g,b gains
+
+commit 49d084af9265f362d9a01f68323cd51bcbc18ccc
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Apr 4 09:55:10 2016 -0400
+
+    add generic extra string args, fix init action
+
+commit 1a67450496057c2525adfd7b9f8ff39b06b3d7f5 (tag: refs/tags/alpha_release-7-0-248)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Apr 1 23:24:26 2016 -0400
+
+    New release ---- alpha_release-7-0-248
+
+commit 9807eccdd2835f3ea12eefd5cd89ca229358d52d
+Merge: 332e363 43a8c6a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 16:42:02 2016 -0400
+
+    Merge pull request #434 from MDSplus/jas-add-raspi-device
+    
+    add raspi device - support for camera attached to raspberry pi computer
+
+commit 43a8c6a4f1983e4749deaf720f107eff7b5d6375
+Merge: 8ec6b40 332e363
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 16:40:08 2016 -0400
+
+    Merge branch 'alpha' into jas-add-raspi-device
+
+commit 332e36315ab71aeaaad5f627c1c339453bc71ef7
+Merge: 66ac5f4 7ee117e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 15:50:34 2016 -0400
+
+    Merge pull request #436 from MDSplus/twf-fix-noncontiguous-numpy-arrays
+    
+    Make sure numpy array is contigous before making a descriptor for it.
+
+commit 8ec6b409a55f2d4af94010521c8f027538015c9e
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Apr 1 15:27:05 2016 -0400
+
+    don't need ascontiguousarray any more objects are fixing this up in _descriptor
+
+commit 7ee117e1ef5fd13a7533d53f7ed9cb7a9017f47c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 15:08:52 2016 -0400
+
+    Make sure numpy array is contigous before making a descriptor for it.
+
+commit 6346b08eafe552a3abf96a92d58bb96dde5aa6c0
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Apr 1 14:56:34 2016 -0400
+
+    fix the uncompressed case and change some defaults
+
+commit 66ac5f4670cf45dfddd42f41ff189f93cb93a3c9
+Merge: 8a4532e daa1d49
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 09:35:42 2016 -0400
+
+    Merge pull request #435 from zack-vii/aa_python
+    
+    cleaner __getattr__ for TreeNode
+
+commit daa1d497afbf40b2f66ae003e61792637c0a9d66
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Apr 1 12:40:46 2016 +0200
+
+    cleaner __getattr__ for TreeNode
+
+commit 8a4532eaa1960ddea847db4443ad7b5a2c6565f0
+Merge: 4f93967 96f8749
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 08:40:51 2016 -0400
+
+    Merge pull request #410 from zack-vii/aa_jtraverser
+    
+    jTraverser fixed NullPointerException
+
+commit 96f87499a60b29cdaef818bfc40fb3d66e4c3bb3
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 10 17:24:13 2016 +0100
+
+    fixed NullPointerException by handling the value of Tree.curr_node
+    
+    using getters and setters for a better control and sync selected
+    TreeNode with curr_node defaulting to TOP if old ref becomes invalid
+
+commit f57e36b3f9cf1f7903ebf00c40935c800042925e (refs/remotes/origin/jas-add-raspi-device)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 31 17:27:58 2016 -0400
+
+    add raspi device - support for camera attached to raspberry pi computer
+
+commit 4f9396740616115cc4654af61e0198574bad38a8 (tag: refs/tags/alpha_release-7-0-247)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Mar 31 15:36:38 2016 -0400
+
+    New release ---- alpha_release-7-0-247
+
+commit fe056456694c79f1fb7ad7b4bd5a6c3d70076f8c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 15:06:32 2016 -0400
+
+    fix raspberrypi repo
+
+commit 90b99ad94ec7fe9f18a04229993200ee652a0f9f (tag: refs/tags/alpha_release-7-0-246)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Mar 31 13:04:58 2016 -0400
+
+    New release ---- alpha_release-7-0-246
+
+commit fd8cc064906cd0f47bf377b4cb9f3691094d07ec
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 12:33:22 2016 -0400
+
+    Fix raspberrypi repo
+
+commit 3f3371213a044ea18fec38ee95d4b960eb2fa9a9
+Merge: 6e25735 a5399af
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 09:55:02 2016 -0400
+
+    Merge pull request #433 from zack-vii/cleanup_428
+    
+    fixedY replaceAll is not in-place
+
+commit a5399af3b597b336542d71bff8020997a4053b44
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 31 15:16:42 2016 +0200
+
+    fixedY replaceAll is not in-place
+    
+    and regexpr requires another level of \escape
+
+commit 6e2573563cc1407fef40b2ba0dd7de4ef4ee9d2d
+Merge: a17e212 bfb448c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 09:10:20 2016 -0400
+
+    Merge pull request #432 from zack-vii/cleanup_428
+    
+    Cleanup 428
+
+commit bfb448c9d4fcd78273d50895c4257b512929ac46
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 31 14:43:45 2016 +0200
+
+    clean 428
+
+commit 6d688f6b9da328fe5856a0b09eeaa0718fcc9f43
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Mar 31 14:40:59 2016 +0200
+
+    Revert "Merge pull request #428 from MDSplus/dev-gm"
+    
+    This reverts commit 89aec2584d145c4713a39290151f9796a44e02b7, reversing
+    changes made to ddeb6370decfed4a831ebce6444533852e002147.
+
+commit a17e2125f9cf1027069a0f6090e9db7505a95875 (tag: refs/tags/alpha_release-7-0-245)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Mar 29 23:18:00 2016 -0400
+
+    New release ---- alpha_release-7-0-245
+
+commit 2cfa9b752ae21930c7aa03c2af834dfae83adea7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 29 09:37:28 2016 -0400
 
@@ -19,7 +384,7 @@ Date:   Fri Mar 25 15:29:56 2016 +0100
     
     Dev gm
 
-commit a14769a53e5cfbf8cc3efcccedffd52b7c31b900 (refs/remotes/origin/dev-gm)
+commit a14769a53e5cfbf8cc3efcccedffd52b7c31b900
 Merge: 5313641 ddeb637
 Author: Mdsplus <mdsplus@spilds.rfx.local>
 Date:   Fri Mar 25 14:28:42 2016 +0100

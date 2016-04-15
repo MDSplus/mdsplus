@@ -1,5 +1,5 @@
 fun public MdsDevices() {
-  return ( [MitDevices(),
+  return ( [pydevices(), MitDevices(),
 	'DEMOADC\0',		'TutorialDevices\0',
 	'DIO4\0', 		'RfxDevices\0',
 	'SIS3820\0', 		'RfxDevices\0',

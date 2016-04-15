@@ -55,7 +55,7 @@ do
 	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
     	    export MDS_PATH=${MDSPLUS_DIR}/tdi
 	    pushd ${MDSPLUS_DIR}/mdsobjects/python
-	    python setup.py test
+	    PATH=${MDSPLUS_DIR}/${BINDIR}:${PATH} python setup.py test
 	    popd;;
 
 	vgpytest)
@@ -69,7 +69,7 @@ do
 	    export LD_LIBRARY_PATH=${MDSPLUS_DIR}/${LIBDIR}
 	    export MDS_PATH=${MDSPLUS_DIR}/tdi
 	    pushd ${MDSPLUS_DIR}/mdsobjects/python
-	    valgrind --error-exitcode=1 python setup.py test
+	    PATH=${MDSPLUS_DIR}/${BINDIR}:${PATH} valgrind --error-exitcode=1 python setup.py test
 	    popd;;
 	   
 

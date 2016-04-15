@@ -7,6 +7,7 @@ def _mimport(name, level=1):
 import sys as _sys
 import ctypes as _C
 import numpy as _N
+from threading import RLock as _RLock
 
 _descriptor=_mimport('_descriptor')
 _Exceptions=_mimport('mdsExceptions')
@@ -140,9 +141,13 @@ class Connection(object):
       if self.socket == -1:
         raise MdsIpException("Error connecting to %s" % (hostspec,))
       self.hostspec=hostspec
+      self.lock=_RLock()
 
     def __del__(self):
-        _DisconnectFromMds(self.socket)
+        try:
+            _DisconnectFromMds(self.socket)
+        except:
+            pass
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
@@ -224,18 +229,23 @@ class Connection(object):
         @return: result of evaluating the expression on the remote server
         @rtype: Scalar or Array
         """
-        if 'arglist' in kwargs:
-            args=kwargs['arglist']
-        num=len(args)+1
-        idx=0
-        status=_SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp)))
-        if not ((status & 1)==1):
-            raise _Exceptions.statusToException(status)
-        #self.__sendArg__(exp,idx,num)
-        for arg in args:
-            idx=idx+1
-            self.__sendArg__(arg,idx,num)
-        return self.__getAnswer__()
+        try:
+            self.lock.acquire()
+            if 'arglist' in kwargs:
+                args=kwargs['arglist']
+            num=len(args)+1
+            idx=0
+            status=_SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(_ver.tobytes(exp)))
+            if not ((status & 1)==1):
+                raise _Exceptions.statusToException(status)
+            #self.__sendArg__(exp,idx,num)
+            for arg in args:
+                idx=idx+1
+                self.__sendArg__(arg,idx,num)
+            ans = self.__getAnswer__()
+        finally:
+            self.lock.release()
+        return ans
 
 
     def setDefault(self,path):

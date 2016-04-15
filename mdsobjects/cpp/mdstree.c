@@ -48,6 +48,7 @@ int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times, int rowsFilled);
 int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times);
 int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int size);
+int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
 
 int getTreeData(void *dbid, int nid, void **data, void *tree)
 {
@@ -275,3 +276,15 @@ int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * tim
   freeDsc(dataXd);
   return status;
 }
+
+int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  int status;
+
+  status = _TreeSetXNci(dbid, nid, name, dataXd);
+	freeDsc(dataXd);
+  return status;
+}
+
+

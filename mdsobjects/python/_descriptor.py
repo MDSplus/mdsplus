@@ -99,6 +99,8 @@ class descriptor(_C.Structure):
                 value = value.astype('S')
                 for i in range(len(value.flat)):
                     value.flat[i]=value.flat[i].ljust(value.itemsize)
+            if not value.flags['CONTIGUOUS']:
+                value=_N.ascontiguousarray(value)
             a=descriptor_a(value)
             self.length=10000
             self.dtype=_dtypes.DTYPE_DSC
