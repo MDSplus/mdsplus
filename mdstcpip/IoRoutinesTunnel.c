@@ -67,7 +67,7 @@ static int tunnel_disconnect(int id)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
   if (p) {
-    kill(p->pid, SIGABRT);
+    kill(p->pid, SIGTERM);
     waitpid(p->pid, NULL, WNOHANG);
     close(p->stdin_pipe);
     close(p->stdout_pipe);
