@@ -960,30 +960,29 @@ void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialDat
 }
 
 
-void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
+void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
 {
-	const int RES_FACTOR = 100;
 	//Resampled aray always converted to float, Assumed 1D array
 	int numRows;
 	float *arrSamples = initialData->getFloatArray(&numRows);
-	float *resSamples = new float[2* numRows/RES_FACTOR]; //It has top keep minimum and maximum
-	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	float *resSamples = new float[2* numRows/resFactor]; //It has top keep minimum and maximum
+	for(int i = 0; i < numRows; i+= resFactor)
 	{
 		float minVal = arrSamples[i];
 		float maxVal = minVal;
-		for(int j = 0; j < RES_FACTOR; j++)
+		for(int j = 0; j < resFactor; j++)
 		{
 			if(arrSamples[i+j] < minVal)
 				minVal = arrSamples[i+j];
 			if(arrSamples[i+j] > maxVal)
 				maxVal = arrSamples[i+j];
 		}
-		resSamples[2*i/RES_FACTOR] = minVal;
-		resSamples[2*i/RES_FACTOR+1] = maxVal;
+		resSamples[2*i/resFactor] = minVal;
+		resSamples[2*i/resFactor+1] = maxVal;
 	}
-	Array *resData = new Float32Array(resSamples, 2* numRows/RES_FACTOR);
+	Array *resData = new Float32Array(resSamples, 2* numRows/resFactor);
 	char dimExpr[64];
-	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR/2,numRows);
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", resFactor/2,numRows);
 	Data *resDim = compileWithArgs(dimExpr, getTree(), 4, start, end, end, start);
 	resampledNode->makeSegment(start, end, resDim, resData);
 	MDSplus::deleteData(resDim);
@@ -997,7 +996,7 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 		String *resModeD = new String("MinMax");
 		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
 		MDSplus::deleteData(resModeD);
-		Data *resSamplesD = new Int32(RES_FACTOR/2);
+		Data *resSamplesD = new Int32(resFactor/2);
 		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
 		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
 		MDSplus::deleteData(resSamplesD);
