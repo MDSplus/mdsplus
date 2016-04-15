@@ -3127,7 +3127,7 @@ public:
     void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
 
 	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples) 
-    void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
+    void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
 
 	//Begin and fill a new data segment. At the same time make a resampled version
     void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
