@@ -1,4 +1,69 @@
-commit 415bf693324d7766321d95b4adb7dd6e20005497 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8baeb08555ead0f006be55809c22c2722455c55a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 15 16:33:59 2016 -0400
+
+    Fix typo in help
+
+commit 6dd0b0258bb4cadfffddd9f9f8938be89b1e6068
+Merge: d53d356 9816c5d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 15 13:08:49 2016 -0400
+
+    Merge pull request #449 from MDSplus/twf-add-connection-tests
+    
+    Use SIGTERM to terminate server mdsip process in tunnel protocol inst…
+
+commit 9816c5ddbb2b2e1d226327d42bfa14ceecf56da1
+Merge: 1a95d06 d53d356
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 15 12:42:07 2016 -0400
+
+    Merge branch 'alpha' into twf-add-connection-tests
+
+commit d53d356859b90915e78fb6bd4a318088e782ef86
+Merge: acde2fb f2d09a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 15 12:41:36 2016 -0400
+
+    Merge pull request #450 from MDSplus/huge-signals
+    
+    Let compression factor be passed by user in makeSegmentMinMax
+
+commit f2d09a7d96231470f1aea884a3dc81ceb8cbb2f1 (refs/remotes/origin/huge-signals)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Apr 15 18:10:28 2016 +0200
+
+    Let compression factor be passed by user in makeSegmentMinMax
+
+commit 1a95d0631afb32b9fd0d1671ad89a0636f155cdc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 15 11:20:08 2016 -0400
+
+    Use SIGTERM to terminate server mdsip process in tunnel protocol instead of SIGABRT which can cause a core dump. Also use just Thread class for connection tests instead of Event class.
+
+commit acde2fb7cafc7555db4b3a2b220515cad47d6e8a
+Merge: 20cc16b da9ae6d
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Apr 15 14:54:21 2016 +0200
+
+    Merge pull request #445 from MDSplus/dev-gm
+    
+    Dev gm
+
+commit da9ae6d326bc3c9b7e3ff18c38f863450c84a169 (refs/remotes/origin/dev-gm)
+Merge: 506362b 20cc16b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Apr 15 14:53:15 2016 +0200
+
+    Merge branch 'alpha' into dev-gm
+
+commit 20cc16b910694c26e5e3aeca1ee6d3de1b018c8a (tag: refs/tags/alpha_release-7-0-252)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Apr 14 23:24:15 2016 -0400
+
+    New release ---- alpha_release-7-0-252
+
+commit 415bf693324d7766321d95b4adb7dd6e20005497
 Merge: e58a6c4 0f94b40
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 14 16:47:05 2016 -0400
@@ -54,6 +119,46 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Apr 11 11:18:10 2016 -0400
 
     TreeNode instance creation returns a pydevice if node is a pydevice device type.
+
+commit 506362b4cc6b72b0f576a3a31657b8910430a597
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 6 14:59:15 2016 +0200
+
+    Remove debug messages
+
+commit a2d7dae2a46006895ce814a9ab13730ea2e821b4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 6 14:56:24 2016 +0200
+
+    Fix backslash replacement
+
+commit cabbe6fef5220fa79af57481c766454151eba321
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 6 14:52:36 2016 +0200
+
+    Remove debug messages
+
+commit 1e0014b95c48b1c1ec6863624fd201be7d09404e
+Merge: 2343684 4770fc8
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 6 14:49:01 2016 +0200
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+    
+    Conflicts:
+    	javascope/jScope/MdsDataProvider.java
+
+commit 2343684eae3e05c5f4794172dc227a54d454ab02
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 6 14:46:09 2016 +0200
+
+    Manage huge signals
+
+commit 524c9bc2971042a65905880c59f864fbc8beb3a7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 30 14:17:29 2016 +0200
+
+    Fix waveform access in jScope
 
 commit 73aad370b14f60b4bcfd178ce972bcfb7f70ce58 (tag: refs/tags/alpha_release-7-0-250)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -128,7 +233,7 @@ Date:   Tue Apr 5 10:13:12 2016 -0400
 
     Fix add of C-based device support and more cleanup of device add
 
-commit badfd9d7217b1f13ca4a1bd21eec7da17e26934f (refs/remotes/origin/huge-signals)
+commit badfd9d7217b1f13ca4a1bd21eec7da17e26934f
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Apr 5 14:19:29 2016 +0200
 
@@ -325,6 +430,16 @@ Date:   Thu Mar 31 09:55:02 2016 -0400
     
     fixedY replaceAll is not in-place
 
+commit 4770fc8ba2fb17fea83618935d62c281537b376f
+Merge: de4afb8 2daf36b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 31 15:26:10 2016 +0200
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+    
+    Conflicts:
+    	javascope/jScope/MdsDataProvider.java
+
 commit a5399af3b597b336542d71bff8020997a4053b44
 Author: zack-vii <zack.vii@live.com>
 Date:   Thu Mar 31 15:16:42 2016 +0200
@@ -332,6 +447,12 @@ Date:   Thu Mar 31 15:16:42 2016 +0200
     fixedY replaceAll is not in-place
     
     and regexpr requires another level of \escape
+
+commit de4afb82fd2e382daa1896b41dc8818268f3c5a0
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 30 14:17:29 2016 +0200
+
+    Fix waveform access in jScope
 
 commit 6e2573563cc1407fef40b2ba0dd7de4ef4ee9d2d
 Merge: a17e212 bfb448c
@@ -356,6 +477,22 @@ Date:   Thu Mar 31 14:40:59 2016 +0200
     
     This reverts commit 89aec2584d145c4713a39290151f9796a44e02b7, reversing
     changes made to ddeb6370decfed4a831ebce6444533852e002147.
+
+commit 2daf36bf84eead77d2e7ee3b3bda9d4a1e872134
+Merge: d112491 a14769a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 30 14:24:03 2016 +0200
+
+    Merge branch 'dev-gm' of github.com:MDSplus/MDSplus into dev-gm
+    
+    Conflicts:
+    	javascope/jScope/MdsDataProvider.java
+
+commit d1124916eda78d6b6e10f1358e901ef6c32d53ee
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 30 14:17:29 2016 +0200
+
+    Fix waveform access in jScope
 
 commit a17e2125f9cf1027069a0f6090e9db7505a95875 (tag: refs/tags/alpha_release-7-0-245)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -402,6 +539,13 @@ Author: Mdsplus <mdsplus@spilds.rfx.local>
 Date:   Fri Mar 25 14:10:12 2016 +0100
 
     Fix missed uodates
+
+commit cf1d1996c39e4beb7f49592b0963f951427ecf3d
+Merge: 6a344db ddeb637
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 25 14:08:06 2016 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into dev-gm
 
 commit 6a344db909ea09dee54a5e123a59f361e0160240
 Merge: ba21f0e 44e3c9f
