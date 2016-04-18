@@ -965,12 +965,12 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 	//Resampled aray always converted to float, Assumed 1D array
 	int numRows;
 	float *arrSamples = initialData->getFloatArray(&numRows);
-	float *resSamples = new float[2* numRows/resFactor]; //It has top keep minimum and maximum
+	float *resSamples = new float[2* (numRows/resFactor + 1)]; //It has top keep minimum and maximum. Ensure enough room even if numRows is not a multiplier of resFactor
 	for(int i = 0; i < numRows; i+= resFactor)
 	{
 		float minVal = arrSamples[i];
 		float maxVal = minVal;
-		for(int j = 0; j < resFactor; j++)
+		for(int j = 0; j < resFactor && i+j < numRows; j++)
 		{
 			if(arrSamples[i+j] < minVal)
 				minVal = arrSamples[i+j];
