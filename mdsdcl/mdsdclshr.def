@@ -27,6 +27,7 @@ mdsdcl_set_prompt
 mdsdcl_set_verify
 mdsdcl_show_macro
 mdsdcl_show_timer
+mdsdcl_show_version
 mdsdcl_spawn
 mdsdcl_type
 mdsdcl_wait

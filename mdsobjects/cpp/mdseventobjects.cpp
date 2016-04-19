@@ -1,4 +1,5 @@
 #include "mdsobjects.h"
+#include <unistd.h>
 
 #include <string>
 
@@ -9,81 +10,124 @@ using namespace std;
 #define MAX_ARGS 512
 
 extern "C" {
-	int64_t convertAsciiToTime(const char *ascTime);
-	int MDSUdpEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
-	int MDSUdpEventCan(int id);
-	int MDSUdpEvent(char *eventNameIn, int bufLen, char *buf);
-	int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
-	int MDSEventCan(int id);
-	int MDSEvent(char *eventNameIn, int bufLen, char *buf);
-	void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
-	void MdsEventRemoveListener(void *eventId);
-	int MdsEventTrigger(char *name, char *buf, int size);
-	int MdsEventTriggerAndWait(char *name, char *buf, int size);
+int64_t convertAsciiToTime(const char *ascTime);
+int MDSEventAst(const char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
+int MDSEventCan(int id);
+int MDSEvent(const char *eventNameIn, int bufLen, char *buf);
+void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
+void  MdsEventRemoveListener(void *eventId);
+int MdsEventTrigger(char *name, char *buf, int size);
+int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
-extern "C" void eventAst(void *arg, int len, char *buf)
-{
-	Event *ev = (Event *)arg;
-	ev->eventBuf.assign(buf, len);
-	ev->eventTime = convertAsciiToTime("now");
-	ev->run(); 
+static pthread_mutex_t _local_m = PTHREAD_MUTEX_INITIALIZER;
+
+namespace MDSplus {
+void eventAst(void *arg, int len, char *buf)
+{   
+    Event *ev = (Event *)arg;
+    ev->eventBuf.assign(buf, len);
+    ev->eventTime = convertAsciiToTime("now");    
+    ev->run();
+    
+    // notify all waiting threads //
     ev->notify();
 }
+} // MDSplus
 
-extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
-{
-	eventAst(arg, len, buf);
-}
-	
+
+
 void Event::connectToEvents()
 {
-	//MDSUdpEventAst(eventName, eventAst, this, &eventId);
-	MDSEventAst(eventName, eventAst, this, &eventId);
+    if ( !MDSEventAst(this->getName(), MDSplus::eventAst, this, &eventId) )
+        throw MdsException("failed to connect to event listener");
 }
+
 void Event::disconnectFromEvents()
-{
-//	MDSUdpEventCan(eventId);
-	MDSEventCan(eventId);
-}
-
-Data *Event::getData()
-{
-	if(eventBuf.length() == 0)
-		return NULL;
-    return deserialize(eventBuf.c_str());
+{    
+    if( !MDSEventCan(eventId) )
+        throw MdsException("failed to close event listener");
 }
 
 
-Event::Event(char *evName)
-{
-	std::size_t size = std::string(evName).size();
-	eventName = new char[size + 1];
-	std::copy(&evName[0], &evName[size], eventName);
-	eventName[size] = 0;
-	eventId = -1;
-	connectToEvents();
-}
-
+Event::Event(const char *name) :
+    eventName(name),
+    eventTime(convertAsciiToTime("now")),
+    eventId(-1)
+{}
 
 Event::~Event()
 {
-	delete [] eventName;
-	if(eventId != -1)
-		disconnectFromEvents();
+    stop();
 }
 
-void Event::setEvent(char *evName, Data *evData)
+Data * Event::getData() const
 {
-	int bufLen;
-	char *buf = evData->serialize(&bufLen);
-	setEventRaw(evName, bufLen, buf);
+    if(eventBuf.length() == 0) return NULL;
+    return deserialize(eventBuf.c_str());
+}
+
+const char *Event::getRaw(size_t *size) const
+{
+    *size = eventBuf.length();
+    return eventBuf.c_str();
+}
+
+Uint64 *Event::getTime() const
+{    
+    return new Uint64(eventTime);
+}
+
+const char *Event::getName() const
+{
+    return eventName.c_str();
+}
+
+void Event::start()
+{
+    connectToEvents();
+}
+
+void Event::stop()
+{
+    if(eventId > -1) {
+        disconnectFromEvents();
+        eventId = -1;
+    }
+}
+
+bool Event::isStarted() const
+{
+    return eventId > -1;
+}
+
+
+void Event::wait(size_t secs)
+{
+    if( !isStarted() ) start();
+    if (secs == 0) condition.wait();
+    else if (condition.waitTimeout(secs * 1000) == false)
+        throw MdsException("Timeout Occurred");    
+}
+
+void Event::notify()
+{
+    condition.notify(); 
+}
+
+
+
+
+void Event::setEvent(const char *evName, Data *evData)
+{
+    int bufLen;
+    char *buf = evData->serialize(&bufLen);
+    setEventRaw(evName, bufLen, buf);
     delete[] buf;
 }
 
-void Event::setEventRaw(char *evName, int bufLen, char *buf)
+void Event::setEventRaw(const char *evName, int bufLen, char *buf)
 {
-//	MDSUdpEvent(evName, bufLen, buf);
-	MDSEvent(evName, bufLen, buf);
+    MDSEvent(evName, bufLen, buf);
 }
 

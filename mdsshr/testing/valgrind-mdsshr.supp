@@ -1,0 +1,14 @@
+#
+# Pthread doesn't free all thread specific memory before program exists
+#
+
+#   match-leak-kinds: possible
+{
+   pthread_cancel of a detached thread
+   Memcheck:Leak
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create*
+}
+

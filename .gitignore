@@ -89,3 +89,6 @@ autom4te.cache
 *.o_i386
 *.dylib_i386
 *.lnk
+
+# python version module
+_version.py

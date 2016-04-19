@@ -36,7 +36,7 @@ EXPORT void mdsplus_event_destructor(void **lvEventPtr)
 	delete eventPtr;
 	*lvEventPtr = NULL;
 }
-
+/*
 EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
@@ -57,7 +57,7 @@ EXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-
+*/
 EXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
@@ -115,7 +115,7 @@ EXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
-		strOut = eventPtr->getName();
+		strOut = strdup(eventPtr->getName());
 		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 		if (!errorCode)

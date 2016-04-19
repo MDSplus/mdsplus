@@ -15,5 +15,5 @@ bin_PROGRAMS = setevent
 setevent_SOURCES = setevent.c
 
 #FIXME: Clean up LIBS in top level configure
-LIBS=
+#LIBS=
 

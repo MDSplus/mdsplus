@@ -74,23 +74,25 @@ extern void *erealloc(void *, size_t n);
 
 
 
-static int out_fd = 0;
+static int out_fd = -1;
 static fpos_t out_pos;
 
 static FILE *switchStdout(const char *newStream)
 {
     fflush(stdout);
     fgetpos(stdout, &out_pos);
-    out_fd = dup(fileno(stdout));    
-    freopen(newStream, "w", stdout);
+    out_fd = dup(fileno(stdout));   
+    if(newStream)
+        freopen(newStream, "w", stdout);
+    else 
+        fclose(stdout);
     return fdopen(out_fd, "w");
 }
 
 static void revertStdout()
 {
-    if(out_fd < 1) return;
+    if(out_fd < 0) return;
     fflush(stdout);
-    //    fclose(stdout);
     dup2(out_fd, fileno(stdout));
     close(out_fd);
     clearerr(stdout);
@@ -548,38 +550,14 @@ static void srunner_send_evt(SRunner * sr, void *obj, enum cl_event evt)
 ///
 
 
-static char log_fname[200];
-static char tap_fname[200];
-static char xml_fname[200];
-static char out_fname[200];
 
 static enum print_output print_mode = CK_NORMAL;
 
 void __test_init(const char *test_name, const char *file, const int line) {
-            
-//    if(group_pid) {
-//        killpg(group_pid,SIGKILL);
-//        group_pid = 0;
-//    }
-    
+                
     if(!suite) {
         suite = suite_create(file);            
         runner = srunner_create(suite);
-
-        strcpy(log_fname,file);
-        strcat(log_fname,".out.log");
-        strcpy(tap_fname,file);
-        strcat(tap_fname,".out.tap");
-        strcpy(xml_fname,file);
-        strcat(xml_fname,".out.xml");
-        strcpy(out_fname,file);
-        strcat(out_fname,".out");
-        
-        //        srunner_set_log(runner,log_fname);
-        //        srunner_set_xml(runner,xml_fname);        
-        //        srunner_set_tap(runner,tap_fname);
-        //        srunner_set_tap(runner,"-"); //tap_fname);
-        //        srunner_set_xml(runner,"-"); //tap_fname);        
                                 
         // print mode normal by default //
         char *env = getenv("TEST_MODE");                
@@ -595,20 +573,25 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // init logger NORMAL by default //
         srunner_init_logging(runner, print_mode);        
         
+        // format of the tests output //
         char *format = getenv("TEST_FORMAT");
-        if(format) { 
-            
-            // stdout redirected to file //
-            FILE *newout = switchStdout(out_fname);
-            
+        
+        // to preserve the output format the stdout must be redirected. If no
+        // env is defined the result will be null and stdout will be
+        // suppressed. The log format preserves the normal stdout as no special
+        // formatting is needed.        
+        char *stdout_file = getenv("TEST_STDOUT_FILE");
+        
+        if(format) {
             if( !strcmp(format,"log") || !strcmp(format,"LOG"))            
-                srunner_register_lfun(runner, newout, 0, lfile_lfun, print_mode);
+                srunner_register_lfun(runner, stdout, 0, lfile_lfun, print_mode);
             else if( !strcmp(format,"tap") || !strcmp(format,"TAP"))            
-                srunner_register_lfun(runner, newout, 0, tap_lfun, print_mode);
+                srunner_register_lfun(runner, switchStdout(stdout_file), 0, tap_lfun, print_mode);
             else if( !strcmp(format,"xml") || !strcmp(format,"XML"))            
-                srunner_register_lfun(runner, newout, 0, xml_lfun, print_mode);
+                srunner_register_lfun(runner, switchStdout(stdout_file), 0, xml_lfun, print_mode);
         }
         else {
+            // default to log format //
             srunner_register_lfun(runner, stdout, 0, stdout_lfun, print_mode);            
         }
         
@@ -618,10 +601,7 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // send runner start event //
         log_srunner_start(runner);    
         log_suite_start(runner,suite);    
-        
-        // set fork //
-        //        set_fork_status(srunner_fork_status(runner));
-        
+                
         // set up message pipe in check_msg //
         setup_messaging(); 
         

@@ -145,6 +145,7 @@ install: $(install_DIRS)
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
 	tar -C ${top_srcdir} -cf - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
+	find . -name '_version\.py' -exec cp {} $(exec_prefix)/{} \;
 	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)

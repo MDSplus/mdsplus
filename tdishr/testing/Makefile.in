@@ -93,6 +93,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1 \
+@ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
+@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
+@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || echo --skip;)
 TESTS = build_test$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = tdishr/testing
@@ -113,6 +117,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/m4_ax_sanitize_check.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/visibility.m4 \
 	$(top_srcdir)/configure.ac
@@ -447,6 +452,9 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_SANITIZE = @ENABLE_SANITIZE@
+ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
+ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 F77 = @F77@
@@ -558,16 +566,19 @@ PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 PY_LOG_COMPILER = @PY_LOG_COMPILER@
-PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
-PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
-PY_LOG_FLAGS = @PY_LOG_FLAGS@
-PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
-PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(am__append_2)
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
 READLINE_LIBS = @READLINE_LIBS@
 READLINK = @READLINK@
+RELEASE_BRANCH = @RELEASE_BRANCH@
+RELEASE_COMMIT = @RELEASE_COMMIT@
+RELEASE_DATE = @RELEASE_DATE@
+RELEASE_MAJOR = @RELEASE_MAJOR@
+RELEASE_MINOR = @RELEASE_MINOR@
+RELEASE_RELEASE = @RELEASE_RELEASE@
+RELEASE_TAG = @RELEASE_TAG@
 REMCAM = @REMCAM@
 REMCAMLIB = @REMCAMLIB@
 RMIC = @RMIC@
@@ -587,7 +598,7 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
-TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
 TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
@@ -683,6 +694,12 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
 
+# // check if libpath is correct or skip python tests
+@ENABLE_SANITIZE_TRUE@_check_sanitize_ldd = \
+@ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+@ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -691,7 +708,7 @@ TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@ 
-LDADD = $(TEST_LIBS) @LIBS@ -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
+LDADD = @LIBS@ $(TEST_LIBS) -lMdsLib -lTdiShr -lTreeShr -lMdsShr 
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
@@ -1176,7 +1193,7 @@ rebuild-tests:
 	fi;
 
 .PHONY: tests
-tests:
+tests: rebuild-tests
 	@echo "Making tests ... "; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
@@ -1184,19 +1201,15 @@ tests:
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@VALGRIND_CHECK_RULES@ 
+@VALGRIND_CHECK_RULES@
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-LOG_DRIVER          ?= @LOG_DRIVER@
-TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
-LOG_COMPILER        ?= @LOG_COMPILER@
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
-PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
+@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
 
-$(TEST_BUILD_TAP): rebuild-tests
+$(TEST_BUILD_TAP):
 	@ \
 	echo "Try to build targets one by one"; \
 	echo "TAP version 13" > $@; \
@@ -1238,6 +1251,10 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
 tests-envdump:

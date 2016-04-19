@@ -165,7 +165,6 @@ VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_
 
 VALGRIND_SUPPRESSIONS_PY ?=
 VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
-                            $(VALGRIND_SUPPRESSIONS) \
                             $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
                             
 
@@ -180,7 +179,8 @@ VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_lo
 # Internal use
 valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
                      $(TEST_LOGS:.log=-valgrind-*.log) \
-                     $(TEST_LOGS:.log=-valgrind-*.xml)
+                     $(TEST_LOGS:.log=-valgrind-*.xml) \
+                     $(TEST_LOGS:.log=-valgrind-*.supp)
 dnl                  $(foreach tst,$(TESTS),$(addprefix $(tst)-valgrind-,$(addsuffix .xml,$(VALGRIND_TOOLS))))
                      
 valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
@@ -224,10 +224,23 @@ VALGRIND_LOG_COMPILER = \
 .PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
 ifeq ($(VALGRIND_ENABLED),yes)
 
+
+_print_valgrind_hello = \
+  echo ""; \
+  echo "---------------------------------------------------------------------------"; \
+  echo " [vagrind $(VALGRIND_TOOL)] "; \
+  echo " active tool options   :  $(valgrind_$(VALGRIND_TOOL)_flags) "; \
+  echo " active valgrind flags : $(VALGRIND_FLAGS) "; \
+  echo " active suppressions   : "; \
+  for supp in $(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY); do \
+    echo "        $${supp}"; \
+  done
+
+
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(MAKE) VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
@@ -237,6 +250,7 @@ tests-valgrind:
 tests-valgrind-tool:
 	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
 	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
+	@ $(_print_valgrind_hello);
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
@@ -247,7 +261,7 @@ tests-valgrind-tool:
 
 tests-valgrind-suppressions:
 	@ \
-	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(MAKE) VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
@@ -257,12 +271,13 @@ tests-valgrind-suppressions:
 tests-valgrind-suppressions-tool:
 	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
 	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
+	@ $(_print_valgrind_hello);
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
-	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk > \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 else

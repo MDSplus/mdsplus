@@ -33,7 +33,7 @@ rebuild-tests:
 	fi;
 
 .PHONY: tests
-tests:
+tests: rebuild-tests
 	@echo "Making tests ... "; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
@@ -42,25 +42,29 @@ tests:
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@VALGRIND_CHECK_RULES@ 
+@VALGRIND_CHECK_RULES@
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-LOG_DRIVER          ?= @LOG_DRIVER@
-TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
-LOG_COMPILER        ?= @LOG_COMPILER@
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
-PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
+if ENABLE_SANITIZE
+  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
+  TESTS_ENVIRONMENT += ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1
+  TESTS_ENVIRONMENT += LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH}
+  TESTS_ENVIRONMENT += TEST_TIMEUNIT=5
+endif
 
-## PY_ARCH_TEST = $(shell $(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@)
-## PY_ARCH_TEST = yes
-## PY_LOG_COMPILER     = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER@,@TESTS_SKIP@)
-## PY_LOG_FLAGS        = @PY_LOG_FLAGS@
-## PY_LOG_COMPILER_TAP = $(if $(PY_ARCH_TEST),@PY_LOG_COMPILER_TAP@,@TESTS_SKIP@)
-## PY_LOG_FLAGS_TAP    = @PY_LOG_FLAGS_TAP@
+# // check if libpath is correct or skip python tests
+if ENABLE_SANITIZE 
+  _check_sanitize_ldd = \
+   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+  PY_LOG_FLAGS += $(shell ${_check_sanitize_ldd} || echo --skip;)
+endif
+
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
@@ -69,8 +73,7 @@ PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 
-
-$(TEST_BUILD_TAP): rebuild-tests
+$(TEST_BUILD_TAP):
 	@ \
 	echo "Try to build targets one by one"; \
 	echo "TAP version 13" > $@; \
@@ -113,7 +116,7 @@ endif
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 ## TODO: add log output
-## $(TEST_SUITE_LOG):
+## $(TEST_SUITE_LOG): 
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -137,6 +140,10 @@ clean-local-tests:
 
 
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
 tests-envdump:

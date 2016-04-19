@@ -134,14 +134,14 @@ dnl correctly call the test chain.
 dnl The test chain is composed by: [tests_env] [log_driver] [log_compiler] [test_flags]
 dnl
 AC_DEFUN([TS_SELECT],[
- AS_VAR_SET([ENABLE_TESTS])
- AS_VAR_SET([TESTS_ENVIRONMENT])
- AS_VAR_SET([LOG_COMPILER])
- AS_VAR_SET([LOG_FLAGS])
- AS_VAR_SET([PY_LOG_COMPILER])
- AS_VAR_SET([PY_LOG_FLAGS])
- AS_VAR_SET([PY_LOG_COMPILER_TAP])
- AS_VAR_SET([PY_LOG_FLAGS_TAP])
+dnl AS_VAR_SET([ENABLE_TESTS])
+dnl AS_VAR_SET([TESTS_ENVIRONMENT])
+dnl AS_VAR_SET([LOG_COMPILER])
+dnl AS_VAR_SET([LOG_FLAGS])
+dnl AS_VAR_SET([PY_LOG_COMPILER])
+dnl AS_VAR_SET([PY_LOG_FLAGS])
+dnl AS_VAR_SET([PY_LOG_COMPILER_TAP])
+dnl AS_VAR_SET([PY_LOG_FLAGS_TAP])
  AS_VAR_SET([LOG_DRIVER],["\$(SHELL) \$(top_srcdir)/conf/test-driver"])
 
  AS_VAR_SET([abs_srcdir],$(cd ${srcdir}; pwd))
@@ -183,7 +183,6 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='${_mds_path}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"VALGRIND_LIB=/usr/lib64/valgrind ")
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
 
  # WINE Valgrind tuning ..

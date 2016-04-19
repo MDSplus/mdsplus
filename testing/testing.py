@@ -1,12 +1,13 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-from __future__ import print_function
+
+import __future__
 import sys,os
 
 
 
-class testing():    
-    from unittest import TestCase,TestSuite,SkipTest
+class testing(object):    
+    from unittest import TestCase,TestSuite
     test_format = os.getenv('TEST_FORMAT','tap')
 
     def check_module(self, module_name ):
@@ -16,7 +17,7 @@ class testing():
         for name, mod in finder.modules.items():
             try:                
                 __import__(name, fromlist=mod.globalnames.keys(),level=1)
-                print(".",end='')
+                sys.stdout.write('.')
             except ImportError, e:
                 print("ERROR IMPORTING %s: " % name + "  --  "+e.message)
         
@@ -87,6 +88,8 @@ def run():
 
 if __name__ == '__main__':
     import inspect
+    if '--skip' in sys.argv or 'ENABLE_SANITIZE' in os.environ:
+        ts.skip_test(sys.argv[1],'Skipped tests that was compiled with sanitize options')
     sys.argv[0] = sys.argv[1]
     check_arch(sys.argv[1])
     try:

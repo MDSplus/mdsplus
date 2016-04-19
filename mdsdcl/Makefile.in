@@ -14,7 +14,8 @@ cmdHelp.c               \
 cmdParseLex.c           \
 cmdParse.tab.c          \
 mdsdclDeltatimeToSeconds.c \
-mdsdcl_commands.c
+mdsdcl_commands.c \
+mdsdcl_show_version.c
 
 
 OBJECTS = $(SOURCES:.c=.o)

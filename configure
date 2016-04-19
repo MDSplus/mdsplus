@@ -648,6 +648,13 @@ SHARETYPEJNI
 SHARETYPE
 REMCAMLIB
 REMCAM
+RELEASE_DATE
+RELEASE_TAG
+RELEASE_BRANCH
+RELEASE_COMMIT
+RELEASE_RELEASE
+RELEASE_MINOR
+RELEASE_MAJOR
 NSLLIB
 NEED_SEMUN
 PYTHON_INCLUDE_DIR
@@ -767,10 +774,6 @@ DOXYGEN
 VALGRIND_memcheck_FLAGS
 VALGRIND_FLAGS
 TESTS_SKIP
-PY_LOG_FLAGS_XML
-PY_LOG_COMPILER_XML
-PY_LOG_FLAGS_TAP
-PY_LOG_COMPILER_TAP
 PY_LOG_FLAGS
 PY_LOG_COMPILER
 LOG_DRIVER
@@ -782,6 +785,11 @@ ENABLE_TESTS
 HAVE_WINEPATH
 HAVE_WINEBOOT
 NOSETESTS
+ENABLE_SANITIZE_LIBPATH
+ENABLE_SANITIZE_OPTIONS
+ENABLE_SANITIZE
+ENABLE_SANITIZE_FALSE
+ENABLE_SANITIZE_TRUE
 VALGRIND_CHECK_RULES
 VALGRIND_HAVE_TOOL_exp_sgcheck
 VALGRIND_HAVE_TOOL_drd
@@ -980,14 +988,15 @@ enable_largefile
 enable_shared
 enable_perf
 enable_java
-enable_sanitizer
+enable_sanitize_address
+enable_sanitize_undefined
+enable_sanitize_thread
 with_jdk
 with_java_target
 with_java_bootclasspath
 with_gsi
 with_srb
 with_labview
-enable_gcc_profiling
 with_idl
 with_visual_studio
 enable_d3d
@@ -998,6 +1007,7 @@ enable_xmltest
 with_x
 enable_valgrind
 with_valgrind_lib
+enable_sanitize
 with_winebottle
 enable_doxygen_doc
 enable_doxygen_dot
@@ -1670,12 +1680,22 @@ Optional Features:
   --disable-shared        Prevent building shared libraries
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
-  --enable-sanitizer      Enable memory error detection using address
+  --enable-sanitize-address
+                          Enable memory error detection using address
                           sanitizer [default=no]
-  --enable-gcc_profiling  enable gcc profiling
+  --enable-sanitize-undefined
+                          Enable undefined behavior detection using undefined
+                          sanitizer [default=no]
+  --enable-sanitize-address
+                          Enable race condition detection using thread
+                          sanitizer [default=no]
   --enable-d3d            build d3d ptdata access library
   --disable-xmltest       Do not try to compile and run a test LIBXML program
   --enable-valgrind       Whether to enable Valgrind on the unit tests
+  --enable-sanitize=flavor
+                          Enable compile sanitizer with flavor in (address |
+                          thread | undefined) [[default=address]]
+
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -3422,7 +3442,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} bash -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3452,8 +3472,9 @@ user_home   = ${user_home}
 
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
-local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
-export SHELL = \${docker_SHELL}
+local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
+SHELL := \${docker_SHELL}
+export SHELL
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
@@ -3502,7 +3523,7 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
+	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
 endif
 
@@ -3566,7 +3587,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} bash -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3653,14 +3674,14 @@ fi;
 
          $as_echo " ------------------------- "
          $as_echo " DOCKER CONFIGURE COMMAND: "
-         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} $(
+         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} ${SHELL} -l -c \"cd $(pwd)\; ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) \"; exit 0;          "
          $as_echo " ------------------------- "
 
-                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} /bin/sh -c \"cd $(pwd)\; ${0} $(
+                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} ${SHELL} -l -c \"cd $(pwd)\; ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
@@ -3705,8 +3726,9 @@ user_home   = ${user_home}
 
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
-local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
-export SHELL = \${docker_SHELL}
+local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
+SHELL := \${docker_SHELL}
+export SHELL
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
@@ -3755,7 +3777,7 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
+	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
 endif
 
@@ -7430,1024 +7452,32 @@ fi
 
 # Add address sanitizer options to flags, if requested. Only useful for GCC
 # version 4.8 and later.
-# Check whether --enable-sanitizer was given.
-if test "${enable_sanitizer+set}" = set; then :
-  enableval=$enable_sanitizer; enable_san="$enableval"
+# Check whether --enable-sanitize-address was given.
+if test "${enable_sanitize_address+set}" = set; then :
+  enableval=$enable_sanitize_address; enable_san_a="$enableval"
 else
-  enable_san="no"
+  enable_san_a="no"
 
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler vendor" >&5
-$as_echo_n "checking for C compiler vendor... " >&6; }
-if ${ax_cv_c_compiler_vendor+:} false; then :
-  $as_echo_n "(cached) " >&6
+# Check whether --enable-sanitize-undefined was given.
+if test "${enable_sanitize_undefined+set}" = set; then :
+  enableval=$enable_sanitize_undefined; enable_san_u="$enableval"
 else
-    # note: don't check for gcc first since some other compilers define __GNUC__
-  vendors="intel:     __ICC,__ECC,__INTEL_COMPILER
-           ibm:       __xlc__,__xlC__,__IBMC__,__IBMCPP__
-           pathscale: __PATHCC__,__PATHSCALE__
-           clang:     __clang__
-           cray:      _CRAYC
-           fujitsu:   __FUJITSU
-           gnu:       __GNUC__
-           sun:       __SUNPRO_C,__SUNPRO_CC
-           hp:        __HP_cc,__HP_aCC
-           dec:       __DECC,__DECCXX,__DECC_VER,__DECCXX_VER
-           borland:   __BORLANDC__,__CODEGEARC__,__TURBOC__
-           comeau:    __COMO__
-           kai:       __KCC
-           lcc:       __LCC__
-           sgi:       __sgi,sgi
-           microsoft: _MSC_VER
-           metrowerks: __MWERKS__
-           watcom:    __WATCOMC__
-           portland:  __PGI
-	   tcc:       __TINYC__
-           unknown:   UNKNOWN"
-  for ventest in $vendors; do
-    case $ventest in
-      *:) vendor=$ventest; continue ;;
-      *)  vencpp="defined("`echo $ventest | sed 's/,/) || defined(/g'`")" ;;
-    esac
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+  enable_san_u="no"
 
-int
-main ()
-{
-
-      #if !($vencpp)
-        thisisanerror;
-      #endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  break
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-  done
-  ax_cv_c_compiler_vendor=`echo $vendor | cut -d: -f1`
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_vendor" >&5
-$as_echo "$ax_cv_c_compiler_vendor" >&6; }
-
-
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler version" >&5
-$as_echo_n "checking for C compiler version... " >&6; }
-if ${ax_cv_c_compiler_version+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-         case $ax_cv_c_compiler_vendor in #(
-  intel) :
-       if ac_fn_c_compute_int "$LINENO" "__INTEL_COMPILER/100" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_INTEL unknown intel compiler version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__INTEL_COMPILER%100)/10" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_INTEL unknown intel compiler version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__INTEL_COMPILER%10)" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_INTEL unknown intel compiler version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  ibm) :
-         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-
-        #if defined(__COMPILER_VER__)
-        choke me;
-        #endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-
-      if ac_fn_c_compute_int "$LINENO" "__xlC__/100" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "__xlC__%100" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "__xlC_ver__/0x100" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "__xlC_ver__%0x100" "_ax_c_compiler_version_build"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler build version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch.$_ax_c_compiler_version_build"
-
-else
-
-      if ac_fn_c_compute_int "$LINENO" "__xlC__%1000" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "(__xlC__/10000)%10" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "(__xlC__/100000)%10" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
- ;; #(
-  pathscale) :
-
-  if ac_fn_c_compute_int "$LINENO" "__PATHCC__" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_PATHSCALE unknown pathscale major
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__PATHCC_MINOR__" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_PATHSCALE unknown pathscale minor
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__PATHCC_PATCHLEVEL__" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_PATHSCALE unknown pathscale patch level
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  clang) :
-
-  if ac_fn_c_compute_int "$LINENO" "__clang_major__" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_CLANG unknown clang major
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__clang_minor__" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_CLANG unknown clang minor
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__clang_patchlevel__" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  0
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  cray) :
-
-  if ac_fn_c_compute_int "$LINENO" "_RELEASE" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_CRAY unknown crayc release
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "_RELEASE_MINOR" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_CRAY unknown crayc minor
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
-   ;; #(
-  fujitsu) :
-
-  if ac_fn_c_compute_int "$LINENO" "__FCC_VERSION" "ax_cv_c_compiler_version"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_FUJITSUunknown fujitsu release
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-   ;; #(
-  gnu) :
-
-  if ac_fn_c_compute_int "$LINENO" "__GNUC__" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_GNU unknown gcc major
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__GNUC_MINOR__" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_GNU unknown gcc minor
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__GNUC_PATCHLEVEL__" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_GNU unknown gcc patch level
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  sun) :
-
-
-  if ac_fn_c_compute_int "$LINENO" "!!(
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     < 0x1000)" "_ax_c_compiler_version_until59"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun release version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if test "X$_ax_c_compiler_version_until59" = X1; then :
-        if ac_fn_c_compute_int "$LINENO" "
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     % 0x10" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     / 0x10) % 0x10" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     / 0x100)" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-
-else
-        if ac_fn_c_compute_int "$LINENO" "
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     % 0x10" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     / 0x100) % 0x100" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__SUNPRO_CC)
-	     __SUNPRO_CC
-	     #else
-	     __SUNPRO_C
-	     #endif
-	     / 0x1000)" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-
-fi
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
- ;; #(
-  hp) :
-
-
-  if ac_fn_c_compute_int "$LINENO" "!!(
-	     #if defined(__HP_cc)
-	     __HP_cc
-	     #else
-	     __HP_aCC
-	     #endif
-	     <= 1)" "_ax_c_compiler_version_untilA0121"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp release version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if test "X$_ax_c_compiler_version_untilA0121" = X1; then :
-             ax_cv_c_compiler_version="01.21.00"
-
-else
-        if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__HP_cc)
-	     __HP_cc
-	     #else
-	     __HP_aCC
-	     #endif
-	     % 100)" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp release version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "((
-	     #if defined(__HP_cc)
-	     __HP_cc
-	     #else
-	     __HP_aCC
-	     #endif
-	     / 100)%100)" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      if ac_fn_c_compute_int "$LINENO" "((
-	     #if defined(__HP_cc)
-	     __HP_cc
-	     #else
-	     __HP_aCC
-	     #endif
-	     / 10000)%100)" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-      ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-
-fi
- ;; #(
-  dec) :
-
-  if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__DECC_VER)
-	     __DECC_VER
-	     #else
-	     __DECCXX_VER
-	     #endif
-	     % 10000)" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_DEC unknown dec release version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "((
-	     #if defined(__DECC_VER)
-	     __DECC_VER
-	     #else
-	     __DECCXX_VER
-	     #endif
-	     / 100000UL)%100)" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_DEC unknown dec minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "((
-	     #if defined(__DECC_VER)
-	     __DECC_VER
-	     #else
-	     __DECCXX_VER
-	     #endif
-	     / 10000000UL)%100)" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_DEC unknown dec major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  borland) :
-
-
- cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-	     #if defined(__TURBOC__)
-	     __TURBOC__
-	     #else
-	     choke me
-	     #endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-       if ac_fn_c_compute_int "$LINENO" "
-	     #if defined(__TURBOC__)
-	     __TURBOC__
-	     #else
-	     choke me
-	     #endif
-	    " "_ax_c_compiler_version_turboc_raw"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown turboc version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-     if test $_ax_c_compiler_version_turboc_raw -lt 661 || test $_ax_c_compiler_version_turboc_raw -gt 1023; then :
-          if ac_fn_c_compute_int "$LINENO" "
-	     #if defined(__TURBOC__)
-	     __TURBOC__
-	     #else
-	     choke me
-	     #endif
-	     % 0x100" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown turboc minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-	if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(__TURBOC__)
-	     __TURBOC__
-	     #else
-	     choke me
-	     #endif
-	    /0x100)%0x100" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown turboc major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-	ax_cv_c_compiler_version="0turboc:$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
-else
-         case $_ax_c_compiler_version_turboc_raw in #(
-  661) :
-    ax_cv_c_compiler_version="0turboc:1.00" ;; #(
-  662) :
-    ax_cv_c_compiler_version="0turboc:1.01" ;; #(
-  663) :
-    ax_cv_c_compiler_version="0turboc:2.00" ;; #(
-  *) :
-
-	 { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: [_AX_COMPILER_VERSION_BORLAND] unknown turboc version between 0x295 and 0x400 please report bug" >&5
-$as_echo "$as_me: WARNING: [_AX_COMPILER_VERSION_BORLAND] unknown turboc version between 0x295 and 0x400 please report bug" >&2;}
-	 ax_cv_c_compiler_version=""
-	  ;;
-esac
-
-fi
-
-else
-  # borlandc
-
-    if ac_fn_c_compute_int "$LINENO" "
-	     #if defined(__BORLANDC__)
-	     __BORLANDC__
-	     #else
-	     __CODEGEARC__
-	     #endif
-	    " "_ax_c_compiler_version_borlandc_raw"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown borlandc version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-    case $_ax_c_compiler_version_borlandc_raw in #(
-        512 ) :
-    ax_cv_c_compiler_version="1borlanc:2.00" ;; #(
-  1024) :
-    ax_cv_c_compiler_version="1borlanc:3.00" ;; #(
-  1024) :
-    ax_cv_c_compiler_version="1borlanc:3.00" ;; #(
-  1040) :
-    ax_cv_c_compiler_version="1borlanc:3.1" ;; #(
-  1106) :
-    ax_cv_c_compiler_version="1borlanc:4.0" ;; #(
-  1280) :
-    ax_cv_c_compiler_version="1borlanc:5.0" ;; #(
-  1312) :
-    ax_cv_c_compiler_version="1borlanc:5.02" ;; #(
-        1328) :
-    ax_cv_c_compiler_version="2cppbuilder:3.0" ;; #(
-  1344) :
-    ax_cv_c_compiler_version="2cppbuilder:4.0" ;; #(
-        1360) :
-    ax_cv_c_compiler_version="3borlancpp:5.5" ;; #(
-  1361) :
-    ax_cv_c_compiler_version="3borlancpp:5.51" ;; #(
-  1378) :
-    ax_cv_c_compiler_version="3borlancpp:5.6.4" ;; #(
-        1392) :
-    ax_cv_c_compiler_version="4cppbuilder:2006" ;; #(
-  1424) :
-    ax_cv_c_compiler_version="4cppbuilder:2007" ;; #(
-  1555) :
-    ax_cv_c_compiler_version="4cppbuilder:2009" ;; #(
-  1569) :
-    ax_cv_c_compiler_version="4cppbuilder:2010" ;; #(
-        1584) :
-    ax_cv_c_compiler_version="5xe" ;; #(
-  1600) :
-    ax_cv_c_compiler_version="5xe:2" ;; #(
-  1616) :
-    ax_cv_c_compiler_version="5xe:3" ;; #(
-  1632) :
-    ax_cv_c_compiler_version="5xe:4" ;; #(
-  *) :
-
-      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: [_AX_COMPILER_VERSION_BORLAND] Unknow borlanc compiler version $_ax_c_compiler_version_borlandc_raw please report bug" >&5
-$as_echo "$as_me: WARNING: [_AX_COMPILER_VERSION_BORLAND] Unknow borlanc compiler version $_ax_c_compiler_version_borlandc_raw please report bug" >&2;}
-       ;;
-esac
-
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-   ;; #(
-  comeau) :
-       if ac_fn_c_compute_int "$LINENO" "__COMO_VERSION__%100" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_COMEAU unknown comeau compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__COMO_VERSION__/100)%10" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_COMEAU unknown comeau compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
-   ;; #(
-  kai) :
-
-  if ac_fn_c_compute_int "$LINENO" "__KCC_VERSION%100" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_KAI unknown kay compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__KCC_VERSION/100)%10" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_KAI unknown kay compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__KCC_VERSION/1000)%10" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_KAI unknown kay compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  sgi) :
-
-
-  if ac_fn_c_compute_int "$LINENO" "
-	     #if defined(_COMPILER_VERSION)
-	     _COMPILER_VERSION
-	     #else
-	     _SGI_COMPILER_VERSION
-	     #endif
-	    %10" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SGI unknown SGI compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(_COMPILER_VERSION)
-	     _COMPILER_VERSION
-	     #else
-	     _SGI_COMPILER_VERSION
-	     #endif
-	    /10)%10" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SGI unknown SGI compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(
-	     #if defined(_COMPILER_VERSION)
-	     _COMPILER_VERSION
-	     #else
-	     _SGI_COMPILER_VERSION
-	     #endif
-	    /100)%10" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_SGI unknown SGI compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  microsoft) :
-
-  if ac_fn_c_compute_int "$LINENO" "_MSC_VER%100" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(_MSC_VER/100)%100" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-    _ax_c_compiler_version_patch=0
-  _ax_c_compiler_version_build=0
-  # special case for version 6
-  if test "X$_ax_c_compiler_version_major" = "X12"; then :
-  if ac_fn_c_compute_int "$LINENO" "_MSC_FULL_VER%1000" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  _ax_c_compiler_version_patch=0
-fi
-
-fi
-  # for version 7
-  if test "X$_ax_c_compiler_version_major" = "X13"; then :
-  if ac_fn_c_compute_int "$LINENO" "_MSC_FULL_VER%1000" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-
-fi
-  # for version > 8
- if test $_ax_c_compiler_version_major -ge 14; then :
-  if ac_fn_c_compute_int "$LINENO" "_MSC_FULL_VER%10000" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-
-fi
- if test $_ax_c_compiler_version_major -ge 15; then :
-  if ac_fn_c_compute_int "$LINENO" "_MSC_BUILD" "_ax_c_compiler_version_build"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler build version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-
-fi
- ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch.$_ax_c_compiler_version_build"
-  ;; #(
-  metrowerks) :
-      if ac_fn_c_compute_int "$LINENO" "__MWERKS__%0x100" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_METROWERKS unknown metrowerks compiler patch version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__MWERKS__/0x100)%0x10" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_METROWERKS unknown metrowerks compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__MWERKS__/0x1000)%0x10" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_METROWERKS unknown metrowerks compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  watcom) :
-      if ac_fn_c_compute_int "$LINENO" "__WATCOMC__%100" "_ax_c_compiler_version_minor"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_WATCOM unknown watcom compiler minor version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "(__WATCOMC__/100)%100" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_WATCOM unknown watcom compiler major version
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
-   ;; #(
-  portland) :
-
-  if ac_fn_c_compute_int "$LINENO" "__PGIC__" "_ax_c_compiler_version_major"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_PORTLAND unknown pgi major
-See \`config.log' for more details" "$LINENO" 5; }
 fi
 
-  if ac_fn_c_compute_int "$LINENO" "__PGIC_MINOR__" "_ax_c_compiler_version_minor"        ""; then :
 
+# Check whether --enable-sanitize-thread was given.
+if test "${enable_sanitize_thread+set}" = set; then :
+  enableval=$enable_sanitize_thread; enable_san_t="$enableval"
 else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_PORTLAND unknown pgi minor
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-  if ac_fn_c_compute_int "$LINENO" "__PGIC_PATCHLEVEL__" "_ax_c_compiler_version_patch"        ""; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "_AX_COMPILER_VERSION_PORTLAND unknown pgi patch level
-See \`config.log' for more details" "$LINENO" 5; }
-fi
+  enable_san_t="no"
 
-  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
-   ;; #(
-  tcc) :
-
-  ax_cv_c_compiler_version=`tcc -v | $SED 's/^[ ]*tcc[ ]\+version[ ]\+\([0-9.]\+\).*/\1/g'`
-   ;; #(
-  *) :
-    ax_cv_c_compiler_version="" ;;
-esac
-
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_version" >&5
-$as_echo "$ax_cv_c_compiler_version" >&6; }
-
-if test "$enable_san" = "yes" -a "$GCC" = yes; then
-
-
 
-  # Used to indicate true or false condition
-  ax_compare_version=false
-
-  # Convert the two version strings to be compared into a format that
-  # allows a simple string comparison.  The end result is that a version
-  # string of the form 1.12.5-r617 will be converted to the form
-  # 0001001200050617.  In other words, each number is zero padded to four
-  # digits, and non digits are removed.
-
-  ax_compare_version_A=`echo "$ax_cv_c_compiler_version" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
-                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/[^0-9]//g'`
-
-
-  ax_compare_version_B=`echo "4.8.0" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
-                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/[^0-9]//g'`
-
-
-    ax_compare_version=`echo "x$ax_compare_version_A
-x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
-
-
-
-    if test "$ax_compare_version" = "true" ; then
-    enable_san="yes"
-    else enable_san="no"
-  fi
-
-   if test "$enable_san" = "yes"; then
-       CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
-   fi
-fi
 
 
 
@@ -8877,7 +7907,13 @@ $as_echo_n "checking for labview... " >&6; }
 if test "${with_labview+set}" = set; then :
   withval=$with_labview;
 else
-  if ${LABVIEW_DIR+:} false; then :
+  with_labview=yes
+fi
+
+
+case $with_labview in #(
+  yes) :
+    if ${LABVIEW_DIR+:} false; then :
   with_labview=$LABVIEW_DIR
 else
   if ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview; then :
@@ -8885,8 +7921,10 @@ else
 else
   with_labview=no
 fi
-fi
-fi
+fi ;; #(
+  *) :
+     ;;
+esac
 
 case $with_labview in #(
   no) :
@@ -8897,31 +7935,10 @@ case $with_labview in #(
     LV_CINTOOLS="$with_labview/cintools"
          LV="mdsobjects/labview" ;;
 esac
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_labview" >&5
 $as_echo "$with_labview" >&6; }
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable profiled code" >&5
-$as_echo_n "checking whether to enable profiled code... " >&6; }
-# Check whether --enable-gcc_profiling was given.
-if test "${enable_gcc_profiling+set}" = set; then :
-  enableval=$enable_gcc_profiling;
-else
-  with_gcc_profiling=no
-fi
-
-case $with_gcc_profiling in #(
-  yes) :
-    GCCPROF="-pg" ;; #(
-  no) :
-    GCCPROF="" ;; #(
-  *) :
-    as_fn_error $? "--enable-gcc_profiling does not take an argument" "$LINENO" 5 ;;
-esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_gcc_profiling" >&5
-$as_echo "$with_gcc_profiling" >&6; }
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for idl" >&5
-$as_echo_n "checking for idl... " >&6; }
 
 # Check whether --with-idl was given.
 if test "${with_idl+set}" = set; then :
@@ -8929,6 +7946,7 @@ if test "${with_idl+set}" = set; then :
 else
   with_idl=yes
 fi
+
 
 case $with_idl in #(
   yes) :
@@ -8948,6 +7966,7 @@ fi ;; #(
   *) :
      ;;
 esac
+
 case $with_idl in #(
   no) :
     IDL_DIR="" ;; #(
@@ -8956,6 +7975,7 @@ case $with_idl in #(
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets" ;;
 esac
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
 $as_echo "$with_idl" >&6; }
 
@@ -13232,7 +12252,7 @@ if ${am_cv_pathless_PYTHON+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-	for am_cv_pathless_PYTHON in python2 python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 none; do
+	for am_cv_pathless_PYTHON in python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2 none; do
 	  test "$am_cv_pathless_PYTHON" = none && break
 	  prog="import sys
 # split strings by '.' and convert to numeric.  Append some zeros
@@ -13882,7 +12902,7 @@ else
 fi
 
 
- # this calls valgrind check with args
+ # check for valgrind
 
 		# Check whether --enable-valgrind was given.
 if test "${enable_valgrind+set}" = set; then :
@@ -14128,7 +13148,6 @@ VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_
 
 VALGRIND_SUPPRESSIONS_PY ?=
 VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
-                            $(VALGRIND_SUPPRESSIONS) \
                             $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
 
 
@@ -14143,7 +13162,8 @@ VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_lo
 # Internal use
 valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
                      $(TEST_LOGS:.log=-valgrind-*.log) \
-                     $(TEST_LOGS:.log=-valgrind-*.xml)
+                     $(TEST_LOGS:.log=-valgrind-*.xml) \
+                     $(TEST_LOGS:.log=-valgrind-*.supp)
 
 valgrind_supp_files = $(addsuffix -valgrind.supp,$(TESTS))
 
@@ -14186,10 +13206,23 @@ VALGRIND_LOG_COMPILER = \
 .PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
 ifeq ($(VALGRIND_ENABLED),yes)
 
+
+_print_valgrind_hello = \
+  echo ""; \
+  echo "---------------------------------------------------------------------------"; \
+  echo " vagrind $(VALGRIND_TOOL) "; \
+  echo " active tool options   :  $(valgrind_$(VALGRIND_TOOL)_flags) "; \
+  echo " active valgrind flags : $(VALGRIND_FLAGS) "; \
+  echo " active suppressions   : "; \
+  for supp in $(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY); do \
+    echo "        $${supp}"; \
+  done
+
+
 tests-valgrind:
 	@ \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
-	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(MAKE) VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-tool VALGRIND_TOOL=$(tool); \
@@ -14199,6 +13232,7 @@ tests-valgrind:
 tests-valgrind-tool:
 	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
 	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
+	@ $(_print_valgrind_hello);
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
@@ -14209,7 +13243,7 @@ tests-valgrind-tool:
 
 tests-valgrind-suppressions:
 	@ \
-	$(MAKE) rebuild-tests VALGRIND_BUILD="yes"; \
+	$(MAKE) VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
 		$(if $(VALGRIND_HAVE_TOOL_$(tool))$(VALGRIND_HAVE_TOOL_exp_$(tool)), \
 			$(MAKE) $(AM_MAKEFLAGS) -k tests-valgrind-suppressions-tool VALGRIND_TOOL=$(tool); \
@@ -14219,12 +13253,13 @@ tests-valgrind-suppressions:
 tests-valgrind-suppressions-tool:
 	@list="$(VALGRIND_LOGS)";           test -z "$$list" || rm -f $$list
 	@list="$(VALGRIND_LOGS:.log=.trs)"; test -z "$$list" || rm -f $$list
+	@ $(_print_valgrind_hello);
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
-	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk >> \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk > \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 else
@@ -14252,16 +13287,1335 @@ VALGRIND_CHECK_RULES="${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"
 
 
 
+ # check for sanitizer
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler vendor" >&5
+$as_echo_n "checking for C compiler vendor... " >&6; }
+if ${ax_cv_c_compiler_vendor+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+    # note: don't check for gcc first since some other compilers define __GNUC__
+  vendors="intel:     __ICC,__ECC,__INTEL_COMPILER
+           ibm:       __xlc__,__xlC__,__IBMC__,__IBMCPP__
+           pathscale: __PATHCC__,__PATHSCALE__
+           clang:     __clang__
+           cray:      _CRAYC
+           fujitsu:   __FUJITSU
+           gnu:       __GNUC__
+           sun:       __SUNPRO_C,__SUNPRO_CC
+           hp:        __HP_cc,__HP_aCC
+           dec:       __DECC,__DECCXX,__DECC_VER,__DECCXX_VER
+           borland:   __BORLANDC__,__CODEGEARC__,__TURBOC__
+           comeau:    __COMO__
+           kai:       __KCC
+           lcc:       __LCC__
+           sgi:       __sgi,sgi
+           microsoft: _MSC_VER
+           metrowerks: __MWERKS__
+           watcom:    __WATCOMC__
+           portland:  __PGI
+	   tcc:       __TINYC__
+           unknown:   UNKNOWN"
+  for ventest in $vendors; do
+    case $ventest in
+      *:) vendor=$ventest; continue ;;
+      *)  vencpp="defined("`echo $ventest | sed 's/,/) || defined(/g'`")" ;;
+    esac
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+      #if !($vencpp)
+        thisisanerror;
+      #endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  done
+  ax_cv_c_compiler_vendor=`echo $vendor | cut -d: -f1`
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_vendor" >&5
+$as_echo "$ax_cv_c_compiler_vendor" >&6; }
+
+
+
+
+  # Check whether --enable-sanitize was given.
+if test "${enable_sanitize+set}" = set; then :
+  enableval=$enable_sanitize; if test "x$enableval" = xyes; then :
+  enable_sanitize=address
+else
+  enable_sanitize=$enableval
+fi
+else
+  if ${ENABLE_SANITIZE+:} false; then :
+
+else
+  enable_sanitize=no
+fi
+
+fi
+
+
+  if  test x"$enable_sanitize" != x"no" -a "$GCC" = "yes" ; then
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler version" >&5
+$as_echo_n "checking for C compiler version... " >&6; }
+if ${ax_cv_c_compiler_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+         case $ax_cv_c_compiler_vendor in #(
+  intel) :
+       if ac_fn_c_compute_int "$LINENO" "__INTEL_COMPILER/100" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_INTEL unknown intel compiler version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__INTEL_COMPILER%100)/10" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_INTEL unknown intel compiler version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__INTEL_COMPILER%10)" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_INTEL unknown intel compiler version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  ibm) :
+         cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+
+        #if defined(__COMPILER_VER__)
+        choke me;
+        #endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+      if ac_fn_c_compute_int "$LINENO" "__xlC__/100" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "__xlC__%100" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "__xlC_ver__/0x100" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "__xlC_ver__%0x100" "_ax_c_compiler_version_build"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler build version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch.$_ax_c_compiler_version_build"
+
+else
+
+      if ac_fn_c_compute_int "$LINENO" "__xlC__%1000" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "(__xlC__/10000)%10" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "(__xlC__/100000)%10" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_IBM unknown IBM compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ ;; #(
+  pathscale) :
+
+  if ac_fn_c_compute_int "$LINENO" "__PATHCC__" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_PATHSCALE unknown pathscale major
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__PATHCC_MINOR__" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_PATHSCALE unknown pathscale minor
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__PATHCC_PATCHLEVEL__" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_PATHSCALE unknown pathscale patch level
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  clang) :
+
+  if ac_fn_c_compute_int "$LINENO" "__clang_major__" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_CLANG unknown clang major
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__clang_minor__" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_CLANG unknown clang minor
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__clang_patchlevel__" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  0
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  cray) :
+
+  if ac_fn_c_compute_int "$LINENO" "_RELEASE" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_CRAY unknown crayc release
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "_RELEASE_MINOR" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_CRAY unknown crayc minor
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
+   ;; #(
+  fujitsu) :
+
+  if ac_fn_c_compute_int "$LINENO" "__FCC_VERSION" "ax_cv_c_compiler_version"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_FUJITSUunknown fujitsu release
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+   ;; #(
+  gnu) :
+
+  if ac_fn_c_compute_int "$LINENO" "__GNUC__" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_GNU unknown gcc major
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__GNUC_MINOR__" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_GNU unknown gcc minor
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__GNUC_PATCHLEVEL__" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_GNU unknown gcc patch level
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  sun) :
+
+
+  if ac_fn_c_compute_int "$LINENO" "!!(
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     < 0x1000)" "_ax_c_compiler_version_until59"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun release version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if test "X$_ax_c_compiler_version_until59" = X1; then :
+        if ac_fn_c_compute_int "$LINENO" "
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     % 0x10" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     / 0x10) % 0x10" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     / 0x100)" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+else
+        if ac_fn_c_compute_int "$LINENO" "
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     % 0x10" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     / 0x100) % 0x100" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__SUNPRO_CC)
+	     __SUNPRO_CC
+	     #else
+	     __SUNPRO_C
+	     #endif
+	     / 0x1000)" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SUN unknown sun major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+fi
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+ ;; #(
+  hp) :
+
+
+  if ac_fn_c_compute_int "$LINENO" "!!(
+	     #if defined(__HP_cc)
+	     __HP_cc
+	     #else
+	     __HP_aCC
+	     #endif
+	     <= 1)" "_ax_c_compiler_version_untilA0121"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp release version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if test "X$_ax_c_compiler_version_untilA0121" = X1; then :
+             ax_cv_c_compiler_version="01.21.00"
+
+else
+        if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__HP_cc)
+	     __HP_cc
+	     #else
+	     __HP_aCC
+	     #endif
+	     % 100)" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp release version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "((
+	     #if defined(__HP_cc)
+	     __HP_cc
+	     #else
+	     __HP_aCC
+	     #endif
+	     / 100)%100)" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      if ac_fn_c_compute_int "$LINENO" "((
+	     #if defined(__HP_cc)
+	     __HP_cc
+	     #else
+	     __HP_aCC
+	     #endif
+	     / 10000)%100)" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_HP unknown hp major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+      ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+
+fi
+ ;; #(
+  dec) :
+
+  if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__DECC_VER)
+	     __DECC_VER
+	     #else
+	     __DECCXX_VER
+	     #endif
+	     % 10000)" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_DEC unknown dec release version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "((
+	     #if defined(__DECC_VER)
+	     __DECC_VER
+	     #else
+	     __DECCXX_VER
+	     #endif
+	     / 100000UL)%100)" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_DEC unknown dec minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "((
+	     #if defined(__DECC_VER)
+	     __DECC_VER
+	     #else
+	     __DECCXX_VER
+	     #endif
+	     / 10000000UL)%100)" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_DEC unknown dec major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  borland) :
+
+
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+	     #if defined(__TURBOC__)
+	     __TURBOC__
+	     #else
+	     choke me
+	     #endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+       if ac_fn_c_compute_int "$LINENO" "
+	     #if defined(__TURBOC__)
+	     __TURBOC__
+	     #else
+	     choke me
+	     #endif
+	    " "_ax_c_compiler_version_turboc_raw"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown turboc version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+     if test $_ax_c_compiler_version_turboc_raw -lt 661 || test $_ax_c_compiler_version_turboc_raw -gt 1023; then :
+          if ac_fn_c_compute_int "$LINENO" "
+	     #if defined(__TURBOC__)
+	     __TURBOC__
+	     #else
+	     choke me
+	     #endif
+	     % 0x100" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown turboc minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+	if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(__TURBOC__)
+	     __TURBOC__
+	     #else
+	     choke me
+	     #endif
+	    /0x100)%0x100" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown turboc major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+	ax_cv_c_compiler_version="0turboc:$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
+else
+         case $_ax_c_compiler_version_turboc_raw in #(
+  661) :
+    ax_cv_c_compiler_version="0turboc:1.00" ;; #(
+  662) :
+    ax_cv_c_compiler_version="0turboc:1.01" ;; #(
+  663) :
+    ax_cv_c_compiler_version="0turboc:2.00" ;; #(
+  *) :
+
+	 { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: [_AX_COMPILER_VERSION_BORLAND] unknown turboc version between 0x295 and 0x400 please report bug" >&5
+$as_echo "$as_me: WARNING: [_AX_COMPILER_VERSION_BORLAND] unknown turboc version between 0x295 and 0x400 please report bug" >&2;}
+	 ax_cv_c_compiler_version=""
+	  ;;
+esac
+
+fi
+
+else
+  # borlandc
+
+    if ac_fn_c_compute_int "$LINENO" "
+	     #if defined(__BORLANDC__)
+	     __BORLANDC__
+	     #else
+	     __CODEGEARC__
+	     #endif
+	    " "_ax_c_compiler_version_borlandc_raw"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_BORLAND unknown borlandc version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+    case $_ax_c_compiler_version_borlandc_raw in #(
+        512 ) :
+    ax_cv_c_compiler_version="1borlanc:2.00" ;; #(
+  1024) :
+    ax_cv_c_compiler_version="1borlanc:3.00" ;; #(
+  1024) :
+    ax_cv_c_compiler_version="1borlanc:3.00" ;; #(
+  1040) :
+    ax_cv_c_compiler_version="1borlanc:3.1" ;; #(
+  1106) :
+    ax_cv_c_compiler_version="1borlanc:4.0" ;; #(
+  1280) :
+    ax_cv_c_compiler_version="1borlanc:5.0" ;; #(
+  1312) :
+    ax_cv_c_compiler_version="1borlanc:5.02" ;; #(
+        1328) :
+    ax_cv_c_compiler_version="2cppbuilder:3.0" ;; #(
+  1344) :
+    ax_cv_c_compiler_version="2cppbuilder:4.0" ;; #(
+        1360) :
+    ax_cv_c_compiler_version="3borlancpp:5.5" ;; #(
+  1361) :
+    ax_cv_c_compiler_version="3borlancpp:5.51" ;; #(
+  1378) :
+    ax_cv_c_compiler_version="3borlancpp:5.6.4" ;; #(
+        1392) :
+    ax_cv_c_compiler_version="4cppbuilder:2006" ;; #(
+  1424) :
+    ax_cv_c_compiler_version="4cppbuilder:2007" ;; #(
+  1555) :
+    ax_cv_c_compiler_version="4cppbuilder:2009" ;; #(
+  1569) :
+    ax_cv_c_compiler_version="4cppbuilder:2010" ;; #(
+        1584) :
+    ax_cv_c_compiler_version="5xe" ;; #(
+  1600) :
+    ax_cv_c_compiler_version="5xe:2" ;; #(
+  1616) :
+    ax_cv_c_compiler_version="5xe:3" ;; #(
+  1632) :
+    ax_cv_c_compiler_version="5xe:4" ;; #(
+  *) :
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: [_AX_COMPILER_VERSION_BORLAND] Unknow borlanc compiler version $_ax_c_compiler_version_borlandc_raw please report bug" >&5
+$as_echo "$as_me: WARNING: [_AX_COMPILER_VERSION_BORLAND] Unknow borlanc compiler version $_ax_c_compiler_version_borlandc_raw please report bug" >&2;}
+       ;;
+esac
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+   ;; #(
+  comeau) :
+       if ac_fn_c_compute_int "$LINENO" "__COMO_VERSION__%100" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_COMEAU unknown comeau compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__COMO_VERSION__/100)%10" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_COMEAU unknown comeau compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
+   ;; #(
+  kai) :
+
+  if ac_fn_c_compute_int "$LINENO" "__KCC_VERSION%100" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_KAI unknown kay compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__KCC_VERSION/100)%10" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_KAI unknown kay compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__KCC_VERSION/1000)%10" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_KAI unknown kay compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  sgi) :
+
+
+  if ac_fn_c_compute_int "$LINENO" "
+	     #if defined(_COMPILER_VERSION)
+	     _COMPILER_VERSION
+	     #else
+	     _SGI_COMPILER_VERSION
+	     #endif
+	    %10" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SGI unknown SGI compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(_COMPILER_VERSION)
+	     _COMPILER_VERSION
+	     #else
+	     _SGI_COMPILER_VERSION
+	     #endif
+	    /10)%10" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SGI unknown SGI compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(
+	     #if defined(_COMPILER_VERSION)
+	     _COMPILER_VERSION
+	     #else
+	     _SGI_COMPILER_VERSION
+	     #endif
+	    /100)%10" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_SGI unknown SGI compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  microsoft) :
+
+  if ac_fn_c_compute_int "$LINENO" "_MSC_VER%100" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(_MSC_VER/100)%100" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+    _ax_c_compiler_version_patch=0
+  _ax_c_compiler_version_build=0
+  # special case for version 6
+  if test "X$_ax_c_compiler_version_major" = "X12"; then :
+  if ac_fn_c_compute_int "$LINENO" "_MSC_FULL_VER%1000" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  _ax_c_compiler_version_patch=0
+fi
+
+fi
+  # for version 7
+  if test "X$_ax_c_compiler_version_major" = "X13"; then :
+  if ac_fn_c_compute_int "$LINENO" "_MSC_FULL_VER%1000" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+fi
+  # for version > 8
+ if test $_ax_c_compiler_version_major -ge 14; then :
+  if ac_fn_c_compute_int "$LINENO" "_MSC_FULL_VER%10000" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+fi
+ if test $_ax_c_compiler_version_major -ge 15; then :
+  if ac_fn_c_compute_int "$LINENO" "_MSC_BUILD" "_ax_c_compiler_version_build"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_MICROSOFT unknown microsoft compiler build version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+
+fi
+ ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch.$_ax_c_compiler_version_build"
+  ;; #(
+  metrowerks) :
+      if ac_fn_c_compute_int "$LINENO" "__MWERKS__%0x100" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_METROWERKS unknown metrowerks compiler patch version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__MWERKS__/0x100)%0x10" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_METROWERKS unknown metrowerks compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__MWERKS__/0x1000)%0x10" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_METROWERKS unknown metrowerks compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  watcom) :
+      if ac_fn_c_compute_int "$LINENO" "__WATCOMC__%100" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_WATCOM unknown watcom compiler minor version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "(__WATCOMC__/100)%100" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_WATCOM unknown watcom compiler major version
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor"
+   ;; #(
+  portland) :
+
+  if ac_fn_c_compute_int "$LINENO" "__PGIC__" "_ax_c_compiler_version_major"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_PORTLAND unknown pgi major
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__PGIC_MINOR__" "_ax_c_compiler_version_minor"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_PORTLAND unknown pgi minor
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  if ac_fn_c_compute_int "$LINENO" "__PGIC_PATCHLEVEL__" "_ax_c_compiler_version_patch"        ""; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "_AX_COMPILER_VERSION_PORTLAND unknown pgi patch level
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+  ax_cv_c_compiler_version="$_ax_c_compiler_version_major.$_ax_c_compiler_version_minor.$_ax_c_compiler_version_patch"
+   ;; #(
+  tcc) :
+
+  ax_cv_c_compiler_version=`tcc -v | $SED 's/^[ ]*tcc[ ]\+version[ ]\+\([0-9.]\+\).*/\1/g'`
+   ;; #(
+  *) :
+    ax_cv_c_compiler_version="" ;;
+esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_version" >&5
+$as_echo "$ax_cv_c_compiler_version" >&6; }
+
+
+
+
+  # Used to indicate true or false condition
+  ax_compare_version=false
+
+  # Convert the two version strings to be compared into a format that
+  # allows a simple string comparison.  The end result is that a version
+  # string of the form 1.12.5-r617 will be converted to the form
+  # 0001001200050617.  In other words, each number is zero padded to four
+  # digits, and non digits are removed.
+
+  ax_compare_version_A=`echo "${ax_cv_c_compiler_version}" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+  ax_compare_version_B=`echo "4.8.0" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+    ax_compare_version=`echo "x$ax_compare_version_A
+x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
+
+
+
+    if test "$ax_compare_version" = "true" ; then
+    :
+    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: gcc version 4.8.0 or higher required for sanitizers" >&5
+$as_echo "gcc version 4.8.0 or higher required for sanitizers" >&6; }
+		      echo "${enable_sanitize} sanitizer not available."; exit 111;
+
+  fi
+
+
+     case ${enable_sanitize} in #(
+  # address sanitizer
+     address) :
+
+
+
+
+     LDD=ldd
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _init in -lasan" >&5
+$as_echo_n "checking for _init in -lasan... " >&6; }
+if ${ac_cv_lib_asan__init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lasan  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _init ();
+int
+main ()
+{
+return _init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_asan__init=yes
+else
+  ac_cv_lib_asan__init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_asan__init" >&5
+$as_echo "$ac_cv_lib_asan__init" >&6; }
+if test "x$ac_cv_lib_asan__init" = xyes; then :
+  have_asan=yes
+fi
+
+     if test "x$have_asan" = xyes; then :
+  CPPFLAGS_save=$CPPFLAGS
+                LIBS_save=$LIBS
+                CPPFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+                LIBS=-lasan
+                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+int x; (void)x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  sanitize_flags=$CPPFLAGS
+                                sanitize_libs=$LIBS
+                                sanitize_env=ASAN_OPTIONS
+                                sanitize_libpath=$($LDD conftest$EXEEXT | grep libasan.so | $AWK '{ print $3 }')
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+                if ${sanitize_libpath+:} false; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: found library path for asan: $sanitize_libpath" >&5
+$as_echo "$as_me: found library path for asan: $sanitize_libpath" >&6;}
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: library path not found for asan" >&5
+$as_echo "$as_me: WARNING: library path not found for asan" >&2;}
+fi
+                CPPFLAGS=${CPPFLAGS_save}
+                LIBS=${LIBS_save}
+                sanitizer_ok=yes
+
+else
+  echo "${enable_sanitize} sanitizer not available."; exit 111;
+fi
+
+
+ ;; #(
+  # thread sanitizer
+     thread) :
+
+
+
+
+     LDD=ldd
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _init in -ltsan" >&5
+$as_echo_n "checking for _init in -ltsan... " >&6; }
+if ${ac_cv_lib_tsan__init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ltsan  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _init ();
+int
+main ()
+{
+return _init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_tsan__init=yes
+else
+  ac_cv_lib_tsan__init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_tsan__init" >&5
+$as_echo "$ac_cv_lib_tsan__init" >&6; }
+if test "x$ac_cv_lib_tsan__init" = xyes; then :
+  have_tsan=yes
+fi
+
+     if test "x$have_tsan" = xyes; then :
+  CPPFLAGS_save=$CPPFLAGS
+                LIBS_save=$LIBS
+                CPPFLAGS="-fsanitize=thread -fno-omit-frame-pointer"
+                LIBS=-ltsan
+                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+int x; (void)x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  sanitize_flags=$CPPFLAGS
+                                sanitize_libs=$LIBS
+                                sanitize_env=TSAN_OPTIONS
+                                sanitize_libpath=$($LDD conftest$EXEEXT | grep libtsan.so | $AWK '{ print $3 }')
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+                if ${sanitize_libpath+:} false; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: found library path for tsan: $sanitize_libpath" >&5
+$as_echo "$as_me: found library path for tsan: $sanitize_libpath" >&6;}
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: library path not found for tsan" >&5
+$as_echo "$as_me: WARNING: library path not found for tsan" >&2;}
+fi
+                CPPFLAGS=${CPPFLAGS_save}
+                LIBS=${LIBS_save}
+                sanitizer_ok=yes
+
+else
+  echo "${enable_sanitize} sanitizer not available."; exit 111;
+fi
+
+
+ ;; #(
+  # undefined sanitizer
+     undefined) :
+
+
+
+
+     LDD=ldd
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _init in -lubsan" >&5
+$as_echo_n "checking for _init in -lubsan... " >&6; }
+if ${ac_cv_lib_ubsan__init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lubsan  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _init ();
+int
+main ()
+{
+return _init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ubsan__init=yes
+else
+  ac_cv_lib_ubsan__init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ubsan__init" >&5
+$as_echo "$ac_cv_lib_ubsan__init" >&6; }
+if test "x$ac_cv_lib_ubsan__init" = xyes; then :
+  have_ubsan=yes
+fi
+
+     if test "x$have_ubsan" = xyes; then :
+  CPPFLAGS_save=$CPPFLAGS
+                LIBS_save=$LIBS
+                CPPFLAGS="-fsanitize=undefined -fno-omit-frame-pointer"
+                LIBS=-lubsan
+                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+int
+main ()
+{
+int x; (void)x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  sanitize_flags=$CPPFLAGS
+                                sanitize_libs=$LIBS
+                                sanitize_env=UBSAN_OPTIONS
+                                sanitize_libpath=$($LDD conftest$EXEEXT | grep libubsan.so | $AWK '{ print $3 }')
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+                if ${sanitize_libpath+:} false; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: found library path for ubsan: $sanitize_libpath" >&5
+$as_echo "$as_me: found library path for ubsan: $sanitize_libpath" >&6;}
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: library path not found for ubsan" >&5
+$as_echo "$as_me: WARNING: library path not found for ubsan" >&2;}
+fi
+                CPPFLAGS=${CPPFLAGS_save}
+                LIBS=${LIBS_save}
+                sanitizer_ok=yes
+
+else
+  echo "${enable_sanitize} sanitizer not available."; exit 111;
+fi
+
+
+ ;; #(
+  *) :
+    # default
+     echo "${enable_sanitize} sanitizer not available."; exit 111; ;;
+esac
+  fi
+
+   if test "${enable_sanitize}" != "no" ; then
+  ENABLE_SANITIZE_TRUE=
+  ENABLE_SANITIZE_FALSE='#'
+else
+  ENABLE_SANITIZE_TRUE='#'
+  ENABLE_SANITIZE_FALSE=
+fi
+
+  if test "x$sanitizer_ok" = xyes; then :
+  ENABLE_SANITIZE=${enable_sanitize}
+             ENABLE_SANITIZE=${enable_sanitize}
+
+             ENABLE_SANITIZE_OPTIONS=${sanitize_env}
+
+             ENABLE_SANITIZE_LIBPATH=${sanitize_libpath}
+
+             CPPFLAGS="${sanitize_flags} $CPPFLAGS"
+                     LIBS="${sanitize_libs} $LIBS"
+
+fi
+
+
+
+
+
+
  # selects particular envs for build:host
 
- ENABLE_TESTS=
- TESTS_ENVIRONMENT=
- LOG_COMPILER=
- LOG_FLAGS=
- PY_LOG_COMPILER=
- PY_LOG_FLAGS=
- PY_LOG_COMPILER_TAP=
- PY_LOG_FLAGS_TAP=
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
 
  abs_srcdir=$(cd ${srcdir}; pwd)
@@ -14794,7 +15148,6 @@ done
       as_fn_append TESTS_ENVIRONMENT "MDS_PATH='${_mds_path}' "
       as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
       as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
-      as_fn_append TESTS_ENVIRONMENT "VALGRIND_LIB=/usr/lib64/valgrind "
       as_fn_append LOG_COMPILER "wine "
 
  # WINE Valgrind tuning ..
@@ -14857,10 +15210,6 @@ fi
 
 
  ## test chain substitution ##
-
-
-
-
 
 
 
@@ -16857,6 +17206,16 @@ esac
 #echo DX_ENV=$DX_ENV
 
 
+## /////////////////////////////////////////////////
+## /// Sanitized Options - must be after other
+## /// Automake tests as they effect various library
+## /// checks etc.
+## /////////////////////////////////////////////////
+
+
+
+
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
@@ -16872,6 +17231,11 @@ esac
 
 
 
+RELEASE_MAJOR=$MAJOR
+RELEASE_MINOR=$MINOR
+RELEASE_RELEASE=$RELEASE
+RELEASE_BRANCH=$GIT_BRANCH
+RELEASE_COMMIT=$GIT_COMMIT
 
 
 
@@ -17023,11 +17387,19 @@ fi
 
 
 
+
+
+
+
+
+
+
+
 ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rpm/mdsipd.xinetd rpm/mdsipsd.xinetd scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rpm/mdsipd.xinetd rpm/mdsipsd.xinetd scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdi/MitDevices/_version.py tdi/RfxDevices/_version.py tdi/W7xDevices/_version.py tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17213,6 +17585,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then
   as_fn_error $? "conditional \"VALGRIND_ENABLED\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_SANITIZE_TRUE}" && test -z "${ENABLE_SANITIZE_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_SANITIZE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_TESTS_TRUE}" && test -z "${ENABLE_TESTS_FALSE}"; then
@@ -17888,6 +18264,7 @@ do
     "macosx/Makefile") CONFIG_FILES="$CONFIG_FILES macosx/Makefile" ;;
     "math/Makefile") CONFIG_FILES="$CONFIG_FILES math/Makefile" ;;
     "mdsdcl/Makefile") CONFIG_FILES="$CONFIG_FILES mdsdcl/Makefile" ;;
+    "mdsdcl/mdsdcl_show_version.c") CONFIG_FILES="$CONFIG_FILES mdsdcl/mdsdcl_show_version.c" ;;
     "mdslib/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/Makefile" ;;
     "mdslib/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/docs/Makefile" ;;
     "mdslib/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/testing/Makefile" ;;
@@ -17896,6 +18273,7 @@ do
     "mdsobjects/cpp/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/docs/Makefile" ;;
     "mdsobjects/cpp/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/testing/Makefile" ;;
     "mdsobjects/cpp/testing/testutils/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/testing/testutils/Makefile" ;;
+    "mdsobjects/python/_version.py") CONFIG_FILES="$CONFIG_FILES mdsobjects/python/_version.py" ;;
     "mdsobjects/python/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/python/docs/Makefile" ;;
     "mdsobjects/python/tests/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/python/tests/Makefile" ;;
     "mdsobjects/java/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/java/Makefile" ;;
@@ -17903,6 +18281,7 @@ do
     "mdsobjects/labview/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/labview/Makefile" ;;
     "mdsmisc/Makefile") CONFIG_FILES="$CONFIG_FILES mdsmisc/Makefile" ;;
     "mdsshr/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/Makefile" ;;
+    "mdsshr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/testing/Makefile" ;;
     "mdsshr/docs/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/docs/Makefile" ;;
     "mdssql/Makefile") CONFIG_FILES="$CONFIG_FILES mdssql/Makefile" ;;
     "mdstcpip/Makefile") CONFIG_FILES="$CONFIG_FILES mdstcpip/Makefile" ;;
@@ -17922,6 +18301,9 @@ do
     "servershr/Makefile") CONFIG_FILES="$CONFIG_FILES servershr/Makefile" ;;
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;
     "tcl/Makefile") CONFIG_FILES="$CONFIG_FILES tcl/Makefile" ;;
+    "tdi/MitDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/MitDevices/_version.py" ;;
+    "tdi/RfxDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/RfxDevices/_version.py" ;;
+    "tdi/W7xDevices/_version.py") CONFIG_FILES="$CONFIG_FILES tdi/W7xDevices/_version.py" ;;
     "tdishr/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/Makefile" ;;
     "tdishr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES tdishr/testing/Makefile" ;;
     "tdic/Makefile") CONFIG_FILES="$CONFIG_FILES tdic/Makefile" ;;
@@ -17931,6 +18313,7 @@ do
     "testing/selftest/Makefile") CONFIG_FILES="$CONFIG_FILES testing/selftest/Makefile" ;;
     "traverser/Makefile") CONFIG_FILES="$CONFIG_FILES traverser/Makefile" ;;
     "treeshr/Makefile") CONFIG_FILES="$CONFIG_FILES treeshr/Makefile" ;;
+    "treeshr/testing/Makefile") CONFIG_FILES="$CONFIG_FILES treeshr/testing/Makefile" ;;
     "wfevent/Makefile") CONFIG_FILES="$CONFIG_FILES wfevent/Makefile" ;;
     "xmdsshr/Makefile") CONFIG_FILES="$CONFIG_FILES xmdsshr/Makefile" ;;
     "xtreeshr/Makefile") CONFIG_FILES="$CONFIG_FILES xtreeshr/Makefile" ;;

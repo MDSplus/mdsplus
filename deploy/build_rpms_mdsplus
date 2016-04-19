@@ -55,6 +55,15 @@ def buildRpms():
     info['minor']=int(os.environ['MINOR'])
     info['release']=int(os.environ['RELEASE'])
     info['dist']=os.environ['DIST']
+    if "INSTALLER_DIR" in os.environ:
+        info['installer_dir']=os.environ['INSTALLER_DIR']
+    else:
+        info['installer_dir']='/installer'
+    if "BUILDROOT" in os.environ:
+        info['buildroot']=os.environ['BUILDROOT']
+    else:
+        info['buildroot']='/buildroot'
+        
     if info['BRANCH']=="stable":
         info['BNAME']=""
     else:
@@ -132,8 +141,8 @@ def buildRpms():
             sys.stdout.flush()
             subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
             p = subprocess.Popen("""
-mkdir -p /installer/BUILD /installer/BUILDROOT /installer/RPMS /installer/SOURCES /installer/SPECS installer/SRPMS
-rpmbuild -bb --define '_topdir /installer' --buildroot=/buildroot --target=%(target)s %(specfilename)s 2>&1
+mkdir -p %(installer_dir)s/BUILD %(installer_dir)s/BUILDROOT %(installer_dir)s/RPMS %(installer_dir)s/SOURCES %(installer_dir)s/SPECS installer/SRPMS
+rpmbuild -bb --define '_topdir %(installer_dir)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1
 """ % info,stdout=subprocess.PIPE,shell=True)
             messages=p.stdout.readlines()
             status=p.wait()
@@ -191,7 +200,7 @@ Buildarch: noarch
         sys.stdout.flush()
         subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
         p=subprocess.Popen("""
-        rpmbuild -bb --define '_topdir /installer' --buildroot=/buildroot %(specfilename)s 2>&1
+        rpmbuild -bb --define '_topdir %(installer_dir)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1
 """ % info,stdout=subprocess.PIPE,shell=True)
         messages=p.stdout.readlines()
         status = p.wait()
@@ -202,7 +211,8 @@ Buildarch: noarch
         print("Done building rpm for mdsplus%(BNAME)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
     try:
-        cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /installer/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+        os.stat('.gnupg')
+        cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" %(installer_dir)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
         child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
         child.expect("Enter pass phrase: ")
         child.sendline("")
@@ -212,10 +222,6 @@ Buildarch: noarch
             sys.stdout.flush()
             raise Exception("Error signing rpms. status=%d" % child.status)
     except:
-	print("Error signing rpms.")
-        sys.stdout.flush()
-    if subprocess.Popen("createrepo -q /installer/RPMS" % info,shell=True).wait() != 0:
-        sys.stdout.flush()
-        raise Exception("Problem creating repository from RPMS")
+	pass
 
 buildRpms()
