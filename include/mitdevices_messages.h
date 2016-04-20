@@ -185,3 +185,6 @@
 #define DEVCANNOT_GET_BOARD_STATE 0x277ca5aa
 #define DEVACQCMD_FAILED        0x277ca5b2
 #define DEVACQ2SH_FAILED        0x277ca5ba
+#define DEVBAD_PARAMETER        0x277ca5c2
+#define DEVCOMM_ERROR           0x277ca5ca
+#define DEVCAMERA_NOT_FOUND     0x277ca5d2

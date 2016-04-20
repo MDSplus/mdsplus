@@ -538,6 +538,9 @@
     <status name="COMM_ERROR" value="5305" severity="Error"
           text="Error communicating with device"
           facabb="DEV"/>
+    <status name="CAMERA_NOT_FOUND" value="5306" severity="Error"
+          text="Could not find specified camera on the network"
+          facabb="DEV"/>
 
 
    </facility>

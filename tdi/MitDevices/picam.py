@@ -12,11 +12,11 @@ class PICAM(MDSplus.Device):
 
     parts = [
         {'path':':COMMENT','type':'text'},
+        {'path':':SERIAL_NO','type':'numeric','options':('no_write_shot',)},
         {'path':':EXPOSURE','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':NUM_FRAMES','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':ROIS','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':TIMEOUT','type':'numeric','value':100000,'options':('no_write_shot',)},
-        {'path':':CAMERA_NO','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':TRG_RESPONSE','type':'text', 'value':'StartOnSingleTrigger', 'options':('no_write_shot',)},
 
         {'path':':MODEL','type':'numeric','options':('no_write_model','write_once',)},

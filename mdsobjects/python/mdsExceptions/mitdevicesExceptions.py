@@ -1366,3 +1366,24 @@ class DevACQ2SH_FAILED(DevException):
   message="Error executing acq2sh command on daq board"
   msgnam="ACQ2SH_FAILED"
 
+
+
+class DevBAD_PARAMETER(DevException):
+  status=662480322
+  message="Invalid parameter specified for device"
+  msgnam="BAD_PARAMETER"
+
+
+
+class DevCOMM_ERROR(DevException):
+  status=662480330
+  message="Error communicating with device"
+  msgnam="COMM_ERROR"
+
+
+
+class DevCAMERA_NOT_FOUND(DevException):
+  status=662480338
+  message="Could not find specified camera on the network"
+  msgnam="CAMERA_NOT_FOUND"
+
