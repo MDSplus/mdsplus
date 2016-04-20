@@ -26,6 +26,7 @@ from dt196b     import DT196B
 from dt216      import DT216
 from dt216a     import DT216A
 from raspicam	import RASPICAM
+from picam      import PICAM
 from timeSignature import timeSignatureAnalyze, timeSignature
 import acq200
 import transport

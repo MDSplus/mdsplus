@@ -532,5 +532,13 @@
     <status name="ACQ2SH_FAILED" value="5303" severity="Error"
           text="Error executing acq2sh command on daq board"
           facabb="DEV"/>
+    <status name="BAD_PARAMETER" value="5304" severity="Error"
+          text="Invalid parameter specified for device"
+          facabb="DEV"/>
+    <status name="COMM_ERROR" value="5305" severity="Error"
+          text="Error communicating with device"
+          facabb="DEV"/>
+
+
    </facility>
 </messages>
