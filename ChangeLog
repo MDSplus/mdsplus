@@ -1,4 +1,25 @@
-commit 8baeb08555ead0f006be55809c22c2722455c55a (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 7b1baab7f5c569e9284d64efe9917d292827a9dc (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 62791d2 951ae07
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 19 09:10:29 2016 -0400
+
+    Merge pull request #451 from MDSplus/huge-signals
+    
+    Fix memory errors when segments are not multiple of copression factor
+
+commit 951ae078165c5ca6467c06421460c9e1ac13d617 (refs/remotes/origin/huge-signals)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Apr 18 14:00:30 2016 +0200
+
+    Fix memory errors when segments are not multiple of copression factor
+
+commit 62791d232e856484149d9f795f79abf42483d700 (tag: refs/tags/alpha_release-7-0-253)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Apr 15 23:24:02 2016 -0400
+
+    New release ---- alpha_release-7-0-253
+
+commit 8baeb08555ead0f006be55809c22c2722455c55a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Apr 15 16:33:59 2016 -0400
 
@@ -29,7 +50,7 @@ Date:   Fri Apr 15 12:41:36 2016 -0400
     
     Let compression factor be passed by user in makeSegmentMinMax
 
-commit f2d09a7d96231470f1aea884a3dc81ceb8cbb2f1 (refs/remotes/origin/huge-signals)
+commit f2d09a7d96231470f1aea884a3dc81ceb8cbb2f1
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Apr 15 18:10:28 2016 +0200
 
