@@ -20,24 +20,13 @@ static pthread_mutex_t astCount_lock;
 static pthread_mutex_t first_lock;
 static pthread_mutex_t second_lock;
 
-///
-/// thread safe print in stdout
-///
-static pthread_mutex_t printf_locked_mutex;
-void printf_locked(const char *format,...) {
-    va_list args;
-    pthread_mutex_lock(&printf_locked_mutex);
-    va_start(args, format);
-    vprintf(format, args);
-    va_end(args);
-    pthread_mutex_unlock(&printf_locked_mutex);
-}
+
 
 
 static int astCount = 0;
 
 void eventAst(void *arg, int len, char *buf) {
-    printf_locked("received event in thread %d, name=%s\n",
+    printf("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&astCount_lock);
@@ -51,7 +40,7 @@ void eventAst(void *arg, int len, char *buf) {
 static int first = 0,second = 0;
 
 void eventAstFirst(void *arg, int len, char *buf) {
-    printf_locked("received event in thread %d, name=%s\n",
+    printf("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&first_lock);
@@ -60,7 +49,7 @@ void eventAstFirst(void *arg, int len, char *buf) {
 }
 
 void eventAstSecond(void *arg, int len, char *buf) {
-    printf_locked("received event in thread %d, name=%s\n",
+    printf("received event in thread %d, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&second_lock);
@@ -77,7 +66,6 @@ static void wait() {
 
 int main(int argc, char **args)
 {
-    pthread_mutex_init(&printf_locked_mutex, NULL);
     pthread_mutex_init(&astCount_lock, NULL);
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
@@ -97,9 +85,7 @@ int main(int argc, char **args)
     }
     
     for (i=0;i<iterations;i++) {
-        pthread_mutex_lock(&printf_locked_mutex);
         sprintf(eventname,"ev_test_%d_%d",i,getpid());
-	pthread_mutex_unlock(&printf_locked_mutex);
 
         status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
         TEST0( status%1 );        

@@ -61,7 +61,7 @@
 
 
 #
-# Possible lost memory blocks that must 
+# More suppression rules for Python custom allocator ( from fc_22 )
 #
 {
    <insert_a_suppression_name_here>
@@ -75,13 +75,6 @@
    Memcheck:Leak
    fun:malloc
    fun:PyObject_Realloc
-   fun:_PyObject_GC_Resize
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:realloc
-   fun:_PyObject_GC_Resize
 }
 {
    <insert_a_suppression_name_here>
@@ -89,4 +82,58 @@
    fun:malloc
    fun:PyString_FromStringAndSize
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:PyObject_Malloc
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:PyThread_allocate_lock
+}
+{
+   realloc supp found in rhel5
+   Memcheck:Leak
+   fun:realloc
+   fun:_PyObject_GC_Resize
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   ...
+   fun:PyObject_Call
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:PyObject_Call
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:calloc
+   ...
+   fun:PyObject_Call
+}
+
+
+
+## Helgind suppressions
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   ...
+   fun:exit
+   fun:Py_Exit
+}
+
+
+
 
