@@ -1,4 +1,25 @@
-commit 7b1baab7f5c569e9284d64efe9917d292827a9dc (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit f885ec906572cc4a836865f87955c1e7df72cdef (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: e26242a f255e1b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 20 10:25:12 2016 -0400
+
+    Merge pull request #453 from MDSplus/jas-add-picam-device
+    
+    New device support for Princeton Instruments Cameras using PythonForP…
+
+commit f255e1b05d59e33a65ccafd0a6bcedef17fd382b (refs/remotes/origin/jas-add-picam-device)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Apr 20 09:48:11 2016 -0400
+
+    New device support for Princeton Instruments Cameras using PythonForPicam
+
+commit e26242ab2f38da44ad37c00d8bfffcbff632db02 (tag: refs/tags/alpha_release-7-0-254)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Apr 19 23:24:18 2016 -0400
+
+    New release ---- alpha_release-7-0-254
+
+commit 7b1baab7f5c569e9284d64efe9917d292827a9dc
 Merge: 62791d2 951ae07
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Apr 19 09:10:29 2016 -0400
