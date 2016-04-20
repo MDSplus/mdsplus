@@ -3393,6 +3393,36 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* DEVBAD_PARAMETER */
+      case 0x277ca5c0:
+        {static const char *text="Invalid parameter specified for device";
+        static const char *msgnam="BAD_PARAMETER";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVCOMM_ERROR */
+      case 0x277ca5c8:
+        {static const char *text="Error communicating with device";
+        static const char *msgnam="COMM_ERROR";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVCAMERA_NOT_FOUND */
+      case 0x277ca5d0:
+        {static const char *text="Could not find specified camera on the network";
+        static const char *msgnam="CAMERA_NOT_FOUND";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
     default: sts = 0;
   }
   if (sts == 0) {
