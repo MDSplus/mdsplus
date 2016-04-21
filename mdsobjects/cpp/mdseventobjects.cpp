@@ -1,6 +1,4 @@
 #include "mdsobjects.h"
-#include <unistd.h>
-
 #include <string>
 
 using namespace MDSplus;
@@ -19,8 +17,6 @@ void  MdsEventRemoveListener(void *eventId);
 int MdsEventTrigger(char *name, char *buf, int size);
 int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
-
-static pthread_mutex_t _local_m = PTHREAD_MUTEX_INITIALIZER;
 
 namespace MDSplus {
 void eventAst(void *arg, int len, char *buf)
