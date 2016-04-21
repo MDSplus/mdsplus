@@ -74,7 +74,7 @@ public:
 		delete tree;
 	}
 	bool isDataAvailable() {return dataAvailable;}
-/// Check abvailability of new data. First the current number of segments is checked. 
+/// Check availability of new data. First the current number of segments is checked. 
 /// If not changed, the index of the next free row is checked
 	void checkDataAvailable()
 	{
@@ -89,8 +89,8 @@ public:
 			segNode->getSegmentInfo(numSegments-1, &dtype, &dimct, dims, &nextRow);
 			lastNextRow = nextRow; 
 //Do not signal condition in which number of segments has increased but no row has nee writen in the new segment
-			if(numSegments > lastSegment +1 && nextRow > 0)
-//			if(numSegments > lastSegment +1 || nextRow > 0)
+//			if(numSegments > lastSegment +1 && nextRow > 0)
+			if(numSegments > lastSegment +1 || nextRow > 0)
 				dataAvailable = true;
 			lastSegment = numSegments;
 			if(dataAvailable)
