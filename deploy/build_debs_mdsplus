@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile
+import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
 
 def getPackageFiles(buildroot,includes,excludes):
     files=list()
@@ -177,40 +177,8 @@ dpkg-deb --build %(tmpdir)s %(debfile)s
 """ % info,shell=True).wait() != 0:
                 raise Exception("Problem building package")
             sys.stdout.flush()
-            subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
             debs.append({"deb":info["debfile"],"arch":info["arch"]})
-        except:
-            subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
-            raise
-    if subprocess.Popen("""
-
-set -o verbose
-set -e
-mkdir -p /installer/repo/conf
-cp -f /tmp/repo/conf/distributions /installer/repo/conf/
-mkdir -p /installer/repo/db
-mkdir -p /installer/repo/dists
-mkdir -p /installer/repo/pool
-mkdir -p /installer/%(flavor)s/DEBS/%(arch)s
-mkdir -p /installer/%(flavor)s/DEBS/noarch
-
-""" % info,shell=True).wait() != 0:
-        raise Exception("Problem copying repo info")
-    for debfile in debs:
-        info["debfile"]=debfile["deb"]
-        info["arch"]=debfile["arch"]
-        info["ndebfile"]=info["debfile"].replace("/tmp","/installer")
-        if subprocess.Popen("""
-
-set -o verbose
-set -e
-cp %(debfile)s %(ndebfile)s
-reprepro -V --waitforlock 20 -b /installer/repo -C %(flavor)s includedeb MDSplus %(ndebfile)s
-
-""" % info,shell=True).wait() != 0:
-                raise Exception("Error loading %(debfile)s into repository" % info)
-        sys.stdout.flush()
-    print("Completed deployment")
-    sys.stdout.flush()
+        finally:
+            shutil.rmtree("%(tmpdir)s" % info)
 
 buildDebs()
