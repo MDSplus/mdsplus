@@ -42,9 +42,9 @@ class PICAM(MDSplus.Device):
     cameras = []
 
     class camera_proc():
-        def __init__(self, camera, proc):
+        def __init__(self, camera):
             self.camera = camera
-            self.proc = proc
+            self.subproc = None
 
     def init(self):
         """
@@ -63,7 +63,7 @@ class PICAM(MDSplus.Device):
         import os
         import subprocess
 
-        camera = int(self.camera)
+        camera = int(self.serial_no)
         for c in PICAM.cameras:
             if c.camera == camera :
                 try:
@@ -72,13 +72,15 @@ class PICAM(MDSplus.Device):
                     pass
                 break
         if not c.camera == camera:
-            PICCAM.cameras.append(PICAM.camera_proc(camera, None))
+            PICCAM.cameras.append(PICAM.camera_proc(camera))
 
         tree = self.local_tree
         shot = self.tree.shot
         path = self.local_path
-        c.subproc = subprocess.Popen('picam %s %d %s'%(tree, shot, path,),
-                                      shell=True)
+        c.subproc = subprocess.Popen('mdstcl', shell=True)
+        c.subproc.stdin.write('set tree %s /shot = %d\n'%(tree, shot,))
+        c.subproc.stdin.write('do/meth %s acquire\n'%(path,))
+        c.subproc.stdin.flush()
     INIT=init
 
     def acquire(self):
@@ -90,7 +92,6 @@ class PICAM(MDSplus.Device):
         from MDSplus.mdsExceptions import DevBAD_PARAMETER
 
         self.debugging = os.getenv('DEBUG_DEVICES')
-        self.debugging = True
         exposure = float(self.exposure)
         exposure = piflt(exposure)
         num_frames = int(self.num_frames)
@@ -178,8 +179,8 @@ class PICAM(MDSplus.Device):
                 status = Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount)) 
                 if not status == "PicamError_None":
                     raise DevCOMM_ERROR("PiCam - error committing ROI Parameter Change %s" % status)
-#                if not failCount == ctypes.c_int(0):
-#                    raise DevCOMM_ERROR("PiCam - ROI commit failure count  > 0", failCount)
+                if not failCount.value == 0:
+                    raise DevCOMM_ERROR("PiCam - ROI commit failure count  > 0", failCount)
                 Picam_DestroyParameters(pointer(paramsFailed))
             else:
                 raise DevBAD_PARAMETER("PiCAM Rois must be 6xN array")
