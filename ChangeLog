@@ -1,4 +1,25 @@
-commit 831915c3dadb91f06db19b568359dfd1b0320c9b (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 7527f777250dd946661512aa44ef9b10e441ce34 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Merge: 2592cf3 663f988
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 21 11:24:28 2016 -0400
+
+    Merge pull request #457 from MDSplus/dev-gm
+    
+    Fix check for new data availability in streaming management
+
+commit 663f9888c2d6f0517553bf2b2c0e3a85bf291baf (refs/remotes/origin/dev-gm)
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Apr 21 16:48:38 2016 +0200
+
+    Fix check for new data availability
+
+commit 2592cf3d34c0929921a68d92566130edc0f3e01d (tag: refs/tags/alpha_release-7-0-256)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Apr 20 12:59:57 2016 -0400
+
+    New release ---- alpha_release-7-0-256
+
+commit 831915c3dadb91f06db19b568359dfd1b0320c9b
 Merge: 533a501 193ab97
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Apr 20 12:30:03 2016 -0400
@@ -120,7 +141,7 @@ Date:   Fri Apr 15 14:54:21 2016 +0200
     
     Dev gm
 
-commit da9ae6d326bc3c9b7e3ff18c38f863450c84a169 (refs/remotes/origin/dev-gm)
+commit da9ae6d326bc3c9b7e3ff18c38f863450c84a169
 Merge: 506362b 20cc16b
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Apr 15 14:53:15 2016 +0200
