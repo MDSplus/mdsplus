@@ -465,7 +465,6 @@ windows_cleanup() {
 
 build_windows() {
     set -e
-    cd ${WORKPACE}
     tests_64=0
     tests_32=0
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
@@ -553,6 +552,7 @@ build_windows() {
 
 publish_windows() {
     set -e
+    cd ${WORKPACE}
     INSTALLER_DIR=${DISTDIR}/${DIST}
     mkdir -p ${INSTALLER_DIR}
     tar zxf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz
@@ -742,6 +742,10 @@ else
 	    then
 		BRANCH=${GIT_BRANCH:7};
 		RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
+		if [ -z ${RELEASE_TAG} ]
+		then
+		    RELEASE_TAG="${BRANCH}_release-1-0-0"
+		fi
 		MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
 		MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
 		RELEASE=$(echo $RELEASE_TAG | cut -f4 -d-);
