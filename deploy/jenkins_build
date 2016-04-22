@@ -465,6 +465,7 @@ windows_cleanup() {
 
 build_windows() {
     set -e
+    cd ${WORKPACE}
     tests_64=0
     tests_32=0
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
