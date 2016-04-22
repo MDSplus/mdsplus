@@ -64,20 +64,26 @@ class PICAM(MDSplus.Device):
         import subprocess
 
         camera = int(self.serial_no)
+
+        c = None
         for c in PICAM.cameras:
             if c.camera == camera :
                 try:
                     c.subproc.terminate()
                 except:
                     pass
-                break
+                c_rec = c
+        if c is None:
+            c = PICAM.camera_proc(camera)
+            PICAM.cameras.append(c)
         if not c.camera == camera:
-            PICCAM.cameras.append(PICAM.camera_proc(camera))
+            c = PICAM.camera_proc(camera)
+            PICAM.cameras.append(c)
 
         tree = self.local_tree
         shot = self.tree.shot
         path = self.local_path
-        c.subproc = subprocess.Popen('mdstcl', shell=True)
+        c.subproc = subprocess.Popen('mdstcl', stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         c.subproc.stdin.write('set tree %s /shot = %d\n'%(tree, shot,))
         c.subproc.stdin.write('do/meth %s acquire\n'%(path,))
         c.subproc.stdin.flush()
