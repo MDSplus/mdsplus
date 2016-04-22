@@ -1336,7 +1336,7 @@
 
   <syntax name="show_version">
     <helpmissing />
-    <routine name="TclShowVersion"/>
+    <routine name="mdsdcl_show_version"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
 

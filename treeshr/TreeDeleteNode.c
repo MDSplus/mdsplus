@@ -232,7 +232,8 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       int nidx = nid.node;
       TreeGetNciLw(dblist->tree_info, nidx, &old_nci);
       TreePutNci(dblist->tree_info, nidx, &empty_nci, 1);
-    } else
+      TreeUnLockNci(dblist->tree_info, 0, nidx);
+   } else
       memcpy(edit->nci + nid.node - edit->first_in_mem, &empty_nci, sizeof(struct nci));
     memcpy(node->name, "deleted node", sizeof(node->name));
     LoadShort(zero, &node->conglomerate_elt);

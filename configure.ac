@@ -134,23 +134,32 @@ AC_ARG_ENABLE([java],
 
 # Add address sanitizer options to flags, if requested. Only useful for GCC
 # version 4.8 and later.
-AC_ARG_ENABLE([sanitizer],
+AC_ARG_ENABLE([sanitize-address],
   [AS_HELP_STRING(
-    [--enable-sanitizer],
+    [--enable-sanitize-address],
     [Enable memory error detection using address sanitizer @<:@default=no@:>@]
   )],
-  [enable_san="$enableval"],
-  [enable_san="no"]
+  [enable_san_a="$enableval"],
+  [enable_san_a="no"]
 )
 
-AX_COMPILER_VERSION
-if test "$enable_san" = "yes" -a "$GCC" = yes; then
-   AX_COMPARE_VERSION( $ax_cv_c_compiler_version, [ge], [4.8.0],
-                       [enable_san="yes"], [enable_san="no"] )
-   if test "$enable_san" = "yes"; then
-       CFLAGS="$CFLAGS -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
-   fi
-fi
+AC_ARG_ENABLE([sanitize-undefined],
+  [AS_HELP_STRING(
+    [--enable-sanitize-undefined],
+    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
+  )],
+  [enable_san_u="$enableval"],
+  [enable_san_u="no"]
+)
+
+AC_ARG_ENABLE([sanitize-thread],
+  [AS_HELP_STRING(
+    [--enable-sanitize-address],
+    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
+  )],
+  [enable_san_t="$enableval"],
+  [enable_san_t="no"]
+)
 
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
@@ -262,47 +271,48 @@ AC_ARG_WITH([labview],
             [AS_HELP_STRING([--with-labview=labview-top-dir],
                             [specify location of labview such as /usr/local/natinst/Labview])],
             [],
-            [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR],
-                                          [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
-				     	  [with_labview=\${top_srcdir}/3rd-party-apis/labview],
-                                     	  [with_labview=no])])])
+            [with_labview=yes])
+
+AS_CASE([$with_labview],
+        [yes],
+        [AS_VAR_SET_IF([LABVIEW_DIR],
+            [with_labview=$LABVIEW_DIR],
+            [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
+                   [with_labview=\${top_srcdir}/3rd-party-apis/labview],
+                   [with_labview=no])])])
+
 AS_CASE([$with_labview],
         [no], [],
         [yes], [AC_MSG_ERROR([Labview location required])],
         [LV_CINTOOLS="$with_labview/cintools"
          LV="mdsobjects/labview"])
+
 AC_MSG_RESULT([$with_labview])
 
-AC_MSG_CHECKING([whether to enable profiled code])
-AC_ARG_ENABLE([gcc_profiling],
-              [AS_HELP_STRING([--enable-gcc_profiling],
-                              [enable gcc profiling])],
-              [],
-              [with_gcc_profiling=no])
-AS_CASE([$with_gcc_profiling],
-        [yes], [GCCPROF="-pg"],
-        [no], [GCCPROF=""],
-        [AC_MSG_ERROR([--enable-gcc_profiling does not take an argument])])
-AC_MSG_RESULT([$with_gcc_profiling])
-
-AC_MSG_CHECKING([for idl])
 AC_ARG_WITH([idl],
             [AS_HELP_STRING([--with-idl=idl-top-dir],
                             [specify location of idl such as /usr/local/itt/idl])],
             [],
             [with_idl=yes])
+
 AS_CASE([$with_idl],
-        [yes], [AS_VAR_SET_IF([IDL_DIR],[with_idl=$IDL_DIR],
-                              [AS_IF([test -r /usr/local/itt/idl], [with_idl=/usr/local/itt/idl],
-                                     [test -r /usr/local/itt/idl], [with_idl=/usr/local/rsi/idl],
-                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
-				     [with_idl=\${top_srcdir}/3rd-party-apis/idl],
-                                     [with_idl=no])])])
+        [yes], 
+        [AS_VAR_SET_IF([IDL_DIR],
+           [with_idl=$IDL_DIR],
+           [AS_IF([test -r /usr/local/itt/idl], 
+               [with_idl=/usr/local/itt/idl],
+               [test -r /usr/local/itt/idl], 
+               [with_idl=/usr/local/rsi/idl],
+               [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
+               [with_idl=\${top_srcdir}/3rd-party-apis/idl],
+               [with_idl=no])])])
+
 AS_CASE([$with_idl],
         [no], [IDL_DIR=""],
         [IDL_INC="-I$with_idl/external"
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets"])
+
 AC_MSG_RESULT([$with_idl])
 
 AC_MSG_CHECKING([for mingw])
@@ -1032,7 +1042,7 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 dnl Find a Python2 interpreter.  Python versions prior to 2.0 are not
 dnl supported. (2.0 was released on October 16, 2000).
 m4_define([_AM_PYTHON_INTERPRETER_LIST],
-          [python2 python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0])
+          [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
 AM_PATH_PYTHON([2])
 
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
@@ -1088,9 +1098,16 @@ AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,
      ])
 AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 
- # this calls valgrind check with args
+ # check for valgrind
  AX_VALGRIND_CHECK
 
+ # check for sanitizer
+ AX_ENABLE_SANITIZE([ENABLE_SANITIZE],
+                    [AS_VAR_SET([CPPFLAGS],["${sanitize_flags} $CPPFLAGS"])
+                     AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
+                    [echo "${enable_sanitize} sanitizer not available."; exit 111;])
+
+ 
  # selects particular envs for build:host
  TS_SELECT
  
@@ -1100,11 +1117,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
  AC_SUBST(LOG_DRIVER)
  AC_SUBST(PY_LOG_COMPILER)
  AC_SUBST(PY_LOG_FLAGS)
- AC_SUBST(PY_LOG_COMPILER_TAP)
- AC_SUBST(PY_LOG_FLAGS_TAP)
- AC_SUBST(PY_LOG_COMPILER_XML)
- AC_SUBST(PY_LOG_FLAGS_XML)
-
+ 
  TS_SET_SKIP_CMD([TESTS_SKIP])
  AC_SUBST(TESTS_SKIP)
 
@@ -1155,6 +1168,16 @@ DX_PS_FEATURE(OFF)
 ## refers to ax_prog_doxygen.m4 macro expansion 
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
+## /////////////////////////////////////////////////
+## /// Sanitized Options - must be after other
+## /// Automake tests as they effect various library
+## /// checks etc.
+## /////////////////////////////////////////////////
+
+
+
+
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
@@ -1187,6 +1210,11 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
+RELEASE_MAJOR=$MAJOR
+RELEASE_MINOR=$MINOR
+RELEASE_RELEASE=$RELEASE
+RELEASE_BRANCH=$GIT_BRANCH
+RELEASE_COMMIT=$GIT_COMMIT
 
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES
@@ -1258,8 +1286,16 @@ AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(NEED_SEMUN)
 AC_SUBST(NSLLIB)
+AC_SUBST(RELEASE_MAJOR)
+AC_SUBST(RELEASE_MINOR)
+AC_SUBST(RELEASE_RELEASE)
+AC_SUBST(RELEASE_COMMIT)
+AC_SUBST(RELEASE_BRANCH)
+AC_SUBST(RELEASE_TAG)
+AC_SUBST(RELEASE_DATE)
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
+AC_SUBST(ENABLE_SANITIZE)
 AC_SUBST(SHARETYPE)
 AC_SUBST(SHARETYPEJNI)
 AC_SUBST(SHARETYPEMOD)
@@ -1306,7 +1342,8 @@ AC_OUTPUT(Makefile.inc
           manpages/Makefile
           macosx/Makefile
           math/Makefile 
-          mdsdcl/Makefile 
+          mdsdcl/Makefile
+	  mdsdcl/mdsdcl_show_version.c
           mdslib/Makefile
           mdslib/docs/Makefile
           mdslib/testing/Makefile 
@@ -1315,6 +1352,7 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
+	  mdsobjects/python/_version.py
           mdsobjects/python/docs/Makefile
           mdsobjects/python/tests/Makefile
           mdsobjects/java/Makefile
@@ -1322,6 +1360,7 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
+          mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
           mdstcpip/Makefile 
@@ -1340,7 +1379,10 @@ AC_OUTPUT(Makefile.inc
           scripts/Makefile
           servershr/Makefile 
           setevent/Makefile
-          tcl/Makefile 
+          tcl/Makefile
+	  tdi/MitDevices/_version.py
+	  tdi/RfxDevices/_version.py
+	  tdi/W7xDevices/_version.py
           tdishr/Makefile 
           tdishr/testing/Makefile 
           tdic/Makefile
@@ -1350,6 +1392,7 @@ AC_OUTPUT(Makefile.inc
           testing/selftest/Makefile
           traverser/Makefile 
           treeshr/Makefile 
+          treeshr/testing/Makefile 
           wfevent/Makefile 
           xmdsshr/Makefile
           xtreeshr/Makefile

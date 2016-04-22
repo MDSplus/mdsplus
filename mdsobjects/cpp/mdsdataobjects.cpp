@@ -1303,7 +1303,7 @@ char *Uint64::getDate()
 	int bufLen;
 	convertTimeToAscii((int64_t *)ptr, dateBuf, 512, &bufLen);
 	char *retDate = new char[bufLen+1];
-	dateBuf[bufLen] = 0;
+	dateBuf[bufLen] = '\0';
 	strcpy(retDate, dateBuf);
 	return retDate;
 }

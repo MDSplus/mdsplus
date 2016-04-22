@@ -134,7 +134,7 @@ AC_DEFUN([DK_CONFIGURE],[
          m4_pushdef([dk_configure_cmd], m4_normalize([
            docker exec -t
            --user ${USER}
-           ${DOCKER_CONTAINER} /bin/sh
+           ${DOCKER_CONTAINER} ${SHELL} -l
            -c \"cd $(pwd)\; ${0} DK_ADD_ESCAPE(${dk_configure_args}) DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"]) \";
            exit 0;
          ]))
@@ -348,8 +348,9 @@ user_home   = ${user_home}
 
 # if MAKESHELL is not defined use local dshell to enter docker container
 docker_SHELL := \$(if \${MAKESHELL},\${MAKESHELL},\${abs_top_builddir}/dshell)
-local_SHELL  := \$(if \${SHELL},${SHELL},/bin/sh)
-export SHELL = \${docker_SHELL}
+local_SHELL  := \$(if \${SHELL},\${SHELL},/bin/sh)
+SHELL := \${docker_SHELL}
+export SHELL
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
@@ -414,7 +415,7 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=/bin/sh; bash"
+	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 	
 endif
 ])
@@ -447,7 +448,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} bash -c "cd \$(pwd); export MAKESHELL=/bin/sh; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; sh \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
 fi
 ]))
 

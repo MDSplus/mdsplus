@@ -49,6 +49,7 @@ $ dwcope [-default setup]
 #include <Xm/PushBG.h>
 #include <Xm/FileSB.h>
 #include <Xm/ToggleBG.h>
+#include <pthread.h>
 #include <Xmds/XmdsWaveform.h>
 #include "dwscope.h"
 #include "dwscope_icon.xbm"
@@ -57,6 +58,8 @@ $ dwcope [-default setup]
 #include <DXm/DXmPrint.h>
 #include <DXm/DECspecific.h>
 #endif
+
+pthread_mutex_t event_mutex;
 
 extern void XmdsInitialize();
 extern void XmdsDestroyWidgetCallback();
@@ -347,7 +350,7 @@ int main(int argc, String * argv)
   void *cds_id = 0;
   MrmHierarchy drm_hierarchy;
   char *printers = GetPrinterList();
-
+  pthread_mutex_init(&event_mutex, NULL);
   MrmInitialize();
 
 #ifndef _NO_DXm
@@ -1263,6 +1266,7 @@ void /*XtInputCallbackProc */ EventUpdate(XtPointer client_data, int *source, Xt
   int r;
   int c;
   XAllowEvents(XtDisplay(Button3Widget), AsyncPointer, CurrentTime);
+  pthread_mutex_lock(&event_mutex);
   if (ScopeTitleEventReceived) {
     SetWindowTitles();
     ScopeTitleEventReceived = 0;
@@ -1283,6 +1287,7 @@ void /*XtInputCallbackProc */ EventUpdate(XtPointer client_data, int *source, Xt
     CloseDataSourcesEventReceived = 0;
     CloseDataSources();
   }
+  pthread_mutex_unlock(&event_mutex);
   return;
 }
 

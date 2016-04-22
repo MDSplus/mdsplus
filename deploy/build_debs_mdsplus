@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile
+import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
 
 def getPackageFiles(buildroot,includes,excludes):
     files=list()
@@ -72,6 +72,18 @@ def doRequire(info, out, root, require):
 
 def buildDebs():
     info=dict()
+    if "INSTALLER_DIR" in os.environ:
+        info['installer_dir']=os.environ['INSTALLER_DIR']
+    else:
+        info['installer_dir']='/installer'
+    if 'BUILDROOT' in os.environ:
+        info['buildroot']=os.environ['BUILDROOT']
+    else:
+        info['buildroot']='/buildroot'
+    if 'SRCDIR' in os.environ:
+        info['srcdir']=os.environ['SRCDIR']
+    else:
+        info['srcdir']='.'
     info['BRANCH']=os.environ['BRANCH']
     info['flavor']=info['BRANCH']
     info['major']=int(os.environ['MAJOR'])
@@ -84,7 +96,7 @@ def buildDebs():
     else:
         info['BNAME']="-%s" % info['BRANCH']
     info['rflavor']=info['BNAME']
-    tree=ET.parse('deploy/packaging.xml')
+    tree=ET.parse('%(srcdir)s/deploy/packaging.xml' % info)
     root=tree.getroot()
     debs=list()
     for package in root.getiterator('package'):
@@ -111,9 +123,9 @@ def buildDebs():
                 excludes.append("/usr/local/mdsplus/lib/*.a")
             if package.find("include_staticlibs") is not None:
                 includes.append("/usr/local/mdsplus/lib/*.a")
-            files=getPackageFiles("/buildroot/",includes,excludes)
+            files=getPackageFiles(info['buildroot'],includes,excludes)
             for f in files:
-                info['file']=f[len("/buildroot/")-1:].replace(' ','\\ ').replace('$','\\$')\
+                info['file']=f[len("%(buildroot)s/"%info)-1:].replace(' ','\\ ').replace('$','\\$')\
                         .replace('(','\\(').replace(')','\\)')
                 if subprocess.Popen("""
 set -o verbose
@@ -121,7 +133,7 @@ set -e
 dn=$(dirname %(file)s)
 mkdir -p %(tmpdir)s/DEBIAN
 mkdir -p "%(tmpdir)s/${dn}"
-cp -av /buildroot/%(file)s "%(tmpdir)s/${dn}/"
+cp -av %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
 """ % info,shell=True).wait() != 0:
                     raise Exception("Error building deb")
                 sys.stdout.flush()
@@ -157,51 +169,16 @@ Description: %(description)s
                     f.write("%s" % (script.text.replace("__INSTALL_PREFIX__","/usr/local")))
                     f.close()
                     os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info,0775)
-            info['debfile']="/tmp/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
+            info['debfile']="%(installer_dir)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
             if subprocess.Popen("""
 set -o verbose
 set -e
-mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
-cat %(tmpdir)s/DEBIAN/control
 dpkg-deb --build %(tmpdir)s %(debfile)s
-reprepro -V --waitforlock 20 -b /tmp/repo -C %(flavor)s includedeb MDSplus %(debfile)s
 """ % info,shell=True).wait() != 0:
-                raise Exception("Problem building package or repository")
+                raise Exception("Problem building package")
             sys.stdout.flush()
-            subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
             debs.append({"deb":info["debfile"],"arch":info["arch"]})
-        except:
-            subprocess.Popen("rm -Rf %(tmpdir)s" % info,shell=True).wait()
-            raise
-    if subprocess.Popen("""
-
-set -o verbose
-set -e
-mkdir -p /installer/repo/conf
-cp -f /tmp/repo/conf/distributions /installer/repo/conf/
-mkdir -p /installer/repo/db
-mkdir -p /installer/repo/dists
-mkdir -p /installer/repo/pool
-mkdir -p /installer/%(flavor)s/DEBS/%(arch)s
-mkdir -p /installer/%(flavor)s/DEBS/noarch
-
-""" % info,shell=True).wait() != 0:
-        raise Exception("Problem copying repo info")
-    for debfile in debs:
-        info["debfile"]=debfile["deb"]
-        info["arch"]=debfile["arch"]
-        info["ndebfile"]=info["debfile"].replace("/tmp","/installer")
-        if subprocess.Popen("""
-
-set -o verbose
-set -e
-cp %(debfile)s %(ndebfile)s
-reprepro -V --waitforlock 20 -b /installer/repo -C %(flavor)s includedeb MDSplus %(ndebfile)s
-
-""" % info,shell=True).wait() != 0:
-                raise Exception("Error loading %(debfile)s into repository" % info)
-        sys.stdout.flush()
-    print("Completed deployment")
-    sys.stdout.flush()
+        finally:
+            shutil.rmtree("%(tmpdir)s" % info)
 
 buildDebs()

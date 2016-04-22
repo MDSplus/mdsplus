@@ -16,36 +16,122 @@
 # http://bugs.python.org/issue2422
 # https://bugs.kde.org/show_bug.cgi?id=266386
 #
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Addr4
+   fun:PyObject_Free
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value4
+   fun:PyObject_Free
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value8
+   fun:PyObject_Free
+}
+{
+   ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value
+   Memcheck:Cond
+   fun:PyObject_Free
+}
+
 
 {
-   /conf/valgrind-python-disableleak.supp
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Addr4
+   fun:PyObject_Realloc
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value4
+   fun:PyObject_Realloc
+}
+{
+   ADDRESS_IN_RANGE/Invalid read of size 4
+   Memcheck:Value8
+   fun:PyObject_Realloc
+}
+{
+   ADDRESS_IN_RANGE/Conditional jump or move depends on uninitialised value
+   Memcheck:Cond
+   fun:PyObject_Realloc
+}
+
+
+#
+# More suppression rules for Python custom allocator ( from fc_22 )
+#
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   fun:_PyObject_GC_NewVar
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:PyObject_Realloc
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:PyString_FromStringAndSize
+}
+{
+   <insert_a_suppression_name_here>
    Memcheck:Leak
    fun:malloc
    fun:PyObject_Malloc
 }
 
 {
-   /conf/valgrind-python-disableleak.supp
-   Memcheck:Cond
-   obj:/usr/sbin/ldconfig
-}
-
-{
-   /conf/valgrind-python-disableleak.supp
+   <insert_a_suppression_name_here>
    Memcheck:Leak
    fun:malloc
+   fun:PyThread_allocate_lock
 }
-
 {
-   /conf/valgrind-python-disableleak.supp
+   realloc supp found in rhel5
    Memcheck:Leak
    fun:realloc
+   fun:_PyObject_GC_Resize
 }
-
 {
-   /conf/valgrind-python-disableleak.supp
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   ...
+   fun:PyObject_Call
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:PyObject_Call
+}
+{
+   <insert_a_suppression_name_here>
    Memcheck:Leak
    fun:calloc
+   ...
+   fun:PyObject_Call
+}
+
+
+
+## Helgind suppressions
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   ...
+   fun:exit
+   fun:Py_Exit
 }
 
 

@@ -1,6 +1,7 @@
 #include <config.h>
 #ifdef _WIN32
 #include <ws2tcpip.h>
+#define SHUT_RDWR SD_BOTH
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -30,10 +31,23 @@ static int releaseEventInfo(void *ptr);
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
 
-static int sendSocket = 0;
-static int eventTopIdx = 0;
-static void *eventInfos[MAX_EVENTS];
+typedef struct _EventList {
+  int eventid;
+  pthread_t thread;
+  int socket;
+  struct _EventList *next;
+} EventList;
+  
+struct EventInfo {
+  int socket;
+  char *eventName;
+  void *arg;
+  void (*astadr) (void *, int, char *);
+};
 
+static int EVENTID = 0;
+static EventList *EVENTLIST = 0;
+static int sendSocket = 0;
 static pthread_mutex_t eventIdMutex;
 static int eventIdMutex_initialized = 0;
 static pthread_mutex_t sendEventMutex;
@@ -45,13 +59,7 @@ static int initializeMutex_initialized = 0;
 
 extern void InitializeEventSettings();
 
-struct EventInfo {
-  int socket;
-  pthread_t thread;
-  char *eventName;
-  void *arg;
-  void (*astadr) (void *, int, char *);
-};
+
 
 /**********************
  Message structure:
@@ -63,8 +71,15 @@ struct EventInfo {
 
 ***********************/
 
-static void *handleMessage(void *arg)
+static void *handleMessage(void *info_in)
 {
+  struct EventInfo *info = (struct EventInfo *)info_in;
+  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
+  int socket = info->socket;
+  size_t thisNameLen = strlen(info->eventName);
+  char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
+  void *arg = info->arg;
+  void (*astadr) (void *, int, char *) = info->astadr;
   int recBytes;
   char recBuf[MAX_MSG_LEN];
   struct sockaddr clientAddr;
@@ -72,13 +87,16 @@ static void *handleMessage(void *arg)
   int nameLen, bufLen;
   char *eventName;
   char *currPtr;
-  int thisNameLen;
-
-  struct EventInfo *eventInfo = (struct EventInfo *)arg;
-  thisNameLen = strlen(eventInfo->eventName);
+  int status;
+  status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
+  status=pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
+  free(info->eventName);
+  free(info);
+  UnlockMdsShrMutex(&eventIdMutex);
+  
   while (1) {
 #ifdef _WIN32
-    if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
+    if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
       int error = WSAGetLastError();
       if (error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK) {
@@ -90,28 +108,31 @@ static void *handleMessage(void *arg)
       continue;
     }
 #else
-    if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
+    if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, (socklen_t *) & addrSize)) < 0) {
-      perror("Error receiving UDP messages\n");
-      continue;
+      break;
     }
 #endif
+    if (recBytes == 0)
+      break;
     if (recBytes < (int)(sizeof(int) * 2 + thisNameLen))
       continue;
     currPtr = recBuf;
-    nameLen = ntohl(*((unsigned int *)currPtr));
+    memcpy(&nameLen,currPtr,sizeof(nameLen));
+    nameLen = ntohl(nameLen);
     if (nameLen != thisNameLen)
       continue;
     currPtr += sizeof(int);
     eventName = currPtr;
     currPtr += nameLen;
-    bufLen = ntohl(*((unsigned int *)currPtr));
+    memcpy(&bufLen, currPtr, sizeof(bufLen));
+    bufLen = ntohl(bufLen);
     currPtr += sizeof(int);
     if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
       continue;
-    if (strncmp(eventInfo->eventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
+    if (strncmp(thisEventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
       continue;
-    eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
+    astadr(arg, bufLen, currPtr);
   }
   return 0;
 }
@@ -136,55 +157,34 @@ static void initialize()
   initialized = 1;
 }
 
-static int releaseEventInfo(void *ptr)
-{
-  int i, status = 0;
+static int pushEvent(pthread_t thread, int socket) {
   LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
+  EventList *ev = malloc(sizeof(EventList));
+  ev->eventid = ++EVENTID;
+  ev->socket = socket;
+  ev->thread = thread;
+  ev->next = EVENTLIST;
+  EVENTLIST=ev;
+  UnlockMdsShrMutex(&eventIdMutex);
+  return ev->eventid;
+}
 
-  for (i = 0; i < eventTopIdx; i++) {
-    if (eventInfos[i] == ptr) {
-      free(((struct EventInfo *)ptr)->eventName);
-      free(ptr);
-      eventInfos[i] = 0;
-      status = 1;
+static EventList *popEvent(int eventid) {
+  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
+  EventList *ev,*ev_prev;
+  for (ev=EVENTLIST,ev_prev=0; ev && ev->eventid != eventid; ev_prev=ev,ev=ev->next);
+  if (ev) {
+    if (ev_prev) {
+      ev_prev->next = ev->next;
+    } else {
+      EVENTLIST = ev->next;
     }
   }
   UnlockMdsShrMutex(&eventIdMutex);
-  return status;
+  return ev;
 }
 
-static int getEventId(void *ptr)
-{
-  int i, ans;
-  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
-
-  if (eventTopIdx >= MAX_EVENTS - 1)	//If top reached, find some hole
-  {
-    for (i = 0; i < MAX_EVENTS; i++) {
-      if (!eventInfos[i]) {
-	eventInfos[i] = ptr;
-	ans = i + 1;
-      }
-    }
-    if (i == MAX_EVENTS) {
-      printf("Too Many events!!");
-      ans = 0;
-    }
-  } else {
-    eventInfos[eventTopIdx] = ptr;
-    eventTopIdx++;
-    ans = eventTopIdx;
-  }
-  UnlockMdsShrMutex(&eventIdMutex);
-  return ans;
-}
-
-static struct EventInfo *getEventInfo(int id)
-{
-  return (id > MAX_EVENTS) ? 0 : (struct EventInfo *)eventInfos[id - 1];
-}
-
-static int getSocket()
+static int getSendSocket()
 {
   LockMdsShrMutex(&getSocketMutex, &getSocketMutex_initialized);
   if (!sendSocket) {
@@ -236,6 +236,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   struct ip_mreq ipMreq;
   struct EventInfo *currInfo;
   unsigned short port;
+  pthread_t thread;
   memset(&ipMreq, 0, sizeof(ipMreq));
 
   initialize();
@@ -366,42 +367,41 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   }
 
   currInfo = (struct EventInfo *)malloc(sizeof(struct EventInfo));
-  currInfo->eventName = malloc(strlen(eventName) + 1);
-  strcpy(currInfo->eventName, eventName);
+  currInfo->eventName = strdup(eventName);
   currInfo->socket = udpSocket;
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
-
-  pthread_create(&currInfo->thread, 0, handleMessage, (void *)currInfo);
-  pthread_detach(currInfo->thread);
-  *eventid = getEventId((void *)currInfo);
+  pthread_create(&thread, 0, handleMessage, (void *)currInfo);
+//  pthread_detach(thread);
+  *eventid = pushEvent(thread, udpSocket);
   return 1;
 }
 
 int MDSUdpEventCan(int eventid)
 {
-  struct EventInfo *currInfo = getEventInfo(eventid);
-  if (currInfo) {
-    pthread_cancel(currInfo->thread);
-#ifndef _WIN32
-    close(currInfo->socket);
-#else
-    shutdown(currInfo->socket, 2);
-    closesocket(currInfo->socket);
-#endif
-    releaseEventInfo(currInfo);
+  EventList *ev = popEvent(eventid);
+  if (ev) {
+    shutdown(ev->socket, SHUT_RDWR);
+    close(ev->socket);
+//    pthread_cancel(ev->thread);
+    pthread_join(ev->thread,0);    
+    free(ev);
     return 1;
-  } else
+  } else {
+    printf("invalid eventid %d\n",eventid);
     return 0;
+  }
 }
 
 int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
 {
   char multiIp[64];
+  uint32_t buflen_net_order = htonl(bufLen);
   int udpSocket;
   struct sockaddr_in sin;
   char *msg=0, *currPtr;
-  int msgLen, nameLen, actBufLen;
+  int msgLen, nameLen = strlen(eventName), actBufLen;
+  uint32_t namelen_net_order = htonl(nameLen);
   int status;
   struct hostent *hp = (struct hostent *)NULL;
   unsigned short port;
@@ -410,7 +410,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
 
   initialize();
   getMulticastAddr(eventName, multiIp);
-  udpSocket = getSocket();
+  udpSocket = getSendSocket();
 
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
@@ -432,14 +432,18 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   msgLen = 4 + nameLen + 4 + actBufLen;
   msg = malloc(msgLen);
   currPtr = msg;
-  *((unsigned int *)currPtr) = htonl(nameLen);
-  currPtr += 4;
+
+  memcpy(currPtr, &namelen_net_order, sizeof(namelen_net_order));
+  currPtr += sizeof(buflen_net_order);
+
   memcpy(currPtr, eventName, nameLen);
   currPtr += nameLen;
 
-  *((unsigned int *)currPtr) = htonl(bufLen);
-  currPtr += 4;
-  memcpy(currPtr, buf, bufLen);
+  memcpy(currPtr, &buflen_net_order, sizeof(buflen_net_order));
+  currPtr += sizeof(buflen_net_order);
+
+  if (buf && bufLen > 0)
+    memcpy(currPtr, buf, bufLen);
 
   LockMdsShrMutex(&sendEventMutex, &sendEventMutex_initialized);
   if (UdpEventGetTtl(&ttl))

@@ -93,6 +93,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1 \
+@ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
+@ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
+@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || echo --skip;)
 TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 	MdsDataTest$(EXEEXT) MdsScalarTest_NumericConversion$(EXEEXT) \
 	MdsScalarTest_NumericLimits$(EXEEXT) \
@@ -125,6 +129,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
 	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
 	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/m4_ax_sanitize_check.m4 \
 	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/visibility.m4 \
 	$(top_srcdir)/configure.ac
@@ -152,126 +157,104 @@ MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsActionTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsApdTest_SOURCES = MdsApdTest.cpp
 MdsApdTest_OBJECTS = MdsApdTest.$(OBJEXT)
 MdsApdTest_LDADD = $(LDADD)
-MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsApdTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsCallTest_SOURCES = MdsCallTest.cpp
 MdsCallTest_OBJECTS = MdsCallTest.$(OBJEXT)
 MdsCallTest_LDADD = $(LDADD)
-MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsCallTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
 MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
 MdsCompoundTest_LDADD = $(LDADD)
-MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsConglomTest_SOURCES = MdsConglomTest.cpp
 MdsConglomTest_OBJECTS = MdsConglomTest.$(OBJEXT)
 MdsConglomTest_LDADD = $(LDADD)
-MdsConglomTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsConglomTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsConnectionTest_SOURCES = MdsConnectionTest.cpp
 MdsConnectionTest_OBJECTS = MdsConnectionTest.$(OBJEXT)
 MdsConnectionTest_LDADD = $(LDADD)
-MdsConnectionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsConnectionTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsDataTest_SOURCES = MdsDataTest.cpp
 MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
 MdsDataTest_LDADD = $(LDADD)
-MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsDimensionTest_SOURCES = MdsDimensionTest.cpp
 MdsDimensionTest_OBJECTS = MdsDimensionTest.$(OBJEXT)
 MdsDimensionTest_LDADD = $(LDADD)
-MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsEventSuppression_SOURCES = MdsEventSuppression.cpp
 MdsEventSuppression_OBJECTS = MdsEventSuppression.$(OBJEXT)
 MdsEventSuppression_LDADD = $(LDADD)
-MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsEventTest_SOURCES = MdsEventTest.cpp
 MdsEventTest_OBJECTS = MdsEventTest.$(OBJEXT)
 MdsEventTest_LDADD = $(LDADD)
-MdsEventTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsEventTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
-MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsExpressionCompileTest_SOURCES = MdsExpressionCompileTest.cpp
 MdsExpressionCompileTest_OBJECTS = MdsExpressionCompileTest.$(OBJEXT)
 MdsExpressionCompileTest_LDADD = $(LDADD)
-MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsFunctionTest_SOURCES = MdsFunctionTest.cpp
 MdsFunctionTest_OBJECTS = MdsFunctionTest.$(OBJEXT)
 MdsFunctionTest_LDADD = $(LDADD)
-MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsRangeTest_SOURCES = MdsRangeTest.cpp
 MdsRangeTest_OBJECTS = MdsRangeTest.$(OBJEXT)
 MdsRangeTest_LDADD = $(LDADD)
-MdsRangeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsRangeTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsScalarTest_NumericConversion_SOURCES =  \
 	MdsScalarTest_NumericConversion.cpp
 MdsScalarTest_NumericConversion_OBJECTS =  \
 	MdsScalarTest_NumericConversion.$(OBJEXT)
 MdsScalarTest_NumericConversion_LDADD = $(LDADD)
-MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsScalarTest_NumericLimits_SOURCES = MdsScalarTest_NumericLimits.cpp
 MdsScalarTest_NumericLimits_OBJECTS =  \
 	MdsScalarTest_NumericLimits.$(OBJEXT)
 MdsScalarTest_NumericLimits_LDADD = $(LDADD)
-MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsScalarTest_ScalarCast_SOURCES = MdsScalarTest_ScalarCast.cpp
 MdsScalarTest_ScalarCast_OBJECTS = MdsScalarTest_ScalarCast.$(OBJEXT)
 MdsScalarTest_ScalarCast_LDADD = $(LDADD)
-MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsSignalTest_SOURCES = MdsSignalTest.cpp
 MdsSignalTest_OBJECTS = MdsSignalTest.$(OBJEXT)
 MdsSignalTest_LDADD = $(LDADD)
-MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsStringTest_SOURCES = MdsStringTest.cpp
 MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
 MdsStringTest_LDADD = $(LDADD)
-MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsTreeNodeTest_SOURCES = MdsTreeNodeTest.cpp
 MdsTreeNodeTest_OBJECTS = MdsTreeNodeTest.$(OBJEXT)
 MdsTreeNodeTest_LDADD = $(LDADD)
-MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsTreeSuppression_SOURCES = MdsTreeSuppression.cpp
 MdsTreeSuppression_OBJECTS = MdsTreeSuppression.$(OBJEXT)
 MdsTreeSuppression_LDADD = $(LDADD)
-MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsTreeTest_SOURCES = MdsTreeTest.cpp
 MdsTreeTest_OBJECTS = MdsTreeTest.$(OBJEXT)
 MdsTreeTest_LDADD = $(LDADD)
-MdsTreeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsTreeTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 MdsWindowTest_SOURCES = MdsWindowTest.cpp
 MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
 MdsWindowTest_LDADD = $(LDADD)
-MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
 buildtest_LDADD = $(LDADD)
-buildtest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a $(am__DEPENDENCIES_1)
+buildtest_DEPENDENCIES = $(am__DEPENDENCIES_2)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -649,6 +632,9 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_SANITIZE = @ENABLE_SANITIZE@
+ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
+ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 F77 = @F77@
@@ -760,16 +746,19 @@ PYTHON_PLATFORM = @PYTHON_PLATFORM@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 PY_LOG_COMPILER = @PY_LOG_COMPILER@
-PY_LOG_COMPILER_TAP = @PY_LOG_COMPILER_TAP@
-PY_LOG_COMPILER_XML = @PY_LOG_COMPILER_XML@
-PY_LOG_FLAGS = @PY_LOG_FLAGS@
-PY_LOG_FLAGS_TAP = @PY_LOG_FLAGS_TAP@
-PY_LOG_FLAGS_XML = @PY_LOG_FLAGS_XML@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@ $(am__append_2)
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
 READLINE_LIBS = @READLINE_LIBS@
 READLINK = @READLINK@
+RELEASE_BRANCH = @RELEASE_BRANCH@
+RELEASE_COMMIT = @RELEASE_COMMIT@
+RELEASE_DATE = @RELEASE_DATE@
+RELEASE_MAJOR = @RELEASE_MAJOR@
+RELEASE_MINOR = @RELEASE_MINOR@
+RELEASE_RELEASE = @RELEASE_RELEASE@
+RELEASE_TAG = @RELEASE_TAG@
 REMCAM = @REMCAM@
 REMCAMLIB = @REMCAMLIB@
 RMIC = @RMIC@
@@ -789,7 +778,7 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
-TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
 TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
@@ -886,6 +875,12 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
 
+# // check if libpath is correct or skip python tests
+@ENABLE_SANITIZE_TRUE@_check_sanitize_ldd = \
+@ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+@ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -894,8 +889,8 @@ TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS)
 AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ $(TEST_CFLAGS)
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
-AM_LIBS = -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
-LDADD = $(TEST_LIBS) testutils/libMdsTestUtils.a @LIBS@ $(AM_LIBS)
+AM_LIBS = $(LIBS) $(TEST_LIBS) testutils/libMdsTestUtils.a
+LDADD = $(AM_LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
 AM_DEFAULT_SOURCE_EXT = .cpp
 
 # set VALGRIND_TESTS to select a subset of tests performed under valgrind if
@@ -910,10 +905,8 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 # generate suppressions codes.
 #
 VALGRIND_SUPPRESSIONS_FILES = \
-                              $(srcdir)/valgrind-stdlib.supp      \
-                              $(srcdir)/valgrind-dlerr.supp       \
-                              $(srcdir)/valgrind-connection.supp  \
-                              $(srcdir)/valgrind-treenode.supp 
+                              $(top_srcdir)/mdsshr/testing/valgrind-mdsshr.supp \
+                              $(srcdir)/valgrind-mdsobjects-cpp.supp
 
 
 #
@@ -1758,7 +1751,7 @@ rebuild-tests:
 	fi;
 
 .PHONY: tests
-tests:
+tests: rebuild-tests
 	@echo "Making tests ... "; \
 	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
 
@@ -1766,19 +1759,15 @@ tests:
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@VALGRIND_CHECK_RULES@ 
+@VALGRIND_CHECK_RULES@
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  FILL TEST CHAIN  ////////////////////////////////////////////////////// #
+# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-LOG_DRIVER          ?= @LOG_DRIVER@
-TESTS_ENVIRONMENT   ?= @TESTS_ENVIRONMENT@
-LOG_COMPILER        ?= @LOG_COMPILER@
-PY_LOG_COMPILER     ?= @PY_LOG_COMPILER@
-PY_LOG_FLAGS        ?= @PY_LOG_FLAGS@
+@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
 
-$(TEST_BUILD_TAP): rebuild-tests
+$(TEST_BUILD_TAP):
 	@ \
 	echo "Try to build targets one by one"; \
 	echo "TAP version 13" > $@; \
@@ -1820,6 +1809,10 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
 tests-envdump:

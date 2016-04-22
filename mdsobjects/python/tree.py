@@ -60,7 +60,7 @@ class _TreeCtx(object):
         if self.ctx not in _TreeCtx.ctxs:
             status=_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
             if (status & 1):
-                _treeshr.TreeFreeDbid(_C.c_void_p(self.ctx))
+                _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -264,9 +264,9 @@ class Tree(object):
                 included=included.toList()
                 included.insert(0,0)
                 included=_N.array(included)
-                status = _treeshr.TreeCreatePulseFile(self.ctx,shot,len(included),_C.c_void_p(included.ctypes.data))
+                status = _treeshr._TreeCreatePulseFile(self.ctx,shot,len(included),_C.c_void_p(included.ctypes.data))
             except:
-                status = _treeshr.TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
+                status = _treeshr._TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
         finally:
             Tree.unlock()
         if not (status & 1):
@@ -339,7 +339,7 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            shot=_treeshr.TreeGetCurrentShotId(_ver.tobytes(treename))
+            shot=_treeshr._TreeGetCurrentShotId(_ver.tobytes(treename))
         finally:
             Tree.unlock()
         if shot==0:
