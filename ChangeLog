@@ -1,4 +1,65 @@
-commit 7527f777250dd946661512aa44ef9b10e441ce34 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+commit 8ffa9cd59abf7ee67a5b3f36c4f53ea914eb2e0a (HEAD -> refs/heads/alpha, tag: refs/tags/alpha_release-7-0-258, refs/remotes/origin/jas-add-picam-device, refs/remotes/origin/alpha)
+Merge: a411390 01856bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 22 15:05:28 2016 -0400
+
+    Merge pull request #459 from MDSplus/twfbld
+    
+    Twfbld
+
+commit 01856bb281a5d8513ef0d8448f725001a1f2429f (tag: refs/tags/twfbld_release-8-0-16, refs/remotes/origin/twfbld)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 22 11:38:17 2016 -0400
+
+    cd to workspace before trying to make the windows installation kit
+
+commit a4113908379fa06d7e6f3c56ee4771f44d68e1bc
+Merge: e143239 bb7f784
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 22 10:36:29 2016 -0400
+
+    Merge pull request #458 from MDSplus/jas-add-picam-device
+    
+    Jas add picam device
+
+commit b48eb1e8ae73213fd58cd88877a176218d6dc187 (tag: refs/tags/twfbld_release-8-0-15)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 22 10:00:14 2016 -0400
+
+    cd to workspace before trying to make the windows installation kit
+
+commit bb7f78454b666bdeca7ac406317598b7a32c164d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Apr 22 09:45:54 2016 -0400
+
+    fix subprocess management
+
+commit 066accebf889bf393eea6d6bec6c4247e71aff62
+Merge: afcb253 e143239
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Apr 22 09:22:33 2016 -0400
+
+    Merge branch 'alpha' into jas-add-picam-device
+
+commit e1432392b57d708135c92a86ec370c1e05c99725 (tag: refs/tags/alpha_release-7-0-257)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Apr 21 23:24:12 2016 -0400
+
+    New release ---- alpha_release-7-0-257
+
+commit afcb25338d633b17c5a49f7cce6024a10d2f8de7
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Apr 21 16:59:39 2016 -0400
+
+    first cut at acquire method
+
+commit d09ff57914003ea4b9a2d590bd2b4c9f61eea67a
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Apr 21 16:47:15 2016 -0400
+
+    initial changes to get it acquire working
+
+commit 7527f777250dd946661512aa44ef9b10e441ce34
 Merge: 2592cf3 663f988
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 21 11:24:28 2016 -0400
@@ -12,6 +73,34 @@ Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Apr 21 16:48:38 2016 +0200
 
     Fix check for new data availability
+
+commit 03506ec7aa22f9b1ce9c7ef2daeaed9b01eecbc1 (tag: refs/tags/twfbld_release-8-0-14)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Apr 21 14:44:48 2016 +0200
+
+    removed unneded include and pthread usage, this fixes windows copilation
+
+commit 5e117b296d1bc6d1f8d0c02ecd71e0e9b180784b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 21 07:25:08 2016 -0400
+
+    Fix debian build after twfbld/alpha merge
+
+commit f032bce79325f3fa10d4df5f425359a8e4434d62 (refs/remotes/origin/twfbld2)
+Merge: cfeeeee fc1588e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 20 13:42:07 2016 -0400
+
+    Merge pull request #455 from AndreaRigoni/twfbld2-fixvalgrind
+    
+    fixes needed to pass valgrind tests
+
+commit fc1588e5cc0bdb7051dd22ec923ac6eea0b46548
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Apr 20 19:39:17 2016 +0200
+
+    fixes needed to pass valgrind tests
+    tested on fc_22 and rhel5
 
 commit 2592cf3d34c0929921a68d92566130edc0f3e01d (tag: refs/tags/alpha_release-7-0-256)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -28,7 +117,7 @@ Date:   Wed Apr 20 12:30:03 2016 -0400
     
     generate new error codes from the XML
 
-commit 193ab9790b00633fdd0ad0e669cf8b57f414581d (refs/remotes/origin/jas-add-picam-device)
+commit 193ab9790b00633fdd0ad0e669cf8b57f414581d
 Merge: db1e892 533a501
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Apr 20 12:24:41 2016 -0400
@@ -67,6 +156,13 @@ Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Apr 19 23:24:18 2016 -0400
 
     New release ---- alpha_release-7-0-254
+
+commit cfeeeee923a9f2959ed0e374da0b156e7f47a6bf
+Merge: 7b1baab 8194f7f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 19 14:40:57 2016 -0400
+
+    Merge twfbld into alpha
 
 commit 7b1baab7f5c569e9284d64efe9917d292827a9dc
 Merge: 62791d2 951ae07
@@ -190,11 +286,140 @@ Date:   Thu Apr 14 11:17:53 2016 -0400
 
     Add thread locking to the get method of a Connection object which will enable multiple threads to use a single connection object safely.
 
+commit 8194f7f0be2879af5f865aa27115761cd6ecc900 (refs/remotes/origin/twfbld-4-20-2016)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 11:40:59 2016 -0400
+
+    Add config.h from workspace for VS build
+
+commit a9d45632e9606fcd1900d7c921a323fa603d92f0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 11:19:07 2016 -0400
+
+    Add WINBLD_REMDIR
+
+commit 066694bf42e21b6d0c22935616ac6fa210f5fdee
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 10:45:59 2016 -0400
+
+    debugging
+
+commit acf9221854e2043cd1f17c3e280db71ad1a573ca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 10:12:12 2016 -0400
+
+    Add WINBLD_HOST environment variable and fix cleanup
+
+commit e0f44612fa345fb5637fdf8ab765f3308371f51f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 09:52:33 2016 -0400
+
+    Add WINBLD_HOST environment variable
+
+commit eb1a5537c0a798bca88d67f298977cf8c725bbef
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 09:49:31 2016 -0400
+
+    Add WINBLD_HOST environment variable
+
+commit 8085cef38f8c9516e8ca9ac218ea3f268ebbdc86
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 09:03:47 2016 -0400
+
+    Skip udp event testing inside wine.
+
+commit ea352e8d6ce8a9b354eaf82b96882905be0f983e
+Merge: e0f46bd 96ef7f1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 13 08:06:00 2016 -0400
+
+    Merge pull request #444 from AndreaRigoni/andrea-sanitize
+    
+    added missing m4 macro for sanitize
+
+commit 96ef7f1dc44e97fd6464f04dd29823ff3b76b291
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Apr 13 10:19:51 2016 +0200
+
+    added missing m4 macro for sanitize
+
+commit e0f46bd3e0e566063cddc45fd4bc256f9cbfc9ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 16:36:08 2016 -0400
+
+    Add more exports to MdsShr
+
+commit 422d971104661272f64bf5be3e78e73d9e9ae45f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 15:35:08 2016 -0400
+
+    Fix windows
+
+commit 948e54ea3b51a0c2e00daf104f4c6145b179b967
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 14:12:25 2016 -0400
+
+    Fixes for windows
+
+commit bd9e9d662178f1415d1c7b4c9a3aa5d36ca97296
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 12:02:45 2016 -0400
+
+    Set HOME environment variable to use workspace
+
+commit cceb2b75bdcb52e2f070b6c14590e1b0fad7a4de
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 11:17:41 2016 -0400
+
+    Add /winbld volume for windows
+
+commit c1afcf78625339348557fb6f7242938f9a0c3f73
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 11:16:44 2016 -0400
+
+    Add /winbld volume for windows
+
+commit abe5270b17e45ac80af48331074eeb7c8ce671ac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 11:13:37 2016 -0400
+
+    Add /winbld volume for windows
+
+commit 0506e7870b5af35e09fcb42fda78110f27c1f3d7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 10:30:33 2016 -0400
+
+    Fix tests on windows
+
+commit b5860eb37119cd1a1e1ba357665b0530653534c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 09:48:47 2016 -0400
+
+    Fix windows 3rd-party configure
+
+commit 1f71707ba5b64e5c21f89a414f30ccef68b898d7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 09:02:21 2016 -0400
+
+    Fix UdpEvents.c for Windows sockets
+
+commit e146cef2e64da9d67483beba50b1b9f157d1860b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 12 09:01:56 2016 -0400
+
+    Add mdsdcl_show_version to def file
+
 commit 1e025fbe93fc6a8acd80dfc470bc70937488a136 (tag: refs/tags/alpha_release-7-0-251)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Apr 11 23:24:19 2016 -0400
 
     New release ---- alpha_release-7-0-251
+
+commit 660adb5e2c92da5f58fc27d064ebfc80822d72b5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 11 15:23:53 2016 -0400
+
+    TclShowVersion obsolete
 
 commit 80349067817e23e07e28dd7974c6fca674a853ac
 Merge: 73aad37 a335710
@@ -422,6 +647,12 @@ Date:   Fri Apr 1 16:40:08 2016 -0400
 
     Merge branch 'alpha' into jas-add-raspi-device
 
+commit b189f9ebdd5e2df9530ab9f39278bf1a8230d014 (tag: refs/tags/twfbld_release-8-0-13)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 16:18:01 2016 -0400
+
+    Add release_tag_file handling to skip builds if already done.
+
 commit 332e36315ab71aeaaad5f627c1c339453bc71ef7
 Merge: 66ac5f4 7ee117e
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -448,6 +679,18 @@ Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri Apr 1 14:56:34 2016 -0400
 
     fix the uncompressed case and change some defaults
+
+commit 1789b7d64eda7f101c89cc801429c0475db99565 (tag: refs/tags/twfbld_release-8-0-12)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 13:10:41 2016 -0400
+
+    Fixes for raspberrpi build
+
+commit 7e1a0e578751c0b3c0a1c19f2a947ef20c10ca35
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 1 10:47:05 2016 -0400
+
+    Add wait in UdpEventsTest.c
 
 commit 66ac5f4670cf45dfddd42f41ff189f93cb93a3c9
 Merge: 8a4532e daa1d49
@@ -512,6 +755,12 @@ Date:   Thu Mar 31 12:33:22 2016 -0400
 
     Fix raspberrypi repo
 
+commit 2bcf25648ac595091944c74ca2fb632f7fe3eeea (tag: refs/tags/twfbld_release-8-0-11)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 10:07:49 2016 -0400
+
+    do not contaminate source dir with configure for pypi
+
 commit 3f3371213a044ea18fec38ee95d4b960eb2fa9a9
 Merge: 6e25735 a5399af
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -520,6 +769,12 @@ Date:   Thu Mar 31 09:55:02 2016 -0400
     Merge pull request #433 from zack-vii/cleanup_428
     
     fixedY replaceAll is not in-place
+
+commit 36997fb8342466b5173e35d685ab396c3b0c97a0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 09:50:34 2016 -0400
+
+    rpms go into branch subdirectory.
 
 commit 4770fc8ba2fb17fea83618935d62c281537b376f
 Merge: de4afb8 2daf36b
@@ -569,6 +824,33 @@ Date:   Thu Mar 31 14:40:59 2016 +0200
     This reverts commit 89aec2584d145c4713a39290151f9796a44e02b7, reversing
     changes made to ddeb6370decfed4a831ebce6444533852e002147.
 
+commit 82f49bf328be339f33711695cf7620c059ecc105 (tag: refs/tags/twfbld_release-8-0-10)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 31 08:11:41 2016 -0400
+
+    Fill in environment info when triggering --publish
+
+commit b5e8347015850f793f398fb01a5acc901765df94 (tag: refs/tags/twfbld_release-8-0-9)
+Merge: 811b504 71adc65
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 30 14:46:24 2016 -0400
+
+    Merge pull request #431 from AndreaRigoni/andrea-sanitize
+    
+    moved enable-sanitize to m4 file
+
+commit 71adc652eb708eb7d0a0cb5a82366f955785674a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Mar 30 19:46:32 2016 +0200
+
+    moved enable-sanitize to m4 file
+
+commit 811b504875e59adf46341d799111d62282044ba5 (tag: refs/tags/twfbld_release-8-0-8)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 30 11:44:16 2016 -0400
+
+    Increase delay on MdsConnectionTest from 5 msec to 500 msec
+
 commit 2daf36bf84eead77d2e7ee3b3bda9d4a1e872134
 Merge: d112491 a14769a
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -591,17 +873,239 @@ Date:   Tue Mar 29 23:18:00 2016 -0400
 
     New release ---- alpha_release-7-0-245
 
+commit 22e30b97f7e5f312dadbedd1d0ae88b566841115
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 16:40:38 2016 -0400
+
+    Mount installer volume when publishing release
+
+commit b601ac9822411e466c030f631494419ca8d53949 (tag: refs/tags/twfbld_release-8-0-7)
+Merge: 63c5e77 a68a040
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 12:13:16 2016 -0400
+
+    Merge pull request #430 from MDSplus/twf-longer-wait-udpevents
+    
+    Increase wait in UdpEventsTest to 10 millisec
+
+commit a68a040b5d75fa338d3d602cfe7d7bed36a03e90
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 12:12:04 2016 -0400
+
+    Increase wait in UdpEventsTest to 10 millisec
+
+commit 63c5e77fb3048fc1a4769015fee798bb6d68be0f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 11:10:31 2016 -0400
+
+    Fix windows case
+
+commit 0fadec47d7c0bdd90bd4a47ff83cdf9ad5bdc627
+Merge: ee2e5f3 b725462
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 11:04:07 2016 -0400
+
+    Merge pull request #429 from MDSplus/twf-fix-jenkins-build
+    
+    Fix build_debs and add build_windows and publish_windows
+
+commit b72546228d9dc53112c385824202c3e7e6478dbb (refs/remotes/origin/twf-fix-jenkins-build)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 11:02:38 2016 -0400
+
+    Fix build_debs and add build_windows and publish_windows
+
 commit 2cfa9b752ae21930c7aa03c2af834dfae83adea7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 29 09:37:28 2016 -0400
 
     Fix tab/space problem for py3 in Connection
 
+commit ee2e5f36f39c95a0719dba4ac6759c5f048ff5fc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 08:35:03 2016 -0400
+
+    Fix debian repo build and remove bits from DIST
+
+commit 9f682eb346f8ac7b34ef1a17b79efd58a2b2c118
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 29 08:33:09 2016 -0400
+
+    Fix debian repo build and remove bits from DIST
+
+commit 2191306ed76fcb9decfdc4ce09ba6aac3a133a33
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 15:36:23 2016 -0400
+
+    Fix typo in deb repo
+
+commit dae5b0096d3bdbd2eb1f42b949a9e249f643150a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 14:52:56 2016 -0400
+
+    Fix repo builds
+
+commit c8e079c6e442cc49bddce195ea7adba0c4d412cd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 14:33:17 2016 -0400
+
+    Fix repo builds
+
+commit f7876ec7f316f0b3180b762212715f3cfec24d16
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 14:31:59 2016 -0400
+
+    Fix build_debs_repo
+
+commit 8aa2d87e9483c468cd4bbf8f86883520ba24a201
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 14:29:35 2016 -0400
+
+    Fix build_debs_repo
+
+commit 1079c7fd3c271147001703089392d66fd91fa74e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 14:25:08 2016 -0400
+
+    Add upload to pypi
+
+commit bd143409264d4d7f7f3e6e482a6ebbd02092b2c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 14:16:29 2016 -0400
+
+    Separate make_release from publish_release
+
+commit 9f7c93eb46f40f8764f03c536f8e9d4488fbd263
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 11:32:49 2016 -0400
+
+    Add debug printout to find syntax error
+
+commit e0a1b6f78f7766d0c1e1bdb68807bea2410c16f1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 11:06:59 2016 -0400
+
+    Add debug printout to find syntax error
+
+commit cd6dead098e41fd8f40dedc80789fa6d06921e19
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 10:39:07 2016 -0400
+
+    Add debug printout to find syntax error
+
+commit 82a85d068f4bcf284985254479f4fdf35991b3e5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 10:14:04 2016 -0400
+
+    Add debug printout to find syntax error
+
+commit 94e5c5b5c6428e45f372412af9967113e72fdbbd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 09:49:18 2016 -0400
+
+    fix buildroot typo
+
+commit 2195104b4d22ba048e38a07e3633a49e004c1b30
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 28 09:13:58 2016 -0400
+
+    Use installer_dir for repo and package build destination
+
 commit 4f22ea85249713e9663f98772c4955052a8e1b6a (tag: refs/tags/alpha_release-7-0-244)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Mar 25 23:24:22 2016 -0400
 
     New release ---- alpha_release-7-0-244
+
+commit c5c9e73fae369df3b32f9fc8b70194627148386a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 16:40:53 2016 -0400
+
+    add twfbld component to apt repo for development
+
+commit aca96e2f24278f8d8fac202a0f5901fbbc5495fa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 16:37:58 2016 -0400
+
+    Check arch for amd64
+
+commit 89c8e90413946b0e0b9363164c274031b68d50d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 16:23:10 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit 4808dd69875fbd3d9f671867f229ff205856fbb8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 15:58:57 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit c52a1b1cedbc28cd3e8d4e9a414f6e6dac9eb338
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 15:40:15 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit b7d4449efe09c083a2a6d2a96b89629b67324441
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 13:27:21 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit c703d66355721157e0fa9c2a724a18c63b778533
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 12:45:07 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit 9977938605f32c9c7d271dcf609a94e8906349f9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 12:39:01 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit 4e2436a7c0dea2402f41fbd3f536a8d744c708c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 12:16:09 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit 2f45f1b9052e62178382004294842194de9bd4f5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 12:10:57 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit cbb6a33a174418e6fb19a068eeb86a1211fcba74
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 12:03:24 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit 4d6c9b9c2ae664aa71f4e963a76b5d81b44c934b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 12:00:02 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit 18cf292e7996fd017cbb840b80229bc344bc4829
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 11:55:35 2016 -0400
+
+    Handle debian using multiple docker images
+
+commit b2b0f20fb29c69f8041cb5300eb4c9c43e29a20e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 11:27:35 2016 -0400
+
+    Add build_debs for debian releases
+
+commit 9b1eac52c88ca359b9dfaaa99c6c199e0482c69d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 25 11:03:45 2016 -0400
+
+    Add build_debs for debian releases
 
 commit 89aec2584d145c4713a39290151f9796a44e02b7
 Merge: ddeb637 a14769a
@@ -650,6 +1154,60 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Mar 25 14:03:11 2016 +0100
 
     Fix missed updates
+
+commit a82a074f58463e6d21c70f7ea1cc0326d6cf100f (tag: refs/tags/twfbld_release-8-0-6)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 24 16:16:20 2016 -0400
+
+    Remove sanitizer suppresion from jenkins_build script
+
+commit 78644d718a754d6a9627402382c3bc7f0bad0526
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 24 16:14:30 2016 -0400
+
+    Use a single sanitize suppression file and include in configure.
+
+commit cb9324ff82abd357459ad9912173e52869052415 (tag: refs/tags/twfbld_release-8-0-5)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 17:09:30 2016 -0400
+
+    Install _version.py files from build directory
+
+commit e09b5f6aa351207b695a422fc5aec12114eb7741
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 15:32:52 2016 -0400
+
+    Add temporary sanitize suppression
+
+commit b05cfc20f2ad6fd9f826116370d372f7225497f4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 14:49:00 2016 -0400
+
+    Add temporary sanitize suppression
+
+commit d3105e58311202eaa43507c97a6eb5f11a4af109
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 13:57:22 2016 -0400
+
+    Add temporary sanitize suppression
+
+commit a08675704d3594d3397db1ace35ec096d246550e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 13:55:17 2016 -0400
+
+    Add temporary sanitize suppression
+
+commit 909b49233f6760b721daa14ef13e9ccc0d0d83c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 10:20:37 2016 -0400
+
+    Add -t on docker run to avoid Unrecognize input header docker bug.
+
+commit 278417393059a55643b51c6c52ebca5e10cac4a5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 23 09:19:55 2016 -0400
+
+    remove the dist directory from TutorialDevices
 
 commit ddeb6370decfed4a831ebce6444533852e002147 (tag: refs/tags/alpha_release-7-0-243)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -717,6 +1275,42 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 22 14:31:27 2016 -0400
 
     Fix python package removal
+
+commit a8307225562214b8ad7a7d7aed38886e7e79c20a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 14:29:07 2016 -0400
+
+    Add version info to device modules and fix python module cleanup
+
+commit 22f5fc9f9c8b03ce69a98fb10b75ab56a9a14823
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 14:28:57 2016 -0400
+
+    Add version info to device modules and fix python module cleanup
+
+commit a5437c216d974e5d3885dd147648428388a9e814
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 13:25:20 2016 -0400
+
+    Add enhanced version info for releases
+
+commit d2aad65d9f62b4b10b14f4a15bc3f75a8022b399
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 13:24:07 2016 -0400
+
+    Add enhanced version info for releases
+
+commit d9040d25697f5436f1605f8a569f3dd88cd07605
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 13:20:56 2016 -0400
+
+    Remove global symbols which should be private
+
+commit a18a7e4fc3af6e41052a957527eea935cda34099
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 22 13:19:45 2016 -0400
+
+    Remove unused tdicompile and lex and yacc modules
 
 commit 6fd58fd169ffa9a050a9cd6e34e89f7cf326cdab
 Merge: c1b59cc 4e00ef7
@@ -944,6 +1538,925 @@ Date:   Fri Mar 11 22:55:06 2016 -0500
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
+commit 8628df12c91286c9a79e7fd35315eef3ba3b4d3f (refs/remotes/origin/twf-merge-twfbld)
+Merge: e9a1ab7 f363865
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 14:47:47 2016 -0500
+
+    Merge branch 'twfbld' of github.com:/MDSplus/mdsplus into twfbld
+    
+    # Conflicts:
+    #	mdsshr/librtl.c
+
+commit e9a1ab74714256797ad8be5b69be5678b09aae1e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 14:02:45 2016 -0500
+
+    Add race suppression
+
+commit f5b6378a9369cded303130c3e44577fefb673ddc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 13:26:49 2016 -0500
+
+    Add leak suppression for sanitize with udt code
+
+commit 7b95f79560f15fba93bbd1edfc80f54a232fb97a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 15:21:35 2016 -0500
+
+    Fix misalignment sanitize errors
+
+commit f4a69cebdc79c79ad9a542a71c91d8f26daae237
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 14:01:35 2016 -0500
+
+    Fix misalignment sanitize errors
+
+commit 32956fb762113fb407771347dc7d2dbc44919280
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 10:27:57 2016 -0500
+
+    Remove ... expression in valgrind suppressions.
+
+commit 735a436dc05a65a507862323b421e4dbed9996c4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 10:14:00 2016 -0500
+
+    Fix status checking
+
+commit 87d4b493490aaf44ad5f9166148f5b595865ca04
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 09:44:47 2016 -0500
+
+    Try set -xv
+
+commit df86664270916dd2f05617d373ca7184fc60502b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Mar 4 12:08:13 2016 +0100
+
+    fix ENABLE_SANITIZE conditional
+
+commit a3983a9419534dc4944bc1901e3798a46399b9c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 17:08:06 2016 -0500
+
+    Add more debug output
+
+commit 1c661f6b670b6cdcb3e744ad2f723705b75c7900
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 16:52:39 2016 -0500
+
+    Fix typo and force verbose to jenkins_build
+
+commit 540f2066c6ea8cf1f04a8f7efa6b28c70de2272d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 16:43:54 2016 -0500
+
+    Fix typo and force verbose to jenkins_build
+
+commit a67916cb2bd43abc0f94bf968a094f64b61e288a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 19:50:41 2016 +0100
+
+    adds a condition to sanitizer to skip python tests
+
+commit 9b2a15a3550d6dacdacba6ab4ea38f9a5e0b07cd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 13:42:48 2016 -0500
+
+    Fix typo on release tag selection
+
+commit d296900a1620bf5510f999784bcd0ad20f5a452e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 12:09:39 2016 -0500
+
+    Fix memory leak in CopySegment
+
+commit e86278ed1b47b2071d16896d1f41a9e2a3b587fa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 12:01:27 2016 -0500
+
+    Fix undefined behaviors and handle empty descriptors in APD's
+
+commit c359d08c995c9a64dc8dba58561e7716e49bcb5d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 17:55:24 2016 +0100
+
+    fixed python suppression for python not compiled with --without-pymalloc option
+
+commit 2618f9e4bb2ff9d51753d2b20bdae3dffd8c9e10
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 10:01:57 2016 -0500
+
+    Fix typo in jenkins_build script
+
+commit 6bb434b0a6724cedfd3a0c74f93df8f7bd6be50b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 09:56:19 2016 -0500
+
+    Fix typo in jenkins_build script
+
+commit 2cc1ae67e7fb264b41369fce5c9ef183a23efabe
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 10:42:22 2016 +0100
+
+    add Param suppression for UDT
+
+commit 33f4afe4607ae25c63cf6e9bec7d223e20edd03a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 10:42:07 2016 +0100
+
+    adds TreeDeleteNodeTest raising helgrind error.
+
+commit e23974256df9546a5bdce1a843071d27c0fb3450
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 16:39:13 2016 -0500
+
+    Remove labview objects routine called mdsplus_event_abort which was using an unimplemented abort method of the Event class. This entry point does not appear in any of the LabView objects and is not referenced by anything.
+
+commit f6273a17fa52104f78955ea7c32e68e1e32152c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 15:56:35 2016 -0500
+
+    Add AC_CHECK_LIB To sanitize and return a special status to indicate sanitize option not available
+
+commit 803a6f706493ff6668fbd6520fa6036d00f1da00
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 13:12:07 2016 -0500
+
+    Unlock Node Nci after TreePutNci call.
+
+commit 4e419c83f65b4a7b06f9c9490da2fae05d22b501
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Mar 2 18:08:05 2016 +0100
+
+    fix Event object race condition.
+
+commit 68c4365f992e158d6140b43e0b706a93255d33ac
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 14:07:03 2016 +0100
+
+    missing VALGRIND_BUILD=yes for 64bit
+
+commit c5e9a24ef00f4692b0bf1f35615d1ef8822c5951
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 14:03:49 2016 +0100
+
+    avoid using tests lib suring sanitize tests..
+
+commit 9ce47f7696a582012b7326932df770a13da7aee9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 12:57:58 2016 +0100
+
+    added sanitize libraries to libs
+
+commit 9e5bb045a63c0e5bf79ef5b3c6994105406e2e9e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 12:15:30 2016 +0100
+
+    fix for tests to make stdout available in log format
+
+commit 3a6052c2affb910541eddf8c301e6674d2260042
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 13:38:09 2016 -0500
+
+    There is currently no support for 32-bit thread sanitizer in gcc so skip that test if specified.
+
+commit 4aed28d14f04cf83542e1754b87ba4bb9e9408c1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 12:33:53 2016 -0500
+
+    Do not fail if platform does not support sanitizers
+
+commit daebfb8f3ba449278814bf2528ec2336f3900709
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 11:35:54 2016 -0500
+
+    Add sanitize testing
+
+commit fb65d3be69f100091663709f79da96d478011ffb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 11:35:30 2016 -0500
+
+    Ignore files generated during testing
+
+commit b8392cdf750afc5a2e27eb7c337ebabce683fab9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 11:34:18 2016 -0500
+
+    Do not use static sanitizer libraries
+
+commit e9ee203a90c5c0216550071d7efbc7f7ae0a55e1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 09:58:04 2016 -0500
+
+    Fix UdpEvents based on sanitize-thread output
+
+commit 84a31d0c675d8d4847bb870d0ed528ee81cc0dfe
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 09:54:25 2016 -0500
+
+    Add three sanitize options
+
+commit 731fba30ae3b7bd4cb0909fcc2d39f62029e8b69
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 29 15:32:41 2016 +0100
+
+    remove .out files in src dir
+
+commit a69c437562befe1cde6aaac81445f183af719c6e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 29 15:31:32 2016 +0100
+
+    fix sanitize addin -lasan to LIBS
+
+commit 2a83663046e818e51619f5e7966817ea97c81b7d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 14:31:04 2016 -0500
+
+    Attempt to avoid docker Unrecognized input header messages which is supposedly caused by threads and having output going to both stdout and stderr. This change pipes stderr to stdout when doing tests.
+
+commit 6e09ecc583385b3dcad2b8b288de8b92f656b968
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 26 15:25:35 2016 +0100
+
+    fix import
+
+commit ea07eabeaec5ae2feb03e1e033770329aa8bb970
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 09:10:19 2016 -0500
+
+    Do valgrind tests before tap
+
+commit 0bdeb84d4795fe39f69b624549932b53d546d289
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 19:08:35 2016 +0100
+
+    fix valgrind suppression for old valgrind versions
+
+commit ac47b3efee1a622a9ad8056f78a786e7ef97495d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 19:00:28 2016 +0100
+
+    add a test proposed by Gabriele for a possible py issue in segments
+
+commit 788617c534fd754964e23ddb033950f52a398a91
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 17:31:32 2016 +0100
+
+    fix space issue in $comment
+
+commit 900e221c7a91b92b56811175818564f40c3e467a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 16:30:42 2016 +0100
+
+    try adding more delay to wait for server to come up
+
+commit af87149b8a9f93f431a3ce0ddad34419654b4668
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 16:23:40 2016 +0100
+
+    fix suppressions
+
+commit a2b98bef7b10da7245fd9b70dfaeca8f1f15c8c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 25 08:36:35 2016 -0500
+
+    Fix tag_release option
+
+commit 3ba7e8f7b9d4a6e2e21108a712bcf0344bb0cdb5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 11:46:33 2016 +0100
+
+    adds suppressions for UDT
+
+commit b40fb6289fda24744fddcbbba4eca430464e773b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 11:46:21 2016 +0100
+
+    adds valgrind hello both to tests-valgrind and tests-valgrind-suppressions
+
+commit 5a2b2b7f32d31a99c31128c17aaeb4cd45f2220c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 08:59:39 2016 +0100
+
+    fix for declaration (sorry Tom my fault).
+
+commit 5ea9b0874859e422e4a125c3661f6f3e82c28e61
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 14:44:08 2016 -0500
+
+    Fix race condition discovered by sanitizer
+
+commit fc3e50f5a582f2966109cce131ba32e142b041f2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 13:47:05 2016 -0500
+
+    Fix final tag release
+
+commit 6ab5ec25299179078e88d3f25d6243ba42f31630
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 13:46:18 2016 -0500
+
+    Fix final tag release
+
+commit 6c3664968229036176a75e5b2f16423eae59a3c4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 09:14:42 2016 -0500
+
+    Add fixes found with sanitizer=thread
+
+commit 26f40898dbf55a2d5b9230cf0b4b13808d1dff82
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 24 14:37:45 2016 +0100
+
+    cleaning up suppression and adding mdsshr pthread_create
+
+commit b427309f5f5de9a599848e93a81dacb61e5406b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 23 15:43:57 2016 -0500
+
+    Fix errors detected by --sanitize=address
+
+commit d4054f238e89e6ba187309dabfe9024191de4a76
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Feb 23 19:29:36 2016 +0100
+
+    adds some to tests
+
+commit f3a1540ce264d75a0bb34bae355699d960e138de
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Feb 23 16:21:47 2016 +0100
+
+    added test to check static functions inside UdpEvents.c
+
+commit 04b944f770d2e48726c35cbc2ec97c46eb12887d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Feb 23 16:19:18 2016 +0100
+
+    fix to propagate make error status
+
+commit 71bec9bd411171bf791598b222ea3244ba91235a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 22 19:12:27 2016 +0100
+
+    fix compatibility with pytohn2.4
+
+commit 64985c856a917e43bb85f1afad7eedcfb60c069e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 22 19:11:49 2016 +0100
+
+    fix python version check
+
+commit 3887fa0545905818341454a2b9eff2c336a827c6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 12:47:24 2016 -0500
+
+    Fix typo in eventname sprintf
+
+commit 0da2956a661b095931aabc02711612502a97bfce
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 19 18:11:45 2016 +0100
+
+    removed SkipTest import
+
+commit ba0007a343a2f0ce8e89a431b15924852195449e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 11:06:00 2016 -0500
+
+    attempt to fix git tag command
+
+commit bf071a06662e1ac1d6eee80d36e90ccb80c07a39
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 11:01:30 2016 -0500
+
+    Fix memory leak in UdpEvent list
+
+commit 23f24a7954cee2c510f37b9adcbd641690990df4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 09:45:26 2016 -0500
+
+    Fix python distribution info
+
+commit c99e4e1c9bc3a65e4211db0cc879b35c8b959b5e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 09:04:26 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit 63c80a467f0d5fd88ac2f106597064a02ac68016
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 08:50:32 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit fd1256b8c5ff13ae56c8ad0a126f97e7cdb940c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 08:48:58 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit 873b746eadbae5cec76f92e77cc6394fc6d438a3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 08:43:11 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit 600d7a231cdf9e1b374fe1e1a1e266aef887d244
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 19 09:14:31 2016 +0100
+
+    fix for labview duplicating string
+    
+    Signed-off-by: AndreaRigoni <andrea.rigoni@pd.infn.it>
+
+commit 4c41ea71bb3f753839285a1048b4feced6a94eaf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 13:42:14 2016 -0500
+
+    Fix configure handling of idl and labview
+
+commit d96587be0ff93839fcb0dfcd9c594629b8714310
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:10:25 2016 +0100
+
+    added some Tap tests
+
+commit c36a7b50a8d20acd1a08e6c22c3bf826f7c6e5e9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:09:30 2016 +0100
+
+    added port selection
+
+commit 17ea601fccfd21e60349d7393b9a19a086ff4540
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:09:13 2016 +0100
+
+    fixed for data NULL
+
+commit 4646a297921aacabb5597f5d6be1293fb702f864
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:05:58 2016 +0100
+
+    cleanup of Event class
+
+commit d96148e6644bdc0e4a5385d4bd4ae4e237c2776d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 10:16:35 2016 -0500
+
+    Add --pid=host on docker run command to ensure unique pid
+
+commit 231062aad0028e1e7b4c21a1913f2385628e115d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 08:01:06 2016 -0500
+
+    Use event name made with pid to avoid conflicts with other running tests.
+
+commit fe4a33e665600a72ad6a0b84e14d26ab0e00e978
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 14:46:30 2016 -0500
+
+    Allow core dumps on tests
+
+commit dc0dec7568388ed70606a44ebea39673a0df8be0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 14:02:55 2016 -0500
+
+    Only do release builds if selected
+
+commit 657816d8d850c9f370e6a5a5886485480d76035b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 13:35:01 2016 -0500
+
+    Fix format of -e option on docker run command
+
+commit 261aa6f148471df150d3a2cf64ea4f59487e8cd8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 17 18:58:19 2016 +0100
+
+    add both $SRCDIR and /mdsplus/source to the docker container mounts
+
+commit b19c9f760f412c1a21c780ff8ff64958f5253fac
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 17 18:29:54 2016 +0100
+
+    add SRCDIR to env in container
+
+commit 6520ba9990211b3102a36a3df9e018a4df6100c5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 17 17:07:08 2016 +0100
+
+    move /mdsplus/xxxx to the matching env value in docker container
+
+commit b4feffa2034831170518c4d7361b28a17ed15bda
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 16:07:51 2016 -0500
+
+    More cleanup of UdpEvents.c
+
+commit 673c3d1e13efce5059e79ed94546643146ef1ea5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 14:38:40 2016 -0500
+
+    Add waits and loop possibility to test
+
+commit 2a3110492bd3a1386b7ac00eaa7e8ab758d7a7f2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 14:36:55 2016 -0500
+
+    Fix race conditions in udp events
+
+commit f0577153903423eaa185f8baa2ff65aa1ced92a3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 09:54:46 2016 -0500
+
+    Stop the eventast thread properly
+
+commit bd3f2efa4a0532b7ca0dd0a3e677dd44a906e434
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 11:01:27 2016 +0100
+
+    added mdsshr tests to automatically performed tests
+
+commit 8fe38bedee03ba86eff2919b8e5fea5fe319d150
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 10:15:17 2016 +0100
+
+    adds Tom fixes for race condition in currInfo
+
+commit 0063a07472e025698a45df3e8e3d55bf94e67784
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:53:11 2016 +0100
+
+    removed cast and added exit(0) to the last fork block
+
+commit 71f965da3d3e41a446920e697d16569720786ebb
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:50:58 2016 +0100
+
+    terminating string with '\0'
+
+commit ab77fb6a22ff71398dd234a98fd14afa2362b2d7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:50:16 2016 +0100
+
+    removed reduntant valgrind suppression invocation
+
+commit 0468b59718b70ff0b865d58f72e8307091d97800
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:49:35 2016 +0100
+
+    added mdsshr testing
+
+commit 035dee22215202aed02ea5d5c720ff41a9a03f31
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:48:47 2016 +0100
+
+    removes notify from run, already done internally in the Ast function
+    adds const to evName strings in arguments
+
+commit 7abc7a6a30e25ebda690114dc599b1257e30c7cf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 9 08:44:53 2016 -0500
+
+    prevent race condition with event tests
+
+commit ab27c0908df8495e7c8c713e7279ec45b45b48a8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 9 08:19:38 2016 -0500
+
+    Avoid errors during event cancelation
+
+commit cdb66cf53a66f37d1faa597e7ab5d7a9dcf2aa82
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 17:28:07 2016 -0500
+
+    Another attempt to fix races condition in udp events
+
+commit 603b6817c4097677dc6023e93473f4ce32d53431
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 17:02:56 2016 -0500
+
+    Attempt to fix race condition in udp events
+
+commit c1db6788a1e3abaa45b2ef69fe32e2fe66cf392c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 14:26:13 2016 -0500
+
+    Revert cpp/mdsdata.c to alpha version
+
+commit 00ce16fa35c8c2824ac7b61afe44fc2508d309b0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 14:24:55 2016 -0500
+
+    Add trailing null to LibSysAscTim string
+
+commit 403d92edc50c48fd62f4ac81055891d145bbed04
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 10:41:04 2016 -0500
+
+    Use VG_TESTS instead of VALGRIND_TESTS variable to prevent conflicts with testing scripts
+
+commit 05f225dae7a3b5946dd4627cdfcfd5f40c977572
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 09:24:51 2016 -0500
+
+    Add null termination to character string returned in convertTimeToAscii
+
+commit 1ed153f8e7633ccb63936a88cd2631b4f52b4f92
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 08:57:34 2016 -0500
+
+    Add space before close bracket in if statements
+
+commit cf5c2f6d6e3bc27d99a99e6d3c085f9069ab796e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 14:12:32 2016 -0500
+
+    Don't use --rm on docker run
+
+commit 96ebb96bb898632a8c107867beda937deba081fb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 14:10:30 2016 -0500
+
+    Don't use --rm on docker run
+
+commit 3ca4ca5701da27d7ce5bc57750ee777b02e6b8ac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 14:09:33 2016 -0500
+
+    Don't use --rm on docker run
+
+commit 9b09372a9993afcbe51ad1477f767b112b1c3bbc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 13:53:57 2016 -0500
+
+    Put distdir in jenkins_build.conf config file
+
+commit 62e835b3e62ffc83eb69d531325dc05298f439b5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 13:31:56 2016 -0500
+
+    Add valgrind test selection
+
+commit e7799cc3d7fc97cb0c0b214d3ddba0321dfcaa6d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 11:23:58 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit 97c986925a58dbd88d4597f991391bdf069fb1ba
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 10:45:10 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit d020d60395d651906113b6f88e32b2c05330183a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 10:30:29 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit c78eab0ef0085278c3db4033e305ef3b6f9d6f14
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 10:27:47 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit 93749c7556c8b255f62bf5877eea4aeec1ae13b0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 15:06:15 2016 -0500
+
+    Update build scripts to handle test and release
+
+commit 09c54c73a1be28a82ad9a76fe5e9e5cccce4606c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 15:00:28 2016 -0500
+
+    Update build scripts to handle test and release
+
+commit 9f5d398223f7d856823ab58189c670f9b391e856
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 14:54:10 2016 -0500
+
+    Update build scripts to use build in docker
+
+commit 5a8ae401e1395698e8c359b9f735532bb7136536
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 08:43:32 2016 -0500
+
+    Make build_mdsplus script executable
+
+commit 13bb4e9568ac5950dded6b9dcbb743da2035b8d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:25:33 2016 -0500
+
+    Fix rpm build
+
+commit 281abf26be3e3204647d8832cc13fe82ba95f25c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:12:06 2016 -0500
+
+    fix rpm builds
+
+commit cfd67a2e2baf882b653f47f871aa93013378437d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:50:36 2016 -0500
+
+    fix rpm builds
+
+commit 35417e058ac6fd65ae352cbb089d5a32ed4fdb2e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:41:39 2016 -0500
+
+    fix rpm builds
+
+commit 2b237dc27400d7f42884975bc091e39adbb02faa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:37:14 2016 -0500
+
+    fix rpm builds
+
+commit 22cee1f2ed1f4978dc8bc910258b3c21b037f49d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:22:38 2016 -0500
+
+    fix rpm builds
+
+commit 384de5b045e861668fc90e349588395c96421535
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 12:58:33 2016 -0500
+
+    Another rework of build script
+
+commit f0c996b4854892801501f74859e4047485a33a2f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:59:51 2016 -0500
+
+    Another rework of build script
+
+commit 9774fd65af6b19727fc7a692e85d297722bf9dd0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:58:02 2016 -0500
+
+    Another rework of build script
+
+commit a83221873f1e53651f934bf37f63755209d2d880
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:55:43 2016 -0500
+
+    Another rework of build script
+
+commit 0a7e7251705613fe1e4167b0c2f51bee91bccb2e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:53:35 2016 -0500
+
+    Another rework of build script
+
+commit 9666dfe3c648f7764a62b16a8efa617492226fa3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:14:14 2016 -0500
+
+    Do build rpms in docker and cleanup jenkins_build script
+
+commit 8b662a204b6c4a68ada8fccf902c484f59ad49ff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 09:33:09 2016 -0500
+
+    typo
+
+commit d428536f5a920a5820eedf4c020cac8c8894ce8d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 09:30:49 2016 -0500
+
+    have to start and stop docker containers since switching builddirs
+
+commit 0dc591da30b06c974f056c3f03a214aee5470abc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 08:32:26 2016 -0500
+
+    fix release job handling
+
+commit f8691b3bd9e242e916fd26543403647e7dbe3e62
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 16:57:52 2016 -0500
+
+    separate test dir from release dir
+
+commit 563cec1cb325bdf62995b10bc9e9cfe64e7fa1fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 16:46:59 2016 -0500
+
+    Add building of rpms and repositories
+
+commit f043a7959aad80413e20634d821cf5c71f0c41c8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 15:53:30 2016 -0500
+
+    Add building of rpms and repositories
+
+commit 553b9d601299950a85f8ff29b7e77931b967660d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 15:51:52 2016 -0500
+
+    Add building of rpms and repositories
+
+commit a33d85bbcfd3c53229978eb745797dd587b6b1e6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 15:48:04 2016 -0500
+
+    Add building of rpms and repositories
+
+commit 3625289273046e708a01aeebe16b8d0b1c9d7cb0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 14:07:28 2016 -0500
+
+    Fix tap32 status check typo
+
+commit 90514191955d98e433b01e66abc58256cff653ba
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 13:07:09 2016 -0500
+
+    Report test failure messages
+
+commit 5b216496a320e2eca26cce0c95c7621cfe28e6a6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 11:52:38 2016 -0500
+
+    Support main release jobs
+
+commit 4e4006686ae232b3cc0604a46db872b89fe9ee18
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 11:51:10 2016 -0500
+
+    Support main release jobs
+
+commit 9093b16743525eda2c7ccd8baaa11fceb6b193bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 15:28:20 2016 -0500
+
+    Fix handling of submodules when running configure from other build directory
+
+commit a15e6a3125de3923e35c10ac46e8a33ba361fba8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 14:36:15 2016 -0500
+
+    Fix configure and 3rd-party-apis to work when run from different directory than the sources.
+
+commit 34f0fcadf0577d360a9e4825f50b06b5f92637ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 14:09:38 2016 -0500
+
+    Let all tests complete before failing in jenkins_build
+
+commit 2cb9a975df42f6353c3a57d1adeaee55047df9a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 12:52:43 2016 -0500
+
+    clean up configure commands in jenkins_build script
+
+commit 36a845abcb0e55a9d4679b7a974cc9c74207a6e6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 12:15:00 2016 -0500
+
+    Add 3rd-party-apis
+
+commit b6497ba24d78efa738fee3db2a40c1e77ac60295
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 10:44:41 2016 -0500
+
+    Add 3rd-party-apis as a submodule
+
+commit cf7ddc59005736530073cc57bdcc0a0c5a7dc49d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 16:10:13 2016 -0500
+
+    Add jenkins_build script
+
+commit 7efa83ab155b870f31b214186424456eb5f558c8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 16:07:43 2016 -0500
+
+    Add jenkins_build script
+
+commit 9be82b6d3333672419c193c07b3c4c0d49b91349
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 15:56:19 2016 -0500
+
+    Add jenkins_build script
+
+commit f3638651be8b1e63518b0d77aaef4b75ee6545d1 (refs/remotes/origin/twfbld-old)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 14:02:45 2016 -0500
+
+    Add race suppression
+
+commit 34ab12cf9f15915d6091397ae21d3aad67f1cc7e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 11 13:26:49 2016 -0500
+
+    Add leak suppression for sanitize with udt code
+
 commit 3f26900b0bbbc03fae219a126c1335714e73c67e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 11 08:32:01 2016 -0500
@@ -1000,6 +2513,12 @@ Date:   Tue Mar 8 15:17:44 2016 -0500
 
     Fix typo in treenode.py referencing _tdishr instead of _treeshr for TreeBeginTimestampedSegment
 
+commit 99396055851e14f7f0b8f624aba7dd9f82245828
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 8 12:36:36 2016 -0500
+
+    Fix length problem with LibSysAscTim
+
 commit cbf928765a807a0126ef327cc1ee48ae5bfd0105
 Merge: 42c2d83 2392533
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1055,6 +2574,18 @@ Date:   Fri Mar 4 23:24:19 2016 -0500
 
     New release ---- alpha_release-7-0-236
 
+commit 02d21700b63ec682e301c5cbcd336f16b41e3db3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 15:21:35 2016 -0500
+
+    Fix misalignment sanitize errors
+
+commit bfa7b64d65b355d708154f3bf7e6f5fa99f0aaa8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 14:01:35 2016 -0500
+
+    Fix misalignment sanitize errors
+
 commit dc1e83f030102d86b0c727c38f468134636a347f
 Merge: 3bbecc1 e0f64f6
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1064,12 +2595,36 @@ Date:   Fri Mar 4 10:51:53 2016 -0500
     
     Dev gm
 
+commit bfe7fb01848bd3f8d912a3da78d1bccb9e49d7b4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 10:27:57 2016 -0500
+
+    Remove ... expression in valgrind suppressions.
+
+commit 6e4a48f94ae70ca5eb9aa93fe2416c61fe10199d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 10:14:00 2016 -0500
+
+    Fix status checking
+
 commit e0f64f67635a37b0e87bbf94ae2ce7fe9b94e15f
 Merge: 831406a 3bbecc1
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 4 09:52:12 2016 -0500
 
     Merge branch 'alpha' into dev-gm
+
+commit 4012b765b648155d091802d654283faa07d9c873
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 4 09:44:47 2016 -0500
+
+    Try set -xv
+
+commit 9f5ed6fb0d61ff68c532465416cfa8dd9903dd85
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Mar 4 12:08:13 2016 +0100
+
+    fix ENABLE_SANITIZE conditional
 
 commit 831406ad07b8ad2c2fdcf4443560ba96e5034025
 Merge: 2a5caf4 f4d6ae6
@@ -1084,11 +2639,194 @@ Date:   Fri Mar 4 10:14:08 2016 +0100
 
     Added MdsStreamingDataProvider
 
+commit 3ccac35fe8baf4455cf0174c42f17470394e3e3d (tag: refs/tags/twfbld_release-8-0-4)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 17:08:06 2016 -0500
+
+    Add more debug output
+
+commit 5bf07a818d9b88626fa547eaa56b64f362c1e725
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 16:52:39 2016 -0500
+
+    Fix typo and force verbose to jenkins_build
+
+commit 4078b78af5103cbfb1372dc465374b954f6dc841
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 16:43:54 2016 -0500
+
+    Fix typo and force verbose to jenkins_build
+
+commit 9f2aa3575535de27aec69aad4c30c8d64edd5efc (tag: refs/tags/twfbld_release-8-0-3)
+Merge: 94ca6e2 51ff854
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 13:52:20 2016 -0500
+
+    Merge pull request #402 from AndreaRigoni/andrea-sanitize
+    
+    adds a condition to sanitizer to skip python tests
+
+commit 51ff854ddb3972763d1697fd1a0e6d40a424d2f7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 19:50:41 2016 +0100
+
+    adds a condition to sanitizer to skip python tests
+
+commit 94ca6e2b5aa87c062d3f8be180d3e84c8d8bd049 (tag: refs/tags/twfbld_release-8-0-2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 13:42:48 2016 -0500
+
+    Fix typo on release tag selection
+
+commit d3726d5fd17bd96ee308b9d59d3fe7bcacc7c82e
+Merge: f93e138 f84214b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 12:09:42 2016 -0500
+
+    Merge pull request #401 from MDSplus/twf-fix-leaks
+    
+    Fix memory leak in CopySegment
+
+commit f84214b982f29fdf8314c0039cc10b0a3679b221
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 12:09:39 2016 -0500
+
+    Fix memory leak in CopySegment
+
+commit f93e138cca3b46dea5b3b38f1e5fb85033ac69cb
+Merge: 17552ea 4fe46e6
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Mar 3 18:04:00 2016 +0100
+
+    Merge pull request #400 from MDSplus/twf-fix-leaks
+    
+    Twf fix leaks
+
+commit 4fe46e689d5b32f6dba57a0b3abf48f6bc0010e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 12:01:27 2016 -0500
+
+    Fix undefined behaviors and handle empty descriptors in APD's
+
+commit 6aa522bf6b393c676804b61f9fbcd87b44e6a975
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 12:00:19 2016 -0500
+
+    Fix CopySegment memory leak
+
+commit 17552ea894e320797c8058f5d81172c2b979619f
+Merge: 4307ad3 2aa107e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 11:58:05 2016 -0500
+
+    Merge pull request #399 from AndreaRigoni/andrea-py-suppression
+    
+    fixed python suppression for python not compiled with --without-pymal…
+
+commit 2aa107eff50f56d39174584d3836d46450584232
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 17:55:24 2016 +0100
+
+    fixed python suppression for python not compiled with --without-pymalloc option
+
+commit 4307ad361a2761041c8921a0dba302a35fd4e904
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 10:01:57 2016 -0500
+
+    Fix typo in jenkins_build script
+
+commit 2b28c36e6346c17ee5e0d72f5b7ab7c3ab2f8535
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 3 09:56:19 2016 -0500
+
+    Fix typo in jenkins_build script
+
+commit 0f49b19c4ce063a367615a333918026458843a81
+Merge: eb90c9f dc12515
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Mar 3 14:38:42 2016 +0100
+
+    Merge pull request #398 from AndreaRigoni/andrea-fix-valgrindcpp
+    
+    Andrea fix valgrindcpp
+
+commit eb90c9f895d4fa291576e645d779608f8b91e1da
+Merge: 92a12be 8eec193
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Mar 3 14:26:34 2016 +0100
+
+    Merge pull request #395 from MDSplus/twf-fix-lock-problem-with-delete-node
+    
+    Unlock Node Nci after TreePutNci call.
+
+commit 92a12beb350f487bce6fd8734572c16e65b891ee
+Merge: 1cb1174 eb376bf
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Mar 3 14:25:54 2016 +0100
+
+    Merge pull request #397 from MDSplus/twf-remove-unused-lv-mdsplus-event-abort
+    
+    Remove labview objects routine called mdsplus_event_abort which was u…
+
+commit 1cb117496f57702a68ed841ef6b96afd15db70bb
+Merge: 6fec196 5aac8ce
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Thu Mar 3 14:25:06 2016 +0100
+
+    Merge pull request #396 from MDSplus/twf-san-config-changes
+    
+    Add AC_CHECK_LIB To sanitize and return a special status to indicate …
+
+commit dc12515aed1baf8b3090fb76f26581c904d6f57c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 10:42:22 2016 +0100
+
+    add Param suppression for UDT
+
+commit 67dbfa2046ca7154596c4518b79a660bb179dd89
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Mar 3 10:42:07 2016 +0100
+
+    adds TreeDeleteNodeTest raising helgrind error.
+
 commit 3bbecc185a720aba4d90022ae9f7842843738473 (tag: refs/tags/alpha_release-7-0-235)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Mar 2 23:24:28 2016 -0500
 
     New release ---- alpha_release-7-0-235
+
+commit eb376bfdbbb4c6a14168eb4bc3bee9b1a572c139 (refs/remotes/origin/twf-remove-unused-lv-mdsplus-event-abort)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 16:39:13 2016 -0500
+
+    Remove labview objects routine called mdsplus_event_abort which was using an unimplemented abort method of the Event class. This entry point does not appear in any of the LabView objects and is not referenced by anything.
+
+commit 5aac8ceed8d9dd61340058495ca4b42cf54e0eef (refs/remotes/origin/twf-san-config-changes)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 15:56:35 2016 -0500
+
+    Add AC_CHECK_LIB To sanitize and return a special status to indicate sanitize option not available
+
+commit 8eec193934aac9cf7784b8eb3ec28d30ecb4cce7 (refs/remotes/origin/twf-fix-lock-problem-with-delete-node)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 13:12:07 2016 -0500
+
+    Unlock Node Nci after TreePutNci call.
+
+commit 6fec196aa2ddb39d4df371c9769a8be851777cf4
+Merge: ecc44af 930c377
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 2 13:08:15 2016 -0500
+
+    Merge pull request #394 from AndreaRigoni/andrea-fix-valgrindcpp
+    
+    fix Event object race condition.
+
+commit 930c3778ef7fd9beb2ddc19a4b88fa9233c18835
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Mar 2 18:08:05 2016 +0100
+
+    fix Event object race condition.
 
 commit 557432e127497894d13b4446d5fe8273bb0381c1
 Merge: 4053de8 effe6c8
@@ -1188,11 +2926,41 @@ Date:   Tue Mar 1 08:57:40 2016 -0500
     
     python tcl replacement and getNodeWild fix on TreeNode
 
+commit ecc44af7e647aab02c6b1a4e3b5c080b31de4a22
+Merge: 35711e0 0e24b4a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 08:44:10 2016 -0500
+
+    Merge pull request #384 from MDSplus/twf-sanitize2
+    
+    Twf sanitize2
+
+commit 0e24b4aa4f8b64ea3bd62ccff100abe02104d2b7
+Merge: 4540ff9 d193ede
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 1 08:43:45 2016 -0500
+
+    Merge pull request #388 from AndreaRigoni/andrea-sanitize2
+    
+    Andrea sanitize2
+
 commit 3a5dcbde13fe256869c4d669764a3ecb309a7354
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Mar 1 14:34:07 2016 +0100
 
     Added forgotten Contour management
+
+commit d193ededa7f48a5a60030540bfe4d971a3c0fe97
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 14:07:03 2016 +0100
+
+    missing VALGRIND_BUILD=yes for 64bit
+
+commit 92b9c99b5e5f1efed8c91b56da0fb47645d59451
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 14:03:49 2016 +0100
+
+    avoid using tests lib suring sanitize tests..
 
 commit 147ce30812e3f5c87d7278ad2aa118c5708d374a
 Author: zack-vii <zack.vii@live.com>
@@ -1206,11 +2974,29 @@ Date:   Thu Feb 4 11:29:50 2016 +0100
 
     _setNode use mdsdcl
 
+commit 24528f088014eef68c5b94f0d9704fa875e206a5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 12:57:58 2016 +0100
+
+    added sanitize libraries to libs
+
+commit 79c155de7cf44a4654764e453486a388b7427f43
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Mar 1 12:15:30 2016 +0100
+
+    fix for tests to make stdout available in log format
+
 commit b8d3267b36244b116dafd437b9e4b6088dc00626 (tag: refs/tags/alpha_release-7-0-233)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Feb 29 23:24:17 2016 -0500
 
     New release ---- alpha_release-7-0-233
+
+commit 4540ff91155e072eab5fc2de7d8f24c37d2e7508 (refs/remotes/origin/twf-sanitize2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 13:38:09 2016 -0500
+
+    There is currently no support for 32-bit thread sanitizer in gcc so skip that test if specified.
 
 commit 1da4df3357de9e29e79646daffac6dba0323e264
 Merge: 2da9bd2 c6232bb
@@ -1220,6 +3006,72 @@ Date:   Mon Feb 29 13:28:19 2016 -0500
     Merge pull request #378 from MDSplus/twf-fix-None-in-List
     
     Twf fix none in list
+
+commit 0ba4d0e9da2feb605052b4fb3a41142343f2d10a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 12:33:53 2016 -0500
+
+    Do not fail if platform does not support sanitizers
+
+commit 00afbe36a93267288aab1be5cdda5565391c26de
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 11:35:54 2016 -0500
+
+    Add sanitize testing
+
+commit a842d52b29c7b475ff3dddda0e4642dc10294423
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 11:35:30 2016 -0500
+
+    Ignore files generated during testing
+
+commit 4c1c780f07c35b44ed4e4ab2564f0f6150de31b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 11:34:18 2016 -0500
+
+    Do not use static sanitizer libraries
+
+commit 0f984a7e5ebefaf0129fb68ae45051b3ec1ddbe8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 09:58:04 2016 -0500
+
+    Fix UdpEvents based on sanitize-thread output
+
+commit b95037dfcc719b0f1bb634de6bbd0ef40e5364fa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 09:54:25 2016 -0500
+
+    Add three sanitize options
+
+commit 35711e01a764093fc5b1a2a5f093f2d3089479d8
+Merge: f197c0b 642b04d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 29 09:36:53 2016 -0500
+
+    Merge pull request #383 from MDSplus/twfbld-fix-sanitize-cpp
+    
+    Twfbld fix sanitize cpp
+
+commit 642b04d4abc405a1dce16d0a02e17fb685e3ed38 (refs/remotes/origin/twfbld-fix-sanitize-cpp)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 29 15:32:41 2016 +0100
+
+    remove .out files in src dir
+
+commit 97e759881abb340563b46b979b0fa00a7cf83977
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 29 15:31:32 2016 +0100
+
+    fix sanitize addin -lasan to LIBS
+
+commit f197c0b28e723956d26c5b409f2949991323a951
+Merge: ea0a3d0 75e277c
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Mon Feb 29 14:33:02 2016 +0100
+
+    Merge pull request #379 from MDSplus/twf-attempt-at-avoiding-docker-unrecognized-input
+    
+    Attempt to avoid docker Unrecognized input header messages which is s…
 
 commit 2da9bd22fe5c52615a542578ffd231e10cf89f55 (tag: refs/tags/alpha_release-7-0-232)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -1239,6 +3091,12 @@ Date:   Fri Feb 26 23:24:22 2016 -0500
 
     New release ---- alpha_release-7-0-231
 
+commit 75e277ce50417940efb742feda9a65fd7bae6b39 (tag: refs/tags/twf-attempt-at-avoiding-docker-unrecognized-input_release-8-0-2, refs/remotes/origin/twf-attempt-at-avoiding-docker-unrecognized-input)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 14:31:04 2016 -0500
+
+    Attempt to avoid docker Unrecognized input header messages which is supposedly caused by threads and having output going to both stdout and stderr. This change pipes stderr to stdout when doing tests.
+
 commit c6232bb1f8a4ed680ece65737087d35444fa5930 (refs/remotes/origin/twf-fix-None-in-List)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Feb 26 14:22:09 2016 -0500
@@ -1251,6 +3109,21 @@ Date:   Fri Feb 26 14:01:42 2016 -0500
 
     Fix inserting None in a List item
 
+commit ea0a3d0eb08e6f4048eefec3c411dba49567c80c
+Merge: 98dd0d6 c03b11b
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Fri Feb 26 15:38:16 2016 +0100
+
+    Merge pull request #377 from MDSplus/twfbld-addpytest
+    
+    Twfbld addpytest
+
+commit c03b11b32d7561a133e177717c5067d5e8dc16ab
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 26 15:25:35 2016 +0100
+
+    fix import
+
 commit c1bdb948410f5b57376e7acbc1517085314af5dd
 Merge: 84d29fc f09b63d
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1259,6 +3132,12 @@ Date:   Fri Feb 26 09:20:52 2016 -0500
     Merge pull request #376 from MDSplus/dev-gm
     
     Fix again reversed field
+
+commit 98dd0d646941194608bc4ae1e1d040b31a3da7f0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 26 09:10:19 2016 -0500
+
+    Do valgrind tests before tap
 
 commit f09b63d538327fefaad5e2ba14a149e7604d0824
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -1281,11 +3160,83 @@ Date:   Fri Feb 26 12:02:56 2016 +0100
 
     Add __contains__ method to mdsscalar.String
 
+commit 2714df89a587fc6294bd613db691e87b66c7fa8b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 19:08:35 2016 +0100
+
+    fix valgrind suppression for old valgrind versions
+
+commit 0abd925feeeb6452e6557de2ea33e6651de44ddf (refs/remotes/origin/twfbld-addpytest)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 19:00:28 2016 +0100
+
+    add a test proposed by Gabriele for a possible py issue in segments
+
+commit 3bea7615b778ae39dbe3ddca9dedce47b3a74f7b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 17:31:32 2016 +0100
+
+    fix space issue in $comment
+
+commit 3eb496bf739d9d60dc95b03c5a7e753ee9792f8c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 16:30:42 2016 +0100
+
+    try adding more delay to wait for server to come up
+
+commit 663ed28323414073a5c2b9d451f5729daa8d6cc5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 16:23:40 2016 +0100
+
+    fix suppressions
+
+commit 63baa2f4daf84b49f679f091707d03c8ef3c62cf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 25 08:36:35 2016 -0500
+
+    Fix tag_release option
+
+commit 92f3659d82747f90426cf992e67185c73316416d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 11:46:33 2016 +0100
+
+    adds suppressions for UDT
+
+commit 02944ac69702c3133a1b91aa669ec530ea961cd5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 11:46:21 2016 +0100
+
+    adds valgrind hello both to tests-valgrind and tests-valgrind-suppressions
+
+commit ffc03f85e42e4db13854d2156b78373b93ea8d28
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 25 08:59:39 2016 +0100
+
+    fix for declaration (sorry Tom my fault).
+
 commit 491942cc4f8b57b5d74bf119acadc0f91f8a2854 (tag: refs/tags/alpha_release-7-0-230)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Feb 24 23:24:16 2016 -0500
 
     New release ---- alpha_release-7-0-230
+
+commit a25e7b26285579e2fa71dab5376fa1e333f4118a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 14:44:08 2016 -0500
+
+    Fix race condition discovered by sanitizer
+
+commit 8c217010981b4647246fa3a61306e537aae27290
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 13:47:05 2016 -0500
+
+    Fix final tag release
+
+commit 181089d8f5521a15177c3867ac99e9ba83d08c77
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 13:46:18 2016 -0500
+
+    Fix final tag release
 
 commit de40d6e69883f926fd1999d9b8fd15b6c2868257
 Merge: 627f95d 9c8781b
@@ -1302,11 +3253,44 @@ Date:   Wed Feb 24 18:33:47 2016 +0100
 
     Fix saved reversed flag
 
+commit dfcdb31cd9e916dbb88bef26ce1b7291f07d70fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 09:14:42 2016 -0500
+
+    Add fixes found with sanitizer=thread
+
+commit 75a534368c4dfb9d1f36255c7be34109e622af84
+Merge: 720b493 fae6d79
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 24 08:51:39 2016 -0500
+
+    Merge pull request #371 from MDSplus/twf-sanitizer-found-fixes
+    
+    Fix errors detected by --sanitize=address
+
+commit 720b493db77e72734937ff555853f5020eafc159
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 24 14:37:45 2016 +0100
+
+    cleaning up suppression and adding mdsshr pthread_create
+
 commit 627f95d8e6af6b6a8a15dba09bcc94b4ee42dc6f (tag: refs/tags/alpha_release-7-0-229)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Tue Feb 23 23:24:12 2016 -0500
 
     New release ---- alpha_release-7-0-229
+
+commit fae6d79c726bd2f68e81f433c976a206e5191388 (refs/remotes/origin/twf-sanitizer-found-fixes)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 23 15:43:57 2016 -0500
+
+    Fix errors detected by --sanitize=address
+
+commit ae6144a20fa74bfab11a41652b270cdde4d4d889
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Feb 23 19:29:36 2016 +0100
+
+    adds some to tests
 
 commit 93ea4773a359dfe8c63379f7ee8a0b90aacb51bd
 Merge: 55ffe5d 7e6fd8d
@@ -1322,6 +3306,18 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Feb 23 11:45:39 2016 -0500
 
     Due to a known bug in docker when threaded applications output to both stdout and stderr docker often crashes with an unrecognized input header error. A reported workaround is to pipe stderr through stdout.
+
+commit 2f154c7afa6c4a4384cc8e398788548eb11792c0
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Feb 23 16:21:47 2016 +0100
+
+    added test to check static functions inside UdpEvents.c
+
+commit ea4074ba26df5edbff67aab08bb7ec3399cb3a50
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Tue Feb 23 16:19:18 2016 +0100
+
+    fix to propagate make error status
 
 commit 55ffe5d6f3d027fe282600d06a74740e62f13c2b
 Merge: d3a3e0c 98af8d0
@@ -1359,6 +3355,18 @@ Date:   Mon Feb 22 13:47:23 2016 -0500
 
     Have to use units() not units_of() to find units. units_of just returns the units of an MDSplus data item while units() tries to find units by looking at properties of the data which might reference other nodes whose data contains the units.
 
+commit 9e46b02760780b963d1d685b9f0f4d8d6c0e7e71
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 22 19:12:27 2016 +0100
+
+    fix compatibility with pytohn2.4
+
+commit 7a9c58ce1a0cfbf76ca8e4933e11aa4c453e3033
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Feb 22 19:11:49 2016 +0100
+
+    fix python version check
+
 commit b0751fc8353d346e9cb115b2c0ce4576f27660fe (tag: refs/tags/alpha_release-7-0-227)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Sat Feb 20 23:24:18 2016 -0500
@@ -1380,13 +3388,172 @@ Date:   Fri Feb 19 16:45:26 2016 -0500
 
     Add fix for deprecated cstring_to_dsc routine
 
+commit fc4ac63e6fbd6ec414127eb739e7557dc049cc63
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 12:47:24 2016 -0500
+
+    Fix typo in eventname sprintf
+
+commit 0ef449d2613dbc31e334389667ae3e833c43da4c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 19 18:11:45 2016 +0100
+
+    removed SkipTest import
+
+commit 9adb52e4d153352abd7040864da2666652736495
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 11:06:00 2016 -0500
+
+    attempt to fix git tag command
+
+commit a2382cb38f9d6bda405630a7302eca3df57d9d8f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 11:01:30 2016 -0500
+
+    Fix memory leak in UdpEvent list
+
+commit 2303196725d29093f2a42e4e487dba7acd95385a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 09:45:26 2016 -0500
+
+    Fix python distribution info
+
+commit 233f755be4f91e05bef9cfe1e0fc387cadc9e01f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 09:04:26 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit 173bd3a8c8ec717e600166610ba71268ef5249d4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 08:50:32 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit 14075fae00a9937c3a04e94638c353ca68e1329e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 08:48:58 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit 38775ddef3ee2357e181034c52aaf150925ff9b0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 19 08:43:11 2016 -0500
+
+    Add tag_release option to jenkins_build
+
+commit e0c0bcf255f763ae92008a7bbf6a08ee09dd4737 (refs/remotes/origin/twfbld-fixvalgrind)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 19 12:37:33 2016 +0100
+
+    back to sleep 1 second
+
+commit 535406cb4ce4cc070e8204bad34356641e5df7ce
+Merge: ff6d044 712e58d
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Fri Feb 19 12:14:07 2016 +0100
+
+    Merge pull request #365 from AndreaRigoni/andrea-fix
+    
+    try to replace alloca
+
+commit 712e58dc8631473ea88e6834ba3d1ae087128e06
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 19 12:12:26 2016 +0100
+
+    try to replace alloca
+
+commit ff6d044cc0341d171173a066966744d1110617b4
+Merge: bbdcd43 2d57298
+Author: Andrea Rigoni <andrea.rgn@gmail.com>
+Date:   Fri Feb 19 09:19:05 2016 +0100
+
+    Merge pull request #364 from AndreaRigoni/fix
+    
+    fix for labview duplicating string
+
+commit 2d57298371cfa757e949c2907bfc412770245031
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Feb 19 09:14:31 2016 +0100
+
+    fix for labview duplicating string
+    
+    Signed-off-by: AndreaRigoni <andrea.rigoni@pd.infn.it>
+
 commit 943d8da91bea7fa57dfe7dfc5eecb0b825a44f78 (tag: refs/tags/alpha_release-7-0-226)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Thu Feb 18 23:24:01 2016 -0500
 
     New release ---- alpha_release-7-0-226
 
+commit bbdcd430cbfc14fd92b399c8b1a100f4ad23d81e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 13:42:14 2016 -0500
+
+    Fix configure handling of idl and labview
+
+commit 79bfe0d033b9480b8d741bc464a5e235c01c0fee
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 12:41:34 2016 -0500
+
+    Make name const to match Event method declaration
+
+commit 7e66953acf4c9578b31e94e4a43c4fd0ffb9af00
+Merge: 09b714f 7d70ae7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 12:36:44 2016 -0500
+
+    Merge pull request #363 from AndreaRigoni/twfbld-fixvalgrind
+    
+    Twfbld fixvalgrind
+
+commit 7d70ae719f2bc7df576d55039c5947aadcc08b3c
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:13:43 2016 +0100
+
+    readd data fix and reduce the sleep time
+
+commit 441558fbfe66b5709538a66d92e6fea9351add7e
+Merge: 74f9e2a 09b714f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:11:46 2016 +0100
+
+    Merge branch 'twfbld-fixvalgrind' of https://github.com/Mdsplus/mdsplus into twfbld-fixvalgrind
+    
+    # Conflicts:
+    #	mdsobjects/cpp/testing/MdsEventTest.cpp
+
+commit 74f9e2ac31d18cb97f7ec2e1c879b3e527e784a5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:10:25 2016 +0100
+
+    added some Tap tests
+
+commit 5eba2e55f4bc55db0791a88fff370417447e28f8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:09:30 2016 +0100
+
+    added port selection
+
+commit 9c6e33e120ff2b069139cdfc62f4383abcb5b3b8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:09:13 2016 +0100
+
+    fixed for data NULL
+
+commit 301cbf1dbfae730265fba495778613e5c0093396
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 18 18:05:58 2016 +0100
+
+    cleanup of Event class
+
 commit 9551f955491c09dd6db95931e7ad8416bbae80a2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 11:38:32 2016 -0500
+
+    Ignore files created by building and running tests
+
+commit 09b714f4d8ec4df5d03a8140f512668b9ab61b48
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 18 11:38:32 2016 -0500
 
@@ -1406,6 +3573,18 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 18 10:30:18 2016 -0500
 
     Only remove uid symlink if removing the package entirely from the system
+
+commit 4fff8df99674fc37277360f909768a778bcd2d9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 10:16:35 2016 -0500
+
+    Add --pid=host on docker run command to ensure unique pid
+
+commit 124236cadf4cc1eced092021fb57afbd6a30aa91
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 18 08:01:06 2016 -0500
+
+    Use event name made with pid to avoid conflicts with other running tests.
 
 commit 231f9d3e04a02c465ea1e762c700675b5bd95064 (tag: refs/tags/alpha_release-7-0-225)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
@@ -1428,6 +3607,36 @@ Date:   Wed Feb 17 15:16:02 2016 -0500
 
     Fix set usage by breaking from switch statement
 
+commit c4d79348dcb69bdf514d0bff0bf47bb0113f56ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 14:46:30 2016 -0500
+
+    Allow core dumps on tests
+
+commit 8a6b5961a2501e644ca3e72ee516926cb937258e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 14:02:55 2016 -0500
+
+    Only do release builds if selected
+
+commit 021a9cab3b4f5eea705ffc25aae574116035eb99
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 17 13:35:01 2016 -0500
+
+    Fix format of -e option on docker run command
+
+commit 48f446e7c017a362bb6ca6972c539b240e72b025
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 17 18:58:19 2016 +0100
+
+    add both $SRCDIR and /mdsplus/source to the docker container mounts
+
+commit 164bb379c8b0f32de77163f325802284ebe767da
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 17 18:29:54 2016 +0100
+
+    add SRCDIR to env in container
+
 commit c7c40b58f0fc1a7c97af85f5f2736d4c53387442 (tag: refs/tags/alpha_release-7-0-224)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Wed Feb 17 12:11:03 2016 -0500
@@ -1443,6 +3652,12 @@ Date:   Wed Feb 17 11:37:43 2016 -0500
     
     Remove uid's during clean and link dwscope_remote to libXmdsShr.a
 
+commit 04cc59ba64cd21b09acef99d8a8168c9783ace0a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 17 17:07:08 2016 +0100
+
+    move /mdsplus/xxxx to the matching env value in docker container
+
 commit b7275abd19a711522c8fd84b4ecb10e69c53e17b (refs/remotes/origin/twf-fix-uid-clean)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 17 10:38:12 2016 -0500
@@ -1454,6 +3669,403 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 17 10:23:48 2016 -0500
 
     Remove uid's during clean and link dwscope_remote to libXmdsShr.a
+
+commit e9240caf5b58048b863769cf233a18ad714b9bab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 16:07:51 2016 -0500
+
+    More cleanup of UdpEvents.c
+
+commit 512fa41f740b815f6422d5bfba5df6b39bfeb790
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 14:38:40 2016 -0500
+
+    Add waits and loop possibility to test
+
+commit 5234aff2f210d700ab51010f3c9ab325c8ae2195
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 14:36:55 2016 -0500
+
+    Fix race conditions in udp events
+
+commit 9b908f7d95f3361ef23e6c08ea128a67e9e7cc71
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 11 09:54:46 2016 -0500
+
+    Stop the eventast thread properly
+
+commit 79b385be99d6413013285c075f3ddcd2f2c537f2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 11:01:27 2016 +0100
+
+    added mdsshr tests to automatically performed tests
+
+commit 89a443af42c08f7e90b18022969e661ad07a67ac
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 10:15:17 2016 +0100
+
+    adds Tom fixes for race condition in currInfo
+
+commit 1aa56d88e985de06c8c9026c0d8ee29a2e8984e1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:53:11 2016 +0100
+
+    removed cast and added exit(0) to the last fork block
+
+commit e4a3fcb179b640e5bad23fd7ff4ac5a2332e8fde
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:50:58 2016 +0100
+
+    terminating string with '\0'
+
+commit d8fcc499dc6ff5a589787be7b0d9d4bc1d358de3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:50:16 2016 +0100
+
+    removed reduntant valgrind suppression invocation
+
+commit c0f38d61b60dfa16231717721ac4af4f66852ce4
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:49:35 2016 +0100
+
+    added mdsshr testing
+
+commit ed5bece848200d56bb6b4a77c229a57a5bacee6d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Feb 11 09:48:47 2016 +0100
+
+    removes notify from run, already done internally in the Ast function
+    adds const to evName strings in arguments
+
+commit a757f1eda226be4cb7708519c9bda25a6f8654b7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 9 08:44:53 2016 -0500
+
+    prevent race condition with event tests
+
+commit 41b02d2ee28e3f8f5decc3ae51e481c6fb5aab00
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 9 08:19:38 2016 -0500
+
+    Avoid errors during event cancelation
+
+commit 10c71033fb4fb001443753d48620e7234d9a7136
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 17:28:07 2016 -0500
+
+    Another attempt to fix races condition in udp events
+
+commit a4217670ef1c9f45c76785a6dd10678869dbfb9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 17:02:56 2016 -0500
+
+    Attempt to fix race condition in udp events
+
+commit 569f2cfc0ec1437a5c514b47aab7065cd25cca86
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 14:26:13 2016 -0500
+
+    Revert cpp/mdsdata.c to alpha version
+
+commit 63f0887120fce083d5e62f6ca4bcab961d5b10a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 14:24:55 2016 -0500
+
+    Add trailing null to LibSysAscTim string
+
+commit a40e43f51eed15b59bcac95ce4523c1121e6d2f0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 10:41:04 2016 -0500
+
+    Use VG_TESTS instead of VALGRIND_TESTS variable to prevent conflicts with testing scripts
+
+commit 007f9f8d0ed8cf9a2d801943a9a1bd8ab3cb159f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 09:24:51 2016 -0500
+
+    Add null termination to character string returned in convertTimeToAscii
+
+commit 3f5c91b8c6faaa30c6309dd406e992ab9a2c3ad7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 8 08:57:34 2016 -0500
+
+    Add space before close bracket in if statements
+
+commit d4e651a2d9624f7a95d60317393ccab23d7cc3d0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 14:12:32 2016 -0500
+
+    Don't use --rm on docker run
+
+commit 687809745a926dde02f90ca27ed1d7df21f1ac8b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 14:10:30 2016 -0500
+
+    Don't use --rm on docker run
+
+commit e2dfa16a664b99e5abdf8c6ced2990aa6c87d32d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 14:09:33 2016 -0500
+
+    Don't use --rm on docker run
+
+commit 161d40385a5e964cf9f3ab77010aa1632ccbcbe5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 13:53:57 2016 -0500
+
+    Put distdir in jenkins_build.conf config file
+
+commit 3c83f83efbaba6ca810c423e54abe9961b365cbc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 13:31:56 2016 -0500
+
+    Add valgrind test selection
+
+commit d8d07fd856988882830c9b38926612097658e6f2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 11:23:58 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit 21bf47e55d161b47fe3492bf220f41d658e843d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 10:45:10 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit dbb0442114d496956b0ff32852fd3974e4a812a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 10:30:29 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit 9ce997818dcd99852d010cea8cd879fe57e8ec04
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 5 10:27:47 2016 -0500
+
+    More cleanup of jenkins_build script
+
+commit c042af3b57e8e084bb86d4dac54ab73b60008921
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 15:06:15 2016 -0500
+
+    Update build scripts to handle test and release
+
+commit d8603a66e17d06d56e0982222adcc8d9b4c8d5d4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 15:00:28 2016 -0500
+
+    Update build scripts to handle test and release
+
+commit 381507a002c04b78d762232d11c02d01bb801ad0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 14:54:10 2016 -0500
+
+    Update build scripts to use build in docker
+
+commit c7de3eb8d230a968d4b2a3e4a5f5736b61fd58ea
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 4 08:43:32 2016 -0500
+
+    Make build_mdsplus script executable
+
+commit eaac7bd92469505fb9b2f51c571ab5f0a75003d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:25:33 2016 -0500
+
+    Fix rpm build
+
+commit 9ab7421448abe55baf796b0fb80327842636fbb0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 15:12:06 2016 -0500
+
+    fix rpm builds
+
+commit 5e491331faf23191b985ba1b0cddaf90141df879
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:50:36 2016 -0500
+
+    fix rpm builds
+
+commit 15934779279fae08e1e589b393099b2196fa174f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:41:39 2016 -0500
+
+    fix rpm builds
+
+commit 8bf0df88e7e0059d6bbb045bbf84c1694fb57dc9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:37:14 2016 -0500
+
+    fix rpm builds
+
+commit d7ec7e6d1f767d01a835b2c0473a738dd77df4db
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 14:22:38 2016 -0500
+
+    fix rpm builds
+
+commit e75323d7050de1d0bbb4b33134310806b90433c8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 12:58:33 2016 -0500
+
+    Another rework of build script
+
+commit 59ededec39d6d90140d481baa046159c2c2c252e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:59:51 2016 -0500
+
+    Another rework of build script
+
+commit fa1fdd1fcac188e27778278e9f79ee583b8c865a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:58:02 2016 -0500
+
+    Another rework of build script
+
+commit 72ac79079801fbf6393775472f41eb96f2faa8e1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:55:43 2016 -0500
+
+    Another rework of build script
+
+commit 4f122f1d987f37e09cd05e8a7bce82726495d845
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:53:35 2016 -0500
+
+    Another rework of build script
+
+commit 1c2f03d70bfea007dbc31d5c3cc14be907421475
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 11:14:14 2016 -0500
+
+    Do build rpms in docker and cleanup jenkins_build script
+
+commit f48dad919ff4adcbc5bd3a4ea1d0282ed433244b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 09:33:09 2016 -0500
+
+    typo
+
+commit 776e74bfc4f49ddd91b1b84028b00c25c7f3b7de
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 09:30:49 2016 -0500
+
+    have to start and stop docker containers since switching builddirs
+
+commit 373b5b3defe21f5b712ab757a6104863bbe50c4f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 3 08:32:26 2016 -0500
+
+    fix release job handling
+
+commit 7b6c89b8ab88e1e650fc40877a27ec22853c2aa5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 16:57:52 2016 -0500
+
+    separate test dir from release dir
+
+commit 699d2916977099ca9604d71f213b8a0f876b1554
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 16:46:59 2016 -0500
+
+    Add building of rpms and repositories
+
+commit 1c8003c3c6cd20079fce14511bac8610519c730d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 15:53:30 2016 -0500
+
+    Add building of rpms and repositories
+
+commit 24fb7ea1c72d41607b6cd0fed24d72a268d63d35
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 15:51:52 2016 -0500
+
+    Add building of rpms and repositories
+
+commit 5901c67c83cf3311a83083640ca2f400245caa6f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 15:48:04 2016 -0500
+
+    Add building of rpms and repositories
+
+commit 4dacbd5de3aac228ae02daf81e8950c2958b9ec5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 14:07:28 2016 -0500
+
+    Fix tap32 status check typo
+
+commit 46d14d38d68075bd2fd86a01bce72f509b0508bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 13:07:09 2016 -0500
+
+    Report test failure messages
+
+commit 161df793f0fe6a594e6a6dfdaf31885ed8612db1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 11:52:38 2016 -0500
+
+    Support main release jobs
+
+commit 7699df0a7b254a4180da903de7aa73fc352fb906
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 2 11:51:10 2016 -0500
+
+    Support main release jobs
+
+commit 568e53686008af7f2c396df1ce3abdb782f49a69
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 15:28:20 2016 -0500
+
+    Fix handling of submodules when running configure from other build directory
+
+commit e96fe5ba7e29e93db949cf0bacc33b96cc290cc6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 14:36:15 2016 -0500
+
+    Fix configure and 3rd-party-apis to work when run from different directory than the sources.
+
+commit 288e14663346f42152fd6c6c3cb607a431889cff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 14:09:38 2016 -0500
+
+    Let all tests complete before failing in jenkins_build
+
+commit bac4e96bc4562f3297fa4f9818c9668d5290b1b3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 12:52:43 2016 -0500
+
+    clean up configure commands in jenkins_build script
+
+commit db7c4e1d9ce9a7386fcd53b96a60321fef90a2db
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 12:15:00 2016 -0500
+
+    Add 3rd-party-apis
+
+commit a754eb9402af4f158bd5872729647b9b67fc136a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 29 10:44:41 2016 -0500
+
+    Add 3rd-party-apis as a submodule
+
+commit 6559afefcb6bd475e9df0e1fc29e8010dbe84a84
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 16:10:13 2016 -0500
+
+    Add jenkins_build script
+
+commit 0b99e1a1dc0ac70c0c795c963fed75e33e66d7e3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 16:07:43 2016 -0500
+
+    Add jenkins_build script
+
+commit 387d3b91b898f5413c25662112fa47ee5d71755e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 28 15:56:19 2016 -0500
+
+    Add jenkins_build script
 
 commit 8471433a237316bf7f2c7e49e524c107d860089b (tag: refs/tags/alpha_release-7-0-223)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
