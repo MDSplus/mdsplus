@@ -1,4 +1,10 @@
-commit 613a26e2840fbef75add10c7ae7d8cf0d544b082 (HEAD -> refs/heads/alpha)
+commit 991fd221c812572e7f777a0bcefb831ca4675d55 (HEAD -> refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sat Apr 23 23:24:29 2016 -0400
+
+    New release ---- alpha_release-7-0-258
+
+commit 613a26e2840fbef75add10c7ae7d8cf0d544b082
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Apr 22 23:24:32 2016 -0400
 
