@@ -15,8 +15,8 @@ while [ $? ]
 do
   if ( grep ${branch}_release /tmp/release_info > /dev/null )
   then
-    release="$(grep 'href.*'${branch}'_release' /tmp/release_info | awk -F\/ '{print substr($NF,0,length($NF)-2);exit}')"
-    echo $release
+    release="$(grep 'href.*'${branch}'_release' /tmp/release_info | awk -F\/ '{print $NF;exit}')"
+    echo ${release:0:-2}
     break
   else
     url=$(grep Next /tmp/release_info | awk -F\" '{print $(NF-3)}')
