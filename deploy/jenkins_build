@@ -791,7 +791,7 @@ EOF
 	    fi
 	    if ( test "${RELEASE_TAG}" != "" )
 	    then
-		mkdir ${WORKSPACE}/pypi
+		mkdir -p ${WORKSPACE}/pypi
 		pushd ${WORKSPACE}/pypi
 		${WORKSPACE}/configure
 		popd
