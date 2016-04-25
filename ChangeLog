@@ -1,4 +1,23 @@
-commit 991fd221c812572e7f777a0bcefb831ca4675d55 (HEAD -> refs/heads/alpha)
+commit 7a5e0cb7ead0a97a303c6623deae24fff3d5ee98 (HEAD -> refs/heads/alpha)
+Merge: 3582103 2510714
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Apr 25 08:29:57 2016 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 251071446d728d2ec05704c83df647509bd22da7 (refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 25 08:29:44 2016 -0400
+
+    Change get_latest_release to deal with both anotated and unanotated tags
+
+commit 35821032b0e0ef94f9b8bfadbc4a6ba79a001cfc
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sun Apr 24 23:24:25 2016 -0400
+
+    New release ---- alpha_release-7-0-258
+
+commit 991fd221c812572e7f777a0bcefb831ca4675d55
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Sat Apr 23 23:24:29 2016 -0400
 
@@ -10,7 +29,7 @@ Date:   Fri Apr 22 23:24:32 2016 -0400
 
     New release ---- alpha_release-7-0-258
 
-commit 8ffa9cd59abf7ee67a5b3f36c4f53ea914eb2e0a (tag: refs/tags/alpha_release-7-0-258, refs/remotes/origin/jas-add-picam-device, refs/remotes/origin/alpha)
+commit 8ffa9cd59abf7ee67a5b3f36c4f53ea914eb2e0a (tag: refs/tags/alpha_release-7-0-258, refs/remotes/origin/jas-add-picam-device)
 Merge: a411390 01856bb
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Apr 22 15:05:28 2016 -0400
