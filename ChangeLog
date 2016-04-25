@@ -1,11 +1,23 @@
-commit 7a5e0cb7ead0a97a303c6623deae24fff3d5ee98 (HEAD -> refs/heads/alpha)
+commit ced194e0d1ec1fab190f83e69fb0edd1409bd262 (HEAD -> refs/heads/alpha, refs/remotes/origin/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 25 10:48:03 2016 -0400
+
+    Fix get_latest_release for all platforms
+
+commit 4189bdc3ec5f28e5eaebf298109bed6c4a004292 (tag: refs/tags/alpha_release-7-0-259)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Apr 25 08:59:15 2016 -0400
+
+    New release ---- alpha_release-7-0-259
+
+commit 7a5e0cb7ead0a97a303c6623deae24fff3d5ee98
 Merge: 3582103 2510714
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Apr 25 08:29:57 2016 -0400
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
-commit 251071446d728d2ec05704c83df647509bd22da7 (refs/remotes/origin/alpha)
+commit 251071446d728d2ec05704c83df647509bd22da7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Apr 25 08:29:44 2016 -0400
 
