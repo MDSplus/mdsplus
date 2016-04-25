@@ -40,6 +40,7 @@ def makeScalar(value):
     raise TypeError('Cannot make Scalar out of '+str(type(value)))
 
 class Scalar(_data.Data):
+    _value = None
     def __new__(cls,value=0):
         try:
             if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
