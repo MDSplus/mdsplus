@@ -699,7 +699,7 @@ else
 		else
 		    LAST_IMAGE=no;
 		fi;
-		if [ ${LAST_IMAGE} = "no" -a ${PUBLISH_RELEASE} ]
+		if [ ${LAST_IMAGE} = "no" -a "${PUBLISH_RELEASE}" = "yes" ]
 		then
 		    continue
 		fi
@@ -732,7 +732,7 @@ else
 		       -e "WORKSPACE=${WORKSPACE}" \
 		       -e "SRCDIR=${SRCDIR}" \
 		       -e "LAST_IMAGE=${LAST_IMAGE}" \
-		       ${sign_keys} \
+		       ${signkeys} \
 		       ${DOCKER_IMAGE};
 		docker rm "${JOB_NAME}${BUILD_NUMBER}";
 	    done;;
