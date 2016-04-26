@@ -422,13 +422,24 @@ build_debs() {
     then
         export INSTALLER_DIR=${DISTDIR}/${DIST}
 	export BUILDROOT=${WORKSPACE}/release
+	case "${ARCH}" in
+	    amd64) BITS=64;;
+	    i386)  BITS=32;;
+	    armhf) BITS=32;;
+		   ;;
+	esac
+	ln -s ${WORKSPACE}/release/bin${bits} ${WORKSPACE}/release/bin
+	ln -s ${WORKSPACE}/release/lib${bits} ${WORKSPACE}/release/lib;
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/${ARCH}
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/noarch
 	${SRCDIR}/deploy/build_debs_mdsplus
+	rm -f ${WORKSPACE}/release/bin
+	rm -f ${WORKSPACE}/release/lib
     fi
 }
 
 build_deb_repo() {
+    set -e
     echo "Building debian repository"
     INSTALLER_DIR=${DISTDIR}/${DIST}
     if [ "$ARCH" = "armhf" ]
