@@ -42,7 +42,6 @@ try:
     else:
         name="mdsplus_%s" % branch
 except:
-    raise
     version,name=getRelease()
     if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
         branch=" (%s)" % os.environ["BRANCH"]
@@ -74,7 +73,6 @@ setup(name=name,
                   pname+'.mdsExceptions'],
       package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
       include_package_data = True,
-      platforms = ('Any',),
       classifiers = [
       'Programming Language :: Python',
       'Intended Audience :: Science/Research',
