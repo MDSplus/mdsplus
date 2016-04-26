@@ -449,11 +449,11 @@ Architectures: ${arches}
 Components: alpha stable
 Description: MDSplus packages
 EOF
-    if [ -d /sign_keys/.gnupg ]
+    if [ -d /sign_keys/jenkins/.gnupg ]
     then 
 	echo "SignWith: MDSplus" >> ${INSTALLER_DIR}/repo/conf/distributions
     fi
-    export HOME=/sign_keys
+    export HOME=/sign_keys/jenkins
     find ${INSTALLER_DIR}/${BRANCH}/DEBS -name "*${MAJOR}\.${MINOR}\.${RELEASE}_*" -exec \
 	 reprepro -V --waitforlock 20 -b ${INSTALLER_DIR}/repo -C ${BRANCH} includedeb MDSplus {} \;
 }
