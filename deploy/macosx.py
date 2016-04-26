@@ -71,8 +71,7 @@ chmod -R o-w,g-w $(pwd)/build/mdsplus
 
 set -e
 cd build/mdsplus/mdsobjects/python
-python setup.py bdist_egg version=%(pyflavor)s%(major)d.%(minor)d.%(release)d
-
+python setup.py bdist_egg
         """ % self.info,'python bdist_egg failed')
         shell("""
 
