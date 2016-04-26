@@ -1579,9 +1579,8 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
       SeekToRfa(attributes_offset, local_nci.DATA_INFO.DATA_LOCATION.rfa);
       local_nci.flags2 |= NciM_EXTENDED_NCI;
       TreePutNci(info_ptr, nidx, &local_nci, 0);
-    } else {
-      TreeUnLockNci(info_ptr, 0, nidx);
-    }
+    } 
+    TreeUnLockNci(info_ptr, 0, nidx);
   }
   return status;
 }
