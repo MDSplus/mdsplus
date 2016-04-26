@@ -584,7 +584,7 @@ class Tree(object):
         Tree.lock()
         try:
             #ctx = _treeshr.TreeGetContext()
-            status = _treeshr.TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+            status = _treeshr._TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
         finally:
             Tree.unlock()
         if not (status & 1):
@@ -597,7 +597,7 @@ class Tree(object):
         Tree.lock()
         try:
             #ctx = _treeshr.TreeGetContext()
-            status = _treeshr.TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+            status = _treeshr._TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
         finally:
             Tree.unlock()
         if not (status & 1):
