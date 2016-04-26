@@ -437,7 +437,6 @@ build_deb_repo() {
     else
 	arches="amd64 i386"
     fi
-    rm -Rf ${INSTALLER_DIR}/repo
     mkdir -p ${INSTALLER_DIR}/repo/conf
     mkdir -p ${INSTALLER_DIR}/repo/db
     mkdir -p ${INSTALLER_DIR}/repo/dists
