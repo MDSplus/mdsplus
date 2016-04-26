@@ -445,9 +445,8 @@ build_deb_repo() {
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
-Version: ${MAJOR}.${MINOR}.${RELEASE}
 Architectures: ${arches}
-Components: alpha stable local twfbld
+Components: alpha stable
 Description: MDSplus packages
 EOF
     if [ -d /sign_keys/.gnupg ]

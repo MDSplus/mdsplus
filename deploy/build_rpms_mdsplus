@@ -222,6 +222,6 @@ Buildarch: noarch
             sys.stdout.flush()
             raise Exception("Error signing rpms. status=%d" % child.status)
     except:
-	pass
+	print('/sign_keys/.gnupg not found so rpm will not be signed')
 
 buildRpms()
