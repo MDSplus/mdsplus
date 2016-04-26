@@ -451,10 +451,11 @@ Architectures: ${arches}
 Components: alpha stable local twfbld
 Description: MDSplus packages
 EOF
-    if [ -d ${HOME}/.gnupg ]
+    if [ -d /sign_keys/.gnupg ]
     then 
 	echo "SignWith: MDSplus" >> ${INSTALLER_DIR}/repo/conf/distributions
     fi
+    export HOME=/sign_keys
     find ${INSTALLER_DIR}/${BRANCH}/DEBS -name "*${MAJOR}\.${MINOR}\.${RELEASE}_*" -exec \
 	 reprepro -V --waitforlock 20 -b ${INSTALLER_DIR}/repo -C ${BRANCH} includedeb MDSplus {} \;
 }
@@ -558,10 +559,10 @@ publish_windows() {
     tar zxf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz
     makensis -DMAJOR=${MAJOR} -DMINOR=${MINOR} -DRELEASE=${RELEASE} -DFLAVOR=${BNAME} -NOCD \
              -DOUTDIR=${INSTALLER_DIR} -DVisualStudio ${SRCDIR}/deploy/mdsplus.nsi
-    if [ -d /certs ]
+    if [ -d /sign_keys ]
     then
-	echo mdsplus | signcode -spc /certs/mdsplus.spc \
-				-v /certs/mdsplus.pvk \
+	echo mdsplus | signcode -spc /sign_keys/mdsplus.spc \
+				-v /sign_keys/mdsplus.pvk \
 				-a sha1 \
 				-$ individual \
 				-n MDSplus  \
@@ -713,7 +714,7 @@ else
 		fi;
 		if [ ! -z "$SIGN_KEYS" ]
 		then
-		    signkeys="-v ${SIGN_KEYS}/.gnupg:${WORKSPACE}/.gnupg"
+		    signkeys="-v ${SIGN_KEYS}:/sign_keys"
 		fi
 		if [ ! -z "$WINBLD" ]
 		then
@@ -761,10 +762,6 @@ else
 		    RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASE};
 		    git log --decorate=full > ChangeLog;
 		fi;
-		if [ ! -z "$SIGN_KEYS" ]
-		then
-		   signkeys="export SIGN_KEYS=$SIGN_KEYS"
-		fi;
 	    fi
 	    cat - <<EOF > ${WORKSPACE}/jenkins_build.conf
 export MAKE_RELEASE=$MAKE_RELEASE
@@ -781,6 +778,7 @@ export RELEASE=${RELEASE}
 export VERBOSE=${VERBOSE}
 export DISTDIR=${DISTDIR}
 export GIT_COMMIT=${GIT_COMMIT}
+export SIGN_KEYS=${SIGN_KEYS}
 EOF
 	    ;;
 	

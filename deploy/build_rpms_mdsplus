@@ -211,7 +211,8 @@ Buildarch: noarch
         print("Done building rpm for mdsplus%(BNAME)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
     try:
-        os.stat('.gnupg')
+        os.stat('/sign_keys/.gnupg')
+        export HOME=/sign_keys
         cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" %(installer_dir)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
         child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
         child.expect("Enter pass phrase: ")
