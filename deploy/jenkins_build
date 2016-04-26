@@ -426,7 +426,6 @@ build_debs() {
 	    amd64) BITS=64;;
 	    i386)  BITS=32;;
 	    armhf) BITS=32;;
-		   ;;
 	esac
 	ln -s ${WORKSPACE}/release/bin${bits} ${WORKSPACE}/release/bin
 	ln -s ${WORKSPACE}/release/lib${bits} ${WORKSPACE}/release/lib;
