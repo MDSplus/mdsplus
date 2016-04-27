@@ -549,6 +549,7 @@ publish_windows() {
     INSTALLER_DIR=${DISTDIR}/${DIST}
     mkdir -p ${INSTALLER_DIR}
     tar zxf ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz
+    rm -f ${DISTDIR}/winbld/mdsplus-${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}.tgz
     makensis -DMAJOR=${MAJOR} -DMINOR=${MINOR} -DRELEASE=${RELEASE} -DFLAVOR=${BNAME} -NOCD \
              -DOUTDIR=${INSTALLER_DIR} -DVisualStudio ${SRCDIR}/deploy/mdsplus.nsi
     if [ -d /sign_keys ]
