@@ -105,9 +105,8 @@ then
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
-Version: ${MAJOR}.${MINOR}.${RELEASE}
 Architectures: ${arches}
-Components: alpha stable local
+Components: alpha stable 
 Description: MDSplus packages
 EOF
     if [ -d /root/.gnupg ]
