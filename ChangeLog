@@ -1,4 +1,16 @@
-commit 706416e91e8d2133ebd0c74ff152d39d129e984f (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+commit fe97ce841cce90a2afcc7059d677c865032355bd (HEAD -> refs/heads/stable, refs/remotes/origin/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 27 09:06:34 2016 -0400
+
+    Remove version from repo config
+
+commit 5827df6b0da159081c248af489de563ce4e2e8a5 (tag: refs/tags/stable_release-7-0-70)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Apr 14 18:02:04 2016 -0400
+
+    New release ---- stable_release-7-0-70
+
+commit 706416e91e8d2133ebd0c74ff152d39d129e984f
 Merge: cb0169b 4589dd6
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 14 11:34:40 2016 -0400
@@ -2374,7 +2386,7 @@ Date:   Wed Apr 22 13:51:58 2015 -0400
 
     Add line feed to original part line
 
-commit b1e400d46324160c70cbd132ff68361f533308de (tag: refs/tags/stable_release-6-1-84)
+commit b1e400d46324160c70cbd132ff68361f533308de (tag: refs/tags/stable_release-7-0-X, tag: refs/tags/stable_release-6-1-84)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Apr 21 22:33:56 2015 +0000
 
