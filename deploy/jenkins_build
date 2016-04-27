@@ -333,19 +333,16 @@ check_tests() {
 build_64 () {
     set -e
     set -o verbose
-#    if [ "$VERBOSE" = "yes" ]
-#    then
-#	set -o verbose
-#    fi
-    MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
+    bits="$1"
+    MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p ${WORKSPACE}/release/64;
     pushd ${WORKSPACE}/release/64;
     ${SRCDIR}/configure \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin64 \
-	    --libdir=${MDSPLUS_DIR}/lib64 \
+	    --bindir=${MDSPLUS_DIR}/bin${bits} \
+	    --libdir=${MDSPLUS_DIR}/lib${bits} \
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
@@ -358,19 +355,16 @@ build_64 () {
 build_32 () {
     set -e
     set -o verbose
-#    if [ "$VERBOSE" = "yes" ]
-#    then
-#	set -o verbose
-#    fi
-    MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus;
+    bits="$1"
+    MDSPLUS_DIR=${WORKSPACE}/release/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p ${WORKSPACE}/release/32;
     pushd ${WORKSPACE}/release/32;
     ${SRCDIR}/configure  \
 	    --prefix=${MDSPLUS_DIR} \
 	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin32 \
-	    --libdir=${MDSPLUS_DIR}/lib32 \
+	    --bindir=${MDSPLUS_DIR}/bin${bits} \
+	    --libdir=${MDSPLUS_DIR}/lib${bits} \
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
@@ -383,10 +377,6 @@ build_32 () {
 build_rpms () {
     set -e
     set -o verbose
-#    if [ "$VERBOSE" = "yes" ]
-#    then
-#	set -o verbose
-#    fi
     if [ "${DISTDIR}" != "" -a -r ${DISTDIR} ]
     then
         export INSTALLER_DIR=${DISTDIR}/${DIST}/${BRANCH}
@@ -422,18 +412,9 @@ build_debs() {
     then
         export INSTALLER_DIR=${DISTDIR}/${DIST}
 	export BUILDROOT=${WORKSPACE}/release
-	case "${ARCH}" in
-	    amd64) BITS=64;;
-	    i386)  BITS=32;;
-	    armhf) BITS=32;;
-	esac
-	ln -s ${WORKSPACE}/release/bin${bits} ${WORKSPACE}/release/bin
-	ln -s ${WORKSPACE}/release/lib${bits} ${WORKSPACE}/release/lib;
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/${ARCH}
 	mkdir -p ${INSTALLER_DIR}/${BRANCH}/DEBS/noarch
 	${SRCDIR}/deploy/build_debs_mdsplus
-	rm -f ${WORKSPACE}/release/bin
-	rm -f ${WORKSPACE}/release/lib
     fi
 }
 
@@ -608,8 +589,8 @@ then
             if [ "${MAKE_RELEASE}" = "yes" ]
             then
               RELEASE_DATE="$(date +"%B %e, %Y")"
-	      build_64;
-	      build_32;
+	      build_64 64;
+	      build_32 32;
 	      build_rpms;
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
