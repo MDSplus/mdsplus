@@ -809,7 +809,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
     (*env)->SetObjectArrayElement(env, jnids, i, jnid);
   }
   if (num_nids > 0)
-    free((char *)nids);
+    free(nids);
 
 /* //printf("\nEnd getMembers");*/
   return jnids;
