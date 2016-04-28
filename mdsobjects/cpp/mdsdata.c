@@ -714,7 +714,7 @@ void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLe
 {
   struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
   short len;
-  int status = LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)timePtr);
+  LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)timePtr);
   if (len > bufLen)
     len = bufLen;
   if (len > 0)
@@ -773,13 +773,12 @@ struct descriptor_xd *GetManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor_xd *serResult;
-  int status;
 
   serResult = (struct descriptor_xd *)getManyObj(serializedIn);
   if (serResult->class == CLASS_XD)
-    status = MdsSerializeDscOut(serResult->pointer, &xd);
+    MdsSerializeDscOut(serResult->pointer, &xd);
   else
-    status = MdsSerializeDscOut((struct descriptor *)serResult, &xd);
+    MdsSerializeDscOut((struct descriptor *)serResult, &xd);
   freeDsc(serResult);
   return &xd;
 }
@@ -788,11 +787,10 @@ struct descriptor_xd *PutManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor *serResult;
-  int status;
 
   serResult = (struct descriptor *)putManyObj(serializedIn);
 
-  status = MdsSerializeDscOut(serResult, &xd);
+  MdsSerializeDscOut(serResult, &xd);
   freeDsc(serResult);
   return &xd;
 }
