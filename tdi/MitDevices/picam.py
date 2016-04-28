@@ -151,6 +151,8 @@ class PICAM(MDSplus.Device):
             print "Picam_SetParameterIntegerValue(camera, PicamParameter_TriggerResponse,",trigger_resp,")"
 	Picam_SetParameterIntegerValue( camera, PicamParameter_TriggerResponse, trigger_resp )
 	Picam_SetParameterIntegerValue( camera, PicamParameter_TriggerDetermination, PicamTriggerDetermination_NegativePolarity )
+        Picam_SetParameterIntegerValue( camera, PicamParameter_OutputSignal, PicamOutputSignal_EffectivelyExposing )
+
         # set the exposure
         if self.debugging:
             print "Picam_SetParameterFloatingPointValue( camera, PicamParameter_ExposureTime, ",exposure,")"
