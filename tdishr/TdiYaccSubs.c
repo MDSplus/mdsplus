@@ -133,7 +133,7 @@ int TdiYacc_BUILD(int ndesc,
 int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 {
   struct descriptor_xd xd = EMPTY_XD, junk = EMPTY_XD, *ptr = *dsc_ptr_ptr;
-  int len = 0, size = 0, status;
+  int status;
 
 	/*********************************************************
         Must not send compile XD-DSC to MDS, it may give it back.
