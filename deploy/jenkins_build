@@ -629,7 +629,7 @@ then
 		echo ${GIT_COMMIT} > ${DIST_TAG_FILE}
  	    fi;;
 	windows)
-	    if [ "${MAKE_RELEASE}" = "yes" ]
+	    if [ "${MAKE_RELEASE}" = "yes" -o "${TESTS}" = "yes" ]
 	    then
 		build_windows;
 	    fi
