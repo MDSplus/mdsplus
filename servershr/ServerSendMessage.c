@@ -170,7 +170,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
     else {
       perror("Error getting the address the socket is bound to.\n");
-      return 0;
+      return ServerSOCKET_ADDR_ERROR;
     }
     if (before_ast)
       flags |= SrvJobBEFORE_NOTIFY;

@@ -15,3 +15,5 @@
 #define ServerINVSHOT              0xfe18022
 #define ServerABORT                0xfe18032
 #define ServerPATH_DOWN            0xfe18042
+#define ServerSOCKET_ADDR_ERROR    0xfe1804a
+#define ServerINVALID_ACTION_OPERATION 0xfe18052
