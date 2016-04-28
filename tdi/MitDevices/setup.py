@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import os
 try:
     exec(open('_version.py').read())
     if branch == "stable":
