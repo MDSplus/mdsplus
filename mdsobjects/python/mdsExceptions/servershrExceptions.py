@@ -60,3 +60,17 @@ class ServerPATH_DOWN(ServerException):
   message="Path to server lost"
   msgnam="PATH_DOWN"
 
+
+
+class ServerSOCKET_ADDR_ERROR(ServerException):
+  status=266436682
+  message="Cannot obtain ip address socket is bound to."
+  msgnam="SOCKET_ADDR_ERROR"
+
+
+
+class ServerINVALID_ACTION_OPERATION(ServerException):
+  status=266436690
+  message="None"
+  msgnam="INVALID_ACTION_OPERATION"
+
