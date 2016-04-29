@@ -161,13 +161,17 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       *conid_out = conid;
     if (addr == 0) {
       int sock = getSocket(conid);
-      struct sockaddr_in addr_struct;
+      struct sockaddr_in addr_struct = {0};
       unsigned int len = sizeof(addr_struct);
-      if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
+      if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) != 0)
 	addr = *(int *)&addr_struct.sin_addr;
     }
     if (addr)
       jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
+    else {
+      perror("Error getting the address the socket is bound to.\n");
+      return ServerSOCKET_ADDR_ERROR;
+    }
     if (before_ast)
       flags |= SrvJobBEFORE_NOTIFY;
     sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
