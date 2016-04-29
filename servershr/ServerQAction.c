@@ -116,7 +116,7 @@ EXPORT int ServerDebug(int setting)
 EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
-  int status;
+  int status=ServerINVALID_ACTION_OPERATION;
   switch (*op) {
   case SrvRemoveLast:
     {
@@ -192,6 +192,7 @@ EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid
   case SrvSetLogging:
     {
       Logging = *(int *)p1;
+      status = 1;
       break;
     }
   case SrvCommand:
