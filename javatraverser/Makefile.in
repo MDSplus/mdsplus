@@ -498,7 +498,6 @@ docsdir = $(exec_prefix)/java/classes/docs
 # Build the class files
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 java_JAVA = $(SOURCES)
-GIFS = $(addprefix ${srcdir}/,$(_GIFS))
 
 # Build the final jar
 java_DATA = jTraverser.jar DeviceBeans.jar TreeServer_Stub.class
@@ -656,7 +655,7 @@ SOURCES = \
 	LoadFile.java \
 	StoreFile.java
 
-_GIFS = \
+GIFS = \
 	DeviceApply.gif    \
 	DeviceButtons.gif  \
 	DeviceCancel.gif   \
@@ -1010,10 +1009,10 @@ TreeServer_Stub.class: classjava.stamp
 	$(RMIC) TreeServer
 
 jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(GIFS)
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(addprefix -C ${srcdir} ,$(GIFS))
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
+	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
