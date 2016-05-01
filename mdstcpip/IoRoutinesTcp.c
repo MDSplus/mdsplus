@@ -666,7 +666,6 @@ static int tcp_listen(int argc, char **argv)
       int tablesize = FD_SETSIZE;
       int error_count = 0;
       fd_set readfds;
-      int one = 1;
       int status;
       FD_ZERO(&fdactive);
       CheckClient(0, 1, matchString);
