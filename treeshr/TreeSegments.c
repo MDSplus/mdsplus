@@ -633,6 +633,7 @@ old array is same size.
       local_nci.length += add_length;
     else
       local_nci.length = (2 ^ 31);
+    local_nci.flags=local_nci.flags | NciM_SEGMENTED;
     TreePutNci(info_ptr, nidx, &local_nci, 0);
     TreeUnLockNci(info_ptr, 0, nidx);
   }
@@ -2510,6 +2511,7 @@ old array is same size.
       local_nci.flags2 |= NciM_EXTENDED_NCI;
     }
     local_nci.length += add_length;
+    local_nci.flags=local_nci.flags | NciM_SEGMENTED;
     TreePutNci(info_ptr, nidx, &local_nci, 0);
   }
   return status;
