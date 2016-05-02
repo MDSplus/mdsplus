@@ -578,12 +578,9 @@ EXPORT int TestGetHelp(char *expr)
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
     int status;
-    char *help;
 
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
-    help = recGetHelp(xd.pointer);
-//    if(help) printf("%s\n", help);
     MdsFree1Dx(&xd, 0);
     return 1;
 }
@@ -593,12 +590,9 @@ EXPORT int TestGetUnits(char *expr)
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
     int status;
-    char *units;
 
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
-    units = recGetUnits(xd.pointer, 0);
-//    if(units) printf("%s\n", units);
     MdsFree1Dx(&xd, 0);
     return 1;
 }
@@ -626,7 +620,6 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     int retSize;
     int idx, i, status;
     char *retArr;
-    float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
     float xMin = *inXMin;
@@ -841,7 +834,6 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     }
     for(i = 0; i < retSamples; i++)
     {
-	currFloat = 0;
 	switch(xArrD->dtype) {
 	    case DTYPE_B:
 	    case DTYPE_BU:
@@ -974,7 +966,6 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     int retSize;
     int idx, i, status;
     char *retArr;
-    float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
     int64_t xMin = *inXMin;
@@ -1152,7 +1143,6 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     }
     for(i = 0; i < retSamples; i++)
     {
-	currFloat = 0;
 	switch(xArrD->dtype) {
 	    case DTYPE_B:
 	    case DTYPE_BU:
@@ -1288,16 +1278,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     float xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-	float *currXMin, *currXMax;
 //printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
-	if(*inXMin < 1E20)
-		currXMin = 0;
-	else
-		currXMin = inXMin;
-	if(*inXMax > 1E20)
-		currXMax = 0;
-	else
-		currXMax = inXMax;
 
 	//Set limits if any
 	if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
