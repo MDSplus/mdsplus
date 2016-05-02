@@ -35,9 +35,6 @@ static int getSegmentedNid(char *expr)
 static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSegmentSamples, double *estimatedDuration)
 {
 	int nid, numSegments, status, startIdx, endIdx;
-	struct descriptor minD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*) xMin};
-	struct descriptor maxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char*) xMax};
-	struct descriptor **startEndTimes;
 	int64_t startTime, endTime, currStartTime, currEndTime;
 	char dtype, dimct;
 	int dims[64];
@@ -59,9 +56,6 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 			MdsFloatToTime(*xMax, &endTime);
 		if(numSegments < NUM_SEGMENTS_THRESHOLD) 
 			return -1;
-		//startEndTimes = malloc(2 * numSegments * sizeof(struct descriptor *));
-		//status = TreeGetSegmentTimes(nid, &numSegments, &startEndTimes);
-		//if(!(status & 1)) return -1;
 		startIdx = 0;
 		if(!xMin)     //If no start time specified, take all initial segments
 			startIdx = 0;
@@ -69,7 +63,6 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 		{
 			while(startIdx < numSegments)
 			{	
-//				XTreeConvertToLongTime(startEndTimes[2*startIdx] , &currStartTime);
 				status = TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
 				if(!(status & 1)) return status;
 				status = XTreeConvertToLongTime(retStartXd.pointer, &currStartTime);
@@ -92,7 +85,6 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 			segmentIdx = startIdx;
 			while(segmentIdx < numSegments)
 			{
-//				XTreeConvertToLongTime(startEndTimes[2*startIdx+1] , &currEndTime);
 				status = TreeGetSegmentLimits(nid, segmentIdx, &retStartXd, &retEndXd);
 				if(!(status & 1)) return status;
 				status = XTreeConvertToLongTime(retEndXd.pointer, &currEndTime);
@@ -109,7 +101,6 @@ static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *
 			else
 				endIdx = segmentIdx;
 		}
-		//TreeFree(startEndTimes);
 		numActSegments = endIdx - startIdx + 1;
 	}
 	else
@@ -218,7 +209,7 @@ static double toDouble(void *ptr, int type)
 static void compressData(float *y, char *x, int xSize, int xType, int nSamples, int reqPoints, float xMin, float xMax, int *retPoints, float *retResolution)
 {
     int deltaSamples, actSamples, currSamples;
-    int i, j, outIdx, startIdx, endIdx;
+    int i, outIdx, startIdx, endIdx;
     float minY, maxY;
 	double deltaTime, startXDouble, currXDouble;
     if(nSamples < 10 * reqPoints)
@@ -587,12 +578,9 @@ EXPORT int TestGetHelp(char *expr)
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
     int status;
-    char *help;
 
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
-    help = recGetHelp(xd.pointer);
-//    if(help) printf("%s\n", help);
     MdsFree1Dx(&xd, 0);
     return 1;
 }
@@ -602,12 +590,9 @@ EXPORT int TestGetUnits(char *expr)
     EMPTYXD(xd);
     struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
     int status;
-    char *units;
 
     status = TdiCompile(&exprD, &xd MDS_END_ARG);
     if(!(status & 1)) return FALSE;
-    units = recGetUnits(xd.pointer, 0);
-//    if(units) printf("%s\n", units);
     MdsFree1Dx(&xd, 0);
     return 1;
 }
@@ -635,14 +620,12 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     int retSize;
     int idx, i, status;
     char *retArr;
-    float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
     float xMin = *inXMin;
     float xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 	double delta;
@@ -851,7 +834,6 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     }
     for(i = 0; i < retSamples; i++)
     {
-	currFloat = 0;
 	switch(xArrD->dtype) {
 	    case DTYPE_B:
 	    case DTYPE_BU:
@@ -984,14 +966,12 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     int retSize;
     int idx, i, status;
     char *retArr;
-    float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
     int64_t xMin = *inXMin;
     int64_t xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
@@ -1163,7 +1143,6 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     }
     for(i = 0; i < retSamples; i++)
     {
-	currFloat = 0;
 	switch(xArrD->dtype) {
 	    case DTYPE_B:
 	    case DTYPE_BU:
@@ -1290,11 +1269,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     struct descriptor xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
     char *err;
     int nSamples, retSamples;
-    int xSampleSize;
-    int retSize;
-    int idx, i, status;
-    char *retArr;
-    float currFloat;
+    int i, status;
     float retResolution;
     DESCRIPTOR_A(retDataD, sizeof(float), DTYPE_FLOAT, 0, 0);
     DESCRIPTOR_A(retDimD, 0, 0, 0, 0);
@@ -1303,22 +1278,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     float xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
-	float *currXMin, *currXMax;
-    double maxX, minX, currX;
-    char *title, *xLabel, *yLabel;
-	int estimatedSamples;
-	double delta;
-	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
 //printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
-	if(*inXMin < 1E20)
-		currXMin = 0;
-	else
-		currXMin = inXMin;
-	if(*inXMax > 1E20)
-		currXMax = 0;
-	else
-		currXMax = inXMax;
 
 	//Set limits if any
 	if(xMin <= -MAX_LIMIT && xMax >= MAX_LIMIT)
@@ -1437,8 +1397,8 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
 //the type of X array is unknown, element size is passed in xSize
 static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints, int64_t xMin, int64_t xMax, int *retPoints, float *retResolution)
 {
-    int deltaSamples, actSamples, currSamples;
-    int i, j, outIdx, startIdx, endIdx;
+    int deltaSamples, currSamples;
+    int i, outIdx, startIdx, endIdx;
     float minY, maxY;
     if(nSamples < 10 * reqPoints)
     {
@@ -1513,22 +1473,13 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     struct descriptor xMaxD = {sizeof(int64_t), DTYPE_Q, CLASS_S, (char *)inXMax};
     char *err;
     int nSamples, retSamples;
-    int xSampleSize;
-    int retSize;
-    int idx, i, status;
-    char *retArr;
-    float currFloat;
+    int i, status;
     float retResolution;
     DESCRIPTOR_A(retDataD, sizeof(float), DTYPE_FLOAT, 0, 0);
     DESCRIPTOR_A(retDimD, 0, 0, 0, 0);
     DESCRIPTOR_SIGNAL_1(retSignalD, &retDataD, 0, &retDimD);
-    int64_t xMin = *inXMin;
-    int64_t xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
-    double maxX, minX, currX;
-    char *title, *xLabel, *yLabel;
 
 //printf("GetXYWaveLongTimes(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 
