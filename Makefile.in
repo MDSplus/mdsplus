@@ -165,7 +165,7 @@ math: mdsshr
 mdsdcl: mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
-mdsmisc: tdishr
+mdsmisc: tdishr xtreeshr
 mdsobjects/cpp: mdstcpip 
 mdsobjects/java: javascope
 mdstcpip: tdishr
