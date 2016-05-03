@@ -250,11 +250,13 @@ class Tree(object):
             Tree.unlock()
         return _treenode.TreeNode(nid,self)
 
-    def createPulse(self,shot):
+    def createPulse(self,shot,mode=None):
         """Create pulse.
         @param shot: Shot number to create
         @type shot: int
-        @rtype: None
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
+        @type mode: str
+        @rtype: new tree if mode is defined
         """
         Tree.lock()
         try:
@@ -271,6 +273,8 @@ class Tree(object):
             Tree.unlock()
         if not (status & 1):
             raise _Exceptions.statusToException(status)
+        if mode is not None:
+            return Tree(self.name,shot,mode)
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
