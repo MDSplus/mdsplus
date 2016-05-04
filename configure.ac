@@ -5,11 +5,10 @@ AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 
-
+dnl AX_TEST_LOCAL_SCOPE
 
 dnl docker helpers
 DK_SET_DOCKER_BUILD
-
 
 
 AC_CANONICAL_TARGET

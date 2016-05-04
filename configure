@@ -2954,14 +2954,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-
-
-
-
-
-
-
-
    if ${HAVE_DOCKER+:} false; then :
 
 else
@@ -3793,10 +3785,6 @@ _as_read_EOF
 fi
 
 fi
-
-
-
-
 
 
 
