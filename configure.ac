@@ -73,7 +73,6 @@ AS_CASE(["$MKDIR_P"],
 
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
-        [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
         [sparc-sun-solaris2*], [${CC=cc}])
 
 #AC_CONFIG_HEADER(include/config.h)
