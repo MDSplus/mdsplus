@@ -8064,19 +8064,6 @@ THREAD="-pthread"
 
 MITDEVICESIO_TARGETS=""
 case "$host" in
-mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
-       FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
-       LDSHARE="-B dynamic";
-       LDARC="-B static";
-       LD_LDSHARE="-B dynamic";
-       LD_LDARC="-B static";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       FOR_LDFLAGS="";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
-       ;;
 *-solaris2*)
        if test $CC = gcc; then
 	 LD=gcc;
