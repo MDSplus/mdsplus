@@ -656,7 +656,6 @@ fi
 
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
-AC_CHECK_SIZEOF(_int64)
 
 # Stuff that only non-automake dirs need
 AC_SUBST([MAKEETCDIR], ["\$(top_builddir)/etc/"])
