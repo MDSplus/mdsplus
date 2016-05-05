@@ -10,7 +10,7 @@ DK_SET_DOCKER_BUILD
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 
