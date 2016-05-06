@@ -19,7 +19,7 @@ class PICAM(MDSplus.Device):
 
     parts = [
         {'path':':COMMENT','type':'text'},
-        {'path':':SERIAL_NO','type':'numeric','options':('no_write_shot',)},
+        {'path':':SERIAL_NO','type':'text','options':('no_write_shot',)},
         {'path':':EXPOSURE','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':NUM_FRAMES','type':'numeric','value':30,'options':('no_write_shot',)},
         {'path':':ROIS','type':'numeric','options':('no_write_shot',)},
@@ -62,7 +62,7 @@ class PICAM(MDSplus.Device):
         import os
         import subprocess
 
-        camera = int(self.serial_no)
+        camera = str(self.serial_no.record)
 
         c = None
         for c in PICAM.cameras:
@@ -85,6 +85,7 @@ class PICAM(MDSplus.Device):
         c.subproc = subprocess.Popen('mdstcl', stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         c.subproc.stdin.write('set tree %s /shot = %d\n'%(tree, shot,))
         c.subproc.stdin.write('do/meth %s acquire\n'%(path,))
+        c.subproc.stdin.write('exit\n')
         c.subproc.stdin.flush()
     INIT=init
 
@@ -101,6 +102,7 @@ class PICAM(MDSplus.Device):
         exposure = piflt(exposure)
         num_frames = int(self.num_frames)
         timeout = int(self.timeout)
+        serial_no = str(self.serial_no.record)
         try:
             if self.debugging:
                 print "PICAM about to try to read the ROIS"
@@ -124,16 +126,28 @@ class PICAM(MDSplus.Device):
         release = piint()
         Picam_GetVersion(pointer(major),pointer(minor),pointer(distribution),pointer(release))
         self.lib_version.record = 'Picam Version %d.%d.%d Released %d' % (major.value,minor.value,distribution.value,release.value,)
-# find the camera
-#
-#        Picam_GetAvailableCameraIDs(
-#           const PicamCameraID** id_array,
-#           piint* id_count);
-#        for camera in ans:
-#           if it is the one open it
-#
+
+        available = ctypes.POINTER(ctypes.c_int)()
+        availableCount = piint();
+
+        status = Picam_GetAvailableCameraIDs(ctypes.byref(available), ctypes.byref(availableCount))
         camera = PicamHandle()
-        Picam_OpenFirstCamera(ctypes.addressof(camera))
+        cameras_type = PicamCameraID*availableCount.value
+        cameras_pointer = ctypes.POINTER(cameras_type)
+        cameras = ctypes.cast(available, cameras_pointer)
+        found = False
+        for c in cameras.contents:
+            if self.debugging:
+                print "checking ",c.serial_number
+            if c.serial_number == serial_no:
+                status = Picam_OpenCamera(pointer(c),ctypes.addressof(camera))
+                if not status == "PicamError_None":
+                    raise DevCOMM_ERROR("PiCam - could not open camera serial no %d - %s"% (serial_no,status,))
+                found = True
+        if not found:
+            raise DevBAD_PARAMETER("PiCam - Could not find camera %d"%serial_no)
+ 
+#        Picam_OpenCamera(ctypes.addressof(camera))
         PicamID = PicamCameraID()  
 
         Picam_GetCameraID(camera,  pointer(PicamID))
@@ -158,7 +172,7 @@ class PICAM(MDSplus.Device):
             print "Picam_SetParameterIntegerValue(camera, PicamParameter_TriggerResponse,",trigger_resp,")"
         Picam_SetParameterIntegerValue( camera, PicamParameter_TriggerResponse, trigger_resp )
         Picam_SetParameterIntegerValue( camera, PicamParameter_TriggerDetermination, PicamTriggerDetermination_PositivePolarity )
-        Picam_SetParameterIntegerValue( camera, PicamParameter_OutputSignal, PicamOutputSignal_EffectivelyExposing )
+        Picam_SetParameterIntegerValue( camera, PicamParameter_OutputSignal, PicamOutputSignal_Exposing )
 
         # set the exposure
         if self.debugging:
@@ -272,10 +286,9 @@ class PICAM(MDSplus.Device):
         if self.debugging:
             print "PICAM - fill it in "
         print "starting...."
-        for i in range(sz):
-            ans[i] = data[i]
-# for some reason this segfaults if their are rois, so use the loop
-#        ans[:] = data
+#        for i in range(sz):
+#            ans[i] = data[i]
+        ans[:] = data
         if self.debugging:
             print "PICAM reshape the data to be (%d, %d, %d)"%(num_frames, readoutstride.value/2/512, 512)
         ans = ans.reshape((num_frames, readoutstride.value/2/512, 512))
