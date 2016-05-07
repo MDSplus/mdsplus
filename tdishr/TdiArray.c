@@ -206,7 +206,7 @@ int Tdi3Random(struct descriptor_a *out_ptr)
 {
   double half = .5;
   double norm = half / 2147483648.;
-  int status = 1, n, length = out_ptr->length;
+  int status = 1, n;
   int i;
 
   if (Tdi_RandomSeed == 1234567) {

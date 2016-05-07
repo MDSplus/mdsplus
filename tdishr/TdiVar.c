@@ -317,7 +317,7 @@ int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr)
   node_type *node_ptr;
   block_type *block_ptr;
   struct descriptor_d upstr = { 0, DTYPE_T, CLASS_D, 0 };
-  int size = 0, status;
+  int status;
   STATIC_CONSTANT int zero = 0;
   if (ident_ptr->dtype == DTYPE_DSC)
     return TdiPutIdent((struct descriptor_r *)ident_ptr->pointer, data_ptr);
@@ -916,7 +916,6 @@ STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
 */
 int Tdi1ShowPrivate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   block_type *_private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
   return wild((int (*)())show_one, narg, list, _private, out_ptr);
 }

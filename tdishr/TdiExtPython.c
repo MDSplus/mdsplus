@@ -174,10 +174,7 @@ static PyObject *getFunction(char *modulename, char *functionname)
      if an error.
    */
   PyObject *module;
-  PyObject *moduleDict;
-  PyObject *method;
   PyObject *ans = 0;
-  PyObject *args;
   module = (*PyImport_ImportModule)(modulename);
   if (module == 0) {
     printf("Error importing module %s\n", modulename);
@@ -336,7 +333,6 @@ int TdiExtPython(struct descriptor *modname_d,
     if (Initialize()) {
       PyThreadState *GIL = (*PyGILState_Ensure)();
       PyObject *ans;
-      PyObject *pyargs;
       PyObject *pyFunction;
       PyObject *pyArgs;
       addToPath(dirspec);

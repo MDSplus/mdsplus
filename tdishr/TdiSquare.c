@@ -27,7 +27,6 @@ int Tdi3Square(struct descriptor *in_ptr, struct descriptor *out_ptr)
 int Tdi3Cmplx(struct descriptor *x_ptr,
 	      struct descriptor *y_ptr, struct descriptor *mold_ptr, struct descriptor *out_ptr)
 {
-  struct descriptor *dummy = mold_ptr;
   return Tdi3Complex(x_ptr, y_ptr, out_ptr);
 }
 

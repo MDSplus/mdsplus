@@ -828,7 +828,6 @@ int Tdi1NdescOf(int opcode, int narg, struct descriptor *list[], struct descript
 {
   int status = 1;
   struct descriptor_r *pr = (struct descriptor_r *)list[0];
-  int iarg = 0;
   unsigned char ndesc;
 
   while (pr && pr->dtype == DTYPE_DSC)

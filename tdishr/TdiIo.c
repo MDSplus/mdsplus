@@ -131,7 +131,6 @@ int Tdi1DateTime(int opcode, int narg, struct descriptor *list[], struct descrip
 */
 int Tdi1Fclose(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   FILE *unit;
   int err;
 
@@ -363,7 +362,6 @@ int Tdi1Write(int opcode, int narg, struct descriptor *list[], struct descriptor
 int Tdi1Read(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
-  int bytes = 0;
   FILE *unit = 0;
   status = TdiGetInUnit(list[0], &unit);
   if (status & 1) {
