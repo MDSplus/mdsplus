@@ -297,11 +297,6 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
         Clobbers string with upcase. IDENT token returns name.
         Note, Lex strings are NUL terminated.
 */
-STATIC_ROUTINE int compare(char *s1, struct TdiFunctionStruct *s2)
-{
-  return strcmp(s1, s2->name);
-}
-
 STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
 {
   struct descriptor_s sd = { 0, DTYPE_T, CLASS_S, 0 };
