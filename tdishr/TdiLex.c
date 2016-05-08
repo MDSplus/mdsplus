@@ -298,12 +298,9 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
 */
 STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
 {
-  struct descriptor_s sd = { 0, DTYPE_T, CLASS_S, 0 };
   int j, token;
   unsigned char *str_l;
 
-  sd.length = len;
-  sd.pointer = (char *)str;
 /*
         upcase(str,len);
 */

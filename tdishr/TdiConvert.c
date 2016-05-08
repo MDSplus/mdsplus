@@ -909,7 +909,6 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
   int classb = pdout->class == CLASS_A;
   char *pb = pdout->pointer;
   register int numb = classb ? (int)pdout->arsize / max(lenb, 1) : 1L;
-  int numbsave;
   int n;
   int status = TdiINVDTYDSC;
  /** no output **/
@@ -962,7 +961,6 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
     --numb;
     goto same;
   } else {
-    numbsave = numb;
 	/** big branch **/
     n = MAXTYPE * dtypea + dtypeb;
     switch (n) {

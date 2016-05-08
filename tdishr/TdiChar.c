@@ -279,7 +279,7 @@ int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct de
   for (; --n >= 0; p1 += size)
     for (j = ncopies; --j >= 0; p3 += size)
       memcpy(p3, p1, size);
-  return 1;
+  return status;
 }
 
 /*------------------------------------------------------------------------------
