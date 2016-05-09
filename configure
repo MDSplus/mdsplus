@@ -1728,7 +1728,9 @@ Optional Packages:
   --with-labview=labview-top-dir
                           specify location of labview such as
                           /usr/local/natinst/Labview
-  --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
+  --with-idl[=idl-top-dir]
+                          specify location of idl such as /usr/local/itt/idl,
+                          or set IDL_DIR
   --with-visual-studio    directory tree containing visual studio compiler,
                           includes and libs
   --with-readline=READLINE_DIR
@@ -7947,7 +7949,6 @@ else
   with_idl=yes
 fi
 
-
 case $with_idl in #(
   yes) :
     if ${IDL_DIR+:} false; then :
@@ -7957,6 +7958,8 @@ else
   with_idl=/usr/local/itt/idl
 elif test -r /usr/local/rsi/idl; then :
   with_idl=/usr/local/rsi/idl
+elif test -r /usr/local/exelis/idl; then :
+  with_idl=/usr/local/exelis/idl
 elif ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl; then :
   with_idl=\${top_srcdir}/3rd-party-apis/idl
 else
@@ -7966,17 +7969,18 @@ fi ;; #(
   *) :
      ;;
 esac
-
 case $with_idl in #(
   no) :
-    IDL_DIR="" ;; #(
+    { IDL_DIR=; unset IDL_DIR;}
+               { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
+$as_echo "$with_idl" >&6; } ;; #(
   *) :
     IDL_INC="-I$with_idl/external"
-         IDLMDSEVENT="idlmdsevent"
-         IDLMDSWIDGETS="idlmdswidgets" ;;
+         IDLMDSEVENT=idlmdsevent
+         IDLMDSWIDGETS=idlmdswidgets
+         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; } ;;
 esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
-$as_echo "$with_idl" >&6; }
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mingw" >&5
 $as_echo_n "checking for mingw... " >&6; }
