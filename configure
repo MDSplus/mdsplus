@@ -721,7 +721,6 @@ D3D_FFLAGS
 D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
-CAMSHR
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
 DX_COND_latex_TRUE
@@ -10333,34 +10332,8 @@ fi
 done
 
 
-
-
-
-
-
 REMCAM="remcam"
-for ac_header in scsi/sg.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "scsi/sg.h" "ac_cv_header_scsi_sg_h" "$ac_includes_default"
-if test "x$ac_cv_header_scsi_sg_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SCSI_SG_H 1
-_ACEOF
- DO_CAMSHR="yes"
-else
-  DO_CAMSHR="no"
-fi
-
-done
-
-if test "$DO_CAMSHR" = yes
-then
-  CAMSHR="camshr"
-  REMCAMLIB="RemCamShr"
-else
-  CAMSHR=""
-  REMCAMLIB="CamShr"
-fi
+REMCAMLIB="RemCamShr"
 
 for ac_header in stdint.h
 do :
@@ -17293,7 +17266,6 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
-
 
 
 

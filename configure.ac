@@ -820,21 +820,8 @@ AC_CHECK_HEADERS(malloc.h alloca.h)
 AC_CHECK_HEADERS(pthread.h)
 AC_CHECK_FUNCS(pthread_lock_global_np)
 
-
-
-
-
-
 REMCAM="remcam"
-AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
-if test "$DO_CAMSHR" = yes
-then
-  CAMSHR="camshr"
-  REMCAMLIB="RemCamShr"
-else
-  CAMSHR=""
-  REMCAMLIB="CamShr"
-fi
+REMCAMLIB="RemCamShr"
 
 AC_CHECK_HEADERS([stdint.h])
 
@@ -1219,7 +1206,6 @@ RELEASE_COMMIT=$GIT_COMMIT
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES
 
-AC_SUBST(CAMSHR)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
