@@ -288,6 +288,7 @@ AS_CASE([$with_labview],
 
 AC_MSG_RESULT([$with_labview])
 
+AC_MSG_CHECKING([whether to include idl support])
 AC_ARG_WITH([idl],
             [AS_HELP_STRING([--with-idl=idl-top-dir],
                             [specify location of idl such as /usr/local/itt/idl])],
@@ -311,7 +312,6 @@ AS_CASE([$with_idl],
         [IDL_INC="-I$with_idl/external"
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets"])
-
 AC_MSG_RESULT([$with_idl])
 
 AC_MSG_CHECKING([for mingw])

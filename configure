@@ -7936,6 +7936,8 @@ esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_labview" >&5
 $as_echo "$with_labview" >&6; }
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to include idl support" >&5
+$as_echo_n "checking whether to include idl support... " >&6; }
 
 # Check whether --with-idl was given.
 if test "${with_idl+set}" = set; then :
@@ -7972,7 +7974,6 @@ case $with_idl in #(
          IDLMDSEVENT="idlmdsevent"
          IDLMDSWIDGETS="idlmdswidgets" ;;
 esac
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
 $as_echo "$with_idl" >&6; }
 
