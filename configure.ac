@@ -599,17 +599,6 @@ case "$host" in
        dnl HDF5_LIBS="-lz -lsz";
        dnl HDF5_DIR="/usr/local";
        X_EXTRA_LIBS="-lXmu";;
-*qnx*) CFLAGS="$CFLAGS -fpic";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       ;;
 esac
 
 dnl see if we have libdc1394 libraries and what version

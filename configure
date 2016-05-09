@@ -8499,17 +8499,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        java_enable="yes"
        LIBPATH="DYLD_LIBRARY_PATH"
                      X_EXTRA_LIBS="-lXmu";;
-*qnx*) CFLAGS="$CFLAGS -fpic";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       ;;
 esac
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dc1394_new  in -ldc1394" >&5
