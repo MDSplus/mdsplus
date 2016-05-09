@@ -55,15 +55,11 @@ extern int TdiEvaluate();
 
 STATIC_CONSTANT DESCRIPTOR(dnul, "\0");
 STATIC_CONSTANT DESCRIPTOR(dfun, ".fun\0");
-STATIC_CONSTANT DESCRIPTOR(def_name, "dna=");
 #if defined(__VMS)
-STATIC_CONSTANT DESCRIPTOR(def_image, "MDS$FUNCTIONS");
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS$PATH:");
 #elif defined(WIN32)
-STATIC_CONSTANT DESCRIPTOR(def_image, "MdsFunctions");
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
 #else
-STATIC_CONSTANT DESCRIPTOR(def_image, "MdsFunctions");
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
 #endif
 STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
@@ -101,9 +97,6 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
     status = TdiDoFun(&entry, narg - 2, &list[2], out_ptr);
     if (status != TdiUNKNOWN_VAR)
       goto done;
-    /*
-       status = TdiFindImageSymbol((struct descriptor_d *)&def_image, &entry, &routine);
-     */
   } else {
     status = TdiFindImageSymbol(&image, &entry, &routine);
     if (!(status & 1))
@@ -186,14 +179,13 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
       unit = fopen(file.pointer, "rb");
       if (unit) {
 	long flen;
-	size_t rlen;
 	fseek(unit, 0, SEEK_END);
 	flen = ftell(unit);
 	flen = (flen > 0xffff) ? 0xffff : flen;
 	fseek(unit, 0, SEEK_SET);
 	dcs.pointer = (char *)malloc(flen);
 	dcs.length = (unsigned short)flen;
-	rlen = fread(dcs.pointer, (size_t) flen, 1, unit);
+	fread(dcs.pointer, (size_t) flen, 1, unit);
 	fclose(unit);
 	status = TdiCompile(&dcs, out_ptr MDS_END_ARG);
 	free(dcs.pointer);

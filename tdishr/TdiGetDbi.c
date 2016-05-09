@@ -17,9 +17,6 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 
-
-
-STATIC_CONSTANT DESCRIPTOR(pathtext, "PATH");
 STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");
 #define EOL {0,DbiEND_OF_LIST,0,0}
 

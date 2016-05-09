@@ -59,7 +59,6 @@ int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descript
   int status = 1;
   EMPTYXD(tmp);
   struct descriptor *text_ptr;
-  STATIC_CONSTANT DESCRIPTOR(compile_zone, "TDI Compile Zone");
   LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
   if (TdiThreadStatic()->compiler_recursing == 1) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");

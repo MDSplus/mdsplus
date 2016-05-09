@@ -35,7 +35,6 @@ STATIC_ROUTINE int goto1(int, struct descriptor *[], struct descriptor_xd *);
 */
 int Tdi1Abort(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   return TdiABORT;
 }
 
@@ -45,7 +44,6 @@ int Tdi1Abort(int opcode, int narg, struct descriptor *list[], struct descriptor
 */
 int Tdi1Break(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   return TdiBREAK;
 }
 
@@ -80,7 +78,6 @@ int Tdi1Comma(int opcode, int narg, struct descriptor *list[], struct descriptor
 */
 int Tdi1Continue(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   return TdiCONTINUE;
 }
 
@@ -225,7 +222,6 @@ int Tdi1Label(int opcode, int narg, struct descriptor *list[], struct descriptor
 */
 int Tdi1Rem(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   return 1;
 }
 

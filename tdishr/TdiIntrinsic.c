@@ -63,40 +63,10 @@ extern int TdiGetLong();
 #endif
 extern int SysGetMsg();
 STATIC_ROUTINE struct descriptor *FixedArray();
-STATIC_CONSTANT char *VMS_CLASS[] = { "CLASS0", "S", "D", "CLASS3", "A" };
-STATIC_CONSTANT char *MDS_CLASS[] = { "XD", "XS", "R", "CA", "APD" };
-
-STATIC_CONSTANT char *MDS_DTYPE[] = {
-  "Ident-",			/*191 */
-  "Nid",			/*192 */
-  "Path-",			/*193 */
-  "Param",			/*194 */
-  "Signal",			/*195 */
-  "Dimension",			/*196 */
-  "Window",			/*197 */
-  "Slope",			/*198 */
-  "Function-",			/*199 */
-  "Conglom",			/*200 */
-  "Range",			/*201 */
-  "Action",			/*202 */
-  "Dispatch",			/*203 */
-  "Program",			/*204 */
-  "Routine",			/*205 */
-  "Procedure",			/*206 */
-  "Method",			/*207 */
-  "Dependency",			/*208 */
-  "Condition",			/*209 */
-  "Event-",			/*210 */
-  "With_Units",			/*211 */
-  "Call",			/*212 */
-  "With_Error",			/*213 */
-};
 
 STATIC_CONSTANT DESCRIPTOR(compile_err, "%TDI Syntax error near # marked region\n");
 STATIC_CONSTANT DESCRIPTOR(hilite, "##");
 STATIC_CONSTANT DESCRIPTOR(newline, "\n");
-STATIC_THREADSAFE pthread_mutex_t lock;
-STATIC_THREADSAFE int lock_initialized = 0;
 STATIC_CONSTANT struct descriptor miss_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
 /****************************
@@ -136,7 +106,6 @@ Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
 int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
   if (message->length > MAXMESS)
     return 0;
@@ -154,7 +123,6 @@ int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_
 
 int TRACE(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
@@ -248,7 +216,6 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
   else if (TdiThreadStatic()->TdiIntrinsic_recursion_count > 1800)
     status = TdiRECURSIVE;
   else {
-    int list_size = narg * sizeof(struct descriptor *);
     struct descriptor *fixed_list[256];
     char fixed[256];
     int i;

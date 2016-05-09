@@ -195,7 +195,6 @@ ing
         NEED to size based on exponent range and number of digits.
 */
 STATIC_CONSTANT DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
-STATIC_CONSTANT DESCRIPTOR(e_dsc, "E");
 STATIC_CONSTANT DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
 
 STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
@@ -297,19 +296,11 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
         Clobbers string with upcase. IDENT token returns name.
         Note, Lex strings are NUL terminated.
 */
-STATIC_ROUTINE int compare(char *s1, struct TdiFunctionStruct *s2)
-{
-  return strcmp(s1, s2->name);
-}
-
 STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
 {
-  struct descriptor_s sd = { 0, DTYPE_T, CLASS_S, 0 };
   int j, token;
   unsigned char *str_l;
 
-  sd.length = len;
-  sd.pointer = (char *)str;
 /*
         upcase(str,len);
 */
@@ -926,7 +917,6 @@ int TdiLexQuote(int len, unsigned char *str, struct marker *mark_ptr)
 int yylex()
 {
   int nstr;
-  extern int yyprevious;
   while ((nstr = yylook()) >= 0)
  yyfussy:switch (nstr) {
     case 0:

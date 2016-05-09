@@ -170,8 +170,6 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
   struct descriptor_xd hold = EMPTY_XD;
   struct descriptor_r *pin = (struct descriptor_r *)their_ptr;
   int status = 1;
-  STATIC_CONSTANT unsigned char OMIT_WINDOW[] = { DTYPE_WINDOW, 0 };
-  STATIC_CONSTANT unsigned char OMIT_AXIS[] = { DTYPE_SLOPE, 0 };
 
   int *recursion_count = &((TdiThreadStatic())->TdiGetData_recursion_count);
   *recursion_count = (*recursion_count + 1);
@@ -696,7 +694,6 @@ static int use_get_record_fun = 1;
 EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
 {
   int status;
-  static int use_fun = 1;
   if (use_get_record_fun) {
     int stat;
     short opcode = 162;		/* external function */

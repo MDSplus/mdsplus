@@ -75,7 +75,6 @@ STATIC_CONSTANT octaword ozero = { 0, 0, 0, 0 };
 STATIC_CONSTANT quadword maxquad = { -1, 2147483647 };
 STATIC_CONSTANT octaword maxocta = { -1, -1, -1, 2147483647 };
 STATIC_CONSTANT quadword umaxquad = { -1, -1 };
-STATIC_CONSTANT int umax64[2] = { -1, -1 };
 STATIC_CONSTANT octaword umaxocta = { -1, -1, -1, -1 };
 STATIC_CONSTANT quadword minquad = { 0, -2147483647 };
 STATIC_CONSTANT octaword minocta = { 0, 0, 0, -2147483647 };
