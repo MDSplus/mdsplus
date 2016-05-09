@@ -290,29 +290,25 @@ AC_MSG_RESULT([$with_labview])
 
 AC_MSG_CHECKING([whether to include idl support])
 AC_ARG_WITH([idl],
-            [AS_HELP_STRING([--with-idl=idl-top-dir],
-                            [specify location of idl such as /usr/local/itt/idl])],
+            [AS_HELP_STRING([[--with-idl[=idl-top-dir]]],
+                            [specify location of idl such as /usr/local/itt/idl, or set IDL_DIR])],
             [],
             [with_idl=yes])
-
 AS_CASE([$with_idl],
-        [yes], 
-        [AS_VAR_SET_IF([IDL_DIR],
-           [with_idl=$IDL_DIR],
-           [AS_IF([test -r /usr/local/itt/idl], 
-               [with_idl=/usr/local/itt/idl],
-               [test -r /usr/local/rsi/idl],
-               [with_idl=/usr/local/rsi/idl],
-               [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
-               [with_idl=\${top_srcdir}/3rd-party-apis/idl],
-               [with_idl=no])])])
-
+        [yes], [AS_VAR_SET_IF([IDL_DIR],
+                              [AS_VAR_SET([with_idl], [$IDL_DIR])],
+                              [AS_IF([test -r /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
+                                     [test -r /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
+                                     [test -r /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
+                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
+                                     [AS_VAR_SET([with_idl], [no])])])])
 AS_CASE([$with_idl],
-        [no], [IDL_DIR=""],
-        [IDL_INC="-I$with_idl/external"
-         IDLMDSEVENT="idlmdsevent"
-         IDLMDSWIDGETS="idlmdswidgets"])
-AC_MSG_RESULT([$with_idl])
+        [no], [AS_UNSET([IDL_DIR])
+               AC_MSG_RESULT([$with_idl])],
+        [AS_VAR_SET([IDL_INC], ["-I$with_idl/external"])
+         AS_VAR_SET([IDLMDSEVENT], [idlmdsevent])
+         AS_VAR_SET([IDLMDSWIDGETS], [idlmdswidgets])
+         AC_MSG_RESULT([yes])])
 
 AC_MSG_CHECKING([for mingw])
 AS_CASE([$host],
