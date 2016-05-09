@@ -369,43 +369,6 @@ THREAD="-pthread"
 AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
-*-solaris2*)  
-       if test $CC = gcc; then
-	 LD=gcc;
-	 FORLD=gcc;
-         LINKSHARED="-shared ";
-         FOR_LINKSHARED="$LINKSHARED"
-         LD_LDSHARE="-Wl,-B,dynamic";
-         LD_LDARC="-Wl,-B,static";
-         LDSHARE="-Wl,-B,dynamic";
-         LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fPIC -D_POSIX_PTHREAD_SEMANTICS";
-         LDFLAGS="$CFLAGS";
-       else 
-         LINKSHARED="-G ";
-         FOR_LINKSHARED="$LINKSHARED";
-         LD_LDARC="-B static ";
-         LD_LDSHARE="-B dynamic ";
-         LDSHARE="-B dynamic";
-         LDARC="-B static";
-         if test -n "`echo 'int main(){return 0;}' | cc -o /dev/null -E -c -Kpic - 2>&1`"; then
-           LDSHARE="-Wl,-B,dynamic";
-           LDARC="-Wl,-B,static";
-         else
-           CFLAGS="$CFLAGS -Kpic";
-         fi;
-       fi;
-       if test "$F77" = "gfortran"
-       then
-         FFLAGS="$FFLAGS -fPIC -fno-range-check"
-       else
-         FFLAGS="$FFLAGS -PIC";
-       fi
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       jni_inc_dir="${JDK_DIR}/include";
-       jni_md_inc_dir="${JDK_DIR}/include/solaris";
-       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *mingw*)
        AC_PROG_F77
        IDLMDSEVENT=""
