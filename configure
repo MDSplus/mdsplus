@@ -7954,7 +7954,7 @@ case $with_idl in #(
 else
   if test -r /usr/local/itt/idl; then :
   with_idl=/usr/local/itt/idl
-elif test -r /usr/local/itt/idl; then :
+elif test -r /usr/local/rsi/idl; then :
   with_idl=/usr/local/rsi/idl
 elif ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl; then :
   with_idl=\${top_srcdir}/3rd-party-apis/idl
