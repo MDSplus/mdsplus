@@ -136,7 +136,7 @@ test_64 () {
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	    --enable-debug --host=x86_64-linux;
+	    --enable-debug --host=${host};
 	$MAKE
 	$MAKE install
 	set +e
@@ -173,7 +173,7 @@ test_64 () {
 			 --with-gsi=/usr:gcc64 \
 			 --with-java_target=6 \
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
-			 --enable-debug --host=x86_64-linux \
+			 --enable-debug --host=${host} \
 			 --enable-sanitize=${test}
 		status=$?
 		if [ "$status" == 111 ]; then
@@ -217,7 +217,7 @@ test_32() {
 	    --with-gsi=/usr:gcc32 \
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	    --enable-debug --host=i686-linux;
+	    --enable-debug --host=${host};
 	$MAKE
 	$MAKE install
 	set +e;
@@ -258,7 +258,7 @@ test_32() {
 			 --with-gsi=/usr:gcc32 \
 			 --with-java_target=6 \
 			 --with-java_bootclasspath=${SRCDIR}/rt.jar \
-			 --enable-debug --host=i686-linux \
+			 --enable-debug --host=${host} \
 			 --enable-sanitize=${test}
 		status=$?
 		if [ "$status" == 111 ]; then
@@ -346,7 +346,7 @@ build_64 () {
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	    --host=x86_64-linux;
+	    --host=${host};
     $MAKE
     $MAKE install
     popd;
@@ -368,7 +368,7 @@ build_32 () {
 	    --with-gsi=/usr:gcc64 \
 	    --with-java_target=6 \
 	    --with-java_bootclasspath=${SRCDIR}/rt.jar \
-	    --host=i686-linux;
+	    --host=${host};
     $MAKE
     $MAKE install
     popd ;
@@ -581,6 +581,15 @@ then
     if [ "$PUBLISH_RELEASE" = "yes" ]
     then
 	DIST_TAG_FILE=${DISTDIR}/${DIST}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
+    fi
+    if [ -z "${host}" ]
+    then
+	if [ "$ARCH" = "i386" -o "$ARCH" = "armhf" ]
+	then
+	    host=i686-linux
+	else
+	    host=x86_64-linux
+	fi
     fi
     case ${DIST_TYPE} in
 	redhat)
