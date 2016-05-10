@@ -78,7 +78,6 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
 	AC_MSG_RESULT(yes)
 	CFLAGS="${CFLAGS} -g -O0"
 	CXXFLAGS="${CXXFLAGS} -g -O0"
-	FFLAGS="${FFLAGS} -g -O0"
 	FCFLAGS="${FCFLAGS} -g -O0"
 	OBJCFLAGS="${OBJCFLAGS} -g -O0"
       ],
@@ -86,7 +85,6 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
 	AC_MSG_RESULT(info)
 	CFLAGS="${CFLAGS} -g"
 	CXXFLAGS="${CXXFLAGS} -g"
-	FFLAGS="${FFLAGS} -g"
 	FCFLAGS="${FCFLAGS} -g"
 	OBJCFLAGS="${OBJCFLAGS} -g"
       ],
@@ -94,7 +92,6 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
 	AC_MSG_RESULT(profile)
 	CFLAGS="${CFLAGS} -g -pg"
 	CXXFLAGS="${CXXFLAGS} -g -pg"
-	FFLAGS="${FFLAGS} -g -pg"
 	FCFLAGS="${FCFLAGS} -g -pg"
 	OBJCFLAGS="${OBJCFLAGS} -g -pg"
 	LDFLAGS="${LDFLAGS} -pg"
@@ -107,8 +104,6 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
 	  [CFLAGS="$5"])
 	AS_IF([test "x${CXXFLAGS+set}" != "xset"],
 	  [CXXFLAGS="$5"])
-	AS_IF([test "x${FFLAGS+set}" != "xset"],
-	  [FFLAGS="$5"])
 	AS_IF([test "x${FCFLAGS+set}" != "xset"],
 	  [FCFLAGS="$5"])
 	AS_IF([test "x${OBJCFLAGS+set}" != "xset"],

@@ -51,7 +51,7 @@ AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
 AC_PROG_AWK
 AC_PROG_CXX
 AC_PROG_CC
-AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
+AC_PROG_FC
 AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_INSTALL
@@ -330,8 +330,7 @@ AC_MSG_RESULT([$with_visual_studio])
 
 
 FORLD=ld
-LD=ld
-LD_LDARC=""
+LD=ld LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
@@ -366,14 +365,13 @@ AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
-       AC_PROG_F77
        IDLMDSEVENT=""
        LIBPRE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
-       FFLAGS="$FFLAGS -fno-range-check"
-       FORLD="$F77"
+       FCFLAGS="$FCFLAGS -fno-range-check"
+       FORLD="$FC"
        if ( echo $host | grep i686 > /dev/null )
        then
          SQL_ARCH=32
@@ -389,7 +387,7 @@ case "$host" in
        MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKEBINDIR="\$(top_builddir)/${BINDIR}/"
-       FFLAGS="$FFLAGS -fno-backslash";
+       FCFLAGS="$FCFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -405,7 +403,7 @@ case "$host" in
 
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
-       FORLD="$F77";
+       FORLD="$FC";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null ) 
        then
@@ -435,9 +433,9 @@ case "$host" in
            MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
-       FFLAGS="$FFLAGS -fno-range-check"
+       FCFLAGS="$FCFLAGS -fno-range-check"
        FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -463,20 +461,12 @@ case "$host" in
        SIZEOF_LONG_LONG=8;
        D64="";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
-       if (test "$F77" = "g77"); then
-         FFLAGS="$FFLAGS -Wno-globals"
-         FOR_LDFLAGS="-lg2c"
-         FORLD="$F77"
-       elif (test "$F77" = "gfortran"); then
-         FFLAGS="$FFLAGS -fno-range-check";
-         FORLD="$F77"
-         FOR_LDFLAGS="-lg2c"
-       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         FORLD="$F77"
+       if (test "$FC" = "gfortran"); then
+         FCFLAGS="$FCFLAGS -fno-range-check";
+         FORLD="$FC"
          FOR_LDFLAGS="-lg2c"
        fi
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -492,10 +482,10 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
-       FFLAGS="$FFLAGS -fno-range-check";
-       FORLD="$F77"
+       FCFLAGS="$FCFLAGS -fno-range-check";
+       FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -513,22 +503,9 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
-       if (test "$F77" = "f77"); then 
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
-       elif (test "$F77" = "g77"); then
-          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
-          FOR_LDFLAGS="-lg2c"; 
-		  FORLD="$F77"
-       elif (test "$F77" = "fort77"); then
-          FFLAGS="$FFLAGS -!bs -Wf,-!it";
-          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-       elif (test "$F77" = "gfortran"); then
-          FFLAGS="$FFLAGS -fno-range-check"
-          FORLD="gfortran"
-          FOR_LDFLAGS="-shared"
-       fi;
+       FCFLAGS="$FCFLAGS -fno-range-check"
+       FORLD="gfortran"
+       FOR_LDFLAGS="-shared"
        FEXECLIBDIR="-L";
        LD="$CC"
        LDSHARE="";
