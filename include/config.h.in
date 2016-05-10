@@ -104,9 +104,6 @@
 /* Define to 1 if you have the `rl_set_signals' function. */
 #undef HAVE_RL_SET_SIGNALS
 
-/* Define to 1 if you have the <scsi/sg.h> header file. */
-#undef HAVE_SCSI_SG_H
-
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
