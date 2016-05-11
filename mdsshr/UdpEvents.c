@@ -26,8 +26,6 @@ extern int UdpEventGetTtl(unsigned char *ttl);
 extern int UdpEventGetLoop(unsigned char *loop);
 extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
-static int releaseEventInfo(void *ptr);
-
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
 
