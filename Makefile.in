@@ -35,7 +35,7 @@ PARTS = \
         @MDSTCPIP@ \
         mdslibidl \
         mdsdcl  \
-	@CAMSHR@ \
+	camshr \
         @REMCAM@ \
         ccl \
 	servershr \

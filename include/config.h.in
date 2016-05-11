@@ -104,9 +104,6 @@
 /* Define to 1 if you have the `rl_set_signals' function. */
 #undef HAVE_RL_SET_SIGNALS
 
-/* Define to 1 if you have the <scsi/sg.h> header file. */
-#undef HAVE_SCSI_SG_H
-
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
@@ -221,9 +218,6 @@
 
 /* The size of `long long', as computed by sizeof. */
 #undef SIZEOF_LONG_LONG
-
-/* The size of `_int64', as computed by sizeof. */
-#undef SIZEOF__INT64
 
 /* "Define if you are using SRB" */
 #undef SRB
