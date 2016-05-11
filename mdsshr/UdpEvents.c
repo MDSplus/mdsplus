@@ -87,9 +87,8 @@ static void *handleMessage(void *info_in)
   int nameLen, bufLen;
   char *eventName;
   char *currPtr;
-  int status;
-  status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
-  status=pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
   free(info->eventName);
   free(info);
   UnlockMdsShrMutex(&eventIdMutex);
