@@ -311,7 +311,7 @@ int rblob;
 {
   int status = 1;
   int rows = *prows, used = arg->used;
-  int isnotseg = 1, ncol = SYB_dbnumcols(dbproc);
+  int ncol = SYB_dbnumcols(dbproc);
   int ind, j, type = 0, len, dtype;
   char ddate[28];
   double d_ans;
