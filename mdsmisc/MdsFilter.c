@@ -51,7 +51,6 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   int num_samples, num_poles, start_idx, end_idx, i;
   float fc, delta, dummy, *filtered_data, start, end, time_at_0;
   float phs_steep, delay;
-  float *mod, *phs;
   static Filter *filter;
 
   if (*num_in_poles > 0)
@@ -82,8 +81,8 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   filter = ButtwInvar(cut_off, &dummy, &dummy, &dummy, &fc, &num_poles);
 
   filtered_data = (float *)malloc(num_samples * sizeof(float));
-  mod = (float *)malloc(sizeof(float) * 1000);
-  phs = (float *)malloc(sizeof(float) * 1000);
+  float mod[1000];
+  float phs[1000];
   TestFilter(filter, fc, 1000, mod, phs);
 
   for (i = 1; i < 1000 - 1 && !isnan(phs[i]) && !isnan(phs[i + 1]) && phs[i] > phs[i + 1]; i++) ;
@@ -93,9 +92,6 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
     delay = phs_steep / (2 * PI);
 
   }
-
-  free((char *)mod);
-  free((char *)phs);
 
   DoFilter(filter, in_data, filtered_data, &num_samples);
   FreeFilter(filter);
