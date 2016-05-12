@@ -630,21 +630,13 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     char *title, *xLabel, *yLabel;
 	double delta;
 	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
-	float *currXMin, *currXMax;
 	int64_t estimatedSamples, estimatedSegmentSamples;
 	double estimatedDuration;
 
 //printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
 
-	if(*inXMin < -1E20)
-		currXMin = 0;
-	else
-		currXMin = inXMin;
-	if(*inXMax > 1E20)
-		currXMax = 0;
-	else
-		currXMax = inXMax;
-
+	float * const currXMin = (*inXMin < -1E20)? NULL : inXMin;
+	float * const currXMax = (*inXMax >  1E20)? NULL : inXMax;
 	estimatedSamples = estimateNumSamples(inY, currXMin, currXMax, &estimatedSegmentSamples, &estimatedDuration);
 //printf("Estimated Samples: %d\n", estimatedSamples);
 //printf("Estimated SegmentSamples: %d\n", estimatedSegmentSamples);
