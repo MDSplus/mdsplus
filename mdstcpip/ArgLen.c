@@ -2,8 +2,6 @@
 
 #include "mdsip_connections.h"
 
-
-
 short ArgLen(struct descrip *d)
 {
   short len;
