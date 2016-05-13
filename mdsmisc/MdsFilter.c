@@ -50,7 +50,8 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
 
   int num_samples, num_poles, start_idx, end_idx, i;
   float fc, delta, dummy, *filtered_data, start, end, time_at_0;
-  float phs_steep, delay;
+  float phs_steep;
+  float delay = 0.0f;
   static Filter *filter;
 
   if (*num_in_poles > 0)
