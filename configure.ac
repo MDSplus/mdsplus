@@ -1021,6 +1021,9 @@ then
   AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
   MOTIF_APS=""
+# IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
+  IDLMDSEVENT=""
+  IDLMDSWIDGETS=""
   AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
 if [[ "$MINGW" = "yes" ]]
