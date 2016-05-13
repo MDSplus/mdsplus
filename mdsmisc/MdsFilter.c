@@ -91,7 +91,6 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   if (i > 1) {
     phs_steep = (phs[1] - phs[i]) / ((i / 1000.) * fc / 2.);
     delay = phs_steep / (2 * PI);
-
   }
 
   DoFilter(filter, in_data, filtered_data, &num_samples);
