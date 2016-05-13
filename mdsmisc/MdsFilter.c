@@ -87,7 +87,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
 
   for (i = 1; i < 1000 - 1 && !isnan(phs[i]) && !isnan(phs[i + 1]) && phs[i] > phs[i + 1]; i++) ;
 
-  if (i > 1 && i < 1000) {
+  if (i > 1) {
     phs_steep = (phs[1] - phs[i]) / ((i / 1000.) * fc / 2.);
     delay = phs_steep / (2 * PI);
 
