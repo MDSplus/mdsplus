@@ -26,8 +26,6 @@ extern int UdpEventGetTtl(unsigned char *ttl);
 extern int UdpEventGetLoop(unsigned char *loop);
 extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
-static int releaseEventInfo(void *ptr);
-
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
 
@@ -87,9 +85,8 @@ static void *handleMessage(void *info_in)
   int nameLen, bufLen;
   char *eventName;
   char *currPtr;
-  int status;
-  status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
-  status=pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
+  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
   free(info->eventName);
   free(info);
   UnlockMdsShrMutex(&eventIdMutex);
