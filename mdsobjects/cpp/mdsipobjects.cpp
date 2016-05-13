@@ -194,7 +194,7 @@ void Connection::unlockGlobal() {
 
 void Connection::openTree(char *tree, int shot) {
 	int status = MdsOpen(sockId, tree, shot);
-	std::cout << "SOCK ID: " << sockId << std::endl;
+//	std::cout << "SOCK ID: " << sockId << std::endl;
 	if(!(status & 1))
 		throw MdsException(status);
 }
