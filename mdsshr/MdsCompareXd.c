@@ -30,7 +30,6 @@
 #include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descriptor *dsc2_ptr)
 {
