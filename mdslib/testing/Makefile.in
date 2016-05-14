@@ -713,6 +713,9 @@ TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 
 #        mdslib_ctest
+VALGRIND_SUPPRESSIONS_FILES = \
+                              $(top_srcdir)/testing/valgrind-mdsplus.supp
+
 
 #
 # Files produced by tests that must be purged

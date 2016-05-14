@@ -91,7 +91,6 @@
 {
    supression for overloaded new operator
    Memcheck:Leak
-   match-leak-kinds: definite
    fun:_Znwm
    fun:_ZN7MDSplus8TreeNodenwEm
 }
@@ -111,8 +110,9 @@
    removes all UDT namespace leaks
    Memcheck:Param
    sendmsg(msg.msg_name)
-   obj:/usr/lib64/libpthread-*
+   obj:*libpthread-*
 }
+
 
 {
    removes all UDT namespace races
@@ -167,4 +167,15 @@
 }
 
 
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   fun:_Exit
+   fun:exit
+   fun:__test_exit
+   fun:exit
+   fun:__test_exit
+   fun:exit
+   fun:(below main)
+}
 
