@@ -69,7 +69,7 @@ then
             --with-idl=/3rd-party-apis-master/idl \
             --with-gsi=/usr:gcc${bits} \
             --host=$host \
-            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FFLAGS="-g -O0"
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar CFLAGS="-g -O0" FCFLAGS="-g -O0"
     make clean > /dev/null
     env LANG=en_US.UTF-8 make
     make install

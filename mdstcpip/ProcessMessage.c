@@ -667,7 +667,9 @@ static Message *ExecuteMessage(Connection * connection)
     void *old_context;
     void *tdi_context[6];
     EMPTYXD(ans_xd);
-    if (GetContextSwitching()) {
+
+    int contextSwitch = GetContextSwitching();
+    if (contextSwitch) {
       old_context = TreeSwitchDbid(connection->context.tree);
       TdiSaveContext(tdi_context);
       TdiRestoreContext(connection->tdicontext);
@@ -694,7 +696,7 @@ static Message *ExecuteMessage(Connection * connection)
     ans = BuildResponse(connection->client_type, connection->message_id, status, ans_xd.pointer);
     MdsFree1Dx(xd, NULL);
     MdsFree1Dx(&ans_xd, NULL);
-    if (GetContextSwitching()) {
+    if (contextSwitch) {
       TdiSaveContext(connection->tdicontext);
       TdiRestoreContext(tdi_context);
       connection->context.tree = TreeSwitchDbid(old_context);
@@ -955,9 +957,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
 #ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
 	  char *cmd = (char *)malloc(64 + strlen(filename));
-	  int status;
 	  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  status = system(cmd);
+	  system(cmd);
 	  free(cmd);
 	}
 #endif

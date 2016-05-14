@@ -118,9 +118,6 @@ int TdiGtQ();
  Tdi3Divide(&i1,&i2,&o);}
 
 #define SetupArgs \
-  struct descriptor_a *ina = (struct descriptor_a *)in;\
-  struct descriptor_a *maska = (struct descriptor_a *)mask;\
-  struct descriptor_a *outa = (struct descriptor_a *)out;\
   int stepm0,stepm1,stepm2,lenm;\
   int j0, j1, j2;\
   switch (out->class)\

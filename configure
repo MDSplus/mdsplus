@@ -866,9 +866,9 @@ CFLAG_VISIBILITY
 WINDRES
 SED
 RANLIB
-ac_ct_F77
-FFLAGS
-F77
+ac_ct_FC
+FCFLAGS
+FC
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -1031,8 +1031,8 @@ CPPFLAGS
 CCC
 CC
 CFLAGS
-F77
-FFLAGS
+FC
+FCFLAGS
 CPP
 PKG_CONFIG
 PKG_CONFIG_PATH
@@ -1728,7 +1728,9 @@ Optional Packages:
   --with-labview=labview-top-dir
                           specify location of labview such as
                           /usr/local/natinst/Labview
-  --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
+  --with-idl[=idl-top-dir]
+                          specify location of idl such as /usr/local/itt/idl,
+                          or set IDL_DIR
   --with-visual-studio    directory tree containing visual studio compiler,
                           includes and libs
   --with-readline=READLINE_DIR
@@ -1749,8 +1751,8 @@ Some influential environment variables:
               you have headers in a nonstandard directory <include dir>
   CC          C compiler command
   CFLAGS      C compiler flags
-  F77         Fortran 77 compiler command
-  FFLAGS      Fortran 77 compiler flags
+  FC          Fortran compiler command
+  FCFLAGS     Fortran compiler flags
   CPP         C preprocessor
   PKG_CONFIG  path to pkg-config utility
   PKG_CONFIG_PATH
@@ -1920,10 +1922,10 @@ fi
 
 } # ac_fn_c_try_compile
 
-# ac_fn_f77_try_compile LINENO
-# ----------------------------
+# ac_fn_fc_try_compile LINENO
+# ---------------------------
 # Try to compile conftest.$ac_ext, and return whether this succeeded.
-ac_fn_f77_try_compile ()
+ac_fn_fc_try_compile ()
 {
   as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
   rm -f conftest.$ac_objext
@@ -1943,7 +1945,7 @@ $as_echo "$ac_try_echo"; } >&5
   fi
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; } && {
-	 test -z "$ac_f77_werror_flag" ||
+	 test -z "$ac_fc_werror_flag" ||
 	 test ! -s conftest.err
        } && test -s conftest.$ac_objext; then :
   ac_retval=0
@@ -1956,7 +1958,7 @@ fi
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
   as_fn_set_status $ac_retval
 
-} # ac_fn_f77_try_compile
+} # ac_fn_fc_try_compile
 
 # ac_fn_c_try_run LINENO
 # ----------------------
@@ -4552,7 +4554,6 @@ fi
 $as_echo "yes" >&6; }
 	CFLAGS="${CFLAGS} -g -O0"
 	CXXFLAGS="${CXXFLAGS} -g -O0"
-	FFLAGS="${FFLAGS} -g -O0"
 	FCFLAGS="${FCFLAGS} -g -O0"
 	OBJCFLAGS="${OBJCFLAGS} -g -O0"
        ;; #(
@@ -4562,7 +4563,6 @@ $as_echo "yes" >&6; }
 $as_echo "info" >&6; }
 	CFLAGS="${CFLAGS} -g"
 	CXXFLAGS="${CXXFLAGS} -g"
-	FFLAGS="${FFLAGS} -g"
 	FCFLAGS="${FCFLAGS} -g"
 	OBJCFLAGS="${OBJCFLAGS} -g"
        ;; #(
@@ -4572,7 +4572,6 @@ $as_echo "info" >&6; }
 $as_echo "profile" >&6; }
 	CFLAGS="${CFLAGS} -g -pg"
 	CXXFLAGS="${CXXFLAGS} -g -pg"
-	FFLAGS="${FFLAGS} -g -pg"
 	FCFLAGS="${FCFLAGS} -g -pg"
 	OBJCFLAGS="${OBJCFLAGS} -g -pg"
 	LDFLAGS="${LDFLAGS} -pg"
@@ -4586,9 +4585,6 @@ $as_echo "no" >&6; }
 fi
 	if test "x${CXXFLAGS+set}" != "xset"; then :
   CXXFLAGS="-g -O2"
-fi
-	if test "x${FFLAGS+set}" != "xset"; then :
-  FFLAGS="-g -O2"
 fi
 	if test "x${FCFLAGS+set}" != "xset"; then :
   FCFLAGS="-g -O2"
@@ -6077,25 +6073,22 @@ else
 fi
 
 
-if ${NOF77+:} false; then :
-
-else
-  ac_ext=f
-ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
-ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_f77_compiler_gnu
+ac_ext=${ac_fc_srcext-f}
+ac_compile='$FC -c $FCFLAGS $ac_fcflags_srcext conftest.$ac_ext >&5'
+ac_link='$FC -o conftest$ac_exeext $FCFLAGS $LDFLAGS $ac_fcflags_srcext conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_fc_compiler_gnu
 if test -n "$ac_tool_prefix"; then
-  for ac_prog in gfortran g77 f90 f95
+  for ac_prog in gfortran g95 xlf95 f95 fort ifort ifc efc pgfortran pgf95 lf95 ftn nagfor xlf90 f90 pgf90 pghpf epcf90 g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77
   do
     # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
 set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_F77+:} false; then :
+if ${ac_cv_prog_FC+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$F77"; then
-  ac_cv_prog_F77="$F77" # Let the user override the test.
+  if test -n "$FC"; then
+  ac_cv_prog_FC="$FC" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -6104,7 +6097,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_F77="$ac_tool_prefix$ac_prog"
+    ac_cv_prog_FC="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -6114,32 +6107,32 @@ IFS=$as_save_IFS
 
 fi
 fi
-F77=$ac_cv_prog_F77
-if test -n "$F77"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $F77" >&5
-$as_echo "$F77" >&6; }
+FC=$ac_cv_prog_FC
+if test -n "$FC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $FC" >&5
+$as_echo "$FC" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-    test -n "$F77" && break
+    test -n "$FC" && break
   done
 fi
-if test -z "$F77"; then
-  ac_ct_F77=$F77
-  for ac_prog in gfortran g77 f90 f95
+if test -z "$FC"; then
+  ac_ct_FC=$FC
+  for ac_prog in gfortran g95 xlf95 f95 fort ifort ifc efc pgfortran pgf95 lf95 ftn nagfor xlf90 f90 pgf90 pghpf epcf90 g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_F77+:} false; then :
+if ${ac_cv_prog_ac_ct_FC+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$ac_ct_F77"; then
-  ac_cv_prog_ac_ct_F77="$ac_ct_F77" # Let the user override the test.
+  if test -n "$ac_ct_FC"; then
+  ac_cv_prog_ac_ct_FC="$ac_ct_FC" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -6148,7 +6141,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_F77="$ac_prog"
+    ac_cv_prog_ac_ct_FC="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -6158,21 +6151,21 @@ IFS=$as_save_IFS
 
 fi
 fi
-ac_ct_F77=$ac_cv_prog_ac_ct_F77
-if test -n "$ac_ct_F77"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_F77" >&5
-$as_echo "$ac_ct_F77" >&6; }
+ac_ct_FC=$ac_cv_prog_ac_ct_FC
+if test -n "$ac_ct_FC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_FC" >&5
+$as_echo "$ac_ct_FC" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-  test -n "$ac_ct_F77" && break
+  test -n "$ac_ct_FC" && break
 done
 
-  if test "x$ac_ct_F77" = x; then
-    F77=""
+  if test "x$ac_ct_FC" = x; then
+    FC=""
   else
     case $cross_compiling:$ac_tool_warned in
 yes:)
@@ -6180,13 +6173,13 @@ yes:)
 $as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
 ac_tool_warned=yes ;;
 esac
-    F77=$ac_ct_F77
+    FC=$ac_ct_FC
   fi
 fi
 
 
 # Provide some information about the compiler.
-$as_echo "$as_me:${as_lineno-$LINENO}: checking for Fortran 77 compiler version" >&5
+$as_echo "$as_me:${as_lineno-$LINENO}: checking for Fortran compiler version" >&5
 set X $ac_compile
 ac_compiler=$2
 for ac_option in --version -v -V -qversion; do
@@ -6215,9 +6208,9 @@ rm -f a.out
 # input file.  (Note that this only needs to work for GNU compilers.)
 ac_save_ext=$ac_ext
 ac_ext=F
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU Fortran 77 compiler" >&5
-$as_echo_n "checking whether we are using the GNU Fortran 77 compiler... " >&6; }
-if ${ac_cv_f77_compiler_gnu+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU Fortran compiler" >&5
+$as_echo_n "checking whether we are using the GNU Fortran compiler... " >&6; }
+if ${ac_cv_fc_compiler_gnu+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   cat > conftest.$ac_ext <<_ACEOF
@@ -6228,62 +6221,62 @@ else
 
       end
 _ACEOF
-if ac_fn_f77_try_compile "$LINENO"; then :
+if ac_fn_fc_try_compile "$LINENO"; then :
   ac_compiler_gnu=yes
 else
   ac_compiler_gnu=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_cv_f77_compiler_gnu=$ac_compiler_gnu
+ac_cv_fc_compiler_gnu=$ac_compiler_gnu
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_f77_compiler_gnu" >&5
-$as_echo "$ac_cv_f77_compiler_gnu" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_fc_compiler_gnu" >&5
+$as_echo "$ac_cv_fc_compiler_gnu" >&6; }
 ac_ext=$ac_save_ext
-ac_test_FFLAGS=${FFLAGS+set}
-ac_save_FFLAGS=$FFLAGS
-FFLAGS=
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $F77 accepts -g" >&5
-$as_echo_n "checking whether $F77 accepts -g... " >&6; }
-if ${ac_cv_prog_f77_g+:} false; then :
+ac_test_FCFLAGS=${FCFLAGS+set}
+ac_save_FCFLAGS=$FCFLAGS
+FCFLAGS=
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $FC accepts -g" >&5
+$as_echo_n "checking whether $FC accepts -g... " >&6; }
+if ${ac_cv_prog_fc_g+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  FFLAGS=-g
+  FCFLAGS=-g
 cat > conftest.$ac_ext <<_ACEOF
       program main
 
       end
 _ACEOF
-if ac_fn_f77_try_compile "$LINENO"; then :
-  ac_cv_prog_f77_g=yes
+if ac_fn_fc_try_compile "$LINENO"; then :
+  ac_cv_prog_fc_g=yes
 else
-  ac_cv_prog_f77_g=no
+  ac_cv_prog_fc_g=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_f77_g" >&5
-$as_echo "$ac_cv_prog_f77_g" >&6; }
-if test "$ac_test_FFLAGS" = set; then
-  FFLAGS=$ac_save_FFLAGS
-elif test $ac_cv_prog_f77_g = yes; then
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-g -O2"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_fc_g" >&5
+$as_echo "$ac_cv_prog_fc_g" >&6; }
+if test "$ac_test_FCFLAGS" = set; then
+  FCFLAGS=$ac_save_FCFLAGS
+elif test $ac_cv_prog_fc_g = yes; then
+  if test "x$ac_cv_fc_compiler_gnu" = xyes; then
+    FCFLAGS="-g -O2"
   else
-    FFLAGS="-g"
+    FCFLAGS="-g"
   fi
 else
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-O2"
+  if test "x$ac_cv_fc_compiler_gnu" = xyes; then
+    FCFLAGS="-O2"
   else
-    FFLAGS=
+    FCFLAGS=
   fi
 fi
 
 if test $ac_compiler_gnu = yes; then
-  G77=yes
+  GFC=yes
 else
-  G77=
+  GFC=
 fi
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -6291,7 +6284,6 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-fi
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -6619,8 +6611,6 @@ case "$MKDIR_P" in #(
 esac
 
 case "$host" in #(
-  alpha-dec-osf*) :
-    ${CC=cc}; ${F77=f77} ;; #(
   sparc-sun-solaris2*) :
     ${CC=cc} ;; #(
   *) :
@@ -7939,6 +7929,8 @@ esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_labview" >&5
 $as_echo "$with_labview" >&6; }
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to include idl support" >&5
+$as_echo_n "checking whether to include idl support... " >&6; }
 
 # Check whether --with-idl was given.
 if test "${with_idl+set}" = set; then :
@@ -7947,7 +7939,6 @@ else
   with_idl=yes
 fi
 
-
 case $with_idl in #(
   yes) :
     if ${IDL_DIR+:} false; then :
@@ -7955,8 +7946,10 @@ case $with_idl in #(
 else
   if test -r /usr/local/itt/idl; then :
   with_idl=/usr/local/itt/idl
-elif test -r /usr/local/itt/idl; then :
+elif test -r /usr/local/rsi/idl; then :
   with_idl=/usr/local/rsi/idl
+elif test -r /usr/local/exelis/idl; then :
+  with_idl=/usr/local/exelis/idl
 elif ${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl; then :
   with_idl=\${top_srcdir}/3rd-party-apis/idl
 else
@@ -7966,18 +7959,18 @@ fi ;; #(
   *) :
      ;;
 esac
-
 case $with_idl in #(
   no) :
-    IDL_DIR="" ;; #(
+    { IDL_DIR=; unset IDL_DIR;}
+               { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
+$as_echo "$with_idl" >&6; } ;; #(
   *) :
     IDL_INC="-I$with_idl/external"
-         IDLMDSEVENT="idlmdsevent"
-         IDLMDSWIDGETS="idlmdswidgets" ;;
+         IDLMDSEVENT=idlmdsevent
+         IDLMDSWIDGETS=idlmdswidgets
+         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; } ;;
 esac
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_idl" >&5
-$as_echo "$with_idl" >&6; }
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mingw" >&5
 $as_echo_n "checking for mingw... " >&6; }
@@ -8031,8 +8024,7 @@ $as_echo "$with_visual_studio" >&6; }
 
 
 FORLD=ld
-LD=ld
-LD_LDARC=""
+LD=ld LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
@@ -8066,275 +8058,14 @@ THREAD="-pthread"
 
 MITDEVICESIO_TARGETS=""
 case "$host" in
-mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
-       FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
-       LDSHARE="-B dynamic";
-       LDARC="-B static";
-       LD_LDSHARE="-B dynamic";
-       LD_LDARC="-B static";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       FOR_LDFLAGS="";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
-       ;;
-*-solaris2*)
-       if test $CC = gcc; then
-	 LD=gcc;
-	 FORLD=gcc;
-         LINKSHARED="-shared ";
-         FOR_LINKSHARED="$LINKSHARED"
-         LD_LDSHARE="-Wl,-B,dynamic";
-         LD_LDARC="-Wl,-B,static";
-         LDSHARE="-Wl,-B,dynamic";
-         LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fPIC -D_POSIX_PTHREAD_SEMANTICS";
-         LDFLAGS="$CFLAGS";
-       else
-         LINKSHARED="-G ";
-         FOR_LINKSHARED="$LINKSHARED";
-         LD_LDARC="-B static ";
-         LD_LDSHARE="-B dynamic ";
-         LDSHARE="-B dynamic";
-         LDARC="-B static";
-         if test -n "`echo 'int main(){return 0;}' | cc -o /dev/null -E -c -Kpic - 2>&1`"; then
-           LDSHARE="-Wl,-B,dynamic";
-           LDARC="-Wl,-B,static";
-         else
-           CFLAGS="$CFLAGS -Kpic";
-         fi;
-       fi;
-       if test "$F77" = "gfortran"
-       then
-         FFLAGS="$FFLAGS -fPIC -fno-range-check"
-       else
-         FFLAGS="$FFLAGS -PIC";
-       fi
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       jni_inc_dir="${JDK_DIR}/include";
-       jni_md_inc_dir="${JDK_DIR}/include/solaris";
-       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *mingw*)
-       ac_ext=f
-ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
-ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_f77_compiler_gnu
-if test -n "$ac_tool_prefix"; then
-  for ac_prog in g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77 xlf90 f90 pgf90 pghpf epcf90 gfortran g95 xlf95 f95 fort ifort ifc efc pgfortran pgf95 lf95 ftn nagfor
-  do
-    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
-set dummy $ac_tool_prefix$ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_F77+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$F77"; then
-  ac_cv_prog_F77="$F77" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_F77="$ac_tool_prefix$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-F77=$ac_cv_prog_F77
-if test -n "$F77"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $F77" >&5
-$as_echo "$F77" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-    test -n "$F77" && break
-  done
-fi
-if test -z "$F77"; then
-  ac_ct_F77=$F77
-  for ac_prog in g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77 xlf90 f90 pgf90 pghpf epcf90 gfortran g95 xlf95 f95 fort ifort ifc efc pgfortran pgf95 lf95 ftn nagfor
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_F77+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_F77"; then
-  ac_cv_prog_ac_ct_F77="$ac_ct_F77" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_F77="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_F77=$ac_cv_prog_ac_ct_F77
-if test -n "$ac_ct_F77"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_F77" >&5
-$as_echo "$ac_ct_F77" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$ac_ct_F77" && break
-done
-
-  if test "x$ac_ct_F77" = x; then
-    F77=""
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    F77=$ac_ct_F77
-  fi
-fi
-
-
-# Provide some information about the compiler.
-$as_echo "$as_me:${as_lineno-$LINENO}: checking for Fortran 77 compiler version" >&5
-set X $ac_compile
-ac_compiler=$2
-for ac_option in --version -v -V -qversion; do
-  { { ac_try="$ac_compiler $ac_option >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_compiler $ac_option >&5") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    sed '10a\
-... rest of stderr output deleted ...
-         10q' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-  fi
-  rm -f conftest.er1 conftest.err
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }
-done
-rm -f a.out
-
-# If we don't use `.F' as extension, the preprocessor is not run on the
-# input file.  (Note that this only needs to work for GNU compilers.)
-ac_save_ext=$ac_ext
-ac_ext=F
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU Fortran 77 compiler" >&5
-$as_echo_n "checking whether we are using the GNU Fortran 77 compiler... " >&6; }
-if ${ac_cv_f77_compiler_gnu+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat > conftest.$ac_ext <<_ACEOF
-      program main
-#ifndef __GNUC__
-       choke me
-#endif
-
-      end
-_ACEOF
-if ac_fn_f77_try_compile "$LINENO"; then :
-  ac_compiler_gnu=yes
-else
-  ac_compiler_gnu=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_cv_f77_compiler_gnu=$ac_compiler_gnu
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_f77_compiler_gnu" >&5
-$as_echo "$ac_cv_f77_compiler_gnu" >&6; }
-ac_ext=$ac_save_ext
-ac_test_FFLAGS=${FFLAGS+set}
-ac_save_FFLAGS=$FFLAGS
-FFLAGS=
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $F77 accepts -g" >&5
-$as_echo_n "checking whether $F77 accepts -g... " >&6; }
-if ${ac_cv_prog_f77_g+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  FFLAGS=-g
-cat > conftest.$ac_ext <<_ACEOF
-      program main
-
-      end
-_ACEOF
-if ac_fn_f77_try_compile "$LINENO"; then :
-  ac_cv_prog_f77_g=yes
-else
-  ac_cv_prog_f77_g=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_f77_g" >&5
-$as_echo "$ac_cv_prog_f77_g" >&6; }
-if test "$ac_test_FFLAGS" = set; then
-  FFLAGS=$ac_save_FFLAGS
-elif test $ac_cv_prog_f77_g = yes; then
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-g -O2"
-  else
-    FFLAGS="-g"
-  fi
-else
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-O2"
-  else
-    FFLAGS=
-  fi
-fi
-
-if test $ac_compiler_gnu = yes; then
-  G77=yes
-else
-  G77=
-fi
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
        IDLMDSEVENT=""
        LIBPRE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
-       FFLAGS="$FFLAGS -fno-range-check"
-       FORLD="$F77"
+       FCFLAGS="$FCFLAGS -fno-range-check"
+       FORLD="$FC"
        if ( echo $host | grep i686 > /dev/null )
        then
          SQL_ARCH=32
@@ -8350,7 +8081,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKEBINDIR="\$(top_builddir)/${BINDIR}/"
-       FFLAGS="$FFLAGS -fno-backslash";
+       FCFLAGS="$FCFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -8366,7 +8097,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
-       FORLD="$F77";
+       FORLD="$FC";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null )
        then
@@ -8396,9 +8127,9 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
            MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
-       FFLAGS="$FFLAGS -fno-range-check"
+       FCFLAGS="$FCFLAGS -fno-range-check"
        FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -8424,20 +8155,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        SIZEOF_LONG_LONG=8;
        D64="";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
-       if (test "$F77" = "g77"); then
-         FFLAGS="$FFLAGS -Wno-globals"
-         FOR_LDFLAGS="-lg2c"
-         FORLD="$F77"
-       elif (test "$F77" = "gfortran"); then
-         FFLAGS="$FFLAGS -fno-range-check";
-         FORLD="$F77"
-         FOR_LDFLAGS="-lg2c"
-       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         FORLD="$F77"
+       if (test "$FC" = "gfortran"); then
+         FCFLAGS="$FCFLAGS -fno-range-check";
+         FORLD="$FC"
          FOR_LDFLAGS="-lg2c"
        fi
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -8453,10 +8176,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
-       FFLAGS="$FFLAGS -fno-range-check";
-       FORLD="$F77"
+       FCFLAGS="$FCFLAGS -fno-range-check";
+       FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -8474,22 +8197,9 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
-       if (test "$F77" = "f77"); then
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
-       elif (test "$F77" = "g77"); then
-          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
-          FOR_LDFLAGS="-lg2c";
-		  FORLD="$F77"
-       elif (test "$F77" = "fort77"); then
-          FFLAGS="$FFLAGS -!bs -Wf,-!it";
-          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-       elif (test "$F77" = "gfortran"); then
-          FFLAGS="$FFLAGS -fno-range-check"
-          FORLD="gfortran"
-          FOR_LDFLAGS="-shared"
-       fi;
+       FCFLAGS="$FCFLAGS -fno-range-check"
+       FORLD="gfortran"
+       FOR_LDFLAGS="-shared"
        FEXECLIBDIR="-L";
        LD="$CC"
        LDSHARE="";
@@ -8515,30 +8225,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        java_enable="yes"
        LIBPATH="DYLD_LIBRARY_PATH"
                      X_EXTRA_LIBS="-lXmu";;
-*aix*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
-       FFLAGS="$FFLAGS -qpic -qnoescape";
-       LDSHARE="";
-       LDARC="";
-       FOR_LDFLAGS="-lxlf90";
-       LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_builddir)/shlib/";
-       EXPORTS_FILE="\$(EXPORTS)";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".a";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
-*qnx*) CFLAGS="$CFLAGS -fpic";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       ;;
 esac
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dc1394_new  in -ldc1394" >&5
@@ -8735,39 +8421,6 @@ $as_echo "$ac_cv_sizeof_long_long" >&6; }
 
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_LONG_LONG $ac_cv_sizeof_long_long
-_ACEOF
-
-
-# The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of _int64" >&5
-$as_echo_n "checking size of _int64... " >&6; }
-if ${ac_cv_sizeof__int64+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_int64))" "ac_cv_sizeof__int64"        "$ac_includes_default"; then :
-
-else
-  if test "$ac_cv_type__int64" = yes; then
-     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (_int64)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof__int64=0
-   fi
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__int64" >&5
-$as_echo "$ac_cv_sizeof__int64" >&6; }
-
-
-
-cat >>confdefs.h <<_ACEOF
-#define SIZEOF__INT64 $ac_cv_sizeof__int64
 _ACEOF
 
 
@@ -12109,6 +11762,9 @@ then
 $as_echo "have uil so openmotif apps will be built." >&6; }
 else
   MOTIF_APS=""
+# IDLMDSEVENT and IDLMDSWIDGETS need MOTIF to build
+  IDLMDSEVENT=""
+  IDLMDSWIDGETS=""
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
 $as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
 fi
