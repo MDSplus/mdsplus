@@ -10,7 +10,7 @@ DK_SET_DOCKER_BUILD
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.13 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 
@@ -32,15 +32,15 @@ AX_IS_RELEASE([always])
 
 dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
 dnl see: www.gnu.org/software/autoconf-archive/ax_check_enable_debug.html
-dnl 
-dnl Check for the presence of an –enable-debug option to configure, with the 
+dnl
+dnl Check for the presence of an --enable-debug option to configure, with the 
 dnl specified default value used when the option is not present. Return the 
 dnl value in the variable $ax_enable_debug.
-dnl Specifying ’yes’ adds ’-g -O0’ to the compilation flags for all languages. 
-dnl Specifying ’info’ adds ’-g’ to the compilation flags. Specifying ’profile’ 
-dnl adds ’-g -pg’ to the compilation flags and ’-pg’ to the linking flags. 
-dnl Otherwise, nothing is added. 
-dnl 
+dnl Specifying "yes" adds "-g -O0" to the compilation flags for all languages. 
+dnl Specifying "info" adds "-g" to the compilation flags. Specifying "profile" 
+dnl adds "-g -pg" to the compilation flags, and "-pg" to the linker flags. 
+dnl Otherwise, nothing is added.
+dnl
 dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no], 
 dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...], 
 dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
@@ -51,7 +51,7 @@ AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
 AC_PROG_AWK
 AC_PROG_CXX
 AC_PROG_CC
-AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
+AC_PROG_FC
 AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_INSTALL
@@ -73,7 +73,6 @@ AS_CASE(["$MKDIR_P"],
 
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
-        [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
         [sparc-sun-solaris2*], [${CC=cc}])
 
 #AC_CONFIG_HEADER(include/config.h)
@@ -289,31 +288,27 @@ AS_CASE([$with_labview],
 
 AC_MSG_RESULT([$with_labview])
 
+AC_MSG_CHECKING([whether to include idl support])
 AC_ARG_WITH([idl],
-            [AS_HELP_STRING([--with-idl=idl-top-dir],
-                            [specify location of idl such as /usr/local/itt/idl])],
+            [AS_HELP_STRING([[--with-idl[=idl-top-dir]]],
+                            [specify location of idl such as /usr/local/itt/idl, or set IDL_DIR])],
             [],
             [with_idl=yes])
-
 AS_CASE([$with_idl],
-        [yes], 
-        [AS_VAR_SET_IF([IDL_DIR],
-           [with_idl=$IDL_DIR],
-           [AS_IF([test -r /usr/local/itt/idl], 
-               [with_idl=/usr/local/itt/idl],
-               [test -r /usr/local/itt/idl], 
-               [with_idl=/usr/local/rsi/idl],
-               [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl],
-               [with_idl=\${top_srcdir}/3rd-party-apis/idl],
-               [with_idl=no])])])
-
+        [yes], [AS_VAR_SET_IF([IDL_DIR],
+                              [AS_VAR_SET([with_idl], [$IDL_DIR])],
+                              [AS_IF([test -r /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
+                                     [test -r /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
+                                     [test -r /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
+                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
+                                     [AS_VAR_SET([with_idl], [no])])])])
 AS_CASE([$with_idl],
-        [no], [IDL_DIR=""],
-        [IDL_INC="-I$with_idl/external"
-         IDLMDSEVENT="idlmdsevent"
-         IDLMDSWIDGETS="idlmdswidgets"])
-
-AC_MSG_RESULT([$with_idl])
+        [no], [AS_UNSET([IDL_DIR])
+               AC_MSG_RESULT([$with_idl])],
+        [AS_VAR_SET([IDL_INC], ["-I$with_idl/external"])
+         AS_VAR_SET([IDLMDSEVENT], [idlmdsevent])
+         AS_VAR_SET([IDLMDSWIDGETS], [idlmdswidgets])
+         AC_MSG_RESULT([yes])])
 
 AC_MSG_CHECKING([for mingw])
 AS_CASE([$host],
@@ -335,8 +330,7 @@ AC_MSG_RESULT([$with_visual_studio])
 
 
 FORLD=ld
-LD=ld
-LD_LDARC=""
+LD=ld LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
@@ -370,65 +364,14 @@ THREAD="-pthread"
 AC_SUBST([THREAD])
 MITDEVICESIO_TARGETS=""
 case "$host" in
-mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
-       FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
-       LDSHARE="-B dynamic";
-       LDARC="-B static";
-       LD_LDSHARE="-B dynamic";
-       LD_LDARC="-B static";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       FOR_LDFLAGS="";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
-       ;;
-*-solaris2*)  
-       if test $CC = gcc; then
-	 LD=gcc;
-	 FORLD=gcc;
-         LINKSHARED="-shared ";
-         FOR_LINKSHARED="$LINKSHARED"
-         LD_LDSHARE="-Wl,-B,dynamic";
-         LD_LDARC="-Wl,-B,static";
-         LDSHARE="-Wl,-B,dynamic";
-         LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fPIC -D_POSIX_PTHREAD_SEMANTICS";
-         LDFLAGS="$CFLAGS";
-       else 
-         LINKSHARED="-G ";
-         FOR_LINKSHARED="$LINKSHARED";
-         LD_LDARC="-B static ";
-         LD_LDSHARE="-B dynamic ";
-         LDSHARE="-B dynamic";
-         LDARC="-B static";
-         if test -n "`echo 'int main(){return 0;}' | cc -o /dev/null -E -c -Kpic - 2>&1`"; then
-           LDSHARE="-Wl,-B,dynamic";
-           LDARC="-Wl,-B,static";
-         else
-           CFLAGS="$CFLAGS -Kpic";
-         fi;
-       fi;
-       if test "$F77" = "gfortran"
-       then
-         FFLAGS="$FFLAGS -fPIC -fno-range-check"
-       else
-         FFLAGS="$FFLAGS -PIC";
-       fi
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       jni_inc_dir="${JDK_DIR}/include";
-       jni_md_inc_dir="${JDK_DIR}/include/solaris";
-       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *mingw*)
-       AC_PROG_F77
        IDLMDSEVENT=""
        LIBPRE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
-       FFLAGS="$FFLAGS -fno-range-check"
-       FORLD="$F77"
+       FCFLAGS="$FCFLAGS -fno-range-check"
+       FORLD="$FC"
        if ( echo $host | grep i686 > /dev/null )
        then
          SQL_ARCH=32
@@ -444,7 +387,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MAKELIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKESHLIBDIR="\$(top_builddir)/${BINDIR}/"
        MAKEBINDIR="\$(top_builddir)/${BINDIR}/"
-       FFLAGS="$FFLAGS -fno-backslash";
+       FCFLAGS="$FCFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -460,7 +403,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
-       FORLD="$F77";
+       FORLD="$FC";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null ) 
        then
@@ -490,9 +433,9 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            MAKEBINDIR="\$(top_builddir)/bin32/"
          fi
        fi
-       FFLAGS="$FFLAGS -fno-range-check"
+       FCFLAGS="$FCFLAGS -fno-range-check"
        FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -518,20 +461,12 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SIZEOF_LONG_LONG=8;
        D64="";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
-       if (test "$F77" = "g77"); then
-         FFLAGS="$FFLAGS -Wno-globals"
-         FOR_LDFLAGS="-lg2c"
-         FORLD="$F77"
-       elif (test "$F77" = "gfortran"); then
-         FFLAGS="$FFLAGS -fno-range-check";
-         FORLD="$F77"
-         FOR_LDFLAGS="-lg2c"
-       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         FORLD="$F77"
+       if (test "$FC" = "gfortran"); then
+         FCFLAGS="$FCFLAGS -fno-range-check";
+         FORLD="$FC"
          FOR_LDFLAGS="-lg2c"
        fi
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -547,10 +482,10 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
-       FFLAGS="$FFLAGS -fno-range-check";
-       FORLD="$F77"
+       FCFLAGS="$FCFLAGS -fno-range-check";
+       FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       FCFLAGS="$FCFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
@@ -568,22 +503,9 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
-       if (test "$F77" = "f77"); then 
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
-       elif (test "$F77" = "g77"); then
-          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
-          FOR_LDFLAGS="-lg2c"; 
-		  FORLD="$F77"
-       elif (test "$F77" = "fort77"); then
-          FFLAGS="$FFLAGS -!bs -Wf,-!it";
-          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-       elif (test "$F77" = "gfortran"); then
-          FFLAGS="$FFLAGS -fno-range-check"
-          FORLD="gfortran"
-          FOR_LDFLAGS="-shared"
-       fi;
+       FCFLAGS="$FCFLAGS -fno-range-check"
+       FORLD="gfortran"
+       FOR_LDFLAGS="-shared"
        FEXECLIBDIR="-L";
        LD="$CC"
        LDSHARE="";
@@ -613,30 +535,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        dnl HDF5_LIBS="-lz -lsz";
        dnl HDF5_DIR="/usr/local";
        X_EXTRA_LIBS="-lXmu";;
-*aix*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
-       FFLAGS="$FFLAGS -qpic -qnoescape";
-       LDSHARE="";
-       LDARC="";
-       FOR_LDFLAGS="-lxlf90";
-       LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_builddir)/shlib/";
-       EXPORTS_FILE="\$(EXPORTS)";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".a";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
-*qnx*) CFLAGS="$CFLAGS -fpic";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       ;;
 esac
 
 dnl see if we have libdc1394 libraries and what version
@@ -656,7 +554,6 @@ fi
 
 AC_CHECK_SIZEOF(long)
 AC_CHECK_SIZEOF(long long)
-AC_CHECK_SIZEOF(_int64)
 
 # Stuff that only non-automake dirs need
 AC_SUBST([MAKEETCDIR], ["\$(top_builddir)/etc/"])

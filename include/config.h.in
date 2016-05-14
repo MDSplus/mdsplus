@@ -222,9 +222,6 @@
 /* The size of `long long', as computed by sizeof. */
 #undef SIZEOF_LONG_LONG
 
-/* The size of `_int64', as computed by sizeof. */
-#undef SIZEOF__INT64
-
 /* "Define if you are using SRB" */
 #undef SRB
 
