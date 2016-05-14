@@ -15,7 +15,6 @@
 {
    pthread_cancel of a detached thread (fc_22)
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    fun:_dl_allocate_tls
 }

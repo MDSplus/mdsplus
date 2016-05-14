@@ -716,6 +716,7 @@ LDADD = @LIBS@ $(TEST_LIBS) @SOCKETLIB@ -lMdsShr
 TEST_EXTENSIONS = .py .pl
 AM_DEFAULT_SOURCE_EXT = .c
 VALGRIND_SUPPRESSIONS_FILES = \
+                              $(top_srcdir)/testing/valgrind-mdsplus.supp \
                               $(srcdir)/valgrind-mdsshr.supp
 
 
