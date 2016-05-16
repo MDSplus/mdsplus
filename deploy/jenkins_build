@@ -145,13 +145,13 @@ test_64 () {
 	then
 	    if [[ "${VG_TESTS}" == *"all"* ]]
 	    then
-		$MAKE -k tests-valgrind TEST_FORMAT=tap 2>&1;
+		$MAKE -k tests-valgrind TEST_FORMAT=log 2>&1;
 	    else
 		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" 2>&1;
 	    fi
 	    tests_valgrind64=$?;
 	fi
-	$MAKE -k tests TEST_FORMAT=tap 2>&1;
+	$MAKE -k tests TEST_FORMAT=log 2>&1;
 	tests_64=$?;
 	popd;
 	test_64_san_address=0
@@ -182,7 +182,7 @@ test_64 () {
 		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
-		    $MAKE -k tests TEST_FORMAT=tap 2>&1;
+		    $MAKE -k tests TEST_FORMAT=log 2>&1;
 		    let test_64_san_${test}=$?
 		else
 		    echo "configure returned status $?"
@@ -226,13 +226,13 @@ test_32() {
 	then
 	    if [[ "${VG_TESTS}" == *"all"* ]]
 	    then
-		$MAKE -k tests-valgrind TEST_FORMAT=tap 2>&1;
+		$MAKE -k tests-valgrind TEST_FORMAT=log 2>&1;
 	    else
 		$MAKE -k tests-valgrind VALGRIND_TOOLS="${VG_TESTS}" 2>&1;
 	    fi
 	    tests_valgrind32=$?;
 	fi
-	$MAKE -k tests TEST_FORMAT=tap 2>&1;
+	$MAKE -k tests TEST_FORMAT=log 2>&1;
 	tests_32=$?;
 	popd;
 	test_32_san_address=0
@@ -484,7 +484,7 @@ build_windows() {
     then
 	  set +e
 	  echo " --- MAKING TESTS 64bit --- "
-	  $MAKE -k tests TEST_FORMAT=tap
+	  $MAKE -k tests TEST_FORMAT=log
 	  tests_64=$?
 	  set -e
     fi
@@ -506,7 +506,7 @@ build_windows() {
     then
 	  set +e
 	  echo " --- MAKING TESTS 32bit --- "
-	  $MAKE -k tests TEST_FORMAT=tap
+	  $MAKE -k tests TEST_FORMAT=log
 	  tests_32=$?
 	  set -e
     fi
