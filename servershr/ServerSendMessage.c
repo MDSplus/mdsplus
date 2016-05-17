@@ -163,8 +163,8 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       int sock = getSocket(conid);
       struct sockaddr_in addr_struct = {0};
       unsigned int len = sizeof(addr_struct);
-      if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) != 0)
-	addr = *(int *)&addr_struct.sin_addr;
+      if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
+		addr = *(int *)&addr_struct.sin_addr;
     }
     if (addr)
       jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
