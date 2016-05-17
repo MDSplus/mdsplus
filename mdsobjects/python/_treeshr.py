@@ -109,7 +109,7 @@ def TreeFindTagWild(tree,wild):
             yield ans
     except GeneratorExit:
         pass
-    TreeFindTagEnd(_C.pointer(ctx))
+    _TreeFindTagEnd(_C.pointer(ctx))
 
 
 def TreeGetRecord(n,*altvalue):
