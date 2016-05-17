@@ -264,9 +264,9 @@ class Tree(object):
                 included=included.toList()
                 included.insert(0,0)
                 included=_N.array(included)
-                status = _treeshr._TreeCreatePulseFile(self.ctx,shot,len(included),_C.c_void_p(included.ctypes.data))
+                status = _treeshr.__TreeCreatePulseFile(self.ctx,shot,len(included),_C.c_void_p(included.ctypes.data))
             except:
-                status = _treeshr._TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
+                status = _treeshr.__TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
         finally:
             Tree.unlock()
         if not (status & 1):
@@ -584,7 +584,7 @@ class Tree(object):
         Tree.lock()
         try:
             #ctx = _treeshr.TreeGetContext()
-            status = _treeshr._TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+            status = _treeshr.__TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
         finally:
             Tree.unlock()
         if not (status & 1):
@@ -597,7 +597,7 @@ class Tree(object):
         Tree.lock()
         try:
             #ctx = _treeshr.TreeGetContext()
-            status = _treeshr._TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+            status = _treeshr.__TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
         finally:
             Tree.unlock()
         if not (status & 1):
