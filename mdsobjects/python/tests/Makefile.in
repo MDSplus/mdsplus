@@ -1089,7 +1089,7 @@ tests: rebuild-tests
 # ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppression=$(top_srcdir)/testing/sanitizer.supp
+@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
 
 $(TEST_BUILD_TAP):
 	@ \
