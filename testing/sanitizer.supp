@@ -1,4 +1,6 @@
 leak:libMdsIpUDT
 race:libMdsIpUDT
 
-leak:libpython*
+leak:*libpython*
+leak:*numpy*
+leak:python*/lib-dynload
