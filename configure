@@ -934,7 +934,7 @@ build_os
 build_vendor
 build_cpu
 build
-DK_DOCKER_TARGETS
+AX_DOCKER_BUILD_TARGETS
 HAVE_DOCKER
 target_alias
 host_alias
@@ -2952,6 +2952,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
+
    if ${HAVE_DOCKER+:} false; then :
 
 else
@@ -3053,12 +3054,9 @@ fi
 fi
 
 
-  if test "x$HAVE_DOCKER" = xyes; then :
+   if test "x$HAVE_DOCKER" = xyes; then :
 
-
-
-
-  if ${DOCKER_URL+:} false; then :
+   if ${DOCKER_URL+:} false; then :
 
           $as_echo
           sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
@@ -3090,7 +3088,7 @@ fi
 
 fi
 
-  if ${DOCKER_IMAGE+:} false; then :
+   if ${DOCKER_IMAGE+:} false; then :
 
           $as_echo
           sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
@@ -3171,18 +3169,15 @@ fi
 
 else
   $as_echo "CREATE ";
-  user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
+    user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
   user_id=$(echo ${user_entry} | awk -F: '{print $3}')
   user_group=$(echo ${user_entry} | awk -F: '{print $4}')
   user_home=$(echo ${user_entry} | awk -F: '{print $6}')
   group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
   user_groups=$(id -G ${USER} | sed 's/ /,/g')
   abs_srcdir=$(cd ${srcdir}; pwd)
-
-
-  docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
-
-  docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+    docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
+    docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 fi
 
@@ -3407,7 +3402,7 @@ fi
 
 fi
 
-  if ${DOCKER_CONTAINER+:} false; then :
+   if ${DOCKER_CONTAINER+:} false; then :
 
 
 user_entry=$(awk -F: "{if (\$1 == \"${USER}\") {print \$0} }" /etc/passwd)
@@ -3418,7 +3413,6 @@ group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
 user_groups=$(id -G ${USER} | sed 's/ /,/g')
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
-
 
 
 
@@ -3457,7 +3451,7 @@ chmod +x dshell
 
 
 
-read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3537,7 +3531,7 @@ _as_read_EOF
 
 fi
 
-  if ${DOCKER_CONTAINER+:} false; then :
+   if ${DOCKER_CONTAINER+:} false; then :
 
 
           $as_echo
@@ -3563,7 +3557,6 @@ group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
 user_groups=$(id -G ${USER} | sed 's/ /,/g')
 abs_builddir=$(pwd)
 abs_srcdir=$(cd ${srcdir}; pwd)
-
 
 
 
@@ -3710,8 +3703,7 @@ abs_srcdir=$(cd ${srcdir}; pwd)
 
 
 
-
-read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3792,6 +3784,7 @@ _as_read_EOF
 fi
 
 fi
+
 
 
 

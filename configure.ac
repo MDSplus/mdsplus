@@ -6,7 +6,7 @@ AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 
 dnl docker helpers
-DK_SET_DOCKER_BUILD
+AX_DOCKER_BUILD
 
 AC_CANONICAL_TARGET
 
