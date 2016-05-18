@@ -109,7 +109,7 @@ def TreeFindTagWild(tree,wild):
             yield ans
     except GeneratorExit:
         pass
-    TreeFindTagEnd(_C.pointer(ctx))
+    _TreeFindTagEnd(_C.pointer(ctx))
 
 
 def TreeGetRecord(n,*altvalue):
@@ -350,16 +350,16 @@ def TreeDeletePulse(tree,shot):
 
 def TreeRestoreContext(ctx):
     try:
-        return __TreeSwitchDbid(ctx)
+        return _TreeSwitchDbid(ctx)
     except:
-        return __TreeSwitchDbid(_C.c_void_p(0))
+        return _TreeSwitchDbid(_C.c_void_p(0))
 
 def TreeGetContext():
-        ctx=__TreeSwitchDbid(_C.c_void_p(0))
+        ctx=_TreeSwitchDbid(_C.c_void_p(0))
         if ctx is None:
             raise _Exceptions.TreeNOT_OPEN()
         else:
-            __TreeSwitchDbid(ctx)
+            _TreeSwitchDbid(ctx)
         return ctx
 
 def TreeClose(ctx,tree,shot):
@@ -645,16 +645,16 @@ _TreeFindTagEnd=__TreeShr.TreeFindTagEnd
 _TreeFindTagEnd.argtypes=[_C.POINTER(_C.c_void_p)]
 _TreeFree=__TreeShr.TreeFree
 _TreeFree.argtypes=[_C.c_void_p]
-__TreeSwitchDbid=__TreeShr.TreeSwitchDbid
-__TreeSwitchDbid.argtypes=[_C.c_void_p]
-__TreeSwitchDbid.restype=_C.c_void_p
-_TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
-_TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
+_TreeSwitchDbid=__TreeShr.TreeSwitchDbid
+_TreeSwitchDbid.argtypes=[_C.c_void_p]
+_TreeSwitchDbid.restype=_C.c_void_p
+__TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
+__TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
 
-_TreeCleanDatafile=__TreeShr._TreeCleanDatafile
-_TreeCleanDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
-_TreeCompressDatafile=__TreeShr._TreeCompressDatafile
-_TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+__TreeCleanDatafile=__TreeShr._TreeCleanDatafile
+__TreeCleanDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
+__TreeCompressDatafile=__TreeShr._TreeCompressDatafile
+__TreeCompressDatafile.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_int32]
 
 __TreeDeletePulseFile=__TreeShr._TreeDeletePulseFile
 __TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32]
