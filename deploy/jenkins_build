@@ -582,28 +582,19 @@ then
     then
 	DIST_TAG_FILE=${DISTDIR}/${DIST}/mdsplus-${BRANCH}-${MAJOR}.${MINOR}-${RELEASE}
     fi
-    if [ -z "${host}" ]
-    then
-	if [ "$ARCH" = "i386" -o "$ARCH" = "armhf" ]
-	then
-	    host=i686-linux
-	else
-	    host=x86_64-linux
-	fi
-    fi
     case ${DIST_TYPE} in
 	redhat)
 	    if [ "${TESTS}" = "yes" ]
 	    then
-		test_64;
-		test_32;
+		host=x86_64-linux test_64;
+		host=i686-linux test_32;
 		check_tests;
 	    fi
             if [ "${MAKE_RELEASE}" = "yes" ]
             then
               RELEASE_DATE="$(date +"%B %e, %Y")"
-	      build_64 64;
-	      build_32 32;
+	      host=x86_64-linux build_64 64;
+	      host=i686-linux   build_32 32;
 	      build_rpms;
 	    fi
 	    if [ "${PUBLISH_RELEASE}" = "yes" ]
@@ -612,6 +603,15 @@ then
 		echo ${GIT_COMMIT} > ${DIST_TAG_FILE}
             fi;;
 	debian)
+	    if [ -z "${host}" ]
+	    then
+		if [ "$ARCH" = "i386" -o "$ARCH" = "armhf" ]
+		then
+		    host=i686-linux
+		else
+		    host=x86_64-linux
+		fi
+	    fi
 	    if [ "${TESTS}" = "yes" ]
 	    then
 		if [ "$ARCH" = "i386" -o "$ARCH" = "armhf" ]
