@@ -934,7 +934,7 @@ build_os
 build_vendor
 build_cpu
 build
-DK_DOCKER_TARGETS
+AX_DOCKER_BUILD_TARGETS
 HAVE_DOCKER
 target_alias
 host_alias
@@ -2953,7 +2953,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-
    if ${HAVE_DOCKER+:} false; then :
 
 else
@@ -3452,7 +3451,7 @@ chmod +x dshell
 
 
 
-read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3704,7 +3703,7 @@ abs_srcdir=$(cd ${srcdir}; pwd)
 
 
 
-read -d '' DK_DOCKER_TARGETS << _as_read_EOF
+read -d '' AX_DOCKER_BUILD_TARGETS << _as_read_EOF
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3785,7 +3784,6 @@ _as_read_EOF
 fi
 
 fi
-
 
 
 

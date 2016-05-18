@@ -92,18 +92,18 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = rpm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_java_home.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_local_scope.m4 \
+	$(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
-	$(top_srcdir)/m4/ax_local_scope.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
+	$(top_srcdir)/m4/m4_ax_docker_build.m4 \
 	$(top_srcdir)/m4/m4_ax_is_release.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_directories.m4 \
-	$(top_srcdir)/m4/m4_ax_mdsplus_dockerbuild.m4 \
 	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
 	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
 	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \

@@ -85,7 +85,8 @@ $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddi
 
 .DEFAULT_GOAL := all
 
-@DK_DOCKER_TARGETS@
+# docker build targets 
+@AX_DOCKER_BUILD_TARGETS@
 
 .PHONY: reconfigure
 reconfigure:
