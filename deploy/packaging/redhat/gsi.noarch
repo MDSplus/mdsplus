@@ -1,0 +1,7 @@
+./usr/local/mdsplus/tdi/roam
+./usr/local/mdsplus/tdi/roam/check_access.fun
+./usr/local/mdsplus/tdi/roam/check_access_callout.fun
+./usr/local/mdsplus/tdi/roam/check_access_file.fun
+./usr/local/mdsplus/tdi/roam/check_access_jobmanager.fun
+./usr/local/mdsplus/tdi/roam/check_access_mdsips.fun
+./usr/local/mdsplus/tdi/roam/cstring.fun

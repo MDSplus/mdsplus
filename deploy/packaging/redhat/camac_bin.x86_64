@@ -1,0 +1,8 @@
+./usr/local/mdsplus/bin64/mdsccl
+./usr/local/mdsplus/bin64/mdscts
+./usr/local/mdsplus/lib64/libCamShr.so
+./usr/local/mdsplus/lib64/libCamShr.so.1
+./usr/local/mdsplus/lib64/libCamShr.so.1.8
+./usr/local/mdsplus/lib64/libRemCamShr.so
+./usr/local/mdsplus/lib64/libccl_commands.so
+./usr/local/mdsplus/lib64/libcts_commands.so

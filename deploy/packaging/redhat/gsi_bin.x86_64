@@ -1,0 +1,5 @@
+./usr/local/mdsplus/bin64/mdsipsd
+./usr/local/mdsplus/bin64/roam_check_access
+./usr/local/mdsplus/lib64/libMdsIpGSI.so
+./usr/local/mdsplus/lib64/libRoam.so
+./usr/local/mdsplus/lib64/libRoam_gcc64.so
