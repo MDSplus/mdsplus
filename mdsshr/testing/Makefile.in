@@ -101,7 +101,7 @@ TESTS = UdpEventsTest$(EXEEXT) UdpEventsTestStatics$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsshr/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ac_local_scope.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
@@ -698,16 +698,14 @@ TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
 # ///  select test form env variable  //////////////////////////////////////// #
 TEST_BUILDTYPE = local
+SUFFIXES = .log .tap .xml
+.PRECIUS = %.log %.tap %.xml
 
 # // check if libpath is correct or skip python tests
 @ENABLE_SANITIZE_TRUE@_check_sanitize_ldd = \
 @ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
 @ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
 
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) 
@@ -729,7 +727,7 @@ check_SCRIPTS =
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .log .o .obj .pl .pl$(EXEEXT) .py .py$(EXEEXT) .trs
+.SUFFIXES: .log .tap .xml .c .o .obj .pl .pl$(EXEEXT) .py .py$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../../testing/testing.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1192,7 +1190,8 @@ uninstall-am:
 
 
 include @top_builddir@/Makefile.inc
-TEST_FORMAT    ?= tap
+TEST_FORMAT    ?= log,tap
+AM_MAKEFLAGS   ?= V=0
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
@@ -1202,21 +1201,25 @@ log: $(TEST_SUITE_LOG)
 .PHONY: rebuild-tests
 rebuild-tests:
 	@ \
+	echo "//// Rebuilding tests ////"; \
 	rm -f *.$(OBJEXT); \
 	rm -f $(check_PROGRAMS); \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) all; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
 	else \
 	 echo "building tests using D_TESTING set"; \
 	 $(MAKE) -k $(AM_MAKEFLAGS) all \
-	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
 	fi;
 
 .PHONY: tests
 tests: rebuild-tests
-	@echo "Making tests ... "; \
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
+	@ \
+	echo "//// Performing tests /////"; \
+	export TEST_FORMAT=${TEST_FORMAT}; \
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) ||:;\
+	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } ||:;
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
@@ -1225,10 +1228,32 @@ tests: rebuild-tests
 @VALGRIND_CHECK_RULES@
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
+# ///  SANITIZE RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
 @ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: $(TEST_SUITE_TAP)
+
+# Single tap output
+# ^^^^^^^^^^^^^^^^^
+# Tap target to generate single tap result beside the normal log file. This
+# should make use of the TEST_TAPFILE env that generate multiple logger
+# instances.
+
+$(TEST_LOGS:.log=.tap):
+	@ \
+	f=$(@:.tap=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_TAPFILE=$@ ||:
+
+# Tap Test Build Suite
+# ^^^^^^^^^^^^^^^^^^^^
+# Collects the tap result of possible test build failures prior to make the
+# actual tests
 
 $(TEST_BUILD_TAP):
 	@ \
@@ -1245,24 +1270,33 @@ $(TEST_BUILD_TAP):
 	done; \
 	echo "1..$${count}" >> $@;
 
-.PHONY: $(TEST_SUITE_TAP)
-$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
-@HAVE_PL_TAP_PARSER_TRUE@	@ \
-@HAVE_PL_TAP_PARSER_TRUE@	echo "Run tests with tap result"; \
-@HAVE_PL_TAP_PARSER_TRUE@	export TEST_FORMAT="tap"; \
-@HAVE_PL_TAP_PARSER_TRUE@	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS; \
-@HAVE_PL_TAP_PARSER_TRUE@	\
+# Tap Test Suite
+# ^^^^^^^^^^^^^^
+# The results are collected here using a perl script collate_tap.pl that is
+# using the perl tap parser from cpan. If it is not actually available
+# configure should have diabled HAVE_PL_TAP_PARSER.
+#
+# TODO: fix this in the case the only tap is provided as TEST_FORMAT and the
+# test taps are streamed into the .log file directly
+#
+
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP) $(TEST_LOGS:.log=.tap)
+@HAVE_PL_TAP_PARSER_TRUE@	@ ## collate test-build.tap \
 @HAVE_PL_TAP_PARSER_TRUE@	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 @HAVE_PL_TAP_PARSER_TRUE@	else suite="$@"; \
 @HAVE_PL_TAP_PARSER_TRUE@	fi; \
-@HAVE_PL_TAP_PARSER_TRUE@	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
-@HAVE_PL_TAP_PARSER_TRUE@	  || exit 1
-@HAVE_PL_TAP_PARSER_FALSE@	@ \
-@HAVE_PL_TAP_PARSER_FALSE@	echo "Run tests without collating results"; \
-@HAVE_PL_TAP_PARSER_FALSE@	export TEST_FORMAT="tap"; \
-@HAVE_PL_TAP_PARSER_FALSE@	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+@HAVE_PL_TAP_PARSER_TRUE@	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) \
+@HAVE_PL_TAP_PARSER_TRUE@	     $(TEST_LOGS:.log=.tap) > $${suite} \
+@HAVE_PL_TAP_PARSER_TRUE@	     || exit 1
+@HAVE_PL_TAP_PARSER_FALSE@	@ ## test parser not available \
+@HAVE_PL_TAP_PARSER_FALSE@	echo "Can not collate tap results" >2;
 
 $(TEST_SUITE_XML):
+
+$(TEST_LOGS:.log=.xml): 
+	@ \
+	f=$(@:.xml=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_XMLFILE=$@ ||:s
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  clean  //////////////////////////////////////////////////////////////// #
@@ -1272,6 +1306,9 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_LOGS:.log=.tap)
+	-$(RM) -rf $(TEST_SUITE_XML)
+	-$(RM) -rf $(TEST_LOGS:.log=.xml)
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  utils  //////////////////////////////////////////////////////////////// #

@@ -7,10 +7,13 @@
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
+
 # ///  select test form env variable  //////////////////////////////////////// #
 
 TEST_BUILDTYPE  = local
-TEST_FORMAT    ?= tap
+TEST_FORMAT    ?= log,tap
+AM_MAKEFLAGS   ?= V=0
+
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
@@ -18,35 +21,46 @@ xml: $(TEST_SUITE_XML)
 log: $(TEST_SUITE_LOG)
 
 
+SUFFIXES = .log .tap .xml
+.PRECIUS = %.log %.tap %.xml
+
+
 .PHONY: rebuild-tests
 rebuild-tests:
 	@ \
+	echo "//// Rebuilding tests ////"; \
 	rm -f *.$(OBJEXT); \
 	rm -f $(check_PROGRAMS); \
 	if [ -n "$${VALGRIND_BUILD}" ]; then \
 	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) all; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
 	else \
 	 echo "building tests using D_TESTING set"; \
 	 $(MAKE) -k $(AM_MAKEFLAGS) all \
-	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING"; \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
 	fi;
 
 .PHONY: tests
 tests: rebuild-tests
-	@echo "Making tests ... "; \
-	$(MAKE) $(AM_MAKEFLAGS) $(TEST_FORMAT);
+	@ \
+	echo "//// Performing tests /////"; \
+	export TEST_FORMAT=${TEST_FORMAT}; \
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) ||:;\
+	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } ||:;
 
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+## Valgrind rules are provided by autoconf macro m4_ax_valgrind_check.m4 where
+## targets tests-valgrind and test-valgrind-suppressions are provided.
+
 @VALGRIND_CHECK_RULES@
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# ///  SANITIZE OPTIONS  ///////////////////////////////////////////////////// #
+# ///  SANITIZE RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
 if ENABLE_SANITIZE
@@ -65,13 +79,34 @@ if ENABLE_SANITIZE
 endif
 
 
-
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+.PHONY: $(TEST_SUITE_TAP)
+
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
+
+
+# Single tap output
+# ^^^^^^^^^^^^^^^^^
+# Tap target to generate single tap result beside the normal log file. This
+# should make use of the TEST_TAPFILE env that generate multiple logger
+# instances.
+
+$(TEST_LOGS:.log=.tap):
+	@ \
+	f=$(@:.tap=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_TAPFILE=$@ ||:
+
+
+
+
+# Tap Test Build Suite
+# ^^^^^^^^^^^^^^^^^^^^
+# Collects the tap result of possible test build failures prior to make the
+# actual tests
 
 $(TEST_BUILD_TAP):
 	@ \
@@ -89,33 +124,37 @@ $(TEST_BUILD_TAP):
 	echo "1..$${count}" >> $@;
 
 
-.PHONY: $(TEST_SUITE_TAP)
-$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
+
+# Tap Test Suite
+# ^^^^^^^^^^^^^^
+# The results are collected here using a perl script collate_tap.pl that is
+# using the perl tap parser from cpan. If it is not actually available
+# configure should have diabled HAVE_PL_TAP_PARSER.
+#
+# TODO: fix this in the case the only tap is provided as TEST_FORMAT and the
+# test taps are streamed into the .log file directly
+#
+
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP) $(TEST_LOGS:.log=.tap)
 if HAVE_PL_TAP_PARSER
-	@ \
-	echo "Run tests with tap result"; \
-	export TEST_FORMAT="tap"; \
-	$(MAKE) -k $(AM_MAKEFLAGS) check-TESTS; \
-	\
-	## collate test-build.tap \
+	@ ## collate test-build.tap \
 	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 	else suite="$@"; \
 	fi; \
-	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) $(TEST_LOGS) > $${suite} \
-	  || exit 1
+	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) \
+	     $(TEST_LOGS:.log=.tap) > $${suite} \
+	     || exit 1
 else
-	@ \
-	echo "Run tests without collating results"; \
-	export TEST_FORMAT="tap"; \
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-	
+	@ ## test parser not available \
+	echo "Can not collate tap results" >2;
 endif
+
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LOG  ///////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-## TODO: add log output
+## test suite log is already provided by automake
 ## $(TEST_SUITE_LOG): 
 
 
@@ -126,6 +165,10 @@ endif
 ## TODO: add xml output
 $(TEST_SUITE_XML):
 
+$(TEST_LOGS:.log=.xml): 
+	@ \
+	f=$(@:.xml=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_XMLFILE=$@ ||:s
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -137,6 +180,9 @@ $(TEST_SUITE_XML):
 clean-local-tests:
 	-$(RM) -rf $(TEST_BUILD_TAP)
 	-$(RM) -rf $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_LOGS:.log=.tap)
+	-$(RM) -rf $(TEST_SUITE_XML)
+	-$(RM) -rf $(TEST_LOGS:.log=.xml)
 
 
 

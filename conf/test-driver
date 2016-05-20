@@ -29,7 +29,7 @@ scriptversion=2013-07-13.22; # UTC
 
 # Make unconditional expansion of undefined variables an error.  This
 # helps a lot in preventing typo-related bugs.
-set -u
+# set -u
 
 usage_error ()
 {
@@ -61,8 +61,8 @@ while test $# -gt 0; do
   --help) print_usage; exit $?;;
   --version) echo "test-driver $scriptversion"; exit $?;;
   --test-name) test_name=$2; shift;;
-  --log-file) log_file=$2; shift;;
-  --trs-file) trs_file=$2; shift;;
+  --log-file)  log_file=$2; shift;;
+  --trs-file)  trs_file=$2; shift;;
   --color-tests) color_tests=$2; shift;;
   --expect-failure) expect_failure=$2; shift;;
   --enable-hard-errors) enable_hard_errors=$2; shift;;
@@ -102,6 +102,14 @@ trap "st=129; $do_exit" 1
 trap "st=130; $do_exit" 2
 trap "st=141; $do_exit" 13
 trap "st=143; $do_exit" 15
+
+
+# TEST_FORMAT HANDLING
+if [ ${TEST_FORMAT} ]; then
+ (echo "${TEST_FORMAT}" | grep "tap" > /dev/null) && export TEST_TAPFILE=${log_file/.log/.tap};
+ (echo "${TEST_FORMAT}" | grep "xml" > /dev/null) && export TEST_XMLFILE=${log_file/.log/.xml};
+fi
+
 
 # Test script is run here.
 "$@" >$log_file 2>&1
