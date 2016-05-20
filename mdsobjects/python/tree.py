@@ -264,13 +264,11 @@ class Tree(object):
                 included=included.toList()
                 included.insert(0,0)
                 included=_N.array(included)
-                status = _treeshr._TreeCreatePulseFile(self.ctx,shot,len(included),_C.c_void_p(included.ctypes.data))
             except:
-                status = _treeshr._TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
+                included = None
+            _treeshr.TreeCreatePulseFile(self.ctx,shot,included)
         finally:
             Tree.unlock()
-        if not (status & 1):
-            raise _Exceptions.statusToException(status)
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -583,12 +581,9 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            #ctx = _treeshr.TreeGetContext()
-            status = _treeshr._TreeCleanDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+             _treeshr.TreeCleanDatafile(self.ctx, self.tree, self.shot)
         finally:
             Tree.unlock()
-        if not (status & 1):
-            raise _Exceptions.statusToException(status)
 
     def compressDatafile(self):
         """Compress data file.
@@ -596,9 +591,6 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            #ctx = _treeshr.TreeGetContext()
-            status = _treeshr._TreeCompressDatafile(self.ctx, _ver.tobytes(self.tree), self.shot)
+            _treeshr.TreeCompressDatafile(self.ctx, self.tree, self.shot)
         finally:
             Tree.unlock()
-        if not (status & 1):
-            raise _Exceptions.statusToException(status)
