@@ -81,13 +81,14 @@ static FILE *switchStdout(const char *newStream)
 {
     fflush(stdout);
     fgetpos(stdout, &out_pos);
-    out_fd = dup(fileno(stdout));   
+    out_fd = dup(fileno(stdout));
     if(newStream)
         freopen(newStream, "w", stdout);
     else 
         fclose(stdout);
     return fdopen(out_fd, "w");
 }
+
 
 static void revertStdout()
 {
@@ -553,6 +554,10 @@ static void srunner_send_evt(SRunner * sr, void *obj, enum cl_event evt)
 
 static enum print_output print_mode = CK_NORMAL;
 
+static int find_first(const char *str, const char *pat) {
+    return strstr(str,pat) == str;
+}
+
 void __test_init(const char *test_name, const char *file, const int line) {
                 
     if(!suite) {
@@ -580,20 +585,37 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // env is defined the result will be null and stdout will be
         // suppressed. The log format preserves the normal stdout as no special
         // formatting is needed.        
-        char *stdout_file = getenv("TEST_STDOUT_FILE");
+        
+        char *out_file = getenv("TEST_STDOUT_FILE");
+        
+        // the standard output format is taken from the frist item in
+        // TEST_FORMAT string        
         
         if(format) {
-            if( !strcmp(format,"log") || !strcmp(format,"LOG"))            
-                srunner_register_lfun(runner, stdout, 0, lfile_lfun, print_mode);
-            else if( !strcmp(format,"tap") || !strcmp(format,"TAP"))            
-                srunner_register_lfun(runner, switchStdout(stdout_file), 0, tap_lfun, print_mode);
-            else if( !strcmp(format,"xml") || !strcmp(format,"XML"))            
-                srunner_register_lfun(runner, switchStdout(stdout_file), 0, xml_lfun, print_mode);
+            if( find_first(format,"log") || find_first(format,"LOG"))            
+                srunner_register_lfun(runner, stdout, 0, stdout_lfun, print_mode);
+            else if( find_first(format,"tap") || find_first(format,"TAP"))
+                srunner_register_lfun(runner, switchStdout(out_file), 0, tap_lfun, print_mode);
+            else if( find_first(format,"xml") || find_first(format,"XML"))            
+                srunner_register_lfun(runner, switchStdout(out_file), 0, xml_lfun, print_mode);
         }
         else {
-            // default to log format //
-            srunner_register_lfun(runner, stdout, 0, stdout_lfun, print_mode);            
+            // default to plain log format //
+            srunner_register_lfun(runner, stdout, 0, lfile_lfun, print_mode);            
         }
+
+        // if any of TEST_TAPFILE or TEST_XMLFILE is given in env further
+        // logger are instanced pointing to specified files.        
+        
+        if( out_file = getenv("TEST_TAPFILE") ) {
+            FILE *f = fopen(out_file,"w");
+            if(f) srunner_register_lfun(runner, f, 0, tap_lfun, print_mode);
+        }
+        if( out_file = getenv("TEST_XMLFILE") ) {
+            FILE *f = fopen(out_file,"w");
+            if(f) srunner_register_lfun(runner, f, 0, xml_lfun, print_mode);
+        }
+
         
         // set fork status //
         srunner_set_fork_status(runner, cur_fork_status());
