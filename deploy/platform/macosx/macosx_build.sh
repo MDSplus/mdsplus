@@ -10,7 +10,7 @@ set -e
 
 if [ -r ${SRCDIR}/deploy/os/${OS}.env ]
 then
-    source ${SRCIDR}/deploy/os/${OS}.env
+    source ${SRCDIR}/deploy/os/${OS}.env
 fi
 
 PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
