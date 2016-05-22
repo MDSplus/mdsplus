@@ -68,8 +68,8 @@ AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************
 #fi
 
 #FIXME: Remove this when Makefile.inc goes away
-AS_CASE(["$MKDIR_P"],
-        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
+#AS_CASE(["$MKDIR_P"],
+#        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
 
 dnl See if we need to use native compilers
 AS_CASE(["$host"],

@@ -13,8 +13,8 @@ volume() {
 	echo "-v $(realpath ${1}):${2}"
     fi
 }
-PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
-if [ "${RELEASE}" = "yes" ]
+
+if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
 then
     RELEASEDIR=${RELEASEDIR}/${BRANCH}
     mkdir -p ${RELEASEDIR}
@@ -23,6 +23,7 @@ else
 fi
 if [ "${PUBLISH}" = "yes" ]
 then
+    PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
     mkdir -p ${PUBLISHDIR}
 fi
 set +e
@@ -41,6 +42,7 @@ docker run -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
        -e "VALGRIND_TOOLS=$VALGRIND_TOOLS" \
        -e "UPDATEPKG=$UPDATEPKG" \
        -e "PLATFORM=$PLATFORM" \
+       -e "COLOR=$COLOR" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
        $(volume "${RELEASEDIR}" /release) \

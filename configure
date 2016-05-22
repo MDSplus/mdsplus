@@ -6596,12 +6596,8 @@ $as_echo "**********VISIBILITY*********$CFLAG_VISIBILITY*******************" >&6
 #fi
 
 #FIXME: Remove this when Makefile.inc goes away
-case "$MKDIR_P" in #(
-  *install-sh*) :
-    MKDIR_P="\$(top_srcdir)/$MKDIR_P" ;; #(
-  *) :
-     ;;
-esac
+#AS_CASE(["$MKDIR_P"],
+#        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
 
 case "$host" in #(
   sparc-sun-solaris2*) :

@@ -158,6 +158,10 @@ OPTIONS
        release builds verify the contents of new installers against these
        content files.
 
+    --color
+       If this option is specified, success and failure messages will be
+       output using ansi color escape sequences.
+
 OPTIONS WITH OS SPECIFIC DEFAULT
 
    --platform=name
@@ -224,7 +228,7 @@ parsecmd() {
 	    --test=skip)
 		TEST=skip
 		;;
-	    --test_form=tap)
+	    --test_format=tap)
 		TEST_FORMAT=tap
 		;;
 	    --test_format=log)
@@ -300,6 +304,9 @@ parsecmd() {
 	    --updatepkg)
 		UPDATEPKG=yes
 		;;
+	    --color)
+		COLOR=yes
+		;;
 	    *)
 		unknownopts="${unknownopts} $i"
 		;;
@@ -312,7 +319,6 @@ parsecmd() {
 	exit 1
     fi
 }
-
 opts="$@"
 #
 # Parse the options provided in the command
@@ -320,7 +326,7 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
-
+    
 #
 # Get the default options for the OS specified.
 #
@@ -339,7 +345,27 @@ fi
 #
 # Reparse the command using the trigger options, the os options and the command line options.
 #
-parsecmd "${trigger_ops} ${os_opts} ${opts}"
+parsecmd "${trigger_opts} ${os_opts} ${opts}"
+
+RED() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[31;47m"
+    fi
+}
+GREEN() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[32;47m"
+    fi
+}
+NORMAL() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[m"
+    fi
+}
+
 #
 # Make sure one of --test --release=version
 # --publish=version options were provided.
@@ -375,13 +401,25 @@ then
 else
     WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
 fi
-if [ -z "$RELEASEDIR" ]
+
+if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    RELEASEDIR=${WORKSPACE}/release
+    if [ -z "$RELEASEDIR" ]
+    then
+	RELEASEDIR=${WORKSPACE}/release
+    fi
+else
+    RELEASEDIR=""
 fi
-if [ -z "$PUBLISHDIR" ]
+
+if [ "$PUBLISH" = "yes" ]
 then
-    PUBLISHDIR=${WORKSPACE}/publish
+    if [ -z "$PUBLISHDIR" ]
+    then
+	PUBLISHDIR=${WORKSPACE}/publish
+    fi
+else
+    PUBLISHDIR=""
 fi
 #
 # Convert DOCKERIMAGE and DOCKERFILE options
@@ -408,11 +446,8 @@ DOCKERIMAGE="$(spacedelim $DOCKERIMAGE)"
 #
 if [ "$DOCKERPULL" = "yes" ]
 then
-    if [ -z "$DOCKERIMAGE" ]
+    if [ ! -z "$DOCKERIMAGE" ]
     then
-	>&2 echo "--dockerpull specified with no --dockerimage specified to identify docker image name"
-	exit 1
-    else
 	for img in ${DOCKERIMAGE}
 	do
 	    docker pull $img
@@ -453,18 +488,25 @@ then
     TEST_FORMAT=log
 fi
 
-RELEASEDIR=${RELEASEDIR}/${DISTNAME}
-PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
+if [ ! -z "$RELEASEDIR" ]
+then
+    RELEASEDIR=${RELEASEDIR}/${DISTNAME}
+fi
+
+if [ ! -z "$PUBLISHDIR" ]
+then
+    PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
+fi
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
     if [ -r $PUBLISHDIR/${BRANCH}_${VERSION} ]
     then
 	cat <<EOF
-
+${GREEN}
 A ${VERSION} ${BRANCH} release already exists for ${OS}.
 The build will be skipped.
- 
+${NORMAL}
 EOF
 	exit 0
     fi
@@ -492,26 +534,31 @@ OS=${OS} \
   KEYS=${KEYS} \
   DISTNAME=${DISTNAME} \
   UPDATEPKG=${UPDATEPKG} \
+  COLOR=$COLOR \
   ARCH=${ARCH} \
   ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
 if [ "$?" != "0" ]
 then
+    RED $COLOR
     cat <<EOF >&2
 ============================================
-
-Failure: The build was unsuccessful!
-
+                                            
+Failure: The build was unsuccessful!        
+                                            
 ============================================
 EOF
+    NORMAL $COLOR
     exit 1
 else
+    GREEN $COLOR
     cat <<EOF
 ============================================
-
-Success!
-
+                                            
+Success!                                    
+                                            
 ============================================
 EOF
+    NORMAL $COLOR
     if [ "$PUBLISH" = "yes" ]
     then
 	touch $PUBLISHDIR/${BRANCH}_${VERSION}

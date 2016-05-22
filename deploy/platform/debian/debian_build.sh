@@ -14,7 +14,26 @@ volume() {
     fi
 }
 
-if [ "${RELEASE}" = "yes" ]
+RED() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[31;47m"
+    fi
+}
+GREEN() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[32;47m"
+    fi
+}
+NORMAL() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[m"
+    fi
+}
+
+if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}
     rm -Rf ${RELEASEDIR}/${BRANCH}/*
@@ -68,10 +87,11 @@ do
        -e "VALGRIND_TOOLS=$VALGRIND_TOOLS" \
        -e "UPDATEPKG=$UPDATEPKG" \
        -e "PLATFORM=$PLATFORM" \
+       -e "COLOR=${COLOR}" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
-       $(volume ${RELEASEDIR} /release) \
-       $(volume ${PUBLISHDIR} /publish) \
+       $(volume "${RELEASEDIR}" /release) \
+       $(volume "${PUBLISHDIR}" /publish) \
        $(volume "$KEYS" /sign_keys) \
        ${image} /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
     status=$?
@@ -83,7 +103,16 @@ do
     fi
     if [ ! "$status" = "0" ]
     then
-	echo "Docker ${PLATFORM}_docker_build.sh returned failure status from ${image}."
+	RED $COLOR
+	cat <<EOF >&2
+======================================================
+
+Docker ${PLATFORM}_docker_build.sh returned failure   
+status when exiting from ${image}
+
+======================================================
+EOF
+	NORMAL $COLOR
 	exitstatus=$status
     fi
     let idx=idx+1
