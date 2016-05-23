@@ -65,7 +65,8 @@ class testing(object):
         
         try:
             from tap.plugins._nose import TAP
-        except ImportError:
+	    nose.run(argv=[ sys.argv[1],'', '--with-tap'])
+        except:
             f.remove('tap')
         try:
             from nose.plugins.xunit import Xunit
