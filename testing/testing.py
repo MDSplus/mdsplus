@@ -108,7 +108,9 @@ class testing(object):
                 '--with-xunit','--xunit-file='+self.xml_file] + nose_aux_args)
             else:
                 res = nose.run(argv=[ sys.argv[1], module_name] + nose_aux_args)
-        return res
+	else:
+            raise IndexError
+	return res
 
 
 
