@@ -33,17 +33,18 @@ NORMAL() {
     fi
 }
 
-if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
+if [ "${RELEASE}" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}
     rm -Rf ${RELEASEDIR}/${BRANCH}/*
-else
-    echo RELEASEDIR=""
+    releasedir=${RELEASEDIR}
 fi
 
 if [ "${PUBLISH}" = "yes" ]
 then
     mkdir -p ${PUBLISHDIR}
+    publishdir=${PUBLISHDIR}
+    releasedir=${RELEASEDIR}
 fi
 set +e
 
@@ -90,8 +91,8 @@ do
        -e "COLOR=${COLOR}" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
-       $(volume "${RELEASEDIR}" /release) \
-       $(volume "${PUBLISHDIR}" /publish) \
+       $(volume "${releasedir}" /release) \
+       $(volume "${publishdir}" /publish) \
        $(volume "$KEYS" /sign_keys) \
        ${image} /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
     status=$?
