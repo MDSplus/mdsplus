@@ -412,7 +412,8 @@ then
     minor=$(echo ${VERSION} | cut -d. -f2)
     release=$(echo ${VERSION} | cut -d. -f3)
     set -e
-    rm -Rf /workspace/releasebld/* /release/*
+    mkdir -p /release/${BRANCH}/DEBS/${ARCH}
+    rm -Rf /workspace/releasebld/* /release/${BRANCH}/DEBS/${ARCH}/*
     if [ "${ARCH}" = "amd64" ]
     then
 	MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
@@ -449,7 +450,6 @@ then
 	$MAKE install
 	popd
     fi
-    mkdir -p /release/${BRANCH}/DEBS/${ARCH}
     BUILDROOT=/workspace/releasebld/buildroot \
 	     BRANCH=${BRANCH} \
 	     VERSION=${VERSION} \
