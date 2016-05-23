@@ -19,7 +19,8 @@ SYNOPSIS
                [--distname=dir] [--dockerpull]
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
-               [--arch=name]
+               [--arch=name] [--color] [--winhost=hostname]
+               [--winbld=dir] [--winrembld=dir]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -161,6 +162,16 @@ OPTIONS
     --color
        If this option is specified, success and failure messages will be
        output using ansi color escape sequences.
+
+    --winhost=hostname
+       Specify the windows system host which has a wsgi application used to
+       build the Visual Studio version of the cpp objects dll.
+
+    --winbld=directory
+       Specify the directory on the linux host with the windows share mounted.
+
+    --winrembld=directory
+       Specify the directory on the windows system host of the windows share.
 
 OPTIONS WITH OS SPECIFIC DEFAULT
 
@@ -306,6 +317,15 @@ parsecmd() {
 		;;
 	    --color)
 		COLOR=yes
+		;;
+	    --winhost=*)
+		WINDOWSHOST="${i#*=}"
+		;;
+	    --winbld=*)
+		WINBLD="${i#*=}"
+		;;
+	    --winrembld=*)
+		WINREMBLD="${i#*=}"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -536,6 +556,9 @@ OS=${OS} \
   UPDATEPKG=${UPDATEPKG} \
   COLOR=$COLOR \
   ARCH=${ARCH} \
+  WINHOST="${WINHOST}" \
+  WINBLD="${WINBLD}" \
+  WINREMBLD="${WINREMBLD}" \
   ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
 if [ "$?" != "0" ]
 then
