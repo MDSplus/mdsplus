@@ -73,7 +73,7 @@ docker run -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
        -e "PUBLISH=$PUBLISH" \
        -e "PLATFORM=$PLATFORM" \
        -e "COLOR=${COLOR}" \
-       -e "WINREMDIR=${WINREMDIR}" \
+       -e "WINREMBLD=${WINREMBLD}" \
        -e "WINHOST=${WINHOST}" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
