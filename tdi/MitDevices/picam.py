@@ -7,6 +7,15 @@ def pointer(x):
     ptr = ctypes.pointer(x)
     return ptr
 
+def kill(proc_pid):
+    import psutil
+
+    process = psutil.Process(proc_pid)
+    print "Process is ", process
+    for proc in process.children(recursive=True):
+        proc.kill()
+    process.kill()
+
 
 class PICAM(MDSplus.Device):
     """
@@ -62,17 +71,22 @@ class PICAM(MDSplus.Device):
         import os
         import subprocess
 
+        self.debugging = os.getenv('DEBUG_DEVICES')
         camera = str(self.serial_no.record)
 
-        c = None
+        c_rec = None
         for c in PICAM.cameras:
             if c.camera == camera :
                 try:
-                    c.subproc.terminate()
-                except:
+                    if self.debugging:
+                        print "PICAM killing ", c.subproc, c.subproc.pid
+                    kill(c.subproc.pid)
+                except Exception, e:
+                    if self.debugging:
+                        print "PICAM kill exception", e
                     pass
                 c_rec = c
-        if c is None:
+        if c_rec is None:
             c = PICAM.camera_proc(camera)
             PICAM.cameras.append(c)
         if not c.camera == camera:
@@ -82,11 +96,12 @@ class PICAM(MDSplus.Device):
         tree = self.local_tree
         shot = self.tree.shot
         path = self.local_path
-        c.subproc = subprocess.Popen('mdstcl', stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        c.subproc = subprocess.Popen('mdstcl 2>&1', stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         c.subproc.stdin.write('set tree %s /shot = %d\n'%(tree, shot,))
         c.subproc.stdin.write('do/meth %s acquire\n'%(path,))
         c.subproc.stdin.write('exit\n')
         c.subproc.stdin.flush()
+        return 1
     INIT=init
 
     def acquire(self):
