@@ -160,10 +160,10 @@ dnl   [AS_VAR_APPEND([PY_LOG_COMPILER_TAP],["${NOSETESTS}"])
 dnl    AS_VAR_APPEND([PY_LOG_FLAGS_TAP],   ["--with-tap --tap-stream"])],
 dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
 
- AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} \$(top_srcdir)/testing/testing.py"])
+ AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
 
- AS_VAR_APPEND([PY_LOG_COMPILER_TAP],  ["${PYTHON} \$(top_srcdir)/testing/testing.py"])
+ AS_VAR_APPEND([PY_LOG_COMPILER_TAP],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS_TAP], [""])
 
  AS_CASE(["${build_os}:${host}"],

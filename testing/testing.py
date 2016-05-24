@@ -16,8 +16,8 @@ class testing(object):
     # list of test formats form TEST_FORMAT env
     test_format  = re.findall(r"[\w']+", os.getenv(TEST_FORMAT,'tap'))
     
-    tap_file = os.getenv(TEST_TAPFILE, os.path.splitext(sys.argv[1])[0])
-    xml_file = os.getenv(TEST_XMLFILE, os.path.splitext(sys.argv[1])[0])
+    tap_file = os.getenv(TEST_TAPFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.tap')
+    xml_file = os.getenv(TEST_XMLFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.xml')
 
     def check_module(self, module_name ):
         from modulefinder import ModuleFinder
