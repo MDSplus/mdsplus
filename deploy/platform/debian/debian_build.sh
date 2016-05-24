@@ -36,7 +36,8 @@ NORMAL() {
 if [ "${RELEASE}" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}
-    rm -Rf ${RELEASEDIR}/${BRANCH}/*
+    rm -Rf ${RELEASEDIR}/${BRANCH}/DEBS
+    rm -Rf ${RELEASEDIR}/repo
     releasedir=${RELEASEDIR}
 fi
 

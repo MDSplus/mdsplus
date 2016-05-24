@@ -13,7 +13,9 @@ NAME
                installers.
 
 SYNOPSIS
-    ./build.sh --os=name [--test[=skip]] [--testformat=tap|log] [--release=version] [--publish=version]
+    ./build.sh --os=name [--test[=skip]] [--test_format=list]
+               [--testrelease]
+               [--release=version] [--publish=version]
                [--source=dir] [--workspace=dir] [--branch=name]
                [--releasedir=dir] [--publishdir=dir] [--keys=dir]
                [--distname=dir] [--dockerpull]
@@ -88,7 +90,14 @@ OPTIONS
        contain a --test=skip which supercedes a --test option on the
        command line.
 
-   --test_format=tap|log
+   --testrelease
+       After performing tests continue to build a test release to verify
+       package contents matches expected contents. Add to one os build for
+       each of redhat platform and debian platform. Full release builds
+       are not needed for all instances of redhat and debian os when just
+       performing tests.
+
+   --test_format=list
        Format used when publishing test results. If you want to see the
        output of the tests use the log option. The tap option will publish
        the results in a standard tap format which only gives pass or fail
@@ -239,15 +248,12 @@ parsecmd() {
 	    --test=skip)
 		TEST=skip
 		;;
-	    --test_format=tap)
-		TEST_FORMAT=tap
-		;;
-	    --test_format=log)
-		TEST_FORMAT=log
+	    --testrelease)
+		TEST_RELEASE=yes
 		;;
 	    --test_format=*)
-		2>&1 echo "Invalid test format specified. Only tap or log format is supported."
-		exit 1;;
+		TEST_FORMAT="${i#*=}"
+		;;
 	    --eventport=*)
 		EVENT_PORT="${i#*=}"
 		;;
@@ -420,6 +426,11 @@ then
     WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
 else
     WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
+fi
+
+if [ "TEST" = "yes" -a "TEST_RELEASE" = "yes" ]
+then
+    RELEASE=yes
 fi
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
