@@ -77,8 +77,9 @@ AC_DEFUN([AX_ENABLE_SANITIZE],[
                          [],[AS_VAR_SET([enable_sanitize],[no])])],
      # thread sanitizer
      [thread],     
-     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer"],
-                         [],[AS_VAR_SET([enable_sanitize],[no])])],
+     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer"],,
+                         [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -fPIE"],,
+                                                [AS_VAR_SET([enable_sanitize],[no])])])],
      # undefined sanitizer
      [undefined],
      [AX_SANITIZER_CHECK([ubsan],["-fsanitize=undefined -fno-omit-frame-pointer"],
@@ -108,6 +109,5 @@ AC_DEFUN([AX_ENABLE_SANITIZE],[
 
   m4_popdef([ax_enable_sanitize])
 ])
-
 
 
