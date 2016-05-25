@@ -71,6 +71,7 @@
 #include <STATICdef.h>
 #include <mdstypes.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAXX 1024		/*length of longest run allowed */
@@ -210,17 +211,24 @@ Do this in runs.
   ******************************/
     old = 0;
     for (pn = diff, j = xn; --j >= 0; old = *p32++) {
-      i = *pn++ = *p32 - old;
-      /**** Check for special delta of 0x800000000
-	    which is the largest negative
-	    32-bit value. On some versions of the c
-	    compiler the other <= tests do not work.
+      unsigned int delta;
+      long long ans;
+    /**** Check for integer overflow, 
+ *        previously was:
+ *             Check for special delta of 0x80000000
+ *             which is the largest negative
+ *             32-bit value. On some versions of the c
+ *             compiler the other <= tests do not work.
+ *        if overflow, put in flag value
       ***********/
-      if (i == 0x80000000) {
-	yy = 32;
+      ans = (long long)*p32 - (long long)old;
+      if ((ans > INT_MAX) || (ans <= INT_MIN)) {
+        pn++;
+        yy = 32;
       }
       else {
-	unsigned int delta = (i < 0) ? -i : i;
+        i = *pn++ = ans;
+	delta = (i < 0) ? -i : i;
 	if (delta <= 64) {
 	  yy = signif[delta];
 	}
@@ -280,7 +288,7 @@ Do this in runs.
   Build exception table.
   Assume 2's complement.
   *********************/
-    mark = -1 << (yn - 1);
+    mark = 0xFFFFFFFF << (yn - 1);
     maxim = ~mark;
     for (pn = diff, pe = exce, j = xe; --j >= 0;) {
       while (*pn <= maxim && *pn > mark)
