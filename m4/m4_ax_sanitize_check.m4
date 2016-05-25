@@ -30,14 +30,16 @@ AC_DEFUN([AX_SANITIZER_CHECK],[
                                [AS_VAR_SET([sanitize_flags],[$CPPFLAGS])
                                 AS_VAR_SET([sanitize_libs],[$LIBS])
                                 AS_VAR_SET([sanitize_env],[_XSAN[]_OPTIONS])
-                                AS_VAR_SET([sanitize_libpath], [$($LDD conftest$EXEEXT | grep [lib]_xsan[].so | $AWK '{ print $[]3 }')])])
-                AS_VAR_SET_IF([sanitize_libpath],[AC_MSG_NOTICE([found library path for] _xsan: $sanitize_libpath)],
-                                                 [AC_MSG_WARN([library path not found for] _xsan)])
+                                AS_VAR_SET([sanitize_libpath], [$($LDD conftest$EXEEXT \
+                                 | grep [lib]_xsan[].so | $AWK '{ print $[]3 }')])
+                                AS_VAR_SET([have_[]_xsan],[yes])],
+                               [AS_VAR_SET([have_[]_xsan],[no])])
+                AS_VAR_SET_IF([sanitize_libpath],
+                              [AC_MSG_NOTICE([found library path for] _xsan: $sanitize_libpath)],
+                              [AC_MSG_WARN([library path not found for] _xsan)])
                 AS_VAR_SET([CPPFLAGS],[${CPPFLAGS_save}])
-                AS_VAR_SET([LIBS],[${LIBS_save}])
-                [$3]
-               ],
-               [$4])     
+                AS_VAR_SET([LIBS],[${LIBS_save}])])
+     AS_VAR_IF([have_[]_xsan],[yes],[$3],[$4])
      m4_popdef([_xsan])
      m4_popdef([_XSAN])
 ])
