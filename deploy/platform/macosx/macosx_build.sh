@@ -15,6 +15,7 @@ fi
 
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
+export PYTHONDONTWRITEBYTECODE=no
 if [ "$RELEASE" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}

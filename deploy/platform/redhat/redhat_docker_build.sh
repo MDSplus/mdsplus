@@ -44,6 +44,7 @@ NORMAL() {
 
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim ${VALGRIND_TOOLS})"
+export PYTHONDONTWRITEBYTECODE=no
 set -e
 if [ "$TEST" = "yes" ]
 then
