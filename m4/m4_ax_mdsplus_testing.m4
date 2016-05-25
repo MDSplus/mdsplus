@@ -51,7 +51,6 @@ AC_DEFUN([TS_WINE_LIBRARIESPATH],[
          AS_VAR_SET_IF([HAVE_WINEPATH],,[AC_CHECK_PROG(HAVE_WINEPATH,winepath,yes,no)])
          TS_VAR_YN(HAVE_WINEPATH,[
          for _i in $_libs; do
-dnl          AS_ECHO("path-> $_i")
           AS_VAR_APPEND($1, "\$(shell winepath -w $_i 2>/dev/null);");
          done
          ]) dnl YN
@@ -134,37 +133,18 @@ dnl correctly call the test chain.
 dnl The test chain is composed by: [tests_env] [log_driver] [log_compiler] [test_flags]
 dnl
 AC_DEFUN([TS_SELECT],[
-dnl AS_VAR_SET([ENABLE_TESTS])
-dnl AS_VAR_SET([TESTS_ENVIRONMENT])
-dnl AS_VAR_SET([LOG_COMPILER])
-dnl AS_VAR_SET([LOG_FLAGS])
-dnl AS_VAR_SET([PY_LOG_COMPILER])
-dnl AS_VAR_SET([PY_LOG_FLAGS])
-dnl AS_VAR_SET([PY_LOG_COMPILER_TAP])
-dnl AS_VAR_SET([PY_LOG_FLAGS_TAP])
  AS_VAR_SET([LOG_DRIVER],["\$(SHELL) \$(top_srcdir)/conf/test-driver"])
-
  AS_VAR_SET([abs_srcdir],$(cd ${srcdir}; pwd))
 
- TS_CHECK_NOSETESTS( [$PYTHON],
- [:],
- [AC_MSG_WARN("python-nose not found")])
-dnl   [AS_VAR_APPEND([PY_LOG_COMPILER],["${NOSETESTS}"])
-dnl    AS_VAR_APPEND([PY_LOG_FLAGS],   [""])],
-dnl   [TS_LOG_SKIP([PY_LOG_COMPILER])])
+ TS_CHECK_NOSETESTS( [$PYTHON],,
+  [AC_MSG_WARN("python-nose not found")])
 
- TS_CHECK_PYTHON_TAP( [$PYTHON],
- [:],
- [AC_MSG_WARN("Tap plugin for python-nose not found")])
-dnl   [AS_VAR_APPEND([PY_LOG_COMPILER_TAP],["${NOSETESTS}"])
-dnl    AS_VAR_APPEND([PY_LOG_FLAGS_TAP],   ["--with-tap --tap-stream"])],
-dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
+ TS_CHECK_PYTHON_TAP( [$PYTHON],,
+  [AC_MSG_WARN("Tap plugin for python-nose not found")])
 
  AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
 
- AS_VAR_APPEND([PY_LOG_COMPILER_TAP],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
- AS_VAR_APPEND([PY_LOG_FLAGS_TAP], [""])
 
  AS_CASE(["${build_os}:${host}"],
  #
@@ -208,7 +188,7 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) ")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
  ],
  #
  # OTHER
@@ -232,25 +212,6 @@ dnl   [TS_LOG_SKIP([PY_LOG_COMPILER_TAP])])
 
 
 
-
-
-dnl --------------------------------------------------------------------------
-dnl -- ONLY FOR TESTING M4 ---------------------------------------------------
-dnl --------------------------------------------------------------------------
-
-AC_DEFUN([TS_TEST],[
- AS_ECHO( --- )
-
- TS_WINEPATH([WINEPATH],[/bin,/lib])
- TS_DEBUG_VAR(WINEPATH)
-dnl TS_SELECT()
-dnl TS_DEBUG_VAR(WINEPATH)
-dnl TS_DEBUG_VAR(TESTS_ENVIRONMENT)
-
- AS_ECHO( --- )
-
- exit 0;
-])
 
 
 
@@ -283,8 +244,6 @@ dnl        $(am__check_pre) $(PY_LOG_DRIVER) --test-name "$$f" \
 dnl        --log-file $$b.log --trs-file $$b.trs \
 dnl        $(am__common_driver_flags) $(AM_PY_LOG_DRIVER_FLAGS) $(PY_LOG_DRIVER_FLAGS) -- $(PY_LOG_COMPILE) \
 dnl        "$$tst" $(AM_TESTS_FD_REDIRECT)
-
-
 
 
 

@@ -65,7 +65,7 @@ class testing(object):
         
         try:
             from tap.plugins._nose import TAP
-	    nose.run(argv=[ sys.argv[1],'', '--with-tap'])
+	    nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
         except:
             f.remove('tap')
         try:
@@ -133,8 +133,8 @@ def check_arch(file_name):
 
 if __name__ == '__main__':
     import inspect
-    if '--skip' in sys.argv or 'ENABLE_SANITIZE' in os.environ:
-        ts.skip_test(sys.argv[1],'Skipped tests that was compiled with sanitize options')
+    if '--skip' in sys.argv:
+        ts.skip_test(sys.argv[1],'Skipped tests')
     sys.argv[0] = sys.argv[1]
     check_arch(sys.argv[1])
     try:

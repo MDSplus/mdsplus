@@ -773,7 +773,6 @@ HAVE_CUTE_DOXYGEN_TRUE
 DOXYGEN
 VALGRIND_memcheck_FLAGS
 VALGRIND_FLAGS
-TESTS_SKIP
 PY_LOG_FLAGS
 PY_LOG_COMPILER
 LOG_DRIVER
@@ -1695,7 +1694,6 @@ Optional Features:
   --enable-sanitize=flavor
                           Enable compile sanitizer with flavor in (address |
                           thread | undefined) [[default=address]]
-
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -12996,20 +12994,20 @@ $as_echo "$ax_cv_c_compiler_vendor" >&6; }
 
   # Check whether --enable-sanitize was given.
 if test "${enable_sanitize+set}" = set; then :
-  enableval=$enable_sanitize; if test "x$enableval" = xyes; then :
-  enable_sanitize=address
-else
-  enable_sanitize=$enableval
-fi
+  enableval=$enable_sanitize; enable_sanitize=${enableval}
 else
   if ${ENABLE_SANITIZE+:} false; then :
-
+  enable_sanitize=${ENABLE_SANITIZE}
 else
   enable_sanitize=no
 fi
-
 fi
 
+
+  # by default yes is the address sanitizer
+  if test "x$enable_sanitize" = xyes; then :
+  enable_sanitize=address
+fi
 
   if  test x"$enable_sanitize" != x"no" -a "$GCC" = "yes" ; then
 
@@ -13922,6 +13920,8 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_version" >&5
 $as_echo "$ax_cv_c_compiler_version" >&6; }
 
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Sanitize-able gcc version" >&5
+$as_echo_n "checking for Sanitize-able gcc version... " >&6; }
 
 
 
@@ -13954,11 +13954,11 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
 
 
     if test "$ax_compare_version" = "true" ; then
-    :
-    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: gcc version 4.8.0 or higher required for sanitizers" >&5
-$as_echo "gcc version 4.8.0 or higher required for sanitizers" >&6; }
-		      echo "${enable_sanitize} sanitizer not available."; exit 111;
-
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, gcc 4.8.0 or higher required" >&5
+$as_echo "no, gcc 4.8.0 or higher required" >&6; }
+		      enable_sanitize=no
   fi
 
 
@@ -14043,10 +14043,10 @@ $as_echo "$as_me: WARNING: library path not found for asan" >&2;}
 fi
                 CPPFLAGS=${CPPFLAGS_save}
                 LIBS=${LIBS_save}
-                sanitizer_ok=yes
+
 
 else
-  echo "${enable_sanitize} sanitizer not available."; exit 111;
+  enable_sanitize=no
 fi
 
 
@@ -14131,10 +14131,10 @@ $as_echo "$as_me: WARNING: library path not found for tsan" >&2;}
 fi
                 CPPFLAGS=${CPPFLAGS_save}
                 LIBS=${LIBS_save}
-                sanitizer_ok=yes
+
 
 else
-  echo "${enable_sanitize} sanitizer not available."; exit 111;
+  enable_sanitize=no
 fi
 
 
@@ -14219,19 +14219,39 @@ $as_echo "$as_me: WARNING: library path not found for ubsan" >&2;}
 fi
                 CPPFLAGS=${CPPFLAGS_save}
                 LIBS=${LIBS_save}
-                sanitizer_ok=yes
+
 
 else
-  echo "${enable_sanitize} sanitizer not available."; exit 111;
+  enable_sanitize=no
 fi
 
 
  ;; #(
+  # default
+     no) :
+     ;; #(
   *) :
-    # default
-     echo "${enable_sanitize} sanitizer not available."; exit 111; ;;
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: sanitizer flavor ${enable_sanitize} not found" >&5
+$as_echo "$as_me: WARNING: sanitizer flavor ${enable_sanitize} not found" >&2;}
+      enable_sanitize=no ;;
 esac
+
+     if test "x$enable_sanitize" = xno; then :
+  echo "sanitizer not available."; exit 111;
+fi
   fi
+
+  if test "x$enable_sanitize" = xno; then :
+  ENABLE_SANITIZE=no
+             ENABLE_SANITIZE_OPTIONS=SAN_OPTIONS
+             ENABLE_SANITIZE_LIBPATH=
+else
+  ENABLE_SANITIZE=${enable_sanitize}
+             ENABLE_SANITIZE_OPTIONS=${sanitize_env}
+             ENABLE_SANITIZE_LIBPATH=${sanitize_libpath}
+             CPPFLAGS="${sanitize_flags} $CPPFLAGS"
+                     LIBS="${sanitize_libs} $LIBS"
+fi
 
    if test "${enable_sanitize}" != "no" ; then
   ENABLE_SANITIZE_TRUE=
@@ -14241,18 +14261,8 @@ else
   ENABLE_SANITIZE_FALSE=
 fi
 
-  if test "x$sanitizer_ok" = xyes; then :
-  ENABLE_SANITIZE=${enable_sanitize}
-             ENABLE_SANITIZE=${enable_sanitize}
 
-             ENABLE_SANITIZE_OPTIONS=${sanitize_env}
 
-             ENABLE_SANITIZE_LIBPATH=${sanitize_libpath}
-
-             CPPFLAGS="${sanitize_flags} $CPPFLAGS"
-                     LIBS="${sanitize_libs} $LIBS"
-
-fi
 
 
 
@@ -14262,7 +14272,6 @@ fi
  # selects particular envs for build:host
 
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
-
  abs_srcdir=$(cd ${srcdir}; pwd)
 
 
@@ -14304,7 +14313,7 @@ fi
 
 
   if test x"${NOSETESTS}" != x""; then :
-  :
+
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"python-nose not found\"" >&5
 $as_echo "$as_me: WARNING: \"python-nose not found\"" >&2;}
@@ -14428,18 +14437,16 @@ fi
 
 
   if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
-  :
+
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tap plugin for python-nose not found\"" >&5
 $as_echo "$as_me: WARNING: \"Tap plugin for python-nose not found\"" >&2;}
 fi
 
 
- as_fn_append PY_LOG_COMPILER "${PYTHON} \$(top_srcdir)/testing/testing.py"
+ as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
  as_fn_append PY_LOG_FLAGS ""
 
- as_fn_append PY_LOG_COMPILER_TAP "${PYTHON} \$(top_srcdir)/testing/testing.py"
- as_fn_append PY_LOG_FLAGS_TAP ""
 
  case "${build_os}:${host}" in #(
   #
@@ -14822,7 +14829,7 @@ fi
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) "
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
   ;; #(
   #
  # OTHER
@@ -14858,11 +14865,6 @@ fi
 
 
 
-
-
-
-
-          TESTS_SKIP="sh -c \"exit 77\"; :"
 
 
 

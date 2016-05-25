@@ -1005,7 +1005,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
  AX_ENABLE_SANITIZE([ENABLE_SANITIZE],
                     [AS_VAR_SET([CPPFLAGS],["${sanitize_flags} $CPPFLAGS"])
                      AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
-                    [echo "${enable_sanitize} sanitizer not available."; exit 111;])
+                    [echo "sanitizer not available."; exit 111;])
 
  
  # selects particular envs for build:host
@@ -1018,9 +1018,6 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
  AC_SUBST(PY_LOG_COMPILER)
  AC_SUBST(PY_LOG_FLAGS)
  
- TS_SET_SKIP_CMD([TESTS_SKIP])
- AC_SUBST(TESTS_SKIP)
-
  AC_SUBST(VALGRIND_FLAGS)
  AC_SUBST(VALGRIND_memcheck_FLAGS)
 

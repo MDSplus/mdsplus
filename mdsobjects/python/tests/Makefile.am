@@ -7,10 +7,6 @@ include ../../../testing/testing.am
 ## // TESTS  //////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
-#PY_LOG_COMPILER=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER@,${TESTS_SKIP})
-#PY_LOG_COMPILER_TAP=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER_TAP@,${TESTS_SKIP})
-
-
 TEST_EXTENSIONS = .py
 
 
@@ -56,16 +52,6 @@ MOSTLYCLEANFILES =
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
-
-
-#nose_test:
-#	@ export TEST_FORMAT=${TEST_FORMAT}; \
-#	$(TESTS_ENVIRONMENT) $(PYTHON) $(srcdir)/test_data.py
-
-#py_test:
-#	$(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py \
-#	 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ && \
-#	 echo SUCCESS || echo FAIL;
 
 
 clean-local: clean-local-tests
