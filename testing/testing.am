@@ -78,6 +78,12 @@ if ENABLE_SANITIZE
    ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
      ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
   PY_LOG_FLAGS += $(shell ${_check_sanitize_ldd} || echo --skip;)
+
+  # // NOTE:
+  # somtimes thread sanitizer does not work with python... probably because of
+  # the -fpie flag for now we will disable it at all.
+  #
+  PY_LOG_FLAGS += $(shell test x"${ENABLE_SANITIZE}" != x"thread" || echo --skip;)
 endif
 
 
