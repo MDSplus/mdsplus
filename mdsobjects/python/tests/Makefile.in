@@ -554,7 +554,6 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
-TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -666,9 +665,6 @@ SUFFIXES = .log .tap .xml
 
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
-
-#PY_LOG_COMPILER=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER@,${TESTS_SKIP})
-#PY_LOG_COMPILER_TAP=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER_TAP@,${TESTS_SKIP})
 TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
@@ -1194,15 +1190,6 @@ tests-envdump:
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
        #simulateSegfault.py 
-
-#nose_test:
-#	@ export TEST_FORMAT=${TEST_FORMAT}; \
-#	$(TESTS_ENVIRONMENT) $(PYTHON) $(srcdir)/test_data.py
-
-#py_test:
-#	$(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py \
-#	 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ && \
-#	 echo SUCCESS || echo FAIL;
 
 clean-local: clean-local-tests
 

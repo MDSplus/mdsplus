@@ -65,7 +65,7 @@ class testing(object):
         
         try:
             from tap.plugins._nose import TAP
-	    nose.run(argv=[ sys.argv[1],'', '--with-tap'])
+	    nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
         except:
             f.remove('tap')
         try:
