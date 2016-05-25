@@ -14030,7 +14030,11 @@ if ac_fn_c_try_link "$LINENO"; then :
   sanitize_flags=$CPPFLAGS
                                 sanitize_libs=$LIBS
                                 sanitize_env=ASAN_OPTIONS
-                                sanitize_libpath=$($LDD conftest$EXEEXT | grep libasan.so | $AWK '{ print $3 }')
+                                sanitize_libpath=$($LDD conftest$EXEEXT \
+                                 | grep libasan.so | $AWK '{ print $3 }')
+                                have_asan=yes
+else
+  have_asan=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -14043,7 +14047,8 @@ $as_echo "$as_me: WARNING: library path not found for asan" >&2;}
 fi
                 CPPFLAGS=${CPPFLAGS_save}
                 LIBS=${LIBS_save}
-
+fi
+     if test "x$have_asan" = xyes; then :
 
 else
   enable_sanitize=no
@@ -14118,7 +14123,11 @@ if ac_fn_c_try_link "$LINENO"; then :
   sanitize_flags=$CPPFLAGS
                                 sanitize_libs=$LIBS
                                 sanitize_env=TSAN_OPTIONS
-                                sanitize_libpath=$($LDD conftest$EXEEXT | grep libtsan.so | $AWK '{ print $3 }')
+                                sanitize_libpath=$($LDD conftest$EXEEXT \
+                                 | grep libtsan.so | $AWK '{ print $3 }')
+                                have_tsan=yes
+else
+  have_tsan=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -14131,7 +14140,8 @@ $as_echo "$as_me: WARNING: library path not found for tsan" >&2;}
 fi
                 CPPFLAGS=${CPPFLAGS_save}
                 LIBS=${LIBS_save}
-
+fi
+     if test "x$have_tsan" = xyes; then :
 
 else
   enable_sanitize=no
@@ -14206,7 +14216,11 @@ if ac_fn_c_try_link "$LINENO"; then :
   sanitize_flags=$CPPFLAGS
                                 sanitize_libs=$LIBS
                                 sanitize_env=UBSAN_OPTIONS
-                                sanitize_libpath=$($LDD conftest$EXEEXT | grep libubsan.so | $AWK '{ print $3 }')
+                                sanitize_libpath=$($LDD conftest$EXEEXT \
+                                 | grep libubsan.so | $AWK '{ print $3 }')
+                                have_ubsan=yes
+else
+  have_ubsan=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -14219,7 +14233,8 @@ $as_echo "$as_me: WARNING: library path not found for ubsan" >&2;}
 fi
                 CPPFLAGS=${CPPFLAGS_save}
                 LIBS=${LIBS_save}
-
+fi
+     if test "x$have_ubsan" = xyes; then :
 
 else
   enable_sanitize=no
