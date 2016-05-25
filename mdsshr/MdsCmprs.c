@@ -223,7 +223,7 @@ Do this in runs.
       ***********/
       ans = (long long)*p32 - (long long)old;
       if ((ans > INT_MAX) || (ans <= INT_MIN)) {
-        pn++;
+        *pn++=ans;
         yy = 32;
       }
       else {
