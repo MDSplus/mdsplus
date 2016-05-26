@@ -562,22 +562,20 @@ fi
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
 
-rm -Rf $(ls %{python_sitelib}/mdsplus* | grep -v devices)
-rm -Rf %{python_sitelib}/MDSplus
-pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
-python setup.py -q install
-rm -Rf build dist MDSplus.egg-info
-rm -f mdsplus_version.pyc
-popd &gt;/dev/null 2&gt;&amp;1
+      rm -Rf %{python_sitelib}/mdsplus-*-python* %{python_sitelib}/MDSplus
+      pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
+      python setup.py -q install
+      rm -Rf build dist MDSplus.egg-info
+      popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
     <prerm>
 
-if [ "$1" == "0" ]
-then
-rm -Rf $(ls %{python_sitelib}/mdsplus* | grep -v devices)
-rm -Rf %{python_sitelib}/MDSplus
-fi
+      if [ "$1" == "0" ]
+      then
+        rm -Rf $(ls %{python_sitelib}/mdsplus* | grep -v devices) &gt;/dev/null 2&gt;&amp;1
+        rm -Rf %{python_sitelib}/MDSplus*
+      fi
 
     </prerm>
   </package>
