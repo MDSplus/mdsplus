@@ -198,17 +198,19 @@ Buildarch: noarch
         sys.stdout.flush()
     try:
         os.stat('/sign_keys/.gnupg')
-        cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /release/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
-        child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
-        child.expect("Enter pass phrase: ")
-        child.sendline("")
-        child.expect(pexpect.EOF)
-        child.close()
-        if child.status != 0:
-            sys.stdout.flush()
-            raise Exception("Error signing rpms. status=%d" % child.status)
-    except Exception,e:
-        print("Got exception in rpm signing: %s" % str(e))
-	print('/sign_keys/.gnupg not found so rpms will not be signed')
+        try:
+            cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /release/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
+            child.expect("Enter pass phrase: ")
+            child.sendline("")
+            child.expect(pexpect.EOF)
+            child.close()
+            if child.status != 0:
+                sys.stdout.flush()
+                raise Exception("Error signing rpms. status=%d" % child.status)
+        except Exception,e:
+            print("Got exception in rpm signing: %s" % str(e))
+        except:
+            print("Sign keys unavailable. Not signing packages.")
 
 buildRpms()
