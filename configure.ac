@@ -1065,12 +1065,20 @@ DX_PS_FEATURE(OFF)
 ## refers to ax_prog_doxygen.m4 macro expansion 
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
-## /////////////////////////////////////////////////
-## /// Sanitized Options - must be after other
-## /// Automake tests as they effect various library
-## /// checks etc.
-## /////////////////////////////////////////////////
+# //////////////////////////////////////////////////////////////////////////// #
+# ////// RELEASE INFO //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
+if [ ! -z ${VERSION} ]
+then
+  RELEASE_MAJOR=$(echo ${VERSION} | cut -d. -f1)
+  RELEASE_MINOR=$(echo ${VERSION} | cut -d. -f2)
+  RELEASE_RELEASE=$(echo ${VERSION} | cut -d. -f3)
+  RELEASE_BRANCH=$BRANCH
+  RELEASE_COMMIT=$GIT_COMMIT
+  RELEASE_DATE="$(date)"
+  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+fi
 
 
 
@@ -1107,11 +1115,6 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
-RELEASE_MAJOR=$MAJOR
-RELEASE_MINOR=$MINOR
-RELEASE_RELEASE=$RELEASE
-RELEASE_BRANCH=$BRANCH
-RELEASE_COMMIT=$GIT_COMMIT
 
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES

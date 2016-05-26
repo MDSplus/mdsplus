@@ -22,7 +22,7 @@ SYNOPSIS
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
                [--arch=name] [--color] [--winhost=hostname]
-               [--winbld=dir] [--winrembld=dir]
+               [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -182,6 +182,9 @@ OPTIONS
     --winrembld=directory
        Specify the directory on the windows system host of the windows share.
 
+    --gitcommit=commit
+       Set by trigger jenkins job representing the commit hash of the sources.
+
 OPTIONS WITH OS SPECIFIC DEFAULT
 
    --platform=name
@@ -332,6 +335,9 @@ parsecmd() {
 		;;
 	    --winrembld=*)
 		WINREMBLD="${i#*=}"
+		;;
+	    --gitcommit=*)
+		GIT_COMMIT="${i#*=}"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -577,6 +583,7 @@ OS=${OS} \
   WINHOST="${WINHOST}" \
   WINBLD="${WINBLD}" \
   WINREMBLD="${WINREMBLD}" \
+  GIT_COMMIT="${GIT_COMMIT}" \
   ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
 if [ "$?" != "0" ]
 then

@@ -246,7 +246,7 @@ then
     fi
     VERSION=${MAJOR}.${MINOR}.${RELEASEV}
     git log --decorate=full > ${SRCDIR}/ChangeLog
-    opts="$opts --release=${VERSION}"
+    opts="$opts --release=${VERSION} --gitcommit=${GIT_COMMIT}"
     cat <<EOF > ${SRCDIR}/trigger.version
 RELEASE_TAG=${RELEASE_TAG}
 VERSION=${VERSION}
