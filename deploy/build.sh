@@ -371,6 +371,13 @@ fi
 #
 # Reparse the command using the trigger options, the os options and the command line options.
 #
+cat <<EOF
+
+Build script executing with the following combined options:
+
+   ${trigger_opts} ${os_opts} ${opts}
+
+EOF
 parsecmd "${trigger_opts} ${os_opts} ${opts}"
 
 RED() {

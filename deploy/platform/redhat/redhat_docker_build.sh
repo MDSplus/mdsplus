@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-# docker_build is used to build, test, package and add rpms's to a
+# redhat_docker_build.sh is used to build, test, package and add rpms's to a
 # repository for redhat based systems.
 #
 #
