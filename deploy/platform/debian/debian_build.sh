@@ -72,7 +72,7 @@ do
     # only build the deb's after both 32-bit and 64-bit builds are
     # complete. Likewise only publish the release once.
     #
-    docker run -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
+    docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
        -u $(id -u):$(id -g) \
        -e "ARCH=${arch}" \
        -e "ARCHES=${ARCH}" \

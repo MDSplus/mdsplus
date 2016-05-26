@@ -28,7 +28,7 @@ then
     mkdir -p ${PUBLISHDIR}
 fi
 set +e
-docker run -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
+docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
        -u $(id -u):$(id -g) \
        -e "BRANCH=$BRANCH" \
        -e "DISTNAME=$DISTNAME" \
