@@ -210,7 +210,7 @@ Buildarch: noarch
                 raise Exception("Error signing rpms. status=%d" % child.status)
         except Exception,e:
             print("Got exception in rpm signing: %s" % str(e))
-        except:
-            print("Sign keys unavailable. Not signing packages.")
+    except:
+        print("Sign keys unavailable. Not signing packages.")
 
 buildRpms()
