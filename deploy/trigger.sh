@@ -244,12 +244,12 @@ then
 	let RELEASEV=$RELEASEV+1;
 	RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     fi
-    VERSION=${MAJOR}.${MINOR}.${RELEASEV}
+    RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
     git log --decorate=full > ${SRCDIR}/ChangeLog
-    opts="$opts --release=${VERSION} --gitcommit=${GIT_COMMIT}"
+    opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"
     cat <<EOF > ${SRCDIR}/trigger.version
 RELEASE_TAG=${RELEASE_TAG}
-VERSION=${VERSION}
+RELEASE_VERSION=${RELEASE_VERSION}
 EOF
 fi
 if [ "$PUBLISH" = "yes" ]
@@ -257,7 +257,7 @@ then
     if [ -r ${SRCDIR}/trigger.version ]
     then
 	. ${SRCDIR}/trigger.version
-	opts="$opts --publish=${VERSION}"
+	opts="$opts --publish=${RELEASE_VERSION}"
     else
 	RED $COLOR
 	cat <<EOF >&2

@@ -261,19 +261,19 @@ parsecmd() {
 		EVENT_PORT="${i#*=}"
 		;;
 	    --release)
-		VERSION=1.2.3
+		RELEASE_VERSION=1.2.3
 		RELEASE=yes
 		;;
             --release=*)
-		VERSION="${i#*=}"
+		RELEASE_VERSION="${i#*=}"
 		RELEASE=yes
 		;;
 	    --publish)
-		VERSION=1.2.3
+		RELEASE_VERSION=1.2.3
 		PUBLISH=yes
 		;;
             --publish=*)
-		VERSION="${i#*=}"
+		RELEASE_VERSION="${i#*=}"
 		PUBLISH=yes
 		;;
 	    --platform=*)
@@ -544,11 +544,11 @@ fi
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${BRANCH}_${VERSION} ]
+    if [ -r $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION} ]
     then
 	cat <<EOF
 ${GREEN}
-A ${VERSION} ${BRANCH} release already exists for ${OS}.
+A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.
 The build will be skipped.
 ${NORMAL}
 EOF
@@ -564,7 +564,7 @@ OS=${OS} \
   EVENT_PORT=${EVENT_PORT} \
   RELEASE=${RELEASE} \
   PUBLISH=${PUBLISH} \
-  VERSION=${VERSION} \
+  RELEASE_VERSION=${RELEASE_VERSION} \
   PLATFORM=${PLATFORM} \
   VALGRIND_TOOLS=${VALGRIND_TOOLS} \
   SANITIZE=${SANITIZE} \
@@ -609,6 +609,6 @@ EOF
     NORMAL $COLOR
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${VERSION}
+	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}
     fi
 fi

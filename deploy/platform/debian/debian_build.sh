@@ -79,7 +79,7 @@ do
        -e "BRANCH=$BRANCH" \
        -e "DISTNAME=$DISTNAME" \
        -e "OS=$OS" \
-       -e "VERSION=$VERSION"  \
+       -e "RELEASE_VERSION=$RELEASE_VERSION"  \
        -e "TEST=$TEST" \
        -e "TESTFORMAT=$TEST_FORMAT" \
        -e "mdsevent_port=$EVENT_PORT" \

@@ -450,7 +450,7 @@ EOF
     rm -Rf /release/*
     
     BRANCH=${BRANCH} \
-	  VERSION=${VERSION} \
+	  RELEASE_VERSION=${RELEASE_VERSION} \
 	  BNAME=${BNAME} \
 	  DISTNAME=${DISTNAME} \
 	  BUILDROOT=${BUILDROOT} \

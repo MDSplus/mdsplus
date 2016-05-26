@@ -47,7 +47,7 @@ def doRequire(info, out, root, require):
 def buildRpms():
     info=dict()
     info['branch']=os.environ['BRANCH']
-    version=os.environ['VERSION'].split('.')
+    version=os.environ['RELEASE_VERSION'].split('.')
     info['major']=int(version[0])
     info['minor']=int(version[1])
     info['release']=int(version[2])

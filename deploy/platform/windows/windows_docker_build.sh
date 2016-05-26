@@ -105,9 +105,9 @@ set -e
 
 if [ "$RELEASE" = "yes" ]
 then
-    major=$(echo ${VERSION} | cut -d. -f1)
-    minor=$(echo ${VERSION} | cut -d. -f2)
-    release=$(echo ${VERSION} | cut -d. -f3)
+    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     if [ "${BRANCH}" = "stable" ]
     then
 	bname=""
@@ -168,9 +168,9 @@ fi
 
 if [ "$PUBLISH" = "yes" ]
 then
-    major=$(echo ${VERSION} | cut -d. -f1)
-    minor=$(echo ${VERSION} | cut -d. -f2)
-    release=$(echo ${VERSION} | cut -d. -f3)
+    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     if [ "${BRANCH}" = "stable" ]
     then
 	bname=""

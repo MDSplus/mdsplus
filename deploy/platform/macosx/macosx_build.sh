@@ -46,7 +46,7 @@ then
     else
 	BNAME="-${BRANCH}"
     fi
-    IFS='.' read -ra VERS <<< "${VERSION}"
+    IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
     set +e
     sudo chown -R root:admin ${WORKSPACE}/releasebld/buildroot
     /Developer/usr/bin/packagemaker \
@@ -75,6 +75,6 @@ then
     else
 	BNAME="-${BRANCH}"
     fi
-    IFS='.' read -ra VERS <<< "${VERSION}"
+    IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
     rsync -a ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg ${PUBLISHDIR}/${BRANCH}/
 fi

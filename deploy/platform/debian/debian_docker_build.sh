@@ -409,9 +409,9 @@ then
     ###
     ### Build release version of MDSplus and then construct installer debs
     ###
-    major=$(echo ${VERSION} | cut -d. -f1)
-    minor=$(echo ${VERSION} | cut -d. -f2)
-    release=$(echo ${VERSION} | cut -d. -f3)
+    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     set -e
     mkdir -p /release/${BRANCH}/DEBS/${ARCH}
     rm -Rf /workspace/releasebld/* /release/${BRANCH}/DEBS/${ARCH}/*
@@ -453,7 +453,7 @@ then
     fi
     BUILDROOT=/workspace/releasebld/buildroot \
 	     BRANCH=${BRANCH} \
-	     VERSION=${VERSION} \
+	     RELEASE_VERSION=${RELEASE_VERSION} \
 	     ARCH=${ARCH} \
 	     DISTNAME=${DISTNAME} \
 	     PLATFORM=${PLATFORM} \
@@ -461,7 +461,7 @@ then
     baddeb=0
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*\.deb")
     do
-	pkg=$(debtopkg $(basename $deb) ${BNAME} ${VERSION} ${ARCH})
+	pkg=$(debtopkg $(basename $deb) ${BNAME} ${RELEASE_VERSION} ${ARCH})
 	if [ "${#pkg}" = "0" ]
 	then
 	   continue

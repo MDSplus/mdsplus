@@ -16962,11 +16962,11 @@ esac
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-if  ! -z ${VERSION}
+if  ! -z ${RELEASE_VERSION}
 then
-  RELEASE_MAJOR=$(echo ${VERSION} | cut -d. -f1)
-  RELEASE_MINOR=$(echo ${VERSION} | cut -d. -f2)
-  RELEASE_RELEASE=$(echo ${VERSION} | cut -d. -f3)
+  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
   RELEASE_BRANCH=$BRANCH
   RELEASE_COMMIT=$GIT_COMMIT
   RELEASE_DATE="$(date)"
