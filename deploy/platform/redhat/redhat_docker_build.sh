@@ -426,7 +426,7 @@ then
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
     mkdir -p /release/RPMS;
     cp /source/deploy/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
-    if [ -d /sign_keys ]
+    if [ -d /sign_keys/.gnupg ]
     then
 	GPGCHECK="1"
     else
@@ -526,7 +526,7 @@ then
     ###
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
     ###
-    if ( ! rsync -a /release/RPMS /publish/RPMS )
+    if ( ! rsync -a --exclude=reprodata /release/RPMS /publish/RPMS )
     then
 	RED $COLOR
 	cat <<EOF >&2
@@ -540,7 +540,7 @@ EOF
 	NORMAL $COLOR
        	exit 1
     fi
-    if ( ! createrepo -q /publish/RPMS )
+    if ( ! createrepo -q --update --cachedir --deltas /publish/cache /publish/RPMS )
     then
 	RED $COLOR
 	cat <<EOF >&2

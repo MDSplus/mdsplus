@@ -6,6 +6,7 @@
 #
 # Run docker image to build mdsplus
 #
+printenv
 set -e
 volume() {
     if [ ! -z "$1" ]
