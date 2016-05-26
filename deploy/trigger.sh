@@ -125,15 +125,9 @@ parsecmd() {
 	    --test=skip)
 		opts="${opts} ${i}"
 		;;
-	    --test_format=tap)
-		opts="${opts} ${i}"
-		;;
-	    --test_format=log)
-		opts="${opts} ${i}"
-		;;
 	    --test_format=*)
-		2>&1 echo "Invalid test format specified. Only tap or log format is supported."
-		exit 1;;
+		opts="${opts} ${i}"
+		;;
 	    --release)
 		RELEASE=yes
 		;;
@@ -156,13 +150,13 @@ parsecmd() {
 		opts="${opts} ${i}"
 		;;
 	    --keys=*)
-		KEYS="${i#*=}"
+		opts="${opts} ${i}"
 		;;
 	    --dockerpull)
-		opts="${opts} --dockerpull"
+		opts="${opts} ${i}"
 		;;
 	    --color)
-		opts="${opts} --color"
+		opts="${opts} ${i}"
 		COLOR=yes
 		;;
 	    *)

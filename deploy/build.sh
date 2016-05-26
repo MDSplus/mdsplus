@@ -308,7 +308,6 @@ parsecmd() {
 		;;
 	    --keys=*)
 		KEYS="${i#*=}"
-		echo "found --keys=${KEYS}"
 		;;
 	    --distname=*)
 		DISTNAME="${i#*=}"
@@ -543,7 +542,6 @@ EOF
 	exit 0
     fi
 fi
-echo "Before script KEYS=${KEYS}"
 #
 # Invoke the platform specific build script
 #
