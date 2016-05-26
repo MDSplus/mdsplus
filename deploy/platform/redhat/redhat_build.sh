@@ -6,6 +6,7 @@
 #
 # Run docker image to build mdsplus
 #
+echo "KEYS is set to ${KEYS}"
 printenv
 set -e
 volume() {
