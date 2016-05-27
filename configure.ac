@@ -68,8 +68,8 @@ AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************
 #fi
 
 #FIXME: Remove this when Makefile.inc goes away
-AS_CASE(["$MKDIR_P"],
-        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
+#AS_CASE(["$MKDIR_P"],
+#        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
 
 dnl See if we need to use native compilers
 AS_CASE(["$host"],
@@ -1005,7 +1005,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
  AX_ENABLE_SANITIZE([ENABLE_SANITIZE],
                     [AS_VAR_SET([CPPFLAGS],["${sanitize_flags} $CPPFLAGS"])
                      AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
-                    [echo "${enable_sanitize} sanitizer not available."; exit 111;])
+                    [echo "sanitizer not available."; exit 111;])
 
  
  # selects particular envs for build:host
@@ -1018,9 +1018,6 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
  AC_SUBST(PY_LOG_COMPILER)
  AC_SUBST(PY_LOG_FLAGS)
  
- TS_SET_SKIP_CMD([TESTS_SKIP])
- AC_SUBST(TESTS_SKIP)
-
  AC_SUBST(VALGRIND_FLAGS)
  AC_SUBST(VALGRIND_memcheck_FLAGS)
 
@@ -1068,12 +1065,20 @@ DX_PS_FEATURE(OFF)
 ## refers to ax_prog_doxygen.m4 macro expansion 
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
-## /////////////////////////////////////////////////
-## /// Sanitized Options - must be after other
-## /// Automake tests as they effect various library
-## /// checks etc.
-## /////////////////////////////////////////////////
+# //////////////////////////////////////////////////////////////////////////// #
+# ////// RELEASE INFO //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
+if [ ! -z ${RELEASE_VERSION} ]
+then
+  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
+  RELEASE_BRANCH=$BRANCH
+  RELEASE_COMMIT=$GIT_COMMIT
+  RELEASE_DATE="$(date)"
+  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+fi
 
 
 
@@ -1110,11 +1115,6 @@ AH_VERBATIM([_WIN32], [
 dnl add here what goes on bottom of config.h
 AH_BOTTOM()
 
-RELEASE_MAJOR=$MAJOR
-RELEASE_MINOR=$MINOR
-RELEASE_RELEASE=$RELEASE
-RELEASE_BRANCH=$BRANCH
-RELEASE_COMMIT=$GIT_COMMIT
 
 dnl define custom direcotries substitution
 AX_MDSPLUS_DIRECTORIES

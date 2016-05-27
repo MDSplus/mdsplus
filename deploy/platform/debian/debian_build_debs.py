@@ -70,7 +70,7 @@ def buildDebs():
     info=dict()
     info['buildroot']=os.environ['BUILDROOT']
     info['BRANCH']=os.environ['BRANCH']
-    version=os.environ['VERSION'].split('.')
+    version=os.environ['RELEASE_VERSION'].split('.')
     info['dist']=os.environ['DISTNAME']
     info['platform']=os.environ['PLATFORM']
     info['arch']=os.environ['ARCH']

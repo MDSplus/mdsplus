@@ -1,11 +1,12 @@
 #!/bin/bash
 #
-# platform/debian/build.sh
+# platform/windows/windows_build.sh
 #
-# Invoked by mdsplus/deploy/build.sh for debian platforms.
+# Invoked by mdsplus/deploy/build.sh for windows platform.
 #
 # Run docker image to build mdsplus
 #
+printenv
 set -e
 volume() {
     if [ ! -z "$1" ]
@@ -36,8 +37,7 @@ NORMAL() {
 if [ "${RELEASE}" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}
-    rm -Rf ${RELEASEDIR}/${BRANCH}/DEBS
-    rm -Rf ${RELEASEDIR}/repo
+    rm -Rf ${RELEASEDIR}/${BRANCH}/*
     releasedir=${RELEASEDIR}
 fi
 
@@ -58,24 +58,10 @@ spacedelim() {
     echo $ans
 }
 
-exitstatus=0
-images=(${DOCKERIMAGE})
 arches=($(spacedelim ${ARCH}))
 idx=0
-while [[ $idx -lt ${#images[*]} ]]
-do
-    image=${images[$idx]}
-    arch=${arches[$idx]}
-    echo "Building installers for ${arch} using ${image}"
-    #
-    # If there are both 32-bit and 64-bit packages for the platform
-    # only build the deb's after both 32-bit and 64-bit builds are
-    # complete. Likewise only publish the release once.
-    #
-    docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
+docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
        -u $(id -u):$(id -g) \
-       -e "ARCH=${arch}" \
-       -e "ARCHES=${ARCH}" \
        -e "BRANCH=$BRANCH" \
        -e "DISTNAME=$DISTNAME" \
        -e "OS=$OS" \
@@ -85,39 +71,35 @@ do
        -e "mdsevent_port=$EVENT_PORT" \
        -e "RELEASE=$RELEASE" \
        -e "PUBLISH=$PUBLISH" \
-       -e "SANITIZE=$SANITIZE" \
-       -e "VALGRIND_TOOLS=$VALGRIND_TOOLS" \
-       -e "UPDATEPKG=$UPDATEPKG" \
        -e "PLATFORM=$PLATFORM" \
        -e "COLOR=${COLOR}" \
+       -e "WINREMBLD=${WINREMBLD}" \
+       -e "WINHOST=${WINHOST}" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
+       $(volume "${WINBLD}" /winbld) \
        $(volume "${releasedir}" /release) \
        $(volume "${publishdir}" /publish) \
        $(volume "$KEYS" /sign_keys) \
-       ${image} /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
-    status=$?
-    if [ -r ${WORKSPACE}/${OS}_docker-cid ]
-    then
-	sleep 3
-	docker rm $(cat ${WORKSPACE}/${OS}_docker-cid)
-	rm -f ${WORKSPACE}/${OS}_docker-cid
-    fi
-    if [ ! "$status" = "0" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
+       ${DOCKERIMAGE} /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
+status=$?
+if [ -r ${WORKSPACE}/${OS}_docker-cid ]
+then
+    sleep 3
+    docker rm $(cat ${WORKSPACE}/${OS}_docker-cid)
+    rm -f ${WORKSPACE}/${OS}_docker-cid
+fi
+if [ ! "$status" = "0" ]
+then
+    RED $COLOR
+    cat <<EOF >&2
 ======================================================
 
 Docker ${PLATFORM}_docker_build.sh returned failure   
-status when exiting from ${image}
+status when exiting from ${DOCKERIMAGE}
 
 ======================================================
 EOF
-	NORMAL $COLOR
-	exitstatus=$status
-    fi
-    let idx=idx+1
-done
-exit $exitstatus
-
+    NORMAL $COLOR
+    exit 1
+fi

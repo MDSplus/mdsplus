@@ -4,6 +4,26 @@
 # debian_docker_build is used to build, test, package and add deb's to a
 # repository for debian based systems.
 #
+
+RED() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[31;47m"
+    fi
+}
+GREEN() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[32;47m"
+    fi
+}
+NORMAL() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[m"
+    fi
+}
+
 if [ -r /source/deploy/os/${OS}.env ]
 then
     source /source/deploy/os/${OS}.env
@@ -25,6 +45,7 @@ spacedelim() {
 
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
+export PYTHONDONTWRITEBYTECODE=no
 
 set -e
 if [ "$ARCH" = "amd64" ]
@@ -75,15 +96,37 @@ then
 	    ###
 	    ### Test with valgrind
 	    ###
-	    $MAKE -k tests-valgrind 2>&1;
-	    tests_valgrind64=$?
+	    if ( ! $MAKE -k tests-valgrind 2>&1 )
+	    then
+		RED $COLOR
+		cat <<EOF >&2
+===========================================
+
+Failure during 64-bit valgrind tests
+
+===========================================
+EOF
+		NORMAL $COLOR
+		tests_valgrind64=1
+	    fi
 	    $MAKE clean_TESTS
 	fi
 	###
 	### Run standard tests
 	###
-	$MAKE -k tests 2>&1;
-	tests_64=$?
+	if (! $MAKE -k tests 2>&1 )
+	then
+	    RED $COLOR
+	    cat <<EOF >&2
+=====================================
+
+Failure during 64-bit normal testing.
+
+=====================================
+EOF
+	    NORMAL $COLOR
+	    tests_64=1
+	fi
 	popd;
 	if [ ! -z "$SANITIZE" ]
 	then
@@ -113,8 +156,19 @@ then
 		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
-		    $MAKE -k tests 2>&1;
-		    let test_64_san_${test}=$?
+		    if ( ! $MAKE -k tests 2>&1 )
+		    then
+			RED $COLOR
+			cat <<EOF >&2
+==============================================
+
+Failure during 64-bit sanitize test ${test}.
+
+=============================================
+EOF
+			NORMAL $COLOR
+			let test_64_san_${test}=1
+		    fi
 		else
 		    echo "configure returned status $status"
 		    let test_64_san_${test}=$status
@@ -148,8 +202,19 @@ then
 	    ###
 	    ### Test with valgrind
 	    ###
-	    $MAKE -k tests-valgrind 2>&1;
-	    tests_valgrind32=$?;
+	    if ( ! $MAKE -k tests-valgrind 2>&1 )
+	    then
+		RED $COLOR
+		cat <<EOF >&2
+========================================
+
+Failure during 32-bit valgrind testing.
+
+========================================
+EOF
+		NORMAL $COLOR
+		tests_valgrind32=1
+	    fi
 	    $MAKE clean_TESTS
 	fi
 	###
@@ -189,8 +254,19 @@ then
 		elif [ "$status" = 0 ]; then
 		    $MAKE
 		    $MAKE install
-		    $MAKE -k tests 2>&1;
-		    let test_32_san_${test}=$?
+		    if ( ! $MAKE -k tests 2>&1 )
+		    then
+			RED $COLOR
+			cat <<EOF >&2
+===============================================
+
+Failure during 32-bit sanitize test ${test}
+
+===============================================
+EOF
+			NORMAL $COLOR
+			let test_32_san_${test}=1
+		    fi
 		else
 		    echo "Configure returned a status 0f $status"
 		    let test_32_san_${test}=$status
@@ -206,88 +282,110 @@ then
     failed=0;
     if [ ! -z "$tests_64" -a "$tests_64" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 64-bit test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     if [ ! -z "$tests_valgrind64" -a "$tests_valgrind64" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 64-bit valgrind test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     for test in address thread undefined; do
 	eval "status=\$test_64_san_${test}"
 	if [ ! -z "$status" -a "$status" != "0" ]
 	then
+	    RED $COLOR
 	    cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 64-bit santize with ${test} failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	    NORMAL $COLOR
 	    failed=1;
 	fi
     done;
     if [ ! -z "$tests_32" -a "$tests_32" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 32-bit test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     if [ ! -z "$tests_valgrind32" -a "$tests_valgrind32" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 32-bit valgrind test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     for test in address thread undefined; do
 	eval "status=\$test_32_san_${test}"
 	if [ ! -z "$status" -a "$status" != "0" ]
 	then
+	    RED $COLOR
 	    cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 32-bit santize with ${test} failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	    NORMAL $COLOR
 	    failed=1;
 	fi
     done;
     if [ "$failed" = "1" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: One or more tests have failed (see above). Build ABORTED 
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	exit 1;
     fi;
-    echo "All tests succeeded"
+    GREEN $COLOR
+    cat <<EOF >&2
+=================================================================
+
+All tests succeeded
+
+=================================================================
+EOF
+    NORMAL $COLOR
 fi
 
 if [ "${BRANCH}" = "stable" ]
@@ -311,11 +409,12 @@ then
     ###
     ### Build release version of MDSplus and then construct installer debs
     ###
-    major=$(echo ${VERSION} | cut -d. -f1)
-    minor=$(echo ${VERSION} | cut -d. -f2)
-    release=$(echo ${VERSION} | cut -d. -f3)
+    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     set -e
-    rm -Rf /workspace/releasebld/* /release/*
+    mkdir -p /release/${BRANCH}/DEBS/${ARCH}
+    rm -Rf /workspace/releasebld/* /release/${BRANCH}/DEBS/${ARCH}/*
     if [ "${ARCH}" = "amd64" ]
     then
 	MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
@@ -352,10 +451,9 @@ then
 	$MAKE install
 	popd
     fi
-    mkdir -p /release/${BRANCH}/DEBS/${ARCH}
     BUILDROOT=/workspace/releasebld/buildroot \
 	     BRANCH=${BRANCH} \
-	     VERSION=${VERSION} \
+	     RELEASE_VERSION=${RELEASE_VERSION} \
 	     ARCH=${ARCH} \
 	     DISTNAME=${DISTNAME} \
 	     PLATFORM=${PLATFORM} \
@@ -363,7 +461,7 @@ then
     baddeb=0
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*\.deb")
     do
-	pkg=$(debtopkg $(basename $deb) ${BNAME} ${VERSION} ${ARCH})
+	pkg=$(debtopkg $(basename $deb) ${BNAME} ${RELEASE_VERSION} ${ARCH})
 	if [ "${#pkg}" = "0" ]
 	then
 	   continue
@@ -380,21 +478,24 @@ then
 	else
 	    set +e
 	    echo "Checking contents of $(basename $deb)"
-	    if ( dpkg -c $deb | \
-		grep -v python/dist | \
-		grep -v python/build | \
-		grep -v egg-info | \
-		awk '{print $6}' | diff - ${checkfile} )
+	    if ( diff <(dpkg -c $deb | \
+		       grep -v python/dist | \
+		       grep -v python/build | \
+		       grep -v egg-info | \
+		       awk '{print $6}' | \
+		       sort) <( sort ${checkfile} ) )
 	    then
 		echo "Contents of $(basename $deb) is correct."
 	    else
+		RED $COLOR
 		cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem with contents of $(basename $deb)
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+		NORMAL $COLOR
 		baddeb=1
 	    fi
 	    set -e
@@ -402,14 +503,16 @@ EOF
     done
     if [ "$baddeb" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem with contents of one or more debs. (see above)
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	exit 1
     fi
     echo "Building repo";
@@ -444,14 +547,16 @@ EOF
     do
 	if ( ! reprepro -V -C ${BRANCH} includedeb MDSplus $deb )
 	then
+	    RED $COLOR
 	    cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem installing $deb into repository.
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	    NORMAL $COLOR
 	    exit 1
 	fi
 	
@@ -470,14 +575,16 @@ then
     then
 	if ( ! rsync -a /release/repo /publish/ )
 	then
+	    RED $COLOR
 	    cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem copying repo into publish area.
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	    NORMAL $COLOR
 	    exit 1
 	fi
     else
@@ -487,14 +594,16 @@ EOF
 	do
 	    if ( ! reprepro -V -C ${BRANCH} includedeb MDSplus $deb )
 	    then
+		RED $COLOR
 		cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem installing debian into publish repository.
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+		NORMAL $COLOR
 		exit 1
 	    fi
 	done

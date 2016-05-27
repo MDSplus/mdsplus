@@ -10,28 +10,16 @@ set -e
 
 if [ -r ${SRCDIR}/deploy/os/${OS}.env ]
 then
-    source ${SRCIDR}/deploy/os/${OS}.env
+    source ${SRCDIR}/deploy/os/${OS}.env
 fi
 
-PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 
-if [ "${RELEASE}" = "yes" ]
-then
-    RELEASEDIR=${RELEASEDIR}/${BRANCH}
-    mkdir -p ${RELEASEDIR}
-else
-    RELEASEDIR=""
-fi
-
-if [ "${PUBLISH}" = "yes" ]
-then
-    PUBLISHDIR=${PUBLISHDIR}
-    mkdir -p ${PUBLISHDIR}
-fi
-
+export PYTHONDONTWRITEBYTECODE=no
 if [ "$RELEASE" = "yes" ]
 then
+    mkdir -p ${RELEASEDIR}/${BRANCH}
+    rm -Rf ${RELEASEDIR}/${BRANCH}/*
     ###
     ### Clean up workspace
     ###
@@ -58,27 +46,35 @@ then
     else
 	BNAME="-${BRANCH}"
     fi
-    IFS='.' read -ra VERS <<< "${VERSION}"
+    IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
+    set +e
     sudo chown -R root:admin ${WORKSPACE}/releasebld/buildroot
-    /Developer/usr/bin/packagemaker --title "MDSplus%(pkgflavor)s" \
-				    --version "%(major)d.%(minor)d.%(release)d" \
-				    --scripts ${SRCDIR}/macosx/scripts \
-				    --install-to "/usr/local" \
-				    --target "10.5" \
-				    -r $(pwd)/build -v -i "MDSplus${BNAME}" \
-				    -o ${RELEASEDIR}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
+    /Developer/usr/bin/packagemaker \
+	--title "MDSplus%(pkgflavor)s" \
+	--version "%(major)d.%(minor)d.%(release)d" \
+	--scripts ${SRCDIR}/macosx/scripts \
+	--install-to "/usr/local" \
+	--target "10.5" \
+	-r $(pwd)/build -v -i "MDSplus${BNAME}" \
+	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
+    status=$?
     sudo chown -R $(id -un):$(id -gn) $(pwd)/build
+    if [ "$status" != "0" ]
+    then
+	>&2 echo "Error building installer"
+    fi
 fi
 
 if [ "$PUBLISH" = "yes" ]
 then
     set -e
+    mkdir -p ${PUBLISHDIR}/${BRANCH}
     if [ "$BRANCH" == "stable" ]
     then
 	BNAME=""
     else
 	BNAME="-${BRANCH}"
     fi
-    IFS='.' read -ra VERS <<< "${VERSION}"
-    rsync -a ${RELEASEDIR}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg ${PUBLISHDIR}/
+    IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
+    rsync -a ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg ${PUBLISHDIR}/${BRANCH}/
 fi

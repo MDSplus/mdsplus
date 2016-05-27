@@ -93,10 +93,13 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:$${ENABLE_SANITIZE_OPTIONS}:start_deactivated=1 \
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
 @ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
 @ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
-@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || echo --skip;)
+@ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
+@ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
+@ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
+@ENABLE_SANITIZE_TRUE@	echo --skip;)
 check_PROGRAMS =
 subdir = mdsobjects/python/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -554,7 +557,6 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
-TESTS_SKIP = @TESTS_SKIP@
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -666,9 +668,6 @@ SUFFIXES = .log .tap .xml
 
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
-
-#PY_LOG_COMPILER=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER@,${TESTS_SKIP})
-#PY_LOG_COMPILER_TAP=$(if $(PYTHON) $(srcdir)/check_python_arch.py ${MAKESHLIBDIR},@PY_LOG_COMPILER_TAP@,${TESTS_SKIP})
 TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
@@ -1097,6 +1096,11 @@ tests: rebuild-tests
 
 @ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
 
+@ENABLE_SANITIZE_TRUE@  # // NOTE:
+@ENABLE_SANITIZE_TRUE@  # somtimes thread sanitizer does not work with python... probably because of
+@ENABLE_SANITIZE_TRUE@  # the -fpie flag for now we will disable it at all.
+@ENABLE_SANITIZE_TRUE@  #
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TAP TARGET   ////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -1194,15 +1198,6 @@ tests-envdump:
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
        #simulateSegfault.py 
-
-#nose_test:
-#	@ export TEST_FORMAT=${TEST_FORMAT}; \
-#	$(TESTS_ENVIRONMENT) $(PYTHON) $(srcdir)/test_data.py
-
-#py_test:
-#	$(TESTS_ENVIRONMENT) $(PYTHON) $(top_srcdir)/testing/testing.py \
-#	 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ && \
-#	 echo SUCCESS || echo FAIL;
 
 clean-local: clean-local-tests
 

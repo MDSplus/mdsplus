@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #
-# docker_build is used to build, test, package and add rpms's to a
+# redhat_docker_build.sh is used to build, test, package and add rpms's to a
 # repository for redhat based systems.
 #
 #
@@ -9,7 +9,6 @@ if [ -r /source/deploy/os/${OS}.env ]
 then
     source /source/deploy/os/${OS}.env
 fi
-printenv
 spacedelim() {
     if [ ! -z "$1" ]
     then
@@ -24,8 +23,28 @@ spacedelim() {
     echo $ans
 }
 
+RED() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[31;47m"
+    fi
+}
+GREEN() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[32;47m"
+    fi
+}
+NORMAL() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[m"
+    fi
+}
+
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim ${VALGRIND_TOOLS})"
+export PYTHONDONTWRITEBYTECODE=no
 set -e
 if [ "$TEST" = "yes" ]
 then
@@ -60,16 +79,38 @@ then
 	###
 	### Test with valgrind
 	###
-	$MAKE -k tests-valgrind 2>&1;
-	tests_valgrind64=$?;
+	if ( ! $MAKE -k tests-valgrind 2>&1 )
+	then
+	    RED $COLOR
+	    cat <<EOF >&2
+=======================================================
+
+Failure doing 64-bit valgrind tests.
+
+=======================================================
+EOF
+	    NORMAL $COLOR
+	    tests_valgrind64=1
+	fi
 	$MAKE clean_TESTS
     fi
     ###
     ### Run standard tests
     ###
-    $MAKE -k tests 2>&1;
-    tests_64=$?
-    popd;
+    if ( ! $MAKE -k tests 2>&1 )
+    then
+	RED $COLOR
+	cat <<EOF >&2
+======================================================
+
+Failure doing 64-bit normal tests.
+
+======================================================
+EOF
+	NORMAL $COLOR
+	tests_64=1
+    fi
+    popd
     if [ ! -z "$SANITIZE" ]
     then
 	###
@@ -98,11 +139,22 @@ then
 	    elif [ "$status" = 0 ]; then
 		$MAKE
 		$MAKE install
-		$MAKE -k tests 2>&1;
-		let test_64_san_${test}=$?
+		if ( ! $MAKE -k tests 2>&1 )
+		then
+		    RED $COLOR
+		    cat <<EOF >&2
+=======================================================
+
+Failure doing 64-bit sanitize test ${test}
+
+=======================================================
+EOF
+		    NORMAL $COLOR
+		    let test_64_san_${test}=1
+		fi
 	    else
 		echo "configure returned status $?"
-		let test_64_san_${test}=$?
+		let test_64_san_${test}=$status
 	    fi
 	    popd
 	done
@@ -132,15 +184,37 @@ then
 	###
 	### Test with valgrind
 	###
-	$MAKE -k tests-valgrind 2>&1;
-	tests_valgrind32=$?;
+	if ( ! $MAKE -k tests-valgrind 2>&1 )
+	then
+	    RED $COLOR
+	    cat <<EOF 2>&1
+===================================================
+
+Failure during 32-bit valgrind testing.
+
+===================================================
+EOF
+	    NORMAL $COLOR
+	    tests_valgrind32=1
+	fi
 	$MAKE clean_TESTS
     fi
     ###
     ### Run standard tests on 32-bit
     ###
-    $MAKE -k tests 2>&1;
-    tests_32=$?;
+    if ( ! $MAKE -k tests 2>&1 )
+    then
+	RED $COLOR
+	cat <<EOF >&2
+===================================================
+
+Failure during 32-bit normal testing.
+
+===================================================
+EOF
+	NORMAL $COLOR
+	tests_32=1
+    fi
     popd;
     if [ ! -z "$SANITIZE" ]
     then
@@ -173,11 +247,22 @@ then
 	    elif [ "$status" = 0 ]; then
 		$MAKE
 		$MAKE install
-		$MAKE -k tests 2>&1;
-		let test_32_san_${test}=$?
+		if ( ! $MAKE -k tests 2>&1 )
+		then
+		    RED $COLOR
+		    cat <<EOF >&2
+=======================================================
+
+Failure during 32-bit sanitize ${test} testing.
+
+=======================================================
+EOF
+		    NORMAL $COLOR
+		    let test_32_san_${test}=1
+		fi
 	    else
-		echo "Configure returned a status 0f $?"
-		let test_32_san_${test}=$?
+		echo "Configure returned a status 0f $status"
+		let test_32_san_${test}=$status
 	    fi
 	    popd
 	done
@@ -188,90 +273,102 @@ then
     failed=0;
     if [ ! -z "$tests_64" -a "$tests_64" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 64-bit test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     if [ ! -z "$tests_valgrind64" -a "$tests_valgrind64" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 64-bit valgrind test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
-    fi;
+    fi
     for test in address thread undefined; do
 	eval "status=\$test_64_san_${test}"
 	if [ ! -z "$status" -a "$status" != "0" ]
 	then
+	    RED $COLOR
 	    cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 64-bit santize with ${test} failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	    NORMAL $COLOR
 	    failed=1;
 	fi
     done;
     if [ ! -z "$tests_32" -a "$tests_32" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 32-bit test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     if [ ! -z "$tests_valgrind32" -a "$tests_valgrind32" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 32-bit valgrind test suite failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	failed=1;
     fi;
     for test in address thread undefined; do
 	eval "status=\$test_32_san_${test}"
 	if [ ! -z "$status" -a "$status" != "0" ]
 	then
+	    RED $COLOR
 	    cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: 32-bit santize with ${test} failed
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
-	    echo "32-bit --enable-sanitize=${test} failed"
-	    failed=1;
+	    NORMAL $COLOR
+	    failed=1
 	fi
-    done;
+    done
     if [ "$failed" = "1" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: One or more tests have failed (see above). Build ABORTED 
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
-	exit 1;
-    fi;
+	NORMAL $COLOR
+	exit 1
+    fi
 fi
-
 if [ "${BRANCH}" = "stable" ]
 then
     BNAME=""
@@ -329,7 +426,7 @@ then
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
     mkdir -p /release/RPMS;
     cp /source/deploy/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
-    if [ -d /sign_keys ]
+    if [ -d /sign_keys/.gnupg ]
     then
 	GPGCHECK="1"
     else
@@ -353,7 +450,7 @@ EOF
     rm -Rf /release/*
     
     BRANCH=${BRANCH} \
-	  VERSION=${VERSION} \
+	  RELEASE_VERSION=${RELEASE_VERSION} \
 	  BNAME=${BNAME} \
 	  DISTNAME=${DISTNAME} \
 	  BUILDROOT=${BUILDROOT} \
@@ -394,13 +491,15 @@ EOF
 	    then
 		echo "Contents of $(basename $rpm) is correct."
 	    else
+		RED $COLOR
 		cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem with contents of $(basename $rpm)
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+		NORMAL $COLOR
 		badrpm=1
 	    fi
 	    set -e
@@ -408,14 +507,16 @@ EOF
     done
     if [ "$badrpm" != "0" ]
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem with contents of one or more rpms. (see above)
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
 	exit 1
     fi
 fi
@@ -425,30 +526,33 @@ then
     ###
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
     ###
-    if ( ! rsync -a /release/RPMS /publish/RPMS )
+    if ( ! rsync -a --exclude=repodata /release/RPMS /publish/ )
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem copying release rpms to publish area!
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
        	exit 1
     fi
-    if ( ! createrepo -q /publish/RPMS )
+    if ( ! createrepo -q --update --cachedir /publish/cache --deltas /publish/RPMS )
     then
+	RED $COLOR
 	cat <<EOF >&2
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 
 Failure: Problem creating rpm repository in publish area!
          Build ABORTED
 
-|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+=================================================================
 EOF
+	NORMAL $COLOR
        	exit 1
     fi
-	
 fi
 

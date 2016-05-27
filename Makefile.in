@@ -144,7 +144,7 @@ install: $(install_DIRS)
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
-	tar -C ${top_srcdir} -cf - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
+	tar -C ${top_srcdir} --exclude='.gitignore' --exclude='*.pyc' -cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
 	find . -name '_version\.py' -exec cp {} $(exec_prefix)/{} \;
 	tar -C ${top_builddir} -cf - include/config.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi

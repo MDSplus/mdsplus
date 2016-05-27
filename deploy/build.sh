@@ -13,13 +13,16 @@ NAME
                installers.
 
 SYNOPSIS
-    ./build.sh --os=name [--test[=skip]] [--testformat=tap|log] [--release=version] [--publish=version]
+    ./build.sh --os=name [--test[=skip]] [--test_format=list]
+               [--testrelease]
+               [--release=version] [--publish=version]
                [--source=dir] [--workspace=dir] [--branch=name]
                [--releasedir=dir] [--publishdir=dir] [--keys=dir]
                [--distname=dir] [--dockerpull]
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
-               [--arch=name]
+               [--arch=name] [--color] [--winhost=hostname]
+               [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -87,7 +90,14 @@ OPTIONS
        contain a --test=skip which supercedes a --test option on the
        command line.
 
-   --test_format=tap|log
+   --testrelease
+       After performing tests continue to build a test release to verify
+       package contents matches expected contents. Add to one os build for
+       each of redhat platform and debian platform. Full release builds
+       are not needed for all instances of redhat and debian os when just
+       performing tests.
+
+   --test_format=list
        Format used when publishing test results. If you want to see the
        output of the tests use the log option. The tap option will publish
        the results in a standard tap format which only gives pass or fail
@@ -158,6 +168,23 @@ OPTIONS
        release builds verify the contents of new installers against these
        content files.
 
+    --color
+       If this option is specified, success and failure messages will be
+       output using ansi color escape sequences.
+
+    --winhost=hostname
+       Specify the windows system host which has a wsgi application used to
+       build the Visual Studio version of the cpp objects dll.
+
+    --winbld=directory
+       Specify the directory on the linux host with the windows share mounted.
+
+    --winrembld=directory
+       Specify the directory on the windows system host of the windows share.
+
+    --gitcommit=commit
+       Set by trigger jenkins job representing the commit hash of the sources.
+
 OPTIONS WITH OS SPECIFIC DEFAULT
 
    --platform=name
@@ -224,32 +251,29 @@ parsecmd() {
 	    --test=skip)
 		TEST=skip
 		;;
-	    --test_form=tap)
-		TEST_FORMAT=tap
-		;;
-	    --test_format=log)
-		TEST_FORMAT=log
+	    --testrelease)
+		TEST_RELEASE=yes
 		;;
 	    --test_format=*)
-		2>&1 echo "Invalid test format specified. Only tap or log format is supported."
-		exit 1;;
+		TEST_FORMAT="${i#*=}"
+		;;
 	    --eventport=*)
 		EVENT_PORT="${i#*=}"
 		;;
 	    --release)
-		VERSION=1.2.3
+		RELEASE_VERSION=1.2.3
 		RELEASE=yes
 		;;
             --release=*)
-		VERSION="${i#*=}"
+		RELEASE_VERSION="${i#*=}"
 		RELEASE=yes
 		;;
 	    --publish)
-		VERSION=1.2.3
+		RELEASE_VERSION=1.2.3
 		PUBLISH=yes
 		;;
             --publish=*)
-		VERSION="${i#*=}"
+		RELEASE_VERSION="${i#*=}"
 		PUBLISH=yes
 		;;
 	    --platform=*)
@@ -300,6 +324,21 @@ parsecmd() {
 	    --updatepkg)
 		UPDATEPKG=yes
 		;;
+	    --color)
+		COLOR=yes
+		;;
+	    --winhost=*)
+		WINDOWSHOST="${i#*=}"
+		;;
+	    --winbld=*)
+		WINBLD="${i#*=}"
+		;;
+	    --winrembld=*)
+		WINREMBLD="${i#*=}"
+		;;
+	    --gitcommit=*)
+		GIT_COMMIT="${i#*=}"
+		;;
 	    *)
 		unknownopts="${unknownopts} $i"
 		;;
@@ -312,7 +351,6 @@ parsecmd() {
 	exit 1
     fi
 }
-
 opts="$@"
 #
 # Parse the options provided in the command
@@ -320,7 +358,7 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
-
+    
 #
 # Get the default options for the OS specified.
 #
@@ -339,7 +377,34 @@ fi
 #
 # Reparse the command using the trigger options, the os options and the command line options.
 #
-parsecmd "${trigger_ops} ${os_opts} ${opts}"
+cat <<EOF
+
+Build script executing with the following combined options:
+
+   ${trigger_opts} ${os_opts} ${opts}
+
+EOF
+parsecmd "${trigger_opts} ${os_opts} ${opts}"
+
+RED() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[31;47m"
+    fi
+}
+GREEN() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[32;47m"
+    fi
+}
+NORMAL() {
+    if [ "$1" = "yes" ]
+    then
+	echo -e "\033[m"
+    fi
+}
+
 #
 # Make sure one of --test --release=version
 # --publish=version options were provided.
@@ -375,13 +440,30 @@ then
 else
     WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
 fi
-if [ -z "$RELEASEDIR" ]
+
+if [ "TEST" = "yes" -a "TEST_RELEASE" = "yes" ]
 then
-    RELEASEDIR=${WORKSPACE}/release
+    RELEASE=yes
 fi
-if [ -z "$PUBLISHDIR" ]
+
+if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    PUBLISHDIR=${WORKSPACE}/publish
+    if [ -z "$RELEASEDIR" ]
+    then
+	RELEASEDIR=${WORKSPACE}/release
+    fi
+else
+    RELEASEDIR=""
+fi
+
+if [ "$PUBLISH" = "yes" ]
+then
+    if [ -z "$PUBLISHDIR" ]
+    then
+	PUBLISHDIR=${WORKSPACE}/publish
+    fi
+else
+    PUBLISHDIR=""
 fi
 #
 # Convert DOCKERIMAGE and DOCKERFILE options
@@ -408,11 +490,8 @@ DOCKERIMAGE="$(spacedelim $DOCKERIMAGE)"
 #
 if [ "$DOCKERPULL" = "yes" ]
 then
-    if [ -z "$DOCKERIMAGE" ]
+    if [ ! -z "$DOCKERIMAGE" ]
     then
-	>&2 echo "--dockerpull specified with no --dockerimage specified to identify docker image name"
-	exit 1
-    else
 	for img in ${DOCKERIMAGE}
 	do
 	    docker pull $img
@@ -453,18 +532,25 @@ then
     TEST_FORMAT=log
 fi
 
-RELEASEDIR=${RELEASEDIR}/${DISTNAME}
-PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
+if [ ! -z "$RELEASEDIR" ]
+then
+    RELEASEDIR=${RELEASEDIR}/${DISTNAME}
+fi
+
+if [ ! -z "$PUBLISHDIR" ]
+then
+    PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
+fi
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${BRANCH}_${VERSION} ]
+    if [ -r $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION} ]
     then
 	cat <<EOF
-
-A ${VERSION} ${BRANCH} release already exists for ${OS}.
+${GREEN}
+A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.
 The build will be skipped.
- 
+${NORMAL}
 EOF
 	exit 0
     fi
@@ -478,7 +564,7 @@ OS=${OS} \
   EVENT_PORT=${EVENT_PORT} \
   RELEASE=${RELEASE} \
   PUBLISH=${PUBLISH} \
-  VERSION=${VERSION} \
+  RELEASE_VERSION=${RELEASE_VERSION} \
   PLATFORM=${PLATFORM} \
   VALGRIND_TOOLS=${VALGRIND_TOOLS} \
   SANITIZE=${SANITIZE} \
@@ -492,28 +578,37 @@ OS=${OS} \
   KEYS=${KEYS} \
   DISTNAME=${DISTNAME} \
   UPDATEPKG=${UPDATEPKG} \
+  COLOR=$COLOR \
   ARCH=${ARCH} \
+  WINHOST="${WINHOST}" \
+  WINBLD="${WINBLD}" \
+  WINREMBLD="${WINREMBLD}" \
+  GIT_COMMIT="${GIT_COMMIT}" \
   ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
 if [ "$?" != "0" ]
 then
+    RED $COLOR
     cat <<EOF >&2
 ============================================
-
-Failure: The build was unsuccessful!
-
+                                            
+Failure: The build was unsuccessful!        
+                                            
 ============================================
 EOF
+    NORMAL $COLOR
     exit 1
 else
+    GREEN $COLOR
     cat <<EOF
 ============================================
-
-Success!
-
+                                            
+Success!                                    
+                                            
 ============================================
 EOF
+    NORMAL $COLOR
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${VERSION}
+	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}
     fi
 fi
