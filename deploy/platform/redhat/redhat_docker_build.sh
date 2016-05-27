@@ -540,7 +540,11 @@ EOF
 	NORMAL $COLOR
        	exit 1
     fi
-    if ( ! createrepo -q --update --cachedir /publish/cache --deltas /publish/RPMS )
+    if ( createrepo -h | grep '--deltas' > /dev/null )
+    then
+	use_deltas="--deltas"
+    fi
+    if ( ! createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS )
     then
 	RED $COLOR
 	cat <<EOF >&2
