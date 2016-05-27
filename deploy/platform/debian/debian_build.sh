@@ -90,6 +90,7 @@ do
        -e "UPDATEPKG=$UPDATEPKG" \
        -e "PLATFORM=$PLATFORM" \
        -e "COLOR=${COLOR}" \
+       -e "GIT_COMMIT=${GIT_COMMIT}" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
        $(volume "${releasedir}" /release) \
