@@ -1,6 +1,5 @@
 import MDSplus
 import ctypes
-from PythonForPicam import *
 
 def pointer(x):
     """Returns a ctypes pointer"""
@@ -105,16 +104,21 @@ class PICAM(MDSplus.Device):
     INIT=init
 
     def acquire(self):
-
         import os
         import ctypes as ctypes
         import numpy as np
         from MDSplus.mdsExceptions import DevCOMM_ERROR
         from MDSplus.mdsExceptions import DevBAD_PARAMETER
+        from MDSplus.mdsExceptions import DevPYDEVICE_NOT_FOUND
+
+        try:
+            import PythonForPicam as pfp
+        except:
+            raise DevPYDEVICE_NOT_FOUND("Picam error importing PythonForPicam")
 
         self.debugging = os.getenv('DEBUG_DEVICES')
         exposure = float(self.exposure)
-        exposure = piflt(exposure)
+        exposure = pfp.piflt(exposure)
         num_frames = int(self.num_frames)
         timeout = int(self.timeout)
         serial_no = str(self.serial_no.record)
@@ -132,22 +136,22 @@ class PICAM(MDSplus.Device):
         print "Acquire  - debugging is ", self.debugging
 
         # initialize the library
-        Picam_InitializeLibrary()
+        pfp.Picam_InitializeLibrary()
 
         # get library version information
-        major = piint()
-        minor = piint()
-        distribution = piint()
-        release = piint()
-        Picam_GetVersion(pointer(major),pointer(minor),pointer(distribution),pointer(release))
+        major = pfp.piint()
+        minor = pfp.piint()
+        distribution = pfp.piint()
+        release = pfp.piint()
+        pfp.Picam_GetVersion(pointer(major),pointer(minor),pointer(distribution),pointer(release))
         self.lib_version.record = 'Picam Version %d.%d.%d Released %d' % (major.value,minor.value,distribution.value,release.value,)
 
         available = ctypes.POINTER(ctypes.c_int)()
-        availableCount = piint();
+        availableCount = pfp.piint();
 
-        status = Picam_GetAvailableCameraIDs(ctypes.byref(available), ctypes.byref(availableCount))
-        camera = PicamHandle()
-        cameras_type = PicamCameraID*availableCount.value
+        status = pfp.Picam_GetAvailableCameraIDs(ctypes.byref(available), ctypes.byref(availableCount))
+        camera = pfp.PicamHandle()
+        cameras_type = pfp.PicamCameraID*availableCount.value
         cameras_pointer = ctypes.POINTER(cameras_type)
         cameras = ctypes.cast(available, cameras_pointer)
         found = False
@@ -155,7 +159,7 @@ class PICAM(MDSplus.Device):
             if self.debugging:
                 print "checking ",c.serial_number
             if c.serial_number == serial_no:
-                status = Picam_OpenCamera(pointer(c),ctypes.addressof(camera))
+                status = pfp.Picam_OpenCamera(pointer(c),ctypes.addressof(camera))
                 if not status == "PicamError_None":
                     raise DevCOMM_ERROR("PiCam - could not open camera serial no %d - %s"% (serial_no,status,))
                 found = True
@@ -163,45 +167,49 @@ class PICAM(MDSplus.Device):
             raise DevBAD_PARAMETER("PiCam - Could not find camera %d"%serial_no)
  
 #        Picam_OpenCamera(ctypes.addressof(camera))
-        PicamID = PicamCameraID()  
+        PicamID = pfp.PicamCameraID()  
 
-        Picam_GetCameraID(camera,  pointer(PicamID))
+        pfp.Picam_GetCameraID(camera,  pointer(PicamID))
         self.model.record = str(PicamID.model)
         self.sensor.record = str(PicamID.sensor_name)
 
         trigger_response = str(self.trg_response.record)
         if trigger_response == 'NoResponse':
-            trigger_resp = PicamTriggerResponse_NoResponse
+            trigger_resp = pfp.PicamTriggerResponse_NoResponse
         elif trigger_response == 'ReadoutPerTrigger':
-            trigger_resp = PicamTriggerResponse_ReadoutPerTrigger
+            trigger_resp = pfp.PicamTriggerResponse_ReadoutPerTrigger
         elif trigger_response == 'ShiftPerTrigger':
-            trigger_resp = PicamTriggerResponse_ShiftPerTrigger
+            trigger_resp = pfp.PicamTriggerResponse_ShiftPerTrigger
         elif trigger_response == 'ExposeDuringTriggerPulse':
-            trigger_resp = PicamTriggerResponse_ExposeDuringTriggerPulse
+            trigger_resp = pfp.PicamTriggerResponse_ExposeDuringTriggerPulse
         elif trigger_response == 'StartOnSingleTrigger':
-            trigger_resp = PicamTriggerResponse_StartOnSingleTrigger
+            trigger_resp = pfp.PicamTriggerResponse_StartOnSingleTrigger
         else:
             raise DevBAD_PARAMETER("PiCam - TRG_RESPONSE must be one of ('NoResponse','ReadoutPerTrigger','ShiftPerTrigger','ExposeDuringTriggerPulse', 'StartOnSingleTrigger')")
 
         if self.debugging:
             print "Picam_SetParameterIntegerValue(camera, PicamParameter_TriggerResponse,",trigger_resp,")"
-        Picam_SetParameterIntegerValue( camera, PicamParameter_TriggerResponse, trigger_resp )
-        Picam_SetParameterIntegerValue( camera, PicamParameter_TriggerDetermination, PicamTriggerDetermination_PositivePolarity )
-        Picam_SetParameterIntegerValue( camera, PicamParameter_OutputSignal, PicamOutputSignal_Exposing )
+        pfp.Picam_SetParameterIntegerValue( camera, pfp.PicamParameter_TriggerResponse, trigger_resp )
+        pfp.Picam_SetParameterIntegerValue( camera, pfp.PicamParameter_TriggerDetermination, pfp.PicamTriggerDetermination_PositivePolarity )
+        pfp.Picam_SetParameterIntegerValue( camera, pfp.PicamParameter_OutputSignal, pfp.PicamOutputSignal_Exposing )
 
         # set the exposure
         if self.debugging:
             print "Picam_SetParameterFloatingPointValue( camera, PicamParameter_ExposureTime, ",exposure,")"
-        Picam_SetParameterFloatingPointValue( camera, PicamParameter_ExposureTime, exposure )
+        pfp.Picam_SetParameterFloatingPointValue( camera, pfp.PicamParameter_ExposureTime, exposure )
 
-        failCount = piint()
-        paramsFailed = piint()
+        failCount = pfp.piint()
+        paramsFailed = pfp.piint()
         if self.debugging:
             print "Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount))"
-        Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount))
+        pfp.Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount))
         if self.debugging:
             print "failcount is ", failCount
-        Picam_DestroyParameters(pointer(paramsFailed))
+        pfp.Picam_DestroyParameters(pointer(paramsFailed))
+
+        width = pfp.piint(0)
+        pfp.Picam_GetParameterIntegerValue( camera, ctypes.c_int(pfp.PicamParameter_SensorActiveWidth), ctypes.byref(width) );
+        width = width.value
 
         # if there are rois set the rois
         if rois is not None:
@@ -211,7 +219,7 @@ class PICAM(MDSplus.Device):
             if shape[1] == 6 :
                 if self.debugging:
                     print "PICAM  it is  nx6"
-                Rois = PicamRois(shape[0])
+                Rois = pfp.PicamRois(shape[0])
                 for i in range(shape[0]):
                     Rois.roi_array[i].x = rois[i,0]
                     Rois.roi_array[i].width = rois[i,1]
@@ -219,30 +227,31 @@ class PICAM(MDSplus.Device):
                     Rois.roi_array[i].y = rois[i,3]
                     Rois.roi_array[i].height = rois[i,4]
                     Rois.roi_array[i].y_binning = rois[i,5]
+                    width = rois[i,1]
                 if self.debugging:
                     print "PICAM The Rois are: ", Rois
-                status = Picam_SetParameterRoisValue(camera, PicamParameter_Rois, pointer(Rois)) 
+                status = pfp.Picam_SetParameterRoisValue(camera, pfp.PicamParameter_Rois, pointer(Rois)) 
                 if not status == "PicamError_None":
                     raise DevCOMM_ERROR("PiCam - error setting ROI- %s"% status)
-                failCount = piint()
-                paramsFailed = piint()
-                status = Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount)) 
+                failCount = pfp.piint()
+                paramsFailed = pfp.piint()
+                status = pfp.Picam_CommitParameters(camera, pointer(paramsFailed), ctypes.byref(failCount)) 
                 if not status == "PicamError_None":
                     raise DevCOMM_ERROR("PiCam - error committing ROI Parameter Change %s" % status)
                 if not failCount.value == 0:
                     raise DevCOMM_ERROR("PiCam - ROI commit failure count  > 0", failCount)
-                Picam_DestroyParameters(pointer(paramsFailed))
+                pfp.Picam_DestroyParameters(pointer(paramsFailed))
             else:
                 raise DevBAD_PARAMETER("PiCAM Rois must be 6xN array")
 
-        errors = PicamAcquisitionErrorsMask()
-        readout_count = pi64s(num_frames)
-        readout_time_out = piint(-1)
-        available = PicamAvailableData(0, 0)
+        errors = pfp.PicamAcquisitionErrorsMask()
+        readout_count = pfp.pi64s(num_frames)
+        readout_time_out = pfp.piint(-1)
+        available = pfp.PicamAvailableData(0, 0)
 
         if self.debugging:
             print "about to call Picam_Acquire"
-        status = Picam_Acquire(camera, readout_count, readout_time_out, ctypes.byref(available), ctypes.byref(errors)) 
+        status = pfp.Picam_Acquire(camera, readout_count, readout_time_out, ctypes.byref(available), ctypes.byref(errors)) 
         if not status == "PicamError_None":
             print "Picam_Acquire returned ",status
             raise DevCOMM_ERROR("PiCam - non zero return from Picam_Acquire - %s" % status)
@@ -250,8 +259,8 @@ class PICAM(MDSplus.Device):
         if self.debugging:
             print "back from aquire"
 
-        temperature = piflt(0.0)
-        status = Picam_GetParameterFloatingPointValue( camera, ctypes.c_int(PicamParameter_SensorTemperatureReading), ctypes.byref(temperature) )
+        temperature = pfp.piflt(0.0)
+        status = pfp.Picam_GetParameterFloatingPointValue( camera, ctypes.c_int(pfp.PicamParameter_SensorTemperatureReading), ctypes.byref(temperature) )
         if status == "PicamError_None" :
             self.sensor_temp.record = temperature.value
             if self.debugging :
@@ -259,8 +268,8 @@ class PICAM(MDSplus.Device):
         else:
             print "PICAM could not read back sensor temperature ", status
 
-        readout_time = piflt(0.0)
-        status = Picam_GetParameterFloatingPointValue( camera, ctypes.c_int(PicamParameter_ReadoutTimeCalculation), ctypes.byref(readout_time) )
+        readout_time = pfp.piflt(0.0)
+        status = pfp.Picam_GetParameterFloatingPointValue( camera, ctypes.c_int(pfp.PicamParameter_ReadoutTimeCalculation), ctypes.byref(readout_time) )
         if status == "PicamError_None" :
             self.readout_time.record = readout_time.value
             if self.debugging :
@@ -268,8 +277,8 @@ class PICAM(MDSplus.Device):
         else:
             print "PICAM could not read back readout time ", status
 
-        readoutstride = piint(0)
-        status = Picam_GetParameterIntegerValue( camera, ctypes.c_int(PicamParameter_ReadoutStride), ctypes.byref(readoutstride) )
+        readoutstride = pfp.piint(0)
+        status = pfp.Picam_GetParameterIntegerValue( camera, ctypes.c_int(pfp.PicamParameter_ReadoutStride), ctypes.byref(readoutstride) )
         if self.debugging:
             print "Picam_GetParameterIntegerValue( camera, ctypes.c_int(PicamParameter_ReadoutStride),",readoutstride," )", status
             
@@ -280,10 +289,10 @@ class PICAM(MDSplus.Device):
         if self.debugging:
             print "sz is ",sz, " num_frames is ", num_frames, "readout_count is ", readout_count, " readoutstride is ", readoutstride
 
-        DataArrayType = pi16u*sz
+        DataArrayType = pfp.pi16u*sz
 
         """ Create pointer type for the above array type """
-        DataArrayPointerType = ctypes.POINTER(pi16u*sz)
+        DataArrayPointerType = ctypes.POINTER(pfp.pi16u*sz)
 
         if self.debugging:
             print "PICAM - cast the read data into the pointer type"
@@ -300,18 +309,15 @@ class PICAM(MDSplus.Device):
         ans = np.empty(sz,np.short)
         if self.debugging:
             print "PICAM - fill it in "
-        print "starting...."
-#        for i in range(sz):
-#            ans[i] = data[i]
         ans[:] = data
         if self.debugging:
-            print "PICAM reshape the data to be (%d, %d, %d)"%(num_frames, readoutstride.value/2/512, 512)
-        ans = ans.reshape((num_frames, readoutstride.value/2/512, 512))
+            print "PICAM reshape the data to be (%d, %d, %d)"%(num_frames, readoutstride.value/2/width, width)
+        ans = ans.reshape((num_frames, readoutstride.value/2/width, width))
         self.frames.record = ans
 
         if self.debugging:
             print "un initialize the library"
-        Picam_UninitializeLibrary()
+        pfp.Picam_UninitializeLibrary()
 
         return 1
 
