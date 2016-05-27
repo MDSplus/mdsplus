@@ -526,7 +526,7 @@ then
     ###
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
     ###
-    if ( ! rsync -a --exclude=reprodata /release/RPMS /publish/RPMS )
+    if ( ! rsync -a --exclude=repodata /release/RPMS /publish/ )
     then
 	RED $COLOR
 	cat <<EOF >&2
@@ -540,7 +540,7 @@ EOF
 	NORMAL $COLOR
        	exit 1
     fi
-    if ( ! createrepo -q --update --cachedir --deltas /publish/cache /publish/RPMS )
+    if ( ! createrepo -q --update --cachedir /publish/cache --deltas /publish/RPMS )
     then
 	RED $COLOR
 	cat <<EOF >&2
