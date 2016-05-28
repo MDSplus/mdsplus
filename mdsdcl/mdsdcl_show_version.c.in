@@ -27,19 +27,19 @@ EXPORT int mdsdcl_show_version(void *ctx, char **error, char **output)
     }
   }
   if (strlen(RELEASE_TAG)) {
-    sprintf(info+strlen(info),"Git tag: %s\n",RELEASE_TAG);
+    sprintf(info+strlen(info),"  Git tag: %s\n",RELEASE_TAG);
     sprintf(info+strlen(info),"  View:\n    https://github.com/MDSplus/mdsplus/tree/%s\n",RELEASE_TAG);
     sprintf(info+strlen(info),"  Download:\n    https://github.com/MDSplus/mdsplus/archive/%s.tar.gz\n",RELEASE_TAG);
   }
   if (strlen(COMMIT)) {
-    sprintf(info+strlen(info),"Git commit: %s\n",COMMIT);
+    sprintf(info+strlen(info),"  Git commit: %s\n",COMMIT);
     if (strlen(RELEASE_TAG)==0) {
       sprintf(info+strlen(info),"  View:\n    https://github.com/MDSplus/mdsplus/tree/%s\n",COMMIT);
       sprintf(info+strlen(info),"  Download:\n    https://github.com/MDSplus/mdsplus/archive/%s.tar.gz\n",COMMIT);
     }
   }
   if (strlen(DATE)) {
-    sprintf(info+strlen(info),"Build date: %s\n",DATE);
+    sprintf(info+strlen(info),"  Build date: %s\n",DATE);
   }
   if (strlen(info) == 2) {
     strcat(info,"Manual build from sources, no version information available\n");

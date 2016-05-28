@@ -44,6 +44,7 @@ docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
        -e "UPDATEPKG=$UPDATEPKG" \
        -e "PLATFORM=$PLATFORM" \
        -e "COLOR=$COLOR" \
+       -e "GIT_COMMIT=$GIT_COMMIT" \
        -v $(realpath ${SRCDIR}):/source \
        -v ${WORKSPACE}:/workspace \
        $(volume "${RELEASEDIR}" /release) \
