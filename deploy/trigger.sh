@@ -14,7 +14,7 @@ NAME
                  build jobs used to test pull requests and generate new MDSplus releases.
 
 SYNOPSIS
-    ./trigger.sh [--test[=skip]] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log] 
+    ./trigger.sh [--test[=skip]] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log] 
                  [--release] [--releasedir=directory] 
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
@@ -43,6 +43,10 @@ OPTIONS
        cross-compiled platforms cannot be tested so the os.opt file will
        contain a --test=skip which supercedes a --test option on the
        command line.
+
+    --testrelease
+       Use for pull request tests so kits will be built and checked but
+       release tags won't be used to compute release number.
 
     --valgrind=test-list|skip
        Normally the build jobs will perform valgrind tests when testing
@@ -121,6 +125,9 @@ parsecmd() {
 		;;
 	    --test)
 		opts="${opts} ${i}"
+                ;;
+            --testrelease)
+                opts="${opts} ${i}"
 		;;
 	    --test=skip)
 		opts="${opts} ${i}"
