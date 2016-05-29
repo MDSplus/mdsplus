@@ -413,8 +413,8 @@ if [ "${TEST}" != "yes"  \
 	       -a  "${RELEASE}" != "yes" \
 	       -a  "${PUBLISH}" != "yes" ]
 then
-    >&2 echo "At least one of --test --release=version --publish=version options must be specified on the command."
-    exit 1
+    >&2 echo "None of --test --release=version --publish=version options specified on the command. Nothing to do!"
+    exit 0
 fi
 #
 # Make sure the platform specified is supported.
