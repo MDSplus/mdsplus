@@ -176,10 +176,21 @@ class Uint32(Scalar):
 
 class Uint64(Scalar):
     """64-bit unsigned number"""
+    _utc0 = 35067168000000000L
+    _utc1 = 1E7
+    @staticmethod
+    def fromTime(value):
+        """converts from seconds since 01-JAN-1970 00:00:00.00"""
+        return Uint64(int(value * Uint64._utc1) + Uint64._utc0)
 
     def _getDate(self):
         return _data.Data.execute('date_time($)',self)
     date=property(_getDate)
+
+    def _getTime(self):
+        """returns date in seconds since 01-JAN-1970 00:00:00.00"""
+        return float(self.value - Uint64._utc0) / Uint64._utc1
+    time=property(_getTime)
 
 class Float32(Scalar):
     """32-bit floating point number"""
