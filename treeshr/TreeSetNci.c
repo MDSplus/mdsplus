@@ -6,7 +6,6 @@
 
 		Author:	Josh Stillerman
 			MIT Plasma Fusion Center
-
 		Date:   19-MAY-1988
 
 		Purpose: Set the Characteristics of a Node.
@@ -93,6 +92,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
   TREE_INFO *tree_info;
   NCI_ITM *itm_ptr;
   NCI nci;
+  int putnci=0;
 /*------------------------------------------------------------------------------
 
  Executable:
@@ -116,11 +116,14 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 
       case NciSET_FLAGS:
 	nci.flags |= *(unsigned int *)itm_ptr->pointer;
+	putnci=1;
 	break;
       case NciCLEAR_FLAGS:
 	nci.flags &= ~(*(unsigned int *)itm_ptr->pointer);
+	putnci=1;
 	break;
       case NciSTATUS:
+	putnci=1;
 	nci.status = *(unsigned int *)itm_ptr->pointer;
 	break;
       case NciUSAGE:
@@ -133,28 +136,29 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 **************************************************/
 
 	  if (!(IS_OPEN_FOR_EDIT(dblist)))
-	    return TreeNOEDIT;
+	    status = TreeNOEDIT;
 
-	  nid_to_node(dblist, nid_ptr, node_ptr);
+	  node_ptr = nid_to_node(dblist, nid_ptr);
 	  if (node_ptr->usage != *(unsigned char *)itm_ptr->pointer) {
 	    node_ptr->usage = *(unsigned char *)itm_ptr->pointer;
 	    dblist->modified = 1;
 	  }
-	  return TreeNORMAL;
+	  status = TreeNORMAL;
+          break;
 	}
       default:
 	status = TreeILLEGAL_ITEM;
 	break;
       }
     }
-    if (status & 1)
+    if ((status & 1) && putnci)
       status = TreePutNci(tree_info, node_number, &nci, 1);
     TreeUnLockNci(tree_info, 0, node_number);
   }
   return status;
 }
 
-int TreeSetNciItm(int nid, int code, int value)
+EXPORT int TreeSetNciItm(int nid, int code, int value)
 {
   NCI_ITM itm[] = { {0, 0, 0, 0}, {0, 0, 0, 0} };
   itm[0].buffer_length = (short)sizeof(int);
@@ -256,8 +260,10 @@ int TreeGetNciLw(TREE_INFO * info, int node_num, NCI * nci)
 	if (status & 1 && deleted) {
 	  status = TreeReopenNci(info);
 	} else {
-	  if (!(status & 1))
+	  if (!(status & 1)) {
+	    TreeUnLockNci(info, 0, node_num);
 	    return status;
+	  }
 	  MDS_IO_LSEEK(info->nci_file->put, node_num * sizeof(nci_bytes), SEEK_SET);
 	  status =
 	      (MDS_IO_READ(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
@@ -334,7 +340,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
       strcat(filename, tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file, 0, sizeof(NCI_FILE));
       info->nci_file->get =
-	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
+	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY, 0664);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
 	info->nci_file->get = 0;
@@ -349,12 +355,13 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
   } else {
   /*******************************************
     Else the file was open for read access so
-    close it and re-open it for write access.
+    open it for write access.
   *******************************************/
     size_t len = strlen(info->filespec) - 4;
     char *filename = strncpy(malloc(len + 20), info->filespec, len);
     filename[len] = '\0';
     strcat(filename, tmpfile ? "characteristics#" : "characteristics");
+    /********* this will never happen ***********/
     if (info->nci_file->put)
       MDS_IO_CLOSE(info->nci_file->put);
     info->nci_file->put =
@@ -368,16 +375,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
     if (info->edit) {
       info->edit->first_in_mem = (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
     }
-  /**********************************************
-   Set up the RABs for buffered reads and writes
-   and CONNECT it.
-   If there is a problem then close it, free the
-   memory and return.
-  **********************************************/
-  } else {
-    free(info->nci_file);
-    info->nci_file = NULL;
-  }
+  } 
   if (status & 1)
     TreeCallHook(OpenNCIFileWrite, info, 0);
   return status;
@@ -509,18 +507,17 @@ int _TreeTurnOn(void *dbid, int nid_in)
     if (~status & 1)
       return status;
     if (!(nci.flags & NciM_PARENT_STATE)) {
-      nid_to_node(dblist, nid, node);
-      if (node->INFO.TREE_INFO.child)
-	status = SetParentState(dblist, child_of(node), 0);
-      if (node->INFO.TREE_INFO.member)
+      node = nid_to_node(dblist, nid);
+      if (node->child)
+	status = SetParentState(dblist, child_of(dblist, node), 0);
+      if (node->member)
 	status = SetParentState(dblist, member_of(node), 0);
     } else
       status = TreePARENT_OFF;
   } else {
-    status = TreeUnLockNci(info, 0, node_num);
-    if (status & 1)
-      status = TreeALREADY_ON;
+    status = TreeALREADY_ON;
   }
+  status = TreeUnLockNci(info, 0, node_num);
   return status;
 }
 
@@ -580,17 +577,16 @@ int _TreeTurnOff(void *dbid, int nid_in)
     if (~status & 1)
       return status;
     if (!(nci.flags & NciM_PARENT_STATE)) {
-      nid_to_node(dblist, nid, node);
-      if (node->INFO.TREE_INFO.child)
-	status = SetParentState(dblist, child_of(node), 1);
-      if (node->INFO.TREE_INFO.member)
+      node = nid_to_node(dblist, nid);
+      if (node->child)
+	status = SetParentState(dblist, child_of(dblist, node), 1);
+      if (node->member)
 	status = SetParentState(dblist, member_of(node), 1);
     }
   } else {
-    status = TreeUnLockNci(info, 0, node_num);
-    if (status & 1)
-      status = TreeALREADY_OFF;
+    status = TreeALREADY_OFF;
   }
+  status = TreeUnLockNci(info, 0, node_num);
   return status;
 }
 
@@ -630,11 +626,11 @@ int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state)
   NCI nci;
   NODE *lnode;
   status = TreeNORMAL;
-  for (lnode = node; lnode && (status & 1); lnode = brother_of(lnode)) {
+  for (lnode = node; lnode && (status & 1); lnode = brother_of(db, lnode)) {
     status = SetNodeParentState(db, lnode, &nci, state);
-    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->INFO.TREE_INFO.child))
-      status = SetParentState(db, child_of(lnode), state);
-    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->INFO.TREE_INFO.member))
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->child))
+      status = SetParentState(db, child_of(db, lnode), state);
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->member))
       status = SetParentState(db, member_of(lnode), state);
   }
   return status;
@@ -687,6 +683,7 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
   if (status & 1) {
     bitassign(state, nci->flags, NciM_PARENT_STATE);
     status = TreePutNci(info, node_num, nci, 0);
+    TreeUnLockNci(info, 0, node_num);
   }
   return status;
 }
@@ -710,7 +707,8 @@ STATIC_THREADSAFE int NCIMutex_initialized;
 
 int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 {
-  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
+  int status;
+  status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
 			   nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
   LockMdsShrMutex(&NCIMutex, &NCIMutex_initialized);
   return status;
@@ -718,7 +716,8 @@ int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 
 int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum)
 {
-  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
+  int status;
+  status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
 			   MDS_IO_LOCK_NONE, 0);
   UnlockMdsShrMutex(&NCIMutex);
   return status;

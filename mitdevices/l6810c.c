@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "l6810c_gen.h"
 #include "devroutines.h"
-extern int CamXandQ();
+
 
 #define min(a,b) ((a) < (b)) ? (a) : (b)
 #define max(a,b) ((a) < (b)) ? (b) : (a)
@@ -51,7 +51,7 @@ struct setup {
   short int mem_size;
 };
 
-int l6810c___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+EXPORT int l6810c___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
 {
   int status;
   int dummy;
@@ -116,7 +116,7 @@ int l6810c___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
   return 1;
 }
 
-int l6810c___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
+EXPORT int l6810c___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
 {
   int status;
   pio(25, 0, 0, 1);		/* Trigger the module */
@@ -132,15 +132,15 @@ int l6810c___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
 #define L6810C_N_CHAN_SRC_CPLING 5
 #define L6810C_N_CHAN_OFFSET 5
 
-extern unsigned short OpcAdd;
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcAdd;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
 static int ReadChannel(char *name,
 		       int chan,
 		       int segs, int seg_size, int drop, int *samples_ptr, short *data_ptr);
 
-int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_struct)
+EXPORT int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_struct)
 {
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) return status;
@@ -276,14 +276,14 @@ int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_struct)
 	      strcat(dim_str, chunk);
 	    }
 	    dim_expr.length = strlen(dim_str);
-	    status = TdiCompile(&dim_expr, &len_dsc, &begin_d, &end_d, &trigger_d,
+	    status = TdiCompile((struct descriptor *)&dim_expr, &len_dsc, &begin_d, &end_d, &trigger_d,
 				(setup.f1_freq == 0) ? (struct descriptor *)&ext_clock_d :
 				(struct descriptor *)&int_clock_d, &dimension_xd MDS_END_ARG);
 	  } else {
 	    static DESCRIPTOR(dim_expr, "BUILD_DIM(BUILD_WINDOW($1, $2, $3), $4)");
 	    end = max_idx;
 	    begin = min_idx;
-	    status = TdiCompile(&dim_expr, &begin_d, &end_d, &trigger_d,
+	    status = TdiCompile((struct descriptor *)&dim_expr, &begin_d, &end_d, &trigger_d,
 				(setup.f1_freq == 0) ? (struct descriptor *)&ext_clock_d :
 				(struct descriptor *)&int_clock_d, &dimension_xd MDS_END_ARG);
 	  }

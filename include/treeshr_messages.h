@@ -1,7 +1,13 @@
 
+#pragma once
+/*
 
-#ifndef TREESHR_MESSAGES
-#define TREESHR_MESSAGES
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     treeshr_messages.xml
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 #define TreeALREADY_OFF          0xfd1802b
 #define TreeALREADY_ON           0xfd18033
@@ -86,6 +92,6 @@
 #define TreeNCIREAD              0xfd1905a
 #define TreeNOVERSION            0xfd19062
 #define TreeDFREAD               0xfd1906a
-
-
-#endif
+#define TreeCLOSEERR             0xfd19072
+#define TreeMOVEERROR            0xfd1907a
+#define TreeOPENEDITERR          0xfd19082

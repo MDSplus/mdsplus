@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "mit_encoder_gen.h"
-int mit_encoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int mit_encoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "MIT_ENCODER");
@@ -38,43 +38,43 @@ int mit_encoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
  ADD_NODE(:CHANNEL_1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_1:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(CHANNEL_1:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_2, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_2:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(CHANNEL_2:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_3, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_3:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(CHANNEL_3:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_4, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_4:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(CHANNEL_4:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_5, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_5:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(CHANNEL_5:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_6, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_6:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(CHANNEL_6:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:SOFT_CHANNEL, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:SOFT_CHANNEL:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(SOFT_CHANNEL:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
@@ -83,8 +83,8 @@ int mit_encoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
   return (TreeSetDefaultNid(old_nid));
 }
 
-int mit_encoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-			   struct descriptor *out_d)
+EXPORT int mit_encoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+			   struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -105,31 +105,31 @@ int mit_encoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *meth
   case (MIT_ENCODER_N_CHANNEL_1 + 1):
  COPY_PART_NAME(:CHANNEL_1) break;
   case (MIT_ENCODER_N_CHANNEL_1_EVENT + 1):
- COPY_PART_NAME(:CHANNEL_1:EVENT) break;
+ COPY_PART_NAME(CHANNEL_1:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_2 + 1):
  COPY_PART_NAME(:CHANNEL_2) break;
   case (MIT_ENCODER_N_CHANNEL_2_EVENT + 1):
- COPY_PART_NAME(:CHANNEL_2:EVENT) break;
+ COPY_PART_NAME(CHANNEL_2:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_3 + 1):
  COPY_PART_NAME(:CHANNEL_3) break;
   case (MIT_ENCODER_N_CHANNEL_3_EVENT + 1):
- COPY_PART_NAME(:CHANNEL_3:EVENT) break;
+ COPY_PART_NAME(CHANNEL_3:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_4 + 1):
  COPY_PART_NAME(:CHANNEL_4) break;
   case (MIT_ENCODER_N_CHANNEL_4_EVENT + 1):
- COPY_PART_NAME(:CHANNEL_4:EVENT) break;
+ COPY_PART_NAME(CHANNEL_4:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_5 + 1):
  COPY_PART_NAME(:CHANNEL_5) break;
   case (MIT_ENCODER_N_CHANNEL_5_EVENT + 1):
- COPY_PART_NAME(:CHANNEL_5:EVENT) break;
+ COPY_PART_NAME(CHANNEL_5:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_6 + 1):
  COPY_PART_NAME(:CHANNEL_6) break;
   case (MIT_ENCODER_N_CHANNEL_6_EVENT + 1):
- COPY_PART_NAME(:CHANNEL_6:EVENT) break;
+ COPY_PART_NAME(CHANNEL_6:EVENT) break;
   case (MIT_ENCODER_N_SOFT_CHANNEL + 1):
  COPY_PART_NAME(:SOFT_CHANNEL) break;
   case (MIT_ENCODER_N_SOFT_CHANNEL_EVENT + 1):
- COPY_PART_NAME(:SOFT_CHANNEL:EVENT) break;
+ COPY_PART_NAME(SOFT_CHANNEL:EVENT) break;
   default:
     status = TreeILLEGAL_ITEM;
   }
@@ -140,7 +140,7 @@ extern int mit_encoder___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int mit_encoder__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int mit_encoder__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];
@@ -158,7 +158,7 @@ int mit_encoder__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_
 extern int mit_encoder___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int mit_encoder__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int mit_encoder__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];

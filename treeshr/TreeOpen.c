@@ -36,9 +36,6 @@
 #endif
 #include "treeshrp.h"
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
-
 int treeshr_errno = 0;
 extern int MDSEventCan();
 static void RemoveBlanksAndUpcase(char *out, char const *in);
@@ -289,7 +286,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
   if (dblist) {
     if (dblist->remote) {
       status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)	       /**** Remote server might have already opened the tree ****/
+      if (status == TreeNOT_OPEN)		   /**** Remote server might have already opened the tree ****/
 	status = TreeNORMAL;
     } else if (local_info) {
 
@@ -393,7 +390,6 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
       dblist->experiment = 0;
       free(dblist->main_treenam);
       dblist->main_treenam = 0;
-      memset(dblist->big_node_linkage, 0, sizeof(dblist->big_node_linkage));
     }
   }
   return status;
@@ -491,9 +487,9 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
 	  dblist->tree_info = info;
 	  dblist->remote = 0;
 	} else {
-	  SubtreeNodeConnect(dblist, parent, info->node);
 	  for (iptr = dblist->tree_info; iptr->next_info; iptr = iptr->next_info) ;
 	  iptr->next_info = info;
+	  SubtreeNodeConnect(dblist, parent, info->node);
 	}
 
       /***********************************************
@@ -669,7 +665,7 @@ static char *GetFname(char *tree, int shot)
 {
   int status = 1;
   static char *ans = 0;
-  struct descriptor fname = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d fname = { 0, DTYPE_T, CLASS_D, 0 };
   void *arglist[4];
   char expression[128];
   static void *TdiExecute = 0;
@@ -710,7 +706,7 @@ static void str_shift(char *in, int num)
   *p1 = 0;
 }
 
-char *MaskReplace(char *path_in, char *tree, int shot)
+EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
 {
   char *path = strcpy(malloc(strlen(path_in) + 1), path_in);
   char ShotMask[13];
@@ -862,7 +858,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 	  }
 	  status = TreeNORMAL;
 	  if (new) {
-	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0777);
+	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0664);
 	    if (fd == -1)
 	      status = TreeFCREATE;
 	  } else {
@@ -1048,31 +1044,18 @@ static int GetVmForTree(TREE_INFO * info, int nomap)
 
 static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * subtreetop)
 {
-  NODE *grandparent = parent_of(parent);
-
-  /*************************************************
-  We must connect the parent node to its child
-  node by modifying the child index of the parent.
-  Before this field can be modified we must make
-  the page of memory modifiable. After modification
-  the page will be set back to readonly.
-  *************************************************/
-
-  if (child_of(grandparent) == parent) {
-    link_it2(dblist, grandparent, child, subtreetop, grandparent);
-  } else {
-    NODE *bro;
-    for (bro = child_of(grandparent); brother_of(bro) && (brother_of(bro) != parent);
-	 bro = brother_of(bro)) ;
-    if (brother_of(bro)) {
-      link_it2(dblist, bro, brother, subtreetop, bro);
-    }
-  }
+  NID child_nid, parent_nid, brother_nid = { 0, 0 };
+  NODE *brother = brother_of(dblist, parent);
+  parent->usage = TreeUSAGE_SUBTREE_REF;
+  subtreetop->usage = TreeUSAGE_SUBTREE_TOP;
+  node_to_nid(dblist, subtreetop, &child_nid);
+  node_to_nid(dblist, parent_of(dblist, parent), &parent_nid);
+  if (brother)
+    node_to_nid(dblist, brother_of(dblist, parent), &brother_nid);
+  parent->child = *(int *)&child_nid;
+  subtreetop->parent = *(int *)&parent_nid;
+  subtreetop->brother = *(int *)&brother_nid;
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
-  link_parent(dblist, subtreetop, grandparent, subtreetop);
-  if (brother_of(parent)) {
-    link_it2(dblist, subtreetop, brother, brother_of(parent), subtreetop);
-  }
   return;
 }
 
@@ -1275,10 +1258,10 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	    status = TreeExpandNodes(*dblist, 0, 0);
 	    strncpy(info->node->name, "TOP         ", sizeof(info->node->name));
 	    info->node->parent = 0;
-	    info->node->INFO.TREE_INFO.child = 0;
-	    info->node->INFO.TREE_INFO.member = 0;
+	    info->node->child = 0;
+	    info->node->member = 0;
 	    info->node->usage = TreeUSAGE_SUBTREE;
-	    (info->node + 1)->INFO.TREE_INFO.child = 0;
+	    (info->node + 1)->child = 0;
 	    bitassign(1, info->edit->nci->flags, NciM_INCLUDE_IN_PULSE);
 	    info->tags = malloc(512);
 	    if (info->tags)
@@ -1330,7 +1313,7 @@ void TreeFreeDbid(void *dbid)
   }
 }
 
-struct descriptor *TreeFileName(char *tree, int shot)
+EXPORT struct descriptor *TreeFileName(char *tree, int shot)
 {
   static struct descriptor ans_dsc = { 0, DTYPE_T, CLASS_D, 0 };
   int fd;

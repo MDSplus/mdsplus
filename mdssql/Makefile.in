@@ -1,10 +1,13 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ DEF=MdsSql.def
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/MdsSql.def
 
 CFLAGS=@CFLAGS@ @SYBASE_INC@ @TARGET_ARCH@
 LD_FLAGS=$(LDFLAGS) @TARGET_ARCH@
-LIBS=@SYBASE_LIB@ @LIBS@ @DNET_STUB@ @LIBSOCKET@
+LIBS=@LIBS@ @SYBASE_LIB@ @DNET_STUB@ @LIBSOCKET@
 
 SOURCES = \
 dynamic_syb.c \

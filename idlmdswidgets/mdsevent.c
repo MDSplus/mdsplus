@@ -30,9 +30,9 @@ Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
 #include <ipdesc.h>
+#include <config.h>
+#include <mdsshr.h>
 
-extern int MDSEventAst();
-extern int MDSEventCan();
 
 typedef struct _event_struct {
   int stub_id;
@@ -57,7 +57,7 @@ static XtInputId XTINPUTID = 0;
 static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
 
-static void EventAst(EventStruct * e, int eventid, char *data);
+static void EventAst(void * e, int eventid, char *data);
 #include <export.h>
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)
@@ -80,7 +80,7 @@ static int UnBlockSig(int sig_number)
 }
 #endif
 
-int IDLMdsEventCan(int argc, void * *argv)
+EXPORT int IDLMdsEventCan(int argc, void * *argv)
 {
   EventStruct *e, *p;
   SOCKET sock = (SOCKET) ((char *)argv[0] - (char *)0);
@@ -100,7 +100,7 @@ int IDLMdsEventCan(int argc, void * *argv)
   return status;
 }
 
-int IDLMdsGetevi(int argc, void **argv)
+EXPORT int IDLMdsGetevi(int argc, void **argv)
 {
   int eventid = (unsigned int)((char *)argv[0] - (char *)0);
   EventStruct *e;
@@ -110,16 +110,17 @@ int IDLMdsGetevi(int argc, void **argv)
   return (e != 0);
 }
 
-int IDLMdsEvent(int argc, void * *argv)
+EXPORT int IDLMdsEvent(int argc, void * *argv)
 {
   SOCKET sock = (SOCKET) ((char *)argv[0] - (char *)0);
+  void *sockp = argv[0];
   int *base_id = (int *)argv[1];
   int *stub_id = (int *)argv[2];
   char *name = (char *)argv[3];
   EventStruct *e = (EventStruct *) malloc(sizeof(EventStruct));
   BlockSig(SIGALRM);
-  if (((sock >= 0) ? MdsEventAst(sock, name, (void (*)(int))EventAst, e, &e->event_id) :
-       MDSEventAst(name, (void (*)(int))EventAst, e, &e->event_id)) & 1) {
+  if (((sock >= 0) ? MdsEventAst(sock, name, EventAst, e, &e->event_id) :
+       MDSEventAst(name, EventAst, e, &e->event_id)) & 1) {
     char *parent_rec;
     char *stub_rec;
     IDL_WidgetStubLock(TRUE);
@@ -132,7 +133,7 @@ int IDLMdsEvent(int argc, void * *argv)
 	IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
 	XTINPUTID =
 	    XtAppAddInput(XtWidgetToApplicationContext(w1), sock, (XtPointer) XtInputExceptMask,
-			  MdsDispatchEvent, (void *)sock);
+			  MdsDispatchEvent, sockp);
       }
 #endif
       e->stub_id = *stub_id;
@@ -150,8 +151,9 @@ int IDLMdsEvent(int argc, void * *argv)
   return -1;
 }
 
-static void EventAst(EventStruct * e, int len, char *data)
+static void EventAst(void * e_in, int len, char *data)
 {
+  EventStruct *e = (EventStruct *)e_in;
   char *stub_rec;
   char *base_rec;
   IDL_WidgetStubLock(TRUE);

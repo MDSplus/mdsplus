@@ -353,30 +353,30 @@ WidgetClass xmdsXdBoxWidgetClass;
   resources xd, or nid/nid_offset and buttonCallbacks to setup
   the initial widget.
 ****************************************************/
-Widget XmdsCreateXdBox(Widget parent, char *name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateXdBox(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
   return XtCreateWidget(name, (WidgetClass) & xmdsXdBoxClassRec, parent, args, argcount);
 }
 
-Boolean XmdsXdBoxApply(Widget w)
+EXPORT Boolean XmdsXdBoxApply(Widget w)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   return xdbw->xdbox.put_on_apply ? XmdsXdBoxPut(w) : 1;
 }
 
-struct descriptor *XmdsXdBoxGetXd(Widget w)
+EXPORT struct descriptor *XmdsXdBoxGetXd(Widget w)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   return (struct descriptor *)Unload(xdbw->xdbox.specific_dlog);
 }
 
-Boolean XmdsXdBoxPut(Widget w)
+EXPORT Boolean XmdsXdBoxPut(Widget w)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   return Put(xdbw);
 }
 
-void XmdsXdBoxReset(Widget w)
+EXPORT void XmdsXdBoxReset(Widget w)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   if (xdbw->xdbox.nid) {
@@ -394,7 +394,7 @@ void XmdsXdBoxReset(Widget w)
   }
 }
 
-void XmdsXdBoxSetState(Widget w, Boolean state)
+EXPORT void XmdsXdBoxSetState(Widget w, Boolean state)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   XmToggleButtonGadgetSetState(XtNameToWidget(xdbw->xdbox.xdb_dlog, "generic_box.on_off_toggle"),
@@ -402,7 +402,7 @@ void XmdsXdBoxSetState(Widget w, Boolean state)
   xdbw->xdbox.on_off = state;
 }
 
-Boolean XmdsXdBoxGetState(Widget w)
+EXPORT Boolean XmdsXdBoxGetState(Widget w)
 {
   Boolean state;
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
@@ -436,14 +436,14 @@ void XmdsXdBoxSetNid(Widget w, int nid)
   }
 }
 
-void XmdsXdBoxSetDefaultNid(Widget w, int def_nid)
+EXPORT void XmdsXdBoxSetDefaultNid(Widget w, int def_nid)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   xdbw->xdbox.default_nid = def_nid;
   SetDefault(w);
 }
 
-void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc)
+EXPORT void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc)
 {
   struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
@@ -458,7 +458,7 @@ void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc)
     Load(xdbw->xdbox.specific_dlog, xdbw->xdbox.xd);
 }
 
-void XmdsXdBoxLoad(Widget w)
+EXPORT void XmdsXdBoxLoad(Widget w)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   if (!xdbw->xdbox.loaded) {
@@ -1003,7 +1003,7 @@ static void DispatchLoad(Widget w, struct descriptor_xd *xd)
   }
 }
 
-struct descriptor_xd *DispatchUnload(Widget w)
+EXPORT struct descriptor_xd *DispatchUnload(Widget w)
 {
   struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
@@ -1251,7 +1251,7 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd)
   }
 }
 
-struct descriptor_xd *TaskUnload(Widget w)
+EXPORT struct descriptor_xd *TaskUnload(Widget w)
 {
   struct descriptor_xd *data = 0;
   Widget expr_widget = XtNameToWidget(w, "task_expr");
@@ -1411,7 +1411,7 @@ static void WindowLoad(Widget w, struct descriptor_xd *xd)
   }
 }
 
-struct descriptor_xd *WindowUnload(Widget w)
+EXPORT struct descriptor_xd *WindowUnload(Widget w)
 {
   struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;

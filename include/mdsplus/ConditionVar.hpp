@@ -88,7 +88,9 @@ private:
 	}
 
 	void _notify() {
+        pthread_mutex_lock(&mutex);
 		pthread_cond_broadcast(&condition);
+        pthread_mutex_unlock(&mutex);
 	}
 
 	void _destroy() {

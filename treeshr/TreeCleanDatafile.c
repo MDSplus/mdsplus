@@ -68,7 +68,7 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
 		    first = 0;
 		  }
 		  if (list->nci.flags2 & NciM_EXTENDED_NCI) {
-		    TreeCopyExtended(dbid1, dbid2, i, &list->nci);
+		    TreeCopyExtended(dbid1, dbid2, i, &list->nci, compress);
 		  } else {
 		    lstatus = _TreeGetRecord(dbid1, i, &xd);
 		    TreeSetViewDate(&now);

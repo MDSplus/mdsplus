@@ -195,7 +195,6 @@ ing
         NEED to size based on exponent range and number of digits.
 */
 STATIC_CONSTANT DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
-STATIC_CONSTANT DESCRIPTOR(e_dsc, "E");
 STATIC_CONSTANT DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
 
 STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
@@ -243,14 +242,14 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
 	/*******************
         Find final location.
         *******************/
-  bad = StrFindFirstNotInSet(&str_dsc, &valid_dsc);
+  bad = StrFindFirstNotInSet((struct descriptor *)&str_dsc, (struct descriptor *)&valid_dsc);
   if (bad > 0)
     str_dsc.length = bad - 1;
 
 	/**********************
         Find special exponents.
         **********************/
-  idx = StrFindFirstInSet(&str_dsc, &dfghst_dsc);
+  idx = StrFindFirstInSet((struct descriptor *)&str_dsc, (struct descriptor *)&dfghst_dsc);
   if (idx) {
     switch (tst = str[idx - 1]) {
     case 'D':
@@ -297,19 +296,11 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
         Clobbers string with upcase. IDENT token returns name.
         Note, Lex strings are NUL terminated.
 */
-STATIC_ROUTINE int compare(char *s1, struct TdiFunctionStruct *s2)
-{
-  return strcmp(s1, s2->name);
-}
-
 STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
 {
-  struct descriptor_s sd = { 0, DTYPE_T, CLASS_S, 0 };
   int j, token;
   unsigned char *str_l;
 
-  sd.length = len;
-  sd.pointer = (char *)str;
 /*
         upcase(str,len);
 */
@@ -628,11 +619,11 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
     MAKE_S(DTYPE_NID, (unsigned short)sizeof(nid), mark_ptr->rptr);
     *(int *)mark_ptr->rptr->pointer = nid;
   } else {
-    struct descriptor abs_dsc = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor_d abs_dsc = { 0, DTYPE_T, CLASS_D, 0 };
     char *apath = TreeAbsPath((char *)str_l);
     if (apath != NULL) {
       unsigned short alen = (unsigned short)strlen(apath);
-      StrCopyR(&abs_dsc, &alen, apath);
+      StrCopyR((struct descriptor *)&abs_dsc, &alen, apath);
       TreeFree(apath);
       MAKE_S(DTYPE_PATH, abs_dsc.length, mark_ptr->rptr);
       _MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);
@@ -926,7 +917,6 @@ int TdiLexQuote(int len, unsigned char *str, struct marker *mark_ptr)
 int yylex()
 {
   int nstr;
-  extern int yyprevious;
   while ((nstr = yylook()) >= 0)
  yyfussy:switch (nstr) {
     case 0:

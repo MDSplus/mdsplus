@@ -1,6 +1,12 @@
 #include <stdlib.h>
 #include <libroutines.h>
+
 #include "mdsip_connections.h"
+
+////////////////////////////////////////////////////////////////////////////////
+//  DoMessage  /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 int DoMessage(int id)
 {
@@ -18,6 +24,7 @@ int DoMessage(int id)
     if (status & 1) {
       ans = (*processMessage) (c, msgptr);
       if (ans) {
+          // NOTE: [Andrea] this status is not actually tested for errors //
 	status = SendMdsMsg(id, ans, 0);
 	free(ans);
       }
@@ -28,3 +35,4 @@ int DoMessage(int id)
   }
   return status;
 }
+

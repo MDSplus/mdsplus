@@ -1,9 +1,13 @@
-#include "mdsip_connections.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include "zlib.h"
+
+#include "zlib/zlib.h"
+
+#include "mdsip_connections.h"
+
+
 static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options)
 {
   char *bptr = (char *)buffer;
@@ -35,7 +39,11 @@ static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options)
   return 0;
 }
 
-int SendMdsMsg(int id, Message * m, int oob)
+
+
+
+
+int SendMdsMsg(int id, Message * m, int msg_options)
 {
   unsigned long len = m->h.msglen - sizeof(m->h);
   unsigned long clength = 0;
@@ -47,7 +55,7 @@ int SendMdsMsg(int id, Message * m, int oob)
     clength = len;
     cm = (Message *) malloc(m->h.msglen + 4);
   }
-  if (!oob)
+  if (!msg_options)
     FlushConnection(id);
   if (m->h.client_type == SENDCAPABILITIES)
     m->h.status = GetCompressionLevel();
@@ -71,9 +79,9 @@ int SendMdsMsg(int id, Message * m, int oob)
       FlipBytes(4, (char *)&cm->h.msglen);
     /* status = SendBytes(id, (char *)cm, cm->h.msglen, oob); */
 /* now msglen is swapped, and cannot be used as byte counter */
-    status = SendBytes(id, (char *)cm, clength + 4 + sizeof(MsgHdr), oob);
+    status = SendBytes(id, (char *)cm, clength + 4 + sizeof(MsgHdr), msg_options);
   } else
-    status = SendBytes(id, (char *)m, len + sizeof(MsgHdr), oob);
+    status = SendBytes(id, (char *)m, len + sizeof(MsgHdr), msg_options);
   if (clength)
     free(cm);
   return status;

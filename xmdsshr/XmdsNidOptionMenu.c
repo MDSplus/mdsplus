@@ -104,7 +104,7 @@ static XtResource resources[] = {
   ,
 };
 
-Widget XmdsCreateNidOptionMenu(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateNidOptionMenu(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
   WidgetList children;
@@ -188,12 +188,12 @@ static void Destroy(Widget w, Resources * info, XtPointer cb)
   XtFree((char *)info);
 }
 
-Boolean XmdsIsNidOptionMenu(Widget w)
+EXPORT Boolean XmdsIsNidOptionMenu(Widget w)
 {
   return GetResources(w) != 0;
 }
 
-int *XmdsNidOptionMenuGetButtons(Widget w, int *num)
+EXPORT int *XmdsNidOptionMenuGetButtons(Widget w, int *num)
 {
   Widget par;
   int *ans = 0;
@@ -220,7 +220,7 @@ static Resources *GetResources(Widget w)
   return answer;
 }
 
-void XmdsNidOptionMenuReset(Widget w)
+EXPORT void XmdsNidOptionMenuReset(Widget w)
 {
   Resources *info = GetResources(w);
   if (info) {
@@ -247,7 +247,7 @@ void XmdsNidOptionMenuReset(Widget w)
   return;
 }
 
-struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected)
+EXPORT struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected)
 {
   struct descriptor_xd *xd = 0;
   Resources *info = GetResources(w);
@@ -270,7 +270,7 @@ struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected)
   return xd;
 }
 
-struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w)
+EXPORT struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w)
 {
   struct descriptor_xd *xd = 0;
   Resources *info = GetResources(w);
@@ -294,7 +294,7 @@ struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w)
   return xd;
 }
 
-int XmdsNidOptionMenuPut(Widget w)
+EXPORT int XmdsNidOptionMenuPut(Widget w)
 {
   Resources *info = GetResources(w);
   int status = 0;
@@ -323,7 +323,7 @@ int XmdsNidOptionMenuPut(Widget w)
   return status;
 }
 
-int XmdsNidOptionMenuApply(Widget w)
+EXPORT int XmdsNidOptionMenuApply(Widget w)
 {
   Resources *info = GetResources(w);
   int status = 0;
@@ -357,7 +357,7 @@ static void ButtonPushed(Widget w, int index, XmPushButtonCallbackStruct * cb)
 {
 }
 
-void XmdsNidOptionMenuSetButton(Widget w, int idx, String text)
+EXPORT void XmdsNidOptionMenuSetButton(Widget w, int idx, String text)
 {
   Resources *info = GetResources(w);
   int num;

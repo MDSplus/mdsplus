@@ -1,49 +1,49 @@
-import numpy,copy,ctypes
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+import numpy as _N
+import ctypes as _C
 
-_data=_mimport('mdsdata',1)
-_dtypes=_mimport('_mdsdtypes',1)
-_scalar=_mimport('mdsscalar',1)
+_data=_mimport('mdsdata')
+_dtypes=_mimport('_mdsdtypes')
+_scalar=_mimport('mdsscalar')
+_ver=_mimport('version')
 
 def makeArray(value):
     if isinstance(value,Array):
         return value
     if isinstance(value,_scalar.Scalar):
         return makeArray((value._value,))
-    if isinstance(value,ctypes.Array):
+    if isinstance(value,_C.Array):
         try:
-            return makeArray(numpy.ctypeslib.as_array(value))
+            return makeArray(_N.ctypeslib.as_array(value))
         except Exception:
             pass
     if isinstance(value,tuple) | isinstance(value,list):
         try:
-            ans=numpy.array(value)
-            if str(ans.dtype)[1:2]=='U':
-              ans=ans.astype('S')
+            ans=_N.array(value)
+            if str(ans.dtype)[1:2] in 'SU':
+                ans = ans.astype(_ver.npstr)
             return makeArray(ans)
         except (ValueError,TypeError):
             newlist=list()
             for i in value:
                 newlist.append(_data.makeData(i).data())
-            return makeArray(numpy.array(newlist))
-    if isinstance(value,numpy.ndarray):
-        if str(value.dtype)[0:2] == '|S':
+            return makeArray(_N.array(newlist))
+    if isinstance(value,_N.ndarray):
+        if str(value.dtype)[0:2] in ['|S', '<U']:
             return StringArray(value)
         if str(value.dtype) == 'bool':
-            return makeArray(value.__array__(numpy.uint8))
+            return makeArray(value.__array__(_N.uint8))
         if str(value.dtype) == 'object':
             raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
         return globals()[str(value.dtype).capitalize()+'Array'](value)
-    if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
-        return makeArray(numpy.array(value).reshape(1))
+    if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
+        return makeArray(_N.array(value).reshape(1))
     raise TypeError('Cannot make Array out of '+str(type(value)))
-                        
 
 def arrayDecompile(a,cl):
     if len(a.shape)==1:
@@ -71,26 +71,27 @@ class Array(_data.Data):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
         if self.__class__.__name__ == 'StringArray':
-            self._value=numpy.array(value).__array__(numpy.string_)
+            self._value=_N.array(value).__array__(_N.str_)
             return
-        if isinstance(value,ctypes.Array):
+        if isinstance(value,_C.Array):
             try:
-                value=numpy.ctypeslib.as_array(value)
+                value=_N.ctypeslib.as_array(value)
             except Exception:
                 pass
-        self._value=numpy.array(value).__array__(numpy.__dict__[self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()])
+        value = _N.array(value)
+        if len(value.shape) == 0:  # happens if value has been a scalar, e.g. int
+            value = value.reshape(1)
+        self._value = value.__array__(_N.__dict__[self.__class__.__name__[0:-5].lower()])
         return
-    
+
     def __getattr__(self,name):
         return self._value.__getattribute__(name)
 
     def _getValue(self):
         """Return the numpy ndarray representation of the array"""
         return self._value
-
     value=property(_getValue)
 
-    
     def _unop(self,op):
         return _data.makeData(getattr(self._value,op)())
 
@@ -115,12 +116,9 @@ class Array(_data.Data):
     def _getMdsDtypeNum(self):
         return {'Uint8Array':_dtypes.DTYPE_BU,'Uint16Array':_dtypes.DTYPE_WU,'Uint32Array':_dtypes.DTYPE_LU,'Uint64Array':_dtypes.DTYPE_QU,
                 'Int8Array':_dtypes.DTYPE_B,'Int16Array':_dtypes.DTYPE_W,'Int32Array':_dtypes.DTYPE_L,'Int64Array':_dtypes.DTYPE_Q,
-                'StringArray':_dtypes.DTYPE_T,
-                'Float32Array':_dtypes.DTYPE_FS,
-                'Float64Array':_dtypes.DTYPE_FT}[self.__class__.__name__[0:-6]]
-
+                'StringArray':_dtypes.DTYPE_T,'Float32Array':_dtypes.DTYPE_FS,'Float64Array':_dtypes.DTYPE_FT}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
-    
+
     def __array__(self):
         raise TypeError('__array__ not yet supported')
 
@@ -135,13 +133,13 @@ class Array(_data.Data):
         @rtype: Data
         """
         return len(self.data())
-
+    
     def getElementAt(self,itm):
         return _data.makeData(self._value[itm])
 
     def setElementAt(self,i,y):
         self._value[i]=y
-    
+
     def all(self):
         return self._unop('all')
 
@@ -174,7 +172,7 @@ class Array(_data.Data):
 
 
     def decompile(self):
-        if str(self._value.dtype).startswith('|S'):
+        if str(self._value.dtype)[0:2] in ['|S', '<U']:
             cl=_scalar.String
         else:
             cl=_scalar.__dict__[str(self._value.dtype).capitalize()]
@@ -182,6 +180,11 @@ class Array(_data.Data):
 
 class Int8Array(Array):
     """8-bit signed number"""
+    def deserialize(self):
+        """Return data item if this array was returned from serialize.
+        @rtype: Data
+        """
+        return _data.Data.deserialize(self)
 
 class Int16Array(Array):
     """16-bit signed number"""

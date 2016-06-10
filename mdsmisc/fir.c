@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include "filter.h"
 #include "complex.h"
+#include <config.h>
 
 static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int));
 static void Rectangular(double *w, int n);
@@ -46,27 +47,27 @@ static void Hanning(double *w, int n);
 static void Hamming(double *w, int n);
 static void Blackmann(double *w, int n);
 
-Filter *FirRectangular(float *fc, float *s_f, int *n)
+EXPORT Filter *FirRectangular(float *fc, float *s_f, int *n)
 {
   return Fir(*fc, *s_f, *n, Rectangular);
 }
 
-Filter *FirBartlett(float *fc, float *s_f, int *n)
+EXPORT Filter *FirBartlett(float *fc, float *s_f, int *n)
 {
   return Fir(*fc, *s_f, *n, Bartlett);
 }
 
-Filter *FirHanning(float *fc, float *s_f, int *n)
+EXPORT Filter *FirHanning(float *fc, float *s_f, int *n)
 {
   return Fir(*fc, *s_f, *n, Hanning);
 }
 
-Filter *FirHamming(float *fc, float *s_f, int *n)
+EXPORT Filter *FirHamming(float *fc, float *s_f, int *n)
 {
   return Fir(*fc, *s_f, *n, Hamming);
 }
 
-Filter *FirBlackmann(float *fc, float *s_f, int *n)
+EXPORT Filter *FirBlackmann(float *fc, float *s_f, int *n)
 {
   return Fir(*fc, *s_f, *n, Blackmann);
 }

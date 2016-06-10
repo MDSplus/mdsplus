@@ -1,11 +1,14 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 CFLAGS += $(THREAD) 
 LDFLAGS += $(THREAD)
 
 @MINGW_TRUE@ MDSTCL=mdstcl.bat
 @MINGW_FALSE@ MDSTCL=mdstcl
-@MINGW_TRUE@ DEF=tcl_commands.def
+@MINGW_TRUE@ DEF=${srcdir}/tcl_commands.def
 
 SOURCES = 			\
 	tcl_add_node.c	\
@@ -38,7 +41,6 @@ SOURCES = 			\
 	tcl_show_current.c	\
 	tcl_show_data.c	\
 	tcl_show_db.c	\
-	tcl_show_version.c \
 	tcl_verify_tree.c	\
 	tcl_wfevent.c \
 	tcl_write.c

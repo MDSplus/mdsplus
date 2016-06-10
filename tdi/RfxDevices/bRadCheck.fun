@@ -152,6 +152,10 @@ write(*,  " signal "//sum( ( _y > 20. ) * 1.0 )//" ref "//( _val - 400 ) );
                			}
             		}
 				}       
+				else
+				{
+					write(*, "Chopper disabilitato dal check :  "//_sigName);
+				}	       
 			}
 		}
 	}

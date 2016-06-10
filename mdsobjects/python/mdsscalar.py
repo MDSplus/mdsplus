@@ -1,74 +1,61 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-import numpy,copy
+import numpy as _N
 
-_dtypes=_mimport('_mdsdtypes',1)
-_data=_mimport('mdsdata',1)
+_dtypes=_mimport('_mdsdtypes')
+_data=_mimport('mdsdata')
+_array=_mimport('mdsarray')
+_ver=_mimport('version')
 
 def makeScalar(value):
-    if isinstance(value,str):
+    if isinstance(value,_ver.basestring):
         return String(value)
     if isinstance(value,Scalar):
-        return copy.deepcopy(value)
-    if isinstance(value,numpy.generic):
-        if isinstance(value,numpy.string_):
+        from copy import deepcopy
+        return deepcopy(value)
+    if isinstance(value,_N.generic):
+        if isinstance(value,(_N.string_, _N.unicode_)):  # includes _N.bytes_
             return String(value)
-        try:
-            if isinstance(value,numpy.bytes_):
-              return String(str(value,encoding='utf8'))
-        except:
-            pass
-        if isinstance(value,numpy.bool_):
+        if isinstance(value,_N.bool_):
             return makeScalar(int(value))
         return globals()[value.__class__.__name__.capitalize()](value)
-    try:
-        if isinstance(value,long):
-            return Int64(value)
-        if isinstance(value,int):
-            return Int32(value)
-    except:
-        if isinstance(value,int):
-            return Int64(value)
+    if isinstance(value,_ver.long):
+        return Int64(value)
+    if isinstance(value,int):
+        return Int32(value)
     if isinstance(value,float):
         return Float32(value)
-    if isinstance(value,str):
-        return String(value)
-    if isinstance(value,bytes):
-        return String(value.decode())
     if isinstance(value,bool):
         return Int8(int(value))
     if isinstance(value,complex):
-        return Complex128(numpy.complex128(value))
-    if isinstance(value,numpy.complex64):
+        return Complex128(_N.complex128(value))
+    if isinstance(value,_N.complex64):
         return Complex64(value)
-    if isinstance(value,numpy.complex128):
+    if isinstance(value,_N.complex128):
         return Complex128(value)
     raise TypeError('Cannot make Scalar out of '+str(type(value)))
 
 class Scalar(_data.Data):
+    _value = None
     def __new__(cls,value=0):
         try:
-            import numpy
-            _array=_mimport('mdsarray',1)
-            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
+            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
                return _array.__dict__[cls.__name__+'Array'](value)
         except:
             pass
-
         return super(Scalar,cls).__new__(cls)
-        
+
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Scalar':
             raise TypeError("cannot create 'Scalar' instances")
         if self.__class__.__name__ == 'String':
-            self._value=numpy.string_(value)
+            self._value = _N.str_(_ver.tostr(value))
             return
-        self._value=numpy.__dict__[self.__class__.__name__.lower()](value)
+        self._value = _N.__dict__[self.__class__.__name__.lower()](value)
 
     def __getattr__(self,name):
         if name.startswith("__array"):
@@ -81,10 +68,10 @@ class Scalar(_data.Data):
     value=property(_getValue)
 
     def __str__(self):
-        formats={'Int8':'%dB','Int16':'%dW','Int32':'%d','Int64':'0X%0xQ',
-                 'Uint8':'%uBU','Uint16':'%uWU','Uint32':'%uLU','Uint64':'0X%0xQU',
-                 'Float32':'%g'}
-        ans=formats[self.__class__.__name__] % (self._value,)
+        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'0X%0uQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'0X%0xQU',
+                 Float32:'%g'}
+        ans=formats[self.__class__] % (self._value,)
         if ans=='nan':
             ans="$ROPRAND"
         elif isinstance(self,Float32) and ans.find('.')==-1:
@@ -92,7 +79,7 @@ class Scalar(_data.Data):
         return ans
 
     def decompile(self):
-        return str(self)
+        return _ver.tostr(self)
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -127,11 +114,11 @@ class Scalar(_data.Data):
         return _data.makeData(getattr(self.value,op)(y,z))
 
     def _getMdsDtypeNum(self):
-        return {'Uint8':DTYPE_BU,'Uint16':DTYPE_WU,'Uint32':DTYPE_LU,'Uint64':DTYPE_QU,
-                'Int8':DTYPE_B,'Int16':DTYPE_W,'Int32':DTYPE_L,'Int64':DTYPE_Q,
-                'String':DTYPE_T,
-                'Float32':DTYPE_FS,
-                'Float64':DTYPE_FT,'Complex64':DTYPE_FSC,'Complex128':DTYPE_FTC}[self.__class__.__name__]
+        return {'Uint8':_dtypes.DTYPE_BU,'Uint16':_dtypes.DTYPE_WU,'Uint32':_dtypes.DTYPE_LU,'Uint64':_dtypes.DTYPE_QU,
+                'Int8':_dtypes.DTYPE_B,'Int16':_dtypes.DTYPE_W,'Int32':_dtypes.DTYPE_L,'Int64':_dtypes.DTYPE_Q,
+                'String':_dtypes.DTYPE_T,
+                'Float32':_dtypes.DTYPE_FS,
+                'Float64':_dtypes.DTYPE_FT,'Complex64':_dtypes.DTYPE_FSC,'Complex128':_dtypes.DTYPE_FTC}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
 
 
@@ -195,7 +182,7 @@ class Uint64(Scalar):
     date=property(_getDate)
 
 class Float32(Scalar):
-    """32-bit floating point number"""    
+    """32-bit floating point number"""
 
 class Complex64(Scalar):
     """32-bit complex number"""
@@ -222,20 +209,21 @@ class String(Scalar):
         """Add: x.__add__(y) <==> x+y
         @rtype: Data"""
         return self.execute('$//$',self,y)
+    def __contains__(self,y):
+        """Contains: x.__contains__(y) <==> y in x
+        @rtype: Bool"""
+        return str(self._value).find(str(y)) != -1
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
         if len(self._value) > 0:
-            return str(self.value.tostring().decode())
+            return str(self._value)
         else:
             return ''
     def __len__(self):
         return len(str(self))
     def decompile(self):
-        if len(self._value) > 0:
-            return repr(self._value.tostring())
-        else:
-            return "''"
+        return repr(str(self))
 
 class Int128(Scalar):
     """128-bit number"""

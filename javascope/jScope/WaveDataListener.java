@@ -14,4 +14,5 @@ public interface WaveDataListener
 {
     void dataRegionUpdated(double []x, float []y, double resolution);
     void dataRegionUpdated(long []x, float []y, double resolution);
+    void legendUpdated(String name);
 }

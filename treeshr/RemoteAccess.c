@@ -44,7 +44,7 @@
 #ifdef SRB
 #define SRB_SOCKET 12345	/* this is the socket value used to indicate that
 				   this file is an an SRB file.  Positive so that
-				   other MDSPlus checks pass, but a value that 
+				   other MDSPlus checks pass, but a value that
 				   otherwise will not occur */
 #include "srbUio.h"
 #endif
@@ -61,9 +61,6 @@ struct descrip {
 
 STATIC_CONSTANT struct descrip empty_ans;
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
-extern int LibFindImageSymbol();
 
 #if !defined(HAVE_PTHREAD_H)
 #define pthread_mutex_t int
@@ -201,6 +198,7 @@ STATIC_ROUTINE void MdsIpFree(void *ptr)
 
 STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
 {
+  int host_in_directive;
   struct _host_list *hostchk;
   struct _host_list **nextone;
   STATIC_THREADSAFE int (*rtn) (char *) = 0;
@@ -223,12 +221,12 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
     if (dbid && hostchk->dbid != dbid)
       continue;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-    if (((getaddr_status == 0) ? memcmp(&sockaddr, &hostchk->sockaddr,
-					sizeof(sockaddr)) : strcmp(hostchk->host, host)) == 0)
+    host_in_directive = (((getaddr_status == 0) ? memcmp(&sockaddr, &hostchk->sockaddr,
+					sizeof(sockaddr)) : strcmp(hostchk->host, host)) == 0);
 #else
-    if (strcmp(hostchk->host, host) == 0)
+    host_in_directive = (strcmp(hostchk->host, host) == 0);
 #endif
-    {
+    if (host_in_directive){
       hostchk->time = time(0);
       if (inc_count)
 	hostchk->connections++;
@@ -1436,7 +1434,7 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
     ssize_t ans = -1;
     if (count == 0) {
       if (deleted)
-	*deleted=0;
+	*deleted = 0;
       return 0;
     }
     LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
@@ -1528,10 +1526,12 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 	  flags |= LOCKFILE_FAIL_IMMEDIATELY;
 	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
 	status =
-	  LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+	    LockFileEx(h, flags, 0, (DWORD) size, 0,
+		       &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       } else {
 	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+	status =
+	    UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       }
 #else
       struct flock flock_info;

@@ -4,8 +4,6 @@ LibCallg
 LibConvertDateString
 LibCreateVmZone
 LibDeleteVmZone
-LibEmul
-LibEstablish
 LibFindFile
 LibFindFileEnd
 LibFindFileRecurseCaseBlind
@@ -17,7 +15,6 @@ LibInsertTree
 LibLookupTree
 LibResetVmZone
 LibSFree1Dd
-LibSigToRet
 LibSpawn
 LibSysAscTim
 LibTimeToVMSTime
@@ -37,7 +34,6 @@ MDSWfeventTimed
 MDSfprintf
 MDSprintf
 MdsClassString
-MdsCmprs
 MdsCompress
 MdsCopyDxXd
 MdsCopyDxXdZ
@@ -95,3 +91,6 @@ libgetvm
 libgetvm_
 LibFindImageSymbol_C
 MdsGetStdMsg
+UdpEventGetLoop
+InitializeEventSettings
+

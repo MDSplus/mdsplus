@@ -1,5 +1,5 @@
 fun public MdsDevices() {
-  return ( [MitDevices(),
+  return ( [pydevices(), MitDevices(),
 	'DEMOADC\0',		'TutorialDevices\0',
 	'DIO4\0', 		'RfxDevices\0',
 	'SIS3820\0', 		'RfxDevices\0',
@@ -35,6 +35,11 @@ fun public MdsDevices() {
     'RFX_PROTECTIONS\0', 'RfxDevices\0',
     'DIO2_ENCDEC\0', 'RfxDevices\0',
     'MARTE_DEVICE\0', 'RfxDevices\0',
+    'MARTE_NE\0', 'RfxDevices\0',
     'MARTE_XRAY\0', 'RfxDevices\0',
-    'CYGNET4K\0', 'RfxDevices\0']);
+    'CYGNET4K\0', 'RfxDevices\0',
+    'BNC845\0', 'W7xDevices\0',
+    'QC9200\0', 'W7xDevices\0',
+    'RFXVICONTROL\0', 'RfxDevices\0',
+	'REDPYTADC\0', 'RfxDevices\0']);
 }

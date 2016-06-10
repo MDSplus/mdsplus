@@ -1,19 +1,12 @@
 package jScope;
 
 /* $Id$ */
-import jScope.Signal;
-import jScope.Frames;
-import jScope.FrameData;
-import jScope.Grid;
-import jScope.ColorMap;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.Insets;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.image.*;
 import java.awt.geom.*;
 
@@ -807,7 +800,7 @@ public class Waveform
           //July 2014 in order to force resolution adjustment
           try {
             waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
-            setXlimits((float)MinXSignal(), (float)MaxXSignal());
+            setXlimits((double)MinXSignal(), (double)MaxXSignal());
           }catch(Exception exc)
           {
               System.out.println(exc);
@@ -1249,8 +1242,6 @@ public class Waveform
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
-        
-            
         if(xmax != Double.MAX_VALUE && xmin != Double.MIN_VALUE)
         {
             double xrange = xmax - xmin;
@@ -1442,7 +1433,7 @@ public class Waveform
         we.setIsMB2(is_mb2);
         
         
-        if(s.isLongX())
+        if(s.isLongXForLabel())
             we.setDateValue(0);
         
 
@@ -1998,50 +1989,45 @@ public class Waveform
     int sy1;// the y coordinate of the first corner of the source rectangle.
     int sx2;// the x coordinate of the second corner of the source rectangle.
     int sy2;// the y coordinate of the second corner of the source rectangle.
-        
+
+   
       dx1 = 1;
       dy1 = 1;
       dx2 = dim.width;
       dy2 = dim.height;
-      //if( frames.getVerticaFlipState() && frames.getHorizontalFlipState() )  
-      if( frames.vertical_flip && frames.horizontal_flip )  
+
+      sx1 = r == null ? 0 : r.x;
+      sy1 = r == null ? 0 : r.y;          
+      sx2 = r == null ? imgDim.width  : r.x + r.width ;
+      sy2 = r == null ? imgDim.height : r.y + r.height ;
+
+    
+      if( frames.getVerticalFlip() && frames.getHorizontalFlip() )  
       {
-        System.out.println("FLIP V & H");  
-        sx1 = r == null ? imgDim.width  : r.x + r.width ;
-        sy1 = r == null ? imgDim.height : r.y + r.height ;
-        sx2 = r == null ? 0 : r.x;
-        sy2 = r == null ? 0 : r.y;          
+        dx1 = dim.width;
+        dy1 = dim.height;
+        dx2 = 1;
+        dy2 = 1;
       }
       else
       {
-          //if( frames.getVerticaFlipState() )
-          if( frames.vertical_flip )
-          
+          if( frames.getVerticalFlip() )
           {              
-                System.out.println("FLIP V");  
-                sx1 = r == null ? 0 : r.x;
-                sy1 = r == null ? imgDim.height : r.y + r.height ;
-                sx2 = r == null ? imgDim.width  : r.x + r.width ;
-                sy2 = r == null ? 0 : r.y;          
+
+                dx1 = dim.width;
+                dy1 = 1;
+                dx2 = 1;
+                dy2 = dim.height;
+              
           }
           else
           {
-              //if( frames.getHorizontalFlipState() )
-              if( frames.horizontal_flip )
+              if( frames.getHorizontalFlip() )
               {
-                //System.out.println("FLIP H");  
-                sx1 = r == null ? imgDim.width  : r.x + r.width ;
-                sy1 = r == null ? 0 : r.y;          
-                sx2 = r == null ? 0 : r.x;
-                sy2 = r == null ? imgDim.height : r.y + r.height ;                  
-              }
-              else
-              {
-                //System.out.println("NO FLIP");  
-                sx1 = r == null ? 0 : r.x;
-                sy1 = r == null ? 0 : r.y;          
-                sx2 = r == null ? imgDim.width  : r.x + r.width ;
-                sy2 = r == null ? imgDim.height : r.y + r.height ;
+                dx1 = 1;
+                dy1 = dim.height;
+                dx2 = dim.width;
+                dy2 = 1;                
               }
           }
       }
@@ -2217,7 +2203,7 @@ public class Waveform
     change_limits = true;
   }
 
-  public void setXlimits(float xmin, float xmax) {
+  public void setXlimits(double xmin, double xmax) {
     if (waveform_signal == null) {
       return;
     }
@@ -2255,7 +2241,7 @@ public class Waveform
 
   protected double MinXSignal() {
     if (waveform_signal == null) {
-      return 0.;
+       return 0.;
     }
     return waveform_signal.getXmin();
   }
@@ -2392,20 +2378,22 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
       for (int i = 0; i < sig.getNumPoints(); i++)
       {
-        up = wm.YPixel(up_error[i] + sig.getY(i), d);
-        if (!sig.hasAsymError())
-        {
-          low = wm.YPixel(sig.getY(i) - up_error[i], d);
-        }
-        else
-        {
-          low = wm.YPixel(sig.getY(i) - low_error[i], d);
-        }
-        x = wm.XPixel(sig.getX(i), d);
+        try {
+            up = wm.YPixel(up_error[i] + sig.getY(i), d);
+            if (!sig.hasAsymError())
+            {
+              low = wm.YPixel(sig.getY(i) - up_error[i], d);
+            }
+            else
+            {
+              low = wm.YPixel(sig.getY(i) - low_error[i], d);
+            }
+            x = wm.XPixel(sig.getX(i), d);
 
-        g.drawLine(x, up, x, low);
-        g.drawLine(x - 2, up, x + 2, up);
-        g.drawLine(x - 2, low, x + 2, low);
+            g.drawLine(x, up, x, low);
+            g.drawLine(x - 2, up, x + 2, up);
+            g.drawLine(x - 2, low, x + 2, low);
+        }catch(Exception exc){}
       }
     }
 
@@ -2465,19 +2453,21 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
                                          waveform_signal.getYmin());
 
       undo_zoom.addElement(r_prev);
-      waveform_signal.freeze();
+      //waveform_signal.freeze();
     }
     else {
       undo_zoom.removeElement(r);
       if(undo_zoom.size() == 0)
-          waveform_signal.unfreeze();
+          unfreeze();
     }
     //GABRIELE AUGUST 2014
-    setXlimits((float)r.start_xs, (float)r.end_xs);
+    setXlimits((double)r.start_xs, (double)r.end_xs);
     waveform_signal.setXLimits( r.start_xs, r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
     change_limits = true;
+    if(add_undo)
+        freeze();
 
   }
 
@@ -2486,13 +2476,12 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       frames.Resize();
     }
     else {
-
       if (waveform_signal == null) {
         return;
       }
       waveform_signal.Autoscale();
+      unfreeze();
     }
-    waveform_signal.unfreeze();
     ReportChanges();
   }
 
@@ -2554,7 +2543,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     }
     waveform_signal.ResetScales();
     undo_zoom.clear();
-    waveform_signal.unfreeze();
+    unfreeze();
     ReportChanges();
   }
 
@@ -2820,16 +2809,21 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     // to do: code goes here.
   }
   
-  public void signalUpdated(boolean changeLimits)
+  public  void signalUpdated(boolean changeLimits)
   {
       change_limits = changeLimits;
       not_drawn = true;
       repaint();
   }
   
-  
- 
-  
+  void freeze()
+  {
+      waveform_signal.freeze();
+  }
+ void unfreeze()
+  {
+      waveform_signal.unfreeze();
+  }
   
   
 }

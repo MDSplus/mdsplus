@@ -21,7 +21,7 @@ class CP7452(Device):
     del i
 
 
-    def init(self,arg):
+    def init(self):
         """Initialize digital outputs of CP7452 cpci board.
         Connects to the host and for each of the DIGITAL_OUTS nodes which are turned on, write the value to the digital output.
         """
@@ -49,7 +49,7 @@ class CP7452(Device):
         return 1
     INIT=init
 
-    def store(self,arg):
+    def store(self):
         """Stores the digital input values into the tree.
         Connects to the host and for each of the DIGITAL_INS nodes which are turned on, read the digital input and store the value in the node.
         """

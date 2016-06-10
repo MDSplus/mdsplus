@@ -33,63 +33,70 @@ class ACQ216(acq.ACQ):
         """
         import tempfile
         import time
+        from MDSplus.mdsExceptions import DevBAD_ACTIVE_CHAN
+        from MDSplus.mdsExceptions import DevBAD_TRIG_SRC
+        from MDSplus.mdsExceptions import DevBAD_CLOCK_SRC
+        from MDSplus.mdsExceptions import DevBAD_PRE_TRIG
+        from MDSplus.mdsExceptions import DevBAD_POST_TRIG
+        from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
+
         start=time.time()
-        msg=None
+
+        if self.debugging():
+            print "starting init\n";
+        path = self.local_path
+        tree = self.local_tree
+        shot = self.tree.shot
+
+        active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
+        if active_chan not in (4,8,16) :
+            raise DevBAD_ACTIVE_CHAN()
+        if self.debugging():
+            print "have active chan\n";
 
         try:
-            if self.debugging():
-                print "starting init\n";
-            path = self.local_path
-            tree = self.local_tree
-            shot = self.tree.shot
-            msg="Must specify active chans as int in (4,8,16)"
-
-            active_chan = int(self.active_chan)
-            msg=None
-            if active_chan not in (4,8,16) :
-                print "active chans must be in (4,8,16)"
-                active_chan = 16
-            if self.debugging():
-                print "have active chan\n";
-
-            msg="Could not read trigger source"
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
-            if self.debugging():
-                print "have trig_src\n";
-            msg="Could not read clock source"
+        except Exception, e:
+            raise DevBAD_TRIG_SRC(str(e))
+        if self.debugging():
+            print "have trig_src\n";
+
+        try:
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-            if self.debugging():
-                print "have clock src\n";
+        except Exception, e:
+            raise DevBAD_CLOCK_SRC(str(e))
+        if self.debugging():
+            print "have clock src\n";
+
+        try:
+            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+        except:
+            clock_out=None
+
+        pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
+        if self.debugging():
+            print "have pre trig\n";
+
+        post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
+        if self.debugging():
+            print "have post trig\n";
+
+        if clock_src == "INT_CLOCK":
+            clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
+            clock_div = 1
+        else :
             try:
-                clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+                clock_div = int(self.clock_div)
             except:
-                clock_out=None
-            msg="Must specify pre trigger samples"
-            pre_trig=int(self.pre_trig.data()*1024)
-            if self.debugging():
-                print "have pre trig\n";
-            msg="Must specify post trigger samples"
-            post_trig=int(self.post_trig.data()*1024)
-            if self.debugging():
-                print "have post trig\n";
-            msg=None
-            if clock_src == "INT_CLOCK":
-                msg="Must specify clock frequency in clock_freq node for internal clock"
-                clock_freq = int(self.clock_freq)
                 clock_div = 1
-                msg=None
-            else :
-                try:
-                    clock_div = int(self.clock_div)
-                except:
-                    clock_div = 1
-            if self.debugging():
-                print "have the settings\n";
+        if self.debugging():
+            print "have the settings\n";
 
 
 #
 # now create the post_shot ftp command file
 #
+        try:
             fd = tempfile.TemporaryFile()
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
@@ -125,10 +132,6 @@ class ACQ216(acq.ACQ):
                     fd.write(setDIOcmd)
 		    fd.write(setRoutecmd)         
             else:
- #               if (clock_div != 1) :
- #                   fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
- #               else:
- #                   fd.write("acqcmd setExternalClock %s\n" % clock_src)
                 if (clock_out != None) :
                     clock_out_num_str = clock_out[-1]
                     clock_out_num = int(clock_out_num_str)
@@ -148,119 +151,76 @@ class ACQ216(acq.ACQ):
                 print "trig_src = %s\n" % (trig_src,)
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             if self.debugging():
-                print "pre-post all set now the xml and commands\n"
+                print "pre-post all set now the JSON and commands\n"
 
-            self.addGenericXMLStuff(fd)
+            self.addGenericJSON(fd)
 
-            fd.write("xmlcmd 'get.vin'>> $settingsf\n")
-            self.finishXMLStuff(fd, auto_store)
+            fd.write("add_cmd 'get.vin'>> $settingsf\n")
+            self.finishJSON(fd, auto_store)
 
             print "Time to make init file = %g\n" % (time.time()-start)
             start=time.time()
-            self.doInit(fd)
-            fd.close()
 
-            print "Time for board to init = %g\n" % (time.time()-start)
-            return  1
+            self.doInit(fd)
 
         except Exception,e:
-            if msg != None:
-                print 'error = %s\nmsg = %s\n' %(msg, str(e),)
-            else:
-                print "%s\n" % (str(e),)
-            return acq.ACQ.InitializationError
+            try:
+                fd.close()
+            except:
+                pass 
+
+            raise
+
+        fd.close()
+       
+        print "Time for board to init = %g\n" % (time.time()-start)
+        return  1
 
     INITFTP=initftp
         
-    def store(self, arg):
-        import MitDevices
-        import time
+    def store(self, arg1='checks', arg2='noauto'):
         if self.debugging():
             print "Begining store\n"
-	self.data_socket=-1
-        if not self.triggered():
-            print "ACQ216 Device not triggered\n"
-            return MitDevices.DevNotTriggered
 
-        complete = 0
-        tries = 0
-        settings = None
-        while not complete and tries < 10 :
-            try:
-                tries = tries + 1
-                settings = self.loadSettings()
-                complete=1
-            except Exception,e:
-                if self.debugging():
-                    print "ACQ216 Error loading settings\n%s\n" %(e,)
-        if settings == None :
-            print "after %d tries could not load settings\n" % (tries,)
-            return acq.ACQ.SettingsNotLoaded
-        
-        path = self.local_path
-        tree = self.local_tree
-        shot = self.tree.shot
-        if self.debugging() :
-            print "xml is loaded\n"
-        if tree != settings['tree'] :
-            print "ACQ216 open tree is %s board armed with tree %s\n" % (tree, settings["tree"],)
-            if arg != "nochecks" :
-                return acq.ACQ.WrongTree
-        if path != settings['path'] :
-            print "ACQ216 device tree path %s, board armed with path %s\n" % (path, settings["path"],)
-            if arg != "nochecks" :
-                return acq.ACQ.WrongPath
-        if shot != int(settings['shot']) :
-            print "ACQ216 open shot is %d, board armed with shot %d\n" % (shot, int(settings["shot"]),)
-            if arg != "nochecks" :
-                return acq.ACQ.WrongShot
-        status = []
-        cmds = self.status_cmds.record
-        for cmd in cmds:
-            cmd = cmd.strip()
-            if self.debugging():
-                print "about to append answer for /%s/\n" % (cmd,)
-                print "   which is /%s/\n" %(settings[cmd],)
-            status.append(settings[cmd])
-            if self.debugging():
-                print "%s returned %s\n" % (cmd, settings[cmd],)
-        if self.debugging():
-            print "about to write board_status signal"
-        self.board_status.record = MDSplus.Signal(cmds, None, status)
+        self.checkTrigger(arg1, arg2)
+        self.loadSettings()
+        self.checkTreeAndShot(arg1, arg2)
+        self.storeStatusCommands()
 
-        numSampsStr = settings['getNumSamples']
-        preTrig = self.getPreTrig(numSampsStr)
-        postTrig = self.getPostTrig(numSampsStr)
+        preTrig = self.getPreTrig()
+        postTrig = self.getPostTrig()
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
-        vin1 = settings['get.vin']
+
+        vin1 = self.settings['get.vin']
         vins = eval('MDSplus.makeArray([%s,])' % (vin1,))
 
         if self.debugging():
             print "got the vins "
             print vins
         self.ranges.record = vins
-        chanMask = settings['getChannelMask'].split('=')[-1]
+        chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
-        if self.debugging():
-            print "clock_src = %s\n" % (clock_src,)
-        if clock_src == 'INT_CLOCK' :
-            intClock = float(settings['getInternalClock'].split()[1])
-            delta=1./float(intClock)
-            self.clock.record = MDSplus.Range(None, None, delta)
-        else:
-            self.clock.record = self.clock_src
 
-        clock = self.clock.record
+        self.storeClock()
+        clock = self.clock
+
 #
 # now store each channel
 #
+        last_error=None
         for chan in range(16):
-            self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
+            try:
+                self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
+            except e:
+                print "Error storing channel %d\n%s" % (chan, e,)
+                last_error = e
 
         self.dataSocketDone()
+        if last_error:
+            raise last_error
+
         return 1
 
     STORE=store

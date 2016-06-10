@@ -844,7 +844,8 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
 #define TEXT_TO_TEXT(pa,lena,pb,lenb,numb) \
   {char *ip = (char*)pa; char *op = (char *)pb; int i=numb; while(i-- > 0) {\
    int nfill; nfill = lenb - lena; \
-   memcpy(op, ip, (nfill <= 0) ? lenb : lena); \
+   if (ip) \
+      memcpy(op, ip, (nfill <= 0) ? lenb : lena); \
    if (nfill > 0) memset(op+lena,32,nfill); op += lenb; ip += lena;} status = 1;}
 
 #define T_T(lena,pa,lenb,pb,numb) TEXT_TO_TEXT(pa,lena,pb,lenb,numb)
@@ -896,7 +897,7 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
         defcase(a,FSC) \
         defcase(a,FTC)
 
-int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
+EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
 {
   int lena = pdin->length;
   int dtypea = pdin->dtype;
@@ -908,7 +909,6 @@ int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
   int classb = pdout->class == CLASS_A;
   char *pb = pdout->pointer;
   register int numb = classb ? (int)pdout->arsize / max(lenb, 1) : 1L;
-  int numbsave;
   int n;
   int status = TdiINVDTYDSC;
  /** no output **/
@@ -961,7 +961,6 @@ int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
     --numb;
     goto same;
   } else {
-    numbsave = numb;
 	/** big branch **/
     n = MAXTYPE * dtypea + dtypeb;
     switch (n) {

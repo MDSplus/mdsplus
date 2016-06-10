@@ -1,15 +1,19 @@
-if '__package__' not in globals() or __package__ is None or len(__package__)==0:
-  def _mimport(name,level):
-    return __import__(name,globals())
-else:
-  def _mimport(name,level):
-    return __import__(name,globals(),{},[],level)
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
 
-_mimport('_loadglobals',1).load(globals())
+import os as _os
+from os import getenv as _getenv
+_treeshr=_mimport('_treeshr')
+_treenode=_mimport('treenode')
+_compound=_mimport('compound')
+_ident=_mimport('ident')
+_mdsarray=_mimport('mdsarray')
+_mdsdata=_mimport('mdsdata')
 
-_treeshr=_mimport('_treeshr',1)
-
-class Device(TreeNode):
+class Device(_treenode.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
     Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
@@ -21,7 +25,7 @@ class Device(TreeNode):
     when you need to include references to other nodes in the device. Lastly the dict instance may contain an 'options' key whose values are
     node options specified as a tuple of strings. Note if you only specify one option include a trailing comma in the tuple.The "parts" attribute
     is used to implement the Add and PART_NAME and ORIGNAL_PART_NAME methods of the subclass.
-    
+
     You can also include a part_dict class attribute consisting of a dict() instance whose keys are attribute names and whose values are nid
     offsets. If you do not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
     to lowercase and the colons and periods are replaced with underscores. Referencing a part name will return another instance of the same
@@ -29,7 +33,7 @@ class Device(TreeNode):
     attributes which is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass names MUST BE UPPERCASE!
 
     Sample usage1::
-    
+
        from MDSplus import Device
 
        class MYDEV(Device):
@@ -78,15 +82,15 @@ class Device(TreeNode):
            def store(self,arg):
                from MDSplus import Signal
                self.chan1=Signal(32,None,42)
-               
+
     If you need to reference attributes using computed names you can do something like::
 
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    
+    debug = _getenv('DEBUG_DEVICES')
     gtkThread = None
-    
+
     def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):
@@ -105,34 +109,40 @@ class Device(TreeNode):
 
     def __new__(cls,node):
         """Create class instance. Initialize part_dict class attribute if necessary.
-        @param node: Not used
+        @param node: Node of device
         @type node: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
         if cls.__name__ == 'Device':
+            try:
+                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
+                model=str(head.record.model)
+                return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
+            except:
+                pass
             raise TypeError("Cannot create instances of Device class")
-        cls.__class_init__();
-        return super(Device,cls).__new__(cls)
+        else:
+            cls.__class_init__();
+            return super(Device,cls).__new__(cls,node)
 
-    def __init__(self,node):
+    def __init__(self,node,tree=None):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
         @rtype: None
         """
-        try:
-            self.nids=node.conglomerate_nids.nid_number
-            self.head=int(self.nids[0])
-        except Exception:
-            self.head=node.nid
-        super(Device,self).__init__(node.nid,node.tree)
+        if isinstance(node,_treenode.TreeNode):
+            try:
+                self.nids=node.conglomerate_nids.nid_number
+                self.head=int(self.nids[0])
+            except Exception:
+                self.head=node.nid
+            super(Device,self).__init__(node.nid,node.tree)
 
-    def ORIGINAL_PART_NAME(self,arg):
+    def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @param arg: Not used. Placeholder for do method argument
-        @type arg: Use None
         @return: Part name of this node
         @rtype: str
         """
@@ -155,7 +165,7 @@ class Device(TreeNode):
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME(None)
         try:
-            return self.__class__(TreeNode(self.part_dict[name]+self.head,self.tree))
+            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
         except KeyError:
             return super(Device,self).__getattr__(name)
 
@@ -168,11 +178,11 @@ class Device(TreeNode):
         @rtype: None
         """
         try:
-            TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
-    def Add(cls,tree,path):
+    def Add(cls,tree,name):
         """Used to add a device instance to an MDSplus tree.
         This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
         For this to work the device class name (uppercase only) and the package name must be returned in the MdsDevices tdi function.
@@ -183,27 +193,41 @@ class Device(TreeNode):
         And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
         on (i.e. write_once).
         """
+        parent = tree
+        if isinstance(tree, _treenode.TreeNode): tree = tree.tree
         cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
-        head=tree.addNode(path,'DEVICE')
+        if isinstance(name,_ident.Ident):
+            name=name.data()
+        head=parent.addNode(name,'DEVICE')
         head=cls(head)
-        head.record=Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
+        try:
+            import_string="from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__)
+        except:
+            import_string=None
+                                                 
+                                                                
+        head.record=_compound.Conglom('__python__',cls.__name__,None,import_string)
         head.write_once=True
-        for elt in cls.parts:
-            node=tree.addNode(path+elt['path'],elt['type'])
-        for elt in cls.parts:
-            node=tree.getNode(path+elt['path'])
+        import MDSplus
+        glob = MDSplus.__dict__
+        glob['tree'] = tree
+        glob['path'] = head.path
+        glob['head'] = head
+        for elt in cls.parts:  # first add all nodes
+            node=head.addNode(elt['path'],elt['type'])
+        for elt in cls.parts:  # then you can reference them in valueExpr
+            node=head.getNode(elt['path'])
             if 'value' in elt:
-                node.record=elt['value']
-            if 'valueExpr' in elt:
-                try:
-                    import MDSplus
-                except:
-                    pass
-                node.record=eval(elt['valueExpr'])
+                if Device.debug: print(node,node.usage,elt['value'])
+                node.record = elt['value']
+            elif 'valueExpr' in elt:
+                glob['node'] = node
+                if Device.debug: print(node,node.usage,elt['valueExpr'])
+                node.record = eval(elt['valueExpr'], glob)
             if 'options' in elt:
                 for option in elt['options']:
-                    exec('node.'+option+'=True')
+                    node.__setattr__(option,True)
         _treeshr.TreeEndConglomerate(tree)
     Add=classmethod(Add)
 
@@ -211,19 +235,12 @@ class Device(TreeNode):
     def dw_setup(self,*args):
         """Bring up a glade setup interface if one exists in the same package as the one providing the device subclass
 
-        The gtk.main() procedure must be run in a separate thread to avoid locking the main program. If this method
-        is invoked via the Py() TDI function, care must be made to do unlock the python thread lock the first time
-        a gtkMain thread is created. This thread unlocking has to be done in the Py TDI function after the GIL state
-        has been restored. This method sets a public TDI variable, _PyReleaseThreadLock, which is inspected in the Py
-        function and if defined, the Py function will release the thread lock. This locking scheme was arrived at
-        after several days of trial and error and seems to work with at least Python versions 2.4 and 2.6.
+        The gtk.main() procedure must be run in a separate thread to avoid locking the main program.
         """
         try:
             from widgets import MDSplusWidget
-            from mdsdata import Data
-            from mdsscalar import Int32
             import gtk.glade
-            import os,gtk,inspect,gobject,threading
+            import os,gtk,inspect,threading
             import sys
             class gtkMain(threading.Thread):
                 def run(self):
@@ -233,7 +250,7 @@ class Device(TreeNode):
                     self.content=[]
                 def write(self,string):
                     self.content.append(string)
-                        
+
             gtk.gdk.threads_init()
             out=MyOut()
             sys.stdout = out
@@ -253,8 +270,6 @@ class Device(TreeNode):
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()
         if Device.gtkThread is None or not Device.gtkThread.isAlive():
-            if Device.gtkThread is None:
-                Int32(1).setTdiVar("_PyReleaseThreadLock");
             Device.gtkThread=gtkMain()
             Device.gtkThread.start()
         return 1
@@ -266,8 +281,63 @@ class Device(TreeNode):
                  if toplevel.get_property('type') == gtk.WINDOW_TOPLEVEL]
         if len(windows) == 1:
             gtk.main_quit()
-            
+
     def waitForSetups(cls):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)
+
+
+    def importPyDeviceModule(name):
+        """Find a device support module with a case insensitive lookup of
+        'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
+
+        import __builtin__
+        import sys
+        check_name=name.lower()+".py"
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.lower() == check_name:
+                            sys.path.insert(0,dp)
+                            try:
+                                ans=__builtin__.__import__(fname[:-3])
+                            finally:
+                                sys.path.remove(dp)
+                            return ans
+    importPyDeviceModule=staticmethod(importPyDeviceModule)
+
+    def findPyDevices():
+        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        ans=list()
+        import __builtin__
+        import sys
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.endswith('.py'):
+                            sys.path.insert(0,dp)
+                            try:
+                                devnam=fname[:-3].upper()
+                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
+                                ans.append(devnam+'\0')
+                                ans.append('\0')
+                            except:
+                                pass
+                            finally:
+                                sys.path.remove(dp)
+        if len(ans) == 0:
+            return None
+        else:
+            return _mdsdata.Data.execute(str(ans))
+
+
+    findPyDevices=staticmethod(findPyDevices)
 

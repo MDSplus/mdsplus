@@ -1,7 +1,7 @@
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
-
+#include <string.h>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -14,6 +14,9 @@
 #include <sys/sem.h>
 #include <errno.h>
 #include <semaphore.h>
+#endif
+#ifndef _MSC_VER
+#include <pthread.h>
 #endif
 using namespace MDSplus;
 using namespace std;
@@ -29,6 +32,8 @@ extern "C" int MdsSetDefault(int sock, char *node);
 extern "C" int MdsClose(int sock);
 extern "C" int ConnectToMds(char *host);
 extern "C" int ConnectToMdsEvents(char *host);
+extern "C" int SetCompressionLevel(int level);
+extern "C" int MdsSetCompression(int id, int level);
 extern "C" void DisconnectFromMds(int sockId);
 extern "C" void FreeMessage(void *m);
 
@@ -150,10 +155,13 @@ void *putManyObj(char *serializedIn)
 
 Mutex Connection::globalMutex;
 
-Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
+Connection::Connection(char *mdsipAddr, int clevel) //mdsipAddr of the form <IP addr>[:<port>]
 {
+	mdsipAddrStr.assign((const char *)mdsipAddr);
+	this->clevel = clevel;
     lockGlobal();
-	sockId = ConnectToMds(mdsipAddr);
+    SetCompressionLevel(clevel);
+    sockId = ConnectToMds(mdsipAddr);
     unlockGlobal();
 	if(sockId <= 0) {
 		std::string msg("Cannot connect to ");
@@ -186,7 +194,7 @@ void Connection::unlockGlobal() {
 
 void Connection::openTree(char *tree, int shot) {
 	int status = MdsOpen(sockId, tree, shot);
-	std::cout << "SOCK ID: " << sockId << std::endl;
+//	std::cout << "SOCK ID: " << sockId << std::endl;
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -211,6 +219,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	//Check whether arguments are compatible (Scalars or Arrays)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
+		delete [] dims;
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
@@ -226,15 +235,15 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
+		delete [] dims;
 		if(!(status & 1))
 		{
 			unlockLocal();
 			throw MdsException(status);
 		}
 	}
-    //	unlockGlobal();
-	
-    	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+    //	unlockGlobal();	
+    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
 		throw MdsException(status);
@@ -260,10 +269,10 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new Uint32(*(unsigned int *)ptr);
 				break;
 			case DTYPE_LONGLONG_IP:
-				resData = new Int64(*(int64_t *)ptr);
+				resData = new Int64(*(long *)ptr);
 				break;
 			case DTYPE_ULONGLONG_IP:
-				resData = new Uint64(*(uint64_t *)ptr);
+				resData = new Uint64(*(unsigned long *)ptr);
 				break;
 			case DTYPE_FLOAT_IP:
 				resData = new Float32(*(float *)ptr);
@@ -332,7 +341,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
-			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
+			throw MdsException("Invalid argument passed to Connection::put(). Can only be Scalar or Array");
 	}
 
 	//Double backslashes!!
@@ -381,27 +390,134 @@ void Connection::setDefault(char *path)
 		throw MdsException(status);
 }
 
+#ifndef _MSC_VER
+void Connection::registerStreamListener(DataStreamListener *listener, char *expr, char *tree, int shot)
+{
+	char regExpr[64 + strlen(expr) + strlen(tree)];
+	sprintf(regExpr, "MdsObjectsCppShr->registerListener(\"%s\",\"%s\",val(%d))", expr, tree, shot);
+
+	Data *idData = get(regExpr, NULL, 0);
+	int id = idData->getInt();
+	deleteData(idData);
+	listenerV.push_back(listener);
+	listenerIdV.push_back(id);
+}
+void Connection::unregisterStreamListener(DataStreamListener *listener)
+{
+	int idx;
+	for(idx = 0; idx < listenerV.size(); idx++)
+	{
+		if(listenerV[idx] == listener)
+			break;
+	}
+	if(idx >= listenerV.size())
+	   	return;
+	int id = listenerIdV[idx];
+	char regExpr[64];
+	sprintf(regExpr, "MdsObjectsCppShr->unregisterListener(val(%d))", id);
+	get(regExpr);
+	listenerV.erase(listenerV.begin() + idx);
+	listenerIdV.erase(listenerIdV.begin() + idx);
+}
+#endif
+void Connection::checkDataAvailability()
+{
+	try  
+	{
+		while(true)
+		{
+			Data *serData = get("MdsObjectsCppShr->getNewSamplesSerializedXd:DSC()");
+			int numBytes;
+			char *serialized = serData->getByteArray(&numBytes);
+			deleteData(serData);
+			Apd *apdData = (Apd *)deserialize(serialized);
+			delete [] serialized;
+			int numDescs =  apdData->getDimension();
+			Data **descs = apdData->getDscs();
+			for(int i = 0; i < numDescs/2; i++)
+			{
+				int id = descs[2*i]->getInt();
+				Signal *sig = (Signal *)descs[2*i+1];
+				int idx;
+				for(idx = 0; idx < listenerIdV.size(); idx++)
+				{
+					if(listenerIdV[idx] == id)
+					break;
+				}
+				if(idx < listenerV.size())
+				{
+					Data *sigData = sig->getData();
+					Data *sigDim = sig->getDimension();
+					if(((Array *)sigData)->getSize() > 0)
+						listenerV[idx]->dataReceived(sigData, sigDim);
+					deleteData(sigData);
+					deleteData(sigDim);
+				}
+			}
+			deleteData(apdData);
+		}
+	}catch(MdsException &exc){}  //Likely because of a resetConnection call
+}
+
+
+static void *checkDataStream(void *connPtr)
+{
+	Connection *conn = (Connection *)connPtr;
+	conn->checkDataAvailability();
+	return NULL;
+}
+
+#ifndef _MSC_VER
+void Connection::startStreaming()
+{
+	pthread_t thread;
+	pthread_create(&thread, NULL, checkDataStream, this);
+}
+#endif
+    
+void Connection::resetConnection()
+{
+    lockGlobal();
+    DisconnectFromMds(sockId);
+    SetCompressionLevel(clevel);
+	char *mdsipAddr = (char *)mdsipAddrStr.c_str();
+    sockId = ConnectToMds(mdsipAddr);
+    unlockGlobal();
+	if(sockId <= 0) {
+		std::string msg("Cannot connect to ");
+		msg += mdsipAddr;
+		throw MdsException(msg.c_str());
+	}
+}
+
+
 void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
 {
-	AutoData<String> fieldName(new String("name"));
+//They are freed by the List descructor
+/*	AutoData<String> fieldName(new String("name"));
 	AutoData<String> nameStr(new String(name));
 	AutoData<String> fieldExp(new String("exp"));
 	AutoData<String> exprStr(new String(expr));
+*/
+	String *fieldName = new String("name");
+	String *nameStr = new String(name);
+	String *fieldExp = new String("exp");
+	String *exprStr = new String(expr);
 
-	AutoData<Dictionary> dict(new Dictionary());
-	dict->setItem(fieldName.get(), nameStr.get());
-	dict->setItem(fieldExp.get(), exprStr.get());
+	Dictionary *dict = new Dictionary();
+	dict->setItem(fieldName, nameStr);
+	dict->setItem(fieldExp, exprStr);
 
-	AutoData<String> argStr(new String("args"));
-	AutoData<List> list(new List());
+	String *argStr = new String("args");
+	List *list = new List();
 	for(int i = 0; i < nArgs; i++)
 		list->append(args[i]);
-	dict->setItem(argStr.get(), list.get());
+	dict->setItem(argStr, list);
 
 	if(idx >= len())
-		List::append(dict.get());
+		List::append(dict);
 	else
-		List::insert(idx, dict.get());
+		List::insert(idx, dict);
 }
 
 void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
@@ -554,3 +670,4 @@ void PutMany::checkStatus(char *nodeName) {
 		throw MdsException(errMsg.get());
 	}
 }
+

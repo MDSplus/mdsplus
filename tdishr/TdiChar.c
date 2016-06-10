@@ -75,7 +75,6 @@ int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
 */
 int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr, struct descriptor *out_ptr)
 {
-  struct descriptor *dummy = kind_ptr;
   char *p1 = in_ptr->pointer;
   char *p2 = out_ptr->pointer;
   int step = in_ptr->length, n, status = 1;
@@ -140,7 +139,7 @@ int Tdi3Element(struct descriptor *number_ptr,
   delim_dsc.class = CLASS_S;
   out_dsc.class = CLASS_S;
   for (; status & 1 && --n >= 0;) {
-    STATIC_CONSTANT int zero = 0;
+    STATIC_CONSTANT unsigned short zero = 0;
     number = *(int *)pnumber, pnumber += number_step;
     status = StrElement(&out_dsc, &number, &delim_dsc, &source_dsc);
     if (!(status & 1))
@@ -220,7 +219,6 @@ int Tdi3Index(struct descriptor *str_ptr,
   struct descriptor str_dsc = *str_ptr;
   struct descriptor sub_dsc = *sub_ptr;
   struct descriptor bac_dsc = bac_ptr ? *bac_ptr : false_dsc;
-  int str_len = str_dsc.length;
   int str_step = (str_dsc.class == CLASS_A) ? str_dsc.length : 0;
   int sub_step = (sub_dsc.class == CLASS_A) ? sub_dsc.length : 0;
   int bac_step = (bac_dsc.class == CLASS_A) ? bac_dsc.length : 0;
@@ -274,7 +272,6 @@ int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
 */
 int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-  struct descriptor *dummy = in2_ptr;
   int n, j, status = 1, size = in1_ptr->length, ncopies = (int)out_ptr->length / size;
   char *p1 = in1_ptr->pointer, *p3 = out_ptr->pointer;
 
@@ -282,7 +279,7 @@ int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct de
   for (; --n >= 0; p1 += size)
     for (j = ncopies; --j >= 0; p3 += size)
       memcpy(p3, p1, size);
-  return 1;
+  return status;
 }
 
 /*------------------------------------------------------------------------------
@@ -348,9 +345,9 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
 		/****************************************************
                 Case insensitive and ignore trailing blanks and tabs.
                 ****************************************************/
-    status = StrUpcase(&one_dsc, &tmp_dsc);
+    status = StrUpcase((struct descriptor *)&one_dsc, (struct descriptor *)&tmp_dsc);
     if (status & 1)
-      status = StrTrim(&one_dsc, &one_dsc, 0);
+      status = StrTrim((struct descriptor *)&one_dsc, (struct descriptor *)&one_dsc, 0);
     if (!(status & 1))
       break;
 		/******************************

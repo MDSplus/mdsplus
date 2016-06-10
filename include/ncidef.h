@@ -1,3 +1,4 @@
+#pragma once
 /**************************************
   NCIDEF.H - definitions of constants
   used in  item list arguments to the
@@ -6,9 +7,6 @@
     TreeGetNci
     TreeSetNci
 **************************************/
-
-#ifndef NCIDEF_H
-#define NCIDEF_H
 
 #define NciEND_OF_LIST          0
 #define NciSET_FLAGS            1
@@ -47,8 +45,8 @@
 #define NciMEMBER		 18
 #define NciCHILD		 19
 #define NciPARENT_RELATIONSHIP   20
-#define   NciK_IS_CHILD            1
-#define   NciK_IS_MEMBER           2
+#define NciK_IS_CHILD             1
+#define NciK_IS_MEMBER            2
 #define NciCONGLOMERATE_NIDS     21
 #define NciORIGINAL_PART_NAME    22
 #define NciNUMBER_OF_MEMBERS     23
@@ -76,4 +74,3 @@ typedef struct nci_itm {
   void *pointer;
   int *return_length_address;
 } NCI_ITM;
-#endif

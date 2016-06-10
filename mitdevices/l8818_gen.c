@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l8818_gen.h"
-int l8818__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l8818__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L8818");
@@ -56,14 +56,14 @@ int l8818__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr "128BU	"
- ADD_NODE_EXPR(:INPUT:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -75,8 +75,8 @@ int l8818__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l8818__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		     struct descriptor *out_d)
+EXPORT int l8818__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		     struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -105,11 +105,11 @@ int l8818__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (L8818_N_INPUT + 1):
  COPY_PART_NAME(:INPUT) break;
   case (L8818_N_INPUT_STARTIDX + 1):
- COPY_PART_NAME(:INPUT:STARTIDX) break;
+ COPY_PART_NAME(INPUT:STARTIDX) break;
   case (L8818_N_INPUT_ENDIDX + 1):
- COPY_PART_NAME(:INPUT:ENDIDX) break;
+ COPY_PART_NAME(INPUT:ENDIDX) break;
   case (L8818_N_INPUT_OFFSET + 1):
- COPY_PART_NAME(:INPUT:OFFSET) break;
+ COPY_PART_NAME(INPUT:OFFSET) break;
   case (L8818_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (L8818_N_STORE_ACTION + 1):
@@ -124,7 +124,7 @@ extern int l8818___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int l8818__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8818__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
       static struct {
@@ -155,7 +155,7 @@ int l8818__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int l8818___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l8818__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8818__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -173,7 +173,7 @@ int l8818__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr
 extern int l8818___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l8818__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8818__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

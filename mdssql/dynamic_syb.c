@@ -21,6 +21,8 @@ typedef const LPBYTE LPCBYTE;
 #include <sqldb.h>
 #define dbloginfree dbfreelogin
 #endif
+#include <config.h>
+#include <mdsdescrip.h>
 static LOGINREC *loginrec = 0;
 static DBPROCESS *dbproc = 0;
 
@@ -36,6 +38,7 @@ char *arg;
 #define MAXMSG 1024
 static int DBSTATUS;
 static char DBMSGTEXT[MAXMSG];
+static struct descriptor DBMSGTEXT_DSC = {0,DTYPE_T,CLASS_S,DBMSGTEXT};
 
 static void strcatn(char *dst, const char *src, int max)
 {
@@ -61,6 +64,11 @@ static void strcatn(char *dst, const char *src, int max)
 /*------------------------------ERROR HANDLER--------------------------------*/
 
 /*------------------------------ERROR HANDLER--------------------------------*/
+
+static void SetMsgLen() {
+  DBMSGTEXT_DSC.length=DBMSGTEXT ? strlen(DBMSGTEXT) : 0;
+}
+
 static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,
 		       cnst char *dberrstr, cnst char *oserrstr)
 {
@@ -75,6 +83,7 @@ static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,
       strcatn(DBMSGTEXT, oserrstr, MAXMSG);
       strcatn(DBMSGTEXT, "\n", MAXMSG);
     }
+    SetMsgLen();
   }
   /* if we have run out of licences then return cancel
      so we can wait and try again */
@@ -117,22 +126,27 @@ static int Msg_Handler(DBPROCESS * dbproc, DBINT msgno, int msgstate, int severi
     }
   }
   strcatn(DBMSGTEXT, msgtext, MAXMSG);
+  SetMsgLen();
   DBSTATUS = msgno;
   return 0;			/* try to continue */
 }
 
-int GetDBStatus()
+EXPORT int GetDBStatus()
 {
   return DBSTATUS;
 }
 
-char *GetDBMsgText()
+EXPORT struct descriptor *GetDBMsgText_dsc() {
+  return &DBMSGTEXT_DSC;
+} 
+  
+EXPORT char *GetDBMsgText()
 {
   return DBMSGTEXT;
 }
 
 /*------------------------------DISCONNECT-----------------------------------*/
-void Logout_Sybase()
+EXPORT void Logout_Sybase()
 {
   if (loginrec)
     dbloginfree(loginrec), loginrec = 0;
@@ -141,7 +155,7 @@ void Logout_Sybase()
 }
 
 /*------------------------------CONNECT--------------------------------------*/
-int Login_Sybase(char *host, char *user, char *pass)
+EXPORT int Login_Sybase(char *host, char *user, char *pass)
 {
 
 #ifdef RETRY_CONNECTS
@@ -182,6 +196,7 @@ int Login_Sybase(char *host, char *user, char *pass)
 #endif
   for (try = 0; ((dbproc == 0) && (try < 10)); try++) {
     DBMSGTEXT[0] = 0;
+    SetMsgLen();
     dbproc = dbopen(loginrec, host);
     if (!dbproc) {
       Sleep(100);
@@ -189,6 +204,7 @@ int Login_Sybase(char *host, char *user, char *pass)
   }
 #else
   DBMSGTEXT[0] = 0;
+  SetMsgLen();
   dbproc = dbopen(loginrec, host);
 #endif
   if (!dbproc)
@@ -200,7 +216,7 @@ int Login_Sybase(char *host, char *user, char *pass)
 }
 
 /*------------------------------DYNAMIC--------------------------------------*/
-int SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
+EXPORT int SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
 int (*USER_GETS) ();		/*routine to fill markers       */
 int (*USER_PUTS) ();		/*routine to store selctions    */
 char *ptext;			/*text string address           */
@@ -214,11 +230,13 @@ int *prows;
   if (dbproc == 0) {
     DBSTATUS = 0;
     strcpy(DBMSGTEXT, "SET_DATABASE must preceed any DSQL calls");
+    SetMsgLen();
     return 0;
   }
 
   DBSTATUS = 1;
   DBMSGTEXT[0] = 0;
+  SetMsgLen();
   *prows = -1;
   if (strchr(ptext, '?')) {
     parsed[0] = '\0';

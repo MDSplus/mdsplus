@@ -61,7 +61,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
     }
     break;
   case DTYPE_PATH:
-    status = StrAppend(pout, pin);
+    status = StrAppend(pout, (struct descriptor *)pin);
     break;
   case DTYPE_DEPENDENCY:
     switch (*(short *)pin->pointer) {
@@ -78,7 +78,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
       break;
     }
     if (status & 1 && now < prec)
-      status = StrAppend(pout, &LEFT_PAREN);
+      status = StrAppend(pout, (struct descriptor *)&LEFT_PAREN);
     if (status & 1)
       status = DependencyGet(now - 1, (struct descriptor_r *)pin->dscptrs[0], pout);
     if (status & 1)
@@ -86,7 +86,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
     if (status & 1)
       status = DependencyGet(now + 1, (struct descriptor_r *)pin->dscptrs[1], pout);
     if (status & 1 && now < prec)
-      status = StrAppend(pout, &RIGHT_PAREN);
+      status = StrAppend(pout, (struct descriptor *)&RIGHT_PAREN);
     break;
   case DTYPE_CONDITION:
     switch (*((short *)pin->pointer)) {

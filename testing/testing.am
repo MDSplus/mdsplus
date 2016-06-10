@@ -1,0 +1,220 @@
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTS SECTION   /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+TEST_CFLAGS = -I${top_srcdir}/testing
+TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
+
+
+# ///  select test form env variable  //////////////////////////////////////// #
+
+TEST_BUILDTYPE  = local
+TEST_FORMAT    ?= log,tap
+AM_MAKEFLAGS   ?= V=0
+
+
+.PHONY: tap xml log
+tap: $(TEST_SUITE_TAP)
+xml: $(TEST_SUITE_XML)
+log: $(TEST_SUITE_LOG)
+
+
+SUFFIXES = .log .tap .xml
+.PRECIUS = %.log %.tap %.xml
+
+
+.PHONY: rebuild-tests
+rebuild-tests:
+	@ \
+	echo "//// Rebuilding tests ////"; \
+	rm -f *.$(OBJEXT); \
+	rm -f $(check_PROGRAMS); \
+	if [ -n "$${VALGRIND_BUILD}" ]; then \
+	 echo "building clean tests for valgrind"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
+	else \
+	 echo "building tests using D_TESTING set"; \
+	 $(MAKE) -k $(AM_MAKEFLAGS) all \
+	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
+	fi;
+
+.PHONY: tests
+tests: rebuild-tests
+	@ \
+	echo "//// Performing tests /////"; \
+	export TEST_FORMAT=${TEST_FORMAT}; \
+	status=0; \
+	$(MAKE) -k $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
+	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
+	exit $$status
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+## Valgrind rules are provided by autoconf macro m4_ax_valgrind_check.m4 where
+## targets tests-valgrind and test-valgrind-suppressions are provided.
+
+@VALGRIND_CHECK_RULES@
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  SANITIZE RULES  /////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+if ENABLE_SANITIZE
+  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
+  TESTS_ENVIRONMENT += ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1
+  TESTS_ENVIRONMENT += LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH}
+  TESTS_ENVIRONMENT += TEST_TIMEUNIT=5
+endif
+
+# // check if libpath is correct or skip python tests
+if ENABLE_SANITIZE 
+  _check_sanitize_ldd = \
+   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
+     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
+  PY_LOG_FLAGS += $(shell ${_check_sanitize_ldd} || echo --skip;)
+
+  # // NOTE:
+  # somtimes thread sanitizer does not work with python... probably because of
+  # the -fpie flag for now we will disable it at all.
+  #
+  PY_LOG_FLAGS += $(shell test x"${ENABLE_SANITIZE}" != x"thread" || echo --skip;)
+endif
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: $(TEST_SUITE_TAP)
+
+TEST_BUILD_TAP = test-build.tap
+TEST_SUITE_TAP = test-suite.tap
+
+
+# Single tap output
+# ^^^^^^^^^^^^^^^^^
+# Tap target to generate single tap result beside the normal log file. This
+# should make use of the TEST_TAPFILE env that generate multiple logger
+# instances.
+
+$(TEST_LOGS:.log=.tap):
+	@ \
+	f=$(@:.tap=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_TAPFILE=$@ ||:
+
+
+
+
+# Tap Test Build Suite
+# ^^^^^^^^^^^^^^^^^^^^
+# Collects the tap result of possible test build failures prior to make the
+# actual tests
+
+$(TEST_BUILD_TAP):
+	@ \
+	echo "Try to build targets one by one"; \
+	echo "TAP version 13" > $@; \
+	count=0; \
+	for i in $(check_PROGRAMS); do \
+	  if ! $(MAKE) -q $$i; then \
+	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
+	    { ((count++)); \
+	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
+	    }; \
+	  fi; \
+	done; \
+	echo "1..$${count}" >> $@;
+
+
+
+# Tap Test Suite
+# ^^^^^^^^^^^^^^
+# The results are collected here using a perl script collate_tap.pl that is
+# using the perl tap parser from cpan. If it is not actually available
+# configure should have diabled HAVE_PL_TAP_PARSER.
+#
+# TODO: fix this in the case the only tap is provided as TEST_FORMAT and the
+# test taps are streamed into the .log file directly
+#
+
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP) $(TEST_LOGS:.log=.tap)
+if HAVE_PL_TAP_PARSER
+	@ ## collate test-build.tap \
+	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
+	else suite="$@"; \
+	fi; \
+	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) \
+	     $(TEST_LOGS:.log=.tap) > $${suite} \
+	     || exit 1
+else
+	@ ## test parser not available \
+	echo "Can not collate tap results" >2;
+endif
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LOG  ///////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## test suite log is already provided by automake
+## $(TEST_SUITE_LOG): 
+
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  XML  ///////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## TODO: add xml output
+$(TEST_SUITE_XML):
+
+$(TEST_LOGS:.log=.xml): 
+	@ \
+	f=$(@:.xml=.log); rm -f $$f; \
+	$(MAKE) $(AM_MAKEFLAGS) $$f TEST_XMLFILE=$@ ||:s
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  clean  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+.PHONY: clean-local-tests
+clean-local-tests:
+	-$(RM) -rf $(TEST_BUILD_TAP)
+	-$(RM) -rf $(TEST_SUITE_TAP)
+	-$(RM) -rf $(TEST_LOGS:.log=.tap)
+	-$(RM) -rf $(TEST_SUITE_XML)
+	-$(RM) -rf $(TEST_LOGS:.log=.xml)
+
+
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  utils  //////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+.PHONY: tests-envdump
+tests-envdump:
+	@echo; \
+	echo ----------------------------------------------------------------; \
+	echo TESTS_ENVIRONMENT = ;\
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	 echo "     $${_i}"; \
+	done;
+
+
+
+if HAVE_WINE
+wineconsole:
+	@ \
+	echo "--------------------------------------------------------------"; \
+	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
+	echo "--------------------------------------------------------------"; \
+	${TESTS_ENVIRONMENT} wineconsole
+endif

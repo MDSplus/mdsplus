@@ -83,11 +83,15 @@ void CloseDataSources();
 #include <Xmds/XmdsWaveform.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <pthread.h>
 #ifndef _toupper
 #define _toupper(c)	(((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
 
 extern void EventUpdate(XtPointer client_data, int *source, XtInputId * id);
+
+extern pthread_mutex_t event_mutex;
+
 
 #if defined(_LOCAL_ACCESS)
 #include <mdsdescrip.h>
@@ -108,7 +112,7 @@ static void ResetErrors()
 {
   static int const four = 4;
   static struct descriptor const clear_messages = { 4, DTYPE_L, CLASS_S, (char *)&four };
-  static struct descriptor messages = { 0, DTYPE_T, CLASS_D, 0 };
+  static struct descriptor_d messages = { 0, DTYPE_T, CLASS_D, 0 };
   TdiDebug(&clear_messages, &messages MDS_END_ARG);
   StrFree1Dx(&messages);
 }
@@ -269,7 +273,7 @@ Boolean EvaluateText(String text, String error_prefix, String * text_ret, String
     if ((TdiExecute(&text_dsc, &string_xd MDS_END_ARG) & 1) &&
 	(TdiData(&string_xd, &string_xd MDS_END_ARG) & 1) &&
 	(TdiAdjustl(&string_xd, &string_d MDS_END_ARG) & 1)) {
-      StrTrim(&string_d, &string_d, 0);
+      StrTrim((struct descriptor *)&string_d, (struct descriptor *)&string_d, 0);
       *text_ret = memcpy(XtMalloc(string_d.length + 1), string_d.pointer, string_d.length);
       (*text_ret)[string_d.length] = '\0';
     } else {
@@ -311,7 +315,9 @@ void SetupEvent(String event, Boolean * received, int *id)
     *id = 0;
   }
   if (strlen(event)) {
+    pthread_mutex_lock(&event_mutex);
     MDSEventAst(event, EventAst, received, id);
+    pthread_mutex_unlock(&event_mutex);
   }
 }
 
@@ -321,12 +327,15 @@ void SetupEventInput(XtAppContext app_context, Widget w)
   this_widget = w;
 }
 #else
+
 static int event_pipe[2];
 static void EventAst(void *astparam, int dlen, char *data)
 {
   Boolean *received = (Boolean *) astparam;
   char buf[1];
+  pthread_mutex_lock(&event_mutex);
   *received = 1;
+  pthread_mutex_unlock(&event_mutex);
   write(event_pipe[1], buf, 1);
 }
 
@@ -337,7 +346,9 @@ void SetupEvent(String event, Boolean * received, int *id)
     *id = 0;
   }
   if (strlen(event)) {
+    pthread_mutex_lock(&event_mutex);
     MDSEventAst(event, EventAst, received, id);
+    pthread_mutex_unlock(&event_mutex);
   }
 }
 

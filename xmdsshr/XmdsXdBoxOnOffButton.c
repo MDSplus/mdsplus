@@ -77,7 +77,7 @@ static XtResource resources[] = {
 static void SetXdState(Widget w, Widget xd_w, XmToggleButtonCallbackStruct * cb);
 static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct * cb);
 
-Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name, ArgList args, Cardinal argcount)
+EXPORT Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
   Resources info = { 0, 0, 1, 0 };
@@ -122,12 +122,12 @@ static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct * cb)
   XmToggleButtonSetState(oo_w, cb->on_off, 0);
 }
 
-Boolean XmdsIsXdBoxOnOffButton(Widget w)
+EXPORT Boolean XmdsIsXdBoxOnOffButton(Widget w)
 {
   return XtNameToWidget(w, "xmds_xdbox_on_off") && XtNameToWidget(w, "xmds_xdbox_dialog_button");
 }
 
-void XmdsXdBoxOnOffButtonReset(Widget w)
+EXPORT void XmdsXdBoxOnOffButtonReset(Widget w)
 {
   if (XmdsIsXdBoxOnOffButton(w)) {
     XmdsOnOffToggleButtonReset(XtNameToWidget(w, "xmds_xdbox_on_off"));
@@ -135,7 +135,7 @@ void XmdsXdBoxOnOffButtonReset(Widget w)
   }
 }
 
-int XmdsXdBoxOnOffButtonPut(Widget w)
+EXPORT int XmdsXdBoxOnOffButtonPut(Widget w)
 {
   int status = 0;
   if (XmdsIsXdBoxOnOffButton(w))
@@ -144,7 +144,7 @@ int XmdsXdBoxOnOffButtonPut(Widget w)
   return status;
 }
 
-int XmdsXdBoxOnOffButtonApply(Widget w)
+EXPORT int XmdsXdBoxOnOffButtonApply(Widget w)
 {
   int status = 0;
   if (XmdsIsXdBoxOnOffButton(w))

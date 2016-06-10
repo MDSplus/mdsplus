@@ -1,21 +1,19 @@
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 CLEANFILES = $(java_DATA)
-if NOT_MINGW
-CLEANFILES += $(bin_SCRIPTS)
-endif
 
 JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 
 # Create the shell script that runs the program
-if NOT_MINGW
+if MINGW
+bin_SCRIPTS = traverser.bat
+else
 bin_SCRIPTS = jTraverser
+CLEANFILES += $(bin_SCRIPTS)
 EXTRA_DIST += jTraverser.template
 $(bin_SCRIPTS): $(srcdir)/jTraverser.template
 	cp $< $@
-else
-bin_SCRIPTS = traverser.bat
 endif
 
 #$(INSTALL) -D $< $@
@@ -30,10 +28,10 @@ TreeServer_Stub.class: classjava.stamp
 	$(RMIC) TreeServer
 
 jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(GIFS)
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(addprefix -C ${srcdir} ,$(GIFS))
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	$(JAR) c0fm $@ DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
+	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 # Giant list of source files follow
 

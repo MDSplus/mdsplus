@@ -94,6 +94,66 @@
     <status name="INV_SETUP" value="4127" severity="Error"
 	    text="device was not properly set up"
 	    facabb="DEV"/>
+    <status name="PYDEVICE_NOT_FOUND" value="4128" severity="Error"
+            text="Python device class not found."
+            facabb="DEV"/>
+    <status name="PYDEVICE_NOT_FOUND" value ="4129" severity="Error"
+            text="Device support not found."
+            facabb="DEV"/>
+    <status name="IO_STUCK" value ="4130" severity="Error"
+           text="I/O to Device is stuck. Check network connection and board status."
+           facabb="DEV"/>
+    <status name="UNKOWN_STATE" value ="4131" severity="Error"
+          text="Device returned unrecognized state string"
+          facabb="DEV"/>
+    <status name="WRONG_TREE" value="4132" severity="Error"
+          text="Attempt to digitizerinto different tree than it was armed with"
+          facabb="DEV"/>
+    <status name="WRONG_PATH" value="4133" severity="Error"
+          text="Attempt to store digitizer into different path than it was armed with"
+          facabb="DEV"/>
+    <status name="WRONG_SHOT" value="4134" severity="Error"
+          text="Attempt to store digitizer into different shot than it was armed with"
+          facabb="DEV"/>
+    <status name="OFFLINE" value ="4135" severity="Error"
+            text="Device is not on line.  Check network connection"
+            facabb="DEV"/>
+    <status name="TRIGGERED_NOT_STORED" value ="4136" severity="Error"
+           text="Device was triggered but not stored."
+           facabb="DEV"/>
+    <status name="NO_NAME_SPECIFIED" value ="4137" severity="Error"
+          text="Device name must be specifed - pleas fill it in."
+          facabb="DEV"/>
+    <status name="BAD_ACTIVE_CHAN" value ="4138" severity="Error"
+          text="Active channels either not available or invalid"
+          facabb="DEV"/>
+    <status name="BAD_TRIG_SRC" value ="4139" severity="Error"
+         text="Trigger source either not available or invalid"
+         facabb="DEV"/>
+    <status name="BAD_CLOCK_SRC" value ="4140" severity="Error"
+         text="Clock source either not available or invalid"
+         facabb="DEV"/>
+    <status name="BAD_PRE_TRIG" value ="4141" severity="Error"
+        text="Pre trigger samples either not available or invalid"
+        facabb="DEV"/>
+    <status name="BAD_POST_TRIG" value ="4142" severity="Error"
+        text="Clock source either not available or invalid"
+        facabb="DEV"/>
+    <status name="BAD_CLOCK_FREQ" value ="4143" severity="Error"
+        text="Clock frequency either not available or invalid"
+        facabb="DEV"/>
+
+    <status name="TRIGGER_FAILED" value ="4144" severity="Error"
+        text="Device trigger method failed"
+        facabb="DEV"/>
+    <status name="ERROR_READING_CHANNEL" value ="4145" severity="Error"
+        text="Error reading data for channel from device"
+        facabb="DEV"/>
+    <status name="ERROR_DOING_INIT" value ="4146" severity="Error"
+        text="Error sending ARM command to device"
+        facabb="DEV"/>
+
+
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
 	    facnam="RETICON$_" facabb="RETICON"/>
@@ -460,20 +520,28 @@
      <status name="NO_SAMPLES" value="5297" severity="Error"
 	    text="Module did not acquire any samples"
 	    facnam="DT196B$_" facabb="DT196B"/>
-     <status name="INITIALIZATION_ERROR" value="5298" severity="Error"
-	    text="Error during module initialization"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="SETTINGS_NOT_LOADED" value="5299" severity="Error"
-	    text="settings not loaded"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="WRONG_TREE" value="5300" severity="Error"
-	    text="Attempt to store ACQ module into different tree than it was armed with"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="WRONG_PATH" value="5301" severity="Error"
-	    text="Attempt to store ACQ module into different path than it was armed with"
-	    facnam="ACQ$_" facabb="ACQ"/>
-     <status name="WRONG_SHOT" value="5302" severity="Error"
-	    text="Attempt to store ACQ module into different shot than it was armed with"
-	    facnam="ACQ$_" facabb="ACQ"/>
+    <status name="CANNOT_LOAD_SETTINGS" value="5300" severity="Error"
+          text="Error loading settings from XML"
+          facabb="DEV"/>
+    <status name="CANNOT_GET_BOARD_STATE" value="5301" severity="Error"
+          text="Cannot retrieve state of daq board"
+          facabb="DEV"/>
+    <status name="ACQCMD_FAILED" value="5302" severity="Error"
+          text="Error executing acqcmd on daq board"
+          facabb="DEV"/>
+    <status name="ACQ2SH_FAILED" value="5303" severity="Error"
+          text="Error executing acq2sh command on daq board"
+          facabb="DEV"/>
+    <status name="BAD_PARAMETER" value="5304" severity="Error"
+          text="Invalid parameter specified for device"
+          facabb="DEV"/>
+    <status name="COMM_ERROR" value="5305" severity="Error"
+          text="Error communicating with device"
+          facabb="DEV"/>
+    <status name="CAMERA_NOT_FOUND" value="5306" severity="Error"
+          text="Could not find specified camera on the network"
+          facabb="DEV"/>
+
+
    </facility>
 </messages>

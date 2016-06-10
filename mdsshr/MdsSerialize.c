@@ -81,12 +81,12 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 			       unsigned int *b_out, unsigned int *b_in)
 {
   unsigned int status = 1, bytes_out = 0, bytes_in = 0, i, j, size_out, size_in;
-  if (in_ptr && (in_ptr[0] || in_ptr[1] || in_ptr[2] || in_ptr[3]))
+  if (in_ptr && (in_ptr[0] || in_ptr[1] || in_ptr[2] || in_ptr[3])) {
     switch (class()) {
     case CLASS_S:
     case CLASS_D:
       {
-	struct descriptor in;
+	struct descriptor in = {0};
 	struct descriptor *po = (struct descriptor *)out_dsc_ptr;
 	set_length(in.length);
 	in.dtype = dtype();
@@ -119,7 +119,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
     case CLASS_XS:
     case CLASS_XD:
       {
-	struct descriptor_xs in;
+	struct descriptor_xs in = {0};
 	struct descriptor_xs *po = (struct descriptor_xs *)out_dsc_ptr;
 	in.length = 0;
 	in.dtype = dtype();
@@ -137,7 +137,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 
     case CLASS_R:
       {
-	struct descriptor_r pi_tmp;
+	struct descriptor_r pi_tmp = {0};
 	struct descriptor_r *pi = &pi_tmp;
 	struct descriptor_r *po = (struct descriptor_r *)out_dsc_ptr;
 	set_length(pi_tmp.length);
@@ -420,12 +420,21 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
       status = LibINVSTRDES;
       break;
     }
+  } else {
+    struct descriptor *po = (struct descriptor *)out_dsc_ptr;
+    static struct descriptor empty = {0,DTYPE_DSC,CLASS_S,0};
+    if (po) {
+      memcpy(po, &empty, sizeof(empty));
+    }
+    bytes_out = align(sizeof(empty), sizeof(void *));
+    bytes_in = sizeof(int);
+  }
   *b_out = bytes_out;
   *b_in = bytes_in;
   return status;
 }
 
-int MdsSerializeDscIn(char const *in, struct descriptor_xd *out)
+EXPORT int MdsSerializeDscIn(char const *in, struct descriptor_xd *out)
 {
   unsigned int size_out;
   unsigned int size_in;
@@ -688,6 +697,14 @@ STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigne
 	    }
 	    bytes_out += size_out;
 	    bytes_in += size_in;
+	  } else {
+	    if (out_ptr) {
+	      int poffset = 0;
+	      LoadInt(poffset, dscptr + (j * 4));
+	      out_ptr += sizeof(int);
+	    }
+	    bytes_out += sizeof(int);
+	    bytes_in += sizeof(void *);
 	  }
 	}
       }
@@ -755,7 +772,7 @@ STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigne
   return status;
 }
 
-STATIC_ROUTINE int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr,
+STATIC_ROUTINE int Dsc2Rec(struct descriptor const *inp, struct descriptor_xd *out_dsc_ptr,
 			   unsigned int *reclen)
 {
   unsigned int size_out;
@@ -841,8 +858,10 @@ STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *le
 	  if (dsc_ptr && *dsc_ptr) {
 	    status = PointerToOffset(*dsc_ptr, length);
 	    *dsc_ptr = (struct descriptor *)((char *)*dsc_ptr - ((char *)a_ptr - (char *)0));
-	  } else
+	  } else {
 	    status = 1;
+	    *dsc_ptr = 0;
+	  }
 	}
 	if (status & 1) {
 	  a_ptr->pointer = a_ptr->pointer - ((char *)a_ptr - (char *)0);
@@ -873,7 +892,7 @@ STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *le
   return status;
 }
 
-int MdsSerializeDscOutZ(struct descriptor *in,
+EXPORT int MdsSerializeDscOutZ(struct descriptor const *in,
 			struct descriptor_xd *out,
 			int (*fixupNid) (),
 			void *fixupNidArg,
@@ -973,7 +992,7 @@ int MdsSerializeDscOutZ(struct descriptor *in,
   return status;
 }
 
-int MdsSerializeDscOut(struct descriptor *in, struct descriptor_xd *out)
+EXPORT int MdsSerializeDscOut(struct descriptor const *in, struct descriptor_xd *out)
 {
   return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }

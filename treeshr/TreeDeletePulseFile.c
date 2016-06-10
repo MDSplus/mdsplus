@@ -41,8 +41,6 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 #include <sys/stat.h>
 #include <ctype.h>
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
 extern char *MaskReplace();
 
 extern void **TreeCtx();

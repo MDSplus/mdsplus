@@ -1,7 +1,13 @@
 
+#pragma once
+/*
 
-#ifndef MITDEVICES_MESSAGES
-#define MITDEVICES_MESSAGES
+ This header was generated using mdsshr/gen_device.py
+ To add new status messages modify: 
+     mitdevices_messages.xml
+ and then in mdsshr do:
+     python gen_devices.py
+*/
 
 #define DEVBAD_ENDIDX           0x277c800a
 #define DEVBAD_FILTER           0x277c8012
@@ -34,6 +40,25 @@
 #define DEVCAM_SX               0x277c80ea
 #define DEVCAM_NOSX             0x277c80f2
 #define DEVINV_SETUP            0x277c80fa
+#define DEVPYDEVICE_NOT_FOUND   0x277c8102
+#define DEVPYDEVICE_NOT_FOUND   0x277c810a
+#define DEVIO_STUCK             0x277c8112
+#define DEVUNKOWN_STATE         0x277c811a
+#define DEVWRONG_TREE           0x277c8122
+#define DEVWRONG_PATH           0x277c812a
+#define DEVWRONG_SHOT           0x277c8132
+#define DEVOFFLINE              0x277c813a
+#define DEVTRIGGERED_NOT_STORED 0x277c8142
+#define DEVNO_NAME_SPECIFIED    0x277c814a
+#define DEVBAD_ACTIVE_CHAN      0x277c8152
+#define DEVBAD_TRIG_SRC         0x277c815a
+#define DEVBAD_CLOCK_SRC        0x277c8162
+#define DEVBAD_PRE_TRIG         0x277c816a
+#define DEVBAD_POST_TRIG        0x277c8172
+#define DEVBAD_CLOCK_FREQ       0x277c817a
+#define DEVTRIGGER_FAILED       0x277c8182
+#define DEVERROR_READING_CHANNEL 0x277c818a
+#define DEVERROR_DOING_INIT     0x277c8192
 #define RETICON$_NORMAL               0x277c8199
 #define RETICON$_BAD_FRAMES           0x277c81a2
 #define RETICON$_BAD_FRAME_SELECT     0x277c81aa
@@ -156,11 +181,10 @@
 #define DSP2904$_CHANNEL_READ_ERROR   0x277ca4ea
 #define PY$_UNHANDLED_EXCEPTION  0x277ca53a
 #define DT196B$_NO_SAMPLES           0x277ca58a
-#define ACQ$_INITIALIZATION_ERROR 0x277ca592
-#define ACQ$_SETTINGS_NOT_LOADED  0x277ca59a
-#define ACQ$_WRONG_TREE           0x277ca5a2
-#define ACQ$_WRONG_PATH           0x277ca5aa
-#define ACQ$_WRONG_SHOT           0x277ca5b2
-
-
-#endif
+#define DEVCANNOT_LOAD_SETTINGS 0x277ca5a2
+#define DEVCANNOT_GET_BOARD_STATE 0x277ca5aa
+#define DEVACQCMD_FAILED        0x277ca5b2
+#define DEVACQ2SH_FAILED        0x277ca5ba
+#define DEVBAD_PARAMETER        0x277ca5c2
+#define DEVCOMM_ERROR           0x277ca5ca
+#define DEVCAMERA_NOT_FOUND     0x277ca5d2

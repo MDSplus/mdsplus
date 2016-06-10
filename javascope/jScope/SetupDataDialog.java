@@ -24,9 +24,9 @@ import javax.swing.event.*;
    private jScopeFacade	    main_scope;
    private ExpandExp        expand_expr;
    private SList	    signalList;
-   private jScopeMultiWave    wave;
-   public  MdsWaveInterface   wi;
-   private Point        wave_coord;
+   private jScopeMultiWave  wave;
+   public  MdsWaveInterface wi;
+   private Point            wave_coord;
 
     JCheckBox title_b = new JCheckBox("Title");
     JTextField title = new JTextField(50);
@@ -1248,8 +1248,10 @@ import javax.swing.event.*;
     {
       wave_coord = new Point(row, col);
       wave = (jScopeMultiWave)w;
-//      wave.addWaveformListener(this);
-//      wi = (MdsWaveInterface)wave.wi;
+      
+//    wave.addWaveformListener(this);
+      wi = (MdsWaveInterface)wave.wi;
+
       
       wi = new MdsWaveInterface(wave,
                                 ((MdsWaveInterface)wave.wi).dp,
@@ -1257,6 +1259,7 @@ import javax.swing.event.*;
                                 wave.wi.cache_enabled);
 
       wi.defaults = ((MdsWaveInterface)wave.wi).defaults;
+      
       putWindowSetup((MdsWaveInterface)wave.wi);
       updateDataSetup();
       setLocationRelativeTo(w.getParent());
@@ -1496,6 +1499,12 @@ import javax.swing.event.*;
        this.wi.legend_y = wi.legend_y;
        this.wi.show_legend = wi.show_legend;
        this.wi.reversed = wi.reversed;
+       
+       this.wi.is_image = wi.is_image;
+       this.wi.keep_ratio = wi.keep_ratio;
+       this.wi.horizontal_flip = wi.horizontal_flip;
+       this.wi.vertical_flip = wi.vertical_flip;
+
        image_b.setSelected(wi.is_image);
        keep_ratio_b.setSelected(wi.keep_ratio);
        horizontal_flip_b.setSelected(wi.horizontal_flip);
@@ -1584,7 +1593,8 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(false);
 		x_max_b.setVisible(true);
 		x_min_b.setVisible(true);
-                continuous_update_b.setVisible(true);
+//Contunius update is experimental and therefore not shown in production interface
+                continuous_update_b.setVisible(false);
 
 		pix_y_max.setVisible(false);
 		pix_y_min.setVisible(false);
@@ -1688,11 +1698,10 @@ import javax.swing.event.*;
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))     return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                  return true;
 	if(image_b.isSelected() != wave_wi.is_image)				                  return true;
-	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;
-/*        
+	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;        
 	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;
 	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				  return true;
-*/
+        
         for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
@@ -1701,7 +1710,7 @@ import javax.swing.event.*;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
         //GAB 2014
-        if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
+        //if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
 
         return false;
     }
@@ -1755,8 +1764,8 @@ import javax.swing.event.*;
 	    wi.cin_ylabel    = y_label.getText();
       
       //GAB 2014
-      wi.isContinuousUpdate = continuous_update_b.isSelected();
-
+      //wi.isContinuousUpdate = continuous_update_b.isSelected();
+      wi.isContinuousUpdate = false;
    }
 
    private int updateWI()
@@ -1781,8 +1790,11 @@ import javax.swing.event.*;
           wi.horizontal_flip = horizontal_flip_b.isSelected();
           wi.vertical_flip = vertical_flip_b.isSelected();
 
+          
+          
           if(!wi.getModified())
           {
+/*
                 if(wi.is_image)
                 {
                     if( wave.frames != null )
@@ -1792,7 +1804,7 @@ import javax.swing.event.*;
                     }
                     return 0;
                 }
-                
+*/              
                 for(int i = 0; i < wave.wi.num_waves; i++)
                 {
                     wave.wi.markers[i]      = s[i].marker;
@@ -1847,7 +1859,8 @@ import javax.swing.event.*;
       wi.mode2D       = new int[num_signal];
       wi.mode1D       = new int[num_signal];
       //GAB 2014
-      wi.isContinuousUpdate = continuous_update_b.isSelected();
+      //wi.isContinuousUpdate = continuous_update_b.isSelected();
+      wi.isContinuousUpdate = false;
 
       if(s[0].shot != UNDEF_SHOT)
         wi.shots        = new long[num_signal];

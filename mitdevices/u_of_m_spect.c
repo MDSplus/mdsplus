@@ -11,8 +11,6 @@
 #include <libroutines.h>
 #include "u_of_m_spect_gen.h"
 
-extern int TdiCompile();
-
 static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p1, float dt);
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
@@ -20,6 +18,7 @@ static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p
 int u_of_m_spect___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 {
   char cmd[512];
+  struct descriptor cmd_d={0,DTYPE_T,CLASS_S,cmd};
   int status = 1;
   FILE *file;
   file = fopen(setup->go_file, "w");
@@ -30,7 +29,8 @@ int u_of_m_spect___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
     fclose(file);
     strcpy(cmd, "rm ");
     strcat(cmd, setup->data_file);
-    LibSpawn(cmd, 1, 1);
+    cmd_d.length=strlen(cmd);
+    LibSpawn(&cmd_d, 1, 1);
   } else
     status = U_OF_M$_GO_FILE_ERROR;
   return status;
@@ -142,11 +142,11 @@ static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p
   array.bounds[0].u = p1 + np;
   array.bounds[1].l = 0;
   array.bounds[1].u = num_frames - 1;
-  return_on_error(TdiCompile(&range, &p1_dsc, &end_dsc, &one_dsc, &first_dim MDS_END_ARG), status);
+  return_on_error(TdiCompile((struct descriptor *)&range, &p1_dsc, &end_dsc, &one_dsc, &first_dim MDS_END_ARG), status);
   return_on_error(TdiCompile
-		  (&dim, &zero_dsc, &num_frames_dsc, &trigger_dsc, &dt_dsc,
+		  ((struct descriptor *)&dim, &zero_dsc, &num_frames_dsc, &trigger_dsc, &dt_dsc,
 		   &second_dim MDS_END_ARG), status);
-  return_on_error(TdiCompile(&sig, &array, &first_dim, &second_dim, &xd MDS_END_ARG), status);
+  return_on_error(TdiCompile((struct descriptor *)&sig, &array, &first_dim, &second_dim, &xd MDS_END_ARG), status);
   return_on_error(TreePutRecord(spectra_nid, (struct descriptor *)&xd, 0), status);
   MdsFree1Dx(&first_dim, 0);
   MdsFree1Dx(&second_dim, 0);

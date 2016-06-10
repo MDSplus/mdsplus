@@ -1,7 +1,9 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ DEF=tdishrext.def
-@MINGW_TRUE@ EXE=.exe
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/tdishrext.def
 
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
 TDIC_LIBS= $(LIBS) -ldl @LIBREADLINE@

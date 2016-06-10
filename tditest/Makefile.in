@@ -1,6 +1,6 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ EXE=.exe
+VPATH = @srcdir@
 
 SOURCES = tditest.c
 

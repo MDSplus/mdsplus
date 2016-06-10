@@ -30,6 +30,7 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <string.h>
+#include <strings.h>
 #include "tdithreadsafe.h"
 
 
@@ -50,6 +51,34 @@ extern int TdiUnits();
 extern int Tdi2Add();
 
 int TdiImpose();
+
+static void FixupDollarNodes(int nid, struct descriptor *out_ptr) {
+  if (out_ptr) {
+    switch (out_ptr->class) {
+      case CLASS_S:
+      case CLASS_D:
+        if ((out_ptr->dtype == DTYPE_IDENT) &&
+            (out_ptr->length == 5) &&
+            (strncasecmp((const char *)out_ptr->pointer,"$node",5) == 0)) {
+          out_ptr->dtype=DTYPE_NID;
+          out_ptr->length=4;
+          *(int *)out_ptr->pointer=nid;
+        }
+        break;
+      case CLASS_XS:
+      case CLASS_XD:
+        FixupDollarNodes(nid, (struct descriptor *)out_ptr->pointer);
+        break;
+      case CLASS_R: {
+        struct descriptor_r *ptr = (struct descriptor_r *)out_ptr;
+        unsigned char i;
+        for (i=0;i<ptr->ndesc; i++)
+          FixupDollarNodes(nid, (struct descriptor *)ptr->dscptrs[i]);
+        break;
+      }
+    }
+  }
+}
 
 int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -141,8 +170,6 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
   struct descriptor_xd hold = EMPTY_XD;
   struct descriptor_r *pin = (struct descriptor_r *)their_ptr;
   int status = 1;
-  STATIC_CONSTANT unsigned char OMIT_WINDOW[] = { DTYPE_WINDOW, 0 };
-  STATIC_CONSTANT unsigned char OMIT_AXIS[] = { DTYPE_SLOPE, 0 };
 
   int *recursion_count = &((TdiThreadStatic())->TdiGetData_recursion_count);
   *recursion_count = (*recursion_count + 1);
@@ -292,7 +319,7 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
         Useful internal and external function.
         C only: status = TdiGetFloat(&in_dsc, &float)
 */
-int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
+extern EXPORT int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
 {
   int status = 1;
 
@@ -361,7 +388,7 @@ int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr)
         Useful internal and external function.
         C only: status = TdiGetLong(&in_dsc, &long)
 */
-int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
+extern EXPORT int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
 {
   int status = 1;
 
@@ -429,7 +456,7 @@ int TdiGetLong(struct descriptor *in_ptr, int *val_ptr)
         Useful internal and external function.
         C only: status = TdiGetNid(&in_dsc, &nid)
 */
-int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
+extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -664,10 +691,9 @@ int Tdi1Validation(int opcode, int narg, struct descriptor *list[], struct descr
 }
 
 static int use_get_record_fun = 1;
-int TdiGetRecord(int nid, struct descriptor_xd *out)
+EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
 {
   int status;
-  static int use_fun = 1;
   if (use_get_record_fun) {
     int stat;
     short opcode = 162;		/* external function */
@@ -695,6 +721,8 @@ int TdiGetRecord(int nid, struct descriptor_xd *out)
   if (!use_get_record_fun) {
     status = TreeGetRecord(nid, (struct descriptor_xd *)out);
   }
+  if (status & 1)
+    FixupDollarNodes(nid,(struct descriptor *)out);
   return status;
 }
 

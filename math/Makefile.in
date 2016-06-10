@@ -1,6 +1,9 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ DEF=MdsMath.def
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/MdsMath.def
 
 SOURCES = \
 	caxpy.f \
@@ -52,8 +55,7 @@ EXPORTS = MdsMath.export
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 local@LIBPRE@MdsMath32 = @LIBPRE@MdsMath@SHARETYPE@_i386
 
-LDFLAGS+=@FFLAGS@
-
+FFLAGS += @FCFLAGS@
 
 ifeq "@MACOSX@" ""
 LIBRARIES = $(@LIBPRE@MdsMath)
@@ -65,10 +67,10 @@ endif
 
 $(local@LIBPRE@MdsMath32) %.o_i386: TARGET_ARCH = -m32
 $(local@LIBPRE@MdsMath32): $(OBJECTS_i386) $(DEF)
-	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
+	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 $(LIBRARIES): $(OBJECTS)  $(DEF)
-	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
+	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)

@@ -146,6 +146,7 @@ MARTE_WAVEGENSetup.java\
 MARTE_BREAKDOWNSetup.java\
 MARTE_RTSMSetup.java\
 MARTE_XRAYSetup.java\
+MARTE_NESetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
 SPIDERSetup.java\
@@ -159,4 +160,6 @@ FLIRSC65XSetup.java\
 NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
-MARTE_DEVICESetup.java
+MARTE_DEVICESetup.java \
+RFXVICONTROLSetup.java \
+REDPYTADCSetup.java

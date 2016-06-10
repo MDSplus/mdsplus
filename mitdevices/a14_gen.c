@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "a14_gen.h"
-int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "A14");
@@ -69,10 +69,10 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_2, TreeUSAGE_SIGNAL)
@@ -80,10 +80,10 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_3, TreeUSAGE_SIGNAL)
@@ -91,10 +91,10 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_4, TreeUSAGE_SIGNAL)
@@ -102,10 +102,10 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_5, TreeUSAGE_SIGNAL)
@@ -113,10 +113,10 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_6, TreeUSAGE_SIGNAL)
@@ -124,10 +124,10 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
@@ -138,8 +138,8 @@ int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int 
   return (TreeSetDefaultNid(old_nid));
 }
 
-int a14__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		   struct descriptor *out_d)
+EXPORT int a14__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		   struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -178,39 +178,39 @@ int a14__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr
   case (A14_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (A14_N_INPUT_1_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_1:STARTIDX) break;
+ COPY_PART_NAME(INPUT_1:STARTIDX) break;
   case (A14_N_INPUT_1_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_1:ENDIDX) break;
+ COPY_PART_NAME(INPUT_1:ENDIDX) break;
   case (A14_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (A14_N_INPUT_2_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_2:STARTIDX) break;
+ COPY_PART_NAME(INPUT_2:STARTIDX) break;
   case (A14_N_INPUT_2_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_2:ENDIDX) break;
+ COPY_PART_NAME(INPUT_2:ENDIDX) break;
   case (A14_N_INPUT_3 + 1):
  COPY_PART_NAME(:INPUT_3) break;
   case (A14_N_INPUT_3_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_3:STARTIDX) break;
+ COPY_PART_NAME(INPUT_3:STARTIDX) break;
   case (A14_N_INPUT_3_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_3:ENDIDX) break;
+ COPY_PART_NAME(INPUT_3:ENDIDX) break;
   case (A14_N_INPUT_4 + 1):
  COPY_PART_NAME(:INPUT_4) break;
   case (A14_N_INPUT_4_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_4:STARTIDX) break;
+ COPY_PART_NAME(INPUT_4:STARTIDX) break;
   case (A14_N_INPUT_4_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_4:ENDIDX) break;
+ COPY_PART_NAME(INPUT_4:ENDIDX) break;
   case (A14_N_INPUT_5 + 1):
  COPY_PART_NAME(:INPUT_5) break;
   case (A14_N_INPUT_5_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_5:STARTIDX) break;
+ COPY_PART_NAME(INPUT_5:STARTIDX) break;
   case (A14_N_INPUT_5_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_5:ENDIDX) break;
+ COPY_PART_NAME(INPUT_5:ENDIDX) break;
   case (A14_N_INPUT_6 + 1):
  COPY_PART_NAME(:INPUT_6) break;
   case (A14_N_INPUT_6_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_6:STARTIDX) break;
+ COPY_PART_NAME(INPUT_6:STARTIDX) break;
   case (A14_N_INPUT_6_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_6:ENDIDX) break;
+ COPY_PART_NAME(INPUT_6:ENDIDX) break;
   case (A14_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (A14_N_STORE_ACTION + 1):
@@ -225,7 +225,7 @@ extern int a14___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int a14__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
       static struct {
@@ -283,7 +283,7 @@ int a14__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int a14___start();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int a14__start(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__start(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStartStruct)
   struct descriptor_xd work_xd[1];
@@ -301,7 +301,7 @@ int a14__start(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int a14___stop();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int a14__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStopStruct)
   struct descriptor_xd work_xd[1];
@@ -319,7 +319,7 @@ int a14__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int a14___store();
 #define free_xd_array { int i; for(i=0; i<3;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int a14__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[3];

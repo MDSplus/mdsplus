@@ -1,0 +1,1 @@
+--platform=debian --test=skip --dockerimage=mdsplus/docker:raspberrypi-32 --distname=RaspberryPi --arch=armhf

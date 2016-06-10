@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <hdf5.h>
+
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
+#include <mdsshr.h>
+#include <tdishr.h>
 #include <treeshr.h>
 #include <ncidef.h>
 #include <usagedef.h>
-#include <hdf5.h>
+
 
 static const char *progname = "h5toMds";
 
@@ -42,7 +46,7 @@ static void PutArray(char dtype, int size, int n_dims, hsize_t * dims, void *ptr
     dsc.dtype = dtype;
     dsc.pointer = ptr;
     dsc.arsize = (int)dims[0] * size;
-    MdsCopyDxXd(&dsc, xd);
+    MdsCopyDxXd((struct descriptor const *)&dsc, xd);
   } else {
     int i;
     DESCRIPTOR_A_COEFF(dsc, 0, 0, 0, 8, 0);
@@ -56,7 +60,7 @@ static void PutArray(char dtype, int size, int n_dims, hsize_t * dims, void *ptr
       dsc.m[i] = (int)dims[i];
       dsc.arsize *= (int)dims[i];
     }
-    MdsCopyDxXd(&dsc, xd);
+    MdsCopyDxXd((struct descriptor const *)&dsc, xd);
   }
 }
 
@@ -251,9 +255,9 @@ static int list_one(h5item * item, struct descriptor *xd)
     list_one(item->brother, xd);
 }
 
-int hdf5list(struct descriptor *xd)
+EXPORT int hdf5list(struct descriptor *xd)
 {
-  MdsFree1Dx(xd, 0);
+  MdsFree1Dx((struct descriptor_xd *)xd, 0);
   if (current)
     list_one(current, xd);
 }
@@ -304,7 +308,7 @@ static int FindItem(char *namein, hid_t * obj, int *item_type)
   return status;
 }
 
-int hdf5read(char *name, struct descriptor_xd *xd)
+EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 {
   hid_t obj, type;
   H5G_stat_t statbuf;
@@ -383,7 +387,7 @@ int hdf5read(char *name, struct descriptor_xd *xd)
 	  hid_t st_id;
 	  if (slen < 0) {
 	    printf("Badly formed string attribute\n");
-	    return;
+	    return 0;
 	  }
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  if (H5Tis_variable_str(type)) {
@@ -492,7 +496,7 @@ int hdf5read(char *name, struct descriptor_xd *xd)
 	  hid_t st_id;
 	  if (slen < 0) {
 	    printf("Badly formed string attribute\n");
-	    return;
+	    return 0;
 	  }
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  if (H5Tis_variable_str(type)) {
@@ -553,14 +557,14 @@ static void FreeObj(h5item * item)
   free(item);
 }
 
-int hdf5close()
+EXPORT int hdf5close()
 {
   if (current)
     FreeObj(current);
   current = 0;
 }
 
-int hdf5open(char *fname)
+EXPORT int hdf5open(char *fname)
 {
   hid_t fid, gid;
   void *edata;

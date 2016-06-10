@@ -1092,7 +1092,8 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[12] == null)
                 {
-					devices[12] = device = new RFXVISetupSetup();
+//					devices[12] = device = new RFXVISetupSetup();
+					devices[12] = device = new RFXVICONTROLSetup();
 					
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
@@ -4285,7 +4286,8 @@ System.out.println("SAVE SETUP: " + fullPath);
             case 11:
                 return new RFXMHDSetup();
             case 12:
-                return new RFXVISetupSetup();
+//                return new RFXVISetupSetup();
+                return new RFXVICONTROLSetup();
             case 13:
                 return new PELLETSetup();
             case 14:

@@ -1,7 +1,8 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 CFLAGS = @CFLAGS@ $$(pkg-config --cflags globus-xio globus-gridmap-callout-error)
-LDFLAGS = @LDFLAGS@ $$(pkg-config --libs globus-xio globus-gridmap-callout-error globus-gssapi-gsi globus-gss-assist globus-gssapi-error) -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lcurl
+LDFLAGS = @LDFLAGS@ $$(pkg-config --libs globus-xio globus-gridmap-callout-error globus-gssapi-gsi globus-gss-assist globus-gssapi-error globus-common) -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lcurl
 EXPORTS = mdsipshr.export
 
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"

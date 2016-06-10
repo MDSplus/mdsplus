@@ -13,11 +13,9 @@
 typedef struct descriptor *Dptr;
 
 extern int mit_clock___get_setup(Dptr, InGet_setupStruct *);
-extern int TdiData();
-extern int TdiCompile();
 extern int GenDeviceFree();
 
-int mit_clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+EXPORT int mit_clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
 			 Dptr * output)
 {
   int status;
@@ -38,7 +36,7 @@ int mit_clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, Eve
     DESCRIPTOR_A(frequency_a, sizeof(float), DTYPE_NATIVE_FLOAT, (char *)frequency,
 		 sizeof(frequency));
     memset(event_mask, 0, sizeof(EventMask));
-    status = TdiData(s.frequency, (struct descriptor *)&frequency_a MDS_END_ARG);
+    status = TdiData((struct descriptor *)s.frequency, (struct descriptor *)&frequency_a MDS_END_ARG);
     if (!(status & 1)) {
       status = TIMING$_INVCLKFRQ;
       goto error;
@@ -89,7 +87,7 @@ int mit_clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, Eve
       setup->hold = tmp;
       setup->start_high = 1;
     }
-    status = TdiCompile(&expr, &dt_dsc, &out MDS_END_ARG);
+    status = TdiCompile((struct descriptor *)&expr, &dt_dsc, &out MDS_END_ARG);
     if (status & 1) {
       static int output_nid;
       static DESCRIPTOR_NID(output_dsc, (char *)&output_nid);

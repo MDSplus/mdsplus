@@ -1,7 +1,10 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
-@MINGW_TRUE@ DEF=servershr.def
+@MINGW_TRUE@ DEF=${srcdir}/servershr.def
 
 SOURCES = \
       ServerDispatchAction.c\

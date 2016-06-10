@@ -170,8 +170,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  bitassign(1, nci->flags, NciM_VERSIONS);
 	if (!utility_update) {
 	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK
-			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.
-	      DATA_LOCATION.record_length;
+			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.DATA_LOCATION.
+	      record_length;
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
 	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
@@ -211,7 +211,9 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	      status =
 		  TreePutDsc(info_ptr, nid, descriptor_ptr,
 			     &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-			     &attributes.facility_length[STANDARD_RECORD_FACILITY]);
+			     &attributes.facility_length[STANDARD_RECORD_FACILITY], (compress_utility
+						 || (nci->flags & NciM_COMPRESS_ON_PUT))
+				  && !(nci->flags & NciM_DO_NOT_COMPRESS));
 	      if (status & 1) {
 		attributes.facility_offset[SEGMENTED_RECORD_FACILITY] = -1;
 		attributes.facility_length[SEGMENTED_RECORD_FACILITY] = 0;
@@ -258,7 +260,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 
   NODE *node_ptr;
   int status;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   switch (node_ptr->usage) {
@@ -366,7 +368,7 @@ int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     strncpy(filename, info->filespec, len);
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
-    df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
+    df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = old_get;

@@ -14,19 +14,18 @@ typedef struct descriptor *Dptr;
 
 extern int mit_pulse___get_setup(Dptr, InGet_setupStruct *);
 extern int mit_decoder__get_event(int *, EventMask *);
-extern int TdiCompile();
 extern int GenDeviceFree();
 
 static int GetSetup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
 		    Dptr * output, int gate);
 
-int mit_pulse__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+EXPORT int mit_pulse__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
 			 Dptr * output)
 {
   return GetSetup(niddsc_ptr, method, setup, event_mask, output, 0);
 }
 
-int mit_gate__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+EXPORT int mit_gate__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
 			Dptr * output)
 {
   return GetSetup(niddsc_ptr, method, setup, event_mask, output, 1);
@@ -114,11 +113,11 @@ static int GetSetup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMas
       memset(event_mask, 0, sizeof(EventMask));
     if (gate) {
       static DESCRIPTOR(out_expression, "$1 + [$2,$3]");
-      TdiCompile(&out_expression, &trigger_nid_dsc, &gate_start_dsc, &gate_end_dsc,
+      TdiCompile((struct descriptor *)&out_expression, &trigger_nid_dsc, &gate_start_dsc, &gate_end_dsc,
 		 &out MDS_END_ARG);
     } else {
       static DESCRIPTOR(out_expression, "$1 + $2");
-      TdiCompile(&out_expression, &trigger_nid_dsc, &gate_start_dsc, &out MDS_END_ARG);
+      TdiCompile((struct descriptor *)&out_expression, &trigger_nid_dsc, &gate_start_dsc, &out MDS_END_ARG);
     }
     status = TreePutRecord(output_nid, (struct descriptor *)&out, 0);
     *output = &output_nid_dsc;

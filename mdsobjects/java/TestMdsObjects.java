@@ -110,29 +110,19 @@ public class TestMdsObjects
    
     public static void main(java.lang.String args[])
     {
-        
-        
-        testRows();
         try {
-           int m[][];
-           m = new int[2][2];
-           m[0][0] = 0;
-           m[0][1] = 1;
-           m[1][0] = 2;
-           m[1][1] = 3;
+            Tree t = new Tree("test", -1);
+            TreeNodeArray tna = t.getNodeWild("***");
+            java.lang.String str[] = tna.getFullPath();
+            for(int i = 0; i < str.length; i++)
+                System.out.println(str[i]);
+            
+        }catch(MdsException exc) 
+        {
+            System.out.println(exc);
+        }
 
-           Int32Array ia = new Int32Array(m);
-           System.out.println(ia);
-           System.exit(0);
-        Tree tree = new Tree("test", 1);
-        long size = tree.getDatafileSize();
-        System.out.println(size);
-        }catch(Exception exc){};
-        //testRows();
-
- //       Connection c = new Connection("150.178.32.45")
-
-      }
+    }
     
     
     

@@ -1,6 +1,9 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
-@MINGW_TRUE@ DEF=mdsmisc.def
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
+@MINGW_TRUE@ DEF=${srcdir}/mdsmisc.def
 
 CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ 
@@ -20,7 +23,6 @@ SOURCES = boxsmooth.c \
 	  iir.c \
 	  MdsFilter.c \
 	  whoami.c \
-	  pycall.c \
 	  ScopeUtilities.c
 
 OBJECTS = $(SOURCES:.c=.o)
@@ -43,7 +45,7 @@ install: $(libdir)
 	fi;
 
 @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXTreeShr
 
 @MAKELIBDIR@@LIBPRE@MdsMisc.a : $(OBJECTS)
 	$(AR) -cr $@ $^

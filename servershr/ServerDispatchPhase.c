@@ -419,7 +419,7 @@ STATIC_ROUTINE char *DetailProc(int full)
   return msg;
 }
 
-int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
+EXPORT int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
 			int sync, void (*output_rtn) (), char *monitor)
 {
   int i;
@@ -527,7 +527,7 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
   return status;
 }
 
-int ServerFailedEssential(void *vtable, int reset)
+EXPORT int ServerFailedEssential(void *vtable, int reset)
 {
   DispatchTable *table = vtable;
   int failed = table ? table->failed_essential : 0;

@@ -32,6 +32,9 @@ void PrintHelp(char *option)
   exit(1);
 }
 
+///
+/// Parse standard input command options.
+/// 
 void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc,
 		  char ***rem_argv)
 {
@@ -99,14 +102,18 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
   }
 }
 
+///
+/// Parse standard input command options.
+/// 
 void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
 {
-  Options options[] = { {"P", "protocol", 1, 0, 0},
-  {"h", "hostfile", 1, 0, 0},
-  {"s", "server", 0, 0, 0},
-  {"m", "multi", 0, 0, 0},
-  {"c", "compression", 1, 0, 0},
-  {0, 0, 0, 0}
+  Options options[] = { 
+      {"P", "protocol", 1, 0, 0},
+      {"h", "hostfile", 1, 0, 0},
+      {"s", "server", 0, 0, 0},
+      {"m", "multi", 0, 0, 0},
+      {"c", "compression", 1, 0, 0},
+      {0, 0, 0, 0}
   };
   ParseCommand(argc, argv, options, 1, extra_argc, extra_argv);
   if (options[0].present && options[0].value)

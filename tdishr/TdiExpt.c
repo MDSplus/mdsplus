@@ -19,7 +19,6 @@
 */
 int Tdi3MdsDefault(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  struct descriptor *dummy = in_ptr;
   char value[4096];
   STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
   int retlen, status;
@@ -44,7 +43,6 @@ int Tdi3MdsDefault(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 */
 int Tdi3Expt(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  struct descriptor *dummy = in_ptr;
   char value[39 - 7];
   int retlen, status;
   STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
@@ -69,7 +67,6 @@ int Tdi3Expt(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 */
 int Tdi3Shot(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  struct descriptor *dummy = in_ptr;
   int value;
   int retlen, status;
   STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
@@ -94,7 +91,6 @@ int Tdi3Shot(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 */
 int Tdi3Shotname(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  struct descriptor *dummy = in_ptr;
   int value;
   int retlen, status;
   struct dbi_itm lst[] = { {sizeof(value), DbiSHOTID, 0, 0}

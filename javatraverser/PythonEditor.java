@@ -10,7 +10,7 @@ import java.util.*;
 public class PythonEditor extends JPanel implements Editor{
     String retVar;
     String program;
-    int rows = 1, columns = 20;
+    int rows = 7, columns = 20;
     JTextArea text_area;
     JTextField text_field;
     boolean default_scroll;
@@ -43,7 +43,8 @@ public class PythonEditor extends JPanel implements Editor{
         JPanel jp = new JPanel();
         jp.setLayout(new BorderLayout());
         JPanel jp1 = new JPanel();
-        jp1.add(new JLabel("Return Variable: "));
+        jp1.setLayout(new BorderLayout());
+        jp1.setBorder(BorderFactory.createTitledBorder("Return Variable"));
         jp1.add(text_field);
         jp.add(jp1, "North");
         JPanel jp2 = new JPanel();

@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "reticon120_gen.h"
-int reticon120__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int reticon120__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "RETICON120");
@@ -122,8 +122,8 @@ int reticon120__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_pt
   return (TreeSetDefaultNid(old_nid));
 }
 
-int reticon120__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-			  struct descriptor *out_d)
+EXPORT int reticon120__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+			  struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -201,7 +201,7 @@ extern int reticon120___init();
 #define free_xd_array { int i; for(i=0; i<3;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int reticon120__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int reticon120__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[3];
@@ -223,7 +223,7 @@ int reticon120__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
 extern int reticon120___store();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int reticon120__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int reticon120__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[2];
@@ -242,7 +242,7 @@ int reticon120__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_
 extern int reticon120___trigger();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int reticon120__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int reticon120__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[2];

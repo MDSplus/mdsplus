@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <config.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -16,6 +17,8 @@ extern int TdiData();
 extern int TdiEvaluate();
 extern int TdiDecompile();
 extern int TdiCompile();
+extern int TdiConvert();
+
 extern void *createScalarData(int dtype, int length, char *ptr, void *unitsData, void *errorData,
 			      void *helpData, void *validationData, void *tree);
 extern void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr,
@@ -38,12 +41,6 @@ extern void *deserializeData(char const *serialized);
 extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen);
 extern void *getManyObj(char *serializedIn);
 extern void *putManyObj(char *serializedIn);
-
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 {
@@ -699,7 +696,7 @@ char *serializeData(void *dsc, int *retSize, void **retDsc)
   return arrPtr->pointer;
 }
 
-extern void *deserializeData(char const *serialized)
+void *deserializeData(char const *serialized)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xdPtr;
@@ -713,11 +710,11 @@ extern void *deserializeData(char const *serialized)
   return xdPtr;
 }
 
-extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
+void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int *retLen)
 {
-  struct descriptor dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
+  struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
   short len;
-  int status = LibSysAscTim(&len, &dateDsc, (int *)timePtr);
+  LibSysAscTim(&len, (struct descriptor *)&dateDsc, (int *)timePtr);
   if (len > bufLen)
     len = bufLen;
   if (len > 0)
@@ -726,7 +723,7 @@ extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int
   *retLen = len;
 }
 
-extern int64_t convertAsciiToTime(const char *ascTime)
+int64_t convertAsciiToTime(const char *ascTime)
 {
   int64_t time;
 //      LibConvertDateString("now", &time);
@@ -735,7 +732,7 @@ extern int64_t convertAsciiToTime(const char *ascTime)
 }
 
 //Conversion from VMS to IEEE float
-EXPORT void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr)
+void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr)
 {
   int status, arsize, i;
   float *fArr;
@@ -765,37 +762,35 @@ EXPORT void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims,
   free((char *)fArr);
 }
 
-extern void convertToIEEEFloat(int dtype, int length, void *ptr)
+void convertToIEEEFloat(int dtype, int length, void *ptr)
 {
   int dims[1] = { 1 };
   convertToIEEEFloatArray(dtype, length, 1, dims, ptr);
 }
 
 ///////////////mdsip support for Connection class///////////
-EXPORT struct descriptor_xd *GetManyExecute(char *serializedIn)
+struct descriptor_xd *GetManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor_xd *serResult;
-  int status;
 
   serResult = (struct descriptor_xd *)getManyObj(serializedIn);
   if (serResult->class == CLASS_XD)
-    status = MdsSerializeDscOut(serResult->pointer, &xd);
+    MdsSerializeDscOut(serResult->pointer, &xd);
   else
-    status = MdsSerializeDscOut((struct descriptor *)serResult, &xd);
+    MdsSerializeDscOut((struct descriptor *)serResult, &xd);
   freeDsc(serResult);
   return &xd;
 }
 
-EXPORT struct descriptor_xd *PutManyExecute(char *serializedIn)
+struct descriptor_xd *PutManyExecute(char *serializedIn)
 {
   static EMPTYXD(xd);
   struct descriptor *serResult;
-  int status;
 
   serResult = (struct descriptor *)putManyObj(serializedIn);
 
-  status = MdsSerializeDscOut(serResult, &xd);
+  MdsSerializeDscOut(serResult, &xd);
   freeDsc(serResult);
   return &xd;
 }

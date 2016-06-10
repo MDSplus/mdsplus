@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int TreeGetPerf(TREE_IO_PERF * perf)
+EXPORT int TreeGetPerf(TREE_IO_PERF * perf)
 {
   static int initialized = 0;
   static TREE_IO_PERF *p = 0;
@@ -30,7 +30,7 @@ int TreeGetPerf(TREE_IO_PERF * perf)
 	if (p == 0)
 	  perror("Error mapping performance file");
 	else
-	  semaphore = sem_open("mds_perf_lock", O_CREAT, 0777, 1);
+	  semaphore = sem_open("mds_perf_lock", O_CREAT, 0664, 1);
       } else
 	perror("Error opening performance file");
     }
@@ -56,7 +56,7 @@ static void Initialize()
     mode_t um = umask(0);
     int pf = open(filename, O_RDWR);
     if (pf == -1) {
-      pf = open(filename, O_RDWR | O_CREAT, 0666);
+      pf = open(filename, O_RDWR | O_CREAT, 0664);
       if (pf != -1) {
 	static TREE_IO_PERF init;
 	write(pf, &init, sizeof(init));
@@ -67,7 +67,7 @@ static void Initialize()
       if (PERF == 0)
 	perror("Error mapping performance file");
       else {
-	SEMAPHORE = sem_open("mds_perf_lock", O_CREAT, 0777, 1);
+	SEMAPHORE = sem_open("mds_perf_lock", O_CREAT, 0664, 1);
       }
     } else
       perror("Error opening performance file");
@@ -75,7 +75,7 @@ static void Initialize()
   }
 }
 
-int TreePerfZero()
+EXPORT int TreePerfZero()
 {
   if (!INITIALIZED)
     Initialize();
@@ -88,7 +88,7 @@ int TreePerfZero()
   return TreeFAILURE;
 }
 
-int TreePerfWrite(int bytes)
+EXPORT int TreePerfWrite(int bytes)
 {
   if (!INITIALIZED)
     Initialize();
@@ -119,7 +119,7 @@ int TreePerfWrite(int bytes)
   return TreeFAILURE;
 }
 
-int TreePerfRead(int bytes)
+EXPORT int TreePerfRead(int bytes)
 {
   if (!INITIALIZED)
     Initialize();
@@ -150,22 +150,22 @@ int TreePerfRead(int bytes)
   return TreeFAILURE;
 }
 #else
-int TreeGetPerf()
+EXPORT int TreeGetPerf()
 {
   return TreeFAILURE;
 }
 
-int TreePerfRead(int bytes)
+EXPORT int TreePerfRead(int bytes)
 {
   return TreeFAILURE;
 }
 
-int TreePerfWrite(int bytes)
+EXPORT int TreePerfWrite(int bytes)
 {
   return TreeFAILURE;
 }
 
-int TreePerfZero()
+EXPORT int TreePerfZero()
 {
   return TreeFAILURE;
 }

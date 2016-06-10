@@ -3,7 +3,18 @@
 #include "globus_xio_gsi.h"
 #include "globus_gss_assist.h"
 #include "globus_xio_tcp_driver.h"
-#include "mdsip_connections.h"
+
+// Undefine symbols defined again in config.h
+#ifdef HAVE_GETADDRINFO
+#undef HAVE_GETADDRINFO
+#endif
+#ifdef HAVE_GETPWUID
+#undef HAVE_GETPWUID
+#endif
+#ifdef _GNU_SOURCE
+#undef _GNU_SOURCE
+#endif
+
 #include <STATICdef.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -13,6 +24,8 @@
 #include <config.h>
 #include <time.h>
 #include <sys/wait.h>
+
+#include "mdsip_connections.h"
 
 static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t gsi_recv(int conid, void *buffer, size_t len);

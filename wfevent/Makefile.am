@@ -15,5 +15,5 @@ bin_PROGRAMS = wfevent
 wfevent_SOURCES = wfevent.c
 
 #FIXME: Clean up LIBS in top level configure
-LIBS=
+#LIBS=
 

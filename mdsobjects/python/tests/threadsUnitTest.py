@@ -1,38 +1,57 @@
 from unittest import TestCase,TestSuite,TextTestRunner,TestResult
 from threading import Thread,enumerate
 from tree import Tree
-import tests.treeUnitTest
+import tests.treeUnitTest as treeUnitTest
+import tests.dataUnitTest as dataUnitTest
+from _mdsshr import getenv
 
+treeUnitTest.tearDownModule=None
+
+def tearDownMOdule():
+    import shutil
+    shutil.rmtree(treeUnitTest._tmpdir)
 
 class threadJob(Thread):
     """Thread to execute the treeTests"""
     def run(self):
         """Run test1.test() function"""
         Tree.usePrivateCtx()
-        #self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
+#        self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
         self.result=TestResult()
-        treeUnitTest.suite().run(self.result)
+        self.test.suite().run(self.result)
 
 class threadTest(TestCase):
 
-    def tenThreads(self):
+    def threadTests(self):
         numsuccessful=0
         threads=list()
-        for i in range(10):
+        if getenv("do_threads") is not None:
+          for i in range(10):
             t=threadJob()
             t.shot=i*2+3
-            threads.append(t)            
-        for t in threads:
+            t.test=treeUnitTest
+            threads.append(t)
+            d=threadJob()
+            d.test=dataUnitTest
+            threads.append(d)
+          for t in threads:
             t.start()
-        for t in threads:
+          for t in threads:
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful=numsuccessful+1
-        self.assertEqual(numsuccessful,10)
+                numsuccessful=numsuccessful+1                
+            else:
+                print( t.result )
+        print("successful: ")
+        print(numsuccessful)
+        self.assertEqual(numsuccessful,len(threads))
         return
 
     def runTest(self):
-        self.tenThreads()
-                
+        self.threadTests()
+        return
+            
+
 def suite():
-    return TestSuite([threadTest('tenThreads')])
+    tests = ['threadTests']
+    return TestSuite(map(threadTest, tests))

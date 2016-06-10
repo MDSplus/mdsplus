@@ -69,8 +69,6 @@ int ServerSendMessage();
 
 extern short ArgLen();
 
-extern char *TranslateLogical(char *);
-extern void TranslateLogicalFree(char *);
 extern int GetAnswerInfoTS();
 
 typedef struct _Job {
@@ -163,13 +161,17 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       *conid_out = conid;
     if (addr == 0) {
       int sock = getSocket(conid);
-      struct sockaddr_in addr_struct;
+      struct sockaddr_in addr_struct = {0};
       unsigned int len = sizeof(addr_struct);
       if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
-	addr = *(int *)&addr_struct.sin_addr;
+		addr = *(int *)&addr_struct.sin_addr;
     }
     if (addr)
       jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
+    else {
+      perror("Error getting the address the socket is bound to.\n");
+      return ServerSOCKET_ADDR_ERROR;
+    }
     if (before_ast)
       flags |= SrvJobBEFORE_NOTIFY;
     sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
@@ -599,7 +601,7 @@ int ServerBadSocket(int socket)
   return !(status == 0);
 }
 
-int ServerDisconnect(char *server_in)
+EXPORT int ServerDisconnect(char *server_in)
 {
   int status = 0;
   char *srv = TranslateLogical(server_in);
@@ -642,7 +644,7 @@ int ServerDisconnect(char *server_in)
   return (status);
 }
 
-int ServerConnect(char *server_in)
+EXPORT int ServerConnect(char *server_in)
 {
   int conid = -1;
   char *srv = TranslateLogical(server_in);

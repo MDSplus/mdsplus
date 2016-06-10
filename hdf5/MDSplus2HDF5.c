@@ -17,6 +17,8 @@
 #include <string.h>
 #include "mds_stdarg.h"
 #include "mdsdescrip.h"
+#include "mdsshr.h"
+#include "tdishr.h"
 #include "treeshr.h"
 #include "hdf5.h"
 
@@ -32,7 +34,7 @@ static int shot;
 static char error_msg[MAX_COMPLAINT];
 static DESCRIPTOR(error_dsc, error_msg);
 
-extern int TdiExecute();
+//extern int TdiExecute();
 
 /*
   Routine MemberMangle - return a new name for a member with an '_' in the front.
@@ -203,7 +205,7 @@ static int is_child(int nid)
   return ans;
 }
 
-void ExitOnMDSError(status, msg)
+void ExitOnMDSError(int status, const char *msg)
 {
   if (!(status & 1)) {
     fprintf(stderr, "MDS Error\n%s\n%s\n", msg, MdsGetMsg(status));
@@ -385,7 +387,7 @@ static void WriteData(hid_t parent, char *name, struct descriptor *dsc)
       static EMPTYXD(xd3);
       status = TdiEvaluate(d_ptr, &xd3 MDS_END_ARG);
       if (status & 1) {
-	status = TdiData(&xd3, &xd3 MDS_END_ARG);
+	status = TdiData((struct descriptor *)&xd3, &xd3 MDS_END_ARG);
 	if (status & 1) {
 	  for (d_ptr = (struct descriptor *)&xd3;
 	       d_ptr->dtype == DTYPE_DSC; d_ptr = (struct descriptor *)d_ptr->pointer) ;

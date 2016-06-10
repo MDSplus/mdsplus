@@ -10,11 +10,6 @@
 #ifndef _WIN32
 #include <mdstypes.h>
 #endif
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 extern void *convertDataToDsc(void *data);
 extern void *convertFromDsc(void *dscPtr, void *tree);
@@ -53,6 +48,7 @@ int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times, int rowsFilled);
 int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times);
 int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int size);
+int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc);
 
 int getTreeData(void *dbid, int nid, void **data, void *tree)
 {
@@ -91,7 +87,7 @@ int deleteTreeData(void *dbid, int nid)
 void convertTime(int *time, char *retTime)
 {
   char timeStr[512];
-  int retLen;
+  unsigned short retLen;
   struct descriptor time_dsc = { 511, DTYPE_T, CLASS_S, timeStr };
 
   LibSysAscTim(&retLen, &time_dsc, time);
@@ -258,7 +254,7 @@ int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc)
   return status;
 }
 
-extern int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times)
+int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
@@ -268,7 +264,7 @@ extern int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t
   return status;
 }
 
-extern int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times,
+int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t * times,
 				      int rowsFilled)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
@@ -280,3 +276,15 @@ extern int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_
   freeDsc(dataXd);
   return status;
 }
+
+int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  int status;
+
+  status = _TreeSetXNci(dbid, nid, name, dataXd);
+	freeDsc(dataXd);
+  return status;
+}
+
+

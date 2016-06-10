@@ -13,6 +13,7 @@
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
+#include "mdsshrp.h"
 
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <sys/types.h>
@@ -33,18 +34,18 @@ STATIC_THREADSAFE int external_count = 0;	/* remote event pendings count */
 STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
 STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
 
-STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr) (), void *astprm, int *eventid);
+STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
 STATIC_ROUTINE void initializeRemote(int receive_events);
 STATIC_CONSTANT int TIMEOUT = 0;
 
-int MDSSetEventTimeout(int seconds)
+EXPORT int MDSSetEventTimeout(int seconds)
 {
   int old_timeout = TIMEOUT;
   TIMEOUT = seconds;
   return old_timeout;
 }
 
-static int ConnectToMds_(char *host)
+static int ConnectToMds_(char const *host)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", (void **)&rtn) : 1;
@@ -76,7 +77,7 @@ static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t * len)
   return 0;
 }
 
-static int MdsEventAst_(int sock, char *eventnam, void (*astadr) (), void *astprm, int *eventid)
+static int MdsEventAst_(int sock, char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst", (void **)&rtn) : 1;
@@ -120,7 +121,7 @@ static int MdsEventCan_(int id, int eid)
   return 0;
 }
 
-static int MdsValue_(int id, char *exp, struct descrip *d1, struct descrip *d2, struct descrip *d3)
+static int MdsValue_(int id, char const *exp, struct descrip *d1, struct descrip *d2, struct descrip *d3)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&rtn) : 1;
@@ -178,10 +179,9 @@ int MDSEvent(char const *evname)
 #elif (defined(_WIN32))
 #define NO_WINDOWS_H
 #include <process.h>
-extern char *TranslateLogical(char *);
 STATIC_ROUTINE void newRemoteId(int *id);
 STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid);
-STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data);
+STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data);
 STATIC_ROUTINE int getRemoteId(int id, int ofs);
 STATIC_THREADSAFE HANDLE external_thread = 0;
 STATIC_THREADSAFE HANDLE external_event = 0;
@@ -222,7 +222,7 @@ STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
   }
 }
 
-STATIC_ROUTINE int RemoteMDSEventAst(char *eventnam_in,
+STATIC_ROUTINE int RemoteMDSEventAst(char const *eventnam_in,
 			     void (*astadr) (void *, int, char *), void *astprm,
 			     int *eventid)
 {
@@ -283,12 +283,12 @@ STATIC_ROUTINE void MDSWfevent_ast(void *astparam, int data_len, char *data)
   SetEvent(event->event);
 }
 
-int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
+EXPORT int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
 {
   return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
 }
 
-int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen, int timeout)
+EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
 {
   int eventid;
   int status;
@@ -365,7 +365,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data)
   UnlockMdsShrMutex(&eqMutex);
 }
 
-int MDSQueueEvent(char *evname, int *eventid)
+EXPORT int MDSQueueEvent(char const *evname, int *eventid)
 {
   int status;
   struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
@@ -390,7 +390,7 @@ int MDSQueueEvent(char *evname, int *eventid)
   return status;
 }
 
-int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
+EXPORT int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
 {
   struct eventQueueHeader *qh;
   int waited = 0;
@@ -447,7 +447,7 @@ STATIC_ROUTINE int RemoteMDSEvent(char const *evname_in, int data_len, char *dat
 
 }
 
-STATIC_ROUTINE char *getEnvironmentVar(char *name)
+STATIC_ROUTINE char *getEnvironmentVar(char const *name)
 {
   char *trans = TranslateLogical(name);
   if (!trans || !*trans)
@@ -464,7 +464,7 @@ STATIC_ROUTINE int searchOpenServer(char *server)
 }
 #endif
 
-STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_servers)
+STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int *num_servers)
 {
   int i, j;
   char *envname = getEnvironmentVar(env_var);
@@ -607,7 +607,7 @@ STATIC_ROUTINE void initializeRemote(int receive_events)
   UnlockMdsShrMutex(&initMutex);
 }
 
-STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr) (), void *astprm, int *eventid)
+STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   int status = 1, i;
   int curr_eventid;
@@ -695,7 +695,7 @@ STATIC_ROUTINE int getRemoteId(int id, int ofs)
   return retId;
 }
 
-STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
+STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data)
 {
   int status = 1, i, tmp_status;
   char expression[256];
@@ -794,7 +794,7 @@ STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
 
 /************* OS dependent part ******************/
 
-STATIC_ROUTINE char *getEnvironmentVar(char *name)
+STATIC_ROUTINE char *getEnvironmentVar(char const *name)
 {
   char *trans = getenv(name);
   if (!trans || !*trans)
@@ -862,7 +862,7 @@ STATIC_ROUTINE int getRemoteId(int id, int ofs)
   return retId;
 }
 
-STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_servers)
+STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int *num_servers)
 {
   unsigned int i, j;
   char *envname = getEnvironmentVar(env_var);
@@ -1060,7 +1060,7 @@ STATIC_ROUTINE void initializeRemote(int receive_events)
   UnlockMdsShrMutex(&initMutex);
 }
 
-STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr) (), void *astprm, int *eventid)
+STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   int status = 1, i;
   int curr_eventid;
@@ -1115,12 +1115,12 @@ STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
   pthread_mutex_unlock(&t->mutex);
 }
 
-int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
+EXPORT int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
 {
   return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
 }
 
-int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen, int timeout)
+EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
 {
   int eventid = -1;
   int status;
@@ -1222,7 +1222,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data)
   UnlockMdsShrMutex(&eqMutex);
 }
 
-int MDSQueueEvent(char *evname, int *eventid)
+EXPORT int MDSQueueEvent(char const *evname, int *eventid)
 {
   int status;
   struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
@@ -1248,7 +1248,7 @@ int MDSQueueEvent(char *evname, int *eventid)
   return status;
 }
 
-int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
+EXPORT int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
 {
   struct eventQueueHeader *qh;
   int waited = 0;
@@ -1304,7 +1304,7 @@ int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data)
   return status;
 }
 
-int RemoteMDSEventAst(char *eventnam_in, void (*astadr) (), void *astprm, int *eventid)
+int RemoteMDSEventAst(char const *eventnam_in, void (*astadr) (), void *astprm, int *eventid)
 {
   int status = 0;
   char *eventnam = eventName(eventnam_in);
@@ -1341,7 +1341,7 @@ int RemoteMDSEventCan(int eventid)
   return canEventRemote(eventid);
 }
 
-STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
+STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data)
 {
   int status = 1, i, tmp_status;
   char expression[256];
@@ -1410,7 +1410,7 @@ int RemoteMDSEvent(char const *evname_in, int data_len, char *data)
 
 #endif
 
-int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), void *astprm,
+EXPORT int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), void *astprm,
 		int *eventid)
 {
   char *eventName = malloc(strlen(eventNameIn) + 1);
@@ -1429,7 +1429,7 @@ int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), v
   return status;
 }
 
-int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
+EXPORT int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
 {
   char *eventName = alloca(strlen(eventNameIn) + 1);
   unsigned int i, j;
@@ -1446,7 +1446,7 @@ int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
   return status;
 }
 
-int MDSEventCan(int id)
+EXPORT int MDSEventCan(int id)
 {
   int status;
   if (getenv("mds_event_server"))

@@ -1,14 +1,15 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
 
 CPPFLAGS += -I$(top_srcdir)/tdishr
 CFLAGS += @SRBINCLUDE@
 CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @LIBS@ @SRBLIB@
+LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @SRBLIB@
 
 CXXSOURCES = \
-	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp
+	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp datastreams.cpp
 
 SOURCES = mdsdata.c mdstree.c
 

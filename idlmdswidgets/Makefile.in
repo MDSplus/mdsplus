@@ -1,5 +1,6 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+VPATH = @srcdir@
 CFLAGS=@CFLAGS@ @IDL_INC@ @X_CFLAGS@ @TARGET_ARCH@
 LDFLAGS=@LDFLAGS@ @IDL_LIB@ @TARGET_ARCH@
 X_LIBS=@X_LIBS@
@@ -43,4 +44,4 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKEUIDDIR@cw_wvedit.uid : cw_wvedit.uil ; $(UIL) -o $@ cw_wvedit.uil
+@MAKEUIDDIR@cw_wvedit.uid : cw_wvedit.uil ; $(UIL) -o $@ $^

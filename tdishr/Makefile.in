@@ -1,9 +1,12 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TdiShr.dll.a
-@MINGW_TRUE@ DEF=TdiShr.def
+@MINGW_TRUE@ DEF=${srcdir}/TdiShr.def
 
-LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD) @LIBDL@
+LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lTreeShr -lMdsShr @LIBM@ @SOCKETLIB@ $(THREAD) @LIBDL@
 SYBASE_INC=@SYBASE_INC@
 
 SOURCES = \

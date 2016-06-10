@@ -19,6 +19,7 @@
 #include <strroutines.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
+#include "mdsshrp.h"
 #include <STATICdef.h>
 
 #define LibVM_FIRST_FIT      1
@@ -33,7 +34,7 @@ void MdsFixDscLength(struct descriptor *in);
 
 STATIC_CONSTANT void *MdsVM_ZONE = 0;
 
-int MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descriptor_xd *dsc_ptr,
+EXPORT int MdsGet1Dx(unsigned int const *length_ptr, unsigned char const *dtype_ptr, struct descriptor_xd *dsc_ptr,
 	      void **zone)
 {
   int status;
@@ -41,13 +42,13 @@ int MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descrip
     if (*length_ptr != dsc_ptr->l_length) {
       if (dsc_ptr->l_length)
 	status =
-	    LibFreeVm(&dsc_ptr->l_length, &dsc_ptr->pointer,
+	  LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer,
 		      zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
       else
 	status = 1;
       if (status & 1)
 	status =
-	    LibGetVm(length_ptr, &dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
+	  LibGetVm((unsigned int *)length_ptr, (void *)&dsc_ptr->pointer, zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
     } else
       status = 1;
     if (status & 1) {
@@ -61,13 +62,13 @@ int MdsGet1Dx(unsigned int *length_ptr, unsigned char *dtype_ptr, struct descrip
   return status;
 }
 
-int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
+EXPORT int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
 {
   int status;
   if (dsc_ptr->class == CLASS_XD) {
     if (dsc_ptr->pointer)
       status =
-	  LibFreeVm(&dsc_ptr->l_length, &dsc_ptr->pointer,
+	LibFreeVm(&dsc_ptr->l_length, (void *)&dsc_ptr->pointer,
 		    zone ? zone : (MdsVM_ZONE ? &MdsVM_ZONE : 0));
     else
       status = 1;
@@ -76,7 +77,7 @@ int MdsFree1Dx(struct descriptor_xd *dsc_ptr, void **zone)
       dsc_ptr->l_length = 0;
     }
   } else if (dsc_ptr->class == CLASS_D)
-    status = LibSFree1Dd(dsc_ptr);
+    status = LibSFree1Dd((struct descriptor *)dsc_ptr);
   else
     status = LibINVSTRDES;
   return status;
@@ -94,7 +95,7 @@ STATIC_ROUTINE struct descriptor *FixedArray();
 	NIDs converted to PATHs for TREE$COPY_TO_RECORD.
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
-STATIC_ROUTINE int copy_dx(struct descriptor_xd *in_dsc_ptr,
+STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			   struct descriptor_xd *out_dsc_ptr,
 			   unsigned int *bytes_used_ptr,
 			   int (*fixup_nid) (),
@@ -238,7 +239,8 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd *in_dsc_ptr,
 	  po->pointer =
 	      (char *)po + align((char *)po - (char *)0 + dscsize,
 				 align_size) - ((char *)po - (char *)0);
-	  _MOVC3(pi->arsize, pi->pointer, po->pointer);
+	  if (pi->arsize > 0 && pi->pointer != NULL )
+	    _MOVC3(pi->arsize, pi->pointer, po->pointer);
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
@@ -324,7 +326,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd *in_dsc_ptr,
 	Compressible flag is set for big arrays.
 */
 
-int MdsCopyDxXdZ(struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_ptr, void **zone,
+EXPORT int MdsCopyDxXdZ(const struct descriptor *in_dsc_ptr, struct descriptor_xd *out_dsc_ptr, void **zone,
 		 int (*fixup_nid) (), void *fixup_nid_arg, int (*fixup_path) (),
 		 void *fixup_path_arg)
 {
@@ -371,7 +373,7 @@ STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
   return (struct descriptor *)answer;
 }
 
-int MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out)
+EXPORT int MdsCopyDxXd(struct descriptor const *in, struct descriptor_xd *out)
 {
   return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
 }

@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -1633,14 +1633,12 @@ static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dcl
   *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 
-int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **error, char **output, char *(*getline)(), void *getlineInfo) {
+EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **error, char **output, char *(*getline)(), void *getlineInfo) {
   dclCommandPtr dclcmd=0;
   YYLTYPE *yyloc_param=0;
   yyscan_t yyscanner;
   YY_BUFFER_STATE cmd_state;
   int result,status=MdsdclIVVERB;
-  dcl_lex_init(&yyscanner);
-  cmd_state = dcl__scan_string (command, yyscanner);
   if (error && *error) {
     free(*error);
     *error = 0;
@@ -1649,7 +1647,13 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **erro
     free(*output);
     *error = 0;
   }
+  dclLock();
+  dcl_lex_init(&yyscanner);
+  cmd_state = dcl__scan_string (command, yyscanner);
   result=yyparse (yyloc_param, yyscanner, &dclcmd, error);
+  dcl__delete_buffer (cmd_state, yyscanner);
+  dcl_lex_destroy(yyscanner);
+  dclUnlock();
   if (result==0) {
     if (dclcmd) {
       dclcmd->command_line=strdup(command);
@@ -1657,8 +1661,6 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **erro
     } else
       status = 1;
   }
-  dcl__delete_buffer (cmd_state, yyscanner);
-  dcl_lex_destroy(yyscanner);
   return status;
 }
   

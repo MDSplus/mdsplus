@@ -1,0 +1,11 @@
+./usr/local/mdsplus/php
+./usr/local/mdsplus/php/README
+./usr/local/mdsplus/php/browser.php
+./usr/local/mdsplus/php/build.sh
+./usr/local/mdsplus/php/config.m4
+./usr/local/mdsplus/php/logbook.php
+./usr/local/mdsplus/php/mdsplus.c
+./usr/local/mdsplus/php/mdsplus.php
+./usr/local/mdsplus/php/php_mdsplus.h
+./usr/local/mdsplus/php/sample.php
+./usr/local/mdsplus/php/shot_display.php

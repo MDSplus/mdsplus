@@ -1342,7 +1342,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
 	System.out.println("jDispatchMonitor "+monitor_server+" "+experiment);
 	
-	MdsHelper.initialization(experiment);
+	//MdsHelper.initialization(experiment);
 
 
         dm = new jDispatchMonitor(monitor_server, experiment);

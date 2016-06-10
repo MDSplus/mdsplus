@@ -10,7 +10,7 @@
 static void ManageChild(Widget w, char *name);
 static void UnManageChild(Widget w, char *name);
 
-int dt200__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int dt200__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "DT200.uid" };
   static int nid;

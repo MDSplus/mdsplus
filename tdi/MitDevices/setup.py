@@ -1,8 +1,25 @@
 #!/usr/bin/env python
+import os
+try:
+    exec(open('_version.py').read())
+    if branch == "stable":
+        name="mdsplus_mitdevices"
+    else:
+        name="mdsplus_%s_mitdevices" % branch
+except:
+    if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
+        branch="_"+os.environ["BRANCH"]
+    else:
+        branch=""
+    name="mdsplus%s_mitdevices" % branch
+    version='0.3'
 
-from setuptools import setup, Extension
-version='0.3'
-setup(name='MitDevices',
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
+
+setup(name=name,
       version=version,
       description='MIT Python Device support',
       long_description = """
@@ -11,24 +28,18 @@ setup(name='MitDevices',
       author='Tom Fredian,Josh Stillerman',
       author_email='twf@www.mdsplus.org',
       url='http://www.mdsplus.org/',
-#      download_url = 'http://www.mdsplus.org/binaries/python/',
       package_dir = {'MitDevices':'.',},
       package_data = {'':['*.glade',]},
       include_package_data = True,
       packages = ['MitDevices',],
-#      package_data = {'MDSplus':'*'},
       platforms = ('Any',),
-      classifiers = [ 'Development Status :: 4 - Beta',
+      classifiers = [
       'Programming Language :: Python',
       'Intended Audience :: Science/Research',
       'Environment :: Console',
       'Topic :: Scientific/Engineering',
       ],
       keywords = ('physics','mdsplus',),
-#       install_requires=['numpy','ctypes'],
-#      include_package_data = True,
-#      test_suite='tests.test_all',
-#     install_requires=["pexpect","PyXML"],
-     install_requires=["pexpect"],
+      install_requires=["pexpect"],
       zip_safe = False,
      )

@@ -169,7 +169,7 @@ static void cw_wvedit_size_func(IDL_ULONG stub, int width, int height)
   IDL_WidgetStubLock(FALSE);
 }
 
-int CW_WVEDIT(unsigned long *parent_id, unsigned long *stub_id, int *cols, int *rows,
+EXPORT int CW_WVEDIT(unsigned long *parent_id, unsigned long *stub_id, int *cols, int *rows,
 	      Widget * plots, Widget * wavedraw_w, struct descriptor *extra_buttons, int num_extra)
 {
   short class;

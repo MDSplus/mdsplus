@@ -272,6 +272,8 @@ public class SetupDefaults extends JDialog implements ActionListener
        {
          reversed = new Boolean(prop).booleanValue();
        }
+       else
+           reversed = false;
 
        prop = (String)js_prop.getProperty("jScope.grid_mode");
        if(prop != null && (val = IsGridMode(prop)) > 0)

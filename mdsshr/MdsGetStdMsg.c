@@ -29,7 +29,6 @@ static const char *FAC_H908 = "H908";
 static const char *FAC_DSP2904 = "DSP2904";
 static const char *FAC_PY = "PY";
 static const char *FAC_DT196B = "DT196B";
-static const char *FAC_ACQ = "ACQ";
 static const char *FAC_Lib = "LIB";
 static const char *FAC_Str = "STR";
 static const char *FAC_Ss = "SS";
@@ -98,6 +97,26 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18040:
         {static const char *text="Path to server lost";
         static const char *msgnam="PATH_DOWN";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerSOCKET_ADDR_ERROR */
+      case 0xfe18048:
+        {static const char *text="Cannot obtain ip address socket is bound to.";
+        static const char *msgnam="SOCKET_ADDR_ERROR";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerINVALID_ACTION_OPERATION */
+      case 0xfe18050:
+        {static const char *text="None";
+        static const char *msgnam="INVALID_ACTION_OPERATION";
         *fac_out = FAC_Server;
         *msgnam_out = msgnam;
         *text_out = text;
@@ -408,6 +427,196 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x277c80f8:
         {static const char *text="device was not properly set up";
         static const char *msgnam="INV_SETUP";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVPYDEVICE_NOT_FOUND */
+      case 0x277c8100:
+        {static const char *text="Python device class not found.";
+        static const char *msgnam="PYDEVICE_NOT_FOUND";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVPYDEVICE_NOT_FOUND */
+      case 0x277c8108:
+        {static const char *text="Device support not found.";
+        static const char *msgnam="PYDEVICE_NOT_FOUND";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVIO_STUCK */
+      case 0x277c8110:
+        {static const char *text="I/O to Device is stuck. Check network connection and board status.";
+        static const char *msgnam="IO_STUCK";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVUNKOWN_STATE */
+      case 0x277c8118:
+        {static const char *text="Device returned unrecognized state string";
+        static const char *msgnam="UNKOWN_STATE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVWRONG_TREE */
+      case 0x277c8120:
+        {static const char *text="Attempt to digitizerinto different tree than it was armed with";
+        static const char *msgnam="WRONG_TREE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVWRONG_PATH */
+      case 0x277c8128:
+        {static const char *text="Attempt to store digitizer into different path than it was armed with";
+        static const char *msgnam="WRONG_PATH";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVWRONG_SHOT */
+      case 0x277c8130:
+        {static const char *text="Attempt to store digitizer into different shot than it was armed with";
+        static const char *msgnam="WRONG_SHOT";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVOFFLINE */
+      case 0x277c8138:
+        {static const char *text="Device is not on line.  Check network connection";
+        static const char *msgnam="OFFLINE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVTRIGGERED_NOT_STORED */
+      case 0x277c8140:
+        {static const char *text="Device was triggered but not stored.";
+        static const char *msgnam="TRIGGERED_NOT_STORED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVNO_NAME_SPECIFIED */
+      case 0x277c8148:
+        {static const char *text="Device name must be specifed - pleas fill it in.";
+        static const char *msgnam="NO_NAME_SPECIFIED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_ACTIVE_CHAN */
+      case 0x277c8150:
+        {static const char *text="Active channels either not available or invalid";
+        static const char *msgnam="BAD_ACTIVE_CHAN";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_TRIG_SRC */
+      case 0x277c8158:
+        {static const char *text="Trigger source either not available or invalid";
+        static const char *msgnam="BAD_TRIG_SRC";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_CLOCK_SRC */
+      case 0x277c8160:
+        {static const char *text="Clock source either not available or invalid";
+        static const char *msgnam="BAD_CLOCK_SRC";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_PRE_TRIG */
+      case 0x277c8168:
+        {static const char *text="Pre trigger samples either not available or invalid";
+        static const char *msgnam="BAD_PRE_TRIG";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_POST_TRIG */
+      case 0x277c8170:
+        {static const char *text="Clock source either not available or invalid";
+        static const char *msgnam="BAD_POST_TRIG";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_CLOCK_FREQ */
+      case 0x277c8178:
+        {static const char *text="Clock frequency either not available or invalid";
+        static const char *msgnam="BAD_CLOCK_FREQ";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVTRIGGER_FAILED */
+      case 0x277c8180:
+        {static const char *text="Device trigger method failed";
+        static const char *msgnam="TRIGGER_FAILED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVERROR_READING_CHANNEL */
+      case 0x277c8188:
+        {static const char *text="Error reading data for channel from device";
+        static const char *msgnam="ERROR_READING_CHANNEL";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVERROR_DOING_INIT */
+      case 0x277c8190:
+        {static const char *text="Error sending ARM command to device";
+        static const char *msgnam="ERROR_DOING_INIT";
         *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
@@ -1634,51 +1843,71 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* ACQINITIALIZATION_ERROR */
-      case 0x277ca590:
-        {static const char *text="Error during module initialization";
-        static const char *msgnam="INITIALIZATION_ERROR";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQSETTINGS_NOT_LOADED */
-      case 0x277ca598:
-        {static const char *text="settings not loaded";
-        static const char *msgnam="SETTINGS_NOT_LOADED";
-        *fac_out = FAC_ACQ;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ACQWRONG_TREE */
+/* DEVCANNOT_LOAD_SETTINGS */
       case 0x277ca5a0:
-        {static const char *text="Attempt to store ACQ module into different tree than it was armed with";
-        static const char *msgnam="WRONG_TREE";
-        *fac_out = FAC_ACQ;
+        {static const char *text="Error loading settings from XML";
+        static const char *msgnam="CANNOT_LOAD_SETTINGS";
+        *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
         break;
 
-/* ACQWRONG_PATH */
+/* DEVCANNOT_GET_BOARD_STATE */
       case 0x277ca5a8:
-        {static const char *text="Attempt to store ACQ module into different path than it was armed with";
-        static const char *msgnam="WRONG_PATH";
-        *fac_out = FAC_ACQ;
+        {static const char *text="Cannot retrieve state of daq board";
+        static const char *msgnam="CANNOT_GET_BOARD_STATE";
+        *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
         break;
 
-/* ACQWRONG_SHOT */
+/* DEVACQCMD_FAILED */
       case 0x277ca5b0:
-        {static const char *text="Attempt to store ACQ module into different shot than it was armed with";
-        static const char *msgnam="WRONG_SHOT";
-        *fac_out = FAC_ACQ;
+        {static const char *text="Error executing acqcmd on daq board";
+        static const char *msgnam="ACQCMD_FAILED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVACQ2SH_FAILED */
+      case 0x277ca5b8:
+        {static const char *text="Error executing acq2sh command on daq board";
+        static const char *msgnam="ACQ2SH_FAILED";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVBAD_PARAMETER */
+      case 0x277ca5c0:
+        {static const char *text="Invalid parameter specified for device";
+        static const char *msgnam="BAD_PARAMETER";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVCOMM_ERROR */
+      case 0x277ca5c8:
+        {static const char *text="Error communicating with device";
+        static const char *msgnam="COMM_ERROR";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVCAMERA_NOT_FOUND */
+      case 0x277ca5d0:
+        {static const char *text="Could not find specified camera on the network";
+        static const char *msgnam="CAMERA_NOT_FOUND";
+        *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2858,6 +3087,36 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19068:
         {static const char *text="Error reading from datafile.";
         static const char *msgnam="DFREAD";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCLOSEERR */
+      case 0xfd19070:
+        {static const char *text="Error closing temporary tree file.";
+        static const char *msgnam="CLOSEERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeMOVEERROR */
+      case 0xfd19078:
+        {static const char *text="Error replacing original treefile with new one.";
+        static const char *msgnam="MOVEERROR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeOPENEDITERR */
+      case 0xfd19080:
+        {static const char *text="Error reopening new treefile for write access.";
+        static const char *msgnam="OPENEDITERR";
         *fac_out = FAC_Tree;
         *msgnam_out = msgnam;
         *text_out = text;

@@ -5,7 +5,6 @@ import time
 import os
 import numpy
 import array
-from xml.marshal.generic import dumps, loads, load 
 
 import MDSplus
 
@@ -142,6 +141,11 @@ class ACQ216_FTP(ACQ_FTP):
     INITFTP=initftp
         
     def storeftp(self, arg):
+
+        try:
+            from xml.marshal.generic import load
+        except:
+            print "you must install PyXML to use this deprecated device.  Please switch to acq216 device type"
 
  	path = self.local_path
         tree = self.local_tree

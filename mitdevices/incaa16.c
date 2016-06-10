@@ -29,15 +29,15 @@ static int one = 1;
  if (!((status = DevCamChk(CamFStopw(setup->name,a,f,num,data,16,0),&one,&one)) & 1)) return status;}
 extern int DevCamChk();
 extern int DevWait(float);
-extern int CamPiow();
-extern int CamFStopw();
-extern int TdiGetFloat();
+
+
+
 extern int DevLong();
 
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
-int incaa16___arm(struct descriptor *niddsc, InArmStruct * setup)
+EXPORT int incaa16___arm(struct descriptor *niddsc, InArmStruct * setup)
 {
   int status;
   float freq;
@@ -70,21 +70,21 @@ int incaa16___arm(struct descriptor *niddsc, InArmStruct * setup)
   return status;
 }
 
-int incaa16___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int incaa16___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = incaa16___arm(niddsc, (InArmStruct *) setup);
   pio(25, 0, 0);
   return status;
 }
 
-int incaa16___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int incaa16___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0);
   return status;
 }
 
-int incaa16___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int incaa16___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)

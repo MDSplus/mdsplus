@@ -8,10 +8,10 @@
 #include "incaa6_gen.h"
 #include "devroutines.h"
 
-extern unsigned short OpcMultiply;
-extern unsigned short OpcValue;
+//extern unsigned short OpcMultiply;
+//extern unsigned short OpcValue;
 
-extern int TdiGetFloat();
+
 
 typedef struct _CSRegister {
   unsigned clock:4;
@@ -36,12 +36,12 @@ static int one = 1;
 
 static int arm_init(InInitStruct * setup, int start);
 
-int incaa6___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int incaa6___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 {
   return arm_init(setup, 1);
 }
 
-int incaa6___arm(struct descriptor *niddsc_ptr, InArmStruct * setup)
+EXPORT int incaa6___arm(struct descriptor *niddsc_ptr, InArmStruct * setup)
 {
   return arm_init((InInitStruct *) setup, 0);
 }
@@ -87,7 +87,7 @@ static int arm_init(InInitStruct * setup, int start)
   return status;
 }
 
-int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
+EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16);		/* Trigger */
@@ -96,7 +96,7 @@ int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
 
 static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
 
-int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");

@@ -22,8 +22,8 @@ MDSplus/Condition.java\
 MDSplus/Connection.java\
 MDSplus/Conglom.java\
 MDSplus/Data.java\
+MDSplus/DataStreamListener.java\
 MDSplus/Dependency.java\
-MDSplus/Device.java\
 MDSplus/Dictionary.java\
 MDSplus/Dimension.java\
 MDSplus/Dispatch.java\
@@ -46,6 +46,7 @@ MDSplus/Int8.java\
 MDSplus/Int8Array.java\
 MDSplus/List.java\
 MDSplus/MdsException.java\
+MDSplus/MdsStreamingDataProvider.java\
 MDSplus/Method.java\
 MDSplus/Procedure.java\
 MDSplus/Program.java\

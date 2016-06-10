@@ -55,22 +55,17 @@ extern int TdiEvaluate();
 
 STATIC_CONSTANT DESCRIPTOR(dnul, "\0");
 STATIC_CONSTANT DESCRIPTOR(dfun, ".fun\0");
-STATIC_CONSTANT DESCRIPTOR(def_name, "dna=");
 #if defined(__VMS)
-STATIC_CONSTANT DESCRIPTOR(def_image, "MDS$FUNCTIONS");
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS$PATH:");
 #elif defined(WIN32)
-STATIC_CONSTANT DESCRIPTOR(def_image, "MdsFunctions");
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
 #else
-STATIC_CONSTANT DESCRIPTOR(def_image, "MdsFunctions");
 STATIC_CONSTANT DESCRIPTOR(def_path, "MDS_PATH:");
 #endif
 STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
 int TdiFindImageSymbol(struct descriptor_d *image, struct descriptor_d *entry, int (**symbol) ())
 {
-  LibEstablish(LibSigToRet);
   return LibFindImageSymbol(image, entry, symbol);
 }
 
@@ -86,13 +81,12 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
   unsigned short code;
   int geterror = 0;
 
-  LibEstablish(TdiFaultHandler);
   if (list[0])
     status = TdiData(list[0], &image MDS_END_ARG);
   if (status & 1)
     status = TdiData(list[1], &entry MDS_END_ARG);
   if (status & 1)
-    status = StrUpcase(&entry, &entry);
+    status = StrUpcase((struct descriptor *)&entry, (struct descriptor *)&entry);
   if (!(status & 1))
     goto done;
 
@@ -103,9 +97,6 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
     status = TdiDoFun(&entry, narg - 2, &list[2], out_ptr);
     if (status != TdiUNKNOWN_VAR)
       goto done;
-    /*
-       status = TdiFindImageSymbol((struct descriptor_d *)&def_image, &entry, &routine);
-     */
   } else {
     status = TdiFindImageSymbol(&image, &entry, &routine);
     if (!(status & 1))
@@ -174,17 +165,17 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
      Gather, compile.
         ***************/
   else {
-    struct descriptor file = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
     status =
-	StrConcat(&file,
+      StrConcat((struct descriptor *)&file,
 		  list[0] ? (struct descriptor *)&image : (struct descriptor
 							   *)&def_path, &entry, &dfun MDS_END_ARG);
     if (status & 1) {
       void *ctx = 0;
       struct descriptor dcs = { 0, DTYPE_T, CLASS_S, 0 };
-      LibFindFileRecurseCaseBlind(&file, &file, &ctx);
+      LibFindFileRecurseCaseBlind((struct descriptor *)&file, (struct descriptor *)&file, &ctx);
       LibFindFileEnd(&ctx);
-      StrAppend(&file, &dnul);
+      StrAppend(&file, (struct descriptor *)&dnul);
       unit = fopen(file.pointer, "rb");
       if (unit) {
 	long flen;
@@ -217,8 +208,8 @@ int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct desc
 	    if (code == OpcPrivate || code == OpcPublic)
 	      pfun2 = (struct descriptor_function *)pfun2->arguments[0];
 	  }
-	  StrUpcase(pfun2, pfun2);
-	  if (StrCompare(&entry, pfun2) == 0) {
+	  StrUpcase((struct descriptor *)pfun2, (struct descriptor *)pfun2);
+	  if (StrCompare((struct descriptor *)&entry, (struct descriptor *)pfun2) == 0) {
 	    tmp[0] = EMPTY_XD;
 	    status = MdsCopyDxXd(pfun->arguments[0], &tmp[0]);
 	    if (status & 1)

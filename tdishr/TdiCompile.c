@@ -59,7 +59,6 @@ int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descript
   int status = 1;
   EMPTYXD(tmp);
   struct descriptor *text_ptr;
-  STATIC_CONSTANT DESCRIPTOR(compile_zone, "TDI Compile Zone");
   LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
   if (TdiThreadStatic()->compiler_recursing == 1) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
@@ -77,7 +76,7 @@ int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descript
       }
       TdiThreadStatic()->compiler_recursing = 1;
       if (!TdiRefZone.l_zone)
-	status = LibCreateVmZone(&TdiRefZone.l_zone, 0, 0, 0, 0, 0, 0, 0, 0, 0, &compile_zone);
+	status = LibCreateVmZone(&TdiRefZone.l_zone);
 
 	/****************************************
                   In case we bomb out, probably not needed.

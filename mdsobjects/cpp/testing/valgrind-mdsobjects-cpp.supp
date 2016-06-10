@@ -1,0 +1,181 @@
+
+#
+# Connection
+#
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr1
+   fun:strlen
+   fun:length
+}
+
+{
+   Unix socket sendmessage
+   Memcheck:Param
+   sendmsg(msg.msg_name)
+   obj:/usr/lib/libc-2.21.so
+}
+
+#   match-leak-kinds: definite
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_ZN10CUDTUnited9newSocketEii
+   fun:_ZN4CUDT6socketEiii
+   fun:_ZN3UDT6socketEiii
+}
+
+#   match-leak-kinds: possible
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create*
+}
+
+#   match-leak-kinds: possible
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:_Znam
+   fun:_ZN10CUnitQueue4initEiii
+   fun:_ZN9CRcvQueue4initEiiiiP8CChannelP6CTimer
+   fun:_ZN10CUDTUnited9updateMuxEP10CUDTSocketPK8sockaddrPKi
+   fun:_ZN10CUDTUnited7connectEiPK8sockaddri
+   fun:_ZN4CUDT7connectEiPK8sockaddri
+   fun:_ZN3UDT7connectEiPK8sockaddri
+}
+
+#   match-leak-kinds: definite
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:xmalloc
+   fun:set_default_locale
+}
+
+#
+# dlerr
+#
+{
+   suppression for dlerror
+   Memcheck:Addr4
+   fun:LibFindImageSymbol_C
+   fun:LibFindImageSymbol
+   fun:TreeCallHook
+}
+
+#
+# stdlib
+#
+#   match-leak-kinds: possible
+{
+   string suppression
+   Memcheck:Leak
+   fun:_Znwm
+   fun:allocate
+   fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
+   fun:_ZNSs12_S_constructIPKcEEPcT_S3_RKSaIcESt20forward_iterator_tag.part.29
+   fun:_S_construct_aux<char const*>
+   fun:_S_construct<char const*>
+   fun:_ZNSsC1EPKcRKSaIcE
+}
+
+#
+# TreeNode
+#
+{
+   supression for overloaded new operator
+   Memcheck:Leak
+   fun:_Znwm
+   fun:_ZN7MDSplus8TreeNodenwEm
+}
+
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  UDT  ////////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# UDT suppressions for race conditions
+# we don't care of udt internal issues
+# ! FOR NOW !
+#
+# UDT 
+{
+   removes all UDT namespace leaks
+   Memcheck:Param
+   sendmsg(msg.msg_name)
+   obj:*libpthread-*
+}
+
+
+{
+   removes all UDT namespace races
+   Helgrind:Race
+   ...
+   fun:_ZN*UDT*
+}
+{
+   removes all UDT namespace drd
+   drd:ConflictingAccess
+   ...
+   fun:_ZN*UDT*   
+}
+{
+   removes all UDT namespace leaks
+   Memcheck:Leak
+   ...
+   fun:_ZN*UDT*
+}
+#
+# RcvQueue 
+{
+   removes all UDT namespace races
+   Helgrind:Race
+   ...
+   fun:_ZN9CRcvQueue*
+}
+{
+   removes all UDT namespace drd
+   drd:ConflictingAccess
+   ...
+   fun:_ZN9CRcvQueue*
+}
+{
+   removes all UDT namespace leaks
+   Memcheck:Leak
+   ...
+   fun:_ZN9CRcvQueue*
+}
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TESTING  ////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+# testing library ( going to be removed when tests will be revised )
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   fun:_Exit
+   fun:__run_exit_handlers
+   fun:exit
+}
+
+
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Misc
+   fun:_Exit
+   fun:exit
+   fun:__test_exit
+   fun:exit
+   fun:__test_exit
+   fun:exit
+   fun:(below main)
+}
+

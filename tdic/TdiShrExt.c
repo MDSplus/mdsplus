@@ -3,7 +3,7 @@
 /*  *2    31-AUG-2000 14:32:24 TWF "Fix conflicting names" */
 /*  *1    31-AUG-2000 14:19:52 TWF "remote mdsconnect,mdsvalue,mdsdisconnect support from " */
 /*  CMS REPLACEMENT HISTORY, Element TDISHREXT.C */
-#define VERSION "2.2000.08.3"
+//#define VERSION "2.2000.08.3"
 /* these are a few routines to get a TDI client up for MDSIP
  * They will be integrated into libBpdMdsUnix.so and called dynamically
  * This will have to be compiled with the mdsplus/include in the -I path
@@ -98,7 +98,7 @@ struct descriptor_xd *bTest1(struct descriptor *in_bufD);
 #include <sys/socket.h>
 #endif
 /* Return the name of the current connection */
-struct descriptor_xd *rMdsCurrent()
+EXPORT struct descriptor_xd *rMdsCurrent()
 {
 /* Values for changing matrix dimensions */
   struct descriptor_s ans_dsc = { 0, 0, CLASS_S, 0 };
@@ -111,7 +111,7 @@ struct descriptor_xd *rMdsCurrent()
 }
 
 /* List Current connections */
-int rMdsList()
+EXPORT int rMdsList()
 {
   Connection *cptr;
   int i = 0;
@@ -133,7 +133,7 @@ int rMdsList()
 }
 
 /* Return the version number to TDI */
-struct descriptor_xd *rgetenv(char *expression)
+EXPORT struct descriptor_xd *rgetenv(char *expression)
 {
   char *sptr;
   struct descriptor_s ans_dsc = { 0, 0, CLASS_S, 0 };
@@ -147,7 +147,7 @@ struct descriptor_xd *rgetenv(char *expression)
 }
 
 /* Return the version number to TDI */
-struct descriptor_xd *rMdsVersion()
+EXPORT struct descriptor_xd *rMdsVersion()
 {
   struct descriptor_s ans_dsc = { 0, 0, CLASS_S, 0 };
 
@@ -215,7 +215,7 @@ static SOCKET AddConnection(char *server)
 }
 
 /* mds server connect */
-int rMdsConnect(char *hostin)
+EXPORT int rMdsConnect(char *hostin)
 {
   char host[STRLEN];
   unsigned int i;
@@ -243,7 +243,7 @@ int rMdsConnect(char *hostin)
 }
 
 /* mdsdisconnect ==================================================================== */
-int rMdsDisconnect(int all)
+EXPORT int rMdsDisconnect(int all)
 {
   int status = 1;
   Connection *cptr;
@@ -282,7 +282,7 @@ int rMdsDisconnect(int all)
 }
 
 /*  ================================================================================ */
-struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
+EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
 {
 /**** NOTE: NULL terminated argument list expected ****/
   va_list incrmtr;

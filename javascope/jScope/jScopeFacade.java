@@ -111,10 +111,13 @@ public class jScopeFacade
     static int num_scope = 0;
     private String config_file;
     static DataServerItem[] server_ip_list;
-    ServerDialog server_diag = null;
+    ServerDialog server_diag;
     static boolean not_sup_local = false;
     private boolean executing_update = false;
     private JFrame main_scope;
+
+    private static jScopeFacade win;
+    public static boolean busy(){return win.executing_update;}
 
     DocPrintJob prnJob = null;
   //  PageFormat pageFormat;
@@ -1106,7 +1109,9 @@ public class jScopeFacade
         {
             public void actionPerformed(ActionEvent e)
             {
-                help_dialog.setVisible(true);
+//                help_dialog.setVisible(true);
+                 JOptionPane.showMessageDialog(jScopeFacade.this, "The jScope tutorial is available at www.mdsplus.org in \"Documentation/The MDSplus tutorial\" section",
+                        "", JOptionPane.INFORMATION_MESSAGE);
             }
         }
         );
@@ -2905,8 +2910,6 @@ remove 28/06/2005
         String file = null;
         String propertiesFile = null;
  
-        jScopeFacade win = null;
-
         Properties props = System.getProperties();
         String debug = props.getProperty("debug");
         if (debug != null && debug.equals("true"))
@@ -3343,6 +3346,7 @@ class ServerDialog
     private static String know_provider[] =
         {
         "MdsDataProvider",
+        "MdsDataProviderUdt",
         "JetMdsDataProvider",
         "TwuDataProvider",
         "JetDataProvider",
@@ -3351,9 +3355,9 @@ class ServerDialog
         "AsdexDataProvider",
         "ASCIIDataProvider",
         "T2DataProvider",
-        "MdsContinuousDataProvider",
         "LocalDataProvider",
-        "LocalRealtimeDataProvider"};
+        "MdsAsynchDataProvider",
+        "MDSplus.MdsStreamingDataProvider"};
 
     ServerDialog(JFrame _dw, String title)
     {
@@ -3517,23 +3521,27 @@ class ServerDialog
         data_provider_list = new JComboBox();
         gridbag.setConstraints(data_provider_list, c);
         getContentPane().add(data_provider_list);
-        data_provider_list.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
+        data_provider_list.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e)
             {
                 try
                 {
-                    String srv = (String)data_provider_list.getSelectedItem();
-                    if (srv != null)
+                    if( e.getStateChange() == ItemEvent.SELECTED )
                     {
-                        Class cl = Class.forName("jScope."+srv);
-                        boolean state = ( (DataProvider) cl.newInstance()).
-                            SupportsTunneling();
-                        tunneling.setEnabled(state);
-                        tunnel_port.setEnabled(state);
-                    }
+                        String srv = (String)data_provider_list.getSelectedItem();
+                        if (srv != null)
+                        {
+                            Class cl = Class.forName("jScope."+srv);
+                            DataProvider dp = ( (DataProvider) cl.newInstance()); 
+                            boolean state = dp.SupportsTunneling();
+                            tunneling.setEnabled(state);
+                            tunnel_port.setEnabled(state);
+                        }
+                    }                    
                 }
                 catch (Exception exc)
                 {}
+
             }
 
         });
@@ -3557,7 +3565,7 @@ class ServerDialog
         connect_b.addActionListener(this);
         p.add(connect_b);
 
-        exit_b = new JButton("Exit");
+        exit_b = new JButton("Close");
         exit_b.addActionListener(this);
         p.add(exit_b);
 

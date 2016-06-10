@@ -25,9 +25,9 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize);
 static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned short *buffer);
 static void FixMenu(Widget w);
 
-extern int CamQ();
+
 extern int DevWait(float);
-int dsp2904___add(int *head_nid)
+EXPORT int dsp2904___add(int *head_nid)
 {
   int counter_bits_nid = *head_nid + DSP2904_N_COUNTER_BITS_32;
   int timer_bits_nid = *head_nid + DSP2904_N_TIMER_BITS_32;
@@ -36,7 +36,7 @@ int dsp2904___add(int *head_nid)
   return 1;
 }
 
-int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 {
   int status;
   typedef struct _ModeReg {
@@ -91,7 +91,7 @@ int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 #undef pio
 #endif
 #define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->traq_name, a, f, d, mem,0), &one, 0),status)
-int dsp2904___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int dsp2904___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status;
   int t_bits_32;
@@ -246,7 +246,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize)
   return status;
 }
 
-int dsp2904__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int dsp2904__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   static String uids[] = { "DSP2904.uid" };
   static MrmRegisterArg uilnames[] = { {"FixMenu", (XtPointer) FixMenu} };

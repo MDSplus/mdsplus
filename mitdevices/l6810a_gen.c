@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l6810a_gen.h"
-int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L6810A");
@@ -57,22 +57,22 @@ int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_01:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_01:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_01:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_01:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 10.24	"
- ADD_NODE_EXPR(:INPUT_01:FULL_SCALE, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_01:FULL_SCALE, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(:INPUT_01:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(INPUT_01:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 128BU    "
- ADD_NODE_EXPR(:INPUT_01:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_01:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -81,22 +81,22 @@ int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_02:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_02:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_02:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_02:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 10.24	"
- ADD_NODE_EXPR(:INPUT_02:FULL_SCALE, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_02:FULL_SCALE, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(:INPUT_02:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(INPUT_02:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 128BU    "
- ADD_NODE_EXPR(:INPUT_02:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_02:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -105,22 +105,22 @@ int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_03:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_03:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_03:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_03:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 10.24	"
- ADD_NODE_EXPR(:INPUT_03:FULL_SCALE, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_03:FULL_SCALE, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(:INPUT_03:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(INPUT_03:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 128BU    "
- ADD_NODE_EXPR(:INPUT_03:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_03:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -129,22 +129,22 @@ int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_04:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_04:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_04:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_04:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 10.24	"
- ADD_NODE_EXPR(:INPUT_04:FULL_SCALE, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_04:FULL_SCALE, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(:INPUT_04:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(INPUT_04:SRC_CPLING, 0, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 128BU    "
- ADD_NODE_EXPR(:INPUT_04:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_04:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -156,8 +156,8 @@ int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l6810a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		      struct descriptor *out_d)
+EXPORT int l6810a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		      struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -188,51 +188,51 @@ int l6810a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_
   case (L6810A_N_INPUT_01 + 1):
  COPY_PART_NAME(:INPUT_01) break;
   case (L6810A_N_INPUT_01_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_01:STARTIDX) break;
+ COPY_PART_NAME(INPUT_01:STARTIDX) break;
   case (L6810A_N_INPUT_01_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_01:ENDIDX) break;
+ COPY_PART_NAME(INPUT_01:ENDIDX) break;
   case (L6810A_N_INPUT_01_FULL_SCALE + 1):
- COPY_PART_NAME(:INPUT_01:FULL_SCALE) break;
+ COPY_PART_NAME(INPUT_01:FULL_SCALE) break;
   case (L6810A_N_INPUT_01_SRC_CPLING + 1):
- COPY_PART_NAME(:INPUT_01:SRC_CPLING) break;
+ COPY_PART_NAME(INPUT_01:SRC_CPLING) break;
   case (L6810A_N_INPUT_01_OFFSET + 1):
- COPY_PART_NAME(:INPUT_01:OFFSET) break;
+ COPY_PART_NAME(INPUT_01:OFFSET) break;
   case (L6810A_N_INPUT_02 + 1):
  COPY_PART_NAME(:INPUT_02) break;
   case (L6810A_N_INPUT_02_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_02:STARTIDX) break;
+ COPY_PART_NAME(INPUT_02:STARTIDX) break;
   case (L6810A_N_INPUT_02_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_02:ENDIDX) break;
+ COPY_PART_NAME(INPUT_02:ENDIDX) break;
   case (L6810A_N_INPUT_02_FULL_SCALE + 1):
- COPY_PART_NAME(:INPUT_02:FULL_SCALE) break;
+ COPY_PART_NAME(INPUT_02:FULL_SCALE) break;
   case (L6810A_N_INPUT_02_SRC_CPLING + 1):
- COPY_PART_NAME(:INPUT_02:SRC_CPLING) break;
+ COPY_PART_NAME(INPUT_02:SRC_CPLING) break;
   case (L6810A_N_INPUT_02_OFFSET + 1):
- COPY_PART_NAME(:INPUT_02:OFFSET) break;
+ COPY_PART_NAME(INPUT_02:OFFSET) break;
   case (L6810A_N_INPUT_03 + 1):
  COPY_PART_NAME(:INPUT_03) break;
   case (L6810A_N_INPUT_03_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_03:STARTIDX) break;
+ COPY_PART_NAME(INPUT_03:STARTIDX) break;
   case (L6810A_N_INPUT_03_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_03:ENDIDX) break;
+ COPY_PART_NAME(INPUT_03:ENDIDX) break;
   case (L6810A_N_INPUT_03_FULL_SCALE + 1):
- COPY_PART_NAME(:INPUT_03:FULL_SCALE) break;
+ COPY_PART_NAME(INPUT_03:FULL_SCALE) break;
   case (L6810A_N_INPUT_03_SRC_CPLING + 1):
- COPY_PART_NAME(:INPUT_03:SRC_CPLING) break;
+ COPY_PART_NAME(INPUT_03:SRC_CPLING) break;
   case (L6810A_N_INPUT_03_OFFSET + 1):
- COPY_PART_NAME(:INPUT_03:OFFSET) break;
+ COPY_PART_NAME(INPUT_03:OFFSET) break;
   case (L6810A_N_INPUT_04 + 1):
  COPY_PART_NAME(:INPUT_04) break;
   case (L6810A_N_INPUT_04_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_04:STARTIDX) break;
+ COPY_PART_NAME(INPUT_04:STARTIDX) break;
   case (L6810A_N_INPUT_04_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_04:ENDIDX) break;
+ COPY_PART_NAME(INPUT_04:ENDIDX) break;
   case (L6810A_N_INPUT_04_FULL_SCALE + 1):
- COPY_PART_NAME(:INPUT_04:FULL_SCALE) break;
+ COPY_PART_NAME(INPUT_04:FULL_SCALE) break;
   case (L6810A_N_INPUT_04_SRC_CPLING + 1):
- COPY_PART_NAME(:INPUT_04:SRC_CPLING) break;
+ COPY_PART_NAME(INPUT_04:SRC_CPLING) break;
   case (L6810A_N_INPUT_04_OFFSET + 1):
- COPY_PART_NAME(:INPUT_04:OFFSET) break;
+ COPY_PART_NAME(INPUT_04:OFFSET) break;
   case (L6810A_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (L6810A_N_STORE_ACTION + 1):
@@ -247,7 +247,7 @@ extern int l6810a___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int l6810a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
       static struct {
@@ -352,7 +352,7 @@ int l6810a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int l6810a___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l6810a__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810a__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -370,7 +370,7 @@ int l6810a__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_pt
 extern int l6810a___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l6810a__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810a__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

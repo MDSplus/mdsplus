@@ -1,18 +1,21 @@
-include @top_srcdir@/Makefile.inc
+include @top_builddir@/Makefile.inc
 
+srcdir=@srcdir@
+builddir=@builddir@
+VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
-@MINGW_TRUE@ EXE=.exe
-@MINGW_TRUE@ DEF=mdsdclshr.def
+@MINGW_TRUE@ DEF=${srcdir}/mdsdclshr.def
 @MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv  @LIBDL@ @SOCKETLIB@ 
-#@MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
-@MINGW_FALSE@ XML_LIBS=-lxml2
+@MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
+
 SOURCES = 		\
 cmdExecute.c         	\
 cmdHelp.c               \
 cmdParseLex.c           \
 cmdParse.tab.c          \
 mdsdclDeltatimeToSeconds.c \
-mdsdcl_commands.c
+mdsdcl_commands.c \
+mdsdcl_show_version.c
 
 
 OBJECTS = $(SOURCES:.c=.o)

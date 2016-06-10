@@ -2,6 +2,7 @@
 #include <string.h>
 #include <STATICdef.h>
 #include <mdsshr.h>
+#include "mdsshrp.h"
 #include "mdsshrthreadsafe.h"
 #include        <stdio.h>
 #include        <stdarg.h>
@@ -9,6 +10,7 @@
 #include        <sys/time.h>
 #include        <unistd.h>
 #include <libroutines.h>
+#include <strroutines.h>
 
 		/*========================================================
 		 * "Define"s and structure definitions ...
@@ -26,17 +28,11 @@
 *
 ************************************************************************/
 
-		/*========================================================
-		 * Function prototypes ...
-		 *=======================================================*/
-extern void StrCopyDx();
-extern int MDSprintf(char *fmt, ...);
-extern int MDSfprintf(FILE * fp, char *fmt, ...);
 
 	/*****************************************************************
 	 * MdsGetMsg:
 	 *****************************************************************/
-char *MdsGetMsg(		/* Return: addr of "status" string      */
+EXPORT char *MdsGetMsg(		/* Return: addr of "status" string      */
 		 int sts	/* <r> sts value                        */
     )
 {
@@ -59,7 +55,7 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
 	    severity[sts & 0x7], msgnam, msgtext);
     return (MdsShrGetThreadStatic())->MdsGetMsg_text;
   }
-  while (!(status & 1) && (LibFindFile(&msg_files, &filnam, &ctx) & 1)) {
+  while (!(status & 1) && (LibFindFile((struct descriptor *)&msg_files, (struct descriptor *)&filnam, &ctx) & 1)) {
     status = LibFindImageSymbol(&filnam, &getmsg_nam, &getmsg);
     if (status & 1) {
       status = (*getmsg) (sts, &facnam, &msgnam, &msgtext);
@@ -75,7 +71,7 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
   return (MdsShrGetThreadStatic())->MdsGetMsg_text;
 }
 
-void MdsGetMsgDsc(int status, struct descriptor *out)
+EXPORT void MdsGetMsgDsc(int status, struct descriptor *out)
 {
   MdsGetMsg(status);
   (MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.length =
@@ -87,9 +83,9 @@ void MdsGetMsgDsc(int status, struct descriptor *out)
 	/*****************************************************************
 	 * MdsMsg:
 	 *****************************************************************/
-int MdsMsg(			/* Return: sts provided by user         */
+EXPORT int MdsMsg(			/* Return: sts provided by user         */
 	    int sts		/* <r> status code                      */
-	    , char fmt[]	/* <r> format statement                     */
+	    , char const fmt[]	/* <r> format statement                     */
 	    , ...		/* <r:opt> arguments to fmt[]               */
     )
 {

@@ -50,6 +50,7 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
  Global variables:                                                            */
 
 #include <Xm/RowColumnP.h>
+#include <config.h>
 
 /*------------------------------------------------------------------------------
 
@@ -59,7 +60,7 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
 
  Executable:                                                                  */
 
-void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent * event)
+EXPORT void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent * event)
 {
   Widget option = w->row_column.memory_subwidget;
   XtX(w) = event->x_root - (option ? XtX(option) + XtWidth(option) / 2 : 0);

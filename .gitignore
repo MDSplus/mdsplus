@@ -20,7 +20,6 @@ lib32/
 lib64/
 *.class
 *.jar
-*.stamp
 *.manifest
 *.egg-info
 *.stamp
@@ -85,6 +84,11 @@ camshr/cts_commands.c
 # automake 
 aclocal.m4
 autom4te.cache
+
 # gfortran objects on macintosh
 *.o_i386
 *.dylib_i386
+*.lnk
+
+# python version module
+_version.py

@@ -9,7 +9,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 
-public class LocalDataProvider extends MdsDataProvider implements DataProvider
+public class LocalDataProvider extends MdsDataProvider /* implements DataProvider */
 {
     Vector listeners = new Vector();
     Vector eventNames = new Vector();
@@ -41,7 +41,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     static native boolean isSegmentedNode(String nodeName);
     static native byte[] getSegment(String nodeName, int segIdx, int segOffset);
     static native byte[] getAllFrames(String nodeName, int startIdx, int endIdx);
-    static native int[] getInfo(String nodeName, boolean isSegmented); //returned: width, height,  bytesPerPixel
+    static native LocalDataProviderInfo getInfo(String nodeName, boolean isSegmented); //returned: width, height,  bytesPerPixel
     static native float[] getSegmentTimes(String nodeName, String timeNames, float timeMin, float timeMax);
     static native float[] getAllTimes(String nodeName, String timeNames);
     static native int[] getSegmentIdxs(String nodeName, float timeMin, float timeMax);
@@ -85,11 +85,11 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
                  allFrames = getAllFrames(nodeName, startIdx, endIdx);
                  if(allFrames == null) throw new IOException(LocalDataProvider.this.ErrorString());
               }
-              int [] info = getInfo(nodeName, isSegmented);
+              LocalDataProviderInfo info = getInfo(nodeName, isSegmented);
               if(info == null) throw new IOException(LocalDataProvider.this.ErrorString());
-              width = info[0];
-              height = info[1];
-              pixelSize = info[2];
+              width = info.dims[0];
+              height = info.dims[1];
+              pixelSize = info.pixelSize;
         }
      /**
      * Returns the type of the corresponding frames. Returned frames can have either of the following types:

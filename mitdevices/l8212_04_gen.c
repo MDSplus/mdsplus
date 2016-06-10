@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l8212_04_gen.h"
-int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L8212_04");
@@ -67,10 +67,10 @@ int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_01:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_01:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_01:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_01:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_02, TreeUSAGE_SIGNAL)
@@ -78,10 +78,10 @@ int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_02:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_02:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_02:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_02:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_03, TreeUSAGE_SIGNAL)
@@ -89,10 +89,10 @@ int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_03:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_03:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_03:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_03:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_04, TreeUSAGE_SIGNAL)
@@ -100,10 +100,10 @@ int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_04:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_04:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_04:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_04:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
@@ -112,8 +112,8 @@ int l8212_04__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l8212_04__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-			struct descriptor *out_d)
+EXPORT int l8212_04__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+			struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -152,27 +152,27 @@ int l8212_04__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_
   case (L8212_04_N_INPUT_01 + 1):
  COPY_PART_NAME(:INPUT_01) break;
   case (L8212_04_N_INPUT_01_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_01:STARTIDX) break;
+ COPY_PART_NAME(INPUT_01:STARTIDX) break;
   case (L8212_04_N_INPUT_01_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_01:ENDIDX) break;
+ COPY_PART_NAME(INPUT_01:ENDIDX) break;
   case (L8212_04_N_INPUT_02 + 1):
  COPY_PART_NAME(:INPUT_02) break;
   case (L8212_04_N_INPUT_02_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_02:STARTIDX) break;
+ COPY_PART_NAME(INPUT_02:STARTIDX) break;
   case (L8212_04_N_INPUT_02_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_02:ENDIDX) break;
+ COPY_PART_NAME(INPUT_02:ENDIDX) break;
   case (L8212_04_N_INPUT_03 + 1):
  COPY_PART_NAME(:INPUT_03) break;
   case (L8212_04_N_INPUT_03_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_03:STARTIDX) break;
+ COPY_PART_NAME(INPUT_03:STARTIDX) break;
   case (L8212_04_N_INPUT_03_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_03:ENDIDX) break;
+ COPY_PART_NAME(INPUT_03:ENDIDX) break;
   case (L8212_04_N_INPUT_04 + 1):
  COPY_PART_NAME(:INPUT_04) break;
   case (L8212_04_N_INPUT_04_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_04:STARTIDX) break;
+ COPY_PART_NAME(INPUT_04:STARTIDX) break;
   case (L8212_04_N_INPUT_04_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_04:ENDIDX) break;
+ COPY_PART_NAME(INPUT_04:ENDIDX) break;
   default:
     status = TreeILLEGAL_ITEM;
   }
@@ -183,7 +183,7 @@ extern int l8212_04___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int l8212_04__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8212_04__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
       static struct {
@@ -217,7 +217,7 @@ int l8212_04__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr
 extern int l8212_04___store();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l8212_04__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8212_04__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
       static struct {
@@ -245,7 +245,7 @@ int l8212_04__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_pt
 extern int l8212_04___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l8212_04__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8212_04__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];

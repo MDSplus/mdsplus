@@ -6,12 +6,11 @@
 #include "joerger_adc_gen.h"
 #include "devroutines.h"
 
-extern int TdiCompile();
-extern int CamBytcnt();
+
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 static int one = 1;
-int joerger_adc___store(int *niddsc, InStoreStruct * setup)
+EXPORT int joerger_adc___store(int *niddsc, InStoreStruct * setup)
 {
   int status;
   int data_nid = setup->head_nid + JOERGER_ADC_N_DATA;
@@ -30,7 +29,7 @@ int joerger_adc___store(int *niddsc, InStoreStruct * setup)
     bytcnt = CamBytcnt(0);
     raw_d.arsize = bytcnt;
     raw_d.m[0] = raw_d.bounds[0].u = bytcnt / 2;
-    TdiCompile(expr, &raw_d, &vstrap_d, &xd MDS_END_ARG);
+    TdiCompile((struct descriptor *)&expr, &raw_d, &vstrap_d, &xd MDS_END_ARG);
     status = TreePutRecord(data_nid, (struct descriptor *)&xd, 0);
   }
   return status;

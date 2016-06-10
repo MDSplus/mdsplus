@@ -7,5 +7,7 @@
     <status name="INVSHOT" value="4100" severity="Error" text="invalid shot number, cannot dispatch actions in model"/>
     <status name="ABORT" value="4102" severity="Error" text="Server action was aborted"/>
     <status name="PATH_DOWN" value="4104" severity="Error" text="Path to server lost"/>
+    <status name="SOCKET_ADDR_ERROR" value="4105" severity="Error" text="Cannot obtain ip address socket is bound to."/>
+    <status name="INVALID_ACTION_OPERATION" value="4106" severity="Error" test="Unknown action operation."/>
   </facility>
 </messages>

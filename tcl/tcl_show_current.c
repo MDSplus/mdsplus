@@ -18,7 +18,7 @@
 	/***************************************************************
 	 * TclShowCurrent:
 	 ***************************************************************/
-int TclShowCurrent(void *ctx, char **error, char **output)
+EXPORT int TclShowCurrent(void *ctx, char **error, char **output)
 {
   int shot;
   char *experiment = 0;

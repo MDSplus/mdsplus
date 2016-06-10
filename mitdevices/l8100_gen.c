@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l8100_gen.h"
-int l8100__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l8100__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L8100");
@@ -37,33 +37,33 @@ int l8100__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(:INPUT_1:GAIN, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_1:GAIN, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(:INPUT_1:MULT, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_1:MULT, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0B	"
- ADD_NODE_EXPR(:INPUT_1:GROUND, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_1:GROUND, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.	"
- ADD_NODE_EXPR(:INPUT_1:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_1:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:FILTER, TreeUSAGE_TEXT)
+ ADD_NODE(INPUT_1:FILTER, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:OUTPUT, TreeUSAGE_SIGNAL)
+ ADD_NODE(INPUT_1:OUTPUT, TreeUSAGE_SIGNAL)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:FILTER_ON, TreeUSAGE_TEXT)
+ ADD_NODE(INPUT_1:FILTER_ON, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -72,33 +72,33 @@ int l8100__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(:INPUT_2:GAIN, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_2:GAIN, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(:INPUT_2:MULT, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_2:MULT, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0B	"
- ADD_NODE_EXPR(:INPUT_2:GROUND, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_2:GROUND, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.	"
- ADD_NODE_EXPR(:INPUT_2:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_2:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:FILTER, TreeUSAGE_TEXT)
+ ADD_NODE(INPUT_2:FILTER, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:OUTPUT, TreeUSAGE_SIGNAL)
+ ADD_NODE(INPUT_2:OUTPUT, TreeUSAGE_SIGNAL)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:FILTER_ON, TreeUSAGE_TEXT)
+ ADD_NODE(INPUT_2:FILTER_ON, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -110,8 +110,8 @@ int l8100__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l8100__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		     struct descriptor *out_d)
+EXPORT int l8100__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		     struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -130,35 +130,35 @@ int l8100__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (L8100_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (L8100_N_INPUT_1_GAIN + 1):
- COPY_PART_NAME(:INPUT_1:GAIN) break;
+ COPY_PART_NAME(INPUT_1:GAIN) break;
   case (L8100_N_INPUT_1_MULT + 1):
- COPY_PART_NAME(:INPUT_1:MULT) break;
+ COPY_PART_NAME(INPUT_1:MULT) break;
   case (L8100_N_INPUT_1_GROUND + 1):
- COPY_PART_NAME(:INPUT_1:GROUND) break;
+ COPY_PART_NAME(INPUT_1:GROUND) break;
   case (L8100_N_INPUT_1_OFFSET + 1):
- COPY_PART_NAME(:INPUT_1:OFFSET) break;
+ COPY_PART_NAME(INPUT_1:OFFSET) break;
   case (L8100_N_INPUT_1_FILTER + 1):
- COPY_PART_NAME(:INPUT_1:FILTER) break;
+ COPY_PART_NAME(INPUT_1:FILTER) break;
   case (L8100_N_INPUT_1_OUTPUT + 1):
- COPY_PART_NAME(:INPUT_1:OUTPUT) break;
+ COPY_PART_NAME(INPUT_1:OUTPUT) break;
   case (L8100_N_INPUT_1_FILTER_ON + 1):
- COPY_PART_NAME(:INPUT_1:FILTER_ON) break;
+ COPY_PART_NAME(INPUT_1:FILTER_ON) break;
   case (L8100_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (L8100_N_INPUT_2_GAIN + 1):
- COPY_PART_NAME(:INPUT_2:GAIN) break;
+ COPY_PART_NAME(INPUT_2:GAIN) break;
   case (L8100_N_INPUT_2_MULT + 1):
- COPY_PART_NAME(:INPUT_2:MULT) break;
+ COPY_PART_NAME(INPUT_2:MULT) break;
   case (L8100_N_INPUT_2_GROUND + 1):
- COPY_PART_NAME(:INPUT_2:GROUND) break;
+ COPY_PART_NAME(INPUT_2:GROUND) break;
   case (L8100_N_INPUT_2_OFFSET + 1):
- COPY_PART_NAME(:INPUT_2:OFFSET) break;
+ COPY_PART_NAME(INPUT_2:OFFSET) break;
   case (L8100_N_INPUT_2_FILTER + 1):
- COPY_PART_NAME(:INPUT_2:FILTER) break;
+ COPY_PART_NAME(INPUT_2:FILTER) break;
   case (L8100_N_INPUT_2_OUTPUT + 1):
- COPY_PART_NAME(:INPUT_2:OUTPUT) break;
+ COPY_PART_NAME(INPUT_2:OUTPUT) break;
   case (L8100_N_INPUT_2_FILTER_ON + 1):
- COPY_PART_NAME(:INPUT_2:FILTER_ON) break;
+ COPY_PART_NAME(INPUT_2:FILTER_ON) break;
   case (L8100_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (L8100_N_STORE_ACTION + 1):
@@ -173,7 +173,7 @@ extern int l8100___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int l8100__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8100__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
       static struct {
@@ -223,7 +223,7 @@ int l8100__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int l8100___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l8100__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8100__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

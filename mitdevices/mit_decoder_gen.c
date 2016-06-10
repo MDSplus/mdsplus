@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "mit_decoder_gen.h"
-int mit_decoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int mit_decoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "MIT_DECODER");
@@ -41,35 +41,35 @@ int mit_decoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_0:PSEUDO_DEV, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_0:PSEUDO_DEV, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_1, TreeUSAGE_SIGNAL)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_1:PSEUDO_DEV, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_1:PSEUDO_DEV, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_2, TreeUSAGE_SIGNAL)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_2:PSEUDO_DEV, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_2:PSEUDO_DEV, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_3, TreeUSAGE_SIGNAL)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_3:PSEUDO_DEV, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_3:PSEUDO_DEV, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_4, TreeUSAGE_SIGNAL)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_4:PSEUDO_DEV, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_4:PSEUDO_DEV, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
@@ -79,8 +79,8 @@ int mit_decoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
   return (TreeSetDefaultNid(old_nid));
 }
 
-int mit_decoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-			   struct descriptor *out_d)
+EXPORT int mit_decoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+			   struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -101,23 +101,23 @@ int mit_decoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *meth
   case (MIT_DECODER_N_CHANNEL_0 + 1):
  COPY_PART_NAME(:CHANNEL_0) break;
   case (MIT_DECODER_N_CHANNEL_0_PSEUDO_DEV + 1):
- COPY_PART_NAME(:CHANNEL_0:PSEUDO_DEV) break;
+ COPY_PART_NAME(CHANNEL_0:PSEUDO_DEV) break;
   case (MIT_DECODER_N_CHANNEL_1 + 1):
  COPY_PART_NAME(:CHANNEL_1) break;
   case (MIT_DECODER_N_CHANNEL_1_PSEUDO_DEV + 1):
- COPY_PART_NAME(:CHANNEL_1:PSEUDO_DEV) break;
+ COPY_PART_NAME(CHANNEL_1:PSEUDO_DEV) break;
   case (MIT_DECODER_N_CHANNEL_2 + 1):
  COPY_PART_NAME(:CHANNEL_2) break;
   case (MIT_DECODER_N_CHANNEL_2_PSEUDO_DEV + 1):
- COPY_PART_NAME(:CHANNEL_2:PSEUDO_DEV) break;
+ COPY_PART_NAME(CHANNEL_2:PSEUDO_DEV) break;
   case (MIT_DECODER_N_CHANNEL_3 + 1):
  COPY_PART_NAME(:CHANNEL_3) break;
   case (MIT_DECODER_N_CHANNEL_3_PSEUDO_DEV + 1):
- COPY_PART_NAME(:CHANNEL_3:PSEUDO_DEV) break;
+ COPY_PART_NAME(CHANNEL_3:PSEUDO_DEV) break;
   case (MIT_DECODER_N_CHANNEL_4 + 1):
  COPY_PART_NAME(:CHANNEL_4) break;
   case (MIT_DECODER_N_CHANNEL_4_PSEUDO_DEV + 1):
- COPY_PART_NAME(:CHANNEL_4:PSEUDO_DEV) break;
+ COPY_PART_NAME(CHANNEL_4:PSEUDO_DEV) break;
   case (MIT_DECODER_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   default:
@@ -130,7 +130,7 @@ extern int mit_decoder___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int mit_decoder__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int mit_decoder__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];

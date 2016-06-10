@@ -62,7 +62,6 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
 {
   int dtype, ndesc, j, status;
   int *arglist[256];
-  LibEstablish(LibSigToRet);
   ndesc = ptask->ndesc;
   while (ndesc > 3 && ptask->arguments[ndesc - 4] == 0)
     ndesc--;

@@ -7,13 +7,13 @@
 #include "l2415_gen.h"
 #include "devroutines.h"
 
-extern int TdiCompile();
+
 static int one = 1;
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0),status)
 #define qrep(f,a,count,d)  return_on_error(DevCamChk(CamQrepw(setup->name, a, f, count, d, 16, 0), &one, &one),status)
 
-int l2415___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l2415___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = 1;
   unsigned short int word_out;
@@ -24,7 +24,7 @@ int l2415___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int l2415___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l2415___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   static int polarity_nid;
   static int range_nid;
@@ -45,12 +45,12 @@ int l2415___store(struct descriptor *niddsc, InStoreStruct * setup)
   range_nid = setup->head_nid + L2415_N_RANGE;
   pio(26, 0, 0);		/* convert output voltage to digital */
   qrep(0, 0, 1, &voltage);	/* read it when we get q back */
-  TdiCompile(&volt_expr, &voltage_dsc, &polarity_dsc, &range_dsc, &out_xd MDS_END_ARG);
+  TdiCompile((struct descriptor *)&volt_expr, &voltage_dsc, &polarity_dsc, &range_dsc, &out_xd MDS_END_ARG);
   volt_out_nid = setup->head_nid + L2415_N_VOLT_OUT;
   return_on_error(TreePutRecord(volt_out_nid, (struct descriptor *)&out_xd, 0), status);
   pio(26, 1, 0);		/* convert output current to digital */
   qrep(0, 0, 1, &current);	/* read it when we get q back */
-  TdiCompile(&current_expr, &current_dsc, &range_dsc, &out_xd MDS_END_ARG);
+  TdiCompile((struct descriptor *)&current_expr, &current_dsc, &range_dsc, &out_xd MDS_END_ARG);
   curr_out_nid = setup->head_nid + L2415_N_CURR_OUT;
   return_on_error(TreePutRecord(curr_out_nid, (struct descriptor *)&out_xd, 0), status);
   /* turn it off */

@@ -514,7 +514,6 @@ int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind, struct descr
   int out_count = 1;
   int status;
   register int i;
-  struct descriptor *dummy = kind;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if (status != 1)
     return status;
@@ -582,7 +581,6 @@ int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind, struct descript
   int out_count = 1;
   int status;
   register int i;
-  struct descriptor *dummy = kind;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
   if (status != 1)

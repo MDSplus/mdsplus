@@ -11,11 +11,11 @@ function  result = NATIVEvalue( mdsthing )
 import MDSplus.*;
 global MDSplus_legacy_behavior
 if ~strcmp(class(MDSplus_legacy_behavior), 'logical')
-    l = getenv('MDSplus_legacy_behavior')
+    l = getenv('MDSplus_legacy_behavior');
     if strcmp(l,'yes')
-        MDSplus_legacy_behavior = true
+        MDSplus_legacy_behavior = true;
     else
-	MDSplus_legacy_behavior = false
+	MDSplus_legacy_behavior = false;
     end
 end
 
@@ -91,7 +91,7 @@ else
     end
     if MDSplus_legacy_behavior
         if ~strcmp(class(result),'char')
-            result = double(result)
+            result = double(result);
         end
     end 
 end

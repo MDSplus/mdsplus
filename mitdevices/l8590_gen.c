@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l8590_gen.h"
-int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L8590");
@@ -48,10 +48,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_2, TreeUSAGE_SIGNAL)
@@ -59,10 +59,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_3, TreeUSAGE_SIGNAL)
@@ -70,10 +70,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_4, TreeUSAGE_SIGNAL)
@@ -81,10 +81,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_5, TreeUSAGE_SIGNAL)
@@ -92,10 +92,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_6, TreeUSAGE_SIGNAL)
@@ -103,10 +103,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_7, TreeUSAGE_SIGNAL)
@@ -114,10 +114,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_7:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_7:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_7:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_7:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_8, TreeUSAGE_SIGNAL)
@@ -125,10 +125,10 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_8:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_8:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_8:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_8:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
@@ -139,8 +139,8 @@ int l8590__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   return (TreeSetDefaultNid(old_nid));
 }
 
-int l8590__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		     struct descriptor *out_d)
+EXPORT int l8590__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		     struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -165,51 +165,51 @@ int l8590__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (L8590_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (L8590_N_INPUT_1_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_1:STARTIDX) break;
+ COPY_PART_NAME(INPUT_1:STARTIDX) break;
   case (L8590_N_INPUT_1_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_1:ENDIDX) break;
+ COPY_PART_NAME(INPUT_1:ENDIDX) break;
   case (L8590_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (L8590_N_INPUT_2_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_2:STARTIDX) break;
+ COPY_PART_NAME(INPUT_2:STARTIDX) break;
   case (L8590_N_INPUT_2_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_2:ENDIDX) break;
+ COPY_PART_NAME(INPUT_2:ENDIDX) break;
   case (L8590_N_INPUT_3 + 1):
  COPY_PART_NAME(:INPUT_3) break;
   case (L8590_N_INPUT_3_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_3:STARTIDX) break;
+ COPY_PART_NAME(INPUT_3:STARTIDX) break;
   case (L8590_N_INPUT_3_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_3:ENDIDX) break;
+ COPY_PART_NAME(INPUT_3:ENDIDX) break;
   case (L8590_N_INPUT_4 + 1):
  COPY_PART_NAME(:INPUT_4) break;
   case (L8590_N_INPUT_4_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_4:STARTIDX) break;
+ COPY_PART_NAME(INPUT_4:STARTIDX) break;
   case (L8590_N_INPUT_4_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_4:ENDIDX) break;
+ COPY_PART_NAME(INPUT_4:ENDIDX) break;
   case (L8590_N_INPUT_5 + 1):
  COPY_PART_NAME(:INPUT_5) break;
   case (L8590_N_INPUT_5_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_5:STARTIDX) break;
+ COPY_PART_NAME(INPUT_5:STARTIDX) break;
   case (L8590_N_INPUT_5_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_5:ENDIDX) break;
+ COPY_PART_NAME(INPUT_5:ENDIDX) break;
   case (L8590_N_INPUT_6 + 1):
  COPY_PART_NAME(:INPUT_6) break;
   case (L8590_N_INPUT_6_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_6:STARTIDX) break;
+ COPY_PART_NAME(INPUT_6:STARTIDX) break;
   case (L8590_N_INPUT_6_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_6:ENDIDX) break;
+ COPY_PART_NAME(INPUT_6:ENDIDX) break;
   case (L8590_N_INPUT_7 + 1):
  COPY_PART_NAME(:INPUT_7) break;
   case (L8590_N_INPUT_7_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_7:STARTIDX) break;
+ COPY_PART_NAME(INPUT_7:STARTIDX) break;
   case (L8590_N_INPUT_7_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_7:ENDIDX) break;
+ COPY_PART_NAME(INPUT_7:ENDIDX) break;
   case (L8590_N_INPUT_8 + 1):
  COPY_PART_NAME(:INPUT_8) break;
   case (L8590_N_INPUT_8_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_8:STARTIDX) break;
+ COPY_PART_NAME(INPUT_8:STARTIDX) break;
   case (L8590_N_INPUT_8_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_8:ENDIDX) break;
+ COPY_PART_NAME(INPUT_8:ENDIDX) break;
   case (L8590_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (L8590_N_STORE_ACTION + 1):
@@ -224,7 +224,7 @@ extern int l8590___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int l8590__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8590__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
       static struct {
@@ -250,7 +250,7 @@ int l8590__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int l8590___store();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int l8590__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l8590__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
       static struct {

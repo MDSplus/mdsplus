@@ -40,9 +40,8 @@
    Management.
 ----------------------------------------------------------------------------*/
 
-#ifndef _XmdsWaveform_h
-#define _XmdsWaveform_h
-
+#pragma once
+#include <stdio.h>
 #ifndef _Xm_h
 #include <Xm/Xm.h>
 #endif
@@ -166,17 +165,6 @@ typedef struct _XmdsWaveformRec *XmdsWaveformWidget;
 
 /* External creation routines:
 */
-#ifdef _NO_PROTO_
-
-extern Widget XmdsCreateWaveform();
-extern void XmdsWaveformPrint();
-extern void XmdsWaveformReverse();
-extern void XmdsWaveformSetCrosshairs();
-extern void XmdsWaveformSetPointerMode();
-extern void XmdsWaveformUpdate();
-extern void XmdsWaveformSetWave();
-
-#else				/* _NO_PROTO_ */
 
 extern Widget XmdsCreateWaveform(Widget parent, char *name, ArgList al, Cardinal ac);
 extern void XmdsWaveformPrint(Widget w, FILE * fid, int width, int height, int rotate, char *title,
@@ -190,6 +178,4 @@ extern void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct * x, XmdsWaveform
 extern void XmdsWaveformSetWave(Widget w, int count, float *x, float *y, Boolean * select,
 				Boolean * pendown, Boolean autoscale, Boolean defer_update);
 
-#endif				/* _NO_PROTO_ */
 
-#endif				/* _XmdsWaveform */

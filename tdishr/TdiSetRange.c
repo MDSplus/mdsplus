@@ -97,9 +97,9 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
                 Get data or range.
                 *****************/
     else {
-      unsigned char dtype = (unsigned char)DTYPE_RANGE;
+      unsigned char omits[] = {(unsigned char)DTYPE_RANGE,0};
       if (status & 1)
-	status = TdiGetData(&dtype, list[j], &tmp);
+	status = TdiGetData(omits, list[j], &tmp);
       if (!(status & 1))
 	break;
       prange = (struct descriptor_range *)tmp.pointer;

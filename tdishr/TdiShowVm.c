@@ -16,6 +16,7 @@ extern int TdiGetLong();
 
 int Tdi1ShowVm(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
+  /*
   int status = 1;
   int code, contex = 0, j = 1, mask, zone_id = 0;
 
@@ -36,4 +37,6 @@ int Tdi1ShowVm(int opcode, int narg, struct descriptor *list[], struct descripto
   if (status == LibNOTFOU)
     status = 1;
   return status;
+  */
+  return 0;
 }

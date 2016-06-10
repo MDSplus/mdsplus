@@ -33,7 +33,7 @@ int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descr
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerCreatePulse(int *id, char *server, char *tree, int shot,
+EXPORT int ServerCreatePulse(int *id, char *server, char *tree, int shot,
 		      void (*ast) (), void *astprm, int *retstatus, void (*before_ast) ())
 {
   struct descrip p1, p2;

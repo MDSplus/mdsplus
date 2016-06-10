@@ -75,7 +75,6 @@ STATIC_CONSTANT octaword ozero = { 0, 0, 0, 0 };
 STATIC_CONSTANT quadword maxquad = { -1, 2147483647 };
 STATIC_CONSTANT octaword maxocta = { -1, -1, -1, 2147483647 };
 STATIC_CONSTANT quadword umaxquad = { -1, -1 };
-STATIC_CONSTANT int umax64[2] = { -1, -1 };
 STATIC_CONSTANT octaword umaxocta = { -1, -1, -1, -1 };
 STATIC_CONSTANT quadword minquad = { 0, -2147483647 };
 STATIC_CONSTANT octaword minocta = { 0, 0, 0, -2147483647 };
@@ -119,9 +118,6 @@ int TdiGtQ();
  Tdi3Divide(&i1,&i2,&o);}
 
 #define SetupArgs \
-  struct descriptor_a *ina = (struct descriptor_a *)in;\
-  struct descriptor_a *maska = (struct descriptor_a *)mask;\
-  struct descriptor_a *outa = (struct descriptor_a *)out;\
   int stepm0,stepm1,stepm2,lenm;\
   int j0, j1, j2;\
   switch (out->class)\

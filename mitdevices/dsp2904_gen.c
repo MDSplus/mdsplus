@@ -2,7 +2,7 @@
 #include <mds_gendevice.h>
 #include "dsp2904_gen.h"
 extern int dsp2904___add(int *nid);
-int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "DSP2904");
@@ -44,10 +44,10 @@ int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, 
  ADD_NODE(:TIMER.GATE, TreeUSAGE_STRUCTURE)
  ADD_NODE(:TIMER.WRAP, TreeUSAGE_STRUCTURE)
  ADD_NODE(:TIMER.BITS_32, TreeUSAGE_STRUCTURE)
- ADD_NODE_INTEGER(:TIMER:PRESET, 0, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(TIMER:PRESET, 0, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(:TIMER:CHANNEL, 9, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(TIMER:CHANNEL, 9, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:COUNTER, TreeUSAGE_SIGNAL)
@@ -58,10 +58,10 @@ int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, 
  ADD_NODE(:COUNTER.GATE, TreeUSAGE_STRUCTURE)
  ADD_NODE(:COUNTER.WRAP, TreeUSAGE_STRUCTURE)
  ADD_NODE(:COUNTER.BITS_32, TreeUSAGE_STRUCTURE)
- ADD_NODE_INTEGER(:COUNTER:PRESET, 0, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(COUNTER:PRESET, 0, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(:COUNTER:CHANNEL, 10, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(COUNTER:CHANNEL, 10, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   ADD_NODE(.IDX_DIVIDER, TreeUSAGE_STRUCTURE)
@@ -96,8 +96,8 @@ int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, 
   return (TreeSetDefaultNid(old_nid));
 }
 
-int dsp2904__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		       struct descriptor *out_d)
+EXPORT int dsp2904__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		       struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -124,9 +124,9 @@ int dsp2904__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d
   case (DSP2904_N_TIMER_BITS_32 + 1):
  COPY_PART_NAME(:TIMER.BITS_32) break;
   case (DSP2904_N_TIMER_PRESET + 1):
- COPY_PART_NAME(:TIMER:PRESET) break;
+ COPY_PART_NAME(TIMER:PRESET) break;
   case (DSP2904_N_TIMER_CHANNEL + 1):
- COPY_PART_NAME(:TIMER:CHANNEL) break;
+ COPY_PART_NAME(TIMER:CHANNEL) break;
   case (DSP2904_N_COUNTER + 1):
  COPY_PART_NAME(:COUNTER) break;
   case (DSP2904_N_COUNTER_GATE + 1):
@@ -136,9 +136,9 @@ int dsp2904__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d
   case (DSP2904_N_COUNTER_BITS_32 + 1):
  COPY_PART_NAME(:COUNTER.BITS_32) break;
   case (DSP2904_N_COUNTER_PRESET + 1):
- COPY_PART_NAME(:COUNTER:PRESET) break;
+ COPY_PART_NAME(COUNTER:PRESET) break;
   case (DSP2904_N_COUNTER_CHANNEL + 1):
- COPY_PART_NAME(:COUNTER:CHANNEL) break;
+ COPY_PART_NAME(COUNTER:CHANNEL) break;
   case (DSP2904_N_IDX_DIVIDER + 1):
     COPY_PART_NAME(.IDX_DIVIDER) break;
   case (DSP2904_N_TIME_OF_CNT + 1):
@@ -165,7 +165,7 @@ extern int dsp2904___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int dsp2904__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int dsp2904__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];
@@ -183,7 +183,7 @@ int dsp2904__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 extern int dsp2904___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-int dsp2904__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int dsp2904__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

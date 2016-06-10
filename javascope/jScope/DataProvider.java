@@ -126,25 +126,22 @@ public interface DataProvider
          * Method AddUpdateEventListener is called by jScope when asynchronous update on event is
          * defined. To connect data visualization to asynchronous event an event name has to be defined
          * in the Update event field of the setup data form popup dialog.
-         * DataProvider implementations supporting aynchronous signal updating should
+         * DataProvider implementations supporting asynchronous signal updating should
          * notify event occurrence to all registered listeners by calling method processUpdateEvent(UpdateEvent e).
          * UpdateEvent defines the following field, in addition to those defined in the AWTEvent
          * superclass:
          * <br>- String name: the name of the event
          * <br>
-         * The possiblity of connecting data display to asynchronous events is useful when jScope
-         * is used during data acquisition, for an atomatic display update when a signal has been
+         * The possibility of connecting data display to asynchronous events is useful when jScope
+         * is used during data acquisition, for an automatic display update when a signal has been
          * acquired. In this case the data acquisition system would generate an event when the
          * signal has been acquired, and the DataProvider implementation would call method
-         * processUpdateEvent (defined in UpdateEventListener inetrafce) to request the display update to
+         * processUpdateEvent (defined in UpdateEventListener interface) to request the display update to
          * jScope.
          * <br>
          * If the DataProvider implementation does not support asynchronous events, the method is defined
          * empty.
          * <br>
-         * NOTE: asynchronous update on event is not required for displaying evolving signals
-         * such as trend recording. See the description of methods SupportsContinuous() and
-         * DataPending() for the management of evolving signals.
          *
          * @param l The passed instance of UpdateEventListener.
          * @param event The name of the event for which the UpdateEventListener is registering.
@@ -158,7 +155,7 @@ public interface DataProvider
          * Method RemoveUpdateEventListeneris called by jScope when the display of a waveform panel is
          * no more triggered by an event.
          *
-         * @param l The instance of UpdateEventListener proeviously registered.
+         * @param l The instance of UpdateEventListener previously registered.
          * @param event The event to which the listener was previously registered.
          * @exception java.io.IOException
          * @see UpdateEventListener
@@ -192,44 +189,7 @@ public interface DataProvider
          */
         public FrameData  GetFrameData(String in_frame, String in_times, float start_time, float end_time) throws IOException;
 
-        /**
-         * If SupportsContinuous returns true, jScope is prepared to handle a signal changing over time.
-         * An example is the display of a trend recording showing a waveform which is updated each time
-         * a new set of samples has been acquired. More generally, an arbitrarily evolving signal
-         * can be diaplayed this way.
-         * If a DataProvider implentation returns true, a separate thread calls repeadetly methods
-         * GetWaveData() and DataPending() until the second method returns false. In this case
-         * GetWaveData() will wait until a new set of samples is ready and has to be dispalyed by jScope,
-         * while method DataPending() notifies to jScope whether new data has to be displayed for
-         * the signal, i.e. whether the signal has not yet finished to be produced.
-         * <br>
-         * If SupportsContinuous returns false, method GetWaveData (or GetResampledWaveData) is called
-         * only once to retrieve the whole signal.
-         * <br>
-         * NOTE in the current implementation, update frequencies up to few Hz can be handled by jScope
-         * with a limited CPU usage.
-         *
-         * @return The indication whether support for evolving signals is provided.
-         */
-        public boolean SupportsContinuous();
-
-        /**
-         * Method DataPending is called by jScope to verify whether the current signal has been fully
-         * displayed. It DataPending returns false, method GetWaveData is called again to retrieve a new
-         * version (usually with some more samples) of the signal.
-         * <br>
-         * If method SupportsContinuous() returned false, DataPending is never called by jScope, and
-         * can therefore be empty.
-         *
-         * @return Indicates whether the current signal is complete.
-         */
-        public boolean DataPending();
-
-        /**
-         * Method enableAsyncUpdate enables or disables possible asynchronous activity of the data provider.
-         * Asynchronous activity is disabled when data are first retrieved, enabled afterwards
-         * **/
-        public void enableAsyncUpdate(boolean enable);
+       // public void enableAsyncUpdate(boolean enable);
         
         /**
          * Method Dispose is called by jScope each time a DataProvider is no more used. Unlike Object.finalize(),
@@ -241,7 +201,7 @@ public interface DataProvider
         /**
          * Method AddConnectionListener is called by jScope after the instantiation of a DataProvider
          * implementation, in order to be notified of the status of data transfer. If a DataProvider
-         * implementation has to handle the transfer of large chuncks of data (e.g. frame sequences)
+         * implementation has to handle the transfer of large chunks of data (e.g. frame sequences)
          * requiring a relatively long time, it should be able to communicate the current status of
          * the transfer to jScope which displays then a status bar. To do this, the DataProvider
          * implementation calls ConnectionListener's method processConnectionEvent, passing an istance of
@@ -302,6 +262,10 @@ public interface DataProvider
          */
         public void    SetArgument(String arg) throws IOException;
 
+        /**
+         * Evaluate the passed string to provide am array of shot numbers. 
+         * For MDSplus data provider it will carry out the execution of the corresponding expression 
+         */
         public long[]   GetShots(String in) throws IOException;
         
      }

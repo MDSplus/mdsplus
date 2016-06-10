@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "b5910a_gen.h"
-int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "B5910A");
@@ -59,25 +59,25 @@ int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
 #undef expr
       flags |= NciM_WRITE_ONCE;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_1:PROGRAMMING, TreeUSAGE_SIGNAL)
+ ADD_NODE(CHANNEL_1:PROGRAMMING, TreeUSAGE_SIGNAL)
 #define expr " B5910A$CHAN(CHANNEL_2) 		"
  ADD_NODE_EXPR(:CHANNEL_2, TreeUSAGE_SIGNAL)
 #undef expr
       flags |= NciM_WRITE_ONCE;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_2:PROGRAMMING, TreeUSAGE_SIGNAL)
+ ADD_NODE(CHANNEL_2:PROGRAMMING, TreeUSAGE_SIGNAL)
 #define expr " B5910A$CHAN(CHANNEL_3) 		"
  ADD_NODE_EXPR(:CHANNEL_3, TreeUSAGE_SIGNAL)
 #undef expr
       flags |= NciM_WRITE_ONCE;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_3:PROGRAMMING, TreeUSAGE_SIGNAL)
+ ADD_NODE(CHANNEL_3:PROGRAMMING, TreeUSAGE_SIGNAL)
 #define expr " B5910A$CHAN(CHANNEL_4) 		"
  ADD_NODE_EXPR(:CHANNEL_4, TreeUSAGE_SIGNAL)
 #undef expr
       flags |= NciM_WRITE_ONCE;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:CHANNEL_4:PROGRAMMING, TreeUSAGE_SIGNAL)
+ ADD_NODE(CHANNEL_4:PROGRAMMING, TreeUSAGE_SIGNAL)
 #define expr " IF_ERROR(INT_CLOCK,EXT_CLOCK)	"
  ADD_NODE_EXPR(:CLOCK_OUT, TreeUSAGE_AXIS)
 #undef expr
@@ -90,8 +90,8 @@ int b5910a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   return (TreeSetDefaultNid(old_nid));
 }
 
-int b5910a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		      struct descriptor *out_d)
+EXPORT int b5910a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		      struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -122,19 +122,19 @@ int b5910a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_
   case (B5910A_N_CHANNEL_1 + 1):
  COPY_PART_NAME(:CHANNEL_1) break;
   case (B5910A_N_CHANNEL_1_PROGRAMMING + 1):
- COPY_PART_NAME(:CHANNEL_1:PROGRAMMING) break;
+ COPY_PART_NAME(CHANNEL_1:PROGRAMMING) break;
   case (B5910A_N_CHANNEL_2 + 1):
  COPY_PART_NAME(:CHANNEL_2) break;
   case (B5910A_N_CHANNEL_2_PROGRAMMING + 1):
- COPY_PART_NAME(:CHANNEL_2:PROGRAMMING) break;
+ COPY_PART_NAME(CHANNEL_2:PROGRAMMING) break;
   case (B5910A_N_CHANNEL_3 + 1):
  COPY_PART_NAME(:CHANNEL_3) break;
   case (B5910A_N_CHANNEL_3_PROGRAMMING + 1):
- COPY_PART_NAME(:CHANNEL_3:PROGRAMMING) break;
+ COPY_PART_NAME(CHANNEL_3:PROGRAMMING) break;
   case (B5910A_N_CHANNEL_4 + 1):
  COPY_PART_NAME(:CHANNEL_4) break;
   case (B5910A_N_CHANNEL_4_PROGRAMMING + 1):
- COPY_PART_NAME(:CHANNEL_4:PROGRAMMING) break;
+ COPY_PART_NAME(CHANNEL_4:PROGRAMMING) break;
   case (B5910A_N_CLOCK_OUT + 1):
  COPY_PART_NAME(:CLOCK_OUT) break;
   case (B5910A_N_INIT_ACTION + 1):
@@ -149,7 +149,7 @@ extern int b5910a___init();
 #define free_xd_array { int i; for(i=0; i<7;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-int b5910a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int b5910a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[7];

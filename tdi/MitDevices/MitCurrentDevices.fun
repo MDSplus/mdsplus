@@ -14,5 +14,7 @@ FUN  PUBLIC MitCurrentDevices() {
         'DT216A\0',      'MitDevices\0',
 	'IDL\0',	 'MitDevices\0',		
 	'MDSDCL\0',	 'MitDevices\0',		
+        'RASPICAM\0',    'MitDevices\0',
+        'PICAM\0',       'MitDevices\0',
 	'RETICON120\0',	 'MitDevices\0']);
 }

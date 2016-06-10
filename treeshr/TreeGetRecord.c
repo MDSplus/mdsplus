@@ -1,7 +1,4 @@
 #include "treeshrp.h"		/* must be first or off_t wrong */
-#ifdef _WIN32
-#include <io.h>
-#endif
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -12,12 +9,6 @@
 #include <mdsshr_messages.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_RANDOM
-#define O_RANDOM 0
-#endif
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
@@ -157,23 +148,21 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 int TreeOpenDatafileR(TREE_INFO * info)
 {
   int status;
-  DATA_FILE *df_ptr = info->data_file;
-  if (df_ptr)
-    return 1;
-  df_ptr = TreeGetVmDatafile(info);
-  if (df_ptr != NULL) {
-
-    size_t len = strlen(info->filespec) - 4;
-    char *filename = strncpy(malloc(len + 9), info->filespec, len);
-    filename[len] = '\0';
-    strcat(filename, "datafile");
-    df_ptr->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
-    free(filename);
-    status = (df_ptr->get == -1) ? TreeFOPENR : TreeNORMAL;
-    if (df_ptr->get == -1)
-      df_ptr->get = 0;
+  if (info->data_file == NULL)
+    info->data_file = TreeGetVmDatafile(info);
+  if (info->data_file != NULL) {
+    if (info->data_file->get == 0) {
+      size_t len = strlen(info->filespec) - 4;
+      char *filename = strncpy(malloc(len + 9), info->filespec, len);
+      int lun = -1;
+      filename[len] = '\0';
+      strcat(filename, "datafile");
+      lun = MDS_IO_OPEN(filename, O_RDONLY, 0);
+      free(filename);
+      status = (lun == -1) ? TreeFOPENR : TreeNORMAL;
+      info->data_file->get = (lun != -1) ? lun : 0;
+    }
   }
-  info->data_file = df_ptr;
   return status;
 }
 
@@ -268,7 +257,7 @@ DATA_FILE *TreeGetVmDatafile()
   return datafile_ptr;
 }
 
-int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, char *record,
+EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, char *record,
 		    int *retsize, int *nodenum, unsigned char flags)
 {
   int status = 1;

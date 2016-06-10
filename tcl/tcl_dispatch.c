@@ -10,6 +10,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <tcl_messages.h>
+#include <mdsdcl_messages.h>
 
 #include "tcl_p.h"
 
@@ -50,7 +51,7 @@ extern int TdiIdentOf();
 	/****************************************************************
 	 * TclDispatch_close:
 	 ****************************************************************/
-int TclDispatch_close(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_close(void *ctx, char **error, char **output)
 {
   char *ident = 0;
 
@@ -68,7 +69,7 @@ int TclDispatch_close(void *ctx, char **error, char **output)
 	/**************************************************************
 	 * TclDispatch_build:
 	 **************************************************************/
-int TclDispatch_build(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_build(void *ctx, char **error, char **output)
 {
   int sts;
   char *monitor = 0;
@@ -103,7 +104,7 @@ static void WaitfrEf(int *id)
   ServerWait(*id);
 }
 
-int TclDispatch(void *ctx, char **error, char **output)
+EXPORT int TclDispatch(void *ctx, char **error, char **output)
 {
   char *treenode = 0;
   int sts;
@@ -117,7 +118,7 @@ int TclDispatch(void *ctx, char **error, char **output)
   if (sts & 1) {
     struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)0 };
     EMPTYXD(xd);
-    struct descriptor ident = { 0, DTYPE_T, CLASS_D, 0 };
+    struct descriptor_d ident = { 0, DTYPE_T, CLASS_D, 0 };
     niddsc.pointer = (char *)&nid;
     sts = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
     if (sts & 1)
@@ -132,7 +133,7 @@ int TclDispatch(void *ctx, char **error, char **output)
       {0, 0, 0, 0}
       };
       TreeGetDbi(itmlst);
-      StrAppend(&ident, &nullstr);
+      StrAppend(&ident, (struct descriptor *)&nullstr);
       sts =
 	  ServerDispatchAction(SyncEfn, ident.pointer, treename, shot, nid, 0, 0,
 			       waiting ? &iostatus : 0, 0, 0);
@@ -160,7 +161,7 @@ int TclDispatch(void *ctx, char **error, char **output)
 	 * TclDispatch_stop_server:
 	 * TclDispatch_start_server:
 	 **************************************************************/
-int TclDispatch_abort_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   char *ident = 0;
@@ -178,7 +179,7 @@ int TclDispatch_abort_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-int TclDispatch_stop_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   char *ident = 0;
@@ -201,7 +202,7 @@ int TclDispatch_stop_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-int TclDispatch_start_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   char *ident = 0;
@@ -227,7 +228,7 @@ int TclDispatch_start_server(void *ctx, char **error, char **output)
 	/***************************************************************
 	 * TclDispatch_set_server:
 	 ***************************************************************/
-int TclDispatch_set_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   int logqual;
@@ -265,7 +266,7 @@ int TclDispatch_set_server(void *ctx, char **error, char **output)
 	/**************************************************************
 	 * TclDispatch_show_server:
 	 **************************************************************/
-int TclDispatch_show_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_show_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   char *ident = 0;
@@ -320,7 +321,7 @@ static void printIt(char *output)
 	/*****************************************************************
 	 * TclDispatch_phase:
 	 *****************************************************************/
-int TclDispatch_phase(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_phase(void *ctx, char **error, char **output)
 {
   char *phase = 0;
   char *synch_str = 0;
@@ -376,7 +377,7 @@ static void CommandDone(DispatchedCommand * command)
   return;
 }
 
-int TclDispatch_command(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_command(void *ctx, char **error, char **output)
 {
   char *cli = 0;
   char *ident = 0;
@@ -424,7 +425,7 @@ int TclDispatch_command(void *ctx, char **error, char **output)
 	/***************************************************************
 	 * TclDispatch_check:
 	 ***************************************************************/
-int TclDispatch_check(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_check(void *ctx, char **error, char **output)
 {
   if (ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET") & 1)) {
     *error = strdup("Error: A essential action failed!\n");

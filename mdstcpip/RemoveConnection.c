@@ -7,6 +7,11 @@ extern int TdiDeleteContext();
 extern int TdiRestoreContext();
 extern int MDSEventCan();
 
+///
+/// \brief RemoveConnection
+/// \param conid
+/// \return 
+///
 int RemoveConnection(int conid)
 {
   int status = 0;

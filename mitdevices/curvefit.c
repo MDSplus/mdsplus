@@ -6,10 +6,11 @@
  */
 
 #include <stdlib.h>
+#include <config.h>
 extern void csakm_();
 extern float csval_();
 
-int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
+EXPORT int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
 {
   float slope;
   float intercept;
@@ -67,7 +68,7 @@ int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x,
   return 1;
 }
 
-int SplineFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
+EXPORT int SplineFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
 {
   int i;
   if (*num_knots > 2) {

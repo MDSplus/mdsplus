@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "t2824_gen.h"
-int t2824__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int t2824__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "T2824");
@@ -35,14 +35,14 @@ int t2824__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(:INPUT_1:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_1:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
@@ -51,8 +51,8 @@ int t2824__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   return (TreeSetDefaultNid(old_nid));
 }
 
-int t2824__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
-		     struct descriptor *out_d)
+EXPORT int t2824__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+		     struct descriptor_d *out_d)
 {
   int element = 0, status;
   NCI_ITM nci_list[] = { {4, NciCONGLOMERATE_ELT, 0, 0}, {0, 0, 0, 0} };
@@ -67,11 +67,11 @@ int t2824__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (T2824_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (T2824_N_INPUT_1_CALIBRATION + 1):
- COPY_PART_NAME(:INPUT_1:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_1:CALIBRATION) break;
   case (T2824_N_INPUT_1_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_1:STARTIDX) break;
+ COPY_PART_NAME(INPUT_1:STARTIDX) break;
   case (T2824_N_INPUT_1_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_1:ENDIDX) break;
+ COPY_PART_NAME(INPUT_1:ENDIDX) break;
   default:
     status = TreeILLEGAL_ITEM;
   }

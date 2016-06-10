@@ -96,7 +96,6 @@ class jScopeWaveContainer
 
                     try
                     {
-
                         UpdateAllWave();
 
                         date = new Date();
@@ -1149,7 +1148,9 @@ remove 28/06/2005
         {
             reversed = new Boolean(prop).booleanValue();
         }
-
+        else
+            reversed = false;
+            
         def_vals.xmax = pr.getProperty(prompt + ".global_1_1.xmax");
 
         def_vals.xmin = pr.getProperty(prompt + ".global_1_1.xmin");
@@ -1223,6 +1224,7 @@ remove 28/06/2005
                 ( (MdsWaveInterface) w.wi).FromFile(pr,
                     "Scope.plot_" + (r + 1) + "_" + (c + 1) , cmd);
                 ( (MdsWaveInterface) w.wi).mapColorIndex(colorMapping);
+                SetWaveParams(w);
                 k++;
             }
         }
@@ -1321,7 +1323,11 @@ remove 28/06/2005
         {
             try
             {
-                Class cl = Class.forName("jScope."+server_item.class_name);
+                Class cl;
+                if(server_item.class_name.contains("."))
+                    cl = Class.forName(server_item.class_name);
+                else
+                    cl = Class.forName("jScope."+server_item.class_name);
                 new_dp = (DataProvider) cl.newInstance();
             }
             catch (Exception e)

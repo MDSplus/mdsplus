@@ -150,7 +150,7 @@
       default to usage ANY and a child node (.name) will default to usage STRUCTURE.
 
       If adding a device (i.e. data acquisition device) use the /MODEL qualifier to
-      specify the type of supported devide you are adding.
+      specify the type of supported device you are adding.
 
       NOTE: The ADD NODE command can only be used when a tree is opened for edit.
     </help>
@@ -1336,7 +1336,7 @@
 
   <syntax name="show_version">
     <helpmissing />
-    <routine name="TclShowVersion"/>
+    <routine name="mdsdcl_show_version"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
 

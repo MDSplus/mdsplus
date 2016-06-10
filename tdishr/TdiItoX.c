@@ -101,7 +101,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
   int k0, k1;
   int special = narg > 1 && list[1] == TdiItoXSpecial;
   int arg1 = narg > 1 && list[1] && list[1] != TdiItoXSpecial;
-  int big_beg, big_end, f, nran, tslo;
+  int big_beg, big_end, nran, tslo;
   int nseg, jseg, kseg;
   struct descriptor *pmode;
   int cmode = -1, flag = (opcode == OpcItoX);
@@ -296,7 +296,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	  goto counted;
       }
       status = TdiCvtArgs(nran, dat, cats);
-      f = TdiFaultClear(0);
+      TdiFaultClear(0);
       if (status & 1)
 	status = TdiSubtract(dat[end].pointer, dat[beg].pointer, &cnt MDS_END_ARG);
       if (tslo && status & 1)

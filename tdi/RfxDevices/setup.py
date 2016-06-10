@@ -1,8 +1,25 @@
 #!/usr/bin/env python
 
-from setuptools import setup, Extension
-version='0.2'
-setup(name='RfxDevices',
+try:
+    exec(open('_version.py').read())
+    if branch == "stable":
+        name="mdsplus_rfxdevices"
+    else:
+        name="mdsplus_%s_rfxdevices" % branch
+except:
+    if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
+        branch="_"+os.environ["BRANCH"]
+    else:
+        branch=""
+    name="mdsplus%s_rfxdevices" % branch
+    version='0.2'
+
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
+
+setup(name=name,
       version=version,
       description='RFX Python Device support',
       long_description = """

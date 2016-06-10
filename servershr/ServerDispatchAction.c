@@ -33,7 +33,7 @@ int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$de
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerDispatchAction(int *id, char *server, char *tree, int shot, int nid,
+EXPORT int ServerDispatchAction(int *id, char *server, char *tree, int shot, int nid,
 			 void (*ast) (), void *astprm, int *retstatus, int *socket,
 			 void (*before_ast) ())
 {
