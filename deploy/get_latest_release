@@ -9,17 +9,29 @@
 # the line with Next in it and graps the url for the next page from that line.
 #
 branch=$1
-url="https://github.com/MDSplus/mdsplus/releases" 
-wget -O /tmp/release_info -q $url
-while [ $? ]
+release=""
+tries=0
+while [ "$tries" -lt 10 ]
 do
-  if ( grep ${branch}_release /tmp/release_info > /dev/null )
-  then
-    release="$(grep ${branch}_release /tmp/release_info | grep "\-\-\-\-" | awk '{print $NF; exit}')"
-    echo $release
-    break
-  else
-    url=$(grep Next /tmp/release_info | awk -F\" '{print $(NF-3)}')
-    wget -O /tmp/release_info -q $url
-  fi
+    url="https://github.com/MDSplus/mdsplus/releases" 
+    while ( wget -O /tmp/release_info -q $url )
+    do
+	if ( grep ${branch}_release /tmp/release_info > /dev/null )
+	then
+	    release="$(grep ${branch}_release /tmp/release_info | \
+grep "\-\-\-\-" | awk '{print $NF; exit}')"
+	    break
+	else
+	    url=$(grep Next /tmp/release_info | awk -F\" '{print $(NF-3)}')
+	fi
+    done
+    if [ ! -z "$release" ]
+    then
+	echo $release
+	break
+    else
+	let tries=$tries+1
+	sleep 5
+    fi
 done
+
