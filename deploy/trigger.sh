@@ -18,6 +18,7 @@ SYNOPSIS
                  [--release] [--releasedir=directory] 
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
+                 [--pypi]
                  
 
 DESCRIPTION
@@ -112,6 +113,9 @@ OPTIONS
        Output failure and success messages in color using ansi color
        escape sequences.
 
+    --pypi
+       Push python package to Python Package Index (http://pypi.python.org/)
+
 EOF
 }
 opts=""
@@ -165,6 +169,9 @@ parsecmd() {
 	    --color)
 		opts="${opts} ${i}"
 		COLOR=yes
+		;;
+	    --pypi)
+		PUSH_TO_PYPI=yes
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -302,6 +309,27 @@ FAILURE
 EOF
 	NORMAL $COLOR
 	exit 1
+    fi
+    if [ "$PUSH_TO_PYPI" = "yes" ]
+    then
+	export BRANCH RELEASE_VERSION
+	if [ "$BRANCH" = "stable" ]
+	then
+	    pypi_name=MDSplus
+	else
+	    pypi_name=mdsplus-${BRANCH}
+	fi
+	if (! wget -O - "https://pypi.python.org/${pypi_name}/$RELEASE_VERSION" >/dev/null 2>&1 )
+	then
+	    tmpdir=$(mktemp -d)
+	    cd $tmpdir
+	    ${WORKSPACE}/configure --disable-java >/dev/null 2>&1
+	    rsync -a ${WORKSPACE}/mdsobjects/python mdsobjects/
+	    cd mdsobjects/python
+	    python setup.py sdist upload
+	    cd $WORKSPACE
+	    rm -Rf $tmpdir
+	fi
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts
