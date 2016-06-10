@@ -461,7 +461,7 @@ then
     baddeb=0
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*\.deb")
     do
-	pkg=$(debtopkg $(basename $deb) ${BNAME} ${RELEASE_VERSION} ${ARCH})
+	pkg=$(debtopkg $(basename $deb) "${BNAME}" ${RELEASE_VERSION} ${ARCH})
 	if [ "${#pkg}" = "0" ]
 	then
 	   continue
