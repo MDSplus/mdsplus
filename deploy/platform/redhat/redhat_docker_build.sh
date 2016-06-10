@@ -425,7 +425,7 @@ then
     mkdir -p ${BUILDROOT}/etc/yum.repos.d;
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
     mkdir -p /release/RPMS;
-    cp /source/deploy/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
+    cp /source/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
     if [ -d /sign_keys/.gnupg ]
     then
 	GPGCHECK="1"
