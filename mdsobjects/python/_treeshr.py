@@ -226,8 +226,18 @@ def TreeTurnOff(n):
         n.tree.unlock()
     if (status & 1):
         return status
-    else:
-        raise _Exceptions.statusToException(status)
+    elif status==265392050:  # TreeLOCK_FAILURE
+        # retry (required eg. if device parts list contains 'disabled' option)
+        from time import sleep
+        sleep(0.01)
+        n.tree.lock()
+        try:
+            status=__TreeTurnOff(n.tree.ctx,n.nid)
+        finally:
+            n.tree.unlock()
+        if (status & 1):
+            return status
+    raise _Exceptions.statusToException(status)
 
 def TreeOpen(tree,shot):
     ctx=_C.c_void_p(0)
