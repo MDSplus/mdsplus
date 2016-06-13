@@ -292,7 +292,7 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
     if (descr) {
       PyObject *descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
       if (descrPtr) {
-	MdsCopyDxXd((struct descriptor *)(*PyLong_AsLong)(descrPtr), outptr);
+	MdsCopyDxXd((struct descriptor *)(*PyLong_AsVoidPtr)(descrPtr), outptr);
 	(*Py_DecRef)(descrPtr);
       } else {
 	printf("Error getting address of descriptor\n");
