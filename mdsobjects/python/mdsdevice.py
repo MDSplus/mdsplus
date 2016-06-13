@@ -205,8 +205,8 @@ class Device(_treenode.TreeNode):
             import_string="from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__)
         except:
             import_string=None
-                                                 
-                                                                
+
+
         head.record=_compound.Conglom('__python__',cls.__name__,None,import_string)
         head.write_once=True
         import MDSplus
@@ -229,6 +229,7 @@ class Device(_treenode.TreeNode):
                 for option in elt['options']:
                     node.__setattr__(option,True)
         _treeshr.TreeEndConglomerate(tree)
+        return head
     Add=classmethod(Add)
 
 
