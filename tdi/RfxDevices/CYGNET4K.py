@@ -1,4 +1,4 @@
-__version__=(2016,02,26,12,42)
+__version__=(2016,06,14,18,15)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -24,15 +24,15 @@ class CYGNET4K(Device):
       {'path':':EXPOSURE', 'type':'numeric', 'valueExpr':"Float64(4).setUnits('ms')",'options':('no_write_shot',)}, # msec
       {'path':':FRAME_MODE', 'type':'text', 'value':'EXTERNAL RISING','options':('no_write_shot',)},
       {'path':':FRAME_RATE', 'type':'numeric', 'valueExpr':"Float64(10).setUnits('Hz')",'options':('no_write_shot',)}, # Hz
-      {'path':':TREND', 'type':'structure'},
-      {'path':':TREND:TREE', 'type':'text','options':('no_write_shot',)},
-      {'path':':TREND:SHOT', 'type':'numeric','options':('no_write_shot',)},
-      {'path':':TREND:PCB', 'type':'text','options':('no_write_shot',)},
-      {'path':':TREND:CMOS', 'type':'text','options':('no_write_shot',)},
-      {'path':':TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
-      {'path':':TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once')},
-      {'path':':TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_IDENT', 'type':'text','value':'CAMERA_SERVER','options':('no_write_shot',)},
+      {'path':'.TREND', 'type':'structure'},
+      {'path':'.TREND:TREE', 'type':'text','options':('no_write_shot',)},
+      {'path':'.TREND:SHOT', 'type':'numeric','options':('no_write_shot',)},
+      {'path':'.TREND:PCB', 'type':'text','options':('no_write_shot',)},
+      {'path':'.TREND:CMOS', 'type':'text','options':('no_write_shot',)},
+      {'path':'.TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
+      {'path':'.TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once')},
+      {'path':'.TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACT_IDENT', 'type':'text','options':('no_write_shot','write_once')},
       {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
       {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
       {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
@@ -746,6 +746,7 @@ class CYGNET4K(Device):
             self.running = False
 
         def run(self):
+            Tree.usePrivateCtx(True)
             try:  # test open Nodes
                 tree = Tree(self.tree, self.shot)
                 try:
