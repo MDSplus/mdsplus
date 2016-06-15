@@ -540,7 +540,7 @@ EOF
 	NORMAL $COLOR
        	exit 1
     fi
-    if ( createrepo -h | grep '--deltas' > /dev/null )
+    if ( createrepo -h | grep '\-\-deltas' > /dev/null )
     then
 	use_deltas="--deltas"
     fi
