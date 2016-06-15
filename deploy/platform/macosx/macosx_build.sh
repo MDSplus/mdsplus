@@ -61,7 +61,7 @@ Failure doing normal tests.
 ======================================================
 EOF
 	NORMAL $COLOR
-	exit
+	exit 1
     fi
 fi
     
@@ -96,8 +96,6 @@ then
 	BNAME="-${BRANCH}"
     fi
     IFS='.' read -ra VERS <<< "${RELEASE_VERSION}"
-    set +e
-    sudo chown -R root:admin ${WORKSPACE}/releasebld/buildroot
     /Developer/usr/bin/packagemaker \
 	--title "MDSplus%(pkgflavor)s" \
 	--version "%(major)d.%(minor)d.%(release)d" \
@@ -106,11 +104,18 @@ then
 	--target "10.5" \
 	-r $(pwd)/build -v -i "MDSplus${BNAME}" \
 	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
-    status=$?
-    sudo chown -R $(id -un):$(id -gn) $(pwd)/build
-    if [ "$status" != "0" ]
+    if [ "$?" != "0" ]
     then
-	>&2 echo "Error building installer"
+	RED $COLOR
+	cat <<EOF >&2
+======================================================
+
+Failure: Error building installer
+
+======================================================
+EOF
+	NORMAL $COLOR
+	exit 1
     fi
 fi
 
