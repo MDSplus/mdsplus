@@ -405,6 +405,24 @@ NORMAL() {
     fi
 }
 
+if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
+then
+    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION} ]
+    then
+	GREEN $COLOR
+	cat <<EOF
+==================================================================
+                                                                  
+A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.  
+The build will be skipped.                                        
+                                                                  
+==================================================================
+EOF
+	NORMAL $COLOR
+	exit 0
+    fi
+fi
+
 #
 # Make sure one of --test --release=version
 # --publish=version options were provided.
@@ -542,19 +560,6 @@ then
     PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
 fi
 
-if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
-then
-    if [ -r $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION} ]
-    then
-	cat <<EOF
-${GREEN}
-A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.
-The build will be skipped.
-${NORMAL}
-EOF
-	exit 0
-    fi
-fi
 #
 # Invoke the platform specific build script
 #
