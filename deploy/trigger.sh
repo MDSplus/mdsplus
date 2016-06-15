@@ -265,6 +265,15 @@ then
 RELEASE_TAG=${RELEASE_TAG}
 RELEASE_VERSION=${RELEASE_VERSION}
 EOF
+    GREEN $COLOR
+    cat <<EOF
+=========================================================
+
+Triggering release ${RELEASE_TAG} build
+
+=========================================================
+EOF
+    NORMAL $COLOR
 fi
 if [ "$PUBLISH" = "yes" ]
 then
@@ -272,6 +281,15 @@ then
     then
 	. ${SRCDIR}/trigger.version
 	opts="$opts --publish=${RELEASE_VERSION}"
+	GREEN $COLOR
+	cat <<EOF
+=========================================================
+
+Triggering publish release of ${RELEASE_TAG}
+
+=========================================================
+EOF
+	NORMAL $COLOR
     else
 	RED $COLOR
 	cat <<EOF >&2
@@ -292,8 +310,11 @@ then
     if [ -r ${SRCDIR}/trigger.version ]
     then
 	. ${SRCDIR}/trigger.version
+	MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
+	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
+	RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
 	comment="New release of ${BRANCH} branch of MDSplus." \
-	       "Version mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE}"
+	       "Version mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASEV}"
 	git tag -f -a -m  "${comment}" ${RELEASE_TAG};
 	git push --follow-tags origin ${BRANCH};
     else
