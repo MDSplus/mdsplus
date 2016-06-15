@@ -63,6 +63,7 @@ EOF
 	NORMAL $COLOR
 	exit 1
     fi
+    popd
 fi
     
 if [ "$RELEASE" = "yes" ]
@@ -72,12 +73,10 @@ then
     ###
     ### Clean up workspace
     ###
-    set +e
     rm -Rf ${WORKSPACE}/releasebld
     ###
     ### Build release version of MDSplus and then construct installer rpms
     ###
-    set -e
     MDSPLUS_DIR=${WORKSPACE}/releasebld/buildroot/usr/local/mdsplus
     mkdir -p ${MDSPLUS_DIR}
     pushd ${WORKSPACE}/releasebld/
@@ -102,7 +101,7 @@ then
 	--scripts ${SRCDIR}/macosx/scripts \
 	--install-to "/usr/local" \
 	--target "10.5" \
-	-r $(pwd)/build -v -i "MDSplus${BNAME}" \
+	-r ${WORKSPACE}/releasebld/buildroot -v -i "MDSplus${BNAME}" \
 	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg
     if [ "$?" != "0" ]
     then
