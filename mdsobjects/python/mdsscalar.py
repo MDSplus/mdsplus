@@ -176,11 +176,17 @@ class Uint32(Scalar):
 
 class Uint64(Scalar):
     """64-bit unsigned number"""
-    _utc0 = 35067168000000000L
+    _utc0 = _N.uint64("35067168000000000")
     _utc1 = 1E7
     @staticmethod
     def fromTime(value):
-        """converts from seconds since 01-JAN-1970 00:00:00.00"""
+        """converts from seconds since 01-JAN-1970 00:00:00.00
+        For example:
+           import MDSplus
+           import time
+           mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
+           print(mdstime.date)
+        """
         return Uint64(int(value * Uint64._utc1) + Uint64._utc0)
 
     def _getDate(self):
