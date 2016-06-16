@@ -34,7 +34,6 @@
 ./usr/local/mdsplus/tdi
 ./usr/local/mdsplus/tdi/Ccl.fun
 ./usr/local/mdsplus/tdi/GetCheckedSegment.fun
-./usr/local/mdsplus/tdi/GetDbInfo.fun
 ./usr/local/mdsplus/tdi/Machine.fun
 ./usr/local/mdsplus/tdi/MdsDevices.fun
 ./usr/local/mdsplus/tdi/MdsVersion.fun
@@ -96,7 +95,6 @@
 ./usr/local/mdsplus/tdi/fformat.fun
 ./usr/local/mdsplus/tdi/filter.fun
 ./usr/local/mdsplus/tdi/findfile.fun
-./usr/local/mdsplus/tdi/findtreedir.fun
 ./usr/local/mdsplus/tdi/getenv.fun
 ./usr/local/mdsplus/tdi/getmsg.fun
 ./usr/local/mdsplus/tdi/helloworld.fun
