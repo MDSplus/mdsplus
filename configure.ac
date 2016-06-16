@@ -1069,7 +1069,7 @@ DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-if [ ! -z ${RELEASE_VERSION} ]
+if [[ ! -z ${RELEASE_VERSION} ]]
 then
   RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
   RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
