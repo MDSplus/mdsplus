@@ -1069,16 +1069,22 @@ DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-if [ ! -z ${RELEASE_VERSION} ]
+if [[ ! -z ${RELEASE_VERSION} ]]
 then
   RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
   RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
   RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
   RELEASE_BRANCH=$BRANCH
   RELEASE_COMMIT=$GIT_COMMIT
-  RELEASE_DATE="$(date)"
-  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+else
+  RELEASE_MAJOR=1
+  RELEASE_MINOR=0
+  RELEASE_RELEASE=0
+  RELEASE_BRANCH="unknown"
+  RELEASE_COMMIT="unknown"
 fi
+RELEASE_DATE="$(date)"
+RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 
 
