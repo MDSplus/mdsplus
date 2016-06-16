@@ -498,10 +498,11 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   char *filename = alloca(strlen(filename_in) + strlen(prefix) + strlen(SHARELIB_TYPE) + 1);
   errorstr[0]='\0';
   *symbol_value = NULL;
-  if ((strlen(prefix) > 0) && strncmp(filename_in, prefix, strlen(prefix))) {
+  strcpy(filename,filename_in);
+  if ((!(strchr(filename,'/') || strchr(filename,'\\'))) &&
+      (strlen(prefix) > 0) &&
+      strncmp(filename_in, prefix, strlen(prefix))) {
     sprintf(filename, "%s%s", prefix, filename_in);
-  } else {
-    strcpy(filename, filename_in);
   }
   if (strcmp(filename+strlen(filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE)) {
     strcat(filename,SHARELIB_TYPE);
