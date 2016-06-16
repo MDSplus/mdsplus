@@ -20,7 +20,6 @@
 ./usr/local/mdsplus/tdi/
 ./usr/local/mdsplus/tdi/c2vmstime.fun
 ./usr/local/mdsplus/tdi/getmsg.fun
-./usr/local/mdsplus/tdi/GetDbInfo.fun
 ./usr/local/mdsplus/tdi/noderefs_of.fun
 ./usr/local/mdsplus/tdi/step_resample.fun
 ./usr/local/mdsplus/tdi/TreeFindTagEnd.fun
@@ -57,7 +56,6 @@
 ./usr/local/mdsplus/tdi/toms510.fun
 ./usr/local/mdsplus/tdi/multitrace.fun
 ./usr/local/mdsplus/tdi/TreeAddTag.fun
-./usr/local/mdsplus/tdi/findtreedir.fun
 ./usr/local/mdsplus/tdi/whoami.fun
 ./usr/local/mdsplus/tdi/seconds_since.fun
 ./usr/local/mdsplus/tdi/math/
