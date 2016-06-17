@@ -66,12 +66,12 @@ then
     ###
     ### Clean up workspace
     ###
-    rm -Rf /workspace/tests
     if [ "${ARCH}" = "amd64" ]
     then
 	###
 	### Build 64-bit MDSplus with debug to run regular and valgrind tests
 	###
+        rm -Rf /workspace/tests/64
 	MDSPLUS_DIR=/workspace/tests/64/buildroot;
 	mkdir -p ${MDSPLUS_DIR};
 	MDS_PATH=${MDSPLUS_DIR}/tdi;
@@ -181,6 +181,7 @@ EOF
 	### Build 32-bit version with debug for testing
 	###
 	set -e
+	rm -Rf /workspace/tests/32
 	MDSPLUS_DIR=/workspace/tests/32/buildroot;
 	MDS_PATH=${MDSPLUS_DIR}/tdi;
 	mkdir -p ${MDSPLUS_DIR};
