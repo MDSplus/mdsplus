@@ -466,7 +466,7 @@ add_cmd get.trig >> $settingsf
                 if self.debugging():
                     print "error retrieving bus %s\n" %(e,)
                 bus = ''
-            if wire != 'fpga' and bus != '' :
+            if bus != '' :
                 fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
                 if self.debugging():
                     print "set.route %s in %s out %s\n" %(line, wire, bus,)
