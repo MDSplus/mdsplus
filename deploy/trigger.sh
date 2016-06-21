@@ -162,6 +162,7 @@ parsecmd() {
 		;;
 	    --keys=*)
 		opts="${opts} ${i}"
+		KEYS=${i#*=}
 		;;
 	    --dockerpull)
 		opts="${opts} ${i}"
@@ -239,6 +240,7 @@ opts="$opts --branch=$BRANCH"
 
 if [ "$RELEASE" = "yes" ]
 then
+    NEW_RELEASE=no
     RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
     if [ -z ${RELEASE_TAG} ]
     then
@@ -253,8 +255,10 @@ then
     else
 	BNAME="-${BRANCH}"
     fi
-    if [ "$(git rev-list -n 1 $RELEASE_TAG)" != "${GIT_COMMIT}" ]
+    LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
+    if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
+	NEW_RELEASE=yes
 	let RELEASEV=$RELEASEV+1;
 	RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     fi
@@ -262,6 +266,8 @@ then
     git log --decorate=full > ${SRCDIR}/ChangeLog
     opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"
     cat <<EOF > ${SRCDIR}/trigger.version
+NEW_RELEASE=${NEW_RELEASE}
+LAST_RELEASE_COMMIT=${LAST_RELEASE_COMMIT}
 RELEASE_TAG=${RELEASE_TAG}
 RELEASE_VERSION=${RELEASE_VERSION}
 EOF
@@ -310,13 +316,18 @@ then
     if [ -r ${SRCDIR}/trigger.version ]
     then
 	. ${SRCDIR}/trigger.version
-	MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
-	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
-	RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
-	comment="New release of ${BRANCH} branch of MDSplus." \
-	       "Version mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASEV}"
-	git tag -f -a -m  "${comment}" ${RELEASE_TAG};
-	git push --follow-tags origin ${BRANCH};
+	if [ "$NEW_RELEASE" = "yes" ]
+	then
+	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" >/dev/null <<EOF
+{
+  "tag_name":"${RELEASE_TAG}",
+  "target_commitish":"${BRANCH}",
+  "name":"${RELEASE_TAG}",
+  "body":"Commits since last release:\n\n 
+$(git log --decorate=full ${LAST_RELEASE_COMMIT}..HEAD | awk '{print $0"\\n"}')"
+}
+EOF
+	fi
     else
 	RED $COLOR
 	cat <<EOF >&2
