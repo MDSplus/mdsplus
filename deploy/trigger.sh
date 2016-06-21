@@ -311,7 +311,7 @@ EOF
 	exit 1
     fi
 fi
-if [ "$TAG_RELEASE" = "yes"]
+if [ "$TAG_RELEASE" = "yes" ]
 then
     if [ -r ${SRCDIR}/trigger.version ]
     then
