@@ -407,6 +407,11 @@ class TreeNode(_data.Data):
         self.putData(None)
         return
 
+    def dir(self):
+        """list descendants"""
+        for desc in self.getDescendants():
+            print('%-12s    %s'%(desc.getNodeName(),desc.getUsage()))
+
     def dispatch(self,wait=True):
         """Dispatch an action node
         @rtype: None

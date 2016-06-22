@@ -300,6 +300,11 @@ class Tree(object):
         finally:
             Tree.unlock()
 
+    def dir(self):
+        """list descendants of top"""
+        _treenode.TreeNode(0,self).dir()
+
+
     def edit(self):
         """Open tree for editing.
         @rtype: None"""
