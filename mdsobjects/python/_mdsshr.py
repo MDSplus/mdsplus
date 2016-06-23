@@ -156,7 +156,7 @@ def MdsFree1Dx(value):
 
 def DateToQuad(date):
     ans=_C.c_ulonglong(0)
-    status = __LibConvertDateString(_ver.bytes(date),ans)
+    status = __LibConvertDateString(_ver.tobytes(date),ans)
     if not (status & 1):
         raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
     return _data.makeData(_N.uint64(ans.value))
