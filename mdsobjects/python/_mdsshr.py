@@ -50,7 +50,9 @@ def getenv(name):
     tl=_mdsshr.TranslateLogical
     tl.restype=_C.c_char_p
     try:
-        ans=tl(str(name))
+        ans=tl(_ver.tobytes(str(name)))
+        if ans is not None:
+            ans = _ver.tostr(ans)
     except:
         ans=""
     return ans
@@ -63,7 +65,7 @@ def setenv(name,value):
     @type value: str
     """
     pe=_mdsshr.MdsPutEnv
-    pe("=".join([str(name),str(value)]))
+    pe(_ver.tobytes("=".join([str(name),str(value)])))
 
 
 def MDSEventCan(eventid):
@@ -154,7 +156,7 @@ def MdsFree1Dx(value):
 
 def DateToQuad(date):
     ans=_C.c_ulonglong(0)
-    status = __LibConvertDateString(_ver.bytes(date),ans)
+    status = __LibConvertDateString(_ver.tobytes(date),ans)
     if not (status & 1):
         raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
     return _data.makeData(_N.uint64(ans.value))
