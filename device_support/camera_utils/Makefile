@@ -40,4 +40,8 @@ clean:
 	rm $(OBJmdsutils)
 	rm $(SHAREDLIBmdsutils)	
 
+install:
+	cp $(SHAREDLIBstreamutils) ${MDSPLUS_DIR}/lib
+	cp $(SHAREDLIBmdsutils) ${MDSPLUS_DIR}/lib
+
 
