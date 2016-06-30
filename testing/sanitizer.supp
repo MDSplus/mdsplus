@@ -1,5 +1,6 @@
 leak:libMdsIpUDT
 race:libMdsIpUDT
+leak:*ThreadStatic
 
 leak:*libpython*
 leak:*numpy*
