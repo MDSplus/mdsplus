@@ -717,12 +717,7 @@ STATIC_THREADSAFE int NCIMutex_initialized;
 
 int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 {
-<<<<<<< HEAD
   int status;
-=======
-int status;
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
   status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
 			   nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
   LockMdsShrMutex(&NCIMutex, &NCIMutex_initialized);
@@ -731,13 +726,7 @@ int status;
 
 int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum)
 {
-<<<<<<< HEAD
   int status;
-=======
-
-int status;
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
   status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
 			   MDS_IO_LOCK_NONE, 0);
 
