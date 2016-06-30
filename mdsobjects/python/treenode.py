@@ -942,15 +942,9 @@ class TreeNode(_data.Data):
         """
         _tree.Tree.lock()
         try:
-            """
             if isinstance(data,_data.Data) and data.__hasBadTreeReferences__(self.tree):
                 data=data.__fixTreeReferences__(self.tree)
-<<<<<<< HEAD
             _treeshr.TreePutRecord(self,data)
-=======
-             """
-            _mimport('_treeshr',1).TreePutRecord(self,data)
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
         finally:
             _tree.Tree.unlock()
         return self

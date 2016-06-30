@@ -43,6 +43,9 @@ public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	private _DIO4_IO_INT_DISABLE= 0x0;
 
 write(*, 'DIO4HWSetPulseChan');
+_s = size(_event);
+write(*, '_event: ', _event);
+write(*, 'event size: ', _s);
 
 /* Initialize Library if the first time */
     if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1;));
@@ -59,6 +62,7 @@ write(*, 'DIO4HWSetPulseChan');
 			write(*, "Error opening DIO4 device, board ID = "// _board_id);
 		return(0);
 	}
+
 
 
 /* Set trigger mode*/
@@ -101,8 +105,6 @@ write(*, 'DIO4HWSetPulseChan');
 
 		_mode = _mode | _DIO4_TC_IDLE_LEVEL_0;
 
-write(*, "Mode DIO4HWSetPulseChan ", _mode );
-
 	_status = DIO4->DIO4_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(_mode), 
 		val(byte(_DIO4_TC_INT_DISABLE)), _levels);
 	if(_status != 0)
@@ -139,6 +141,7 @@ write(*, "Mode DIO4HWSetPulseChan ", _mode );
 	
 
 /* Set event if trigger mode == event */
+	
 	if(_trig_mode == 0)
 	{
 		write(*, 'EVENT');
@@ -175,8 +178,6 @@ write(*, "Mode DIO4HWSetPulseChan ", _mode );
 	}
 	
 
-/*
-Non funziona crea problemi alla h=generazione del trigger
 
 		if(_evTermCode)
 		  _term = _DIO4_IO_TERMINATION_ON;
@@ -207,7 +208,7 @@ Non funziona crea problemi alla h=generazione del trigger
 			return(0);
 		}
 
-*/
+
 /* Close device */
 	DIO4->DIO4_Close(val(_handle));
 

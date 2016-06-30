@@ -94,7 +94,6 @@ class NI6259AI(Device):
         NI6259AI.ni6259Fds[self.nid] = self.fd
 
     def restoreInfo(self):
-<<<<<<< HEAD
         if NI6259AI.niLib is None:
             NI6259AI.niLib = CDLL("libni6259.so")
         if NI6259AI.niInterfaceLib is None:
@@ -104,24 +103,6 @@ class NI6259AI(Device):
             self.fd = NI6259AI.ni6259Fds[self.nid]
         else:
             try:
-=======
-        global ni6259Fds
-        global ni6259Nids
-        global niLib
-        global niInterfaceLib
-        try:
-            niLib
-        except:
-            niLib = CDLL("libpxi6259.so")
-            niInterfaceLib = CDLL("libNiInterface.so")
-        try:
-            idx = ni6259Nids.index(self.getNid())
-            self.fd = ni6259Fds[idx]
-            #print 'RESTORE INFO HANDLE FOUND'
-        except:
-            #print 'RESTORE INFO HANDLE NOT FOUND'
-            try: 
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
                 boardId = self.board_id.data();
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing Board Id' )
@@ -129,10 +110,6 @@ class NI6259AI(Device):
             try:
                 fileName = '/dev/pxi6259.'+str(boardId)+'.ai';
                 self.fd = os.open(fileName, os.O_RDWR);
-<<<<<<< HEAD
-=======
-                print 'Open fd: ', self.fd
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -314,17 +291,7 @@ class NI6259AI(Device):
 
         print('================= PXI 6259 Init ===============')
 
-<<<<<<< HEAD
         self.restoreInfo()
-=======
-        global niLib
-        global niInterfaceLib
-
-
-        if self.restoreInfo() == 0 :
-            return 0
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
         aiConf = c_void_p(0)
         NI6259AI.niInterfaceLib.pxi6259_create_ai_conf_ptr(byref(aiConf))
         try:
@@ -690,8 +657,6 @@ class NI6259AI(Device):
     def trigger(self):
       global niLib
       global niInterfaceLib
-
-
       self.restoreInfo()
       try:
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))

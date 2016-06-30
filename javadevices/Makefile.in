@@ -623,7 +623,6 @@ MARTE_BREAKDOWNSetup.java\
 MARTE_RTSMSetup.java\
 MARTE_XRAYSetup.java\
 MARTE_NESetup.java\
-MARTE_DUTY_CYCLESetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
 SPIDERSetup.java\
@@ -639,8 +638,7 @@ ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
 MARTE_DEVICESetup.java \
 RFXVICONTROLSetup.java \
-REDPYTADCSetup.java \
-CAENDT5724Setup.java
+REDPYTADCSetup.java
 
 all: all-am
 

@@ -490,7 +490,6 @@ int _TreeTurnOn(void *dbid, int nid_in)
   TREE_INFO *info;
   NCI nci;
   NODE *node;
-
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
   if (dblist->remote)
@@ -515,9 +514,6 @@ int _TreeTurnOn(void *dbid, int nid_in)
 	status = SetParentState(dblist, member_of(node), 0);
     } else
       status = TreePARENT_OFF;
-////PROVA
-    status = TreeUnLockNci(info, 0, node_num);
-
   } else {
     status = TreeALREADY_ON;
   }
@@ -565,7 +561,6 @@ int _TreeTurnOff(void *dbid, int nid_in)
   TREE_INFO *info;
   NCI nci;
   NODE *node;
-
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
   if (dblist->remote)
@@ -588,8 +583,6 @@ int _TreeTurnOff(void *dbid, int nid_in)
       if (node->member)
 	status = SetParentState(dblist, member_of(node), 1);
     }
-////PROVA
-    status = TreeUnLockNci(info, 0, node_num);
   } else {
     status = TreeALREADY_OFF;
   }
@@ -692,9 +685,6 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
     status = TreePutNci(info, node_num, nci, 0);
     TreeUnLockNci(info, 0, node_num);
   }
-//PROVA
-    status = TreeUnLockNci(info, 0, node_num);
-
   return status;
 }
 
@@ -717,12 +707,7 @@ STATIC_THREADSAFE int NCIMutex_initialized;
 
 int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 {
-<<<<<<< HEAD
   int status;
-=======
-int status;
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
   status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
 			   nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
   LockMdsShrMutex(&NCIMutex, &NCIMutex_initialized);
@@ -731,16 +716,9 @@ int status;
 
 int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum)
 {
-<<<<<<< HEAD
   int status;
-=======
-
-int status;
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
   status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
 			   MDS_IO_LOCK_NONE, 0);
-
   UnlockMdsShrMutex(&NCIMutex);
   return status;
 }
