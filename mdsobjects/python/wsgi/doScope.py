@@ -63,6 +63,7 @@ def file_list_cmp(x,y):
 def doScope(self):
   response_headers=list()
   noCache(response_headers)
+  overallShot = None
   if 'user' in self.args:
       user=self.args['user'][-1]
       response_headers.append(('Content-type','text/html'))
@@ -100,7 +101,8 @@ def doScope(self):
 #Handle direct configuration
     response_headers.append(('IS_CONFIG','YES'))
     response_headers.append(('Content-type','text/xml'))
-
+    if 'shot' in self.args:
+        overallShot = self.args['shot'][-1]
     f = open(self.args['configxml'][-1],'r')
     lines = f.readlines()
     f.close()
@@ -158,12 +160,15 @@ def doScope(self):
 
         if(tree != None):
           outStr = outStr+' tree = "'+tree+'" ';
-          if(globalDefs & (1 << GLOBAL_SHOT_IDX)):
-            shotNum = globalShot
+          if overallShot != None:
+            outStr = outStr+' shot = "'+overallShot+'" '
           else:
-            shotNum = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.shot')
-          if(shotNum != None):
-            outStr = outStr+' shot = "'+shotNum+'" '
+            if(globalDefs & (1 << GLOBAL_SHOT_IDX)):
+              shotNum = globalShot
+            else:
+              shotNum = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.shot')
+            if(shotNum != None):
+              outStr = outStr+' shot = "'+shotNum+'" '
 
         if(globalDefs & (1 << GLOBAL_XMIN_IDX)):
           xmin = globalXMin
