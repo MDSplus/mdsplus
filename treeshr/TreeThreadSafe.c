@@ -15,7 +15,17 @@ STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 STATIC_ROUTINE void buffer_key_alloc();
 
 /* Return the thread-specific buffer */
-TreeThreadStatic *TreeGetThreadStatic()
+
+#if defined(__has_feature)
+#  if __has_feature(address_sanitizer)
+#    define SKIP_SAN __attribute__((no_sanitize("address")))
+#  endif
+#endif
+#ifndef SKIP_SAN
+#define SKIP_SAN
+#endif
+
+SKIP_SAN TreeThreadStatic *TreeGetThreadStatic()
 {
   TreeThreadStatic *p;
   pthread_once(&buffer_key_once, buffer_key_alloc);
@@ -52,6 +62,7 @@ EXPORT int TreeUsingPrivateCtx()
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf)
 {
+  printf("buffer_destroy called\n");
   if (buf != NULL) {
     free(buf);
   }

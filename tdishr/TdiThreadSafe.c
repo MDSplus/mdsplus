@@ -13,9 +13,18 @@ STATIC_THREADSAFE pthread_key_t buffer_key;
 STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 
 STATIC_ROUTINE void buffer_key_alloc();
+#if defined(__has_feature)
+#  if __has_feature(address_sanitizer)
+#    define SKIP_SAN __attribute__((no_sanitize("address")))
+#  endif
+#endif
+#ifndef SKIP_SAN
+#define SKIP_SAN
+#endif
+
 
 /* Return the thread-specific buffer */
-ThreadStatic *TdiThreadStatic()
+SKIP_SAN ThreadStatic *TdiThreadStatic()
 {
   ThreadStatic *p;
   pthread_once(&buffer_key_once, buffer_key_alloc);
