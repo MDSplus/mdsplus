@@ -19,7 +19,6 @@
 #include <strroutines.h>
 #include "../mdsshr/mdsshrthreadsafe.h"
 #include <tdishr.h>
-// #include <pthread.h>
 
 #if _WIN32 || _WIN64
 #if _WIN64
@@ -37,9 +36,6 @@
 #define ENV_32
 #endif
 #endif
-
-
-pthread_mutex_t openTreeMutex = PTHREAD_MUTEX_INITIALIZER; 
 
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
 			   int *numbytes, void * *dptr, void **m);
@@ -1445,7 +1441,6 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   jfieldID ctx1Fid, ctx2Fid;
   jclass cls;
 
-  pthread_mutex_lock(&openTreeMutex);  //Context management requires locking tree open
   name = (*env)->GetStringUTFChars(env, jname, 0);
   if (strlen(name) > 0)
     status = _TreeOpen(&ctx, (char *)name, shot, readonly ? 1 : 0);
@@ -1456,7 +1451,6 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if (!(status & 1)) {
     throwMdsException(env, status);
-    pthread_mutex_unlock(&openTreeMutex);  
     return;
   }
   TreeSwitchDbid(ctx);
@@ -1467,7 +1461,6 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   ctx2Fid = (*env)->GetFieldID(env, cls, "ctx2", "I");
   (*env)->SetIntField(env, jobj, ctx1Fid, ctx1);
   (*env)->SetIntField(env, jobj, ctx2Fid, ctx2);
-  pthread_mutex_unlock(&openTreeMutex);  
 }
 
 /*

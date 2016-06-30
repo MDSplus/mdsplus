@@ -1,16 +1,7 @@
-<<<<<<< HEAD
 from MDSplus import mdsExceptions, Device, Data, version
 from ctypes import CDLL, byref, c_double, c_int, c_void_p, c_char_p, create_string_buffer
 from numpy import array
 from threading import Thread
-=======
-from MDSplus import *
-from numpy import *
-from threading import *
-from ctypes import *
-import datetime
-import time
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 import traceback
 
 class FLIRSC65X(Device):
@@ -58,15 +49,10 @@ class FLIRSC65X(Device):
       {'path':'.STREAMING:AUTOSCALE', 'type':'text', 'value':'YES'},
       {'path':'.STREAMING:LOLIM', 'type':'numeric', 'value':15},
       {'path':'.STREAMING:HILIM', 'type':'numeric', 'value':50},
-<<<<<<< HEAD
 
 
-=======
-  
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
-      {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
-      {'path':'.TIMING:FRAME0INT64', 'type':'numeric', 'value':0}]
+      {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
 
     parts.append({'path':':INIT_ACT','type':'action',
       'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
@@ -77,7 +63,6 @@ class FLIRSC65X(Device):
     parts.append({'path':':STOP_ACT','type':'action',
       'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_store',head))",
       'options':('no_write_shot',)})
-<<<<<<< HEAD
 
     handle = c_int(-1)
     handles = {}
@@ -86,20 +71,12 @@ class FLIRSC65X(Device):
     mdsLib = None
     streamLib = None
     flirUtilsLib = None
-=======
-    print 'FLIRSC65X added'
-    
-    
-    handle = c_int(-1)
-    error = create_string_buffer('', 512)
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
     error = create_string_buffer(version.tobytes(''), 512)
 
 
     """Asynchronous readout internal class"""
     class AsynchStore(Thread):
-<<<<<<< HEAD
 
         def configure(self, device):
             self.device = device
@@ -204,184 +181,9 @@ class FLIRSC65X(Device):
 
 ###remove info###
     def removeInfo(self):
-=======
-      frameIdx = 0
-      stopReq = False
-
-      def configure(self, device, flirLib):
-        self.device = device
-        self.flirLib = flirLib
-        
-      def run(self):
-
-        print self.device.getNodeName()," - Asynchronous acquisition thread started"  		
-
-        status = self.flirLib.startFramesAcquisition(self.device.handle)    #acquisition loop 
-        if status < 0:
-          flirLib.getLastError(self.device.handle, self.device.error)
-          Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot start frames acquisition : ' + self.device.error.raw )
-        
-        print self.device.getNodeName()," - Asynchronous acquisition thread ended"	
-        return
-      
-      def stop(self):
-        if self.isAlive():  #worker is running
-          status = self.flirLib.stopFramesAcquisition(self.device.handle)
-          if status < 0:
-             flirLib.getLastError(self.device.handle, self.device.error)
-             Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot stop frames acquisition : ' + self.device.error.raw )
-        else:
-          print 'Worker is NOT alive. Stop not necessary.'  
-        return
-#end class AsynchStore
-
-
-###save worker###  
-    def saveWorker(self):
-      global cameraWorkers
-      global cameraWorkerNids
-      try:
-        cameraWorkers
-      except:
-        cameraWorkerNids = []
-        cameraWorkers = []
-      try:
-        idx = cameraWorkerNids.index(self.getNid())
-        cameraWorkers[idx] = self.worker
-      except:
-        print 'Save Worker: New Worker saved'
-        cameraWorkerNids.append(self.getNid())
-        cameraWorkers.append(self.worker)
-        return
-      return
-
-###restore worker###   
-    def restoreWorker(self):
-      global cameraWorkerNids
-      global cameraWorkers    
-      try:
-        idx = cameraWorkerNids.index(self.getNid())
-        self.worker = cameraWorkers[idx]
-        print 'Restore worker: worker recovered'
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Restore worker: WORKER NOT PRESENT')
-        return 0
-      return 1
-
-
-###remove worker###   
-    def removeWorker(self):
-      global cameraWorkerNids
-      global cameraWorkers    
-      
-      print 'Remove worker'
-      try:
-        cameraWorkerNids.remove(self.getNid())
-        cameraWorkers.remove(self.worker)
-        del self.worker
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot remove worker!!')
-        return 0
-         
-      return 1
-
-    
-    
-###create Info###   
-#allow to manage multiple occurrences of camera devices and to avoid opening and closing devices handles 
-    def createInfo(self):
-      global cameraHandles
-      global cameraNids
-      global flirLib
-      global streamLib
-      global mdsLib 
-
-      try:
-        cameraHandles
-      except:
-        cameraHandles = []
-        cameraNids = []
-      
-      print self.getNodeName(),' - Create Info: creating new handle'
-                  
-      try:
-          try:
-            flirLib
-          except:
-            libName = "libflirsc65x.so"
-            flirLib = CDLL(libName)
-            print flirLib
-          try:
-            mdsLib
-          except:
-            libName = "libcammdsutils.so"
-            mdsLib = CDLL(libName)
-            print mdsLib
-          try:
-            streamLib
-          except:
-            libName = "libcamstreamutils.so"
-            streamLib = CDLL(libName)
-            print streamLib
-      except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: CANNOT LOAD LIBRARY ' + libName )
-          return 0
-                
-      print "Opening Flir Camera..."
-            
-      try: 
-          name = self.name.data()
-      except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: MISSING DEVICE NAME' )
-          return 0
-                                        
-      self.handle = c_int(-1)
-      status = flirLib.flirOpen(c_char_p(name), byref(self.handle))
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: Cannot open FLIR camera '+ name +'('+self.error.raw+')')
-        return 0
-                
-      cameraHandles.append(self.handle)
-      cameraNids.append(self.getNid())
-      print self.getNodeName()," - Camera opened and handle saved."              
-      return 1         
-      
-      
-###restore info###   
-    def restoreInfo(self):
-      global cameraHandles
-      global cameraNids
-            
-      try:
-        idx = cameraNids.index(self.getNid())     
-        self.handle = cameraHandles[idx]
-        print self.getNodeName(),' - Restore Info: handle recovered'
-      except:
-        print self.getNodeName(),' - Restore Info: HANDLE NOT PRESENT'
-        return 0
-                 
-      return 1
-
-
-
-###remove info###    
-    def removeInfo(self):
-      global cameraHandles
-      global cameraNids
-      global flirLib
-      
-      print 'Close camera and remove info'
-      status = flirLib.flirClose(self.handle)  #CLOSE FLIR CAMERA     --- self.device.handle
-      if status < 0:
-         flirLib.getLastError(self.handle, self.error)   #self.device.
-         Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR CLOSING THE CAMERA: ' + self.error.raw )   #self.handle
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       try:
         del(FLIRSC65X.handles[self.nid])
       except:
-<<<<<<< HEAD
         print('ERROR TRYING TO REMOVE INFO')
 
 
@@ -391,69 +193,18 @@ class FLIRSC65X(Device):
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-=======
-        print 'ERROR TRYING TO REMOVE INFO'
-        return 0
-      
-      return 1      
-
-
-
-##########init############################################################################    
-    def init(self,arg):
-        
-      if self.restoreWorker() == 1:    #TRY TO RESTORE WORKER.
-          if self.worker.isAlive():
-             print 'ERROR: CANNOT DO INIT DURING ACQUISITION'
-             return 0                 #MUST NOT CLOSE CAMERA
-          else:
-             self.removeWorker()      #WORKER EXIST FROM THE LAST ACQUISITION 
-             print 'remove last acquisition worker'
-                        
-       
-      if self.restoreInfo() == 0:    #TRY TO RESTORE HANDLE.  
-        if self.createInfo() == 0:   #IF NOT EXISTS TRY TO CREATE NEW HANDLE
-          return 0                   #ON ERROR EXIT FROM INIT
-                                 
-      if self.initCamera(arg)==0:    #ON INIT ERROR CLOSE CAMERA. 
-         self.removeInfo()
-         return 0
-      
-      print self.getNodeName(), ' - Init action completed.'
-      return 1        
-        
-        
-        
-        
-##########initCamera###########      
-    def initCamera(self,arg):
-      global flirLib
-      global mdsLib
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
       try:
         self.frames.setCompressOnPut(False)
       except:
-<<<<<<< HEAD
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot disable automatic compresson on put for frames node')
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-=======
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot disable automatic compression on put for frames node')
-        return 0
-      
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       try:
         self.frames_metad.setCompressOnPut(False)
       except:
-<<<<<<< HEAD
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot disable automatic compresson on put for frames_metad node')
         raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot disable automatic compression on put for frames_metad node')
-        return 0
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
 ###Object Parameters
 
@@ -495,7 +246,6 @@ class FLIRSC65X(Device):
       try:
         o_atm_trans = c_double(self.object_atm_trans.data())
       except:
-<<<<<<< HEAD
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid value for object atmosfere trasmission')
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -505,23 +255,11 @@ class FLIRSC65X(Device):
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Object Parameters : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid value for object atmosfere trasmission')
-        return 0
-       
-       
-      status = flirLib.setObjectParameters(self.handle, o_refl_temp, o_atm_temp, o_distance, o_emissivity, o_atm_hum , o_optic_temp, o_optic_trans, o_atm_trans )
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Object Parameters : ' + self.error.raw)
-        return 0
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
 ###Frame Rate
       try:
          frameRate = self.timing_frame_rate.data()
       except:
-<<<<<<< HEAD
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid frame rate value')
         raise mdsExceptions.TclFAILED_ESSENTIAL
       status = FLIRSC65X.flirLib.setFrameRateNew(self.handle, c_double(frameRate))
@@ -531,18 +269,6 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###Frame Area
-=======
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid frame rate value')
-        return 0
-      status = flirLib.setFrameRateNew(self.handle, c_double(frameRate))
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Frame Rate : ' + self.error.raw)
-        return 0
-
-###Frame Area
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       x=c_int(0)
       y=c_int(0)
       width=c_int(0)
@@ -573,21 +299,12 @@ class FLIRSC65X(Device):
       elif measureRange == '300...2000':
         measRangeInt=c_int(2)
 
-<<<<<<< HEAD
       status = FLIRSC65X.flirLib.setMeasurementRange(self.handle, measRangeInt)
       if status < 0:
         try:
           FLIRSC65X.flirLib.getLastError(self.handle, self.error)
           Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Measurement Range : ' + self.error.raw)
           raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-      status = flirLib.setMeasurementRange(self.handle, measRangeInt)
-      if status < 0:
-        try:
-          flirLib.getLastError(self.handle, self.error)
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Measurement Range : ' + self.error.raw)
-          return 0
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
         except:
           traceback.print_exc()
 
@@ -632,34 +349,21 @@ class FLIRSC65X(Device):
            raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
            trigSource = array([0.])
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       print("OK " + triggerMode )
       if triggerMode == 'EXTERNAL':   #0=internal  1=external trigger
         trigModeCode=c_int(1)
       else:
         trigSource = array([0.])
-<<<<<<< HEAD
         trigModeCode=c_int(0)
 
       numTrigger = trigSource.size
       print("OK - NUM TRIGGER ", numTrigger)
       print("OK - Trigger Source ", trigSource)
-=======
-        trigModeCode=c_int(0) 
- 
-      numTrigger = trigSource.size
-      print "OK - NUM TRIGGER ", numTrigger
-      print "OK - Trigger Source ", trigSource
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
 
       timeBase = Data.compile(" $ : $ + $ :(zero( size( $ ), 0.) + 1.) * 1./$", trigSource, trigSource, burstDuration, trigSource, frameRate)
 
-<<<<<<< HEAD
       print("Data = " + Data.decompile(timeBase))
 
       self.timing_time_base.putData(timeBase)
@@ -669,17 +373,6 @@ class FLIRSC65X(Device):
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Set Internal/External Trigger : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-      print "Data = " + Data.decompile(timeBase)  
- 
-      self.timing_time_base.putData(timeBase)          
-      status = flirLib.setTriggerMode(self.handle, trigModeCode, c_double(burstDuration), numTrigger)
- 
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Internal/External Trigger : ' + self.error.raw)
-        return 0
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
 ###Calibration
       try:
@@ -710,19 +403,11 @@ class FLIRSC65X(Device):
       try:
         streamingMode = self.streaming_mode.data()
       except:
-<<<<<<< HEAD
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming mode setup')
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
       if streamingMode == 'Stream and Store':
-=======
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid streaming mode setup')
-        return 0
-
-      
-      if streamingMode == 'Stream and Store': 
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
           streamingEnabled = c_int(1)
           storeEnabled = c_int(1)
       elif streamingMode == 'Only Stream':
@@ -752,24 +437,14 @@ class FLIRSC65X(Device):
           try:
              highLim = c_int(self.streaming_hilim.data())
           except:
-<<<<<<< HEAD
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming high temperature limit parameter value')
              raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid streaming high temperature limit parameter value')
-             return 0  
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
           try:
              streamingPort = c_int(self.streaming_port.data())
           except:
-<<<<<<< HEAD
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming port parameter value')
              raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid streaming port parameter value')
-             return 0  
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
           try:
              streamingServer = self.streaming_server.data()
@@ -784,7 +459,6 @@ class FLIRSC65X(Device):
           highLim = c_int(36)
           streamingServer = "localhost"
 
-<<<<<<< HEAD
       print("lowLim ", lowLim)
       print("highLim ", highLim)
       print("frameTempUnitCode ", frameTempUnitCode)
@@ -800,39 +474,15 @@ class FLIRSC65X(Device):
 
 
 ###Acquisition
-=======
-      print "lowLim ", lowLim
-      print "highLim ", highLim
-      print "frameTempUnitCode ", frameTempUnitCode
-      print "streamingPort ", streamingPort
-      print "streamingServer ", streamingServer
-
-                    
-      status = flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim);
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot execute streaming setup mode : ' + self.error.raw)
-        return 0
-
-
-###Acquisition                
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
 
       try:
         acqSkipFrameNumber = c_int( self.timing_skip_frame.data() )
       except:
-<<<<<<< HEAD
         Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid acquisition decimation value')
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       status = FLIRSC65X.flirLib.setAcquisitionMode(self.handle, storeEnabled , acqSkipFrameNumber)
-=======
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid acquisition decimation value')
-        return 0
-        
-      status = flirLib.setAcquisitionMode(self.handle, storeEnabled , acqSkipFrameNumber)    
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute acquisition setup mode : ' + self.error.raw)
@@ -842,7 +492,6 @@ class FLIRSC65X(Device):
        treePtr = c_void_p(0)
        status = FLIRSC65X.mdsLib.camOpenTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
        if status == -1:
-<<<<<<< HEAD
          Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open tree')
          raise mdsExceptions.TclFAILED_ESSENTIAL
       except:
@@ -853,18 +502,6 @@ class FLIRSC65X(Device):
       framesMetadNid = self.frames_metad.nid
 
       status = FLIRSC65X.flirLib.setTreeInfo( self.handle,  treePtr,  framesNid,  timebaseNid,  framesMetadNid)
-=======
-         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open tree')
-         return 0
-      except:
-       traceback.print_exc()
-        
-      framesNid = self.frames.getNid()
-      timebaseNid = self.timing_time_base.getNid()
-      framesMetadNid = self.frames_metad.getNid()
-       
-      status = flirLib.setTreeInfo( self.handle,  treePtr,  framesNid,  timebaseNid,  framesMetadNid)
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute set tree info : '+self.error.raw)
@@ -878,19 +515,10 @@ class FLIRSC65X(Device):
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Calibration : '+self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-<<<<<<< HEAD
       print('Init action completed.')
       return
-=======
-      return 1
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
-
-
-
-
 
 ####################MANUAL CALIBRATION ACTION
-<<<<<<< HEAD
     def calib(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -909,38 +537,6 @@ class FLIRSC65X(Device):
     def autofocus(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-    def calib(self,arg):
-      global flirLib
-      
-      if self.restoreInfo() == 0:    #TRY TO RESTORE HANDLE.        
-        if self.createInfo() == 0:   #IF NOT EXISTS TRY TO CREATE NEW HANDLE
-          return 0                   #ON ERROR EXIT 
-      else: 
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: device already in use')
-        return 0                           
-                  
-      status = flirLib.executeAutoCalib(self.handle)
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Calibration '+ self.error.raw)
-        return 0
-      
-      self.removeInfo()
-      return 1
-
-
-####################MANUAL AUTOFOCUS ACTION
-    def autofocus(self,arg):
-      global flirLib
-
-      if self.restoreInfo() == 0:    #TRY TO RESTORE HANDLE.        
-        if self.createInfo() == 0:   #IF NOT EXISTS TRY TO CREATE NEW HANDLE
-          return 0                   #ON ERROR EXIT 
-      else: 
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: device already in use')
-        return 0   
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
       status = FLIRSC65X.flirLib.executeAutoFocus(self.handle)
       if status < 0:
@@ -948,7 +544,6 @@ class FLIRSC65X(Device):
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Auto Focus : ' + self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-<<<<<<< HEAD
       self.saveInfo()
       return
 
@@ -994,112 +589,21 @@ class FLIRSC65X(Device):
       self.worker = self.AsynchStore()
       self.worker.daemon = True
       self.worker.stopReq = False
-=======
-      self.removeInfo()   
-      return 1
 
-        
-####################READ FOCUS POSITION
-    def rd_foc_pos(self,arg):    
-      global flirLib
-
-      if self.restoreInfo() == 0:    #TRY TO RESTORE HANDLE.        
-        if self.createInfo() == 0:   #IF NOT EXISTS TRY TO CREATE NEW HANDLE
-          return 0                   #ON ERROR EXIT 
-      else: 
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: device already in use')
-        return 0  
-      
-      focPos=0
-      status = flirLib.getFocusAbsPosition(self.handle, byref(c_int(focPos)))
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Focus Position : '+ self.error.raw)
-        return 0 
-      
-      print "Readed Focus Position: ", focPos 
-      self.cam_setup_focus_pos.putData(focPos)   #write data in mdsplus
-
-      self.removeInfo()   
-      return 1        
-        
-        
-####################WRITE FOCUS POSITION
-    def wr_foc_pos(self,arg):
-      global flirLib
-
-      if self.restoreInfo() == 0:    #TRY TO RESTORE HANDLE.        
-        if self.createInfo() == 0:   #IF NOT EXISTS TRY TO CREATE NEW HANDLE
-          return 0                   #ON ERROR EXIT 
-      else: 
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: device already in use')
-        return 0  
-
-      focPos=self.cam_setup_focus_pos.data()
-      status = flirLib.setFocusAbsPosition(self.handle, c_int(focPos))
-      if status < 0:
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Write Focus Position : ' + self.error.raw)
-        return 0 
-      
-      print "Writed Focus Position: ", focPos 
-      self.removeInfo()
-      return 1
-            
-            
-##########start store############################################################################   
-    def start_store(self, arg):
-      global flirLib
-      global mdsLib
-      global streamLib
-
-      print 'Start FLIR Store'
-
-      if self.restoreInfo() == 0:    #EXIT if NO HANDLE exists.
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'ERROR: Init action MUST be perform before start_store')
-          return 0
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
-
-      if self.restoreWorker() == 1:    #TRY TO RESTORE WORKER.
-          if self.worker.isAlive():
-             print 'ERROR: CANNOT DO START STORE DURING ACQUISITION'
-             return 0                 #MUST NOT CLOSE CAMERA
-          else:
-             print 'Remove last acquisition Worker'
-             self.removeWorker()      #WORKER EXIST FROM THE LAST ACQUISITION 
-                  
-      self.worker = self.AsynchStore()
-      self.worker.daemon = True
-      self.worker.stopReq = False
-      self.worker.configure(self, flirLib)
-      self.saveWorker()        
-                
-      timestamp=datetime.datetime.now()
-      sampleTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)  #ms   
-      self.timing_frame0int64.putData(Int64(sampleTime))    
-             
       width = c_int(0)
       height = c_int(0)
       payloadSize = c_int(0)
       status = FLIRSC65X.flirLib.startAcquisition(self.handle, byref(width), byref(height), byref(payloadSize))
       if status < 0:
-<<<<<<< HEAD
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Start Camera Acquisition : '+self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
       self.worker.configure(self)
       self.saveWorker()
-=======
-        flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition : '+self.error.raw)
-        return 0
-      
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
       self.worker.start()
       return
 
 
-<<<<<<< HEAD
 ##########stop store############################################################################
     def stop_store(self):
 
@@ -1108,24 +612,4 @@ class FLIRSC65X(Device):
       if  self.restoreWorker() :
       	self.worker.stop()
       return
-=======
-##########stop store############################################################################   
-    def stop_store(self,arg):
-
-      print 'STOP STORE'
-      try: 
-                             
-        if  self.restoreWorker():
-          self.worker.stop()
-          self.removeWorker()
-        
-        if self.restoreInfo():  
-          self.removeInfo()
-          self.handle = c_int(-1)                            
-
-      except:
-          print 'ERROR IN STOP STORE'
-              
-      return 1
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -662,8 +662,8 @@
             <StringItem index="1" value="start_store"/>
             <StringItem index="2" value="stop_store"/>
             <StringItem index="3" value="calib"/>
-            <StringItem index="4" value="rd_foc_pos"/>
-            <StringItem index="5" value="wr_foc_pos"/>
+            <StringItem index="4" value="readFocusPos"/>
+            <StringItem index="5" value="writeFocusPos"/>
             <StringItem index="6" value="autofocus"/>
           </StringArray>
         </Property>

@@ -58,10 +58,6 @@ class DIO4(Device):
     parts.append({'path':'.OUT_EV_SW:CODE', 'type':'numeric'})
     parts.append({'path':'.OUT_EV_SW:TIME', 'type':'numeric', 'value':0})
 
-<<<<<<< HEAD
-=======
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
     parts.append({'path':'.CHANNEL_1:TERM', 'type':'text', 'value':'NO'})
     parts.append({'path':'.CHANNEL_2:TERM', 'type':'text', 'value':'NO'})
     parts.append({'path':'.CHANNEL_3:TERM', 'type':'text', 'value':'NO'})
@@ -72,13 +68,13 @@ class DIO4(Device):
     parts.append({'path':'.CHANNEL_8:TERM', 'type':'text', 'value':'NO'})
 
     parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'INIT',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'store',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'STORE',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':RESET_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','RESET',50,None),Method(None,'reset',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','RESET',50,None),Method(None,'RESET',head))",
         'options':('no_write_shot',)})
 
     mainLib = None
@@ -86,16 +82,9 @@ class DIO4(Device):
     workers = {}
 
 
-<<<<<<< HEAD
 # INIT
     def INIT(self):
         if Device.debug: print('INIT')
-=======
-# init
-    def init(self, arg):
-        print 'INIT'
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 
 # Board ID
         try:
@@ -217,6 +206,11 @@ class DIO4(Device):
         else:
             if Device.debug: print('SW EVENT IS OFF')
 
+
+
+
+
+
         for c in range(8):
             if getattr(self, 'channel_%d'%(c+1)).isOn():
                 channelMask = channelMask | (1 << c)
@@ -289,7 +283,6 @@ class DIO4(Device):
                         cyclicDict = {'NO':0, 'YES':1}
                         levelDict = {'LOW':0, 'HIGH':1}
                         cyclic = cyclicDict[getattr(self,'channel_%d_cyclic'%(c+1)).data()]
-<<<<<<< HEAD
                         if Device.debug: print(cyclic)
                         initLev1 = levelDict[getattr(self,'channel_%d_init_lev_1'%(c+1)).data()]
                         if Device.debug: print(initLev1)
@@ -299,21 +292,11 @@ class DIO4(Device):
                         if Device.debug: print(duration)
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
                         if Device.debug: print(delay)
-=======
-                        print "Ciclic = ", cyclic
-                        initLev1 = levelDict[getattr(self,'channel_%d_init_lev_1'%(c+1)).data()]
-                        print "Init Level 1 = ", initLev1
-                        initLev2 = levelDict[getattr(self,'channel_%d_init_lev_2'%(c+1)).data()]
-                        print "Init Level 2 = ", initLev2
-                        duration = getattr(self,'channel_%d_duration'%(c+1)).data()
-                        print "Duration = ", duration
-                        delay = getattr(self,'channel_%d_delay'%(c+1)).data()
-                        print "Delay = ", delay
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
                         evTermDict = {'NO':0, 'YES':1}
                         evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
                         evTermCode = evTermDict[evTerm]
-                        print "evTermCode = ", evTermCode
+
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Pulse parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -346,6 +329,8 @@ class DIO4(Device):
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write Pulse parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
+
+
 
                 elif function == 'GCLOCK':
                     trigModeDict = {'EVENT':0, 'RISING EDGE':1, 'FALLING EDGE':2, 'SOFTWARE':3}
@@ -388,6 +373,8 @@ class DIO4(Device):
                         evTermDict = {'NO':0, 'YES':1}
                         evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
                         evTermCode = evTermDict[evTerm]
+
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -417,6 +404,9 @@ class DIO4(Device):
                         period = int((1. / frequency) / 1E-7 + 0.5) * 1E-7;
                         #setattr(self, 'channel_%d_clock'%(c+1), Data.compile('BUILD_RANGE('+trig1+','+trig2+','+str(period)+')'))
                         getattr(self, 'channel_%d_clock'%(c+1)).putData(Range(Data.compile(trigger_1), Data.compile(trigger_2), period))
+
+
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write GCLOCK parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -459,6 +449,7 @@ class DIO4(Device):
                         evTermDict = {'NO':0, 'YES':1}
                         evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
                         evTermCode = evTermDict[evTerm]
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Dual Speed Clock parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -622,13 +613,8 @@ class DIO4(Device):
 
 
 # RESET
-<<<<<<< HEAD
     def RESET(self):
         print('RESET')
-=======
-    def reset(self, arg):
-        print 'RESET'
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 # Board ID
         try:
             boardId = self.board_id.data()
@@ -670,13 +656,8 @@ class DIO4(Device):
 
 
 
-<<<<<<< HEAD
     def STORE(self):
         if Device.debug: print('STORE')
-=======
-    def store(self, arg):
-        print 'STORE'
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 # Board ID
         try:
             boardId = self.board_id.data()
@@ -751,14 +732,8 @@ class DIO4(Device):
                     function = getattr(self, 'channel_%d_function'%(c+1)).data()
                 except:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid FUNCTION')
-<<<<<<< HEAD
                     raise mdsExceptions.TclFAILED_ESSENTIAL
                 if Device.debug: print('FUNCTION: ' + function)
-=======
-                    return 0
-                print 'FUNCTION: ' + function
-
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
                 if function == 'PULSE' or function == 'GCLOCK' or function == 'DCLOCK':
                     if swMode == 'REMOTE':
                         status = Data.execute('MdsValue("DIO4HWGetPhaseCount(0, $1, $2)", $1,$2)', boardId, channelMask)
@@ -786,13 +761,8 @@ class DIO4(Device):
         return
 
 
-<<<<<<< HEAD
     def TRIGGER(self):
         if Device.debug: print('TRIGGER')
-=======
-    def trigger(self, arg):
-        print 'TRIGGER'
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
 # Board ID
         try:
             boardId = self.board_id.data()
@@ -845,11 +815,7 @@ class DIO4(Device):
                                 status = Data.execute("DIO4HWTrigger(0, $1, $2)", boardId, channelMask)
                                 if status == 0:
                                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute trigger')
-<<<<<<< HEAD
                                     raise mdsExceptions.TclFAILED_ESSENTIAL
-=======
-                                    return 0
->>>>>>> fc8b338905a379dbe20ffdc2303641271f6ee218
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Error setting trigger mode')
                         raise mdsExceptions.TclFAILED_ESSENTIAL

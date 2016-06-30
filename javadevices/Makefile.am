@@ -147,7 +147,6 @@ MARTE_BREAKDOWNSetup.java\
 MARTE_RTSMSetup.java\
 MARTE_XRAYSetup.java\
 MARTE_NESetup.java\
-MARTE_DUTY_CYCLESetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
 SPIDERSetup.java\

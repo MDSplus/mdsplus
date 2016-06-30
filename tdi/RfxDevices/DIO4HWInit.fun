@@ -23,6 +23,14 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	private _DIO4_IO_INT_ENABLE =0x1;
 	private _DIO4_IO_INT_DISABLE= 0x0;
 
+
+
+
+
+
+
+
+
 	/* private _NO_EVENT = -1; */
 
 	 /* if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = []; */
@@ -31,8 +39,8 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 /* Initialize Library if the first time */
-       _first = 0;
-       if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1; _first = 1;));
+    _first = 0;
+    if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1; _first = 1;));
 
 
 /* Open device */
@@ -98,10 +106,14 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 	if(_ext_clock==1)
 	{
-		write(*, 'HIGHWAY');
+	write(*, 'HIGHWAY');
 
 	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
 			val(byte(_DIO4_TH_OUTPUT_DISABLE)), val(byte(_DIO4_TH_INT_DISABLE)));
+
+
+
+
 
 		_clock_source = byte(_DIO4_CLOCK_SOURCE_TIMING_HIGHWAY);
 
@@ -127,6 +139,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	}	
 
 
+
 		
 	_status = DIO4->DIO4_CS_SetClockSource(val(_handle), val(_clock_source), val(byte(0)), val(byte(_DIO4_CLOCK_SOURCE_RISING_EDGE)));
 	if(_status != 0)
@@ -137,6 +150,13 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			write(*, "Error setting clock source in DIO4 device, board ID = "// _board_id);
 		return(0);
 	}
+
+
+
+
+
+
+
 
 
 /* Set recorder start event and arm recorder */
@@ -177,6 +197,11 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}
+
+
+
+
+
 
 /* Set synch event if defined */
 
@@ -248,9 +273,9 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 /* Close device */
-     DIO4->DIO4_Close(val(_handle));
+	DIO4->DIO4_Close(val(_handle));
 
-     write(*, 'OK end initialized');
+write(*, 'OK end initialized');
 
     return(1);
 }

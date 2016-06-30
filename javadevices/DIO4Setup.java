@@ -3992,7 +3992,7 @@ public class DIO4Setup extends DeviceSetup {
 
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init", "trigger", "store", "reset"});
+        deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE", "RESET"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 

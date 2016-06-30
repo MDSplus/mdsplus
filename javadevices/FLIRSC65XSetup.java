@@ -24,7 +24,6 @@ public class FLIRSC65XSetup extends DeviceSetup {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
         jPanel1 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         deviceField16 = new DeviceField();
@@ -78,192 +77,145 @@ public class FLIRSC65XSetup extends DeviceSetup {
         deviceField19 = new DeviceField();
         deviceField20 = new DeviceField();
         deviceButtons1 = new DeviceButtons();
-
         setDeviceProvider("localhost:8000");
         setDeviceTitle("FLIR SC65X Camera Device");
         setDeviceType("FLIRSC65X");
         setHeight(350);
         setWidth(900);
-
         jPanel1.setMinimumSize(new java.awt.Dimension(690, 470));
         jPanel1.setPreferredSize(new java.awt.Dimension(690, 470));
         jPanel1.setLayout(new java.awt.BorderLayout(5, 5));
-
         jPanel8.setMinimumSize(new java.awt.Dimension(690, 40));
         jPanel8.setPreferredSize(new java.awt.Dimension(690, 40));
-
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Name (IP): ");
         deviceField16.setNumCols(20);
         deviceField16.setOffsetNid(1);
         deviceField16.setTextOnly(true);
         jPanel8.add(deviceField16);
-
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("Comment:");
         deviceField17.setNumCols(30);
         deviceField17.setOffsetNid(2);
         jPanel8.add(deviceField17);
         jPanel8.add(deviceDispatch1);
-
         jPanel1.add(jPanel8, java.awt.BorderLayout.NORTH);
-
         jPanel17.setMinimumSize(new java.awt.Dimension(690, 440));
         jPanel17.setPreferredSize(new java.awt.Dimension(690, 440));
         jPanel17.setLayout(new java.awt.BorderLayout());
-
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(680, 390));
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(680, 390));
-
         jPanel2.setLayout(new java.awt.GridLayout(3, 1));
-
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Object"));
-
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("Emissivity:");
         deviceField22.setOffsetNid(4);
         jPanel11.add(deviceField22);
-
         deviceField23.setIdentifier("");
         deviceField23.setLabelString("Distance [m]:");
         deviceField23.setOffsetNid(5);
         jPanel11.add(deviceField23);
-
         deviceField24.setIdentifier("");
         deviceField24.setLabelString("Reflected Temperature [°C]:");
         deviceField24.setOffsetNid(6);
         jPanel11.add(deviceField24);
-
         jPanel2.add(jPanel11);
-
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("External optics"));
-
         deviceField25.setIdentifier("");
         deviceField25.setLabelString("Temperature [°C]:");
         deviceField25.setOffsetNid(7);
         jPanel13.add(deviceField25);
-
         deviceField26.setIdentifier("");
         deviceField26.setLabelString("Transmission:");
         deviceField26.setOffsetNid(8);
         jPanel13.add(deviceField26);
-
         jPanel2.add(jPanel13);
-
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Atmosphere"));
-
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Atmospheric temperature [°C]:");
         deviceField1.setOffsetNid(9);
         jPanel3.add(deviceField1);
-
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Relative humidity [%]:");
         deviceField2.setOffsetNid(10);
         jPanel3.add(deviceField2);
-
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Estimated transmission:");
         deviceField3.setOffsetNid(10);
         jPanel3.add(deviceField3);
-
         jPanel2.add(jPanel3);
-
         jTabbedPane1.addTab("Object Parameters", jPanel2);
-
         jPanel5.setLayout(new java.awt.GridLayout(3, 1));
-
         jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Frame Area"));
-
         deviceField27.setEditable(false);
         deviceField27.setIdentifier("");
         deviceField27.setLabelString("Start X:");
         deviceField27.setNumCols(4);
         deviceField27.setOffsetNid(13);
         jPanel14.add(deviceField27);
-
         deviceField28.setEditable(false);
         deviceField28.setIdentifier("");
         deviceField28.setLabelString("Start Y:");
         deviceField28.setNumCols(4);
         deviceField28.setOffsetNid(14);
         jPanel14.add(deviceField28);
-
         deviceField29.setEditable(false);
         deviceField29.setIdentifier("");
         deviceField29.setLabelString("Width: ");
         deviceField29.setNumCols(4);
         deviceField29.setOffsetNid(15);
         jPanel14.add(deviceField29);
-
         deviceField30.setEditable(false);
         deviceField30.setIdentifier("");
         deviceField30.setLabelString("Height: ");
         deviceField30.setNumCols(4);
         deviceField30.setOffsetNid(16);
         jPanel14.add(deviceField30);
-
         jPanel5.add(jPanel14);
-
         jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("Camera Settings"));
-
         deviceChoice1.setChoiceItems(new String[] {"50", "100"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Lens Focal Length [mm]:");
         deviceChoice1.setOffsetNid(19);
         deviceChoice1.setUpdateIdentifier("");
         jPanel12.add(deviceChoice1);
-
         deviceChoice2.setChoiceItems(new String[] {"-40...150", "0...650", "300...2000"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Measurement Range [°C]:");
         deviceChoice2.setOffsetNid(20);
         deviceChoice2.setUpdateIdentifier("");
         jPanel12.add(deviceChoice2);
-
         deviceField4.setLabelString("Focus position : ");
         deviceField4.setOffsetNid(21);
         jPanel12.add(deviceField4);
-
         jPanel5.add(jPanel12);
-
         jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Image Settings"));
-
         deviceChoice3.setChoiceItems(new String[] {"Radiometric", "LinearTemperature10mK", "LinearTemperature100mK"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Image Temperature");
         deviceChoice3.setOffsetNid(17);
         deviceChoice3.setUpdateIdentifier("");
         jPanel18.add(deviceChoice3);
-
         jPanel5.add(jPanel18);
-
         jTabbedPane1.addTab("Image & Camera Settings", jPanel5);
         jPanel5.getAccessibleContext().setAccessibleName("Frame Area");
-
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         jPanel4.setLayout(new java.awt.GridLayout(3, 1));
-
         jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Synchronization"));
-
         deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Trigger Mode:");
         deviceChoice4.setOffsetNid(25);
         deviceChoice4.setUpdateIdentifier("");
         jPanel15.add(deviceChoice4);
-
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Trigger Source: ");
         deviceField5.setNumCols(25);
         deviceField5.setOffsetNid(26);
         jPanel15.add(deviceField5);
-
         jPanel4.add(jPanel15);
-
         jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Frames Acquisition"));
         jPanel16.setLayout(new java.awt.GridLayout(1, 1));
-
         deviceChoice6.setChoiceFloatValues(new float[] {200.0f, 100.0f, 50.0f, 25.0f, 12.5f, 6.25f, 3.12f});
         deviceChoice6.setChoiceItems(new String[] {"200", "100", "50", "25", "12.5", "6.25", "3.12"});
         deviceChoice6.setIdentifier("");
@@ -271,101 +223,75 @@ public class FLIRSC65XSetup extends DeviceSetup {
         deviceChoice6.setOffsetNid(28);
         deviceChoice6.setUpdateIdentifier("");
         jPanel6.add(deviceChoice6);
-
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Burst Duration [s]:");
         deviceField8.setNumCols(20);
         deviceField8.setOffsetNid(29);
         jPanel6.add(deviceField8);
-
         jPanel16.add(jPanel6);
-
         jPanel4.add(jPanel16);
-
         jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Calibration"));
-
         deviceField32.setEditable(false);
         deviceField32.setIdentifier("");
         deviceField32.setLabelString("Calibration Time [s]:");
         deviceField32.setNumCols(4);
         deviceField32.setOffsetNid(23);
         jPanel19.add(deviceField32);
-
         deviceChoice7.setChoiceItems(new String[] {"YES", "NO"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Auto Calibration");
         deviceChoice7.setOffsetNid(22);
         deviceChoice7.setUpdateIdentifier("");
         jPanel19.add(deviceChoice7);
-
         jPanel4.add(jPanel19);
-
         jTabbedPane1.addTab("Timing", jPanel4);
-
         jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         jPanel9.setLayout(new java.awt.GridLayout(3, 1));
-
         jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
-
         deviceChoice5.setChoiceItems(new String[] {"Stream and Store", "Only Stream", "Only Store"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Acquisition Mode:");
         deviceChoice5.setOffsetNid(32);
         deviceChoice5.setUpdateIdentifier("");
         jPanel10.add(deviceChoice5);
-
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Streaming Port:");
         deviceField18.setNumCols(4);
         deviceField18.setOffsetNid(34);
         jPanel10.add(deviceField18);
-
         jPanel9.add(jPanel10);
-
         jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Frames Decimation for Storing"));
-
         deviceField21.setIdentifier("");
         deviceField21.setLabelString("Save one frame and skip:");
         deviceField21.setNumCols(4);
         deviceField21.setOffsetNid(30);
         jPanel21.add(deviceField21);
-
         jPanel9.add(jPanel21);
-
         jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Dynamic Range for Streaming"));
-
         deviceChoice8.setChoiceItems(new String[] {"YES", "NO"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Auto Adjustment:");
         deviceChoice8.setOffsetNid(35);
         deviceChoice8.setUpdateIdentifier("");
         jPanel20.add(deviceChoice8);
-
         deviceField19.setIdentifier("");
         deviceField19.setLabelString("Manual Low Limit [°C]:");
         deviceField19.setNumCols(4);
         deviceField19.setOffsetNid(36);
         jPanel20.add(deviceField19);
-
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("Manual High Limit [°C]:");
         deviceField20.setNumCols(4);
         deviceField20.setOffsetNid(37);
         jPanel20.add(deviceField20);
-
         jPanel9.add(jPanel20);
-
         jTabbedPane1.addTab("Storage & Streaming", jPanel9);
-
         jPanel17.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
-
         jPanel1.add(jPanel17, java.awt.BorderLayout.CENTER);
-
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
-
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init", "start_store", "stop_store", "calib", "rd_foc_pos", "wr_foc_pos", "autofocus"});
+        deviceButtons1.setMethods(new String[] {"init", "start_store", "stop_store", "calib", "readFocusPos", "writeFocusPos", "autofocus"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
