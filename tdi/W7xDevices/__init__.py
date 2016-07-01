@@ -29,3 +29,5 @@ except:
 
 from bnc845 import BNC845
 from qc9200 import QC9200
+from acq425 import ACQ425
+from acq480 import ACQ480
