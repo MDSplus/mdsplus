@@ -11,21 +11,21 @@ from mdsdcl import tcl
 import random
 import gc as _gc
 import os,time
+import sys as _sys
 
 
 import tempfile
 _tmpdir=tempfile.mkdtemp()
 
-def setUpModule():    
+def setUpModule():
+    """Setup invoked by nose"""
     pass
 
 def tearDownModule():
+    """tearDown invoked by nose"""
     import shutil
     shutil.rmtree(_tmpdir)
     
-
-
-
 class treeTests(TestCase):
 
     shot=0
@@ -40,7 +40,6 @@ class treeTests(TestCase):
                 treeTests.shot=treeTests.shot+2
         finally:
             l.release()
-        print ("Creating trees in %s" % (_tmpdir,))
         if getenv("TEST_DISTRIBUTED_TREES") is not None:
             hostpart="localhost::"
         else:

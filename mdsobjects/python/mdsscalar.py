@@ -5,6 +5,7 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 import numpy as _N
+import ctypes as _C
 
 _dtypes=_mimport('_mdsdtypes')
 _data=_mimport('mdsdata')
@@ -23,6 +24,23 @@ def makeScalar(value):
         if isinstance(value,_N.bool_):
             return makeScalar(int(value))
         return globals()[value.__class__.__name__.capitalize()](value)
+    if isinstance(value,_C._SimpleCData):
+        if isinstance(value,_C.c_int64):
+            return Int64(value.value)
+        if isinstance(value,_C.c_uint64):
+            return Uint64(value.value)
+        if isinstance(value,_C.c_int32):
+            return Int32(value.value)
+        if isinstance(value,_C.c_uint32):
+            return Uint32(value.value)
+        if isinstance(value,_C.c_int16):
+            return Int16(value.value)
+        if isinstance(value,_C.c_uint16):
+            return Uint16(value.value)
+        if isinstance(value,_C.c_int8):
+            return Int8(value.value)
+        if isinstance(value,(_C.c_uint8,_C.c_bool)):
+            return Uint8(value.value)
     if isinstance(value,_ver.long):
         return Int64(value)
     if isinstance(value,int):

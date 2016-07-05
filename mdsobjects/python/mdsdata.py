@@ -4,7 +4,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import numpy as _N
+import numpy as _N, ctypes as _C
 
 _dtypes=_mimport('_mdsdtypes')
 _ver=_mimport('version')
@@ -76,7 +76,7 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,(_N.generic,int,float,complex,_ver.basestring,_ver.long)):
+    if isinstance(value,(_N.generic,int,float,complex,_ver.basestring,_ver.long,_C._SimpleCData)):
         return _scalar.makeScalar(value)
     if isinstance(value,(tuple,list)):
         apd = _apd.Apd(tuple(value),_dtypes.DTYPE_LIST)
@@ -509,6 +509,7 @@ class Data(object):
         """Return string representation
         @rtype: string
         """
+        _tdishr=_mimport('_tdishr')
         return _tdishr.TdiDecompile(self)
 
     __str__=decompile
