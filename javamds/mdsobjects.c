@@ -1428,6 +1428,15 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree(JNIEnv * env, jclass c
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
+
+#ifdef _WIN32
+static unsigned long *openMutex;
+static int openMutex_initialized = 0;
+#else
+static pthread_mutex_t openMutex;
+static int openMutex_initialized = 0;
+#endif
+
 /*
  * Class:     MDSplus_Tree
  * Method:    openTree
@@ -1441,6 +1450,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   jfieldID ctx1Fid, ctx2Fid;
   jclass cls;
 
+  LockMdsShrMutex(&openMutex, &openMutex_initialized);
   name = (*env)->GetStringUTFChars(env, jname, 0);
   if (strlen(name) > 0)
     status = _TreeOpen(&ctx, (char *)name, shot, readonly ? 1 : 0);
@@ -1450,6 +1460,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   }
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if (!(status & 1)) {
+    UnlockMdsShrMutex(&openMutex);
     throwMdsException(env, status);
     return;
   }
@@ -1461,6 +1472,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   ctx2Fid = (*env)->GetFieldID(env, cls, "ctx2", "I");
   (*env)->SetIntField(env, jobj, ctx1Fid, ctx1);
   (*env)->SetIntField(env, jobj, ctx2Fid, ctx2);
+  UnlockMdsShrMutex(&openMutex);
 }
 
 /*
