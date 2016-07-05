@@ -177,5 +177,5 @@ then
     else
 	bname="-${BRANCH}"
     fi
-    rsync -a /release/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/
+    rsync -a /release/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}/
 fi
