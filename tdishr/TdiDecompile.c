@@ -637,7 +637,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_POINTER:{
 	char outstr[256];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
-	out.length = sprintf(outstr, "Pointer(%p)", *(void **)in_ptr->pointer);
+	out.length = sprintf(outstr, "Pointer(%#x)", *(void **)in_ptr->pointer);
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
