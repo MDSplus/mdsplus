@@ -786,8 +786,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	break;
       }
       d->length =
-	  message->h.dtype ==
-	  DTYPE_CSTRING ? message->h.length : lengths[min(message->h.dtype, 13)];
+	  message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype] : message->h.length;
       d->dtype = message->h.dtype;
       if (d->class == CLASS_A) {
 	ARRAY_7 *a = (ARRAY_7 *) d;
@@ -815,7 +814,6 @@ Message *ProcessMessage(Connection * connection, Message * message)
       case IEEE_CLIENT:
       case JAVA_CLIENT:
 	memcpy(d->pointer, message->bytes, dbytes);
-	break;
 	break;
       case CRAY_IEEE_CLIENT:
 	switch (d->dtype) {
