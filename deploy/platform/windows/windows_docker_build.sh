@@ -155,14 +155,26 @@ EOF
     popd
     if [ -d /sign_keys ]
     then
-	echo mdsplus | signcode -spc /sign_keys/mdsplus.spc \
+	set +e
+	for timestamp_server in http://timestamp.comodoca.com/authenticode http://timestamp.verisign.com/scripts/timestamp.dll http://timestamp.globalsign.com/scripts/timestamp.dll http://tsa.starfieldtech.com
+	do
+	    if ( signcode -spc /sign_keys/mdsplus.spc \
 				-v /sign_keys/mdsplus.pvk \
 				-a sha1 \
 				-$ individual \
 				-n MDSplus  \
 				-i http://www.mdsplus.org/ \
 				-t http://timestamp.verisign.com/scripts/timestamp.dll \
-				-tr 10 /release/MDSplus${bname}-${major}.${minor}-${release}.exe
+				-tr 10 /release/MDSplus${bname}-${major}.${minor}-${release}.exe <<EOF
+mdsplus
+EOF
+	       )
+	    then
+		break
+	    fi
+	done
+	set -e
+	    
     fi
 fi
 
