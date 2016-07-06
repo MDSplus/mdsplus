@@ -54,6 +54,7 @@ typedef struct dclCommand {
   int qualifier_count;		/*!< number of qualifiers */
   dclQualifierPtr *qualifiers;	/*!< array of qualifiers */
   char *routine;		/*!< routine providing implementation of the command */
+  char *image;                  /*!< optional image where routine can be found */
 } dclCommand, *dclCommandPtr;
 
 #define YYSTYPE_IS_DECLARED
