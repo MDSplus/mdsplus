@@ -121,6 +121,8 @@ static void freeCommand(dclCommandPtr * cmd_in)
 	free(cmd->verb);
       if (cmd->routine)
 	free(cmd->routine);
+      if (cmd->image)
+	free(cmd->image);
       if (cmd->command_line)
 	free(cmd->command_line);
       freeCommandParamsAndQuals(cmd);
@@ -386,6 +388,12 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd)
       if (cmd->routine)
 	free(cmd->routine);
       cmd->routine = strdup((const char *)node->properties->children->content);
+    }
+  } else if (node->name && (strcasecmp((const char *)node->name, "image") == 0)) {
+    if (node->properties && node->properties->children && node->properties->children->content) {
+      if (cmd->image)
+	free(cmd->image);
+      cmd->image = strdup((const char *)node->properties->children->content);
     }
   }
 
@@ -770,6 +778,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 
   if (strcmp(image, "mdsdcl_commands") == 0)
     image = "Mdsdcl";
+  if (cmdDef->image)
+    image = cmdDef->image;
   status = LibFindImageSymbol_C(image, cmdDef->routine, (void **)&handler);
   if (status & 1) {
     status = handler(cmd, error, output, getline, getlineinfo);
@@ -1150,6 +1160,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   char *error = 0;
   char *output = 0;
   dclDocListPtr doc_l;
+  cmd->image=0;
   if (dclDocs == NULL)
     mdsdclAddCommands("mdsdcl_commands", &error);
   if (mdsdclVerify() && strlen(cmd->command_line) > 0) {

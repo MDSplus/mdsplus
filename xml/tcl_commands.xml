@@ -1336,6 +1336,7 @@
 
   <syntax name="show_version">
     <helpmissing />
+    <image name="Mdsdcl"/>
     <routine name="mdsdcl_show_version"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
