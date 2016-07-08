@@ -304,7 +304,6 @@ EXPORT int TclCreatePulse(void *ctx, char **error, char **output)
 	    } else
 	      nids[num++] = nid;
 	  }
-	  free(wnode);
 	  free(nodename);
 	  TreeFindNodeEnd(&ctx);
 	}
