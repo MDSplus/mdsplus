@@ -699,7 +699,7 @@ class Data(object):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
-        if isinstance(self,_treenode.TreeNode) or isinstance(self,_treenode.TreePath):
+        if isinstance(self,_tree.TreeNode) or isinstance(self,_tree.TreePath):
             return True
         elif isinstance(self,_compound.Compound):
             for arg in self.args:
@@ -788,4 +788,4 @@ _compound=_mimport('compound')
 _array=_mimport('mdsarray')
 _scalar=_mimport('mdsscalar')
 _scope=_mimport('scope')
-_treenode=_mimport('treenode')
+_tree=_mimport('tree')

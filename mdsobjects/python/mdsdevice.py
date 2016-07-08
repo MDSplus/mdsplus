@@ -6,14 +6,13 @@ def _mimport(name, level=1):
 
 import os as _os
 from os import getenv as _getenv
-_treeshr=_mimport('_treeshr')
-_treenode=_mimport('treenode')
+_tree=_mimport('tree')
 _compound=_mimport('compound')
 _ident=_mimport('ident')
 _mdsarray=_mimport('mdsarray')
 _mdsdata=_mimport('mdsdata')
 
-class Device(_treenode.TreeNode):
+class Device(_tree.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
     Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
@@ -116,7 +115,7 @@ class Device(_treenode.TreeNode):
         """
         if cls.__name__ == 'Device':
             try:
-                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
+                head=_tree.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
                 model=str(head.record.model)
                 return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
             except:
@@ -132,7 +131,7 @@ class Device(_treenode.TreeNode):
         @type node: TreeNode
         @rtype: None
         """
-        if isinstance(node,_treenode.TreeNode):
+        if isinstance(node,_tree.TreeNode):
             try:
                 self.nids=node.conglomerate_nids.nid_number
                 self.head=int(self.nids[0])
@@ -165,7 +164,7 @@ class Device(_treenode.TreeNode):
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME(None)
         try:
-            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
+            return self.__class__(_tree.TreeNode(self.part_dict[name]+self.head,self.tree))
         except KeyError:
             return super(Device,self).__getattr__(name)
 
@@ -178,7 +177,7 @@ class Device(_treenode.TreeNode):
         @rtype: None
         """
         try:
-            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            _tree.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
@@ -194,7 +193,7 @@ class Device(_treenode.TreeNode):
         on (i.e. write_once).
         """
         parent = tree
-        if isinstance(tree, _treenode.TreeNode): tree = tree.tree
+        if isinstance(tree, _tree.TreeNode): tree = tree.tree
         cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         if isinstance(name,_ident.Ident):

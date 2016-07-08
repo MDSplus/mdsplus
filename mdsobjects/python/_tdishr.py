@@ -11,7 +11,6 @@ _mdsshr=_mimport('_mdsshr')
 _Exceptions=_mimport('mdsExceptions')
 _tree=_mimport('tree')
 _ver=_mimport('version')
-_treeshr=_mimport('_treeshr')
 
 _TdiShr=_ver.load_library('TdiShr')
 

@@ -203,7 +203,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_treenode.TreePath)):
+        if (isinstance(value,_tree.TreePath)):
             value.restoreContext()
             str_d=descriptor_string(str(value))
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
@@ -213,7 +213,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_treenode.TreeNode)):
+        if (isinstance(value,_tree.TreeNode)):
             value.restoreContext()
             self.length=4
             self.dtype=_dtypes.DTYPE_NID
@@ -221,7 +221,7 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
-        if (isinstance(value,_treenode.TreeNodeArray)):
+        if (isinstance(value,_tree.TreeNodeArray)):
             value.restoreContext()
             self.__init__(value.nids)
             return
@@ -383,12 +383,12 @@ class descriptor(_C.Structure):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
-                    return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
+                    return _tree.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
-                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                      return _tree.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
                     else:
-                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                       return _tree.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):
@@ -475,7 +475,7 @@ class descriptor(_C.Structure):
                 self.dtype=_dtypes.DTYPE_L
                 nids=_array.makeArray(_N.ndarray(shape=shape,dtype=_dtypes.mdsdtypes(self.dtype).toCtype(),
                                           buffer=_ver.buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents)))
-                return _treenode.TreeNodeArray(nids)
+                return _tree.TreeNodeArray(nids)
             if self.dtype == _dtypes.DTYPE_F:
                 return _array.makeArray(_data.Data.execute("float($)",(descr,)))
             if self.dtype == _dtypes.DTYPE_D or self.dtype == _dtypes.DTYPE_G:
@@ -758,5 +758,4 @@ class descriptor_a(_C.Structure):
         return ans
 
 _tdishr=_mimport('_tdishr')
-_treenode=_mimport('treenode')
 _tree=_mimport('tree')
