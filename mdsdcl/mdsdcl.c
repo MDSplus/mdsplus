@@ -206,6 +206,7 @@ int main(int argc, char const *argv[])
 	prompt = 0;
 	if (status == MdsdclEXIT) {
 	  free(command);
+          status=0;
 	  goto done;
 	}
       }
