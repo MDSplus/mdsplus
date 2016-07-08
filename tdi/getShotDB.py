@@ -13,6 +13,13 @@ def getShotDB(expt,path=None,lower=None,upper=None):
     isTdi = isinstance(expt, MDSplus.mdsdata.Data)
     expt = str(expt).lower()
 
+    def getTreePath():
+        # split path variable into single paths and replaces the ~t treename
+        expt_paths = os.getenv(expt+'_path')
+        if expt_paths is None:
+            raise MDSplus.mdsExceptions.TreeNOPATH
+        return expt_paths.replace('~t',expt).split(';')
+
     def getshots(expt_path,lower,upper):
         if expt_path.find('::')>=0:
             # path is referring to remote tree
@@ -27,22 +34,20 @@ def getShotDB(expt,path=None,lower=None,upper=None):
         start = expt+'_'
         files = [f[len(expt):-5].split('_') for f in os.listdir(expt_path) if f.endswith('.tree') and f.startswith(start)]
         return [int(f[1]) for f in files if len(f)==2 and f[1]!='model']
-    # split path variable into single paths and replaces the ~t treename
-    expt_paths = os.getenv(expt+'_path').replace('~t',expt).split(';')
     """The path argument is interpreted"""
     # try to convert to native datatype
     try: path = path.data().tolist()
     except: pass
     if isinstance(path, (int,)):
         # path is int and refering to the index of the path list
-        path = expt_paths[path]
+        path = getTreePath()[path]
     if isinstance(path, MDSplus.version.basestring):
         # path is str and used as path
         shots = getshots(path,lower,upper)
     else:
         # path is undefined and the total list will be collected
         shots = []
-        for expt_path in expt_paths:
+        for expt_path in getTreePath():
             try:
                 shots += getshots(expt_path,lower,upper)
             except:
