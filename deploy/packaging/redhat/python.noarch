@@ -1,6 +1,7 @@
 ./usr/local/mdsplus/mdsobjects/python
 ./usr/local/mdsplus/mdsobjects/python/MDSobjects-epydoc.prj
 ./usr/local/mdsplus/mdsobjects/python/__init__.py
+./usr/local/mdsplus/mdsobjects/python/__pycache__
 ./usr/local/mdsplus/mdsobjects/python/_descriptor.py
 ./usr/local/mdsplus/mdsobjects/python/_loadglobals.py
 ./usr/local/mdsplus/mdsobjects/python/_mdsclasses.py
@@ -148,6 +149,7 @@
 ./usr/local/mdsplus/mdsobjects/python/makedoc.sh
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions/__init__.py
+./usr/local/mdsplus/mdsobjects/python/mdsExceptions/__pycache__
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions/camshrExceptions.py
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions/mdsdclExceptions.py
 ./usr/local/mdsplus/mdsobjects/python/mdsExceptions/mdsshrExceptions.py
@@ -167,6 +169,7 @@
 ./usr/local/mdsplus/mdsobjects/python/setup.py
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/__init__.py
+./usr/local/mdsplus/mdsobjects/python/tdibuiltins/__pycache__
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/builtin.py
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/builtins_other.py
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/constants.py
@@ -175,6 +178,7 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/Makefile.am
 ./usr/local/mdsplus/mdsobjects/python/tests/Makefile.in
 ./usr/local/mdsplus/mdsobjects/python/tests/__init__.py
+./usr/local/mdsplus/mdsobjects/python/tests/__pycache__
 ./usr/local/mdsplus/mdsobjects/python/tests/check_python_arch.py
 ./usr/local/mdsplus/mdsobjects/python/tests/connectionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/dataUnitTest.py

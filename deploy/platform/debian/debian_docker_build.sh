@@ -475,7 +475,7 @@ then
 		grep -v python/dist | \
 		grep -v python/build | \
 		grep -v egg-info | \
-		awk '{print $6}' > ${checkfile}
+		awk '{print $6}' | sort > ${checkfile}
 	else
 	    set +e
 	    echo "Checking contents of $(basename $deb)"

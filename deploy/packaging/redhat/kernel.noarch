@@ -95,6 +95,7 @@
 ./usr/local/mdsplus/tdi/fformat.fun
 ./usr/local/mdsplus/tdi/filter.fun
 ./usr/local/mdsplus/tdi/findfile.fun
+./usr/local/mdsplus/tdi/getShotDB.py
 ./usr/local/mdsplus/tdi/getenv.fun
 ./usr/local/mdsplus/tdi/getmsg.fun
 ./usr/local/mdsplus/tdi/helloworld.fun
