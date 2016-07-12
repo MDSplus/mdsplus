@@ -20,6 +20,7 @@
 ./usr/local/mdsplus/tdi/
 ./usr/local/mdsplus/tdi/c2vmstime.fun
 ./usr/local/mdsplus/tdi/getmsg.fun
+./usr/local/mdsplus/tdi/getShotDB.py
 ./usr/local/mdsplus/tdi/noderefs_of.fun
 ./usr/local/mdsplus/tdi/step_resample.fun
 ./usr/local/mdsplus/tdi/TreeFindTagEnd.fun
