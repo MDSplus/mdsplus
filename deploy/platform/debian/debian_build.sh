@@ -58,7 +58,6 @@ spacedelim() {
     echo $ans
 }
 
-exitstatus=0
 images=(${DOCKERIMAGE})
 arches=($(spacedelim ${ARCH}))
 idx=0
@@ -116,9 +115,8 @@ status when exiting from ${image}
 ======================================================
 EOF
 	NORMAL $COLOR
-	exitstatus=$status
+	exit $status
     fi
     let idx=idx+1
 done
-exit $exitstatus
 
