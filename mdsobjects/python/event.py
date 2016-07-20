@@ -1,16 +1,27 @@
+import time as _time
+import threading as _threading
+import sys as _sys
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
 
-import time as _time
-import threading as _threading
-import sys as _sys
 
 _data=_mimport('mdsdata')
 _array=_mimport('mdsarray')
 _mdsshr=_mimport('_mdsshr')
+_Exceptions=_mimport('mdsExceptions')
+_ver=_mimport('version')
+#
+#############################################
+
+#### Load Shared Libraries Referenced #######
+#
+_MdsShr=_ver.load_library('MdsShr')
+#
+#############################################
 
 class Event(_threading.Thread):
     """Thread to wait for event"""
@@ -72,7 +83,9 @@ class Event(_threading.Thread):
         if buffer is None:
             from numpy import array
             buffer=array([])
-        _mdsshr.MDSEvent(event,buffer)
+        status=_MdsShr.MDSEvent(_ver.tobytes(event),_C.c_int32(len(buffer)),_C.c_void_p(buffer.ctypes.data))
+        if not ((status & 1) == 1):
+            raise _Exceptions.statusToException(status)
     seteventRaw=staticmethod(seteventRaw)
 
     def wfevent(event,timeout=0):

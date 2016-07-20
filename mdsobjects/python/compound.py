@@ -1,3 +1,5 @@
+import ctypes as _C
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -5,8 +7,8 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 _data=_mimport('mdsdata')
-_dtypes=_mimport('_mdsdtypes')
 _Exceptions=_mimport('mdsExceptions')
+descriptor=_mimport('descriptor')
 
 class Compound(_data.Data):
     def __init__(self,*args, **params):
@@ -14,12 +16,13 @@ class Compound(_data.Data):
         """
         if self.__class__.__name__=='Compound':
             raise TypeError("Cannot create instances of class Compound")
+        self._fields={}
+        for idx in range(len(self.fields)):
+            self._fields[self.fields[idx]]=idx
         if 'args' in params:
             args=params['args']
         if 'params' in params:
             params=params['params']
-        if not hasattr(self,'_dtype'):
-            self._dtype=_dtypes.fromName('DTYPE_'+self.__class__.__name__.upper())
         if 'opcode' in params:
             self._opcode=params['opcode']
         try:
@@ -54,6 +57,8 @@ class Compound(_data.Data):
     def __getattr__(self,name,*args):
         if name in self.__dict__:
             return self.__dict__[name]
+        if name == '_dtype':
+            return self.dtype_id
         if name == '_opcode_name':
             return 'undefined'
         if name == '_fields':
@@ -78,6 +83,14 @@ class Compound(_data.Data):
                 return self.args[self._fields[name]]
             except:
                 return None
+        if name.startswith('get') and name[3:].lower() in self._fields:
+            def getter():
+                return self.args[self._fields[name[3:].lower()]]
+            return getter
+        if name.startswith('set') and name[3:].lower() in self._fields:
+            def setter(value):
+                self.__setattr__(name[3:].lower(),value)
+            return setter
         raise AttributeError('No such attribute '+str(name))
 
     def __getitem__(self,num):
@@ -125,12 +138,6 @@ class Compound(_data.Data):
             tmp[num]=value
             self.args=tuple(tmp)
         return
-
-#    def decompile(self):
-#        arglist=list()
-#        for arg in self.args:
-#            arglist.append(makeData(arg).decompile())
-#        return 'Build_'+self.__class__.__name__+'('+','.join(arglist)+')'
 
     def getArgumentAt(self,idx):
         """Return argument at index idx (indexes start at 0)
@@ -185,56 +192,111 @@ class Compound(_data.Data):
         """
         self.args=args
 
-
-class MetaClass(type):
-
-    def __new__(meta,classname,bases,classDict):
-        if len(classDict)==0:
-            classDict=dict(bases[0].__dict__)
-            newClassDict=classDict
-            newClassDict['_fields']=dict()
-            idx=0
-            if 'fields' in classDict:
-                for f in classDict['fields']:
-                    name=f[0:1].upper()+f[1:]
-                    exec ("def get"+name+"(self): return self.__getattr__('"+f+"')")
-                    exec ("newClassDict['get'+name]=get"+name)
-                    newClassDict['get'+name].__doc__='Get the '+f+' field\n@rtype: Data'
-                    exec ('def set'+name+'(self,value): return self.__setattr__("'+f+'",value)')
-                    exec ("newClassDict['set'+name]=set"+name)
-                    newClassDict['set'+name].__doc__='Set the '+f+' field\n@type value: Data\n@rtype: None'
-                    exec ("newClassDict['_dtype']=_dtypes.DTYPE_"+classname.upper())
-                    newClassDict['_fields'][f]=idx
-                    idx=idx+1
-                c=type.__new__(meta,classname,bases,newClassDict)
+    @staticmethod
+    def descriptorWithProps(value,d):
+        dpt=_C.POINTER(descriptor.Descriptor)
+        if hasattr(value,'_units') and value._units is not None:
+            dunits=descriptor.Descriptor_r()
+            dunits.length=0
+            dunits.dtype=WithUnits.dtype_id
+            dunits.pointer=_C.c_void_p(0)
+            dunits.ndesc=2
+            dunits.dscptrs[0]=_C.cast(_C.pointer(d),dpt)
+            dunits.dscptrs[1]=_C.cast(_C.pointer(_data.makeData(value.units).descriptor),dpt)
+            dunits.original=d
         else:
-            c=type.__new__(meta,classname,bases,classDict)
-        return c
+            dunits=d
+        if hasattr(value,'_error') and value._error is not None:
+            derror=descriptor.Descriptor_r()
+            derror.length=0
+            derror.dtype=WithError.dtype_id
+            derror.pointer=_C.c_void_p(0)
+            derror.ndesc=2
+            derror.dscptrs[0]=_C.cast(_C.pointer(dunits),dpt)
+            derror.dscptrs[1]=_C.cast(_C.pointer(_data.makeData(value._error).descriptor),dpt)
+            derror.original=dunits
+        else:
+            derror=dunits
+        if (hasattr(value,'_help') and value._help is not None) or (hasattr(value,'_validation') and value._validation is not None):
+            dparam=descriptor.Descriptor_r()
+            dparam.length=0
+            dparam.dtype=Parameter.dtype_id
+            dparam.pointer=_C.c_void_p(0)
+            dparam.ndesc=3
+            dparam.dscptrs[0]=_C.cast(_C.pointer(derror),dpt)
+            if hasattr(value,'_help') and value._help is not None:
+                dparam.dscptrs[1]=_C.cast(_C.pointer(_data.makeData(value._help).descriptor),dpt)
+            else:
+                dparam.dscptrs[1]=_C.cast(_C.c_void_p(0),dpt)
+            if hasattr(value,'_validation') and value._validation is not None:
+                dparam.dscptrs[2]=_C.cast(_C.pointer(_data.makeData(value._validation).descriptor),dpt)
+            else:
+                dparam.dscptrs[2]=_C.cast(_C.c_void_p(0),dpt)
+            dparam.original=derror
+        else:
+            dparam=derror
+        return dparam
 
-class _Action(Compound):
+    @property
+    def descriptor(self):
+        d=descriptor.Descriptor_r()
+        if self.opcode is None:
+            d.length=0
+            d.pointer=_C.c_void_p(0)
+        else:
+            d.length=2
+            d.pointer=_C.cast(_C.pointer(_C.c_uint16(self.opcode)),_C.c_void_p)
+        d.dtype=self.dtype_id
+        d.ndesc=len(self.args)
+        for idx in range(len(self.args)):
+            if self.args[idx] is None:
+                d.dscptrs[idx]=_C.cast(_C.c_void_p(0),type(d.dscptrs[idx]))
+            else:
+                d.dscptrs[idx]=_C.cast(_C.pointer(_data.makeData(self.args[idx]).descriptor),_C.POINTER(descriptor.Descriptor))
+        d.original=self
+        return self.descriptorWithProps(self,d)
+
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        if d.pointer is None:
+            opcode=None
+        else:
+            opcode=_C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
+        args=[]
+        for i in range(d.ndesc):
+            if _C.cast(d.dscptrs[i],_C.c_void_p).value is None:
+                args.append(None)
+            else:
+                args.append(d.dscptrs[i].contents.value)
+        args=tuple(args)
+        return cls(opcode=opcode,args=args)
+            
+class Action(Compound):
     """
     An Action is used for describing an operation to be performed by an
     MDSplus action server. Actions are typically dispatched using the
     mdstcl DISPATCH command
     """
     fields=('dispatch','task','errorLog','completionMessage','performance')
-Action=MetaClass('Action',(_Action,),{})
+    dtype_id=202
 
-class _Call(Compound):
+class Call(Compound):
     """
     A Call is used to call routines in shared libraries.
     """
     fields=('image','routine')
     _opcode_name='retType'
-Call=MetaClass('Call',(_Call,),{})
+    dtype_id=212
 
-class _Conglom(Compound):
+class Conglom(Compound):
     """A Conglom is used at the head of an MDSplus conglomerate. A conglomerate is a set of tree nodes used
     to define a device such as a piece of data acquisition hardware. A conglomerate is associated with some
     external code providing various methods which can be performed on the device. The Conglom class contains
     information used for locating the external code.
     """
     fields=('image','model','name','qualifiers')
+    dtype_id=200
     def getClass(self, ):
         if not self.image=='__python__':
             raise Exception('Conglom does not represent a python class.')
@@ -246,28 +308,28 @@ class _Conglom(Compound):
         if not model in safe_env:
             raise _Exceptions.DevPYDEVICE_NOT_FOUND
         return safe_env[model]
-Conglom=MetaClass('Conglom',(_Conglom,),{})
 
-class _Dependency(Compound):
+class Dependency(Compound):
     """A Dependency object is used to describe action dependencies. This is a legacy class and may not be recognized by
     some dispatching systems
     """
     fields=('arg1','arg2')
-Dependency=MetaClass('Dependency',(_Dependency,),{})
+    dtype_id=208
 
-class _Dimension(Compound):
+class Dimension(Compound):
     """A dimension object is used to describe a signal dimension, typically a time axis. It provides a compact description
     of the timing information of measurements recorded by devices such as transient recorders. It associates a Window
     object with an axis. The axis is generally a range with possibly no start or end but simply a delta. The Window
     object is then used to bracket the axis to resolve the appropriate timestamps.
     """
     fields=('window','axis')
-Dimension=MetaClass('Dimension',(_Dimension,),{})
+    dtype_id=196
 
-class _Dispatch(Compound):
+class Dispatch(Compound):
     """A Dispatch object is used to describe when an where an action should be dispatched to an MDSplus action server.
     """
     fields=('ident','phase','when','completion')
+    dtype_id=203
 
     def __init__(self,*args,**kwargs):
         if 'dispatch_type' not in kwargs:
@@ -276,120 +338,67 @@ class _Dispatch(Compound):
         super(_Dispatch,self).__init__(args=args,params=kwargs)
         if self.completion is None:
            self.completion = None
-Dispatch=MetaClass('Dispatch',(_Dispatch,),{})
 
-class _Function(Compound):
+class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
     """
     fields=tuple()
+    dtype_id=199
 
     def __init__(self,opcode,args):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
-#        from _opcodes.opcodes import find_opcode
         super(Function,self).__init__(args=args,opcode=opcode)
-#        opc=find_opcode(self._opcode)
-#        if opc:
-#            opc.check_args(args)
-#            self._opcode=opc.number
-#        else:
-#            raise Exception("Invalid opcode - "+str(self._opcode))
-#        self.__dict__['opc']=opc
 
-#    def setOpcode(self,opcode):
-#        """Set opcode
-#        @param opcode: either a string or a index number of the builtin operation
-#        @type opcode: str,int
-#        """
-#        from _opcodes.opcodes import find_opcode
-#        opc=find_opcode(opcode)
-#        if not opc:
-#            raise Exception("Invalid opcode - "+str(opcode))
-#        self.opcode=opcode
-#        self.__dict__['opc']=opc
-
-#
-# The following code can be used if we want to implement TDI opcodes in python code using the opcodes.py module.
-# If it is commened out, it will default to using TdiEvaluate to perform the evaluation.
-#
-#    def evaluate(self):
-#        """Returns the answer when the function is evaluated."""
-#        return self.opc.evaluate(self.args)
-#
-#    def decompile(self):
-#            return self.opc.str(self.args)
-
-#    def __str__(self):
-#        """Returns the string representation of the function."""
-#        return self.opc.str(self.args)
-#
-#def compile_function(name,*args):
-#
-#    opcode=find_opcode(name)
-#    if opcode:
-#        if opcode.class_of:
-#            return opcode.class_of(*args)
-#        else:
-#            return opc(opcode.number,*args)
-#    else:
-#        return opc('BUILD_CALL',None,*args)
-Function=MetaClass('Function',(_Function,),{})
-
-class _Method(Compound):
+class Method(Compound):
     """A Method object is used to describe an operation to be performed on an MDSplus conglomerate/device
     """
     fields=('timeout','method','object')
-Method=MetaClass('Method',(_Method,),{})
+    dtype_id=207
 
-class _Procedure(Compound):
+class Procedure(Compound):
     """A Procedure is a deprecated object
     """
     fields=('timeout','language','procedure')
-Procedure=MetaClass('Procedure',(_Procedure,),{})
+    dtype_id=206
 
-class _Program(Compound):
+class Program(Compound):
     """A Program is a deprecated object"""
     fields=('timeout','program')
-Program=MetaClass('Program',(_Program,),{})
+    dtype_id=204
 
-class _Range(Compound):
+class Range(Compound):
     """A Range describes a ramp. When used as an axis in a Dimension object along with a Window object it can be
     used to describe a clock. In this context it is possible to have missing begin and ending values or even have the
     begin, ending, and delta fields specified as arrays to indicate a multi-speed clock.
     """
     fields=('begin','ending','delta')
+    dtype_id=201
 
     def decompile(self):
         parts=list()
         for arg in self.args:
             parts.append(_data.makeData(arg).decompile())
         return ' : '.join(parts)
-Range=MetaClass('Range',(_Range,),{})
 
-class _Routine(Compound):
+class Routine(Compound):
     """A Routine is a deprecated object"""
     fields=('timeout','image','routine')
-Routine=MetaClass('Routine',(_Routine,),{})
+    dtype_id=205
 
-class _Signal(Compound):
+class Signal(Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent
     axis (Dimensions). When Signals are indexed using s[idx], the index is resolved using the dimension of the signal
     """
     fields=('value','raw')
+    dtype_id=195
 
-    def _getDims(self):
+    @property
+    def dims(self):
+        """The dimensions of the signal"""
         return self.getArguments()
-
-    dims=property(_getDims)
-    """The dimensions of the signal"""
-
-#    def decompile(self):
-#        arglist=list()
-#        for arg in self.args:
-#            arglist.append(makeData(arg).decompile())
-#        return 'Build_Signal('+','.join(arglist)+')'
 
     def dim_of(self,idx=0):
         """Return the signals dimension
@@ -441,25 +450,20 @@ class _Signal(Compound):
         @rtype: None
         """
         return self.setArguments(value)
-Signal=MetaClass('Signal',(_Signal,),{})
 
-class _Window(Compound):
+class Window(Compound):
     """A Window object can be used to construct a Dimension object. It brackets the axis information stored in the
     Dimension to construct the independent axis of a signal.
     """
     fields=('startIdx','endIdx','timeAt0')
+    dtype_id=197
 
-#    def decompile(self):
-#        return 'Build_Window('+makeData(self.startIdx).decompile()+','+makeData(self.endIdx).decompile()+','+makeData(self.timeAt0)+')'
-Window=MetaClass('Window',(_Window,),{})
-
-class _Opaque(Compound):
+class Opaque(Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
     """
     fields=('data','otype')
+    dtype_id=217
 
-#    def decompile(self):
-#        return 'Build_Opaque('+makeData(self.data).decompile()+','+makeData(self.otype).decompile()+')'
 
     def getImage(self):
       import Image
@@ -482,4 +486,41 @@ class _Opaque(Compound):
         f.close()
       return opq
     fromFile=staticmethod(fromFile)
-Opaque=MetaClass('Opaque',(_Opaque,),{})
+
+class WithUnits(Compound):
+    """An Opaque object containing a binary uint8 array and a string identifying the type.
+    """
+    fields=('data','units')
+    dtype_id=211
+
+class WithError(Compound):
+    """An Opaque object containing a binary uint8 array and a string identifying the type.
+    """
+    fields=('data','error')
+    dtype_id=211
+
+class Parameter(Compound):
+    """An Opaque object containing a binary uint8 array and a string identifying the type.
+    """
+    fields=('data','help','validation')
+    dtype_id=194
+
+descriptor.dtypeToClass[Action.dtype_id]=Action
+descriptor.dtypeToClass[Call.dtype_id]=Call
+descriptor.dtypeToClass[Conglom.dtype_id]=Conglom
+descriptor.dtypeToClass[Dependency.dtype_id]=Dependency
+descriptor.dtypeToClass[Dimension.dtype_id]=Dimension
+descriptor.dtypeToClass[Dispatch.dtype_id]=Dispatch
+descriptor.dtypeToClass[Function.dtype_id]=Function
+descriptor.dtypeToClass[Method.dtype_id]=Method
+descriptor.dtypeToClass[Procedure.dtype_id]=Procedure
+descriptor.dtypeToClass[Program.dtype_id]=Program
+descriptor.dtypeToClass[Range.dtype_id]=Range
+descriptor.dtypeToClass[Routine.dtype_id]=Routine
+descriptor.dtypeToClass[Signal.dtype_id]=Signal
+descriptor.dtypeToClass[Window.dtype_id]=Window
+descriptor.dtypeToClass[Opaque.dtype_id]=Opaque
+descriptor.dtypeToClass[WithError.dtype_id]=WithError
+descriptor.dtypeToClass[WithUnits.dtype_id]=WithUnits
+descriptor.dtypeToClass[Parameter.dtype_id]=Parameter
+

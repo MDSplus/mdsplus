@@ -12,6 +12,11 @@ _Exceptions=_mimport('mdsExceptions')
 
 MDSplusException = _Exceptions.MDSplusException
 MdsException = MDSplusException
+#### Load Shared Libraries Referenced #######
+#
+_MdsShr=_ver.load_library('MdsShr')
+#
+#############################################
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -48,11 +53,13 @@ def getDimension(item,idx=0):
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
+    _tdishr=_mimport('_tdishr')
     return _tdishr.TdiCompile('data($)',(item,)).evaluate().value
 
 def decompile(item):
     """Returns the item converted to a string
     @rtype: string"""
+    _tdishr=_mimport('_tdishr')
 
     return _tdishr.TdiDecompile(item)
 
@@ -72,15 +79,15 @@ def rawPart(item):
 
 def makeData(value):
     """Convert a python object to a MDSobject Data object"""
+    _tree=_mimport("tree")
     if value is None:
         return EmptyData()
-    if isinstance(value,Data):
+    if isinstance(value,(Data,_tree.TreeNode)):
         return value
     if isinstance(value,(_N.generic,int,float,complex,_ver.basestring,_ver.long,_C._SimpleCData)):
         return _scalar.makeScalar(value)
     if isinstance(value,(tuple,list)):
-        apd = _apd.Apd(tuple(value),_dtypes.DTYPE_LIST)
-        return _apd.List(apd)
+        return _apd.List(value)
     if isinstance(value,_N.ndarray):
         return _array.makeArray(value)
     if isinstance(value,dict):
@@ -323,6 +330,7 @@ class Data(object):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
+        _tdishr=_mimport('_tdishr')
         return int(_tdishr.TdiCompile('size($)',(self,)).data())
 
     def __long__(self):
@@ -445,18 +453,7 @@ class Data(object):
         """Xor: x.__xor__(y) <==> x^y
         @rtype: Data"""
         return Data.execute('$^$',self,y)
-
-    def _getDescriptor(self):
-        """Return descriptor for passing data to MDSplus library routines.
-        @rtype: descriptor
-        """
-        return _descriptor.descriptor(self)
-
-    descriptor=property(_getDescriptor)
-    """Descriptor of data.
-    @type: descriptor
-    """
-
+    
     def compare(self,value):
         """Compare this data with argument
         @param value: data to compare to
@@ -464,7 +461,7 @@ class Data(object):
         @return: Return True if the value and this Data object contain the same data
         @rtype: Bool
         """
-        status = _mdsshr.MdsCompareXd(self,value)
+        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_C.pointer(makeData(value).descriptor))
         if status == 1:
             return True
         else:
@@ -475,12 +472,14 @@ class Data(object):
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
+        _tdishr=_mimport('_tdishr')
         return _tdishr.TdiCompile(expr,args)
     compile=staticmethod(compile)
 
     def execute(expr,*args):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
+        _tdishr=_mimport('_tdishr')
         return _tdishr.TdiExecute(expr,args)
     execute=staticmethod(execute)
 
@@ -498,6 +497,7 @@ class Data(object):
         @param tdivarname: The name of the publi tdi variable
         @type tdivarname: string
         @rtype: Data"""
+        _tdishr=_mimport('_tdishr')
         try:
 #            return _compound.Function(opcode='public',args=(str(tdivarname),)).evaluate()
             return _tdishr.TdiExecute('public '+str(tdivarname))
@@ -531,19 +531,19 @@ class Data(object):
                 return altvalue[0]
             raise
 
-    def _getDescrPtr(self):
+    @property
+    def descrPtr(self):
         """Return pointer to descriptor of inself as an int
         @rtype: int
         """
         from ctypes import addressof
         return addressof(self.descriptor)
 
-    descrPtr=property(_getDescrPtr)
-
     def evaluate(self):
         """Return the result of TDI evaluate(this).
         @rtype: Data
         """
+        _tdishr=_mimport('_tdishr')
         return _tdishr.TdiEvaluate(self)
 
     def _isScalar(x):
@@ -699,6 +699,7 @@ class Data(object):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
+        _tree=_mimport("tree")
         if isinstance(self,_tree.TreeNode) or isinstance(self,_tree.TreePath):
             return True
         elif isinstance(self,_compound.Compound):
@@ -745,18 +746,30 @@ class Data(object):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        return _array.Uint8Array(_mdsshr.MdsSerializeDscOut(self))
-        return Data.execute('SerializeOut($)',self)
+        xd=descriptor.Descriptor_xd()
+        status=_MdsShr.MdsSerializeDscOut(_C.pointer(self.descriptor),_C.pointer(xd))
+        if (status & 1) == 1:
+            return xd.value
+        else:
+            raise _Exceptions.statusToException(status)
 
-    def deserialize(data):
+    @staticmethod
+    def deserialize(bytes):
         """Return Data from serialized buffer.
         @param data: Buffer returned from serialize.
         @type data: Uint8Array
         @rtype: Data
         """
-        return _mdsshr.MdsSerializeDscIn(data)
-    deserialize=staticmethod(deserialize)
+        if len(bytes) == 0:  # short cut if setevent did not send array
+            return _apd.List([])
+        xd=descriptor.Descriptor_xd()
+        status=_MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.pointer(xd))
+        if (status & 1) == 1:
+            return xd.value
+        else:
+            raise _Exceptions.statusToException(status)
 
+    @staticmethod
     def makeData(value):
         """Return MDSplus data class from value.
         @param value: Any value
@@ -764,28 +777,29 @@ class Data(object):
         @rtype: Data
         """
         return makeData(value)
-    makeData=staticmethod(makeData)
 
 class EmptyData(Data):
     """No Value"""
     def __init__(self):
         pass
-
+    
     def __str__(self):
         return "<no-data>"
+    
+    @property
+    def value(self):
+        return None
 
-    def _getValue(self):
-       return None
+    @property
+    def descriptor(self):
+        d = descriptor.Descriptor_xd()
+        d.dtype = descriptor.Descriptor_xd.dtype_dsc
+        return d
+   
 
-    value=property(_getValue)
-
-
-_descriptor=_mimport('_descriptor')
-_tdishr=_mimport('_tdishr')
-_mdsshr=_mimport('_mdsshr')
+_scalar=_mimport('mdsscalar')
 _apd=_mimport('apd')
 _compound=_mimport('compound')
 _array=_mimport('mdsarray')
-_scalar=_mimport('mdsscalar')
 _scope=_mimport('scope')
-_tree=_mimport('tree')
+descriptor=_mimport('descriptor')

@@ -7,10 +7,10 @@ def _mimport(name, level=1):
 import numpy as _N
 import ctypes as _C
 
-_data=_mimport('mdsdata')
-_dtypes=_mimport('_mdsdtypes')
 _scalar=_mimport('mdsscalar')
+_data=_mimport('mdsdata')
 _ver=_mimport('version')
+descriptor=_mimport('descriptor')
 
 def makeArray(value):
     if isinstance(value,Array):
@@ -67,6 +67,8 @@ def arrayDecompile(a,cl):
         return ans
 
 class Array(_data.Data):
+    ctype=None
+    
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
@@ -87,10 +89,10 @@ class Array(_data.Data):
     def __getattr__(self,name):
         return self._value.__getattribute__(name)
 
-    def _getValue(self):
+    @property
+    def value(self):
         """Return the numpy ndarray representation of the array"""
         return self._value
-    value=property(_getValue)
 
     def _unop(self,op):
         return _data.makeData(getattr(self._value,op)())
@@ -112,12 +114,6 @@ class Array(_data.Data):
         except AttributeError:
             pass
         return _data.makeData(getattr(self._value,op)(y,z))
-
-    def _getMdsDtypeNum(self):
-        return {'Uint8Array':_dtypes.DTYPE_BU,'Uint16Array':_dtypes.DTYPE_WU,'Uint32Array':_dtypes.DTYPE_LU,'Uint64Array':_dtypes.DTYPE_QU,
-                'Int8Array':_dtypes.DTYPE_B,'Int16Array':_dtypes.DTYPE_W,'Int32Array':_dtypes.DTYPE_L,'Int64Array':_dtypes.DTYPE_Q,
-                'StringArray':_dtypes.DTYPE_T,'Float32Array':_dtypes.DTYPE_FS,'Float64Array':_dtypes.DTYPE_FT}[self.__class__.__name__]
-    mdsdtype=property(_getMdsDtypeNum)
 
     def __array__(self):
         raise TypeError('__array__ not yet supported')
@@ -178,8 +174,115 @@ class Array(_data.Data):
             cl=_scalar.__dict__[str(self._value.dtype).capitalize()]
         return arrayDecompile(self._value,cl)
 
+    @property
+    def descriptor(self):
+      try:
+        _compound=_mimport('compound')
+        value=self._value
+        if str(value.dtype)[1] in 'SU':
+            value = value.astype('S')
+            for i in range(len(value.flat)):
+                value.flat[i]=value.flat[i].ljust(value.itemsize)
+        if not value.flags['CONTIGUOUS']:
+            value=_N.ascontiguousarray(value)
+        value = value.T
+        if not value.flags.f_contiguous:
+            value=value.copy('F')
+        d=descriptor.Descriptor_a()
+        d.scale=0
+        d.digits=0
+        d.aflags=0
+        d.dtype=self.dtype_id
+        d.length=value.itemsize
+        d.pointer=_C.c_void_p(value.ctypes.data)
+        d.dimct=_N.shape(_N.shape(value))[0]
+        d.arsize=value.nbytes
+        d.a0=d.pointer
+        if d.dimct > 1:
+            d.coeff=1
+            for i in range(d.dimct):
+                d.coeff_and_bounds[i]=_N.shape(value)[i]
+        d.original=self
+        return _compound.Compound.descriptorWithProps(self,d)
+      except:
+          import traceback
+          traceback.print_exc()
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        _tree=_mimport('tree')
+        if d.dtype == 0:
+            d.dtype = Int32Array.dtype_id
+        if d.coeff:
+            d.arsize=d.length
+            shape=list()
+            for i in range(d.dimct):
+                dim=d.coeff_and_bounds[d.dimct-i-1]
+                if dim > 0:
+                    d.arsize=d.arsize*dim
+                    shape.append(dim)
+        else:
+            shape=[int(d.arsize/d.length),]
+        if d.dtype == StringArray.dtype_id:
+            return StringArray(
+                _N.ndarray(shape=shape,
+                           dtype=_N.dtype(('S',d.length)),
+                           buffer=_ver.buffer(
+                               _C.cast(
+                                   d.pointer,
+                                   _C.POINTER(_C.c_byte*d.arsize)).contents)))
+        if d.dtype == _tree.TreeNode.dtype_id:
+            d.dtype=Int32Array.dtype_id
+            nids=_N.ndarray(
+                shape=shape,
+                dtype=_N.int32,
+                buffer=_ver.buffer(
+                    _C.cast(
+                        d.pointer,
+                        _C.POINTER(_C.c_int32 * int(d.arsize/d.length))).contents))
+            return _tree.TreeNodeArray(list(nids))
+        if d.dtype == 10: ### VMS FLOAT
+            return _array.makeArray(_data.Data.execute("float($)",(d,)))
+        if d.dtype == 11 or d.dtype == 27: ### VMS DOUBLES
+            return _array.makeArray(_data.Data.execute("FT_FLOAT($)",(d,)))
+        if d.dtype == Complex64Array.dtype_id:
+            return _array.makeArray(
+                _N.ndarray(
+                    shape=shape,
+                    dtype=_N.complex64,
+                    buffer=_ver.buffer(
+                        _C.cast(
+                            d.pointer,
+                            _C.POINTER(
+                                _C.c_float * int(d.arsize*2/d.length))).contents)))
+        if d.dtype == Complex128Array.dtype_id:
+            return _array.makeArray(
+                _N.ndarray(
+                    shape=shape,
+                    dtype=_N.complex128,
+                    buffer=_ver.buffer(
+                        _C.cast(
+                            d.pointer,
+                            _C.POINTER(_C.c_double * int(d.arsize*2/d.length))).contents)))
+        if d.dtype in descriptor.dtypeToArrayClass:
+            cls = descriptor.dtypeToArrayClass[d.dtype]
+            if cls.ctype is not None:
+                a=_N.ndarray(
+                    shape=shape,
+                    dtype=cls.ctype,
+                    buffer=_ver.buffer(
+                        _C.cast(
+                            d.pointer,
+                            _C.POINTER(
+                                cls.ctype * int(d.arsize/d.length))).contents))
+                return makeArray(a)
+        raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
+
 class Int8Array(Array):
     """8-bit signed number"""
+    dtype_id=6
+    ctype=_C.c_int8
+    
     def deserialize(self):
         """Return data item if this array was returned from serialize.
         @rtype: Data
@@ -188,15 +291,23 @@ class Int8Array(Array):
 
 class Int16Array(Array):
     """16-bit signed number"""
+    dtype_id=7
+    ctype=_C.c_int16
 
 class Int32Array(Array):
     """32-bit signed number"""
+    dtype_id=8
+    ctype=_C.c_int32
 
 class Int64Array(Array):
     """64-bit signed number"""
+    dtype_id=9
+    ctype=_C.c_int64
 
 class Uint8Array(Array):
     """8-bit unsigned number"""
+    dtype_id=2
+    ctype=_C.c_uint8
     def deserialize(self):
         """Return data item if this array was returned from serialize.
         @rtype: Data
@@ -205,27 +316,40 @@ class Uint8Array(Array):
 
 class Uint16Array(Array):
     """16-bit unsigned number"""
-
+    dtype_id=3
+    ctype=_C.c_uint16
+    
 class Uint32Array(Array):
     """32-bit unsigned number"""
+    dtype_id=4
+    ctype=_C.c_uint32
 
 class Uint64Array(Array):
     """64-bit unsigned number"""
+    dtype_id=5
+    ctype=_C.c_uint64
 
 class Float32Array(Array):
     """32-bit floating point number"""
+    dtype_id=52
+    ctype=_C.c_float
 
 class Complex64Array(Array):
     """32-bit complex number"""
+    dtype_id=54
 
 class Float64Array(Array):
     """64-bit floating point number"""
+    dtype_id=53
+    ctype=_C.c_double
 
 class Complex128Array(Array):
     """64-bit complex number"""
+    dtype_id=55
 
 class StringArray(Array):
     """String"""
+    dtype_id=14
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""
@@ -241,11 +365,29 @@ class StringArray(Array):
 
 class Int128Array(Array):
     """128-bit signed number"""
+    dtype_id=26
     def __init__(self):
         raise TypeError("Int128Array is not yet supported")
 
 class Uint128Array(Array):
     """128-bit unsigned number"""
+    dtype_id=25
     def __init__(self):
         raise TypeError("Uint128Array is not yet supported")
+
+descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
+descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
+descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
+descriptor.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
+descriptor.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
+descriptor.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
+descriptor.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
+descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
+descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
+descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
+descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
+descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
+descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
+descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
+descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
 
