@@ -570,6 +570,9 @@ then
     ###
     ### DO NOT CLEAN /publish as it may contain valid older release packages
     ###
+    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     mkdir -p /publish/${BRANCH}/DEBS
     rsync -a /release/${BRANCH}/DEBS/${ARCH} /publish/${BRANCH}/DEBS/
     if [ ! -r /publish/repo ]
@@ -591,12 +594,11 @@ EOF
     else
 	pushd /publish/repo
 	reprepro clearvanished
-	for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${major}\.${minor}\.${release}_*")
-	do
-	    if ( ! reprepro -V -C ${BRANCH} includedeb MDSplus $deb )
-	    then
-		RED $COLOR
-		cat <<EOF >&2
+	env HOME=/sign_keys reprepro -V --keepunused --keepunreferenced -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
+	if [ "$?" != "0" ]
+	then
+	    RED $COLOR
+	    cat <<EOF >&2
 =================================================================
 
 Failure: Problem installing debian into publish repository.
@@ -604,10 +606,9 @@ Failure: Problem installing debian into publish repository.
 
 =================================================================
 EOF
-		NORMAL $COLOR
-		exit 1
-	    fi
-	done
+	    NORMAL $COLOR
+	    exit 1
+	fi
 	popd
     fi
 fi
