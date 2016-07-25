@@ -1,13 +1,17 @@
+import sys as _sys
+import traceback as _tb
 def _mimport(name, level=1):
-    try:
-        return __import__(name, globals(), level=level)
-    except:
-        try:
-            return __import__(name, globals())
-        except:
-            return __import__('MDSplus.'+name,globals())
+    return __import__(name, globals=globals(), level=level)
 
-_compound=_mimport('compound',2)
+_compound = None
+for level in (0,1,2,-1):
+   try:
+     _compound=_mimport('compound',level)
+     break
+   except:
+     _tb.print_exc()
+if _compound is None:
+   _sys.exit()
 
 class Builtin(_compound.Function):
     _dtype=199

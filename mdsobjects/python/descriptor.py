@@ -12,7 +12,6 @@ descriptor=_mimport('descriptor')
 
 #### Load Shared Libraries Referenced #######
 #
-_TreeShr=_ver.load_library('TreeShr')
 _MdsShr=_ver.load_library('MdsShr')
 #
 #############################################

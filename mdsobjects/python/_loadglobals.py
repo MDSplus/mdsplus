@@ -12,8 +12,8 @@ def load(gbls):
                 gbls[key]=mod.__dict__[key]
 
     for mod in ('apd','mdsarray','compound','mdsdata','ident','mdsscalar',
-                'tree','mdsdevice','event','_tdishr','scope','_mdsshr','_tdishr',
-                '_descriptor','connection','mdsdcl'):
+                'tree','mdsdevice','event','scope','_mdsshr',
+                'connection','mdsdcl'):
         loadmod_full(mod,gbls)
     for mod in ('mdsExceptions', 'tdibuiltins'):
         loadmod_full(mod, gbls)

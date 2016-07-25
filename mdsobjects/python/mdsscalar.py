@@ -7,18 +7,18 @@ def _mimport(name, level=1):
 import numpy as _N
 import ctypes as _C
 
-_dtypes=_mimport('_mdsdtypes')
 _data=_mimport('mdsdata')
 _array=_mimport('mdsarray')
 _ver=_mimport('version')
 descriptor=_mimport('descriptor')
 
 def makeScalar(value):
-    if isinstance(value,_ver.basestring):
-        return String(value)
     if isinstance(value,Scalar):
+        return value
         from copy import deepcopy
         return deepcopy(value)
+    if isinstance(value,_ver.basestring):
+        return String(value)
     if isinstance(value,_N.generic):
         if isinstance(value,(_N.string_, _N.unicode_)):  # includes _N.bytes_
             return String(value)
@@ -69,12 +69,12 @@ class Scalar(_data.Data):
         return super(Scalar,cls).__new__(cls)
 
     def __init__(self,value=0):
-        if self.__class__.__name__ == 'Scalar':
+        if isinstance(value,self.__class__):
+            self._value=value._value
+        elif self.__class__ == Scalar:
             raise TypeError("cannot create 'Scalar' instances")
-        if self.__class__.__name__ == 'String':
-            self._value = _N.str_(_ver.tostr(value))
-            return
-        self._value = _N.__dict__[self.__class__.__name__.lower()](value)
+        else:
+            self._value = _N.__dict__[self.__class__.__name__.lower()](value)
 
     @property
     def mdsdtype(self):
@@ -87,10 +87,7 @@ class Scalar(_data.Data):
         d=descriptor.Descriptor_s()
         d.length=self._value.nbytes
         d.dtype=self.dtype_id
-        if isinstance(self._value,_N.unicode_):
-            array=_N.array(self._value.astype('S'))
-        else:
-            array=_N.array(self._value)
+        array=_N.array(self._value)
         d.pointer=_C.c_void_p(array.ctypes.data)
         d.original=self
         d.array=array
@@ -297,6 +294,20 @@ class String(Scalar):
     """String"""
     dtype_id=14
 
+    @property
+    def descriptor(self):
+      try:
+        _compound=_mimport('compound')
+        d=descriptor.Descriptor_s()
+        d.length=len(self)
+        d.dtype=self.dtype_id
+        d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(str(self))),_C.c_void_p)
+        d.original=self
+        return _compound.Compound.descriptorWithProps(self,d)
+      except:
+          import traceback
+          traceback.print_exc()
+
     @classmethod
     def fromDescriptor(cls,d):
         if d.length == 0:
@@ -316,6 +327,10 @@ class String(Scalar):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
         return str(self._value).find(str(y)) != -1
+
+    def __init__(self,value):
+        self._value = _N.str_(_ver.tostr(value))
+
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""

@@ -11,14 +11,15 @@ import threading as _threading
 
 #### Load other python modules referenced ###
 #
-_compound=_mimport('compound')
 _data=_mimport('mdsdata')
 _Exceptions=_mimport('mdsExceptions')
 _scalar=_mimport('mdsscalar')
 _array=_mimport('mdsarray')
 _mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
+_compound=_mimport('compound')
 descriptor=_mimport('descriptor')
+_mdsshr=_mimport('_mdsshr')
 #
 #############################################
 
@@ -42,7 +43,7 @@ _thread_data=_ThreadData()
 
 _hard_lock=_threading.Lock() #### Thread lock
 
-_activeTree={} # Holds tdishr active tree context info
+_activeTree={} # Holds the active global tree contexts
 
 _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to codenum table
               'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
@@ -94,17 +95,6 @@ def _getActiveTree(thread=None):
     else:
         ctx = 0
     return _C.c_void_p(ctx)
-
-def _dateToQuad(datestr):
-    if isinstance(datestr,(str,_scalar.String)):
-        ans=_C.c_uint64(0)
-        datestr=_C.c_char_p(_ver.tobytes(str(datestr)))
-        status = _MdsShr.LibConvertDateString(datestr,_C.pointer(ans))
-        if not (status & 1):
-            raise Exception("Cannot parse \"%s\" as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (_ver.tostr(datestr.value),))
-        return _scalar.Uint64(_N.uint64(ans.value))
-    else:
-        return _data.makeData(datestr)
 
 class _TreeCtx(object):
 
@@ -180,7 +170,7 @@ class Tree(object):
 	# support for the with-structure
     def __enter__(self):
         """ referenced if using "with Tree() ... " block"""
-    	return self
+        return self
     
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -822,8 +812,8 @@ Get tree information such as:
         @type delta: Uint64, Float32 or Float64
         @rtype: None
         """
-        begin = _dateToQuad(begin)
-        end = _dateToQuad(begin)
+        begin = _mdsshr.DateToQuad(begin)
+        end = _mdsshr.DateToQuad(begin)
         delta = _data.makeData(delta)
         status = _TreeShr.TreeSetTimeContext(_C.pointer(begin.descriptor),
                                              _C.pointer(begin.descriptor),
@@ -839,7 +829,7 @@ Get tree information such as:
         @type date: str
         @rtype: None
         """
-        status = _TreeShr.TreeSetViewDate(_C.pointer(_C.c_int64(_dateToQuad(date).data())))
+        status = _TreeShr.TreeSetViewDate(_C.pointer(_C.c_int64(_mdsshr.DateToQuad(date).data())))
         if not status & 1:
             raise _statToExs(status)
 
@@ -1549,7 +1539,7 @@ class TreeNode(object):
                 return altvalue[0]
             else:
                 raise _statToEx(status)
-        except Exception,e:
+        except Exception:
             import traceback
             traceback.print_exc()
             raise
@@ -2238,13 +2228,11 @@ class TreeNode(object):
         """
         Tree.lock()
         try:
-            array=_array.makeArray(array)
-            t_d=_scalar.Int64(timestamp).descriptor
             status=_TreeShr._TreePutRow(self.tree.ctx,
                                         self._nid,
                                         _C.c_int32(bufsize),
-                                        _C.c_void_p(t_d.pointer),
-                                        _C.pointer(_data.makeData(array).descriptor))
+                                        _C.c_void_p(_scalar.Uint64(timestamp).descriptor.pointer),
+                                        _C.pointer(_array.makeArray(array).descriptor))
             if not (status & 1):
                 raise _statToEx(status)
         finally:
@@ -2277,7 +2265,7 @@ class TreeNode(object):
         @type array: Array
         @rtype: None
         """
-        timestampArray=_array.Int64Array(timestampArray)
+        timestampArray=_array.Uint64Array(timestampArray)
         value=_array.makeArray(value)
         Tree.lock()
         try:
@@ -2581,7 +2569,7 @@ class TreePath(TreeNode):
 
     @classmethod
     def fromDescriptor(cls,d):
-        return cls(_ver.tostr(_C.cast(d.pointer,_C.c_char_p).value))
+        return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
         
 
 class TreeNodeArray(_data.Data):

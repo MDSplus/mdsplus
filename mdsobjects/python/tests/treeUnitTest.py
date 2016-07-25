@@ -24,7 +24,7 @@ def setUpModule():
 def tearDownModule():
     """tearDown invoked by nose"""
     import shutil
-#    shutil.rmtree(_tmpdir)
+    shutil.rmtree(_tmpdir)
     
 class treeTests(TestCase):
 

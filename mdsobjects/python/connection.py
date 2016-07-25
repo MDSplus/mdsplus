@@ -16,7 +16,7 @@ _scalar=_mimport('mdsscalar')
 _array=_mimport('mdsarray')
 _data=_mimport('mdsdata')
 _ver=_mimport('version')
-_statToEx=_Exceptions.statusToException # Convert TreeShr status return to exception
+_statToEx=_Exceptions.statusToException
 
 class MdsIpException(_Exceptions.MDSplusException):
   pass

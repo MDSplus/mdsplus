@@ -6,7 +6,6 @@ def _mimport(name, level=1):
 
 import numpy as _N, ctypes as _C
 
-_dtypes=_mimport('_mdsdtypes')
 _ver=_mimport('version')
 _Exceptions=_mimport('mdsExceptions')
 
@@ -15,6 +14,7 @@ MdsException = MDSplusException
 #### Load Shared Libraries Referenced #######
 #
 _MdsShr=_ver.load_library('MdsShr')
+_TdiShr=_ver.load_library('TdiShr')
 #
 #############################################
 
@@ -38,7 +38,7 @@ def getValuePart(item):
     """Return the value portion of an object
     @rtype: Data"""
     try:
-        return Data.execute('value_of($)',item)
+        return _builtins.VALUE_OF(item).evaluate()
     except:
         return None
 
@@ -46,27 +46,24 @@ def getDimension(item,idx=0):
     """Return dimension of an object
     @rtype: Data"""
     try:
-        return Data.execute('dim_of($,$)',item,idx)
+        return _builtins.DIM_OF(item,idx).evaluate()
     except:
         return None
 
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
-    _tdishr=_mimport('_tdishr')
-    return _tdishr.TdiCompile('data($)',(item,)).evaluate().value
+    return _builtins.DATA(item).evaluate().value
 
 def decompile(item):
     """Returns the item converted to a string
     @rtype: string"""
-    _tdishr=_mimport('_tdishr')
-
-    return _tdishr.TdiDecompile(item)
+    return str(makeData(item).decompile())
 
 def evaluate(item,):
     """Return evaluation of mdsplus object"""
     try:
-        return item.evaluate()
+        return makeData(item).evaluate()
     except:
         return item
 
@@ -88,10 +85,13 @@ def makeData(value):
         return _scalar.makeScalar(value)
     if isinstance(value,(tuple,list)):
         return _apd.List(value)
-    if isinstance(value,_N.ndarray):
+    if isinstance(value,(_N.ndarray,_C.Array)):
         return _array.makeArray(value)
     if isinstance(value,dict):
         return _apd.Dictionary(value)
+    if isinstance(value,slice):
+        return _builtins.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
+
     else:
         raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
 
@@ -120,116 +120,80 @@ class Data(object):
     def value_of(self):
         """Return value part of object
         @rtype: Data"""
-        return Data.execute('value_of($)',self)
+        return _builtins.VALUE_OF(self).evaluate()
 
     def raw_of(self):
         """Return raw part of object
         @rtype: Data"""
-        return Data.execute('raw_of($)',self)
+        return _builtins.RAW_OF(self).evaluate()
     def units_of(self):
         """Return units of object
         @rtype: Data"""
-        return Data.execute('units_of($)',self)
+        return _builtins.UNITS_OF(self).evaluate()
 
     def getDimensionAt(self,idx=0):
         """Return dimension of object
         @param idx: Index of dimension
         @type idx: int
         @rtype: Data"""
-        return Data.execute('dim_of($,$)',(self,idx))
+        return _builtins.DIM_OF(self,idx).evaluate()
 
     dim_of=getDimensionAt
 
-    def getUnits(self):
-        """Return the TDI evaluation of UNITS_OF(this).
-        EmptyData is returned if no units defined.
-        @rtype: Data"""
-        return Data.execute('units($)',self)
-    def setUnits(self,units):
-        """Set the units of the Data instance.
-        @type: String
-        @rtype: original type"""
+    @property
+    def units(self):
+        """units associated with this data."""
+        return _builtins.UNITS(self).evaluate()
+    @units.setter
+    def units(self,units):
         if units is None:
             if hasattr(self,'_units'):
                 delattr(self,'_units')
         else:
             self._units=units
-        return self
-    units=property(getUnits,setUnits)
 
-    def getError(self):
-        """Get the error field.
-        Returns EmptyData if no error defined.
-        @rtype: Data"""
-        return Data.execute('error_of($)',self)
-
-    def setError(self,error):
-        """Set the Error field for this Data instance.
-        @type: Data
-        @rtype: original type"""
+    @property
+    def error(self):
+        """error property of this data."""
+        return _builtins.ERROR_OF(self).evaluate()
+    @error.setter
+    def error(self,error):
         if error is None:
             if hasattr(self,'_error'):
                 delattr(self,'_error')
         else:
             self._error=error
-        return self
 
-    error=property(getError,setError)
-
-    def getHelp(self):
-        """Returns the result of TDI GET_HELP(this).
-        Returns EmptyData if no help field defined.
-        @rtype: Data"""
-        return Data.execute('help_of($)',self)
-
-    def setHelp(self,help):
-        """Set the Help  field for this Data instance.
-        @rtype: original type
-        """
+    @property
+    def help(self):
+        """help property of this node."""
+        return _builtins.HELP_OF(self).evaluate()
+    @help.setter
+    def help(self,help):
         if help is None:
             if hasattr(self,'_help'):
                 delattr(self,'_help')
         else:
             self._help=help
-        return self
 
-    help=property(getHelp,setHelp)
-
-    def getValidation(self):
-        return Data.execute('validation_of($)',self)
-
-    def setValidation(self,validation):
-        """A validation procedure for the data.
-        Currently no built-in utilities make use of this validation property.
-        One could envision storing an expression which tests the data and returns
-        a result.
-        @type: Data
-        @rtype: original type"""
+    @property
+    def validation(self):
+        """Validation property of this node"""
+        return _builtins.VALIDATION_OF(self).evaluate()
+    @validation.setter
+    def validation(self,validation):
         if validation is None:
             if hasattr(self,'_validation'):
                 delattr(self,'_validation')
         else:
             self._validation=validation
-        return self
-
-    validation=property(getValidation,setValidation)
-
-    def push_dollar_value(self):
-        """Set $value for expression evaluation
-        @rtype: None"""
-        pass
-
-    def pop_dollar_value(self):
-        """Pop $value for expression evaluation
-        @rtype: Data"""
-        pass
 
     def __abs__(self):
         """
         Absolute value: x.__abs__() <==> abs(x)
         @rtype: Data
         """
-        return Data.execute('abs($)',self)
+        return _builtins.ABS(self).evaluate()
 
     def bool(self):
         """
@@ -249,20 +213,17 @@ class Data(object):
         """
         Add: x.__add__(y) <==> x+y
         @rtype: Data"""
-        if isinstance(y,Data):
-            return Data.execute('$+$',self,y)
-        else:
-            return self+makeData(y)
+        return _builtins.ADD(self,y).evaluate()
 
     def __and__(self,y):
         """And: x.__and__(y) <==> x&y
         @rtype: Data"""
-        return Data.execute('$ & $',self,y)
+        return _builtins.IAND(self,y).evaluate()
 
     def __div__(self,y):
         """Divide: x.__div__(y) <==> x/y
         @rtype: Data"""
-        return Data.execute('$/$',self,y)
+        return _builtins.DIVIDE(self,y).evaluate()
 
     __truediv__=__div__
 
@@ -270,7 +231,7 @@ class Data(object):
         """Equals: x.__eq__(y) <==> x==y
         @rtype: Bool"""
         try:
-            return Data.execute('$ == $',self,y).bool()
+            return _builtins.EQ(self,y).evaluate().bool()
         except:
             return False
 
@@ -283,24 +244,26 @@ class Data(object):
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: Data"""
-        return float(Data.execute('float($)[0]',self).value)
+        ans=_builtins.FLOAT(self).evaluate().value
+        try:
+            return float(ans)
+        except:
+            return float(ans[0])
 
     def __floordiv__(self,y):
         """Floordiv: x.__floordiv__(y) <==> x//y
         @rtype: Data"""
-        return Data.execute('floor($/$)',self,y)
+        return _builtins.FLOOR(self,y).evaluate()
 
     def __ge__(self,y):
         """Greater or equal: x.__ge__(y) <==> x>=y
         @rtype: Bool"""
-        return Data.execute('$ >= $',self,y).bool()
+        return _builtins.GE(self,y).evaluate().bool()
 
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        if isinstance(y,slice):
-            y=_compound.Range(y.start,y.stop,y.step)
-        ans = Data.execute('$[$]',self,y)
+        ans = _builtins.SUBSCRIPT(self,y).evaluate()
         if isinstance(ans,_array.Array):
             if ans.shape[0]==0:
                 raise IndexError
@@ -309,7 +272,7 @@ class Data(object):
     def __gt__(self,y):
         """Greater than: x.__gt__(y) <==> x>y
         @rtype: Bool"""
-        return Data.execute('$ > $',self,y).bool()
+        return _builtins.GT(self,y).evaluate().bool()
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -330,8 +293,7 @@ class Data(object):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
-        _tdishr=_mimport('_tdishr')
-        return int(_tdishr.TdiCompile('size($)',(self,)).data())
+        return int(_builtins.SIZE(self).data())
 
     def __long__(self):
         """Convert this object to python long
@@ -467,21 +429,19 @@ class Data(object):
         else:
             return False
 
-    def compile(expr, *args):
+    @staticmethod
+    def compile(*args):
         """Static method (routine in C++) which compiles the expression (via TdiCompile())
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
-        _tdishr=_mimport('_tdishr')
-        return _tdishr.TdiCompile(expr,args)
-    compile=staticmethod(compile)
+        return _builtins.COMPILE(*args).evaluate()
 
-    def execute(expr,*args):
+    @staticmethod
+    def execute(*args):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
-        _tdishr=_mimport('_tdishr')
-        return _tdishr.TdiExecute(expr,args)
-    execute=staticmethod(execute)
+        return Data.compile(*args).evaluate()
 
     def setTdiVar(self,tdivarname):
         """Set tdi public variable with this data
@@ -492,25 +452,22 @@ class Data(object):
         """
         return self.execute("`public "+str(tdivarname)+"=$",self)
 
+    @staticmethod
     def getTdiVar(tdivarname):
         """Get value of tdi public variable
         @param tdivarname: The name of the publi tdi variable
         @type tdivarname: string
         @rtype: Data"""
-        _tdishr=_mimport('_tdishr')
         try:
-#            return _compound.Function(opcode='public',args=(str(tdivarname),)).evaluate()
-            return _tdishr.TdiExecute('public '+str(tdivarname))
+            return _builtins.PUBLIC(str(tdivarname)).evaluate()
         except:
             return None
-    getTdiVar=staticmethod(getTdiVar)
 
     def decompile(self):
         """Return string representation
         @rtype: string
         """
-        _tdishr=_mimport('_tdishr')
-        return _tdishr.TdiDecompile(self)
+        return str(_builtins.DECOMPILE(self).evaluate())
 
     __str__=decompile
     """String: x.__str__() <==> str(x)
@@ -525,7 +482,7 @@ class Data(object):
         @rtype: Scalar,Array
         """
         try:
-            return self.execute("data($)",(self,)).value
+            return _builtins.DATA(self).evaluate().value
         except _Exceptions.TreeNODATA:
             if len(altvalue)==1:
                 return altvalue[0]
@@ -536,43 +493,44 @@ class Data(object):
         """Return pointer to descriptor of inself as an int
         @rtype: int
         """
-        from ctypes import addressof
-        return addressof(self.descriptor)
+        return _C.addressof(self.descriptor)
 
     def evaluate(self):
         """Return the result of TDI evaluate(this).
         @rtype: Data
         """
-        _tdishr=_mimport('_tdishr')
-        return _tdishr.TdiEvaluate(self)
+        xd = descriptor.Descriptor_xd()
+        status = _TdiShr.TdiEvaluate(_C.pointer(self.descriptor),
+                                  _C.pointer(xd),
+                                  _C.c_void_p(-1))
+        if (status & 1 != 0):
+            return xd.value
+        else:
+            raise _Exceptions.statusToException(status)
 
+    @staticmethod
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
         _scalar=_mimport('mdsscalar')
         return isinstance(x,_scalar.Scalar)
-    _isScalar=staticmethod(_isScalar)
 
     def getByte(self):
-        """Convert this data into a byte. Implemented at this class level by returning TDI
-        data(BYTE(this)). If data() fails or the returned class is not scalar,
-        generate an exception.
+        """Convert this data into a byte.
         @rtype: Int8
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=Data.execute('byte($)',self)
+        ans=_builtins.BYTE(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getShort(self):
-        """Convert this data into a short. Implemented at this class level by returning TDI
-        data(WORD(this)).If data() fails or the returned class is not scalar, generate
-        an exception.
+        """Convert this data into a short.
         @rtype: Int16
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=Data.execute('word($)',self)
+        ans=_builtins.WORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -584,108 +542,82 @@ class Data(object):
         @rtype: Int32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=Data.execute('long($)',self)
+        ans=_builtins.LONG(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getLong(self):
-        """Convert this data into a long. Implemented at this class level by returning TDI
-        data(QUADWORD(this)).If data() fails or the returned class is not scalar,
-        generate an exception.
+        """Convert this data into a long.
         @rtype: Int64
         @raise TypeError: if data is not a scalar value
         """
-        ans=Data.execute('quadword($)',self)
+        ans=_builtins.QUADWORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getFloat(self):
-        """Convert this data into a float32. Implemented at this class level by returning TDI
-        data(F_FLOAT(this)).If data() fails or the returned class is not scalar,
-        generate an exception.
+        """Convert this data into a float32. 
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=Data.execute('float($)',self)
+        ans=_builtins.FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getDouble(self):
-        """Convert this data into a float64. Implemented at this class level by returning TDI
-        data(FT_FLOAT(this)). If data() fails or the returned class is not scalar,
-        generate an exception.
+        """Convert this data into a float64
         @rtype: Float64
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=Data.execute('ft_float($)',self)
+        ans=_builtins.FT_FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getFloatArray(self):
-        """Convert this data into a float32. Implemented at this class level by returning TDI
-        data(F_FLOAT(this)).If data() fails or the returned class is not scalar,
-        generate an exception.
+        """Convert this data into a float32.
         @rtype: Float32
         """
-        ans=Data.execute('float($)',self)
-        return ans
+        return _builtins.FLOAT(self).evaluate()
 
     def getDoubleArray(self):
-        """Convert this data into a float64. Implemented at this class level by returning TDI
-        data(FT_FLOAT(this)). If data() fails or the returned class is not scalar,
-        generate an exception.
+        """Convert this data into a float64.
         @rtype: Float64
         """
-        ans=Data.execute('ft_float($)',self)
-        return ans
+        return _builtins.FT_FLOAT(self).evaluate()
 
     def getShape(self):
-        """Get the array dimensions as an integer array. It is implemented at this class
-        level by computing TDI expression SHAPE(this). If shape fails an exception is
-        generated.
+        """Get the array dimensions as an integer array.
         @rtype: Int32Array
         """
-        return Data.execute('shape($)',self)
+        return _builtins.SHAPE(self).evaluate()
 
     def getByteArray(self):
-        """Convert this data into a byte array. Implemented at this class level by
-        returning TDI data(BYTE(this)). If data() fails or the returned class is not
-        array, generates an exception. In Java and C++ will return a 1 dimensional
-        array using row-first ordering if a multidimensional array.
+        """Convert this data into a byte array. 
         @rtype: Int8Array
         """
-        return Data.execute('byte($)',self)
+        return _builtins.BYTE(self).evaluate()
 
     def getShortArray(self):
-        """Convert this data into a short array. Implemented at this class level by
-        returning TDI data(WORD(this)). If data() fails or the returned class is not
-        array, generates an exception. In Java and C++ will return a 1 dimensional
-        array using row-first ordering if a multidimensional array.
+        """Convert this data into a short array.
         @rtype: Int16Array
         """
-        return Data.execute('word($)',self)
+        return _builtins.WORD(self).evaluate()
 
     def getIntArray(self):
-        """Convert this data into a int array. Implemented at this class level by
-        returning TDI data (LONG(this)). If data() fails or the returned class is not
-        array, generates an exception. In Java and C++ will return a 1 dimensional
-        array using row-first ordering if a multidimensional array.
+        """Convert this data into a int array.
         @rtype: Int32Array
         """
-        return Data.execute('long($)',self)
+        return _builtins.LONG(self).evaluate()
 
     def getLongArray(self):
-        """Convert this data into a long array. Implemented at this class level by
-        returning TDI data(QUADWORD(this)). If data() fails or the returned class is
-        not array, generates an exception. In Java and C++ will return a 1 dimensional
-        array using row-first ordering if a multidimensional array.
+        """Convert this data into a long array.
         @rtype: Int64Array
         """
-        return Data.execute('quadword($)',self)
+        return _builtins.QUADWORD(self).evaluate()
 
     def getString(self):
         """Convert this data into a STRING. Implemented at this class level by returning
@@ -693,12 +625,13 @@ class Data(object):
         generates an exception.
         @rtype: String
         """
-        return str(Data.execute('text($)',self))
+        return str(_builtins.TEXT(self).evaluate())
 
     def hasNodeReference(self):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
+        _compound=_mimport('compound')
         _tree=_mimport("tree")
         if isinstance(self,_tree.TreeNode) or isinstance(self,_tree.TreePath):
             return True
@@ -740,7 +673,7 @@ class Data(object):
         """Return sin() of data assuming data is in degrees
         @rtype: Float32Array
         """
-        return Data.execute('sind($)',self)
+        return _builtins.SIND(self).evaluate()
 
     def serialize(self):
         """Return Uint8Array binary representation.
@@ -799,7 +732,8 @@ class EmptyData(Data):
 
 _scalar=_mimport('mdsscalar')
 _apd=_mimport('apd')
-_compound=_mimport('compound')
 _array=_mimport('mdsarray')
 _scope=_mimport('scope')
 descriptor=_mimport('descriptor')
+_compound=_mimport('compound')
+_builtins=_mimport('tdibuiltins')
