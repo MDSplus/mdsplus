@@ -2797,6 +2797,7 @@ class Device(TreeNode):
     debug = _getenv('DEBUG_DEVICES')
     gtkThread = None
 
+    @classmethod
     def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):
@@ -2811,7 +2812,6 @@ class Device(TreeNode):
                     except:
                         pass
             cls.initialized=True
-    __class_init__=classmethod(__class_init__)
 
     def __new__(cls,node):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -2888,6 +2888,7 @@ class Device(TreeNode):
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
+    @classmethod
     def Add(cls,tree,name):
         """Used to add a device instance to an MDSplus tree.
         This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
@@ -2936,7 +2937,6 @@ class Device(TreeNode):
                     node.__setattr__(option,True)
         _treeshr.TreeEndConglomerate(tree)
         return head
-    Add=classmethod(Add)
 
 
     def dw_setup(self,*args):
@@ -2989,11 +2989,11 @@ class Device(TreeNode):
         if len(windows) == 1:
             gtk.main_quit()
 
+    @classmethod
     def waitForSetups(cls):
         Device.gtkThread.join()
-    waitForSetups=classmethod(waitForSetups)
 
-
+    @staticmethod
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
@@ -3015,8 +3015,8 @@ class Device(TreeNode):
                             finally:
                                 sys.path.remove(dp)
                             return ans
-    importPyDeviceModule=staticmethod(importPyDeviceModule)
 
+    @staticmethod
     def findPyDevices():
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
@@ -3044,9 +3044,6 @@ class Device(TreeNode):
             return None
         else:
             return _mdsdata.Data.execute(str(ans))
-
-
-    findPyDevices=staticmethod(findPyDevices)
 
 
 
