@@ -11,6 +11,7 @@ _scalar=_mimport('mdsscalar')
 _data=_mimport('mdsdata')
 _ver=_mimport('version')
 descriptor=_mimport('descriptor')
+_compound=_mimport('compound')
 
 def makeArray(value):
     if isinstance(value,Array):
@@ -176,8 +177,6 @@ class Array(_data.Data):
 
     @property
     def descriptor(self):
-      try:
-        _compound=_mimport('compound')
         value=self._value
         if str(value.dtype)[1] in 'SU':
             value = value.astype('S')
@@ -203,10 +202,10 @@ class Array(_data.Data):
             for i in range(d.dimct):
                 d.coeff_and_bounds[i]=_N.shape(value)[i]
         d.original=self
-        return _compound.Compound.descriptorWithProps(self,d)
-      except:
-          import traceback
-          traceback.print_exc()
+        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+            return _compound.Compound.descriptorWithProps(self,d)
+        else:
+            return d
 
     @classmethod
     def fromDescriptor(cls,d):

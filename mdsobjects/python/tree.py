@@ -8,18 +8,23 @@ import sys as _sys
 import ctypes as _C
 import numpy as _N
 import threading as _threading
+from os import getenv as _getenv
 
 #### Load other python modules referenced ###
 #
 _data=_mimport('mdsdata')
 _Exceptions=_mimport('mdsExceptions')
-_scalar=_mimport('mdsscalar')
 _array=_mimport('mdsarray')
 _mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
 _compound=_mimport('compound')
 descriptor=_mimport('descriptor')
 _mdsshr=_mimport('_mdsshr')
+_compound=_mimport('compound')
+_ident=_mimport('ident')
+_mdsarray=_mimport('mdsarray')
+_mdsdata=_mimport('mdsdata')
+
 #
 #############################################
 
@@ -921,6 +926,10 @@ class TreeNode(object):
     @type tree: Tree
     """
     dtype_id=192
+    _units=None
+    _error=None
+    _help=None
+    _validation=None
 
     def __new__(cls,nid,tree=None):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -929,14 +938,13 @@ class TreeNode(object):
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        _mdsdevice=_mimport('mdsdevice')
         node = super(TreeNode,cls).__new__(cls)
-        if not isinstance(node,_mdsdevice.Device):
+        if not isinstance(node,Device):
             try:
                 TreeNode.__init__(node,nid,tree=tree)
                 if node.usage == "DEVICE":
                     model=str(node.record.model)
-                    return _mdsdevice.Device.importPyDeviceModule(model).__dict__[model.upper()](node)
+                    return Device.importPyDeviceModule(model).__dict__[model.upper()](node)
             except:
                 pass
         return node
@@ -1009,8 +1017,10 @@ class TreeNode(object):
       d.pointer=_C.cast(_C.pointer(self._nid),_C.c_void_p)
       d.original=self
       d.tree=self.tree
-      return d
-### fix      return _data._descrWithUnitsAndError(self,d)
+      if self._units or self._error is not None or self._help is not None or self._validation is not None:
+          return _compound.Compound.descriptorWithProps(self,d)
+      else:
+          return d
 
     @property
     def disabled(self):
@@ -1637,47 +1647,48 @@ class TreeNode(object):
         """
         return self.minpath
 
+    class NCI_ITEMS(_C.Structure):
+        _fields_=list()
+        for idx in range(50):
+            _fields_+=[("buflen%d"%idx,_C.c_ushort),
+                       ("code%d"%idx,_C.c_ushort),
+                       ("pointer%d"%idx,_C.c_void_p),
+                       ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
+                
+        def __init__(self,items):
+            retlens=(_C.c_uint16*50)()
+            self.ans=list()
+            self.retlen=list()
+            self.rettype=list()
+            if not isinstance(items,(list,tuple)):
+                items=tuple(items)
+            for idx in range(len(items)):
+                item="Nci"+items[idx].upper()
+                item_info=TreeNode.__dict__[item]
+                code=item_info[0]
+                item_type=item_info[1]
+                item_length=item_info[2]
+                self.retlen.append(_C.c_int32(0))
+                self.rettype.append(item_info[3])
+                if item_type == _C.c_char_p:
+                    self.ans.append(item_type(str.encode(' ')*item_length))
+                    self.__setattr__('pointer%d'%idx,
+                                     _C.cast(self.ans[idx],_C.c_void_p))
+                else:
+                    self.ans.append(item_type())
+                    self.__setattr__('pointer%d'%idx,
+                                     _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
+                self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
+                self.__setattr__('code%d'%idx,_C.c_ushort(code))
+                self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
+            self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
+            self.__setattr__('code%d'%len(items),_C.c_ushort(TreeNode.NciEND_OF_LIST[0]))
+            self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
+            self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
+
     def getNci(self,items,returnDict=True):
         """Return dictionary of nci items"""
         status=0
-        class NCI_ITEMS(_C.Structure):
-            _fields_=list()
-            for idx in range(50):
-                _fields_+=[("buflen%d"%idx,_C.c_ushort),
-                           ("code%d"%idx,_C.c_ushort),
-                           ("pointer%d"%idx,_C.c_void_p),
-                           ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
-                
-            def __init__(self,items):
-                retlens=(_C.c_uint16*50)()
-                self.ans=list()
-                self.retlen=list()
-                self.rettype=list()
-                if not isinstance(items,(list,tuple)):
-                    items=tuple(items)
-                for idx in range(len(items)):
-                    item="Nci"+items[idx].upper()
-                    item_info=TreeNode.__dict__[item]
-                    code=item_info[0]
-                    item_type=item_info[1]
-                    item_length=item_info[2]
-                    self.retlen.append(_C.c_int32(0))
-                    self.rettype.append(item_info[3])
-                    if item_type == _C.c_char_p:
-                        self.ans.append(item_type(str.encode(' ')*item_length))
-                        self.__setattr__('pointer%d'%idx,
-                                         _C.cast(self.ans[idx],_C.c_void_p))
-                    else:
-                        self.ans.append(item_type())
-                        self.__setattr__('pointer%d'%idx,
-                                         _C.cast(_C.pointer(self.ans[idx]),_C.c_void_p))
-                    self.__setattr__('buflen%d'%idx,_C.c_ushort(item_length))
-                    self.__setattr__('code%d'%idx,_C.c_ushort(code))
-                    self.__setattr__('retlen%d'%idx,_C.pointer(self.retlen[idx]))
-                self.__setattr__('buflen%d'%len(items),_C.c_ushort(0))
-                self.__setattr__('code%d'%len(items),_C.c_ushort(TreeNode.NciEND_OF_LIST[0]))
-                self.__setattr__('pointer%d'%len(items),_C.c_void_p(0))
-                self.__setattr__('retlen%d'%len(items),_C.cast(_C.c_void_p(0),_C.POINTER(_C.c_int32)))
 
         if isinstance(items,str):
             items=[items]
@@ -1699,7 +1710,7 @@ class TreeNode(object):
         for item in flag_items:
             items.remove(item)
 
-        itmlst=NCI_ITEMS(items)
+        itmlst=self.NCI_ITEMS(items)
         try:
             Tree.lock()
             if len(items) > 0:
@@ -2565,7 +2576,10 @@ class TreePath(TreeNode):
         d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(self.tree_path)),_C.c_void_p)
         d.original=self
         d.tree=self.tree
-        return d
+        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+            return _compound.Compound.descriptorWithProps(self,d)
+        else:
+            return d
 
     @classmethod
     def fromDescriptor(cls,d):
@@ -2703,6 +2717,340 @@ class TreeNodeArray(_data.Data):
         else:
             ans = tuple(ans)
         return ans
+
+
+class Device(TreeNode):
+    """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
+
+    Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
+    which describe the subnodes of your device implementation. The parts attribute should be a list or tuple of dict objects where each dict is a
+    description of each subnode. The dict object should include a minimum of a 'path' key whose value is the relative path of the node (be sure to
+    include the leading period or colon) and a 'type' key whose value is the usage type of the node. In addition you may optionally specify a
+    'value' key whose value is the actual value to store into the node when it is first added in the tree. Instead of a 'value' key, you can
+    provide a 'valueExpr' key whose value is a string which is python code to be evaluated before writing the result into the node. Use a valueExpr
+    when you need to include references to other nodes in the device. Lastly the dict instance may contain an 'options' key whose values are
+    node options specified as a tuple of strings. Note if you only specify one option include a trailing comma in the tuple.The "parts" attribute
+    is used to implement the Add and PART_NAME and ORIGNAL_PART_NAME methods of the subclass.
+
+    You can also include a part_dict class attribute consisting of a dict() instance whose keys are attribute names and whose values are nid
+    offsets. If you do not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
+    to lowercase and the colons and periods are replaced with underscores. Referencing a part name will return another instance of the same
+    device with that node as the node in the Device subclass instance. The Device class also supports the part_name and original_part_name
+    attributes which is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass names MUST BE UPPERCASE!
+
+    Sample usage1::
+
+       from MDSplus import Device
+
+       class MYDEV(Device):
+           parts=[{'path':':COMMENT','type':'text'},
+                  {'path':':INIT_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                  'options':('no_write_shot',)},
+                  {'path':':STORE_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                  'options':('no_write_shot',)},
+                  {'path':'.SETTINGS','type':'structure'},
+                  {'path':'.SETTINGS:KNOB1','type':'numeric'},
+                  {'path':'.SIGNALS','type':'structure'},
+                  {'path':'.SIGNALS:CHANNEL_1','type':'signal','options':('no_write_model','write_once')}]
+
+           def init(self,arg):
+               knob1=self.settings_knob1.record
+               return 1
+
+           def store(self,arg):
+               from MDSplus import Signal
+               self.signals_channel_1=Signal(32,None,42)
+
+    Sample usage2::
+
+       from MDSplus import Device
+
+           parts=[{'path':':COMMENT','type':'text'},
+                  {'path':':INIT_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                  'options':('no_write_shot',)},
+                  {'path':':STORE_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                  'options':('no_write_shot',)},
+                  {'path':'.SETTINGS','type':'structure'},
+                  {'path':'.SETTINGS:KNOB1','type':'numeric'},
+                  {'path':'.SIGNALS','type':'structure'},
+                  {'path':'.SIGNALS:CHANNEL_1','type':'signal','options':('no_write_model','write_once')}]
+
+           part_dict={'knob1':5,'chan1':7}
+
+           def init(self,arg):
+               knob1=self.knob1.record
+               return 1
+
+           def store(self,arg):
+               from MDSplus import Signal
+               self.chan1=Signal(32,None,42)
+
+    If you need to reference attributes using computed names you can do something like::
+
+        for i in range(16):
+            self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
+    """
+    debug = _getenv('DEBUG_DEVICES')
+    gtkThread = None
+
+    def __class_init__(cls):
+        if not hasattr(cls,'initialized'):
+            if hasattr(cls,'parts'):
+                cls.part_names=list()
+                for elt in cls.parts:
+                    cls.part_names.append(elt['path'])
+            if hasattr(cls,'part_names') and not hasattr(cls,'part_dict'):
+                cls.part_dict=dict()
+                for i in range(len(cls.part_names)):
+                    try:
+                        cls.part_dict[cls.part_names[i][1:].lower().replace(':','_').replace('.','_')]=i+1
+                    except:
+                        pass
+            cls.initialized=True
+    __class_init__=classmethod(__class_init__)
+
+    def __new__(cls,node):
+        """Create class instance. Initialize part_dict class attribute if necessary.
+        @param node: Node of device
+        @type node: TreeNode
+        @return: Instance of the device subclass
+        @rtype: Device subclass instance
+        """
+        if cls.__name__ == 'Device':
+            try:
+                head=TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
+                model=str(head.record.model)
+                return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
+            except:
+                pass
+            raise TypeError("Cannot create instances of Device class")
+        else:
+            cls.__class_init__();
+            return super(Device,cls).__new__(cls,node)
+
+    def __init__(self,node,tree=None):
+        """Initialize a Device instance
+        @param node: Conglomerate node of this device
+        @type node: TreeNode
+        @rtype: None
+        """
+        if isinstance(node,TreeNode):
+            try:
+                self.nids=node.conglomerate_nids.nid_number
+                self.head=int(self.nids[0])
+            except Exception:
+                self.head=node.nid
+            super(Device,self).__init__(node.nid,node.tree)
+
+    def ORIGINAL_PART_NAME(self):
+        """Method to return the original part name.
+        Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
+        @return: Part name of this node
+        @rtype: str
+        """
+        name = ""
+        if self.nid != self.head:
+            try:
+                name = self.part_names[self.nid-self.head-1].upper()
+            except:
+                pass
+        return name
+    PART_NAME=ORIGINAL_PART_NAME
+
+    def __getattr__(self,name):
+        """Return TreeNode of subpart if name matches mangled node name.
+        @param name: part name. Node path with colons and periods replaced by underscores.
+        @type name: str
+        @return: Device instance of device part
+        @rtype: Device
+        """
+        if name == 'part_name' or name == 'original_part_name':
+            return self.ORIGINAL_PART_NAME(None)
+        try:
+            return self.__class__(TreeNode(self.part_dict[name]+self.head,self.tree))
+        except KeyError:
+            return super(Device,self).__getattr__(name)
+
+    def __setattr__(self,name,value):
+        """Set value into device subnode if name matches a mangled subpart node name. Otherwise assign value to class instance attribute.
+        @param name: Name of attribute or device subpart
+        @type name: str
+        @param value: Value of the attribute or device subpart
+        @type value: varied
+        @rtype: None
+        """
+        try:
+            TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+        except KeyError:
+            super(Device,self).__setattr__(name,value)
+
+    def Add(cls,tree,name):
+        """Used to add a device instance to an MDSplus tree.
+        This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
+        For this to work the device class name (uppercase only) and the package name must be returned in the MdsDevices tdi function.
+        Also the Device subclass must include the parts attribute which is a list or tuple containing one dict instance per subnode of the device.
+        The dict instance should include a 'path' key set to the relative node name path of the subnode. a 'type' key set to the usage string of
+        the subnode and optionally a 'value' key or a 'valueExpr' key containing a value to initialized the node or a string containing python
+        code which when evaluated during the adding of the device after the subnode has been created produces a data item to store in the node.
+        And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
+        on (i.e. write_once).
+        """
+        parent = tree
+        if isinstance(tree, TreeNode): tree = tree.tree
+        cls.__class_init__()
+        _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
+        if isinstance(name,_ident.Ident):
+            name=name.data()
+        head=parent.addNode(name,'DEVICE')
+        head=cls(head)
+        try:
+            import_string="from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__)
+        except:
+            import_string=None
+
+
+        head.record=_compound.Conglom('__python__',cls.__name__,None,import_string)
+        head.write_once=True
+        import MDSplus
+        glob = MDSplus.__dict__
+        glob['tree'] = tree
+        glob['path'] = head.path
+        glob['head'] = head
+        for elt in cls.parts:  # first add all nodes
+            node=head.addNode(elt['path'],elt['type'])
+        for elt in cls.parts:  # then you can reference them in valueExpr
+            node=head.getNode(elt['path'])
+            if 'value' in elt:
+                if Device.debug: print(node,node.usage,elt['value'])
+                node.record = elt['value']
+            elif 'valueExpr' in elt:
+                glob['node'] = node
+                if Device.debug: print(node,node.usage,elt['valueExpr'])
+                node.record = eval(elt['valueExpr'], glob)
+            if 'options' in elt:
+                for option in elt['options']:
+                    node.__setattr__(option,True)
+        _treeshr.TreeEndConglomerate(tree)
+        return head
+    Add=classmethod(Add)
+
+
+    def dw_setup(self,*args):
+        """Bring up a glade setup interface if one exists in the same package as the one providing the device subclass
+
+        The gtk.main() procedure must be run in a separate thread to avoid locking the main program.
+        """
+        try:
+            from widgets import MDSplusWidget
+            import gtk.glade
+            import os,gtk,inspect,threading
+            import sys
+            class gtkMain(threading.Thread):
+                def run(self):
+                    gtk.main()
+            class MyOut:
+                def __init__(self):
+                    self.content=[]
+                def write(self,string):
+                    self.content.append(string)
+
+            gtk.gdk.threads_init()
+            out=MyOut()
+            sys.stdout = out
+            sys.stderr = out
+            window=gtk.glade.XML(os.path.dirname(inspect.getsourcefile(self.__class__))+os.sep+self.__class__.__name__+'.glade').get_widget(self.__class__.__name__.lower())
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+            window.device_node=self
+            window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
+            MDSplusWidget.doToAll(window,"reset")
+        except Exception:
+            import sys
+            e=sys.exc_info()[1]
+            print( e)
+            raise Exception("No setup available, %s" % (str(e),))
+
+        window.connect("destroy",self.onSetupWindowClose)
+        window.show_all()
+        if Device.gtkThread is None or not Device.gtkThread.isAlive():
+            Device.gtkThread=gtkMain()
+            Device.gtkThread.start()
+        return 1
+    DW_SETUP=dw_setup
+
+    def onSetupWindowClose(self,window):
+        import gtk
+        windows=[toplevel for toplevel in gtk.window_list_toplevels()
+                 if toplevel.get_property('type') == gtk.WINDOW_TOPLEVEL]
+        if len(windows) == 1:
+            gtk.main_quit()
+
+    def waitForSetups(cls):
+        Device.gtkThread.join()
+    waitForSetups=classmethod(waitForSetups)
+
+
+    def importPyDeviceModule(name):
+        """Find a device support module with a case insensitive lookup of
+        'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
+
+        import __builtin__
+        import sys
+        check_name=name.lower()+".py"
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.lower() == check_name:
+                            sys.path.insert(0,dp)
+                            try:
+                                ans=__builtin__.__import__(fname[:-3])
+                            finally:
+                                sys.path.remove(dp)
+                            return ans
+    importPyDeviceModule=staticmethod(importPyDeviceModule)
+
+    def findPyDevices():
+        """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        ans=list()
+        import __builtin__
+        import sys
+        if "MDS_PYDEVICE_PATH" in _os.environ:
+            path=_os.environ["MDS_PYDEVICE_PATH"]
+            parts=path.split(';')
+            for part in parts:
+                w=_os.walk(part)
+                for dp,dn,fn in w:
+                    for fname in fn:
+                        if fname.endswith('.py'):
+                            sys.path.insert(0,dp)
+                            try:
+                                devnam=fname[:-3].upper()
+                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
+                                ans.append(devnam+'\0')
+                                ans.append('\0')
+                            except:
+                                pass
+                            finally:
+                                sys.path.remove(dp)
+        if len(ans) == 0:
+            return None
+        else:
+            return _mdsdata.Data.execute(str(ans))
+
+
+    findPyDevices=staticmethod(findPyDevices)
+
+
+
+_scalar=_mimport('mdsscalar')
 
 ############### Node Characteristic Options ######
 #

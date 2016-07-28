@@ -6,15 +6,17 @@ def _mimport(name, level=1):
 
 import numpy as _N, ctypes as _C
 
-_ver=_mimport('version')
-_Exceptions=_mimport('mdsExceptions')
+_version=_mimport('version')
+_descriptor=_mimport('descriptor')
+_exceptions=_mimport('mdsExceptions')
 
-MDSplusException = _Exceptions.MDSplusException
+
+MDSplusException = _exceptions.MDSplusException
 MdsException = MDSplusException
 #### Load Shared Libraries Referenced #######
 #
-_MdsShr=_ver.load_library('MdsShr')
-_TdiShr=_ver.load_library('TdiShr')
+_MdsShr=_version.load_library('MdsShr')
+_TdiShr=_version.load_library('TdiShr')
 #
 #############################################
 
@@ -38,7 +40,7 @@ def getValuePart(item):
     """Return the value portion of an object
     @rtype: Data"""
     try:
-        return _builtins.VALUE_OF(item).evaluate()
+        return _compound.VALUE_OF(item).evaluate()
     except:
         return None
 
@@ -46,14 +48,14 @@ def getDimension(item,idx=0):
     """Return dimension of an object
     @rtype: Data"""
     try:
-        return _builtins.DIM_OF(item,idx).evaluate()
+        return _compound.DIM_OF(item,idx).evaluate()
     except:
         return None
 
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
-    return _builtins.DATA(item).evaluate().value
+    return _compound.DATA(item).evaluate().value
 
 def decompile(item):
     """Returns the item converted to a string
@@ -76,12 +78,11 @@ def rawPart(item):
 
 def makeData(value):
     """Convert a python object to a MDSobject Data object"""
-    _tree=_mimport("tree")
     if value is None:
         return EmptyData()
     if isinstance(value,(Data,_tree.TreeNode)):
         return value
-    if isinstance(value,(_N.generic,int,float,complex,_ver.basestring,_ver.long,_C._SimpleCData)):
+    if isinstance(value,(_N.generic,int,float,complex,_version.basestring,_version.long,_C._SimpleCData)):
         return _scalar.makeScalar(value)
     if isinstance(value,(tuple,list)):
         return _apd.List(value)
@@ -90,7 +91,7 @@ def makeData(value):
     if isinstance(value,dict):
         return _apd.Dictionary(value)
     if isinstance(value,slice):
-        return _builtins.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
+        return _compound.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
 
     else:
         raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
@@ -99,6 +100,11 @@ class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
     __array_priority__ = 100. ##### Needed to force things like numpy-array * mdsplus-data to use our __rmul__
+
+    _units=None
+    _error=None
+    _help=None
+    _validation=None
 
     def __init__(self,*value):
         """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
@@ -120,30 +126,30 @@ class Data(object):
     def value_of(self):
         """Return value part of object
         @rtype: Data"""
-        return _builtins.VALUE_OF(self).evaluate()
+        return _compound.VALUE_OF(self).evaluate()
 
     def raw_of(self):
         """Return raw part of object
         @rtype: Data"""
-        return _builtins.RAW_OF(self).evaluate()
+        return _compound.RAW_OF(self).evaluate()
     def units_of(self):
         """Return units of object
         @rtype: Data"""
-        return _builtins.UNITS_OF(self).evaluate()
+        return _compound.UNITS_OF(self).evaluate()
 
     def getDimensionAt(self,idx=0):
         """Return dimension of object
         @param idx: Index of dimension
         @type idx: int
         @rtype: Data"""
-        return _builtins.DIM_OF(self,idx).evaluate()
+        return _compound.DIM_OF(self,idx).evaluate()
 
     dim_of=getDimensionAt
 
     @property
     def units(self):
         """units associated with this data."""
-        return _builtins.UNITS(self).evaluate()
+        return _compound.UNITS(self).evaluate()
     @units.setter
     def units(self,units):
         if units is None:
@@ -155,7 +161,7 @@ class Data(object):
     @property
     def error(self):
         """error property of this data."""
-        return _builtins.ERROR_OF(self).evaluate()
+        return _compound.ERROR_OF(self).evaluate()
     @error.setter
     def error(self,error):
         if error is None:
@@ -167,7 +173,7 @@ class Data(object):
     @property
     def help(self):
         """help property of this node."""
-        return _builtins.HELP_OF(self).evaluate()
+        return _compound.HELP_OF(self).evaluate()
     @help.setter
     def help(self,help):
         if help is None:
@@ -179,7 +185,7 @@ class Data(object):
     @property
     def validation(self):
         """Validation property of this node"""
-        return _builtins.VALIDATION_OF(self).evaluate()
+        return _compound.VALIDATION_OF(self).evaluate()
     @validation.setter
     def validation(self,validation):
         if validation is None:
@@ -193,7 +199,7 @@ class Data(object):
         Absolute value: x.__abs__() <==> abs(x)
         @rtype: Data
         """
-        return _builtins.ABS(self).evaluate()
+        return _compound.ABS(self).evaluate()
 
     def bool(self):
         """
@@ -213,17 +219,17 @@ class Data(object):
         """
         Add: x.__add__(y) <==> x+y
         @rtype: Data"""
-        return _builtins.ADD(self,y).evaluate()
+        return _compound.ADD(self,y).evaluate()
 
     def __and__(self,y):
         """And: x.__and__(y) <==> x&y
         @rtype: Data"""
-        return _builtins.IAND(self,y).evaluate()
+        return _compound.IAND(self,y).evaluate()
 
     def __div__(self,y):
         """Divide: x.__div__(y) <==> x/y
         @rtype: Data"""
-        return _builtins.DIVIDE(self,y).evaluate()
+        return _compound.DIVIDE(self,y).evaluate()
 
     __truediv__=__div__
 
@@ -231,7 +237,7 @@ class Data(object):
         """Equals: x.__eq__(y) <==> x==y
         @rtype: Bool"""
         try:
-            return _builtins.EQ(self,y).evaluate().bool()
+            return _compound.EQ(self,y).evaluate().bool()
         except:
             return False
 
@@ -244,7 +250,7 @@ class Data(object):
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: Data"""
-        ans=_builtins.FLOAT(self).evaluate().value
+        ans=_compound.FLOAT(self).evaluate().value
         try:
             return float(ans)
         except:
@@ -253,17 +259,17 @@ class Data(object):
     def __floordiv__(self,y):
         """Floordiv: x.__floordiv__(y) <==> x//y
         @rtype: Data"""
-        return _builtins.FLOOR(self,y).evaluate()
+        return _compound.FLOOR(self,y).evaluate()
 
     def __ge__(self,y):
         """Greater or equal: x.__ge__(y) <==> x>=y
         @rtype: Bool"""
-        return _builtins.GE(self,y).evaluate().bool()
+        return _compound.GE(self,y).evaluate().bool()
 
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        ans = _builtins.SUBSCRIPT(self,y).evaluate()
+        ans = _compound.SUBSCRIPT(self,y).evaluate()
         if isinstance(ans,_array.Array):
             if ans.shape[0]==0:
                 raise IndexError
@@ -272,7 +278,7 @@ class Data(object):
     def __gt__(self,y):
         """Greater than: x.__gt__(y) <==> x>y
         @rtype: Bool"""
-        return _builtins.GT(self,y).evaluate().bool()
+        return _compound.GT(self,y).evaluate().bool()
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -293,12 +299,12 @@ class Data(object):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
-        return int(_builtins.SIZE(self).data())
+        return int(_compound.SIZE(self).data())
 
     def __long__(self):
         """Convert this object to python long
         @rtype: long"""
-        return _ver.long(self.getLong()._value)
+        return _version.long(self.getLong()._value)
 
     def __lshift__(self,y):
         """Lrft binary shift: x.__lshift__(y) <==> x<<y
@@ -435,7 +441,7 @@ class Data(object):
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
-        return _builtins.COMPILE(*args).evaluate()
+        return _compound.COMPILE(*args).evaluate()
 
     @staticmethod
     def execute(*args):
@@ -459,7 +465,7 @@ class Data(object):
         @type tdivarname: string
         @rtype: Data"""
         try:
-            return _builtins.PUBLIC(str(tdivarname)).evaluate()
+            return _compound.PUBLIC(str(tdivarname)).evaluate()
         except:
             return None
 
@@ -467,7 +473,7 @@ class Data(object):
         """Return string representation
         @rtype: string
         """
-        return str(_builtins.DECOMPILE(self).evaluate())
+        return str(_compound.DECOMPILE(self).evaluate())
 
     __str__=decompile
     """String: x.__str__() <==> str(x)
@@ -482,8 +488,8 @@ class Data(object):
         @rtype: Scalar,Array
         """
         try:
-            return _builtins.DATA(self).evaluate().value
-        except _Exceptions.TreeNODATA:
+            return _compound.DATA(self).evaluate().value
+        except _exceptions.TreeNODATA:
             if len(altvalue)==1:
                 return altvalue[0]
             raise
@@ -499,20 +505,19 @@ class Data(object):
         """Return the result of TDI evaluate(this).
         @rtype: Data
         """
-        xd = descriptor.Descriptor_xd()
+        xd = _descriptor.Descriptor_xd()
         status = _TdiShr.TdiEvaluate(_C.pointer(self.descriptor),
                                   _C.pointer(xd),
                                   _C.c_void_p(-1))
         if (status & 1 != 0):
             return xd.value
         else:
-            raise _Exceptions.statusToException(status)
+            raise _exceptions.statusToException(status)
 
     @staticmethod
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        _scalar=_mimport('mdsscalar')
         return isinstance(x,_scalar.Scalar)
 
     def getByte(self):
@@ -520,7 +525,7 @@ class Data(object):
         @rtype: Int8
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_builtins.BYTE(self).evaluate()
+        ans=_compound.BYTE(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -530,7 +535,7 @@ class Data(object):
         @rtype: Int16
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_builtins.WORD(self).evaluate()
+        ans=_compound.WORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -542,7 +547,7 @@ class Data(object):
         @rtype: Int32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_builtins.LONG(self).evaluate()
+        ans=_compound.LONG(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -552,7 +557,7 @@ class Data(object):
         @rtype: Int64
         @raise TypeError: if data is not a scalar value
         """
-        ans=_builtins.QUADWORD(self).evaluate()
+        ans=_compound.QUADWORD(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -562,7 +567,7 @@ class Data(object):
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_builtins.FLOAT(self).evaluate()
+        ans=_compound.FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -572,7 +577,7 @@ class Data(object):
         @rtype: Float64
         @raise TypeError: Raised if data is not a scalar value
         """
-        ans=_builtins.FT_FLOAT(self).evaluate()
+        ans=_compound.FT_FLOAT(self).evaluate()
         if not Data._isScalar(ans):
             raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
@@ -581,43 +586,43 @@ class Data(object):
         """Convert this data into a float32.
         @rtype: Float32
         """
-        return _builtins.FLOAT(self).evaluate()
+        return _compound.FLOAT(self).evaluate()
 
     def getDoubleArray(self):
         """Convert this data into a float64.
         @rtype: Float64
         """
-        return _builtins.FT_FLOAT(self).evaluate()
+        return _compound.FT_FLOAT(self).evaluate()
 
     def getShape(self):
         """Get the array dimensions as an integer array.
         @rtype: Int32Array
         """
-        return _builtins.SHAPE(self).evaluate()
+        return _compound.SHAPE(self).evaluate()
 
     def getByteArray(self):
         """Convert this data into a byte array. 
         @rtype: Int8Array
         """
-        return _builtins.BYTE(self).evaluate()
+        return _compound.BYTE(self).evaluate()
 
     def getShortArray(self):
         """Convert this data into a short array.
         @rtype: Int16Array
         """
-        return _builtins.WORD(self).evaluate()
+        return _compound.WORD(self).evaluate()
 
     def getIntArray(self):
         """Convert this data into a int array.
         @rtype: Int32Array
         """
-        return _builtins.LONG(self).evaluate()
+        return _compound.LONG(self).evaluate()
 
     def getLongArray(self):
         """Convert this data into a long array.
         @rtype: Int64Array
         """
-        return _builtins.QUADWORD(self).evaluate()
+        return _compound.QUADWORD(self).evaluate()
 
     def getString(self):
         """Convert this data into a STRING. Implemented at this class level by returning
@@ -625,14 +630,12 @@ class Data(object):
         generates an exception.
         @rtype: String
         """
-        return str(_builtins.TEXT(self).evaluate())
+        return str(_compound.TEXT(self).evaluate())
 
     def hasNodeReference(self):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
-        _compound=_mimport('compound')
-        _tree=_mimport("tree")
         if isinstance(self,_tree.TreeNode) or isinstance(self,_tree.TreePath):
             return True
         elif isinstance(self,_compound.Compound):
@@ -665,7 +668,7 @@ class Data(object):
         @rtype: None
         """
         if scope is None:
-            scope=_scope.Scope(title)
+            scope=_mimport('scope').Scope(title)
         scope.plot(self,self.dim_of(0),row,col)
         scope.show()
 
@@ -673,18 +676,18 @@ class Data(object):
         """Return sin() of data assuming data is in degrees
         @rtype: Float32Array
         """
-        return _builtins.SIND(self).evaluate()
+        return _compound.SIND(self).evaluate()
 
     def serialize(self):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        xd=descriptor.Descriptor_xd()
+        xd=_descriptor.Descriptor_xd()
         status=_MdsShr.MdsSerializeDscOut(_C.pointer(self.descriptor),_C.pointer(xd))
         if (status & 1) == 1:
             return xd.value
         else:
-            raise _Exceptions.statusToException(status)
+            raise _exceptions.statusToException(status)
 
     @staticmethod
     def deserialize(bytes):
@@ -695,12 +698,12 @@ class Data(object):
         """
         if len(bytes) == 0:  # short cut if setevent did not send array
             return _apd.List([])
-        xd=descriptor.Descriptor_xd()
+        xd=_descriptor.Descriptor_xd()
         status=_MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.pointer(xd))
         if (status & 1) == 1:
             return xd.value
         else:
-            raise _Exceptions.statusToException(status)
+            raise _exceptions.statusToException(status)
 
     @staticmethod
     def makeData(value):
@@ -725,15 +728,12 @@ class EmptyData(Data):
 
     @property
     def descriptor(self):
-        d = descriptor.Descriptor_xd()
-        d.dtype = descriptor.Descriptor_xd.dtype_dsc
+        d = _descriptor.Descriptor_xd()
+        d.dtype = _descriptor.Descriptor_xd.dtype_dsc
         return d
-   
 
-_scalar=_mimport('mdsscalar')
-_apd=_mimport('apd')
-_array=_mimport('mdsarray')
-_scope=_mimport('scope')
-descriptor=_mimport('descriptor')
 _compound=_mimport('compound')
-_builtins=_mimport('tdibuiltins')
+_scalar=_mimport('mdsscalar')
+_array=_mimport('mdsarray')
+_tree=_mimport('tree')
+_apd=_mimport('apd')

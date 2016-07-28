@@ -82,8 +82,6 @@ class Scalar(_data.Data):
 
     @property
     def descriptor(self):
-      try:
-        _compound=_mimport('compound')
         d=descriptor.Descriptor_s()
         d.length=self._value.nbytes
         d.dtype=self.dtype_id
@@ -91,10 +89,10 @@ class Scalar(_data.Data):
         d.pointer=_C.c_void_p(array.ctypes.data)
         d.original=self
         d.array=array
-        return _compound.Compound.descriptorWithProps(self,d)
-      except:
-          import traceback
-          traceback.print_exc()
+        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+            return _compound.Compound.descriptorWithProps(self,d)
+        else:
+            return d
 
     def __getattr__(self,name):
         if name.startswith("__array"):
@@ -296,17 +294,15 @@ class String(Scalar):
 
     @property
     def descriptor(self):
-      try:
-        _compound=_mimport('compound')
         d=descriptor.Descriptor_s()
         d.length=len(self)
         d.dtype=self.dtype_id
         d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(str(self))),_C.c_void_p)
         d.original=self
-        return _compound.Compound.descriptorWithProps(self,d)
-      except:
-          import traceback
-          traceback.print_exc()
+        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+            return _compound.Compound.descriptorWithProps(self,d)
+        else:
+            return d
 
     @classmethod
     def fromDescriptor(cls,d):
@@ -370,3 +366,5 @@ descriptor.dtypeToClass[Float64.dtype_id]=Float64
 descriptor.dtypeToClass[Complex64.dtype_id]=Complex64
 descriptor.dtypeToClass[Complex128.dtype_id]=Complex128
 descriptor.dtypeToClass[String.dtype_id]=String
+
+_compound=_mimport('compound')

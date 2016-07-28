@@ -10,6 +10,18 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 @license: GNU GPL
 
 """
+import sys as _sys
+try:
+    @property
+    def gub(self):
+        return 42
+    @gub.setter
+    def gub(self,value):
+        self._gub=value
+    del gub
+except:
+    raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
