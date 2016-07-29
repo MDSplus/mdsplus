@@ -232,6 +232,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
     case DTYPE_T:
     case DTYPE_PATH:
     case DTYPE_EVENT:
+      if (!result[0]) goto skip;
       dx.length = (unsigned short)strlen(dx.pointer = (char *)result[0]);
       break;
     case DTYPE_NID:
