@@ -476,7 +476,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_LU:
     case DTYPE_Q:
     case DTYPE_QU:
-      cdsc.length = (unsigned short)(in_ptr->length * 8 * .29 + 2);
+      cdsc.length = (unsigned short)(in_ptr->length * 2.4 + 1.6);
       status = TdiConvert(in_ptr, &cdsc MDS_END_ARG);
       if (status & 1)
 	status = noblanks(&cdsc);
