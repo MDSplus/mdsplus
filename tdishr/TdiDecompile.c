@@ -474,7 +474,9 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_BU:
     case DTYPE_WU:
     case DTYPE_LU:
-      cdsc.length = (unsigned short)(in_ptr->length * 8 * .30103 + 2);
+    case DTYPE_Q:
+    case DTYPE_QU:
+      cdsc.length = (unsigned short)(in_ptr->length * 8 * .29 + 2);
       status = TdiConvert(in_ptr, &cdsc MDS_END_ARG);
       if (status & 1)
 	status = noblanks(&cdsc);
@@ -491,8 +493,6 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 		/***********************************************
                 Assumes: low-order byte is first. right-to-left.
                 ***********************************************/
-    case DTYPE_Q:
-    case DTYPE_QU:
     case DTYPE_O:
     case DTYPE_OU:
       cptr = c0;
