@@ -23,6 +23,7 @@ extern unsigned int TdiIndent;
 #include <string.h>
 #include <tdishr_messages.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>
@@ -474,7 +475,9 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_BU:
     case DTYPE_WU:
     case DTYPE_LU:
-      cdsc.length = (unsigned short)(in_ptr->length * 8 * .30103 + 2);
+    case DTYPE_Q:
+    case DTYPE_QU:
+      cdsc.length = (unsigned short)(in_ptr->length * 2.4 + 1.6);
       status = TdiConvert(in_ptr, &cdsc MDS_END_ARG);
       if (status & 1)
 	status = noblanks(&cdsc);
@@ -491,8 +494,6 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 		/***********************************************
                 Assumes: low-order byte is first. right-to-left.
                 ***********************************************/
-    case DTYPE_Q:
-    case DTYPE_QU:
     case DTYPE_O:
     case DTYPE_OU:
       cptr = c0;
@@ -637,7 +638,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_POINTER:{
 	char outstr[256];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
-	out.length = sprintf(outstr, "Pointer(%#x)", *(void **)in_ptr->pointer);
+	out.length = sprintf(outstr, "Pointer(%#jx)", (uint64_t)*in_ptr->pointer);
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
