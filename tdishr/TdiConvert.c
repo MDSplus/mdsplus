@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <math.h>
@@ -812,12 +813,12 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
 #define BU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned char,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
 #define WU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned short,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
 #define LU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%u",(unsigned int)*ip++))
+#define QU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,uint64_t,pb,numb,sprintf(text,"%llu",(uint64_t)*ip++))
 #define B_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,char,pb,numb,sprintf(text,"%d",(int)*ip++))
 #define W_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,short,pb,numb,sprintf(text,"%d",(int)*ip++))
 #define L_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,int,pb,numb,sprintf(text,"%d",(int)*ip++))
-#define QU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x",ip[1],ip[0]);ip += 2)
+#define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,int64_t,pb,numb,sprintf(text,"%lld",(int64_t)*ip++))
 #define OU_T(lena,pa,lenb,pb,numb)  TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
-#define Q_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x",ip[1],ip[0]);ip += 2)
 #define O_T(lena,pa,lenb,pb,numb)   TO_TEXT(pa,unsigned int,pb,numb,sprintf(text,"%#x%08x%08x%08x",ip[3],ip[2],ip[1],ip[0]);ip +=4)
 #if DTYPE_F == DTYPE_NATIVE_FLOAT
 #define F_T(lena,pa,lenb,pb,numb)   FLOAT_TO_TEXT(DTYPE_F,pa,pb,numb,lenb,'E'); status=1
