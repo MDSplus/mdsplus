@@ -23,7 +23,7 @@ extern unsigned int TdiIndent;
 #include <string.h>
 #include <tdishr_messages.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>
@@ -638,7 +638,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_POINTER:{
 	char outstr[256];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
-	out.length = sprintf(outstr, "Pointer(%#jx)", (uint64_t)*in_ptr->pointer);
+	out.length = sprintf(outstr, "Pointer(%#"PRIx64")", (uint64_t)*in_ptr->pointer);
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
