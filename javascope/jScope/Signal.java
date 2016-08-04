@@ -1215,11 +1215,7 @@ public class Signal implements WaveDataListener
     public void incShowXZ()
     {
         if (type == TYPE_2D && mode2D == Signal.MODE_XZ)
-        {
-            int idx = curr_y_xz_idx;
-            idx = (idx + 1) % y2D.length;
-            showXZ( (int) idx);
-        }
+            showXZ((curr_y_xz_idx + 1) % y2D.length);
     }
 
     public void decShowXZ()
@@ -1236,11 +1232,7 @@ public class Signal implements WaveDataListener
     public void incShowYZ()
     {
         if ( type == TYPE_2D && mode2D == Signal.MODE_YZ )
-        {
-            int idx = curr_x_yz_idx;
-            idx = (idx + 1) % x2D.length;
-            showYZ(idx);
-        }
+            showYZ((curr_x_yz_idx + 1) % x2D.length);
     }
 
     public void decShowYZ()

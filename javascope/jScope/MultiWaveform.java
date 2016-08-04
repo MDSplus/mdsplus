@@ -76,14 +76,13 @@ public class MultiWaveform
         super.Copy(wave);
         if (!wave.is_image)
         {
-            int i;
             int n_sig;
             MultiWaveform w = (MultiWaveform) wave;
 
             if (signals.size() != 0)
                 signals.removeAllElements();
             Vector<Signal> s = w.GetSignals();
-            for (i = 0; i < s.size(); i++)
+            for (int i = 0; i < s.size(); i++)
             {    
                 signals.addElement(new Signal(s.elementAt(i)));
                 signals.elementAt(i).registerSignalListener(this);

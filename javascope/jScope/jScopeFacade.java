@@ -1595,29 +1595,21 @@ public class jScopeFacade
         String proxy_host = js_prop.getProperty("jScope.http_proxy_host");
         String proxy_port = js_prop.getProperty("jScope.http_proxy_port");
 
-        int val = 0;
         prop = js_prop.getProperty("jScope.vertical_offset");
-        if (prop != null)
-        {
-            try
-            {
+        if (prop != null) {
+            int val = 0;
+            try {
                 val = Integer.parseInt(prop);
-            }
-            catch (NumberFormatException e)
-            {}
+            } catch (NumberFormatException e) {}
             Waveform.SetVerticalOffset(val);
-
         }
-        val = 0;
+
         prop = js_prop.getProperty("jScope.horizontal_offset");
-        if (prop != null)
-        {
-            try
-            {
+        if (prop != null) {
+            int val = 0;
+            try {
                 val = Integer.parseInt(prop);
-            }
-            catch (NumberFormatException e)
-            {}
+            } catch (NumberFormatException e) {}
             Waveform.SetHorizontalOffset(val);
         }
 
