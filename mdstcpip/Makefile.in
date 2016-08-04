@@ -29,7 +29,7 @@ CFLAGS += $(THREAD) $(COMPRESSION_SWITCH) -I@srcdir@/udt4/src -I@srcdir@/udt4/ud
 LDFLAGS += $(THREAD)
 
 CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing $(CFLAGS) @CXXFLAGS@
-LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @SOCKETLIB@
+LIBS=@LIBS@ @LIBRESOLV@ $(LIBSOCKET)
 
 MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@ $(IMPLIB_MdsIpShr)
 MdsIpSrvShr = @MAKESHLIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@ $(IMPLIB_MdsIpSrvShr)

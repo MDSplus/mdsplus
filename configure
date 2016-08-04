@@ -642,7 +642,6 @@ SYBASE_LIB
 SYBASE_INC
 SRBINCLUDE
 SRBLIB
-SOCKETLIB
 SHARETYPEMOD
 SHARETYPEJNI
 SHARETYPE
@@ -655,7 +654,6 @@ RELEASE_COMMIT
 RELEASE_RELEASE
 RELEASE_MINOR
 RELEASE_MAJOR
-NSLLIB
 NEED_SEMUN
 PYTHON_INCLUDE_DIR
 MOTIF_LD_LDARC
@@ -679,12 +677,10 @@ LINKSHARED
 LIBRT
 LIBXEXT
 LIBXP
-LIBSOCKET
 LIBRESOLV
 LIBREADLINE
 LIBPRE
 LIBPATH
-LIBNSL
 LIBM
 LIBDL
 LD_LDARC
@@ -840,6 +836,7 @@ READLINE_TRUE
 READLINE_LIBS
 READLINE_LDFLAGS
 READLINE_CPPFLAGS
+LIBSOCKET
 MAKEETCDIR
 THREAD
 VS_FALSE
@@ -7235,90 +7232,6 @@ rm -rf conftest*
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
-$as_echo_n "checking for socket in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_socket+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket ();
-int
-main ()
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_socket=yes
-else
-  ac_cv_lib_socket_socket=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
-$as_echo "$ac_cv_lib_socket_socket" >&6; }
-if test "x$ac_cv_lib_socket_socket" = xyes; then :
-  SOCKETLIB="-l socket"
-else
-  SOCKELIB=""
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for inet_addr in -lnsl" >&5
-$as_echo_n "checking for inet_addr in -lnsl... " >&6; }
-if ${ac_cv_lib_nsl_inet_addr+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inet_addr ();
-int
-main ()
-{
-return inet_addr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_nsl_inet_addr=yes
-else
-  ac_cv_lib_nsl_inet_addr=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_inet_addr" >&5
-$as_echo "$ac_cv_lib_nsl_inet_addr" >&6; }
-if test "x$ac_cv_lib_nsl_inet_addr" = xyes; then :
-  NSLLIB="-l nsl"
-else
-  NSLLIB=""
-fi
-
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
@@ -8048,7 +7961,6 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
@@ -8477,6 +8389,94 @@ fi
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
+$as_echo_n "checking for library containing gethostbyname... " >&6; }
+if ${ac_cv_search_gethostbyname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gethostbyname ();
+int
+main ()
+{
+return gethostbyname ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' nsl socket; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_gethostbyname=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_gethostbyname+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_gethostbyname+:} false; then :
+
+else
+  ac_cv_search_gethostbyname=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_gethostbyname" >&5
+$as_echo "$ac_cv_search_gethostbyname" >&6; }
+ac_res=$ac_cv_search_gethostbyname
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  if test "x$ac_cv_search_gethostbyname" = x"none required"; then :
+
+else
+  LIBSOCKET=$ac_cv_search_gethostbyname
+fi
+else
+                                  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in ws2_32" >&5
+$as_echo_n "checking for gethostbyname in ws2_32... " >&6; }
+                LIBSOCKET="-lws2_32"
+                mds_old_LIBS="$LIBS"
+                LIBS="$LIBSOCKET $LIBS"
+                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <winsock2.h>
+int
+main ()
+{
+gethostbyname ("");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; { LIBSOCKET=; unset LIBSOCKET;}
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+                LIBS=$mds_old_LIBS
+fi
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pow in -lm" >&5
 $as_echo_n "checking for pow in -lm... " >&6; }
 if ${ac_cv_lib_m_pow+:} false; then :
@@ -8601,213 +8601,6 @@ if test "x$ac_cv_lib_dl_dlopen" = xyes; then :
   LIBDL="-ldl"
 else
   LIBDL=""
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lc" >&5
-$as_echo_n "checking for gethostbyname in -lc... " >&6; }
-if ${ac_cv_lib_c_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_c_gethostbyname=yes
-else
-  ac_cv_lib_c_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_gethostbyname" >&5
-$as_echo "$ac_cv_lib_c_gethostbyname" >&6; }
-if test "x$ac_cv_lib_c_gethostbyname" = xyes; then :
-  LIBNSL=""
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lsocket" >&5
-$as_echo_n "checking for gethostbyname in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_gethostbyname=yes
-else
-  ac_cv_lib_socket_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_gethostbyname" >&5
-$as_echo "$ac_cv_lib_socket_gethostbyname" >&6; }
-if test "x$ac_cv_lib_socket_gethostbyname" = xyes; then :
-  LIBNSL="-lsocket"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
-$as_echo_n "checking for gethostbyname in -lnsl... " >&6; }
-if ${ac_cv_lib_nsl_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_nsl_gethostbyname=yes
-else
-  ac_cv_lib_nsl_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_gethostbyname" >&5
-$as_echo "$ac_cv_lib_nsl_gethostbyname" >&6; }
-if test "x$ac_cv_lib_nsl_gethostbyname" = xyes; then :
-  LIBNSL="-lnsl"
-else
-  LIBNSL=""
-fi
-
-fi
-
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lc" >&5
-$as_echo_n "checking for socket in -lc... " >&6; }
-if ${ac_cv_lib_c_socket+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket ();
-int
-main ()
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_c_socket=yes
-else
-  ac_cv_lib_c_socket=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_socket" >&5
-$as_echo "$ac_cv_lib_c_socket" >&6; }
-if test "x$ac_cv_lib_c_socket" = xyes; then :
-  LIBSOCKET=""
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
-$as_echo_n "checking for socket in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_socket+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket ();
-int
-main ()
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_socket=yes
-else
-  ac_cv_lib_socket_socket=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
-$as_echo "$ac_cv_lib_socket_socket" >&6; }
-if test "x$ac_cv_lib_socket_socket" = xyes; then :
-  LIBSOCKET="-lsocket"
-else
-  LIBSOCKET=""
-fi
-
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for getgrgid in -lc" >&5
@@ -17054,10 +16847,6 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
-
-
-
-
 
 
 
