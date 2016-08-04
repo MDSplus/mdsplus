@@ -103,8 +103,6 @@ public class WaveDisplay
   }
 
   public void processWaveformEvent(WaveformEvent e) {
-    int event_id = e.getID();
-
     WaveformEvent we = e;
     MultiWaveform w = (MultiWaveform) we.getSource();
     WaveInterface wi = w.getWaveInterface();

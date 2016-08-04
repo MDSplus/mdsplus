@@ -201,7 +201,6 @@ public class ProfileDialog extends JDialog implements WaveformListener
     public void processWaveformEvent(WaveformEvent e)
     {
         String s = null;
-	    int event_id = e.getID();
 
 	    WaveformEvent we = e;
 	    MultiWaveform w = (MultiWaveform)we.getSource();

@@ -2504,10 +2504,8 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   public void SetXScale(Waveform w) {
-    double xmin, xmax;
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
 
 
     waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
@@ -2515,31 +2513,27 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   public void SetYScale(Waveform w) {
-    double ymin, ymax;
-
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
+
     waveform_signal.setYmin(w.waveform_signal.getYmin(), Signal.SIMPLE);
     waveform_signal.setYmax(w.waveform_signal.getYmax(), Signal.SIMPLE);
     ReportChanges();
   }
 
   public void SetXScaleAutoY(Waveform w) {
-
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
-    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
  
+    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     waveform_signal.AutoscaleY();
     ReportChanges();
   }
 
   public void ResetScales() {
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
+
     waveform_signal.ResetScales();
     undo_zoom.clear();
     unfreeze();
@@ -2587,20 +2581,19 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     }
   }
 
-  public void performZoom() {
-    double start_xs, end_xs, start_ys, end_ys;
-    Dimension d = getWaveSize();
+    public void performZoom() {
+        if(wm == null)
+            return;
 
-    if(wm == null) return;
+        Dimension d = getWaveSize();
+        double start_xs = wm.XValue(start_x, d);
+        double end_xs = wm.XValue(end_x, d);
+        double start_ys = wm.YValue(start_y, d);
+        double end_ys = wm.YValue(end_y, d);
 
-    start_xs = wm.XValue(start_x, d);
-    end_xs = wm.XValue(end_x, d);
-    start_ys = wm.YValue(start_y, d);
-    end_ys = wm.YValue(end_y, d);
-
-    ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
-    ReportLimits(r, true);
-  }
+        ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
+        ReportLimits(r, true);
+    }
 
   public void SetTitle(String title) {
     this.title = title;

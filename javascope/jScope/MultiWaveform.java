@@ -76,7 +76,6 @@ public class MultiWaveform
         super.Copy(wave);
         if (!wave.is_image)
         {
-            int n_sig;
             MultiWaveform w = (MultiWaveform) wave;
 
             if (signals.size() != 0)
