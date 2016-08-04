@@ -1320,9 +1320,6 @@ public class Signal implements WaveDataListener
         increasing_x = true;
     }
 
-    
-    
-  
     public void setMode1D(int mode)
     {
         this.mode1D = mode;
@@ -1479,7 +1476,6 @@ public class Signal implements WaveDataListener
       return v;
     }
 
-     
     /**
      * Sets all signal attributes.
      *
@@ -1531,7 +1527,6 @@ public class Signal implements WaveDataListener
     {
         this.type = type;
     }
-
 
     /**
      * Set marker step.
@@ -2977,7 +2972,6 @@ public class Signal implements WaveDataListener
 
     }
 
-
     private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
     {
         if (arr1 == null) return arr2.clone();
@@ -3090,11 +3084,10 @@ public class Signal implements WaveDataListener
         }
         int samplesBefore, samplesAfter;
         if(regX.length == 0) return;
-        
+
         if(x == null) x = new double[0];
         if(y == null) y = new float[0];
-        
-        
+
         for(samplesBefore = 0; samplesBefore < x.length && x[samplesBefore] < regX[0]; samplesBefore++);
         if(samplesBefore > 0 && samplesBefore < x.length && x[samplesBefore] > regX[0]) samplesBefore--;
         for(samplesAfter = 0; samplesAfter < x.length - 1 && 
@@ -3228,13 +3221,13 @@ public class Signal implements WaveDataListener
                 fireSignalUpdated(false);
             }
         }
-     }
-    
+    }
+
     void registerSignalListener(SignalListener listener)
     {
         signalListeners.addElement(listener);
     }
-    
+
     void adjustArraySizes()
     {
         if(x.length < y.length)
@@ -3250,6 +3243,7 @@ public class Signal implements WaveDataListener
             x = newX;
         }
     }
+
     void freeze()
     {
         if(isLongX() && xmax > xLong[xLong.length - 1])
@@ -3259,6 +3253,7 @@ public class Signal implements WaveDataListener
         freezedXMin = xmin;
         freezedXMax = xmax;
     }
+
     void unfreeze()
     {
         freezeMode = NOT_FREEZED;
@@ -3282,15 +3277,13 @@ public class Signal implements WaveDataListener
     {
         this.legend = legend;
     }
+
     public String getLegend() { return legend;}
     
     void fireSignalUpdated(boolean changeLimits)
     {
         if(debug) System.out.println("FIRE SIGNAL UPDATE "+ signalListeners.size());
         for(int i = 0; i < signalListeners.size(); i++)
-        {
             signalListeners.elementAt(i).signalUpdated(changeLimits);
-        }
     }
-
 }

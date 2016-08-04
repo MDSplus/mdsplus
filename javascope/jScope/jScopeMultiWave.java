@@ -232,11 +232,8 @@ public class jScopeMultiWave
                     wi.signals[i].setMarkerStep(wi.markers_step[i]);
                     wi.signals[i].setInterpolate(wi.interpolates[i]);
                     wi.signals[i].setColorIdx(wi.colors_idx[i]);
-
                     wi.signals[i].setMode1D(wi.mode1D[i]);
                     wi.signals[i].setMode2D(wi.mode2D[i]);
-
-
                 }
             if (!all_null)
             {

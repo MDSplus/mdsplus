@@ -1650,7 +1650,6 @@ public class jScopeFacade
                 refreshPeriod = -1;
             }
         }
-
     }
 
     public static long getRefreshPeriod() {return refreshPeriod;}

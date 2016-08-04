@@ -363,9 +363,7 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
             long dt = (maxSpecific - minSpecific) / MAX_PIXELS;
             limitsExpr = "JavaSetResampleLimits(" + minSpecific + "UQ," +
                 maxSpecific + "UQ," + dt + "UQ)";
-        }
-        else
-        {
+        } else {
             double dt = (max - min) / MAX_PIXELS;
             limitsExpr = "JavaSetResampleLimits(" + min + "," + max + "," + dt +
                 ")";
@@ -373,6 +371,4 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
         GetFloatNative(limitsExpr);
     }
     boolean supportsLargeSignals() {return false;} //Subclass LocalDataProvider will return false
-
-
 }

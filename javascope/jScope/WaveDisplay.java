@@ -128,9 +128,7 @@ public class WaveDisplay
         break;
       default:
         showStatus(we.toString());
-                
     }
-
   }
 
   protected boolean translateToBoolean(String value) {

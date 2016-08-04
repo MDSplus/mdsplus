@@ -2507,7 +2507,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     if (waveform_signal == null)
       return;
 
-
     waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     ReportChanges();
   }
@@ -2740,7 +2739,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       }
   }
 
-  
   public ColorMap getColorMap()
   {
       return frames.getColorMap();
@@ -2760,7 +2758,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
      not_drawn = true;
      repaint();
   }
-
 
   public synchronized void addWaveformListener(WaveformListener l) {
     if (l == null) {
@@ -2812,10 +2809,9 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   {
       waveform_signal.freeze();
   }
- void unfreeze()
-  {
-      waveform_signal.unfreeze();
-  }
-  
-  
+
+    void unfreeze()
+    {
+        waveform_signal.unfreeze();
+    }
 }
