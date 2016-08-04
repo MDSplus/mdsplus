@@ -1581,14 +1581,6 @@ EXPORT void deviceSetup(char *deviceName, char *treeName, int shot, char *rootNa
 //////////////////////////////////////////////////////
 // MdsProtocol Plugin stuff
 //////////////////////////////////////////////////////
-static void throwMdsExceptionStr(JNIEnv * env, char *errorMsg)
-{
-  jclass exc;
-
-  exc = (*env)->FindClass(env, "Exception");
-  (*env)->ThrowNew(env, exc, errorMsg);
-}
-
 /*
  * Class:     jScope_MdsIpProtocolWrapper
  * Method:    connectToMds
