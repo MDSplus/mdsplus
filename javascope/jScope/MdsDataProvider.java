@@ -1479,7 +1479,7 @@ public class MdsDataProvider
  
         Properties pr = new Properties();
         pr.load(new ByteArrayInputStream(in.getBytes()));
-        String def_node = ( (String) pr.getProperty("__default_node"));
+        String def_node = pr.getProperty("__default_node");
         if (def_node != null)
         {
             def_node = def_node.trim();

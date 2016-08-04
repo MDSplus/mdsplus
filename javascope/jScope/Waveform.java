@@ -797,14 +797,13 @@ public class Waveform
                      update_timestamp);
           grid = null;
           not_drawn = true;
-          //July 2014 in order to force resolution adjustment
-          try {
-            waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
-            setXlimits((double)MinXSignal(), (double)MaxXSignal());
-          }catch(Exception exc)
-          {
+            //July 2014 in order to force resolution adjustment
+            try {
+                waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
+                setXlimits(MinXSignal(), MaxXSignal());
+            } catch(Exception exc) {
               System.out.println(exc);
-          }
+            }
         }
 
         prev_point_x = prev_point_y = -1;
@@ -2461,7 +2460,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
           unfreeze();
     }
     //GABRIELE AUGUST 2014
-    setXlimits((double)r.start_xs, (double)r.end_xs);
+    setXlimits(r.start_xs, r.end_xs);
     waveform_signal.setXLimits( r.start_xs, r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
@@ -2742,7 +2741,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   {
       if(frames != null)
       {
-          ((Frames)frames).shiftImagePixel(bitShift, bitClip);
+          frames.shiftImagePixel(bitShift, bitClip);
           not_drawn = true;
           repaint();
       }

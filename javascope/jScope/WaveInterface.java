@@ -1036,7 +1036,7 @@ public class WaveInterface
                    this.markers[curr_wave] == Signal.NONE))
             {
                 w_error[curr_wave] = null;
-                signals[curr_wave] = GetSignal(curr_wave, (double) xmin, (double) xmax);
+                signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);
                 evaluated[curr_wave] = true;
                 if (signals[curr_wave] == null)
                 {
@@ -1388,9 +1388,9 @@ public class WaveInterface
             
         
         if(yDimension > 1)
-            out_signal.setMode2D( (int) mode2D[curr_wave]);
+            out_signal.setMode2D(mode2D[curr_wave]);
         else
-            out_signal.setMode1D( (int) mode1D[curr_wave]);
+            out_signal.setMode1D(mode1D[curr_wave]);
  
         if (wd != null)
         {

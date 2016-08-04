@@ -360,7 +360,7 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
             long maxSpecific = jScopeFacade.convertToSpecificTime( (long) max);
             long minSpecific = jScopeFacade.convertToSpecificTime( (long) min);
 
-            long dt = ( (long) maxSpecific - (long) minSpecific) / MAX_PIXELS;
+            long dt = (maxSpecific - minSpecific) / MAX_PIXELS;
             limitsExpr = "JavaSetResampleLimits(" + minSpecific + "UQ," +
                 maxSpecific + "UQ," + dt + "UQ)";
         }

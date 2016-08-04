@@ -257,7 +257,7 @@ class ColorDialog
             return;
         while (true)
         {
-            prop = (String) js_prop.getProperty("jScope.item_color_" + i);
+            prop = js_prop.getProperty("jScope.item_color_" + i);
             if (prop == null)
                 break;
             String name = new String(prop.substring(0, len = prop.indexOf(",")));

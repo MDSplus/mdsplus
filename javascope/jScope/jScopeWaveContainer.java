@@ -1288,7 +1288,7 @@ remove 28/06/2005
                         ph[k++] = (float) 1. / rows[j];
                     break;
                 }
-                ph[k] = (float) (w.wi.height / height);
+                ph[k] = w.wi.height / height;
             }
         }
         invalidate();

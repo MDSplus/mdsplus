@@ -11,7 +11,7 @@ import java.util.zip.*;
 public class MdsMessage extends Object
 {
     public    static final int    HEADER_SIZE          = 48;
-    public    static final int    SUPPORTS_COMPRESSION = (int)0x8000;
+    public    static final int    SUPPORTS_COMPRESSION = 0x8000;
     public    static final byte   SENDCAPABILITIES     = (byte)0xF;
     public    static final byte   COMPRESSED           = (byte)0x20;
     public    static final byte   BIG_ENDIAN_MASK      = (byte)0x80;
@@ -447,23 +447,21 @@ public class MdsMessage extends Object
         return out;
     }
 
-        public int[] ToUShortArray() throws IOException
+    public int[] ToUShortArray() throws IOException
     {
         int ch1, ch2;
         int out[] = new int[body.length / 2];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
-            {
-                ch1 = (int)((body[j+1] & 0xff) << 8);
-                ch2 = (int)((body[j+0] & 0xff) << 0);
-                out[i] = (int)((ch1) + (ch2));
+        if (swap)
+            for (int i = 0, j = 0; i < body.length / 2; ++i, j += 2) {
+                ch1 = (body[j+1] & 0xff) << 8;
+                ch2 = (body[j+0] & 0xff) << 0;
+                out[i] = ch1 + ch2;
             }
-	    else
-            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
-            {
-                ch1 = (int)((body[j+0] & 0xff) << 8);
-                ch2 = (int)((body[j+1] & 0xff) << 0);
-                out[i] = (int)((ch1) + (ch2));
+	else
+            for (int i = 0, j = 0; i < body.length / 2; ++i, j += 2) {
+                ch1 = (body[j+0] & 0xff) << 8;
+                ch2 = (body[j+1] & 0xff) << 0;
+                out[i] = ch1 + ch2;
             }
         return out;
     }
@@ -479,7 +477,7 @@ public class MdsMessage extends Object
                 ch2 = (body[j+2] & 0xff) << 16;
                 ch3 = (body[j+1] & 0xff) << 8;
                 ch4 = (body[j+0] & 0xff) << 0;
-                out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
+                out[i] = Float.intBitsToFloat(ch1 + ch2 + ch3 + ch4);
             }
 	    else
             for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
@@ -488,7 +486,7 @@ public class MdsMessage extends Object
                 ch2 = (body[j+1] & 0xff) << 16;
                 ch3 = (body[j+2] & 0xff) << 8;
                 ch4 = (body[j+3] & 0xff) << 0;
-                out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
+                out[i] = Float.intBitsToFloat(ch1 + ch2 + ch3 + ch4);
             }
         return out;
     }

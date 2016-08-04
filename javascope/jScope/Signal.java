@@ -1527,8 +1527,7 @@ public class Signal implements WaveDataListener
         if (name == null)
             return;
         for (int i = 0; i < markerList.length; i++)
-            if (name.toLowerCase().equals( ( (String) markerList[i]).
-                                          toLowerCase()))
+            if (name.toLowerCase().equals(markerList[i].toLowerCase()))
             {
                 setMarker(i);
                 return;
@@ -2970,8 +2969,8 @@ public class Signal implements WaveDataListener
             arr[i] = (float)arr1[i];
         return appendArray(arr, sizeUsed, arr2, incSize);
                 */
-        if(arr1 == null) return (double [])arr2.clone();
-        if(arr2 == null) return (double [])arr1.clone();
+        if (arr1 == null) return arr2.clone();
+        if (arr2 == null) return arr1.clone();
 
         double val[];
         if(arr1.length < sizeUsed + arr2.length)
@@ -2989,8 +2988,8 @@ public class Signal implements WaveDataListener
 
     private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
     {
-        if(arr1 == null) return (float [])arr2.clone();
-        if(arr2 == null) return (float [])arr1.clone();
+        if (arr1 == null) return arr2.clone();
+        if (arr2 == null) return arr1.clone();
 
         float val[];
         if(arr1.length < sizeUsed + arr2.length)
