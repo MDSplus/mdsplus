@@ -790,16 +790,16 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
     return NULL;
   }
 
-  if (num_nids > 0) {
-    nids = (int *)malloc(num_nids * sizeof(nid));
-    nci_list2[0].buffer_length = sizeof(int) * num_nids;
-    nci_list2[0].pointer = nids;
-    status = TreeGetNci(nid, nci_list2);
-    if (!(status & 1))
-    {
-      RaiseException(env, MdsGetMsg(status), status);
-      return NULL;
-    }
+  if (num_nids == 0)
+    return NULL;
+
+  nids = (int *)malloc(num_nids * sizeof(nid));
+  nci_list2[0].buffer_length = sizeof(int) * num_nids;
+  nci_list2[0].pointer = nids;
+  status = TreeGetNci(nid, nci_list2);
+  if (!(status & 1)) {
+    RaiseException(env, MdsGetMsg(status), status);
+    return NULL;
   }
   constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
@@ -808,8 +808,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
     jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     (*env)->SetObjectArrayElement(env, jnids, i, jnid);
   }
-  if (num_nids > 0)
-    free(nids);
+  free(nids);
 
 /* //printf("\nEnd getMembers");*/
   return jnids;
