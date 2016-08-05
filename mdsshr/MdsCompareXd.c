@@ -51,7 +51,7 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
       case CLASS_S:
       case CLASS_D:
 	if (((d2->class == CLASS_S) || (d2->class == CLASS_D)) && (d1->length == d2->length))
-	  status = memcmp(d1->pointer, d2->pointer, (int)d1->length) == 0;
+	  status = memcmp(d1->pointer, d2->pointer, d1->length) == 0;
 	else
 	  status = 0;
 	break;
@@ -77,7 +77,7 @@ EXPORT int MdsCompareXd(const struct descriptor *dsc1_ptr, const struct descript
 	  status = 1;
 	  if (r1->length == r2->length) {
 	    if (r1->length)
-	      status = memcmp(r1->pointer, r2->pointer, (int)r1->length) == 0;
+	      status = memcmp(r1->pointer, r2->pointer, r1->length) == 0;
 	  } else
 	    status = 0;
 	  if (r1->ndesc == r2->ndesc) {
