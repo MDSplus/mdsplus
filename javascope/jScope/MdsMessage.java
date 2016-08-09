@@ -389,14 +389,14 @@ public class MdsMessage extends Object
 
     public float[] ToFloatArray() throws IOException
     {
-        float out[] = new float[body.length / 2];
+        float out[] = new float[body.length / 4];
         getWrappedBody().asFloatBuffer().get(out);
         return out;
     }
 
     public double[] ToDoubleArray() throws IOException
     {
-        double out[] = new double[body.length / 2];
+        double out[] = new double[body.length / 8];
         getWrappedBody().asDoubleBuffer().get(out);
         return out;
     }
