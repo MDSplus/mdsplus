@@ -156,12 +156,8 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
         if(js_prop == null) return;
 
-        if((prop = (String)js_prop.getProperty("jScope.font.application")) != null)
-	    {
+        if((prop = js_prop.getProperty("jScope.font.application")) != null)
 	         main_scope.SetApplicationFonts(StringToFont(prop));
-	    }
-
-
 
         prop = (String)js_prop.getProperty("jScope.font");
 

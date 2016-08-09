@@ -1520,11 +1520,11 @@ public class jScopeFacade
         //for same abnormal reason the directory creation failed
         //<home directory> is used as configuration directory
 
-        curr_directory = (String) System.getProperty("jScope.config_directory");
+        curr_directory = System.getProperty("jScope.config_directory");
 
         if (curr_directory == null || curr_directory.trim().length() == 0)
         {
-            curr_directory = (String) js_prop.getProperty("jScope.directory");
+            curr_directory = js_prop.getProperty("jScope.directory");
 
             if (curr_directory == null || curr_directory.trim().length() == 0)
             {
@@ -1578,7 +1578,7 @@ public class jScopeFacade
         }
 
         default_server_idx = -1;
-        String prop = (String) js_prop.getProperty("jScope.default_server");
+        String prop = js_prop.getProperty("jScope.default_server");
         if (prop != null)
         {
             try
@@ -1589,39 +1589,27 @@ public class jScopeFacade
             {}
         }
 
-        String cache_directory = (String) js_prop.getProperty(
-            "jScope.cache_directory");
-        String cache_size = (String) js_prop.getProperty("jScope.cache_size");
-        String f_name = (String) js_prop.getProperty(
-            "jScope.save_selected_points");
-        String proxy_host = (String) js_prop.getProperty(
-            "jScope.http_proxy_host");
-        String proxy_port = (String) js_prop.getProperty(
-            "jScope.http_proxy_port");
+        String cache_directory = js_prop.getProperty("jScope.cache_directory");
+        String cache_size = js_prop.getProperty("jScope.cache_size");
+        String f_name = js_prop.getProperty("jScope.save_selected_points");
+        String proxy_host = js_prop.getProperty("jScope.http_proxy_host");
+        String proxy_port = js_prop.getProperty("jScope.http_proxy_port");
 
-        prop = (String) js_prop.getProperty("jScope.vertical_offset");
-        int val = 0;
-        if (prop != null)
-        {
-            try
-            {
+        prop = js_prop.getProperty("jScope.vertical_offset");
+        if (prop != null) {
+            int val = 0;
+            try {
                 val = Integer.parseInt(prop);
-            }
-            catch (NumberFormatException e)
-            {}
+            } catch (NumberFormatException e) {}
             Waveform.SetVerticalOffset(val);
-
         }
-        val = 0;
-        prop = (String) js_prop.getProperty("jScope.horizontal_offset");
-        if (prop != null)
-        {
-            try
-            {
+
+        prop = js_prop.getProperty("jScope.horizontal_offset");
+        if (prop != null) {
+            int val = 0;
+            try {
                 val = Integer.parseInt(prop);
-            }
-            catch (NumberFormatException e)
-            {}
+            } catch (NumberFormatException e) {}
             Waveform.SetHorizontalOffset(val);
         }
 
@@ -1662,7 +1650,6 @@ public class jScopeFacade
                 refreshPeriod = -1;
             }
         }
-
     }
 
     public static long getRefreshPeriod() {return refreshPeriod;}
@@ -1882,12 +1869,10 @@ public class jScopeFacade
         int idx = 0, maxIdx = 0;
         int maxHistory = 2;
 
-        String config_file_history = (String) js_prop.getProperty("jScope.config_file_history_length");
-        try
-        {
+        String config_file_history = js_prop.getProperty("jScope.config_file_history_length");
+        try {
             maxHistory = Integer.parseInt(config_file_history);
-        }
-        catch (Exception exc){};
+        } catch (Exception exc){};
 
 
         File pf = f.getParentFile();
@@ -3593,27 +3578,18 @@ class ServerDialog
         while (true)
         {
             dsi = new DataServerItem();
-            dsi.name = (String) js_prop.getProperty("jScope.data_server_" + i +
-                ".name");
+            dsi.name = js_prop.getProperty("jScope.data_server_" + i + ".name");
             if (dsi.name == null)
                 break;
-            dsi.argument = (String) js_prop.getProperty("jScope.data_server_" +
-                i + ".argument");
-            dsi.user = (String) js_prop.getProperty("jScope.data_server_" + i +
-                ".user");
-            dsi.class_name = (String) js_prop.getProperty("jScope.data_server_" +
-                i + ".class");
-            dsi.browse_class = (String) js_prop.getProperty(
-                "jScope.data_server_" + i + ".browse_class");
-            dsi.browse_url = (String) js_prop.getProperty("jScope.data_server_" +
-                i + ".browse_url");
-            dsi.tunnel_port = (String) js_prop.getProperty(
-                "jScope.data_server_" + i + ".tunnel_port");
-            try
-            {
-                dsi.fast_network_access = new Boolean( (String) js_prop.
-                    getProperty("jScope.data_server_" + i +
-                                ".fast_network_access")).booleanValue();
+            dsi.argument = js_prop.getProperty("jScope.data_server_" + i + ".argument");
+            dsi.user = js_prop.getProperty("jScope.data_server_" + i + ".user");
+            dsi.class_name = js_prop.getProperty("jScope.data_server_" + i + ".class");
+            dsi.browse_class = js_prop.getProperty("jScope.data_server_" + i + ".browse_class");
+            dsi.browse_url = js_prop.getProperty("jScope.data_server_" + i + ".browse_url");
+            dsi.tunnel_port = js_prop.getProperty("jScope.data_server_" + i + ".tunnel_port");
+            try {
+                dsi.fast_network_access = new Boolean(js_prop.getProperty(
+                    "jScope.data_server_" + i + ".fast_network_access")).booleanValue();
             }
             catch (Exception exc)
             {

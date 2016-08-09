@@ -1255,11 +1255,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
      */
     public void showWindow(int x, int y, int width, int height)
     {
-        if(!this.isShowing())
-        {
-            ((JFrame)f).pack();
-            ((JFrame)f).setBounds(new Rectangle(x, y, width, height));
-            ((JFrame)f).setVisible(true);
+        if (!this.isShowing()) {
+            f.pack();
+            f.setBounds(new Rectangle(x, y, width, height));
+            f.setVisible(true);
         }
         wave_container.update();
    }
