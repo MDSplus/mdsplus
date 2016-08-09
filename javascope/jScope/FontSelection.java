@@ -225,14 +225,12 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 	    }
     }
 
-
     public void toFile(PrintWriter out, String prompt)
     {
         if(font != null)
 	        out.println(prompt +": " + font.toString());
 	    out.println("");
     }
-
 
     public Font GetFont()
     {
@@ -255,7 +253,6 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
     public void actionPerformed(ActionEvent e)
     {
-
 	    Object ob = e.getSource();
 	    int i;
 

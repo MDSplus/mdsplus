@@ -390,7 +390,6 @@ class JetDataProvider implements DataProvider
                 JiDim jdimTime = jvarData.getDims()[ndims-1];
                 JiVar jvarTime = jns.getVar(jdimTime.mName);
 
-
                 JiDim jdimXData = null;
                 JiVar jvarXData = null;
                 if (ndims >= 2){
@@ -425,7 +424,6 @@ class JetDataProvider implements DataProvider
                 throw(new IOException(error_string));
             }
 
-
             if(is_time)
                 return last_x;
              else
@@ -433,7 +431,6 @@ class JetDataProvider implements DataProvider
                     return last_y;
                 else
                     return last_data;
-
         }
     }
 
@@ -489,7 +486,6 @@ class JetDataProvider implements DataProvider
         throw(new IOException(error_string));
     }
 
-
     public void AddConnectionListener(ConnectionListener l)
     {
 	    if (l == null) {
@@ -517,8 +513,6 @@ class JetDataProvider implements DataProvider
         }
     }
 
-
-
 public static void main(String args[])
 {
     System.out.println("\nStart readout PPF/40573/MAGN/IPLA");
@@ -537,6 +531,5 @@ public static void main(String args[])
     System.out.println("Num. points: "+data.length);
     } catch (IOException exc){}
  }
-
 }
 

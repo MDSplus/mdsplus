@@ -879,22 +879,15 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     String region = expAndRegion.substring(expAndRegion.indexOf('~') + 1);
     String str6 = st.nextToken();
     String str7 = st.nextToken();
-
     String str8 = str1 + "/" + ipAddress + "/" + expAndRegion + "/" + str6 + "/";
-
     String str9 = "Experimet : " + experiment + " Source : " + region + " Shot = " + str6;
 
-    if (str7.startsWith("vexpr"))
-    {
+    if (str7.startsWith("vexpr")) {
       Object localObject = paramString.substring(paramString.lastIndexOf(',') + 1, paramString.lastIndexOf(')'));
       String str10 = paramString.substring(paramString.indexOf('(') + 1, paramString.lastIndexOf(','));
-
       str8 = str8 + "vexpr(decompile(`getnci(" + str10 + ",\"record\"))," + (String)localObject + ")";
-
       str9 = str9 + " uRun = " + (String)localObject + "\n    Data Path : " + str10;
-    }
-    else
-    {
+    } else {
       str8 = str8 + "decompile(`getnci(" + str7 + ",\"record\"))";
       str9 = str9 + "\n    Data path : " + str7;
     }
@@ -1366,6 +1359,5 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     {
         updSignalDataQeue.add(new UpdSignalData(name, operation, Signal.TYPE_2D, x, y, times));
     }
-
 }
 

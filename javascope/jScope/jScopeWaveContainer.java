@@ -1656,13 +1656,10 @@ remove 28/06/2005
 
         if (add_sig)
             resetSplitPosition();
-        
-
     }
 
     public void SaveAsText(jScopeMultiWave w, boolean all)
     {
-
         Vector<Waveform> panel = new Vector<>();
         MdsWaveInterface wi;
         jScopeMultiWave wave;
@@ -1724,7 +1721,6 @@ remove 28/06/2005
             }
             else
                 done = true;
-
         }
 
         if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -1736,7 +1732,6 @@ remove 28/06/2005
                 {
                     for (int i = 0; i < GetWaveformCount(); i++)
                         panel.addElement(GetWavePanel(i));
-
                 }
                 else
                     panel.addElement(w);
@@ -1876,7 +1871,6 @@ remove 28/06/2005
                         out.newLine();
                     }
                     out.close();
-
                 }
                 catch (IOException e)
                 {
@@ -1899,5 +1893,4 @@ remove 28/06/2005
     {
         progressMonitor.close();
     }
-    
 }

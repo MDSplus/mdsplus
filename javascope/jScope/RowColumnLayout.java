@@ -331,9 +331,7 @@ public class RowColumnLayout implements LayoutManager {
         this.column = column;
 //        setSize(main_p);
 	    sizeUnknown = true;
-
     }
-
 
     /**
      * Return normalize height of ith componet

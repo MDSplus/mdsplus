@@ -1995,10 +1995,8 @@ public class MdsDataProvider
         return true;
     }
 
-
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
-
         mds.setUser(server_item.user);
         is_tunneling = false;
         if (server_item.tunnel_port != null &&

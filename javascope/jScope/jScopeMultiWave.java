@@ -98,7 +98,6 @@ public class jScopeMultiWave
         */
     }
 
-
     public void Refresh()
     {
         setCursor(new Cursor(Cursor.WAIT_CURSOR));

@@ -1033,16 +1033,13 @@ public class WaveInterface
                 w_error[curr_wave] = null;
                 signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);
                 evaluated[curr_wave] = true;
-                if (signals[curr_wave] == null)
-                {
+                if (signals[curr_wave] == null) {
                     w_error[curr_wave] = curr_error;
                     evaluated[curr_wave] = false;
-                }
-                else
-                {
+                } else {
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
                     setLimits(signals[curr_wave]);
-                 }
+                }
             }
         }
         modified = false;
@@ -1050,22 +1047,15 @@ public class WaveInterface
 
     private void CreateNewFramesClass(int image_type) throws IOException
     {
-
-        if (image_type == FrameData.JAI_IMAGE)
-        {
-            try
-            {
+        if (image_type == FrameData.JAI_IMAGE) {
+            try {
                 Class cl = Class.forName("jScope.FrameJAI");
                 frames = (Frames) cl.newInstance();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw (new IOException(
                     "Java Advanced Imaging must be installed to show this type of image"));
             }
-        }
-        else
-        {
+        } else {
             frames = new Frames();
             frames.setColorMap(colorMap);
         }
@@ -1146,7 +1136,6 @@ public class WaveInterface
         return curr_shots;
     }
 
-    
     static String processShotExpression(String shotExpr, String exp)
     {
         
@@ -1270,7 +1259,6 @@ public class WaveInterface
         return out_signal;
     }
 
-
     private Signal GetSignalFromProvider(int curr_wave, double xmin, double xmax) throws
         IOException
     {
@@ -1332,7 +1320,6 @@ public class WaveInterface
             {
                 low_err = dp.GetWaveData(in_low_err[curr_wave]);
             }
-
         }
         else // X field not defined
         {
@@ -1380,8 +1367,7 @@ public class WaveInterface
             out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
         else
             out_signal = new Signal(wd, xwd, xmin, xmax);
-            
-        
+
         if(yDimension > 1)
             out_signal.setMode2D(mode2D[curr_wave]);
         else
@@ -1393,7 +1379,6 @@ public class WaveInterface
                 title = wd.GetTitle();
             }catch(Exception exc){}
         }
-
 
         if (up_err != null && low_err != null)
             out_signal.AddAsymError(up_err, low_err);
@@ -1411,5 +1396,4 @@ public class WaveInterface
         out_signal.setLabels(title, xlabel, ylabel, null);
         return out_signal;
     }
-
 }

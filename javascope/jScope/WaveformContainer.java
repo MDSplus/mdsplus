@@ -48,10 +48,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    protected boolean      print_bw = false;
    protected String       save_as_txt_directory = null;
 
-   
-      
-   
-   
     /**
      * Constructs a new WaveformContainer with a number of column and component in column.
      *
@@ -63,14 +59,11 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         CreateWaveformContainer(add_component);
     }
 
-
-
     public WaveformContainer()
     {
       super();
       CreateWaveformContainer(true);
     }
-
 
     /**
      * Initialize WaveformContaine
@@ -125,7 +118,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	     });
      }
 
-
    /**
     * Return a new MultiWaveform component
     *
@@ -136,6 +128,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         Component[] c = CreateWaveComponents(1);
         return c[0];
    }
+
    /**
     * Create an array of MultiWaveform
     *
@@ -155,7 +148,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         }
         return c;
    }
-
 
    /**
     * Add MultiWaveform to the container
@@ -219,7 +211,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         }
     }
 
-
     /**
      * process waveform event on this container
      *
@@ -281,7 +272,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         dispatchWaveContainerEvent(we);
     }
 
-
     /**
      * Set popup menu to this container
      *
@@ -293,7 +283,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         wave_popup.setParent(this);
     }
 
-
    public Waveform GetWavePanel(int idx)
    {
        Component c = getGridComponent(idx);
@@ -302,7 +291,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         else
             return null;
    }
-
 
     /**
      * Set current MultiWaveform parameters
@@ -317,7 +305,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         w.SetGridMode(grid_mode, int_label, int_label);
         w.SetGridSteps(x_grid_lines, y_grid_lines);
     }
-
 
     /**
      * Return indexn of an added MultiWaveform
@@ -428,7 +415,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         }
     }
 
-
     /**
      * Autoscale operation on all waveforms
      *
@@ -445,7 +431,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	            w.Autoscale();
 	    }
     }
-
 
     /**
      * Autoscale operation on all images
@@ -464,7 +449,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    }
     }
 
-
     /**
      * Autoscale y axis on all waveform
      *
@@ -481,7 +465,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	            w.AutoscaleY();
 	    }
     }
-
 
     /**
      * Set the same scale factor of the argument waveform to all waveform
@@ -613,7 +596,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         return this.getGridComponentCount();
     }
 
-
     public void SetFont(Font font)
     {
         Waveform.SetFont(font);
@@ -630,7 +612,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    }
     }
 
-
     public void setPrintWithLegend(boolean print_with_legend)
     {
         this.print_with_legend = print_with_legend;
@@ -640,7 +621,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     {
         this.print_bw = print_bw;
     }
-
 
     public void SetColors(Color colors[], String colors_name[])
     {
@@ -657,7 +637,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             }
         }
     }
-
 
     public void SetParams(int mode,
                           int grid_mode,
@@ -695,7 +674,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	            w.StopFrame();
 	    }
     }
-
 
     public void SetMode(int mode)
     {
@@ -767,7 +745,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             return sel_wave;
         return w;
     }
-
 
     public void ResetDrawPanel(int _row[])
     {
@@ -1051,8 +1028,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 
    public void SaveAsText(Waveform w, boolean all)
    {
-
-
         String title = "Save";
         if (all)
             title = "Save all signals in text format";
@@ -1122,7 +1097,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 
                 try
                 {
-                    
                     BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
                     out.write("% Title: "+ w.GetTitle());
                     out.newLine();
@@ -1141,7 +1115,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                        out.write("% time: "+ prop.getProperty("time"));
                        out.newLine();
                     } catch (Exception e){}
-
 
                     double xmax = w.GetWaveformMetrics().XMax();
                     double xmin = w.GetWaveformMetrics().XMin();

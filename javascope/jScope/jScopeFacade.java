@@ -1865,7 +1865,6 @@ public class jScopeFacade
 
     private void creaHistoryFile(File f)
     {
-
         int idx = 0, maxIdx = 0;
         int maxHistory = 2;
 

@@ -263,11 +263,10 @@ import javax.swing.event.*;
     public SList()
     {
 	    BorderLayout bl= new BorderLayout(25,1);
-	    setLayout(bl );
+	    setLayout(bl);
 
 	    lab = new JLabel("Signals list");
 	    add("North", lab);
-
 
 	    list_model.addElement("Select this item to add new expression");
 	    sig_list = new JList<>(list_model);
@@ -283,7 +282,6 @@ import javax.swing.event.*;
                     SList.this.signalSelect(((JList)e.getSource()).getSelectedIndex()-1);
                 }
 	        });
-
 
 	    sig_list.addKeyListener(
 	        new KeyAdapter()
@@ -365,7 +363,6 @@ import javax.swing.event.*;
             }
             );
 
-
 	    gridbag.setConstraints(marker_step_t, c);
 	    p.add(marker_step_t);
 
@@ -375,7 +372,6 @@ import javax.swing.event.*;
 	    add("South", lab);
 
 	    setOptionState(false);
-
    }
 
       public void setSignalSelect(int sig)

@@ -422,8 +422,6 @@ public class SetupDefaults extends JDialog implements ActionListener
 	  Waveform.SetVerticalOffset(v_ofs);
 	  vertical_offset.setText(""+v_ofs);
 
-
-
 	  if(auto_color_mode.getSelectedIndex() == 0)
 	    WaveInterface.auto_color_on_expr = false;
 	  else
