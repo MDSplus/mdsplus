@@ -8,25 +8,20 @@ import java.io.IOException;
 
 
 public class AboutWindow extends JLabel  {
+	static String javaVersion = System.getProperty("java.version");
+	ImageIcon io = null;
   
-  static String javaVersion = System.getProperty("java.version");
-  ImageIcon io = null;
-  
-  public AboutWindow() 
-  {
-    try
-    {
-        String icon_file = jScopeFacade.findFileInClassPath("about_jscope.jpg");
-        if(icon_file != null)
-            io = new ImageIcon(icon_file);
-        else
-            io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
-        
-        if(jScopeFacade.is_debug)
-            System.out.println("about_jscope image path "+icon_file+io);
-        setIcon(io);
-    } catch (NullPointerException e){}
-  }
+	public AboutWindow() {
+		String icon_file = jScopeFacade.findFileInClassPath("about_jscope.jpg");
+		if (icon_file != null)
+			io = new ImageIcon(icon_file);
+		else
+			io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
+
+		if (jScopeFacade.is_debug)
+			System.out.println("about_jscope image path " + icon_file + io);
+		setIcon(io);
+	}
   
 	public void update(Graphics g) {
 		paint(g);
