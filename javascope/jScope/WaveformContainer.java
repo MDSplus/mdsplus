@@ -1052,7 +1052,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    public void SaveAsText(Waveform w, boolean all)
    {
 
-        Vector<Waveform> panel = new Vector<>();
 
         String title = "Save";
         if (all)
@@ -1117,15 +1116,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             if (txtsig_file != null)
             {
                 save_as_txt_directory = new String(txtsig_file);
-                if (all)
-                {
-                    for (int i = 0; i < GetWaveformCount(); i++)
-                        panel.addElement(GetWavePanel(i));
-
-                }
-                else
-                    panel.addElement(w);
-
                 String s = "", s1 = "", s2 = "";
                 boolean g_more_point, new_line;
                 StringBuffer space = new StringBuffer();

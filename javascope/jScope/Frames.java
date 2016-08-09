@@ -431,7 +431,6 @@ class Frames extends Canvas
         if(frame_time.size() != 0)
             frame_time.removeAllElements();
 
-        int num_frame = frames.getNumFrame();
         float buf_values[] = null;
         if(frames.zoom_rect != null)
             zoom_rect = new Rectangle(frames.zoom_rect);
@@ -804,7 +803,6 @@ class Frames extends Canvas
         ByteArrayInputStream b = new ByteArrayInputStream(buf);
         DataInputStream d = new DataInputStream(b);
 
-        int pixel_size = d.readInt();
         int width = d.readInt();
         int height = d.readInt();
         int img_size = height*width;

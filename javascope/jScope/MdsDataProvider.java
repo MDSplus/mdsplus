@@ -217,9 +217,7 @@ public class MdsDataProvider
                 pixel_size = d.readInt();
                 int width = d.readInt();
                 int height = d.readInt();
-                int img_size = height * width;
                 int n_frame = d.readInt();
-                Vector f_time = new Vector();
 
                 dim = new Dimension(width, height);
                 if (in_x == null || in_x.length() == 0)
@@ -1171,7 +1169,6 @@ public class MdsDataProvider
     protected void finalize()
     {
         int status;
-        String err = new String("");
         if (open)
             mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
         if (connected)
@@ -1247,7 +1244,6 @@ public class MdsDataProvider
 
     public synchronized byte[] GetAllFrames(String in_frame) throws IOException
     {
-        byte img_buf[], out[] = null;
         float time[];
         int shape[];
         int pixel_size = 8;
@@ -1276,7 +1272,7 @@ public class MdsDataProvider
 
         //in = in_frame;
         in = "_jScope_img";
-        img_buf = GetByteArray(in);
+        byte[] img_buf = GetByteArray(in);
         if (img_buf == null)
             return null;
 
@@ -1300,23 +1296,16 @@ public class MdsDataProvider
         }
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream d = new DataOutputStream(b);
-
-        d.writeInt(pixel_size);
-
-        d.writeInt(shape[0]);
-        d.writeInt(shape[1]);
-        d.writeInt(num_time);
-
-        for (int i = 0; i < num_time; i++)
-            d.writeFloat(time[i]);
-
-        d.write(img_buf);
-        img_buf = null;
-        out = b.toByteArray();
-        d.close();
-
-        return out;
+        try (DataOutputStream d = new DataOutputStream(b)) {
+            d.writeInt(pixel_size);
+            d.writeInt(shape[0]);
+            d.writeInt(shape[1]);
+            d.writeInt(num_time);
+            for (int i = 0; i < num_time; i++)
+                d.writeFloat(time[i]);
+            d.write(img_buf);
+            return b.toByteArray();
+	}
     }
 
     public synchronized float[] GetFrameTimes(String in_frame)
@@ -1948,27 +1937,17 @@ public class MdsDataProvider
 
     protected boolean NotYetNumber(String in)
     {
-        boolean ris;
-        ris = false;
-        try
-        {
-            Float f = new Float(in);
+        try {
+            Float.parseFloat(in);
+	    return false;
+        } catch (NumberFormatException e) {
+            return true;
         }
-        catch (NumberFormatException e)
-        {
-            ris = true;
-        }
-
-        return ris;
     }
 
     public synchronized void AddUpdateEventListener(UpdateEventListener l,
         String event_name) throws IOException
     {
-
-        int eventid;
-        String error;
-
         if (event_name == null || event_name.trim().length() == 0)
             return;
         CheckConnection();
@@ -1978,9 +1957,6 @@ public class MdsDataProvider
     public synchronized void RemoveUpdateEventListener(UpdateEventListener l,
         String event_name) throws IOException
     {
-        int eventid;
-        String error;
-
         if (event_name == null || event_name.trim().length() == 0)
             return;
         CheckConnection();

@@ -13,7 +13,6 @@ class ASCIIDataProvider implements DataProvider
     String error = null;
     String path_exp = null;
     long   curr_shot = -1;
-    float time[];
     float y[];
     float x[];
 

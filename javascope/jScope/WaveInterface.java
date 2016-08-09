@@ -66,10 +66,6 @@ public class WaveInterface
 // Used for asynchronous Update
     public boolean asynch_update = true;
     Signal wave_signals[];
-    double wave_xmin, wave_xmax;
-    int wave_timestamp;
-    boolean request_pending;
-    double orig_xmin, orig_xmax;
     protected boolean evaluated[];
 
 
@@ -154,7 +150,6 @@ public class WaveInterface
         title = null;
         xlabel = null;
         ylabel = null;
-        zlabel = null;
         is_image = false;
         keep_ratio = true;
         horizontal_flip = false;
@@ -1286,7 +1281,7 @@ public class WaveInterface
         int xDimension = 1;
         int yDimension = 1;
         Signal out_signal;
-        String xlabel = null, ylabel = null, zlabel = null, title = null;
+        String xlabel = null, ylabel = null, title = null;
 
         if (shots != null && shots.length != 0)
             dp.Update(experiment, shots[curr_wave]);
@@ -1413,7 +1408,7 @@ public class WaveInterface
                 ylabel = wd.GetYLabel();
             }catch(Exception exc){}
         }
-        out_signal.setLabels(title, xlabel, ylabel, zlabel);
+        out_signal.setLabels(title, xlabel, ylabel, null);
         return out_signal;
     }
 

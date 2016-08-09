@@ -322,9 +322,6 @@ class JetDataProvider implements DataProvider
 
     public float[] GetFloatArray(String in, int type) throws IOException
     {
-        float out[] = null;
-        String in_expr = new String(in);
-
         error_string = null;
         boolean is_time = (type == X);
         boolean is_y = (type == Y);
@@ -347,16 +344,10 @@ class JetDataProvider implements DataProvider
                 url_name = experiment + "/" + shot + "/" + in;
         }
 
-        out = null;
-
         ConnectionEvent e = new ConnectionEvent(this, "Network");
         DispatchConnectionEvent(e);
 
-        if((last_url_name != null && url_name.equals(last_url_name)) || out!= null)
-        {
-            if(out != null)
-                return out;
-
+        if (last_url_name != null && url_name.equals(last_url_name)) {
             if(is_time)
                 return last_x;
             else
@@ -364,9 +355,7 @@ class JetDataProvider implements DataProvider
                     return last_y;
                 else
                     return last_data;
-        }
-        else
-        {
+        } else {
             last_x = last_data = last_y = null;
             try
             {

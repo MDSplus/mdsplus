@@ -89,13 +89,10 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
 
     static private boolean reasonableShotNr( String shot )
     {
-        try
-        {
-            Integer sn = new Integer(shot);
+        try {
+            Integer.parseInt(shot);
             return true;
-        }
-        catch(NumberFormatException e)
-        {
+        } catch(NumberFormatException e) {
             return false;
         }
     }

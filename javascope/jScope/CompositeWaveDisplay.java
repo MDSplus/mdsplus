@@ -156,7 +156,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         public void run()
         {
-            Signal s;
             float x[];
             float y[];
             int numElem, numMsg = 0;
@@ -887,12 +886,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
     if (str7.startsWith("vexpr"))
     {
-      Object localObject = null;
-      String str10 = null;
-      StringTokenizer localStringTokenizer2 = new StringTokenizer(paramString, ",");
-
-      localObject = paramString.substring(paramString.lastIndexOf(',') + 1, paramString.lastIndexOf(')'));
-      str10 = paramString.substring(paramString.indexOf('(') + 1, paramString.lastIndexOf(','));
+      Object localObject = paramString.substring(paramString.lastIndexOf(',') + 1, paramString.lastIndexOf(')'));
+      String str10 = paramString.substring(paramString.indexOf('(') + 1, paramString.lastIndexOf(','));
 
       str8 = str8 + "vexpr(decompile(`getnci(" + str10 + ",\"record\"))," + (String)localObject + ")";
 

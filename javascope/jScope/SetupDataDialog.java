@@ -682,10 +682,6 @@ import javax.swing.event.*;
 	    idx = findSignalSetup(ws);
 	    if( idx == -1)
 	    {
-
-	        String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ;
-	        String y_e =  new String(y_expr.getText());
-
 	        if(shots != null && shots.length != 0)
 	        {
 		        for (int i = 0; i < shots.length; i++, ws = getSignalSetup())

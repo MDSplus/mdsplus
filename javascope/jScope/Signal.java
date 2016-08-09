@@ -260,7 +260,6 @@ public class Signal implements WaveDataListener
      * X and Y arrays when mode is MODE_XZ or MODE_YZ
      */
     private double[] sliceX;
-    private long[]   sliceXLong;
     private float[]  sliceY;
     
     
@@ -307,7 +306,6 @@ public class Signal implements WaveDataListener
     float z[];
     
     double xY2D[];
-    long   xY2DLong[];
     float yY2D[];
     float zY2D[];
     

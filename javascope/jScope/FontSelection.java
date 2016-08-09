@@ -148,7 +148,6 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     {
         Properties js_prop = main_scope.js_prop;
         String prop;
-        int i = 0, len;
 
         if(js_prop == null) return;
 
@@ -249,11 +248,8 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
     }
 
     public void itemStateChanged(ItemEvent e) {
-        if ( e.getStateChange() != ItemEvent.SELECTED ) {
+        if (e.getStateChange() != ItemEvent.SELECTED)
             return;
-        }
-
-        Object list = e.getSource();
         fontC.changeFont(GetFont());
     }
 

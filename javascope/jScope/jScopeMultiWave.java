@@ -114,7 +114,6 @@ public class jScopeMultiWave
             public void run()
             {
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
-                boolean cache_state = mwi.cache_enabled;
                 try {
                     mwi.refresh();
                 }catch(Exception exc){}
