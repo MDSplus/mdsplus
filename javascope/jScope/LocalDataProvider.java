@@ -11,8 +11,8 @@ import java.text.DateFormat;
 
 public class LocalDataProvider extends MdsDataProvider /* implements DataProvider */
 {
-    Vector listeners = new Vector();
-    Vector eventNames = new Vector();
+    Vector<EventDescriptor> listeners = new Vector<>();
+    Vector<String> eventNames = new Vector<>();
 
     static class EventDescriptor
     {

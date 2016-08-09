@@ -308,8 +308,8 @@ public class jScopeFacade
         implements ActionListener
     {
 
-        private Vector name_list = new Vector();
-        private Vector expr_list = new Vector();
+        private Vector<String> name_list = new Vector<>();
+        private Vector<String> expr_list = new Vector<>();
         private JButton apply, cancel, save, reset;
         jScopeFacade dw;
         boolean is_pv_apply = false;
@@ -3148,7 +3148,7 @@ class WindowDialog
         row_1.setMinorTickSpacing(1);
         row_1.setPaintTicks(true);
         row_1.setPaintLabels(true);
-        Hashtable labelTable = new Hashtable();
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(new Integer(1), new JLabel("1"));
         labelTable.put(new Integer(4), new JLabel("4"));
         labelTable.put(new Integer(8), new JLabel("8"));
@@ -3314,15 +3314,14 @@ class ServerDialog
     extends JDialog
     implements ActionListener
 {
-    private Hashtable data_server_class = new Hashtable();
-    static private JList server_list;
-    private DefaultListModel list_model = new DefaultListModel();
+    private Hashtable<String, String> data_server_class = new Hashtable<>();
+    static private JList<DataServerItem> server_list;
+    private DefaultListModel<DataServerItem> list_model = new DefaultListModel<>();
     private JButton add_b, remove_b, exit_b, connect_b, modify_b;
     JLabel server_label, user_label;
     JTextField server_l, server_a, server_u;
     JCheckBox automatic;
-//    JComboBox<String> data_provider_list;
-    JComboBox data_provider_list;
+    JComboBox<String> data_provider_list;
 
     JCheckBox tunneling;
     JTextField tunnel_port;
@@ -3361,7 +3360,7 @@ class ServerDialog
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
         c.gridheight = 10;
-        server_list = new JList(list_model);
+        server_list = new JList<>(list_model);
         JScrollPane scrollServerList = new JScrollPane(server_list);
         server_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         server_list.addListSelectionListener(new ListSelectionListener()
@@ -3502,8 +3501,7 @@ class ServerDialog
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
- //       data_provider_list = new JComboBox<String>();
-        data_provider_list = new JComboBox();
+        data_provider_list = new JComboBox<>();
         gridbag.setConstraints(data_provider_list, c);
         getContentPane().add(data_provider_list);
         data_provider_list.addItemListener(new ItemListener() {

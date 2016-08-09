@@ -36,7 +36,7 @@ class JetDataProvider implements DataProvider
     private boolean evaluate_url = false;
     private String url_source = "http://data.jet.uk/";
 
-    private   Vector    connection_listener = new Vector();
+    private   Vector<ConnectionListener> connection_listener = new Vector<>();
 
     JTextField user_text;
     JPasswordField passwd_text;

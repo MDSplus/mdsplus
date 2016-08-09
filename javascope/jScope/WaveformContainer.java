@@ -43,7 +43,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    protected Font         font = new Font("Helvetica", Font.PLAIN, 12);
    protected WavePopup    wave_popup;
 
-   private   Vector       wave_container_listener = new Vector();
+   private   Vector<WaveContainerListener> wave_container_listener = new Vector<>();
    protected boolean      print_with_legend = false;
    protected boolean      print_bw = false;
    protected String       save_as_txt_directory = null;
@@ -1052,7 +1052,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    public void SaveAsText(Waveform w, boolean all)
    {
 
-        Vector panel = new Vector();
+        Vector<Waveform> panel = new Vector<>();
 
         String title = "Save";
         if (all)

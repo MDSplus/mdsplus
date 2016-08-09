@@ -248,12 +248,14 @@ import javax.swing.event.*;
 
    class SList extends JPanel implements ItemListener
    {
-    private JList            sig_list;
-//    private DefaultListModel<String> list_model = new DefaultListModel<String>();
-    private DefaultListModel list_model = new DefaultListModel();
-    private JComboBox        mode1D, mode2D, color, marker;
+    private JList<String>            sig_list;
+    private DefaultListModel<String> list_model = new DefaultListModel<>();
+    private JComboBox<String>        mode1D;
+    private JComboBox<String>        mode2D;
+    private JComboBox<String>        color;
+    private JComboBox<String>        marker;
     private JTextField	     marker_step_t;
-    private Vector<Data>     signals = new Vector<Data>();
+    private Vector<Data>     signals = new Vector<>();
     private long		     shots[]=null;
     private int              list_num_shot = 0;
     private int              sel_signal = -1;
@@ -268,7 +270,7 @@ import javax.swing.event.*;
 
 
 	    list_model.addElement("Select this item to add new expression");
-	    sig_list = new JList(list_model);
+	    sig_list = new JList<>(list_model);
         JScrollPane scroll_sig_list = new JScrollPane(sig_list);
         sig_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sig_list.addListSelectionListener(
@@ -308,7 +310,7 @@ import javax.swing.event.*;
 
         p.setLayout(gridbag);
 
-        mode1D = new JComboBox();
+        mode1D = new JComboBox<>();
 	    mode1D.addItem("Line");
 	    mode1D.addItem("No Line");
 	    mode1D.addItem("Step Plot");
@@ -316,7 +318,7 @@ import javax.swing.event.*;
 	    gridbag.setConstraints(mode1D, c);
 	    p.add(mode1D);
 
-        mode2D = new JComboBox();
+        mode2D = new JComboBox<>();
 	    mode2D.addItem("y & time");
 	    mode2D.addItem("x & y");
 	    mode2D.addItem("y & x");
@@ -325,13 +327,13 @@ import javax.swing.event.*;
 	    gridbag.setConstraints(mode2D, c);
 	    p.add(mode2D);
 
-	    color = new JComboBox();
+	    color = new JComboBox<>();
 	    SetColorList();
 	    color.addItemListener(this);
 	    gridbag.setConstraints(color, c);
 	    p.add(color);
 
-	    marker = new JComboBox();
+	    marker = new JComboBox<>();
 	    for(int i = 0; i < Signal.markerList.length; i++)
 	        marker.addItem(Signal.markerList[i]);
 

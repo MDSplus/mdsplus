@@ -7,7 +7,7 @@ import java.io.IOException;
 class DataAccessURL  
 {
     
-    static Vector dataAccessVector = new Vector();
+    static Vector<DataAccess> dataAccessVector = new Vector<>();
         
     static public void addProtocol(DataAccess dataAccess)
     {

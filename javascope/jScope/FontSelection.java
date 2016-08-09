@@ -16,15 +16,16 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
     JButton ok, cancel, apply;
     FontPanel fontC;
-    JComboBox fonts, sizes, styles;
+    JComboBox<String> fonts;
+    JComboBox<String> sizes;
+    JComboBox<String> styles;
+    String[] size_l;
+    String[] style_l;
     int index = 0;
     String fontchoice = "fontchoice";
     int stChoice = 0;
     String siChoice = "10";
     jScopeFacade main_scope;
-    String envfonts[];
-    String size_l[];
-    String style_l[];
     Font font;
 
     public FontSelection(Frame dw, String title) {
@@ -78,9 +79,6 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         styleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         stylePanel.add(styleLabel);
 
-        GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        envfonts = gEnv.getAvailableFontFamilyNames();
-
         ButtonGroup   font_selection = new ButtonGroup();
         application_i = new JRadioButton("Application");
         fontSelectionPanel.add(application_i);
@@ -89,26 +87,24 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         font_selection.add(application_i);
         font_selection.add(waveform_i);
 
-
-        fonts = new JComboBox(envfonts);
-
+        GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] envfonts = gEnv.getAvailableFontFamilyNames();
+        fonts = new JComboBox<>(envfonts);
         fonts.addItemListener(this);
         fontchoice = envfonts[0];
         fontPanel.add(fonts);
 
-        size_l = new String[]{ "10", "12", "14", "16", "18", "20", "22", "24", "26", "28" };
-        sizes = new JComboBox(size_l);
-
+        size_l = new String[] { "10", "12", "14", "16", "18", "20", "22", "24", "26", "28" };
+        sizes = new JComboBox<>(size_l);
         sizes.addItemListener(this);
         sizePanel.add(sizes);
 
-        style_l = new String[]{
+        style_l = new String[] {
                                 "PLAIN",
                                 "BOLD",
                                 "ITALIC",
                                 "BOLD & ITALIC"};
-        styles = new JComboBox(style_l);
-
+        styles = new JComboBox<>(style_l);
         styles.addItemListener(this);
         stylePanel.add(styles);
 

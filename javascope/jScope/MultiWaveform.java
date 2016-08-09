@@ -28,7 +28,7 @@ public class MultiWaveform
     static final int LEGEND_RIGHT = 2;
 
     protected Vector<Signal> signals = new Vector<Signal>();
-    protected Vector orig_signals = null;
+    protected Vector<Signal> orig_signals = null;
     protected double orig_xmin, orig_xmax;
     protected int curr_point_sig_idx = -1;
 
@@ -322,7 +322,7 @@ public class MultiWaveform
 
     }
 
-    public Vector GetSignals()
+    public Vector<Signal> GetSignals()
     {
         return signals;
     }
@@ -1412,7 +1412,7 @@ public class MultiWaveform
         {
             signals = orig_signals;
             //operation on signals must not affect original signals
-            orig_signals = new Vector();
+            orig_signals = new Vector<>();
             for (int i = 0; i < signals.size(); i++)
                 orig_signals.addElement(signals.elementAt(i));
 
@@ -1466,7 +1466,7 @@ public class MultiWaveform
         double x_range = end_xs - start_xs;
         if (orig_signals == null)
         {
-            orig_signals = new Vector();
+            orig_signals = new Vector<>();
             for (int i = 0; i < signals.size(); i++)
                 orig_signals.addElement(signals.elementAt(i));
             orig_xmin = waveform_signal.getXmin();

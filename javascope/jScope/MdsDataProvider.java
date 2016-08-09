@@ -416,7 +416,7 @@ public class MdsDataProvider
             var_idx+=2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
@@ -459,7 +459,7 @@ public class MdsDataProvider
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
@@ -693,7 +693,7 @@ public class MdsDataProvider
 
              if(segmentMode == SEGMENTED_UNKNOWN)
              {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, in_y));
                 try {                 
                     byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
@@ -730,7 +730,7 @@ public class MdsDataProvider
                 }
             }            
             
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, yExpr));
                 if(in_x == null)
                     args.addElement(new Descriptor(null, ""));
@@ -963,7 +963,7 @@ public class MdsDataProvider
         public boolean isXLong(){return isXLong;}
 
         //Async update management
-        Vector<WaveDataListener> waveDataListenersV = new Vector<WaveDataListener>();
+        Vector<WaveDataListener> waveDataListenersV = new Vector<>();
 
 
         public void addWaveDataListener(WaveDataListener listener)
@@ -1005,7 +1005,7 @@ public class MdsDataProvider
             }
         }
         boolean enabled = true;
-        Vector<UpdateDescriptor>requestsV = new Vector<UpdateDescriptor>();
+        Vector<UpdateDescriptor>requestsV = new Vector<>();
         void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long delay)
         {

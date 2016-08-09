@@ -24,7 +24,7 @@ public class SignalBox
         }
      }
     
-     Hashtable signals_name = new Hashtable();
+     Hashtable<String, Sign> signals_name = new Hashtable<>();
      Object obj[];
      
      public void AddSignal(String x_expr, String y_expr)

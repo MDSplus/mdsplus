@@ -35,7 +35,7 @@ class TwuDataProvider
     private   String experiment;
     protected long   shot;
     private String error_string;
-    private transient Vector   connection_listener = new Vector();
+    private transient Vector<ConnectionListener> connection_listener = new Vector<>();
     private String user_agent;
     private TwuWaveData lastWaveData = null ;
 

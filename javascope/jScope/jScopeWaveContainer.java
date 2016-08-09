@@ -1663,7 +1663,7 @@ remove 28/06/2005
     public void SaveAsText(jScopeMultiWave w, boolean all)
     {
 
-        Vector panel = new Vector();
+        Vector<Waveform> panel = new Vector<>();
         MdsWaveInterface wi;
         jScopeMultiWave wave;
 	    

@@ -28,10 +28,10 @@ public class SetupDefaults extends JDialog implements ActionListener
 
    private JTextField    x_grid_lines, y_grid_lines;
    private JTextField    vertical_offset, horizontal_offset;
-   private JComboBox	 grid_mode;
-   private JComboBox     legend_mode;
+   private JComboBox<String> grid_mode;
+   private JComboBox<String> legend_mode;
+   private JComboBox<String> auto_color_mode;
    private JCheckBox     reversed_b;
-   private JComboBox     auto_color_mode;
    private JCheckBox     upd_limits;
    int	   curr_grid_mode = 0,
            x_curr_lines_grid = 3,
@@ -194,13 +194,13 @@ public class SetupDefaults extends JDialog implements ActionListener
         panel1.add(lab);
 
         String grd[] = {"Dotted", "Gray"};
-        grid_mode = new JComboBox(grd);//Grid.GRID_MODE);
+        grid_mode = new JComboBox<>(grd);//Grid.GRID_MODE);
         grid_mode.setSelectedIndex(curr_grid_mode);
         panel1.add(grid_mode);
 
         lab = new JLabel("Legend:");
         panel1.add(lab);
-        legend_mode = new JComboBox();
+        legend_mode = new JComboBox<>();
         legend_mode.addItem("In Graphics");
         legend_mode.addItem("Fixed Bottom");
         legend_mode.addItem("Fixed Right");
@@ -209,7 +209,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
         lab = new JLabel("Auto color:");
         panel1.add(lab);
-        auto_color_mode = new JComboBox();
+        auto_color_mode = new JComboBox<>();
         auto_color_mode.addItem("on shot");
         auto_color_mode.addItem("on expression");
         auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);

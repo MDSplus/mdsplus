@@ -19,7 +19,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
     public class myQueue
     {
-        Vector data = new Vector();
+        Vector<Object> data = new Vector<>();
 
         synchronized public void add(Object o)
         {
@@ -62,10 +62,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     static  private JFrame    f = null;
     PrinterJob                prnJob;
     PageFormat                pf;
-    Hashtable                 signals1DHash = new Hashtable();
-    Hashtable                 signals2DHash = new Hashtable();
-    Vector                    signals1DVector = new Vector();
-    Vector                    signals2DVector = new Vector();
+    Hashtable<String, Signal> signals1DHash = new Hashtable<>();
+    Hashtable<String, Signal> signals2DHash = new Hashtable<>();
+    Vector<Signal>            signals1DVector = new Vector<>();
+    Vector<Signal>            signals2DVector = new Vector<>();
 
     myQueue updSignalDataQeue = new  myQueue();
     AppendThread appendThread;

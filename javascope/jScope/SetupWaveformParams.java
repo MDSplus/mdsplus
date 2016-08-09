@@ -25,8 +25,8 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
    private JTextField    x_grid_lines, y_grid_lines;
    private JTextField    vertical_offset, horizontal_offset;
-   private JComboBox	 grid_mode;
-   private JComboBox     legend_mode;
+   private JComboBox<String> grid_mode;
+   private JComboBox<String> legend_mode;
    private JCheckBox     reversed_b;
    int	   x_curr_lines_grid = 3,
            y_curr_lines_grid = 3;
@@ -148,12 +148,12 @@ public class SetupWaveformParams extends JDialog implements ActionListener
         lab = new JLabel("Grid: Mode");
         panel1.add(lab);
 
-        grid_mode = new JComboBox(Grid.GRID_MODE);
+        grid_mode = new JComboBox<>(Grid.GRID_MODE);
         panel1.add(grid_mode);
 
         lab = new JLabel("Legend:");
         panel1.add(lab);
-        legend_mode = new JComboBox();
+        legend_mode = new JComboBox<>();
         legend_mode.addItem("In Graphics");
         legend_mode.addItem("Fixed Bottom");
         legend_mode.addItem("Fixed Right");

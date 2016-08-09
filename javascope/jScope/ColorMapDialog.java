@@ -11,10 +11,10 @@ import java.io.*;
 public class ColorMapDialog
     extends JDialog
 {
-    private Vector colorMapListener = new Vector();
+    private Vector<ActionListener> colorMapListener = new Vector<>();
     ColorMap colorMap;
     ColorPalette cp;
-    JComboBox cmComboBox;
+    JComboBox<ColorMap> cmComboBox;
 
     JTextField minVal, maxVal;
     JButton ok, apply, cancel;
@@ -147,7 +147,7 @@ public class ColorMapDialog
             pan2.add(maxVal = new JTextField(6));
          */
 
-        cmComboBox = new JComboBox();
+        cmComboBox = new JComboBox<>();
         pan2.add(cmComboBox);
         int r[] = new int[256];
         int g[] = new int[256];

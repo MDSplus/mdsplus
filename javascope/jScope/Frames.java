@@ -11,7 +11,7 @@ class Frames extends Canvas
 {
     static final int ROI = 20;
 
-    Vector frame_time = new Vector();
+    Vector<Float> frame_time = new Vector<>();
     Rectangle zoom_rect = null;
     Rectangle view_rect = null;
     private int curr_frame_idx = -1;
@@ -52,7 +52,7 @@ class Frames extends Canvas
     class FrameCache
     {
         FrameData fd;
-        Hashtable recentFrames;
+        Hashtable<Integer, FrameDescriptor> recentFrames;
         int bitShift;
         boolean bitClip;
         ColorMap colorMap;
@@ -62,14 +62,14 @@ class Frames extends Canvas
         Dimension frameDim;
         int numFrames;
         MediaTracker tracker;
-        Vector recentIdxV= new Vector();
+        Vector<Integer> recentIdxV= new Vector<Integer>();
         int updateCount = 0;
         static final int MAX_CACHE_MEM = 50000000;
 
         public FrameCache()
         {
             this.fd = fd;
-            recentFrames = new Hashtable();
+            recentFrames = new Hashtable<>();
             bitShift = 0;
             bitClip = false;
             colorMap = new ColorMap();
@@ -81,7 +81,7 @@ class Frames extends Canvas
             bitShift = 0;
             bitClip = false;
             colorMap = new ColorMap();
-            recentFrames = new Hashtable();
+            recentFrames = new Hashtable<>();
             Enumeration fds = fc.recentFrames.keys();
             while(fds.hasMoreElements())
             {

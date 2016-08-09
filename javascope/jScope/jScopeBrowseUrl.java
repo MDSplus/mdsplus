@@ -23,7 +23,7 @@ public class jScopeBrowseUrl extends JDialog
     URLConnection url_con;
     String mime_type;
 
-    Vector url_list = new Vector();
+    Vector<URL> url_list = new Vector<>();
     JButton back;
     JButton forward;
     JButton home;
