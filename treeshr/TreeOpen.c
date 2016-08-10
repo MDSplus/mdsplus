@@ -901,7 +901,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
 static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag, int report)
 {
   int status;
-  int nomap;
+  int nomap = 0;
   int fd;
 
   /******************************************
