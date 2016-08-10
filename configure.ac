@@ -78,8 +78,6 @@ AS_CASE(["$host"],
 #AC_CONFIG_HEADER(include/config.h)
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
-AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
-AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
@@ -367,7 +365,6 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
@@ -589,11 +586,23 @@ fi
 
 dnl Checks for libraries.
 
+AC_SEARCH_LIBS([gethostbyname], [nsl socket],
+               [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
+               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because 
+                dnl it requires #include <winsocks2.h> to work. 
+                AC_MSG_CHECKING([for gethostbyname in ws2_32]) 
+                LIBSOCKET="-lws2_32"
+                mds_old_LIBS="$LIBS"
+                LIBS="$LIBSOCKET $LIBS" 
+                AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <winsock2.h>]], 
+                                                [[gethostbyname ("");]])], 
+                               [AC_MSG_RESULT([yes])],
+                               [AC_MSG_RESULT([no]); AS_UNSET([LIBSOCKET])])
+                LIBS=$mds_old_LIBS])
+AC_SUBST([LIBSOCKET])
 AC_CHECK_LIB([m], [pow], [LIBM="-lm"], [LIBM=""])
 AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
-AC_CHECK_LIB(c,gethostbyname,LIBNSL="",AC_CHECK_LIB(socket,gethostbyname,LIBNSL="-lsocket",AC_CHECK_LIB(nsl,gethostbyname,LIBNSL="-lnsl",LIBNSL="")))
-AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET=""))
 AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
 AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
@@ -1162,12 +1171,10 @@ AC_SUBST(LD_LDSHARE)
 AC_SUBST(LD_LDARC)
 AC_SUBST(LIBDL)
 AC_SUBST(LIBM)
-AC_SUBST(LIBNSL)
 AC_SUBST(LIBPATH)
 AC_SUBST(LIBPRE)
 AC_SUBST(LIBREADLINE)
 AC_SUBST(LIBRESOLV)
-AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
 AC_SUBST(LIBRT)
@@ -1191,7 +1198,6 @@ AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(NEED_SEMUN)
-AC_SUBST(NSLLIB)
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
@@ -1205,7 +1211,6 @@ AC_SUBST(ENABLE_SANITIZE)
 AC_SUBST(SHARETYPE)
 AC_SUBST(SHARETYPEJNI)
 AC_SUBST(SHARETYPEMOD)
-AC_SUBST(SOCKETLIB)
 AC_SUBST(SRBLIB)
 AC_SUBST(SRBINCLUDE)
 AC_SUBST(SYBASE_INC)
