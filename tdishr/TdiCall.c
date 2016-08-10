@@ -68,9 +68,6 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
     break;
   case DTYPE_D:
   case DTYPE_G:
-#if SIZE_OF_INT_P == 8
-  case DTYPE_T:
-#endif
   case DTYPE_FC:
   case DTYPE_FSC:
     if (f_regs) {
@@ -80,6 +77,7 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
       *result_g = (*called_g) (newdsc, routine);
       break;
     }
+  case DTYPE_T:
   case DTYPE_POINTER:
     if (f_regs) {
       void *(*called_p) () = (void *(*)())called;
