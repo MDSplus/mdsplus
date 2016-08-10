@@ -267,7 +267,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
        if(js_prop == null) return;
 
-       prop = (String)js_prop.getProperty("jScope.reversed");
+       prop = js_prop.getProperty("jScope.reversed");
        if(prop != null && ( prop.equals("true") || prop.equals("false")))
        {
          reversed = new Boolean(prop).booleanValue();
@@ -275,11 +275,11 @@ public class SetupDefaults extends JDialog implements ActionListener
        else
            reversed = false;
 
-       prop = (String)js_prop.getProperty("jScope.grid_mode");
+       prop = js_prop.getProperty("jScope.grid_mode");
        if(prop != null && (val = IsGridMode(prop)) > 0)
          curr_grid_mode =  val;
 
-       prop = (String)js_prop.getProperty("jScope.x_grid");
+       prop = js_prop.getProperty("jScope.x_grid");
        if(prop != null)
        {
             try
@@ -290,7 +290,7 @@ public class SetupDefaults extends JDialog implements ActionListener
             catch (NumberFormatException e) {}
        }
 
-       prop = (String)js_prop.getProperty("jScope.y_grid");
+       prop = js_prop.getProperty("jScope.y_grid");
        if(prop != null)
        {
             try

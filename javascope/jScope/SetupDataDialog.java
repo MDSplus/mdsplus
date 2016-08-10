@@ -354,7 +354,7 @@ import javax.swing.event.*;
                     if(getSignalSelect() != -1)
                     {
                             try {
-                                ((Data)signals.elementAt(getSignalSelect())).marker_step = new Integer(marker_step_t.getText()).intValue();
+                                signals.elementAt(getSignalSelect()).marker_step = new Integer(marker_step_t.getText()).intValue();
                             } catch (NumberFormatException ex) {
                                 marker_step_t.setText("1");
                             }
@@ -399,7 +399,7 @@ import javax.swing.event.*;
 	    sig_list.ensureIndexIsVisible(id);
         if(sig >= 0)
             if(getSignalSelect() < signals.size())
-                putSignalSetup((Data)signals.elementAt(getSignalSelect()));
+                putSignalSetup(signals.elementAt(getSignalSelect()));
         else
         	resetSignalSetup();
 	    setOptionState(getSignalSelect() >= 0);
@@ -435,13 +435,13 @@ import javax.swing.event.*;
 	    }
       }
 
-     public int findSignalSetup(Data ws)
-     {
-	    for(int i=0; i < signals.size(); i++)
-	        if(((Data)signals.elementAt(i)).equals(ws))
-		        return i;
-	    return -1;
-     }
+    public int findSignalSetup(Data ws)
+    {
+        for(int i=0; i < signals.size(); i++)
+            if(signals.elementAt(i).equals(ws))
+                return i;
+        return -1;
+    }
 
      public void updateSignalSetup(int idx, Data ws)
      {
@@ -2071,14 +2071,12 @@ import javax.swing.event.*;
 	    if(ob == x_max || ob == y_max || ob == x_min
 	       || ob == y_min || ob == shot || ob == time_max || ob == time_min)
 	    {
-	        Character ch = new Character((char)key);
-            if(!ch.isDigit((char)key) &&
-		    key != KeyEvent.VK_DELETE &&
-	        key != '.' && key != '+' && key != '-')
-		    return;
+	        Character ch = new Character(key);
+                if(!ch.isDigit(key) && key != KeyEvent.VK_DELETE && key != '.' && key != '+' && key != '-')
+                    return;
+            }
         }
-      }
-   }
+    }
 
    private void  defaultButtonOperation(Object obj, boolean state, String val)
    {

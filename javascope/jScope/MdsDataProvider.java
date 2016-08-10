@@ -1412,7 +1412,6 @@ public class MdsDataProvider
         return error;
     }
 
-    
     public synchronized void Update(String experiment, long shot)
     {
         Update( experiment,  shot, false);
@@ -1436,7 +1435,6 @@ public class MdsDataProvider
 
     public synchronized String GetString(String in) throws IOException
     {
-
         if (in == null)
             return null;
 
@@ -1471,15 +1469,12 @@ public class MdsDataProvider
 
     public synchronized void SetEnvironment(String in) throws IOException
     {
-
         if (in == null || in.length() == 0)
             return;
 
-        
- 
         Properties pr = new Properties();
         pr.load(new ByteArrayInputStream(in.getBytes()));
-        String def_node = ( (String) pr.getProperty("__default_node"));
+        String def_node = pr.getProperty("__default_node");
         if (def_node != null)
         {
             def_node = def_node.trim();
@@ -1502,12 +1497,10 @@ public class MdsDataProvider
             open = false;
             environment_vars = in;
         }
-    
     }
 
     void SetEnvironmentSpecific(String in)
     {
-
         Descriptor desc = mds.MdsValue(in);
         switch (desc.dtype)
         {
@@ -1522,7 +1515,6 @@ public class MdsDataProvider
                   
     }
 
-    
     double GetNow(String in) throws Exception
     {
         boolean isPlus = true;
@@ -1580,8 +1572,7 @@ public class MdsDataProvider
         long javaTime = cal.getTime().getTime();
         return javaTime;
     }
-    
-    
+ 
     public synchronized double GetFloat(String in) throws IOException
     {
         error = null;
@@ -1603,8 +1594,6 @@ public class MdsDataProvider
                 return GetNow(in);
             }catch(Exception exc1){}
         } //If exception occurs this is not a date, try NOW condtruction
-
-
 
         if (NotYetNumber(in))
         {
@@ -1648,8 +1637,6 @@ public class MdsDataProvider
         return new SimpleWaveData(in_y, in_x, experiment, shot);
     }
 
- 
-
     public float[] GetFloatArray(String in) throws IOException
     {
         RealArray realArray = GetRealArray(in);
@@ -1668,8 +1655,7 @@ public class MdsDataProvider
 
     public synchronized RealArray GetRealArray(String in) throws IOException
     {
-        
-        
+
         RealArray out;
         ConnectionEvent e = new ConnectionEvent(this, 1, 0);
         DispatchConnectionEvent(e);
@@ -1730,7 +1716,6 @@ public class MdsDataProvider
 
         return out;
     }
-
 
     public long[] GetShots(String in) throws IOException
     {

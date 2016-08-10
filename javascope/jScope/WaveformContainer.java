@@ -764,7 +764,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                w = GetWavePanel(i);
             }
         } else
-            return (Waveform)sel_wave;
+            return sel_wave;
         return w;
     }
 

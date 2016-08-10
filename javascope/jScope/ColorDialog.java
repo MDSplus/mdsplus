@@ -250,21 +250,19 @@ class ColorDialog
     private void GetPropertiesValue()
     {
         Properties js_prop = main_scope.js_prop;
-        String prop;
-        int i = 0, len;
-
         if (js_prop == null)
             return;
-        while (true)
-        {
-            prop = (String) js_prop.getProperty("jScope.item_color_" + i);
+
+        String prop;
+        for (int i = 0; ; ++i) {
+            prop = js_prop.getProperty("jScope.item_color_" + i);
             if (prop == null)
                 break;
-            String name = new String(prop.substring(0, len = prop.indexOf(",")));
-            Color cr = StringToColor(new String(prop.substring(len + 2,
-                prop.length())));
+
+            int len = prop.indexOf(",");
+            String name = new String(prop.substring(0, len));
+            Color cr = StringToColor(new String(prop.substring(len + 2, prop.length())));
             InsertItemAt(name, cr, i);
-            i++;
         }
     }
 

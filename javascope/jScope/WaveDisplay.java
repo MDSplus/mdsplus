@@ -103,19 +103,15 @@ public class WaveDisplay
   }
 
   public void processWaveformEvent(WaveformEvent e) {
-    String s = null;
-    int event_id = e.getID();
-
-    WaveformEvent we = (WaveformEvent) e;
+    WaveformEvent we = e;
     MultiWaveform w = (MultiWaveform) we.getSource();
     WaveInterface wi = w.getWaveInterface();
-    int we_id = we.getID();
 
-    switch (we_id) {
+    switch (we.getID()) {
       case WaveformEvent.MEASURE_UPDATE :
       case WaveformEvent.POINT_UPDATE:
       case WaveformEvent.POINT_IMAGE_UPDATE:
-        s = we.toString();
+        String s = we.toString();
         if (wi.shots != null) {
           s = (s +
                " Expr : " + w.getSignalName(we.signal_idx) +
@@ -128,14 +124,11 @@ public class WaveDisplay
         showStatus(s);
         break;
       case WaveformEvent.STATUS_INFO:
-        s = we.status_info;
-        showStatus(s);
+        showStatus(we.status_info);
         break;
       default:
         showStatus(we.toString());
-                
     }
-
   }
 
   protected boolean translateToBoolean(String value) {

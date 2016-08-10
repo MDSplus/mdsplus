@@ -232,11 +232,8 @@ public class jScopeMultiWave
                     wi.signals[i].setMarkerStep(wi.markers_step[i]);
                     wi.signals[i].setInterpolate(wi.interpolates[i]);
                     wi.signals[i].setColorIdx(wi.colors_idx[i]);
-
-                    wi.signals[i].setMode1D( (int) wi.mode1D[i]);
-                    wi.signals[i].setMode2D( (int) wi.mode2D[i]);
-
-
+                    wi.signals[i].setMode1D(wi.mode1D[i]);
+                    wi.signals[i].setMode2D(wi.mode2D[i]);
                 }
             if (!all_null)
             {
@@ -314,8 +311,8 @@ public class jScopeMultiWave
             "";
         
         //If the legend is defined in the signal, override it
-        if (signals.size() > i && ((Signal) signals.elementAt(i)).getLegend() != null)
-            return ((Signal) signals.elementAt(i)).getLegend();
+        if (signals.size() > i && signals.elementAt(i).getLegend() != null)
+            return signals.elementAt(i).getLegend();
         
         if (wi.shots != null)
         {
@@ -328,8 +325,8 @@ public class jScopeMultiWave
 
         if (signals.size() > i)
         {
-            s += ((Signal) signals.elementAt(i)).getName();
-            Signal sign = (Signal) signals.elementAt(i);
+            s += signals.elementAt(i).getName();
+            Signal sign = signals.elementAt(i);
             if (sign != null && sign.getType() == Signal.TYPE_2D)
             {
                 switch (sign.getMode2D())

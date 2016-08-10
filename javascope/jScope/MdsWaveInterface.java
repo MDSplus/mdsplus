@@ -1289,17 +1289,11 @@ Fix bug : shot expression must be always evaluated.
                      */
                     prop = pr.getProperty(prompt + ".mode_1D_" + idx + "_" + s);
                     if (prop != null)
-                    {
-                        mode1D[expr_idx +
-                            s] = mode1DStringToCode( (String) prop);
-                    }
+                        mode1D[expr_idx + s] = mode1DStringToCode(prop);
 
                     prop = pr.getProperty(prompt + ".mode_2D_" + idx + "_" + s);
                     if (prop != null)
-                    {
-                        mode2D[expr_idx +
-                            s] = mode2DStringToCode( (String) prop);
-                    }
+                        mode2D[expr_idx + s] = mode2DStringToCode(prop);
 
                     prop = pr.getProperty(prompt + ".color_" + idx + "_" + s);
                     if (prop != null)
