@@ -842,8 +842,18 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
     retNumDims = dimct;
     memcpy(retDims, dims, dimct * sizeof(int));
     retDtype = dtype;
-
-  } else {
+    switch(dtype) {
+        case DTYPE_B:
+        case DTYPE_BU: retPixelSize = 1; break;
+        case DTYPE_W:
+        case DTYPE_WU: retPixelSize = 2; break;
+        case DTYPE_L:
+        case DTYPE_LU: retPixelSize = 4; break;
+        case DTYPE_Q:
+        case DTYPE_QU: retPixelSize = 8; break;
+	default: retPixelSize = 1;
+    }
+   } else {
     status = TdiCompile(&nodeNameD, &xd MDS_END_ARG);
     (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
     if (status & 1)
