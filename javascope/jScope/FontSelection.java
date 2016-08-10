@@ -146,13 +146,13 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
     private void GetPropertiesValue()
     {
-        Properties js_prop = main_scope.js_prop;
-        String prop;
+		Properties js_prop = main_scope.js_prop;
+		if (js_prop == null)
+			return;
 
-        if(js_prop == null) return;
-
-        if((prop = js_prop.getProperty("jScope.font.application")) != null)
-	         main_scope.SetApplicationFonts(StringToFont(prop));
+		String prop = js_prop.getProperty("jScope.font.application");
+		if (prop != null)
+			main_scope.SetApplicationFonts(StringToFont(prop));
 
         prop = (String)js_prop.getProperty("jScope.font");
 
