@@ -139,4 +139,7 @@ extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, i
 			     int numargs_in, ...);
 #endif
 extern int ServerConnect(char *);
+extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid, int on,
+			     int mode, char *server, int actstatus);
+
 #endif

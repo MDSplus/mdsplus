@@ -139,7 +139,6 @@ void SendMonitor(int mode, int idx)
 {
   if (MonitorOn) {
     ActionInfo *actions = table->actions;
-    struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
     char tree[13];
     char *cptr;
     int i;
@@ -158,15 +157,8 @@ void SendMonitor(int mode, int idx)
 	server[i] = cptr[i];
     server[i] = 0;
     pthread_mutex_lock(&send_msg_mutex);
-    MonitorOn = ServerSendMessage(0, Monitor, SrvMonitor, 0, 0, 0, 0, 0, 8,
-				  MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
-				  MakeDescrip(&p2, DTYPE_LONG, 0, 0, &table->shot),
-				  MakeDescrip(&p3, DTYPE_LONG, 0, 0, &actions[idx].phase),
-				  MakeDescrip(&p4, DTYPE_LONG, 0, 0, &actions[idx].nid),
-				  MakeDescrip(&p5, DTYPE_LONG, 0, 0, &on),
-				  MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
-				  MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, server),
-				  MakeDescrip(&p8, DTYPE_LONG, 0, 0, &actions[idx].status));
+    MonitorOn = ServerSendMonitor(Monitor, tree, table->shot, actions[idx].phase,
+				  actions[idx].nid, on, mode, server, actions[idx].status);
     pthread_mutex_unlock(&send_msg_mutex);
   }
 }

@@ -24,6 +24,7 @@ SOURCES = \
       ServerCreatePulse.c\
       ServerFindServers.c\
       ServerSendMessage.c\
+      ServerSendMonitor.c\
       ServerQAction.c
 
 OBJECTS = $(SOURCES:.c=.o)
