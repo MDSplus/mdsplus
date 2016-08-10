@@ -393,17 +393,11 @@ STATIC_ROUTINE int work(int
 /***********************************************/
 int Tdi1Cull(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-
-  status = work(rcull, opcode, narg, list, out_ptr);
-  return status;
+  return work(rcull, opcode, narg, list, out_ptr);
 }
 
 /***********************************************/
 int Tdi1Extend(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-
-  status = work(rextend, opcode, narg, list, out_ptr);
-  return status;
+  return work(rextend, opcode, narg, list, out_ptr);
 }
