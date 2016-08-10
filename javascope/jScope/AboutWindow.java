@@ -28,11 +28,13 @@ public class AboutWindow extends JLabel  {
 	}
 
 	public void paint(Graphics gReal) {
+		if(io == null)
+			return;
+
   	//Double buffering
 	  Image imageBuffer = createImage( getWidth(), getHeight() );
 	  Graphics g = imageBuffer.getGraphics();
 
-    if(io == null) return;
     
     Image image = io.getImage();
   
