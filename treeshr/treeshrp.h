@@ -288,13 +288,15 @@ typedef struct tree_header {
   unsigned sort_members:1;
   unsigned versions_in_model:1;
   unsigned versions_in_pulse:1;
-  unsigned:4;
+  unsigned readonly:1;
+  unsigned:3;
 #else
   unsigned char sort_children:1;	/* Sort children flag */
   unsigned char sort_members:1;	/* Sort members  flag */
   unsigned char versions_in_model:1;
   unsigned char versions_in_pulse:1;
-  unsigned char:4;
+  unsigned char readonly:1;
+  unsigned char:3;
 #endif
   char fill1[6];
   int free;			/* First node in free node list (connected by PARENT/CHILD indexes */

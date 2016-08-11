@@ -3123,6 +3123,16 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* TreeREADONLY_TREE */
+      case 0xfd19088:
+        {static const char *text="Tree is marked as readonly. No write operations permitted.";
+        static const char *msgnam="READONLY_TREE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* TdiBREAK */
       case 0xfd38008:
         {static const char *text="BREAK was not in DO FOR SWITCH or WHILE";

@@ -95,3 +95,4 @@
 #define TreeCLOSEERR             0xfd19072
 #define TreeMOVEERROR            0xfd1907a
 #define TreeOPENEDITERR          0xfd19082
+#define TreeREADONLY_TREE        0xfd1908a

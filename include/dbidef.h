@@ -20,6 +20,7 @@
 #define DbiOPEN_READONLY      9	/* True if tree has been opened readonly */
 #define DbiVERSIONS_IN_MODEL 10	/* True if using versioning in model */
 #define DbiVERSIONS_IN_PULSE 11	/* True if using versioning in pulse files */
+#define DbiREADONLY          12 /* True if making tree readonly */
 
 typedef struct dbi_itm {
   short int buffer_length;
