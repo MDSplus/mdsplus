@@ -69,7 +69,6 @@
 ./usr/local/mdsplus/tdi/MitDevices/TR10_GetActPostSamples.fun
 ./usr/local/mdsplus/tdi/MitDevices/__init__.py
 ./usr/local/mdsplus/tdi/MitDevices/_version.py
-./usr/local/mdsplus/tdi/MitDevices/_version.py.in
 ./usr/local/mdsplus/tdi/MitDevices/a14__part_name.fun
 ./usr/local/mdsplus/tdi/MitDevices/a14_adjust.fun
 ./usr/local/mdsplus/tdi/MitDevices/a14_clock_divide.fun

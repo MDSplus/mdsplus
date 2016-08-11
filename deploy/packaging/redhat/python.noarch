@@ -9,7 +9,6 @@
 ./usr/local/mdsplus/mdsobjects/python/_tdishr.py
 ./usr/local/mdsplus/mdsobjects/python/_treeshr.py
 ./usr/local/mdsplus/mdsobjects/python/_version.py
-./usr/local/mdsplus/mdsobjects/python/_version.py.in
 ./usr/local/mdsplus/mdsobjects/python/apd.py
 ./usr/local/mdsplus/mdsobjects/python/compound.py
 ./usr/local/mdsplus/mdsobjects/python/connection.py
@@ -135,8 +134,6 @@
 ./usr/local/mdsplus/mdsobjects/python/doc/toc.html
 ./usr/local/mdsplus/mdsobjects/python/doc/trees.html
 ./usr/local/mdsplus/mdsobjects/python/docs
-./usr/local/mdsplus/mdsobjects/python/docs/Makefile.am
-./usr/local/mdsplus/mdsobjects/python/docs/Makefile.in
 ./usr/local/mdsplus/mdsobjects/python/docs/index.md
 ./usr/local/mdsplus/mdsobjects/python/docs/logo.jpg
 ./usr/local/mdsplus/mdsobjects/python/event.py
@@ -172,8 +169,6 @@
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/constants.py
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/mathops.py
 ./usr/local/mdsplus/mdsobjects/python/tests
-./usr/local/mdsplus/mdsobjects/python/tests/Makefile.am
-./usr/local/mdsplus/mdsobjects/python/tests/Makefile.in
 ./usr/local/mdsplus/mdsobjects/python/tests/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/tests/check_python_arch.py
 ./usr/local/mdsplus/mdsobjects/python/tests/connectionUnitTest.py
