@@ -691,7 +691,6 @@
 ./usr/local/mdsplus/tdi/RfxDevices/ZELOS2150GV.py
 ./usr/local/mdsplus/tdi/RfxDevices/__init__.py
 ./usr/local/mdsplus/tdi/RfxDevices/_version.py
-./usr/local/mdsplus/tdi/RfxDevices/_version.py.in
 ./usr/local/mdsplus/tdi/RfxDevices/bRadCheck.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bRadField2D.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bRadMax.fun
