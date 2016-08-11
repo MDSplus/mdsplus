@@ -72,6 +72,10 @@ int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
       dblist->tree_info->header->versions_in_pulse = (*(unsigned int *)itm_ptr->pointer) != 0;
       dblist->modified = 1;
       break;
+    case DbiREADONLY:
+      dblist->tree_info->header->readonly = (*(unsigned int *)itm_ptr->pointer) != 0;
+      dblist->modified = 1;
+      break;
     default:
       status = TreeILLEGAL_ITEM;
       break;
