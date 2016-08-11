@@ -2885,7 +2885,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw
  */
 JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate(JNIEnv * env, jclass cls, jlong time) {
   struct descriptor_d dateDsc = { 0, DTYPE_T, CLASS_D, 0 };
-  short len;
+  unsigned short len;
   jstring jdate;
   char *date;
 

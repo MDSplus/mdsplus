@@ -181,32 +181,28 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   struct descriptor in_d = { 0, DTYPE_T, CLASS_S, 0 };
   EMPTYXD(xd);
   struct descriptor_a *arr_ptr;
-  char *expanded_in;
 
+  char * const expanded_in = calloc(strlen(in) + 40, sizeof(char));
   error_message[0] = 0;
   *out_dim = 0;
   switch (type) {
   case FLOAT:
-    expanded_in = malloc(strlen(in) + 40);
     sprintf(expanded_in, "_xxx = %s;fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
-    expanded_in = malloc(strlen(in) + 40);
     sprintf(expanded_in, "_xxx = %s;ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
-    expanded_in = malloc(strlen(in) + 40);
     sprintf(expanded_in, "long(%s)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case QUADWORD:
-    expanded_in = malloc(strlen(in) + 16);
     sprintf(expanded_in, "%s", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
@@ -216,12 +212,11 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   status = TdiCompile(&in_d, &xd MDS_END_ARG);
   if (status & 1)
     status = TdiData(&xd, &xd MDS_END_ARG);
+  free(expanded_in);
   if (!(status & 1)) {
     strncpy(error_message, MdsGetMsg(status), 512);
-  free(expanded_in);
     return 0;
   }
-  free(expanded_in);
   if (!xd.pointer) {
     strcpy(error_message, "Missing data");
     return 0;
@@ -1591,14 +1586,6 @@ EXPORT void deviceSetup(char *deviceName, char *treeName, int shot, char *rootNa
 //////////////////////////////////////////////////////
 // MdsProtocol Plugin stuff
 //////////////////////////////////////////////////////
-static void throwMdsExceptionStr(JNIEnv * env, char *errorMsg)
-{
-  jclass exc;
-
-  exc = (*env)->FindClass(env, "Exception");
-  (*env)->ThrowNew(env, exc, errorMsg);
-}
-
 /*
  * Class:     jScope_MdsIpProtocolWrapper
  * Method:    connectToMds
