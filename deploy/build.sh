@@ -424,6 +424,14 @@ EOF
 fi
 
 #
+# Make sure submodules have been updated
+#
+if [ ! -r ${SRCDIR}/3rd-party-apis/.git ]
+then
+    ${SRCDIR}/conf/update_submodules
+fi
+
+#
 # Make sure one of --test --release=version
 # --publish=version options were provided.
 #
@@ -459,7 +467,7 @@ else
     WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
 fi
 
-if [ "TEST" = "yes" -a "TEST_RELEASE" = "yes" ]
+if [ "$TEST" = "yes" -a "$TEST_RELEASE" = "yes" ]
 then
     RELEASE=yes
 fi

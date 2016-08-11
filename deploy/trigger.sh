@@ -238,6 +238,14 @@ fi
 BRANCH=${GIT_BRANCH:7}
 opts="$opts --branch=$BRANCH"
 
+#
+# Make sure submodules have been updated
+#
+if [ ! -r ${SRCDIR}/3rd-party-apis/.git ]
+then
+    ${SRCDIR}/conf/update_submodules
+fi
+
 if [ "$RELEASE" = "yes" ]
 then
     NEW_RELEASE=no
