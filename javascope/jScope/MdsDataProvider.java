@@ -1961,29 +1961,20 @@ public class MdsDataProvider
 
     public synchronized void AddConnectionListener(ConnectionListener l)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.addConnectionListener(l);
+        if (mds != null)
+            mds.addConnectionListener(l);
     }
 
     public synchronized void RemoveConnectionListener(ConnectionListener l)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.removeConnectionListener(l);
+        if (mds != null)
+            mds.removeConnectionListener(l);
     }
 
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
         if (mds == null)
-        {
-            return;
-        }
-        mds.dispatchConnectionEvent(e);
+            mds.dispatchConnectionEvent(e);
     }
 
     public boolean SupportsTunneling()
