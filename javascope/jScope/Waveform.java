@@ -1529,7 +1529,7 @@ public class Waveform
       first_set_point = false;
 
       if (p != null) {
-        if(curr_point_y != Double.NaN)
+        if (!Double.isNaN(curr_point_y))
            p.y = wm.YPixel(curr_point_y, d);
 
         curr_x = wave_point_x;
