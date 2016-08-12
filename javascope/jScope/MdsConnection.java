@@ -128,8 +128,6 @@ public class MdsConnection
 	                    }
 
 	                    curr_message = null;
-	                    //if(pending_count == 0)
-	                    //    MdsConnection.this.NotifyMessage();
 	                }
         	    }
 	        }
@@ -153,7 +151,6 @@ public class MdsConnection
 				    dispatchConnectionEvent(ce);}
 				}).start();
 	                //MdsConnection.this.dispatchConnectionEvent(ce);
-	                //MdsConnection.this.NotifyMessage();
 	            }
 	        }
 	    }
@@ -179,12 +176,6 @@ public class MdsConnection
                 return msg;
 	    }
 	} // End MRT class
-
-	private synchronized void NotifyMessage()
-	{
-	    notify();
-            System.out.printf("-- Notify");
-	}
 
     public MdsConnection ()
     {

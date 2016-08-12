@@ -1327,19 +1327,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         addSignal(s, row,  col);
     }
 
-    private boolean checkMessage(UpdSignalData upd)
-    {
-        switch(upd.type)
-        {
-            case Signal.TYPE_1D:
-            break;
-            case Signal.TYPE_2D:
-            break;
-        }
-
-        return true;
-    }
-
     public void enqueueUpdateSignals(int  numPointsPerSignal, int operation,  float x[], float y[])
     {
        updSignalDataQeue.add(new UpdSignalData(numPointsPerSignal, operation, Signal.TYPE_1D, x, y));

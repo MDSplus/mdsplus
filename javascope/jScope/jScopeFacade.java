@@ -1499,11 +1499,6 @@ public class jScopeFacade
         }
     }
 
-    private void crateConfigDir()
-    {
-
-    }
-
     protected void GetPropertiesValue()
     {
         if (js_prop == null)
@@ -1653,13 +1648,6 @@ public class jScopeFacade
     }
 
     public static long getRefreshPeriod() {return refreshPeriod;}
-    private boolean IsIpAddress(String addr)
-    {
-        if (addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
-            return true;
-        else
-            return false;
-    }
 
     private void InitDataServer()
     {
@@ -2149,12 +2137,6 @@ public class jScopeFacade
 
         }
         return false;
-    }
-
-
-
-    private void updateServerMenu()
-    {
     }
 
     public void UpdateFont()

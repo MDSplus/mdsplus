@@ -1294,14 +1294,6 @@ remove 28/06/2005
         invalidate();
     }
 
-    private boolean IsIpAddress(String addr)
-    {
-        if (addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
-            return true;
-        else
-            return false;
-    }
-
     private JFrame GetFrameParent()
     {
         Container c = this;

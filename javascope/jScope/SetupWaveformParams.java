@@ -193,56 +193,6 @@ public class SetupWaveformParams extends JDialog implements ActionListener
  	  pack();
   }
 
-   private int IsGridMode(String mode)
-   {
-        for(int i = 0; i < Grid.GRID_MODE.length ; i++)
-            if(Grid.GRID_MODE[i].equals(mode))
-                return i;
-        return -1;
-   }
-
-   /*
-   private void GetPropertiesValue()
-   {
-       Properties js_prop = main_scope.js_prop;
-       String prop;
-       int val = 0;
-
-       if(js_prop == null) return;
-
-       prop = (String)js_prop.getProperty("jScope.reversed");
-       if(prop != null && ( prop.equals("true") || prop.equals("false")))
-       {
-         reversed = new Boolean(prop).booleanValue();
-       }
-
-       prop = (String)js_prop.getProperty("jScope.grid_mode");
-       if(prop != null && (val = IsGridMode(prop)) > 0)
-         curr_grid_mode =  val;
-
-       prop = (String)js_prop.getProperty("jScope.x_grid");
-       if(prop != null)
-       {
-            try
-            {
-                val = Integer.parseInt(prop);
-                x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            }
-            catch (NumberFormatException e) {}
-       }
-
-       prop = (String)js_prop.getProperty("jScope.y_grid");
-       if(prop != null)
-       {
-            try
-            {
-                val = Integer.parseInt(prop);
-                y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            } catch (NumberFormatException e) {}
-       }
-   }
-   */
-
    public void eraseForm()
    {
 	title.setText("");
