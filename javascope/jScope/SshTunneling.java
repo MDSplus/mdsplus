@@ -187,7 +187,7 @@ public class SshTunneling
         sshListener.stop();
     }
 
-    public void finalize()
+    protected void finalize()
     {
     }
 
