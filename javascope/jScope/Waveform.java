@@ -231,8 +231,7 @@ public class Waveform
       }
       else {
         int i;
-        out = (new Float(f)).toString();
-        out.trim();
+        out = (new Float(f)).toString().trim();
         if (f < 1. && f > -1.) { //remove last 0s
           for (i = out.length() - 1; out.charAt(i) == '0'; i--) {
             ;
@@ -244,7 +243,7 @@ public class Waveform
     else {
       out = ( (f > 0) ? "+" : "-") + "inf";
     }
-    out.trim();
+    out = out.trim();
     return out;
   }
 

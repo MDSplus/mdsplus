@@ -412,7 +412,7 @@ public class MdsConnection
 	    }
 	    catch(IOException e)
 	        {
-	            error.concat("Could not get IO for "+provider + e);
+	            error = "Could not get IO for " + provider + e;
 	            return 0;
 	        }
 
@@ -431,7 +431,7 @@ public class MdsConnection
 	    }
 	    catch(IOException e)
 	        {
-	            error.concat("Could not get IO for "+provider + e);
+	            error = "Could not get IO for " + provider + e;
 	        }
 
     }
