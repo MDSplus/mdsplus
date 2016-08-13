@@ -56,13 +56,11 @@ class TwuSimpleFrameData
         else
           all_times = provider.GetFloatArray(in_x);
 
+        if(all_times == null)
+            throw(new IOException("Frame time evaluation error"));
+
         for(i = 0; i < all_times.length; i++)
           all_times[i] = (float)(-0.1 + 0.06 * i);
-
-        if(all_times == null)
-        {
-            throw(new IOException("Frame time evaluation error"));
-        }
 
         for(i = 0; i < all_times.length; i++)
         {
