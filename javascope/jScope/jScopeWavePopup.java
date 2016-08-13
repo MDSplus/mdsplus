@@ -134,7 +134,6 @@ class jScopeWavePopup
     protected void SetMenu()
     {
         super.SetMenu();
-        this.wave = (jScopeMultiWave)super.wave;
         //      remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
         jScopeFacade.jScopeSetUI(this);
     }

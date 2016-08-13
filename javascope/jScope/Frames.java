@@ -68,7 +68,6 @@ class Frames extends Canvas
 
         public FrameCache()
         {
-            this.fd = fd;
             recentFrames = new Hashtable<>();
             bitShift = 0;
             bitClip = false;
