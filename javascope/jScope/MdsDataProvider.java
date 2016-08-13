@@ -1973,7 +1973,7 @@ public class MdsDataProvider
 
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
-        if (mds == null)
+        if (mds != null)
             mds.dispatchConnectionEvent(e);
     }
 
