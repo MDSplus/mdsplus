@@ -866,10 +866,9 @@ class Frames extends Canvas
 
         if(img_w == -1 && img_h == -1)
        {
-            img_width = img_w = img.getWidth(this);
-            img_height = img_h = img.getHeight(this);
+            img_width = img.getWidth(this);
+            img_height = img.getHeight(this);
             return values;
-
        }
         float values_array[] = new float[img_w * img_h];
        int k = 0;

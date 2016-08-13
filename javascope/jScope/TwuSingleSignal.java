@@ -501,16 +501,11 @@ public class TwuSingleSignal
         final int ix        = findIndexInSubset(data, target );
         final int bestGuess = start+ix*step ;
 
-        if(step>1)
-        {
+        if (step>1) {
             // Continue search with smaller step.
-
             int newstep = (int) Math.ceil (step / ((float)maxpts)) ;
             if (newstep < 1)
               newstep = 1 ;        
-
-
-            data = null ;
             return FindIndex (target, xsig, bestGuess, newstep, maxpts, upperlimit ) ;
         }
 

@@ -404,7 +404,6 @@ class JetDataProvider implements DataProvider
                 last_x = new float[time.length];
                 for(int i = 0; i < time.length; i++)
                     last_x[i] = (float)time[i];
-                time = null;
 
                 dims = jvarData.getDims();
                 last_data = jvarData.readFloat(dims);

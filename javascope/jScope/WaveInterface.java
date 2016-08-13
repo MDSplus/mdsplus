@@ -1200,7 +1200,6 @@ public class WaveInterface
                 else
                     error = "Shot syntax error\n";
             }
-            shot_list = null;
             throw (new IOException(error));
         }
         return shot_list;

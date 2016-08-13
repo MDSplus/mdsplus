@@ -1151,7 +1151,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                     System.out.println(e);
                 }
             }
-            file_diag = null;
         }
     }
 }

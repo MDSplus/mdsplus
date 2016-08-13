@@ -1161,24 +1161,20 @@ public class MultiWaveform
 
     public int getSignalMode1D(int idx)
     {
-        int mode = -1;
-        if (idx >= 0 && idx < signals.size())
-        {
-            Signal s = signals.elementAt(idx);
-            mode = signals.elementAt(idx).getMode1D();
-        }
-        return mode;
+        try {
+            return signals.elementAt(idx).getMode1D();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return -1;
+	}
     }
 
     public int getSignalMode2D(int idx)
     {
-        int mode = -1;
-        if (idx >= 0 && idx < signals.size())
-        {
-            Signal s = signals.elementAt(idx);
-            mode = signals.elementAt(idx).getMode2D();
-        }
-        return mode;
+        try {
+            return signals.elementAt(idx).getMode2D();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return -1;
+	}
     }
 
     public int getSignalMode1D()

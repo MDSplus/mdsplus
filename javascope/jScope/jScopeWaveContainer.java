@@ -1878,7 +1878,6 @@ remove 28/06/2005
                 }
             }
         }
-        file_diag = null;
     }
     
     ProgressMonitor progressMonitor;

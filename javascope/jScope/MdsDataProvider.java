@@ -1168,11 +1168,10 @@ public class MdsDataProvider
 
     protected void finalize()
     {
-        int status;
         if (open)
             mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
         if (connected)
-            status = mds.DisconnectFromMds();
+            mds.DisconnectFromMds();
     }
     //To be overridden by any DataProvider implementation with added dynamic generation
     public jScope.AsynchDataSource getAsynchSource()
@@ -1905,15 +1904,12 @@ public class MdsDataProvider
         }
         if (open && def_node_changed)
         {
-            Descriptor descr;
-            if (default_node != null)
-            {
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
-                if( (descr.int_data[0] & 1 ) == 0   )
+            if (default_node != null) {
+                Descriptor descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
+                if ((descr.int_data[0] & 1 ) == 0)
                     mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
-            }
-            else
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
+            } else
+                mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
 
             def_node_changed = false;
         }
