@@ -1611,7 +1611,7 @@ public class MdsDataProvider
             }
         }
         else
-            return new Float(in).floatValue();
+            return Float.parseFloat(in);
         return 0;
     }
 

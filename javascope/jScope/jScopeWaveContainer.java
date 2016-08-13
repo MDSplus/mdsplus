@@ -1089,7 +1089,7 @@ remove 28/06/2005
             throw (new IOException("missing columns keyword"));
         else
         {
-            columns = new Integer(prop).intValue();
+            columns = Integer.parseInt(prop);
             pw = new float[MAX_COLUMN];
         }
 
@@ -1125,7 +1125,7 @@ remove 28/06/2005
                     throw (new IOException("missing rows_in_column_1 keyword"));
                 break;
             }
-            int r = new Integer(prop).intValue();
+            int r = Integer.parseInt(prop);
             read_rows[c - 1] = r;
         }
 
@@ -1138,7 +1138,7 @@ remove 28/06/2005
                 {
                     throw (new IOException("missing vpane_" + c + " keyword"));
                 }
-                int w = new Integer(prop).intValue();
+                int w = Integer.parseInt(prop);
                 pw[c - 1] = (float) w;
             }
         }

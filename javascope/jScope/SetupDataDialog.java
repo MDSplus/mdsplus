@@ -354,7 +354,7 @@ import javax.swing.event.*;
                     if(getSignalSelect() != -1)
                     {
                             try {
-                                signals.elementAt(getSignalSelect()).marker_step = new Integer(marker_step_t.getText()).intValue();
+                                signals.elementAt(getSignalSelect()).marker_step = Integer.parseInt(marker_step_t.getText());
                             } catch (NumberFormatException ex) {
                                 marker_step_t.setText("1");
                             }
@@ -592,7 +592,7 @@ import javax.swing.event.*;
 	ws.marker        = marker.getSelectedIndex();
 
 	try{
-	    ws.marker_step   = new Integer(marker_step_t.getText()).intValue();
+	    ws.marker_step = Integer.parseInt(marker_step_t.getText());
 	} catch(NumberFormatException e) {
 	    ws.marker_step   = 1;
 	}

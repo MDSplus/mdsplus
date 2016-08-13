@@ -402,7 +402,7 @@ public class SetupDefaults extends JDialog implements ActionListener
       int h_ofs = 0, v_ofs = 0;
 	  try
 	  {
-	    h_ofs = new Integer(horizontal_offset.getText().trim()).intValue();
+	    h_ofs = Integer.parseInt(horizontal_offset.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -413,7 +413,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
 	  try
 	  {
-	    v_ofs = new Integer(vertical_offset.getText().trim()).intValue();
+	    v_ofs = Integer.parseInt(vertical_offset.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -429,7 +429,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
 	  try
 	  {
-	    x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
+	    x_curr_lines_grid = Integer.parseInt(x_grid_lines.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -441,7 +441,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
 	  try
 	  {
-	    y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
+	    y_curr_lines_grid = Integer.parseInt(y_grid_lines.getText().trim());
       }
 	  catch (NumberFormatException exc)
 	  {

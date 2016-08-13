@@ -222,21 +222,19 @@ public class TWUProperties
     public double
     Minimum()
     {
-        String mini = signalProps.getProperty("Signal.Minimum");
-        Double min  = new Double(Double.NaN);
-        if (mini != null)
-          min = Double.valueOf(mini);
-        return min.doubleValue();
+        String min = signalProps.getProperty("Signal.Minimum");
+        if (min != null)
+          return Double.parseDouble(min);
+        return Double.NaN;
     }
 
     public double
     Maximum()
     {
-        String maxi = signalProps.getProperty("Signal.Maximum");
-        Double max  = new Double(Double.NaN);
-        if (maxi != null)
-          max = Double.valueOf(maxi);
-        return max.doubleValue();
+        String max = signalProps.getProperty("Signal.Maximum");
+        if (max != null)
+          return Double.parseDouble(max);
+        return Double.NaN;
     }
     
     public double

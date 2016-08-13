@@ -144,11 +144,11 @@ class ColorDialog
         getContentPane().add(label);
 
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put(new Integer(0), new JLabel("0"));
-        labelTable.put(new Integer(64), new JLabel("64"));
-        labelTable.put(new Integer(128), new JLabel("128"));
-        labelTable.put(new Integer(192), new JLabel("192"));
-        labelTable.put(new Integer(255), new JLabel("255"));
+        labelTable.put(0, new JLabel("0"));
+        labelTable.put(64, new JLabel("64"));
+        labelTable.put(128, new JLabel("128"));
+        labelTable.put(192, new JLabel("192"));
+        labelTable.put(255, new JLabel("255"));
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
@@ -536,11 +536,11 @@ class ColorDialog
     {
         int pos;
         String tmp = str.substring(str.indexOf("=") + 1, pos = str.indexOf(","));
-        int r = new Integer(tmp).intValue();
+        int r = Integer.parseInt(tmp);
         tmp = str.substring(pos + 3, pos = str.indexOf(",", pos + 1));
-        int g = new Integer(tmp).intValue();
+        int g = Integer.parseInt(tmp);
         tmp = str.substring(pos + 3, str.indexOf("]", pos + 1));
-        int b = new Integer(tmp).intValue();
+        int b = Integer.parseInt(tmp);
         int c = (r << 16 | g << 8 | b);
         return (new Color(c));
     }

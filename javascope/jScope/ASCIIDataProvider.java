@@ -408,10 +408,8 @@ class ASCIIDataProvider implements DataProvider
     public double GetFloat(String in)
     {
         error = null;
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
-
 
     public long[] GetShots(String in) throws IOException
     {

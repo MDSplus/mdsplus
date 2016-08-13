@@ -217,8 +217,7 @@ public class Waveform
              curr_f /= (double) 10, exp++) {
           ;
         }
-        out = (new Float(Math.round(curr_f * 100) / 100.)).toString() + "e" +
-            (new Integer(exp)).toString();
+        out = Double.toString(Math.round(curr_f * 100) / 100.) + "e" + Integer.toString(exp);
       }
       else
       if (abs_f < 1E-3 && abs_f > 0) {
@@ -226,12 +225,11 @@ public class Waveform
              exp--) {
           ;
         }
-        out = (new Float(curr_f)).toString() + "e" +
-            (new Integer(exp)).toString();
+        out = Double.toString(curr_f) + "e" + Integer.toString(exp);
       }
       else {
         int i;
-        out = (new Float(f)).toString().trim();
+        out = Double.toString(f);
         if (f < 1. && f > -1.) { //remove last 0s
           for (i = out.length() - 1; out.charAt(i) == '0'; i--) {
             ;

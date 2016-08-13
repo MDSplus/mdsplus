@@ -56,8 +56,7 @@ class NotConnectedDataProvider implements DataProvider
 
     public double GetFloat(String in)
     {
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
 
     public float[] GetFloatArray(String in_x, String in_y, float start, float end)

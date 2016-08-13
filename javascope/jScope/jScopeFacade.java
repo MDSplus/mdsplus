@@ -2735,10 +2735,10 @@ public class jScopeFacade
             if ( (prop = pr.getProperty("Scope.geometry")) != null)
             {
                 StringTokenizer st = new StringTokenizer(prop);
-                width = new Integer(st.nextToken("x")).intValue();
-                height = new Integer(st.nextToken("x+")).intValue();
-                xpos = new Integer(st.nextToken("+")).intValue();
-                ypos = new Integer(st.nextToken("+")).intValue();
+                width = Integer.parseInt(st.nextToken("x"));
+                height = Integer.parseInt(st.nextToken("x+"));
+                xpos = Integer.parseInt(st.nextToken("+"));
+                ypos = Integer.parseInt(st.nextToken("+"));
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 if (height > screenSize.height)
                     height = screenSize.height;

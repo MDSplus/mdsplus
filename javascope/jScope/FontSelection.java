@@ -237,9 +237,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             fontchoice = (String)fonts.getSelectedItem();
             stChoice = styles.getSelectedIndex();
             siChoice = (String)sizes.getSelectedItem();
-            Integer newSize = new Integer(siChoice);
-            int size = newSize.intValue();
-            Font f = new Font(fontchoice, stChoice, size);
+            Font f = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
             f = StringToFont(f.toString());
 
             return f;

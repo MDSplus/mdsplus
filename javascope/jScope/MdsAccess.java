@@ -101,7 +101,7 @@ public class MdsAccess implements DataAccess
         if ((this.experiment != null) && (!this.experiment.equals("")))
         {
           this.shot_str = st1.nextToken();
-          int shot = new Integer(this.shot_str).intValue();
+          int shot = Integer.parseInt(this.shot_str);
           if (region != null)
           {
             int out[] = np.GetIntArray("treeSetSource('" + this.experiment + "','" + region + "')");
@@ -144,7 +144,7 @@ public class MdsAccess implements DataAccess
         {
             //String shot_str = st2.nextToken();
             shot_str = st2.nextToken();
-            int shot = (new Integer(shot_str)).intValue();
+            int shot = Integer.parseInt(shot_str);
             np.Update(experiment, shot);
         }
         signal = st2.nextToken();
