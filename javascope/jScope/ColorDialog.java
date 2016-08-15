@@ -382,10 +382,7 @@ class ColorDialog
         {
             color_name = new String[color_set.size()];
             for (int i = 0; i < color_set.size(); i++)
-            {
-                color_name[i] = new String( ( (Item) color_set.elementAt(i)).
-                                           name);
-            }
+                color_name[i] = color_set.elementAt(i).name;
         }
         return color_name;
     }

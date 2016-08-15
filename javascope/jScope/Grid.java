@@ -532,15 +532,15 @@ public class Grid
 
                         Date date = new Date();
                         date.setTime(datel);
-                        currStringSubSec = dfSubSec.format(date).toString();
-                        curr_string = df.format(date).toString();
+                        currStringSubSec = dfSubSec.format(date);
+                        curr_string = df.format(date);
 
                         DateFormat df1 = new SimpleDateFormat("d-MMM-yyyy");
 
                         //--df1.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         //GABdf1.setTimeZone(TimeZone.getDefault());
 
-                        String new_date_string = df1.format(date).toString();
+                        String new_date_string = df1.format(date);
 
                         if(i == 0 || !new_date_string.equals(prev_date_string))
                         {

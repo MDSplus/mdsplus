@@ -210,7 +210,7 @@ public class WaveformEvent
             return dateFormat.format(date).toString();
 
         }
-        return dateFormat.format(date).toString();
+        return dateFormat.format(date);
     }
     public String toString()
     {

@@ -999,9 +999,7 @@ public class Signal implements WaveDataListener
     static String toStringTime(long time)
     {
         DateFormat df = new SimpleDateFormat("HH:mm:sss");
-        Date date = new Date();
-        date.setTime(time);
-        return df.format(date).toString();
+        return df.format(new Date(time));
     }
 
     public String getStringOfXinYZplot()
