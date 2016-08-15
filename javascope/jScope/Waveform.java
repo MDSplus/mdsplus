@@ -15,7 +15,7 @@ import java.awt.geom.*;
 public class Waveform 
     extends JComponent implements SignalListener{
 
-  public static int MAX_POINTS = 1000;
+  public static final int MAX_POINTS = 1000;
   static public boolean is_debug = false;
 
   public static final Color[] COLOR_SET = {

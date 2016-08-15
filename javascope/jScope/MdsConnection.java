@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 
 public class MdsConnection
 {
-        static public int    DEFAULT_PORT = 8000;
-        static public String DEFAULT_USER = "JAVA_USER";
+        public static final int    DEFAULT_PORT = 8000;
+        public static final String DEFAULT_USER = "JAVA_USER";
         static final  int    MAX_NUM_EVENTS = 256;
 
                 
