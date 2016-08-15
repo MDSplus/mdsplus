@@ -328,24 +328,18 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
 
     int getEventId(String event) throws Exception
     {
-        for(int idx = 0; idx < listeners.size(); idx++)
-        {
-            EventDescriptor evDescr = listeners.elementAt(idx);
+        for(EventDescriptor evDescr : listeners)
             if(event.equals(evDescr.getEvent()))
                 return evDescr.getEvId();
-        }
         throw(new Exception());
     }
 
     public void fireEvent(int nameIdx)
     {
         String event = eventNames.elementAt(nameIdx);
-        for(int idx = 0; idx < listeners.size(); idx++)
-        {
-            EventDescriptor evDescr = listeners.elementAt(idx);
+        for(EventDescriptor evDescr : listeners)
             if(evDescr.getEvent().equals(event))
                 evDescr.getListener().processUpdateEvent(new UpdateEvent(this, event));
-        }
     }
 
     native public int registerEvent(String event, int idx);

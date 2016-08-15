@@ -273,9 +273,8 @@ public class WaveformEditor
     public synchronized void notifyUpdate(float[] waveX, float[] waveY,
                                           int newIdx)
     {
-        for (int i = 0; i < listeners.size(); i++)
-            ( (WaveformEditorListener) listeners.elementAt(i)).waveformUpdated(
-                waveX, waveY, newIdx);
+        for (WaveformEditorListener l : listeners)
+            l.waveformUpdated(waveX, waveY, newIdx);
     }
 
     public void setEditable(boolean editable)

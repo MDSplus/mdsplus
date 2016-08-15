@@ -93,8 +93,8 @@ class ColorDialog
         GetColorsName();
 
         color = new JComboBox<>();
-        for (int i = 0; i < color_name.length; i++)
-            color.addItem(color_name[i]);
+        for (String name : color_name)
+            color.addItem(name);
 
         color.addItemListener(this);
         gridbag.setConstraints(color, c);

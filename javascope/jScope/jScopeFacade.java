@@ -1865,11 +1865,9 @@ public class jScopeFacade
         File pf = f.getParentFile();
         String list[] = pf.list(new FileFilter(f.getName()));
 
-        for(int i = 0; i < list.length; i++)
-        {
-            StringTokenizer st = new StringTokenizer(list[i], ";");
-            try
-            {
+        for (String file : list) {
+            StringTokenizer st = new StringTokenizer(file, ";");
+            try {
                 String s = st.nextToken();
                 s = st.nextToken();
                 if (s != null)

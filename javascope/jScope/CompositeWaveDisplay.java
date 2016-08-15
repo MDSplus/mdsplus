@@ -181,10 +181,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                     d = new Date();
                     end = d.getTime();
 
-                    for(int i = 0; i < signals2DVector.size(); i++)
-                    {
-                        ((Signal) signals2DVector.elementAt(i)).setMode2D(Signal.MODE_PROFILE);
-                    }
+                    for (Signal s : signals2DVector)
+                        s.setMode2D(Signal.MODE_PROFILE);
 
                     wave_container.appendUpdateWaveforms();
 
