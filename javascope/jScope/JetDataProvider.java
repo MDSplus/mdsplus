@@ -504,12 +504,8 @@ class JetDataProvider implements DataProvider
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
         if (connection_listener != null)
-        {
             for(int i = 0; i < connection_listener.size(); i++)
-            {
-                ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
-            }
-        }
+                connection_listener.elementAt(i).processConnectionEvent(e);
     }
 
 public static void main(String args[])

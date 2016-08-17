@@ -257,28 +257,23 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
             }
         }
+
         private void processsSignal1DPacket( UpdSignalData usd )
         {
-            Signal s;
-
-            s = (Signal)signals1DHash.get(usd.name);
+            Signal s = signals1DHash.get(usd.name);
             if(s != null)
-            {
                 appendToSignal(s, usd.operation, usd.x, usd.y);
-            }
         }
 
         private void processsSignals1DPacket( UpdSignalData usd )
         {
-            Signal s;
-
             float x[];
             float y[];
             y = new float[usd.numPointsPerSignal];
 
             for (int i = 0; i < signals1DVector.size(); i++)
             {
-                s = (Signal)signals1DVector.elementAt(i);
+                Signal s = signals1DVector.elementAt(i);
                 System.arraycopy(usd.y, i * usd.numPointsPerSignal,
                                  y, 0, usd.numPointsPerSignal);
                 if (usd.x != null && usd.x.length > 1)
@@ -325,8 +320,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         private void processsSignals2DPacket( UpdSignalData usd )
         {
-            Signal s;
-
             float x[];
             float y[];
             int nPoints[] = new int[1];
@@ -338,7 +331,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
             for (int i = 0; i < signals2DVector.size(); i++)
             {
-                s = (Signal)signals2DVector.elementAt(i);
+                Signal s = signals2DVector.elementAt(i);
                 System.arraycopy(usd.y, i * totPoints, y, 0, totPoints);
                 System.arraycopy(usd.x, i * totPoints, x, 0, totPoints);
                 nPoints[0] = usd.numPointsPerSignal;
@@ -348,9 +341,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         private void processsSignal2DPacket( UpdSignalData usd )
         {
-            Signal s;
-
-            s = (Signal)signals2DHash.get(usd.name);
+            Signal s = signals2DHash.get(usd.name);
             if(s != null)
             {
                 int nPoints[] = new int[usd.times.length];

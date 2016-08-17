@@ -251,10 +251,8 @@ class TwuDataProvider
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
         if (connection_listener != null)
-        {
             for(int i = 0; i < connection_listener.size(); i++)
-              ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
-        }
+              connection_listener.elementAt(i).processConnectionEvent(e);
     }
 
     //  -------------------------------------------

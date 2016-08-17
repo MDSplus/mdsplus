@@ -291,7 +291,7 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
         int idx = listeners.indexOf(new EventDescriptor(l, event, 0));
         if(idx != -1)
         {
-            int evId = ((EventDescriptor)listeners.elementAt(idx)).getEvId();
+            int evId = listeners.elementAt(idx).getEvId();
             listeners.removeElementAt(idx);
             try {
                 int id = getEventId(event);
@@ -330,7 +330,7 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
     {
         for(int idx = 0; idx < listeners.size(); idx++)
         {
-            EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
+            EventDescriptor evDescr = listeners.elementAt(idx);
             if(event.equals(evDescr.getEvent()))
                 return evDescr.getEvId();
         }
@@ -339,10 +339,10 @@ public class LocalDataProvider extends MdsDataProvider /* implements DataProvide
 
     public void fireEvent(int nameIdx)
     {
-        String event = (String)eventNames.elementAt(nameIdx);
+        String event = eventNames.elementAt(nameIdx);
         for(int idx = 0; idx < listeners.size(); idx++)
         {
-            EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
+            EventDescriptor evDescr = listeners.elementAt(idx);
             if(evDescr.getEvent().equals(event))
                 evDescr.getListener().processUpdateEvent(new UpdateEvent(this, event));
         }

@@ -59,8 +59,8 @@ public class jScopeBrowseUrl extends JDialog
                     {
                         try {
                             curr_url--;
-                            //html.setPage((URL)url_list.elementAt(curr_url));
-                            setPage((URL)url_list.elementAt(curr_url));
+                            //html.setPage(url_list.elementAt(curr_url));
+                            setPage(url_list.elementAt(curr_url));
                         } catch (IOException ioe) {
                             System.out.println("IOE: " + ioe);
                         }
@@ -79,7 +79,7 @@ public class jScopeBrowseUrl extends JDialog
                     {
                         try {
                             curr_url++;
-                            html.setPage((URL)url_list.elementAt(curr_url));
+                            html.setPage(url_list.elementAt(curr_url));
                         } catch (IOException ioe) {
                             System.out.println("IOE: " + ioe);
                         }
@@ -98,7 +98,7 @@ public class jScopeBrowseUrl extends JDialog
                     {
                         try {
                             curr_url = 0;
-                            html.setPage((URL)url_list.elementAt(0));
+                            html.setPage(url_list.elementAt(0));
                         } catch (IOException ioe) {
                             System.out.println("IOE: " + ioe);
                         }

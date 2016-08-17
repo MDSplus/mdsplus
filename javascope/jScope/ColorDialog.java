@@ -120,7 +120,7 @@ class ColorDialog
                 int color_idx = ( (JList) e.getSource()).getSelectedIndex();
                 if (color_idx >= 0 && color_idx < color_set.size())
                 {
-                    Item c_item = (Item) color_set.elementAt(color_idx);
+                    Item c_item = color_set.elementAt(color_idx);
                     ColorDialog.this.SetSliderToColor(c_item.color);
                     ColorDialog.this.colorName.setText(c_item.name);
                 }
