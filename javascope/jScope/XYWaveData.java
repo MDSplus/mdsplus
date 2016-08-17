@@ -407,7 +407,7 @@ public class XYWaveData implements WaveData
            for(int i = 0; i < x.length; i++)
            {
                 try {
-                    Thread.currentThread().sleep(100);
+                    Thread.sleep(100);
                 }catch(InterruptedException exc){}
                 
                 newX[0] = x[x.length - 1] + i + 1;

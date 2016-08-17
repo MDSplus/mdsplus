@@ -195,7 +195,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                             wait();
                         }
                     }
-                    Thread.currentThread().sleep(500);
+                    Thread.sleep(500);
 
                 } catch (Exception exc) {
                     System.out.println(exc);
