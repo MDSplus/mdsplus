@@ -1094,9 +1094,20 @@ fi
 RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
+# Determine common warning options to apply to C, C++, and Fortran languages
+AS_VAR_SET([WARNFLAGS], ["-Wall"])
 
-
-
+AC_MSG_CHECKING([whether to treat warnings as errors])
+AC_ARG_ENABLE([werror],
+              [AS_HELP_STRING([--enable-werror],
+                              [Treat all warnings as errors])],
+              [],
+              [AS_VAR_SET([enable_werror], [no])])
+AS_CASE([$enable_werror],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
+        [])
+AC_SUBST([WARNFLAGS])
+AC_MSG_RESULT([$enable_werror])
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #

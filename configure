@@ -718,6 +718,7 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+WARNFLAGS
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
 DX_COND_latex_TRUE
@@ -1015,6 +1016,7 @@ enable_doxygen_chi
 enable_doxygen_html
 enable_doxygen_ps
 enable_doxygen_pdf
+enable_werror
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1702,6 +1704,7 @@ Optional Features:
   --disable-doxygen-html  don't generate doxygen plain HTML documentation
   --enable-doxygen-ps     generate doxygen PostScript documentation
   --disable-doxygen-pdf   don't generate doxygen PDF documentation
+  --enable-werror         Treat all warnings as errors
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -16739,9 +16742,27 @@ fi
 RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
+# Determine common warning options to apply to C, C++, and Fortran languages
+WARNFLAGS="-Wall"
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
+$as_echo_n "checking whether to treat warnings as errors... " >&6; }
+# Check whether --enable-werror was given.
+if test "${enable_werror+set}" = set; then :
+  enableval=$enable_werror;
+else
+  enable_werror=no
+fi
 
+case $enable_werror in #(
+  yes) :
+    as_fn_append WARNFLAGS " -Werror" ;; #(
+  *) :
+     ;;
+esac
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
+$as_echo "$enable_werror" >&6; }
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #

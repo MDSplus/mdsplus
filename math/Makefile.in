@@ -55,7 +55,7 @@ EXPORTS = MdsMath.export
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 local@LIBPRE@MdsMath32 = @LIBPRE@MdsMath@SHARETYPE@_i386
 
-FFLAGS += @FCFLAGS@
+FFLAGS += $(FCFLAGS)
 
 ifeq "@MACOSX@" ""
 LIBRARIES = $(@LIBPRE@MdsMath)
