@@ -1,4 +1,4 @@
-AM_CFLAGS = $(TARGET_ARCH)
+AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS)
 
 #FIXME: Use rpath-link until build system is flattened
 libdir=@MAKESHLIBDIR@

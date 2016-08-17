@@ -1,6 +1,8 @@
 
 include @top_builddir@/Makefile.inc
 
+AM_CFLAGS = $(WARNFLAGS)
+
 if MINGW
 WIN=.win
 DEF=mdsipshr.def
