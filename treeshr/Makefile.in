@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
-CFLAGS=@CFLAGS@ @SRBINCLUDE@ $(THREAD)
+CFLAGS+=@SRBINCLUDE@ $(THREAD)
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr @SRBLIB@ $(LIBSOCKET) $(THREAD)
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TreeShr.dll.a
