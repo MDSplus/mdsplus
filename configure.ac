@@ -196,13 +196,16 @@ AC_ARG_WITH([jdk],
 
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
-                            [specify version of compiled classes (i.e. 6)])],
-            [JAVACFLAGS="$JAVACFLAGS -source $withval -target $withval"])
+                            [specify version of compiled mdsobjects classes (i.e. 6)])],
+            [AS_VAR_SET([JAVAVERSION], ["-source $withval -target $withval"])],
+            [AS_VAR_SET([JAVAVERSION], [])])
 
 AC_ARG_WITH([java_bootclasspath],
 	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
                             [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [JAVACFLAGS="$JAVACFLAGS -bootclasspath $withval"])
+            [AS_VAR_APPEND([JAVAVERSION], [" -bootclasspath $withval"])],
+            [AS_VAR_APPEND([JAVAVERSION], [])])
+AC_SUBST([JAVAVERSION])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])

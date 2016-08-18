@@ -849,6 +849,7 @@ GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
+JAVAVERSION
 READLINK
 JAVAC_PATH_NAME
 RPATHLINK
@@ -1714,7 +1715,8 @@ Optional Packages:
   --with-docker-url       specify docker url
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
-                          specify version of compiled classes (i.e. 6)
+                          specify version of compiled mdsobjects classes (i.e.
+                          6)
   --with-java_bootclasspath=bootclasspath
                           specify the bootclasspath option for use with
                           --with-java_target (i.e.
@@ -7558,15 +7560,20 @@ fi
 
 # Check whether --with-java_target was given.
 if test "${with_java_target+set}" = set; then :
-  withval=$with_java_target; JAVACFLAGS="$JAVACFLAGS -source $withval -target $withval"
+  withval=$with_java_target; JAVAVERSION="-source $withval -target $withval"
+else
+  JAVAVERSION=
 fi
 
 
 
 # Check whether --with-java_bootclasspath was given.
 if test "${with_java_bootclasspath+set}" = set; then :
-  withval=$with_java_bootclasspath; JAVACFLAGS="$JAVACFLAGS -bootclasspath $withval"
+  withval=$with_java_bootclasspath; as_fn_append JAVAVERSION " -bootclasspath $withval"
+else
+  as_fn_append JAVAVERSION
 fi
+
 
 
 case $enable_java in #(
