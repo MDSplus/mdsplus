@@ -1,7 +1,7 @@
 include @top_builddir@/Makefile.inc
 
 VPATH = @srcdir@
-CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.  -DH5_USE_16_API @TARGET_ARCH@
+CFLAGS+=@HDF5_INCS@ -I.  -DH5_USE_16_API @TARGET_ARCH@
 LD_FLAGS=$(LDFLAGS) @TARGET_ARCH@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -lhdf5
 

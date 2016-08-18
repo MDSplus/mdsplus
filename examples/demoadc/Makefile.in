@@ -1,10 +1,11 @@
+include @top_builddir@/Makefile.inc
+
 SHELL=/bin/sh
 CC=@CC@
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
