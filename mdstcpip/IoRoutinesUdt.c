@@ -162,7 +162,7 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
 {
   char *ans = NULL;
   struct sockaddr_in sin;
-  socklen_t n = sizeof(sin);
+  int n = sizeof(sin);
   if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
     struct hostent *hp = 0;
     char *iphost = inet_ntoa(sin.sin_addr);

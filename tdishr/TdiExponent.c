@@ -15,23 +15,23 @@
 extern int IsRoprand();
 
 #define F_FLOAT_EXPONENT(val) (((*(int *)val) >> 7) & 0xFF)
-#define F_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0xff << 7)) | ((exp & 0xff) << 7))
+#define F_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0xff << 7)) | (((exp) & 0xff) << 7))
 #define F_FLOAT_BIAS 0x80
 #define F_FLOAT_PREC 23
 #define FS_FLOAT_EXPONENT(val) (((*(int *)val) >> 23) & 0xFF)
-#define FS_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0xff << 23)) | ((exp & 0xff) << 23))
+#define FS_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0xff << 23)) | (((exp) & 0xff) << 23))
 #define FS_FLOAT_BIAS 0x80
 #define FS_FLOAT_PREC 23
 #define G_FLOAT_EXPONENT(val) (((*(int *)val) >> 4) & 0x7FF)
-#define G_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0x7ff << 4)) | ((exp & 0x7ff) << 4))
+#define G_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0x7ff << 4)) | (((exp) & 0x7ff) << 4))
 #define G_FLOAT_BIAS 0x400
 #define G_FLOAT_PREC 52
 #define D_FLOAT_EXPONENT(val) (((*(int *)val) >> 7) & 0xFF)
-#define D_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0xff << 7)) | ((exp & 0xff) << 7))
+#define D_FLOAT_SET_EXPONENT(val,exp) (*(int *)val = (*(int *)val & ~(0xff << 7)) | (((exp) & 0xff) << 7))
 #define D_FLOAT_BIAS 0x80
 #define D_FLOAT_PREC 55
 #define FT_FLOAT_EXPONENT(val) ((((int *)val)[1] >> 20) & 0x7FF)
-#define FT_FLOAT_SET_EXPONENT(val,exp) (((int *)val)[1] = (((int *)val)[1] & ~(0x7ff << 20)) | ((exp & 0x7ff) << 20))
+#define FT_FLOAT_SET_EXPONENT(val,exp) (((int *)val)[1] = (((int *)val)[1] & ~(0x7ff << 20)) | (((exp) & 0x7ff) << 20))
 #define FT_FLOAT_BIAS 0x400
 #define FT_FLOAT_PREC 52
 

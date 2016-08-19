@@ -4,13 +4,12 @@
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
+#include <tdishr.h>
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
 
-extern int TdiData();
-extern int TdiFloat();
 //Convert a time expression to 64 bit integer 
 
 EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * retTime)
@@ -34,7 +33,7 @@ EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * retTime)
     return 1;
   }
   //Not a 64 bit integer, try to convert it to a float and use MdsFloatToTime
-  status = TdiFloat(&xd, &xd MDS_END_ARG);
+  status = TdiFloat((struct descriptor *)&xd, &xd MDS_END_ARG);
   if (!(status & 1))
     return status;
 
@@ -70,7 +69,7 @@ EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, uint64_t * retTime)
     return 1;
   }
   //Not a 64 bit integer, try to convert it to a float and use MdsFloatToTime
-  status = TdiFloat(&xd, &xd MDS_END_ARG);
+  status = TdiFloat((struct descriptor *)&xd, &xd MDS_END_ARG);
   if (!(status & 1))
     return status;
   if (xd.pointer->dtype == DTYPE_DOUBLE)

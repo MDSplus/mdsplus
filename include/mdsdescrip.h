@@ -374,7 +374,7 @@ struct descriptor_function {
 
 #define DESCRIPTOR_FUNCTION_0(name, op_code_ptr) \
 	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
-						(unsigned char *)op_code_ptr, 0, __fill_value__ 0}
+					   (unsigned char *)op_code_ptr, 0, __fill_value__ {0}}
 
 #define DESCRIPTOR_FUNCTION_1(name, op_code_ptr, arg) \
 	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \

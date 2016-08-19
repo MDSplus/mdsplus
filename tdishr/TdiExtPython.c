@@ -324,8 +324,9 @@ int TdiExtPython(struct descriptor *modname_d,
   int status = TdiUNKNOWN_VAR;
   char *filename;
 #ifndef _WIN32
-  struct sigaction offact = {SIG_DFL, 0, 0, 0, 0};
+  struct sigaction offact = {0};//{SIG_DFL, 0, 0, 0, 0};
   struct sigaction oldact;
+  offact.sa_handler=SIG_DFL;
   sigaction(SIGCHLD, &offact, &oldact);
 #endif
   char *dirspec = findModule(modname_d, &filename);

@@ -748,6 +748,9 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
       TreeUnLockNci(info_ptr, 0, nidx);
       return TreeBUFFEROVF;
     }
+    compress =	(local_nci.flags & NciM_COMPRESS_ON_PUT) &&
+	(local_nci.flags & NciM_COMPRESS_SEGMENTS) &&
+      !(local_nci.flags & NciM_DO_NOT_COMPRESS);
     for (index_offset = segment_header.index_offset;
 	 (status & 1) != 0 && idx < segment_index.first_idx && segment_index.previous_offset > 0;
 	 index_offset = segment_index.previous_offset)
@@ -851,7 +854,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     int rows_in_segment;
     unsigned int bytes_to_insert;
 #ifdef WORDS_BIGENDIAN
-    unsigned char *buffer, *bptr;
+    char *buffer, *bptr;
 #endif
     int64_t offset;
     NCI local_nci;
@@ -1106,6 +1109,7 @@ static int ReadSegment(TREE_INFO * info_ptr, int nid, SEGMENT_HEADER * segment_h
       if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
 	int64_t *tp;
 	int deleted = 1;
+	//	char *bptr;
 	dim2.arsize = sinfo->rows * sizeof(int64_t);
 	dim2.pointer = malloc(dim2.arsize);
 	while (status & 1 && deleted) {
@@ -1237,9 +1241,10 @@ static int getSegmentLimits(TREE_INFO * info_ptr, int nid,
       MdsCopyDxXd(&q_d, retEnd);
     } else {
       int length = sizeof(int64_t) * sinfo->rows;
-      char *buffer = malloc(length), *bptr;
+      char *buffer = malloc(length);
       int64_t timestamp;
       int deleted = 1;
+      char *bptr;
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X
@@ -1816,7 +1821,7 @@ static int PutSegmentHeader(TREE_INFO * info, SEGMENT_HEADER * hdr, int64_t * of
   int64_t loffset;
   int j;
   char *next_row_fix = getenv("NEXT_ROW_FIX");
-  unsigned char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
+  char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
 		       3 * sizeof(int64_t)], *bptr = buffer;
   if (*offset == -1) {
     TreeLockDatafile(info, 0, 0);
@@ -1870,7 +1875,7 @@ static int PutSegmentIndex(TREE_INFO * info, SEGMENT_INDEX * idx, int64_t * offs
   int status;
   int i;
   int64_t loffset;
-  unsigned char buffer[sizeof(int64_t) + sizeof(int) +
+  char buffer[sizeof(int64_t) + sizeof(int) +
 		       SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr =
       buffer;
   if (*offset == -1) {
@@ -1920,7 +1925,7 @@ int TreePutExtendedAttributes(TREE_INFO * info, EXTENDED_ATTRIBUTES * att, int64
   int status;
   int i;
   int64_t loffset;
-  unsigned char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))],
+  char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))],
       *bptr = buffer;
   if (*offset == -1) {
     TreeLockDatafile(info, 0, 0);
@@ -1954,7 +1959,7 @@ static int PutNamedAttributesIndex(TREE_INFO * info, NAMED_ATTRIBUTES_INDEX * in
   int status;
   int i;
   int64_t loffset;
-  unsigned char buffer[sizeof(int64_t) +
+  char buffer[sizeof(int64_t) +
 		       NAMED_ATTRIBUTES_PER_INDEX * (NAMED_ATTRIBUTE_NAME_SIZE + sizeof(int64_t) +
 						     sizeof(int))], *bptr = buffer;
   if (*offset == -1) {
@@ -1991,7 +1996,7 @@ static int PutInitialValue(TREE_INFO * info, int *dims, struct descriptor_a *arr
   int i;
   int64_t loffset;
 #ifdef WORDS_BIGENDIAN
-  unsigned char *buffer, *bptr;
+  char *buffer, *bptr;
 #endif
   if (*offset == -1) {
     TreeLockDatafile(info, 0, 0);
@@ -2075,7 +2080,7 @@ static int GetSegmentHeader(TREE_INFO * info, int64_t offset, SEGMENT_HEADER * h
 {
   int status = TreeFAILURE;
   int i;
-  unsigned char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
+  char buffer[2 * sizeof(char) + 1 * sizeof(short) + 10 * sizeof(int) +
 		       3 * sizeof(int64_t)], *bptr;
   if (offset > -1) {
     int deleted = 1;
@@ -2114,7 +2119,7 @@ static int GetSegmentIndex(TREE_INFO * info, int64_t offset, SEGMENT_INDEX * idx
 {
   int status = TreeFAILURE;
   int i;
-  unsigned char buffer[sizeof(int64_t) + sizeof(int) +
+  char buffer[sizeof(int64_t) + sizeof(int) +
 		       SEGMENTS_PER_INDEX * (6 * sizeof(int64_t) + 4 * sizeof(int))], *bptr;
   if (offset > -1) {
     int deleted = 1;
@@ -2163,7 +2168,7 @@ int TreeGetExtendedAttributes(TREE_INFO * info, int64_t offset, EXTENDED_ATTRIBU
 {
   int status = TreeFAILURE;
   int i;
-  unsigned char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))],
+  char buffer[sizeof(int64_t) + FACILITIES_PER_EA * (sizeof(int64_t) + sizeof(int))],
       *bptr;
   if (offset > -1) {
     int deleted = 1;
@@ -2196,7 +2201,7 @@ static int GetNamedAttributesIndex(TREE_INFO * info, int64_t offset, NAMED_ATTRI
 {
   int status = TreeFAILURE;
   int i;
-  unsigned char buffer[sizeof(int64_t) +
+  char buffer[sizeof(int64_t) +
 		       NAMED_ATTRIBUTES_PER_INDEX * (sizeof(int64_t) + sizeof(int) +
 						     NAMED_ATTRIBUTE_NAME_SIZE)], *bptr;
   if (offset > -1) {
@@ -2581,7 +2586,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
     int rows_in_segment;
     int bytes_to_insert;
 #ifdef WORDS_BIGENDIAN
-    unsigned char *buffer, *bptr, *times;
+    char *buffer, *bptr, *times;
 #endif
     int64_t offset;
     NCI local_nci;

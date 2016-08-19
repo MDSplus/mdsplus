@@ -861,7 +861,7 @@ int yyparse()
      ** get globals into registers.
      ** branch to here only if YYBACKUP was called.
      */
- yynewstate:
+    // yynewstate:
     yy_pv = yypv;
     yy_ps = yyps;
     yy_state = yystate;
@@ -1027,7 +1027,7 @@ int yyparse()
 	yyerror((nl_msg(30003, "syntax error")));
 	yynerrs++;
 	goto skip_init;
- yyerrlab:
+	// yyerrlab:
 	/*
 	 ** get globals into registers.
 	 ** we have a user generated syntax type error

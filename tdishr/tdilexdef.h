@@ -12,6 +12,6 @@
 #ifdef unput
 #undef unput
 #endif
-#define unput(c)	(--TdiRefZone.a_cur, c)
+#define unput(c)	--TdiRefZone.a_cur
 #define pos()		(TdiYylvalPtr->w_ok = TdiRefZone.a_cur - TdiRefZone.a_begin)
 #define nlpos()

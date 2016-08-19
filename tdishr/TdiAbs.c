@@ -107,6 +107,10 @@ STATIC_CONSTANT const int roprand = 0x8000;
   otype *out=(otype *)(out_ptr->pointer); \
   for (i=0;i<out_count;i++) {
 
+#define start_operate2(type) {\
+  type *out=(type *)(out_ptr->pointer); \
+  for (i=0;i<out_count;i++) {
+
 #define end_operate } break; }
 
 #define AbsFloat(dtype) \
@@ -407,26 +411,26 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
   switch (in_ptr->dtype) {
   case DTYPE_B:
   case DTYPE_BU:
-    start_operate(char) out[i] = 0;
-    end_operate case DTYPE_W:case DTYPE_WU:start_operate(short int) out[i] = 0;
-    end_operate case DTYPE_L:case DTYPE_LU:start_operate(int) out[i] = 0;
-    end_operate case DTYPE_Q:case DTYPE_QU:start_operate(Int64) zero64;
+    start_operate2(char) out[i] = 0;
+    end_operate case DTYPE_W:case DTYPE_WU:start_operate2(short int) out[i] = 0;
+    end_operate case DTYPE_L:case DTYPE_LU:start_operate2(int) out[i] = 0;
+    end_operate case DTYPE_Q:case DTYPE_QU:start_operate2(Int64) zero64;
     end_operate case DTYPE_O:case DTYPE_OU:out_count = out_count * 2;
-    start_operate(Int64)
+    start_operate2(Int64)
 	zero64;
-    end_operate case DTYPE_F:start_operate(float)
+    end_operate case DTYPE_F:start_operate2(float)
     float ans = (float)0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_F, 0);
-    end_operate case DTYPE_FS:start_operate(float)
+    end_operate case DTYPE_FS:start_operate2(float)
     float ans = (float)0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_FS, 0);
-    end_operate case DTYPE_G:start_operate(double)
+    end_operate case DTYPE_G:start_operate2(double)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_G, 0);
-    end_operate case DTYPE_D:start_operate(double)
+    end_operate case DTYPE_D:start_operate2(double)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_D, 0);
-    end_operate case DTYPE_FT:start_operate(double)
+    end_operate case DTYPE_FT:start_operate2(double)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_FT, 0);
     end_operate case DTYPE_FC:case DTYPE_FSC:start_operate(int) out[i] = in[i * 2 + 1];
