@@ -38,7 +38,8 @@ int TdiYacc_ARG(struct marker *mark_ptr)
 {
   struct descriptor *ptr;
   struct descriptor_xd junk = EMPTY_XD;
-  int len = mark_ptr->rptr->length, status;
+  unsigned int len = mark_ptr->rptr->length;
+  int status;
   unsigned char *c_ptr;
 
   if (len == 1)
@@ -78,7 +79,7 @@ int TdiYacc_BUILD(int ndesc,
 {
   struct descriptor_function *tmp;
   int dsc_size = sizeof(struct descriptor_function) + sizeof(struct descriptor *) * (ndesc - 1);
-  int vm_size = dsc_size + sizeof(unsigned short);
+  unsigned int vm_size = dsc_size + sizeof(unsigned short);
   struct TdiFunctionStruct *this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 
   TdiRefZone.l_status = LibGetVm(&vm_size, (void **)&tmp, &TdiRefZone.l_zone);

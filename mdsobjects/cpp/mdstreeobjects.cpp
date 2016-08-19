@@ -922,7 +922,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 
 	int *nids = new int[nNids];
 	struct nci_itm nciList1[] = 
-		{{4*nNids, NciCONGLOMERATE_ELT, (char *)nids, &retLen},
+	  {{(short)(4*nNids), NciCONGLOMERATE_ELT, (char *)nids, &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
 	status = _TreeGetNci(tree->getCtx(), nid, nciList1);

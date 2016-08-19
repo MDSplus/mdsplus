@@ -200,6 +200,19 @@ extern int RemCamGetStat();
 extern int RemCamError();
 extern int RemCamStatus();
 extern int RemCamBytcnt();
+extern int RemCamPiow();
+extern int RemCamQrepw();
+extern int RemCamPioQrepw();
+extern int RemCamFQstopw();
+extern int RemCamFStopw();
+extern int RemCamFQrepw();
+extern int RemCamQrepw();
+extern int RemCamQscanw();
+extern int RemCamQstopw();
+extern int RemCamStopw();
+extern int RemCamSetMAXBUF();
+extern int RemCamGetMAXBUF();
+
 
 EXPORT int CamVerbose(int mode)
 {

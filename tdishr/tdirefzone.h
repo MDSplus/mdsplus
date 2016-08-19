@@ -42,7 +42,7 @@ struct marker {
 
 #define MAKE_S(dtype_in,bytes,out)\
 	{int dsc_size = sizeof(struct descriptor_s);\
-	int vm_size = dsc_size + (bytes);\
+	unsigned int vm_size = dsc_size + (bytes);\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor *)(out))->length = bytes;		\
 	((struct descriptor *)(out))->dtype = dtype_in;		\
@@ -51,7 +51,7 @@ struct marker {
 
 #define MAKE_XD(dtype_in,bytes,out)\
 	{int dsc_size = sizeof(struct descriptor_xd);\
-	int vm_size = dsc_size + (bytes);\
+	unsigned int vm_size = dsc_size + (bytes);\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor_xd *)(out))->l_length = bytes;		\
 	((struct descriptor_xd *)(out))->length = 0;			\
@@ -61,7 +61,7 @@ struct marker {
 
 #define MAKE_R(ndesc,dtype_in,bytes,out)\
 	{int dsc_size = sizeof($RECORD(ndesc));\
-	int vm_size = dsc_size + (bytes);\
+	unsigned int vm_size = dsc_size + (bytes);\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor *)(out))->length = bytes;		\
 	((struct descriptor *)(out))->dtype = dtype_in;		\

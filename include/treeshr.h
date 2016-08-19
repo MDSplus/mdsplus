@@ -236,10 +236,10 @@ extern int TREE_BLOCKID;
 					   struct descriptor_xd *start_list,
 					   struct descriptor_xd *end_list);
 
-  extern EXPORT int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value);
-  extern EXPORT int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
-  extern EXPORT int TreeSetXNci(int nid, char *xnciname, struct descriptor *value);
-  extern EXPORT int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value);
+  extern EXPORT int TreeGetXNci(int nid, const char *xnciname, struct descriptor_xd *value);
+  extern EXPORT int _TreeGetXNci(void *dbid, int nid, const char *xnciname, struct descriptor_xd *value);
+  extern EXPORT int TreeSetXNci(int nid, const char *xnciname, struct descriptor *value);
+  extern EXPORT int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *value);
   extern EXPORT int TreeSetViewDate(int64_t * date);
   extern EXPORT int _TreeSetViewDate(void *dbid, int64_t * date);
   extern EXPORT int TreeSetCurrentShotId(char const *experiment, int shot);

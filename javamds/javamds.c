@@ -961,6 +961,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfoXXX
   }
   jarr = (*env)->NewIntArray(env, 3);
   (*env)->SetIntArrayRegion(env, jarr, 0, 3, (const jint *)retInfo);
+  return NULL;
 }
 
 static int getStartEndIdx(int nid, float startTime, float endTime, int *retStartIdx, int *retEndIdx)
@@ -1623,7 +1624,7 @@ JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_send
 JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
   (JNIEnv *env, jobject jobj, jint connectionId, jint size)
 {
-    char *readBuf = malloc(size);
+    jbyte *readBuf = malloc(size);
     int retSize;
     jbyteArray jarr;
     IoRoutines *ior = GetConnectionIo(connectionId);

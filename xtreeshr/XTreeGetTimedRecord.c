@@ -6,6 +6,7 @@
 #include <mdsshr.h>
 #include <string.h>
 #include <stdlib.h>
+#include <tdishr.h>
 #include <treeshr.h>
 
 extern unsigned short OpcExtFunction;
@@ -19,15 +20,20 @@ static int timedAccessFlag = 0;
 
 #define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
-extern int TdiData(), TdiEvaluate();
 
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
-extern int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t * converted);
-extern int XTreeConvertToLongDelta(struct descriptor *deltaD, uint64_t * converted);
+extern int XTreeConvertToLongTime(struct descriptor *timeD,
+				  uint64_t * converted);
+extern int XTreeConvertToLongDelta(struct descriptor *deltaD,
+				   uint64_t * converted);
+extern int XTreeMinMaxResample(struct descriptor_signal *inSignalD,
+			       struct descriptor *startD,
+			       struct descriptor *endD,
+			       struct descriptor *deltaD,
+			       struct descriptor_xd *outSignalXd);
 
-extern int TdiDecompile();
 /*
 static void printDecompiled(struct descriptor *inD)
 {
@@ -68,11 +74,10 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	EMPTYXD(xd);
 	EMPTYXD(startXd);
 	EMPTYXD(endXd);
-	int status, minDelta, maxDelta, currDelta, outDelta, outNid;
+	int status, outNid;
 	int resampleFactor;
-	int64_t deltaNs, startNs, endNs, reqResampleFactor, actDeltaNs, reqDelta;
-	double deltaFloat;
-	char deltaBuf[16];
+	int64_t actDeltaNs;
+	uint64_t deltaNs, startNs, endNs;
 	char dtype, dimct;
 	int dims[16];
 	int nextRow;
@@ -87,7 +92,8 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleFactor", &xd) : TreeGetXNci(nid, "ResampleFactor", &xd);
 	if(!(status & 1)) 
 		return nid;
-	status = TdiData(&xd, &xd MDS_END_ARG);
+	status = TdiGetLong((struct descriptor *)&xd,&resampleFactor);
+	/*	status = TdiData(&xd, &xd MDS_END_ARG);
 	if(status & 1)
 		status = TdiLong(&xd, &xd MDS_END_ARG);
 	if(!(status & 1))
@@ -96,6 +102,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 		return nid;
 	}
 	resampleFactor = *(int *)xd.pointer->pointer;
+	*/
 	MdsFree1Dx(&xd, 0);
 
 	status = (dbid)?_TreeGetSegmentLimits(dbid, nid, 0, &startXd, &endXd):TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
@@ -134,23 +141,21 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 {
   int status, nid;
   int actNumSegments, currSegIdx, numSegments, currIdx, numDimensions;
-  int i, nameLen, startIdx, endIdx, firstSegmentTruncated, lastSegmentTruncated;
+  int i, nameLen, startIdx, endIdx;
   char resampleFunName[MAX_FUN_NAMELEN], squishFunName[MAX_FUN_NAMELEN];
   char resampleMode[MAX_FUN_NAMELEN];
   EMPTYXD(startTimesXd);
   EMPTYXD(endTimesXd);
-  int64_t *startTimes, *endTimes, start, end;
+  uint64_t *startTimes, *endTimes, start, end;
 
   struct descriptor resampleFunNameD = { 0, DTYPE_T, CLASS_S, resampleFunName };
   struct descriptor squishFunNameD = { 0, DTYPE_T, CLASS_S, squishFunName };
   DESCRIPTOR_R(resampleFunD, DTYPE_FUNCTION, 6);
   DESCRIPTOR_R(squishFunD, DTYPE_FUNCTION, 6);
 
-  struct descriptor_a *segmentsApd;
   struct descriptor_a *startTimesApd;
   struct descriptor_a *endTimesApd;
   struct descriptor_a *currApd;
-  EMPTYXD(segmentsXd);
   EMPTYXD(xd);
   EMPTYXD(emptyXd);
   struct descriptor_xd *resampledXds;
@@ -300,8 +305,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		return 0; //Internal error
 	if(endTimesApd->arsize/endTimesApd->length != numSegments)
 		return 0; //Internal error
-	startTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
-	endTimes = (int64_t *)malloc(numSegments * sizeof(int64_t));
+	startTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
+	endTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
 	for(currSegIdx = 0; currSegIdx < numSegments; currSegIdx++)
 	{
 		status = XTreeConvertToLongTime(((struct descriptor **)(startTimesApd->pointer))[currSegIdx], &startTimes[currSegIdx]);
@@ -321,8 +326,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		{
 			if(endTimes[startIdx] > start) //First overlapping segment
 			{
-				if(startTimes[startIdx] < start)
-					firstSegmentTruncated = 1;
+			  //				if(startTimes[startIdx] < start)
+			  //		firstSegmentTruncated = 1;
 				break;
 			}
 			startIdx++;
@@ -347,8 +352,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 					currSegIdx--;
 					break;
 				}
-				if(startTimes[currSegIdx] < end)
-					lastSegmentTruncated = 1;
+				//				if(startTimes[currSegIdx] < end)
+				//	lastSegmentTruncated = 1;
 				break;
 			}
 			currSegIdx++;
@@ -498,7 +503,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 			resampleFunD.dscptrs[3] = startD;
 			resampleFunD.dscptrs[4] = endD;
 			resampleFunD.dscptrs[5] = minDeltaD;
-			status = TdiEvaluate(&resampleFunD, &resampledXds[currSegIdx] MDS_END_ARG);
+			status = TdiEvaluate((struct descriptor *)&resampleFunD, &resampledXds[currSegIdx] MDS_END_ARG);
 //			printf("%s\n", MdsGetMsg(status));
 		}
 		else
@@ -552,7 +557,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
     squishFunD.dscptrs[4] = endD;
     squishFunD.dscptrs[5] = minDeltaD;
 
-    status = TdiEvaluate(&squishFunD, outSignal MDS_END_ARG);
+    status = TdiEvaluate((struct descriptor *)&squishFunD, outSignal MDS_END_ARG);
   } else
     status =
 	XTreeDefaultSquish((struct descriptor_a *)&signalsApd, startD, endD, minDeltaD, outSignal);
