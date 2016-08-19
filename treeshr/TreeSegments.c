@@ -1358,14 +1358,14 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
   return status;
 }
 
-int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value);
+int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *value);
 
-int TreeSetXNci(int nid, char *xnciname, struct descriptor *value)
+int TreeSetXNci(int nid, const char *xnciname, struct descriptor *value)
 {
   return _TreeSetXNci(*TreeCtx(), nid, xnciname, value);
 }
 
-int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
+int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *value)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid_ptr = (NID *) & nid;
@@ -1591,14 +1591,14 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
   return status;
 }
 
-int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
+int _TreeGetXNci(void *dbid, int nid, const char *xnciname, struct descriptor_xd *value);
 
-int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value)
+int TreeGetXNci(int nid, const char *xnciname, struct descriptor_xd *value)
 {
   return _TreeGetXNci(*TreeCtx(), nid, xnciname, value);
 }
 
-int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value)
+int _TreeGetXNci(void *dbid, int nid, const char *xnciname, struct descriptor_xd *value)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid_ptr = (NID *) & nid;
