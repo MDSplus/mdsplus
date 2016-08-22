@@ -585,11 +585,7 @@ pro wvedit_MovePoint,state,x,y
 end
 
 function CW_WVEDIT_CVT,ev
-  event_info = lonarr(10)
-  dummy = MemMove(event_info, ev.value, 40)
-;  dummy=call_external('librtl','ots$move3',40,ev.value,event_info,value=[1,1,0])
-;  dummy=call_external('librtl','ots$move3',4,0L,ev.value+40,value=[1,0,1])
-  dummy = XtFree(ev.value)
+  event_info =  MdsValue('_info=long(zero(10)),IdlMdsWidgets->GetEventInfo($, ref(_info)),_info',ev.value)
   idx = event_info(0)
   reason = event_info(1)
   callback = event_info(2)

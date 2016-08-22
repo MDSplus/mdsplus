@@ -12,9 +12,7 @@ LIBS=@LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr -lMdsMath
 UIL=@UIL@ -I$(top_srcdir)/include
 
 SOURCES = \
-mdsevent.c \
 cw_wveditv5.c \
-memmoveext.c
 
 OBJECTS = $(SOURCES:.c=.o)
 

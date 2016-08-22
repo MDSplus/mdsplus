@@ -1,3 +1,5 @@
+#include <string.h>
+#include <config.h>
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <Mrm/MrmPublic.h>
@@ -8,6 +10,7 @@
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
 #include <Xm/Text.h>
+#include <malloc.h>
 #include "export.h"
 
 enum callback_id { CB_UNKNOWN, CB_AUTOSCALE, CB_CROSSHAIRS, CB_LIMITS, CB_MOVE, CB_STRETCH,
@@ -24,6 +27,8 @@ typedef struct _EventInfo {
   int state;
   int button;
   Widget w;
+  int eventid;
+  struct _EventInfo *next;
 } EventInfo;
 
 typedef struct _IdlEventRec {
@@ -68,19 +73,16 @@ static void Move(Widget w, int stub, XmdsWavedrawValueCBStruct * v);
 static void SetAtLimits(Widget w, int stub, XmPushButtonCallbackStruct * cb);
 static void AddPoint(Widget w, int stub, XmdsWavedrawValueCBStruct * cb);
 static void DeletePoint(Widget w, int stub, XmdsWavedrawValueCBStruct * cb);
-static void Busy(Widget w);
-static void Unbusy(Widget w);
-static Window CreateBusyWindow(Widget w);
 Boolean ReplaceString(String * old, String new, Boolean free);
 
-static XtAppContext app_context = 0;
-static Display *display = 0;
+//static XtAppContext app_context = 0;
+//static Display *display = 0;
 static Widget setup_wave = 0;
 static Widget SelectedWidget = 0;
 static Boolean Initialized = 0;
 static Widget CustomizePrintWidget = 0;
-static Window BusyWindow;
-static int BusyLevel = 0;
+//static Window BusyWindow;
+//static int BusyLevel = 0;
 static String PrintFile = "WVEDIT.PS";
 
 static void Init(XtAppContext app_context)
@@ -198,10 +200,10 @@ EXPORT int CW_WVEDIT(unsigned long *parent_id, unsigned long *stub_id, int *cols
   Widget sash = 0;
   Widget pw;
   Widget parent_w;
-  Widget stub_w;
+  //  Widget stub_w;
   Widget t_id;
   int widx = 0;
-  int id;
+  //  int id;
   char *parent_rec;
   char *stub_rec;
   int numchildren;
@@ -351,7 +353,7 @@ static void /*XtActionProc */ MoveVerticalPane(Widget w, XButtonEvent * event, S
   Position main_y_root;
   int min_offset = 0;
   int max_offset = 10000000;
-  int i;
+  //  int i;
   Widget separator = XtNameToWidget(TopWidget(w), "*pane_separator");
   XtTranslateCoords(XtNameToWidget(TopWidget(w), "*cw_wvedit"), 0, 0, &main_x_root, &main_y_root);
   if (event->type == ButtonPress) {
@@ -443,8 +445,8 @@ static Widget FindWave(Widget w, XButtonEvent * event)
 
 static void Crosshairs(Widget w, int stub, XmdsWaveformCrosshairsCBStruct * cb)
 {
-  Widget top = TopWidget(w);
-  Widget plots = XtNameToWidget(top, "*cw_wvedit");
+  //Widget top = TopWidget(w);
+  //  Widget plots = XtNameToWidget(top, "*cw_wvedit");
   EventInfo *e = NewEvent(w, stub, cb->event, cb->reason, CB_CROSSHAIRS);
   e->values[0] = cb->x;
   e->values[1] = cb->y;
@@ -470,9 +472,9 @@ static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom 
   else if (*type == XA_Y_AXIS) {
     int num = (int)(*length * ((float)*format) / 32);
     int i;
-    float *y = (float *)value;
+    //    float *y = (float *)value;
     if (x) {
-      EventInfo *e;
+      //      EventInfo *e;
       Boolean *knots = (Boolean *) XtMalloc(num * sizeof(Boolean));
       for (i = 0; i < num; i++)
 	knots[i] = (Boolean) 1;
@@ -484,8 +486,8 @@ static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom 
       XtFree((String) x);
       x = 0;
       XtFree((String) value);
-      e = NewEvent(w, stub, 0, 0, CB_PASTE);
-      e = NewEvent(w, stub, 0, 18, CB_FIT);
+      NewEvent(w, stub, 0, 0, CB_PASTE);
+      NewEvent(w, stub, 0, 18, CB_FIT);
     }
   } else if (*type == XA_STRING) {
     XtVaSetValues(w, XmdsNtitle, value, NULL);
@@ -501,20 +503,20 @@ static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom 
       else if (values[i] == XA_STRING)
 	supports_string_paste = 1;
     if (supports_data_paste) {
-      Atom targets[2];
-      targets[0] = XA_X_AXIS;
-      targets[1] = XA_Y_AXIS;
+      //      Atom targets[2];
+      //targets[0] = XA_X_AXIS;
+      //targets[1] = XA_Y_AXIS;
 /*
         XtGetSelectionValues(w, XA_PRIMARY, targets, XtNumber(targets), (XtSelectionCallbackProc)PasteComplete, 
                                               (XtPointer)stub, XtLastTimestampProcessed(XtDisplay(w)));
 */
       XtGetSelectionValue(w, XA_PRIMARY, XA_X_AXIS, (XtSelectionCallbackProc) PasteComplete,
-			  (XtPointer) stub, XtLastTimestampProcessed(XtDisplay(w)));
+			  (XtPointer) ((char *)0+stub), XtLastTimestampProcessed(XtDisplay(w)));
       XtGetSelectionValue(w, XA_PRIMARY, XA_Y_AXIS, (XtSelectionCallbackProc) PasteComplete,
-			  (XtPointer) stub, XtLastTimestampProcessed(XtDisplay(w)));
+			  (XtPointer) ((char *)0+stub), XtLastTimestampProcessed(XtDisplay(w)));
     } else if (supports_string_paste)
       XtGetSelectionValue(w, XA_PRIMARY, XA_STRING, (XtSelectionCallbackProc) PasteComplete,
-			  (XtPointer) stub, XtLastTimestampProcessed(XtDisplay(w)));
+			  (XtPointer) ((char *)0+stub), XtLastTimestampProcessed(XtDisplay(w)));
     XtFree((String) values);
   } else if (value)
     XtFree((String) value);
@@ -528,7 +530,7 @@ static void Paste(Widget w, int stub, XmAnyCallbackStruct * cb)
     XA_TARGETS = XInternAtom(XtDisplay(w), "TARGETS", 0);
   }
   XtGetSelectionValue(w, XA_PRIMARY, XA_TARGETS, (XtSelectionCallbackProc) PasteComplete,
-		      (XtPointer) stub, XtLastTimestampProcessed(XtDisplay(w)));
+		      (XtPointer) ((char *)0+stub), XtLastTimestampProcessed(XtDisplay(w)));
 }
 
 static void LoseSelection(Widget w, Atom * selection)
@@ -609,7 +611,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct * cb)
   size_t thirty_two_k = 32768;
   float zero = 0.0;
   int three = 3;
-  EventInfo *e = NewEvent(w, stub, cb->event, cb->reason, CB_FIT);
+  //EventInfo *e = NewEvent(w, stub, cb->event, cb->reason, CB_FIT);
   XtVaGetValues(w, XmdsNxIncreasing, &xincreasing, XmdsNyIncreasing, &yincreasing,
 		XmdsNlowX, &lowx, XmdsNhighX, &highx, XmdsNlowY, &lowy, XmdsNhighY, &highy,
 		XmdsNclosed, &closed, NULL);
@@ -656,7 +658,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct * cb)
 	  XtFree((String) cscoef);
 	} else {
 	  int knotid = 1;
-	  int first_knot = 0;
+	  //	  int first_knot = 0;
 	  if (closed) {
 	    int offset;
 	    spline_x = (float *)XtRealloc((String) spline_x, spline_points * 2 * sizeof(float));
@@ -819,117 +821,11 @@ static void DeletePoint(Widget w, int stub, XmdsWavedrawValueCBStruct * cb)
 
 static void Print(Widget w, int tag, XmdsWavedrawValueCBStruct * cb)
 {
-  /*
-     int       count;
-     Widget wave = setup_wave;
-     XtVaGetValues(wave, XmdsNcount, &count, NULL);
-     if (count)
-     {
-     FILE     *printfid = fopen(PrintFile, "w", "rop=RAH,WBH","mbc=8","mbf=2","deq=32");
-     if (printfid)
-     {
-     XmString  filenames[1];
-     int       orientation;
-     filenames[0] = XmStringCreateSimple(PrintFile);
-     XtVaGetValues(CustomizePrintWidget, DXmNorientation, &orientation, NULL);
-     Busy(wave);
-     XmdsWaveformPrint(wave, printfid, 0, 0, orientation, 0, 0, 0);
-     fclose(printfid);
-     DXmPrintWgtPrintJob(CustomizePrintWidget, filenames, 1);
-     XmStringFree(filenames[0]);
-     Unbusy(wave);
-     }
-     else
-     XmdsComplain(TopWidget(wave), "Error creating printfile, %s", PrintFile);
-     }
-     else
-     XmdsComplain(TopWidget(wave), "No data to print");
-   */
   return;
 }
 
 static void PrintAll(Widget w, int tag, XmAnyCallbackStruct * cb)
 {
-  /*
-     FILE     *printfid = fopen(PrintFile, "w", "rop=RAH,WBH","mbc=8","mbf=2","deq=32");
-     Widget    plots = XtNameToWidget(TopWidget(w),"*cw_wvedit");
-     int       width = XtWidth(plots);
-     int       height = XtHeight(plots);
-     if (printfid)
-     {
-     XmString  filenames[1];
-     int       orientation;
-     int       i;
-     filenames[0] = XmStringCreateSimple(PrintFile);
-     XtVaGetValues(CustomizePrintWidget, DXmNorientation, &orientation, NULL);
-     Busy(plots);
-     for (i=0;1;i++)
-     {
-     Widget pane = PaneIdxToWidget(plots,i);
-     if (pane)
-     {
-     int i;
-     for (i=0;1;i++)
-     {
-     Widget wave = WaveIdxToWidget(pane,i);
-     if (wave)
-     XmdsWaveformPrint(wave, printfid, width, height, orientation, 0, 0, 0);
-     else
-     break;
-     }
-     }
-     else
-     break;
-     }
-     fclose(printfid);
-     DXmPrintWgtPrintJob(CustomizePrintWidget, filenames, 1);
-     XmStringFree(filenames[0]);
-     Unbusy(plots);
-     }
-     else
-     XmdsComplain(TopWidget(w), "Error creating printfile, %s", PrintFile);
-     return;
-   */
-}
-
-static Window CreateBusyWindow(Widget toplevel)
-{
-  unsigned long valuemask;
-  XSetWindowAttributes attributes;
-/* Ignore device events while the busy cursor is displayed. */
-  valuemask = CWDontPropagate | CWCursor;
-  attributes.do_not_propagate_mask = (KeyPressMask | KeyReleaseMask |
-				      ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
-  attributes.cursor = XCreateFontCursor(XtDisplay(toplevel), XC_watch);
-
-/* The window will be as big as the display screen, and clipped by
-   its own parent window, so we never have to worry about resizing */
-  return XCreateWindow(XtDisplay(toplevel), XtWindow(toplevel), 0, 0,
-		       WidthOfScreen(XtScreen(toplevel)), HeightOfScreen(XtScreen(toplevel)),
-		       (unsigned int)0, CopyFromParent, InputOnly,
-		       CopyFromParent, valuemask, &attributes);
-}
-
-static void Busy(Widget w)
-{
-  if (BusyLevel++)
-    return;
-  if (BusyWindow) {
-    XEvent event;
-    XMapRaised(XtDisplay(w), BusyWindow);
-    while (XCheckMaskEvent(XtDisplay(w),
-			   ButtonPressMask | ButtonReleaseMask | ButtonMotionMask |
-			   PointerMotionMask | KeyPressMask, &event)) ;
-    XFlush(XtDisplay(w));
-  }
-}
-
-static void Unbusy(Widget w)
-{
-  if (--BusyLevel)
-    return;
-  if (BusyWindow)
-    XUnmapWindow(XtDisplay(w), BusyWindow);
 }
 
 static void ResetCustomizePrint(Widget w, int tag, XmAnyCallbackStruct * cb)
@@ -955,26 +851,58 @@ Boolean ReplaceString(String * old, String new, Boolean free)
   return changed;
 }
 
+static EventInfo *EVENTLIST = 0;
+EXPORT void GetEventInfo(int *eventid, int *info) {
+  EventInfo *e,*prev;
+  IDL_WidgetStubLock(TRUE);
+  memset(info,0,40);
+  for (e=EVENTLIST,prev=NULL; e; prev=e,e=e->next) {
+    if (e->eventid==*eventid) {
+      memcpy(info,e,40);
+      if (prev == NULL)
+	EVENTLIST=e->next;
+      else
+	prev->next=e->next;
+      free(e);
+    }
+  }
+  IDL_WidgetStubLock(FALSE);
+}
+  
 static EventInfo *NewEvent(Widget w, unsigned long stub, XEvent * event, int reason,
 			   enum callback_id callback_id)
 {
+  static int EVENTID=0;
   static EventInfo *last_e = 0;
   if (!(last_e && last_e->w == w && last_e->reason == reason && last_e->callback_id == callback_id)) {
     char *rec;
     IDL_WidgetStubLock(TRUE);
     rec = IDL_WidgetStubLookup(stub);
     if (rec) {
-      EventInfo *e = (EventInfo *) XtMalloc(sizeof(EventInfo));
+      EventInfo *e = (EventInfo *) malloc(sizeof(EventInfo));
       e->wave_idx = WaveToIdx(w);
       e->reason = reason;
       e->callback_id = callback_id;
       e->state = event ? ((XButtonEvent *) event)->state : 0;
       e->button = event ? ((XButtonEvent *) event)->button : 0;
       e->w = w;
-      IDL_WidgetIssueStubEvent(rec, (IDL_LONG) e);
+      e->eventid=++EVENTID;
+      if (EVENTLIST==NULL) {
+	e->next=0;
+	EVENTLIST=e;
+      } else {
+	e->next=EVENTLIST;
+	EVENTLIST=e;
+      }
+      IDL_WidgetIssueStubEvent(rec, (IDL_LONG) e->eventid);
       last_e = e;
     }
     IDL_WidgetStubLock(FALSE);
   }
   return last_e;
+}
+
+EXPORT void *memmoveext(void *dest, const void *src, size_t n)
+{
+  return memmove(dest, src, n);
 }
