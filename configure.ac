@@ -1298,8 +1298,6 @@ AC_OUTPUT(Makefile.inc
           rpm/Makefile
           rpm/envsyms
           rpm/post_install_script
-          rpm/mdsipd.xinetd
-          rpm/mdsipsd.xinetd
           scripts/Makefile
           servershr/Makefile 
           setevent/Makefile

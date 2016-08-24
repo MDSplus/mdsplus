@@ -119,8 +119,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(dist_rpm_SCRIPTS) \
 	$(dist_etc_DATA) $(am__dist_rpm_DATA_DIST) $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = envsyms post_install_script mdsipd.xinetd \
-	mdsipsd.xinetd
+CONFIG_CLEAN_FILES = envsyms post_install_script
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -178,7 +177,6 @@ am__dist_rpm_DATA_DIST = mdsipd.xinetd mdsipsd.xinetd \
 DATA = $(dist_etc_DATA) $(dist_rpm_DATA) $(etc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/envsyms.in \
-	$(srcdir)/mdsipd.xinetd.in $(srcdir)/mdsipsd.xinetd.in \
 	$(srcdir)/post_install_script.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -514,10 +512,6 @@ $(am__aclocal_m4_deps):
 envsyms: $(top_builddir)/config.status $(srcdir)/envsyms.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 post_install_script: $(top_builddir)/config.status $(srcdir)/post_install_script.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-mdsipd.xinetd: $(top_builddir)/config.status $(srcdir)/mdsipd.xinetd.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-mdsipsd.xinetd: $(top_builddir)/config.status $(srcdir)/mdsipsd.xinetd.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-dist_rpmSCRIPTS: $(dist_rpm_SCRIPTS)
 	@$(NORMAL_INSTALL)
