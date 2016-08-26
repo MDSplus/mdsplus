@@ -161,8 +161,8 @@ EXPORT int t4012___trigger(struct descriptor *nid, InTriggerStruct * setup)
   return status;
 }
 
-static float setupfreqs[] =
-    { 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1, .5, .2, .1, .05, .02, .01 };
+//static float setupfreqs[] =
+//    { 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1, .5, .2, .1, .05, .02, .01 };
 static float freqs[] =
     { 2E-7, 5E-7, 1E-6, 2E-6, 5E-6, 1E-5, 2E-5, 5E-5, 1E-4, 2E-4, 5E-4, 1E-3, 2E-3, 5E-3, 1E-2,
 2E-2, 5E-2, 1E-1 };
@@ -219,7 +219,7 @@ EXPORT int t4012___store(int *niddsc, InStoreStruct * setup)
   static int _roprand = 32768;
   static DESCRIPTOR_FLOAT(roprand, &_roprand);
   static FUNCTION(1) value = {
-  2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, 0};
+    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
   static DESCRIPTOR_FUNCTION_2(subtract_exp, (unsigned char *)&OpcSubtract, &value, &offset_d);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &subtract_exp);
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -360,7 +360,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
   int chunk_address = 0x0B000 | chunk;
   int points_to_read;
   int status = 1;
-  int tries;
+  //int tries;
   for (points_to_read = chunksize; status & 1 && points_to_read; points_to_read = chunksize) {
     struct {
       unsigned short status;
@@ -384,7 +384,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
     return_on_error(DevCamChk
 		    (CamQstopw
 		     (setup->name, 0, 2, points_to_read, buffer + *samples_read, 16,
-		      (short *)&iosb), &one, 0), status);
+		      (unsigned short *)&iosb), &one, 0), status);
     status = status & 1 ? iosb.status : status;
     *samples_read += iosb.bytcnt / 2;
     if (iosb.bytcnt / 2 != points_to_read)

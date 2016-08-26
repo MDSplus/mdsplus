@@ -52,9 +52,9 @@ static int arm_init(InInitStruct * setup, int start)
   float freq;
   int status;
   int i;
-  int chans;
-  int ival;
-  int ptsc;
+  //int chans;
+  //int ival;
+  //int ptsc;
   /*********************************************
     Read in the name and mode records.
     If any problem is encountered
@@ -94,7 +94,7 @@ EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * set
   return status;
 }
 
-static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
+//static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
 
 EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
@@ -112,8 +112,8 @@ EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   static DESCRIPTOR_NID(ext_clock_d, &clock_in_nid);
   static float coefficient = 20.0 / 4096;
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
-  static int key;
-  static DESCRIPTOR_LONG(key_d, &key);
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &value);
   static DESCRIPTOR(volts_str, "volts");
@@ -134,13 +134,13 @@ EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   int samples_to_read;
   int mar = 3 * 1024 * 1024 / 6;
   int samps_per_chan;
-  int i;
-  int polarity;
+  //int i;
+  //int polarity;
   CSRegister csreg = { 4, 4, 0, 0, 1, 1, 0, 0, 1 };
   int min_idx;
   int max_idx;
   int start_addr = 0;
-  int tries;
+  //int tries;
   int memsize;
   int fast;
   int actual_ptsc;

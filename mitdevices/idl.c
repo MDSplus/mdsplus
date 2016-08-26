@@ -16,7 +16,7 @@ static int (*execute) (char *cmd);
 
 static void InitIdl()
 {
-  int zero;
+  //int zero;
   if (!idl_initialized) {
     DESCRIPTOR(image, "IDL");
     DESCRIPTOR(execute_d, "execute");

@@ -55,7 +55,7 @@ EXPORT int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   int counter_preset_nid = setup->head_nid + DSP2904_N_COUNTER_PRESET;
   int t_preset;
   int timer_preset_nid = setup->head_nid + DSP2904_N_TIMER_PRESET;
-  float option;
+  //float option;
   mode.gate = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_GATE);
   mode.wrap = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_WRAP);
   mode.bits32 = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_BITS_32);
@@ -111,7 +111,7 @@ EXPORT int dsp2904___store(struct descriptor *niddsc, InStoreStruct * setup)
   unsigned short *low_word;
   unsigned short *high_word;
   unsigned short (*data_long)[2];
-  int channel;
+  //int channel;
   int timer_bits_32 = setup->head_nid + DSP2904_N_TIMER_BITS_32;
   int counter_bits_32 = setup->head_nid + DSP2904_N_COUNTER_BITS_32;
   int timer_nid = setup->head_nid + DSP2904_N_TIMER;
@@ -210,7 +210,7 @@ static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned sho
     pio(10, 0, 0, 16);
     for (points_to_read = num; points_to_read && (status & 1); points_to_read = num - points_read) {
       int count = points_to_read > 32767 ? 32767 : points_to_read;
-      status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read, 16, (short *)&iosb);
+      status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read, 16, (unsigned short *)&iosb);
       status = (status & 1) ? iosb.status : status;
       if (iosb.bytcnt == 0)
 	break;

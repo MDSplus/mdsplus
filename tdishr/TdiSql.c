@@ -72,7 +72,7 @@ typedef struct {
 } ARGLIST;
 STATIC_CONSTANT double HUGE_D = 1.7e+38;
 STATIC_CONSTANT float HUGE_F = (float)1.7e+38;
-STATIC_CONSTANT quadw HUGE_Q = { 0xffffffff, 0x7fffffff };
+//STATIC_CONSTANT quadw HUGE_Q = { 0xffffffff, 0x7fffffff };
 
 STATIC_CONSTANT int HUGE_L = 0x7fffffff;
 STATIC_CONSTANT short HUGE_W = 0x7fff;
@@ -91,15 +91,15 @@ STATIC_CONSTANT uint64_t nan_d_bits = 0x7ff8000000000000ULL;
 #endif
 
 static double d_null = 0;
-static float f_null = 0;
+//static float f_null = 0;
 
 STATIC_CONSTANT const char *default_date = "Jan 01 1970 12:00:00:000AM";
-static DESCRIPTOR(ddate, "dd-mmm-yyyy hh:mm:ss.cc");
+//static DESCRIPTOR(ddate, "dd-mmm-yyyy hh:mm:ss.cc");
 static int width = 0, head = 2;
-static int (*USERSQL_ERRORS) () = 0;
-static int (*USERSQL_GETS) () = 0;
-static int (*USERSQL_PUTS) () = 0;
-static int (*USERSQL_SET) () = 0;
+//static int (*USERSQL_ERRORS) () = 0;
+//static int (*USERSQL_GETS) () = 0;
+//static int (*USERSQL_PUTS) () = 0;
+//static int (*USERSQL_SET) () = 0;
 static int (*SQL_DYNAMIC) () = 0;
 static char *(*SQL_GETDBMSGTEXT) () = 0;
 

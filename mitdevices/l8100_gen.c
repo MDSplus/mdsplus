@@ -180,22 +180,22 @@ EXPORT int l8100__init(struct descriptor *nid_d_ptr, struct descriptor *method_d
     short code;
     float value;
   } input_1_gain_t[] = {
-  1, 100., 2, 10., 4, 1., 0, 0};
+    {1, 100.}, {2, 10.}, {4, 1.}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_1_mult_t[] = {
-  1, 1., 2, .5, 4, .2, 0, 0};
+    {1, 1.}, {2, .5}, {4, .2}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_2_gain_t[] = {
-  1, 100., 2, 10., 4, 1., 0, 0};
+    {1, 100.}, {2, 10.}, {4, 1.}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_2_mult_t[] = {
-  1, 1., 2, .5, 4, .2, 0, 0};
+    {1, 1.}, {2, .5}, {4, .2}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);

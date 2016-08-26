@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <mdstypes.h>
 #include <tdishr.h>
+#include <xtreeshr.h>
 #define MAX_LIMIT 1E10
 
 static int recIsSegmented(struct descriptor *dsc);
@@ -35,7 +36,7 @@ static int getSegmentedNid(char *expr)
 static int64_t estimateNumSamples(char *sigName, float *xMin, float *xMax, int *estimatedSegmentSamples, double *estimatedDuration)
 {
 	int nid, numSegments, status, startIdx, endIdx;
-	int64_t startTime, endTime, currStartTime, currEndTime;
+	uint64_t startTime, endTime, currStartTime, currEndTime;
 	char dtype, dimct;
 	int dims[64];
 	int nextRow, segmentSamples, numActSegments, segmentIdx;
@@ -351,7 +352,7 @@ static char *recGetHelp(struct descriptor *dsc)
 	    rDsc = (struct descriptor_r *)dsc;
 	    for(i = 0; i < rDsc->ndesc; i++)
 	    {
-		if(help = recGetHelp(rDsc->dscptrs[i]))
+	      if((help = recGetHelp(rDsc->dscptrs[i]))!=NULL)
 		    return help;
 	    }
 	    return NULL;
@@ -630,7 +631,8 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     char *title, *xLabel, *yLabel;
 	double delta;
 	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
-	int64_t estimatedSamples, estimatedSegmentSamples;
+	int64_t estimatedSamples;
+	int estimatedSegmentSamples;
 	double estimatedDuration;
 
 //printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 

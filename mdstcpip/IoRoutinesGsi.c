@@ -5,6 +5,9 @@
 #include "globus_xio_tcp_driver.h"
 
 // Undefine symbols defined again in config.h
+#ifdef HAVE_STDARG_H
+#undef HAVE_STDARG_H
+#endif
 #ifdef HAVE_GETADDRINFO
 #undef HAVE_GETADDRINFO
 #endif
@@ -314,7 +317,7 @@ static void readCallback(globus_xio_handle_t xio_handle,
   if (id > 0) {
     GSI_INFO *info = getGsiInfo(id);
     if (info) {
-      globus_result_t res;
+      globus_result_t res __attribute__ ((unused));
       globus_byte_t buff[1];
       int status = DoMessage(id);
       if (status & 1)

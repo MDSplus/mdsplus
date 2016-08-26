@@ -127,7 +127,7 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct * setup)
   int status;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
   struct _range range1;
   struct _range range2;
   struct _pre_mem reg1;

@@ -114,7 +114,7 @@ EXPORT int l3512a___store(struct descriptor *niddsc, InStoreStruct * setup)
   unsigned short data[32768];
   int status;
   static float duration;
-  int i;
+  //int i;
   static int kind;
   static DESCRIPTOR_LONG(kind_dsc, &kind);
   int values;

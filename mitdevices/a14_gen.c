@@ -231,28 +231,28 @@ EXPORT int a14__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
       static struct {
     short code;
     int value;
-  } clock_divide_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 10, 4, 20, 5, 40, 6, 100, 0, 0};
+      } clock_divide_t[] = {
+    {0, 1}, {1, 2}, {2, 4}, {3, 10}, {4, 20}, {5, 40}, {6, 100}, {0, 0}};
   static struct {
     short code;
     int value;
   } clk_polarity_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } str_polarity_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } stp_polarity_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } gated_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);

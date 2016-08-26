@@ -16,7 +16,7 @@ struct l8100_ctl {
 };
 
 static int one = 1;
-static int zero = 0;
+//static int zero = 0;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) < (b)) ? (b) : (a))
@@ -38,7 +38,7 @@ static int InitChannel(InInitStruct * setup, int chan, int gain, int mult, float
   if (IsOn(input_nid)) {
     unsigned short off;
     struct l8100_ctl ctl;
-    unsigned short *ctl_w;
+    //unsigned short *ctl_w;
     ctl.gain = gain;
     ctl.mult = mult;
     ctl.filter = IsOn(filter_nid);

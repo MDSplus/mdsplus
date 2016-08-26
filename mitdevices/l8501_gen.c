@@ -149,7 +149,7 @@ EXPORT int l8501__init(struct descriptor *nid_d_ptr, struct descriptor *method_d
     short code;
     int value;
   } mode_t[] = {
-  0, 1, 1, 2, 2, 3, 3, 4, 0, 0};
+    {0, 1}, {1, 2}, {2, 3}, {3, 4}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);
@@ -174,7 +174,7 @@ EXPORT int l8501__store(struct descriptor *nid_d_ptr, struct descriptor *method_
     short code;
     int value;
   } mode_t[] = {
-  0, 1, 1, 2, 2, 3, 3, 4, 0, 0};
+    {0, 1}, {1, 2}, {2, 3}, {3, 4}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);

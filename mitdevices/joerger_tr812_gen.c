@@ -282,42 +282,42 @@ EXPORT int joerger_tr812__init(struct descriptor *nid_d_ptr, struct descriptor *
     short code;
     int value;
   } channel_1_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_2_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_3_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_4_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_5_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_6_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_7_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } channel_8_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);

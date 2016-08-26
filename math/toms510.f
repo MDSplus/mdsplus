@@ -2,15 +2,15 @@
 !  *2    19-MAR-1993 14:11:16 TWF "Change name to avoid conflict"
 !  *1    19-MAR-1993 14:10:08 TWF "Piecewise linear approximation for paste"
 !  VAX/DEC CMS REPLACEMENT HISTORY, Element MDSIDL$TOMS510.FOR
-c From:	IN%"netlibd@surfer.EPM.ORNL.GOV" 26-FEB-1991 22:49:24.88
-c To:	HORNE@ALCVAX.PFC.MIT.EDU
-c CC:	
-c Subj:	Re:send 510 from toms
+c From:      IN%"netlibd@surfer.EPM.ORNL.GOV" 26-FEB-1991 22:49:24.88
+c To:      HORNE@ALCVAX.PFC.MIT.EDU
+c CC:      
+c Subj:      Re:send 510 from toms
 Caveat receptor.  (Jack) dongarra@cs.utk.edu, (Eric Grosse) research!ehg
 Careful! Anything free comes with no guarantee.
 c *** from netlib, Tue Feb 26 22:48:51 EST 1991 ***
 
-      subroutine toms510(x, y, e, m, u, v, w, k, ip)							       ! 2
+      subroutine toms510(x, y, e, m, u, v, w, k, ip)
 c piecewise linear approximations of fewest
 c line segments within given tolerances.
 c x,y,e and m contain input data.

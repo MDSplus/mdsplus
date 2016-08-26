@@ -86,12 +86,12 @@ EXPORT int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
   int min_idx;
   int max_idx;
   int num_chans;
-  int vm_size;
+  //int vm_size;
   short *channel_data_ptr;
   int status;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
   float wait_time;
   stop_trig_nid = setup->head_nid + L8210_N_STOP_TRIG;
   ext_clock_in_nid = setup->head_nid + L8210_N_EXT_CLOCK_IN;
@@ -369,7 +369,7 @@ static void pts_activate_proc(Widget w)
   struct descriptor_xd *header_xd = XmdsNidOptionMenuGetXd(header_w);
   static char header[7];
   static struct descriptor header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
-  int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
+  int status __attribute__ ((unused)) = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
   int i;
   XmScaleGetValue(mems_w, &mems);
   L8210HeaderToPTS(header, (char *)&mems, pts);

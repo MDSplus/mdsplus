@@ -31,8 +31,6 @@
 
 static char *tree;
 static int shot;
-static char error_msg[MAX_COMPLAINT];
-static DESCRIPTOR(error_dsc, error_msg);
 
 //extern int TdiExecute();
 
@@ -230,7 +228,6 @@ static void parse_cmdline(int argc, const char *argv[])
 
 static hid_t CreateHDF5(char *tree, int shot)
 {
-  herr_t status;
 
   hid_t file_id;
   char filename[MAX_FILENAME];
@@ -270,7 +267,7 @@ hid_t MdsType2HDF5Type(unsigned char type)
 
 static void PutNumeric(hid_t parent, char *name, struct descriptor *dsc)
 {
-  herr_t status;
+  //  herr_t status;
   hid_t type = MdsType2HDF5Type(dsc->dtype);
   if (type != 0) {
     hid_t ds_id = H5Screate(H5S_SCALAR);
@@ -280,7 +277,8 @@ static void PutNumeric(hid_t parent, char *name, struct descriptor *dsc)
       a_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
     }
     if (a_id > 0) {
-      status = H5Awrite(a_id, MdsType2HDF5Type(dsc->dtype), dsc->pointer);
+      //      status = H5Awrite(a_id, MdsType2HDF5Type(dsc->dtype), dsc->pointer);
+      H5Awrite(a_id, MdsType2HDF5Type(dsc->dtype), dsc->pointer);
       H5Aclose(a_id);
     } else
       fprintf(stderr, "could not create attribute to store scalar in %s\n", name);
@@ -292,7 +290,7 @@ typedef ARRAY_COEFF(char, MAX_DIMS) ARRAY_AC;
 static void PutArray(hid_t parent, char *name, struct descriptor *dsc)
 {
   int j;
-  herr_t status;
+  //  herr_t status;
   struct descriptor_a *adsc = (struct descriptor_a *)dsc;
   ARRAY_AC *ac_dsc = (ARRAY_AC *) dsc;
   hid_t space_id;
@@ -316,7 +314,8 @@ static void PutArray(hid_t parent, char *name, struct descriptor *dsc)
       ds_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
     }
     if (ds_id > 0) {
-      status = H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dsc->pointer);
+      //      status = H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dsc->pointer);
+      H5Dwrite(ds_id, dtype, H5S_ALL, H5S_ALL, H5P_DEFAULT, dsc->pointer);
       H5Dclose(ds_id);
       H5Sclose(space_id);
     } else
@@ -326,11 +325,10 @@ static void PutArray(hid_t parent, char *name, struct descriptor *dsc)
 
 static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
 {
-  int status;
   switch (dsc->dtype) {
   case DTYPE_T:
     if (dsc->length > 0) {
-      herr_t status;
+      //      herr_t status;
       hid_t ds_id = H5Screate(H5S_SCALAR);
       hsize_t size = dsc->length;
       hid_t type = H5Tcopy(H5T_C_S1);
@@ -341,12 +339,15 @@ static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
 	a_id = H5Acreate(parent, new_name, MdsType2HDF5Type(dsc->dtype), ds_id, H5P_DEFAULT);
       }
       if (a_id > 0) {
-	status = H5Awrite(a_id, type, dsc->pointer);
-	status = H5Aclose(a_id);
+	//	status = H5Awrite(a_id, type, dsc->pointer);
+	//status = H5Aclose(a_id);
+	H5Awrite(a_id, type, dsc->pointer);
+	H5Aclose(a_id);
       } else {
 	fprintf(stderr, "could not create attribute called %s\n", name);
       }
-      status = H5Sclose(ds_id);
+      //      status = H5Sclose(ds_id);
+      H5Sclose(ds_id);
       break;
     }
   default:

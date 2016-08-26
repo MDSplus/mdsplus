@@ -36,7 +36,7 @@ EXPORT int a12___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 static int ReadSetup(char *name, float *freq_ptr, int *polarity);
 static int ReadChannel(char *name, int fast, int *max_samps_ptr, int chan, short *data_ptr);
 
-static int sinewave;
+static int sinewave __attribute__ ((unused));
 
 #define A12_N_INPUTS         5
 #define A12_K_NODES_PER_INP  3
@@ -86,8 +86,7 @@ EXPORT int a12__store(struct descriptor *niddsc_ptr)
   short channel_data[32767];
   int status;
   int chan;
-  int samples_to_read;
-  int i;
+  int samples_to_read __attribute__ ((unused));
   int polarity;
   int fast;
   short int module_id;

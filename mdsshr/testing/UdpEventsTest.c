@@ -26,7 +26,7 @@ static pthread_mutex_t second_lock;
 static int astCount = 0;
 
 void eventAst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&astCount_lock);
@@ -40,7 +40,7 @@ void eventAst(void *arg, int len, char *buf) {
 static int first = 0,second = 0;
 
 void eventAstFirst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&first_lock);
@@ -49,7 +49,7 @@ void eventAstFirst(void *arg, int len, char *buf) {
 }
 
 void eventAstSecond(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&second_lock);
@@ -66,6 +66,9 @@ static void wait() {
 
 int main(int argc, char **args)
 {
+    int status;
+    int i,iterations,ev_id;
+    char *eventname = alloca(100);
     pthread_mutex_init(&astCount_lock, NULL);
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
@@ -74,9 +77,6 @@ int main(int argc, char **args)
 #ifdef _WIN32
     SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
 #endif
-    int status;
-    int i,iterations,ev_id;
-    char *eventname = alloca(100);
     if (argc < 2) {
         iterations=3;
     } else {
@@ -123,4 +123,5 @@ int main(int argc, char **args)
     status = MDSEventCan(id2);
     
     END_TESTING;
+    return (status & 1)==0;
 }

@@ -1,7 +1,10 @@
 # @configure_input@
 
 DEFAULT_CFLAGS=-g -O2
+
+ifeq "$(NOWARN)" ""
 WARNFLAGS = @WARNFLAGS@
+endif
 
 AWK ?= @AWK@
 CC = @CC@

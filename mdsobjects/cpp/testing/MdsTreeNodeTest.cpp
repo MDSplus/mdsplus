@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
         data = node->getData();
         TEST1( data->getInt() == 5552368 );
 
-        int len = node->getLength();
+        int len __attribute__ ((unused)) = node->getLength();
 
         // getLength()  Nci length of Int32 is 12
         TEST1( node->getLength() == 12 );

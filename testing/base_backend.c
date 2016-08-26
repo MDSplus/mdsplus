@@ -42,9 +42,9 @@ void __test_init(const char *test_name, const char *file, const int line) {}
 
 void __test_end() {}
 
-int  __setup_parent() {}
+int  __setup_parent() {return 0;}
 
-int  __setup_child() {}
+int  __setup_child() {return 0;}
 
 void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
 

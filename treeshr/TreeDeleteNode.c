@@ -170,11 +170,8 @@ extern void _TreeDeleteNodeExecute(void *dbid)
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   static NID nid;
   NODE *node;
-  NODE *prevnode = 0;
   NODE *parent;
   static NCI empty_nci;
-  NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
-      (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
 
   TREE_EDIT *edit = dblist->tree_info->edit;
   static int zero = 0;
@@ -250,7 +247,6 @@ void _TreeDeleteNodesWrite(void *dbid) {
   static NID nid;
   NODE *node;
   NODE *prevnode = 0;
-  NODE *parent;
   static NCI empty_nci;
   NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
       (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
@@ -259,7 +255,6 @@ void _TreeDeleteNodesWrite(void *dbid) {
   DELETED_NID *dnid,*next;
   NCI old_nci;
   int nidx;
-  static int zero = 0;
   for (dnid=edit->deleted_nid_list,edit->deleted_nid_list=0; dnid; dnid=next) {
     next=dnid->next;
     nid=dnid->nid;

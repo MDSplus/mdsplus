@@ -8,7 +8,7 @@
 #include <sys/unistd.h>
 
 #include <string.h>
-
+extern char *strsignal(int);
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -34,7 +34,7 @@
 // without context switching will be not possible to run all tests if one fails.
 #else
 #include <ucontext.h>
-static ucontext_t error_jmp_context;
+//static ucontext_t error_jmp_context;
 volatile int error_jmp_state;
 #endif
 
@@ -202,7 +202,8 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 /// 
 
 void __mark_point(const char *__assertion, const char *__file, 
-                  unsigned int __line, const char *__function)
+                  unsigned int __line, const char *__function
+		  __attribute__ ((unused)))
 {
     if(!suite) __test_init(__assertion,__file,__line);
     send_loc_info(__file, __line);
@@ -214,7 +215,8 @@ void __mark_point(const char *__assertion, const char *__file,
 /// 
 
 void __assert_fail (const char *__assertion, const char *__file,
-                    unsigned int __line, const char *__function)
+                    unsigned int __line, const char *__function
+		    __attribute__ ((unused)))
 {    
     if(!suite) __test_init(__assertion,__file,__line);
     __test_assert_fail(__file,__line,__assertion,NULL);    
@@ -607,11 +609,11 @@ void __test_init(const char *test_name, const char *file, const int line) {
         // if any of TEST_TAPFILE or TEST_XMLFILE is given in env further
         // logger are instanced pointing to specified files.        
         
-        if( out_file = getenv("TEST_TAPFILE") ) {
+        if( (out_file = getenv("TEST_TAPFILE")) != NULL ) {
             FILE *f = fopen(out_file,"w");
             if(f) srunner_register_lfun(runner, f, 0, tap_lfun, print_mode);
         }
-        if( out_file = getenv("TEST_XMLFILE") ) {
+        if( (out_file = getenv("TEST_XMLFILE")) != NULL ) {
             FILE *f = fopen(out_file,"w");
             if(f) srunner_register_lfun(runner, f, 0, xml_lfun, print_mode);
         }
