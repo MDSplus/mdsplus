@@ -190,12 +190,12 @@ EXPORT int l8212_04__init(struct descriptor *nid_d_ptr, struct descriptor *metho
     short code;
     int value;
   } noc_t[] = {
-  0, 1, 1, 2, 2, 4, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {0, 0}};
   static struct {
     short code;
     int value;
   } offset_t[] = {
-  0, 0, 1, -2048, 2, -4096, 0, 0};
+    {0, 0}, {1, -2048}, {2, -4096}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);
@@ -224,7 +224,7 @@ EXPORT int l8212_04__store(struct descriptor *nid_d_ptr, struct descriptor *meth
     short code;
     int value;
   } offset_t[] = {
-  0, 0, 1, -2048, 2, -4096, 0, 0};
+    {0, 0}, {1, -2048}, {2, -4096}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);

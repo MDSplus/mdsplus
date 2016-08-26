@@ -67,7 +67,7 @@ then
 	--with-gsi=/usr:gcc64 \
 	--with-java_target=6 \
 	--with-java_bootclasspath=/source/rt.jar \
-	--enable-debug --host=x86_64-linux;
+	--enable-debug --enable-werror --host=x86_64-linux;
     $MAKE
     $MAKE install
     ###
@@ -175,7 +175,7 @@ EOF
 	--with-gsi=/usr:gcc32 \
 	--with-java_target=6 \
 	--with-java_bootclasspath=/source/rt.jar \
-	--enable-debug --host=i686-linux;
+	--enable-debug --enable-werror --host=i686-linux;
     $MAKE
     $MAKE install
     set +e;

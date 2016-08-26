@@ -1498,7 +1498,7 @@ public:
     }    
     
     virtual void propagateDeletion() {
-        for(std::size_t i = 0; i < descs.size(); ++i)
+      for(std::size_t i = 0; i < (std::size_t)descs.size(); ++i)
             if (descs[i])
             {
                 descs[i]->decRefCount();
@@ -1527,7 +1527,7 @@ protected:
 public:
     /// set Data at idx element of contained descriptors
     void assignDescAt(Data *data, int idx) {
-        if ( idx < 0 || idx >= descs.size() ) {
+      if ( idx < 0 || idx >= (int)descs.size() ) {
             if(data) deleteData(data);            
             throw (MdsException("Index out of bounds accessing arguments"));
         }

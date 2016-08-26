@@ -44,7 +44,7 @@ int main(int argc, char **argv)
       tdiputs(line_in);
     }
     while (line_in[len - 2] == '\\') {
-      char *line = fgets(&line_in[len - 2], MAXEXPR - len + 2, in);
+      fgets(&line_in[len - 2], MAXEXPR - len + 2, in);
       if (!comment)
 	tdiputs(&line_in[len - 2]);
       len = strlen(line_in);

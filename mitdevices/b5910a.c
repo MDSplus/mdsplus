@@ -213,8 +213,8 @@ static void ResetWave(Widget w)
 	float *knot_y;
 	int num_knots = 0;
 	int j;
-	int knot = 0;
-	int on_state;
+	//int knot = 0;
+	//	int on_state;
 	Widget xdbw = XmdsXdBoxDialogButtonGetXdBox(XtNameToWidget(Top(w), xd_name(i)));
 	Widget dw = XtNameToWidget(Top(w), d_name(i));
 	Widget fw = XtNameToWidget(Top(w), fit_name(i));
@@ -321,9 +321,9 @@ static void OutputValue(Widget w, float x, float y)
 
 static void AutoY(Widget w, int *idx, XmPushButtonCallbackStruct * cb)
 {
-  int i;
-  float *xmin;
-  float *xmax;
+  //int i;
+  //float *xmin;
+  //float *xmax;
 
   Widget wave = XtNameToWidget(Top(w), d_name(*idx - 1));
   XtVaSetValues(wave, XmdsNyMin, 0, XmdsNyMax, 0, NULL);
@@ -512,7 +512,7 @@ static void Limits(Widget w, int tag, XmdsWaveformLimitsCBStruct * l)
 
 static void Fit(Widget w, int tag, XmdsWavedrawFitCBStruct * c)
 {
-  int fit;
+  //int fit;
   char name[10] = "*";
   strcat(name, XtName(w));
   strcat(name, "_fit");
@@ -818,7 +818,7 @@ EXPORT int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   } reg = {
   0, 0, 0, 0, 0, 0}, state;
   short mem_data[32768];
-  int clock_range;
+  //int clock_range;
   static DESCRIPTOR(dt_expr, "SLOPE_OF($)");
   static float dt;
   static DESCRIPTOR_FLOAT(dt_dsc, &dt);

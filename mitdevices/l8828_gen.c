@@ -127,7 +127,7 @@ EXPORT int l8828__init(struct descriptor *nid_d_ptr, struct descriptor *method_d
     short code;
     float value;
   } clock_t[] = {
-  0, 250.0, 1, 125.0, 2, 62.5, 3, 31.25, 4, 15.625, 5, 7.8125, 6, 3.90625, 7, 0.0, 0, 0};
+    {0, 250.0}, {1, 125.0}, {2, 62.5}, {3, 31.25}, {4, 15.625}, {5, 7.8125}, {6, 3.90625}, {7, 0.0}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);

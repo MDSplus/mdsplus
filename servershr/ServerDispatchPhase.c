@@ -411,7 +411,7 @@ STATIC_ROUTINE char *DetailProc(int full)
   return msg;
 }
 
-EXPORT int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
+EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in,
 			int sync, void (*output_rtn) (), char *monitor)
 {
   int i;

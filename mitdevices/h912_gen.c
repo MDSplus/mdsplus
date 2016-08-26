@@ -366,15 +366,16 @@ EXPORT int h912__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_
     short code;
     int value;
   } int_clock_t[] = {
-  0, 500000,
-	1, 200000,
-	2, 100000,
-	3, 50000, 4, 20000, 5, 10000, 6, 5000, 7, 2000, 8, 1000, 9, 500, 10, 200, 15, 0, 0, 0};
+    {0, 500000},
+    {1, 200000},
+    {2, 100000},
+    {3, 50000}, {4, 20000}, {5, 10000}, {6, 5000}, {7, 2000},
+    {8, 1000}, {9, 500}, {10, 200}, {15, 0}, {0, 0}};
   static struct {
     short code;
     int value;
   } blocks_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 4, 16, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {4, 16}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);

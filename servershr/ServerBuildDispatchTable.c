@@ -127,7 +127,7 @@ static int fixup_path(struct descriptor *path_in, int idx, struct descriptor_d *
   return status;
 }
 
-static int make_idents(struct descriptor *path_in, int idx, struct descriptor *path_out)
+static int make_idents(struct descriptor *path_in, int idx __attribute__ ((unused)), struct descriptor *path_out __attribute__ ((unused)))
 {
   if (path_in && path_in->pointer && path_in->pointer[0] == '_')
     path_in->dtype = DTYPE_IDENT;

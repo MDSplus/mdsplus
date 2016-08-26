@@ -35,7 +35,7 @@ static char * _new_unique_event_name(const char *prefix, ...) {
 
 static int astCount = 0;
 void eventAst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     astCount++;
@@ -214,7 +214,7 @@ void test_popEvent() {
 
 static void * _thread_action(void *arg) {
     (void)arg;
-    int status;
+    int status __attribute__ ((unused));
     status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
     status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
     while(1) {

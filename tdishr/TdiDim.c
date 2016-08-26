@@ -541,7 +541,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   typedef struct {
     double l[2];
   } octaword_aligned;
-  STATIC_CONSTANT octaword_aligned zero = { 0 };
+  STATIC_CONSTANT octaword_aligned zero = { {0} };
   STATIC_CONSTANT struct descriptor dzero = { 0, 0, CLASS_S, (void *)&zero };
 
   switch (in1->dtype) {

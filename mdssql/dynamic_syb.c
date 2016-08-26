@@ -66,7 +66,7 @@ static void strcatn(char *dst, const char *src, int max)
 /*------------------------------ERROR HANDLER--------------------------------*/
 
 static void SetMsgLen() {
-  DBMSGTEXT_DSC.length=DBMSGTEXT ? strlen(DBMSGTEXT) : 0;
+  DBMSGTEXT_DSC.length=strlen(DBMSGTEXT);
 }
 
 static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,

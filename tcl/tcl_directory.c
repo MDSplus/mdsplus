@@ -77,8 +77,7 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
 			int time[]	/* <r> date/time to display: quadword       */
     )
 {
-  int flags = 0;
-  short len;
+  unsigned short len;
   static char datime[24];
   static DESCRIPTOR(dsc_datime, datime);
 

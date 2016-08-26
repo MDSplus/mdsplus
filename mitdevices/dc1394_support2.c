@@ -29,8 +29,8 @@ static int framesize = 0;
 static pthread_t thread_id = 0;
 static int max_frames = 0;
 static int debug_flag;
-static int width;
-static int height;
+static unsigned int width;
+static unsigned int height;
 static int bytes;
 static char model[43] = "\0";
 static int needSwap = 0;
@@ -101,6 +101,7 @@ EXPORT void *CaptureFrames(void *arg)
     next_frame++;
   }
   pthread_cleanup_pop(1);
+  return (0);
 }
 
 /*
@@ -374,7 +375,7 @@ EXPORT int dc1394ReadTimes(double *data)
     return (0);
 }
 
-EXPORT int dc1394ReadFrames(char *data)
+EXPORT int dc1394ReadFrames(unsigned char *data)
 {
   int status;
   if (buf) {

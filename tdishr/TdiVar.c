@@ -144,7 +144,8 @@ STATIC_ROUTINE int compare(struct descriptor *key_ptr, node_type * node_ptr, blo
 STATIC_ROUTINE int allocate(struct descriptor *key_ptr,
 			    node_type ** node_ptr_ptr, block_type * block_ptr)
 {
-  int status = 1, len = sizeof(struct link) - 1 + key_ptr->length;
+  int status = 1;
+  unsigned int len = sizeof(struct link) - 1 + key_ptr->length;
 
 	/*******************************************************************
         Must clear memory unless allocate is called only once for each node.
@@ -424,7 +425,8 @@ STATIC_ROUTINE int free_one(node_type * node_ptr, user_type * user_ptr)
 */
 STATIC_ROUTINE int free_all(node_type ** pnode)
 {
-  int status = 1, stat2, len;
+  int status = 1, stat2;
+  unsigned int len;
   block_type *private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
 
   if ((*pnode)->xd.l_length)

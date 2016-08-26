@@ -99,7 +99,7 @@ MdsDataTest::get_vector(mds::Data *data, Fn fn)
     std::vector<R> out;
     int size;
     R * array = (data->*fn)(&size);
-    for(size_t i = 0; i<size; ++i)
+    for(size_t i = 0; i<(unsigned int)size; ++i)
         out.push_back(array[i]);
     delete [] array;
     return out;
@@ -222,7 +222,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::complex<
 ///
 template <typename T >
 inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<T> &array) {
-    TEST1( data->getSize() == array.size() );
+  TEST1( (unsigned int)data->getSize() == array.size() );
         
     TEST1( data->getByteArray() == array );
     TEST1( data->getShortArray() == array );
@@ -262,7 +262,7 @@ inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<T
 ///
 template <typename T >
 inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<std::complex<T> > &array) {
-    TEST1 ( data->getSize() == array.size() );
+  TEST1 ( (unsigned int)data->getSize() == array.size() );
 
     TEST_MDS_EXCEPTION( data->getByteArray(), "getByteArray() not supported for Complex data type" );
     TEST_MDS_EXCEPTION( data->getShortArray(), "getShortArray() not supported for Complex data type" );

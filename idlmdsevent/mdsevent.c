@@ -193,7 +193,7 @@ EXPORT int IDLMdsEvent(int argc, void * *argv)
 	IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
 	if (sock >= 0) {
 	  XtAppAddInput(XtWidgetToApplicationContext(w1), sock, (XtPointer) XtInputExceptMask,
-			MdsDispatchEvent, (void *)sock);
+			MdsDispatchEvent, (char *)0+sock);
 	}
 	pipe(event_pipe);
 	XTINPUTID =

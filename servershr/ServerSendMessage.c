@@ -480,7 +480,7 @@ static int StartReceiver(short *port_out)
   return status;
 }
 
-static void ThreadExit(void *arg)
+static void ThreadExit(void *arg __attribute__ ((unused)))
 {
   printf("ServerSendMessage thread exitted\n");
   ThreadRunning = 0;

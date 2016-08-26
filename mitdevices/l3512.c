@@ -35,8 +35,6 @@ EXPORT int l3512___init(struct descriptor *niddsc, InInitStruct * setup)
   int status;
   float duration;
   DwellCode dwell_code;
-#pragma member_alignment save
-#pragma nomember_alignment
   struct {
  unsigned __attribute__ ((packed)) offset:8;
  unsigned __attribute__ ((packed)) gain:3;
@@ -54,7 +52,6 @@ EXPORT int l3512___init(struct descriptor *niddsc, InInitStruct * setup)
  unsigned __attribute__ ((packed)) fill:13;
   } setup_3587 = {
   1, 0, 0, 0};
-#pragma member_alignment restore
   int i;
   int tries;
   static int kind;
@@ -116,7 +113,7 @@ EXPORT int l3512___store(struct descriptor *niddsc, InStoreStruct * setup)
   unsigned short data[32768];
   int status;
   static float duration;
-  int i;
+  //int i;
   static int kind;
   static DESCRIPTOR_LONG(kind_dsc, &kind);
   int values;

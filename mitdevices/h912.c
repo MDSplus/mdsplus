@@ -67,7 +67,7 @@ EXPORT int h912___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 EXPORT int h912___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status;
-  int mstatus;
+  //int mstatus;
   struct _status {
     unsigned mode:3;
     unsigned state:2;

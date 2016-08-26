@@ -183,7 +183,7 @@ EXPORT int l6810a___store(struct descriptor *niddsc_ptr, InStoreStruct * in_stru
   int status;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
 
   int min_idx;
   int max_idx;

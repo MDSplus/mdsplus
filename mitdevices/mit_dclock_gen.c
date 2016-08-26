@@ -89,7 +89,7 @@ extern int mit_dclock___get_setup();
 int mit_dclock___get_setup(struct descriptor *nid_d_ptr, InGet_setupStruct * in_ptr)
 {
   declare_variables(InGet_setupStruct)
-  struct descriptor_xd work_xd[1];
+    //struct descriptor_xd work_xd[1];
   initialize_variables(InGet_setupStruct)
 
       read_float_error(MIT_DCLOCK_N_FREQUENCY_1, frequency_1, MPB$_BADFREQ);

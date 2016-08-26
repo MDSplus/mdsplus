@@ -113,7 +113,7 @@ EXPORT int ServerDebug(int setting)
   return old;
 }
 
-EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
+EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
   int status=ServerINVALID_ACTION_OPERATION;
@@ -339,14 +339,14 @@ static void FreeJob(SrvJob * job)
   free(job);
 }
 
-static void ThreadCleanup(void *arg)
+static void ThreadCleanup(void *arg __attribute__ ((unused)))
 {
   WorkerThreadRunning = 0;
   WorkerDied++;
   printf("Worker thread exitted\n");
 }
 
-static void *Worker(void *arg)
+static void *Worker(void *arg __attribute__ ((unused)) )
 {
   SrvJob *job;
   pthread_cleanup_push(ThreadCleanup, 0);
@@ -770,6 +770,7 @@ static SOCKET AttachPort(int addr, short port)
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
       shutdown(sock, 2);
       close(sock);
+      perror("Error establishing reply connection to mdstcl client (i.e. dispatcher)");
       return -1;
     }
     new = (ClientList *) malloc(sizeof(ClientList));

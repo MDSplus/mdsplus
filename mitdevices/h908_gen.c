@@ -649,12 +649,13 @@ EXPORT int h908__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_
     short code;
     int value;
   } int_clock_t[] = {
-  0, 0, 1, 40000, 2, 20000, 3, 10000, 4, 5000, 5, 2000, 6, 1000, 7, 500, 8, 200, 9, 100, 0, 0};
+    {0, 0}, {1, 40000}, {2, 20000}, {3, 10000}, {4, 5000},
+    {5, 2000}, {6, 1000}, {7, 500}, {8, 200}, {9, 100}, {0, 0}};
   static struct {
     short code;
     int value;
   } active_chans_t[] = {
-  0, 32, 1, 16, 2, 8, 3, 4, 0, 0};
+    {0, 32}, {1, 16}, {2, 8}, {3, 4}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);

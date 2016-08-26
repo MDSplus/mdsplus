@@ -36,7 +36,7 @@ static int zero = 0;
 
 int l8590_mem___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
-  static DESCRIPTOR(sclr_wild, "L8590_%");
+  //static DESCRIPTOR(sclr_wild, "L8590_%");
   int status;
   int old_def;
   void *ctx;
@@ -86,7 +86,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   static int latch_nid;
   static DESCRIPTOR_NID(latch, &latch_nid);
   static FUNCTION(1) dvalue = {
-  2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, 0};
+    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
   static DESCRIPTOR_SIGNAL_1(signal, &dvalue, &counts, &latch);
   int setup_status = 0;
   latch_nid = setup->head_nid + L8590_MEM_N_LATCH;
@@ -196,7 +196,7 @@ static void Load(Widget w)
   l8590_memname = TreeGetPath(nid);
   XmListDeleteAllItems(w);
   for (i = 1; i < 17; i++) {
-    int ctx = 0;
+    //int ctx = 0;
     int dig_nid;
     int status;
     XmString item;

@@ -246,7 +246,7 @@ EXPORT int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
   int ind;
   int i;
   int j;
-  float volt;
+  //float volt;
   int vmax;
   int vfmax = 0;
   int nfmax = 0;

@@ -36,7 +36,6 @@ typedef struct _status_reg {
 
 EXPORT int b2408___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
-  int i;
   int j;
   int npts;
   int status = 1;

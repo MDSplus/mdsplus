@@ -14,7 +14,6 @@
 
 int main(int argc, char *argv[])
 {
-    BEGIN_TESTING(dtpye);
     
     long status;
     int dsc;
@@ -60,8 +59,9 @@ int main(int argc, char *argv[])
     
     int null = 0;
     int len = 0;
-    char *msg = "   ";
+    //    char *msg = "   ";
     
+    BEGIN_TESTING(dtype);
     /**** Run tests ****/
     
     dsc = descr(&dtype_uchar, &vUChar, &null);
@@ -145,4 +145,5 @@ int main(int argc, char *argv[])
     TEST1(strcmp(vCstring, CSTRING_TEST1) == 0);
         
     END_TESTING;
+    return 0;
 }

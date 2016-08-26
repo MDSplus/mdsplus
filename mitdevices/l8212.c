@@ -270,7 +270,6 @@ static int L8212__TRIGGER(struct descriptor *niddsc_ptr, InTriggerStruct * setup
 //extern unsigned short OpcAdd;
 //extern unsigned short OpcMultiply;
 //extern unsigned short OpcValue;
-#pragma extern_model restore
 
 static void L8212$HeaderToPTS(int memories, char *header_ptr, int *pts_ptr);
 static void PTStoMinMax(int chans, int mems, char *header, int pts, int *min_ptr, int *max_ptr);
@@ -345,9 +344,9 @@ static int L8212__STORE(struct descriptor *niddsc_ptr, InStoreStruct * setup, in
   short *channel_data_ptr;
   int status;
   int chan;
-  int samples_to_read;
-  int i;
-  int pts;
+  //int samples_to_read;
+  //int i;
+  //int pts;
   int stop_trig_nid;
   int use_qrep = 0;
   int name_nid;
@@ -390,7 +389,7 @@ static int L8212__STORE(struct descriptor *niddsc_ptr, InStoreStruct * setup, in
 
       raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
       if (raw.m[0] > 0) {
-	samples_to_read = raw.bounds[0].u - min_idx + 1;
+	//samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(setup->name, samples_per_channel, chan, channel_data_ptr, use_qrep);
 	if (status & 1) {
 	  raw.pointer = (char *)(channel_data_ptr + (raw.bounds[0].l - min_idx));
@@ -461,8 +460,8 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
     unsigned short bytcnt;
     unsigned short fill[2];
   } iosb;
-  int lamchks = 10;
-  unsigned short dum_read;
+  //int lamchks = 10;
+  //unsigned short dum_read;
   int status;
 
   pio(16, 0, &chan)
@@ -649,7 +648,7 @@ static void clock_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * r
   Widget parent = XtParent(XtParent(w));
   Widget clock_menu = XtNameToWidget(parent, "clock_menu");
   int num_buttons;
-  int *buttons = XmdsNidOptionMenuGetButtons(clock_menu, &num_buttons);
+  int *buttons __attribute__ ((unused)) = XmdsNidOptionMenuGetButtons(clock_menu, &num_buttons);
   if (*(int *)&reason->data == (num_buttons - 2))
     XtManageChild(XtNameToWidget(parent, "external_clock"));
   else

@@ -165,6 +165,6 @@ int main(int argc, char *argv[])
   printf("\n");
   printf("\n");
 
-  exit((status  & 1)==0);
+  return (status & 1)==0;
 
 }

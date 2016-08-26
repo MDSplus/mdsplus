@@ -46,7 +46,7 @@ EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *method
   };
   static NCI_ITM nci[] =
       { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
-  String verbs;
+  //String verbs;
 
 /*------------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ static void Reset(Widget w)
   int nid;
   String selections;
   String selection;
-  int ctx = 0;
+  //int ctx = 0;
   int first = 1;
   XtVaGetValues(list_w, XmNuserData, &user_data, NULL);
   nid = (intptr_t) user_data;

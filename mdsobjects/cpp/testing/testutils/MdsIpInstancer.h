@@ -88,7 +88,7 @@ public:
                              (char *)"-P",(char *)m_protocol.c_str(),
                              (char *)"-p",(char *)port_str,
                              (char *)"-h",(char *)m_host_file->name() };
-            int status = mdsip_main(_argc,_argv);
+            int status __attribute__ ((unused)) = mdsip_main(_argc,_argv);
             exit(1);
         }
         else {

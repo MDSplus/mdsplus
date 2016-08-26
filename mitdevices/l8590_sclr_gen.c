@@ -209,7 +209,7 @@ int l8590_sclr___get_setup(struct descriptor *nid_d_ptr, InGet_setupStruct * in_
     short code;
     int value;
   } num_active_t[] = {
-  0, 1, 1, 2, 2, 3, 2, 4, 3, 5, 3, 6, 3, 7, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 3}, {2, 4}, {3, 5}, {3, 6}, {3, 7}, {3, 8}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);

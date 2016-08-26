@@ -12,7 +12,7 @@ static int one = 1;
 #define max(a,b) (((a) <= (b)) ? (b) : (a))
 #define SignalError(call) status = call; if (!(status & 1)) { return status; }
 #define pio(f,a,dv) {int d = dv;\
- if (!((status = DevCamChk(CamPiow(setup->name,a,f,&dv,16,0),&one,&one)) & 1)) return status;}
+ if (!((status = DevCamChk(CamPiow(setup->name,a,f,&d,16,0),&one,&one)) & 1)) return status;}
 extern int DevCamChk();
 
 

@@ -38,7 +38,7 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
 
 static void (*appAst)();
 
-static void eventAst(void *astprm, int msglen, char *msg) {
+static void eventAst(void *astprm, int msglen __attribute__ ((unused)), char *msg) {
   (*appAst)(astprm,msg);
 }
   
