@@ -4,6 +4,7 @@
 * in file LICENSE that is included with this distribution. 
 \*************************************************************************/
 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -29,46 +30,50 @@
 #include "epicsThread.h"
 
 /* Create the dset for devWfSoft */
-static long init_record(mdsexprRecord * prec);
-static long read_mp(mdsexprRecord * prec);
-extern int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path,
-		   unsigned int *nodeId, char *errMsg);
-extern int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *bufDims,
-			int *bufTypes, int maxRetElements, int retType, void *retBuf,
-			int *retElements, char *errMsg, int isLocal);
+static long init_record(mdsexprRecord *prec);
+static long read_mp(mdsexprRecord *prec);
+extern int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path, unsigned int *nodeId, char *errMsg);
+extern int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *bufDims, int *bufTypes, int maxRetElements, int retType, void *retBuf, int *retElements, char *errMsg, int isLocal);
 
 struct {
-  long number;
-  DEVSUPFUN report;
-  DEVSUPFUN init;
-  DEVSUPFUN init_record;
-  DEVSUPFUN get_ioint_info;
-  DEVSUPFUN read_mp;
+    long      number;
+    DEVSUPFUN report;
+    DEVSUPFUN init;
+    DEVSUPFUN init_record;
+    DEVSUPFUN get_ioint_info;
+    DEVSUPFUN read_mp;
 } devExprSoft = {
-5, NULL, NULL, init_record, NULL, read_mp};
-
+    5,
+    NULL,
+    NULL,
+    init_record,
+    NULL,
+    read_mp
+};
 epicsExportAddress(dset, devExprSoft);
 
-static void callbackFunc(CALLBACK * pcallback)
+static void callbackFunc(CALLBACK *pcallback)
 {
-  struct dbCommon *precord;
-  rset *prset;
-
-  callbackGetUser(precord, pcallback);
-  prset = (rset *) (precord->rset);
-  dbScanLock(precord);
-  (*prset->process) (precord);
-  dbScanUnlock(precord);
+     struct dbCommon  *precord;
+     rset      *prset;
+     
+     callbackGetUser(precord,pcallback);
+     prset = (rset *)(precord->rset);
+     dbScanLock(precord);
+     (*prset->process)(precord);
+     dbScanUnlock(precord);
 }
 
-static long init_record(mdsexprRecord * prec)
+
+
+static long init_record(mdsexprRecord *prec)
 {
-  CALLBACK *pcallback;
-  pcallback = (CALLBACK *) (calloc(1, sizeof(CALLBACK)));
-  callbackSetCallback(callbackFunc, pcallback);
-  callbackSetUser(prec, pcallback);
-  prec->dpvt = (void *)pcallback;
-  /* INP must be CONSTANT, PV_LINK, DB_LINK or CA_LINK */
+    CALLBACK *pcallback;
+    pcallback = (CALLBACK *)(calloc(1,sizeof(CALLBACK)));
+    callbackSetCallback(callbackFunc,pcallback);
+    callbackSetUser(prec,pcallback);
+    prec->dpvt = (void *)pcallback;
+    /* INP must be CONSTANT, PV_LINK, DB_LINK or CA_LINK*/
 /*    switch (prec->inp.type) {
     case CONSTANT:
         prec->nord = 0;
@@ -87,66 +92,65 @@ static long init_record(mdsexprRecord * prec)
         return(S_db_badField);
     }
 */
-  if (strlen(prec->exp) > 0 || (prec->loc == mdsexprLOCREM_Remote))	//If an experiment name is defined, or it is remote open it
-    prec->errs = openMds(prec->exp, prec->shot, (prec->loc == mdsexprLOCREM_Local), prec->dsip,
-			 0, &prec->tidx, prec->errm);
-  else
-    prec->tidx = -1;
-  return 0;
+    if(strlen(prec->exp) > 0 || (prec->loc == mdsexprLOCREM_Remote)) //If an experiment name is defined, or it is remote open it
+    	prec->errs = openMds(prec->exp, prec->shot, (prec->loc == mdsexprLOCREM_Local), prec->dsip, 
+		0, &prec->tidx, prec->errm);
+    else
+	prec->tidx = -1;
+    return 0;
 }
 
-static long asynchRead(CALLBACK * pcallback)
+static long asynchRead(CALLBACK *pcallback)
 {
-  struct dbCommon *precord;
-  struct rset *prset;
-  mdsexprRecord *prec;
-  long nRequest;
-  int nRows;
-  int i;
-  long currTime;
-  void *buffers[8];
-  int bufDims[8];
-  int bufTypes[8];
-  int nBuffers;
+    struct dbCommon  *precord;
+    struct rset      *prset;
+    mdsexprRecord *prec;
+    long nRequest;
+    int nRows;
+    int i;
+    long currTime;
+    void *buffers[8];
+    int bufDims[8];
+    int bufTypes[8];
+    int nBuffers;
 
-  callbackGetUser(precord, pcallback);
-  prec = (mdsexprRecord *) precord;
-  nRequest = prec->nelm;
+    callbackGetUser(precord,pcallback);
+    prec = (mdsexprRecord *)precord;
+    nRequest = prec->nelm;
 
-  for (i = 0; i < 8; i++) {
-    buffers[i] = malloc(8 * prec->nelm);	//Allocate maximum memory
-    bufDims[i] = prec->nelm;
-  }
-  dbGetLink(&prec->inp1, prec->fti1, buffers[0], 0, (void *)&bufDims[0]);
-  dbGetLink(&prec->inp2, prec->fti2, buffers[1], 0, (void *)&bufDims[1]);
-  dbGetLink(&prec->inp3, prec->fti3, buffers[2], 0, (void *)&bufDims[2]);
-  dbGetLink(&prec->inp4, prec->fti4, buffers[3], 0, (void *)&bufDims[3]);
-  dbGetLink(&prec->inp5, prec->fti5, buffers[4], 0, (void *)&bufDims[4]);
-  dbGetLink(&prec->inp6, prec->fti6, buffers[5], 0, (void *)&bufDims[5]);
-  dbGetLink(&prec->inp7, prec->fti7, buffers[6], 0, (void *)&bufDims[6]);
-  dbGetLink(&prec->inp8, prec->fti8, buffers[7], 0, (void *)&bufDims[7]);
+    for(i = 0; i < 8; i++)
+    {
+	buffers[i] = malloc(8*prec->nelm); //Allocate maximum memory
+	bufDims[i] = prec->nelm;
+    }
+    dbGetLink(&prec->inp1, prec->fti1, buffers[0], 0, (void *)&bufDims[0]);
+    dbGetLink(&prec->inp2, prec->fti2, buffers[1], 0, (void *)&bufDims[1]);
+    dbGetLink(&prec->inp3, prec->fti3, buffers[2], 0, (void *)&bufDims[2]);
+    dbGetLink(&prec->inp4, prec->fti4, buffers[3], 0, (void *)&bufDims[3]);
+    dbGetLink(&prec->inp5, prec->fti5, buffers[4], 0, (void *)&bufDims[4]);
+    dbGetLink(&prec->inp6, prec->fti6, buffers[5], 0, (void *)&bufDims[5]);
+    dbGetLink(&prec->inp7, prec->fti7, buffers[6], 0, (void *)&bufDims[6]);
+    dbGetLink(&prec->inp8, prec->fti8, buffers[7], 0, (void *)&bufDims[7]);
 
-  bufTypes[0] = prec->fti1;
-  bufTypes[1] = prec->fti2;
-  bufTypes[2] = prec->fti3;
-  bufTypes[3] = prec->fti4;
-  bufTypes[4] = prec->fti5;
-  bufTypes[5] = prec->fti6;
-  bufTypes[6] = prec->fti7;
-  bufTypes[7] = prec->fti8;
+    bufTypes[0] = prec->fti1;
+    bufTypes[1] = prec->fti2;
+    bufTypes[2] = prec->fti3;
+    bufTypes[3] = prec->fti4;
+    bufTypes[4] = prec->fti5;
+    bufTypes[5] = prec->fti6;
+    bufTypes[6] = prec->fti7;
+    bufTypes[7] = prec->fti8;
 
-  for (nBuffers = 0; nBuffers < 8; nBuffers++)
-    if (bufDims[nBuffers] == 0)
-      break;
+    for(nBuffers = 0; nBuffers < 8; nBuffers++)
+	if(bufDims[nBuffers] == 0)
+	    break;
 
-  prec->errs =
-      evaluateExpr(prec->expr, prec->tidx, nBuffers, buffers, bufDims, bufTypes, prec->nelm,
-		   prec->ftvl, prec->bptr, &prec->nord, prec->errm,
-		   (prec->loc == mdsexprLOCREM_Local));
+    prec->errs = evaluateExpr(prec->expr, prec->tidx, nBuffers, buffers, bufDims, bufTypes, prec->nelm, prec->ftvl, prec->bptr, &prec->nord, prec->errm, (prec->loc == mdsexprLOCREM_Local));
+
 
 //Deallocate memory
-  for (i = 0; i < 8; i++)
-    free(buffers[i]);
+    for(i = 0; i < 8; i++)
+	free(buffers[i]);
 
 //    dbGetLink(&prec->inp, prec->ftvl, prec->bptr, 0, &nRequest);
 /*    if (nRequest > 0) {
@@ -172,22 +176,50 @@ static long asynchRead(CALLBACK * pcallback)
         prec->didx += nRows;
     }
 */
-  callbackRequest(pcallback);
-  return 0;
-}
-
-static long read_mp(mdsexprRecord * prec)
-{
-  long nRequest = prec->nelm;
-  CALLBACK *pcallback = (CALLBACK *) prec->dpvt;
-  if (prec->pact) {
-    prec->udf = FALSE;
+    callbackRequest(pcallback);
     return 0;
-  }
-  prec->pact = TRUE;
-
-  epicsThreadCreate("mdsexpr_THREAD", epicsThreadPriorityHigh,
-		    epicsThreadGetStackSize(epicsThreadStackMedium), asynchRead, pcallback);
-//prec->pact = FALSE; //DA CAVARE
-  return 0;
 }
+
+
+static long read_mp(mdsexprRecord *prec)
+{
+    long nRequest = prec->nelm;
+     CALLBACK *pcallback = (CALLBACK *)prec->dpvt;
+     if(prec->pact) {
+          prec->udf = FALSE;
+          return 0;
+     }
+     prec->pact=TRUE;
+
+/*************************Set Intermediate result to 0 UNTIL SET BY asyncRead*********************************/
+     printf("Scrivo zero\n");
+     switch(prec->ftvl) {
+	    	case DBF_CHAR: 
+	    	case DBF_UCHAR: 
+		    *((char *)prec->bptr) = 0;
+		    break;
+	    	case DBF_SHORT: 
+	    	case DBF_USHORT: 
+		    *((short *)prec->bptr) = 0;
+		    break;
+	    	case DBF_LONG: 
+	    	case DBF_ULONG: 
+		    *((int *)prec->bptr) = 0;
+		    break;
+	    	case DBF_FLOAT: 
+		    *((float *)prec->bptr) = 0;
+		    break;
+	    	case DBF_DOUBLE: 
+		    *((double *)prec->bptr) = 0;
+		    break;
+	}
+
+/**************************************************************************************************************/
+
+    epicsThreadCreate("mdsexpr_THREAD", epicsThreadPriorityHigh, epicsThreadGetStackSize(epicsThreadStackMedium), asynchRead, pcallback);
+//prec->pact = FALSE; //DA CAVARE
+    return 0;
+}
+
+
+

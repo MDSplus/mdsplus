@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
+    <Property name="deviceTitle" type="java.lang.String" value="Variable Dudt Cycle clock generator"/>
+    <Property name="deviceType" type="java.lang.String" value="MARTE_DUTY_CYCLE"/>
+    <Property name="height" type="int" value="250"/>
+    <Property name="width" type="int" value="500"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,2,12"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="South"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="1"/>
+        <Property name="rows" type="int" value="3"/>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField1">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Comment:"/>
+                <Property name="numCols" type="int" value="25"/>
+                <Property name="offsetNid" type="int" value="1"/>
+                <Property name="textOnly" type="boolean" value="true"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceDispatch" name="deviceDispatch1">
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField2">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Device ID: "/>
+                <Property name="numCols" type="int" value="3"/>
+                <Property name="offsetNid" type="int" value="2"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField3">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="In Clock bit:"/>
+                <Property name="numCols" type="int" value="3"/>
+                <Property name="offsetNid" type="int" value="1039"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField4">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Enable bit:"/>
+                <Property name="numCols" type="int" value="3"/>
+                <Property name="offsetNid" type="int" value="1045"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField5">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Out Clock bit:"/>
+                <Property name="numCols" type="int" value="3"/>
+                <Property name="offsetNid" type="int" value="1051"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel4">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField6">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Freq.(Hz): "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="1057"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField7">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Output Freq. (Hz):"/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="1063"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField8">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Duty Cycle %:"/>
+                <Property name="numCols" type="int" value="3"/>
+                <Property name="offsetNid" type="int" value="1069"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

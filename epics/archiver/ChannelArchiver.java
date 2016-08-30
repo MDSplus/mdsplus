@@ -649,7 +649,7 @@ public class ChannelArchiver
                     if (isCheckChan || gh == null || !gh.isDisabled()) 
 		    {
                         treeManager.putRow(treeNodeName, data, time);
-               System.out.println("Severities: " + severity + " " + prevSeverity);
+                        System.out.println("Severities: " + severity + " " + prevSeverity);
 			if(severity != prevSeverity)
 			{
 			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
@@ -715,7 +715,6 @@ public class ChannelArchiver
             TreeNodeArray treeNodeArr = tree.getNodeWild("***");
             java.lang.String []nodeNames = treeNodeArr.getPath();
             int[] nids = treeNodeArr.getNid();
-	    System.out.println("Ci sono " + nodeNames.length + " PVs");
             for(int i = 0; i < nodeNames.length; i++)
             {
                 if(nodeNames[i].endsWith(":REC_NAME"))
@@ -727,13 +726,13 @@ public class ChannelArchiver
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
 			recName = recName.trim();
-                        System.out.println("Adesso mi smazzolo "+recName);
+                        System.out.println("Scanning...."+recName);
                         //Get VAL channel. It will remain open thorough the whole program execution
                         Channel valChan = ctxt.createChannel(recName+".VAL");
                         ctxt.pendIO(5.);
                         DBR valDbr = valChan.get();
                         ctxt.pendIO(5.);
-			System.out.println("Canale creato...");
+			System.out.println("Monitoring Channel created ...");
                         //valDbr.printInfo(System.out);
                         if(!valDbr.isENUM() && !valDbr.isCTRL()&&! valDbr.isINT())
                         {
@@ -814,7 +813,7 @@ public class ChannelArchiver
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
                         TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
-System.out.println("Configuazione letta, adesso collego....");
+			catSystem.out.println("Monitoring channel started...");
                         if(scanMode.equals("MONITOR"))
                         {
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
