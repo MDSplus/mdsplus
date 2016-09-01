@@ -405,33 +405,36 @@ case "$host" in
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$FC";
        LD="gcc"
-       if ( uname -m | grep 64 > /dev/null ) 
+       if ( echo $host| grep 64 > /dev/null )
        then
-         if ( echo $host| grep 64 > /dev/null )
+         if [[ -d /usr/lib64 ]]
          then
-           if [[ -d /usr/lib64 ]]
-           then
-             D64="64"
-           else
-             D64=""
-           fi
-           SYB64=$D64
-           TARGET_ARCH="-m64"
-           UILCMD=uil
-           uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
+           D64="64"
          else
-           TARGET_ARCH="-m32"
-           UILCMD=uil32
-           uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_builddir)/lib32/"
-           MAKESHLIBDIR="\$(top_builddir)/lib32/"
-           MAKEUIDDIR="\$(top_builddir)/uid32/"
-           MAKEBINDIR="\$(top_builddir)/bin32/"
+           D64=""
          fi
+         SYB64=$D64
+         TARGET_ARCH="-m64"
+         UILCMD=uil
+         uiddir="${uiddir}${D64}"
+         MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+         MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+         MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	 MAKEBINDIR="\$(top_builddir)/bin${D64}/"
+       else
+         if [[ -d /usr/lib64 ]]
+         then
+           D32="32"
+         else
+           D32=""
+         fi
+         TARGET_ARCH="-m32"
+         UILCMD=uil32
+         uiddir="${uiddir}${D32}"
+         MAKELIBDIR="\$(top_builddir)/lib${D32}/"
+         MAKESHLIBDIR="\$(top_builddir)/lib${D32}/"
+         MAKEUIDDIR="\$(top_builddir)/uid${D32}/"
+         MAKEBINDIR="\$(top_builddir)/bin${D32}/"
        fi
        FCFLAGS="$FCFLAGS -fno-range-check"
        FOR_LDFLAGS="-lg2c"
