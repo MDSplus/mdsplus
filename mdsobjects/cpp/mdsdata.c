@@ -336,7 +336,9 @@ void *convertFromDsc(void *ptr, void *tree)
 
 void freeDsc(void *dscPtr)
 {
+  
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)dscPtr;
+  if(!dscPtr) return;
   if (xdPtr->class != CLASS_XD) {
     printf("PANIC in convertFromDsc: not an XD\n");
     exit(0);
