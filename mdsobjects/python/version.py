@@ -15,10 +15,14 @@ has_basestring= 'basestring' in __builtins__
 has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
 
+import struct as _struct
+import os as _os
+isPointer8=_struct.calcsize('P')==8
+isNT=_os.name=='nt'
+
 def load_library(name):
     import ctypes as C
-    import os
-    import platform
+    import os, platform
     if platform.system() == 'Darwin':
         if not os.getenv('DYLD_LIBRARY_PATH'):
             if os.getenv('MDSPLUS_DIR'):
@@ -44,10 +48,16 @@ def load_library(name):
         try:
             return C.CDLL(libnam)
         except:
-            try:
-                return C.CDLL(name)
-            except:
-                return C.CDLL(os.path.basename(libnam))
+            pass
+        try:
+            return C.CDLL(name)
+        except:
+            pass
+        try:
+            return C.CDLL(os.path.basename(libnam))
+        except:
+            print('Could not load CDLL: '+libnam)
+
 
 # substitute missing builtins
 if has_long:

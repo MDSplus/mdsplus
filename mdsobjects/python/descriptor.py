@@ -1,5 +1,4 @@
 import ctypes as _C
-import os as _os
 
 def _mimport(name, level=1):
     try:
@@ -9,6 +8,7 @@ def _mimport(name, level=1):
 
 _ver=_mimport('version')
 descriptor=_mimport('descriptor')
+_exceptions=_mimport('mdsExceptions')
 
 #### Load Shared Libraries Referenced #######
 #
@@ -22,7 +22,7 @@ def __desc_init__(self):
     self.dclass = self.dclass_id
     self.pointer = _C.c_void_p(0)
 
-    
+
 class Descriptor(_C.Structure):
     _fields_=[("length",_C.c_ushort),
               ("dtype",_C.c_ubyte),
@@ -40,7 +40,7 @@ class Descriptor_s(_C.Structure):
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
-  
+
 class Descriptor_d(_C.Structure):
     dclass_id = 2
     _fields_=Descriptor._fields_
@@ -53,9 +53,7 @@ class Descriptor_d(_C.Structure):
 
 class Descriptor_a(_C.Structure):
     dclass_id = 4
-    if _os.name=='nt':
-        if _struct.calcsize("P")==4:
-            _pack_=1
+    if _ver.isNT:
         _fields_=Descriptor._fields_ + [("scale",_C.c_byte),
                                         ("digits",_C.c_ubyte),
                                         ("aflags",_C.c_ubyte),
@@ -136,7 +134,7 @@ def __desc_xd_init__(self):
     self.dclass = self.dclass_id
     self.pointer = _C.c_void_p(0)
     self.l_length = 0
-    
+
 class Descriptor_xd(_C.Structure):
     dclass_id = 192
     dtype_dsc = 24
@@ -164,10 +162,10 @@ class Descriptor_xs(_C.Structure):
         else:
             return _C.cast(self.pointer,_C.POINTER(dclassToClass[self.dclass])).contents.value
 
-    
+
 class Descriptor_r(_C.Structure):
     dclass_id = 194
-    if _os.name=='nt' and _struct.calcsize("P")==8:
+    if _ver.isNT and _ver.isPointer8:
         _fields_=Descriptor._fields_ + [("ndesc",_C.c_ubyte),
                                         ("fill1",_C.c_ubyte*6),
                                         ("dscptrs",_C.POINTER(Descriptor)*256)]
@@ -179,7 +177,7 @@ class Descriptor_r(_C.Structure):
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
-    
+
 class Descriptor_ca(_C.Structure):
     dclass_id = 195
     _fields_=Descriptor_a._fields_
@@ -191,8 +189,8 @@ class Descriptor_ca(_C.Structure):
         if (status & 1) == 1:
             return xd.value
         else:
-            raise _Exceptions.statusToException(status)
-    
+            raise _exceptions.statusToException(status)
+
 class Descriptor_apd(_C.Structure):
     dclass_id = 196
     _fields_=Descriptor_a._fields_
