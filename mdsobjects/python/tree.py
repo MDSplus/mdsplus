@@ -1130,7 +1130,7 @@ class TreeNode(object):
         "Is this node turned on (settable)"
         return self.isOn()
     @on.setter
-    def set_on(self,value): self.setOn(value)
+    def on(self,value): self.setOn(value)
 
     original_part_name=nciProp("original_part_name","original part name of this node")
 
