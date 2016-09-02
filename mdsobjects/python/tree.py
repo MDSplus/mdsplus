@@ -2903,7 +2903,7 @@ class Device(TreeNode):
         parent = tree
         if isinstance(tree, TreeNode): tree = tree.tree
         cls.__class_init__()
-        _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
+        _TreeShr._TreeStartConglomerate(tree.ctx,len(cls.parts)+1)
         if isinstance(name,_ident.Ident):
             name=name.data()
         head=parent.addNode(name,'DEVICE')
@@ -2912,8 +2912,6 @@ class Device(TreeNode):
             import_string="from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__)
         except:
             import_string=None
-
-
         head.record=_compound.Conglom('__python__',cls.__name__,None,import_string)
         head.write_once=True
         import MDSplus
@@ -2935,7 +2933,7 @@ class Device(TreeNode):
             if 'options' in elt:
                 for option in elt['options']:
                     node.__setattr__(option,True)
-        _treeshr.TreeEndConglomerate(tree)
+        _TreeShr._TreeEndConglomerate(tree.ctx)
         return head
 
 
