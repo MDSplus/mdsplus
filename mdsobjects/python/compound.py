@@ -261,7 +261,7 @@ class Compound(_data.Data):
         if d.length == 2:
             ans.opcode=_C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
         return ans
-            
+
 class Action(Compound):
     """
     An Action is used for describing an operation to be performed by an
@@ -325,7 +325,7 @@ class Dispatch(Compound):
             self.opcode=kwargs['dispatch_type']
         else:
             self.opcode=2
-        super(_Dispatch,self).__init__(args=args)
+        super(Dispatch,self).__init__(args=args)
         if self.completion is None:
            self.completion = None
 
