@@ -243,10 +243,10 @@ class Compound(_data.Data):
             else:
                 d.dscptrs[idx]=_C.cast(_C.pointer(self.args[idx].descriptor),_C.POINTER(_descriptor.Descriptor))
         d.original=self
-        if self._units or self._error is not None or self._help is not None or self._validation is not None:
-            return self.descriptorWithProps(self,d)
+        if self._units is None and self._error is None and self._help is None and self._validation is None:
+            return d  # if not props
         else:
-            return d
+            return self.descriptorWithProps(self,d)
 
     @classmethod
     def fromDescriptor(cls,d):
