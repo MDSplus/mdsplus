@@ -339,7 +339,7 @@ int * Data::getShape(int *numDim)
 ///
 Data * Data::getData(int classType, int dataType) {
 	void *dscPtr = convertToDsc();
-	void *retDsc;
+	void *retDsc = NULL;
 	switch(dataType)  
 	{
 	  case DTYPE_B: 
