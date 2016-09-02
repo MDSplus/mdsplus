@@ -10,7 +10,6 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 @license: GNU GPL
 
 """
-import sys as _sys
 try:
     @property
     def gub(self):
@@ -54,7 +53,7 @@ _mimport('_loadglobals').load(globals())
 def _remove():
     "Remove installed MDSplus package"
     import os
-    
+
     def _findPackageDir():
         _f=__file__.split(os.sep)
         while len(_f) > 1 and _f[-1] != 'MDSplus':
@@ -64,7 +63,6 @@ def _remove():
         if 'egg' in _f[-2]:
             _f=_f[:-1]
         return os.sep.join(_f)
-    _f=__file__.split(os.sep)
 
     packagedir=_findPackageDir()
     try:
@@ -73,6 +71,6 @@ def _remove():
     except Exception:
         import sys
         print("Error removing %s: %s" % (packagedir,sys.exc_info()[1]))
-        
 
-            
+
+
