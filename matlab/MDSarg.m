@@ -60,7 +60,11 @@ else
         case 'uint8'
             result = Uint8Array(reshape(thing,[],1),sz(sz > 1));
         case 'char'
-            result = String(thing);
+            if (sz(1) == 1)
+              result = String(thing);
+            else
+              result = StringArray(thing);
+            end
         otherwise
             result = thing;
     end
