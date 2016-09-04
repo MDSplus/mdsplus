@@ -4,7 +4,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import copy as _copy
 import numpy as _N
 import ctypes as _C
 
@@ -72,7 +71,7 @@ class Apd(_data.Data):
         return False
 
     def __fixTreeReferences__(self,tree):
-        descs=list(ans.descs)
+        descs=list(self.descs)
         for idx in range(len(descs)):
             if isinstance(descs[idx],_data.Data) and descs[idx].__hasBadTreeReferences__(tree):
                 descs[idx]=descs[idx].__fixTreeReferences__(tree)
@@ -254,4 +253,4 @@ descriptor=_mimport('descriptor')
 descriptor.dtypeToClass[Apd.dtype_id]=Apd
 descriptor.dtypeToClass[List.dtype_id]=List
 descriptor.dtypeToClass[Dictionary.dtype_id]=Dictionary
-                        
+
