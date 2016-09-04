@@ -532,8 +532,7 @@ Get tree information such as:
 
     def dir(self):
         """list descendants of top"""
-        TreeNode(0,self).dir()
-
+        self.top.dir()
 
     def edit(self):
         """Open tree for editing.
@@ -1308,15 +1307,14 @@ class TreeNode(object):
         Use replace=True if any existing tags should be removed.
         Tag names must be either a str or a list or tuple
         containing str instances."""
-        ok=True
+        def checkstr(s):
+            if not isinstance(s,str):
+                raise TypeError("Tag names must be a string or list of strings")
         if isinstance(names,(list,tuple)):
             for name in names:
-                if not isinstance(name,str):
-                    ok=False
-        elif not isinstance(names,str):
-            ok=False
-        if not ok:
-            raise TypeError("Tag names must be a string or list of strings")
+                checkstr(name)
+        else:
+            checkstr(names)
         if replace:
             for name in self.tags:
                 self.removeTag(name)
@@ -1983,18 +1981,18 @@ class TreeNode(object):
         try:
             ctx=_C.c_void_p(0)
             tags=list()
-            done=False
             fnt=_TreeShr._TreeFindNodeTags
             fnt.restype=_C.c_void_p
-            while not done:
+            while True:
                 tag_ptr=_TreeShr._TreeFindNodeTags(self.tree.ctx,
                                                    self._nid,
                                                    _C.pointer(ctx))
-                try:
-                    tags.append(_ver.tostr(_C.cast(tag_ptr,_C.c_char_p).value.rstrip()))
-                    Tree._TreeFree(tag_ptr)
-                except:
-                    done=True
+                value = _C.cast(tag_ptr,_C.c_char_p).value
+                if value is None:
+                    _TreeShr.TreeFree(tag_ptr)
+                    break;
+                tags.append(_ver.tostr(value.rstrip()))
+                _TreeShr.TreeFree(tag_ptr)
         finally:
             Tree.unlock()
         tags = _array.makeArray(tags).astype(_ver.npstr)
