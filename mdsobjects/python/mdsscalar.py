@@ -61,11 +61,10 @@ def makeScalar(value):
 class Scalar(_data.Data):
     _value = None
     def __new__(cls,value=0):
-        try:
-            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
-               return _array.__dict__[cls.__name__+'Array'](value)
-        except:
-            pass
+        if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
+            key = cls.__name__+'Array'
+            if key in _array.__dict__:
+                return _array.__dict__[key](value)
         return super(Scalar,cls).__new__(cls)
 
     def __init__(self,value=0):
