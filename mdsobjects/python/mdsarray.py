@@ -254,10 +254,10 @@ class Array(_data.Data):
         if isinstance(value,Array):
             return value
         if isinstance(value,_scalar.Scalar):
-            return makeArray((value._value,))
+            return Array.make((value._value,))
         if isinstance(value,_C.Array):
             try:
-                return makeArray(_N.ctypeslib.as_array(value))
+                return Array.make(_N.ctypeslib.as_array(value))
             except Exception:
                 pass
         if isinstance(value,tuple) | isinstance(value,list):
@@ -269,18 +269,18 @@ class Array(_data.Data):
             except (ValueError,TypeError):
                 newlist=list()
                 for i in value:
-                    newlist.append(_data.makeData(i).data())
-                return makeArray(_N.array(newlist))
+                    newlist.append(_data.Data.make(i).data())
+                return Array.make(_N.array(newlist))
         if isinstance(value,_N.ndarray):
             if str(value.dtype)[1] in 'SU':
                 return StringArray(value)
             if str(value.dtype) == 'bool':
-                return makeArray(value.__array__(_N.uint8))
+                return Array.make(value.__array__(_N.uint8))
             if str(value.dtype) == 'object':
                 raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
             return globals()[str(value.dtype).capitalize()+'Array'](value)
         if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
-            return makeArray(_N.array(value).reshape(1))
+            return Array.make(_N.array(value).reshape(1))
         raise TypeError('Cannot make Array out of '+str(type(value)))
 
 makeArray = Array.make

@@ -659,7 +659,7 @@ class Data(object):
         if isinstance(value,(tuple,list)):
             return _apd.List(value)
         if isinstance(value,(_N.ndarray,_C.Array)):
-            return _array.makeArray(value)
+            return _array.Array.make(value)
         if isinstance(value,dict):
             return _apd.Dictionary(value)
         if isinstance(value,slice):
