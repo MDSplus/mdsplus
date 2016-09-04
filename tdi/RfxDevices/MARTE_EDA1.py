@@ -18,11 +18,11 @@ class MARTE_EDA1(MARTE_GENERIC):
         'LqgComResOn','LqgFbkON','LqgRefOn','LqgFbkKproGain','LqgFfwOn','LqgFfwGain', 'ToffFbkShiftH', 'condTriggerTimes', 'condTriggerThresholds', 'DisruptionDetectionEnable',
         'TokTstartCheckMode','TokThresholdBpmode','TokIpLowQ','TokTunIpFR','TokVpcatRampUp','TokTunVpcat','IFS_DN','LQGIpfilterOn','LQGContIpnormOn','LQGEquiIpNormOn','TokFastRampUpIpOn']
 
-    parValues = (['0']*26+['TdiCompile("zero(8, 0.)")']*2 + ['0']*8 +
-        ['0.3','1.5','TdiCompile("[0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]")','500','0','0.3','300','1500','7.5','0','0','5.649E-5','0','0'] +
-        ['0.3','1.5','TdiCompile("[0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315]")','500','0','0.3','300','150' ,'7.5','0','0','5950'    ,'0','0'] + ['0']*12 +
-        ['TdiCompile("[.15,.3,.15,.3,.15,.3,.3,.3]")','TdiCompile("[9000E3,2250E3,6000E3,2250E3,6000E3,1500E3,1500E3,2250E3]")','.3','.5','0.','0.','.55','.8','0','1','0','1.','0','1.','0.'] +
-        ['TdiCompile("[0.,0.,0.,0.]")']*2 + ['0','10.2','100E-9','160000','.95','1000','1','TdiCompile("[-2746,-889,4100,0,-1692,-1157,-206,426]")','1','1','1','0'])
+    parValues = (['0']*26+['ZERO(8,0.)']*2 + ['0']*8 +
+        ['0.3','1.5','Float32Array([0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239])','500','0','0.3','300','1500','7.5','0','0','5.649E-5','0','0'] +
+        ['0.3','1.5','Float32Array([0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315])','500','0','0.3','300','150' ,'7.5','0','0','5950'    ,'0','0'] + ['0']*12 +
+        ['Float32Array([.15,.3,.15,.3,.15,.3,.3,.3])','Float32Array([9000E3,2250E3,6000E3,2250E3,6000E3,1500E3,1500E3,2250E3])','.3','.5','0.','0.','.55','.8','0','1','0','1.','0','1.','0.'] +
+        ['Float32Array([0.,0.,0.,0.])']*2 + ['0','10.2','100E-9','160000','.95','1000','1','Int32Array([-2746,-889,4100,0,-1692,-1157,-206,426])','1','1','1','0'])
     parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})

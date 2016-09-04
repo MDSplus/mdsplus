@@ -6,7 +6,7 @@ except:
 class MARTE_RTSM(MARTE_COMMON):
     parNames = ['numStates', 'stateTime','stateNumNext','stateNext','stateNextMask','stateNextPattern','stateOutMode','stateOutBits', 'triggerTime', 'frequency']
 
-    parValues = ['1']+['TdiCompile("zero(8, 0.)")']*2+['TdiCompile("zero(64, 0.)")']*4+['TdiCompile("zero(8, 0.)")', '0', '1000']
+    parValues = ['1']+['ZERO(8,0.)']*2+['ZERO(64,0.)']*4+['ZERO(8,0.)', '0', '1000']
 
     waveParNames = ['state1_wave1','state1_wave2','state1_wave3','state1_wave4','state1_wave5','state1_wave6','state1_wave7','state1_wave8',
         'state2_wave1','state2_wave2','state2_wave3','state2_wave4','state2_wave5','state2_wave6','state2_wave7','state2_wave8',
