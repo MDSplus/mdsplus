@@ -306,10 +306,8 @@ class GetMany(_apd.List):
                 name=val['name']
                 try:
                     self.result[name]=_apd.Dictionary({'value':_data.Data.execute('data('+val['exp']+')',tuple(val['args']))})
-                except Exception:
-                    import sys
-                    e=sys.exc_info()[1]
-                    self.result[name]=_apd.Dictionary({'error':str(e)})
+                except Exception as exc:
+                    self.result[name]=_apd.Dictionary({'error':str(exc)})
             return self.result
         else:
             ans=self.connection.get("GetManyExecute($)",self.serialize())
@@ -424,8 +422,8 @@ class PutMany(_apd.List):
                         self.result[node]='Success'
                     else:
                         self.result[node]=_statToEx(status).message
-                except:
-                    self.result[node]=str(_sys.exc_info()[1])
+                except Exception as exc:
+                    self.result[node]=str(exc)
             return self.result
         else:
             ans=self.connection.get("PutManyExecute($)",self.serialize())

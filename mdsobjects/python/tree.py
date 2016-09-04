@@ -2967,11 +2967,9 @@ class Device(TreeNode):
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
             MDSplusWidget.doToAll(window,"reset")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            print( e)
-            raise Exception("No setup available, %s" % (str(e),))
+        except Exception as exc:
+            print(exc)
+            raise Exception("No setup available, %s" % (str(exc),))
 
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()

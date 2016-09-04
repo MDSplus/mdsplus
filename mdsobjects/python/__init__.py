@@ -46,9 +46,8 @@ except:
 
 #try:
 _mimport('_loadglobals').load(globals())
-#except Exception:
-#    import sys
-#    print('Error importing MDSplus package: %s' % (sys.exc_info()[1],))
+#except Exception as exc:
+#    print('Error importing MDSplus package: %s' % (exc,))
 
 TdiCompile=globals()['Data'].compile
 TdiEvaluate=globals()['Data'].evaluate
@@ -72,9 +71,8 @@ def _remove():
     try:
         import shutil
         shutil.rmtree(packagedir)
-    except Exception:
-        import sys
-        print("Error removing %s: %s" % (packagedir,sys.exc_info()[1]))
+    except Exception as exc:
+        print("Error removing %s: %s" % (packagedir,exc))
 
 
 

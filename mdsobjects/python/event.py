@@ -231,8 +231,8 @@ the e.join() would return exiting the problem.
                 self.exception=None
             except MdsInvalidEvent:
                 return
-            except:
-                self.exception=_sys.exc_info()[1]
+            except Exception as exc:
+                self.exception=exc
             self.time=_time.time()
             self.qtime=_mdsshr.DateToQuad("now")
             self.subclass_run()
