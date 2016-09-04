@@ -1444,9 +1444,9 @@ class TreeNode(object):
             raise TreeNodeException("Node does not contain an action description")
         else:
             if wait:
-                status=_data.Data.execute("tcl('dispatch/wait "+str(self.fullpath).replace('\\','\\\\')+"')")
+                status=_mdsdcl.tcl("dispatch/wait "+str(self.fullpath))
             else:
-                status=_data.Data.execute("tcl('dispatch/nowait "+str(self.fullpath).replace('\\','\\\\')+"')")
+                status=_mdsdcl.tcl("dispatch/wait "+str(self.fullpath))
             if not (status & 1):
                 raise TreeNodeException(status)
 
