@@ -5,7 +5,7 @@ except:
 
 class MARTE_DEQU(MARTE_GENERIC):
     parNames = ['InputMapping', 'InputAutozero', 'bpCorrectionCoeffs', 'torI2TLimit', 'FluxDiffCorrectionOn', 'FluxDiffCorrectionCoeffs', 'AliasRemoveOn', 'TimeConstLpfMandF', 'FourthHarmRecOn', 'deltaTequ']
-    parValues = ['0','0', 'TdiCompile("zero(32, 0.)+1.")','0','0', 'TdiCompile("[-331.63E-9,-123.053E-9,-24.8494E-9,10.2545E-9,15.5055E-9,-35.3507E-9,-186.869E-9]")','0','0.16','0','0.05']
+    parValues = ['0','0', 'ADD(ZERO(32,0.),1.)','0','0', 'Float32Array([-331.63E-9,-123.053E-9,-24.8494E-9,10.2545E-9,15.5055E-9,-35.3507E-9,-186.869E-9])','0','0.16','0','0.05']
     parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
