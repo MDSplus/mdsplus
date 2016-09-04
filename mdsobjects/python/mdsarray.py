@@ -69,7 +69,7 @@ def arrayDecompile(a,cl):
 
 class Array(_data.Data):
     ctype=None
-    
+
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
@@ -130,7 +130,7 @@ class Array(_data.Data):
         @rtype: Data
         """
         return len(self.data())
-    
+
     def getElementAt(self,itm):
         return _data.makeData(self._value[itm])
 
@@ -241,11 +241,11 @@ class Array(_data.Data):
                         _C.POINTER(_C.c_int32 * int(d.arsize/d.length))).contents))
             return _tree.TreeNodeArray(list(nids))
         if d.dtype == 10: ### VMS FLOAT
-            return _array.makeArray(_data.Data.execute("float($)",(d,)))
+            return makeArray(_data.Data.execute("float($)",(d,)))
         if d.dtype == 11 or d.dtype == 27: ### VMS DOUBLES
-            return _array.makeArray(_data.Data.execute("FT_FLOAT($)",(d,)))
+            return makeArray(_data.Data.execute("FT_FLOAT($)",(d,)))
         if d.dtype == Complex64Array.dtype_id:
-            return _array.makeArray(
+            return makeArray(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex64,
@@ -255,7 +255,7 @@ class Array(_data.Data):
                             _C.POINTER(
                                 _C.c_float * int(d.arsize*2/d.length))).contents)))
         if d.dtype == Complex128Array.dtype_id:
-            return _array.makeArray(
+            return makeArray(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex128,
@@ -281,7 +281,7 @@ class Int8Array(Array):
     """8-bit signed number"""
     dtype_id=6
     ctype=_C.c_int8
-    
+
     def deserialize(self):
         """Return data item if this array was returned from serialize.
         @rtype: Data
@@ -317,7 +317,7 @@ class Uint16Array(Array):
     """16-bit unsigned number"""
     dtype_id=3
     ctype=_C.c_uint16
-    
+
 class Uint32Array(Array):
     """32-bit unsigned number"""
     dtype_id=4
