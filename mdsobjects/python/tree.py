@@ -3023,24 +3023,22 @@ class Device(TreeNode):
             path=os.environ["MDS_PYDEVICE_PATH"]
             parts=path.split(';')
             for part in parts:
-                w=os.walk(part)
-                for dp,dn,fn in w:
+                for dp,dn,fn in os.walk(part):
+                    sys.path.insert(0,dp)
                     for fname in fn:
                         if fname.endswith('.py'):
-                            sys.path.insert(0,dp)
                             try:
                                 devnam=fname[:-3].upper()
-                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
-                                ans.append(device+'\0')  # TODO: check whether devnam or device should be used here
+                                __builtin__.__import__(fname[:-3]).__dict__[devnam]
+                                ans.append(devnam+'\0')
                                 ans.append('\0')
                             except:
                                 pass
-                            finally:
-                                sys.path.remove(dp)
+                    sys.path.remove(dp)
         if len(ans) == 0:
             return None
         else:
-            return _mdsdata.Data.execute(str(ans))
+            return _mdsdata.Data.compile(str(ans))
 
 
 
