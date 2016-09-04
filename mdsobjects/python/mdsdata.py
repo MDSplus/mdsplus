@@ -156,6 +156,9 @@ class Data(object):
                 delattr(self,'_units')
         else:
             self._units=units
+    def setUnits(self,units):
+        self.units=units
+        return self
 
     @property
     def error(self):
@@ -168,6 +171,9 @@ class Data(object):
                 delattr(self,'_error')
         else:
             self._error=error
+    def setError(self,error):
+        self.error=error
+        return self
 
     @property
     def help(self):
@@ -180,6 +186,9 @@ class Data(object):
                 delattr(self,'_help')
         else:
             self._help=help
+    def setHelp(self,help):
+        self.help=help
+        return self
 
     @property
     def validation(self):
@@ -192,6 +201,9 @@ class Data(object):
                 delattr(self,'_validation')
         else:
             self._validation=validation
+    def setValidation(self,validation):
+        self.validation=validation
+        return self
 
     def __abs__(self):
         """
@@ -440,6 +452,8 @@ class Data(object):
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
+        if len(args)==2 and isinstance(args[1],(tuple,)):
+            args = tuple([args[0]]+list(args[1]))  # compatibility
         return _compound.COMPILE(*args).evaluate()
 
     @staticmethod

@@ -303,6 +303,10 @@ Get tree information such as:
             else:
                 return item[1](ans.value)
 
+    @property
+    def top(self):  # compatibility
+        "Tree root"
+        return TreeNode(0,self)
     def __getattr__(self,name):
 
         """Support for referencing an immediate child or
