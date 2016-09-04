@@ -20,62 +20,6 @@ _TdiShr=_version.load_library('TdiShr')
 #
 #############################################
 
-def getUnits(item):
-    """Return units of item. Evaluate the units expression if necessary.
-    @rtype: string"""
-    try:
-        return item.units
-    except:
-        return ""
-
-def getError(item):
-    """Return the data of the error of an object
-    @rtype: Data"""
-    try:
-        return item.error
-    except:
-        return None
-
-def getValuePart(item):
-    """Return the value portion of an object
-    @rtype: Data"""
-    try:
-        return _compound.VALUE_OF(item).evaluate()
-    except:
-        return None
-
-def getDimension(item,idx=0):
-    """Return dimension of an object
-    @rtype: Data"""
-    try:
-        return _compound.DIM_OF(item,idx).evaluate()
-    except:
-        return None
-
-def data(item):
-    """Return the data for an object converted into a primitive data type
-    @rtype: Data"""
-    return _compound.DATA(item).evaluate().value
-
-def decompile(item):
-    """Returns the item converted to a string
-    @rtype: string"""
-    return str(makeData(item).decompile())
-
-def evaluate(item,):
-    """Return evaluation of mdsplus object"""
-    try:
-        return makeData(item).evaluate()
-    except:
-        return item
-
-def rawPart(item):
-    """Return raw portion of data item"""
-    try:
-        return item.raw
-    except:
-        return None
-
 def makeData(value):
     """Convert a python object to a MDSobject Data object"""
     if value is None:
@@ -142,7 +86,6 @@ class Data(object):
         @type idx: int
         @rtype: Data"""
         return _compound.DIM_OF(self,idx).evaluate()
-
     dim_of=getDimensionAt
 
     @property
