@@ -92,9 +92,7 @@ def makeData(value):
         return _apd.Dictionary(value)
     if isinstance(value,slice):
         return _compound.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
-
-    else:
-        raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
+    raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
 
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
@@ -132,6 +130,7 @@ class Data(object):
         """Return raw part of object
         @rtype: Data"""
         return _compound.RAW_OF(self).evaluate()
+
     def units_of(self):
         """Return units of object
         @rtype: Data"""
@@ -421,7 +420,7 @@ class Data(object):
         """Xor: x.__xor__(y) <==> x^y
         @rtype: Data"""
         return Data.execute('$^$',self,y)
-    
+
     def compare(self,value):
         """Compare this data with argument
         @param value: data to compare to
@@ -563,7 +562,7 @@ class Data(object):
         return ans
 
     def getFloat(self):
-        """Convert this data into a float32. 
+        """Convert this data into a float32.
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
@@ -601,7 +600,7 @@ class Data(object):
         return _compound.SHAPE(self).evaluate()
 
     def getByteArray(self):
-        """Convert this data into a byte array. 
+        """Convert this data into a byte array.
         @rtype: Int8Array
         """
         return _compound.BYTE(self).evaluate()
@@ -718,10 +717,10 @@ class EmptyData(Data):
     """No Value"""
     def __init__(self):
         pass
-    
+
     def __str__(self):
         return "<no-data>"
-    
+
     @property
     def value(self):
         return None
