@@ -164,11 +164,8 @@ class Compound(_data.Data):
     @staticmethod
     def descriptorWithProps(value,d):
         dpt=_C.POINTER(_descriptor.Descriptor)
-        try:
+        if value._units is not None:
             units_d=_data.makeData(value._units).descriptor
-        except AttributeError:
-            units_d=None
-        if units_d is not None:
             dunits=_descriptor.Descriptor_r()
             dunits.length=0
             dunits.dtype=WithUnits.dtype_id
@@ -179,11 +176,8 @@ class Compound(_data.Data):
             dunits.original=d
         else:
             dunits=d
-        try:
+        if value._error is not None:
             error_d=_data.makeData(value._error).descriptor
-        except AttributeError:
-            error_d=None
-        if error_d is not None:
             derror=_descriptor.Descriptor_r()
             derror.length=0
             derror.dtype=WithError.dtype_id
@@ -194,26 +188,20 @@ class Compound(_data.Data):
             derror.original=dunits
         else:
             derror=dunits
-        try:
-            help_d=_data.makeData(value._help).descriptor
-        except AttributeError:
-            help_d=None
-        try:
-            validation_d=_data.makeData(value._validation).descriptor
-        except AttributeError:
-            validation_d=None
-        if help_d is not None or validation_d is not None:
+        if value._help is not None or value._validation is not None:
             dparam=_descriptor.Descriptor_r()
             dparam.length=0
             dparam.dtype=Parameter.dtype_id
             dparam.pointer=_C.c_void_p(0)
             dparam.ndesc=3
             dparam.dscptrs[0]=_C.cast(_C.pointer(derror),dpt)
-            if help_d is not None:
+            if value._help is not None:
+                help_d=_data.makeData(value._help).descriptor
                 dparam.dscptrs[1]=_C.cast(_C.pointer(help_d),dpt)
             else:
                 dparam.dscptrs[1]=_C.cast(_C.c_void_p(0),dpt)
-            if validation_d is not None:
+            if value._validation is not None:
+                validation_d=_data.makeData(value._validation).descriptor
                 dparam.dscptrs[2]=_C.cast(_C.pointer(validation_d),dpt)
             else:
                 dparam.dscptrs[2]=_C.cast(_C.c_void_p(0),dpt)
