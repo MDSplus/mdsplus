@@ -3031,6 +3031,12 @@ class Device(TreeNode):
                                 devnam=fname[:-3].upper()
                                 __builtin__.__import__(fname[:-3]).__dict__[devnam]
                                 ans.append(devnam+'\0')
+                                """
+                          TODO: If the trailing \0 is important, it is unsave
+                                python's numpy trims the \0 is if len(item) = itemsize-1
+                                perhaps it is better to omit the \0 and trim the strings
+                                in client program
+                                """
                                 ans.append('\0')
                             except:
                                 pass

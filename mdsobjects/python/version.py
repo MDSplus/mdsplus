@@ -14,6 +14,7 @@ has_unicode   = 'unicode'    in __builtins__
 has_basestring= 'basestring' in __builtins__
 has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
+has_xrange    = 'xrange'     in __builtins__
 
 import struct as _struct
 import os as _os
@@ -88,6 +89,10 @@ if has_unicode:
     varstr = unicode
 else:
     varstr = bytes
+if has_xrange:
+    xrange = xrange
+else:
+    xrange = range
 
 # numpy char types
 npunicode = 'U'

@@ -20,6 +20,13 @@ class Array(_data.Data):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
         if self.__class__.__name__ == 'StringArray':
+            if isinstance(value,(tuple,list)):
+                l = 0
+                for s in value:
+                    l = max(l,len(s))
+                value = list(value)
+                for i in _ver.xrange(len(value)):
+                    value[i]=value[i].ljust(l)
             self._value=_N.array(value).__array__(_N.str_)
             return
         if isinstance(value,_C.Array):
@@ -259,12 +266,12 @@ class Array(_data.Data):
                 return Array.make(_N.ctypeslib.as_array(value))
             except Exception:
                 pass
-        if isinstance(value,tuple) | isinstance(value,list):
+        if isinstance(value,(tuple,list)):
             try:
                 ans=_N.array(value)
                 if str(ans.dtype)[1] in 'SU':
                     ans = ans.astype(_ver.npstr)
-                return makeArray(ans)
+                return Array.make()
             except (ValueError,TypeError):
                 newlist=list()
                 for i in value:
