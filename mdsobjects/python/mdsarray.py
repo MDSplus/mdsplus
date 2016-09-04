@@ -13,27 +13,6 @@ _ver=_mimport('version')
 descriptor=_mimport('descriptor')
 _compound=_mimport('compound')
 
-def arrayDecompile(a,cl):
-    if len(a.shape)==1:
-        ans='['
-        for idx in range(len(a)):
-            sval=cl(a[idx])
-            if idx < len(a)-1:
-                ending=','
-            else:
-                ending=']'
-            ans=ans+sval.decompile()+ending
-        return ans
-    else:
-        ans='['
-        for idx in range(a.shape[0]):
-            if idx < a.shape[0]-1:
-                ending=', '
-            else:
-                ending=']'
-            ans=ans+arrayDecompile(a[idx],cl)+ending
-        return ans
-
 class Array(_data.Data):
     ctype=None
 
@@ -136,6 +115,26 @@ class Array(_data.Data):
 
 
     def decompile(self):
+        def arrayDecompile(a,cl):
+            if len(a.shape)==1:
+                ans='['
+                for idx in range(len(a)):
+                    sval=cl(a[idx])
+                    if idx < len(a)-1:
+                        ending=','
+                    else:
+                        ending=']'
+                    ans+=sval.decompile()+ending
+                return ans
+            else:
+                ans='['
+                for idx in range(a.shape[0]):
+                    if idx < a.shape[0]-1:
+                        ending=', '
+                    else:
+                        ending=']'
+                    ans+=arrayDecompile(a[idx],cl)+ending
+                return ans
         if str(self._value.dtype)[1] in 'SU':
             cl=_scalar.String
         else:
