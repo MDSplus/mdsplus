@@ -21,13 +21,14 @@ if os.name=='nt':
 else:
     setenv("PyLib","python%d.%d" % sys.version_info[0:2])
 
-treeSuite=       _mimportSuite('treeUnitTest')
-threadsSuite=    _mimportSuite('threadsUnitTest')
+connectionsSuite=_mimportSuite('connectionUnitTest')
 dataSuite=       _mimportSuite('dataUnitTest')
 dclSuite=        _mimportSuite('dclUnitTest')
+devicesSuite=    _mimportSuite('devicesUnitTest')
 exceptionSuite=  _mimportSuite('exceptionUnitTest')
-connectionsSuite=_mimportSuite('connectionUnitTest')
 segmentsSuite=   _mimportSuite('segmentsUnitTest')
+treeSuite=       _mimportSuite('treeUnitTest')
+threadsSuite=    _mimportSuite('threadsUnitTest')
 
 class cleanup(TestCase):
     dir=None
@@ -65,15 +66,15 @@ def test_all(*arg):
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
     tests=list()
-    tests.append(dclSuite())
     tests.append(dataSuite())
-    tests.append(exceptionSuite())
+    tests.append(dclSuite())
+    tests.append(devicesSuite())
     tests.append(connectionsSuite())
+    tests.append(exceptionSuite())
     tests.append(segmentsSuite())
     tests.append(treeSuite())
     if os.getenv('TEST_THREADS') is not None:
         tests.append(threadsSuite())
-
     return TestSuite(tests)
 
 def run():
