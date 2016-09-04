@@ -50,6 +50,10 @@ _mimport('_loadglobals').load(globals())
 #    import sys
 #    print('Error importing MDSplus package: %s' % (sys.exc_info()[1],))
 
+TdiCompile=globals()['Data'].compile
+TdiEvaluate=globals()['Data'].evaluate
+TdiExecute=globals()['Data'].execute
+
 def _remove():
     "Remove installed MDSplus package"
     import os
