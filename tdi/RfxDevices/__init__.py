@@ -28,7 +28,7 @@ except:
     __version__='Unknown'
 
 from MDSplus import Device as _debug
-if _debug.debug: 
+if _debug.debug:
     from sys import stdout as _stdout
     def _debug(s,p=tuple()):
         _stdout.write(s % p)
@@ -44,8 +44,8 @@ def _mimport(name):
             module = __import__(name, globals(), fromlist=[name]).__getattribute__(name)
         _debug(' successful\n')
         return module
-    except:
-        _debug(' failed!\n')
+    except Exception as exc:
+        _debug(' failed: %s\n'%exc)
 
 ACQIPPSETUP = _mimport('ACQIPPSETUP')
 CAENDT5720 = _mimport('CAENDT5720')
