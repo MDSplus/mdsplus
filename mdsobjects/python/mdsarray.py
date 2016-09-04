@@ -13,39 +13,6 @@ _ver=_mimport('version')
 descriptor=_mimport('descriptor')
 _compound=_mimport('compound')
 
-def makeArray(value):
-    if isinstance(value,Array):
-        return value
-    if isinstance(value,_scalar.Scalar):
-        return makeArray((value._value,))
-    if isinstance(value,_C.Array):
-        try:
-            return makeArray(_N.ctypeslib.as_array(value))
-        except Exception:
-            pass
-    if isinstance(value,tuple) | isinstance(value,list):
-        try:
-            ans=_N.array(value)
-            if str(ans.dtype)[1:2] in 'SU':
-                ans = ans.astype(_ver.npstr)
-            return makeArray(ans)
-        except (ValueError,TypeError):
-            newlist=list()
-            for i in value:
-                newlist.append(_data.makeData(i).data())
-            return makeArray(_N.array(newlist))
-    if isinstance(value,_N.ndarray):
-        if str(value.dtype)[0:2] in ['|S', '<U']:
-            return StringArray(value)
-        if str(value.dtype) == 'bool':
-            return makeArray(value.__array__(_N.uint8))
-        if str(value.dtype) == 'object':
-            raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
-        return globals()[str(value.dtype).capitalize()+'Array'](value)
-    if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
-        return makeArray(_N.array(value).reshape(1))
-    raise TypeError('Cannot make Array out of '+str(type(value)))
-
 def arrayDecompile(a,cl):
     if len(a.shape)==1:
         ans='['
@@ -169,7 +136,7 @@ class Array(_data.Data):
 
 
     def decompile(self):
-        if str(self._value.dtype)[0:2] in ['|S', '<U']:
+        if str(self._value.dtype)[1] in 'SU':
             cl=_scalar.String
         else:
             cl=_scalar.__dict__[str(self._value.dtype).capitalize()]
@@ -276,6 +243,47 @@ class Array(_data.Data):
                                 cls.ctype * int(d.arsize/d.length))).contents))
                 return makeArray(a)
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
+
+    @staticmethod
+    def make(value):
+        """Convert a python object to a MDSobject Data array
+        @param value: Any value
+        @type data: any
+        @rtype: Array
+        """
+        if isinstance(value,Array):
+            return value
+        if isinstance(value,_scalar.Scalar):
+            return makeArray((value._value,))
+        if isinstance(value,_C.Array):
+            try:
+                return makeArray(_N.ctypeslib.as_array(value))
+            except Exception:
+                pass
+        if isinstance(value,tuple) | isinstance(value,list):
+            try:
+                ans=_N.array(value)
+                if str(ans.dtype)[1] in 'SU':
+                    ans = ans.astype(_ver.npstr)
+                return makeArray(ans)
+            except (ValueError,TypeError):
+                newlist=list()
+                for i in value:
+                    newlist.append(_data.makeData(i).data())
+                return makeArray(_N.array(newlist))
+        if isinstance(value,_N.ndarray):
+            if str(value.dtype)[1] in 'SU':
+                return StringArray(value)
+            if str(value.dtype) == 'bool':
+                return makeArray(value.__array__(_N.uint8))
+            if str(value.dtype) == 'object':
+                raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
+            return globals()[str(value.dtype).capitalize()+'Array'](value)
+        if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
+            return makeArray(_N.array(value).reshape(1))
+        raise TypeError('Cannot make Array out of '+str(type(value)))
+
+makeArray = Array.make
 
 class Int8Array(Array):
     """8-bit signed number"""

@@ -20,24 +20,6 @@ _TdiShr=_version.load_library('TdiShr')
 #
 #############################################
 
-def makeData(value):
-    """Convert a python object to a MDSobject Data object"""
-    if value is None:
-        return EmptyData()
-    if isinstance(value,(Data,_tree.TreeNode)):
-        return value
-    if isinstance(value,(_N.generic,int,float,complex,_version.basestring,_version.long,_C._SimpleCData)):
-        return _scalar.makeScalar(value)
-    if isinstance(value,(tuple,list)):
-        return _apd.List(value)
-    if isinstance(value,(_N.ndarray,_C.Array)):
-        return _array.makeArray(value)
-    if isinstance(value,dict):
-        return _apd.Dictionary(value)
-    if isinstance(value,slice):
-        return _compound.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
-    raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
-
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
@@ -662,13 +644,29 @@ class Data(object):
             raise _exceptions.statusToException(status)
 
     @staticmethod
-    def makeData(value):
-        """Return MDSplus data class from value.
+    def make(value):
+        """Convert a python object to a MDSobject Data object
         @param value: Any value
         @type data: Any
         @rtype: Data
         """
-        return makeData(value)
+        if value is None:
+            return EmptyData()
+        if isinstance(value,(Data,_tree.TreeNode)):
+            return value
+        if isinstance(value,(_N.generic,int,float,complex,_version.basestring,_version.long,_C._SimpleCData)):
+            return _scalar.makeScalar(value)
+        if isinstance(value,(tuple,list)):
+            return _apd.List(value)
+        if isinstance(value,(_N.ndarray,_C.Array)):
+            return _array.makeArray(value)
+        if isinstance(value,dict):
+            return _apd.Dictionary(value)
+        if isinstance(value,slice):
+            return _compound.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
+        raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
+
+makeData=Data.make
 
 class EmptyData(Data):
     """No Value"""
