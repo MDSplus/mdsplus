@@ -7,7 +7,6 @@ def _mimport(name, level=1):
         return __import__(name, globals())
 
 _ver=_mimport('version')
-descriptor=_mimport('descriptor')
 _exceptions=_mimport('mdsExceptions')
 
 #### Load Shared Libraries Referenced #######
@@ -22,7 +21,6 @@ def __desc_init__(self):
     self.dclass = self.dclass_id
     self.pointer = _C.c_void_p(0)
 
-
 class Descriptor(_C.Structure):
     _fields_=[("length",_C.c_ushort),
               ("dtype",_C.c_ubyte),
@@ -34,17 +32,17 @@ class Descriptor(_C.Structure):
         return d.value
 
 class Descriptor_s(_C.Structure):
-    _fields_=Descriptor._fields_
     dclass_id = 1
     __init__=__desc_init__
+    _fields_=Descriptor._fields_
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
 
 class Descriptor_d(_C.Structure):
     dclass_id = 2
-    _fields_=Descriptor._fields_
     __init__=__desc_init__
+    _fields_=Descriptor._fields_
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
@@ -53,25 +51,27 @@ class Descriptor_d(_C.Structure):
 
 class Descriptor_a(_C.Structure):
     dclass_id = 4
-    if _ver.isNT:
-        _fields_=Descriptor._fields_ + [("scale",_C.c_byte),
-                                        ("digits",_C.c_ubyte),
-                                        ("aflags",_C.c_ubyte),
-                                        ("dimct",_C.c_ubyte),
-                                        ("arsize",_C.c_uint),
-                                        ("a0",_C.c_void_p),
-                                        ("coeff_and_bounds",_C.c_int32 * 24)]
-    else:
-        _fields_=Descriptor._fields_ + [("scale",_C.c_byte),
-                                        ("digits",_C.c_ubyte),
-                                        ("fill1",_C.c_ushort),
-                                        ("aflags",_C.c_ubyte),
-                                        ("fill2",_C.c_ubyte * 3),
-                                        ("dimct",_C.c_ubyte),
-                                        ("arsize",_C.c_uint),
-                                        ("a0",_C.c_void_p),
-                                        ("coeff_and_bounds",_C.c_int32 * 24)]
     __init__=__desc_init__
+    if _ver.isNT:
+        _fields_ = Descriptor._fields_ + [
+                   ("scale",_C.c_byte),
+                   ("digits",_C.c_ubyte),
+                   ("aflags",_C.c_ubyte),
+                   ("dimct",_C.c_ubyte),
+                   ("arsize",_C.c_uint),
+                   ("a0",_C.c_void_p),
+                   ("coeff_and_bounds",_C.c_int32 * 24)]
+    else:
+        _fields_ = Descriptor._fields_ + [
+                   ("scale",_C.c_byte),
+                   ("digits",_C.c_ubyte),
+                   ("fill1",_C.c_ushort),
+                   ("aflags",_C.c_ubyte),
+                   ("fill2",_C.c_ubyte * 3),
+                   ("dimct",_C.c_ubyte),
+                   ("arsize",_C.c_uint),
+                   ("a0",_C.c_void_p),
+                   ("coeff_and_bounds",_C.c_int32 * 24)]
 
     @property
     def value(self):
@@ -79,53 +79,52 @@ class Descriptor_a(_C.Structure):
 
     @property
     def binscale(self):
-        return not ((self.aflags & 8) == 0)
+        return bool(self.aflags & 8)
     @binscale.setter
     def binscale(self,value):
         if value:
-            self.aflags = self.aflags & ~8
+            self.aflags&= ~8
         else:
-            self.aflags = self.aflags | 8
+            self.aflags|= 8
 
     @property
     def redim(self):
-        return not ((self.aflags & 16) == 0)
+        return bool(self.aflags & 16)
     @redim.setter
     def redim(self,value):
         if value:
-            self.aflags = self.aflags & ~16
+            self.aflags&= ~16
         else:
-            self.aflags = self.aflags | 16
-
+            self.aflags|= 16
     @property
     def column(self):
-        return not ((self.aflags & 32) == 0)
+        return bool(self.aflags & 32)
     @column.setter
     def column(self,value):
         if value:
-            self.aflags = self.aflags & ~32
+            self.aflags&= ~32
         else:
-            self.aflags = self.aflags | 32
+            self.aflags|= 32
 
     @property
     def coeff(self):
-        return not ((self.aflags & 64) == 0)
+        return bool(self.aflags & 64)
     @coeff.setter
     def coeff(self,value):
         if value:
-            self.aflags = self.aflags & ~64
+            self.aflags&= ~64
         else:
-            self.aflags = self.aflags | 64
+            self.aflags|= 64
 
     @property
     def bounds(self):
-        return not ((self.aflags & 128) == 0)
+        return bool(self.aflags & 128)
     @bounds.setter
     def bounds(self,value):
         if value:
-            self.aflags = self.aflags & ~128
+            self.aflags&= ~128
         else:
-            self.aflags = self.aflags | 128
+            self.aflags|= 128
 
 
 def __desc_xd_init__(self):
@@ -138,8 +137,8 @@ def __desc_xd_init__(self):
 class Descriptor_xd(_C.Structure):
     dclass_id = 192
     dtype_dsc = 24
-    _fields_=Descriptor._fields_ + [("l_length",_C.c_uint32)]
     __init__=__desc_xd_init__
+    _fields_=Descriptor._fields_ + [("l_length",_C.c_uint32)]
     @property
     def value(self):
         if self.pointer is None:
@@ -153,8 +152,8 @@ class Descriptor_xd(_C.Structure):
 
 class Descriptor_xs(_C.Structure):
     dclass_id = 193
-    _fields_=Descriptor_xd._fields_
     __init__=__desc_xd_init__
+    _fields_=Descriptor_xd._fields_
     @property
     def value(self):
         if self.pointer is None:
@@ -165,23 +164,25 @@ class Descriptor_xs(_C.Structure):
 
 class Descriptor_r(_C.Structure):
     dclass_id = 194
-    if _ver.isNT and _ver.isPointer8:
-        _fields_=Descriptor._fields_ + [("ndesc",_C.c_ubyte),
-                                        ("fill1",_C.c_ubyte*6),
-                                        ("dscptrs",_C.POINTER(Descriptor)*256)]
-    else:
-        _fields_=Descriptor._fields_ + [("ndesc",_C.c_ubyte),
-                                        ("fill1",_C.c_ubyte*3),
-                                        ("dscptrs",_C.POINTER(Descriptor)*256)]
     __init__=__desc_init__
+    if _ver.isNT and _ver.isPointer8:
+        _fields_ = Descriptor._fields_ + [
+                   ("ndesc",_C.c_ubyte),
+                   ("fill1",_C.c_ubyte*6),
+                   ("dscptrs",_C.POINTER(Descriptor)*256)]
+    else:
+        _fields_ = Descriptor._fields_ + [
+                   ("ndesc",_C.c_ubyte),
+                   ("fill1",_C.c_ubyte*3),
+                   ("dscptrs",_C.POINTER(Descriptor)*256)]
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
 
 class Descriptor_ca(_C.Structure):
     dclass_id = 195
-    _fields_=Descriptor_a._fields_
     __init__=__desc_init__
+    _fields_=Descriptor_a._fields_
     @property
     def value(self):
         xd=Descriptor_xd()
@@ -193,8 +194,8 @@ class Descriptor_ca(_C.Structure):
 
 class Descriptor_apd(_C.Structure):
     dclass_id = 196
-    _fields_=Descriptor_a._fields_
     __init__=__desc_init__
+    _fields_=Descriptor_a._fields_
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
