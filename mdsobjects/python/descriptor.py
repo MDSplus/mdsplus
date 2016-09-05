@@ -15,6 +15,14 @@ _MdsShr=_ver.load_library('MdsShr')
 #
 #############################################
 
+def pointerToObject(pointer):
+    if pointer == 0:
+        return None
+    else:
+        dsc_ptr = _C.cast(pointer,_C.POINTER(Descriptor))
+        dsc = dsc_ptr.contents
+        return dsc.value
+
 def __desc_init__(self):
     self.length = 0
     self.dtype = 0
@@ -30,6 +38,9 @@ class Descriptor(_C.Structure):
     def value(self):
         d=_C.cast(_C.pointer(self),_C.POINTER(dclassToClass[self.dclass])).contents
         return d.value
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 class Descriptor_s(_C.Structure):
     dclass_id = 1
@@ -38,6 +49,9 @@ class Descriptor_s(_C.Structure):
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 class Descriptor_d(_C.Structure):
     dclass_id = 2
@@ -46,6 +60,9 @@ class Descriptor_d(_C.Structure):
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
+    @property
+    def addressof(self):
+        return _C.addressof(self)
     def __del__(self):
           _MdsShr.MdsFree1Dx(_C.pointer(self),_C.c_void_p(0))
 
@@ -76,6 +93,9 @@ class Descriptor_a(_C.Structure):
     @property
     def value(self):
         return dtypeToArrayClass[self.dtype].fromDescriptor(self)
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
     @property
     def binscale(self):
@@ -149,6 +169,9 @@ class Descriptor_xd(_C.Structure):
         return _C.cast(_C.pointer(d),_C.POINTER(dclassToClass[d.dclass])).contents.value
     def __del__(self):
           _MdsShr.MdsFree1Dx(_C.pointer(self),_C.c_void_p(0))
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 class Descriptor_xs(_C.Structure):
     dclass_id = 193
@@ -160,7 +183,9 @@ class Descriptor_xs(_C.Structure):
             return None
         else:
             return _C.cast(self.pointer,_C.POINTER(dclassToClass[self.dclass])).contents.value
-
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 class Descriptor_r(_C.Structure):
     dclass_id = 194
@@ -178,6 +203,9 @@ class Descriptor_r(_C.Structure):
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 class Descriptor_ca(_C.Structure):
     dclass_id = 195
@@ -191,6 +219,9 @@ class Descriptor_ca(_C.Structure):
             return xd.value
         else:
             raise _exceptions.statusToException(status)
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 class Descriptor_apd(_C.Structure):
     dclass_id = 196
@@ -199,6 +230,9 @@ class Descriptor_apd(_C.Structure):
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)
+    @property
+    def addressof(self):
+        return _C.addressof(self)
 
 dclassToClass={Descriptor_s.dclass_id : Descriptor_s,
                Descriptor_d.dclass_id : Descriptor_d,
