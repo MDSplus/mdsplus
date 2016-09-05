@@ -131,7 +131,7 @@ class Dictionary(dict,Apd):
             if isinstance(value,dict):
                 for key,val in value.items():
                     self.setdefault(key,val)
-            elif isinstance(value,Apd):
+            elif isinstance(value,(Apd,list,tuple)):
                 for idx in range(0,len(value),2):
                     key=value[idx]
                     if isinstance(key,_scalar.Scalar):
@@ -140,7 +140,7 @@ class Dictionary(dict,Apd):
                         key=str(key)
                     elif isinstance(key,_N.int32):
                         key=int(key)
-                    elif isinstance(key,_N.float32) or isinstance(key,_N.float64):
+                    elif isinstance(key,(_N.float32,_N.float64)):
                         key=float(key)
                     val=value[idx+1]
                     if isinstance(val,Apd):
