@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup, Extension
+from setuptools import setup
 version='0.2'
 setup(name='TutorialDevices',
       version=version,
