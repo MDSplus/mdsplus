@@ -36,12 +36,11 @@ class Apd(_data.Data):
     def __init__(self,descs,dtype=0):
         """Initializes a Apd instance
         """
-        if isinstance(descs,tuple):
+        if isinstance(descs,(tuple,list,Apd)):
             self.descs=descs
             self.dtype=dtype
         else:
             raise TypeError("must provide tuple of items when creating ApdData")
-        return
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
@@ -131,7 +130,7 @@ class Dictionary(dict,Apd):
             if isinstance(value,dict):
                 for key,val in value.items():
                     self.setdefault(key,val)
-            elif isinstance(value,Apd):
+            elif isinstance(value,(Apd,list,tuple)):
                 for idx in range(0,len(value),2):
                     key=value[idx]
                     if isinstance(key,_scalar.Scalar):
@@ -140,7 +139,7 @@ class Dictionary(dict,Apd):
                         key=str(key)
                     elif isinstance(key,_N.int32):
                         key=int(key)
-                    elif isinstance(key,_N.float32) or isinstance(key,_N.float64):
+                    elif isinstance(key,(_N.float32,_N.float64)):
                         key=float(key)
                     val=value[idx+1]
                     if isinstance(val,Apd):
