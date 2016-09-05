@@ -422,6 +422,8 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+    default:
+      return NULL;
     }
   case CLASS_R:
     record_d = (struct descriptor_r *)desc;
@@ -502,6 +504,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       cls = (*env)->FindClass(env, "SlopeData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
       break;
+    default:  return NULL;
     }
     obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     data_cls = (*env)->FindClass(env, "Data");
@@ -546,6 +549,8 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
     }
     args[0].l = jobjects;
     return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+  default:
+    return NULL;
   }
   return 0;
 }
