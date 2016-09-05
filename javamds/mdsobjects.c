@@ -455,7 +455,12 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-    }
+     default: 
+      sprintf(message, "Datatype %d not supported for class CLASS_A", desc->dtype);
+      exc = (*env)->FindClass(env, "MdsException");
+      (*env)->ThrowNew(env, exc, message);
+      return NULL;
+   }
 
   case CLASS_R:
 
@@ -560,6 +565,11 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	    (*env)->GetStaticMethodID(env, cls, "getData",
 				      "(LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Range;");
 	break;
+      default: 
+	sprintf(message, "Datatype %d not supported for class CLASS_R", desc->dtype);
+	exc = (*env)->FindClass(env, "MdsException");
+	(*env)->ThrowNew(env, exc, message);
+	return NULL;
       }
       obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       data_cls = (*env)->FindClass(env, "MDSplus/Data");
@@ -638,6 +648,12 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
     }
     args[0].l = jobjects;
     return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+  default: 
+      sprintf(message, "class %d not supported", desc->class);
+      exc = (*env)->FindClass(env, "MdsException");
+      (*env)->ThrowNew(env, exc, message);
+      return NULL;
+
   }
   return 0;
 }
