@@ -36,12 +36,11 @@ class Apd(_data.Data):
     def __init__(self,descs,dtype=0):
         """Initializes a Apd instance
         """
-        if isinstance(descs,tuple):
+        if isinstance(descs,(tuple,list,Apd)):
             self.descs=descs
             self.dtype=dtype
         else:
             raise TypeError("must provide tuple of items when creating ApdData")
-        return
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
