@@ -10,7 +10,7 @@ import ctypes as _C
 _data=_mimport('mdsdata')
 _array=_mimport('mdsarray')
 _ver=_mimport('version')
-descriptor=_mimport('descriptor')
+_descriptor=_mimport('descriptor')
 
 def makeScalar(value):
     if isinstance(value,Scalar):
@@ -81,7 +81,7 @@ class Scalar(_data.Data):
 
     @property
     def descriptor(self):
-        d=descriptor.Descriptor_s()
+        d=_descriptor.Descriptor_s()
         d.length=self._value.nbytes
         d.dtype=self.dtype_id
         array=_N.array(self._value)
@@ -293,7 +293,7 @@ class String(Scalar):
 
     @property
     def descriptor(self):
-        d=descriptor.Descriptor_s()
+        d=_descriptor.Descriptor_s()
         d.length=len(self)
         d.dtype=self.dtype_id
         d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(str(self))),_C.c_void_p)
@@ -350,20 +350,20 @@ class Uint128(Scalar):
     def __init__(self):
         raise TypeError("Uint128 is not yet supported")
 
-descriptor.dtypeToClass[Uint8.dtype_id]=Uint8
-descriptor.dtypeToClass[Uint16.dtype_id]=Uint16
-descriptor.dtypeToClass[Uint32.dtype_id]=Uint32
-descriptor.dtypeToClass[Uint64.dtype_id]=Uint64
-descriptor.dtypeToClass[Uint128.dtype_id]=Uint128
-descriptor.dtypeToClass[Int8.dtype_id]=Int8
-descriptor.dtypeToClass[Int16.dtype_id]=Int16
-descriptor.dtypeToClass[Int32.dtype_id]=Int32
-descriptor.dtypeToClass[Int64.dtype_id]=Int64
-descriptor.dtypeToClass[Int128.dtype_id]=Int128
-descriptor.dtypeToClass[Float32.dtype_id]=Float32
-descriptor.dtypeToClass[Float64.dtype_id]=Float64
-descriptor.dtypeToClass[Complex64.dtype_id]=Complex64
-descriptor.dtypeToClass[Complex128.dtype_id]=Complex128
-descriptor.dtypeToClass[String.dtype_id]=String
+_descriptor.dtypeToClass[Uint8.dtype_id]=Uint8
+_descriptor.dtypeToClass[Uint16.dtype_id]=Uint16
+_descriptor.dtypeToClass[Uint32.dtype_id]=Uint32
+_descriptor.dtypeToClass[Uint64.dtype_id]=Uint64
+_descriptor.dtypeToClass[Uint128.dtype_id]=Uint128
+_descriptor.dtypeToClass[Int8.dtype_id]=Int8
+_descriptor.dtypeToClass[Int16.dtype_id]=Int16
+_descriptor.dtypeToClass[Int32.dtype_id]=Int32
+_descriptor.dtypeToClass[Int64.dtype_id]=Int64
+_descriptor.dtypeToClass[Int128.dtype_id]=Int128
+_descriptor.dtypeToClass[Float32.dtype_id]=Float32
+_descriptor.dtypeToClass[Float64.dtype_id]=Float64
+_descriptor.dtypeToClass[Complex64.dtype_id]=Complex64
+_descriptor.dtypeToClass[Complex128.dtype_id]=Complex128
+_descriptor.dtypeToClass[String.dtype_id]=String
 
 _compound=_mimport('compound')

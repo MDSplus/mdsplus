@@ -10,7 +10,7 @@ import ctypes as _C
 _scalar=_mimport('mdsscalar')
 _data=_mimport('mdsdata')
 _ver=_mimport('version')
-descriptor=_mimport('descriptor')
+_descriptor=_mimport('descriptor')
 _compound=_mimport('compound')
 
 class Array(_data.Data):
@@ -160,7 +160,7 @@ class Array(_data.Data):
         value = value.T
         if not value.flags.f_contiguous:
             value=value.copy('F')
-        d=descriptor.Descriptor_a()
+        d=_descriptor.Descriptor_a()
         d.scale=0
         d.digits=0
         d.aflags=0
@@ -236,8 +236,8 @@ class Array(_data.Data):
                         _C.cast(
                             d.pointer,
                             _C.POINTER(_C.c_double * int(d.arsize*2/d.length))).contents)))
-        if d.dtype in descriptor.dtypeToArrayClass:
-            cls = descriptor.dtypeToArrayClass[d.dtype]
+        if d.dtype in _descriptor.dtypeToArrayClass:
+            cls = _descriptor.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
                 a=_N.ndarray(
                     shape=shape,
@@ -388,19 +388,19 @@ class Uint128Array(Array):
     def __init__(self):
         raise TypeError("Uint128Array is not yet supported")
 
-descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
-descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
-descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
-descriptor.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
-descriptor.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
-descriptor.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
-descriptor.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
-descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
-descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
-descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
-descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
-descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
-descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
-descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
-descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
+_descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
+_descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
+_descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
+_descriptor.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
+_descriptor.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
+_descriptor.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
+_descriptor.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
+_descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
+_descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
+_descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
+_descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
+_descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
+_descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
+_descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
+_descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
 
