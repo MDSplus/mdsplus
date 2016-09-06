@@ -5,6 +5,7 @@ Goal is to generate code that work on both python2x and python3x.
 """
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
+from types import GeneratorType as generator  # analysis:ignore
 from sys import version_info as pyver
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
