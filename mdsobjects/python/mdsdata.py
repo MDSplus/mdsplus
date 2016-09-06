@@ -651,7 +651,7 @@ class Data(object):
         @rtype: Data
         """
         if value is None:
-            return EmptyData()
+            return Missing
         if isinstance(value,(Data,_tree.TreeNode)):
             return value
         if isinstance(value,(_N.generic,int,float,complex,_version.basestring,_version.long,_C._SimpleCData)):
@@ -669,12 +669,12 @@ class Data(object):
 makeData=Data.make
 
 class EmptyData(Data):
-    """No Value"""
+    """No Value aka $Missing"""
     def __init__(self):
         pass
 
     def __str__(self):
-        return "<no-data>"
+        return "*"
 
     @property
     def value(self):
@@ -685,6 +685,12 @@ class EmptyData(Data):
         d = _descriptor.Descriptor_xd()
         d.dtype = _descriptor.Descriptor_xd.dtype_dsc
         return d
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        return Missing
+Missing=EmptyData()
+
 
 _descriptor.dtypeToClass[0]=EmptyData
 _descriptor.dtypeToArrayClass[0]=EmptyData
