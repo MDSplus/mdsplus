@@ -32,6 +32,10 @@
 ./usr/local/mdsplus/share/man/man5/mdsip.hosts.5
 ./usr/local/mdsplus/share/man/man5/mdsplus.conf.5
 ./usr/local/mdsplus/tdi
+./usr/local/mdsplus/tdi/Apd
+./usr/local/mdsplus/tdi/Apd/Apd.py
+./usr/local/mdsplus/tdi/Apd/Dict.py
+./usr/local/mdsplus/tdi/Apd/List.py
 ./usr/local/mdsplus/tdi/Ccl.fun
 ./usr/local/mdsplus/tdi/MdsDevices.fun
 ./usr/local/mdsplus/tdi/TutorialDevices
