@@ -164,6 +164,8 @@ class Descriptor_xd(_C.Structure):
         if self.pointer is None:
             return None
         d=_C.cast(self.pointer,_C.POINTER(Descriptor)).contents
+        if (d.dclass==0):
+            return None
         if hasattr(self,'tree'):
             d.tree=self.tree
         return _C.cast(_C.pointer(d),_C.POINTER(dclassToClass[d.dclass])).contents.value
