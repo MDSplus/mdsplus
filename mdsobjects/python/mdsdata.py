@@ -686,6 +686,9 @@ class EmptyData(Data):
         d.dtype = _descriptor.Descriptor_xd.dtype_dsc
         return d
 
+_descriptor.dtypeToClass[0]=EmptyData
+_descriptor.dtypeToArrayClass[0]=EmptyData
+
 _compound=_mimport('compound')
 _scalar=_mimport('mdsscalar')
 _array=_mimport('mdsarray')
