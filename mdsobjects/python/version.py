@@ -5,7 +5,6 @@ Goal is to generate code that work on both python2x and python3x.
 """
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
-from types import GeneratorType as generator  # analysis:ignore
 from sys import version_info as pyver
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
@@ -59,6 +58,15 @@ def load_library(name):
             return C.CDLL(os.path.basename(libnam))
         except:
             print('Could not load CDLL: '+libnam)
+
+
+from types import GeneratorType as generator  # analysis:ignore
+if ispy3:
+    def next(g):
+        return g.__next__()
+else:
+    def next(g):
+        return g.next()
 
 
 # substitute missing builtins

@@ -16,7 +16,6 @@ class Apd(_data.Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
-
     mdsclass=196
     dtype_id=24
 
@@ -162,9 +161,12 @@ class Dictionary(dict,Apd):
             if isinstance(value,dict):
                 for key,val in value.items():
                     self.setdefault(key,val)
-            elif isinstance(value,(tuple,list,_ver.generator,Apd)):
+            elif isinstance(value,(tuple,list,Apd)):
                 for idx in range(0,len(value),2):
                     self.setdefault(value[idx],value[idx+1])
+            elif isinstance(value,(_ver.generator)):
+                for key in value:                    
+                    self.setdefault(key,_ver.next(value))
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
                 
@@ -207,7 +209,7 @@ class List(list,Apd):
 
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,(tuple,list,_ver.generator,Apd)):
+            if isinstance(value,(tuple,list,Apd,_ver.generator)):
                 for val in value:
                     self.append(val)
             else:
