@@ -324,7 +324,7 @@ Get tree information such as:
             try:
                 return self.getNode(name)
             except:
-                raise AttributeError('No such attribute: '+name)
+                pass
         raise AttributeError('No such attribute: '+name)
 
     @classmethod
@@ -1547,7 +1547,7 @@ class TreeNode(object):
                 return altvalue[0]
             else:
                 raise _exceptions.statusToException(status)
-        except _exceptions.MdsException:
+        except _exceptions.MDSplusException:
             raise  # no need for traceback as this is expected to happen
         except Exception:
             import traceback
