@@ -611,7 +611,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct * cb)
   size_t thirty_two_k = 32768;
   float zero = 0.0;
   int three = 3;
-  //EventInfo *e = NewEvent(w, stub, cb->event, cb->reason, CB_FIT);
+  NewEvent(w, stub, cb->event, cb->reason, CB_FIT);
   XtVaGetValues(w, XmdsNxIncreasing, &xincreasing, XmdsNyIncreasing, &yincreasing,
 		XmdsNlowX, &lowx, XmdsNhighX, &highx, XmdsNlowY, &lowy, XmdsNhighY, &highy,
 		XmdsNclosed, &closed, NULL);
