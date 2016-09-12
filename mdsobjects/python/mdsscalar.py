@@ -88,7 +88,7 @@ class Scalar(_data.Data):
         d.pointer=_C.c_void_p(array.ctypes.data)
         d.original=self
         d.array=array
-        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+        if self._units is not None or self._error is not None or self._help is not None or self._validation is not None:
             return _compound.Compound.descriptorWithProps(self,d)
         else:
             return d

@@ -38,7 +38,6 @@ class Array(_data.Data):
         if len(value.shape) == 0:  # happens if value has been a scalar, e.g. int
             value = value.reshape(1)
         self._value = value.__array__(_N.__dict__[self.__class__.__name__[0:-5].lower()])
-        return
 
     def __getattr__(self,name):
         return self._value.__getattribute__(name)
@@ -163,19 +162,19 @@ class Array(_data.Data):
         d=_descriptor.Descriptor_a()
         d.scale=0
         d.digits=0
-        d.aflags=0
         d.dtype=self.dtype_id
         d.length=value.itemsize
         d.pointer=_C.c_void_p(value.ctypes.data)
-        d.dimct=_N.shape(_N.shape(value))[0]
+        d.dimct=value.ndim
+        d.aflags=48
         d.arsize=value.nbytes
         d.a0=d.pointer
         if d.dimct > 1:
-            d.coeff=1
+            d.coeff=True
             for i in range(d.dimct):
                 d.coeff_and_bounds[i]=_N.shape(value)[i]
         d.original=self
-        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+        if self._units is not None or self._error is not None or self._help is not None or self._validation is not None:
             return _compound.Compound.descriptorWithProps(self,d)
         else:
             return d
@@ -214,11 +213,11 @@ class Array(_data.Data):
                         _C.POINTER(_C.c_int32 * int(d.arsize/d.length))).contents))
             return _tree.TreeNodeArray(list(nids))
         if d.dtype == 10: ### VMS FLOAT
-            return makeArray(_data.Data.execute("float($)",(d,)))
+            return Array.make(_data.Data.execute("float($)",(d,)))
         if d.dtype == 11 or d.dtype == 27: ### VMS DOUBLES
-            return makeArray(_data.Data.execute("FT_FLOAT($)",(d,)))
+            return Array.make(_data.Data.execute("FT_FLOAT($)",(d,)))
         if d.dtype == Complex64Array.dtype_id:
-            return makeArray(
+            return Array.make(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex64,
@@ -228,7 +227,7 @@ class Array(_data.Data):
                             _C.POINTER(
                                 _C.c_float * int(d.arsize*2/d.length))).contents)))
         if d.dtype == Complex128Array.dtype_id:
-            return makeArray(
+            return Array.make(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex128,
@@ -247,7 +246,7 @@ class Array(_data.Data):
                             d.pointer,
                             _C.POINTER(
                                 cls.ctype * int(d.arsize/d.length))).contents))
-                return makeArray(a)
+                return Array.make(a)
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 
     @staticmethod

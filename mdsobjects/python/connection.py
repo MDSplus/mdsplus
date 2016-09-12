@@ -4,7 +4,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import sys as _sys
 import ctypes as _C
 import numpy as _N
 from threading import RLock as _RLock
