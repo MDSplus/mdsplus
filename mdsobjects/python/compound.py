@@ -246,8 +246,14 @@ class Compound(_data.Data):
                 args.append(d.dscptrs[i].contents.value)
         args=tuple(args)
         ans=cls(args=args)
-        if d.length == 2:
-            ans.opcode=_C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
+        if d.length>0:
+            if d.length == 1:
+                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint8))
+            elif d.length == 2:
+                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint16))
+            else:
+                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
+            ans.opcode = opcptr.contents.value
         return ans
 
 class Action(Compound):
