@@ -690,7 +690,7 @@ int Tdi1Validation(int opcode, int narg, struct descriptor *list[], struct descr
   return status;
 }
 
-static int use_get_record_fun = 1;
+static int use_get_record_fun = 0;
 EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
 {
   int status;
@@ -698,7 +698,7 @@ EXPORT int TdiGetRecord(int nid, struct descriptor_xd *out)
     int stat;
     short opcode = 162;		/* external function */
     DESCRIPTOR_LONG(stat_d, &stat);
-    static DESCRIPTOR(getrec_d, "TdiGetRecord");
+    static DESCRIPTOR(getrec_d, "TdiGetRecord---not-used");
     DESCRIPTOR_LONG(nid_d, (char *)&nid);
     DESCRIPTOR(var_d, "_out");
     DESCRIPTOR_R(getrec, DTYPE_FUNCTION, 4);
