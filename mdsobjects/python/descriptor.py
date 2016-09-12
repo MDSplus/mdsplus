@@ -103,9 +103,9 @@ class Descriptor_a(_C.Structure):
     @binscale.setter
     def binscale(self,value):
         if value:
-            self.aflags&= ~8
-        else:
             self.aflags|= 8
+        else:
+            self.aflags&= ~8
 
     @property
     def redim(self):
@@ -113,18 +113,18 @@ class Descriptor_a(_C.Structure):
     @redim.setter
     def redim(self,value):
         if value:
-            self.aflags&= ~16
-        else:
             self.aflags|= 16
+        else:
+            self.aflags&= ~16
     @property
     def column(self):
         return bool(self.aflags & 32)
     @column.setter
     def column(self,value):
         if value:
-            self.aflags&= ~32
-        else:
             self.aflags|= 32
+        else:
+            self.aflags&= ~32
 
     @property
     def coeff(self):
@@ -132,9 +132,9 @@ class Descriptor_a(_C.Structure):
     @coeff.setter
     def coeff(self,value):
         if value:
-            self.aflags&= ~64
-        else:
             self.aflags|= 64
+        else:
+            self.aflags&= ~64
 
     @property
     def bounds(self):
@@ -142,9 +142,9 @@ class Descriptor_a(_C.Structure):
     @bounds.setter
     def bounds(self,value):
         if value:
-            self.aflags&= ~128
-        else:
             self.aflags|= 128
+        else:
+            self.aflags&= ~128
 
 
 def __desc_xd_init__(self):
