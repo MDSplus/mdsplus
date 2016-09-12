@@ -636,9 +636,12 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 		    (struct descriptor *)out_ptr, &BUILD_EVENT, &t2, &CLOSE_EVENT MDS_END_ARG);
       break;
     case DTYPE_POINTER:{
-	char outstr[256];
+	char outstr[11+2*in_ptr->length];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
-	out.length = sprintf(outstr, "Pointer(%p)", *((void **)(in_ptr->pointer)));
+        if (in_ptr->length==4)
+          out.length = sprintf(outstr, "Pointer(%#"PRIx32")", *(uint32_t *)in_ptr->pointer);
+        else
+          out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer); 
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
