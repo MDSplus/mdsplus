@@ -28,8 +28,8 @@ MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 if [ "$TEST" = "yes" -o "$RELEASE" = "yes" ]
 then
     
-    JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
-    JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
+    export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
+    export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
     MDSPLUS_DIR=/workspace/buildroot;
     MDS_PATH=${MDSPLUS_DIR}/tdi;
     mkdir -p /workspace/64;
