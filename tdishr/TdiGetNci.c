@@ -181,7 +181,10 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
-int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1GetNci(int opcode __attribute__ ((unused)),
+	       int narg,
+	       struct descriptor *list[],
+	       struct descriptor_xd *out_ptr)
 {
   int status = 1;
   STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };

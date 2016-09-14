@@ -24,7 +24,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int h908___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int h908___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   struct _msetup {
     unsigned pretrig:1;
@@ -53,21 +53,21 @@ EXPORT int h908___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-EXPORT int h908___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int h908___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
 {
   int status;
   pio(25, 0, 0, 16)
       return status;
 }
 
-EXPORT int h908___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int h908___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16)
       return status;
 }
 
-EXPORT int h908___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int h908___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   //int mstatus;

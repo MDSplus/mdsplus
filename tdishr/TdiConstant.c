@@ -13,16 +13,11 @@
 
 
 
-int Tdi1Constant(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Constant(int opcode, int narg __attribute__ ((unused)),
+		 struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
 
-/*
-     struct descriptor *(*fun)()=(struct descriptor *(*)())*TdiRefFunction[opcode].f3;
-        status = MdsCopyDxXd(fun(),out_ptr);
-*/
   return MdsCopyDxXd(((struct descriptor * (*)())*TdiRefFunction[opcode].f3) (), out_ptr);
-  return status;
 }
 
 /*------------------------------------------------

@@ -109,7 +109,7 @@ EXPORT Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as, float *f
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
-static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc, int *N,
+static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
 			       double *gain)
 {
   double n_real, Wc, l10;
@@ -156,7 +156,7 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
   return poles;
 }
 
-static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc, int *N,
+static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
 			      double *gain)
 {
   double eps, Wc, alpha, a, b, l10, treshold, curr_val, angle, V, Vprev, Vnew;

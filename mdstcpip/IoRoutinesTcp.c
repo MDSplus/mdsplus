@@ -235,7 +235,7 @@ static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static void ABORT(int sigval)
+static void ABORT(int sigval __attribute__ ((unused)))
 {
   Socket *s;
   lock_socket_list();
@@ -337,8 +337,8 @@ static int tcp_flush(int conid)
           if (FD_ISSET(sock, &readfds)) {
               status = ioctl(sock, FIONREAD, &nbytes);
               if (nbytes > 0 && status != -1) {
-                  nbytes =
-                      recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
+		nbytes =
+		  recv(sock, buffer, sizeof(buffer) > (size_t)nbytes ? nbytes : (FIONREAD_TYPE)sizeof(buffer), MSG_NOSIGNAL);
                   if (nbytes > 0)
                     tries = 0;
                 }
@@ -437,7 +437,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
   hp = gethostbyname(host);
   if (hp == NULL) {
       addr = inet_addr(host);
-      if (addr != 0xffffffff)
+      if (addr != -1)
         hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
     }
   if (hp == 0) {
@@ -498,7 +498,7 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static int tcp_connect(int conid, char *protocol, char *host)
+static int tcp_connect(int conid, char *protocol __attribute__ ((unused)), char *host)
 {
   struct sockaddr_in sin;
   int s;
@@ -613,7 +613,7 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;

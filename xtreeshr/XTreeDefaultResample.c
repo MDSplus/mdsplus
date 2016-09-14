@@ -849,7 +849,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   outDim = malloc(2 * outSamples * 8);
 
   //Check data array too short
-  if (dataD->arsize / dataD->length < numTimebaseSamples)
+  if ((int)(dataD->arsize / dataD->length) < numTimebaseSamples)
     numTimebaseSamples = dataD->arsize / dataD->length;
 
   resample(start64, end64, (deltaD) ? delta64 : 0, timebase64, numTimebaseSamples, numDims, dims,

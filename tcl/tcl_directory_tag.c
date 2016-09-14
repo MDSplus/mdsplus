@@ -24,7 +24,7 @@
 	 * TclDirectoryTag:
 	 * Perform directory of all of the tags
 	 ****************************************************************/
-EXPORT int TclDirectoryTag(void *ctx, char **error, char **output)
+EXPORT int TclDirectoryTag(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   int sub_total;
   int grand_total;

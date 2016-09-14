@@ -35,7 +35,8 @@ int turn_crate_on_off_line(char *crate_name, int state)
 {
   char controller[12], *pController;
   short SCCdata;
-  int i, status = SUCCESS;	// optimistic ...
+  size_t i;
+  int status = SUCCESS;	// optimistic ...
   int idx;
   TranslatedIosb iosb;
   extern struct CRATE *CRATEdb;

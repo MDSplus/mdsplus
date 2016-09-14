@@ -9,7 +9,7 @@
 
 extern void **TreeCtx();
 
-STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
+STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 {
   int status;
   void *dbid1 = 0, *dbid2 = 0;
@@ -128,20 +128,20 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
 
 int TreeCleanDatafile(char *tree, int shot)
 {
-  return RewriteDatafile(TreeCtx(), tree, shot, 0);
+  return RewriteDatafile(tree, shot, 0);
 }
 
 int TreeCompressDatafile(char *tree, int shot)
 {
-  return RewriteDatafile(TreeCtx(), tree, shot, 1);
+  return RewriteDatafile(tree, shot, 1);
 }
 
-int _TreeCleanDatafile(void **dbid, char *tree, int shot)
+int _TreeCleanDatafile(void **dbid __attribute__ ((unused)), char *tree, int shot)
 {
-  return RewriteDatafile(dbid, tree, shot, 0);
+  return RewriteDatafile(tree, shot, 0);
 }
 
-int _TreeCompressDatafile(void **dbid, char *tree, int shot)
+int _TreeCompressDatafile(void **dbid __attribute__ ((unused)), char *tree, int shot)
 {
-  return RewriteDatafile(dbid, tree, shot, 1);
+  return RewriteDatafile(tree, shot, 1);
 }

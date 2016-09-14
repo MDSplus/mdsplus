@@ -17,7 +17,7 @@ extern int PARAGON_FTP_DELETE(char *report, int delete);
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
 /*
-int paragon_rpt___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
+int paragon_rpt___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct *setup)
 {
   static struct descriptor_d rpt_name = {0,DTYPE_T,CLASS_D,0};
   static DESCRIPTOR(zero,"\0");

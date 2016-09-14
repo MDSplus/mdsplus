@@ -75,6 +75,8 @@ int bisearch(int dbType,
     dbptr = (void *)CRATEdb;
     entrySize = CRATE_ENTRY;
     break;
+  default:
+    return 0;
   }
 
   candidate = (char *)malloc(entrySize);	// allocate memory for item to compare with
@@ -94,6 +96,8 @@ int bisearch(int dbType,
 //                              length = 6;             // eg. 'GKabnn'
       length = (strlen(target) == 4) ? 4 : 6;	// eg. 'GKab' or 'GKabnn'
       break;
+    default:
+      return 0;
     }
 
     sprintf(fmt, "%%.%ds", length);	// build format string -- fixed [2002.05.14]

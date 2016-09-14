@@ -147,7 +147,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 
 int TreeOpenDatafileR(TREE_INFO * info)
 {
-  int status;
+  int status = TreeFAILURE;
   if (info->data_file == NULL)
     info->data_file = TreeGetVmDatafile(info);
   if (info->data_file != NULL) {

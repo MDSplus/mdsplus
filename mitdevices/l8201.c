@@ -18,7 +18,7 @@ static int zero = 0;
 static short buffer[16384];
 static DESCRIPTOR_A(data, sizeof(short), DTYPE_W, buffer, sizeof(buffer));
 
-EXPORT int l8201___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8201___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   return_on_error(TdiData(setup->download, &data MDS_END_ARG), status);
@@ -29,7 +29,7 @@ EXPORT int l8201___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-EXPORT int l8201___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8201___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   int upload_nid = setup->head_nid + L8201_N_UPLOAD;

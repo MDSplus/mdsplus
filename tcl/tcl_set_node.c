@@ -103,9 +103,9 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
       int clear_flags;
       struct descriptor_d dsc_path = { 0, DTYPE_T, CLASS_D, 0 };
       NCI_ITM set_itmlst[] =
-	  { {0, NciSET_FLAGS, (unsigned char *)&set_flags, 0}, {0, NciEND_OF_LIST} };
+	{ {0, NciSET_FLAGS, (unsigned char *)&set_flags, 0}, {0, NciEND_OF_LIST, 0, 0} };
       NCI_ITM clear_itmlst[] =
-	  { {0, NciCLEAR_FLAGS, (unsigned char *)&clear_flags, 0}, {0, NciEND_OF_LIST} };
+	{ {0, NciCLEAR_FLAGS, (unsigned char *)&clear_flags, 0}, {0, NciEND_OF_LIST, 0, 0} };
       set_flags = 0;
       clear_flags = 0;
       switch (cli_present(ctx, "WRITE_ONCE")) {

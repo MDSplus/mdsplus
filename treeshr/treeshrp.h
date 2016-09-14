@@ -240,7 +240,8 @@ PACK_START
 } NODE;
 
 #ifdef EMPTY_NODE
-static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} };
+static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} ,
+			   0, 0, 0, 0, 0, 0, 0, 0};
 #endif
 
 static inline int node_offset(NODE * a, NODE * b)

@@ -19,14 +19,14 @@ static void Reset();
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-EXPORT int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct * setup)
+EXPORT int mdsdcl___execute(struct descriptor *niddsc_ptr __attribute__ ((unused)), InExecuteStruct * setup)
 {
-  int status;
+  int status = 1;
   char *line;
   for (line = strtok(setup->verbs, "\n"); line; line = strtok(0, "\n")) {
     char cmd[128];
     strcpy(cmd, "set command ");
-    strcat(cmd, line);
+    strncat(cmd, line, 125);
     return_on_error(mdsdcl_do_command(cmd), status);
   }
   for (line = strtok(setup->commands, "\n"); line; line = strtok(0, "\n")) {
@@ -36,7 +36,7 @@ EXPORT int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct * s
   return status;
 }
 
-EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int mdsdcl__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "MDSDCL.uid" };
   static int nid;

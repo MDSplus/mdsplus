@@ -69,7 +69,7 @@ static void SetMsgLen() {
   DBMSGTEXT_DSC.length=strlen(DBMSGTEXT);
 }
 
-static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,
+static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused)), int dberr, int oserr,
 		       cnst char *dberrstr, cnst char *oserrstr)
 {
 #ifdef WIN32
@@ -98,7 +98,7 @@ static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,
 }
 
 /*------------------------------MESSAGE HANDLER------------------------------*/
-static int Msg_Handler(DBPROCESS * dbproc, DBINT msgno, int msgstate, int severity,
+  static int Msg_Handler(DBPROCESS * dbproc __attribute__ ((unused)), DBINT msgno, int msgstate, int severity,
 		       cnst char *msgtext, cnst char *servername, cnst char *procname,
 		       DBUSMALLINT line)
 {
@@ -170,7 +170,7 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
     loginrec = 0;
   }
   if (dbinit() == FAIL)
-    Fatal("Login_Sybase: Can't init DB-library\n");
+    Fatal("%s","Login_Sybase: Can't init DB-library\n");
   dbmsghandle(Msg_Handler);
   dberrhandle(Err_Handler);
   loginrec = dblogin();

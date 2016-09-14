@@ -14,8 +14,8 @@
 
 	Call sequence: 
 
-EXPORT int L2232__INIT(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
-EXPORT int L2232__STORE(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
+EXPORT int L2232__INIT(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct *setup)
+EXPORT int L2232__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct *setup)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989
@@ -66,7 +66,7 @@ static int one = 1;
 
  Executable:                                                                  */
 
-EXPORT int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int l2232___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) {return retstatus; }
@@ -78,7 +78,7 @@ EXPORT int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-EXPORT int l2232___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l2232___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   unsigned short dummy;
   int nid;

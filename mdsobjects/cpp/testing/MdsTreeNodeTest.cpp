@@ -82,7 +82,7 @@ void print_segment_info(TreeNode *node, int segment = -1)
 #endif
 
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(TreeNode);
 

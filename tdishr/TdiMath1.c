@@ -247,7 +247,7 @@ STATIC_ROUTINE void sqrt_complex(double *in, double *out)
 
 STATIC_ROUTINE void log_complex(double *in, double *out)
 {
-  double theta;
+  double theta = 0;
   if (in[0] > 0.0)
     theta = 0.0;
   else if (in[0] < 0.0 && in[1] >= 0.0)

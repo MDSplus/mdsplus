@@ -39,7 +39,7 @@ JNIEXPORT jstring JNICALL Java_Data_toString(JNIEnv * env, jobject obj)
   return ris;
 }
 
-JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls, jstring jexpr) {
+JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jexpr) {
   EMPTYXD(xd);
   int status, ris = 0;
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls, jstring jexp
   return ris;
 }
 
-JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls, jstring jsource) {
+JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jsource) {
   EMPTYXD(out_xd);
   //EMPTYXD(dec_xd);
   int status;

@@ -182,7 +182,7 @@ static int OctaIsSet(unsigned int *base, int bit);
 //static int GetSetup(int chan_nid, DecoderSetup * regs);
 //static int GetPseudoDevNid(struct descriptor_xd *pseudo_xd, int *dev_nid);
 
-EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int mpb__decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   //static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
@@ -195,7 +195,7 @@ EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * s
   int event_bit;
   int event_ind;
   DecoderSetup regs[5];
-  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0 };	/* always low, start low */
+  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low */
   unsigned short cam_data;
   pio(2, 24, 0, "Disable Lam and code recognizer ");	/* Disable Lam and code recognizer */
   pio(0, 16, 0xFFEF, "Enable 16 bit buses ");	/* Enable 16 bit buses */
@@ -214,7 +214,7 @@ EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * s
         not at Terminal Count)
   ***************************/
   for (chan = 0; chan < 5; chan++) {
-    static DecoderSetup reg = { 4, 1, 0, 0, 0 };	/* always low, start low, count up */
+    static DecoderSetup reg = { 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low, count up */
     unsigned short step_cmd = 0xFFF0 | (chan + 1);
     unsigned short regv = *(unsigned short *)&reg;
     cam_data = chan + 0xFF01;
@@ -400,7 +400,7 @@ static int GetEventNum(char *name, unsigned int *mask)
   return status & 1;
 }
 */
-EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "MPB__DECODER.uid" };
   Widget w;
@@ -423,7 +423,7 @@ EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *
   return 1;
 }
 
-static void Reset(Widget w, XtPointer client_data, XmAnyCallbackStruct * cb)
+static void Reset(Widget w, XtPointer client_data __attribute__ ((unused)), XmAnyCallbackStruct * cb __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < 5; i++) {
@@ -437,7 +437,7 @@ static void Reset(Widget w, XtPointer client_data, XmAnyCallbackStruct * cb)
   }
 }
 
-static void Show(Widget w, Widget top, XmAnyCallbackStruct * cb)
+static void Show(Widget w, Widget top, XmAnyCallbackStruct * cb __attribute__ ((unused)))
 {
   int i;
   String text = malloc(4000);

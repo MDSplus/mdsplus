@@ -75,7 +75,7 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
   };
 
   Arg *sub_args;
-  int i, cnt;
+  Cardinal i, cnt;
 
   String new_name = XtMalloc(strlen(name) + 7);
 

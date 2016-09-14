@@ -19,7 +19,7 @@ static int zero = 0;
 static short buffer[65536];
 static DESCRIPTOR_A(data, sizeof(short), DTYPE_W, buffer, sizeof(buffer));
 
-EXPORT int l8206___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8206___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   int download_nid = setup->head_nid + L8206_N_DOWNLOAD;
@@ -38,7 +38,7 @@ EXPORT int l8206___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-EXPORT int l8206___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8206___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   int savstatus;

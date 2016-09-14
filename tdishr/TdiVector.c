@@ -33,7 +33,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
 									 0}, 1, 0
   };
   array_coeff arr = { sizeof(char), DTYPE_BU, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0},
-  MAXDIM, 0
+		      MAXDIM, 0, 0, {0}
   };
   struct descriptor_xd (*psig)[], (*puni)[] = 0, (*pdat)[] = 0;
   struct TdiCatStruct (*pcats)[] = 0;

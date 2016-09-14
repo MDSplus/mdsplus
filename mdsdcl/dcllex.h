@@ -12,8 +12,8 @@
 
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 37
+#define YY_FLEX_MINOR_VERSION 6
+#define YY_FLEX_SUBMINOR_VERSION 0
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -132,7 +132,15 @@ typedef void* yyscan_t;
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
@@ -214,7 +222,7 @@ void dcl_free (void * ,yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define dcl_wrap(yyscanner) 1
+#define dcl_wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -264,11 +272,11 @@ void dcl_set_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
 
 FILE *dcl_get_in (yyscan_t yyscanner );
 
-void dcl_set_in  (FILE * in_str ,yyscan_t yyscanner );
+void dcl_set_in  (FILE * _in_str ,yyscan_t yyscanner );
 
 FILE *dcl_get_out (yyscan_t yyscanner );
 
-void dcl_set_out  (FILE * out_str ,yyscan_t yyscanner );
+void dcl_set_out  (FILE * _out_str ,yyscan_t yyscanner );
 
 yy_size_t dcl_get_leng (yyscan_t yyscanner );
 
@@ -276,11 +284,11 @@ char *dcl_get_text (yyscan_t yyscanner );
 
 int dcl_get_lineno (yyscan_t yyscanner );
 
-void dcl_set_lineno (int line_number ,yyscan_t yyscanner );
+void dcl_set_lineno (int _line_number ,yyscan_t yyscanner );
 
 int dcl_get_column  (yyscan_t yyscanner );
 
-void dcl_set_column (int column_no ,yyscan_t yyscanner );
+void dcl_set_column (int _column_no ,yyscan_t yyscanner );
 
 YYSTYPE * dcl_get_lval (yyscan_t yyscanner );
 
@@ -316,7 +324,12 @@ static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Number of entries by which start-condition stack grows. */
@@ -354,6 +367,6 @@ extern int dcl_lex \
 #line 134 "cmdParse.x"
 
 
-#line 358 "dcllex.h"
+#line 371 "dcllex.h"
 #undef dcl_IN_HEADER
 #endif /* dcl_HEADER_H */

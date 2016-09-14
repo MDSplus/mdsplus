@@ -4,7 +4,7 @@
 
 extern unsigned short RemCamLastIosb[4];
 
-int RemCamVerbose(int flag)
+int RemCamVerbose(int flag __attribute__ ((unused)))
 {
   return 1;
 }

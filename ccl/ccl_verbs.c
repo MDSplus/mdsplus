@@ -37,7 +37,7 @@ static int Qrequired = 0;
 
 #define single_io(ccl_name,cam_name) EXPORT int ccl_name(void *ctx, char **error, char **output) \
 {\
-  int status = ParseQualifiers(ctx, error, output);				\
+  int status = ParseQualifiers(ctx, error);				\
   if (status & 1) status = cam_name(Name,A,F,D,Mem,(unsigned short *)&iosb); \
   return CheckErrors(status,(unsigned short *)&iosb, error, output);	\
 }
@@ -58,7 +58,7 @@ int ccl_show_status();
 multi_io(ccl_stop, CamStopw)
     not_implemented(ccl_wdata)
 
-static int ParseQualifiers(void *ctx, char **error, char **output)
+static int ParseQualifiers(void *ctx, char **error)
 {
   int *d32;
   short *d16;
@@ -142,7 +142,7 @@ static int ParseQualifiers(void *ctx, char **error, char **output)
     int val = 0;
     if (cli_get_value(ctx, "data", &value) & 1) {
       if (binary) {
-	int j;
+	size_t j;
 	for (j = 0; j < strlen(value); j++) {
 	  char v = value[strlen(value) - j - 1];
 	  if (v != '0' && v != '1') {
@@ -206,7 +206,7 @@ static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
   return status;
 }
 
-EXPORT int ccl_set_xandq(void *ctx, char **error, char **output)
+EXPORT int ccl_set_xandq(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
 {
   char *value = 0;
   if (cli_get_value(ctx, "x", &value) & 1) {
@@ -230,20 +230,20 @@ EXPORT int ccl_set_xandq(void *ctx, char **error, char **output)
   return 1;
 }
 
-EXPORT int ccl_set_module(void *ctx, char **error, char **output)
+EXPORT int ccl_set_module(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
 {
   int status = cli_get_value(ctx, "name", &DefName) & 1;
   return status;
 }
 
-EXPORT int ccl_show_module(void *ctx, char **error, char **output)
+EXPORT int ccl_show_module(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   *output = malloc((DefName ? strlen(DefName) : 12) + 100);
   sprintf(*output, "Module set to %s\n", DefName ? DefName : "<undefined>");
   return 1;
 }
 
-EXPORT int ccl_show_status(void *ctx, char **error, char **output)
+EXPORT int ccl_show_status(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   *output = malloc(100);
   sprintf(*output,"Last status = 0x%x, iosb status = 0x%x, bytcnt = %d, %s, %s\n",
@@ -252,7 +252,7 @@ EXPORT int ccl_show_status(void *ctx, char **error, char **output)
   return 1;
 }
 
-EXPORT int ccl_show_data(void *ctx, char **error, char **output)
+EXPORT int ccl_show_data(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   int *d32 = (int *)D;
   short *d16 = (short *)D;
@@ -321,12 +321,16 @@ EXPORT int ccl_show_data(void *ctx, char **error, char **output)
   return 1;
 }
 
-EXPORT int ccl_set_verbose(void *cts, char **error, char **output)
+EXPORT int ccl_set_verbose(void *cts __attribute__ ((unused)),
+			   char **error __attribute__ ((unused)),
+			   char **output __attribute ((unused)))
 {
   return CamVerbose(1);
 }
 
-EXPORT int ccl_set_noverbose(void *cts, char **error, char **output)
+EXPORT int ccl_set_noverbose(void *cts __attribute__ ((unused)),
+			     char **error __attribute__ ((unused)),
+			     char **output __attribute__ ((unused)))
 {
   return CamVerbose(0);
 }

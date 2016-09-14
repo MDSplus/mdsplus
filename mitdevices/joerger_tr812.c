@@ -37,14 +37,14 @@ static int one = 1;
 static int ReadChannel(int partial, struct _f0a0 *f0a0, InStoreStruct * setup, int *chan_ptr,
 		       int *samples_ptr, short *data_ptr);
 
-int joerger_tr812___trigger(struct descriptor_s *niddsc_ptr, InTriggerStruct * setup)
+int joerger_tr812___trigger(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0);
   return status;
 }
 
-int joerger_tr812___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+int joerger_tr812___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   //static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
@@ -74,12 +74,12 @@ int joerger_tr812___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 
 static int Store(InStoreStruct * setup, int partial);
 
-int joerger_tr812___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+int joerger_tr812___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   return Store(setup, 0);
 }
 
-int joerger_tr812___partial_store(struct descriptor_s *niddsc_ptr, InPartial_storeStruct * setup)
+int joerger_tr812___partial_store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InPartial_storeStruct * setup)
 {
   return Store((InStoreStruct *) setup, 1);
 }

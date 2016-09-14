@@ -30,8 +30,10 @@ static void printDecompiled(struct descriptor *inD)
 }
 */
 
-EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor *startD,
-			      struct descriptor *endD, struct descriptor *minDeltaD,
+EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
+			      struct descriptor *startD __attribute__ ((unused)),
+			      struct descriptor *endD __attribute__ ((unused)),
+			      struct descriptor *minDeltaD __attribute__ ((unused)),
 			      struct descriptor_xd *outXd)
 {
   EMPTYXD(emptyXd);
@@ -39,10 +41,10 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
   EMPTYXD(setRangeExprXd);
   struct descriptor_signal *currSignalD;
   struct descriptor_xd *shapesXd;
-  struct descriptor_xd *dimensionsXd;
+  struct descriptor_xd *dimensionsXd = 0;
   struct descriptor_a *arrayD;
-  struct descriptor_a **arraysD;
-  int minNumShapes, maxNumShapes, numShapes;
+  struct descriptor_a **arraysD = 0;
+  int minNumShapes = 0, maxNumShapes = 0, numShapes;
   int totSize;
   int i, j, status, lastDimension;
   int outShape[64];
@@ -57,8 +59,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
   DESCRIPTOR_A(endingArrD, 0, 0, 0, 0);
   DESCRIPTOR_A(deltavalArrD, 0, 0, 0, 0);
   DESCRIPTOR_RANGE(outRangeD, &beginArrD, &endingArrD, &deltavalArrD);
-  char *beginPtr, *endingPtr, *deltavalPtr;
-  char *outDataBuf, *outDimBuf;
+  char *beginPtr=0, *endingPtr=0, *deltavalPtr=0;
+  char *outDataBuf, *outDimBuf=0;
 
   int numSignals, numDimensions;
   int allDimensionsAreRanges;
@@ -70,7 +72,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
     signalsApd = (struct descriptor_a *)((struct descriptor_xd *)signalsApd)->pointer;
 
   numSignals = signalsApd->arsize / signalsApd->length;
-  if (numSignals == 0) {
+  if (numSignals <= 0) {
     MdsCopyDxXd((struct descriptor *)&emptyXd, outXd);
     return 1;
   }
@@ -321,16 +323,16 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
   free(outDataBuf);
   if (allDimensionsAreRanges) {
     if (numSignals > 1) {
-      free(beginPtr);
-      free(endingPtr);
-      free(deltavalPtr);
+      if (beginPtr) free(beginPtr);
+      if (endingPtr) free(endingPtr);
+      if (deltavalPtr) free(deltavalPtr);
     }
   } else {
     for (i = 0; i < numSignals; i++)
       MdsFree1Dx(&dimensionsXd[i], 0);
-    free((char *)dimensionsXd);
-    free(outDimBuf);
-    free((char *)arraysD);
+    if (dimensionsXd) free((char *)dimensionsXd);
+    if (outDimBuf) free(outDimBuf);
+    if (arraysD) free((char *)arraysD);
   }
   MdsFree1Dx(&setRangeExprXd, 0);
   return status;

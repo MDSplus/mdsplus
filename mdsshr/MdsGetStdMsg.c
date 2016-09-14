@@ -443,10 +443,10 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVPYDEVICE_NOT_FOUND */
+/* DEVPYDEVICE_NOT_FOUND2 */
       case 0x277c8108:
         {static const char *text="Device support not found.";
-        static const char *msgnam="PYDEVICE_NOT_FOUND";
+        static const char *msgnam="PYDEVICE_NOT_FOUND2";
         *fac_out = FAC_DEV;
         *msgnam_out = msgnam;
         *text_out = text;

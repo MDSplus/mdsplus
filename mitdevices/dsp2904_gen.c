@@ -2,7 +2,7 @@
 #include <mds_gendevice.h>
 #include "dsp2904_gen.h"
 extern int dsp2904___add(int *nid);
-EXPORT int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "DSP2904");
@@ -96,7 +96,7 @@ EXPORT int dsp2904__add(struct descriptor *name_d_ptr, struct descriptor *dummy_
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int dsp2904__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int dsp2904__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		       struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -165,7 +165,7 @@ extern int dsp2904___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int dsp2904__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int dsp2904__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];
@@ -183,7 +183,7 @@ EXPORT int dsp2904__init(struct descriptor *nid_d_ptr, struct descriptor *method
 extern int dsp2904___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int dsp2904__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int dsp2904__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

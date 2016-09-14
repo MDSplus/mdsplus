@@ -519,7 +519,7 @@ void LoadDataSetup(Widget w, String title, WaveInfo * info)
   Widget top;
   Widget tw;
   XmString title_s = XmStringCreateSimple(title);
-  for (tw = w; tw; top = tw, tw = XtParent(tw)) ;
+  for (top = tw = w; tw; top = tw, tw = XtParent(tw)) ;
   XtVaSetValues(w, XmNdialogTitle, title_s, NULL);
   XmStringFree(title_s);
   XmTextSetString(XtNameToWidget(w, "exp_text"), info->database);
@@ -659,7 +659,7 @@ void GetDataSetup(Widget w, WaveInfo * info, int *change_mask)
   int value;
   int mask = 0;
   int global_defaults = info->_global.global_defaults;
-  Widget top;
+  Widget top = w;
   Widget tw;
   for (tw = w; tw; top = tw, tw = XtParent(tw)) ;
   GetGlobalDefaults(XtNameToWidget(top, "*defaults_setup_db"), info);
@@ -750,7 +750,7 @@ Boolean ReplaceString(String * old, String new, Boolean free)
   return changed;
 }
 
-void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data)
+void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   if (*file) {
     XmString mask;
@@ -773,7 +773,9 @@ void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data)
   }
 }
 
-void DisplayHelp(Widget w_in, String tag, XtPointer callback_data)
+void DisplayHelp(Widget w_in __attribute__ ((unused)),
+		 String tag __attribute__ ((unused)),
+		 XtPointer callback_data __attribute__ ((unused)))
 {
 }
 
@@ -802,9 +804,9 @@ void ResetWave(WaveInfo * info)
   ReplaceString(&info->ymax, "", 0);
 }
 
-void DisableGlobalDefault(Widget w, String tag, XtPointer callback_data)
+void DisableGlobalDefault(Widget w, String tag, XtPointer callback_data __attribute__ ((unused)))
 {
-  Widget top;
+  Widget top = w;
   Widget tw;
   Widget defaults_widget;
   char name[128];
@@ -818,11 +820,12 @@ void DisableGlobalDefault(Widget w, String tag, XtPointer callback_data)
     XmToggleButtonGadgetSetState(button, 0, 1);
 }
 
-void InitDefaultsSetupWidget(Widget w, int *tag, XtPointer callback_data)
+void InitDefaultsSetupWidget(Widget w, int *tag __attribute__ ((unused)),
+			     XtPointer callback_data __attribute__ ((unused)))
 {
   static int default_db_inited = 0;
   if (!default_db_inited) {
-    Widget top;
+    Widget top = w;
     Widget tw;
     Widget defaults_widget;
     Widget setup_widget;
@@ -858,7 +861,7 @@ static String Concat(String prefix, String postfix)
   return answer;
 }
 
-void ExpandReset(Widget w, int *tag, XtPointer callback_data)
+void ExpandReset(Widget w, int *tag, XtPointer callback_data __attribute__ ((unused)))
 {
   Widget dsw;
   Widget exw;
@@ -879,14 +882,14 @@ void ExpandReset(Widget w, int *tag, XtPointer callback_data)
   }
 }
 
-void ExpandCancel(Widget w, int *tag, XtPointer callback_data)
+void ExpandCancel(Widget w, int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
 {
   Widget dsw;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw)) ;
   XtUnmanageChild(XtNameToWidget(dsw, "*expand_dialog"));
 }
 
-void ExpandOk(Widget w, int *tag, XtPointer callback_data)
+void ExpandOk(Widget w, int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
 {
   Widget dsw;
   Widget exw;
@@ -958,7 +961,7 @@ static void SetOptionIdx(Widget w, int idx)
     static Widget *options;
     static Cardinal num_options;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
-    if (idx < num_options)
+    if (idx < (int)num_options)
       XtVaSetValues(w, XmNmenuHistory, options[idx], NULL);
   }
 }
@@ -974,7 +977,7 @@ static int GetOptionIdx(Widget w)
     static Cardinal num_options;
     int i;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
-    for (i = 0; i < num_options; i++)
+    for (i = 0; i < (int)num_options; i++)
       if (options[i] == option) {
 	idx = i;
 	break;

@@ -66,7 +66,7 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   int numSegments, status, currSegment, currIdx, outIdx;
   int nid = *nidPtr;
   double segStart, segEnd, actMin, actMax, actDelta, currMin, currMax;
-  int outSamples, minSegment, maxSegment;
+  int outSamples, minSegment=0, maxSegment;
   float *outData, *outTimes, *currTimes, *currData, currSamples;
   double *currDataDouble, *currTimesDouble, currTime;
   int isDouble, isTimeDouble;

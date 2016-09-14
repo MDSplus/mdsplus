@@ -36,12 +36,12 @@ static int one = 1;
 
 static int arm_init(InInitStruct * setup, int start);
 
-EXPORT int incaa6___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int incaa6___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   return arm_init(setup, 1);
 }
 
-EXPORT int incaa6___arm(struct descriptor *niddsc_ptr, InArmStruct * setup)
+EXPORT int incaa6___arm(struct descriptor *niddsc_ptr __attribute__ ((unused)), InArmStruct * setup)
 {
   return arm_init((InInitStruct *) setup, 0);
 }
@@ -87,7 +87,7 @@ static int arm_init(InInitStruct * setup, int start)
   return status;
 }
 
-EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
+EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16);		/* Trigger */
@@ -96,7 +96,7 @@ EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * set
 
 //static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
 
-EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");

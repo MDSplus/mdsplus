@@ -10,10 +10,11 @@
 
 #define HV1443_K_CHANS          16
 
-extern int hv1443___get_settings(struct descriptor *niddsc, InGet_settingsStruct * setup);
+extern int hv1443___get_settings(struct descriptor *niddsc __attribute__ ((unused)), InGet_settingsStruct * setup);
 extern int GenDeviceFree();
 
-EXPORT int hv1443__get_settings(struct descriptor *niddsc_ptr, struct descriptor *meth, int max_chans,
+EXPORT int hv1443__get_settings(struct descriptor *niddsc_ptr __attribute__ ((unused)),
+				struct descriptor *meth __attribute__ ((unused)), int max_chans,
 			 int *settings)
 {
   int status = 1;

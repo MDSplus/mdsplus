@@ -387,7 +387,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);
@@ -498,7 +498,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);

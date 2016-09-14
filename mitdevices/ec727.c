@@ -15,7 +15,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int ec727___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int ec727___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   pio(24, 0)
@@ -23,7 +23,7 @@ EXPORT int ec727___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-EXPORT int ec727___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int ec727___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   static DESCRIPTOR(sigdef, "BUILD_SIGNAL(BUILD_WITH_UNITS($,'counts'),*,$[ $ : $ ])");
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(int), DTYPE_L, 0, 1, 0);

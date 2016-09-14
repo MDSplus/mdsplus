@@ -132,7 +132,7 @@ int TdiPutLogical(unsigned char data, struct descriptor_xd *out_ptr)
 /*--------------------------------------------------------------
         Comparison routine.
 */
-STATIC_ROUTINE int compare(struct descriptor *key_ptr, node_type * node_ptr, block_type * block_ptr)
+STATIC_ROUTINE int compare(struct descriptor *key_ptr, node_type * node_ptr, block_type * block_ptr __attribute__ ((unused)))
 {
   return StrCaseBlindCompare(key_ptr, &node_ptr->name_dsc);
 }
@@ -452,7 +452,7 @@ STATIC_ROUTINE int free_all(node_type ** pnode)
 /*--------------------------------------------------------------
         Release variables.
 */
-int Tdi1Deallocate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Deallocate(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   block_type *private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
@@ -467,7 +467,7 @@ int Tdi1Deallocate(int opcode, int narg, struct descriptor *list[], struct descr
 /*--------------------------------------------------------------
         Check for allocated variable, private only by default.
 */
-int Tdi1Allocated(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Allocated(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor key_dsc = EMPTDY_S;
@@ -493,7 +493,7 @@ int Tdi1Allocated(int opcode, int narg, struct descriptor *list[], struct descri
 /*--------------------------------------------------------------
         Check for argument present.
 */
-int Tdi1Present(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Present(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor key_dsc = EMPTDY_S;
@@ -674,7 +674,7 @@ int TdiDoFun(struct descriptor *ident_ptr,
 /***************************************************************
         Replace variable. Assumed called by INTRINSIC so that out_ptr is XD-DSC.
 */
-int Tdi1Equals(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Equals(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -692,7 +692,7 @@ int Tdi1Equals(int opcode, int narg, struct descriptor *list[], struct descripto
 /*--------------------------------------------------------------
         Store in first argument of binary opertor.
 */
-int Tdi1EqualsFirst(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1EqualsFirst(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -706,7 +706,7 @@ int Tdi1EqualsFirst(int opcode, int narg, struct descriptor *list[], struct desc
 /*--------------------------------------------------------------
         Decrement a variable before use.
 */
-int Tdi1PreDec(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PreDec(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -719,7 +719,7 @@ int Tdi1PreDec(int opcode, int narg, struct descriptor *list[], struct descripto
 /*--------------------------------------------------------------
         Increment a variable before use.
 */
-int Tdi1PreInc(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PreInc(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -732,7 +732,7 @@ int Tdi1PreInc(int opcode, int narg, struct descriptor *list[], struct descripto
 /*--------------------------------------------------------------
         Decrement a variable after use.
 */
-int Tdi1PostDec(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PostDec(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -749,7 +749,7 @@ int Tdi1PostDec(int opcode, int narg, struct descriptor *list[], struct descript
 /*--------------------------------------------------------------
         Increment a variable after use.
 */
-int Tdi1PostInc(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PostInc(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -768,7 +768,7 @@ int Tdi1PostInc(int opcode, int narg, struct descriptor *list[], struct descript
         PRIVATE and PUBLIC must have text argument, not expression.
         They are keywords, not standard functions. NEED we change this?
 */
-int Tdi1Private(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Private(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   node_type *node_ptr;
@@ -786,7 +786,7 @@ int Tdi1Private(int opcode, int narg, struct descriptor *list[], struct descript
         Find by identifier.
         PRIVATE and PUBLIC must have text argument, not expression.
 */
-int Tdi1Public(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Public(int opcode __attribute__ ((unused)), int narg __attribute__((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   node_type *node_ptr;
@@ -804,7 +804,7 @@ int Tdi1Public(int opcode, int narg, struct descriptor *list[], struct descripto
 /*--------------------------------------------------------------
         Find by text expression.
 */
-int Tdi1Var(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Var(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -844,7 +844,7 @@ int Tdi1Fun(int opcode, int narg, struct descriptor *list[], struct descriptor_x
         Release the private variables.
         This to be used by functions.
 */
-int Tdi1ResetPrivate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ResetPrivate()
 {
   int status = 1;
   block_type *private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
@@ -860,7 +860,7 @@ int Tdi1ResetPrivate(int opcode, int narg, struct descriptor *list[], struct des
 /*--------------------------------------------------------------
         Release the public variables.
 */
-int Tdi1ResetPublic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ResetPublic()
 {
   int status = 1;
 
@@ -916,7 +916,7 @@ STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
 /*--------------------------------------------------------------
         Display private variables.
 */
-int Tdi1ShowPrivate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ShowPrivate(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   block_type *_private = (block_type *) & ((TdiThreadStatic())->TdiVar_private);
   return wild((int (*)())show_one, narg, list, _private, out_ptr);
@@ -925,7 +925,7 @@ int Tdi1ShowPrivate(int opcode, int narg, struct descriptor *list[], struct desc
 /*--------------------------------------------------------------
         Display public variables.
 */
-int Tdi1ShowPublic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ShowPublic(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   LockTdiMutex(&lock, &lock_initialized);

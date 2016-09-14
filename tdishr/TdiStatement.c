@@ -33,7 +33,7 @@ STATIC_ROUTINE int goto1(int, struct descriptor *[], struct descriptor_xd *);
         ABORT processing.
                 ABORT()
 */
-int Tdi1Abort(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Abort()
 {
   return TdiABORT;
 }
@@ -42,7 +42,7 @@ int Tdi1Abort(int opcode, int narg, struct descriptor *list[], struct descriptor
         BREAK from DO...WHILE FOR or WHILE loops or SWITCH.
                 BREAK;
 */
-int Tdi1Break(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Break()
 {
   return TdiBREAK;
 }
@@ -50,7 +50,7 @@ int Tdi1Break(int opcode, int narg, struct descriptor *list[], struct descriptor
 /*-----------------------------------------------------------------
         CASE within SWITCH.
 */
-int Tdi1Case(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Case(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   status = TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
@@ -61,7 +61,7 @@ int Tdi1Case(int opcode, int narg, struct descriptor *list[], struct descriptor_
         Evaluates all arguments but returns last only.
                 result = evaluation,...evaluation
 */
-int Tdi1Comma(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Comma(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int j;
@@ -76,7 +76,7 @@ int Tdi1Comma(int opcode, int narg, struct descriptor *list[], struct descriptor
         CONTINUE from DO...WHILE FOR or WHILE loops.
                 CONTINUE;
 */
-int Tdi1Continue(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Continue()
 {
   return TdiCONTINUE;
 }
@@ -84,7 +84,7 @@ int Tdi1Continue(int opcode, int narg, struct descriptor *list[], struct descrip
 /*-----------------------------------------------------------------
         CASE DEFAULT within SWITCH.
 */
-int Tdi1Default(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Default(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   status = TdiIntrinsic(OpcStatement, narg, &list[0], out_ptr);
@@ -95,7 +95,7 @@ int Tdi1Default(int opcode, int narg, struct descriptor *list[], struct descript
         Loops until expression is false, doing a statement.
                 DO {statement} WHILE (expression);
 */
-int Tdi1Do(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Do(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int test;
@@ -114,7 +114,7 @@ int Tdi1Do(int opcode, int narg, struct descriptor *list[], struct descriptor_xd
         Loops FOR expression true and doing a statement.
                 FOR ([init]; [test]; [update]) statement
 */
-int Tdi1For(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1For(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int test;
@@ -140,7 +140,7 @@ int Tdi1For(int opcode, int narg, struct descriptor *list[], struct descriptor_x
         GOTO a label in active area of code.
                 GOTO label;
 */
-int Tdi1Goto(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Goto(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -160,7 +160,7 @@ int Tdi1Goto(int opcode, int narg, struct descriptor *list[], struct descriptor_
         Tests IF expression and does a statement if true or possibly another if false.
                 IF (expression) statement ELSE statement
 */
-int Tdi1If(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1If(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int test = 0;
@@ -187,7 +187,7 @@ int Tdi1If(int opcode, int narg, struct descriptor *list[], struct descriptor_xd
         If last fails, return EMPTY descriptor and success.
                 first_good = IF_ERROR(a,...)
 */
-int Tdi1IfError(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IfError(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int keep, j;
@@ -209,7 +209,7 @@ int Tdi1IfError(int opcode, int narg, struct descriptor *list[], struct descript
         Hold LABEL for GOTO.
                 label : stmt
 */
-int Tdi1Label(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Label(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -220,7 +220,7 @@ int Tdi1Label(int opcode, int narg, struct descriptor *list[], struct descriptor
 /*-----------------------------------------------------------------
         Remark embedded in expression, a no-operation.
 */
-int Tdi1Rem(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Rem()
 {
   return 1;
 }
@@ -233,7 +233,7 @@ int Tdi1Rem(int opcode, int narg, struct descriptor *list[], struct descriptor_x
                 ...
         }
 */
-int Tdi1Return(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Return(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -314,7 +314,7 @@ STATIC_ROUTINE int goto1(int narg, struct descriptor *list[], struct descriptor_
         Note statements end with a semicolon or right brace.
                 {statement ... statement}
 */
-int Tdi1Statement(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Statement(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int j;
@@ -417,7 +417,7 @@ STATIC_ROUTINE int switch1(struct descriptor *ptest,
   return status;
 }
 
-int Tdi1Switch(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Switch(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int jdefault = 0;
@@ -450,7 +450,7 @@ int Tdi1Switch(int opcode, int narg, struct descriptor *list[], struct descripto
         Loops while expression is true and does a statement.
                 WHILE (expression) statement
 */
-int Tdi1While(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1While(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int test;

@@ -390,7 +390,7 @@ int udt_epoll_add_usock(int eid, UDTSOCKET u, const int * events)
 	}
 }
 
-int udt_epoll_add_ssock(int eid, SYSSOCKET s, const int * events)
+  int udt_epoll_add_ssock(int eid, SYSSOCKET s, const int * events __attribute__ ((unused)))
 {
     int rc;
     int flag = 0;

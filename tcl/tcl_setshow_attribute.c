@@ -93,7 +93,7 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
 
 extern int TdiCompile();
 
-EXPORT int TclSetAttribute(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
+EXPORT int TclSetAttribute(void *ctx, char **error, char **output __attribute__ ((unused)), char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *attname = 0;

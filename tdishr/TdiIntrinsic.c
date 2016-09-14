@@ -104,7 +104,10 @@ STATIC_ROUTINE void numb(int count)
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TdiTrace(int opcode __attribute__ ((unused)),
+	     int narg __attribute__ ((unused)),
+	     struct descriptor *list[] __attribute__ ((unused)),
+	     struct descriptor_xd *out_ptr)
 {
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
   if (message->length > MAXMESS)
@@ -121,7 +124,10 @@ int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_
   return 1;
 }
 
-int TRACE(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TRACE(int opcode,
+	  int narg,
+	  struct descriptor *list[],
+	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
@@ -386,7 +392,10 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
                 2 to print the current message
                 4 to clear the message buffer
 */
-int Tdi1Debug(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Debug(int opcode __attribute__ ((unused)),
+	      int narg,
+	      struct descriptor *list[],
+	      struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int option = -1;

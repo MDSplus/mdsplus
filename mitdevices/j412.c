@@ -14,7 +14,7 @@ static int one = 1;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(in_struct->name, a, f, d, 16, 0), &one, &one))
 #define stop(f,a,n,d)  return_on_error(DevCamChk(CamStopw(in_struct->name, a, f, n, d, 24, 0), &one, &one))
 
-EXPORT int j412___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+EXPORT int j412___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in_struct)
 {
   struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int status;

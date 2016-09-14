@@ -632,8 +632,8 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	double delta;
 	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
 	int64_t estimatedSamples;
-	int estimatedSegmentSamples;
-	double estimatedDuration;
+	int estimatedSegmentSamples = 0;
+	double estimatedDuration = 0;
 
 //printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
 
@@ -743,7 +743,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)
@@ -1053,7 +1053,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)
@@ -1336,7 +1336,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)
@@ -1533,7 +1533,7 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)

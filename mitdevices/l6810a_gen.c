@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l6810a_gen.h"
-EXPORT int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L6810A");
@@ -156,7 +156,7 @@ EXPORT int l6810a__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int l6810a__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int l6810a__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		      struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -247,7 +247,7 @@ extern int l6810a___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int l6810a__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810a__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
@@ -358,7 +358,7 @@ EXPORT int l6810a__init(struct descriptor *nid_d_ptr, struct descriptor *method_
 extern int l6810a___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int l6810a__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810a__trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -376,7 +376,7 @@ EXPORT int l6810a__trigger(struct descriptor *nid_d_ptr, struct descriptor *meth
 extern int l6810a___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int l6810a__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810a__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

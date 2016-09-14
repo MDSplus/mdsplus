@@ -142,7 +142,7 @@ extern int CvtConvertFloat();
 
 STATIC_ROUTINE int GtrFloat(int dtype, void *a, void *b)
 {
-  int ans;
+  int ans=0;
   float a_local;
   float b_local;
   if (CvtConvertFloat(a, dtype, &a_local, DTYPE_NATIVE_FLOAT, 0) &&
@@ -153,7 +153,7 @@ STATIC_ROUTINE int GtrFloat(int dtype, void *a, void *b)
 
 STATIC_ROUTINE int GtrDouble(int dtype, void *a, void *b)
 {
-  int ans;
+  int ans=0;
   double a_local;
   double b_local;
   if (CvtConvertFloat(a, dtype, &a_local, DTYPE_NATIVE_DOUBLE, 0) &&
@@ -657,7 +657,7 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_
         Sort in place.
         Method: MAP(array, SORT(array, [upcase]))
 */
-int Tdi1SortVal(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1SortVal(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -677,7 +677,7 @@ int Tdi1SortVal(int opcode, int narg, struct descriptor *list[], struct descript
         There may any number or arguments.
         The signality is removed and units are joined by VECTOR.
 */
-int Tdi1Union(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Union(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int j, n, len;
@@ -775,7 +775,7 @@ int Tdi1Union(int opcode, int narg, struct descriptor *list[], struct descriptor
         list    vector of valid values
         upcase  compare in uppercase (for text only)
 */
-int Tdi1IsIn(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IsIn(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor *pupcase = narg > 2 ? list[2] : 0;

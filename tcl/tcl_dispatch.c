@@ -51,7 +51,7 @@ extern int TdiIdentOf();
 	/****************************************************************
 	 * TclDispatch_close:
 	 ****************************************************************/
-EXPORT int TclDispatch_close(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_close(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
 {
   char *ident = 0;
 
@@ -69,7 +69,7 @@ EXPORT int TclDispatch_close(void *ctx, char **error, char **output)
 	/**************************************************************
 	 * TclDispatch_build:
 	 **************************************************************/
-EXPORT int TclDispatch_build(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts;
   char *monitor = 0;
@@ -104,7 +104,7 @@ static void WaitfrEf(int *id)
   ServerWait(*id);
 }
 
-EXPORT int TclDispatch(void *ctx, char **error, char **output)
+EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *treenode = 0;
   int sts;
@@ -161,7 +161,7 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output)
 	 * TclDispatch_stop_server:
 	 * TclDispatch_start_server:
 	 **************************************************************/
-EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   char *ident = 0;
@@ -179,7 +179,7 @@ EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   char *ident = 0;
@@ -202,7 +202,7 @@ EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   char *ident = 0;
@@ -228,7 +228,7 @@ EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output)
 	/***************************************************************
 	 * TclDispatch_set_server:
 	 ***************************************************************/
-EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   int logqual;
@@ -266,7 +266,7 @@ EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output)
 	/**************************************************************
 	 * TclDispatch_show_server:
 	 **************************************************************/
-EXPORT int TclDispatch_show_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   int sts = 1;
   char *ident = 0;
@@ -321,7 +321,7 @@ static void printIt(char *output)
 	/*****************************************************************
 	 * TclDispatch_phase:
 	 *****************************************************************/
-EXPORT int TclDispatch_phase(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *phase = 0;
   char *synch_str = 0;
@@ -377,7 +377,7 @@ static void CommandDone(DispatchedCommand * command)
   return;
 }
 
-EXPORT int TclDispatch_command(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *cli = 0;
   char *ident = 0;
@@ -425,7 +425,7 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output)
 	/***************************************************************
 	 * TclDispatch_check:
 	 ***************************************************************/
-EXPORT int TclDispatch_check(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_check(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   if (ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET") & 1)) {
     *error = strdup("Error: A essential action failed!\n");

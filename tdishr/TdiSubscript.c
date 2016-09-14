@@ -324,7 +324,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
         Each B value out of range uses extreme values of A.
         A is treated as a linear array and subscripting is to nearest integer.
 */
-int Tdi1Map(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd dwu = EMPTY_XD, sig[1], uni[1], dat[1];

@@ -20,7 +20,7 @@
 	 * TclRemoveTag:
 	 *  Remove a tag name
 	 ***************************************************************/
-EXPORT int TclRemoveTag(void *ctx, char **error, char **output)
+EXPORT int TclRemoveTag(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts;
   char *tagnam = 0;

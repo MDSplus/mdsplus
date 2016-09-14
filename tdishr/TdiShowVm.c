@@ -14,7 +14,7 @@
 
 extern int TdiGetLong();
 
-int Tdi1ShowVm(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ShowVm()
 {
   /*
   int status = 1;

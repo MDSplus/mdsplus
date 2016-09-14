@@ -20,7 +20,7 @@
 
 extern int StrFree1Dx();
 
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+static inline int minInt(int a, int b) { return a < b ? a : b; }
 
 #define read_nci \
  if (nci_version != version)\
@@ -187,7 +187,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       read_nci;
       set_retlen(sizeof(rfa_l));
       rfa_l = RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa);
-      memcpy(itm->pointer, &rfa_l, min(sizeof(unsigned int), itm->buffer_length));
+      memcpy(itm->pointer, &rfa_l, minInt(sizeof(unsigned int), itm->buffer_length));
       break;
     case NciCONGLOMERATE_ELT:
       break_on_no_node;
@@ -484,7 +484,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
     }
     if (string) {
       if (itm->buffer_length && itm->pointer) {
-	retlen = min((int)strlen(string), itm->buffer_length);
+	retlen = minInt(strlen(string), itm->buffer_length);
 	memcpy(itm->pointer, string, retlen);
 	free(string);
       } else {
@@ -708,7 +708,7 @@ int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 
 int TreeOpenNciR(TREE_INFO * info)
 {
-  int status;
+  int status = TreeFAILURE;
 	/****************************************************
     Allocate an nci_file structure
     (if there is any problem ...

@@ -424,7 +424,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
                 logical = ALL(mask, [dim])
 */
 int Tdi3All(struct descriptor *in_ptr,
-	    struct descriptor *pmask,
+	    struct descriptor *pmask __attribute__ ((unused)),
 	    struct descriptor *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -448,7 +448,7 @@ int Tdi3All(struct descriptor *in_ptr,
                 logical = ANY(mask, [dim])
 */
 int Tdi3Any(struct descriptor *in_ptr,
-	    struct descriptor *pmask,
+	    struct descriptor *pmask __attribute__ ((unused)),
 	    struct descriptor *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -473,7 +473,7 @@ int Tdi3Any(struct descriptor *in_ptr,
                 vector-long = COUNT(mask, dim)
 */
 int Tdi3Count(struct descriptor *in_ptr,
-	      struct descriptor *pmask,
+	      struct descriptor *pmask __attribute__ ((unused)),
 	      struct descriptor *out_ptr,
 	      int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -499,7 +499,7 @@ int Tdi3Count(struct descriptor *in_ptr,
                 array-logical = FIRSTLOC(mask, [dim])
 */
 int Tdi3FirstLoc(struct descriptor *in_ptr,
-		 struct descriptor *pmask,
+		 struct descriptor *pmask __attribute__ ((unused)),
 		 struct descriptor *out_ptr,
 		 int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -524,7 +524,7 @@ int Tdi3FirstLoc(struct descriptor *in_ptr,
                 array-logical = LASTLOC(mask, [dim])
 */
 int Tdi3LastLoc(struct descriptor *in_ptr,
-		struct descriptor *pmask,
+		struct descriptor *pmask __attribute__ ((unused)),
 		struct descriptor *out_ptr,
 		int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -552,7 +552,12 @@ int Tdi3LastLoc(struct descriptor *in_ptr,
 int Tdi3Replicate(struct descriptor *in_ptr,
 		  struct descriptor *pmask,
 		  struct descriptor *out_ptr,
-		  int count0, int count1, int count2, int step0, int step1, int step2)
+		  int count0 __attribute__ ((unused)),
+		  int count1 __attribute__ ((unused)),
+		  int count2,
+		  int step0 __attribute__ ((unused)),
+		  int step1 __attribute__ ((unused)),
+		  int step2)
 {
   char *pin = in_ptr->pointer, *pout = out_ptr->pointer;
   int j0, j1, ncopies = *(int *)pmask;
@@ -571,7 +576,10 @@ int Tdi3Replicate(struct descriptor *in_ptr,
 int Tdi3Spread(struct descriptor *in_ptr,
 	       struct descriptor *pmask,
 	       struct descriptor *out_ptr,
-	       int count0, int count1, int count2, int step0, int step1, int step2)
+	       int count0, int count1 __attribute__ ((unused)),
+	       int count2, int step0,
+	       int step1 __attribute__ ((unused)),
+	       int step2 __attribute__ ((unused)))
 {
   char *pin = in_ptr->pointer, *pout = out_ptr->pointer;
   int j0, j1, ncopies = *(int *)pmask;

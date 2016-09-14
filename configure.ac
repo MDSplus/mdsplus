@@ -1101,7 +1101,7 @@ RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
-AS_VAR_SET([WARNFLAGS], ["-Wall"])
+AS_VAR_SET([WARNFLAGS], ["-Wextra -Wall"])
 
 AC_MSG_CHECKING([whether to treat warnings as errors])
 AC_ARG_ENABLE([werror],

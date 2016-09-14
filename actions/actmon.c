@@ -217,7 +217,7 @@ int main(int argc, String * argv)
   return 0;
 }
 
-static void Exit(Widget w, int *tag, XtPointer callback_data)
+static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
 {
   exit(0);
 }
@@ -236,7 +236,8 @@ static Widget FindTop(Widget w)
   return w;
 }
 
-static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb)
+static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
+			  XmListCallbackStruct * cb __attribute__ ((unused)))
 {
   static ServerList *server;
   int idx;
@@ -250,7 +251,7 @@ static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb)
   }
 }
 
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb)
+static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused)))
 {
   static int operation;
   static Widget dialog = NULL;
@@ -320,7 +321,7 @@ static void SetKillSensitive(Widget top)
   }
 }
 
-static void ConfirmServerAbort(Widget w, void *tag, void *cb)
+static void ConfirmServerAbort(Widget w, void *tag __attribute__ ((unused)), void *cb __attribute__ ((unused)))
 {
   int *op_ptr;
   int operation;
@@ -354,7 +355,7 @@ static void ConfirmServerAbort(Widget w, void *tag, void *cb)
   }
 }
 
-static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct * cb)
+static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonCallbackStruct * cb)
 {
   Widget dw = 0;
   switch (*tag) {
@@ -478,7 +479,7 @@ static void QEvent(LinkedEvent * ev)
   unlock_event_queue();
 }
 
-static void MessageAst(int dummy, char *reply)
+static void MessageAst(int dummy __attribute__ ((unused)), char *reply)
 {
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = 0;

@@ -11,10 +11,10 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <usagedef.h>
+#include <tdishr.h>
 
 #include "tcl_p.h"
 
-extern int TdiDecompile();
 
 /**********************************************************************
 * TCL_SHOW_DATA.C --
@@ -31,7 +31,6 @@ extern int TdiDecompile();
 		 *======================================================*/
 static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error, char **output);
 
-extern int TdiOpcodeString();
 
 	/****************************************************************
 	 * lib_cvt_dx_dx:
@@ -54,7 +53,7 @@ static char *TclDtypeString(	/* Returns:  address of formatted string */
 	/****************************************************************
 	 * CvtIdentT:
 	 ****************************************************************/
-static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **error, char **output)
+static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **output)
 {
   char *ident = MdsDescrToCstring(in_dsc_ptr);
   char *dtype = TclDtypeString(in_dsc_ptr->dtype);
@@ -72,13 +71,14 @@ static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **error, cha
 static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error, char **output)
 {
   int nid = *(int *)in_dsc_ptr->pointer;
-  int sts;
+  int sts = 0;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
 
   if (nid == 0) {
     char *out_str = alloca(strlen(dstr) + strlen("$VALUE") + depth + 10);
     sprintf(out_str, "%*s$VALUE\n", (int)(strlen(dstr) + depth), dstr);
     tclAppend(output, out_str);
+    sts = 1;
   } else {
     char *pathname = 0;
     if ((pathname = TreeGetPath(nid))) {
@@ -97,6 +97,7 @@ static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error, char 
       char *out_str = alloca(strlen("***** Bad Nid Reference ********") + depth + strlen(dstr) + 10);
       sprintf(out_str, "%*s***** Bad Nid Reference ********\n", (int)(strlen(dstr) + depth), dstr);
       tclAppend(output, out_str);
+      sts = 1;
     }
   }
   free(dstr);
@@ -106,7 +107,7 @@ static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error, char 
 	/**************************************************************
 	 * CvtNumericT:
 	 **************************************************************/
-static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth, char **error, char **output)
+static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth, char **output)
 {
   int sts;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
@@ -204,11 +205,11 @@ static int CvtDdscT(struct descriptor *in_dsc_ptr, int depth, char **error, char
     break;
 
   case DTYPE_IDENT:
-    sts = CvtIdentT(in_dsc_ptr, depth, error, output);
+    sts = CvtIdentT(in_dsc_ptr, depth, output);
     break;
 
   default:
-    sts = CvtNumericT(in_dsc_ptr, depth, error, output);
+    sts = CvtNumericT(in_dsc_ptr, depth, output);
     break;
   }
   free(dstr);
@@ -245,7 +246,7 @@ static int CvtFunctionT(struct descriptor *in_dsc_ptr, int depth, char **error, 
   int sts;
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
   static struct descriptor_xd ostr = { 0, DTYPE_T, CLASS_XD, 0, 0 };
-  struct descriptor_s opcode_dsc = { 2, DTYPE_WU, CLASS_S, (char *)0 };
+  struct descriptor opcode_dsc = { 2, DTYPE_WU, CLASS_S, (char *)0 };
 
   opcode_dsc.pointer = (char *)in_dsc_ptr->pointer;
   sts = TdiOpcodeString(&opcode_dsc, &ostr MDS_END_ARG);
@@ -283,7 +284,7 @@ static int CvtRdscT(struct descriptor *in_dsc_ptr, int depth, char **error, char
 	/****************************************************************
 	 * CvtAdscT:
 	 ****************************************************************/
-static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **error, char **output)
+static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output)
 {
   char *dstr = TclDtypeString(in_dsc_ptr->dtype);
   int *bptr;
@@ -329,7 +330,7 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **error, ch
 	 ****************************************************************/
 static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error, char **output)
 {
-  int sts;
+  int sts=0;
   switch (in_dsc_ptr->class) {
   case CLASS_XD:
   case CLASS_XS:
@@ -357,7 +358,7 @@ static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error, char *
   case CLASS_A:
   case CLASS_CA:
   case CLASS_APD:
-    sts = CvtAdscT((struct descriptor_a *)in_dsc_ptr, depth, error, output);
+    sts = CvtAdscT((struct descriptor_a *)in_dsc_ptr, depth, output);
     break;
   }
   return sts;
@@ -374,7 +375,7 @@ EXPORT int TclShowData(void *ctx, char **error, char **output)
   char *pathnam;
   char *nodnam = 0;
   void *ctx1 = 0;
-  struct descriptor_xd data = { 0, 0, CLASS_XD, 0 };
+  struct descriptor_xd data = { 0, 0, CLASS_XD, 0, 0 };
 
   usageMask = -1;
   while (cli_get_value(ctx, "NODE", &nodnam) & 1) {

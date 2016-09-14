@@ -155,12 +155,12 @@ EXPORT int TreeGetPerf()
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfRead(int bytes)
+EXPORT int TreePerfRead(int bytes __attribute__ ((unused)))
 {
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfWrite(int bytes)
+EXPORT int TreePerfWrite(int bytes __attribute__ ((unused)))
 {
   return TreeFAILURE;
 }

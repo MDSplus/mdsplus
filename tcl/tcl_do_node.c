@@ -22,7 +22,7 @@ extern int TdiDoTask();
 	/***************************************************************
 	 * TclDoNode:
 	 ***************************************************************/
-EXPORT int TclDoNode(void *ctx, char **error, char **output)
+EXPORT int TclDoNode(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts;
   char *nodnam = 0;

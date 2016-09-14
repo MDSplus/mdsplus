@@ -81,6 +81,10 @@ int add_entry(int dbType, char *newEntry)
     dbptr = (void *)CRATEdb;
     entrySize = CRATE_ENTRY;
     break;
+  default:
+    unlock_file();
+    status = FILE_ERROR;
+    goto AddEntry_Exit;
   }
 
   // shift current entries by one
