@@ -99,7 +99,10 @@ static void _RemoveTagIdx(PINO_DATABASE * dblist, int tagidx)
 {
   TAG_INFO *info_ptr, *remove_info_ptr;
   NODE *node_ptr;
-  int *tags_ptr, *this_tags_ptr;
+  int *tags_ptr, *this_tags_ptr = 0;
+
+  if (dblist->tree_info->header->tags <= 0)
+    return;
 
   /****************************************
    First we must remove the linked list of
@@ -165,7 +168,7 @@ static void _RemoveTagIdx(PINO_DATABASE * dblist, int tagidx)
    by the removed tag and then decrement the
    total tag count.
   ********************************************/
-  if (dblist->tree_info->header->tags > 0) {
+  if (this_tags_ptr) {
     size_t bytes;
     if ((bytes =
 	 (dblist->tree_info->header->tags -

@@ -514,7 +514,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
       (strchr(filename, '\\') == 0)) {
     char *library_path=getenv("MDSPLUS_LIBRARY_PATH");
     if (library_path) {
-      int offset = 0;
+      size_t offset = 0;
       char *libpath=strdup(library_path);
       while (offset < strlen(library_path)) {
 	char *dptr = strchr(libpath+offset, delim);
@@ -916,7 +916,7 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
     }
 
     {
-      struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+      struct tm tm = { 0 };
 #ifdef _WIN32
       unsigned int day, year, hour, minute, second;
       char month[4];

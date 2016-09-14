@@ -419,8 +419,6 @@ STATIC_ROUTINE int IsMember(PINO_DATABASE * db, NODE * node)
 
 STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
 {
-  int tokencnt;
-  char *tokenptr;
   int status;
   char *char_ptr = ctx->string;
   char *end_ptr = ctx->string + strlen(ctx->string);
@@ -428,6 +426,8 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
   char *tree = NULL;
   int treelen = 0;
   SEARCH_TYPE state = NONE;
+  int tokencnt = 1;
+  char *tokenptr = char_ptr;
 
 /**************************************************
  If the string is empty then assume error otherwise
@@ -1089,7 +1089,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
       int nid;
       NODE *node;
       NID *nidptr = (NID *) & nid;
-      int i;
+      unsigned int i;
       for (i = 0; i < sizeof(tsearch.tag); i++) {
 	if (tsearch.tag[i] == ' ') {
 	  tsearch.tag[i] = '\0';

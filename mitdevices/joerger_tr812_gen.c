@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "joerger_tr812_gen.h"
-EXPORT int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "JOERGER_TR812");
@@ -170,7 +170,7 @@ EXPORT int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int joerger_tr812__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int joerger_tr812__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 			     struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -275,7 +275,7 @@ extern int joerger_tr812___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int joerger_tr812__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr812__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
@@ -362,7 +362,7 @@ EXPORT int joerger_tr812__init(struct descriptor *nid_d_ptr, struct descriptor *
 extern int joerger_tr812___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int joerger_tr812__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr812__trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -380,7 +380,7 @@ EXPORT int joerger_tr812__trigger(struct descriptor *nid_d_ptr, struct descripto
 extern int joerger_tr812___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int joerger_tr812__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr812__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];
@@ -398,7 +398,7 @@ EXPORT int joerger_tr812__store(struct descriptor *nid_d_ptr, struct descriptor 
 extern int joerger_tr812___partial_store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int joerger_tr812__partial_store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr812__partial_store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InPartial_storeStruct)
   struct descriptor_xd work_xd[1];

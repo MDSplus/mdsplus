@@ -70,6 +70,9 @@ int create_tmp_file(int dbType, int count, char *filename)
   case CRATE_DB:
     entrySize = CRATE_ENTRY;
     break;
+
+  default:
+    return 0;
   }
 
   // make 'blank-entry' format specifier

@@ -110,7 +110,7 @@ extern int TdiLexPath();
 #define _JUST3(opcode,arg1,arg2,arg3,out)       if (TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {yyerror(0);}
 #define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if (TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {yyerror(0);}
 
-STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0, 0 };
+STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
 //#line 111 "TdiYacc.y"
 typedef union {

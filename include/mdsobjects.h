@@ -308,7 +308,7 @@ public:
     }
 
     /// \return true if this and data match, false otherwise and as default
-    virtual bool equals(Data *data) { return false; }
+    virtual bool equals(Data *data __attribute__ ((unused))) { return false; }
 
     /// \return Return the result of TDI evaluate
     Data *evaluate();
@@ -371,7 +371,7 @@ public:
     virtual std::vector<uint64_t> getLongUnsignedArray();
     virtual double * getDoubleArray(int *numElements);
     virtual std::vector<double> getDoubleArray();
-    virtual std::complex<double> * getComplexArray(int *numElements) {
+    virtual std::complex<double> * getComplexArray(int *numElements __attribute__ ((unused))) {
         throw MdsException("getComplexArray() not supported for non Complex data types"); }
     virtual std::vector<std::complex<double> > getComplexArray();
     virtual char ** getStringArray(int *numElements) {
@@ -926,7 +926,7 @@ public:
         init(val, std::string(val).size(), units, error, help, validation);
     }
 
-    String(unsigned char *uval, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int len __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
         // FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
         // FIXME: Warning: Do not use this constructor in user code
         char * val = reinterpret_cast<char *>(uval);
@@ -934,7 +934,7 @@ public:
     }
 
     //GAB  definition in order to avoid breaking LabVIEW
-    String(unsigned char *uval, int numDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int numDims __attribute__ ((unused)), int *dims __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
         char * val = reinterpret_cast<char *>(uval);
         init(val, std::string(val).size(), units, error, help, validation);
     }
@@ -1542,8 +1542,8 @@ public:
     }
 
     /// retrieve Data at the idx position of contained descriptors
-    Data * getDescAt(std::size_t idx) {
-        if ( idx < 0 || idx >= descs.size() ) {
+    Data * getDescAt(int idx) {
+      if ( idx < 0 || idx >= (int)descs.size() ) {
             throw (MdsException("Index out of bounds accessing arguments"));
         }
 
@@ -3812,7 +3812,7 @@ public:
     ~Connection();
     void openTree(char *tree, int shot);
     void closeAllTrees();
-    void closeTree(char *tree, int shot)
+    void closeTree(char *tree __attribute__ ((unused)), int shot __attribute__ ((unused)))
     {
         closeAllTrees();
     }

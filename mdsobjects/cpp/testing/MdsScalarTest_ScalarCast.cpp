@@ -54,7 +54,7 @@ numeric_cast_test() {
 
 
 /// this may trigger an exception where overflow should be thrown by numeric_cast
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(ScalarCast);
 

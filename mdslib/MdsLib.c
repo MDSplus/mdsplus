@@ -485,9 +485,12 @@ static int va_MdsValue(char *expression, ...)
 	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
 		       &dims[6], &null, &dlen);
 	  break;
+	default:
+	  status = 0;
+	  break;
 	}
-
-	MdsValueSet(dscAnswer, descrs[ansdescr - 1], length);
+        if (status & 1)
+	  MdsValueSet(dscAnswer, descrs[ansdescr - 1], length);
       }
       if (dnew)
 	free(dnew);
@@ -697,9 +700,12 @@ static int va_MdsValue2(char *expression, ...)
 	      va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5],
 		       &dims[6], &null, &dlen);
 	  break;
+	default:
+	  status = 0;
+	  break;
 	}
-
-	MdsValueSet(dscAnswer, descrs[ansdescr - 1], length);
+	if (status & 1)
+	  MdsValueSet(dscAnswer, descrs[ansdescr - 1], length);
       }
       if (dnew)
 	free(dnew);
@@ -1048,6 +1054,9 @@ static int dtype_length(struct descriptor *d)
   case DTYPE_CSTRING:
     len = d->length ? d->length : (d->pointer ? strlen(d->pointer) : 0);
     break;
+  default:
+    len = 0;
+    break;
   }
   return len;
 }
@@ -1268,15 +1277,16 @@ static void MdsValueMove(int source_length, char *source_array, char fill, int d
 static void MdsValueCopy(int dim, int length, char fill, char *in, unsigned int *in_m, char *out,
 			 unsigned int *out_m)
 {
-  int i;
+  unsigned int i;
+  int j;
   if (dim == 1)
     MdsValueMove(length * in_m[0], in, fill, length * out_m[0], out);
   else {
     int in_increment = length;
     int out_increment = length;
-    for (i = 0; i < dim - 1; i++) {
-      in_increment *= in_m[i];
-      out_increment *= out_m[i];
+    for (j = 0; j < dim - 1; j++) {
+      in_increment *= in_m[j];
+      out_increment *= out_m[j];
     }
     for (i = 0; i < in_m[dim - 1] && i < out_m[dim - 1]; i++)
       MdsValueCopy(dim - 1, length, fill, in + in_increment * i, in_m, out + out_increment * i,

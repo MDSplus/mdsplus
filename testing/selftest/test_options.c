@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include "testing.h"
-#include "config.h"
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(1);
     TEST1(1);

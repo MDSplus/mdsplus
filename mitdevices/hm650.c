@@ -37,7 +37,7 @@ static int one = 1;
 #define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, &one),status)
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-EXPORT int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int hm650___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = 1;
   int dly_status = 1;
@@ -120,7 +120,7 @@ EXPORT int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
     return 1;
 }
 
-EXPORT int hm650___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int hm650___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0, 16);

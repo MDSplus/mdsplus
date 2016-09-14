@@ -15,7 +15,7 @@ typedef struct descriptor *Dptr;
 extern int mit__clock___get_setup(Dptr, InGet_setupStruct *);
 extern int GenDeviceFree();
 
-EXPORT int mit__clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup,
+EXPORT int mit__clock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup,
 			  EventMask * event_mask, Dptr * output)
 {
   int status;

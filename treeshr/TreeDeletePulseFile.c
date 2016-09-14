@@ -51,7 +51,7 @@ int TreeDeletePulseFile(int shotid, int allfiles)
   return _TreeDeletePulseFile(*TreeCtx(), shotid, allfiles);
 }
 
-int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
+int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles __attribute__ ((unused)))
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int status = 1;

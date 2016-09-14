@@ -12,7 +12,7 @@
 #define CSTRING_TEST0 "this is a test"
 #define CSTRING_TEST1 "THIS IS A TEST"
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     
     long status;

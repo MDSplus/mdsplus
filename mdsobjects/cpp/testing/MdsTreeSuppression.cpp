@@ -24,7 +24,7 @@ using namespace testing;
 
 // this seems to catch a leak in treeshr
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(MDSTreeSuppression);
 #ifdef _WIN32

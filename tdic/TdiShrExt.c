@@ -531,7 +531,7 @@ static int MdsToIp(struct descriptor **tdiarg, short *len)
 
 static int IpToMds(int dtypein)
 {
-  int dtype;
+  int dtype = DTYPE_Z;
   switch (dtypein) {
   case DTYPE_UCHAR:
     dtype = DTYPE_BU;

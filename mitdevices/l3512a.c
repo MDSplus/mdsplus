@@ -31,7 +31,7 @@ static int zero = 0;
 #define stop(name,f,a,c,d)  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 #define fstop(name,f,a,c,d)  return_on_error(DevCamChk(CamFStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 
-EXPORT int l3512a___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l3512a___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   float duration;
@@ -108,7 +108,7 @@ static DwellCode ConvertDwell(float *dwell)
   return answer;
 }
 
-EXPORT int l3512a___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l3512a___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
 
   unsigned short data[32768];

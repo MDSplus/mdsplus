@@ -73,7 +73,8 @@ int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
         F8X elemental, converts integer into ASCII (assumed) text byte.
                 text = CHAR(integer)
 */
-int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr, struct descriptor *out_ptr)
+int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr __attribute__ ((unused)),
+	     struct descriptor *out_ptr)
 {
   char *p1 = in_ptr->pointer;
   char *p2 = out_ptr->pointer;
@@ -270,7 +271,8 @@ int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
                 REPEAT(string, ncopies)
         Limitation: ncopies must be a scalar.
 */
-int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
+int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr __attribute__ ((unused)),
+	       struct descriptor *out_ptr)
 {
   int n, j, status = 1, size = in1_ptr->length, ncopies = (int)out_ptr->length / size;
   char *p1 = in1_ptr->pointer, *p3 = out_ptr->pointer;

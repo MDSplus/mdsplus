@@ -21,7 +21,7 @@
 	 * TclRename:
 	 * Rename a node or subtree.
 	 ***************************************************************/
-EXPORT int TclRename(void *ctx, char **error, char **output)
+EXPORT int TclRename(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int nid;
   int sts = MdsdclIVVERB;

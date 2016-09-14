@@ -117,7 +117,7 @@ int TdiIextend(int left, int right, struct descriptor_a *px)
 /*---------------------------------------------
         Remove elements not satisfying mask.
 */
-STATIC_ROUTINE int rcull(struct descriptor *pnew,
+STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
 			 struct descriptor_a *pmask, struct descriptor_a *px)
 {
   char *pm = pmask->pointer, *pi = px->pointer, *po = pi;

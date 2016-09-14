@@ -115,7 +115,8 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-int Tdi1DoTask(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DoTask(int opcode __attribute__ ((unused)),
+	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   quadw dt = { 0, 0 };

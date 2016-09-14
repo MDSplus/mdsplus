@@ -15,7 +15,7 @@
 *
 ************************************************************************/
 
-EXPORT int TclDeletePulse(void *ctx, char **error, char **output)
+EXPORT int TclDeletePulse(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *asciiShot = 0;
   int shot;

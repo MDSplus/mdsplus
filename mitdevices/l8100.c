@@ -51,7 +51,7 @@ static int InitChannel(InInitStruct * setup, int chan, int gain, int mult, float
   return status;
 }
 
-EXPORT int l8100___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l8100___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
 
@@ -107,7 +107,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
   return status;
 }
 
-EXPORT int l8100___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l8100___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   status = StoreChannel(setup, 0);

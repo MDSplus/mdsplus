@@ -69,7 +69,10 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
-int Tdi1GetDbi(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1GetDbi(int opcode __attribute__ ((unused)),
+	       int narg,
+	       struct descriptor *list[],
+	       struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_d string = { 0, DTYPE_T, CLASS_D, 0 };
@@ -138,7 +141,8 @@ int Tdi1GetDbi(int opcode, int narg, struct descriptor *list[], struct descripto
                 USING(expression, [DEFAULT], [SHOTID], [EXPT])
         Note that DEFAULT may be NID/PATH and will not be data at same.
 */
-STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */ int arg,
+STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */
+			     int arg __attribute__ ((unused)),
 			     struct descriptor_d *pout)
 {
   int status = 0;
@@ -152,7 +156,9 @@ STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */ int arg,
   return status;
 }
 
-STATIC_ROUTINE int fixup_path(struct descriptor *pin, int arg, struct descriptor_d *pout)
+STATIC_ROUTINE int fixup_path(struct descriptor *pin,
+			      int arg __attribute__ ((unused)),
+			      struct descriptor_d *pout)
 {
   int status = 0;
   char *pathin = MdsDescrToCstring(pin);
@@ -167,7 +173,10 @@ STATIC_ROUTINE int fixup_path(struct descriptor *pin, int arg, struct descriptor
   return status;
 }
 
-int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Using(int opcode __attribute__ ((unused)),
+	      int narg,
+	      struct descriptor *list[],
+	      struct descriptor_xd *out_ptr)
 {
   int status = 1;
   void *ctx;

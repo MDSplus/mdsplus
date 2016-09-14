@@ -25,7 +25,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l2256___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   pio(9, 0)
@@ -33,14 +33,14 @@ EXPORT int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-EXPORT int l2256___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l2256___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-EXPORT int l2256___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l2256___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   //static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);

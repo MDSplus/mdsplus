@@ -62,6 +62,9 @@ int expand_db(int dbType, int numOfEntries)
     FileName = CRATE_DB_FILE;
     FileIncr = CRATE_DB_INCREMENT;
     break;
+
+  default:
+    return 0;
   }
 
   // calculate new db file size

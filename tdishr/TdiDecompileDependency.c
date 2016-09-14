@@ -116,7 +116,8 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
 }
 
 /*------------------------------------------------------------------*/
-int Tdi1DecompileDependency(int opcode, int narg, struct descriptor *list[],
+int Tdi1DecompileDependency(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+			    struct descriptor *list[],
 			    struct descriptor_xd *out_ptr)
 {
   int status = 1;

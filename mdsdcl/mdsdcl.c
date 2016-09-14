@@ -34,7 +34,7 @@ static void flushError(char *error)
   error[0] = 0;
 }
 
-void handle_signals(int signo)
+void handle_signals(int signo __attribute__ ((unused)))
 {
 }
 
@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
   char *history_file = 0;
   char *command = 0;
   int notDone = 1;
-  int status;
+  int status = 0;
   int i;
   char *output = 0;
   char *error = 0;
@@ -64,17 +64,18 @@ int main(int argc, char const *argv[])
   if ((argc > 2) && (strcmp("-prep", argv[1]) == 0)) {
     char *prep_cmd = strdup(argv[2]);
     int inquote = 0;
+    size_t k;
 
     /* Replace option hyphens with slashes to convert the prep to a
        SET COMMAND command. Utilties such as mdstcl, mdsccl, etc use
        this to load the appropriate command definitions, set the prompt
        string and the history file. */
 
-    for (i = 0; i < strlen(prep_cmd); i++) {
-      if (prep_cmd[i] == '"')
+    for (k = 0; k < strlen(prep_cmd); k++) {
+      if (prep_cmd[k] == '"')
 	inquote = !inquote;
-      else if ((!inquote) && (prep_cmd[i] == '-'))
-	prep_cmd[i] = '/';
+      else if ((!inquote) && (prep_cmd[k] == '-'))
+	prep_cmd[k] = '/';
     }
 
     /* Execute the prep command */

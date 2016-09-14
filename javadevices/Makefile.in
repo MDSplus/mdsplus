@@ -91,9 +91,27 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = javadevices
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
-	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
-	$(top_srcdir)/m4/readline.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
+	$(top_srcdir)/m4/ax_check_java_home.m4 \
+	$(top_srcdir)/m4/ax_compare_version.m4 \
+	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
+	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
+	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
+	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
+	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
+	$(top_srcdir)/m4/m4_ax_docker_build.m4 \
+	$(top_srcdir)/m4/m4_ax_is_release.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_directories.m4 \
+	$(top_srcdir)/m4/m4_ax_mdsplus_testing.m4 \
+	$(top_srcdir)/m4/m4_ax_perl_module_version.m4 \
+	$(top_srcdir)/m4/m4_ax_prog_doxygen.m4 \
+	$(top_srcdir)/m4/m4_ax_python_architecture.m4 \
+	$(top_srcdir)/m4/m4_ax_python_module.m4 \
+	$(top_srcdir)/m4/m4_ax_sanitize_check.m4 \
+	$(top_srcdir)/m4/m4_ax_valgrind_check.m4 \
+	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/m4/visibility.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -181,8 +199,7 @@ CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CHECK_CFLAGS = @CHECK_CFLAGS@
-CHECK_LIBS = @CHECK_LIBS@
+CFLAG_VISIBILITY = @CFLAG_VISIBILITY@
 CLOCK_GETTIME_LIB = @CLOCK_GETTIME_LIB@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -227,11 +244,14 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ENABLE_SANITIZE = @ENABLE_SANITIZE@
+ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
+ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
-F77 = @F77@
+FC = @FC@
+FCFLAGS = @FCFLAGS@
 FEXECLIBDIR = @FEXECLIBDIR@
-FFLAGS = @FFLAGS@
 FORLD = @FORLD@
 FOR_LDFLAGS = @FOR_LDFLAGS@
 FOR_LINKSHARED = @FOR_LINKSHARED@
@@ -241,7 +261,12 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
-HAVE_VALGRIND = @HAVE_VALGRIND@
+HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_VISIBILITY = @HAVE_VISIBILITY@
+HAVE_WINE = @HAVE_WINE@
+HAVE_WINEBOOT = @HAVE_WINEBOOT@
+HAVE_WINECONSOLE = @HAVE_WINECONSOLE@
+HAVE_WINEPATH = @HAVE_WINEPATH@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
@@ -259,6 +284,8 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
+JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
+JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
@@ -271,12 +298,12 @@ LD_LDARC = @LD_LDARC@
 LD_LDSHARE = @LD_LDSHARE@
 LIBDL = @LIBDL@
 LIBM = @LIBM@
-LIBNSL = @LIBNSL@
 LIBOBJS = @LIBOBJS@
 LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
+LIBRT = @LIBRT@
 LIBS = @LIBS@
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
@@ -285,6 +312,8 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LOG_COMPILER = @LOG_COMPILER@
+LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
@@ -306,7 +335,7 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NSLLIB = @NSLLIB@
+NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -316,14 +345,31 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PYTHON = @PYTHON@
+PYTHON_ARCHITECTURE = @PYTHON_ARCHITECTURE@
+PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
+PYTHON_PLATFORM = @PYTHON_PLATFORM@
+PYTHON_PREFIX = @PYTHON_PREFIX@
+PYTHON_VERSION = @PYTHON_VERSION@
+PY_LOG_COMPILER = @PY_LOG_COMPILER@
+PY_LOG_FLAGS = @PY_LOG_FLAGS@
 RANLIB = @RANLIB@
 READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
 READLINE_LIBS = @READLINE_LIBS@
+READLINK = @READLINK@
+RELEASE_BRANCH = @RELEASE_BRANCH@
+RELEASE_COMMIT = @RELEASE_COMMIT@
+RELEASE_DATE = @RELEASE_DATE@
+RELEASE_MAJOR = @RELEASE_MAJOR@
+RELEASE_MINOR = @RELEASE_MINOR@
+RELEASE_RELEASE = @RELEASE_RELEASE@
+RELEASE_TAG = @RELEASE_TAG@
 REMCAM = @REMCAM@
 REMCAMLIB = @REMCAMLIB@
 RMIC = @RMIC@
@@ -334,7 +380,6 @@ SHARETYPE = @SHARETYPE@
 SHARETYPEJNI = @SHARETYPEJNI@
 SHARETYPEMOD = @SHARETYPEMOD@
 SHELL = @SHELL@
-SOCKETLIB = @SOCKETLIB@
 SRBINCLUDE = @SRBINCLUDE@
 SRBLIB = @SRBLIB@
 STRIP = @STRIP@
@@ -343,14 +388,24 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
+VALGRIND = @VALGRIND@
+VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_FLAGS = @VALGRIND_FLAGS@
+VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
+VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
+VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
+VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
+VALGRIND_memcheck_FLAGS = @VALGRIND_memcheck_FLAGS@
 VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
 VS_DIR = @VS_DIR@
+WARNFLAGS = @WARNFLAGS@
 WINDRES = @WINDRES@
 XMKMF = @XMKMF@
 XML2_CONFIG = @XML2_CONFIG@
@@ -368,7 +423,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_F77 = @ac_ct_F77@
+ac_ct_FC = @ac_ct_FC@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -403,9 +458,13 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
+pkgpyexecdir = @pkgpyexecdir@
+pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+pyexecdir = @pyexecdir@
+pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -563,7 +622,6 @@ MARTE_BREAKDOWNSetup.java\
 MARTE_RTSMSetup.java\
 MARTE_XRAYSetup.java\
 MARTE_NESetup.java\
-MARTE_DUTY_CYCLESetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
 SPIDERSetup.java\
@@ -579,8 +637,7 @@ ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
 MARTE_DEVICESetup.java \
 RFXVICONTROLSetup.java \
-REDPYTADCSetup.java \
-CAENDT5724Setup.java
+REDPYTADCSetup.java
 
 all: all-am
 

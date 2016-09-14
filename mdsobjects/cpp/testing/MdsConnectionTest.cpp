@@ -1,7 +1,7 @@
 // if windows skip this test .. //
 #ifdef _WIN32
 #include "testing.h"
-int main(int argc, char *argv[]) { SKIP_TEST("Connection test requires fork") }
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused))) { SKIP_TEST("Connection test requires fork") }
 #else 
 
 
@@ -78,7 +78,7 @@ void test_tree_open(const char *prot)
 
 
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(Connection);
         

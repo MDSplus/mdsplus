@@ -181,7 +181,7 @@ int mdsdcl_do_help(const char *command, char **error, char **output)
   if (helpFound == 0) {
     if (*output)
       free(*output);
-    *output = strdup("No help available for that command.\n");
+    *error = strdup("No help available for that command.\n");
   }
   if (command == NULL)
     *output =

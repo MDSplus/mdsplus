@@ -113,7 +113,7 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
       {"s", "server", 0, 0, 0},
       {"m", "multi", 0, 0, 0},
       {"c", "compression", 1, 0, 0},
-      {0, 0, 0, 0}
+      {0, 0, 0, 0,0}
   };
   ParseCommand(argc, argv, options, 1, extra_argc, extra_argv);
   if (options[0].present && options[0].value)

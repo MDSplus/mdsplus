@@ -15,7 +15,7 @@ static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-int u_of_m_spect___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+int u_of_m_spect___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   char cmd[512];
   struct descriptor cmd_d={0,DTYPE_T,CLASS_S,cmd};
@@ -36,7 +36,7 @@ int u_of_m_spect___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int u_of_m_spect___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+int u_of_m_spect___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   int frame;
@@ -71,7 +71,7 @@ int u_of_m_spect___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
       char line[132];
       int rows = np / 10;
       int row;
-      int offset;
+      int offset = 0;
       for (row = 0; row < rows; row++) {
 	offset = frame * np + row * 10;
 	fgets(line, 131, file);
@@ -127,7 +127,7 @@ static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p
   int spectra_nid = head_nid + U_OF_M_SPECT_N_SPECTRA;
   static ARRAY_BOUNDS(int, 2) array = {
     sizeof(int), DTYPE_L, CLASS_A, 0, 0, 0, {
-  0, 0, 1, 1, 1}, 2};
+      0, 0, 1, 1, 1}, 2, 0, 0, {0}, {{0}}};
   p1_dsc.pointer = (char *)&p1;
   num_frames_dsc.pointer = (char *)&num_frames;
   dt_dsc.pointer = (char *)&dt;

@@ -95,7 +95,6 @@ static double d_null = 0;
 
 STATIC_CONSTANT const char *default_date = "Jan 01 1970 12:00:00:000AM";
 //static DESCRIPTOR(ddate, "dd-mmm-yyyy hh:mm:ss.cc");
-static int width = 0, head = 2;
 //static int (*USERSQL_ERRORS) () = 0;
 //static int (*USERSQL_GETS) () = 0;
 //static int (*USERSQL_PUTS) () = 0;
@@ -303,11 +302,10 @@ STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
   bufs[idx].size = 0;
 }
 
-STATIC_ROUTINE int Puts(dbproc, prows, arg, rblob)
+STATIC_ROUTINE int Puts(dbproc, prows, arg)
 DBPROCESS *dbproc;
 int *prows;
 ARGLIST *arg;
-int rblob;
 {
   int status = 1;
   int rows = *prows, used = arg->used;
@@ -434,6 +432,7 @@ int rblob;
 	case SYBDATETIME:					/***convert date to double***/
 
 	  if (date) {		/*Julian day 3 million?? is 17-Nov-1858 */
+	    dtype = DTYPE_FT;
 #ifdef OLD
 	    int yr, mo, da, hr, mi, se, th, leap;
 	    int status = SYB_dbconvert(dbproc, type, buf, bufs[j].len,
@@ -447,7 +446,6 @@ int rblob;
 	    char mon[4], *moptr, ampm[3];
 
 	    len = sizeof(d_null);
-	    dtype = DTYPE_FT;
 	    if (status < 0) {
 	      buf = (char *)&d_null;
 	      break;
@@ -593,7 +591,7 @@ ARGLIST *arg;
 }
 
 /*********************************************************/
-int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Dsql(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   int rows = 0;
@@ -674,59 +672,17 @@ int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_
 }
 
 /*********************************************************/
-int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Isql()
 {
-  int status = 0;
-/*
-  ARGLIST user_args = { 0 };
-  int rows = 0;
-  struct descriptor dtext = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor drows = { sizeof(rows), DTYPE_L, CLASS_S, 0 };
-  drows.pointer = (char *)&rows;
-  user_args.c = narg - 1;
-  user_args.v = &list[1];
-  if (USERSQL_SET == 0) {
-    if (status & 1)
-      status = TDISQL_LINK("SQL_DYNAMIC", &SQL_DYNAMIC);
-    if (status & 1)
-      status = TDISQL_LINK("USERSQL_ERRORS", &USERSQL_ERRORS);
-    if (status & 1)
-      status = TDISQL_LINK("USERSQL_GETS", &USERSQL_GETS);
-    if (status & 1)
-      status = TDISQL_LINK("USERSQL_PUTS", &USERSQL_PUTS);
-    if (status & 1)
-      status = TDISQL_LINK("USERSQL_SET", &USERSQL_SET);
-  }
-  width = width > 0 ? width : 132;
-  if (status & 1)
-    status = TdiData(list[0], &dtext MDS_END_ARG);
-  if (status & 1) {
-    USERSQL_SET(gets, printf, printf, printf, width, head);
-    status = SQL_DYNAMIC(USERSQL_GETS,
-			 USERSQL_PUTS,
-			 &dtext,
-			 &width,
-			 &rows);
-    if (!(status & 1))
-      USERSQL_ERRORS();
-  }
-  StrFree1Dx(&dtext);
-  if (status & 1)
-    status = MdsCopyDxXd(&drows, out_ptr);
-  FreeBuffers();
-*/
-  return status;
+  fprintf(stderr, "ISQL function no longer supported\n");
+  return 0;
 }
 
 /*********************************************************/
-int Tdi1IsqlSet(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IsqlSet()
 {
-  int status = 1;
-  if (narg >= 1 && list[0])
-    status = TdiGetLong(list[0], &width);
-  if (narg >= 2 && list[1] && status & 1)
-    status = TdiGetLong(list[1], &head);
-  return status;
+  fprintf(stderr, "ISQL function no longer supported\n");
+  return 0;
 }
 #else				/* no sybase support */
 STATIC_CONSTANT DESCRIPTOR(const msg,

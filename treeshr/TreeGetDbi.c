@@ -5,7 +5,8 @@
 #include <dbidef.h>
 
 extern void **TreeCtx();
-#define min(a,b) (((a) < (b)) ? (a) : (b))
+static inline int minInt(int a, int b) { return a < b ? a : b;}
+
 int TreeGetDbi(struct dbi_itm *itmlst)
 {
   return _TreeGetDbi(*TreeCtx(), itmlst);
@@ -20,7 +21,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
   PINO_DATABASE *db = (PINO_DATABASE *) dbid;
   struct dbi_itm *lst = itmlst;
   int status = TreeNORMAL;
-  while (lst->code && (status & 1)) {
+  while ((lst->code != 0) && (status & 1)) {
     char *string = NULL;
     unsigned short retlen = 0;
     switch (lst->code) {
@@ -72,9 +73,9 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
 	for (count = 0, db_tmp = (PINO_DATABASE *) dbid; db_tmp ? db_tmp->open : 0;
 	     count++, db_tmp = db_tmp->next) ;
 	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &count, min(lst->buffer_length, sizeof(int)));
+	memcpy(lst->pointer, &count, minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
       }
 
@@ -83,9 +84,9 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int count = db->stack_size;
 	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &count, min(lst->buffer_length, sizeof(int)));
+	memcpy(lst->pointer, &count, minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
       }
 
@@ -104,9 +105,9 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int value = db->tree_info->header->versions_in_model;
 	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &value, min(lst->buffer_length, sizeof(int)));
+	memcpy(lst->pointer, &value, minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
       }
 
@@ -115,9 +116,9 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int value = db->tree_info->header->versions_in_pulse;
 	memset(lst->pointer, 0, lst->buffer_length);
-	memcpy(lst->pointer, &value, min(lst->buffer_length, sizeof(int)));
+	memcpy(lst->pointer, &value, minInt(lst->buffer_length, sizeof(int)));
 	if (lst->return_length_address)
-	  *lst->return_length_address = min(lst->buffer_length, sizeof(int));
+	  *lst->return_length_address = minInt(lst->buffer_length, sizeof(int));
 	break;
       }
 
@@ -127,7 +128,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
     }
     if (string) {
       if (lst->buffer_length && lst->pointer) {
-	retlen = min((unsigned short)strlen(string), lst->buffer_length);
+	retlen = minInt(strlen(string), lst->buffer_length);
 	strncpy((char *)lst->pointer, string, retlen);
 	if (retlen < lst->buffer_length)
 	  ((char *)lst->pointer)[retlen] = '\0';

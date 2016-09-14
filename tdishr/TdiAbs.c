@@ -513,7 +513,7 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
   return status;
 }
 
-int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind, struct descriptor *out_ptr)
+int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((unused)), struct descriptor *out_ptr)
 {
   int out_count = 1;
   int status;
@@ -580,7 +580,7 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
   return status;
 }
 
-int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind, struct descriptor *out_ptr)
+int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((unused)), struct descriptor *out_ptr)
 {
   int out_count = 1;
   int status;

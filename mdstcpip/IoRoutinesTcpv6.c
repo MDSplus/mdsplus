@@ -152,7 +152,7 @@ static void PopSocket(int socket)
   unlock_socket_list();
 }
 
-static void ABORT(int sigval)
+static void ABORT(int sigval __attribute__ ((unused)))
 {
   SocketList *s;
   lock_socket_list();
@@ -282,7 +282,7 @@ static int tcp_flush(int conid)
 #if !defined(__sparc__)
     struct timeval timout = { 0, 1 };
     int status;
-    int nbytes;
+    ssize_t nbytes;
     int tries = 0;
     char buffer[1000];
     fd_set readfds, writefds;
@@ -297,7 +297,7 @@ static int tcp_flush(int conid)
 	status = ioctl(sock, FIONREAD, &nbytes);
 	if (nbytes > 0 && status != -1) {
 	  nbytes =
-	      recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
+	    recv(sock, buffer, (sizeof(buffer) > (size_t)nbytes) ? (size_t)nbytes : sizeof(buffer), MSG_NOSIGNAL);
 	  if (nbytes > 0)
 	    tries = 0;
 	}
@@ -421,7 +421,7 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen)
   }
 }
 
-static int tcp_connect(int conid, char *protocol, char *host)
+static int tcp_connect(int conid, char *protocol __attribute__ ((unused)), char *host)
 {
   struct sockaddr_in6 sin;
   int s;
@@ -531,7 +531,7 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;

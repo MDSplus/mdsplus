@@ -69,7 +69,10 @@ int TdiFindImageSymbol(struct descriptor_d *image, struct descriptor_d *entry, i
   return LibFindImageSymbol(image, entry, symbol);
 }
 
-int Tdi1ExtFunction(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
+		    int narg,
+		    struct descriptor *list[],
+		    struct descriptor_xd *out_ptr)
 {
   int status = 1;
   FILE *unit;

@@ -54,7 +54,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
 	/***************************************************************
 	 * TclSetTree:
 	 **************************************************************/
-EXPORT int TclSetTree(void *ctx, char **error, char **output)
+EXPORT int TclSetTree(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = MdsdclIVVERB;
   int shot;

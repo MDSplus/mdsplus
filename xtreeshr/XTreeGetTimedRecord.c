@@ -122,7 +122,7 @@ static int checkResampledVersion(void *dbid, int nid, struct descriptor *deltaD)
 	actDeltaNs = (endNs - startNs)/numRows;
 	if(actDeltaNs <= 0)
 		return nid;
-	if(deltaNs / actDeltaNs < resampleFactor)
+	if((int)(deltaNs / actDeltaNs) < resampleFactor)
 		return nid;
 	status = (dbid) ? _TreeGetXNci(dbid, nid, "ResampleNid", &xd) : TreeGetXNci(nid, "ResampleNid", &xd);
   	if (!status & 1 || !xd.pointer ||xd.pointer->class != CLASS_S || xd.pointer->dtype != DTYPE_NID)
@@ -301,9 +301,9 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		return 0; //Internal error
 	startTimesApd = (struct descriptor_a *)startTimesXd.pointer;
 	endTimesApd = (struct descriptor_a *)endTimesXd.pointer;
-	if(startTimesApd->arsize/startTimesApd->length != numSegments)
+	if((int)(startTimesApd->arsize/startTimesApd->length) != numSegments)
 		return 0; //Internal error
-	if(endTimesApd->arsize/endTimesApd->length != numSegments)
+	if((int)(endTimesApd->arsize/endTimesApd->length) != numSegments)
 		return 0; //Internal error
 	startTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));
 	endTimes = (uint64_t *)malloc(numSegments * sizeof(int64_t));

@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "h912_gen.h"
-EXPORT int h912__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int h912__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "H912");
@@ -226,7 +226,7 @@ EXPORT int h912__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int h912__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int h912__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		    struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -359,7 +359,7 @@ extern int h912___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int h912__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int h912__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
@@ -396,7 +396,7 @@ EXPORT int h912__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_
 extern int h912___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int h912__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int h912__trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -414,7 +414,7 @@ EXPORT int h912__trigger(struct descriptor *nid_d_ptr, struct descriptor *method
 extern int h912___stop();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int h912__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int h912__stop(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStopStruct)
   struct descriptor_xd work_xd[1];
@@ -432,7 +432,7 @@ EXPORT int h912__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_
 extern int h912___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int h912__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int h912__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

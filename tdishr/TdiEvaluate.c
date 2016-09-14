@@ -34,7 +34,9 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
-int Tdi1Evaluate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Evaluate(int opcode __attribute__ ((unused)),
+		 int narg __attribute__ ((unused)),
+		 struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_function *pfun;

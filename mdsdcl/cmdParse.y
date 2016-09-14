@@ -110,13 +110,13 @@ VALUE {
   $$->values=malloc(sizeof(char *));
   if (value[0]=='"' && value[strlen(value)-1]=='"') {
     char *nval;
-    int i;
+    size_t i;
     value[strlen(value)-1]='\0';
     nval=strdup(value+1);
     free(value);
     for (i=0;i<strlen(nval);i++) {
       if (nval[i]=='"' && nval[i+1]=='"') {
-	int j;
+	size_t j;
 	for (j=i+1;j<strlen(nval);j++) {
 	  nval[j]=nval[j+1];
 	}
@@ -167,7 +167,9 @@ PVALUE {
 }
 
 %%
-static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s) {
+static void yyerror(YYLTYPE *yyloc_param __attribute__ ((unused)),
+		    yyscan_t yyscanner __attribute__ ((unused)),
+		    dclCommandPtr *dclcmd __attribute__ ((unused)), char **error, char *s __attribute__ ((unused))) {
   *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 

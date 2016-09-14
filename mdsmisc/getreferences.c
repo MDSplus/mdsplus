@@ -19,7 +19,7 @@ EXPORT int GetReferenceCount(int *nid)
   return cnt;
 }
 
-EXPORT void GetReferences(int *nid, int *ans)
+EXPORT void GetReferences(int *nid __attribute__ ((unused)), int *ans)
 {
   int idx = 0;
   FillRefs((struct descriptor *)&src, ans, &idx);

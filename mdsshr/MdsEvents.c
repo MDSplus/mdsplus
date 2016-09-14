@@ -147,7 +147,7 @@ static int RegisterRead_(int sock)
 #endif
 
 static char *eventName(char const *eventnam_in) {
-  int i,j;
+  size_t i,j;
   char *eventnam=0;
   if (eventnam_in) {
     eventnam = strdup(eventnam_in);
@@ -970,7 +970,7 @@ STATIC_ROUTINE void handleRemoteAst()
 }
 #endif
 
-STATIC_ROUTINE int searchOpenServer(char *server)
+STATIC_ROUTINE int searchOpenServer()
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
@@ -1124,7 +1124,8 @@ EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datl
 {
   int eventid = -1;
   int status;
-  struct wfevent_thread_cond t = { 1 };
+  struct wfevent_thread_cond t = { 0 };
+  t.active = 1;
   pthread_mutex_init(&t.mutex, NULL);
   pthread_cond_init(&t.cond, NULL);
   t.buflen = buflen;
@@ -1364,6 +1365,7 @@ STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data)
   sprintf(expression, "setevent(\"%s\"%s)", evname, data_len > 0 ? ",$" : "");
   if (status & 1) {
     int reconnects = 0;
+    tmp_status = 0;
     for (i = 0; i < num_send_servers; i++) {
       if (send_ids[i] > 0) {
 	if (data_len > 0)

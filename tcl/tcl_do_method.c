@@ -25,7 +25,7 @@ extern int TdiCompile();
 	/****************************************************************
 	 * TclDoMethod:
 	 ****************************************************************/
-EXPORT int TclDoMethod(void *ctx, char **error, char **output)
+EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int i;
   int argc;

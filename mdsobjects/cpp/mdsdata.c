@@ -98,7 +98,7 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 }
 
 #define MAX_ARGS 128
-void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs)
+void *convertToCompoundDsc(int clazz __attribute__ ((unused)), int dtype, int length, void *ptr, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xds[MAX_ARGS];
@@ -343,8 +343,6 @@ void freeDsc(void *dscPtr)
     printf("PANIC in convertFromDsc: not an XD\n");
     exit(0);
   }
-  MdsFree1Dx(xdPtr, 0);
-  free((char *)xdPtr);
 }
 
 char *decompileDsc(void *ptr)

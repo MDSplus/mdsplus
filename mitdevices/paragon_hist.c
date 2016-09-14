@@ -49,24 +49,24 @@ typedef struct _time {
   int lo, hi;
 } TIME;
 
-static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort);
+static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int sort);
 
 static int ParseHistorian(char *line, struct descriptor *name, float *value, TIME * time);
 static void StoreSignal(int nid,
 			int num,
 			float *values, TIME * times, struct descriptor_xd *limits, int sort);
 
-int paragon_hist___store(struct descriptor *niddsc, InStoreStruct * setup)
+int paragon_hist___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   return Store(niddsc, setup, 0);
 }
 
-int paragon_hist___insert(struct descriptor *niddsc, InInsertStruct * setup)
+int paragon_hist___insert(struct descriptor *niddsc __attribute__ ((unused)), InInsertStruct * setup)
 {
   return Store(niddsc, (InStoreStruct *) setup, 1);
 }
 
-static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort)
+static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int sort)
 {
   static struct descriptor_d rpt_name = { 0, DTYPE_T, CLASS_D, 0 };
   static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };

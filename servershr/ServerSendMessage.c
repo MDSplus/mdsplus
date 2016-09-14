@@ -47,7 +47,7 @@ int ServerSendMessage();
 #define close closesocket
 #else
 #include <signal.h>
-#include <setjmp.h>
+//#include <setjmp.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -532,10 +532,11 @@ static void *Worker(void *sockptr)
   int sock = *(int *)sockptr;
   int tablesize = FD_SETSIZE;
   int num = 0;
-  int last_client_addr = 0;
+  int last_client_addr;
   int rep;
   fd_set readfds, fdactive;
   pthread_cleanup_push(ThreadExit, 0);
+  last_client_addr = 0;
   /*
      signal(SIGSEGV, signal_handler);
      signal(SIGBUS, signal_handler);

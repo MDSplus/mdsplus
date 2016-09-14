@@ -374,10 +374,10 @@ Data * Data::getData(int classType, int dataType) {
 	    break;
 	}
 	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != classType)
-		throw MdsException("Cannot convert to desired type");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
+	if(!retData || retData->clazz != classType)
+		throw MdsException("Cannot convert to desired type");
 
 	return retData;
 }
@@ -626,7 +626,7 @@ double Data::getDouble()
 	return scalar.ptr->getDouble();
 }
 
-Data * Data::getDimensionAt(int dimIdx) {
+Data * Data::getDimensionAt(int dimIdx __attribute__ ((unused))) {
 	return executeWithArgs("DIM_OF($)", 1, this);
 }
 

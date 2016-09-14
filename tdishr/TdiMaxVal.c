@@ -278,7 +278,7 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 	       struct descriptor *out, int count0, int count1, int count2,
 	       int step0, int step1, int step2)
 {
-  int count;
+  int count=-1;
   SetupArgs switch (in->dtype) {
   case DTYPE_T:
     OperateT(Tdi3Lt)

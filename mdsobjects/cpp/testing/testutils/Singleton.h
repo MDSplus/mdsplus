@@ -19,8 +19,8 @@ public:
         this->get_instance() = copy;
     }
 
-    inline T * const operator -> () { return &get_instance(); }
-    inline const T * const operator -> () const { return &get_instance(); }
+    inline T * operator -> () { return &get_instance(); }
+    inline const T * operator -> () const { return &get_instance(); }
 
     static T & get_instance() {
         static T instance;

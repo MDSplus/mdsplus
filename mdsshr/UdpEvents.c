@@ -78,11 +78,12 @@ static void *handleMessage(void *info_in)
   char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
   void *arg = info->arg;
   void (*astadr) (void *, int, char *) = info->astadr;
-  int recBytes;
+  ssize_t recBytes;
   char recBuf[MAX_MSG_LEN];
   struct sockaddr clientAddr;
   int addrSize = sizeof(clientAddr);
-  int nameLen, bufLen;
+  size_t nameLen;
+  int bufLen;
   char *eventName;
   char *currPtr;
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
@@ -125,7 +126,7 @@ static void *handleMessage(void *info_in)
     memcpy(&bufLen, currPtr, sizeof(bufLen));
     bufLen = ntohl(bufLen);
     currPtr += sizeof(int);
-    if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
+    if ((size_t)recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
       continue;
     if (strncmp(thisEventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
       continue;

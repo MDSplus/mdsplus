@@ -52,8 +52,8 @@ static int AddNode(const char *h5name, int usage)
   int status;
   int memlen = ((strlen(h5name) < 12) ? 12 : strlen(h5name)) + 2;
   char *name = strcpy(malloc(memlen), (usage != TreeUSAGE_STRUCTURE) ? ":" : ".");
-  int i;
-  int len;
+  size_t i;
+  size_t len;
   int idx = 1;
   int nid;
   for (i = 0; i < strlen(h5name) &&
@@ -183,7 +183,7 @@ static void PutData(hid_t obj, int nid, char dtype, int htype, int size, int n_d
   }
 }
 
-static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
+static int mds_find_attr(hid_t attr_id, const char *name, void *op_data __attribute__ ((unused)))
 {
   hid_t obj, type;
   int nid;
@@ -280,7 +280,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);
@@ -438,7 +438,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);

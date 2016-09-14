@@ -50,7 +50,7 @@ static int SetChannel(InInitStruct * setup, struct descriptor *channel_value, in
   return status;
 }
 
-int joerger_cg___init(struct descriptor *niddsc, InInitStruct * setup)
+int joerger_cg___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   int polarities = 0;
@@ -66,7 +66,7 @@ int joerger_cg___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int joerger_cg___stop(struct descriptor *niddsc, InStopStruct * setup)
+int joerger_cg___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
 {
   int status;
   pio(9, 1, 0, 0)

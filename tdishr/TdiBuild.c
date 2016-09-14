@@ -24,7 +24,8 @@ extern int TdiMasterData();
         Return without evaluation. Passes paths, nids, and functions.
                 any = AS_IS(any)
 */
-int Tdi1AsIs(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 

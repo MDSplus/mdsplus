@@ -77,7 +77,7 @@ extern int cli_present();
 //-------------------------------------------------------------------------
 static void str_upcase(char *str)
 {
-  int i;
+  size_t i;
 
   for (i = 0; i < strlen(str); i++)
     str[i] = toupper(str[i]);
@@ -86,10 +86,11 @@ static void str_upcase(char *str)
 //-------------------------------------------------------------------------
 // assign a new module to CTS database
 //-------------------------------------------------------------------------
-EXPORT int Assign(void *ctx, char **error, char *output)
+EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused)))
 {
   char line[MODULE_ENTRY + 1];
-  int dbFileSize, fd, i, nullMask, numOfEntries;
+  int dbFileSize, fd, nullMask, numOfEntries;
+  size_t i;
   int status = SUCCESS;		// assume the best
   char *phy_name = 0;
   char *log_name = 0;
@@ -205,7 +206,7 @@ EXPORT int Assign(void *ctx, char **error, char *output)
 //-------------------------------------------------------------------------
 // map generic scsi device names to crate table names 
 //-------------------------------------------------------------------------
-EXPORT int Autoconfig(void *ctx, char **error, char **output)
+EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
 {
   char highway_name[CRATE_NAME_SIZE + 1], *pHighwayName;
   char line[CRATE_ENTRY];
@@ -265,7 +266,7 @@ EXPORT int Autoconfig(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // deassign a module
 //-------------------------------------------------------------------------
-EXPORT int Deassign(void *ctx, char **error, char **output)
+EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char db_tmp[64];
   int i, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name;
@@ -366,7 +367,7 @@ EXPORT int Deassign(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // set a crate on-line or off-line
 //-------------------------------------------------------------------------
-EXPORT int SetCrate(void *ctx, char **error, char **output)
+EXPORT int SetCrate(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int status;
   char *cratename;
@@ -671,7 +672,7 @@ EXPORT int AddCrate(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // Delete a crate from the crate db
 //-------------------------------------------------------------------------
-EXPORT int DelCrate(void *ctx, char **error, char **output)
+EXPORT int DelCrate(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char crateName[CRATE_NAME_SIZE + 1];
   int index, numOfEntries;

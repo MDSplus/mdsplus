@@ -84,7 +84,7 @@ static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait
   return (p && WriteFile(p->stdin_pipe, buffer, buflen, (DWORD *)&num, NULL)) ? num : -1;
 }
 #else
-static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
+static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait __attribute__ ((unused)))
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
   return p ? write(p->stdin_pipe, buffer, buflen) : -1;
@@ -107,7 +107,7 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 #endif
 
 #ifndef _WIN32
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;
@@ -253,7 +253,7 @@ static int tunnel_listen(int argc, char **argv)
   return 0;
 }
 #else
-static int tunnel_listen(int argc, char **argv)
+static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
 {
   struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;

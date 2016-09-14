@@ -636,7 +636,7 @@ old array is same size.
     local_nci.flags=local_nci.flags | NciM_SEGMENTED;
     TreePutNci(info_ptr, nidx, &local_nci, 0);
     TreeUnLockNci(info_ptr, 0, nidx);
-  }
+  } else status = TreeNNF;
   return status;
 }
 
@@ -789,6 +789,7 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
     status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
     TreeUnLockNci(info_ptr, 0, nidx);
   }
+  else status=TreeNNF;
   return status;
 }
 
@@ -979,7 +980,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
 	  PutSegmentHeader(info_ptr, &segment_header,
 			   &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
     TreeUnLockNci(info_ptr, 0, nidx);
-  }
+  } else status = TreeNNF;
   return status;
 }
 
@@ -1730,7 +1731,7 @@ int _TreeGetXNci(void *dbid, int nid, const char *xnciname, struct descriptor_xd
   return status;
 }
 
-int TreeSetRetrievalQuota(int quota)
+int TreeSetRetrievalQuota(int quota __attribute__ ((unused)))
 {
   printf("TreeSetRetrievalQuota is not implemented\n");
   return 0;
@@ -2063,8 +2064,8 @@ static int PutDimensionValue(TREE_INFO * info, int64_t * timestamps, int rows_fi
   }
   if (rows_filled > 0) {
     status =
-	(MDS_IO_WRITE(info->data_file->put, timestamps, rows_filled * sizeof(int64_t)) ==
-	 (rows_filled * sizeof(int64_t))) ? TreeSUCCESS : TreeFAILURE;
+      (MDS_IO_WRITE(info->data_file->put, timestamps, rows_filled * sizeof(int64_t)) ==
+       (int)(rows_filled * sizeof(int64_t))) ? TreeSUCCESS : TreeFAILURE;
   }
   if (status & 1 && length > 0) {
     status =
@@ -2518,7 +2519,7 @@ old array is same size.
     local_nci.length += add_length;
     local_nci.flags=local_nci.flags | NciM_SEGMENTED;
     TreePutNci(info_ptr, nidx, &local_nci, 0);
-  }
+  } else status = TreeNNF;
   TreeUnLockNci(info_ptr, 0, nidx);
   return status;
 }
@@ -2721,7 +2722,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
 		 SEEK_SET);
     status =
 	(MDS_IO_WRITE(info_ptr->data_file->put, timestamp, sizeof(int64_t) * rows_to_insert) ==
-	 (sizeof(int64_t) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
+	 (int)(sizeof(int64_t) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
 #endif
     TreeUnLockDatafile(info_ptr, 0, offset);
     segment_header.next_row = startIdx + bytes_to_insert / bytes_per_row;
@@ -2730,7 +2731,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
 	  PutSegmentHeader(info_ptr, &segment_header,
 			   &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
     TreeUnLockNci(info_ptr, 0, nidx);
-  }
+  } else status = TreeNNF;
   return status;
 }
 
@@ -2759,6 +2760,7 @@ static int CopyNamedAttributes(TREE_INFO * info_in, TREE_INFO * info_out, int ni
   int status = GetNamedAttributesIndex(info_in, *offset, &index);
   if (status & 1) {
     int i;
+    *length=0;
     if (index.previous_offset != -1) {
       CopyNamedAttributes(info_in, info_out, nid, &index.previous_offset, 0, compress);
     }
@@ -2890,6 +2892,7 @@ static int CopySegmentedRecords(TREE_INFO * info_in, TREE_INFO * info_out, int n
   SEGMENT_HEADER header;
   int status = GetSegmentHeader(info_in, *offset, &header);
   if (status & 1) {
+    *length=0;
     status =
 	CopySegmentIndex(info_in, info_out, nid, &header, &header.index_offset, &header.data_offset,
 			 &header.dim_offset, compress);
@@ -3133,7 +3136,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 static int segmentInRange(TREE_INFO * info_ptr, int nid,
 			  struct descriptor *start,
 			  struct descriptor *end,
-			  SEGMENT_HEADER * segment_header, SEGMENT_INFO * sinfo)
+			  SEGMENT_INFO * sinfo)
 {
   int ans = 0;
   if ((start && start->pointer) || (end && end->pointer)) {
@@ -3262,7 +3265,7 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
 	  break;
 	else {
 	  SEGMENT_INFO *sinfo = &index.segment[segidx % SEGMENTS_PER_INDEX];
-	  if (segmentInRange(info_ptr, nid, start, end, &segment_header, sinfo)) {
+	  if (segmentInRange(info_ptr, nid, start, end, sinfo)) {
 	    EMPTYXD(segment);
 	    EMPTYXD(dim);
 	    segfound = 1;

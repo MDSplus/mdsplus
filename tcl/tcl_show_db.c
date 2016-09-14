@@ -21,7 +21,7 @@
 	/***************************************************************
 	 * TclShowDb:
 	 ***************************************************************/
-EXPORT int TclShowDB(void *ctx, char **error, char **output)
+EXPORT int TclShowDB(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   int sts;
   int open;

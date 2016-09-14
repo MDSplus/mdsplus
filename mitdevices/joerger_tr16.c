@@ -35,7 +35,7 @@ typedef struct _f0a1 {
 
 static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr, int use_enhanced);
 
-int joerger_tr16___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+int joerger_tr16___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in_struct)
 {
   int status;
   int *gains = &in_struct->input_01_gain;
@@ -65,7 +65,7 @@ int joerger_tr16___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
   return status;
 }
 
-int joerger_tr16___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
+int joerger_tr16___trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), InTriggerStruct * in_struct)
 {
   int status;
   pio(25, 0, 0, one);		/* Trigger the module */
@@ -83,7 +83,7 @@ int joerger_tr16___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_st
 //extern unsigned short OpcMultiply;
 //extern unsigned short OpcValue;
 
-int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+int joerger_tr16___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) return status;
@@ -127,8 +127,8 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
   //int i;
   int ret_status = 1;
 
-  static F0A0 f0a0 = { 0, 0, 0 };
-  static F0A1 f0a1 = { 0, 0, 0 };
+  static F0A0 f0a0 = { 0 };
+  static F0A1 f0a1 = { 0 };
   int min_idx;
   int max_idx;
   int active_mem;

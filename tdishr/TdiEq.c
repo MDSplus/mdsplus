@@ -186,13 +186,13 @@ break;
         if (!(equal_until_last & (k < maxlen-1 && ' ' == in[k]))) {\
           if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) \
             {out[i] = not_op 0; break;} \
-          else breakout \
+          else {breakout}		\
         } \
       } else \
         if (!(equal_until_last & (k < maxlen-1 && in1[k] == in2[k]))) {\
           if (!(in1[k] op in2[k])) \
             {out[i] = not_op 0; break;} \
-          else breakout \
+          else {breakout}		\
         } \
       k++; \
     } \

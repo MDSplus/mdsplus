@@ -159,7 +159,7 @@ STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
         Nested comments allowed. Len is not used.
         Limitation:     Not ANSI C standard use of delimiters.
 */
-STATIC_ROUTINE int TdiLexComment(int len, unsigned char *str, struct marker *mark_ptr)
+STATIC_ROUTINE int TdiLexComment()
 {
   char c, c1;
   int count = 1;
@@ -272,6 +272,9 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
       break;
     case 'T':
       type = 7;
+      break;
+    default:
+      type = 0;
       break;
     }
     str[idx - 1] = 'E';
@@ -667,7 +670,9 @@ STATIC_ROUTINE int TdiLexBinEq(int token)
   return token;
 }
 
-STATIC_ROUTINE int TdiLexPunct(int len, unsigned char *str, struct marker *mark_ptr)
+STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
+			       unsigned char *str,
+			       struct marker *mark_ptr)
 {
   char c0 = str[0], c1 = input();
 
@@ -821,7 +826,9 @@ STATIC_ROUTINE int TdiLexPunct(int len, unsigned char *str, struct marker *mark_
         NEED overflow check on octal and hex. Watch sign extend of char.
 */
 
-int TdiLexQuote(int len, unsigned char *str, struct marker *mark_ptr)
+int TdiLexQuote(int len __attribute__ ((unused)),
+		unsigned char *str,
+		struct marker *mark_ptr)
 {
   char c, c1, *cptr = TdiRefZone.a_cur;
   int cur = 0, limit;
@@ -1679,12 +1686,12 @@ int yyinput()
   return (input());
 }
 
-void yyoutput(int c)
+void yyoutput()
 {
   //  output(c);
 }
 
-void yyunput(int c)
+void yyunput(int c __attribute__ ((unused)))
 {
   unput(c);
 }

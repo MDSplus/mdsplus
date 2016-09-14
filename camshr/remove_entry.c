@@ -92,6 +92,9 @@ int remove_entry(int dbType, int index)
     dbptr = (void *)CRATEdb;
     entrySize = CRATE_ENTRY;
     break;
+  default:
+    unlock_file();
+    return 0;
   }
 
   // set up 'blank-entry' format string

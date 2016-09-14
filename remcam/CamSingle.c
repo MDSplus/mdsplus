@@ -43,7 +43,7 @@ MakeSingle(CamPiow, Piow)
 static void getiosb(int serverid, short *iosb)
 {
   int status;
-  struct descrip ans_d = { 0, 0, {0, 0, 0, 0, 0, 0, 0}, 0 };
+  struct descrip ans_d = { 0, 0, {0}, 0, 0};
   status = MdsValue(serverid, "_iosb", &ans_d, 0);
   if (status & 1 && ans_d.dtype == DTYPE_USHORT && ans_d.ndims == 1 && ans_d.dims[0] == 4) {
     memcpy(RemCamLastIosb, ans_d.ptr, 8);
@@ -57,7 +57,7 @@ static void getiosb(int serverid, short *iosb)
 static void getdata(int serverid, void *data)
 {
   int status;
-  struct descrip ans_d = { 0, 0, {0, 0, 0, 0, 0, 0, 0}, 0 };
+  struct descrip ans_d = { 0, 0, {0}, 0, 0};
   status = MdsValue(serverid, "_data", &ans_d, 0);
   if (status & 1 && (ans_d.dtype == DTYPE_USHORT || ans_d.dtype == DTYPE_LONG) && ans_d.ptr)
     memcpy(data, ans_d.ptr, (ans_d.dtype == DTYPE_USHORT) ? 2 : 4);
@@ -71,8 +71,8 @@ static int CamSingle(char *routine, char *name, int a, int f, void *data, int me
   int status = 0;
   int writeData;
   if (serverid) {
-    struct descrip data_d = { 8, 0, {0, 0, 0, 0, 0, 0, 0}, 0 };
-    struct descrip ans_d = { 0, 0, {0, 0, 0, 0, 0, 0, 0}, 0 };
+    struct descrip data_d = { 8, 0, {0}, 0, 0};
+    struct descrip ans_d = { 0, 0, {0}, 0, 0};
     char cmd[512];
 
     writeData = (!(f & 0x08)) && (f > 8);

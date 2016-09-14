@@ -54,7 +54,8 @@ extern void TdiYyReset();
 */
 STATIC_THREADSAFE int yacc_mutex_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t yacc_mutex;
-int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
+		struct descriptor_xd *out_ptr)
 {
   int status = 1;
   EMPTYXD(tmp);
@@ -122,7 +123,7 @@ int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descript
         Compile and evaluate an expression.
                 result = EXECUTE(string, [arg1,...])
 */
-int Tdi1Execute(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_xd tmp = EMPTY_XD;
