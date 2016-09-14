@@ -16753,7 +16753,7 @@ RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
-WARNFLAGS="-Wextra -Wall"
+WARNFLAGS="-Wall"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
 $as_echo_n "checking whether to treat warnings as errors... " >&6; }
