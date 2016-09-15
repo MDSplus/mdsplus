@@ -30,6 +30,8 @@ interface FrameData
      * -FramDeata.JAI_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
      *  content of every image file supported by the JAI (Java Advanced Imaging) package. The JAI package needs not 
      *  to be installed unless file formats other than gif or jpeg are used.
+     * <br>
+     * Currently, only BITMAP_IMAGE is supported
      * 
      * @return The type of the corresponding frame.
      * @exception java.io.IOException
@@ -57,7 +59,6 @@ interface FrameData
      * the frame sequence with the other signals displayed by jScope.
      * 
      * @return The time array for the frame sequence.
-     * @exception java.io.IOException
      */
     public float[] GetFrameTimes() throws Exception;
 
