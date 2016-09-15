@@ -343,6 +343,8 @@ void freeDsc(void *dscPtr)
     printf("PANIC in convertFromDsc: not an XD\n");
     exit(0);
   }
+  MdsFree1Dx(xdPtr, 0);
+  free((char *)xdPtr);
 }
 
 char *decompileDsc(void *ptr)
