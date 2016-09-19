@@ -24,12 +24,12 @@ public interface DataProvider
          * For example the MdsDataProvider allows the definition of TDI variables which may be useful
          * for configuring remote data access.
          * jScope allows the definition of an arbitrary set of environment variable using the
-         * customize->public variables... option. As jScope does not make any assumption on the
+         * customize--public variables... option. As jScope does not make any assumption on the
          * syntax of the defined variables, each variable definition is passed to the Data provider
-         * by means of the SetEnvironment method, whose argument is a String which defines <name value>
+         * by means of the SetEnvironment method, whose argument is a String which defines name value
          * pairs. If the DataProvider implementation does not support such a feature, it simply returns.
          *
-         * @param exp The variable definition expressed as <name value> pair.
+         * @param exp The variable definition expressed as name value pair.
          * @exception java.io.IOException
          */
 
@@ -53,7 +53,6 @@ public interface DataProvider
          *
          * @param in The specification of the label or title.
          * @return The evaluated label or title.
-         * @exception java.io.IOException
          */
         public String  GetString(String in) throws IOException;
 
@@ -67,7 +66,6 @@ public interface DataProvider
          *
          * @param in The specification of the value.
          * @return The evaluated value.
-         * @exception java.io.IOException
          */
         public double   GetFloat(String in) throws IOException;
 
@@ -77,8 +75,7 @@ public interface DataProvider
          * to the data provider implementation to retrieve X and Y axis.
          * The evaluated signal is not directly returned as a vector, rather as a object implementing
          * the WaveData interface. 
-         * @see WavData
-         * @param in The specification of the signal, typed in the Y axis field of the setup data source
+          * @param in The specification of the signal, typed in the Y axis field of the setup data source
          * popup form, or in the lower right window of jScope.
          * @return The evaluated signal embedded in a WaveData object, or null if an error is encountered.
          * @see WaveData
@@ -108,7 +105,7 @@ public interface DataProvider
 
         /**
          * If an error is encountered in the evaluation of a signal (GetWaveData or
-         * GetResampledWaveData returning null or generation IOException), jScope calls ErrorString
+         * GetResampledWaveData returning null or generating IOException), jScope calls ErrorString
          * method to retrieve the description of the error just occurred.
          *
          * @return A verbose description of the last error.
@@ -224,7 +221,6 @@ public interface DataProvider
          * secon case a warning dialog is shown, and in the third case the DataProvider is simply discarded.
          *
          * @param f The container Frame.
-         * @param user Local username as specified in the property file or in the Network->Edit server list... dialog
          * @return The status of the DataProvider specific validation process
          */
         public int     InquireCredentials(JFrame f, DataServerItem server_item);

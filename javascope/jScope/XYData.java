@@ -41,8 +41,7 @@ package jScope;
      * @param resolution: declared resolution
      * @param increasingX: increasing x values flag
      */
-     
-    XYData(double x[], float y[], double resolution, boolean increasingX)
+    public  XYData(double x[], float y[], double resolution, boolean increasingX)
     {
        this(x, y, resolution, increasingX, x[0], x[x.length - 1]);
     }
@@ -57,7 +56,7 @@ package jScope;
      * @param xMin: lower bound X region of interest
      * @param xMax: upper bound X region of interest
      */
-    XYData(double x[], float y[], double resolution, boolean increasingX, double xMin, double xMax)
+    public XYData(double x[], float y[], double resolution, boolean increasingX, double xMin, double xMax)
     {
         this.resolution = resolution;
         this.increasingX = increasingX;
@@ -75,7 +74,7 @@ package jScope;
      * @param y: y (values) array
      * @param resolution: declared resolution
      */
-    XYData(double x[], float y[], double resolution)
+    public XYData(double x[], float y[], double resolution)
     {
         this.resolution = resolution;
         this.x = x;
@@ -106,7 +105,7 @@ package jScope;
      * @param y: y (values) array
      * @param resolution: declared resolution
      */
-    XYData(long x[], float y[], double resolution)
+    public XYData(long x[], float y[], double resolution)
     {
         this.resolution = resolution;
         this.xLong = x;
@@ -143,7 +142,7 @@ package jScope;
      * @param xMin: lower bound X region of interest
      * @param xMax: upper bound X region of interest
      */
-    XYData(long[]x, float[]y, double  resolution, boolean increasingX)
+    public XYData(long[]x, float[]y, double  resolution, boolean increasingX)
     {
         this.resolution = resolution;
         this.increasingX = increasingX;
