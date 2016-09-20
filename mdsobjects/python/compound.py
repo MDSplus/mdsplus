@@ -66,7 +66,6 @@ class Compound(_data.Data):
         else:
             super(Compound,self).__setattr__(name,value)
 
-
     def __setitem__(self,num,value):
         if isinstance(num,slice):
             indices=num.indices(num.start+len(value))
@@ -134,7 +133,7 @@ class Compound(_data.Data):
         @type args: tuple
         """
         self._args = [None if arg is None else _data.makeData(arg) for arg in args]
-        while self.getNumDescs()<len(self._fields):
+        while self.getNumDescs()<self._argOffset:
             self._args.append(None)
 
     @staticmethod
@@ -300,9 +299,9 @@ class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
     """
-    _fields={}
-    opcodeToClass={}
+    fields=tuple()
     dtype_id=199
+    opcodeToClass={}
 
     @classmethod
     def fromDescriptor(cls,d):
@@ -319,22 +318,12 @@ class Function(Compound):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
-        self.setDescs(args)
-
-    def getArguments(self):
-        """Return arguments
-        @rtype: Data,None
-        """
-        return Compound.__getitem__(self,slice(self._argOffset,None))
-    def setArgumentAt(self,idx,value):
-        """Set argument at index idx (indexes start at 0)"""
-        return super(type(self),self).__setitem__(idx+self._argOffset,value)
-
-    def setArguments(self,args):
-        """Set arguments
-        @type args: tuple
-        """
-        return super(type(self),self).__setitem__(slice(self._argOffset,None),args)
+        if len(args)>self.max_args or (self.max_args>0 and len(args)<self.min_args):
+            if self.max_args==0 or self.max_args==self.min_args:
+                raise TypeError("Requires %d input arguments for %s"%(self.max_args,self.__class__.__name__))
+            else:
+                raise TypeError("Requires %d to %d input arguments for %s"%(self.min_args,self.max_args,self.__class__.__name__))
+        super(Function,self).__init__(*args)
 
 class Method(Compound):
     """A Method object is used to describe an operation to be performed on an MDSplus conglomerate/device
@@ -510,7 +499,6 @@ _descriptor.dtypeToClass[WithUnits.dtype_id]=WithUnits
 _descriptor.dtypeToClass[Parameter.dtype_id]=Parameter
 
 class dPLACEHOLDER(Function):
-    min_args=0
     max_args=0
     opcode=0
 
