@@ -69,26 +69,16 @@ class Descriptor_d(_C.Structure):
 class Descriptor_a(_C.Structure):
     dclass_id = 4
     __init__=__desc_init__
-    if _ver.isNT:
-        _fields_ = Descriptor._fields_ + [
-                   ("scale",_C.c_byte),
-                   ("digits",_C.c_ubyte),
-                   ("aflags",_C.c_ubyte),
-                   ("dimct",_C.c_ubyte),
-                   ("arsize",_C.c_uint),
-                   ("a0",_C.c_void_p),
-                   ("coeff_and_bounds",_C.c_int32 * 24)]
-    else:
-        _fields_ = Descriptor._fields_ + [
-                   ("scale",_C.c_byte),
-                   ("digits",_C.c_ubyte),
-                   ("fill1",_C.c_ushort),
-                   ("aflags",_C.c_ubyte),
-                   ("fill2",_C.c_ubyte * 3),
-                   ("dimct",_C.c_ubyte),
-                   ("arsize",_C.c_uint),
-                   ("a0",_C.c_void_p),
-                   ("coeff_and_bounds",_C.c_int32 * 24)]
+    _fields_ = Descriptor._fields_ + [
+               ("scale",_C.c_byte),
+               ("digits",_C.c_ubyte),
+               ("_fill1",_C.c_ubyte * (0 if _ver.isNt else 2)),
+               ("aflags",_C.c_ubyte),
+               ("_fill2",_C.c_ubyte * (0 if _ver.isNt else 3)),
+               ("dimct",_C.c_ubyte),
+               ("arsize",_C.c_uint),
+               ("a0",_C.c_void_p),
+               ("coeff_and_bounds",_C.c_int32 * 24)]
 
     @property
     def value(self):
@@ -192,16 +182,10 @@ class Descriptor_xs(_C.Structure):
 class Descriptor_r(_C.Structure):
     dclass_id = 194
     __init__=__desc_init__
-    if _ver.isNT and _ver.isPointer8:
-        _fields_ = Descriptor._fields_ + [
-                   ("ndesc",_C.c_ubyte),
-                   ("fill1",_C.c_ubyte*6),
-                   ("dscptrs",_C.POINTER(Descriptor)*256)]
-    else:
-        _fields_ = Descriptor._fields_ + [
-                   ("ndesc",_C.c_ubyte),
-                   ("fill1",_C.c_ubyte*3),
-                   ("dscptrs",_C.POINTER(Descriptor)*256)]
+    _pack_ = _C.sizeof(_C.c_void_p)
+    _fields_ = Descriptor._fields_ + [
+               ("ndesc",_C.c_ubyte),
+               ("dscptrs",_C.POINTER(Descriptor)*256)]
     @property
     def value(self):
         return dtypeToClass[self.dtype].fromDescriptor(self)

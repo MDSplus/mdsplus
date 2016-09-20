@@ -16,11 +16,6 @@ has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
 has_xrange    = 'xrange'     in __builtins__
 
-import struct as _struct
-import os as _os
-isPointer8=_struct.calcsize('P')==8
-isNT=_os.name=='nt'
-
 def load_library(name):
     import ctypes as C
     import os, platform
@@ -59,6 +54,8 @@ def load_library(name):
         except:
             print('Could not load CDLL: '+libnam)
 
+import os as isNt
+isNt = isNt.name=='nt'
 
 from types import GeneratorType as generator  # analysis:ignore
 if ispy3:
