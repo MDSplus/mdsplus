@@ -1379,7 +1379,7 @@ public class WaveInterface
             curr_error = dp.ErrorString();
             return null;
         }
-        wd.setContinuousUpdate(isContinuousUpdate);
+        //wd.setContinuousUpdate(isContinuousUpdate);
         boolean hasErrors = up_err != null || low_err != null;
         if( xDimension == 1)
             out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
