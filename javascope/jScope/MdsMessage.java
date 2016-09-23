@@ -345,7 +345,8 @@ public class MdsMessage extends Object
     }
 
     private ByteBuffer getWrappedBody() {
-        return ByteBuffer.wrap(body).order(swap ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
+        return ByteBuffer.wrap(body).order(swap ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+//       return ByteBuffer.wrap(body).order(swap ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
     }
 
     public long[] ToLongArray() throws IOException
