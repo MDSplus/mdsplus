@@ -426,7 +426,7 @@ class Data(object):
         @rtype: Scalar,Array
         """
         try:
-            return _compound.DATA(self).evaluate().value
+            return _compound.DATA(self).evaluate()
         except _exceptions.TreeNODATA:
             if len(altvalue)==1:
                 return altvalue[0]
