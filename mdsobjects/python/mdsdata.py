@@ -387,6 +387,15 @@ class Data(object):
         @rtype: Data"""
         return Data.compile(*args).evaluate()
 
+    def assignTo(self,varname):
+        """Set tdi variable with this data
+        @param varname: The name of the public tdi variable to create
+        @type varname: string
+        @rtype: Data
+        @return: Returns new value of the tdi variable
+        """
+        return self.execute("%s=$"%(varname,),self)
+
     def setTdiVar(self,tdivarname):
         """Set tdi public variable with this data
         @param tdivarname: The name of the public tdi variable to create
@@ -394,7 +403,7 @@ class Data(object):
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
-        return self.execute("`public "+str(tdivarname)+"=$",self)
+        return self.execute("public %s=$"%(tdivarname,),self)
 
     @staticmethod
     def getTdiVar(tdivarname):
@@ -674,7 +683,7 @@ class EmptyData(Data):
     def __init__(self):
         pass
 
-    def __str__(self):
+    def decompile(self):
         return "*"
 
     @property
