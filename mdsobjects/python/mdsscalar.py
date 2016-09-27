@@ -104,8 +104,8 @@ class Scalar(_data.Data):
         return self._value
 
     def decompile(self):
-        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'0X%0uQ',
-                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'0X%0xQU',
+        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'%dQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU',
                  Float32:'%g'}
         ans=formats[self.__class__] % (self._value,)
         if ans=='nan':
