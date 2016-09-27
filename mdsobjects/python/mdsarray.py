@@ -370,10 +370,6 @@ class StringArray(Array):
         """Add: x.__add__(y) <==> x+y
         @rtype: Data"""
         return self.execute('$//$',self,y)
-    def __str__(self):
-        """String: x.__str__() <==> str(x)
-        @rtype: String"""
-        return self.decompile()
 
 class Int128Array(Array):
     """128-bit signed number"""

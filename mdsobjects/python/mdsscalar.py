@@ -103,7 +103,7 @@ class Scalar(_data.Data):
         """Return the numpy scalar representation of the scalar"""
         return self._value
 
-    def __str__(self):
+    def decompile(self):
         formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'0X%0uQ',
                  Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'0X%0xQU',
                  Float32:'%g'}
@@ -114,18 +114,15 @@ class Scalar(_data.Data):
             ans=ans+"."
         return ans
 
-    def decompile(self):
-        return _ver.tostr(self)
-
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return self._value.__int__()
+        return int(self._value)
 
     def __long__(self):
         """Long: x.__long__() <==> long(x)
         @rtype: int"""
-        return self.__value.__long__()
+        return _ver.long(self._value)
 
     def _unop(self,op):
         return _data.makeData(getattr(self.value,op)())
@@ -268,7 +265,7 @@ class Complex64(Scalar):
     dtype_id=54
     _ctype=_C.c_float*2
     _ntype=_N.complex64
-    def __str__(self):
+    def decompile(self):
         return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
 
 class Float64(Scalar):
@@ -276,7 +273,7 @@ class Float64(Scalar):
     dtype_id=53
     _ctype=_C.c_double
     _ntype=_N.float64
-    def __str__(self):
+    def decompile(self):
         return ("%E" % self._value).replace("E","D")
 
 class Complex128(Scalar):
@@ -284,7 +281,7 @@ class Complex128(Scalar):
     dtype_id=55
     _ctype=_C.c_double*2
     _ntype=_N.complex128
-    def __str__(self):
+    def decompile(self):
         return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
 
 class String(Scalar):
@@ -321,7 +318,7 @@ class String(Scalar):
     def __contains__(self,y):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
-        return str(self._value).find(str(y)) != -1
+        return self.find(str(y)) != -1
 
     def __init__(self,value):
         self._value = _N.str_(_ver.tostr(value))
@@ -329,14 +326,13 @@ class String(Scalar):
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
-        if len(self._value) > 0:
-            return str(self._value)
-        else:
-            return ''
+        return str(self._value)
+
     def __len__(self):
-        return len(str(self))
+        return len(self._value)
+
     def decompile(self):
-        return repr(str(self))
+        return repr(self._value)
 
 class Int128(Scalar):
     """128-bit number"""

@@ -422,12 +422,12 @@ class Data(object):
         """
         return str(_compound.DECOMPILE(self).evaluate())
 
-    __str__=decompile
-    """String: x.__str__() <==> str(x)
-    @type: String"""
+    def __repr__(self):
+        """Representation
+        @type: String"""
+        return self.decompile()
 
-    __repr__=decompile
-    """Representation"""
+    __str__=__repr__
 
 
     def data(self,*altvalue):
