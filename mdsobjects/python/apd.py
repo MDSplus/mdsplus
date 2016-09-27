@@ -70,7 +70,7 @@ class Apd(_data.Data):
                 return True
         return False
 
-        
+
     def __fixTreeReferences__(self,tree):
         for idx in range(len(self._descs)):
             if isinstance(self._descs[idx],_data.Data) and self._descs[idx].__hasBadTreeReferences__(tree):
@@ -129,30 +129,30 @@ class Apd(_data.Data):
             self._descs=list(descs)
         else:
             raise TypeError("must provide tuple")
+        return self
 
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
         self[idx]=value
+        return self
 
     def append(self,value):
         """Append a value to apd"""
         self[len(self)]=value
-
-    def data(self):
-        """Returns native representation of the apd"""
-        return list(map(_data.Data.data,self._descs))
+        return self
 
     @property
     def descs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
-        """        
+        """
         return tuple(self._descs)
-        
-        
+
+
 class Dictionary(dict,Apd):
     """dictionary class"""
+    _key_value_exception = Exception('A dictionary requires an even number of elements read as key-value pairs.')
 
     dtype_id=216
 
@@ -162,35 +162,52 @@ class Dictionary(dict,Apd):
                 for key,val in value.items():
                     self.setdefault(key,val)
             elif isinstance(value,(tuple,list,Apd)):
+                if  len(value)&1:
+                    raise Dictionary._key_value_exception
                 for idx in range(0,len(value),2):
                     self.setdefault(value[idx],value[idx+1])
             elif isinstance(value,(_ver.generator)):
-                for key in value:                    
+                for key in value:
                     self.setdefault(key,_ver.next(value))
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
-                
+
+    @staticmethod
+    def tokey(key):
+        if isinstance(key,_scalar.Scalar):
+            return key.value
+        if isinstance(key,_N.string_):
+            return str(key)
+        elif isinstance(key,_N.int32):
+            return int(key)
+        elif isinstance(key,(_N.float32,_N.float64)):
+            return float(key)
+        else:
+            return _data.Data.make(key).data().value
+
     def setdefault(self,key,val):
         """check keys and converts values to instances of Data"""
-        if isinstance(key,_scalar.Scalar):
-            key=key.value
-        if isinstance(key,_N.string_):
-            key=str(key)
-        elif isinstance(key,_N.int32):
-            key=int(key)
-        elif isinstance(key,(_N.float32,_N.float64)):
-            key=float(key)
+        key = Dictionary.tokey(key)
         if not isinstance(val,_data.Data):
             val=_data.Data.make(val)
         super(Dictionary,self).setdefault(key,val)
 
-    def __setattr__(self,name,value):
+    def remove(self,key):
+        """remove pair with key"""
+        del(self[Dictionary.tokey(key)])
+
+    def __setitem__(self,name,value):
         """sets values as instances of Data"""
         self.setdefault(name,value)
 
-    def data(self):
+    def __getitem__(self,name):
+        """gets values as instances of Data"""
+        return super(Dictionary,self).__getitem__(Dictionary.tokey(name))
+
+    @property
+    def value(self):
         """Return native representation of data item"""
-        dict(zip(self.keys(),map(_data.Data.data,self.values())))
+        return dict(zip(self.keys(),map(_data.Data.data,self.values())))
 
     def toApd(self):
         return Apd(self.descs,self.dtype_id)
@@ -199,7 +216,7 @@ class Dictionary(dict,Apd):
     def descs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
-        """        
+        """
         return sum(self.items(),())
 
 class List(list,Apd):
@@ -219,8 +236,13 @@ class List(list,Apd):
     def descs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
-        """        
+        """
         return tuple(self)
+
+    @property
+    def value(self):
+        """Returns native representation of the List"""
+        return list(map(_data.Data.data,self._descs))
 
 
 descriptor=_mimport('descriptor')
