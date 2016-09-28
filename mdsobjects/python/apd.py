@@ -183,7 +183,7 @@ class Dictionary(dict,Apd):
         elif isinstance(key,(_N.float32,_N.float64)):
             return float(key)
         else:
-            return _data.Data.make(key).data().value
+            return _data.Data.make(key).data()
 
     def setdefault(self,key,val):
         """check keys and converts values to instances of Data"""

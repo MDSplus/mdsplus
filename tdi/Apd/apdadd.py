@@ -21,13 +21,13 @@ def apdadd(*args):
             raise Exception('Invalid agument class. Argument must be a List or Dictionary')
         return apd
 
-    arg0 = args[0].data()
+    arg0 = args[0].getData()
     if isinstance(arg0, (List, Dictionary)):
         apd = add_apd(arg0, args[1:], len(arg0))
         var = args[0]
     else:
         var = args[1]
-        apd = add_apd(var.data(), args[2:], int(arg0))
+        apd = add_apd(var.getData(), args[2:], int(arg0))
     from MDSplus.ident import Ident
     if isinstance(var, (Ident,)):
         apd.assignTo(var.name)

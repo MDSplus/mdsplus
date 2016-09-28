@@ -429,15 +429,14 @@ class Data(object):
 
     __str__=__repr__
 
-
     def data(self,*altvalue):
         """Return primitimive value of the data.
-        @rtype: Scalar,Array
+        @rtype: numpy or native type
         """
         try:
-            return _compound.DATA(self).evaluate()
+            return _compound.DATA(self).evaluate().value
         except _exceptions.TreeNODATA:
-            if len(altvalue)==1:
+            if len(altvalue):
                 return altvalue[0]
             raise
 
@@ -466,6 +465,17 @@ class Data(object):
         """Is item a Scalar
         @rtype: Bool"""
         return isinstance(x,_scalar.Scalar)
+
+    def getData(self,*altvalue):
+        """Return primitimive value of the data.
+        @rtype: Scalar,Array
+        """
+        try:
+            return _compound.DATA(self).evaluate()
+        except _exceptions.TreeNODATA:
+            if len(altvalue):
+                return altvalue[0]
+            raise
 
     def getByte(self):
         """Convert this data into a byte.
