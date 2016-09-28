@@ -137,14 +137,14 @@ class Dictionary(dict,Apd):
                 for idx in range(0,len(value),2):
                     key=value[idx]
                     val=value[idx+1]
-                    self.setdefault()
+                    self.setdefault(key,val)
             elif isinstance(value,_T.GeneratorType):
                 if _ver.ispy3:
                     for key in value:
                         self.setdefault(key,value.__next__())
                 else:
                     for key in value:
-                        self.setdefault(key,value.next())                    
+                        self.setdefault(key,value.next())
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
 
@@ -161,7 +161,7 @@ class Dictionary(dict,Apd):
             self.__dict__[name]=value
         else:
             self.setdefault(name,value)
-            
+
     def setdefault(self,key,val):
         if isinstance(key,_scalar.Scalar):
             key=key.value
