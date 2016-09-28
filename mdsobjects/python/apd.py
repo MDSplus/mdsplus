@@ -212,8 +212,11 @@ class List(list,Apd):
 
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,(Apd,list,tuple,_T.GeneratorType)):
+            if isinstance(value,(list,tuple,_T.GeneratorType)):
                 for val in value:
+                    super(List,self).append(val)
+            elif isinstance(value,(Apd,)):
+                for val in value.descs:
                     super(List,self).append(val)
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
