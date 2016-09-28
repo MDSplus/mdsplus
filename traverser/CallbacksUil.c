@@ -1517,7 +1517,6 @@ void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), X
 {
   static Boolean devices_loaded = False;
   char **devnames;
-  char **imagenames;
   int num;
   Widget top;
   usage = TreeUSAGE_DEVICE;
@@ -1535,12 +1534,15 @@ void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), X
       static XtCallbackRec device_changed_list[] = { {(XtCallbackProc) SetDeviceType, 0}, {0, 0} };
       args[0].value = (long)device_changed_list;
       rb = XtNameToWidget(top, "*.ad_radioBox1");
-      GetSupportedDevices(&devnames, &imagenames, &num);
+      GetSupportedDevices(&devnames, &num);
       for (i = 0; i < num; i++) {
 
 	Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
+	free(devnames[i]);
 	XtManageChild(w);
       }
+      if (devnames)
+	free(devnames);
       devices_loaded = True;
     }
     XtManageChild(top);
