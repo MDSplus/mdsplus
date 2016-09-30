@@ -11,12 +11,12 @@ def apdadd(*args):
             if idx<0:
                 idx += len(apd)+1
             for arg in args[::-1]:
-                apd.insert(idx,arg)
+                apd.insert(idx,arg.evaluate())
         elif isinstance(apd, (Dictionary)):
             if  len(args)&1:
                 raise Dictionary._key_value_exception
             for idx in range(0,len(args),2):
-                apd.setdefault(args[idx],args[idx+1])
+                apd.setdefault(args[idx].evaluate(),args[idx+1].evaluate())
         else:
             raise Exception('Invalid agument class. Argument must be a List or Dictionary')
         return apd
