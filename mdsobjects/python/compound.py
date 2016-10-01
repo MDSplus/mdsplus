@@ -23,7 +23,7 @@ class Compound(_data.Data):
         self.setDescs(args)
         for k,v in kwargs:
             if k in self.fields:
-                self[self._fields[k]] = v
+                self.setDescAt(self._fields[k],v)
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
@@ -43,7 +43,7 @@ class Compound(_data.Data):
         if name == '_fields':
             return {}
         if name in self._fields:
-            return self[self._fields[name]]
+            return self.getDescAt(self._fields[name])
         elif name.startswith('get') and name[3:].lower() in self._fields:
             def getter():
                 return self._args[self._fields[name[3:].lower()]]
@@ -54,52 +54,39 @@ class Compound(_data.Data):
             return setter
         raise AttributeError('No such attribute '+str(name))
 
-    def __getitem__(self,num):
-        if num<len(self._args):
-            return self._args[num]
-        else:
-            return None
+    def __getitem__(self,idx):
+        return self.getDescAt(idx)
 
     def __setattr__(self,name,value):
         if name in self._fields:
-            self[self._fields[name]] = value
+            self.getDescAt(self._fields[name],value)
         else:
             super(Compound,self).__setattr__(name,value)
 
-    def __setitem__(self,num,value):
-        if isinstance(num,slice):
-            indices=num.indices(num.start+len(value))
-            idx = 0
-            for i in range(indices[0],indices[1],indices[2]):
-                self[i] = value[idx]
-                idx += 1
-        else:
-            if value is None:
-                if len(self._args) > num:
-                    self._args[num] = None
-            else:
-                while len(self._args) <= num:
-                    self._args.append(None)
-                self._args[num]=_data.makeData(value)
-        return
+    def __setitem__(self,idx,value):
+        return self.setDescAt(idx,value)
 
     def getArgumentAt(self,idx):
         """Return argument at index idx (indexes start at 0)
         @rtype: Data,None
         """
-        return self[idx+self._argOffset]
+        return self.getDescAt(self._argOffset+idx)
 
     def getArguments(self):
         """Return arguments
         @rtype: Data,None
         """
-        return self[slice(self._argOffset,None)]
+        return self.getDescAt(slice(self._argOffset,None))
 
     def getDescAt(self,idx):
         """Return descriptor with index idx (first descriptor is 0)
         @rtype: Data
         """
-        return self[idx]
+        if isinstance(idx, (slice,)):
+            return tuple(self._args[idx])
+        if idx<len(self._args):
+            return self._args[idx]
+        return None
 
     def getDescs(self):
         """Return descriptors or None if no descriptors
@@ -115,18 +102,32 @@ class Compound(_data.Data):
 
     def setArgumentAt(self,idx,value):
         """Set argument at index idx (indexes start at 0)"""
-        self[idx+self._argOffset] = value
+        return self.setDescAt(self._argOffset+idx, value)
 
     def setArguments(self,args):
         """Set arguments
         @type args: tuple
         """
         self._args = self._args[:self._argOffset+len(args)]
-        self[slice(self._argOffset,None)] = args
+        return self.setDescAt(slice(self._argOffset,None),args)
 
-    def setDescAt(self,n,value):
+    def setDescAt(self,idx,value):
         """Set descriptor at index idx (indexes start at 0)"""
-        self[n] = value
+        if isinstance(idx,slice):
+            indices=idx.indices(idx.start+len(value))
+            idx = 0
+            for i in range(indices[0],indices[1],indices[2]):
+                self.setDescAt(i,value[idx])
+                idx += 1
+        else:
+            if value is None:
+                if len(self._args) > idx:
+                    self._args[idx] = None
+            else:
+                if len(self._args) <= idx:
+                    self._args+=[None]*(idx-len(self._args)+1)
+                self._args[idx]=_data.makeData(value)
+        return self
 
     def setDescs(self,args):
         """Set descriptors
@@ -201,10 +202,10 @@ class Compound(_data.Data):
         d.dtype=self.dtype_id
         d.ndesc = self.getNumDescs()
         for idx in range(d.ndesc):
-            if self[idx] is None:
+            if self.getDescAt(idx) is None:
                 d.dscptrs[idx]=_C.cast(_C.c_void_p(0),type(d.dscptrs[idx]))
             else:
-                d.dscptrs[idx]=_C.cast(_C.pointer(self[idx].descriptor),_C.POINTER(_descriptor.Descriptor))
+                d.dscptrs[idx]=_C.cast(_C.pointer(self.getDescAt(idx).descriptor),_C.POINTER(_descriptor.Descriptor))
         d.original=self
         if self._units is None and self._error is None and self._help is None and self._validation is None:
             return d  # if not props
@@ -377,10 +378,7 @@ class Signal(Compound):
         """Return the signals dimension
         @rtype: Data
         """
-        if idx < len(self.dims):
-            return self.dims[idx]
-        else:
-            return _data.Missing()
+        return self.getDimensionAt(idx)
 
     def __getitem__(self,idx):
         """Subscripting <==> signal[subscript]. Uses the dimension information for subscripting
@@ -398,16 +396,13 @@ class Signal(Compound):
         @type idx: int
         @rtype: Data
         """
-        try:
-            return self.dims[idx]
-        except:
-            return None
+        return self.getArgumentAt(idx)
 
     def getDimensions(self):
         """Return all the dimensions of the signal
         @rtype: tuple
         """
-        return self.dims
+        return self.getArguments()
 
     def setDimensionAt(self,idx,value):
         """Set the dimension
