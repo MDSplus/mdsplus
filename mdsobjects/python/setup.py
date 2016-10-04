@@ -35,18 +35,18 @@ def getRelease():
     return (release,name.lower())
 
 
+branch = None
 try:
     exec(open('_version.py').read())
-    if branch == "stable":
-        name="mdsplus"
-    else:
-        name="mdsplus_%s" % branch
 except:
+    pass
+if branch is None:
     version,name=getRelease()
-    if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
-        branch=" (%s)" % os.environ["BRANCH"]
-    else:
-        branch=""
+elif branch == "stable":
+    name="mdsplus"
+else:
+    name="mdsplus_%s" % branch
+
 pname='MDSplus'
 setup(name=name,
       version=version,

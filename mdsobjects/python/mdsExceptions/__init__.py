@@ -66,10 +66,10 @@ _statusDict=dict()
 
 _all=globals()
 exception=None
-
 for exception in _all:
   if hasattr(_all[exception],"status"):
     _statusDict[_all[exception].status & -8]=_all[exception]
+del(exception)
 
 def statusToException(status):
   status = int(status)

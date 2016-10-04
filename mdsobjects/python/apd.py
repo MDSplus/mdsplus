@@ -4,19 +4,18 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import copy as _copy
 import numpy as _N
 import ctypes as _C
 
 _data=_mimport('mdsdata')
 _scalar=_mimport('mdsscalar')
 _array=_mimport('mdsarray')
+_ver=_mimport('version')
 
 class Apd(_data.Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
-
     mdsclass=196
     dtype_id=24
 
@@ -62,63 +61,58 @@ class Apd(_data.Data):
             d_d=_C.cast(d_d_ptr,_C.POINTER(descriptor.Descriptor)).contents
             d_d=_C.cast(d_d_ptr,_C.POINTER(descriptor.dclassToClass[d_d.dclass])).contents
             descs.append(d_d.value)
-        return cls(value=tuple(descs))
+        return cls(descs)
 
 
     def __hasBadTreeReferences__(self,tree):
-        for desc in self.descs:
+        for desc in self._descs:
             if isinstance(desc,_data.Data) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
 
+
     def __fixTreeReferences__(self,tree):
-        descs=list(ans.descs)
-        for idx in range(len(descs)):
-            if isinstance(descs[idx],_data.Data) and descs[idx].__hasBadTreeReferences__(tree):
-                descs[idx]=descs[idx].__fixTreeReferences__(tree)
-        descs=tuple(descs)
-        return type(self)(descs)
+        for idx in range(len(self._descs)):
+            if isinstance(self._descs[idx],_data.Data) and self._descs[idx].__hasBadTreeReferences__(tree):
+                self._descs[idx]=self._descs[idx].__fixTreeReferences__(tree)
+        return self
 
     def __init__(self,descs,dtype=0):
         """Initializes a Apd instance
         """
-        if isinstance(descs,tuple):
-            self.descs=descs
+        if isinstance(descs,(tuple,list,_ver.generator)):
+            self._descs=list(descs)
             self.dtype=dtype
         else:
-            raise TypeError("must provide tuple of items when creating ApdData")
-        return
+            raise TypeError("must provide tuple of items when creating ApdData: %s"%(type(descs),))
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
-        return len(self.descs)
+        return len(self._descs)
 
     def __getitem__(self,idx):
         """Return descriptor(s) x.__getitem__(idx) <==> x[idx]
         @rtype: Data|tuple
         """
         try:
-            return self.descs[idx]
+            return self._descs[idx]
         except:
-            return None
-        return
+            return
 
     def __setitem__(self,idx,value):
         """Set descriptor. x.__setitem__(idx,value) <==> x[idx]=value
         @rtype: None
         """
-        l=list(self.descs)
-        while len(l) <= idx:
-            l.append(None)
-        l[idx]=value
-        self.descs=tuple(l)
-        return None
+        diff = 1+idx-len(self._descs)
+        if diff>0:
+            self._descs+=[None]*diff
+        self._descs[idx]=value
 
     def getDescs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
         """
-        return self.descs
+        return self._descs
 
     def getDescAt(self,idx=0):
         """Return the descriptor indexed by idx. (indexes start at 0).
@@ -131,31 +125,34 @@ class Apd(_data.Data):
         @type descs: tuple
         @rtype: None
         """
-        if isinstance(descs,tuple):
-            self.descs=descs
+        if isinstance(descs,(tuple,list,_ver.generator)):
+            self._descs=list(descs)
         else:
             raise TypeError("must provide tuple")
-        return
+        return self
 
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
         self[idx]=value
-        return None
+        return self
 
     def append(self,value):
         """Append a value to apd"""
         self[len(self)]=value
+        return self
 
-    def data(self):
-        """Returns native representation of the apd"""
-        l=list()
-        for d in self.descs:
-            l.append(d.data())
-        return tuple(l)
+    @property
+    def descs(self):
+        """Returns the descs of the Apd.
+        @rtype: tuple
+        """
+        return tuple(self._descs)
+
 
 class Dictionary(dict,Apd):
     """dictionary class"""
+    _key_value_exception = Exception('A dictionary requires an even number of elements read as key-value pairs.')
 
     dtype_id=216
 
@@ -164,65 +161,63 @@ class Dictionary(dict,Apd):
             if isinstance(value,dict):
                 for key,val in value.items():
                     self.setdefault(key,val)
-            elif isinstance(value,tuple):
+            elif isinstance(value,(tuple,list,Apd)):
+                if  len(value)&1:
+                    raise Dictionary._key_value_exception
                 for idx in range(0,len(value),2):
-                    key=value[idx]
-                    if isinstance(key,_scalar.Scalar):
-                        key=key.value
-                    if isinstance(key,_N.string_):
-                        key=str(key)
-                    elif isinstance(key,_N.int32):
-                        key=int(key)
-                    elif isinstance(key,_N.float32) or isinstance(key,_N.float64):
-                        key=float(key)
-                    val=value[idx+1]
-                    if isinstance(val,Apd):
-                        val=Dictionary(val)
-                    self.setdefault(key,val)
+                    self.setdefault(value[idx],value[idx+1])
+            elif isinstance(value,(_ver.generator)):
+                for key in value:
+                    self.setdefault(key,_ver.next(value))
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
+
+    @staticmethod
+    def tokey(key):
+        if isinstance(key,_scalar.Scalar):
+            return key.value
+        if isinstance(key,_N.string_):
+            return str(key)
+        elif isinstance(key,_N.int32):
+            return int(key)
+        elif isinstance(key,(_N.float32,_N.float64)):
+            return float(key)
+        else:
+            return _data.Data.make(key).data()
+
+    def setdefault(self,key,val):
+        """check keys and converts values to instances of Data"""
+        key = Dictionary.tokey(key)
+        if not isinstance(val,_data.Data):
+            val=_data.Data.make(val)
+        super(Dictionary,self).setdefault(key,val)
+
+    def remove(self,key):
+        """remove pair with key"""
+        del(self[Dictionary.tokey(key)])
+
+    def __setitem__(self,name,value):
+        """sets values as instances of Data"""
+        self.setdefault(name,value)
+
+    def __getitem__(self,name):
+        """gets values as instances of Data"""
+        return super(Dictionary,self).__getitem__(Dictionary.tokey(name))
+
+    @property
+    def value(self):
+        """Return native representation of data item"""
+        return dict(zip(self.keys(),map(_data.Data.data,self.values())))
+
+    def toApd(self):
+        return Apd(self.descs,self.dtype_id)
 
     @property
     def descs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
         """
-        descs=[]
-        items=self.items()
-        for item in items:
-            descs=descs+list(item)
-        return tuple(descs)
-
-    def __getattr__(self,name):
-        if name in self.keys():
-            return self[name]
-        else:
-            raise AttributeError('No such attribute: '+name)
-
-    def __setattr__(self,name,value):
-        if name in self.keys():
-            self[name]=value
-        elif hasattr(self,name):
-            self.__dict__[name]=value
-        else:
-            self.setdefault(name,value)
-
-    def data(self):
-        """Return native representation of data item"""
-        d=dict()
-        for key,val in self.items():
-            d.setdefault(key,val.data())
-        return d
-
-    def toApd(self):
-        apd=Apd(tuple(),self.dtype_id)
-        for key,val in self.items():
-            apd.append(key)
-            apd.append(val)
-        return apd
-
-    def __str__(self):
-        return dict.__str__(self)
+        return sum(self.items(),())
 
 class List(list,Apd):
     """list class"""
@@ -231,27 +226,27 @@ class List(list,Apd):
 
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,Apd) or isinstance(value,list) or isinstance(value,tuple):
-                for idx in range(len(value)):
-                    super(List,self).append(value[idx])
+            if isinstance(value,(tuple,list,Apd,_ver.generator)):
+                for val in value:
+                    self.append(val)
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
-
-    def __str__(self):
-        return list.__str__(self)
 
     @property
     def descs(self):
         """Returns the descs of the Apd.
         @rtype: tuple
         """
-        descs=[]
-        for item in self:
-            descs.append(item)
-        return tuple(descs)
+        return tuple(self)
+
+    @property
+    def value(self):
+        """Returns native representation of the List"""
+        return list(map(_data.Data.data,self._descs))
+
 
 descriptor=_mimport('descriptor')
 descriptor.dtypeToClass[Apd.dtype_id]=Apd
 descriptor.dtypeToClass[List.dtype_id]=List
 descriptor.dtypeToClass[Dictionary.dtype_id]=Dictionary
-                        
+
