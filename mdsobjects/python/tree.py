@@ -1989,10 +1989,9 @@ class TreeNode(object):
                                                    _C.pointer(ctx))
                 value = _C.cast(tag_ptr,_C.c_char_p).value
                 if value is None:
-                    _TreeShr.TreeFree(tag_ptr)
                     break;
                 tags.append(_ver.tostr(value.rstrip()))
-                _TreeShr.TreeFree(tag_ptr)
+                _TreeShr.TreeFree(_C.c_void_p(tag_ptr))
         finally:
             Tree.unlock()
         tags = _array.makeArray(tags).astype(_ver.npstr)
