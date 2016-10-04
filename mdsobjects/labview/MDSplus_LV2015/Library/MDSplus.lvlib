@@ -356,8 +356,6 @@
 		<Item Name="Tree Add Device.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Add Device.vi"/>
 		<Item Name="Tree Add Node.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Add Node.vi"/>
 		<Item Name="Tree Create.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Create.vi"/>
-		<Item Name="Tree Create (Mode).vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Create (Mode).vi"/>
-		<Item Name="Tree Open.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Open.vi"/>
 		<Item Name="Tree Create Pulse.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Create Pulse.vi"/>
 		<Item Name="Tree Delete Pulse.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Delete Pulse.vi"/>
 		<Item Name="Tree Destroy.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Destroy.vi"/>
