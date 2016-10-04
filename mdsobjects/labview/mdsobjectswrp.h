@@ -20,7 +20,7 @@ typedef float float32;
 typedef double float64;
 typedef uint32_t Bool32;
 
-//#pragma pack(1)  !!! Removed, it was the origin of memory misalignments in 64 bit architectures
+#pragma pack(1)  //!!! Possible origin of memory misalignments in 64 bit architectures?
 
 #endif
 
