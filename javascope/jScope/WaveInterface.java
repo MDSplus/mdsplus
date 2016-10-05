@@ -1379,6 +1379,15 @@ public class WaveInterface
             curr_error = dp.ErrorString();
             return null;
         }
+        //Check for bidimensional X axis
+        if(in_x[curr_wave] != null)
+        {
+            xwd = dp.GetWaveData(in_x[curr_wave]);
+            if(xwd.getNumDimension() == 1)
+                xwd = null; //xwd is different from null ONLY for bidimensional X axis 
+        }
+        
+        
         //wd.setContinuousUpdate(isContinuousUpdate);
         boolean hasErrors = up_err != null || low_err != null;
         if( xDimension == 1)
