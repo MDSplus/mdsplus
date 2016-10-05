@@ -60,7 +60,7 @@ def makeScalar(value):
 
 class Scalar(_data.Data):
     _value = None
-    def __new__(cls,value=0):
+    def __new__(cls,value=0,*args):
         if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
             key = cls.__name__+'Array'
             if key in _array.__dict__:
@@ -73,7 +73,7 @@ class Scalar(_data.Data):
         elif self.__class__ == Scalar:
             raise TypeError("cannot create 'Scalar' instances")
         else:
-            self._value = _N.__dict__[self.__class__.__name__.lower()](value)
+            self._value = self._ntype(value)
 
     @property
     def mdsdtype(self):
@@ -180,9 +180,9 @@ class Scalar(_data.Data):
     def fromDescriptor(cls,d):
         value=_C.cast(d.pointer,_C.POINTER(cls._ctype)).contents
         if isinstance(value,_C.Array):
-            ans = cls(cls._ntype(complex(value[0],value[1])))
+            ans = cls(complex(value[0],value[1]))
         else:
-            ans = cls(cls._ntype(value.value))
+            ans = cls(value.value)
         return ans
 
 class Int8(Scalar):
@@ -346,6 +346,28 @@ class Uint128(Scalar):
     def __init__(self):
         raise TypeError("Uint128 is not yet supported")
 
+class Pointer(Scalar):
+    """32/64bit pointer"""
+    dtype_id=51
+    def __init__(self, value=0, is64=True):
+        if is64:
+            self._ctype=_C.c_uint64
+            self._ntype=_N.uint64
+        else:
+            self._ctype=_C.c_uint32
+            self._ntype=_N.uint32
+        super(Pointer,self).__init__(value)
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        is64 = d.length>4
+        ctype = _C.c_uint64 if is64 else _C.c_uint32
+        value=_C.cast(d.pointer,_C.POINTER(ctype)).contents
+        return Pointer(value.value,is64)
+
+    def decompile(self):
+        return "Pointer(0x%X)" % (self._value)
+
 _descriptor.dtypeToClass[Uint8.dtype_id]=Uint8
 _descriptor.dtypeToClass[Uint16.dtype_id]=Uint16
 _descriptor.dtypeToClass[Uint32.dtype_id]=Uint32
@@ -361,5 +383,6 @@ _descriptor.dtypeToClass[Float64.dtype_id]=Float64
 _descriptor.dtypeToClass[Complex64.dtype_id]=Complex64
 _descriptor.dtypeToClass[Complex128.dtype_id]=Complex128
 _descriptor.dtypeToClass[String.dtype_id]=String
+_descriptor.dtypeToClass[Pointer.dtype_id]=Pointer
 
 _compound=_mimport('compound')
