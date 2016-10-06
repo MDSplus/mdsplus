@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-import pexpect
+try:
+	import pexpect
+except:
+	print("Package pexpect not found but required for controlling dt100")
 import re
 import transport
 import array
