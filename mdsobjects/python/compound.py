@@ -59,7 +59,7 @@ class Compound(_data.Data):
 
     def __setattr__(self,name,value):
         if name in self._fields:
-            self.getDescAt(self._fields[name],value)
+            self.setDescAt(self._fields[name],value)
         else:
             super(Compound,self).__setattr__(name,value)
 
