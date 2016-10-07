@@ -2214,11 +2214,15 @@ class TreeNode(object):
         """
         Tree.lock()
         try:
-            if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
-                value=value.__fixTreeReferences__(self.tree)
+            if value is None:
+                ptr = _C.c_void_p(0)
+            else:
+                if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
+                    value=value.__fixTreeReferences__(self.tree)
+                ptr = _C.pointer(_data.makeData(value).descriptor)
             status=_TreeShr._TreePutRecord(self.tree.ctx,
                                            self._nid,
-                                           _C.pointer(_data.makeData(value).descriptor),0)
+                                           ptr,0)
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:
