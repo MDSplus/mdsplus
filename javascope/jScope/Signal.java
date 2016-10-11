@@ -2079,7 +2079,7 @@ public class Signal implements WaveDataListener
             y2D = data.getY2D();
             z = data.getZ();
             
-            if( x_data != null)
+            if( x_data != null)  //This holds ONLY for bidimensional X axis, used to draw x-Y images over time
             {
                 xY2D = x_data.getX2D();
                 yY2D = x_data.getY2D();
