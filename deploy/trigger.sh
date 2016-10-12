@@ -235,7 +235,7 @@ EOF
     exit 1
 fi
 
-BRANCH=${GIT_BRANCH}
+BRANCH=${GIT_BRANCH##*/}
 opts="$opts --branch=$BRANCH"
 
 #
