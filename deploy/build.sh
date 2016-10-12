@@ -295,7 +295,7 @@ parsecmd() {
 		BRANCH="${i#*=}"
 		;;
 	    --workspace=*)
-		WORKSPACE="${i#*=}"
+		NEW_WORKSPACE="${i#*=}"
 		;;
 	    --releasedir=*)
 		RELEASEDIR="${i#*=}"
@@ -460,11 +460,14 @@ then
     >&2 echo "Plaform ${PLATFORM} is not supported."
     exit 1
 fi
-if [ -z "$WORKSPACE" ]
+if [ -z "$NEW_WORKSPACE" ]
 then
-    WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+    if [ -z "$WORKSPACE" ]
+    then
+       WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+    fi
 else
-    WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
+    WORKSPACE=$(realpath ${NEW_WORKSPACE})
 fi
 
 if [ "$TEST" = "yes" -a "$TEST_RELEASE" = "yes" ]
