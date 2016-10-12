@@ -366,7 +366,7 @@ class Pointer(Scalar):
         return Pointer(value.value,is64)
 
     def decompile(self):
-        return "Pointer(0x%X)" % (self._value)
+        return "Pointer(0x%x)" % (self._value)
 
 _descriptor.dtypeToClass[Uint8.dtype_id]=Uint8
 _descriptor.dtypeToClass[Uint16.dtype_id]=Uint16
