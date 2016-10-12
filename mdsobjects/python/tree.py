@@ -185,12 +185,15 @@ class Tree(object):
     def name(self):
         "Tree name"
         return self.getDbi("name")
+    treename=name
+    expt=name
+    #tree=name
 
     @property
     def shotid(self):
         "Shot number of tree"
         return self.getDbi("shotid")
-    shot=shotid
+    #shot=shotid
 
     @property
     def modified(self):
@@ -244,17 +247,12 @@ class Tree(object):
     def versions_in_pulse(self,value):
         self.setDbi("versions_in_pulse",value)
 
-    @property
-    def tree(self):
-        "name of tree"
-        return self.getDbi("name")
-
     def getDbi(self,itemname):
 
         """
-Get tree information such as:
+        Get tree information such as:
 
-        tree/treename/name - name of the tree
+        treename/name/expt - name of the tree
         shotid/shot        - shot number
         default/pwd        - default node
         modified           - true if modified during edit
@@ -264,14 +262,14 @@ Get tree information such as:
         versions_in_pulse  - true if data versions is enabled in the pulse
 
         itemname can be a single string or a list/tuple of strings
-"""
+        """
         if isinstance(itemname,(list,tuple)):
             ans={}
             for item in itemname:
                 ans[item]=self.getDbi(item)
             return ans
         else:
-            itemlist={'TREE':(1,str,12),'TREENAME':(1,str,12),'NAME':(1,str,12),
+            itemlist={'NAME':(1,str,12),'EXPT':(1,str,12),
                       'SHOTID':(2,int),'SHOT':(2,int),
                       'MODIFIED':(3,bool),
                       'OPEN_FOR_EDIT':(4,bool),
@@ -394,6 +392,8 @@ Get tree information such as:
                 _TreeShr.TreeSwitchDbid(self.ctx)
                 if tree is not None:
                     self.tctx=_TreeCtx(self.ctx.value)
+            self.tree = self.name
+            self.shot = self.shotid
         finally:
             _hard_lock.release()
 
@@ -896,7 +896,7 @@ Get tree information such as:
         """
         Tree.lock()
         try:
-             status = _TreeShr._TreeCleanDatafile(self.ctx,
+             status = _TreeShr._TreeCleanDatafile(0,
                                                   _C.c_char_p(_ver.tobytes(self.tree)),
                                                   _C.c_int32(int(self.shot)))
              if not status & 1:
@@ -910,7 +910,7 @@ Get tree information such as:
         """
         Tree.lock()
         try:
-            status = _TreeShr._TreeCompressDatafile(self.ctx,
+            status = _TreeShr._TreeCompressDatafile(0,
                                                     _C.c_char_p(_ver.tobytes(self.tree)),
                                                     _C.c_int32(int(self.shot)))
             if not status & 1:
@@ -1153,7 +1153,11 @@ class TreeNode(object):
         "Data contents of node (settable)"
         return self.getRecord()
     @record.setter
-    def record(self,value): self.putData(value)
+    def record(self,value):
+        self.putData(value)
+
+    def data(self):
+        return self.record.data()
 
     rfa=nciProp("rfa","data offset in datafile")
 
@@ -1246,6 +1250,8 @@ class TreeNode(object):
                 return self.getNode(name)
             except:
                 pass
+        else:
+            return self.record.__getattr__(name)
         raise AttributeError('Attribute %s is not defined' % (name,))
 
     def __repr__(self):
@@ -2214,11 +2220,15 @@ class TreeNode(object):
         """
         Tree.lock()
         try:
-            if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
-                value=value.__fixTreeReferences__(self.tree)
+            if value is None:
+                ptr = _C.c_void_p(0)
+            else:
+                if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
+                    value=value.__fixTreeReferences__(self.tree)
+                ptr = _C.pointer(_data.makeData(value).descriptor)
             status=_TreeShr._TreePutRecord(self.tree.ctx,
                                            self._nid,
-                                           _C.pointer(_data.makeData(value).descriptor),0)
+                                           ptr,0)
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:

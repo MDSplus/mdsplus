@@ -690,7 +690,7 @@ makeData=Data.make
 class EmptyData(Data):
     """No Value aka $Missing"""
     _descriptor=_descriptor.Descriptor_s()
-    _descriptor.dtype=24
+    _descriptor.dtype=0
     def __init__(self):
         pass
 
