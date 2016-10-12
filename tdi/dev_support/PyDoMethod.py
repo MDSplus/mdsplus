@@ -1,5 +1,5 @@
 from MDSplus import Int32, Device
-from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND
+from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND,PyUNHANDLED_EXCEPTION
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
@@ -42,4 +42,5 @@ def PyDoMethod(n,method,*args):
         if hasattr(exc,'status'):
             return [exc.status,None]
         else:
-            return [Int32(0),None]
+            return [PyUNHANDLED_EXCEPTION.status,None]
+
