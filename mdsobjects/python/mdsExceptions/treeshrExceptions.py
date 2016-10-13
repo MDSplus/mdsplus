@@ -620,3 +620,10 @@ class TreeOPENEDITERR(TreeException):
   message="Error reopening new treefile for write access."
   msgnam="OPENEDITERR"
 
+
+
+class TreeREADONLY_TREE(TreeException):
+  status=265392266
+  message="Tree is marked as readonly. No write operations permitted."
+  msgnam="READONLY_TREE"
+
