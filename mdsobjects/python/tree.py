@@ -589,7 +589,7 @@ class Tree(object):
         """
         Tree.lock()
         try:
-            shot=_TreeShr._TreeGetCurrentShotId(_ver.tobytes(treename))
+            shot=_TreeShr.TreeGetCurrentShotId(_ver.tobytes(treename))
         finally:
             Tree.unlock()
         if shot==0:
