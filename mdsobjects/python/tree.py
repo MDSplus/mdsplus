@@ -1156,9 +1156,6 @@ class TreeNode(object):
     def record(self,value):
         self.putData(value)
 
-    def data(self):
-        return self.record.data()
-
     rfa=nciProp("rfa","data offset in datafile")
 
     rlength=nciProp("rlength","length of data in node")
@@ -1251,7 +1248,7 @@ class TreeNode(object):
             except:
                 pass
         else:
-            return self.record.__getattr__(name)
+            return self.record.__getattribute__(name)
         raise AttributeError('Attribute %s is not defined' % (name,))
 
     def __repr__(self):
