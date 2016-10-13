@@ -1411,7 +1411,7 @@ static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints,
     }
     if(startIdx == nSamples) startIdx--;
     if(xMax == 0)
-      endIdx == nSamples - 1;
+      endIdx = nSamples - 1;
     else
     {
       for(endIdx = startIdx; endIdx < nSamples && x[endIdx] < xMax; endIdx++);
