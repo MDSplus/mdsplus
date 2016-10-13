@@ -119,28 +119,18 @@ class Array(_data.Data):
     def clip(self,y,z):
         return self._triop('clip',y,z)
 
-
     def decompile(self):
         def arrayDecompile(a,cl):
+            ans='['
             if len(a.shape)==1:
-                ans='['
                 for idx in range(len(a)):
-                    sval=cl(a[idx])
-                    if idx < len(a)-1:
-                        ending=','
-                    else:
-                        ending=']'
-                    ans+=sval.decompile()+ending
-                return ans
+                    if idx > 0: ans+=', '
+                    ans+=cl(a[idx]).decompile()
             else:
-                ans='['
                 for idx in range(a.shape[0]):
-                    if idx < a.shape[0]-1:
-                        ending=', '
-                    else:
-                        ending=']'
-                    ans+=arrayDecompile(a[idx],cl)+ending
-                return ans
+                    if idx > 0: ans+=', '
+                    ans+=arrayDecompile(a[idx],cl)
+            return ans+']'
         if str(self._value.dtype)[1] in 'SU':
             cl=_scalar.String
         else:
