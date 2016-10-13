@@ -2618,6 +2618,10 @@ class TreeNodeArray(_array.Int32Array):
         """
         return TreeNode(self._value[n],self.tree)
 
+    @property
+    def nid_number(self):
+        return self._value
+
     def restoreContext(self):
         self.tree.restoreContext()
 
