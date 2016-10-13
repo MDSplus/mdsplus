@@ -14,7 +14,7 @@ class MDSplusException(Exception):
     if isinstance(status,int):
       self.status=status
     if not hasattr(self,'status'):
-      self.status=-1
+      self.status=-2
       self.msgnam='UNKNOWN'
       self.message='Unknown exception'
       self.fac='MDSplus'
