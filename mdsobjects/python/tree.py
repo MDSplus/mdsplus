@@ -2596,19 +2596,21 @@ class TreePath(TreeNode):
         return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
 
 
-class TreeNodeArray(_data.Data):
+class TreeNodeArray(_array.Int32Array):
     def __init__(self,nids,tree=None):
-        self.nids=nids
+        if isinstance(nids,_C.Array):
+            try:
+                nids=_N.ctypeslib.as_array(nids)
+            except Exception:
+                pass
+        nids = _N.array(nids)
+        if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
+            nids = nids.reshape(1)
+        self._value = nids.__array__(_N.int32)
         if tree is None:
             self.tree=Tree()
         else:
             self.tree=tree
-
-    def __eq__(self,y):
-        return(_N.array(self.nids,dtype=_N.uint32)==_N.array(y.nids,dtype=_N.uint32))
-
-    def __len__(self):
-        return len(self.nids)
 
     def __getitem__(self,n):
         """Return TreeNode from mdsarray. array[n]
@@ -2617,7 +2619,7 @@ class TreeNodeArray(_data.Data):
         @return: node
         @rtype: TreeNode
         """
-        return TreeNode(self.nids[n],self.tree)
+        return TreeNode(self._value[n],self.tree)
 
     def restoreContext(self):
         self.tree.restoreContext()
