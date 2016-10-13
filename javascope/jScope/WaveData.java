@@ -22,7 +22,7 @@ public interface WaveData
 
     /**
      * Get X and Y data for unidimensional signals within a given time interval
-     * The returned conainer object is an instance of XYData bringing information about X (time) and Y axis
+     * The returned container object is an instance of XYData bringing information about X (time) and Y axis
      *
      * @param xmin: Lower bound of X region of interest
      * @param xmax: Upper bound of X region of interest
@@ -34,6 +34,21 @@ public interface WaveData
      * @see XYData
      */
      XYData getData(double xmin, double xmax, int numPoints) throws Exception;
+
+    /**
+     * Get X and Y data for unidimensional signals within a given time interval expressed in absolute times
+     * The returned container object is an instance of XYData bringing information about X (time) and Y axis
+     *
+     * @param xmin: Lower bound of X region of interest
+     * @param xmax: Upper bound of X region of interest
+     * @param numPoints: The suggested number of samples. The returned number of samples actually returned 
+     * in XYData instance can be different, it is up to the DataProvider implementation decide the resampling
+     * policy. The passed number is a hint from jScope
+     * @return The  XYData instance describing X and Y values of the returned signal.
+     * @exception java.io.IOException
+     * @see XYData
+     */
+     XYData getData(long xmin, long xmax, int numPoints) throws Exception;
 
  
     /**

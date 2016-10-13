@@ -411,7 +411,13 @@ class AsdexDataProvider extends MdsDataProvider
             return out;
             //           return GetDefaultZLabel(in_y);
         }
-                public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+        public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+        public XYData getData(double xmin, double xmax, int numPoints) throws Exception
          {
              double x[] = GetXDoubleData();
              float y[] = GetFloatData();
