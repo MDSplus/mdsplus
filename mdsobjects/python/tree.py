@@ -1138,11 +1138,21 @@ class TreeNode(object):
 
     parent=nciProp("parent","parent node of this node")
 
-    parent_disable=nciProp("parent_disabled","is parent disabled")
+    parent_state=nciProp("parent_state","is parent disabled")
 
     parent_relationship=nciProp("parent_relationship","parent relationship")
 
-    parent_state=nciProp("parent_state","state of parent")
+    @property
+    def parent_disabled(self):
+        return self.isParentDisabled()
+    @parent_disabled.setter
+    def parent_disabled(self,value): self.setParentOn(not value)
+
+    @property
+    def parent_on(self):
+        return self.isParentOn()
+    @parent_on.setter
+    def parent_on(self,value):  self.setParentOn(value)
 
     path=nciProp("path","path to this node")
 
@@ -2114,17 +2124,14 @@ class TreeNode(object):
       @return: Return True if parent is turned off
       @rtype: bool
       """
-      if self.parent:
-          return self.parent.disabled
-      else:
-          return False
+      return not self.isParentOn()
 
     def isParentOn(self):
       """Return True if parent is on
       @return: Return True if parent is turned on
       @rtype: bool
       """
-      return not self.parent_state
+      return (int(self.get_flags) & 2)==0
 
     def isSegmented(self):
         """Return true if this node contains segmented records
@@ -2438,6 +2445,15 @@ class TreeNode(object):
         @rtype: original type
         """
         self._setNciFlag(0x1000,flag)
+
+    def setParentOn(self,flag):
+        """Turn parent node on or off
+        @param flag: State to set the on characteristic.
+        If true then the node is turned on. If false the node is turned off.
+        @type flag: bool
+        @rtype: None
+        """
+        self.parent.on = flag
 
     def setOn(self,flag):
         """Turn node on or off
