@@ -1258,7 +1258,11 @@ class TreeNode(object):
             except:
                 pass
         elif self.length:
-            return self.record.__getattribute__(name)
+            rec = self.record
+            try:
+                return rec.__getattribute__(name)
+            except AttributeError:
+                return rec.__getattr__(name)
         raise AttributeError('Attribute %s is not defined' % (name,))
 
     def __repr__(self):
