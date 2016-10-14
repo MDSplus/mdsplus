@@ -21,8 +21,6 @@ descriptor=_mimport('descriptor')
 _mdsshr=_mimport('_mdsshr')
 _compound=_mimport('compound')
 _ident=_mimport('ident')
-_mdsarray=_mimport('mdsarray')
-_mdsdata=_mimport('mdsdata')
 
 #
 #############################################
@@ -1465,6 +1463,19 @@ class TreeNode(object):
             else:
                 _mdsdcl.tcl("dispatch %s"     %(self.fullpath,),0,0,1)
 
+    @property
+    def deref(self):
+        """ resolves as many node references as possible
+            device nodes wil be conserved
+        """
+        if self.usage=='DEVICE':
+            return self
+        try:     ans = self.record
+        except:  return self
+        if isinstance(ans, (_data.Data,TreeNode)):
+            return ans.deref
+        return ans
+
     def doMethod(self,method,*args):
         """Execute method on conglomerate element
         @param method: method name to perform
@@ -2881,6 +2892,9 @@ class Device(TreeNode):
                 self.head=node.nid
             super(Device,self).__init__(node.nid,node.tree)
 
+    def deref(self):
+        return self
+
     def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
@@ -3078,7 +3092,7 @@ class Device(TreeNode):
         if len(ans) == 0:
             return None
         else:
-            return _mdsdata.Data.compile(str(ans))
+            return _data.Data.compile(str(ans))
 
 
 

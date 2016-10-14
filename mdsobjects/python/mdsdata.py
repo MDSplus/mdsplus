@@ -47,6 +47,10 @@ class Data(object):
             return default
         return ans
 
+    @property
+    def deref(self):
+        return self
+
     def value_of(self):
         """Return value part of object
         @rtype: Data"""

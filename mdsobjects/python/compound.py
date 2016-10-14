@@ -8,6 +8,7 @@ def _mimport(name, level=1):
 
 _descriptor=_mimport('descriptor')
 _data=_mimport('mdsdata')
+_tree=_mimport('tree')
 _exceptions=_mimport('mdsExceptions')
 
 class Compound(_data.Data):
@@ -24,6 +25,15 @@ class Compound(_data.Data):
         for k,v in kwargs:
             if k in self.fields:
                 self.setDescAt(self._fields[k],v)
+
+    @property
+    def deref(self):
+        for i in range(self.getNumDescs()):
+            ans = self.getDescAt(i)
+            if isinstance(ans,(_data.Data,_tree.TreeNode)):
+                self.setDescAt(i,ans.deref)
+        return self
+
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self._args:
