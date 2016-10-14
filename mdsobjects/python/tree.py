@@ -1447,11 +1447,9 @@ class TreeNode(object):
             raise TreeNodeException("Node does not contain an action description")
         else:
             if wait:
-                status=_mdsdcl.tcl("dispatch/wait "+str(self.fullpath))
+                _mdsdcl.tcl("dispatch/wait %s"%(self.fullpath,),0,0,1)
             else:
-                status=_mdsdcl.tcl("dispatch/wait "+str(self.fullpath))
-            if not (status & 1):
-                raise TreeNodeException(status)
+                _mdsdcl.tcl("dispatch %s"     %(self.fullpath,),0,0,1)
 
     def doMethod(self,method,*args):
         """Execute method on conglomerate element
