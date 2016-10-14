@@ -938,6 +938,7 @@ class TreeNode(object):
         @rtype: Device subclass instance
         """
         node = super(TreeNode,cls).__new__(cls)
+        node._nid = None # initializes field to prevent stack overflow in __getattr__
         if not isinstance(node,Device):
             try:
                 TreeNode.__init__(node,nid,tree=tree)
@@ -1250,12 +1251,14 @@ class TreeNode(object):
             matches the name of an immediate
             ancester to the node.
         """
+        if name=='tree':
+            return Tree()
         if name.upper() == name:
             try:
                 return self.getNode(name)
             except:
                 pass
-        elif self.length:
+        if self.length>0:
             rec = self.record
             try:
                 return rec.__getattribute__(name)
