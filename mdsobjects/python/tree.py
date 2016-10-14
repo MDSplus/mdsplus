@@ -1247,7 +1247,7 @@ class TreeNode(object):
                 return self.getNode(name)
             except:
                 pass
-        else:
+        elif self.length:
             return self.record.__getattribute__(name)
         raise AttributeError('Attribute %s is not defined' % (name,))
 
@@ -1577,7 +1577,7 @@ class TreeNode(object):
         @return: First level descendants of this node
         @rtype: TreeNodeArray
         """
-        return TreeNodeArray(self.member_nids.nids + self.children_nids.nids,self.tree)
+        return self.member_nids + self.children_nids
 
     def getDtype(self):
         """Return the name of the data type stored in this node
@@ -1659,7 +1659,6 @@ class TreeNode(object):
                        ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
 
         def __init__(self,items):
-            self.retlens=(_C.c_uint16*50)()  # TODO: purpose? "self." was missing unused?
             self.ans=list()
             self.retlen=list()
             self.rettype=list()
@@ -2617,6 +2616,11 @@ class TreeNodeArray(_array.Int32Array):
         @rtype: TreeNode
         """
         return TreeNode(self._value[n],self.tree)
+
+    def __add__(self,x):
+        if isinstance(x, (TreeNodeArray,)) and self.tree==x.tree:
+            return TreeNodeArray(_N.concatenate((self._value,x._value)),self.tree)
+        raise Exception('You can only add TreeNodeArrays of the same tree')
 
     @property
     def nid_number(self):
