@@ -482,12 +482,13 @@ EOF
 	else
 	    set +e
 	    echo "Checking contents of $(basename $rpm)"
-	    if ( rpm2cpio $rpm | \
-		       cpio --list --quiet | \
-		       grep -v python/dist | \
-		       grep -v python/build | \
-		       grep -v egg-info | \
-		       diff - ${checkfile} )
+	    if ( diff <(rpm2cpio $rpm | \
+		           cpio --list --quiet | \
+		           grep -v python/dist | \
+		           grep -v python/build | \
+		           grep -v egg-info | \
+                           sort) \
+                      <(sort ${checkfile}) )
 	    then
 		echo "Contents of $(basename $rpm) is correct."
 	    else
