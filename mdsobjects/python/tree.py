@@ -319,7 +319,7 @@ class Tree(object):
         if name.upper() == name:
             try:
                 return self.getNode(name)
-            except:
+            except _exceptions.TreeNNF:
                 pass
         raise AttributeError('No such attribute: '+name)
 
