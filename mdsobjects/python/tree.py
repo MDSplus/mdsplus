@@ -948,6 +948,8 @@ class TreeNode(object):
             try:
                 if node.usage == "DEVICE":
                     return node.record.getClass(node)
+            except _exceptions.TreeNODATA:
+                pass
             except _exceptions.DevPYDEVICE_NOT_FOUND:
                 pass
         return node
