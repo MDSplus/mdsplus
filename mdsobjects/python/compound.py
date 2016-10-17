@@ -265,17 +265,21 @@ class Conglom(Compound):
     """
     fields=('image','model','name','qualifiers')
     dtype_id=200
-    def getClass(self, ):
+    def getClass(self, *args):
         if not self.image=='__python__':
             raise Exception('Conglom does not represent a python class.')
         model = str(self.model)
         safe_env = {}
         qualifiers = self.qualifiers.value.tolist()
         if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
-        exec(compile(qualifiers,'<string>','exec')) in safe_env
-        if not model in safe_env:
-            raise _exceptions.DevPYDEVICE_NOT_FOUND
-        return safe_env[model]
+        exec(compile(qualifiers,'<string>','exec'),safe_env)
+        if model in safe_env:
+            cls = safe_env[model]
+        else:
+            cls = _tree.Device.importPyDeviceModule(model).__dict__[model]
+        if issubclass(cls,(_tree.Device,)):
+            return cls if len(args)==0 else cls(*args)
+        raise _exceptions.DevPYDEVICE_NOT_FOUND
 
 class Dependency(Compound):
     """A Dependency object is used to describe action dependencies. This is a legacy class and may not be recognized by
