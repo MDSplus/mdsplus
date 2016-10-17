@@ -398,6 +398,11 @@ class Tree(object):
     def __deepcopy__(self,memo):
         return self
 
+    def __eq__(self,obj):
+        if isinstance(obj,(Tree,)):
+            return self.ctx.value == obj.ctx.value
+        return False
+
     def __repr__(self):
         """Return representation
         @return: String representation of open tree
