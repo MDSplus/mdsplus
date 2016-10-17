@@ -943,13 +943,12 @@ class TreeNode(object):
         @rtype: Device subclass instance
         """
         node = super(TreeNode,cls).__new__(cls)
-        node._nid = None # initializes field to prevent stack overflow in __getattr__
         if not isinstance(node,Device):
+            TreeNode.__init__(node,nid,tree=tree)
             try:
-                TreeNode.__init__(node,nid,tree=tree)
                 if node.usage == "DEVICE":
                     return node.record.getClass(node)
-            except:
+            except _exceptions.DevPYDEVICE_NOT_FOUND:
                 pass
         return node
 
@@ -961,9 +960,9 @@ class TreeNode(object):
         @type tree: Tree
         """
         if nid is None:
-            self._nid=None
+            self._nid = None
         else:
-            self._nid=_C.c_int32(int(nid));
+            self._nid = _C.c_int32(int(nid))
         if tree is None:
             self.tree=Tree()
         else:
@@ -1245,7 +1244,7 @@ class TreeNode(object):
             path='\\%s::TOP%s' % (tree.tree,relpath)
             try:
                 ans=tree.getNode(str(self))
-            except:
+            except _exceptions.TreeNNF:
                 ans=TreePath(path,tree)
             return ans
 
@@ -1260,7 +1259,7 @@ class TreeNode(object):
         if name.upper() == name:
             try:
                 return self.getNode(name)
-            except:
+            except _exceptions.TreeNNF:
                 pass
         if self.length>0:
             rec = self.record
@@ -2893,15 +2892,17 @@ class Device(TreeNode):
         @rtype: None
         """
         if isinstance(node,TreeNode):
-            try:
-                self.nids=node.conglomerate_nids.nid_number
+            self.nids = node.conglomerate_nids.nid_number
+            if len(self.nids)>0:
                 self.head=int(self.nids[0])
-                part_idx = node.nid-self.head-1
-                if part_idx<len(self.part_names):
-                    self.__original_node_name = self.part_names[part_idx].upper()
-            except Exception:
-                self.head=node.nid
+                if node.nid>self.head:
+                    part_idx = node.nid-self.head-1
+                    if part_idx<len(self.part_names):
+                        self.__original_node_name = self.part_names[part_idx].upper()
+            else:
+                self.head = node.nid
             super(Device,self).__init__(node.nid,node.tree)
+
 
     def deref(self):
         return self
