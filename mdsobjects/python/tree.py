@@ -948,8 +948,7 @@ class TreeNode(object):
             try:
                 TreeNode.__init__(node,nid,tree=tree)
                 if node.usage == "DEVICE":
-                    model=str(node.record.model)
-                    return Device.importPyDeviceModule(model).__dict__[model.upper()](node)
+                    return node.record.getClass(node)
             except:
                 pass
         return node
