@@ -2852,7 +2852,8 @@ class Device(TreeNode):
 
     @classmethod
     def __class_init__(cls):
-        if not hasattr(cls,'initialized'):
+        if not hasattr(cls,'_initialized'):
+            cls._initialized=False
             if hasattr(cls,'parts'):
                 cls.part_names=list()
                 for elt in cls.parts:
@@ -2864,7 +2865,7 @@ class Device(TreeNode):
                         cls.part_dict[cls.part_names[i][1:].lower().replace(':','_').replace('.','_')]=i+1
                     except:
                         pass
-            cls.initialized=True
+            cls._initialized=True
 
     def __new__(cls,node):
         """Create class instance. Initialize part_dict class attribute if necessary.
@@ -2873,7 +2874,7 @@ class Device(TreeNode):
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        if cls.__name__ == 'Device':
+        if cls == Device:
             try:
                 head=TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
                 model=str(head.record.model)
@@ -2895,6 +2896,9 @@ class Device(TreeNode):
             try:
                 self.nids=node.conglomerate_nids.nid_number
                 self.head=int(self.nids[0])
+                part_idx = node.nid-self.head-1
+                if part_idx<len(self.part_names):
+                    self.__original_node_name = self.part_names[part_idx].upper()
             except Exception:
                 self.head=node.nid
             super(Device,self).__init__(node.nid,node.tree)
@@ -2908,13 +2912,9 @@ class Device(TreeNode):
         @return: Part name of this node
         @rtype: str
         """
-        name = ""
-        if self.nid != self.head:
-            try:
-                name = self.part_names[self.nid-self.head-1].upper()
-            except:
-                pass
-        return name
+        if hasattr(self,'__original_node_name'):
+            return self.__original_part_name
+        return ""
     PART_NAME=ORIGINAL_PART_NAME
 
     def __getattr__(self,name):
@@ -2924,12 +2924,12 @@ class Device(TreeNode):
         @return: Device instance of device part
         @rtype: Device
         """
+        self.__class_init__()
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME(None)
-        try:
+        if name in self.part_dict:
             return self.__class__(TreeNode(self.part_dict[name]+self.head,self.tree))
-        except KeyError:
-            return super(Device,self).__getattr__(name)
+        return super(Device,self).__getattr__(name)
 
     def __setattr__(self,name,value):
         """Set value into device subnode if name matches a mangled subpart node name. Otherwise assign value to class instance attribute.
@@ -2939,10 +2939,13 @@ class Device(TreeNode):
         @type value: varied
         @rtype: None
         """
-        try:
-            TreeNode(self.part_dict[name]+self.head,self.tree).record=value
-        except KeyError:
+        if name.startswith('_'):
             super(Device,self).__setattr__(name,value)
+        else:
+            try:
+                TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            except KeyError:
+                super(Device,self).__setattr__(name,value)
 
     @classmethod
     def Add(cls,tree,name):
@@ -3045,11 +3048,13 @@ class Device(TreeNode):
     def waitForSetups(cls):
         Device.gtkThread.join()
 
+    __cached_py_device_modules = {}
     @staticmethod
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-
+        if name in Device.__cached_py_device_modules:
+            return Device.__cached_py_device_modules[name]
         import __builtin__
         import sys,os
         check_name=name.lower()+".py"
@@ -3066,11 +3071,15 @@ class Device(TreeNode):
                                 ans=__builtin__.__import__(fname[:-3])
                             finally:
                                 sys.path.remove(dp)
-                            return ans
+        Device.__cached_py_device_modules[name] = ans
+        return ans
 
+    __cached_py_devices = None
     @staticmethod
     def findPyDevices():
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
+        if Device.__cached_py_devices is not None:
+            return _data.Data.compile(str(Device.__cached_py_devices))
         ans=list()
         import __builtin__
         import sys,os
@@ -3099,6 +3108,7 @@ class Device(TreeNode):
         if len(ans) == 0:
             return None
         else:
+            Device.__cached_py_devices = ans
             return _data.Data.compile(str(ans))
 
 
