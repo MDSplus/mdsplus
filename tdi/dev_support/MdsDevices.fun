@@ -41,6 +41,6 @@ fun public MdsDevices() {
     'RFXVICONTROL', 'RfxDevices',
     'REDPYTADC', 'RfxDevices',
     'BNC845', 'W7xDevices',
-    'QC9200', 'W7xDevices',
+    'QC9200', 'W7xDevices'
   ]);
 }
