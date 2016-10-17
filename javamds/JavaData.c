@@ -208,7 +208,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       args[0].d = ((float *)desc->pointer)[0];
       args[1].d = ((float *)desc->pointer)[1];
       args[2].i = desc->dtype;
-      printf("DESCRIPTOR TO OBJECT: Re: %f Im %f\n", args[0].d, args[1].d);
+     // printf("DESCRIPTOR TO OBJECT: Re: %f Im %f\n", args[0].d, args[1].d);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
     case DTYPE_T:
@@ -275,7 +275,10 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       array_d = (struct descriptor_a *)ca_xd.pointer;
     else
       array_d = (struct descriptor_a *)desc;
-    length = array_d->arsize / array_d->length;
+    if(array_d->length == 0)  //Empty string descriptor
+      length = 0;
+    else
+      length = array_d->arsize / array_d->length;
     switch (array_d->dtype) {
     case DTYPE_MISSING:
       cls = (*env)->FindClass(env, "IntArray");
