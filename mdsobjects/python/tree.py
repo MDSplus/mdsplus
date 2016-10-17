@@ -943,7 +943,7 @@ class TreeNode(object):
         @rtype: Device subclass instance
         """
         node = super(TreeNode,cls).__new__(cls)
-        if not isinstance(node,Device):
+        if type(node) is TreeNode:
             TreeNode.__init__(node,nid,tree=tree)
             try:
                 if node.usage == "DEVICE":
