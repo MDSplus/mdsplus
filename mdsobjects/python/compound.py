@@ -62,7 +62,7 @@ class Compound(_data.Data):
             def setter(value):
                 self.__setattr__(name[3:].lower(),value)
             return setter
-        raise AttributeError('No such attribute '+str(name))
+        raise AttributeError('No such attribute: '+name)
 
     def __getitem__(self,idx):
         return self.getDescAt(idx)

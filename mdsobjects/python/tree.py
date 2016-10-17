@@ -382,7 +382,7 @@ class Tree(object):
                                                  _C.c_char_p(_ver.tobytes(tree)),
                                                  _C.c_int32(shot))
                 else:
-                    raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
+                    raise TypeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
                 if not status & 1:
                     raise _exceptions.statusToException(status)
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
@@ -1269,7 +1269,7 @@ class TreeNode(object):
                 return rec.__getattribute__(name)
             except AttributeError:
                 return rec.__getattr__(name)
-        raise AttributeError('Attribute %s is not defined' % (name,))
+        raise AttributeError('No such attribute: '+name)
 
     def __repr__(self):
         if self._nid is None:
