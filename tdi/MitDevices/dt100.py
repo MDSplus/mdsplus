@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
-try:
-	import pexpect
-except:
-	print("Package pexpect not found but required for controlling dt100")
+import pexpect
 import re
 import transport
 import array
@@ -29,7 +26,7 @@ class Connection:
 		self.p = _p
 
 
-class Dt100(transport.Transport):
+class DT100(transport.Transport):
 	'connects to remote dt100 server, holds open connections and handles transactions'
 
 	def logtx(self, s):
