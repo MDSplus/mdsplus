@@ -97,7 +97,7 @@ def _getActiveTree(thread=None):
         ctx = 0
     return _C.c_void_p(ctx)
 
-class _TreeCtx(object):
+class _TreeCtx(object): # HINT: _TreeCtx begin
 
     """ The TreeCtx class is used to manage proper garbage collection
     of open trees. It retains reference counts of tree contexts and
@@ -123,7 +123,7 @@ class _TreeCtx(object):
             if status & 1:
                 _TreeShr.TreeFreeDbid(_C.c_void_p(self.ctx))
 
-class _DBI_ITM_INT(_C.Structure):
+class _DBI_ITM_INT(_C.Structure): # HINT: _DBI_ITM_INT begin
 
     """ Ctype structure class for making calls into _TreeGetDbi() for integer values """
 
@@ -142,7 +142,7 @@ class _DBI_ITM_INT(_C.Structure):
         self.pointer2=_C.c_void_p(0)
         self.retlen2=_C.c_void_p(0)
 
-class _DBI_ITM_CHAR(_C.Structure):
+class _DBI_ITM_CHAR(_C.Structure): # HINT: _DBI_ITM_CHAR begin
 
     """ Ctype structure class for making calls into _TreeGetDbi() for string values """
 
@@ -161,7 +161,7 @@ class _DBI_ITM_CHAR(_C.Structure):
         self.pointer2=_C.c_void_p(0)
         self.retlen2=_C.c_void_p(0)
 
-class Tree(object):
+class Tree(object): # HINT: Tree begin
 
     """Open an MDSplus Data Storage Hierarchy"""
 
@@ -921,8 +921,7 @@ class Tree(object):
         finally:
             Tree.unlock()
 
-
-class TreeNode(object):
+class TreeNode(object): # HINT: TreeNode begin
     """Class to represent an MDSplus node reference (nid).
     @ivar nid: node index of this node.
     @type nid: int
@@ -969,6 +968,70 @@ class TreeNode(object):
             self.tree=Tree()
         else:
             self.tree=tree
+
+    ###################################
+    ### Data Properties
+    ###################################
+
+    @property
+    def units(self):
+        """units associated with this data."""
+        return _compound.UNITS(self).evaluate()
+    @units.setter
+    def units(self,units):
+        if units is None:
+            if hasattr(self,'_units'):
+                delattr(self,'_units')
+        else:
+            self._units=units
+    def setUnits(self,units):
+        self.units=units
+        return self
+
+    @property
+    def error(self):
+        """error property of this data."""
+        return _compound.ERROR_OF(self).evaluate()
+    @error.setter
+    def error(self,error):
+        if error is None:
+            if hasattr(self,'_error'):
+                delattr(self,'_error')
+        else:
+            self._error=error
+    def setError(self,error):
+        self.error=error
+        return self
+
+    @property
+    def help(self):
+        """help property of this node."""
+        return _compound.HELP_OF(self).evaluate()
+    @help.setter
+    def help(self,help):
+        if help is None:
+            if hasattr(self,'_help'):
+                delattr(self,'_help')
+        else:
+            self._help=help
+    def setHelp(self,help):
+        self.help=help
+        return self
+
+    @property
+    def validation(self):
+        """Validation property of this node"""
+        return _compound.VALIDATION_OF(self).evaluate()
+    @validation.setter
+    def validation(self,validation):
+        if validation is None:
+            if hasattr(self,'_validation'):
+                delattr(self,'_validation')
+        else:
+            self._validation=validation
+    def setValidation(self,validation):
+        self.validation=validation
+        return self
 
     ###################################
     ### Node Properties
@@ -1026,6 +1089,8 @@ class TreeNode(object):
           return _compound.Compound.descriptorWithProps(self,d)
       else:
           return d
+
+
 
     @property
     def disabled(self):
@@ -1263,25 +1328,22 @@ class TreeNode(object):
                 return self.getNode(name)
             except _exceptions.TreeNNF:
                 pass
+        try:
+            return super(TreeNode,self).__getattr__(name)
+        except AttributeError:
+            pass
+        """
         if self.length>0:
             rec = self.record
             try:
                 return rec.__getattribute__(name)
             except AttributeError:
                 return rec.__getattr__(name)
+        """
         raise AttributeError('No such attribute: '+name)
 
     def __repr__(self):
-        if self._nid is None:
-            return str(self)
-        else:
-            if self.nid == 0:
-                return str(self.fullpath)
-            if self.isChild():
-                prefix="."
-            else:
-                prefix=""
-            return prefix+str(self.node_name)
+        return self.__str__()
 
     def __str__(self):
       """Convert TreeNode to string."""
@@ -2586,7 +2648,7 @@ class TreeNode(object):
         finally:
             Tree.unlock
 
-class TreePath(TreeNode):
+class TreePath(TreeNode): # HINT: TreePath begin
     """Class to represent an MDSplus node reference (path)."""
 
     dtype_id = 193
@@ -2629,7 +2691,7 @@ class TreePath(TreeNode):
         return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
 
 
-class TreeNodeArray(_array.Int32Array):
+class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
     def __init__(self,nids,tree=None):
         if isinstance(nids,_C.Array):
             try:
@@ -2773,7 +2835,7 @@ class TreeNodeArray(_array.Int32Array):
         return ans
 
 
-class Device(TreeNode):
+class Device(TreeNode): # HINT: Device begin
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
     Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
@@ -3147,14 +3209,6 @@ class Device(TreeNode):
                             try:
                                 devnam=fname[:-3].upper()
                                 __builtin__.__import__(fname[:-3]).__dict__[devnam]
-                                ans.append(devnam+'\0')
-                                """
-                          TODO: If the trailing \0 is important, it is unsave
-                                python's numpy trims the \0 is if len(item) = itemsize-1
-                                perhaps it is better to omit the \0 and trim the strings
-                                in client program
-                                """
-                                ans.append('\0')
                             except:
                                 pass
                     sys.path.remove(dp)
