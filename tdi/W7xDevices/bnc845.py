@@ -46,7 +46,6 @@ def bnc_report (ok) : return ' . . . OK' if ok else ' . . . Not OK'
 
 class BNC845 (MDSplus.Device) :
 	"""Control functions for the BNC generator supplied by FZ Juelich, based on BNCCommunication.py by A. Kraemer-Flecken (a.kraemer-flecken@fz-juelich.de).  Can be tested with script sim_bncgen from the MDSplusW7X project."""
-
 	parts=[{'path': ':HOST',         'type': 'TEXT',    'options':('no_write_shot',), 'value': '192.168.0.100'},
 	       {'path': ':PORT',         'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 18},
 	       {'path': ':TRIG_SRC',     'type': 'TEXT',    'options':('no_write_shot',), 'value': 'external'},

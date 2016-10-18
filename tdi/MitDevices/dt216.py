@@ -1,8 +1,6 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 
 from tempfile import *
-import acq200
-import transport
 from Dt200WriteMaster import Dt200WriteMaster
 
 from time import sleep, time
@@ -13,9 +11,9 @@ import array
 class DT216(Device):
     """
     D-Tacq ACQ216  16 channel transient recorder
-    
+
     """
-    
+
     parts=[
         {'path':':NODE','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
         {'path':':BOARD','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
@@ -52,7 +50,7 @@ class DT216(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
                   'options':('no_write_shot',)})
-    
+
     trig_sources=[ 'DI0',
                    'DI1',
                    'DI2',
@@ -63,9 +61,9 @@ class DT216(Device):
     clock_sources = trig_sources
     clock_sources.append('INT')
     clock_sources.append('MASTER')
-    
+
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi', ' ']
-    
+
     del i
     def getPreTrig(self,str) :
 	parts = str.split('=')
@@ -115,7 +113,7 @@ class DT216(Device):
 
     def timeoutHandler(self,sig,stack):
         raise Exception("Timeout occurred")
-        
+
     def getState(self):
         """Get the current state"""
         import socket,signal
@@ -131,7 +129,7 @@ class DT216(Device):
         signal.alarm(0)
         s.close()
         return state
-                  
+
     def doInit(self,tree,shot,path):
         """Get the current state"""
         import socket,signal
@@ -269,7 +267,7 @@ class DT216(Device):
             return 0
 
     INITFTP=initftp
-        
+
     def storeftp(self, arg):
 
         try:
@@ -313,7 +311,7 @@ class DT216(Device):
             delta=1./float(intClock)
 	else:
 	    delta = 0
-        
+
         #trigExpr = 'self.%s'% str(self.trig_src.record)
         #trig_src = eval(trigExpr.lower())
         trig_src = self.__getattr__(str(self.trig_src.record).lower())
@@ -365,7 +363,7 @@ class DT216(Device):
 			dim = Dimension(Window(start, end, trig_src ), axis)
                     else:
 			dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
-                    dat = Data.compile('build_signal(build_with_units( $*(0. + $value), "V") ,build_with_units($,"Counts"),$)', coefficent, buf,dim) 
+                    dat = Data.compile('build_signal(build_with_units( $*(0. + $value), "V") ,build_with_units($,"Counts"),$)', coefficent, buf,dim)
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
 	return 1
 
