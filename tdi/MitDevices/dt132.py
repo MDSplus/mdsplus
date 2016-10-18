@@ -1,5 +1,4 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
-from Dt200WriteMaster import Dt200WriteMaster
 import acq200
 import transport
 
@@ -10,16 +9,16 @@ import numpy
 class DT132(Device):
     """
     D-Tacq ACQ132  32 channel transient recorder
-    
+
     Methods:
     Add() - add a DTAO32 device to the tree open for edit
-    Init(arg) - initialize the DTAO32 device 
+    Init(arg) - initialize the DTAO32 device
                 write setup parameters and waveforms to the device
     Store(arg) - store the data acquired by the device
     Help(arg) - Print this message
-    
+
     Nodes:
-    
+
     :HOSTIP - mdsip address of the host storing the data.  Usually 192.168.0.254:8106
      BOARDIP'- ip addres sof the card as a string something like 192.168.0.40
      COMMENT - user comment string
@@ -27,18 +26,18 @@ class DT132(Device):
             :wire - string specifying the source of this signal { 'fpga','mezz','rio','pxi','lemo', 'none }
             :bus  - string specifying the destination of this signal { 'fpga','rio','pxi', 'none }
     :ACTIVE_CHANS - number of active channels {8, 16, 32}
-     INT_CLOCK - stored by module (representation of internal clock       
+     INT_CLOCK - stored by module (representation of internal clock
      TRIG_SRC - reference to DIn line used for trigger (DI3)
-     TRIG_EDGE - string {rising, falling} 
+     TRIG_EDGE - string {rising, falling}
      CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK
-     CLOCK_DIV - NOT CURRENTLY IMPLIMENTED 
+     CLOCK_DIV - NOT CURRENTLY IMPLIMENTED
      CLOCK_EDGE -  string {rising, falling}
      CLOCK_FREQ - frequency for internal clock
      PRE_TRIG - pre trigger samples MUST BE ZERO FOR NOW
      POST_TRIG - post trigger samples
      SEGMENTS - number of segments to store data in NOT IMPLIMENTED FOR NOW
      CLOCK - Filled in by store place for module to store clock information
-     RANGES - place for module to store calibration information 
+     RANGES - place for module to store calibration information
      STATUS_CMDS - array of shell commands to send to the module to record firmware version  etc
      BOARD_STATUS - place for module to store answers for STATUS_CMDS as signal
      INPUT_[01-32] - place for module to store data in volts (reference to INPUT_NN:RAW)
@@ -49,7 +48,7 @@ class DT132(Device):
      INIT_ACTION - dispatching information for INIT
      STORE_ACTION - dispatching information for STORE
     """
-    
+
     parts=[
         {'path':':HOSTIP','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
         {'path':':BOARDIP','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
@@ -60,8 +59,8 @@ class DT132(Device):
         parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
         parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
     parts2=[
-        {'path':':ACTIVE_CHANS','type':'numeric','value':32,'options':('no_write_shot',)},        
-        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},       
+        {'path':':ACTIVE_CHANS','type':'numeric','value':32,'options':('no_write_shot',)},
+        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},
         {'path':':TRIG_SRC','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
         {'path':':TRIG_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
         {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
@@ -90,7 +89,7 @@ class DT132(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
                   'options':('no_write_shot',)})
-    
+
     clock_edges=['rising', 'falling']
     trigger_edges = clock_edges
     trig_sources=[ 'DI0',
@@ -102,16 +101,16 @@ class DT132(Device):
                    ]
     clock_sources = trig_sources
     clock_sources.append('INT_CLOCK')
-    
+
     masks = {8: '11110000000000001111000000000000',
              16:'11111111000000001111111100000000',
              32:'11111111111111111111111111111111',
              }
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
-    
+
     del i
-    
-        
+
+
     def init(self, arg):
         """
         Initialize the device
@@ -161,10 +160,10 @@ class DT132(Device):
             pre_trig=int(self.pre_trig.data()*1024)
             error="Must specify post trigger samples"
             post_trig=int(self.post_trig.data()*1024)
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
             UUT.set_abort()
             UUT.clear_routes()
-            
+
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
@@ -199,14 +198,14 @@ class DT132(Device):
             return 0
 
     INIT=init
-        
+
     def getVins(self, UUT):
         vins = UUT.uut.acq2sh('get.vin 1:32')
         vins = vins[0]
         vins = vins[:-1]
         return makeArray(numpy.array(vins.split()).astype('int'))
 
-        
+
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
         print "clock_str is -%s-" % clock_str
@@ -232,7 +231,7 @@ class DT132(Device):
             error="Must specify a board ipaddress"
             boardip=str(self.boardip.record)
             error=None
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
             try:
                 ans = []
                 cmds = self.status_cmds.record
@@ -331,14 +330,14 @@ class DT132(Device):
                         else:
 			    raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, None, Dimension(Window(start, end, self.trig_src), clock))
-        
+
             UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))
         except Exception,e :
             if error is not None:
                 e=error
             print "Error storing DT132 Device\n%s" % ( str(e), )
             return 0
-                
+
         return 1
 
     STORE=store
