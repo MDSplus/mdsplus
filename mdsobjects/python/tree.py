@@ -1332,14 +1332,12 @@ class TreeNode(object): # HINT: TreeNode begin
             return super(TreeNode,self).__getattr__(name)
         except AttributeError:
             pass
-        """
         if self.length>0:
             rec = self.record
             try:
                 return rec.__getattribute__(name)
             except AttributeError:
                 return rec.__getattr__(name)
-        """
         raise AttributeError('No such attribute: '+name)
 
     def __repr__(self):
