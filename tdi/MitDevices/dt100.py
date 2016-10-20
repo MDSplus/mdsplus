@@ -26,7 +26,7 @@ class Connection:
 		self.p = _p
 
 
-class Dt100(transport.Transport):
+class DT100(transport.Transport):
 	'connects to remote dt100 server, holds open connections and handles transactions'
 
 	def logtx(self, s):

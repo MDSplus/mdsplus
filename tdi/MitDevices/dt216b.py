@@ -1,26 +1,23 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
-from Dt200WriteMaster import Dt200WriteMaster
 from tempfile import *
 import acq200
 import transport
 
-from time import sleep
 import os
-import numpy
 
 class DT216B(Device):
     """
     D-Tacq ACQ216  16 channel transient recorder
-    
+
     Methods:
     Add() - add a DT216B device to the tree open for edit
-    Init(arg) - initialize the DT216B device 
+    Init(arg) - initialize the DT216B device
                 write setup parameters and waveforms to the device
     Store(arg) - store the data acquired by the device
     Help(arg) - Print this message
-    
+
     Nodes:
-    
+
     :HOSTIP - mdsip address of the host storing the data.  Usually 192.168.0.254:8106
      BOARDIP'- ip addres sof the card as a string something like 192.168.0.40
      COMMENT - user comment string
@@ -29,18 +26,18 @@ class DT216B(Device):
             :bus  - string specifying the destination of this signal { 'fpga','rio','pxi', 'none }
     :ACTIVE_CHANS - number of active channels {2, 4, 8, 16}
      INT_CLOCK - stored by module (representation of internal clock
-     MASTER    - points to INT_CLOCK node - needed a node to fill into clock_src       
+     MASTER    - points to INT_CLOCK node - needed a node to fill into clock_src
      TRIG_SRC - reference to DIn line used for trigger (DI3)
-     TRIG_EDGE - string {rising, falling} 
+     TRIG_EDGE - string {rising, falling}
      CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK, or MASTER
-     CLOCK_DIV - NOT CURRENTLY IMPLIMENTED 
+     CLOCK_DIV - NOT CURRENTLY IMPLIMENTED
      CLOCK_EDGE -  string {rising, falling}
      CLOCK_FREQ - frequency for internal clock
      PRE_TRIG - pre trigger samples MUST BE ZERO FOR NOW
      POST_TRIG - post trigger samples
      SEGMENTS - number of segments to store data in NOT IMPLIMENTED FOR NOW
      CLOCK - Filled in by store place for module to store clock information
-     RANGES - place for module to store calibration information 
+     RANGES - place for module to store calibration information
      STATUS_CMDS - array of shell commands to send to the module to record firmware version  etc
      BOARD_STATUS - place for module to store answers for STATUS_CMDS as signal
      INPUT_[01-16] - place for module to store data in volts (reference to INPUT_NN:RAW)
@@ -51,7 +48,7 @@ class DT216B(Device):
      INIT_ACTION - dispatching information for INIT
      STORE_ACTION - dispatching information for STORE
     """
-    
+
     parts=[
         {'path':':HOSTIP','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
         {'path':':BOARDIP','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
@@ -62,8 +59,8 @@ class DT216B(Device):
         parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
         parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
     parts2=[
-        {'path':':ACTIVE_CHANS','type':'numeric','value':16,'options':('no_write_shot',)},        
-        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},       
+        {'path':':ACTIVE_CHANS','type':'numeric','value':16,'options':('no_write_shot',)},
+        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},
         {'path':':MASTER','type':'axis','valueExpr':'head.int_clock', 'options':('no_write_model','write_once')},
         {'path':':TRIG_SRC','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
         {'path':':TRIG_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
@@ -96,7 +93,7 @@ class DT216B(Device):
     parts.append({'path':':WAIT_ACTION','type':'action',
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAIT',head))",
                   'options':('no_write_shot',)})
-    
+
     clock_edges=['rising', 'falling']
     trigger_edges = clock_edges
     trig_sources=[ 'DI0',
@@ -109,18 +106,18 @@ class DT216B(Device):
     clock_sources = trig_sources
     clock_sources.append('INT_CLOCK')
     clock_sources.append('MASTER')
-    
+
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
-    
+
     del i
-    
+
     def check(self, expression, message):
         try:
             ans = eval(expression)
             return ans
         except:
             raise Exception, message
-        
+
     def init(self, arg):
         """
         Initialize the device
@@ -131,7 +128,7 @@ class DT216B(Device):
         debug=os.getenv("DEBUG_DEVICES")
         try:
             boardip=self.check( 'str(self.boardip.record)', "Must specify a board ipaddress")
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
             active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (2, 4, 8, 16)")
             if active_chans not in (2,4,8,16) :
                 print "active chans must be in (2, 4,8, 16 )"
@@ -149,13 +146,13 @@ class DT216B(Device):
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER':
                 clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")
             else:
-                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for external clock")                
+                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for external clock")
                 clock_div = self.check('int(self.clock_div)', "Must specify a divisor for external clock")
             pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
             post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
             UUT.set_abort()
             UUT.clear_routes()
-            
+
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
@@ -183,7 +180,7 @@ class DT216B(Device):
 		UUT.uut.acqcmd("setExternalClock %s" % clock_src)
             UUT.setPrePostMode(pre_trig, post_trig)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
-            UUT.set_arm() 
+            UUT.set_arm()
             return  1
 
         except Exception,e:
@@ -191,18 +188,18 @@ class DT216B(Device):
             return 0
 
     INIT=init
-        
+
     def getVins(self, UUT):
         vins = UUT.uut.acq2sh('get.vin 1:16')
         ans = eval('makeArray([%s])' % vins)
         return ans
 
-        
+
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
         print "clock_str is -%s-" % clock_str
         return eval('int(%s)' % clock_str)
-        
+
     def store(self, arg):
         """
         Store the data from the device
@@ -218,7 +215,7 @@ class DT216B(Device):
         debug=os.getenv("DEBUG_DEVICES")
         try:
             boardip=self.check( 'str(self.boardip.record)', "Must specify a board ipaddress")
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
             try:
                 ans = []
                 cmds = self.status_cmds.record
@@ -244,7 +241,7 @@ class DT216B(Device):
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             if debug:
                 print "pre = %d, post = %d" % (pre, post, )
-            clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string") 
+            clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))
             else:
@@ -328,7 +325,7 @@ class DT216B(Device):
         except Exception,e :
             print "Error storing DT216B Device\n%s" % ( str(e), )
             return 0
-                
+
         return 1
 
     STORE=store
@@ -341,8 +338,8 @@ class DT216B(Device):
     HELP=help
 
     def wait(self, arg):
-	""" 
-           Wait method for dt216b module  
+	"""
+           Wait method for dt216b module
            wait for the device to complete
            asynchronous data acquisition tasks
         """

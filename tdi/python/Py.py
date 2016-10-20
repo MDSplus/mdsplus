@@ -1,8 +1,7 @@
 import traceback as _tb
-import sys as _sys
-import MDSplus as _mdsplus
+import MDSplus
 
-def Py(cmds, varname=None, isglobal=False,lock=None):
+def Py(cmds, *arg):
     """
     Execute python commands passed as a string or string array in cmds argument.
     If you want to return the value of a variable defined in the commands pass
@@ -20,7 +19,10 @@ def Py(cmds, varname=None, isglobal=False,lock=None):
 
     The lock argument is no longer used but retained for compatibility.
     """
-    _mdsplus.Data.execute("deallocate(public _py_exception)")
+    varname = arg[0] if len(arg)>0 else None
+    isglobal= arg[1] if len(arg)>1 else False
+    arg     = arg[3:]if len(arg)>3 else []
+    MDSplus.Data.execute("deallocate(public _py_exception)")
     cmdlist=list()
     ans=1
     for cmd in cmds:
@@ -28,13 +30,14 @@ def Py(cmds, varname=None, isglobal=False,lock=None):
     cmds="\n".join(cmdlist)
     if isglobal:
         ns = globals()
+        ns['arg'] = arg
     else:
-        ns = {}
+        ns = {"arg":arg,'MDSplus':MDSplus}
     try:
         exec( cmds ) in ns
-    except:
+    except Exception as exc:
         _tb.print_exc()
-        _mdsplus.String(_sys.exc_info()[1]).setTdiVar("_py_exception")
+        MDSplus.String(exc).setTdiVar("_py_exception")
         ans = 0
     if varname is not None:
         varname=str(varname)

@@ -11,6 +11,10 @@ import jScope.FrameData;
 import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 public class WaveInterface
@@ -93,6 +97,9 @@ public class WaveInterface
 
     ColorMap colorMap = new ColorMap();
 
+    boolean xLimitsLong;
+    long xminLong = 0;
+    long xmaxLong = 0;
 
 
     public WaveInterface()
@@ -839,6 +846,12 @@ public class WaveInterface
                 error = dp.ErrorString();
                 return 0;
             }
+            long timeLong = getDate(in_xmin);
+            if(timeLong != -1)
+            {
+                xLimitsLong = true;
+                xminLong = timeLong;
+            }
         }
         else
             xmin = (!is_image) ? -Double.MAX_VALUE : -1;
@@ -852,6 +865,12 @@ public class WaveInterface
             {
                 error = dp.ErrorString();
                 return 0;
+            }
+            long timeLong = getDate(in_xmax);
+            if(timeLong != -1)
+            {
+                xLimitsLong = true;
+                xmaxLong = timeLong;
             }
         }
         else
@@ -1379,12 +1398,31 @@ public class WaveInterface
             curr_error = dp.ErrorString();
             return null;
         }
+        //Check for bidimensional X axis
+        if(in_x[curr_wave] != null)
+        {
+            xwd = dp.GetWaveData(in_x[curr_wave]);
+            if(xwd.getNumDimension() == 1)
+                xwd = null; //xwd is different from null ONLY for bidimensional X axis 
+        }
+        
+        
         //wd.setContinuousUpdate(isContinuousUpdate);
         boolean hasErrors = up_err != null || low_err != null;
         if( xDimension == 1)
-            out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
+        {
+            if(xLimitsLong)
+                out_signal = new Signal(wd, xwd, xminLong, xmaxLong, low_err, up_err);
+            else
+                out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
+        }
         else
-            out_signal = new Signal(wd, xwd, xmin, xmax);
+        {
+           if(xLimitsLong)
+                out_signal = new Signal(wd, xwd, xminLong, xmaxLong);
+            else
+                out_signal = new Signal(wd, xwd, xmin, xmax);
+        }
             
         
         if(yDimension > 1)
@@ -1416,5 +1454,23 @@ public class WaveInterface
         out_signal.setLabels(title, xlabel, ylabel, zlabel);
         return out_signal;
     }
-
+    
+    //Try to convert the passed string to a date. Return the converted time in long format if it succeeds, -1 otherwise
+    long getDate(String inVal)
+    {
+         try {
+            Calendar cal = Calendar.getInstance();
+            //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+//            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm z");
+            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
+//            Date date = df.parse(inVal + " GMT");
+            Date date = df.parse(inVal);
+            cal.setTime(date);
+            long javaTime = cal.getTime().getTime();
+            return javaTime;
+        }catch(Exception exc)
+        {
+            return 0;
+        }
+    }
 }

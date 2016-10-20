@@ -11740,7 +11740,7 @@ fi
 
 
   if test "$PYTHON" = :; then
-      as_fn_error $? "no suitable Python interpreter found" "$LINENO" 5
+      :
   else
 
 
@@ -11886,7 +11886,6 @@ $as_echo "$am_cv_python_pyexecdir" >&6; }
 
 
   fi
-
 
 
  if test "$PYTHON" != :; then

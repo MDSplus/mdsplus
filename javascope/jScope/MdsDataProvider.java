@@ -682,6 +682,10 @@ public class MdsDataProvider
         {
             return getData(xmin, xmax, numPoints, false);
         }
+        public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+        {
+            return getData((double)xmin, (double)xmax, numPoints, true);
+        }
         public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
         {
              String xExpr, yExpr;
@@ -712,7 +716,7 @@ public class MdsDataProvider
                 yExpr =  in_y;
                 _jscope_set = true;
                 if(in_x == null)
-                    xExpr = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var )";
+                    xExpr = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var );";
                 else
                     xExpr = in_x;
             }
@@ -721,7 +725,7 @@ public class MdsDataProvider
                 if(in_x == null)
                 {
                     yExpr =  in_y;
-                    xExpr = "__jScope_var = (" +in_y+") ; DIM_OF(__jScope_var)";
+                    xExpr = "__jScope_var = (" +in_y+") ; DIM_OF(__jScope_var);";
                 }
                 else
                 {
@@ -903,7 +907,7 @@ public class MdsDataProvider
         private long x2DLong[];
         public double[] getX2D()
         {
-            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0)";
+            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0);";
             try {
                 RealArray realArray = GetRealArray(in);
                 if( realArray.isLong() )
@@ -927,7 +931,7 @@ public class MdsDataProvider
           
         public float[] getY2D()
         {
-            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1)";
+            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1);";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
@@ -943,14 +947,14 @@ public class MdsDataProvider
         }
         public float[] getX_X2D()
         {
-            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 0)";
+            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 0);";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
         }
         public float[] getX_Y2D()
         {
-            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 1)";
+            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 1);";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
@@ -1582,7 +1586,7 @@ public class MdsDataProvider
             Calendar cal = Calendar.getInstance();
             //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
-            //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
+//            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
             Date date = df.parse(in + " GMT");
             //Date date = df.parse(in);
             cal.setTime(date);
