@@ -37,7 +37,7 @@ class Apd(_data.Data):
             descs_ptrs=(_C.c_void_p*len(descs))()
             for idx in range(len(descs)):
                 desc=descs[idx]
-                desc=_data.makeData(desc)
+                desc=_data.Data.make(desc)
                 desc_d=desc.descriptor
                 d.original.append(desc_d)
                 descs_ptrs[idx]=_C.cast(_C.pointer(desc_d),_C.c_void_p)
@@ -126,7 +126,7 @@ class Apd(_data.Data):
         @rtype: None
         """
         if isinstance(descs,(tuple,list,_ver.generator)):
-            self._descs=list(descs)
+            self._descs=list(map(_data.Data.make,descs))
         else:
             raise TypeError("must provide tuple")
         return self
@@ -134,12 +134,12 @@ class Apd(_data.Data):
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
-        self[idx]=value
+        self[idx]=_data.Data.make(value)
         return self
 
     def append(self,value):
         """Append a value to apd"""
-        self[len(self)]=value
+        self[len(self)]=_data.Data.make(value)
         return self
 
     @property
@@ -152,6 +152,12 @@ class Apd(_data.Data):
 
 class Dictionary(dict,Apd):
     """dictionary class"""
+    class dict_np(_N.ndarray):
+        def __new__(cls,items):
+            return _N.asarray(items,'object').view(Dictionary.dict_np)
+        def tolist(self):
+            return dict(super(Dictionary.dict_np,self).tolist())
+
     _key_value_exception = Exception('A dictionary requires an even number of elements read as key-value pairs.')
 
     dtype_id=216
@@ -207,7 +213,7 @@ class Dictionary(dict,Apd):
     @property
     def value(self):
         """Return native representation of data item"""
-        return dict(zip(self.keys(),map(_data.Data.data,self.values())))
+        return Dictionary.dict_np(self.items())
 
     def toApd(self):
         return Apd(self.descs,self.dtype_id)
@@ -242,8 +248,7 @@ class List(list,Apd):
     @property
     def value(self):
         """Returns native representation of the List"""
-        return list(map(_data.Data.data,self._descs))
-
+        return _N.array(self.descs,'object')
 
 descriptor=_mimport('descriptor')
 descriptor.dtypeToClass[Apd.dtype_id]=Apd
