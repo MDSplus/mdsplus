@@ -1,4 +1,4 @@
-__version__=(2016,06,14,18,15)
+__version__=(2016,10,20,15,30)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -30,13 +30,13 @@ class CYGNET4K(Device):
       {'path':'.TREND:PCB', 'type':'text','options':('no_write_shot',)},
       {'path':'.TREND:CMOS', 'type':'text','options':('no_write_shot',)},
       {'path':'.TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
-      {'path':'.TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once')},
-      {'path':'.TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_IDENT', 'type':'text','options':('no_write_shot','write_once')},
-      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_STORE','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',90,None),Method(None,'store',head))",'options':('no_write_shot','write_once')},
+      {'path':'.TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once','disabled')},
+      {'path':'.TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once','disabled')},
+      {'path':':ACTIONSERVER', 'type':'text','options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:INIT', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:STOP', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:STORE','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',90,None),Method(None,'store',head))",'options':('no_write_shot','write_once')},
       {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
       {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
       {'path':':TEMP_CMOS', 'type':'numeric','options':('no_write_model','write_once')},
