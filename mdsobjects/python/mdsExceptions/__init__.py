@@ -33,6 +33,7 @@ class MDSplusError(MDSplusException):
   severity="E"
   msgnam="Error"
   message="Failure to complete operation"
+  status=-2
   def __init__(self,status=None):
     pass
 
@@ -41,6 +42,7 @@ class MDSplusSuccess(MDSplusException):
   severity="S"
   msgnam="Success"
   message="Successful execution"
+  status=1
   def __init__(self,status=None):
     pass
 
