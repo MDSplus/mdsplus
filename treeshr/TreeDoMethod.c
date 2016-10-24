@@ -169,16 +169,16 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  struct descriptor_a *list = (struct descriptor_a *)list_xd.pointer;
 	  if (list && list->dtype == DTYPE_LIST && list->arsize == (sizeof(void *)*2)) {
 	    struct descriptor *statd = ((struct descriptor **)list->pointer)[0];
-	    struct descriptor *ansd = ((struct descriptor **)list->pointer)[1];
+	    struct descriptor *ansd  = ((struct descriptor **)list->pointer)[1];
 	    if (ansd) {
-	      (*TdiExecute)(&dollar_d, ansd, ans_xd, MdsEND_ARG);
+	      (*TdiExecute)(&dollar_d, ansd,ans_xd, MdsEND_ARG);
 	    } else {
 	      (*TdiExecute)(&dollar_d,statd,ans_xd, MdsEND_ARG);
 	    }
 	  }
 	  else {
+	    (*TdiExecute)(&dollar_d,&stat_d,ans_xd, MdsEND_ARG);
 	    status = 0;
-	    (*TdiExecute)(&dollar_d,&stat_d,ans_xd);
 	  }
 	  MdsFree1Dx(&list_xd,0);
 	}
@@ -225,3 +225,4 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
    */
   return status;
 }
+
