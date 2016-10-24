@@ -12,67 +12,60 @@ _array=_mimport('mdsarray')
 _ver=_mimport('version')
 _descriptor=_mimport('descriptor')
 
-def makeScalar(value):
-    if isinstance(value,Scalar):
-        return value
-        from copy import deepcopy
-        return deepcopy(value)
-    if isinstance(value,_ver.basestring):
-        return String(value)
-    if isinstance(value,_N.generic):
-        if isinstance(value,(_N.string_, _N.unicode_)):  # includes _N.bytes_
-            return String(value)
-        if isinstance(value,_N.bool_):
-            return makeScalar(int(value))
-        return globals()[value.__class__.__name__.capitalize()](value)
-    if isinstance(value,_C._SimpleCData):
-        if isinstance(value,_C.c_int64):
-            return Int64(value.value)
-        if isinstance(value,_C.c_uint64):
-            return Uint64(value.value)
-        if isinstance(value,_C.c_int32):
-            return Int32(value.value)
-        if isinstance(value,_C.c_uint32):
-            return Uint32(value.value)
-        if isinstance(value,_C.c_int16):
-            return Int16(value.value)
-        if isinstance(value,_C.c_uint16):
-            return Uint16(value.value)
-        if isinstance(value,_C.c_int8):
-            return Int8(value.value)
-        if isinstance(value,(_C.c_uint8,_C.c_bool)):
-            return Uint8(value.value)
-    if isinstance(value,_ver.long):
-        return Int64(value)
-    if isinstance(value,int):
-        return Int32(value)
-    if isinstance(value,float):
-        return Float32(value)
-    if isinstance(value,bool):
-        return Int8(int(value))
-    if isinstance(value,complex):
-        return Complex128(_N.complex128(value))
-    if isinstance(value,_N.complex64):
-        return Complex64(value)
-    if isinstance(value,_N.complex128):
-        return Complex128(value)
-    raise TypeError('Cannot make Scalar out of '+str(type(value)))
-
 class Scalar(_data.Data):
     _value = None
-    def __new__(cls,value=0,*args):
+    def __new__(cls,*value):
+        if cls is not Scalar or len(value)==0:
+            return object.__new__(cls,*value)
+        value = value[0]
+        if isinstance(value,cls):
+            return value
         if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
             key = cls.__name__+'Array'
             if key in _array.__dict__:
-                return _array.__dict__[key](value)
-        return super(Scalar,cls).__new__(cls)
+                cls = _array.__dict__[key]
+                return cls.__new__(cls,value)
+        if isinstance(value,(_N.string_, _N.unicode_,_ver.basestring)):  # includes _N.bytes_
+            cls = String
+        elif isinstance(value,(_N.generic,)):
+            cls = globals()[value.__class__.__name__.capitalize()]
+        elif isinstance(value,(_C.c_double)):
+            cls = Float64
+        elif isinstance(value,(_C.c_float,float)):
+            cls = Float32
+        elif isinstance(value,(_C.c_int64,_ver.long)):
+            cls = Int64
+        elif isinstance(value,(_C.c_uint64,)):
+            cls = Uint64
+        elif isinstance(value,(_C.c_int32,int)):
+            cls = Int32
+        elif isinstance(value,(_C.c_uint32,)):
+            cls = Uint32
+        elif isinstance(value,(_C.c_int16,)):
+            cls = Int16
+        elif isinstance(value,(_C.c_uint16,)):
+            cls = Uint16
+        elif isinstance(value,(_C.c_int8,)):
+            cls = Int8
+        elif isinstance(value,(_C.c_uint8,_C.c_bool,bool,_N.bool_)):
+            cls = Uint8
+        elif isinstance(value,_N.complex64):
+            cls = Complex64
+        elif isinstance(value,(_N.complex128,complex)):
+            cls = Complex128
+        else:
+            raise TypeError('Cannot make Scalar out of '+str(type(value)))
+        return cls.__new__(cls,value)
 
     def __init__(self,value=0):
+        if value is self: return
         if isinstance(value,self.__class__):
             self._value=value._value
         elif self.__class__ == Scalar:
             raise TypeError("cannot create 'Scalar' instances")
         else:
+            if isinstance(value,_C._SimpleCData):
+                value = value.value
             self._value = self._ntype(value)
 
     @property
@@ -125,7 +118,7 @@ class Scalar(_data.Data):
         return _ver.long(self._value)
 
     def _unop(self,op):
-        return _data.makeData(getattr(self.value,op)())
+        return _data.Data(getattr(self.value,op)())
 
     def _binop(self,op,y):
         try:
@@ -133,7 +126,7 @@ class Scalar(_data.Data):
         except AttributeError:
             pass
         ans=getattr(self.value,op)(y)
-        return _data.makeData(ans)
+        return _data.Data(ans)
 
     def _triop(self,op,y,z):
         try:
@@ -144,7 +137,7 @@ class Scalar(_data.Data):
             z=z.value
         except AttributeError:
             pass
-        return _data.makeData(getattr(self.value,op)(y,z))
+        return _data.Data(getattr(self.value,op)(y,z))
 
     def all(self):
         return self._unop('all')
@@ -165,10 +158,10 @@ class Scalar(_data.Data):
             return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
-        return _data.makeData(self.value.argsort(axis,kind,order))
+        return _data.Data(self.value.argsort(axis,kind,order))
 
     def astype(self,type):
-        return _data.makeData(self.value.astype(type))
+        return _data.Data(self.value.astype(type))
 
     def byteswap(self):
         return self._unop('byteswap')
@@ -184,6 +177,8 @@ class Scalar(_data.Data):
         else:
             ans = cls(value.value)
         return ans
+
+makeScalar=Scalar
 
 class Int8(Scalar):
     """8-bit signed number"""
@@ -321,6 +316,7 @@ class String(Scalar):
         return self.find(str(y)) != -1
 
     def __init__(self,value):
+        if value is self: return
         self._value = _N.str_(_ver.tostr(value))
 
     def __str__(self):
@@ -350,6 +346,7 @@ class Pointer(Scalar):
     """32/64bit pointer"""
     dtype_id=51
     def __init__(self, value=0, is64=True):
+        if value is self: return
         if is64:
             self._ctype=_C.c_uint64
             self._ntype=_N.uint64

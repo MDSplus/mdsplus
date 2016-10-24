@@ -14,30 +14,64 @@ _descriptor=_mimport('descriptor')
 _compound=_mimport('compound')
 
 class Array(_data.Data):
-    ctype=None
+    ctype = None
+    __MAX_DIM = 8
+    def __new__(cls,*value):
+        """Convert a python object to a MDSobject Data array
+        @param value: Any value
+        @type data: any
+        @rtype: Array
+        """
+        if cls is not Array or len(value)==0:
+            return object.__new__(cls,*value)
+        value=value[0]
+        if isinstance(value,(cls,)):
+            return value
+        if isinstance(value,_scalar.Scalar):
+            value = value._value
+        if isinstance(value,_C.Array):
+            try: value = _N.ctypeslib.as_array(value)
+            except: pass
+        if isinstance(value,(tuple,list)):
+            if len(value)==0:
+                return Int32Array.__new__(Int32Array,[])
+            try:
+                ans=_N.array(value)
+                if str(ans.dtype)[1] in 'SU':
+                    ans = ans.astype(_ver.npstr)
+                value = ans
+            except (ValueError,TypeError):
+                newlist=list()
+                for i in value:
+                    newlist.append(_data.Data(i).data())
+                value = _N.array(newlist)
+        if isinstance(value,(_N.ndarray,_N.generic,_scalar.Scalar)):
+            if str(value.dtype)[1] in 'SU':
+                cls = StringArray
+            elif str(value.dtype) == 'bool':
+                cls = Uint8Array
+            elif str(value.dtype) == 'object':
+                cls = _apd.List.__new__(_apd.List,value)
+            else:
+                cls = globals()[str(value.dtype).capitalize()+'Array']
+        else:
+            raise TypeError('Cannot make Array out of '+str(type(value)))
+        return cls.__new__(cls,value)
 
     def __init__(self,value=0):
-        if self.__class__.__name__ == 'Array':
-            raise TypeError("cannot create 'Array' instances")
-        if self.__class__.__name__ == 'StringArray':
-            if isinstance(value,(tuple,list)):
-                l = 0
-                for s in value:
-                    l = max(l,len(s))
-                value = list(value)
-                for i in _ver.xrange(len(value)):
-                    value[i]=value[i].ljust(l)
-            self._value=_N.array(value).__array__(_N.str_)
-            return
+        if value is self: return
+        if self.__class__ is Array:
+            raise TypeError("cannot instantiate 'Array'")
         if isinstance(value,_C.Array):
             try:
                 value=_N.ctypeslib.as_array(value)
             except Exception:
                 pass
         value = _N.array(value)
-        if len(value.shape) == 0:  # happens if value has been a scalar, e.g. int
+        if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:  # happens if value has been a scalar, e.g. int
             value = value.reshape(1)
         self._value = value.__array__(_N.__dict__[self.__class__.__name__[0:-5].lower()])
+        return
 
     def __getattr__(self,name):
         return self._value.__getattribute__(name)
@@ -48,14 +82,14 @@ class Array(_data.Data):
         return self._value
 
     def _unop(self,op):
-        return _data.makeData(getattr(self._value,op)())
+        return _data.Data(getattr(self._value,op)())
 
     def _binop(self,op,y):
         try:
             y=y._value
         except AttributeError:
             pass
-        return _data.makeData(getattr(self._value,op)(y))
+        return _data.Data(getattr(self._value,op)(y))
 
     def _triop(self,op,y,z):
         try:
@@ -66,7 +100,7 @@ class Array(_data.Data):
             z=z._value
         except AttributeError:
             pass
-        return _data.makeData(getattr(self._value,op)(y,z))
+        return _data.Data(getattr(self._value,op)(y,z))
 
     def __array__(self):
         raise TypeError('__array__ not yet supported')
@@ -84,7 +118,7 @@ class Array(_data.Data):
         return len(self.data())
 
     def getElementAt(self,itm):
-        return _data.makeData(self._value[itm])
+        return _data.Data(self._value[itm])
 
     def setElementAt(self,i,y):
         self._value[i]=y
@@ -108,10 +142,10 @@ class Array(_data.Data):
             return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
-        return _data.makeData(self._value.argsort(axis,kind,order))
+        return _data.Data(self._value.argsort(axis,kind,order))
 
     def astype(self,type):
-        return _data.makeData(self._value.astype(type))
+        return _data.Data(self._value.astype(type))
 
     def byteswap(self):
         return self._unop('byteswap')
@@ -202,12 +236,8 @@ class Array(_data.Data):
                         d.pointer,
                         _C.POINTER(_C.c_int32 * int(d.arsize/d.length))).contents))
             return _tree.TreeNodeArray(list(nids))
-        if d.dtype == 10: ### VMS FLOAT
-            return Array.make(_data.Data.execute("float($)",(d,)))
-        if d.dtype == 11 or d.dtype == 27: ### VMS DOUBLES
-            return Array.make(_data.Data.execute("FT_FLOAT($)",(d,)))
         if d.dtype == Complex64Array.dtype_id:
-            return Array.make(
+            return Array(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex64,
@@ -217,7 +247,7 @@ class Array(_data.Data):
                             _C.POINTER(
                                 _C.c_float * int(d.arsize*2/d.length))).contents)))
         if d.dtype == Complex128Array.dtype_id:
-            return Array.make(
+            return Array(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex128,
@@ -236,49 +266,10 @@ class Array(_data.Data):
                             d.pointer,
                             _C.POINTER(
                                 cls.ctype * int(d.arsize/d.length))).contents))
-                return Array.make(a)
+                return Array(a)
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 
-    @staticmethod
-    def make(value):
-        """Convert a python object to a MDSobject Data array
-        @param value: Any value
-        @type data: any
-        @rtype: Array
-        """
-        if isinstance(value,Array):
-            return value
-        if isinstance(value,_scalar.Scalar):
-            return Array.make((value._value,))
-        if isinstance(value,_C.Array):
-            try:
-                return Array.make(_N.ctypeslib.as_array(value))
-            except Exception:
-                pass
-        if isinstance(value,(tuple,list)):
-            try:
-                ans=_N.array(value)
-                if str(ans.dtype)[1] in 'SU':
-                    ans = ans.astype(_ver.npstr)
-                return Array.make()
-            except (ValueError,TypeError):
-                newlist=list()
-                for i in value:
-                    newlist.append(_data.Data.make(i).data())
-                return Array.make(_N.array(newlist))
-        if isinstance(value,_N.ndarray):
-            if str(value.dtype)[1] in 'SU':
-                return StringArray(value)
-            if str(value.dtype) == 'bool':
-                return Array.make(value.__array__(_N.uint8))
-            if str(value.dtype) == 'object':
-                raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
-            return globals()[str(value.dtype).capitalize()+'Array'](value)
-        if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
-            return Array.make(_N.array(value).reshape(1))
-        raise TypeError('Cannot make Array out of '+str(type(value)))
-
-makeArray = Array.make
+makeArray = Array
 
 class Int8Array(Array):
     """8-bit signed number"""
@@ -336,6 +327,10 @@ class Float32Array(Array):
     dtype_id=52
     ctype=_C.c_float
 
+class FloatFArray(Float32Array):
+    """64-bit floating point number"""
+    dtype_id=10
+
 class Complex64Array(Array):
     """32-bit complex number"""
     dtype_id=54
@@ -345,6 +340,14 @@ class Float64Array(Array):
     dtype_id=53
     ctype=_C.c_double
 
+class FloatDArray(Float64Array):
+    """64-bit floating point number"""
+    dtype_id=11
+
+class FloatGArray(Float64Array):
+    """64-bit floating point number"""
+    dtype_id=27
+
 class Complex128Array(Array):
     """64-bit complex number"""
     dtype_id=55
@@ -352,6 +355,19 @@ class Complex128Array(Array):
 class StringArray(Array):
     """String"""
     dtype_id=14
+
+    def __init__(self,value):
+        if value is self: return
+        if isinstance(value,(tuple,list)):
+            l = 0
+            value = map(str,value)
+            for s in value:
+                l = max(l,len(s))
+            value = list(value)
+            for i in _ver.xrange(len(value)):
+                value[i]=value[i].ljust(l)
+        self._value=_N.array(value,_ver.npstr)
+
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""
@@ -373,6 +389,7 @@ class Uint128Array(Array):
     def __init__(self):
         raise TypeError("Uint128Array is not yet supported")
 
+_apd=_mimport('apd')
 _descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
 _descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
 _descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
@@ -384,7 +401,10 @@ _descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
 _descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
 _descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
 _descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
+_descriptor.dtypeToArrayClass[FloatFArray.dtype_id]=Float32Array
 _descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
+_descriptor.dtypeToArrayClass[FloatDArray.dtype_id]=Float64Array
+_descriptor.dtypeToArrayClass[FloatGArray.dtype_id]=Float64Array
 _descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
 _descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
 _descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray

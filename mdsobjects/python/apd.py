@@ -7,17 +7,19 @@ def _mimport(name, level=1):
 import numpy as _N
 import ctypes as _C
 
+_descriptor=_mimport('descriptor')
 _data=_mimport('mdsdata')
 _scalar=_mimport('mdsscalar')
 _array=_mimport('mdsarray')
 _ver=_mimport('version')
 
-class Apd(_data.Data):
+class Apd(_array.Array):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
     mdsclass=196
     dtype_id=24
+    __LP =_C.POINTER(_descriptor.Descriptor)
 
     @property
     def descriptor(self):
@@ -33,14 +35,12 @@ class Apd(_data.Data):
         d.length=_C.sizeof(_C.c_void_p)
         d.original=[]
         if len(descs) > 0:
-            d.arsize=_C.sizeof(_C.c_void_p)*len(descs)
-            descs_ptrs=(_C.c_void_p*len(descs))()
+            d.arsize=_C.sizeof(Apd.__LP)*len(descs)
+            descs_ptrs=(Apd.__LP*len(descs))()
             for idx in range(len(descs)):
                 desc=descs[idx]
-                desc=_data.Data.make(desc)
-                desc_d=desc.descriptor
-                d.original.append(desc_d)
-                descs_ptrs[idx]=_C.cast(_C.pointer(desc_d),_C.c_void_p)
+                d.original.append(desc)
+                descs_ptrs[idx] = _descriptor.getPointer(desc)
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         else:
             d.arsize=0
@@ -126,7 +126,7 @@ class Apd(_data.Data):
         @rtype: None
         """
         if isinstance(descs,(tuple,list,_ver.generator)):
-            self._descs=list(map(_data.Data.make,descs))
+            self._descs=list(map(_data.Data,descs))
         else:
             raise TypeError("must provide tuple")
         return self
@@ -134,12 +134,12 @@ class Apd(_data.Data):
     def setDescAt(self,idx,value):
         """Set a descriptor in the Apd
         """
-        self[idx]=_data.Data.make(value)
+        self[idx]=_data.Data(value)
         return self
 
     def append(self,value):
         """Append a value to apd"""
-        self[len(self)]=_data.Data.make(value)
+        self[len(self)]=_data.Data(value)
         return self
 
     @property
@@ -154,7 +154,7 @@ class Dictionary(dict,Apd):
     """dictionary class"""
     class dict_np(_N.ndarray):
         def __new__(cls,items):
-            return _N.asarray(items,'object').view(Dictionary.dict_np)
+            return _N.asarray(tuple(d.value for d in items),'object').view(Dictionary.dict_np)
         def tolist(self):
             return dict(super(Dictionary.dict_np,self).tolist())
 
@@ -189,13 +189,13 @@ class Dictionary(dict,Apd):
         elif isinstance(key,(_N.float32,_N.float64)):
             return float(key)
         else:
-            return _data.Data.make(key).data()
+            return _data.Data(key).data()
 
     def setdefault(self,key,val):
         """check keys and converts values to instances of Data"""
         key = Dictionary.tokey(key)
         if not isinstance(val,_data.Data):
-            val=_data.Data.make(val)
+            val=_data.Data(val)
         super(Dictionary,self).setdefault(key,val)
 
     def remove(self,key):
@@ -232,9 +232,9 @@ class List(list,Apd):
 
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,(tuple,list,Apd,_ver.generator)):
+            if isinstance(value,(tuple,list,Apd,_ver.generator,_N.ndarray)):
                 for val in value:
-                    self.append(val)
+                    self.append(_data.Data(val))
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 
@@ -248,7 +248,7 @@ class List(list,Apd):
     @property
     def value(self):
         """Returns native representation of the List"""
-        return _N.array(self.descs,'object')
+        return _N.asarray(tuple(d.value for d in self.descs),'object')
 
 descriptor=_mimport('descriptor')
 descriptor.dtypeToClass[Apd.dtype_id]=Apd

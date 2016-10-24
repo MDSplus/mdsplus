@@ -10,7 +10,6 @@ _version=_mimport('version')
 _descriptor=_mimport('descriptor')
 _exceptions=_mimport('mdsExceptions')
 
-
 MDSplusException = _exceptions.MDSplusException
 MdsException = MDSplusException
 #### Load Shared Libraries Referenced #######
@@ -19,7 +18,6 @@ _MdsShr=_version.load_library('MdsShr')
 _TdiShr=_version.load_library('TdiShr')
 #
 #############################################
-
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
@@ -30,12 +28,30 @@ class Data(object):
     _help=None
     _validation=None
 
-    def __init__(self,*value):
-        """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
-        @raise TypeError: Raised if attempting to create an instance of Data
+    def __new__(cls,*value):
+        """Convert a python object to a MDSobject Data object
+        @param value: Any value
+        @type data: Any
         @rtype: Data
         """
-        raise TypeError('Cannot create \'Data\' instances')
+        if cls is not Data or len(value)==0:
+            return object.__new__(cls)
+        value = value[0]
+        if value is None:
+            return EmptyData
+        if isinstance(value,(cls,_tree.TreeNode)):
+            return value
+        if isinstance(value,(_N.ScalarType,_C._SimpleCData)):
+            cls = _scalar.Scalar
+        elif isinstance(value,(_N.ndarray,_C.Array,tuple,list)):
+            cls = _array.Array
+        elif isinstance(value,dict):
+            cls = _apd.Dictionary
+        elif isinstance(value,slice):
+            return _compound.BUILD_RANGE.__new__(_compound.BUILD_RANGE,value).evaluate()
+        else:
+            raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
+        return cls.__new__(cls,value)
 
     def __function(self,name,default):
         found = False
@@ -298,7 +314,7 @@ class Data(object):
         if isinstance(y,Data):
             return Data.execute('$+$',y,self)
         else:
-            return makeData(y)+self
+            return Data(y)+self
 
     def __rdiv__(self,y):
         """Reverse divide: x.__rdiv__(y) <==> y/x
@@ -369,7 +385,7 @@ class Data(object):
         @return: Return True if the value and this Data object contain the same data
         @rtype: Bool
         """
-        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_C.pointer(makeData(value).descriptor))
+        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_descriptor.getPointer(Data(value)))
         if status == 1:
             return True
         else:
@@ -456,7 +472,7 @@ class Data(object):
         @rtype: Data
         """
         xd = _descriptor.Descriptor_xd()
-        status = _TdiShr.TdiEvaluate(_C.pointer(self.descriptor),
+        status = _TdiShr.TdiEvaluate(_descriptor.getPointer(self),
                                   _C.pointer(xd),
                                   _C.c_void_p(-1))
         if (status & 1 != 0):
@@ -666,36 +682,11 @@ class Data(object):
         else:
             raise _exceptions.statusToException(status)
 
-    @staticmethod
-    def make(value):
-        """Convert a python object to a MDSobject Data object
-        @param value: Any value
-        @type data: Any
-        @rtype: Data
-        """
-        if value is None:
-            return Missing
-        if isinstance(value,(Data,_tree.TreeNode)):
-            return value
-        if isinstance(value,(_N.generic,int,float,complex,_version.basestring,_version.long,_C._SimpleCData)):
-            return _scalar.makeScalar(value)
-        if isinstance(value,(tuple,list)):
-            return _apd.List(value)
-        if isinstance(value,(_N.ndarray,_C.Array)):
-            return _array.Array.make(value)
-        if isinstance(value,dict):
-            return _apd.Dictionary(value)
-        if isinstance(value,slice):
-            return _compound.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
-        raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
-
-makeData=Data.make
+makeData=Data
 
 class EmptyData(Data):
-    """No Value aka $Missing"""
-    _descriptor=_descriptor.Descriptor_s()
-    _descriptor.dtype=0
-    def __init__(self):
+    """No Value aka *"""
+    def __init__(self,*value):
         pass
 
     def decompile(self):
@@ -705,18 +696,31 @@ class EmptyData(Data):
     def value(self):
         return None
 
+    def data(self):
+        return None
+
     @property
     def descriptor(self):
-        return EmptyData._descriptor
+        return None
 
     @classmethod
     def fromDescriptor(cls,d):
+        return EmptyData
+EmptyData = EmptyData()
+
+class Missing(EmptyData):
+    """No Value aka $Missing"""
+    descriptor=_descriptor.Descriptor()
+    _descriptor.dtype=0
+    def decompile(self):
+        return "$Missing"
+    @classmethod
+    def fromDescriptor(cls,d):
         return Missing
-Missing=EmptyData()
 
 
-_descriptor.dtypeToClass[0]=EmptyData
-_descriptor.dtypeToArrayClass[0]=EmptyData
+_descriptor.dtypeToClass[0]=Missing
+_descriptor.dtypeToArrayClass[0]=Missing
 
 _compound=_mimport('compound')
 _scalar=_mimport('mdsscalar')

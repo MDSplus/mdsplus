@@ -90,7 +90,7 @@ the e.join() would return exiting the problem.
         """
         if len(self.raw) == 0:
             return None
-        return _array.makeArray(self.getRaw()).deserialize()
+        return _array.Array(self.getRaw()).deserialize()
 
     def getRaw(self):
         """Return raw data transfered with the event.
@@ -129,7 +129,7 @@ the e.join() would return exiting the problem.
         if data is None:
             Event.seteventRaw(event,None)
         else:
-            Event.seteventRaw(event,_data.makeData(data).serialize())
+            Event.seteventRaw(event,_data.Data(data).serialize())
 
     @staticmethod
     def seteventRaw(event,buffer=None):

@@ -6,6 +6,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
+_ver=_mimport('version')
 _descriptor=_mimport('descriptor')
 _data=_mimport('mdsdata')
 _tree=_mimport('tree')
@@ -15,7 +16,8 @@ class Compound(_data.Data):
     def __init__(self,*args, **kwargs):
         """MDSplus compound data.
         """
-        if self.__class__.__name__=='Compound':
+        if len(args)==1 and args[0] is self: return
+        if self.__class__ is Compound:
             raise TypeError("Cannot create instances of class Compound")
         self._fields={}
         for idx in range(len(self.fields)):
@@ -62,7 +64,7 @@ class Compound(_data.Data):
             def setter(value):
                 self.__setattr__(name[3:].lower(),value)
             return setter
-        raise AttributeError('No such attribute: '+name)
+        raise AttributeError("No such attribute '%s' in %s"%(name,self.__class__.__name__))
 
     def __getitem__(self,idx):
         return self.getDescAt(idx)
@@ -136,41 +138,38 @@ class Compound(_data.Data):
             else:
                 if len(self._args) <= idx:
                     self._args+=[None]*(idx-len(self._args)+1)
-                self._args[idx]=_data.makeData(value)
+                self._args[idx]=_data.Data(value)
         return self
 
     def setDescs(self,args):
         """Set descriptors
         @type args: tuple
         """
-        self._args = [None if arg is None else _data.makeData(arg) for arg in args]
+        self._args = [_data.Data(arg) for arg in args]
         while self.getNumDescs()<self._argOffset:
             self._args.append(None)
 
     @staticmethod
     def descriptorWithProps(value,d):
-        dpt=_C.POINTER(_descriptor.Descriptor)
         if value._units is not None:
-            units_d=_data.makeData(value._units).descriptor
             dunits=_descriptor.Descriptor_r()
             dunits.length=0
             dunits.dtype=WithUnits.dtype_id
             dunits.pointer=_C.c_void_p(0)
             dunits.ndesc=2
-            dunits.dscptrs[0]=_C.cast(_C.pointer(d),dpt)
-            dunits.dscptrs[1]=_C.cast(_C.pointer(units_d),dpt)
+            dunits.dscptrs[0]=_descriptor.getPointer(d)
+            dunits.dscptrs[1]=_descriptor.getPointer(_data.Data(value._units))
             dunits.original=d
         else:
             dunits=d
         if value._error is not None:
-            error_d=_data.makeData(value._error).descriptor
             derror=_descriptor.Descriptor_r()
             derror.length=0
             derror.dtype=WithError.dtype_id
             derror.pointer=_C.c_void_p(0)
             derror.ndesc=2
-            derror.dscptrs[0]=_C.cast(_C.pointer(dunits),dpt)
-            derror.dscptrs[1]=_C.cast(_C.pointer(error_d),dpt)
+            derror.dscptrs[0]=_descriptor.getPointer(dunits)
+            derror.dscptrs[1]=_descriptor.getPointer(_data.Data(value._error))
             derror.original=dunits
         else:
             derror=dunits
@@ -180,17 +179,9 @@ class Compound(_data.Data):
             dparam.dtype=Parameter.dtype_id
             dparam.pointer=_C.c_void_p(0)
             dparam.ndesc=3
-            dparam.dscptrs[0]=_C.cast(_C.pointer(derror),dpt)
-            if value._help is not None:
-                help_d=_data.makeData(value._help).descriptor
-                dparam.dscptrs[1]=_C.cast(_C.pointer(help_d),dpt)
-            else:
-                dparam.dscptrs[1]=_C.cast(_C.c_void_p(0),dpt)
-            if value._validation is not None:
-                validation_d=_data.makeData(value._validation).descriptor
-                dparam.dscptrs[2]=_C.cast(_C.pointer(validation_d),dpt)
-            else:
-                dparam.dscptrs[2]=_C.cast(_C.c_void_p(0),dpt)
+            dparam.dscptrs[0]=_descriptor.getPointer(derror)
+            dparam.dscptrs[1]=_descriptor.getPointer(_data.Data(value._help))
+            dparam.dscptrs[2]=_descriptor.getPointer(_data.Data(value._validation))
             dparam.original=derror
         else:
             dparam=derror
@@ -211,11 +202,8 @@ class Compound(_data.Data):
             d.pointer=_C.cast(_C.pointer(_C.c_uint16(opcode)),_C.c_void_p)
         d.dtype=self.dtype_id
         d.ndesc = self.getNumDescs()
-        for idx in range(d.ndesc):
-            if self.getDescAt(idx) is None:
-                d.dscptrs[idx]=_C.cast(_C.c_void_p(0),type(d.dscptrs[idx]))
-            else:
-                d.dscptrs[idx]=_C.cast(_C.pointer(self.getDescAt(idx).descriptor),_C.POINTER(_descriptor.Descriptor))
+        for idx in _ver.xrange(d.ndesc):
+            d.dscptrs[idx]= _descriptor.getPointer(self.getDescAt(idx))
         d.original=self
         if self._units is None and self._error is None and self._help is None and self._validation is None:
             return d  # if not props
@@ -225,7 +213,7 @@ class Compound(_data.Data):
     @classmethod
     def fromDescriptor(cls,d):
         args=[]
-        for i in range(d.ndesc):
+        for i in _ver.xrange(d.ndesc):
             try:
                 args.append(d.dscptrs[i].contents.value)
             except ValueError:
@@ -304,6 +292,7 @@ class Dispatch(Compound):
     dtype_id=203
 
     def __init__(self,*args,**kwargs):
+        if len(args)==1 and args[0] is self: return
         if 'type' in kwargs:
             self.opcode=kwargs['type']
         else:
@@ -333,11 +322,12 @@ class Function(Compound):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
+        if len(args)==1 and args[0] is self: return
         if len(args)>self.max_args or (self.max_args>0 and len(args)<self.min_args):
             if self.max_args==0 or self.max_args==self.min_args:
-                raise TypeError("Requires %d input arguments for %s"%(self.max_args,self.__class__.__name__))
+                raise TypeError("Requires %d input arguments for %s but %d given"%(self.max_args,self.__class__.__name__,len(args)))
             else:
-                raise TypeError("Requires %d to %d input arguments for %s"%(self.min_args,self.max_args,self.__class__.__name__))
+                raise TypeError("Requires %d to %d input arguments for %s but %d given"%(self.min_args,self.max_args,self.__class__.__name__,len(args)))
         super(Function,self).__init__(*args)
 
 class Method(Compound):
@@ -368,7 +358,7 @@ class Range(Compound):
     def decompile(self):
         parts=list()
         for arg in self._args:
-            parts.append(_data.makeData(arg).decompile())
+            parts.append(_data.Data(arg).decompile())
         return ' : '.join(parts)
 
 class Routine(Compound):
@@ -450,7 +440,7 @@ class Opaque(Compound):
     def getImage(self):
       import Image
       from StringIO import StringIO
-      return Image.open(StringIO(_data.makeData(self.getData()).data().data))
+      return Image.open(StringIO(_data.Data(self.getData()).data().data))
 
     @staticmethod
     def fromFile(filename,typestring):
@@ -464,7 +454,7 @@ class Opaque(Compound):
       import numpy as _N
       f = open(filename,'rb')
       try:
-        opq=Opaque(_data.makeData(_N.fromstring(f.read(),dtype="uint8")),typestring)
+        opq=Opaque(_data.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
       finally:
         f.close()
       return opq
@@ -486,7 +476,6 @@ class Parameter(Compound):
     """
     fields=('data','help','validation')
     dtype_id=194
-
 
 _descriptor.dtypeToClass[Action.dtype_id]=Action
 _descriptor.dtypeToClass[Call.dtype_id]=Call
@@ -901,6 +890,12 @@ class BUILD_RANGE(Function):
     min_args=2
     max_args=3
     opcode=83
+    def __init__(self,*args):
+        if len(args)==1 and args[0] is self: return
+        if len(args)==1 and isinstance(args,(slice,)):
+            super(BUILD_RANGE,self).__init__(args[0].start,args[0].stop,args[0].step)
+        else:
+            super(BUILD_RANGE,self).__init__(*args)
 
 class BUILD_ROUTINE(Function):
     min_args=3

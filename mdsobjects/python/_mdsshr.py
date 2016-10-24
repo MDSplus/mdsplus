@@ -48,5 +48,5 @@ def DateToQuad(date):
     status = _mdsshr.LibConvertDateString(_C.c_char_p(_ver.tobytes(date)),_C.pointer(ans))
     if not (status & 1):
         raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
-    return _data.makeData(_N.uint64(ans.value))
+    return _data.Data(_N.uint64(ans.value))
 

@@ -17,7 +17,7 @@ _array=_mimport('mdsarray')
 _mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
 _compound=_mimport('compound')
-descriptor=_mimport('descriptor')
+_descriptor=_mimport('descriptor')
 _mdsshr=_mimport('_mdsshr')
 _compound=_mimport('compound')
 _ident=_mimport('ident')
@@ -823,7 +823,7 @@ class Tree(object): # HINT: Tree begin
         """
         begin = _mdsshr.DateToQuad(begin)
         end = _mdsshr.DateToQuad(end)
-        delta = _data.makeData(delta)
+        delta = _data.Data(delta)
         status = _TreeShr.TreeSetTimeContext(_C.pointer(begin.descriptor),
                                              _C.pointer(end.descriptor),
                                              _C.pointer(delta.descriptor))
@@ -1079,7 +1079,7 @@ class TreeNode(object): # HINT: TreeNode begin
     @property
     def descriptor(self):
       """Return a MDSplus descriptor"""
-      d=descriptor.Descriptor_s()
+      d=_descriptor.Descriptor_s()
       d.length=4
       d.dtype=self.dtype_id
       d.pointer=_C.cast(_C.pointer(self._nid),_C.c_void_p)
@@ -1439,10 +1439,10 @@ class TreeNode(object): # HINT: TreeNode begin
           Tree.lock()
           status=_TreeShr._TreeBeginSegment(self.tree.ctx,
                                             self._nid,
-                                            _C.pointer(_data.makeData(start).descriptor),
-                                            _C.pointer(_data.makeData(end).descriptor),
-                                            _C.pointer(_data.makeData(dimension).descriptor),
-                                            _C.pointer(_data.makeData(initialValueArray).descriptor),
+                                            _C.pointer(_data.Data(start).descriptor),
+                                            _C.pointer(_data.Data(end).descriptor),
+                                            _C.pointer(_data.Data(dimension).descriptor),
+                                            _C.pointer(_data.Data(initialValueArray).descriptor),
                                             _C.c_int32(idx))
         finally:
           Tree.unlock()
@@ -1461,7 +1461,7 @@ class TreeNode(object): # HINT: TreeNode begin
           Tree.lock()
           status=_TreeShr._TreeBeginTimestampedSegment(self.tree.ctx,
                                                        self._nid,
-                                                       _C.pointer(_data.makeData(array).descriptor),
+                                                       _C.pointer(_data.Data(array).descriptor),
                                                        _C.c_int32(idx))
         finally:
           Tree.unlock()
@@ -1558,9 +1558,9 @@ class TreeNode(object): # HINT: TreeNode begin
             arglist=[self.tree.ctx,
                      _C.pointer(_scalar.Int32(self.nid).descriptor),
                      _C.pointer(_scalar.String(method).descriptor)]
-            ans_d=descriptor.descriptor_xd()
+            ans_d=_descriptor.descriptor_xd()
             for arg in args:
-                arglist.append(_C.pointer(_data.makeData(arg).descriptor))
+                arglist.append(_descriptor.getPointer(_data.Data(arg)))
             arglist.append(_C.pointer(ans_d))
             arglist.append(_C.c_void_p(0xffffffff))
             status=_TreeShr._TreeDoMethod(*arglist)
@@ -1631,7 +1631,7 @@ class TreeNode(object): # HINT: TreeNode begin
         @rtype: Data
         """
         try:
-            xd=descriptor.Descriptor_xd()
+            xd=_descriptor.Descriptor_xd()
             xd.tree=self.tree
             status=_TreeShr._TreeGetRecord(self.tree.ctx,
                                            self._nid,_C.pointer(xd))
@@ -1821,7 +1821,7 @@ class TreeNode(object): # HINT: TreeNode begin
                     if rettype == _scalar.String:
                         val=_scalar.String(val.value[0:retlen].rstrip())
                     elif issubclass(rettype,_scalar.Scalar):
-                        val=_scalar.makeScalar(val)
+                        val=_scalar.Scalar(val)
                     elif rettype == TreeNode:
                         if retlen == 4:
                             val=TreeNode(int(val.value),self.tree)
@@ -1968,8 +1968,8 @@ class TreeNode(object): # HINT: TreeNode begin
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            value=descriptor.Descriptor_xd()
-            dim=descriptor.Descriptor_xd()
+            value=_descriptor.Descriptor_xd()
+            dim=_descriptor.Descriptor_xd()
             status=_TreeShr._TreeGetSegment(self.tree.ctx,
                                             self._nid,
                                             _C.c_int32(idx),
@@ -1996,8 +1996,8 @@ class TreeNode(object): # HINT: TreeNode begin
             return None
 
     def getSegmentLimits(self,idx):
-        start=descriptor.Descriptor_xd()
-        end=descriptor.Descriptor_xd()
+        start=_descriptor.Descriptor_xd()
+        end=_descriptor.Descriptor_xd()
         status=_TreeShr._TreeGetSegmentLimits(self.tree.ctx,
                                               self._nid,
                                               _C.c_int32(idx),
@@ -2087,7 +2087,7 @@ class TreeNode(object): # HINT: TreeNode begin
                 _TreeShr.TreeFree(_C.c_void_p(tag_ptr))
         finally:
             Tree.unlock()
-        tags = _array.makeArray(tags).astype(_ver.npstr)
+        tags = _array.Array(tags).astype(_ver.npstr)
         return tags
 
 
@@ -2251,23 +2251,15 @@ class TreeNode(object): # HINT: TreeNode begin
         """
         Tree.lock()
         try:
-            if isinstance(valueArray,_compound.Compound):
-                status=_TreeShr._TreeMakeSegment(self.tree.ctx,
-                                                 self._nid,
-                                                 _C.pointer(_data.makeData(start).descriptor),
-                                                 _C.pointer(_data.makeData(end).descriptor),
-                                                 _C.pointer(_data.makeData(dimension).descriptor),
-                                                 _C.pointer(_data.makeData(valueArray).descriptor),
-                                                 _C.c_int32(idx),_C.c_int32(1))
-            else:
-                status=_TreeShr._TreeMakeSegment(self.tree.ctx,
-                                                 self._nid,
-                                                 _C.pointer(_data.makeData(start).descriptor),
-                                                 _C.pointer(_data.makeData(end).descriptor),
-                                                 _C.pointer(_data.makeData(dimension).descriptor),
-                                                 _C.pointer(_data.makeData(valueArray).descriptor),
-                                                 _C.c_int32(idx),
-                                                 _C.c_int32(valueArray.shape[0]))
+            shape = 1 if isinstance(valueArray,_compound.Compound) else valueArray.shape[0]
+            status=_TreeShr._TreeMakeSegment(self.tree.ctx,
+                                             self._nid,
+                                             _descriptor.getPointer(_data.Data(start)),
+                                             _descriptor.getPointer(_data.Data(end)),
+                                             _descriptor.getPointer(_data.Data(dimension)),
+                                             _descriptor.getPointer(_data.Data(valueArray)),
+                                             _C.c_int32(idx),
+                                             _C.c_int32(shape))
         finally:
             Tree.unlock()
         if not (status & 1):
@@ -2304,15 +2296,12 @@ class TreeNode(object): # HINT: TreeNode begin
         """
         Tree.lock()
         try:
-            if value is None:
-                ptr = _C.c_void_p(0)
-            else:
-                if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
-                    value=value.__fixTreeReferences__(self.tree)
-                ptr = _C.pointer(_data.makeData(value).descriptor)
+            if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
+                value=value.__fixTreeReferences__(self.tree)
             status=_TreeShr._TreePutRecord(self.tree.ctx,
                                            self._nid,
-                                           ptr,0)
+                                           _descriptor.getPointer(_data.Data(value)),
+                                           0)
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:
@@ -2333,8 +2322,8 @@ class TreeNode(object): # HINT: TreeNode begin
             status=_TreeShr._TreePutRow(self.tree.ctx,
                                         self._nid,
                                         _C.c_int32(bufsize),
-                                        _C.c_void_p(_scalar.Uint64(timestamp).descriptor.pointer),
-                                        _C.pointer(_array.makeArray(array).descriptor))
+                                        _C.c_void_p(_scalar.Uint64(timestamp)._descriptor.pointer),
+                                        _C.pointer(_array.Array(array).descriptor))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:
@@ -2353,7 +2342,7 @@ class TreeNode(object): # HINT: TreeNode begin
             status=_TreeShr._TreePutSegment(self.tree.ctx,
                                             self._nid,
                                             _C.c_int32(idx),
-                                            _C.pointer(_data.makeData(data).descriptor))
+                                            _C.pointer(_data.Data(data).descriptor))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:
@@ -2368,13 +2357,13 @@ class TreeNode(object): # HINT: TreeNode begin
         @rtype: None
         """
         timestampArray=_array.Uint64Array(timestampArray)
-        array=_array.makeArray(array)
+        array=_array.Array(array)
         Tree.lock()
         try:
             status=_TreeShr._TreePutTimestampedSegment(self.tree.ctx,
                                                self._nid,
-                                               _C.c_void_p(_data.makeData(timestampArray).descriptor.pointer),
-                                               _C.pointer(_data.makeData(array).descriptor))
+                                               _descriptor.getPointer(timestampArray),
+                                               _descriptor.getPointer(array))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:
@@ -2392,12 +2381,14 @@ class TreeNode(object): # HINT: TreeNode begin
         @type rows_filled: int
         @rtype: None
         """
+        timestampArray=_array.Uint64Array(timestampArray)
+        array=_array.Array(array)
         Tree.lock()
         try:
             status=_TreeShr._TreeMakeTimestampedSegment(self.tree.ctx,
                                                         self._nid,
-                                                        _data.makeData(timestampArray).descriptor.pointer,
-                                                        _C.pointer(_data.makeData(array).descriptor),
+                                                        _descriptor.getPointer(timestampArray),
+                                                        _descriptor.getPointer(array),
                                                         _C.c_int32(idx),
                                                         _C.c_int32(rows_filled))
             if not (status & 1):
@@ -2472,7 +2463,8 @@ class TreeNode(object): # HINT: TreeNode begin
         try:
           Tree.lock()
           status = _TreeShr._TreeSetNci(self.tree.ctx,
-                                        self._nid,_C.pointer(itmlst))
+                                        self._nid,
+                                        _C.pointer(itmlst))
         finally:
           Tree.unlock()
         if not (status & 1):
@@ -2621,7 +2613,7 @@ class TreeNode(object): # HINT: TreeNode begin
         """
         self._setNciFlag(0x80, flag)
 
-    def updateSegment(self,start,end,dim,idx):
+    def updateSegment(self,start,end,dimension,idx):
         """Update a segment
         @param start: index of first row of segment
         @type start: Data
@@ -2636,11 +2628,11 @@ class TreeNode(object): # HINT: TreeNode begin
         Tree.lock()
         try:
             status = _TreeShr._TreeUpdateSegment(self.tree.ctx,
-                                                 self._nid,
-                                                 _C.pointer(_data.makeData(start).descriptor),
-                                                 _C.pointer(_data.makeData(end).descriptor),
-                                                 _C.pointer(_data.makeData(dim).descriptor),
-                                                 _C.c_int32(idx))
+                                             self._nid,
+                                             _descriptor.getPointer(_data.Data(start)),
+                                             _descriptor.getPointer(_data.Data(end)),
+                                             _descriptor.getPointer(_data.Data(dimension)),
+                                             _C.c_int32(idx))
             if not status & 1:
                 raise _exceptions.statusToException(status)
         finally:
@@ -2673,7 +2665,7 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
     @property
     def descriptor(self):
-        d=descriptor.Descriptor_s()
+        d=_descriptor.Descriptor_s()
         d.length=len(self.tree_path)
         d.dtype=self.dtype_id
         d.pointer=_C.cast(_C.c_char_p(_ver.tobytes(self.tree_path)),_C.c_void_p)
@@ -2827,7 +2819,7 @@ class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
                 doArray is False
             ans.append(val)
         if doArray:
-            ans = _array.makeArray(ans)
+            ans = _array.Array(ans)
         else:
             ans = tuple(ans)
         return ans
@@ -3288,5 +3280,5 @@ TreeNode.NciVERSION            =(41,_C.c_uint32,4,_scalar.Uint32)
 
 ############# dtype to classes ##################################
 #
-descriptor.dtypeToClass[TreeNode.dtype_id]=TreeNode
-descriptor.dtypeToClass[TreePath.dtype_id]=TreePath
+_descriptor.dtypeToClass[TreeNode.dtype_id]=TreeNode
+_descriptor.dtypeToClass[TreePath.dtype_id]=TreePath

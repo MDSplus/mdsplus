@@ -140,9 +140,9 @@ class Connection(object):
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
-        val=_data.makeData(value)
+        val=_data.Data(value)
         if not isinstance(val,_scalar.Scalar) and not isinstance(val,_array.Array):
-            val=_data.makeData(val.data())
+            val=_data.Data(val.data())
         valInfo=self.__inspect__(val)
         status=_SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
         if not ((status & 1)==1):
