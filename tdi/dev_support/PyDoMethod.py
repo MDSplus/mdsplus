@@ -1,4 +1,4 @@
-from MDSplus import Int32, Device, List
+from MDSplus import Device, List
 from MDSplus import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSuccess
 from sys import stderr,exc_info
 
