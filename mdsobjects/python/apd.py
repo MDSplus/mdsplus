@@ -77,14 +77,15 @@ class Apd(_array.Array):
                 self._descs[idx]=self._descs[idx].__fixTreeReferences__(tree)
         return self
 
-    def __init__(self,descs,dtype=0):
+    def __init__(self,value,dtype=0):
         """Initializes a Apd instance
         """
-        if isinstance(descs,(tuple,list,_ver.generator)):
-            self._descs=list(descs)
+        if value is self: return
+        if isinstance(value,(tuple,list,_ver.generator)):
+            self._descs=list(value)
             self.dtype=dtype
         else:
-            raise TypeError("must provide tuple of items when creating ApdData: %s"%(type(descs),))
+            raise TypeError("must provide tuple of items when creating ApdData: %s"%(type(value),))
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
@@ -163,6 +164,7 @@ class Dictionary(dict,Apd):
     dtype_id=216
 
     def __init__(self,value=None):
+        if value is self: return
         if value is not None:
             if isinstance(value,dict):
                 for key,val in value.items():
@@ -231,6 +233,7 @@ class List(list,Apd):
     dtype_id=214
 
     def __init__(self,value=None):
+        if value is self: return
         if value is not None:
             if isinstance(value,(tuple,list,Apd,_ver.generator,_N.ndarray)):
                 for val in value:
