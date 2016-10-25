@@ -24,13 +24,13 @@ def apdadd(*args):
         return apd
     arg0 = args[0].getData()
     if isinstance(arg0, (List, Dictionary)):
-        apd = add_apd(arg0, args[1:], len(arg0))
+        apd = add_apd(arg0, list(args[1:]), len(arg0))
         var = args[0]
     else:
         var = args[1]
         arg1= var.getData()
         if isinstance(arg1, (List,)):
-            apd = add_apd(arg1, args[2:], int(arg0))
+            apd = add_apd(arg1, list(args[2:]), int(arg0))
         else:
             raise TypeError('Invalid agument class. Argument must be a List or Dictionary')
     if isinstance(var, (Ident,)):
