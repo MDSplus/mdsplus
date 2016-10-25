@@ -39,7 +39,7 @@ class Apd(_array.Array):
             for idx in range(len(descs)):
                 desc=descs[idx]
                 d.original.append(desc)
-                descs_ptrs[idx] = _descriptor.objectToPointer(desc)
+                descs_ptrs[idx] = _descriptor.objectToPointer(_data.Data(desc))
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         else:
             d.arsize=0
@@ -175,28 +175,27 @@ class Dictionary(dict,Apd):
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
 
     @staticmethod
-    def tokey(key):
+    def toKey(key):
         if isinstance(key,_scalar.Scalar):
-            return key.value
+            key = key.value
         if isinstance(key,_N.string_):
             return str(key)
-        elif isinstance(key,_N.int32):
+        if isinstance(key,_N.int32):
             return int(key)
-        elif isinstance(key,(_N.float32,_N.float64)):
+        if isinstance(key,(_N.float32,_N.float64)):
             return float(key)
-        else:
-            return _data.Data(key).data()
+        return _data.Data(key).data().tolist()
 
     def setdefault(self,key,val):
         """check keys and converts values to instances of Data"""
-        key = Dictionary.tokey(key)
+        key = Dictionary.toKey(key)
         if not isinstance(val,_data.Data):
             val=_data.Data(val)
         super(Dictionary,self).setdefault(key,val)
 
     def remove(self,key):
         """remove pair with key"""
-        del(self[Dictionary.tokey(key)])
+        del(self[Dictionary.toKey(key)])
 
     def __setitem__(self,name,value):
         """sets values as instances of Data"""
@@ -204,7 +203,7 @@ class Dictionary(dict,Apd):
 
     def __getitem__(self,name):
         """gets values as instances of Data"""
-        return super(Dictionary,self).__getitem__(Dictionary.tokey(name))
+        return super(Dictionary,self).__getitem__(Dictionary.toKey(name))
 
     @property
     def value(self):
