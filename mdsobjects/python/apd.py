@@ -19,7 +19,6 @@ class Apd(_array.Array):
     """
     mdsclass=196
     dtype_id=24
-    __LP =_C.POINTER(_descriptor.Descriptor)
 
     @property
     def descriptor(self):
@@ -35,12 +34,12 @@ class Apd(_array.Array):
         d.length=_C.sizeof(_C.c_void_p)
         d.original=[]
         if len(descs) > 0:
-            d.arsize=_C.sizeof(Apd.__LP)*len(descs)
-            descs_ptrs=(Apd.__LP*len(descs))()
+            d.arsize=_C.sizeof(_descriptor.c_desc_p)*len(descs)
+            descs_ptrs=(_descriptor.c_desc_p*len(descs))()
             for idx in range(len(descs)):
                 desc=descs[idx]
                 d.original.append(desc)
-                descs_ptrs[idx] = _descriptor.getPointer(desc)
+                descs_ptrs[idx] = _descriptor.objectToPointer(desc)
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         else:
             d.arsize=0
@@ -53,14 +52,9 @@ class Apd(_array.Array):
 
     @classmethod
     def fromDescriptor(cls,d):
-        num=d.arsize/d.length
-        dptrs=_C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
-        descs=[]
-        for idx in range(num):
-            d_d_ptr=dptrs[idx]
-            d_d=_C.cast(d_d_ptr,_C.POINTER(descriptor.Descriptor)).contents
-            d_d=_C.cast(d_d_ptr,_C.POINTER(descriptor.dclassToClass[d_d.dclass])).contents
-            descs.append(d_d.value)
+        num   = d.arsize/d.length
+        dptrs = _C.cast(d.pointer,_C.POINTER(_C.c_void_p*num)).contents
+        descs = [_descriptor.pointerToObject(dptr) for dptr in dptrs]
         return cls(descs)
 
 

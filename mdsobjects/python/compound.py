@@ -157,8 +157,8 @@ class Compound(_data.Data):
             dunits.dtype=WithUnits.dtype_id
             dunits.pointer=_C.c_void_p(0)
             dunits.ndesc=2
-            dunits.dscptrs[0]=_descriptor.getPointer(d)
-            dunits.dscptrs[1]=_descriptor.getPointer(_data.Data(value._units))
+            dunits.dscptrs[0]=_descriptor.descToPointer(d)
+            dunits.dscptrs[1]=_descriptor.objectToPointer(_data.Data(value._units))
             dunits.original=d
         else:
             dunits=d
@@ -168,8 +168,8 @@ class Compound(_data.Data):
             derror.dtype=WithError.dtype_id
             derror.pointer=_C.c_void_p(0)
             derror.ndesc=2
-            derror.dscptrs[0]=_descriptor.getPointer(dunits)
-            derror.dscptrs[1]=_descriptor.getPointer(_data.Data(value._error))
+            derror.dscptrs[0]=_descriptor.descToPointer(dunits)
+            derror.dscptrs[1]=_descriptor.objectToPointer(_data.Data(value._error))
             derror.original=dunits
         else:
             derror=dunits
@@ -179,9 +179,9 @@ class Compound(_data.Data):
             dparam.dtype=Parameter.dtype_id
             dparam.pointer=_C.c_void_p(0)
             dparam.ndesc=3
-            dparam.dscptrs[0]=_descriptor.getPointer(derror)
-            dparam.dscptrs[1]=_descriptor.getPointer(_data.Data(value._help))
-            dparam.dscptrs[2]=_descriptor.getPointer(_data.Data(value._validation))
+            dparam.dscptrs[0]=_descriptor.descToPointer(derror)
+            dparam.dscptrs[1]=_descriptor.objectToPointer(_data.Data(value._help))
+            dparam.dscptrs[2]=_descriptor.objectToPointer(_data.Data(value._validation))
             dparam.original=derror
         else:
             dparam=derror
@@ -203,7 +203,7 @@ class Compound(_data.Data):
         d.dtype=self.dtype_id
         d.ndesc = self.getNumDescs()
         for idx in _ver.xrange(d.ndesc):
-            d.dscptrs[idx]= _descriptor.getPointer(self.getDescAt(idx))
+            d.dscptrs[idx]= _descriptor.objectToPointer(self.getDescAt(idx))
         d.original=self
         if self._units is None and self._error is None and self._help is None and self._validation is None:
             return d  # if not props
@@ -212,12 +212,7 @@ class Compound(_data.Data):
 
     @classmethod
     def fromDescriptor(cls,d):
-        args=[]
-        for i in _ver.xrange(d.ndesc):
-            try:
-                args.append(d.dscptrs[i].contents.value)
-            except ValueError:
-                args.append(None)
+        args = [_descriptor.pointerToObject(d.dscptrs[i]) for i in _ver.xrange(d.ndesc)]
         ans=cls(*args)
         if d.length>0:
             if d.length == 1:
@@ -309,13 +304,8 @@ class Function(Compound):
 
     @classmethod
     def fromDescriptor(cls,d):
-        opc=_C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
-        args=[]
-        for i in range(d.ndesc):
-            if _C.cast(d.dscptrs[i],_C.c_void_p).value is None:
-                args.append(None)
-            else:
-                args.append(d.dscptrs[i].contents.value)
+        opc  = _C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
+        args = [_descriptor.pointerToObject(d.dscptrs[i]) for i in _ver.xrange(d.ndesc)]
         return cls.opcodeToClass[opc](*args)
 
     def __init__(self,*args):

@@ -385,7 +385,7 @@ class Data(object):
         @return: Return True if the value and this Data object contain the same data
         @rtype: Bool
         """
-        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_descriptor.getPointer(Data(value)))
+        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_descriptor.objectToPointer(Data(value)))
         if status == 1:
             return True
         else:
@@ -472,7 +472,7 @@ class Data(object):
         @rtype: Data
         """
         xd = _descriptor.Descriptor_xd()
-        status = _TdiShr.TdiEvaluate(_descriptor.getPointer(self),
+        status = _TdiShr.TdiEvaluate(_descriptor.objectToPointer(self),
                                   _C.pointer(xd),
                                   _C.c_void_p(-1))
         if (status & 1 != 0):

@@ -14,22 +14,29 @@ _exceptions=_mimport('mdsExceptions')
 _MdsShr=_ver.load_library('MdsShr')
 #
 #############################################
-def getPointer(desc):
-    if not(desc is None or isinstance(desc,(_C.Structure,))):
-        desc = desc.descriptor
-    if desc is None:
-        pointer = _C.c_void_p(0)
-    else:
-        pointer = _C.pointer(desc)
-    return _C.cast(pointer,c_desc_p)
+
+def objectToPointer(obj):
+    if obj is None: return c_desc_p0
+    return descToPointer(obj.descriptor)
+
+def descToPointer(desc):
+    if desc is None: return c_desc_p0
+    return _C.cast(_C.pointer(desc),c_desc_p)
+
+def pointerToDesc(pointer):
+    if pointer is None or pointer == 0: return None
+    LP = _C.cast(pointer,c_desc_p)
+    return LP.contents if LP.__nonzero__() else None
+
+def pointerToDesc_x(pointer):
+    desc = pointerToDesc(pointer)
+    if desc is None: return None
+    return _C.cast(pointer,_C.POINTER(dclassToClass[desc.dclass])).contents
 
 def pointerToObject(pointer):
-    if pointer == 0:
-        return None
-    else:
-        dsc_ptr = _C.cast(pointer,c_desc_p)
-        dsc = dsc_ptr.contents
-        return dsc.value
+    desc = pointerToDesc(pointer)
+    if desc is None : return None
+    return desc.value
 
 def __desc_init__(self):
     self.length = 0
@@ -74,6 +81,7 @@ class Descriptor_d(_C.Structure):
     def __del__(self):
           _MdsShr.MdsFree1Dx(_C.pointer(self),_C.c_void_p(0))
 c_desc_p=_C.POINTER(Descriptor)
+c_desc_p0=_C.cast(_C.c_void_p(0),c_desc_p)
 
 class Descriptor_a(_C.Structure):
     dclass_id = 4

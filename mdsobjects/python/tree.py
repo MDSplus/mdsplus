@@ -1560,7 +1560,7 @@ class TreeNode(object): # HINT: TreeNode begin
                      _C.pointer(_scalar.String(method).descriptor)]
             ans_d=_descriptor.descriptor_xd()
             for arg in args:
-                arglist.append(_descriptor.getPointer(_data.Data(arg)))
+                arglist.append(_descriptor.objectToPointer(_data.Data(arg)))
             arglist.append(_C.pointer(ans_d))
             arglist.append(_C.c_void_p(0xffffffff))
             status=_TreeShr._TreeDoMethod(*arglist)
@@ -2254,10 +2254,10 @@ class TreeNode(object): # HINT: TreeNode begin
             shape = 1 if isinstance(valueArray,_compound.Compound) else valueArray.shape[0]
             status=_TreeShr._TreeMakeSegment(self.tree.ctx,
                                              self._nid,
-                                             _descriptor.getPointer(_data.Data(start)),
-                                             _descriptor.getPointer(_data.Data(end)),
-                                             _descriptor.getPointer(_data.Data(dimension)),
-                                             _descriptor.getPointer(_data.Data(valueArray)),
+                                             _descriptor.objectToPointer(_data.Data(start)),
+                                             _descriptor.objectToPointer(_data.Data(end)),
+                                             _descriptor.objectToPointer(_data.Data(dimension)),
+                                             _descriptor.objectToPointer(_data.Data(valueArray)),
                                              _C.c_int32(idx),
                                              _C.c_int32(shape))
         finally:
@@ -2300,7 +2300,7 @@ class TreeNode(object): # HINT: TreeNode begin
                 value=value.__fixTreeReferences__(self.tree)
             status=_TreeShr._TreePutRecord(self.tree.ctx,
                                            self._nid,
-                                           _descriptor.getPointer(_data.Data(value)),
+                                           _descriptor.objectToPointer(_data.Data(value)),
                                            0)
             if not (status & 1):
                 raise _exceptions.statusToException(status)
@@ -2362,8 +2362,8 @@ class TreeNode(object): # HINT: TreeNode begin
         try:
             status=_TreeShr._TreePutTimestampedSegment(self.tree.ctx,
                                                self._nid,
-                                               _descriptor.getPointer(timestampArray),
-                                               _descriptor.getPointer(array))
+                                               _descriptor.objectToPointer(timestampArray),
+                                               _descriptor.objectToPointer(array))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:
@@ -2387,8 +2387,8 @@ class TreeNode(object): # HINT: TreeNode begin
         try:
             status=_TreeShr._TreeMakeTimestampedSegment(self.tree.ctx,
                                                         self._nid,
-                                                        _descriptor.getPointer(timestampArray),
-                                                        _descriptor.getPointer(array),
+                                                        _descriptor.objectToPointer(timestampArray),
+                                                        _descriptor.objectToPointer(array),
                                                         _C.c_int32(idx),
                                                         _C.c_int32(rows_filled))
             if not (status & 1):
@@ -2629,9 +2629,9 @@ class TreeNode(object): # HINT: TreeNode begin
         try:
             status = _TreeShr._TreeUpdateSegment(self.tree.ctx,
                                              self._nid,
-                                             _descriptor.getPointer(_data.Data(start)),
-                                             _descriptor.getPointer(_data.Data(end)),
-                                             _descriptor.getPointer(_data.Data(dimension)),
+                                             _descriptor.objectToPointer(_data.Data(start)),
+                                             _descriptor.objectToPointer(_data.Data(end)),
+                                             _descriptor.objectToPointer(_data.Data(dimension)),
                                              _C.c_int32(idx))
             if not status & 1:
                 raise _exceptions.statusToException(status)

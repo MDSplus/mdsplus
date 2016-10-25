@@ -29,7 +29,6 @@ class Ident(_data.Data):
     def fromDescriptor(cls,d):
         return cls(
             _ver.tostr(
-                _C.cast(d.pointer,
-                        _C.POINTER(_C.c_char*d.length)).contents.value))
+                _C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
 
 descriptor.dtypeToClass[Ident.dtype_id]=Ident

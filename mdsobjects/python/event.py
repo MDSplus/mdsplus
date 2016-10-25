@@ -1,6 +1,5 @@
 import time as _time
 import threading as _threading
-import sys as _sys
 import ctypes as _C
 import numpy as _N
 

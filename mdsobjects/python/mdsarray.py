@@ -85,21 +85,12 @@ class Array(_data.Data):
         return _data.Data(getattr(self._value,op)())
 
     def _binop(self,op,y):
-        try:
-            y=y._value
-        except AttributeError:
-            pass
+        if hasattr(y,'_value'): y=y._value
         return _data.Data(getattr(self._value,op)(y))
 
     def _triop(self,op,y,z):
-        try:
-            y=y._value
-        except AttributeError:
-            pass
-        try:
-            z=z._value
-        except AttributeError:
-            pass
+        if hasattr(y,'_value'): y=y._value
+        if hasattr(z,'_value'): z=z._value
         return _data.Data(getattr(self._value,op)(y,z))
 
     def __array__(self):
@@ -132,14 +123,12 @@ class Array(_data.Data):
     def argmax(self,*axis):
         if axis:
             return self._binop('argmax',axis[0])
-        else:
-            return self._unop('argmax')
+        return self._unop('argmax')
 
     def argmin(self,*axis):
         if axis:
             return self._binop('argmin',axis[0])
-        else:
-            return self._unop('argmin')
+        return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
         return _data.Data(self._value.argsort(axis,kind,order))
@@ -200,11 +189,13 @@ class Array(_data.Data):
         d.original=self
         if self._units is not None or self._error is not None or self._help is not None or self._validation is not None:
             return _compound.Compound.descriptorWithProps(self,d)
-        else:
-            return d
+        return d
 
     @classmethod
     def fromDescriptor(cls,d):
+        def getNumpy(ntype,ctype,length):
+            buffer = _ver.buffer(_C.cast(d.pointer,_C.POINTER(ctype*length)).contents)
+            return _N.ndarray(shape,ntype,buffer)
         _tree=_mimport('tree')
         if d.dtype == 0:
             d.dtype = Int32Array.dtype_id
@@ -219,54 +210,19 @@ class Array(_data.Data):
         else:
             shape=[int(d.arsize/d.length),]
         if d.dtype == StringArray.dtype_id:
-            return StringArray(
-                _N.ndarray(shape=shape,
-                           dtype=_N.dtype(('S',d.length)),
-                           buffer=_ver.buffer(
-                               _C.cast(
-                                   d.pointer,
-                                   _C.POINTER(_C.c_byte*d.arsize)).contents)))
+            return StringArray(getNumpy(_N.dtype(('S',d.length)),_C.c_byte,d.arsize))
         if d.dtype == _tree.TreeNode.dtype_id:
             d.dtype=Int32Array.dtype_id
-            nids=_N.ndarray(
-                shape=shape,
-                dtype=_N.int32,
-                buffer=_ver.buffer(
-                    _C.cast(
-                        d.pointer,
-                        _C.POINTER(_C.c_int32 * int(d.arsize/d.length))).contents))
+            nids=getNumpy(_N.int32,_C.c_int32,int(d.arsize/d.length))
             return _tree.TreeNodeArray(list(nids))
         if d.dtype == Complex64Array.dtype_id:
-            return Array(
-                _N.ndarray(
-                    shape=shape,
-                    dtype=_N.complex64,
-                    buffer=_ver.buffer(
-                        _C.cast(
-                            d.pointer,
-                            _C.POINTER(
-                                _C.c_float * int(d.arsize*2/d.length))).contents)))
+            return Array(getNumpy(_N.complex64,_C.c_float,int(d.arsize*2/d.length)))
         if d.dtype == Complex128Array.dtype_id:
-            return Array(
-                _N.ndarray(
-                    shape=shape,
-                    dtype=_N.complex128,
-                    buffer=_ver.buffer(
-                        _C.cast(
-                            d.pointer,
-                            _C.POINTER(_C.c_double * int(d.arsize*2/d.length))).contents)))
+            return Array(getNumpy(_N.complex128,_C.c_double,int(d.arsize*2/d.length)))
         if d.dtype in _descriptor.dtypeToArrayClass:
             cls = _descriptor.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
-                a=_N.ndarray(
-                    shape=shape,
-                    dtype=cls.ctype,
-                    buffer=_ver.buffer(
-                        _C.cast(
-                            d.pointer,
-                            _C.POINTER(
-                                cls.ctype * int(d.arsize/d.length))).contents))
-                return Array(a)
+                return Array(getNumpy(cls.ctype,cls.ctype,int(d.arsize/d.length)))
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 
 makeArray = Array
