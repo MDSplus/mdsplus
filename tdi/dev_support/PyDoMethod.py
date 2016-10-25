@@ -22,7 +22,7 @@ def PyDoMethod(n,method,*args):
         model = str(c.model)
         method = str(method)
         result = None
-        if method.upper()<>'ORIGINAL_PART_NAME':
+        if not hasattr(Device,method):
             print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
         if not isinstance(device, (Device,)):
             safe_env = {}
