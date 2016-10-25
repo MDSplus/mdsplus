@@ -1,6 +1,5 @@
 from unittest import TestCase,TestSuite
-from tree import Tree
-from treenode import TreeNode
+from tree import Tree,TreeNode
 from mdsdata import makeData,Data
 from mdsscalar import Uint32
 from mdsarray import makeArray

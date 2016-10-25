@@ -35,18 +35,18 @@ def getRelease():
     return (release,name.lower())
 
 
+branch = None
 try:
     exec(open('_version.py').read())
-    if branch == "stable":
-        name="mdsplus"
-    else:
-        name="mdsplus_%s" % branch
 except:
+    pass
+if branch is None:
     version,name=getRelease()
-    if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
-        branch=" (%s)" % os.environ["BRANCH"]
-    else:
-        branch=""
+elif branch == "stable":
+    name="mdsplus"
+else:
+    name="mdsplus_%s" % branch
+
 pname='MDSplus'
 setup(name=name,
       version=version,
@@ -60,13 +60,11 @@ setup(name=name,
       url='http://www.mdsplus.org/',
       download_url = 'http://www.mdsplus.org/mdsplus_download/python',
       package_dir = {pname:'.',
-                     pname+'.tdibuiltins':'./tdibuiltins',
                      pname+'.tests':'./tests',
                      pname+'.widgets':'./widgets',
                      pname+'.wsgi':'./wsgi',
                      pname+'.mdsExceptions':'./mdsExceptions'},
       packages = [pname,
-                  pname+'.tdibuiltins',
                   pname+'.tests',
                   pname+'.widgets',
                   pname+'.wsgi',

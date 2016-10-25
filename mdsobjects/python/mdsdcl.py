@@ -7,13 +7,12 @@ def _mimport(name, level=1):
 import ctypes as _C
 
 _ver=_mimport('version')
-_desc=_mimport('_descriptor')
-_mdsshr=_mimport('_mdsshr')
 _Exceptions=_mimport('mdsExceptions')
+descriptor=_mimport('descriptor')
 
 _mdsdcl=_ver.load_library('Mdsdcl')
 _mdsdcl_do_command_dsc=_mdsdcl.mdsdcl_do_command_dsc
-_mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _C.POINTER(_desc.descriptor_xd), _C.POINTER(_desc.descriptor_xd)]
+_mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _C.POINTER(descriptor.Descriptor_xd), _C.POINTER(descriptor.Descriptor_xd)]
 
 
 def dcl(command,return_out=False,return_error=False,raise_exception=False):
@@ -29,15 +28,15 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False):
     @rtype: str / tuple / None
     """
     if return_error:
-      xd_error=_desc.descriptor_xd()
+      xd_error=descriptor.Descriptor_xd()
       error_p=_C.pointer(xd_error)
     else:
-      error_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
+      error_p=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor.Descriptor_xd))
     if return_out:
-      xd_output = _desc.descriptor_xd()
+      xd_output = descriptor.Descriptor_xd()
       out_p=_C.pointer(xd_output)
     else:
-      out_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
+      out_p=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor.Descriptor_xd))
     status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     if (status & 1) == 0 and raise_exception:
       raise _Exceptions.statusToException(status)
