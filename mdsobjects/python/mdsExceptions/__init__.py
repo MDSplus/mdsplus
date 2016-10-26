@@ -14,8 +14,8 @@ class MDSplusException(Exception):
     if isinstance(status,int):
       self.status=status
     if not hasattr(self,'status'):
-      self.status=-1
-      self.msgnam='UNKNOWN'
+      self.status=-2
+      self.msgnam='Unknown'
       self.message='Unknown exception'
       self.fac='MDSplus'
     if isinstance(status,str):
@@ -33,16 +33,16 @@ class MDSplusError(MDSplusException):
   severity="E"
   msgnam="Error"
   message="Failure to complete operation"
-  def __init__(self,status=None):
-    pass
+  status=-8|2  # serverity E
+  def __init__(*args): pass
 
 class MDSplusSuccess(MDSplusException):
   fac="MDSplus"
   severity="S"
   msgnam="Success"
   message="Successful execution"
-  def __init__(self,status=None):
-    pass
+  status=1
+  def __init__(*args): pass
 
 class MDSplusUnknown(MDSplusException):
   fac="MDSplus"
