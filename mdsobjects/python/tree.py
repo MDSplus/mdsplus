@@ -2907,18 +2907,19 @@ class Device(TreeNode): # HINT: Device begin
     if debug:
         if int(debug)<0:
             @staticmethod
-            def _debugDevice(d):
+            def _debugDevice(dev):
                 from MDSplus import Device
                 import types
                 def dummy(self,*args,**kvargs):
                     return 1
                 db = {}
-                for k,v in d.__dict__.items():
-                    if isinstance(v,(types.FunctionType,)):
-                        db[k] = dummy
-                    else:
-                        db[k] = v
-                return type(d.__name__,(Device,),db)
+                for d in dev.mro()[-4::-1]: #mro[-3] is Device
+                    for k,v in d.__dict__.items():
+                        if isinstance(v,(types.FunctionType,)):
+                            db[k] = dummy
+                        else:
+                            db[k] = v
+                return type(dev.__name__,(Device,),db)
         else:
             @staticmethod
             def _debugDevice(device):
