@@ -33,9 +33,8 @@ class MDSplusError(MDSplusException):
   severity="E"
   msgnam="Error"
   message="Failure to complete operation"
-  status=-2
-  def __init__(self,status=None):
-    pass
+  status=-8|2  # serverity E
+  def __init__(*args): pass
 
 class MDSplusSuccess(MDSplusException):
   fac="MDSplus"
@@ -43,8 +42,7 @@ class MDSplusSuccess(MDSplusException):
   msgnam="Success"
   message="Successful execution"
   status=1
-  def __init__(self,status=None):
-    pass
+  def __init__(*args): pass
 
 class MDSplusUnknown(MDSplusException):
   fac="MDSplus"
