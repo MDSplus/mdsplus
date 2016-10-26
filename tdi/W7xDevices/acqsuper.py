@@ -29,7 +29,7 @@ class ACQSUPER(MDSplus.Device):
         try:
             addr = str(self.host.record)
         except Exception as ex:
-            raise MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED(str(ex))  # TODO: does this really occur?
+            raise MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED(str(ex))
         if len(addr) == 0 :
             raise MDSplus.mdsExceptions.DevNO_NAME_SPECIFIED()
         return addr
