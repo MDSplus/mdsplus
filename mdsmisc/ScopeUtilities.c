@@ -1403,9 +1403,19 @@ static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints,
     }
 
 //From here, consider xMin and xMax
-    for(startIdx = 0; startIdx < nSamples && x[startIdx] < xMin; startIdx++);
+    if(xMin == 0)
+      startIdx = 0;
+    else
+    {
+      for(startIdx = 0; startIdx < nSamples && x[startIdx] < xMin; startIdx++);
+    }
     if(startIdx == nSamples) startIdx--;
-    for(endIdx = startIdx; endIdx < nSamples && x[endIdx] < xMax; endIdx++);
+    if(xMax == 0)
+      endIdx = nSamples - 1;
+    else
+    {
+      for(endIdx = startIdx; endIdx < nSamples && x[endIdx] < xMax; endIdx++);
+    }
     if(endIdx == nSamples) endIdx--;
     if((endIdx - startIdx) < 10 * reqPoints)
 	deltaSamples = 1;

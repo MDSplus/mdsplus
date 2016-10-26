@@ -344,23 +344,3 @@ DeleteRegValue HKLM "${ENVREG}" main_path
 DeleteRegValue HKLM "${ENVREG}" subtree_path
 DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
 SectionEnd
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

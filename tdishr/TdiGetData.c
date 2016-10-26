@@ -497,7 +497,8 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
         WARNING: $THIS is only defined within the subexpressions.
         WARNING: Use of $THIS or $VALUE can be infinitely recursive.
 */
-int Tdi1This(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1This(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+	     struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   int status = 1;
   if (TdiThreadStatic()->TdiSELF_PTR)
@@ -513,7 +514,8 @@ int Tdi1This(int opcode, int narg, struct descriptor *list[], struct descriptor_
         This allows the data field of signals to reference the raw field of a signal
         and the validation field of params to reference the value field of a param.
 */
-int Tdi1Value(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Value(int opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
+	      struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -541,7 +543,8 @@ int Tdi1Value(int opcode, int narg, struct descriptor *list[], struct descriptor
         A major entry point for evaluation of the data of expressions.
                 status = TdiData(&in, &out MDS_END_ARG)
 */
-int Tdi1Data(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Data(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
 
@@ -559,7 +562,7 @@ int Tdi1Data(int opcode, int narg, struct descriptor *list[], struct descriptor_
                 UNITS(other)            UNITS(DATA(other) not stripping above)
                 UNITS(other)            " "     (single blank to keep IDL happy)
 */
-int Tdi1Units(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Units(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_r *rptr;
@@ -623,8 +626,8 @@ int Tdi1Units(int opcode, int narg, struct descriptor *list[], struct descriptor
                 status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
 STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(null, 0, 0);
-int Tdi1DataWithUnits(int opcode, int narg, struct descriptor *list[],
-		      struct descriptor_xd *out_ptr)
+int Tdi1DataWithUnits(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+		      struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_WITH_UNITS, 0 };
@@ -662,7 +665,8 @@ int Tdi1DataWithUnits(int opcode, int narg, struct descriptor *list[],
         Note that $VALUE would not be defined in that form.
         Need we check that result is logical scalar?
 */
-int Tdi1Validation(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+		   struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_r *rptr;
