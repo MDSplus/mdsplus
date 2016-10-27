@@ -28,6 +28,20 @@ class MDSplusException(Exception):
                                self.msgnam,
                                self.message)
 
+_modules=_g.glob(_dirname(__file__)+"/*.py")
+for _m in _modules:
+  if '__init__' not in _m:
+    _m=_basename(_m)[0:-3]
+    _m=_mimport(_m)
+    for _key in _m.__dict__:
+      globals()[_key]=_m.__dict__[_key]
+
+_statusDict=dict()
+for exception in globals().values():
+  if hasattr(exception,'status'):
+    code = exception.status & -8
+    if code<>0: _statusDict[code]=exception
+
 class MDSplusError(MDSplusException):
   fac="MDSplus"
   severity="E"
@@ -52,32 +66,13 @@ class MDSplusUnknown(MDSplusException):
     self.severity=self.severities[self.status & 7]
     self.message="Operation returned unknown status value: %s" % str(status)
 
-_modules=_g.glob(_dirname(__file__)+"/*.py")
-
-for _m in _modules:
-  if '__init__' not in _m:
-    _m=_basename(_m)[0:-3]
-    _m=_mimport(_m)
-    for _key in _m.__dict__:
-      globals()[_key]=_m.__dict__[_key]
-
-_statusDict=dict()
-
-
-_all=globals()
-exception=None
-
-for exception in _all:
-  if hasattr(_all[exception],"status"):
-    _statusDict[_all[exception].status & -8]=_all[exception]
-
 def statusToException(status):
   status = int(status)
   if (status & -8) in _statusDict:
     return _statusDict[status & -8](status)
-  elif status == 0:
+  elif status == MDSplusError.status:
     return MDSplusError()
-  elif status == 1:
+  elif status == MDSplusSuccess.status:
     return MDSplusSuccess()
   else:
     return MDSplusUnknown(status)
