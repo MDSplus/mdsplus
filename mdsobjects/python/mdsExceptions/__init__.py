@@ -28,8 +28,7 @@ class MDSplusException(Exception):
                                self.msgnam,
                                self.message)
 
-_modules=_g.glob(_dirname(__file__)+"/*.py")
-for _m in _modules:
+for _m in _g.glob(_dirname(__file__)+"/*.py"):
   if '__init__' not in _m:
     _m=_basename(_m)[0:-3]
     _m=_mimport(_m)
@@ -41,6 +40,7 @@ for exception in globals().values():
   if hasattr(exception,'status'):
     code = exception.status & -8
     if code<>0: _statusDict[code]=exception
+del(exception,code)
 
 class MDSplusError(MDSplusException):
   fac="MDSplus"
@@ -65,6 +65,8 @@ class MDSplusUnknown(MDSplusException):
     self.status=status
     self.severity=self.severities[self.status & 7]
     self.message="Operation returned unknown status value: %s" % str(status)
+  def __repr__(self):
+    return 'MDSplusUnknown(%s)'%(str(self.status),)
 
 def statusToException(status):
   status = int(status)
