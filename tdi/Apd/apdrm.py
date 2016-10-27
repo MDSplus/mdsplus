@@ -10,13 +10,13 @@ def apdrm(var,*args):
     if isinstance(apd, (List,)):
         args = list(args)
         args.sort(reverse=True)
-        for arg in args:
-            del(apd[int(arg)])
+        for idx in args:
+            del(apd[int(idx.data())])
     elif isinstance(apd, (Dictionary)):
-        for k in args:
-            del(apd[k.data()])
+        for key in args:
+            del(apd[Dictionary.toKey(key.data())])
     else:
-        raise Exception('Invalid agument class. Argument must be a List or Dictionary')
+        raise TypeError('Invalid agument class. Argument must be a List or Dictionary')
     if isinstance(var, (Ident,)):
         apd.assignTo(var.name)
     return apd

@@ -1,9 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/tdi/
-./usr/local/mdsplus/tdi/d3d/
 ./usr/local/mdsplus/tdi/d3d/TreeFindNodeTagsJeff.fun
 ./usr/local/mdsplus/tdi/d3d/cer_rot.fun
 ./usr/local/mdsplus/tdi/d3d/cerprof.fun
@@ -32,7 +26,6 @@
 ./usr/local/mdsplus/tdi/d3d/getdia.fun
 ./usr/local/mdsplus/tdi/d3d/getgas.fun
 ./usr/local/mdsplus/tdi/d3d/getgas2.fun
-./usr/local/mdsplus/tdi/d3d/global/
 ./usr/local/mdsplus/tdi/d3d/global/aminor.fun
 ./usr/local/mdsplus/tdi/d3d/global/atime.fun
 ./usr/local/mdsplus/tdi/d3d/global/bt0.fun
@@ -58,7 +51,6 @@
 ./usr/local/mdsplus/tdi/d3d/moo.fun
 ./usr/local/mdsplus/tdi/d3d/multiphase.fun
 ./usr/local/mdsplus/tdi/d3d/nebar.fun
-./usr/local/mdsplus/tdi/d3d/nimrod/
 ./usr/local/mdsplus/tdi/d3d/nimrod/nimrod_db.fun
 ./usr/local/mdsplus/tdi/d3d/nimrod/nimrod_phys_db.fun
 ./usr/local/mdsplus/tdi/d3d/nimrod/nimrod_phys_db2.fun
@@ -68,7 +60,6 @@
 ./usr/local/mdsplus/tdi/d3d/paramtest.fun
 ./usr/local/mdsplus/tdi/d3d/parse_idens.fun
 ./usr/local/mdsplus/tdi/d3d/ppf.fun
-./usr/local/mdsplus/tdi/d3d/ptdata/
 ./usr/local/mdsplus/tdi/d3d/ptdata/ptcomments.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata/ptdata.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata/ptdata_error.fun
@@ -81,7 +72,6 @@
 ./usr/local/mdsplus/tdi/d3d/ptdata/pthead_size.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata/ptnpts.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata/ptunits.fun
-./usr/local/mdsplus/tdi/d3d/ptdata2/
 ./usr/local/mdsplus/tdi/d3d/ptdata2/README.TXT
 ./usr/local/mdsplus/tdi/d3d/ptdata2/check_pcdata.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/dumpit.fun
@@ -96,7 +86,6 @@
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_ifix.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_real32.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata2/pthead2_size.fun
-./usr/local/mdsplus/tdi/d3d/ptdata_historic/
 ./usr/local/mdsplus/tdi/d3d/ptdata_historic/README
 ./usr/local/mdsplus/tdi/d3d/ptdata_historic/ptcomments_historic.fun
 ./usr/local/mdsplus/tdi/d3d/ptdata_historic/ptdata_error_historic.fun
