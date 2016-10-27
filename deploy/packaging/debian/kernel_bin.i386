@@ -1,8 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/bin/
 ./usr/local/mdsplus/bin/SetMdsplusFileProtection
 ./usr/local/mdsplus/bin/build_test
 ./usr/local/mdsplus/bin/job_finish
@@ -29,7 +24,6 @@
 ./usr/local/mdsplus/bin/tditest
 ./usr/local/mdsplus/bin/unix_submit
 ./usr/local/mdsplus/bin/wfevent
-./usr/local/mdsplus/lib/
 ./usr/local/mdsplus/lib/libMdsIpHTTP.so
 ./usr/local/mdsplus/lib/libMdsIpLOCAL.so
 ./usr/local/mdsplus/lib/libMdsIpSSH.so

@@ -1,9 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/tdi/
-./usr/local/mdsplus/tdi/KbsiDevices/
 ./usr/local/mdsplus/tdi/KbsiDevices/.project
 ./usr/local/mdsplus/tdi/KbsiDevices/E1429__add.fun
 ./usr/local/mdsplus/tdi/KbsiDevices/E1429__arm.fun

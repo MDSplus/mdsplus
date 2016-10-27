@@ -1,8 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/lib/
 ./usr/local/mdsplus/lib/MDSobjectsLVShr
 ./usr/local/mdsplus/lib/libLV.so
 ./usr/local/mdsplus/lib/libMDSobjectsLVShr

@@ -1,9 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/matlab/
-./usr/local/mdsplus/matlab/@mdscvt/
 ./usr/local/mdsplus/matlab/@mdscvt/mdscvt.m
 ./usr/local/mdsplus/matlab/MDSarg.m
 ./usr/local/mdsplus/matlab/NATIVEvalue.m
