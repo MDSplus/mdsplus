@@ -1,9 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/idl/
-./usr/local/mdsplus/idl/camac/
 ./usr/local/mdsplus/idl/camac/camassign.pro
 ./usr/local/mdsplus/idl/camac/camblock.pro
 ./usr/local/mdsplus/idl/camac/camcheck.pro
@@ -28,8 +22,6 @@
 ./usr/local/mdsplus/idl/camac/camx.pro
 ./usr/local/mdsplus/idl/camac/camxandq.pro
 ./usr/local/mdsplus/idl/camac/j221test.pro
-./usr/local/mdsplus/tdi/
-./usr/local/mdsplus/tdi/camac/
 ./usr/local/mdsplus/tdi/camac/CamError.fun
 ./usr/local/mdsplus/tdi/camac/CamFQrepw.fun
 ./usr/local/mdsplus/tdi/camac/CamFQstopw.fun
