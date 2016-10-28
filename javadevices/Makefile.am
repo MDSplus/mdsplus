@@ -164,5 +164,5 @@ MARTE_DEVICESetup.java \
 RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
 JRG_ADC32ASetup.java \
-AEON_3248Setup.java
+A3248Setup.java
 
