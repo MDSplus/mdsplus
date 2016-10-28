@@ -8,12 +8,12 @@
  *
  * @author manduchi
  */
-public class AEON_3248Setup extends DeviceSetup {
+public class A3248Setup extends DeviceSetup {
 
     /**
      * Creates new form AEON_3248Setup
      */
-    public AEON_3248Setup() {
+    public A3248Setup() {
         initComponents();
     }
 
@@ -55,7 +55,7 @@ public class AEON_3248Setup extends DeviceSetup {
         setDeviceTitle("AEON Model 3248");
         setDeviceType("AEON_3248");
         setHeight(300);
-        setWidth(700);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField5.setIdentifier("");
