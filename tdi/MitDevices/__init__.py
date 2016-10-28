@@ -39,6 +39,7 @@ _mimport('acq200','ACQ200')
 _mimport('acq216','ACQ216')
 _mimport('acq216_ftp','ACQ216_FTP')
 
+_mimport('a3248','A3248')
 _mimport('cp7452','CP7452')
 
 _mimport('dtao32','DTAO32')
