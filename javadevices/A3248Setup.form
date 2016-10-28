@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="AEON Model 3248"/>
     <Property name="deviceType" type="java.lang.String" value="AEON_3248"/>
     <Property name="height" type="int" value="300"/>
-    <Property name="width" type="int" value="700"/>
+    <Property name="width" type="int" value="800"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
