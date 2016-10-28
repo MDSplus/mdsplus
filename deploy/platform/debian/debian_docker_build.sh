@@ -379,7 +379,7 @@ if [ "${BRANCH}" = "stable" ]
 then
     BNAME=""
 else
-    BNAME="-${BRANCH}"
+    BNAME="-$(echo ${BRANCH} | sed -e 's/-/_/g')"
 fi
 
 debtopkg() {
