@@ -1,6 +1,6 @@
 from MDSplus import Device
 
-class AEON_3248(Device):
+class A3248(Device):
     """
     D-Tacq ACQ216  16 channel transient recorder
     
@@ -81,7 +81,7 @@ class AEON_3248(Device):
         from MDSplus.mdsExceptions import DevBAD_CLOCK_FREQ
 
         if self.debug:
-            print "AEON_3248 INIT starting"
+            print "A3248 INIT starting"
         name = self.getString(self.name, DevBAD_NAME)
         gain = self.getInteger(self.gain, DevBAD_GAIN)
         if not gain in (1,2,4,8):
@@ -157,6 +157,12 @@ class AEON_3248(Device):
         return 1
     STORE=store
 
+    def dw_setup(self):
+        from MDSplus import Data
+        Data.execute('a3248__dw_setup($)', self.nid)
+        return 1
+    DW_SETUP=dw_setup
+
     def storeChannel(self, name, chan, addr, pts, gain, offset):
         import MDSplus
         
@@ -192,6 +198,6 @@ class AEON_3248(Device):
 
     def help(self):
         """ Help method to describe the methods and nodes of the AEON_3248 module type """
-        help(AEON_3248)
+        help(A3248)
         return 1
     HELP=help
