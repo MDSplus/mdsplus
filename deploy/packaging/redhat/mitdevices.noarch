@@ -90,7 +90,6 @@
 ./usr/local/mdsplus/tdi/MitDevices/aeon_trigger.fun
 ./usr/local/mdsplus/tdi/MitDevices/b5910a$chan.fun
 ./usr/local/mdsplus/tdi/MitDevices/b5910a.fun
-./usr/local/mdsplus/tdi/MitDevices/build
 ./usr/local/mdsplus/tdi/MitDevices/chs_a14__add.fun
 ./usr/local/mdsplus/tdi/MitDevices/chs_a14__init.fun
 ./usr/local/mdsplus/tdi/MitDevices/chs_a14__part_name.fun
