@@ -163,7 +163,7 @@ EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
     else if( strncmp(comment_d.pointer, FIVE_V_KEY, strlen(FIVE_V_KEY)) == 0) {
       coef_d.pointer = (void *)&coefficients[2];
     }
-    MdsFree1Dx(&comment_d,0);
+    StrFree1Dx(&comment_d);
   }
   fast = TreeIsOn(comment_nid) & 1;
   pio(0, 2, (int *)&csreg, 24);
