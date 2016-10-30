@@ -72,6 +72,7 @@
 ./usr/local/mdsplus/tdi/MitDevices/a14_adjust.fun
 ./usr/local/mdsplus/tdi/MitDevices/a14_clock_divide.fun
 ./usr/local/mdsplus/tdi/MitDevices/a3248.py
+./usr/local/mdsplus/tdi/MitDevices/a3248__dw_setup.fun
 ./usr/local/mdsplus/tdi/MitDevices/acq.py
 ./usr/local/mdsplus/tdi/MitDevices/acq132.py
 ./usr/local/mdsplus/tdi/MitDevices/acq196.py
@@ -81,7 +82,6 @@
 ./usr/local/mdsplus/tdi/MitDevices/acq216_ftp.py
 ./usr/local/mdsplus/tdi/MitDevices/acq_ftp.py
 ./usr/local/mdsplus/tdi/MitDevices/acq_inetd.conf
-./usr/local/mdsplus/tdi/MitDevices/a3248__dw_setup.fun
 ./usr/local/mdsplus/tdi/MitDevices/aeon_arm.fun
 ./usr/local/mdsplus/tdi/MitDevices/aeon_checktrigger.fun
 ./usr/local/mdsplus/tdi/MitDevices/aeon_getchannel.fun
