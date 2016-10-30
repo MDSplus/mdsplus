@@ -81,7 +81,7 @@
 ./usr/local/mdsplus/tdi/MitDevices/acq216_ftp.py
 ./usr/local/mdsplus/tdi/MitDevices/acq_ftp.py
 ./usr/local/mdsplus/tdi/MitDevices/acq_inetd.conf
-./usr/local/mdsplus/tdi/MitDevices/aeon_3248__dw_setup.fun
+./usr/local/mdsplus/tdi/MitDevices/a3248__dw_setup.fun
 ./usr/local/mdsplus/tdi/MitDevices/aeon_arm.fun
 ./usr/local/mdsplus/tdi/MitDevices/aeon_checktrigger.fun
 ./usr/local/mdsplus/tdi/MitDevices/aeon_getchannel.fun
