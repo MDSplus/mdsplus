@@ -447,7 +447,7 @@ EOF
 	else
 	    set +e
 	    echo "Checking contents of $(basename $rpm)"
-	    if ( makelist $rpm | diff - ${checkfile} )
+	    if ( diff <(makelist $rpm) <(sort ${checkfile}) )
 	    then
 		echo "Contents of $(basename $rpm) is correct."
 	    else
