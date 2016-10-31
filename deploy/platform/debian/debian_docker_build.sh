@@ -445,7 +445,7 @@ then
 	else
 	    set +e
 	    echo "Checking contents of $(basename $deb)"
-	    if ( makelist $deb | diff - ${checkfile} )
+	    if ( diff <(makelist $deb) <(sort ${checkfile}) )
 	    then
 		echo "Contents of $(basename $deb) is correct."
 	    else
