@@ -149,6 +149,7 @@ install: $(install_DIRS)
 		--exclude='*.pyc' \
 		--exclude=__pycache__ \
 		--exclude=python/build \
+                --exclude=tdi/*Devices/build \
 		--exclude='*egg-info' \
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
