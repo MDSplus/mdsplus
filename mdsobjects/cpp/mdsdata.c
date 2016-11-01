@@ -100,12 +100,12 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 #define MAX_ARGS 128
 
 #ifdef _MSC_VER
-#define unused
+#define UNUSED_ARGUMENT
 #else
-#define unused __attribute__ ((unused))
+#define UNUSED_ARGUMENT __attribute__ ((unused))
 #endif
 
-void *convertToCompoundDsc(int clazz unused, int dtype, int length, void *ptr, int ndescs, void **descs)
+void *convertToCompoundDsc(int clazz UNUSED_ARGUMENT, int dtype, int length, void *ptr, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xds[MAX_ARGS];
