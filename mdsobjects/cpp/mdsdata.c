@@ -99,7 +99,9 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 
 #define MAX_ARGS 128
 
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+#define unused
+#else
 #define unused __attribute__ ((unused))
 #endif
 
