@@ -13,7 +13,9 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
+#define UNUSED_ARGUMENT
 #else
+#define UNUSED_ARGUMENT __attribute__ ((unused))
 #include <sys/types.h>
 //#include <sys/ipc.h>
 //#include <sys/sem.h>
@@ -308,7 +310,7 @@ public:
     }
 
     /// \return true if this and data match, false otherwise and as default
-    virtual bool equals(Data *data __attribute__ ((unused))) { return false; }
+    virtual bool equals(Data *data UNUSED_ARGUMENT) { return false; }
 
     /// \return Return the result of TDI evaluate
     Data *evaluate();
@@ -371,7 +373,7 @@ public:
     virtual std::vector<uint64_t> getLongUnsignedArray();
     virtual double * getDoubleArray(int *numElements);
     virtual std::vector<double> getDoubleArray();
-    virtual std::complex<double> * getComplexArray(int *numElements __attribute__ ((unused))) {
+    virtual std::complex<double> * getComplexArray(int *numElements UNUSED_ARGUMENT) {
         throw MdsException("getComplexArray() not supported for non Complex data types"); }
     virtual std::vector<std::complex<double> > getComplexArray();
     virtual char ** getStringArray(int *numElements) {
@@ -926,7 +928,7 @@ public:
         init(val, std::string(val).size(), units, error, help, validation);
     }
 
-    String(unsigned char *uval, int len __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int len UNUSED_ARGUMENT, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
         // FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
         // FIXME: Warning: Do not use this constructor in user code
         char * val = reinterpret_cast<char *>(uval);
@@ -934,7 +936,7 @@ public:
     }
 
     //GAB  definition in order to avoid breaking LabVIEW
-    String(unsigned char *uval, int numDims __attribute__ ((unused)), int *dims __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int numDims UNUSED_ARGUMENT, int *dims UNUSED_ARGUMENT, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
         char * val = reinterpret_cast<char *>(uval);
         init(val, std::string(val).size(), units, error, help, validation);
     }
@@ -3812,7 +3814,7 @@ public:
     ~Connection();
     void openTree(char *tree, int shot);
     void closeAllTrees();
-    void closeTree(char *tree __attribute__ ((unused)), int shot __attribute__ ((unused)))
+    void closeTree(char *tree UNUSED_ARGUMENT, int shot UNUSED_ARGUMENT)
     {
         closeAllTrees();
     }
