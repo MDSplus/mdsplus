@@ -40,8 +40,8 @@ public fun JRG_ADC32A__INIT(as_is _nid, optional _method) {
   _active_chan = DevNodeRef(_nid, _N_ACTIVE_CHAN);
   _status_reg = _status_reg | (int(log2(_active_chan)) & 0x7);
   _status_reg = _status_reg | (int(log2(DevNodeRef(_nid,_N_ACTIVE_MEM))) << 3);
-/*  _status_reg = _status_reg | 1 << 8;  */ /* burst mode*/
-/* next bit multiburst = 0 */
+  _status_reg = _status_reg | 1 << 8;   /* burst mode*/
+/* next bit multiburst = 0 */  /* single burst */
   _ext_clock = DevNodeRef(_nid,_N_EXT_CLOCK);
   _is_ext_clock = getnci(_ext_clock,"LENGTH") > 0;
   _status_reg = _status_reg | (_is_ext_clock << 10);
