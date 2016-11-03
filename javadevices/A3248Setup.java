@@ -50,12 +50,13 @@ public class A3248Setup extends DeviceSetup {
         deviceChoice2 = new DeviceChoice();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
+        deviceField13 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("AEON Model 3248");
-        setDeviceType("AEON_3248");
+        setDeviceType("A3248");
         setHeight(300);
-        setWidth(800);
+        setWidth(850);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField5.setIdentifier("");
@@ -153,6 +154,11 @@ public class A3248Setup extends DeviceSetup {
         deviceField4.setOffsetNid(5);
         jPanel3.add(deviceField4);
 
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("Offset");
+        deviceField13.setOffsetNid(7);
+        jPanel3.add(deviceField13);
+
         jPanel1.add(jPanel3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
@@ -170,6 +176,7 @@ public class A3248Setup extends DeviceSetup {
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
+    private DeviceField deviceField13;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;

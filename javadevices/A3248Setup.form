@@ -4,9 +4,9 @@
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
     <Property name="deviceTitle" type="java.lang.String" value="AEON Model 3248"/>
-    <Property name="deviceType" type="java.lang.String" value="AEON_3248"/>
+    <Property name="deviceType" type="java.lang.String" value="A3248"/>
     <Property name="height" type="int" value="300"/>
-    <Property name="width" type="int" value="800"/>
+    <Property name="width" type="int" value="850"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
@@ -257,6 +257,13 @@
                 <Property name="labelString" type="java.lang.String" value="Trigger: "/>
                 <Property name="numCols" type="int" value="15"/>
                 <Property name="offsetNid" type="int" value="5"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField13">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Offset"/>
+                <Property name="offsetNid" type="int" value="7"/>
               </Properties>
             </Component>
           </SubComponents>
