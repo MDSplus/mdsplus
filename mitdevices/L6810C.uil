@@ -39,42 +39,50 @@ names = case_sensitive
 !(BX) bx_info("uil_utilities", "BXUTIL-UIL.C", true)
 !(BX) bx_info("uil_constants", "MAIN-UIL.H", true)
 !(BX) bx_info("uil_callbacks", "CALLBACKS-UIL.C", true)
-!(BX) bx_info("uil_uil", "L6810D.UIL", true)
+!(BX) bx_info("uil_uil", "A.UIL", true)
 !(BX) bx_info("uil_main", "MAIN-UIL.C", true)
 !(BX) bx_info("uil_makefile", "MAKEFILE-UIL.MMS", true)
 !(BX) bx_info("uil_imakefile", "MAKEFILE-UIL.COM", true)
 !(BX) bx_info("include_path", "[]", false)
 !(BX) bx_info("xrunner_command", "$(M_ROOT)/arch/X11.5/Xm1.2/mic_xm.o", false)
-!(BX) bx_info("purify_command", "purify", false)
 !(BX) bx_info("c++_libraries", "sys$share:decw$dxmlibshr12.exe/share,sys$share:decw$xmlibshr12.exe/s"&
 !(BX)	"hare,sys$share:decw$mrmlibshr12.exe/share,sys$share:decw$xtlibshrr5."&
 !(BX)	"exe/share,sys$share:decw$xlibshr.exe/share,sys$share:decc$shr.exe/sh"&
 !(BX)	"are")
-!(BX) bx_info("c++_flags", "/define=VMS")
-!(BX) bx_info("c++_cc", "CXX")
+!(BX) bx_info("c++_flags", "/standard=vaxc/define=(__STDC__=1)")
+!(BX) bx_info("c++_cc", "CC")
 !(BX) bx_info("system_directory", "BX$SYSTEM:")
+!(BX) bx_info("makefile_options", "main-uil.exe : readint.obj, readstring.obj, listtree.obj",
+!(BX)		"l"&
+!(BX)	"isttree.obj : listtree.c, listtree.h,listtreep.h", false)
 !(BX) bx_info("builder_version", "Builder Xcessory 3.5.1 VMS")
 !(BX) bx_info("uil", "uil")
 !(BX) bx_info("cc", "cc")
-!(BX) bx_info("cpp", "CXX")
-!(BX) bx_info("cOutputIncludes", "/define=VMS")
+!(BX) bx_info("cpp", "CC")
+!(BX) bx_info("cOutputIncludes", "/standard=vaxc/define=(__STDC__=1)")
 !(BX) bx_info("cOutputLibraries", "sys$share:decw$dxmlibshr12.exe/share,sys$share:decw$xmlibshr12.ex"&
 !(BX)	"e/share,sys$share:decw$mrmlibshr12.exe/share,sys$share:decw$xtlib"&
 !(BX)	"shrr5.exe/share,sys$share:decw$xlibshr.exe/share,sys$share:decc$s"&
 !(BX)	"hr.exe/share")
-!(BX) bx_info("uilCOutputIncludes", "/define=VMS")
+!(BX) bx_info("uilCOutputIncludes", "/standard=vaxc/define=(__STDC__=1)/deb/noopt")
 !(BX) bx_info("uilUILOutputIncludes", "/motif")
 !(BX) bx_info("uilOutputLibraries", "sys$share:decw$dxmlibshr12.exe/share,sys$share:decw$xmlibshr12."&
 !(BX)	"exe/share,sys$share:decw$mrmlibshr12.exe/share,sys$share:decw$x"&
 !(BX)	"tlibshrr5.exe/share,sys$share:decw$xlibshr.exe/share,sys$share:"&
-!(BX)	"decc$shr.exe/share")
-!(BX) bx_info("cppOutputIncludes", "/define=VMS")
+!(BX)	"decc$shr.exe/share,sys$share:tdishr/share,sys$share:mdsshr/shar"&
+!(BX)	"e,sys$share:mdslib/share,sys$share:xmdsshr/share, []readstring."&
+!(BX)	"obj, []readint.obj,[]listtree.obj")
+!(BX) bx_info("makefileOptions", "main-uil.exe : readint.obj, readstring.obj, listtree.obj",
+!(BX)		"l"&
+!(BX)	"isttree.obj : listtree.c, listtree.h,listtreep.h")
+!(BX) bx_info("cppOutputIncludes", "/standard=vaxc/define=(__STDC__=1)")
 !(BX) bx_info("cppOutputLibraries", "sys$share:decw$dxmlibshr12.exe/share,sys$share:decw$xmlibshr12."&
 !(BX)	"exe/share,sys$share:decw$mrmlibshr12.exe/share,sys$share:decw$x"&
 !(BX)	"tlibshrr5.exe/share,sys$share:decw$xlibshr.exe/share,sys$share:"&
 !(BX)	"decc$shr.exe/share")
+!(BX) bx_info("makefileLinkFlags", "/deb")
 !(BX) bx_info("builder_version", "Builder Xcessory 3.5.1 VMS")
-!(BX) bx_info("ansi", "false")
+!(BX) bx_info("ansi", "true")
 !(BX) bx_info("use_locales", "false")
 !(BX) bx_info("new_mrm_style", "true")
 !(BX) bx_info("c_wrap_lines", "true")
@@ -83,6 +91,8 @@ names = case_sensitive
 !(BX) bx_info("purify_command", "purify")
 !(BX) bx_info("integrate_xrunner", "false")
 !(BX) bx_info("xrunner_command", "$(M_ROOT)/arch/X11.5/Xm1.2/mic_xm.o")
+
+include file "XmdsWidgets.uil";
 
 value
     DEVICE_NID :  -1;
@@ -116,7 +126,8 @@ value
     L6810C$N_INP_OFFSET :  5;
     L6810C$N_INIT_ACTION :  34;
     L6810C$N_STORE_ACTION :  35;
-    L6810C$N_TRIGGER_DELAY :  36;
+    L6810C$N_TRIGGER_DLY :  36;
+
     gains :  string_table(
 	compound_string(".4096"),
 	compound_string(" 1.024"),
@@ -171,19 +182,19 @@ list BaseStyleReasons : callbacks {
 
 !(BX)object dialogShell : XmDialogShell widget {
 !(BX)    arguments {
-!(BX)        XmNx = 308;
-!(BX)        XmNy = 167;
-!(BX)        XmNwidth = 903;
+!(BX)        XmNx = 136;
+!(BX)        XmNy = 155;
+!(BX)        XmNwidth = 877;
 !(BX)        XmNheight = 432;
 !(BX)    };
 !(BX)    controls {
-!(BX)         managed XmBulletinBoardDialog l6810C;
+!(BX)         managed XmBulletinBoardDialog L6810C ;
 !(BX)    };
 !(BX)    callbacks {
 !(BX)    };
 !(BX)};
 
-object L6810C : XmBulletinBoardDialog widget {
+object L6810C  : XmBulletinBoardDialog widget {
     arguments {
         XmNautoUnmanage = false;
         XmNdefaultPosition = true;
@@ -191,42 +202,41 @@ object L6810C : XmBulletinBoardDialog widget {
         XmNnoResize = false;
         XmNdialogTitle = compound_string("L6810C  Lecroy 4 Channel Transie" &
  "nt Recorder");
-        XmNx = 308;
-        XmNy = 167;
-        XmNwidth = 903;
+        XmNx = 136;
+        XmNy = 155;
+        XmNwidth = 877;
         XmNheight = 432;
     };
     controls {
-         managed XmLabel label2;
-         managed XmdsExprField exprField4;
-         managed XmLabel label1;
-         managed XmdsExprField segs;
+         managed user_defined segs;
          managed XmLabel label;
-         managed XmdsNidOptionMenu nidOptionMenu;
+         managed user_defined dly;
+         managed XmLabel label_dly;
+         managed user_defined nidOptionMenu;
          managed XmLabelGadget labelGadget;
          managed XmLabelGadget labelGadget1;
-         managed XmdsExprField dsExprField;
-         managed XmdsExprField dsExprField1;
-         managed XmdsXdBoxOnOffButton dsXdBoxOnOffButton;
-         managed XmdsXdBoxOnOffButton dsXdBoxOnOffButton1;
-         managed XmdsNidOptionMenu dsNidOptionMenu;
-         managed XmdsNidOptionMenu dsNidOptionMenu1;
-         managed XmdsExprField dsExprField2;
+         managed user_defined dsExprField;
+         managed user_defined dsExprField1;
+         managed user_defined dsXdBoxOnOffButton;
+         managed user_defined dsXdBoxOnOffButton1;
+         managed user_defined dsNidOptionMenu;
+         managed user_defined dsNidOptionMenu1;
+         managed user_defined dsExprField2;
          managed XmLabelGadget labelGadget2;
          managed XmLabelGadget labelGadget3;
-         managed XmdsExprField dsExprField3;
-         managed XmdsCancelButton dsCancelButton;
-         managed XmdsResetButton dsResetButton;
-         managed XmdsOkButton dsOkButton;
-         managed XmdsApplyButton dsApplyButton;
+         managed user_defined dsExprField3;
+         managed user_defined dsCancelButton;
+         managed user_defined dsResetButton;
+         managed user_defined dsOkButton;
+         managed user_defined dsApplyButton;
          managed XmBulletinBoard bulletinBoard;
-         managed XmdsNidOptionMenu dsNidOptionMenu2;
+         managed user_defined dsNidOptionMenu2;
     };
     callbacks {
     };
 };
 
-object dsNidOptionMenu2 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -281,28 +291,28 @@ object bulletinBoard : XmBulletinBoard widget {
         XmNheight = 190;
     };
     controls {
-         managed XmdsExprField exprField3;
-         managed XmdsExprField exprField2;
-         managed XmdsExprField exprField1;
-         managed XmdsExprField exprField;
+         managed user_defined exprField3;
+         managed user_defined exprField2;
+         managed user_defined exprField1;
+         managed user_defined exprField;
          managed XmLabelGadget labelGadget6;
-         managed XmdsDigChans dsDigChans;
-         managed XmdsNidOptionMenu dsNidOptionMenu3;
-         managed XmdsNidOptionMenu dsNidOptionMenu4;
-         managed XmdsNidOptionMenu dsNidOptionMenu5;
-         managed XmdsNidOptionMenu dsNidOptionMenu6;
+         managed user_defined dsDigChans;
+         managed user_defined dsNidOptionMenu3;
+         managed user_defined dsNidOptionMenu4;
+         managed user_defined dsNidOptionMenu5;
+         managed user_defined dsNidOptionMenu6;
          managed XmLabelGadget labelGadget4;
          managed XmLabelGadget labelGadget5;
-         managed XmdsNidOptionMenu dsNidOptionMenu7;
-         managed XmdsNidOptionMenu dsNidOptionMenu8;
-         managed XmdsNidOptionMenu dsNidOptionMenu9;
-         managed XmdsNidOptionMenu dsNidOptionMenu10;
+         managed user_defined dsNidOptionMenu7;
+         managed user_defined dsNidOptionMenu8;
+         managed user_defined dsNidOptionMenu9;
+         managed user_defined dsNidOptionMenu10;
     };
     callbacks {
     };
 };
 
-object dsNidOptionMenu10 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu10 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -319,7 +329,7 @@ object dsNidOptionMenu10 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu9 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu9 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -336,7 +346,7 @@ object dsNidOptionMenu9 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu8 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu8 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -353,7 +363,7 @@ object dsNidOptionMenu8 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu7 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu7 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
@@ -394,7 +404,7 @@ object labelGadget4 : XmLabelGadget widget {
     };
 };
 
-object dsNidOptionMenu6 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu6 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -411,7 +421,7 @@ object dsNidOptionMenu6 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu5 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu5 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -428,7 +438,7 @@ object dsNidOptionMenu5 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu4 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu4 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -445,7 +455,7 @@ object dsNidOptionMenu4 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu3 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu3 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
@@ -462,7 +472,7 @@ object dsNidOptionMenu3 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsDigChans : XmdsDigChans widget {
+object dsDigChans : user_defined procedure XmdsCreateDigChans widget {
     arguments {
         XmdsNnodesPerChannel = L6810C$K_NODES_PER_INP;
         XmdsNnid = DEVICE_NID;
@@ -491,7 +501,7 @@ object labelGadget6 : XmLabelGadget widget {
     };
 };
 
-object exprField : XmdsExprField widget {
+object exprField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
@@ -508,7 +518,7 @@ object exprField : XmdsExprField widget {
     };
 };
 
-object exprField1 : XmdsExprField widget {
+object exprField1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
@@ -525,7 +535,7 @@ object exprField1 : XmdsExprField widget {
     };
 };
 
-object exprField2 : XmdsExprField widget {
+object exprField2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
@@ -542,7 +552,7 @@ object exprField2 : XmdsExprField widget {
     };
 };
 
-object exprField3 : XmdsExprField widget {
+object exprField3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
@@ -559,7 +569,7 @@ object exprField3 : XmdsExprField widget {
     };
 };
 
-object dsApplyButton : XmdsApplyButton widget {
+object dsApplyButton : user_defined procedure XmdsCreateApplyButton widget {
     arguments {
         XmNx = 239;
         XmNy = 383;
@@ -570,7 +580,7 @@ object dsApplyButton : XmdsApplyButton widget {
     };
 };
 
-object dsOkButton : XmdsOkButton widget {
+object dsOkButton : user_defined procedure XmdsCreateOkButton widget {
     arguments {
         XmNx = 10;
         XmNy = 383;
@@ -581,7 +591,7 @@ object dsOkButton : XmdsOkButton widget {
     };
 };
 
-object dsResetButton : XmdsResetButton widget {
+object dsResetButton : user_defined procedure XmdsCreateResetButton widget {
     arguments {
         XmNx = 497;
         XmNy = 383;
@@ -592,7 +602,7 @@ object dsResetButton : XmdsResetButton widget {
     };
 };
 
-object dsCancelButton : XmdsCancelButton widget {
+object dsCancelButton : user_defined procedure XmdsCreateCancelButton widget {
     arguments {
         XmNx = 739;
         XmNy = 383;
@@ -603,7 +613,7 @@ object dsCancelButton : XmdsCancelButton widget {
     };
 };
 
-object dsExprField3 : XmdsExprField widget {
+object dsExprField3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
@@ -634,9 +644,8 @@ object labelGadget3 : XmLabelGadget widget {
 object labelGadget2 : XmLabelGadget widget {
     arguments {
         XmNlabelString = compound_string("External Clock:");
-        XmNx = 240;
-        XmNy = 77;
-        XmNheight = 20;
+        XmNx = 259;
+        XmNy = 76;
     };
     controls {
     };
@@ -644,15 +653,15 @@ object labelGadget2 : XmLabelGadget widget {
     };
 };
 
-object dsExprField2 : XmdsExprField widget {
+object dsExprField2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
         XmdsNnidOffset = L6810C$N_EXT_CLOCK_IN;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
-        XmNx = 340;
-        XmNy = 75;
+        XmNx = 365;
+        XmNy = 74;
     };
     controls {
     };
@@ -660,7 +669,7 @@ object dsExprField2 : XmdsExprField widget {
     };
 };
 
-object dsNidOptionMenu1 : XmdsNidOptionMenu widget {
+object dsNidOptionMenu1 : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -713,7 +722,7 @@ object dsNidOptionMenu1 : XmdsNidOptionMenu widget {
     };
 };
 
-object dsNidOptionMenu : XmdsNidOptionMenu widget {
+object dsNidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -736,7 +745,7 @@ object dsNidOptionMenu : XmdsNidOptionMenu widget {
     };
 };
 
-object dsXdBoxOnOffButton1 : XmdsXdBoxOnOffButton widget {
+object dsXdBoxOnOffButton1 : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Store Action");
@@ -752,7 +761,7 @@ object dsXdBoxOnOffButton1 : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object dsXdBoxOnOffButton : XmdsXdBoxOnOffButton widget {
+object dsXdBoxOnOffButton : user_defined procedure XmdsCreateXdBoxOnOffButton widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
@@ -768,7 +777,7 @@ object dsXdBoxOnOffButton : XmdsXdBoxOnOffButton widget {
     };
 };
 
-object dsExprField1 : XmdsExprField widget {
+object dsExprField1 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -785,7 +794,7 @@ object dsExprField1 : XmdsExprField widget {
     };
 };
 
-object dsExprField : XmdsExprField widget {
+object dsExprField : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
@@ -826,7 +835,7 @@ object labelGadget : XmLabelGadget widget {
     };
 };
 
-object nidOptionMenu : XmdsNidOptionMenu widget {
+object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
@@ -877,9 +886,9 @@ object nidOptionMenu : XmdsNidOptionMenu widget {
 
 object label : XmLabel widget {
     arguments {
-        XmNlabelString = compound_string("Segements:");
-        XmNx = 530;
-        XmNy = 78;
+        XmNlabelString = compound_string("Segments:");
+        XmNx = 515;
+        XmNy = 76;
     };
     controls {
     };
@@ -887,7 +896,7 @@ object label : XmLabel widget {
     };
 };
 
-object segs : XmdsExprField widget {
+object segs : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 5;
@@ -895,8 +904,8 @@ object segs : XmdsExprField widget {
         XmdsNnidOffset = L6810C$N_SEGMENTS;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
-        XmNx = 620;
-        XmNy = 75;
+        XmNx = 570;
+        XmNy = 72;
     };
     controls {
     };
@@ -904,13 +913,11 @@ object segs : XmdsExprField widget {
     };
 };
 
-object label1 : XmLabel widget {
+object label_dly : XmLabel widget {
     arguments {
-        XmNlabelString = compound_string("Trigger Delay");
-        XmNx = 700;
-        XmNy = 77;
-        XmNwidth = 90;
-        XmNheight = 20;
+        XmNlabelString = compound_string("Trigger Delay:");
+        XmNx = 608;
+        XmNy = 76;
     };
     controls {
     };
@@ -918,16 +925,16 @@ object label1 : XmLabel widget {
     };
 };
 
-object exprField4 : XmdsExprField widget {
+object dly : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
-        XmdsNnidOffset = L6810C$N_TRIGGER_DELAY;
-        XmNcolumns = 4;
+        XmNcolumns = 5;
         XmdsNputOnApply = true;
+        XmdsNnidOffset = L6810C$N_TRIGGER_DLY;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
-        XmNx = 790;
-        XmNy = 75;
+        XmNx = 698;
+        XmNy = 72;
     };
     controls {
     };
@@ -935,15 +942,4 @@ object exprField4 : XmdsExprField widget {
     };
 };
 
-object label2 : XmLabel widget {
-    arguments {
-        XmNlabelString = compound_string("8ths");
-        XmNx = 830;
-        XmNy = 78;
-    };
-    controls {
-    };
-    callbacks {
-    };
-};
 end module;
