@@ -1,18 +1,11 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/bin/
 ./usr/local/mdsplus/bin/MonitorCpciData.py
 ./usr/local/mdsplus/bin/dtaq_update_board.sh
 ./usr/local/mdsplus/bin/reboot_dtaq_satelite
-./usr/local/mdsplus/lib/
 ./usr/local/mdsplus/lib/acq_root_filesystem.tgz
 ./usr/local/mdsplus/lib/acq_root_filesystem.tgz_ffs
-./usr/local/mdsplus/lib/libMIT$DEVICES.so
+./usr/local/mdsplus/lib/libMIT$DEVICES.so -> libMitDevices.so
 ./usr/local/mdsplus/lib/libMitDevices.so
 ./usr/local/mdsplus/lib/libMitDevicesMsg.so
-./usr/local/mdsplus/uid/
 ./usr/local/mdsplus/uid/A12.uid
 ./usr/local/mdsplus/uid/A14.uid
 ./usr/local/mdsplus/uid/A3204.uid

@@ -27,5 +27,11 @@ try:
 except:
     __version__='Unknown'
 
-from bnc845 import BNC845
-from qc9200 import QC9200
+def _mimport(filename,name=None,local=locals()):
+    from MDSplus import Device
+    Device._mimport(globals(),local,filename,name)
+
+_mimport('acq425','ACQ425')
+_mimport('acq480','ACQ480')
+_mimport('bnc845','BNC845')
+_mimport('qc9200','QC9200')

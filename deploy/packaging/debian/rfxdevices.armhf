@@ -1,12 +1,4 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/java/
-./usr/local/mdsplus/java/classes/
 ./usr/local/mdsplus/java/classes/jDevices.jar
-./usr/local/mdsplus/tdi/
-./usr/local/mdsplus/tdi/RfxDevices/
 ./usr/local/mdsplus/tdi/RfxDevices/AAGain.fun
 ./usr/local/mdsplus/tdi/RfxDevices/AAMaxValue.fun
 ./usr/local/mdsplus/tdi/RfxDevices/ABGain.fun

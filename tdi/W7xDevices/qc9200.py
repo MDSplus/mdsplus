@@ -17,7 +17,6 @@ def qc_talk (ser, msg) :
 
 class QC9200 (Device) :
     """Limited control for the Quantum Composers Sapphire 9200 Series Pulse Generator."""
-    if Device.debug: print('QC9200')
     parts=[{'path': ':PORT',        'type': 'TEXT',    'options':('no_write_shot',), 'value': 'COM3'}, # likely /dev/ttyACM0 on Linux
            {'path': ':TRIG_LEVEL',  'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 2.5},
            {'path': ':TRIG_EDGE',   'type': 'TEXT',    'options':('no_write_shot',), 'value': 'RISING'}, # or FALLING

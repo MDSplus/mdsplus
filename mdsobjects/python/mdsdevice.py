@@ -91,6 +91,57 @@ class Device(_treenode.TreeNode):
     debug = _getenv('DEBUG_DEVICES')
     gtkThread = None
 
+    """ debug safe import """
+    if debug:
+        if int(debug)<0:
+            @staticmethod
+            def _debugDevice(dev):
+                from MDSplus import Device
+                import types
+                def dummy(self,*args,**kvargs):
+                    return 1
+                db = {}
+                for d in dev.mro()[-4::-1]: #mro[-3] is Device
+                    for k,v in d.__dict__.items():
+                        if isinstance(v,(types.FunctionType,)):
+                            db[k] = dummy
+                        else:
+                            db[k] = v
+                return type(dev.__name__,(Device,),db)
+        else:
+            @staticmethod
+            def _debugDevice(device):
+                return device
+        @staticmethod
+        def _debug(s,p=tuple()):
+            from sys import stdout as _stdout
+            _stdout.write(s % p)
+    else:
+        @staticmethod
+        def _debug(s,p=tuple()):
+            pass
+        @staticmethod
+        def _debugDevice(device):
+            return device
+    @staticmethod
+    def _mimport(loc,glob,filename,name=None):
+        if isinstance(name,(tuple,list)):
+            for n in name:
+                Device._mimport(loc,glob,filename,n)
+            return
+        if name is None: name = filename
+        Device._debug('loading %-21s',(name+':'))
+        try:
+            try:
+                device = __import__(filename, glob, fromlist=[name], level=1).__getattribute__(name)
+            except:
+                device = __import__(filename, glob, fromlist=[name]).__getattribute__(name)
+            Device._debug(' successful\n')
+            loc[name] = Device._debugDevice(device)
+        except Exception as exc:
+            Device._debug(' failed: %s\n'%exc)
+    """ /debug safe import """
+
     def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):

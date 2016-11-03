@@ -35,7 +35,7 @@ using namespace testing;
 //    void setQualifiers(Data *qualifiers) {assignDescAt(qualifiers, 3);}
 //};
 
-int main(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))) {
+int main(int argc UNUSED_ARGUMENT, char **argv UNUSED_ARGUMENT) {
     BEGIN_TESTING(Conglom);                
     
     { // CTR

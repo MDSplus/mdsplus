@@ -682,6 +682,10 @@ public class MdsDataProvider
         {
             return getData(xmin, xmax, numPoints, false);
         }
+        public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+        {
+            return getData((double)xmin, (double)xmax, numPoints, true);
+        }
         public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
         {
              String xExpr, yExpr;
@@ -1582,7 +1586,7 @@ public class MdsDataProvider
             Calendar cal = Calendar.getInstance();
             //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
-            //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
+//            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
             Date date = df.parse(in + " GMT");
             //Date date = df.parse(in);
             cal.setTime(date);

@@ -42,11 +42,10 @@ static void RemoveBlanksAndUpcase(char *out, char const *in);
 static int CloseTopTree(PINO_DATABASE * dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *subtree_list);
 static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editting);
-static int OpenTreefile(char *tree, int shot, TREE_INFO * info, int edit_flag, int *nomap, int *fd,
-			int report);
-static int MapFile(int fd, TREE_INFO * info, int edit_flag, int nomap);
+static int OpenTreefile(char *tree, int shot, TREE_INFO * info, int edit_flag, int *nomap, int *fd);
+static int MapFile(int fd, TREE_INFO * info, int nomap);
 static int GetVmForTree(TREE_INFO * info, int nomap);
-static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag, int remote);
+static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag);
 static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * subtreetop);
 
 extern void **TreeCtx();
@@ -212,6 +211,9 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
 	    db->next->next = 0;
 	  }
 	}
+      }
+      else {
+	status = db_slot_status;
       }
       TranslateLogicalFree(path);
     } else
@@ -475,11 +477,11 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       info->flush = (dblist->shotid == -1);
       info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
       info->shot = dblist->shotid;
-      status = MapTree(tree, dblist->shotid, info, 0, parent == 0);
+      status = MapTree(tree, dblist->shotid, info, 0);
       if (!(status & 1) && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
 	status = TreeCallHook(RetrieveTree, info, 0);
 	if (status & 1)
-	  status = MapTree(tree, dblist->shotid, info, 0, parent == 0);
+	  status = MapTree(tree, dblist->shotid, info, 0);
       }
       if (status == TreeNORMAL) {
 	TreeCallHook(OpenTree, info, 0);
@@ -810,7 +812,7 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
 }
 
 static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, char **resnam_out,
-		   int report, int edit_flag, int *fd_out)
+		   int edit_flag, int *fd_out)
 {
   int fd = -1;
   int status = TreeNORMAL;
@@ -908,7 +910,7 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
   return status;
 }
 
-static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag, int report)
+static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag)
 {
   int status;
   int nomap = 0;
@@ -920,19 +922,18 @@ static int MapTree(char *tree, int shot, TREE_INFO * info, int edit_flag, int re
   section on the tree file.
   *******************************************/
 
-  status = OpenTreefile(tree, shot, info, edit_flag, &nomap, &fd, report);
+  status = OpenTreefile(tree, shot, info, edit_flag, &nomap, &fd);
   if (status == TreeNORMAL)
-    status = MapFile(fd, info, edit_flag, nomap);
+    status = MapFile(fd, info,  nomap);
   return status;
 }
 
-static int OpenTreefile(char *tree, int shot, TREE_INFO * info, int edit_flag, int *nomap, int *fd,
-			int report)
+static int OpenTreefile(char *tree, int shot, TREE_INFO * info, int edit_flag, int *nomap, int *fd)
 {
   int status;
 
   char *resnam;
-  status = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report, edit_flag, fd);
+  status = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, edit_flag, fd);
   if (status & 1) {
     info->alq = (int)(MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512);
     if (info->alq < 1) {
@@ -976,7 +977,7 @@ void FixupHeader(TREE_HEADER * hdr)
 #define FixupHeader(arg)
 #endif
 
-static int MapFile(int fd, TREE_INFO * info, int edit_flag, int nomap)
+static int MapFile(int fd, TREE_INFO * info, int nomap)
 {
   int status;
 
@@ -1170,11 +1171,11 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	info->flush = ((*dblist)->shotid == -1);
 	info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
 	info->shot = (*dblist)->shotid;
-	status = MapTree(tree, (*dblist)->shotid, info, 1, 1);
+	status = MapTree(tree, (*dblist)->shotid, info, 1);
 	if (!(status & 1) && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
 	  status = TreeCallHook(RetrieveTree, info, 0);
 	  if (status & 1)
-	    status = MapTree(tree, (*dblist)->shotid, info, 1, 1);
+	    status = MapTree(tree, (*dblist)->shotid, info, 1);
 	}
 	if (status & 1) {
 	  TreeCallHook(OpenTreeEdit, info, 0);
@@ -1228,19 +1229,19 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	info->treenam = strdup(tree);
 	info->shot = (*dblist)->shotid;
 	status =
-	    OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0,
+	    OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec,  0,
 		    &fd);
 	if (fd > -1) {
 	  char *resnam = 0;
 	  MDS_IO_CLOSE(fd);
 	  info->channel = -2;
-	  status = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0, 0, &fd);
+	  status = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam,  0, &fd);
 	  if (resnam)
 	    free(resnam);
 	  if (fd > -1) {
 	    MDS_IO_CLOSE(fd);
 	    status =
-		OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0, 0, &fd);
+		OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0, &fd);
 	    if (resnam)
 	      free(resnam);
 	    if (fd > -1)
@@ -1329,7 +1330,7 @@ EXPORT struct descriptor *TreeFileName(char *tree, int shot)
   int fd;
   char *ans;
   TREE_INFO dummy_info;
-  int status = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0, 0, &fd);
+  int status = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0, &fd);
   if (status & 1) {
     MDS_IO_CLOSE(fd);
     ans_dsc.pointer = ans;

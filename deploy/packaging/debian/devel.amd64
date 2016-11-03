@@ -1,13 +1,7 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/include/
 ./usr/local/mdsplus/include/STATICdef.h
 ./usr/local/mdsplus/include/SystemSpecific.h
 ./usr/local/mdsplus/include/Timeout.h
 ./usr/local/mdsplus/include/WindowsUnnamedSemaphore.h
-./usr/local/mdsplus/include/Xmds/
 ./usr/local/mdsplus/include/Xmds/ListTree.h
 ./usr/local/mdsplus/include/Xmds/ListTreeP.h
 ./usr/local/mdsplus/include/Xmds/XmdsCallbacks.h
@@ -51,7 +45,6 @@
 ./usr/local/mdsplus/include/mdslib.h
 ./usr/local/mdsplus/include/mdslib.inc
 ./usr/local/mdsplus/include/mdsobjects.h
-./usr/local/mdsplus/include/mdsplus/
 ./usr/local/mdsplus/include/mdsplus/AutoPointer.hpp
 ./usr/local/mdsplus/include/mdsplus/ConditionVar.hpp
 ./usr/local/mdsplus/include/mdsplus/Mutex.hpp

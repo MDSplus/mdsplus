@@ -42,7 +42,7 @@ extern int TdiTrace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
-int Tdi1Decompile(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = 1;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };

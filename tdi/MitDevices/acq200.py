@@ -1,6 +1,4 @@
 #!/usr/bin/python
-
-import dt100
 import re
 
 #       12345678901234567890123456789012
@@ -16,7 +14,7 @@ GNS_PRE   = 1
 GNS_POST  = 2
 GNS_ELAPSED = 3
 
-class Acq200:
+class ACQ200:
 	'models an ACQ200 class intelligent digitizer'
 	def set_dio32(self, value = IN32):
 		return self.uut.acq2sh("set.dio32 " + value)

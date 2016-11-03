@@ -285,7 +285,9 @@ public class Signal implements WaveDataListener
     //True if signal is resampled on server side to
     //reduce net load
     private boolean full_load = false;
-
+    
+    private boolean longXLimits = false;
+    private long xMinLong, xMaxLong;
     ContourSignal cs;
     private double contourLevels[];
     Vector<Vector> contourSignals = new Vector<Vector>();
@@ -528,8 +530,50 @@ public class Signal implements WaveDataListener
        this(data, x_data, xminVal, xmaxVal, null, null);
    }
     
+   public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal)
+   {
+       this(data, x_data, xminVal, xmaxVal, null, null);
+   }
+    
    public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal, WaveData lowErrData, WaveData upErrData)
    {
+        error = (lowErrData != null || upErrData != null);
+        asym_error = (lowErrData != null && upErrData != null);
+        up_errorData = upErrData;
+        low_errorData = lowErrData;
+        if(xminVal != -Double.MAX_VALUE)
+        {
+            xLimitsInitialized = true;
+            saved_xmin = this.xmin = curr_xmin = xminVal;
+        }
+        if(xmaxVal != Double.MAX_VALUE)
+        {
+            saved_xmax = this.xmax = curr_xmax = xmaxVal;
+        }
+        this.data = data;
+        this.x_data = x_data;
+        
+        
+        try {
+            checkData(saved_xmin, saved_xmax);
+            
+            if(saved_xmin == -Double.MAX_VALUE)
+                saved_xmin = this.xmin;
+            if(saved_xmax == Double.MAX_VALUE)
+                saved_xmax = this.xmax;
+            
+           
+        }catch(Exception exc)
+        {
+            System.out.println("Signal exception: " + exc);
+        }
+        data.addWaveDataListener(this);
+   }
+    public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal, WaveData lowErrData, WaveData upErrData)
+   {
+        xMinLong = xminVal;
+        xMaxLong = xmaxVal;
+        longXLimits = true;
         error = (lowErrData != null || upErrData != null);
         asym_error = (lowErrData != null && upErrData != null);
         up_errorData = upErrData;
@@ -863,6 +907,10 @@ public class Signal implements WaveDataListener
         startIndexToUpdate = s.startIndexToUpdate;
         signalListeners = s.signalListeners;
         freezeMode = s.freezeMode;
+        
+        longXLimits = s.longXLimits;
+        xMinLong = s.xMinLong;
+        xMaxLong = s.xMaxLong;
      }
 
     
@@ -2012,23 +2060,47 @@ public class Signal implements WaveDataListener
             {
                 XYData xyData;
                 if(!error)
-                    xyData = data.getData(xMin, xMax, NUM_POINTS);
+                {
+                    if(longXLimits)
+                        xyData = data.getData(xMinLong, xMaxLong, NUM_POINTS);
+                    else
+                        xyData = data.getData(xMin, xMax, NUM_POINTS);
+                }
                 else
-                    xyData = data.getData(xMin, xMax, Integer.MAX_VALUE);
+                {
+                    if(longXLimits)
+                        xyData = data.getData(xMinLong, xMaxLong, Integer.MAX_VALUE);
+                    else
+                        xyData = data.getData(xMin, xMax, Integer.MAX_VALUE);
+                }
                 if(xyData == null) return; //empty signal
                 x = xyData.x;
                 y = xyData.y;
                 adjustArraySizes();
                 increasing_x = xyData.increasingX;
                 
-                if(xMin == -Double.MAX_VALUE)
-                    this.xmin = curr_xmin = xyData.xMin;
+                if(longXLimits)
+                {
+                    if(xMin == 0)
+                        this.xmin = curr_xmin = xyData.xMin;
+                    else
+                        this.xmin = curr_xmin = xMin;
+                    if(xMax == 0)
+                        this.xmax = curr_xmax = xyData.xMax;
+                    else
+                        this.xmax = curr_xmax = xMax;
+                }
                 else
-                    this.xmin = curr_xmin = xMin;
-                if(xMax == Double.MAX_VALUE)
-                    this.xmax = curr_xmax = xyData.xMax;
-                else
-                    this.xmax = curr_xmax = xMax;
+                {
+                    if(xMin == -Double.MAX_VALUE)
+                        this.xmin = curr_xmin = xyData.xMin;
+                    else
+                        this.xmin = curr_xmin = xMin;
+                    if(xMax == Double.MAX_VALUE)
+                        this.xmax = curr_xmax = xyData.xMax;
+                    else
+                        this.xmax = curr_xmax = xMax;
+                }
 //Autoscale Y, ymin and ymax are possibly changed afterwards
                 this.ymin = this.ymax = y[0];
                 for(int i = 0; i < y.length; i++)
