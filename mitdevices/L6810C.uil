@@ -105,27 +105,29 @@ value
     DEVICE$N_INP_ENDIDX :  2;
     DEVICE$N_INP_STARTIDX :  1;
     DEVICE$N_INPUTS :  12;
-    L6810B$K_CONG_NODES :  36;
-    L6810B$N_HEAD :  0;
-    L6810B$N_NAME :  1;
-    L6810B$N_COMMENT :  2;
-    L6810B$N_FREQ :  3;
-    L6810B$N_EXT_CLOCK_IN :  4;
-    L6810B$N_STOP_TRIG :  5;
-    L6810B$N_MEMORIES :  6;
-    L6810B$N_SEGMENTS :  7;
-    L6810B$N_ACTIVE_MEM :  8;
-    L6810B$N_ACTIVE_CHANS :  9;
-    L6810B$N_INPUTS :  10;
-    L6810B$K_NODES_PER_INP :  6;
-    L6810B$N_INP_HEAD :  0;
-    L6810B$N_INP_STARTIDX :  1;
-    L6810B$N_INP_ENDIDX :  2;
-    L6810B$N_INP_FULL_SCALE :  3;
-    L6810B$N_INP_SRC_CPLING :  4;
-    L6810B$N_INP_OFFSET :  5;
-    L6810B$N_INIT_ACTION :  34;
-    L6810B$N_STORE_ACTION :  35;
+    L6810C$K_CONG_NODES :  36;
+    L6810C$N_HEAD :  0;
+    L6810C$N_NAME :  1;
+    L6810C$N_COMMENT :  2;
+    L6810C$N_FREQ :  3;
+    L6810C$N_EXT_CLOCK_IN :  4;
+    L6810C$N_STOP_TRIG :  5;
+    L6810C$N_MEMORIES :  6;
+    L6810C$N_SEGMENTS :  7;
+    L6810C$N_ACTIVE_MEM :  8;
+    L6810C$N_ACTIVE_CHANS :  9;
+    L6810C$N_INPUTS :  10;
+    L6810C$K_NODES_PER_INP :  6;
+    L6810C$N_INP_HEAD :  0;
+    L6810C$N_INP_STARTIDX :  1;
+    L6810C$N_INP_ENDIDX :  2;
+    L6810C$N_INP_FULL_SCALE :  3;
+    L6810C$N_INP_SRC_CPLING :  4;
+    L6810C$N_INP_OFFSET :  5;
+    L6810C$N_INIT_ACTION :  34;
+    L6810C$N_STORE_ACTION :  35;
+    L6810C$N_TRIGGER_DLY :  36;
+
     gains :  string_table(
 	compound_string(".4096"),
 	compound_string(" 1.024"),
@@ -186,19 +188,19 @@ list BaseStyleReasons : callbacks {
 !(BX)        XmNheight = 432;
 !(BX)    };
 !(BX)    controls {
-!(BX)         managed XmBulletinBoardDialog L6810B ;
+!(BX)         managed XmBulletinBoardDialog L6810C ;
 !(BX)    };
 !(BX)    callbacks {
 !(BX)    };
 !(BX)};
 
-object L6810B  : XmBulletinBoardDialog widget {
+object L6810C  : XmBulletinBoardDialog widget {
     arguments {
         XmNautoUnmanage = false;
         XmNdefaultPosition = true;
         XmNresizePolicy = XmRESIZE_GROW;
         XmNnoResize = false;
-        XmNdialogTitle = compound_string("L6810B  Lecroy 4 Channel Transie" &
+        XmNdialogTitle = compound_string("L6810C  Lecroy 4 Channel Transie" &
  "nt Recorder");
         XmNx = 136;
         XmNy = 155;
@@ -208,6 +210,8 @@ object L6810B  : XmBulletinBoardDialog widget {
     controls {
          managed user_defined segs;
          managed XmLabel label;
+         managed user_defined dly;
+         managed XmLabel label_dly;
          managed user_defined nidOptionMenu;
          managed XmLabelGadget labelGadget;
          managed XmLabelGadget labelGadget1;
@@ -252,7 +256,7 @@ object dsNidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu widget 
 	compound_string("8192"));
         XmNlabelString = compound_string("Samples/seg:");
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_ACTIVE_MEM;
+        XmdsNnidOffset = L6810C$N_ACTIVE_MEM;
         XmdsNlabelStrings = string_table(
 	compound_string("1 K"),
 	compound_string("2 K"),
@@ -312,7 +316,7 @@ object dsNidOptionMenu10 : user_defined procedure XmdsCreateNidOptionMenu widget
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
-        XmdsNnidOffset = L6810B$N_INPUTS + 3 * L6810B$K_NODES_PER_INP + L6810B$N_INP_SRC_CPLING;
+        XmdsNnidOffset = L6810C$N_INPUTS + 3 * L6810C$K_NODES_PER_INP + L6810C$N_INP_SRC_CPLING;
         XmdsNlabelStrings = chan_src_strs;
         XmNx = 629;
         XmNy = 128;
@@ -329,7 +333,7 @@ object dsNidOptionMenu9 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
-        XmdsNnidOffset = L6810B$N_INPUTS + 2 * L6810B$K_NODES_PER_INP + L6810B$N_INP_SRC_CPLING;
+        XmdsNnidOffset = L6810C$N_INPUTS + 2 * L6810C$K_NODES_PER_INP + L6810C$N_INP_SRC_CPLING;
         XmdsNlabelStrings = chan_src_strs;
         XmNx = 630;
         XmNy = 95;
@@ -346,7 +350,7 @@ object dsNidOptionMenu8 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
-        XmdsNnidOffset = L6810B$N_INPUTS + 1 * L6810B$K_NODES_PER_INP + L6810B$N_INP_SRC_CPLING;
+        XmdsNnidOffset = L6810C$N_INPUTS + 1 * L6810C$K_NODES_PER_INP + L6810C$N_INP_SRC_CPLING;
         XmdsNlabelStrings = chan_src_strs;
         XmNx = 629;
         XmNy = 64;
@@ -363,7 +367,7 @@ object dsNidOptionMenu7 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = chan_src_codes;
-        XmdsNnidOffset = L6810B$N_INPUTS + 0 * L6810B$K_NODES_PER_INP + L6810B$N_INP_SRC_CPLING;
+        XmdsNnidOffset = L6810C$N_INPUTS + 0 * L6810C$K_NODES_PER_INP + L6810C$N_INP_SRC_CPLING;
         XmdsNlabelStrings = chan_src_strs;
         XmNx = 628;
         XmNy = 31;
@@ -404,7 +408,7 @@ object dsNidOptionMenu6 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
-        XmdsNnidOffset = L6810B$N_INPUTS + 3 * L6810B$K_NODES_PER_INP + L6810B$N_INP_FULL_SCALE;
+        XmdsNnidOffset = L6810C$N_INPUTS + 3 * L6810C$K_NODES_PER_INP + L6810C$N_INP_FULL_SCALE;
         XmdsNlabelStrings = gains;
         XmNx = 496;
         XmNy = 128;
@@ -421,7 +425,7 @@ object dsNidOptionMenu5 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
-        XmdsNnidOffset = L6810B$N_INPUTS + 2 * L6810B$K_NODES_PER_INP + L6810B$N_INP_FULL_SCALE;
+        XmdsNnidOffset = L6810C$N_INPUTS + 2 * L6810C$K_NODES_PER_INP + L6810C$N_INP_FULL_SCALE;
         XmdsNlabelStrings = gains;
         XmNx = 496;
         XmNy = 94;
@@ -438,7 +442,7 @@ object dsNidOptionMenu4 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
-        XmdsNnidOffset = L6810B$N_INPUTS + 1 * L6810B$K_NODES_PER_INP + L6810B$N_INP_FULL_SCALE;
+        XmdsNnidOffset = L6810C$N_INPUTS + 1 * L6810C$K_NODES_PER_INP + L6810C$N_INP_FULL_SCALE;
         XmdsNlabelStrings = gains;
         XmNx = 496;
         XmNy = 62;
@@ -455,7 +459,7 @@ object dsNidOptionMenu3 : user_defined procedure XmdsCreateNidOptionMenu widget 
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = gains;
-        XmdsNnidOffset = L6810B$N_INPUTS + 0 * L6810B$K_NODES_PER_INP + L6810B$N_INP_FULL_SCALE;
+        XmdsNnidOffset = L6810C$N_INPUTS + 0 * L6810C$K_NODES_PER_INP + L6810C$N_INP_FULL_SCALE;
         XmdsNlabelStrings = gains;
         XmNx = 496;
         XmNy = 30;
@@ -470,13 +474,13 @@ object dsNidOptionMenu3 : user_defined procedure XmdsCreateNidOptionMenu widget 
 
 object dsDigChans : user_defined procedure XmdsCreateDigChans widget {
     arguments {
-        XmdsNnodesPerChannel = L6810B$K_NODES_PER_INP;
+        XmdsNnodesPerChannel = L6810C$K_NODES_PER_INP;
         XmdsNnid = DEVICE_NID;
         XmdsNchannels = 4;
-        XmdsNendIdxNidOffset = L6810B$N_INP_ENDIDX;
-        XmdsNstartIdxNidOffset = L6810B$N_INP_STARTIDX;
-        XmdsNdataNidOffset = L6810B$N_INP_HEAD;
-        XmdsNnidOffset = L6810B$N_INPUTS;
+        XmdsNendIdxNidOffset = L6810C$N_INP_ENDIDX;
+        XmdsNstartIdxNidOffset = L6810C$N_INP_STARTIDX;
+        XmdsNdataNidOffset = L6810C$N_INP_HEAD;
+        XmdsNnidOffset = L6810C$N_INPUTS;
         XmNwidth = 472;
     };
     controls {
@@ -502,7 +506,7 @@ object exprField : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_INPUTS + 0 * L6810B$K_NODES_PER_INP + L6810B$N_INP_OFFSET;
+        XmdsNnidOffset = L6810C$N_INPUTS + 0 * L6810C$K_NODES_PER_INP + L6810C$N_INP_OFFSET;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
         XmNx = 794;
@@ -519,7 +523,7 @@ object exprField1 : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_INPUTS + 1 * L6810B$K_NODES_PER_INP + L6810B$N_INP_OFFSET;
+        XmdsNnidOffset = L6810C$N_INPUTS + 1 * L6810C$K_NODES_PER_INP + L6810C$N_INP_OFFSET;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
         XmNx = 794;
@@ -536,7 +540,7 @@ object exprField2 : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_INPUTS + 2 * L6810B$K_NODES_PER_INP + L6810B$N_INP_OFFSET;
+        XmdsNnidOffset = L6810C$N_INPUTS + 2 * L6810C$K_NODES_PER_INP + L6810C$N_INP_OFFSET;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
         XmNx = 794;
@@ -553,7 +557,7 @@ object exprField3 : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 3;
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_INPUTS + 3 * L6810B$K_NODES_PER_INP + L6810B$N_INP_OFFSET;
+        XmdsNnidOffset = L6810C$N_INPUTS + 3 * L6810C$K_NODES_PER_INP + L6810C$N_INP_OFFSET;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
         XmNx = 794;
@@ -613,7 +617,7 @@ object dsExprField3 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
-        XmdsNnidOffset = L6810B$N_STOP_TRIG;
+        XmdsNnidOffset = L6810C$N_STOP_TRIG;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
         XmNx = 72;
@@ -653,7 +657,7 @@ object dsExprField2 : user_defined procedure XmdsCreateExprField widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 20;
-        XmdsNnidOffset = L6810B$N_EXT_CLOCK_IN;
+        XmdsNnidOffset = L6810C$N_EXT_CLOCK_IN;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
         XmNx = 365;
@@ -689,7 +693,7 @@ object dsNidOptionMenu1 : user_defined procedure XmdsCreateNidOptionMenu widget 
 	compound_string("5000000"));
         XmNlabelString = compound_string("Internal Clock");
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_FREQ;
+        XmdsNnidOffset = L6810C$N_FREQ;
         XmdsNlabelStrings = string_table(
 	compound_string("External Clock"),
 	compound_string("20  Hz"),
@@ -727,7 +731,7 @@ object dsNidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
 	compound_string("4 "));
         XmNlabelString = compound_string("Active Channels:");
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_ACTIVE_CHANS;
+        XmdsNnidOffset = L6810C$N_ACTIVE_CHANS;
         XmdsNlabelStrings = string_table(
 	compound_string("1 "),
 	compound_string("2 "),
@@ -745,7 +749,7 @@ object dsXdBoxOnOffButton1 : user_defined procedure XmdsCreateXdBoxOnOffButton w
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Store Action");
-        XmdsNnidOffset = L6810B$N_STORE_ACTION;
+        XmdsNnidOffset = L6810C$N_STORE_ACTION;
         XmNx = 226;
         XmNy = 346;
         XmNwidth = 118;
@@ -761,7 +765,7 @@ object dsXdBoxOnOffButton : user_defined procedure XmdsCreateXdBoxOnOffButton wi
     arguments {
         XmdsNnid = DEVICE_NID;
         XmNlabelString = compound_string("Initialization Action");
-        XmdsNnidOffset = L6810B$N_INIT_ACTION;
+        XmdsNnidOffset = L6810C$N_INIT_ACTION;
         XmNx = 12;
         XmNy = 346;
         XmNwidth = 155;
@@ -778,7 +782,7 @@ object dsExprField1 : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
         XmNcolumns = 32;
-        XmdsNnidOffset = L6810B$N_COMMENT;
+        XmdsNnidOffset = L6810C$N_COMMENT;
         XmNmarginHeight = 1;
         XmdsNautoQuote = true;
         XmNx = 108;
@@ -795,7 +799,7 @@ object dsExprField : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmdsNdefaultQuote = true;
         XmNcolumns = 32;
-        XmdsNnidOffset = L6810B$N_NAME;
+        XmdsNnidOffset = L6810C$N_NAME;
         XmNmarginHeight = 1;
         XmdsNautoQuote = true;
         XmNx = 110;
@@ -853,7 +857,7 @@ object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
 	compound_string("16"));
         XmNlabelString = compound_string("Memory:");
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_MEMORIES;
+        XmdsNnidOffset = L6810C$N_MEMORIES;
         XmdsNlabelStrings = string_table(
 	compound_string("512k"),
 	compound_string("1 Meg"),
@@ -883,7 +887,7 @@ object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
 object label : XmLabel widget {
     arguments {
         XmNlabelString = compound_string("Segments:");
-        XmNx = 565;
+        XmNx = 515;
         XmNy = 76;
     };
     controls {
@@ -897,10 +901,39 @@ object segs : user_defined procedure XmdsCreateExprField widget {
         XmdsNnid = DEVICE_NID;
         XmNcolumns = 5;
         XmdsNputOnApply = true;
-        XmdsNnidOffset = L6810B$N_SEGMENTS;
+        XmdsNnidOffset = L6810C$N_SEGMENTS;
         XmNmarginHeight = 1;
         XmNmarginWidth = 1;
-        XmNx = 657;
+        XmNx = 570;
+        XmNy = 72;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object label_dly : XmLabel widget {
+    arguments {
+        XmNlabelString = compound_string("Trigger Delay:");
+        XmNx = 608;
+        XmNy = 76;
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+object dly : user_defined procedure XmdsCreateExprField widget {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmNcolumns = 5;
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = L6810C$N_TRIGGER_DLY;
+        XmNmarginHeight = 1;
+        XmNmarginWidth = 1;
+        XmNx = 698;
         XmNy = 72;
     };
     controls {
