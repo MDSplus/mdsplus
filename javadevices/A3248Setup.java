@@ -130,7 +130,7 @@ public class A3248Setup extends DeviceSetup {
         deviceChoice1.setChoiceIntValues(new int[] {10000, 6670, 5000, 4000, 3330, 2860, 2500, 1000, 667, 500, 400, 333, 286, 250});
         deviceChoice1.setChoiceItems(new String[] {"10000", "6670", "5000", "4000", "3330", "2860", "2500", "1000", "667", "500", "400", "333", "286", "250"});
         deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Clock Freq (Hz).:");
+        deviceChoice1.setLabelString("Clock Freq (KHz).:");
         deviceChoice1.setOffsetNid(4);
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);

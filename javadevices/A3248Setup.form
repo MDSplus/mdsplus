@@ -220,7 +220,7 @@
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Clock Freq (Hz).:"/>
+                <Property name="labelString" type="java.lang.String" value="Clock Freq (KHz).:"/>
                 <Property name="offsetNid" type="int" value="4"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>

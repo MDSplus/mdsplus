@@ -181,11 +181,11 @@ class A3248(Device):
             start=0
             end=pts-1
             try:
-                start = max(int(self.__getattr__('input_%1.1d_startidx'%(chan+1,))),0)
+                start = max(int(self.__getattr__('input_%1.1d_start_idx'%(chan+1,))),0)
             except:
                 pass
             try:
-                end = min(int(self.__getattr__('input_%1.1d_endidx'%(chan+1,))),pts-1)
+                end = min(int(self.__getattr__('input_%1.1d_end_idx'%(chan+1,))),pts-1)
             except:
                 pass
             if self.debug:
@@ -197,9 +197,10 @@ class A3248(Device):
 	        print "gain = %d"%gain
                 print "offset =%d"%offset
                 print "dim is %s"% str(dim)
+                print "start is %d end is %d"%(start, end,)
             dat = MDSplus.Data.compile(
                         'build_signal(build_with_units(($value - $2)*.02/$1, "V") ,build_with_units($3,"Counts"),$4)',
-                        gain, offset, buf, dim) 
+                        gain, offset, buf[start : end], dim) 
             exec('c=self.input_'+'%1d'%(chan+1,)+'.record=dat')
 
     def help(self):
