@@ -971,6 +971,11 @@ class TreeNode(object): # HINT: TreeNode begin
         else:
             self.tree=tree[0]
 
+    def __eq__(self,obj):
+        if isinstance(obj,(TreeNode,)):
+            return self.tree == obj.tree and self.nid == obj.nid
+        return False
+
     ###################################
     ### Data Properties
     ###################################
@@ -2698,6 +2703,14 @@ class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
             self.tree=Tree(*tree)
         else:
             self.tree=tree[0]
+
+    def __eq__(self,obj):
+        if isinstance(obj,(TreeNodeArray,)):
+            if self.tree == obj.tree:
+                return self.nid_number == obj.nid_number
+            _N.zeros((max(self.nid_number.size,obj.nid_number.size),),_N.bool)
+        return _N.zeros_like(self.nid_number,_N.bool)
+
 
     def __getitem__(self,n):
         """Return TreeNode from mdsarray. array[n]
