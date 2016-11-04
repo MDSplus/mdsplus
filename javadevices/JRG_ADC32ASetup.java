@@ -37,6 +37,7 @@ public class JRG_ADC32ASetup extends DeviceSetup {
         deviceField3 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
+        deviceField70 = new DeviceField();
         deviceField5 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
@@ -172,7 +173,7 @@ public class JRG_ADC32ASetup extends DeviceSetup {
         setDeviceTitle("Joerger ADC32A 32 Channels Digitizer");
         setDeviceType("JRG_ADC32A");
         setHeight(400);
-        setWidth(700);
+        setWidth(900);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 1));
@@ -211,8 +212,14 @@ public class JRG_ADC32ASetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Clock: ");
         deviceField4.setNumCols(20);
-        deviceField4.setOffsetNid(5);
+        deviceField4.setOffsetNid(7);
         jPanel4.add(deviceField4);
+
+        deviceField70.setIdentifier("");
+        deviceField70.setLabelString("Ext. Clock");
+        deviceField70.setNumCols(20);
+        deviceField70.setOffsetNid(5);
+        jPanel4.add(deviceField70);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Trigger: ");
@@ -973,6 +980,7 @@ public class JRG_ADC32ASetup extends DeviceSetup {
     private DeviceField deviceField68;
     private DeviceField deviceField69;
     private DeviceField deviceField7;
+    private DeviceField deviceField70;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
