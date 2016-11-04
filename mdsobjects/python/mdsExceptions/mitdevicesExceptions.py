@@ -244,10 +244,10 @@ class DevPYDEVICE_NOT_FOUND(DevException):
 
 
 
-class DevPYDEVICE_NOT_FOUND2(DevException):
+class DevPY_INTERFACE_LIBRARY_NOT_FOUND(DevException):
   status=662470922
-  message="Device support not found."
-  msgnam="PYDEVICE_NOT_FOUND2"
+  message="The needed device hardware interface library could not be loaded."
+  msgnam="PY_INTERFACE_LIBRARY_NOT_FOUND"
 
 
 

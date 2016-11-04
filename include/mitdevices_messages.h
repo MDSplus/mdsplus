@@ -41,7 +41,7 @@
 #define DEVCAM_NOSX             0x277c80f2
 #define DEVINV_SETUP            0x277c80fa
 #define DEVPYDEVICE_NOT_FOUND   0x277c8102
-#define DEVPYDEVICE_NOT_FOUND2  0x277c810a
+#define DEVPY_INTERFACE_LIBRARY_NOT_FOUND 0x277c810a
 #define DEVIO_STUCK             0x277c8112
 #define DEVUNKOWN_STATE         0x277c811a
 #define DEVWRONG_TREE           0x277c8122

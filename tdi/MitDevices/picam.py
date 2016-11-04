@@ -109,12 +109,12 @@ class PICAM(MDSplus.Device):
         import numpy as np
         from MDSplus.mdsExceptions import DevCOMM_ERROR
         from MDSplus.mdsExceptions import DevBAD_PARAMETER
-        from MDSplus.mdsExceptions import DevPYDEVICE_NOT_FOUND
+        from MDSplus.mdsExceptions import DevPY_INTERFACE_LIBRARY_NOT_FOUND
 
         try:
             import PythonForPicam as pfp
         except:
-            raise DevPYDEVICE_NOT_FOUND("Picam error importing PythonForPicam")
+            raise DevPY_INTERFACE_LIBRARY_NOT_FOUND("Picam error importing PythonForPicam")
 
         self.debugging = os.getenv('DEBUG_DEVICES')
         exposure = float(self.exposure)
