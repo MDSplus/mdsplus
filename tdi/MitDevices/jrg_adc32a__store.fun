@@ -24,7 +24,6 @@ public fun jrg_adc32a__store(as_is _nid, optional _method) {
   _trigger       = DevNodeRef(_nid,_N_TRIGGER);  /* get trigger */
   _active_chan       = DevNodeRef(_nid,_N_ACTIVE_CHAN);  /* get number of samples */
   _active_mem = DevNodeRef(_nid, _N_ACTIVE_MEM);
-
   _module_id = 0L;
 
   /* Read Module ID */
@@ -83,7 +82,7 @@ public fun jrg_adc32a__store(as_is _nid, optional _method) {
 /*  _data_buffer = set_range([_memsize],_data_buffer); */
 
   if (_ext_clock) {
-    _clock = _ext_clock;
+    _clock = DevNodeRef(_nid, _N_EXT_CLOCK);
   } else {
     _clock = make_range(* , * , _active_chan*10E-6);
   }

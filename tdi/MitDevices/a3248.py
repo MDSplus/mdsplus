@@ -89,7 +89,7 @@ class A3248(Device):
         gain_code = int(math.log(gain, 2))
         offset = self.getInteger(self.offset, DevBAD_OFFSET)
         offset = max(min(offset, 255), 0)
-        gain_offset_reg = gain_code | (offset << 2)
+        gain_offset_reg = (gain_code<<8) | offset
 
         pretrig = max(min(self.getInteger(self.pretrig, DevBAD_PRE_TRIG),32768),0)
         
@@ -129,24 +129,32 @@ class A3248(Device):
         from MDSplus.mdsExceptions import DevBAD_NAME
         from MDSplus.mdsExceptions import DevNOT_TRIGGERED
 
-        print "starting A3248 store"
+        if self.debug:
+            print "starting A3248 store"
         name = self.getString(self.name, DevBAD_NAME)
         status = Data.execute('AEON_CHECKTRIGGER("%s")' % (name,))
         if not (status & 1) :
             raise DevNOT_TRIGGERED("Module %s not triggered"%name)
         setup_vector = Data.execute('AEON_GETSETUP("%s")' % (name,))
-        status_reg = setup_vector[0]
-        gain_reg = setup_vector[1]
-        addr = setup_vector[2]       
-        print "get dt"
+        status_reg = int(setup_vector[0])
+        gain_reg = int(setup_vector[1])
+        addr = int(setup_vector[2])       
+        if self.debug:
+            print "get dt"
         dt = self.dts[int((status_reg >> 8)&0xF)]   
         pts = 32768
         if status_reg & 0x00F1 :
             pts = (status_reg&0xFF)*128
-        gain =  1 << ((gain_reg >> 8) & 3)
+        if self.debug:
+            print "gain reg is %d"%gain_reg
+        gain_code = ((gain_reg >> 8) & 3)
+        gain =  (1 << gain_code)
+        if self.debug:
+            print "gain is %d"%gain
         offset = gain_reg &0xFF
-        offset = -.02*offset/gain
-        print "store clock record"
+        offset = int(offset)
+        if self.debug:
+            print "store clock record"
         if dt == 0 :
             self.clock.record=self.ext_clock
         else :
@@ -168,7 +176,8 @@ class A3248(Device):
         
         chan_node = self.__getattr__('input_%1.1d' % (chan+1,))
         if chan_node.on :
-            print "it is on so ..."
+            if self.debug:
+                print "it is on so ..."
             start=0
             end=pts-1
             try:
@@ -179,22 +188,19 @@ class A3248(Device):
                 end = min(int(self.__getattr__('input_%1.1d_endidx'%(chan+1,))),pts-1)
             except:
                 pass
-            print "about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end,)
-            buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end,))
-
+            if self.debug:
+                print "about to aeon_getchannel(%s, %d, %d %d)" % (name, addr, chan, end,)
+            buf = MDSplus.Data.execute('aeon_getchannel("%s", %d, %d, %d)' % (name, addr, chan, end,)) 
             dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trigger ), self.clock)
-            print "about to make dat"
-            print 'build_signal(build_with_units((($1+ ($2-$1)*($value - -32768)/(32767 - -32768 ))), "V") ,build_with_units($3,"Counts"),$4)'
-	    print gain
-            print offset
-            print buf
-            print "dim is %s"% str(dim)
+            if self.debug:
+                print "about to make dat"
+	        print "gain = %d"%gain
+                print "offset =%d"%offset
+                print "dim is %s"% str(dim)
             dat = MDSplus.Data.compile(
                         'build_signal(build_with_units(($value - $2)*.02/$1, "V") ,build_with_units($3,"Counts"),$4)',
                         gain, offset, buf, dim) 
-            print "have dat"
             exec('c=self.input_'+'%1d'%(chan+1,)+'.record=dat')
-            print "written"
 
     def help(self):
         """ Help method to describe the methods and nodes of the AEON_3248 module type """
