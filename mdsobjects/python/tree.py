@@ -2329,7 +2329,7 @@ class TreeNode(object): # HINT: TreeNode begin
             status=_TreeShr._TreePutRow(self.tree.ctx,
                                         self._nid,
                                         _C.c_int32(bufsize),
-                                        _C.c_void_p(_scalar.Uint64(timestamp)._descriptor.pointer),
+                                        _C.c_void_p(_scalar.Uint64(timestamp).descriptor.pointer),
                                         _C.pointer(_array.Array(array).descriptor))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
@@ -2707,9 +2707,9 @@ class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
     def __eq__(self,obj):
         if isinstance(obj,(TreeNodeArray,)):
             if self.tree == obj.tree:
-                return self.nid_number == obj.nid_number
-            _N.zeros((max(self.nid_number.size,obj.nid_number.size),),_N.bool)
-        return _N.zeros_like(self.nid_number,_N.bool)
+                return self._value == obj._value
+            _N.zeros((max(self._value.size,obj._value.size),),_N.bool)
+        return _N.zeros_like(self._value,_N.bool)
 
 
     def __getitem__(self,n):
@@ -2728,7 +2728,7 @@ class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
 
     @property
     def nid_number(self):
-        return self._value
+        return _array.Array(self._value)
 
     def restoreContext(self):
         self.tree.restoreContext()
