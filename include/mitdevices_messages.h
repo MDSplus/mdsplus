@@ -188,3 +188,4 @@
 #define DEVBAD_PARAMETER        0x277ca5c2
 #define DEVCOMM_ERROR           0x277ca5ca
 #define DEVCAMERA_NOT_FOUND     0x277ca5d2
+#define DEVNOT_A_PYDEVICE       0x277ca5da

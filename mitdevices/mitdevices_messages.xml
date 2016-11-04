@@ -541,6 +541,9 @@
     <status name="CAMERA_NOT_FOUND" value="5306" severity="Error"
           text="Could not find specified camera on the network"
           facabb="DEV"/>
+    <status name="NOT_A_PYDEVICE" value="5307" severity="Error"
+          text="Device is not a python device."
+          facabb="DEV"/>
 
 
    </facility>

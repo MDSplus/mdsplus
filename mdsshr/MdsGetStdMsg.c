@@ -1,11 +1,6 @@
-static const char *FAC_Tcl = "TCL";
 static const char *FAC_Tdi = "TDI";
-static const char *FAC_Lib = "LIB";
-static const char *FAC_Str = "STR";
-static const char *FAC_Ss = "SS";
-static const char *FAC_Cam = "CAM";
-static const char *FAC_Server = "SERVER";
 static const char *FAC_Mdsdcl = "MDSDCL";
+static const char *FAC_Cam = "CAM";
 static const char *FAC_Tree = "TREE";
 static const char *FAC_DEV = "DEV";
 static const char *FAC_RETICON = "RETICON";
@@ -37,31 +32,16 @@ static const char *FAC_H908 = "H908";
 static const char *FAC_DSP2904 = "DSP2904";
 static const char *FAC_PY = "PY";
 static const char *FAC_DT196B = "DT196B";
+static const char *FAC_Lib = "LIB";
+static const char *FAC_Str = "STR";
+static const char *FAC_Ss = "SS";
+static const char *FAC_Tcl = "TCL";
+static const char *FAC_Server = "SERVER";
 
 
 int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
     int sts;
     switch (status & (-8)) {
-
-/* TclNORMAL */
-      case 0x2a0008:
-        {static const char *text="Normal successful completion";
-        static const char *msgnam="NORMAL";
-        *fac_out = FAC_Tcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TclFAILED_ESSENTIAL */
-      case 0x2a0010:
-        {static const char *text="Essential action failed";
-        static const char *msgnam="FAILED_ESSENTIAL";
-        *fac_out = FAC_Tcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
 
 /* TdiBREAK */
       case 0xfd38008:
@@ -383,276 +363,6 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* LibINSVIRMEM */
-      case 0x158210:
-        {static const char *text="Insufficient virtual memory";
-        static const char *msgnam="INSVIRMEM";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibINVARG */
-      case 0x158230:
-        {static const char *text="Invalid argument";
-        static const char *msgnam="INVARG";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibINVSTRDES */
-      case 0x158220:
-        {static const char *text="Invalid string descriptor";
-        static const char *msgnam="INVSTRDES";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibKEYNOTFOU */
-      case 0x1582f8:
-        {static const char *text="Key not found";
-        static const char *msgnam="KEYNOTFOU";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibNOTFOU */
-      case 0x158270:
-        {static const char *text="Entity not found";
-        static const char *msgnam="NOTFOU";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibQUEWASEMP */
-      case 0x1582e8:
-        {static const char *text="Queue was empty";
-        static const char *msgnam="QUEWASEMP";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibSTRTRU */
-      case 0x158010:
-        {static const char *text="String truncated";
-        static const char *msgnam="STRTRU";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrMATCH */
-      case 0x248418:
-        {static const char *text="Strings match";
-        static const char *msgnam="MATCH";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrNOMATCH */
-      case 0x248208:
-        {static const char *text="Strings do not match";
-        static const char *msgnam="NOMATCH";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrNOELEM */
-      case 0x248218:
-        {static const char *text="Not enough delimited characters";
-        static const char *msgnam="NOELEM";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrINVDELIM */
-      case 0x248210:
-        {static const char *text="Not enough delimited characters";
-        static const char *msgnam="INVDELIM";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrSTRTOOLON */
-      case 0x248070:
-        {static const char *text="String too long";
-        static const char *msgnam="STRTOOLON";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* SsINTOVF */
-      case 0x478:
-        {static const char *text="Integer overflow";
-        static const char *msgnam="INTOVF";
-        *fac_out = FAC_Ss;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamDONE_Q */
-      case 0x8018008:
-        {static const char *text="I/O completed with X=1, Q=1";
-        static const char *msgnam="DONE_Q";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamDONE_NOQ */
-      case 0x8018010:
-        {static const char *text="I/O completed with X=1, Q=0";
-        static const char *msgnam="DONE_NOQ";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamDONE_NOX */
-      case 0x8019000:
-        {static const char *text="I/O completed with X=0 - probable failure";
-        static const char *msgnam="DONE_NOX";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamSERTRAERR */
-      case 0x8019800:
-        {static const char *text="serial transmission error on highway";
-        static const char *msgnam="SERTRAERR";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamSCCFAIL */
-      case 0x8019840:
-        {static const char *text="serial crate controller failure";
-        static const char *msgnam="SCCFAIL";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamOFFLINE */
-      case 0x8019868:
-        {static const char *text="crate is offline";
-        static const char *msgnam="OFFLINE";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerNOT_DISPATCHED */
-      case 0xfe18008:
-        {static const char *text="action not dispatched, depended on failed action";
-        static const char *msgnam="NOT_DISPATCHED";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerINVALID_DEPENDENCY */
-      case 0xfe18010:
-        {static const char *text="action dependency cannot be evaluated";
-        static const char *msgnam="INVALID_DEPENDENCY";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerCANT_HAPPEN */
-      case 0xfe18018:
-        {static const char *text="action contains circular dependency or depends on action which was not dispatched";
-        static const char *msgnam="CANT_HAPPEN";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerINVSHOT */
-      case 0xfe18020:
-        {static const char *text="invalid shot number, cannot dispatch actions in model";
-        static const char *msgnam="INVSHOT";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerABORT */
-      case 0xfe18030:
-        {static const char *text="Server action was aborted";
-        static const char *msgnam="ABORT";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerPATH_DOWN */
-      case 0xfe18040:
-        {static const char *text="Path to server lost";
-        static const char *msgnam="PATH_DOWN";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerSOCKET_ADDR_ERROR */
-      case 0xfe18048:
-        {static const char *text="Cannot obtain ip address socket is bound to.";
-        static const char *msgnam="SOCKET_ADDR_ERROR";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* ServerINVALID_ACTION_OPERATION */
-      case 0xfe18050:
-        {static const char *text="None";
-        static const char *msgnam="INVALID_ACTION_OPERATION";
-        *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
 /* MdsdclSUCCESS */
       case 0x8020008:
         {static const char *text="Normal successful completion";
@@ -788,6 +498,66 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         {static const char *text="Qualifier value needed";
         static const char *msgnam="MISSING_VALUE";
         *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamDONE_Q */
+      case 0x8018008:
+        {static const char *text="I/O completed with X=1, Q=1";
+        static const char *msgnam="DONE_Q";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamDONE_NOQ */
+      case 0x8018010:
+        {static const char *text="I/O completed with X=1, Q=0";
+        static const char *msgnam="DONE_NOQ";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamDONE_NOX */
+      case 0x8019000:
+        {static const char *text="I/O completed with X=0 - probable failure";
+        static const char *msgnam="DONE_NOX";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamSERTRAERR */
+      case 0x8019800:
+        {static const char *text="serial transmission error on highway";
+        static const char *msgnam="SERTRAERR";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamSCCFAIL */
+      case 0x8019840:
+        {static const char *text="serial crate controller failure";
+        static const char *msgnam="SCCFAIL";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamOFFLINE */
+      case 0x8019868:
+        {static const char *text="crate is offline";
+        static const char *msgnam="OFFLINE";
+        *fac_out = FAC_Cam;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3448,6 +3218,246 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         {static const char *text="Could not find specified camera on the network";
         static const char *msgnam="CAMERA_NOT_FOUND";
         *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* DEVNOT_A_PYDEVICE */
+      case 0x277ca5d8:
+        {static const char *text="Device is not a python device.";
+        static const char *msgnam="NOT_A_PYDEVICE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibINSVIRMEM */
+      case 0x158210:
+        {static const char *text="Insufficient virtual memory";
+        static const char *msgnam="INSVIRMEM";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibINVARG */
+      case 0x158230:
+        {static const char *text="Invalid argument";
+        static const char *msgnam="INVARG";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibINVSTRDES */
+      case 0x158220:
+        {static const char *text="Invalid string descriptor";
+        static const char *msgnam="INVSTRDES";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibKEYNOTFOU */
+      case 0x1582f8:
+        {static const char *text="Key not found";
+        static const char *msgnam="KEYNOTFOU";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibNOTFOU */
+      case 0x158270:
+        {static const char *text="Entity not found";
+        static const char *msgnam="NOTFOU";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibQUEWASEMP */
+      case 0x1582e8:
+        {static const char *text="Queue was empty";
+        static const char *msgnam="QUEWASEMP";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibSTRTRU */
+      case 0x158010:
+        {static const char *text="String truncated";
+        static const char *msgnam="STRTRU";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrMATCH */
+      case 0x248418:
+        {static const char *text="Strings match";
+        static const char *msgnam="MATCH";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrNOMATCH */
+      case 0x248208:
+        {static const char *text="Strings do not match";
+        static const char *msgnam="NOMATCH";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrNOELEM */
+      case 0x248218:
+        {static const char *text="Not enough delimited characters";
+        static const char *msgnam="NOELEM";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrINVDELIM */
+      case 0x248210:
+        {static const char *text="Not enough delimited characters";
+        static const char *msgnam="INVDELIM";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrSTRTOOLON */
+      case 0x248070:
+        {static const char *text="String too long";
+        static const char *msgnam="STRTOOLON";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* SsINTOVF */
+      case 0x478:
+        {static const char *text="Integer overflow";
+        static const char *msgnam="INTOVF";
+        *fac_out = FAC_Ss;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TclNORMAL */
+      case 0x2a0008:
+        {static const char *text="Normal successful completion";
+        static const char *msgnam="NORMAL";
+        *fac_out = FAC_Tcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TclFAILED_ESSENTIAL */
+      case 0x2a0010:
+        {static const char *text="Essential action failed";
+        static const char *msgnam="FAILED_ESSENTIAL";
+        *fac_out = FAC_Tcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerNOT_DISPATCHED */
+      case 0xfe18008:
+        {static const char *text="action not dispatched, depended on failed action";
+        static const char *msgnam="NOT_DISPATCHED";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerINVALID_DEPENDENCY */
+      case 0xfe18010:
+        {static const char *text="action dependency cannot be evaluated";
+        static const char *msgnam="INVALID_DEPENDENCY";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerCANT_HAPPEN */
+      case 0xfe18018:
+        {static const char *text="action contains circular dependency or depends on action which was not dispatched";
+        static const char *msgnam="CANT_HAPPEN";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerINVSHOT */
+      case 0xfe18020:
+        {static const char *text="invalid shot number, cannot dispatch actions in model";
+        static const char *msgnam="INVSHOT";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerABORT */
+      case 0xfe18030:
+        {static const char *text="Server action was aborted";
+        static const char *msgnam="ABORT";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerPATH_DOWN */
+      case 0xfe18040:
+        {static const char *text="Path to server lost";
+        static const char *msgnam="PATH_DOWN";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerSOCKET_ADDR_ERROR */
+      case 0xfe18048:
+        {static const char *text="Cannot obtain ip address socket is bound to.";
+        static const char *msgnam="SOCKET_ADDR_ERROR";
+        *fac_out = FAC_Server;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* ServerINVALID_ACTION_OPERATION */
+      case 0xfe18050:
+        {static const char *text="None";
+        static const char *msgnam="INVALID_ACTION_OPERATION";
+        *fac_out = FAC_Server;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}

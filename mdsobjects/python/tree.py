@@ -949,6 +949,8 @@ class TreeNode(object): # HINT: TreeNode begin
                     return node.record.getClass(node)
             except _exceptions.TreeNODATA:
                 pass
+            except _exceptions.DevNOT_A_PYDEVICE:
+                pass
             except _exceptions.DevPYDEVICE_NOT_FOUND:
                 pass
         return node
