@@ -934,7 +934,7 @@ class TreeNode(object): # HINT: TreeNode begin
     _help=None
     _validation=None
 
-    def __new__(cls,nid,tree=None):
+    def __new__(cls,nid,*tree):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
@@ -943,7 +943,7 @@ class TreeNode(object): # HINT: TreeNode begin
         """
         node = super(TreeNode,cls).__new__(cls)
         if type(node) is TreeNode:
-            TreeNode.__init__(node,nid,tree=tree)
+            TreeNode.__init__(node,nid,*tree)
             try:
                 if node.usage == "DEVICE":
                     return node.record.getClass(node)
@@ -955,7 +955,7 @@ class TreeNode(object): # HINT: TreeNode begin
                 pass
         return node
 
-    def __init__(self,nid,tree=None):
+    def __init__(self,nid,*tree):
         """Initialze TreeNode
         @param n: Index of the node in the tree.
         @type n: int
@@ -966,10 +966,10 @@ class TreeNode(object): # HINT: TreeNode begin
             self._nid = None
         else:
             self._nid = _C.c_int32(int(nid))
-        if tree is None:
-            self.tree=Tree()
+        if len(tree)<1 or not isinstance(tree[0],(Tree,)):
+            self.tree=Tree(*tree)
         else:
-            self.tree=tree
+            self.tree=tree[0]
 
     ###################################
     ### Data Properties
@@ -2645,12 +2645,12 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
     dtype_id = 193
 
-    def __init__(self,path,tree=None):
+    def __init__(self,path,*tree):
         self.tree_path=str(path);
-        if tree is None:
-            self.tree=Tree()
+        if len(tree)<1 or not isinstance(tree[0],(Tree,)):
+            self.tree=Tree(*tree)
         else:
-            self.tree=tree
+            self.tree=tree[0]
         try:
             self._nid=self.tree.getNode(self.tree_path)._nid
         except:
@@ -2684,7 +2684,7 @@ class TreePath(TreeNode): # HINT: TreePath begin
 
 
 class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
-    def __init__(self,nids,tree=None):
+    def __init__(self,nids,*tree):
         if isinstance(nids,_C.Array):
             try:
                 nids=_N.ctypeslib.as_array(nids)
@@ -2694,10 +2694,10 @@ class TreeNodeArray(_array.Int32Array): # HINT: TreeNodeArray begin
         if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
             nids = nids.reshape(1)
         self._value = nids.__array__(_N.int32)
-        if tree is None:
-            self.tree=Tree()
+        if len(tree)<1 or not isinstance(tree[0],(Tree,)):
+            self.tree=Tree(*tree)
         else:
-            self.tree=tree
+            self.tree=tree[0]
 
     def __getitem__(self,n):
         """Return TreeNode from mdsarray. array[n]
@@ -2993,7 +2993,7 @@ class Device(TreeNode): # HINT: Device begin
             cls.__class_init__();
             return super(Device,cls).__new__(cls,node)
 
-    def __init__(self,node,tree=None):
+    def __init__(self,node,*tree):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
