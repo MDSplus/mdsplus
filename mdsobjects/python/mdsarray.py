@@ -94,7 +94,7 @@ class Array(_data.Data):
         return _data.Data(getattr(self._value,op)(y,z))
 
     def __array__(self):
-        raise TypeError('__array__ not yet supported')
+        return self.value
 
     def __copy__(self):
         return type(self)(self._value)
