@@ -23,7 +23,7 @@ class Array(_data.Data):
         @rtype: Array
         """
         if cls is not Array or len(value)==0:
-            return object.__new__(cls,*value)
+            return object.__new__(cls)
         value=value[0]
         if isinstance(value,(cls,)):
             return value

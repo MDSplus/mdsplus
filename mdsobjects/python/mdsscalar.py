@@ -16,7 +16,7 @@ class Scalar(_data.Data):
     _value = None
     def __new__(cls,*value):
         if cls is not Scalar or len(value)==0:
-            return object.__new__(cls,*value)
+            return object.__new__(cls)
         value = value[0]
         if isinstance(value,cls):
             return value
