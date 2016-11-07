@@ -26,6 +26,6 @@ class connectionTests(TestCase):
 
 def suite():
     tests = []
-    if name <> 'nt':  # windows does not work with local:<path> notation
+    if not name == 'nt':  # windows does not work with local:<path> notation
         tests+=['connectionWithThreads',]
     return TestSuite(map(connectionTests,tests))

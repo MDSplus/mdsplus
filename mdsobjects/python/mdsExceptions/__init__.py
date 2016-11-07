@@ -36,10 +36,11 @@ for _m in _g.glob(_dirname(__file__)+"/*.py"):
       globals()[_key]=_m.__dict__[_key]
 
 _statusDict=dict()
+exception,code = None,None
 for exception in globals().values():
   if hasattr(exception,'status'):
     code = exception.status & -8
-    if code<>0: _statusDict[code]=exception
+    if not code==0: _statusDict[code]=exception
 del(exception,code)
 
 class MDSplusError(MDSplusException):

@@ -249,7 +249,7 @@ class Conglom(Compound):
     fields=('image','model','name','qualifiers')
     dtype_id=200
     def getClass(self, *args):
-        if self.image<>'__python__':
+        if not self.image=='__python__':
             raise _exceptions.DevNOT_A_PYDEVICE
         model = str(self.model)
         safe_env = {}
