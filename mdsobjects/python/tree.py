@@ -2329,7 +2329,7 @@ class TreeNode(object): # HINT: TreeNode begin
             status=_TreeShr._TreePutRow(self.tree.ctx,
                                         self._nid,
                                         _C.c_int32(bufsize),
-                                        _C.c_void_p(_scalar.Uint64(timestamp).descriptor.pointer),
+                                        _C.pointer(_C.c_int64(int(timestamp))),
                                         _C.pointer(_array.Array(array).descriptor))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
