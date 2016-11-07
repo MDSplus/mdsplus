@@ -194,7 +194,9 @@ class Data(object):
         @rtype: Bool"""
         try:
             return _compound.EQ(self,y).evaluate().bool()
-        except:
+        except Exception:
+            import traceback
+            print(traceback.format_exc)
             return False
 
     def __hasBadTreeReferences__(self,tree):

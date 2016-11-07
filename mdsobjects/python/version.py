@@ -5,9 +5,12 @@ Goal is to generate code that work on both python2x and python3x.
 """
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
+from numpy import bytes_ as npbytes
+from numpy import unicode_ as npunicode
 from sys import version_info as pyver
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
+npstr = npunicode if ispy3 else npbytes
 # __builtins__ is dict
 has_long      = 'long'       in __builtins__
 has_unicode   = 'unicode'    in __builtins__
@@ -100,14 +103,10 @@ if has_xrange:
 else:
     xrange = range
 
-# numpy char types
-npunicode = 'U'
-npbytes = 'S'
-if ispy2:
-    npstr = npbytes
+if has_xrange:
+    xrange = xrange
 else:
-    npstr = npunicode
-
+    xrange = range
 
 def _decode(string):
     try:
@@ -115,10 +114,8 @@ def _decode(string):
     except:
         return string.decode('CP1252', 'backslashreplace')
 
-
 def _encode(string):
     return string.encode('utf-8', 'backslashreplace')
-
 
 def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
@@ -138,14 +135,18 @@ def _tostring(string, targ, nptarg, conv, lstres):
 
 
 def tostr(string):
-    if ispy2:
-        return _tostring(string, str, npbytes, _encode, bytes)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tostr(item) for item in string)
+    elif ispy2:
+        return _tostring(string, str, npstr, _encode, bytes)
     else:
-        return _tostring(string, str, npunicode, _decode, unicode)
+        return _tostring(string, str, npstr, _decode, unicode)
 
 
 def tobytes(string):
-    if ispy2:
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tobytes(item) for item in string)
+    elif ispy2:
         return _tostring(string, bytes, npbytes, _encode, bytes)
     else:
         def _bytes(string):
@@ -154,8 +155,10 @@ def tobytes(string):
 
 
 def tounicode(string):
-    if ispy3:
-        return _tostring(string, unicode, npbytes, _encode, unicode)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tounicode(item) for item in string)
+    elif ispy3:
+        return _tostring(string, unicode, npunicode, _encode, unicode)
     else:
         def _unicode(string):
             return _decode(str(string))

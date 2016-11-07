@@ -36,22 +36,19 @@ class Array(_data.Data):
             if len(value)==0:
                 return Int32Array.__new__(Int32Array,[])
             try:
-                ans=_N.array(value)
-                if str(ans.dtype)[1] in 'SU':
-                    ans = ans.astype(_ver.npstr)
-                value = ans
+                value = _N.array(value)
             except (ValueError,TypeError):
                 newlist=list()
                 for i in value:
                     newlist.append(_data.Data(i).data())
                 value = _N.array(newlist)
-        if isinstance(value,(_N.ndarray,_N.generic,_scalar.Scalar)):
-            if str(value.dtype)[1] in 'SU':
+        if isinstance(value,(_N.ndarray,_N.generic)):
+            if   str(value.dtype)[1] in 'SU':
                 cls = StringArray
             elif str(value.dtype) == 'bool':
                 cls = Uint8Array
             elif str(value.dtype) == 'object':
-                cls = _apd.List.__new__(_apd.List,value)
+                cls = _apd.List
             else:
                 cls = globals()[str(value.dtype).capitalize()+'Array']
         else:
@@ -74,6 +71,7 @@ class Array(_data.Data):
         return
 
     def __getattr__(self,name):
+        if name=='_value': raise Exception('_value undefined')
         return self._value.__getattribute__(name)
 
     @property
@@ -108,11 +106,17 @@ class Array(_data.Data):
         """
         return len(self.data())
 
-    def getElementAt(self,itm):
-        return _data.Data(self._value[itm])
+    def __setitem__(self,index,value):
+        self._value[index]=value
 
-    def setElementAt(self,i,y):
-        self._value[i]=y
+    def __getitem__(self,index):
+        return _data.Data(self._value[index])
+
+    def getElementAt(self,index):
+        return self[index]
+
+    def setElementAt(self,index,value):
+        self[index] = value
 
     def all(self):
         return self._unop('all')
@@ -154,15 +158,16 @@ class Array(_data.Data):
                     if idx > 0: ans+=', '
                     ans+=arrayDecompile(a[idx],cl)
             return ans+']'
-        if str(self._value.dtype)[1] in 'SU':
-            cl=_scalar.String
-        else:
-            cl=_scalar.__dict__[str(self._value.dtype).capitalize()]
+
+        cl=_scalar.__dict__[str(type(self))[:-5]]
         return arrayDecompile(self._value,cl)
 
     @property
     def descriptor(self):
         value=self._value
+        dti = str(value.dtype)[1]
+        if dti in 'SU' and not dti=='S':
+            value = value.astype('S')
         if not value.flags['CONTIGUOUS']:
             value=_N.ascontiguousarray(value)
         value = value.T
@@ -310,15 +315,18 @@ class StringArray(Array):
 
     def __init__(self,value):
         if value is self: return
-        if isinstance(value,(tuple,list)):
-            l = 0
-            value = map(str,value)
-            for s in value:
-                l = max(l,len(s))
-            value = list(value)
-            for i in _ver.xrange(len(value)):
-                value[i]=value[i].ljust(l)
-        self._value=_N.array(value,_ver.npstr)
+        if isinstance(value, (StringArray,)):
+            self._value = value._value
+            return
+        if not isinstance(value,(_N.ndarray,)):
+            value = _N.array(value)
+        if not value.dtype.type is _ver.npbytes:
+            try: value = value.astype(_ver.npbytes)
+            except:
+                value = _N.array(_ver.tobytes(value.tolist()))
+        for i in _ver.xrange(len(value.flat)):
+            value.flat[i]=value.flat[i].ljust(value.itemsize)
+        self._value = value
 
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x

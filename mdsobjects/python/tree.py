@@ -2094,7 +2094,7 @@ class TreeNode(object): # HINT: TreeNode begin
                 _TreeShr.TreeFree(_C.c_void_p(tag_ptr))
         finally:
             Tree.unlock()
-        tags = _array.Array(tags).astype(_ver.npstr)
+        tags = _array.Array(tags)
         return tags
 
 
@@ -2330,7 +2330,7 @@ class TreeNode(object): # HINT: TreeNode begin
                                         self._nid,
                                         _C.c_int32(bufsize),
                                         _C.pointer(_C.c_int64(int(timestamp))),
-                                        _C.pointer(_array.Array(array).descriptor))
+                                        _descriptor.objectToPointer(_array.Array(array)))
             if not (status & 1):
                 raise _exceptions.statusToException(status)
         finally:

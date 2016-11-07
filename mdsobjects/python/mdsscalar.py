@@ -282,6 +282,9 @@ class Complex128(Scalar):
 class String(Scalar):
     """String"""
     dtype_id=14
+    _ntype=_N.bytes_
+    def __init__(self,value):
+        super(String,self).__init__(_ver.tobytes(value))
 
     @property
     def descriptor(self):
@@ -292,18 +295,16 @@ class String(Scalar):
         d.original=self
         if self._units or self._error is not None or self._help is not None or self._validation is not None:
             return _compound.Compound.descriptorWithProps(self,d)
-        else:
-            return d
+        return d
 
     @classmethod
     def fromDescriptor(cls,d):
         if d.length == 0:
             return cls('')
-        else:
-            return cls(_N.array(_C.cast(d.pointer,_C.POINTER((_C.c_byte*d.length))).contents[:],dtype=_N.uint8).tostring())
+        return cls(_N.array(_C.cast(d.pointer,_C.POINTER((_C.c_byte*d.length))).contents[:],dtype=_N.uint8).tostring())
 
     def __radd__(self,y):
-        """Reverse add: x.__radd__(y) <==> y+x
+        """radd: x.__radd__(y) <==> y+x
         @rtype: Data"""
         return self.execute('$//$',y,self)
     def __add__(self,y):
@@ -315,20 +316,16 @@ class String(Scalar):
         @rtype: Bool"""
         return self.find(str(y)) != -1
 
-    def __init__(self,value):
-        if value is self: return
-        self._value = _N.str_(_ver.tostr(value))
-
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
-        return str(self._value)
+        return _ver.tostr(self._value)
 
     def __len__(self):
         return len(self._value)
 
     def decompile(self):
-        return repr(self._value)
+        return repr(str(self))
 
 class Int128(Scalar):
     """128-bit number"""
