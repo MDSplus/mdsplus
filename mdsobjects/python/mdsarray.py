@@ -158,8 +158,8 @@ class Array(_data.Data):
                     if idx > 0: ans+=', '
                     ans+=arrayDecompile(a[idx],cl)
             return ans+']'
-
-        cl=_scalar.__dict__[str(type(self))[:-5]]
+        print(str(type(self)))
+        cl=_scalar.__dict__[self.__class__.__name__[:-5]]
         return arrayDecompile(self._value,cl)
 
     @property
