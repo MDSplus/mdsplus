@@ -7,23 +7,18 @@ from numpy import array,int32
 from compound import Signal,Range
 from _mdsshr import DateToQuad,getenv,setenv
 from mdsdcl import tcl
-import random
 import gc as _gc
-import os,time
-
+import os
 
 import tempfile
 _tmpdir=tempfile.mkdtemp()
 
-def setUpModule():    
+def setUpModule():
     pass
 
 def tearDownModule():
     import shutil
     shutil.rmtree(_tmpdir)
-    
-
-
 
 class treeTests(TestCase):
 
@@ -48,8 +43,8 @@ class treeTests(TestCase):
         setenv("pytreesub_path",hostpart+_tmpdir)
         if getenv('testing_path') is None:
             setenv('testing_path',"%s/trees"%(os.path.dirname(os.path.realpath(__file__)),))
-        
-        
+
+
     def tearDown(self):
         pass
 
@@ -248,7 +243,7 @@ class treeTests(TestCase):
         testing = Tree('testing', -1)
         for node in testing.getNodeWild(".compression:*"):
             self.pytree.SIG_CMPRS.record=node.record
-            self.assertTrue((self.pytree.SIG_CMPRS.record == node.record).all(), 
+            self.assertTrue((self.pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
         return
 

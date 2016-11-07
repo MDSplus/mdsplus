@@ -5,7 +5,7 @@ MDSplus tests
 Tests of MDSplus
 
 """
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
+from unittest import TestCase,TestSuite,TextTestRunner
 from tests.treeUnitTest import treeTests
 from tests.threadsUnitTest import suite as threadsSuite
 from tests.dataUnitTest import suite as dataSuite
@@ -14,8 +14,7 @@ from tests.connectionUnitTest import suite as connectionsSuite
 from _mdsshr import setenv,getenv
 
 import os
-import time
-import warnings
+import sys
 
 class cleanup(TestCase):
     dir=None
@@ -50,8 +49,6 @@ class cleanup(TestCase):
 
 def test_all(*arg):
     import tempfile
-    import os
-    import sys
     if getenv('waitdbg') is not None:
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
@@ -76,4 +73,6 @@ def test_all(*arg):
     tests.append(connectionsSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
     return TestSuite(tests)
+if __name__=='__main__':
+    TextTestRunner().run(test_all())
 

@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 import sys
 import os
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
 
 def getRelease():
     name='mdsplus'
@@ -48,37 +44,64 @@ else:
     name="mdsplus_%s" % branch
 
 pname='MDSplus'
-setup(name=name,
-      version=version,
-      description='MDSplus Python Objects',
-      long_description = """
+
+
+setupkw = {
+      'name'         : name,
+      'version'      : version,
+      'description'  : 'MDSplus Python Objects',
+      'long_description': """
       This module provides all of the functionality of MDSplus TDI natively in python.
       All of the MDSplus data types such as signal are represented as python classes.
       """,
-      author='Tom Fredian,Josh Stillerman,Gabriele Manduchi',
-      author_email='twf@www.mdsplus.org',
-      url='http://www.mdsplus.org/',
-      download_url = 'http://www.mdsplus.org/mdsplus_download/python',
-      package_dir = {pname:'.',
+      'author'       : 'Tom Fredian,Josh Stillerman,Gabriele Manduchi',
+      'author_email' : 'twf@www.mdsplus.org',
+      'url'          : 'http://www.mdsplus.org/',
+      'download_url' : 'http://www.mdsplus.org/mdsplus_download/python',
+      'package_dir'  : {pname:'.',
                      pname+'.tests':'./tests',
                      pname+'.widgets':'./widgets',
                      pname+'.wsgi':'./wsgi',
                      pname+'.mdsExceptions':'./mdsExceptions'},
-      packages = [pname,
+      'packages'     : [pname,
                   pname+'.tests',
                   pname+'.widgets',
                   pname+'.wsgi',
                   pname+'.mdsExceptions'],
-      package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
-      include_package_data = True,
-      classifiers = [
+      'package_data' : {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
+      'classifiers'  : [
       'Programming Language :: Python',
       'Intended Audience :: Science/Research',
       'Environment :: Console',
       'Topic :: Scientific/Engineering',
       ],
-      keywords = ('physics','mdsplus',),
+      'keywords'     : ('physics','mdsplus',),
 #       install_requires=['numpy','ctypes'],
-      test_suite='tests.test_all',
-      zip_safe = False,
-    )
+    }
+
+try:
+    from setuptools import setup
+    setupkw['include_package_data'] = True
+    setupkw['test_suite'] = 'tests.test_all'
+    setupkw['zip_safe']   = False
+except:
+    from distutils.core import setup
+    from distutils.cmd import Command
+    class TestCommand(Command):
+        user_options = []
+
+        def initialize_options(self):
+            pass
+
+        def finalize_options(self):
+            pass
+
+        def run(self):
+            import sys, subprocess
+
+            raise SystemExit(
+                subprocess.call([sys.executable,
+                                 '-m',
+                                 'tests.__init__']))
+    setupkw['cmdclass'] = {'test': TestCommand}
+setup(**setupkw)
