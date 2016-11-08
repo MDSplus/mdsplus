@@ -158,8 +158,10 @@ class Array(_data.Data):
                     if idx > 0: ans+=', '
                     ans+=arrayDecompile(a[idx],cl)
             return ans+']'
-        print(str(type(self)))
-        cl=_scalar.__dict__[self.__class__.__name__[:-5]]
+        if isinstance(self,(_tree.TreeNodeArray,)):
+            cl=_scalar.Int32
+        else:
+            cl=_scalar.__dict__[self.__class__.__name__[:-5]]
         return arrayDecompile(self._value,cl)
 
     @property
@@ -350,6 +352,7 @@ class Uint128Array(Array):
         raise TypeError("Uint128Array is not yet supported")
 
 _apd=_mimport('apd')
+_tree=_mimport('tree')
 _descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
 _descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
 _descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array

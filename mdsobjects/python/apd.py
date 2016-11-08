@@ -176,11 +176,11 @@ class Dictionary(dict,Apd):
 
     @staticmethod
     def toKey(key):
-        if isinstance(key,_scalar.Scalar):
+        if isinstance(key,(_scalar.Scalar,)):
             key = key.value
-        if isinstance(key,_N.string_):
-            return str(key)
-        if isinstance(key,_N.int32):
+        if isinstance(key,(_ver.npbytes,_ver.npunicode)):
+            return _ver.tostr(key)
+        if isinstance(key,(_N.int32,)):
             return int(key)
         if isinstance(key,(_N.float32,_N.float64)):
             return float(key)

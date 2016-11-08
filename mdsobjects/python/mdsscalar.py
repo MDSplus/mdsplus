@@ -20,12 +20,12 @@ class Scalar(_data.Data):
         value = value[0]
         if isinstance(value,cls):
             return value
-        if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _N.ndarray):
+        if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value, _ver.nparray):
             key = cls.__name__+'Array'
             if key in _array.__dict__:
                 cls = _array.__dict__[key]
                 return cls.__new__(cls,value)
-        if isinstance(value,(_N.string_, _N.unicode_,_ver.basestring)):  # includes _N.bytes_
+        if isinstance(value,(_ver.npbytes, _ver.npunicode,_ver.basestring)):
             cls = String
         elif isinstance(value,(_N.generic,)):
             cls = globals()[value.__class__.__name__.capitalize()]
@@ -282,7 +282,7 @@ class Complex128(Scalar):
 class String(Scalar):
     """String"""
     dtype_id=14
-    _ntype=_N.bytes_
+    _ntype=_ver.npbytes
     def __init__(self,value):
         super(String,self).__init__(_ver.tobytes(value))
 
