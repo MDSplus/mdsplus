@@ -437,7 +437,7 @@ private:
 ///
 /// \brief The Scalar class
 ///
-/// Scalar is the common superclass for all scalar data types
+/// Scalar is the common base class for all scalar data types
 /// (descriptor class CLASS_S).
 class EXPORT Scalar: public Data
 {    
@@ -1020,13 +1020,13 @@ public:
 ///
 /// \brief The Array class object description of DTYPE_A
 ///
-/// Common superclass for arrays (CLASS_A). It contains dimension informationThe
+/// Common base class for arrays (CLASS_A). It contains dimension informationThe
 /// contained data is assumed to be row-first ordered.
 /// Array - derived classes will hold actual data in language-specific structures.
 /// This allows for a direct implementation of operations such as getElementAt()
 /// and setElementAt() which would be difficult or impossible to implement via TDI.
 ///
-/// For the remaining Data methods, the generic mechanism of the superclass'
+/// For the remaining Data methods, the generic mechanism of the base class'
 /// implementation (conversion to MDSplus descriptor, TDI operation conversion back
 /// to class instances) is retained.
 
@@ -1458,7 +1458,7 @@ public:
 ///
 /// \brief The Compound class object description of DTYPE_R
 ///
-/// Compound is the common supreclass for all CLASS_R types. Its fields contain
+/// Compound is the common base class for all CLASS_R types. Its fields contain
 /// all the required information (Descriptor array, keyword). Its getter/setter
 /// methods allow to read/replace descriptors, based on their index. Derived
 /// classes will only define methods with appropriate names for reading/writing
@@ -3603,7 +3603,7 @@ public:
 /// fact defines the virtual function \ref run(), which is called after the
 /// class instantiation whenever the event with the specified name has been
 /// received. The overriden run() method can then retrieve received data by
-/// calling superclass \ref getData() or \ref getRaw() methods.
+/// calling base class \ref getData() or \ref getRaw() methods.
 /// 
 /// The following example code shows how to define a new Event class called
 /// MyEvent whose action is to print the content of the received buffer (it is
