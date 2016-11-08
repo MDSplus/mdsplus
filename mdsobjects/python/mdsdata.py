@@ -28,6 +28,18 @@ class Data(object):
     _help=None
     _validation=None
 
+    @property  # used by numpy.array
+    def __array_interface__(self):
+        data = self.data()
+        return {
+            'shape':data.shape,
+            'typestr':data.dtype.str,
+            'descr':data.dtype.descr,
+            'strides':data.strides,
+            'data':data,
+            'version':3,
+        }
+
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
         @param value: Any value
