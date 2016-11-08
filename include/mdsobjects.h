@@ -1500,7 +1500,7 @@ public:
     }    
     
     virtual void propagateDeletion() {
-      for(std::size_t i = 0; i < (std::size_t)descs.size(); ++i)
+      for(std::size_t i = 0; i < descs.size(); ++i)
             if (descs[i])
             {
                 descs[i]->decRefCount();
