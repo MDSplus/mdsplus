@@ -1471,21 +1471,13 @@ public:
         opcode = 0;
     }
 
-    Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-    {
-        switch(length) {
-        case 1:
-            opcode = *(char *)ptr;
-            break;
-        case 2:
-            opcode = *(short *)ptr;
-            break;
-        case 4:
-            opcode = *(int *)ptr;
-            break;
-        default:
-            opcode = 0;
-        }
+	Compound(int dtype, int length, void * ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+		switch(length) {
+			case 1:  opcode = *(static_cast<char *>(ptr)); break;
+			case 2:  opcode = *(static_cast<short *>(ptr)); break;
+			case 4:  opcode = *(static_cast<int *>(ptr)); break;
+			default: opcode = 0;
+		}
 
 		for(int i = 0; i < nDescs; ++i) {
 			this->descs.push_back((Data *)descs[i]);
