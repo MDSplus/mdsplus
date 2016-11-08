@@ -1486,13 +1486,12 @@ public:
         default:
             opcode = 0;
         }
-        if(nDescs > 0) {
-            for(int i = 0; i < nDescs; ++i) {
-                this->descs.push_back((Data *)descs[i]);
-                if (this->descs[i])
-                    this->descs[i]->incRefCount();
-            }
-        }
+
+		for(int i = 0; i < nDescs; ++i) {
+			this->descs.push_back((Data *)descs[i]);
+			if (this->descs[i])
+				this->descs[i]->incRefCount();
+		}
 
         clazz = CLASS_R;
         this->dtype = dtype;
