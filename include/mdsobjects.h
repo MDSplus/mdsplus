@@ -1466,10 +1466,11 @@ public:
 
 class EXPORT Compound: public Data {
 public:
-    Compound() {
-        clazz = CLASS_R;
-        opcode = 0;
-    }
+	Compound():
+		opcode(0)
+	{
+		clazz = CLASS_R;
+	}
 
 	Compound(int dtype, int length, void * ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 		switch(length) {
