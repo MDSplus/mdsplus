@@ -12379,8 +12379,8 @@ fi
   :
 else
 
-	        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
-$as_echo "$as_me: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
+	        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works only in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
+$as_echo "$as_me: WARNING: Valgrind works only in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
 		enable_valgrind="no"
 
 fi
