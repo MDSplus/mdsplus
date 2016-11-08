@@ -97,15 +97,11 @@ class Scalar(_data.Data):
         return self._value
 
     def decompile(self):
-        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'%dQ',
-                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU',
-                 Float32:'%g'}
-        ans=formats[self.__class__] % (self._value,)
-        if ans=='nan':
-            ans="$ROPRAND"
-        elif isinstance(self,Float32) and ans.find('.')==-1:
-            ans=ans+"."
-        return ans
+        formats={ Int8:'%dB' , Int16:'%dW' , Int32:'%d'  , Int64:'%dQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU'}
+        if self.__class__ in formats:
+            return formats[self.__class__] % (self._value,)
+        return super(Scalar,self).decompile()
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -260,24 +256,21 @@ class Complex64(Scalar):
     dtype_id=54
     _ctype=_C.c_float*2
     _ntype=_N.complex64
-    def decompile(self):
-        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
+    #def decompile(self):        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
 
 class Float64(Scalar):
     """64-bit floating point number"""
     dtype_id=53
     _ctype=_C.c_double
     _ntype=_N.float64
-    def decompile(self):
-        return ("%E" % self._value).replace("E","D")
+    #def decompile(self):        return ("%E" % self._value).replace("E","D")
 
 class Complex128(Scalar):
     """64-bit complex number"""
     dtype_id=55
     _ctype=_C.c_double*2
     _ntype=_N.complex128
-    def decompile(self):
-        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
+    #def decompile(self):        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
 
 class String(Scalar):
     """String"""
@@ -324,8 +317,7 @@ class String(Scalar):
     def __len__(self):
         return len(self._value)
 
-    def decompile(self):
-        return repr(str(self))
+    #def decompile(self):        return repr(str(self))
 
 class Int128(Scalar):
     """128-bit number"""
@@ -359,8 +351,7 @@ class Pointer(Scalar):
         value=_C.cast(d.pointer,_C.POINTER(ctype)).contents
         return Pointer(value.value,is64)
 
-    def decompile(self):
-        return "Pointer(0x%x)" % (self._value)
+    #def decompile(self):        return "Pointer(0x%x)" % (self._value)
 
 _descriptor.dtypeToClass[Uint8.dtype_id]=Uint8
 _descriptor.dtypeToClass[Uint16.dtype_id]=Uint16
