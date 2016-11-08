@@ -1469,10 +1469,14 @@ public:
 	Compound():
 		opcode(0)
 	{
-		clazz = CLASS_R;
+		setClass();
 	}
 
 	Compound(int dtype, int length, void * ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+		setClass();
+		setAccessory(units, error, help, validation);
+		this->dtype = dtype;
+
 		switch(length) {
 			case 1:  opcode = *(static_cast<char *>(ptr)); break;
 			case 2:  opcode = *(static_cast<short *>(ptr)); break;
@@ -1485,11 +1489,7 @@ public:
 			if (this->descs[i])
 				this->descs[i]->incRefCount();
 		}
-
-        clazz = CLASS_R;
-        this->dtype = dtype;
-        setAccessory(units, error, help, validation);
-    }    
+	}
     
     virtual void propagateDeletion() {
       for(std::size_t i = 0; i < descs.size(); ++i)
@@ -1550,6 +1550,10 @@ public:
 	return descs.size();
     }
 
+private:
+	void setClass() {
+		clazz = CLASS_R;
+	}
 };
 
 
