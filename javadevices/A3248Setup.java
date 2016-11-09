@@ -51,6 +51,7 @@ public class A3248Setup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceField13 = new DeviceField();
+        extClockField = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("AEON Model 3248");
@@ -127,6 +128,8 @@ public class A3248Setup extends DeviceSetup {
 
         jPanel1.add(jPanel2);
 
+        jPanel3.setPreferredSize(new java.awt.Dimension(1268, 96));
+
         deviceChoice1.setChoiceIntValues(new int[] {10000, 6670, 5000, 4000, 3330, 2860, 2500, 1000, 667, 500, 400, 333, 286, 250, 0});
         deviceChoice1.setChoiceItems(new String[] {"10000", "6670", "5000", "4000", "3330", "2860", "2500", "1000", "667", "500", "400", "333", "286", "250", "External"});
         deviceChoice1.setConvert(true);
@@ -159,6 +162,11 @@ public class A3248Setup extends DeviceSetup {
         deviceField13.setOffsetNid(7);
         jPanel3.add(deviceField13);
 
+        extClockField.setIdentifier("");
+        extClockField.setLabelString("External Clock:");
+        extClockField.setOffsetNid(3);
+        jPanel3.add(extClockField);
+
         jPanel1.add(jPanel3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
@@ -185,6 +193,7 @@ public class A3248Setup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
+    private DeviceField extClockField;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
