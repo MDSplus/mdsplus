@@ -26,7 +26,6 @@ public class JRG_ADC32ASetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
@@ -36,14 +35,14 @@ public class JRG_ADC32ASetup extends DeviceSetup {
         deviceChoice1 = new DeviceChoice();
         deviceField3 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        deviceField70 = new DeviceField();
         deviceField5 = new DeviceField();
+        deviceField70 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
         deviceChoice2 = new DeviceChoice();
+        deviceButtons1 = new DeviceButtons();
         jPanel6 = new javax.swing.JPanel();
         deviceField8 = new DeviceField();
         deviceField9 = new DeviceField();
@@ -174,7 +173,6 @@ public class JRG_ADC32ASetup extends DeviceSetup {
         setDeviceType("JRG_ADC32A");
         setHeight(400);
         setWidth(900);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 1));
 
@@ -209,23 +207,17 @@ public class JRG_ADC32ASetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Clock: ");
-        deviceField4.setNumCols(20);
-        deviceField4.setOffsetNid(7);
-        jPanel4.add(deviceField4);
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Trigger: ");
+        deviceField5.setNumCols(20);
+        deviceField5.setOffsetNid(6);
+        jPanel4.add(deviceField5);
 
         deviceField70.setIdentifier("");
         deviceField70.setLabelString("Ext. Clock");
         deviceField70.setNumCols(20);
         deviceField70.setOffsetNid(5);
         jPanel4.add(deviceField70);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Trigger: ");
-        deviceField5.setNumCols(20);
-        deviceField5.setOffsetNid(6);
-        jPanel4.add(deviceField5);
 
         jPanel1.add(jPanel4);
 
@@ -250,6 +242,7 @@ public class JRG_ADC32ASetup extends DeviceSetup {
         deviceChoice2.setOffsetNid(11);
         deviceChoice2.setUpdateIdentifier("");
         jPanel5.add(deviceChoice2);
+        jPanel5.add(deviceButtons1);
 
         jTabbedPane1.addTab("Ch 1", jPanel5);
 
@@ -946,7 +939,6 @@ public class JRG_ADC32ASetup extends DeviceSetup {
     private DeviceField deviceField37;
     private DeviceField deviceField38;
     private DeviceField deviceField39;
-    private DeviceField deviceField4;
     private DeviceField deviceField40;
     private DeviceField deviceField41;
     private DeviceField deviceField42;
