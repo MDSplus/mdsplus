@@ -135,6 +135,7 @@ public class A3248Setup extends DeviceSetup {
         deviceChoice1.setConvert(true);
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Clock Freq (KHz).:");
+        deviceChoice1.setOffsetNid(4);
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);
 
