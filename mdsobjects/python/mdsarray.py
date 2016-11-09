@@ -95,7 +95,7 @@ class Array(_data.Data):
         return self.value
 
     def __copy__(self):
-        return type(self)(self._value)
+        return self.__class__(self._value)
 
     def __deepcopy__(self,memo=None):
         return self.__copy__()
@@ -104,7 +104,7 @@ class Array(_data.Data):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
-        return len(self.data())
+        return len(self._value)
 
     def __setitem__(self,index,value):
         self._value[index]=value
@@ -152,7 +152,7 @@ class Array(_data.Data):
             if len(a.shape)==1:
                 for idx in range(len(a)):
                     if idx > 0: ans+=', '
-                    ans+=cl(a[idx]).decompile()
+                    ans+=str(cl(a[idx]).decompile())
             else:
                 for idx in range(a.shape[0]):
                     if idx > 0: ans+=', '

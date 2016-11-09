@@ -27,6 +27,8 @@ class Scalar(_data.Data):
                 return cls.__new__(cls,value)
         if isinstance(value,(_ver.npbytes, _ver.npunicode,_ver.basestring)):
             cls = String
+        elif isinstance(value,(_N.bool_,)):
+            cls = Uint8
         elif isinstance(value,(_N.generic,)):
             cls = globals()[value.__class__.__name__.capitalize()]
         elif isinstance(value,(_C.c_double)):

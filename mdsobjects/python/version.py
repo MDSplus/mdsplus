@@ -137,32 +137,28 @@ def _tostring(string, targ, nptarg, conv, lstres):
 def tostr(string):
     if isinstance(string,(list, tuple)):
         return string.__class__(tostr(item) for item in string)
-    elif ispy2:
-        return _tostring(string, str, npstr, _encode, bytes)
-    else:
-        return _tostring(string, str, npstr, _decode, unicode)
+    return _tostring(string, str, npstr, _decode, str)
 
+
+if ispy2:
+    _bytes = bytes
+    def _unicode(string):
+        return _decode(str(string))
+else:
+    def _bytes(string):
+        return _encode(str(string))
+    _unicode = unicode
 
 def tobytes(string):
     if isinstance(string,(list, tuple)):
         return string.__class__(tobytes(item) for item in string)
-    elif ispy2:
-        return _tostring(string, bytes, npbytes, _encode, bytes)
-    else:
-        def _bytes(string):
-            return _encode(str(string))
-        return _tostring(string, bytes, npbytes, _encode, _bytes)
+    return _tostring(string, bytes, npbytes, _encode, _bytes)
 
 
 def tounicode(string):
     if isinstance(string,(list, tuple)):
         return string.__class__(tounicode(item) for item in string)
-    elif ispy3:
-        return _tostring(string, unicode, npunicode, _encode, unicode)
-    else:
-        def _unicode(string):
-            return _decode(str(string))
-        return _tostring(string, unicode, npunicode, _decode, _unicode)
+    return _tostring(string, unicode, npunicode, _decode, _unicode)
 
 # Extract the code attribute of a function. Different implementations
 # are for Python 2/3 compatibility.

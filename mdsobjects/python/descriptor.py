@@ -26,10 +26,7 @@ def descToPointer(desc):
 def pointerToDesc(pointer):
     if pointer is None or pointer == 0: return None
     LP = _C.cast(pointer,c_desc_p)
-    if _ver.ispy2:
-        return LP.contents if LP.__nonzero__() else None
-    else:
-        return LP.contents if LP else None
+    return LP.contents if bool(LP) else None
 
 
 def pointerToDesc_x(pointer):
