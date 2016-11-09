@@ -162,54 +162,142 @@ class Data(object):
         self.validation=validation
         return self
 
-    def __abs__(self):
-        """
-        Absolute value: x.__abs__() <==> abs(x)
-        @rtype: Data
-        """
-        return _compound.ABS(self).evaluate()
+    """ binary operator methods (order: https://docs.python.org/2/library/operator.html) """
+    @staticmethod
+    def __bool(data):
+        if isinstance(data,_array.Array):
+            return data.all().bool()
+        if isinstance(data,Data):
+            return data.bool()
+        return bool(data)
 
-    def bool(self):
-        """
-        Return boolean
-        @rtype: Bool
-        """
-        if isinstance(self,_array.Array):
-            return self._value!=0
-        elif isinstance(self,_compound.Compound) and hasattr(self,'value_of'):
-            return self.value_of().bool()
-        else:
-            ans=int(self)
-            return (ans & 1) == 1
-    __bool__=bool
+    def __lt__(self,y):
+        return _compound.LT(self,y).evaluate().bool()
+    def __rlt__(self,y):
+        return  Data(y)<self
 
-    def __add__(self,y):
-        """
-        Add: x.__add__(y) <==> x+y
-        @rtype: Data"""
-        return _compound.ADD(self,y).evaluate()
-
-    def __and__(self,y):
-        """And: x.__and__(y) <==> x&y
-        @rtype: Data"""
-        return _compound.IAND(self,y).evaluate()
-
-    def __div__(self,y):
-        """Divide: x.__div__(y) <==> x/y
-        @rtype: Data"""
-        return _compound.DIVIDE(self,y).evaluate()
-
-    __truediv__=__div__
+    def __le__(self,y):
+        return _compound.LE(self,y).evaluate().bool()
+    def __rle__(self,y):
+        return  Data(y)<=self
 
     def __eq__(self,y):
-        """Equals: x.__eq__(y) <==> x==y
-        @rtype: Bool"""
-        try:
-            return _compound.EQ(self,y).evaluate().bool()
-        except Exception:
-            import traceback
-            print(traceback.format_exc())
-            return False
+        return _compound.EQ(self,y).evaluate().bool()
+    def __req__(self,y):
+        return  Data(y)==self
+
+    def __ne__(self,y):
+        return _compound.NE(self,y).evaluate().bool()
+    def __rne__(self,y):
+        return Data(y)!=self
+
+    def __gt__(self,y):
+        return _compound.GT(self,y).evaluate().bool()
+    def __rgt__(self,y):
+        return  Data(y)>self
+
+    def __ge__(self,y):
+        return _compound.GE(self,y).evaluate().bool()
+    def __rge__(self,y):
+        return  Data(y)>=self
+
+    def __add__(self,y):
+        return _compound.ADD(self,y).evaluate()
+    def __radd__(self,y):
+        return Data(y)+self
+    def __iadd__(self,y):
+        self._value = (self+y)._value
+
+    def __and__(self,y):
+        return _compound.IAND(self,y).evaluate()
+    def __rand__(self,y):
+        return Data(y)&self
+    def __iand__(self,y):
+        self._value = (self&y)._value
+
+    def __div__(self,y):
+        return _compound.DIVIDE(self,y).evaluate()
+    def __rdiv__(self,y):
+        return Data(y)/self
+    def __idiv__(self,y):
+        self._value = (self/y)._value
+    __truediv__=__div__
+    __rtruediv__=__rdiv__
+    __itruediv__=__idiv__
+
+    def __floordiv__(self,y):
+        return _compound.FLOOR(_compound.DIVIDE(self,y)).evaluate()
+    def __rfloordiv__(self,y):
+        return Data(y)//self
+    def __ifloordiv__(self,y):
+        self._value = (self//y)._value
+
+    def __lshift__(self,y):
+        return _compound.SHIFT_LEFT(self,y).evaluate()
+    def __rlshift__(self,y):
+        return Data(y)<<self
+    def __ilshift__(self,y):
+        self._value = (self<<y)._value
+
+    def __mod__(self,y):
+        return _compound.MOD(self,y).evaluate()
+    def __rmod__(self,y):
+        return Data(y)%self
+    def __imod__(self,y):
+        self._value = (self%y)._value
+
+    def __sub__(self,y):
+        return _compound.SUBTRACT(self,y).evaluate()
+    def __rsub__(self,y):
+        return Data(y)-self
+    def __isub__(self,y):
+        self._value = (self-y)._value
+
+    def __rshift__(self,y):
+        return _compound.SHIFT_RIGHT(self,y).evaluate()
+    def __rrshift__(self,y):
+        return Data(y)>>self
+    def __irshift__(self,y):
+        self._value = (self>>y)._value
+
+    def __mul__(self,y):
+        return _compound.MULTIPLY(self,y).evaluate()
+    def __rmul__(self,y):
+        return Data(y)*self
+    def __imul__(self,y):
+        self._value = (self*y)._value
+
+    def __or__(self,y):
+        return _compound.IOR(self,y).evaluate()
+    def __ror__(self,y):
+        return Data(y)|self
+    def __ior__(self,y):
+        self._value = (self|y)._value
+
+    def __pow__(self,y):
+        return _compound.POWER(self,y).evaluate()
+    def __rpow__(self,y):
+        return Data(y)**self
+    def __ipow__(self,y):
+        self._value = (self**y)._value
+
+    def __xor__(self,y):
+        return _compound.MULTIPLY(self,y).evaluate()
+    def __rxor__(self,y):
+        return Data(y)^self
+    def __ixor__(self,y):
+        self._value = (self^y)._value
+
+    def __abs__(self):
+        return _compound.ABS(self).evaluate()
+    def __invert__(self):
+        return _compound.INOT(self).evaluate()
+    def __neg__(self):
+        return _compound.UNARY_MINUS(self).evaluate()
+    def __pos__(self):
+        return _compound.UNARY_PLUS(self).evaluate()
+    def __nonzero__(self):
+        return Data.__bool(self != 0)
 
     def __hasBadTreeReferences__(self,tree):
         return False
@@ -217,53 +305,35 @@ class Data(object):
     def __fixTreeReferences__(self,tree):
         return self
 
-    def __float__(self):
-        """Float: x.__float__() <==> float(x)
-        @rtype: Data"""
-        ans=_compound.FLOAT(self).evaluate().value
-        try:
-            return float(ans)
-        except:
-            return float(ans[0])
-
-    def __floordiv__(self,y):
-        """Floordiv: x.__floordiv__(y) <==> x//y
-        @rtype: Data"""
-        return _compound.FLOOR(self,y).evaluate()
-
-    def __ge__(self,y):
-        """Greater or equal: x.__ge__(y) <==> x>=y
-        @rtype: Bool"""
-        return _compound.GE(self,y).evaluate().bool()
+    def decompile(self):
+        """Return string representation
+        @rtype: string"""
+        return _compound.DECOMPILE(self).evaluate()
 
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
         ans = _compound.SUBSCRIPT(self,y).evaluate()
-        if isinstance(ans,_array.Array):
-            if ans.shape[0]==0:
-                raise IndexError
+        if isinstance(ans,_array.Array) and ans.shape[0]==0:
+            raise IndexError
         return ans
 
-    def __gt__(self,y):
-        """Greater than: x.__gt__(y) <==> x>y
+    def __bool__(self):
+        """Return boolean
         @rtype: Bool"""
-        return _compound.GT(self,y).evaluate().bool()
+        if isinstance(self,_array.Array):
+            return self._value!=0
+        elif isinstance(self,_compound.Compound) and hasattr(self,'value_of'):
+            return self.value_of().bool()
+        else:
+            ans=int(self)
+            return (ans & 1) == 1
+    bool=__bool__
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
         return int(self.getInt().value)
-
-    def __invert__(self):
-        """Binary not: x.__invert__() <==> ~x
-        @rtype: Data"""
-        return Data.execute('~$',self)
-
-    def __le__(self,y):
-        """Less than or equal: x.__le__(y) <==> x<=y
-        @rtype: Bool"""
-        return Data.execute('$<=$',self,y).bool()
 
     def __len__(self):
         """Length: x.__len__() <==> len(x)
@@ -276,121 +346,10 @@ class Data(object):
         @rtype: long"""
         return _version.long(self.getLong()._value)
 
-    def __lshift__(self,y):
-        """Lrft binary shift: x.__lshift__(y) <==> x<<y
-        @rtype: Data"""
-        return Data.execute('$<<$',self,y)
-
-    def __lt__(self,y):
-        """Less than: x.__lt__(y) <==> x<y
-        @rtype: Bool"""
-        return Data.execute('$<$',self,y).bool()
-
-    def __mod__(self,y):
-        """Modulus: x.__mod__(y) <==> x%y
-        @rtype: Data"""
-        return Data.execute('$ mod $',self,y)
-
-    def __mul__(self,y):
-        """Multiply: x.__mul__(y) <==> x*y
-        @rtype: Data"""
-        ans = Data.execute('$ * $',self,y)
-        return ans
-
-    def __ne__(self,y):
-        """Not equal: x.__ne__(y) <==> x!=y
-        @rtype: Data"""
-        return Data.execute('$ != $',self,y).bool()
-
-    def __neg__(self):
-        """Negation: x.__neg__() <==> -x
-        @rtype: Data"""
-        return Data.execute('-$',self)
-
-    def __nonzero__(self):
-        """Not equal 0: x.__nonzero__() <==> x != 0
-        @rtype: Bool"""
-        return Data.execute('$ != 0',self).bool()
-
-    def __or__(self,y):
-        """Or: x.__or__(y) <==> x|y
-        @rtype: Data"""
-        return Data.execute('$ | $',self,y)
-
-    def __pos__(self):
-        """Unary plus: x.__pos__() <==> +x
-        @rtype: Data"""
-        return self
-
-    def __radd__(self,y):
-        """Reverse add: x.__radd__(y) <==> y+x
-        @rtype: Data"""
-        if isinstance(y,Data):
-            return Data.execute('$+$',y,self)
-        else:
-            return Data(y)+self
-
-    def __rdiv__(self,y):
-        """Reverse divide: x.__rdiv__(y) <==> y/x
-        @rtype: Data"""
-        return Data.execute('$/$',y,self)
-
-    def __rfloordiv__(self,y):
-        """x.__rfloordiv__(y) <==> y//x
-        @rtype: Data"""
-        return Data.execute('floor($/$)',y,self)
-
-    def __rlshift__(self,y):
-        """Reverse left binary shift: x.__rlshift__(y) <==> y<<x
-        @rtype: Data"""
-        return Data.execute('$ << $',self,y)
-
-    def __rmod__(self,y):
-        """Reverse modulus: x.__rmod__(y) <==> y%x
-        @rtype: Data"""
-        return Data.execute('$ mod $',y,self)
-
-    def __rmul__(self,y):
-        """Multiply: x.__rmul__(y) <==> y*x
-        @rtype: Data"""
-        return self.__mul__(y)
-
-    __ror__=__or__
-    def __ror__(self,y):
-        """Reverse or: x.__ror__(y) <==> y|x
-        @type: Data"""
-        return self.__or__(y)
-
-    def __rrshift__(self,y):
-        """Reverse right binary shift: x.__rrshift__(y) <==> y>>x
-        @rtype: Data"""
-        return Data.execute('$ >> $',y,self)
-
-    def __rshift__(self,y):
-        """Right binary shift: x.__rshift__(y) <==> x>>y
-        @rtype: Data
-        """
-        return Data.execute('$ >> $',self,y)
-
-    def __rsub__(self,y):
-        """Reverse subtract: x.__rsub__(y) <==> y-x
-        @rtype: Data"""
-        return Data.execute('$ - $',y,self)
-
-    def __rxor__(self,y):
-        """Reverse xor: x.__rxor__(y) <==> y^x
-        @rtype: Data"""
-        return Data.execute('$^$',y,self)
-
-    def __sub__(self,y):
-        """Subtract: x.__sub__(y) <==> x-y
-        @rtype: Data"""
-        return Data.execute('$ - $',self,y)
-
-    def __xor__(self,y):
-        """Xor: x.__xor__(y) <==> x^y
-        @rtype: Data"""
-        return Data.execute('$^$',self,y)
+    def __float__(self):
+        """Float: x.__float__() <==> float(x)
+        @rtype: float"""
+        return float(self.getInt().value)
 
     def compare(self,value):
         """Compare this data with argument
@@ -450,17 +409,10 @@ class Data(object):
         except:
             return None
 
-    def decompile(self):
-        """Return string representation
-        @rtype: string
-        """
-        return str(_compound.DECOMPILE(self).evaluate())
-
     def __repr__(self):
         """Representation
         @type: String"""
-        return self.decompile()
-
+        return str(self.decompile())
     __str__=__repr__
 
     def data(self,*altvalue):
