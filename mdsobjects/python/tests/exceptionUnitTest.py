@@ -24,7 +24,7 @@ class exceptionTests(TestCase):
         from mdsExceptions import TclNORMAL
         err = TclNORMAL()
         self.assertEquals(err.status, 2752521)
-        self.assertEquals(err.severity, 'S') 
+        self.assertEquals(err.severity, 'S')
         self.assertEquals(err.fac, 'Tcl')
 
     def runTest(self):
@@ -34,3 +34,7 @@ class exceptionTests(TestCase):
 
 def suite():
     return exceptionTests()
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

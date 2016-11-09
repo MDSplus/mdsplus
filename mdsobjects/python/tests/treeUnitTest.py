@@ -1,7 +1,6 @@
-from unittest import TestCase,TestSuite
+from unittest import TestCase
 from tree import Tree,TreeNode
-from mdsdata import makeData,Data
-from mdsscalar import Uint32
+from mdsdata import Data
 from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
@@ -34,7 +33,6 @@ class treeTests(TestCase):
                 treeTests.shot=treeTests.shot+2
         finally:
             l.release()
-        print ("Creating trees in %s" % (_tmpdir,))
         if getenv("TEST_DISTRIBUTED_TREES") is not None:
             hostpart="localhost::"
         else:
@@ -52,7 +50,7 @@ class treeTests(TestCase):
     def editTrees(self):
         pytree=Tree('pytree',self.shot,'new')
         pytree_top=pytree.default
-        subtree=pytree_top.addNode('pytreesub','subtree')
+        pytree_top.addNode('pytreesub','subtree')
         for i in range(10):
             node=pytree_top.addNode('val%02d' % (i,),'numeric')
             node.record=i
@@ -278,3 +276,7 @@ class treeTests(TestCase):
 
 def suite():
     return treeTests()
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

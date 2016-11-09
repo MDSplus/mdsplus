@@ -73,6 +73,6 @@ def test_all(*arg):
     tests.append(connectionsSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
     return TestSuite(tests)
+
 if __name__=='__main__':
     TextTestRunner().run(test_all())
-

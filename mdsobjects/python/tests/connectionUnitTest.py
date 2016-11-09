@@ -9,7 +9,6 @@ class connectionTests(TestCase):
         c=Connection('local://gub')
 
         class ConnectionThread(Thread):
-
             def run(self):
                 for i in range(1000):
                     self.test.assertEqual(int(c.get('%d' % i)),i)
