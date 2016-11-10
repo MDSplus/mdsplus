@@ -81,7 +81,6 @@ extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiMasterData();
 
-STATIC_CONSTANT DESCRIPTOR_A(arr0, sizeof(int), DTYPE_L, 0, sizeof(int));
 STATIC_CONSTANT unsigned char zero_val = 0;
 STATIC_CONSTANT unsigned char one_val = 1;
 STATIC_CONSTANT struct descriptor zero = { sizeof(zero_val), DTYPE_BU, CLASS_S, (char *)&zero_val };
@@ -218,9 +217,9 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
         ******************/
   if (!(status & 1))
     goto err;
-  head = (unsigned short)(sizeof(arr0) + sizeof(int) *
-			  ((pa->aflags.coeff ? sizeof(char *) + rank * sizeof(int) : 0)
-			   + (pa->aflags.bounds ? 2 * rank * sizeof(int) : 0)));
+  head = (unsigned short)(sizeof(struct descriptor_a) +
+			  (pa->aflags.coeff ? sizeof(char *) + rank * sizeof(int) : 0) +
+			  (pa->aflags.bounds ? 2 * rank * sizeof(int) : 0));
   digits = cats[narg].digits;
   out_dtype = cats[narg].out_dtype;
 
@@ -246,7 +245,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     pmask = (struct descriptor *)&ncopies;
 		/** scalar to simple vector **/
     if (rank == 0)
-      _MOVC3(head, (char *)&arr0, (char *)&arr);
+      _MOVC3(head, (char *)pa, (char *)&arr);
 		/** simple and coefficient vector **/
     else {
       _MOVC3(head, (char *)pa, (char *)&arr);
@@ -279,7 +278,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     pmask = (struct descriptor *)&ncopies;
 		/** scalar to simple vector **/
     if (rank == 0)
-      _MOVC3(head, (char *)&arr0, (char *)&arr);
+      _MOVC3(head, (char *)pa, (char *)&arr);
     else if (rank >= MAXDIM)
       status = TdiNDIM_OVER;
 		/** coefficient vector **/
@@ -327,8 +326,8 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
         ****************/
   else if (pfun->f2 == Tdi2Mask2) {
     psig = 0;
-    _MOVC3(head, (char *)&arr0, (char *)&arr);
-    arr.arsize = arr0.length * rank;
+    _MOVC3(head, (char *)pa, (char *)&arr);
+    arr.arsize = pa->length * rank;
     status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*******************
