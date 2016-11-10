@@ -508,12 +508,19 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		}
 		else
 		{
-			if(!strcmp(resampleMode, "MinMax"))
-      			status = XTreeMinMaxResample((struct descriptor_signal *)&currSignalD, startD, endD,
-				    minDeltaD, &resampledXds[currSegIdx]);
-			else
-      			status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD,
-				    minDeltaD, &resampledXds[currSegIdx]);
+			/*if(!startD && !endD && !minDeltaD)  //If no resampling required
+			{
+				MdsCopyDxXd(&currSignalD, &resampledXds[currSegIdx]);
+			}
+			else */
+			{
+				if(!strcmp(resampleMode, "MinMax"))
+	      			status = XTreeMinMaxResample((struct descriptor_signal *)&currSignalD, startD, endD,
+					    minDeltaD, &resampledXds[currSegIdx]);
+				else
+	      			status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD,
+					    minDeltaD, &resampledXds[currSegIdx]);
+			}
 		}
 
 //printDecompiled(resampledXds[currSegIdx].pointer);
