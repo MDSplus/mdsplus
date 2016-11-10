@@ -508,11 +508,11 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int inNid, struct descriptor *startD
 		}
 		else
 		{
-			/*if(!startD && !endD && !minDeltaD)  //If no resampling required
+			if(!startD && !endD && !minDeltaD)  //If no resampling required
 			{
 				MdsCopyDxXd(&currSignalD, &resampledXds[currSegIdx]);
 			}
-			else */
+			else
 			{
 				if(!strcmp(resampleMode, "MinMax"))
 	      			status = XTreeMinMaxResample((struct descriptor_signal *)&currSignalD, startD, endD,
