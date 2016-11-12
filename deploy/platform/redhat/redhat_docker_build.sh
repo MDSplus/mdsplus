@@ -64,6 +64,11 @@ NORMAL() {
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim ${VALGRIND_TOOLS})"
 export PYTHONDONTWRITEBYTECODE=no
+export PYTHONPATH=/workspace/python
+mkdir -p ${PYTHONPATH}
+ln -sf /source/mdsobjects/python ${PYTHONPATH}/MDSplus
+export PyLib=python2.7
+export MDS_PATH=/source/tdi
 set -e
 if [ "$TEST" = "yes" ]
 then
