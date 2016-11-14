@@ -29,6 +29,7 @@ static void (*PyGILState_Release)(PyThreadState *) = 0;
 typedef void* PyObject;
 typedef ssize_t Py_ssize_t;
 static void (*Py_DecRef)() = 0;
+static PyObject *(*Py_None) () = 0;
 static PyObject *(*PyTuple_New) () = 0;
 static PyObject *(*PyString_FromString) () = 0;
 static PyObject *(*PyUnicode_FromString) () = 0;
@@ -110,6 +111,7 @@ static int Initialize()
     loadrtn(PyGILState_Release, 1);
     /*** load python functions ***/
     loadrtn(Py_DecRef, 1);
+    loadrtn(Py_None, 1);
     loadrtn(PyTuple_New, 1);
     loadrtn(PyString_FromString, 0);
     if (!PyString_FromString) {
@@ -290,7 +292,11 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
   if (dataObj) {
     PyObject *descr = (*PyObject_GetAttrString)(dataObj, "descriptor");
     if (descr) {
-      PyObject *descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
+      PyObject* descrPtr;
+      if (descr==Py_None)
+          descrPtr = NULL;
+      else
+          descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
       if (descrPtr) {
 	MdsCopyDxXd((struct descriptor *)(*PyLong_AsVoidPtr)(descrPtr), outptr);
 	(*Py_DecRef)(descrPtr);
