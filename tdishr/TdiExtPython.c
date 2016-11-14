@@ -17,6 +17,8 @@
 #include <alloca.h>
 #endif
 
+#define Py_None _Py_NoneStruct
+
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
   fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
@@ -43,7 +45,6 @@ static PyObject *(*PyImport_ImportModule) () = 0;
 static PyObject *(*PyModule_GetDict) () = 0;
 static PyObject *(*PyDict_GetItemString) () = 0;
 static PyObject *(*Py_BuildValue) () = 0;
-static PyObject *Py_None;
 static PyObject *_Py_NoneStruct;
 static PyObject *(*PyList_Insert) () = 0;
 static PyObject *(*PyObject_CallFunction) () = 0;
@@ -111,7 +112,6 @@ static int Initialize()
     loadrtn(PyGILState_Release, 1);
     /*** load python functions ***/
     loadrtn(Py_DecRef, 1);
-    loadrtn(Py_None, 1);
     loadrtn(PyTuple_New, 1);
     loadrtn(PyString_FromString, 0);
     if (!PyString_FromString) {
