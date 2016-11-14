@@ -178,19 +178,18 @@ static PyObject *getFunction(char *modulename, char *functionname)
   PyObject *module;
   PyObject *ans = 0;
   module = (*PyImport_ImportModule)(modulename);
-  if (module == 0) {
+  if (!module) {
     printf("Error importing module %s\n", modulename);
     if ((*PyErr_Occurred)()) {
       PyErr_Print();
     }
   } else {
     ans = (*PyObject_GetAttrString)(module, functionname);
-    if (ans == 0) {
+    if (!ans) {
       printf("Error finding function called '%s' in module %s\n", functionname, modulename);
       if ((*PyErr_Occurred)()) {
 	(*PyErr_Print)();
       }
-      (*Py_DecRef)(module);
     } else {
       if (!(*PyCallable_Check)(ans)) {
 	printf("Error, item called '%s' in module %s is not callable\n", functionname, modulename);
@@ -198,6 +197,7 @@ static PyObject *getFunction(char *modulename, char *functionname)
 	ans = 0;
       }
     }
+    (*Py_DecRef)(module);
   }
   return ans;
 }
@@ -275,6 +275,7 @@ static PyObject *argsToTuple(int nargs, struct descriptor **args)
 	break;
       }
     }
+    (*Py_DecRef)(pointerToObject);
   }
   if (idx != nargs) {
     (*Py_DecRef)(ans);
@@ -289,22 +290,22 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
   PyObject *dataObj;
   makeDataFunction = getFunction("MDSplus", "makeData");
   dataObj = (*PyObject_CallFunction)(makeDataFunction, "O", value);
+  (*Py_DecRef)(makeDataFunction);
   if (dataObj) {
     PyObject *descr = (*PyObject_GetAttrString)(dataObj, "descriptor");
     if (descr) {
-      PyObject* descrPtr;
-      if (descr==Py_None)
-          descrPtr = NULL;
-      else
-          descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
-      if (descrPtr) {
-	MdsCopyDxXd((struct descriptor *)(*PyLong_AsVoidPtr)(descrPtr), outptr);
-	(*Py_DecRef)(descrPtr);
-      } else {
-	printf("Error getting address of descriptor\n");
-	if ((*PyErr_Occurred)()) {
-	  (*PyErr_Print)();
-	}
+      PyObject* descrPtr = NULL;
+      if (descr!=Py_None){
+        descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
+        if (descrPtr) {
+  	  MdsCopyDxXd((struct descriptor *)(*PyLong_AsVoidPtr)(descrPtr), outptr);
+  	  (*Py_DecRef)(descrPtr);
+        } else {
+  	  printf("Error getting address of descriptor\n");
+  	  if ((*PyErr_Occurred)()) {
+  	    (*PyErr_Print)();
+  	  }
+        }
       }
       (*Py_DecRef)(descr);
     } else {
@@ -346,12 +347,11 @@ int TdiExtPython(struct descriptor *modname_d,
       addToPath(dirspec);
       free(dirspec);
       pyFunction = getFunction(filename, filename);
+      free(filename);
       if (pyFunction) {
-	free(filename);
 	pyArgs = argsToTuple(nargs, args);
 	ans = (*PyObject_CallObject)(pyFunction, pyArgs);
-	(*Py_DecRef)(pyArgs);
-	if (ans == 0) {
+	if (!ans) {
 	  printf("Error calling fun in %s\n", filename);
 	  if ((*PyErr_Occurred)()) {
 	    (*PyErr_Print)();
@@ -361,6 +361,8 @@ int TdiExtPython(struct descriptor *modname_d,
 	  (*Py_DecRef)(ans);
 	  status = 1;
 	}
+	(*Py_DecRef)(pyArgs);
+	(*Py_DecRef)(pyFunction);
       }
       (*PyGILState_Release)(GIL);
     }
