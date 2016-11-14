@@ -72,18 +72,6 @@ static int Initialize()
       fprintf(stderr,"\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\nPlease define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
       return 0;
     }
-#ifdef _WIN32
-    lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
-    strcat(lib, ".dll");
-#else
-    if (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0) {
-      lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
-    } else {
-      lib = strcpy((char *)malloc(strlen(envsym) + 7), "lib");
-      strcat(lib, envsym);
-      strcat(lib, ".so");
-    }
-#endif
 #ifdef RTLD_NOLOAD
     /*** See if python routines are already available ***/
     handle = dlopen(0, RTLD_NOLOAD);
@@ -91,13 +79,24 @@ static int Initialize()
     /*** If not, load the python library ***/
 #endif
     if (!Py_Initialize) {
+#ifdef _WIN32
+      lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
+      strcat(lib, ".dll");
+#else
+      if (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0) {
+        lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
+      } else {
+        lib = strcpy((char *)malloc(strlen(envsym) + 7), "lib");
+        strcat(lib, envsym);
+        strcat(lib, ".so");
+      }
+#endif
       handle = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);
+      free(lib);
       if (!handle) {
 	fprintf(stderr, "\n\nUnable to load python library: %s\nError: %s\n\n", lib, dlerror());
-	free(lib);
 	return 0;
       }
-      free(lib);
       loadrtn(Py_Initialize, 1);
       (*Py_Initialize) ();
       loadrtn(PyEval_ThreadsInitialized, 1);
