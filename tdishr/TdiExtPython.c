@@ -350,6 +350,7 @@ int TdiExtPython(struct descriptor *modname_d,
 	free(filename);
 	pyArgs = argsToTuple(nargs, args);
 	ans = (*PyObject_CallObject)(pyFunction, pyArgs);
+	(*Py_DecRef)(pyArgs);
 	if (ans == 0) {
 	  printf("Error calling fun in %s\n", filename);
 	  if ((*PyErr_Occurred)()) {
@@ -358,7 +359,6 @@ int TdiExtPython(struct descriptor *modname_d,
 	} else {
 	  getAnswer(ans, out_ptr);
 	  (*Py_DecRef)(ans);
-	  (*Py_DecRef)(pyArgs);
 	  status = 1;
 	}
       }
