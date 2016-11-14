@@ -240,17 +240,17 @@ static char *findModule(struct descriptor *modname_d, char **modname_out)
   int status;
   status = LibFindFileRecurseCaseBlind(&modfile_d, &ans_d, &ctx);
   LibFindFileEnd(&ctx);
+  char *dirspec = NULL;
   if (status & 1) {
-    char *dirspec = MdsDescrToCstring((struct descriptor *)&ans_d);
+    dirspec = MdsDescrToCstring((struct descriptor *)&ans_d);
     char *modnam = (char *)malloc(modlen + 1);
     strncpy(modnam, &dirspec[strlen(dirspec) - modlen - strlen(ftype)], modlen);
     modnam[modlen] = 0;
     *modname_out = modnam;
     dirspec[strlen(dirspec) - modlen - strlen(ftype)] = 0;
-    return dirspec;
-  } else {
-    return 0;
   }
+  free(ans_d.pointer);
+  return dirspec;
 }
 
 static PyObject *argsToTuple(int nargs, struct descriptor **args)
