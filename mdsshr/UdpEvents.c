@@ -22,8 +22,8 @@
 #include "mdsshrthreadsafe.h"
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
-extern int UdpEventGetTtl(unsigned char *ttl);
-extern int UdpEventGetLoop(unsigned char *loop);
+extern int UdpEventGetTtl(char *ttl);
+extern int UdpEventGetLoop(char *loop);
 extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
 #define MAX_MSG_LEN 4096
@@ -403,7 +403,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   int status;
   struct hostent *hp = (struct hostent *)NULL;
   unsigned short port;
-  unsigned char ttl,loop;
+  char ttl, loop;
   struct in_addr *interface_addr=0;
 
   initialize();
@@ -449,7 +449,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   if (UdpEventGetLoop(&loop))
     setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
   if (UdpEventGetInterface(&interface_addr)) {
-    status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF, interface_addr, sizeof(*interface_addr));
+    status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF, (char *)interface_addr, sizeof(*interface_addr));
     free(interface_addr);
   }
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) == -1) {

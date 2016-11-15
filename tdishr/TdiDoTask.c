@@ -61,7 +61,7 @@ STATIC_ROUTINE void TASK_AST(int astpar, int r0, int r1, int *pc, int psl)
 STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr)
 {
   int dtype, ndesc, j, status;
-  int *arglist[256];
+  void **arglist[256];
   ndesc = ptask->ndesc;
   while (ndesc > 3 && ptask->arguments[ndesc - 4] == 0)
     ndesc--;
@@ -76,20 +76,20 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
       status = TdiData(pmethod->method, &method_d MDS_END_ARG);
       if (status & 1)
 	status = TdiGetNid(pmethod->object, &nid);
-      arglist[0] = (int *)(long)ndesc + 1;
-      arglist[1] = (int *)&nid_dsc;
-      arglist[2] = (int *)&method_d;
+      int nargs = ndesc + 1;
+      struct descriptor_s narg_dsc = { 4, DTYPE_L, CLASS_S, (char*)&nargs };
+      arglist[0] = (void *)(&narg_dsc);
+      arglist[1] = (void *)(&nid_dsc);
+      arglist[2] = (void *)(&method_d);
 
       /*** skip timeout,method,object ***/
       for (j = 3; j < ndesc; ++j)
-	arglist[j] = (int *)pmethod->arguments[j - 3];
-      arglist[ndesc] = (int *)out_ptr;
+	arglist[j] = (void *)pmethod->arguments[j - 3];
+      arglist[ndesc] = (void *)out_ptr;
       arglist[ndesc + 1] = MdsEND_ARG;
       if (status & 1) {
-	status = (long)LibCallg(arglist, TreeDoMethod);
-	if (!(status & 1)) {
-	  status = TdiPutLong(&status, out_ptr);
-	}
+        struct descriptor_s out = { sizeof(void *) , DTYPE_POINTER, CLASS_S , LibCallg(arglist, TreeDoMethod) };
+        MdsCopyDxXd((struct descriptor*)&out, out_ptr);
       }
       StrFree1Dx(&method_d);
       break;
@@ -100,7 +100,6 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
       struct descriptor_program *prog_task = (struct descriptor_program *)ptask;
       if (prog_task->program && prog_task->program->dtype == DTYPE_T)
 	status = LibSpawn(prog_task->program, 1, 0) == 0;
-
       status = TdiPutLong(&status, out_ptr);
 
     }

@@ -6,7 +6,7 @@
 #include "windows.h"
 #endif
 #else
-typedef int SOCKET;
+typedef unsigned int SOCKET;
 #endif
 
 #define MAX_DIMS 7

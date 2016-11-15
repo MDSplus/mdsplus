@@ -81,9 +81,14 @@ EXPORT int UdpEventGetPort(unsigned short *port) {
   return status;
 }
 
+
+#ifdef _WIN32
+EXPORT int UdpEventGetInterface(struct in_addr **interface_addr __attribute__ ((unused))) {
+  return 0;
+}
+#else
 EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
   int status = 0;
-#ifndef _WIN32
   if (settings[MULTICAST_IF]) {
     struct ifaddrs *ifaddr=0, *ifa=0;
     if (getifaddrs(&ifaddr) == 0) {
@@ -102,9 +107,9 @@ EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
       freeifaddrs(ifaddr);
     }
   }
-#endif
   return status;
 }
+#endif
 
 EXPORT int UdpEventGetAddress(char **address, unsigned char *arange) {
   unsigned int num, p1 = 224, p2 = 0, p3 = 0, p4 = 175, p5 = 255;

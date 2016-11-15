@@ -5,7 +5,7 @@
 #endif
 
 #ifdef WIN32
-#pragma warning (disable : 4244 4102 )	/* int to short conversions and unreferenced label */
+//#pragma warning (disable : 4244 4102 )	/* int to short conversions and unreferenced label */
 #endif
 
 /*      TdiYacc.Y
