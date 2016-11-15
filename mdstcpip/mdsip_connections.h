@@ -5,12 +5,12 @@
 #include <config.h>
 #include <mdsdescrip.h>
 #ifdef _WIN32
-#ifndef __SIZE_TYPE__
-typedef int ssize_t;
-#endif
-#include <winsock2.h>
+ #ifndef __SIZE_TYPE__
+ typedef int ssize_t;
+ #endif
+ #include <winsock2.h>
 #else
-#include <sys/types.h>
+ #include <sys/types.h>
 #endif
 #include <ipdesc.h>
 #include <mds_stdarg.h>

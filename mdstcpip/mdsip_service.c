@@ -10,11 +10,11 @@ static int shut = 0;
 static HANDLE shutdownEventHandle;
 static int extra_argc;
 static char **extra_argv;
-#ifdef _WIN64
-static char *dirname = "bin_x86_64";
-#else
-static char *dirname = "bin_x86";
-#endif
+// #ifdef _WIN64
+// static char *dirname = "bin_x86_64";
+// #else
+// static char *dirname = "bin_x86";
+// #endif
 
 static char *ServiceName(int generic)
 {
@@ -40,12 +40,12 @@ static int SpawnWorker(SOCKET sock)
   //	  getenv("MDSPLUS_DIR"), dirname, GetPortname(), GetHostfile(), GetMaxCompressionLevel(),
   //	  _getpid(), sock);
   sprintf(cmd,
-	  "mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",
+	  "mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%u",
 	  GetPortname(),
 	  GetHostfile(),
 	  GetMaxCompressionLevel(),
 	  _getpid(),
-	  sock);
+	  (unsigned int)sock);
   memset(&startupinfo, 0, sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
   status = CreateProcess(NULL, TEXT(cmd), NULL, NULL, FALSE, 0, NULL, NULL, &startupinfo, &pinfo);
@@ -95,29 +95,29 @@ static void InitializeService()
   SetThisServiceStatus(SERVICE_START_PENDING, 1000);
 }
 
-static void RemoveService()
+static BOOL RemoveService()
 {
+  BOOL status = 1;
   SC_HANDLE hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
   if (hSCManager) {
     SC_HANDLE hService = OpenService(hSCManager, TEXT(ServiceName(1)), DELETE);
     if (hService) {
-      BOOL status;
       status = DeleteService(hService);
       status = CloseServiceHandle(hService);
     }
     CloseServiceHandle(hSCManager);
   }
+  return status;
 }
 
-static void InstallService()
+static int InstallService()
 {
+  int status = 1;
   SC_HANDLE hSCManager;
-  int status;
   RemoveService();
   hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
   if (hSCManager) {
     SC_HANDLE hService;
-    char *pgm;
     char *cmd;
     static const char *multi_opt = "--multi";
     static const char *server_opt = "--server";
@@ -179,14 +179,21 @@ static void InstallService()
       CloseServiceHandle(hService);
     CloseServiceHandle(hSCManager);
   }
+  return status;
 }
 
 static void InitializeSockets()
 {
-  WSADATA wsaData;
-  WORD wVersionRequested;
-  wVersionRequested = MAKEWORD(1, 1);
-  WSAStartup(wVersionRequested, &wsaData);
+#ifdef _WIN32
+  static int initialized = 0;
+  if (!initialized) {
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+    WSAStartup(wVersionRequested, &wsaData);
+    initialized = 1;
+  }
+#endif
 }
 
 static short GetPort()
@@ -244,7 +251,7 @@ static int ServiceMain(int argc, char **argv)
     return 0;
   } else {
     s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s == -1) {
+    if (s == INVALID_SOCKET) {
       printf("Error getting Connection Socket\n");
       exit(1);
     }
@@ -314,10 +321,7 @@ int main(int argc, char **argv)
     SERVICE_TABLE_ENTRY srvcTable[] = { {ServiceName(1), (LPSERVICE_MAIN_FUNCTION) ServiceMain}
     , {NULL, NULL}
     };
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
+    InitializeSockets();
     StartServiceCtrlDispatcher(srvcTable);
   }
   return 1;

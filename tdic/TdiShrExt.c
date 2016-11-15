@@ -39,6 +39,11 @@ dele *.exe;
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
+#ifdef _WIN32
+ #include <winsock2.h>
+#else
+ #include <sys/types.h>
+#endif
 #ifdef VMS
 #include <ctype.h>
 #define TdiCvt TDI$CVT
@@ -48,10 +53,7 @@ extern int MdsClose(int sock);
 extern int TdiCvt();
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
-extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
-#ifndef _WIN32
-#define INVALID_SOCKET -1
-#endif
+extern SOCKET ReuseCheck(char *hostin, char *unique, size_t buflen);
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
@@ -121,7 +123,7 @@ EXPORT int rMdsList()
   for (cptr = Connections; (cptr != NULL);) {
     i++;
     if (cptr->sock != INVALID_SOCKET) {
-      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, cptr->sock);
+      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, (int)cptr->sock);
       if (cptr->sock == sock)
 	printf("  <-- active");
     } else
@@ -161,15 +163,14 @@ EXPORT struct descriptor_xd *rMdsVersion()
 /* Routine returns socket if valid */
 static SOCKET AddConnection(char *server)
 {
-  int status;
   Connection *cptr;
   SOCKET nsock;
   char *unique = malloc(128);
 /* Extract the ip and port numbers */
-  if ((status = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
+  if ((nsock = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
     free(unique);
     printf("hostname [%s] invalid, No Connection\n", server);
-    return (INVALID_SOCKET);
+    return INVALID_SOCKET;
   }
 /* scan through current list looking for an ip/port pair */
   for (cptr = Connections; (cptr != NULL);) {
