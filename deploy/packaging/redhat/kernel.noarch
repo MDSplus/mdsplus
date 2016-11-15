@@ -154,7 +154,7 @@
 ./usr/local/mdsplus/tdi/python/Py.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
 ./usr/local/mdsplus/tdi/python/intersect1d.fun
-./usr/local/mdsplus/tdi/python/pyfun.fun
+./usr/local/mdsplus/tdi/python/pyfun.py
 ./usr/local/mdsplus/tdi/python/setdiff1d.fun
 ./usr/local/mdsplus/tdi/remote
 ./usr/local/mdsplus/tdi/remote/GetDefaultNid.fun
