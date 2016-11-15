@@ -1,9 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/epics/
-./usr/local/mdsplus/epics/archiver/
 ./usr/local/mdsplus/epics/archiver/ChannelArchiver.java
 ./usr/local/mdsplus/epics/archiver/Sdd2Mds
 ./usr/local/mdsplus/epics/archiver/Xml2Mds.java
@@ -13,14 +7,12 @@
 ./usr/local/mdsplus/epics/archiver/sdd2IOBList.xsl
 ./usr/local/mdsplus/epics/archiver/sdd2SignalsList.xsl
 ./usr/local/mdsplus/epics/archiver/sdd2VariablesList.xsl
-./usr/local/mdsplus/epics/cas/
 ./usr/local/mdsplus/epics/cas/main.cc
 ./usr/local/mdsplus/epics/cas/mdsChannel.cc
 ./usr/local/mdsplus/epics/cas/mdsPV.cc
 ./usr/local/mdsplus/epics/cas/mdsServer.cc
 ./usr/local/mdsplus/epics/cas/mdsServer.h
 ./usr/local/mdsplus/epics/cas/pvEntry.cc
-./usr/local/mdsplus/epics/mdsrecords/
 ./usr/local/mdsplus/epics/mdsrecords/Makefile
 ./usr/local/mdsplus/epics/mdsrecords/dbCommon.dbd
 ./usr/local/mdsplus/epics/mdsrecords/devExprSoft.c

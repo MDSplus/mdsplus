@@ -962,14 +962,14 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     MDS_IO_LSEEK(info_ptr->data_file->put, offset, SEEK_SET);
     status =
 	(MDS_IO_WRITE(info_ptr->data_file->put, buffer, bytes_to_insert) ==
-	 bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
+	 (ssize_t)bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
     free(buffer);
 #else
     TreeLockDatafile(info_ptr, 0, offset);
     MDS_IO_LSEEK(info_ptr->data_file->put, offset, SEEK_SET);
     status =
 	(MDS_IO_WRITE(info_ptr->data_file->put, data->pointer, bytes_to_insert) ==
-	 bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
+	 (ssize_t)bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
     TreeUnLockDatafile(info_ptr, 0, offset);
 #endif
     if (startIdx == segment_header.next_row) {

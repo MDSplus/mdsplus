@@ -380,6 +380,7 @@ class dataTests(TestCase):
         self.assertEqual(int(Float64(255)),255)
 
     def tdiFunctions(self):
+        self.assertEqual(Data.execute("Py('import MDSplus;a=MDSplus.Uint8(8)','a')"),Uint8(8))
         def doUnaryArray(expression,ans):
             self.assertEqual(((Data.execute(expression))==ans).all(),True)
 
@@ -494,7 +495,7 @@ class dataTests(TestCase):
         self.basicBinaryOperators()
         self.mathFunctions()
         self.tdiFunctions()
-        
+
 
 def suite():
     tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']

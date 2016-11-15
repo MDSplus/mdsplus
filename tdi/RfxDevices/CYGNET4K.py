@@ -1,4 +1,4 @@
-__version__=(2016,06,14,18,15)
+__version__=(2016,10,26,16,00)
 from MDSplus import mdsExceptions, Device, Tree, Dimension
 from MDSplus import Int16Array, Uint16Array, Uint64Array, Float32Array
 from numpy import array
@@ -30,13 +30,13 @@ class CYGNET4K(Device):
       {'path':'.TREND:PCB', 'type':'text','options':('no_write_shot',)},
       {'path':'.TREND:CMOS', 'type':'text','options':('no_write_shot',)},
       {'path':'.TREND:PERIOD', 'type':'numeric','valueExpr':"Float32(1.).setUnits('s')",'options':('no_write_shot',)},
-      {'path':'.TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once')},
-      {'path':'.TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_IDENT', 'type':'text','options':('no_write_shot','write_once')},
-      {'path':':ACT_INIT','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_START','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
-      {'path':':ACT_STORE','type':'action','valueExpr':"Action(Dispatch(head.act_ident,'STORE',90,None),Method(None,'store',head))",'options':('no_write_shot','write_once')},
+      {'path':'.TREND:ACT_START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'trend_start',head))",'options':('no_write_shot','write_once','disabled')},
+      {'path':'.TREND:ACT_STOP','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',50,None),Method(None,'trend_stop',head))",'options':('no_write_shot','write_once','disabled')},
+      {'path':':ACTIONSERVER', 'type':'text','options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:INIT', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',20,None),Method(None,'init',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:START','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'INIT',50,None),Method(None,'start',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:STOP', 'type':'action','valueExpr':"Action(Dispatch(head.actionserver,'DEINIT',20,None),Method(None,'stop',head))",'options':('no_write_shot','write_once')},
+      {'path':':ACTIONSERVER:STORE','type':'action','valueExpr':"Action(Dispatch(head.actionserver,'STORE',90,None),Method(None,'store',head))",'options':('no_write_shot','write_once')},
       {'path':':BINNING', 'type':'text','options':('no_write_model','write_once')},
       {'path':':ROI_RECT', 'type':'numeric','options':('no_write_model','write_once')},
       {'path':':TEMP_CMOS', 'type':'numeric','options':('no_write_model','write_once')},
@@ -618,7 +618,7 @@ class CYGNET4K(Device):
             if self.worker.isAlive():  # error on timeout
                 raise mdsExceptions.DevException
 
-    def trend_start(self):
+    def trend_start(self,ns=0):
         dev_id = int(self.device_id.data())
         if dev_id < 0:
             print('Wrong value for DEVICE_ID, must be greater than 0')
@@ -644,7 +644,9 @@ class CYGNET4K(Device):
         except:
             print('Check TREND_TREE and TREND_SHOT.')
             raise mdsExceptions.TreeNODATA
-        self.trendWorker = self.AsynchTrend(self, trendTree, trendShot, trendPcb, trendCmos)
+        try:    ns = bool(int(ns))
+        except: ns = False
+        self.trendWorker = self.AsynchTrend(self, trendTree, trendShot, trendPcb, trendCmos, ns)
         self.saveTrendWorker()
         self.trendWorker.start()
         for i in range(10):
@@ -733,7 +735,7 @@ class CYGNET4K(Device):
             CYGNET4K.xclib.storeFrames(self.device.frames)
 
     class AsynchTrend(Thread):
-        def __init__(self, device, trendTree, trendShot, trendPcb, trendCmos):
+        def __init__(self, device, trendTree, trendShot, trendPcb, trendCmos, ns):
             Thread.__init__(self)
             self.device = device
             self.period = float(device.trend_period.data())
@@ -741,6 +743,7 @@ class CYGNET4K(Device):
             self.shot = trendShot
             self.pcb = trendPcb
             self.cmos = trendCmos
+            self.ns = ns
             self.stopReq = False
             self.daemon = True
             self.running = False
@@ -779,6 +782,7 @@ class CYGNET4K(Device):
                 else:
                     sleep(timeTillNextMeasurement);  # wait remaining period unit self.period
                     currTime = int(int(time()/self.period+.1)*self.period*1000);  # currTime in steps of self.period
+                    if self.ns: currTime*= 1000000 # time in nano seconds
                     try:
                         if self.shot==0:
                             if Tree.getCurrent(self.tree) != tree.shot:

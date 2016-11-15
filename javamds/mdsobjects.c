@@ -1398,7 +1398,11 @@ static unsigned int getCtx2(void *ctx)
     return 0;
 }
 
+#ifdef ENV_64
 static void *getCtx(unsigned int ctx1, unsigned int ctx2)
+#else
+static void *getCtx(unsigned int ctx1, unsigned int ctx2 __attribute__ ((unused)))
+#endif
 {
 //      if(sizeof(void *) == 8)
 #ifdef ENV_64

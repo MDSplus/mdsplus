@@ -114,6 +114,18 @@ class Dictionary(dict,Apd):
 
     mdsdtype=216
 
+    @staticmethod
+    def toKey(key):
+        if isinstance(key,_scalar.Scalar):
+            key=key.value
+        if isinstance(key,_N.string_):
+            key=str(key)
+        elif isinstance(key,_N.int32):
+            key=int(key)
+        elif isinstance(key,(_N.float32,_N.float64)):
+            key=float(key)
+        return key
+
     def __hasBadTreeReferences__(self,tree):
         for v in self.itervalues():
             if isinstance(v,_data.Data) and v.__hasBadTreeReferences__(tree):
@@ -163,14 +175,7 @@ class Dictionary(dict,Apd):
             self.setdefault(name,value)
 
     def setdefault(self,key,val):
-        if isinstance(key,_scalar.Scalar):
-            key=key.value
-        if isinstance(key,_N.string_):
-            key=str(key)
-        elif isinstance(key,_N.int32):
-            key=int(key)
-        elif isinstance(key,(_N.float32,_N.float64)):
-            key=float(key)
+        key = Dictionary.toKey(key)
         if isinstance(val,Apd):
             val=Dictionary(val)
         super(Dictionary,self).setdefault(key,val)

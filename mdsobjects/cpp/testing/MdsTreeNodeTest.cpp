@@ -82,7 +82,7 @@ void print_segment_info(TreeNode *node, int segment = -1)
 #endif
 
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(TreeNode);
 
@@ -228,7 +228,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
         data = node->getData();
         TEST1( data->getInt() == 5552368 );
 
-        int len __attribute__ ((unused)) = node->getLength();
+        int len UNUSED_ARGUMENT = node->getLength();
 
         // getLength()  Nci length of Int32 is 12
         TEST1( node->getLength() == 12 );

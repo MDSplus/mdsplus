@@ -1,20 +1,13 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/bin/
 ./usr/local/mdsplus/bin/MonitorCpciData.py
 ./usr/local/mdsplus/bin/dtaq_update_board.sh
 ./usr/local/mdsplus/bin/reboot_dtaq_satelite
-./usr/local/mdsplus/lib/
 ./usr/local/mdsplus/lib/acq_root_filesystem.tgz
 ./usr/local/mdsplus/lib/acq_root_filesystem.tgz_ffs
-./usr/local/mdsplus/lib/libMIT$DEVICES.so
+./usr/local/mdsplus/lib/libMIT$DEVICES.so -> libMitDevices.so
 ./usr/local/mdsplus/lib/libMitDevices.so
 ./usr/local/mdsplus/lib/libMitDevicesIO.so
 ./usr/local/mdsplus/lib/libMitDevicesMsg.so
 ./usr/local/mdsplus/lib/libdc1394_support2.so
-./usr/local/mdsplus/uid/
 ./usr/local/mdsplus/uid/A12.uid
 ./usr/local/mdsplus/uid/A14.uid
 ./usr/local/mdsplus/uid/A3204.uid
@@ -66,6 +59,7 @@
 ./usr/local/mdsplus/uid/L6810.uid
 ./usr/local/mdsplus/uid/L6810A.uid
 ./usr/local/mdsplus/uid/L6810B.uid
+./usr/local/mdsplus/uid/L6810C.uid
 ./usr/local/mdsplus/uid/L8100.uid
 ./usr/local/mdsplus/uid/L8201.uid
 ./usr/local/mdsplus/uid/L8206.uid

@@ -328,7 +328,7 @@ parsecmd() {
 		COLOR=yes
 		;;
 	    --winhost=*)
-		WINDOWSHOST="${i#*=}"
+		WINHOST="${i#*=}"
 		;;
 	    --winbld=*)
 		WINBLD="${i#*=}"

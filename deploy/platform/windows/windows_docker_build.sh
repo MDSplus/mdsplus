@@ -21,7 +21,11 @@ NORMAL() {
     fi
 }
 
-
+export PYTHONPATH=/workspace/python
+mkdir -p ${PYTHONPATH}
+ln -sf /source/mdsobjects/python ${PYTHONPATH}/MDSplus
+export PyLib=python27
+export MDS_PATH=/source/tdi
 set -e
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 

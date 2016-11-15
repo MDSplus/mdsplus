@@ -1,9 +1,3 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/idl/
-./usr/local/mdsplus/idl/Logbook/
 ./usr/local/mdsplus/idl/Logbook/Entry_Display.sav
 ./usr/local/mdsplus/idl/Logbook/bust_string.pro
 ./usr/local/mdsplus/idl/Logbook/commit.pro
@@ -20,7 +14,6 @@
 ./usr/local/mdsplus/idl/Logbook/make_entry_display_sav.pro
 ./usr/local/mdsplus/idl/Logbook/rollback.pro
 ./usr/local/mdsplus/idl/Logbook/sql_finish.pro
-./usr/local/mdsplus/idl/PreIDL52/
 ./usr/local/mdsplus/idl/PreIDL52/lon64arr.pro
 ./usr/local/mdsplus/idl/PreIDL52/long64.pro
 ./usr/local/mdsplus/idl/PreIDL52/uint.pro

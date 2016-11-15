@@ -5,6 +5,26 @@
 # repository for debian based systems.
 #
 
+config(){
+    /source/configure \
+        --prefix=${MDSPLUS_DIR} \
+        --exec_prefix=${MDSPLUS_DIR} \
+        --bindir=${MDSPLUS_DIR}/bin \
+        --libdir=${MDSPLUS_DIR}/lib \
+        --with-java_target=6 \
+        --with-java_bootclasspath=/source/rt.jar \
+        --host=${host} \
+        --with-gsi=/usr:gcc$*
+}
+makelist(){
+    dpkg -c $1 | \
+    grep -v python/dist | \
+    grep -v python/build | \
+    grep -v egg-info | \
+    grep -v '/$' | \
+    awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
+    sort
+}
 RED() {
     if [ "$1" = "yes" ]
     then
@@ -46,7 +66,11 @@ spacedelim() {
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
 export PYTHONDONTWRITEBYTECODE=no
-
+export PYTHONPATH=/workspace/python
+mkdir -p ${PYTHONPATH}
+ln -sf /source/mdsobjects/python ${PYTHONPATH}/MDSplus
+export PyLib=python2.7
+export MDS_PATH=/source/tdi
 set -e
 if [ "$ARCH" = "amd64" ]
 then
@@ -76,15 +100,7 @@ then
 	mkdir -p ${MDSPLUS_DIR};
 	MDS_PATH=${MDSPLUS_DIR}/tdi;
 	pushd /workspace/tests/64;
-	/source/configure  \
-	    --prefix=${MDSPLUS_DIR} \
-	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin \
-	    --libdir=${MDSPLUS_DIR}/lib \
-	    --with-gsi=/usr:gcc64 \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=/source/rt.jar \
-	    --enable-debug --enable-werror --host=${host};
+	config 64 --enable-debug --enable-werror
 	$MAKE
 	$MAKE install
 	###
@@ -139,16 +155,7 @@ EOF
 		MDS_PATH=${MDSPLUS_DIR}/tdi;
 		mkdir -p ${MDSPLUS_DIR};
 		pushd /workspace/tests/64-san-${test};
-		/source/configure \
-		    --prefix=${MDSPLUS_DIR} \
-		    --exec_prefix=${MDSPLUS_DIR} \
-		    --bindir=${MDSPLUS_DIR}/bin \
-		    --libdir=${MDSPLUS_DIR}/lib \
-		    --with-gsi=/usr:gcc64 \
-		    --with-java_target=6 \
-		    --with-java_bootclasspath=/source/rt.jar \
-		    --enable-debug --host=${host} \
-		    --enable-sanitize=${test}
+		config 64 --enable-debug --enable-sanitize=${test}
 		status=$?
 		if [ "$status" = "111" ]; then
 		    echo "Sanitizer ${test} not supported. Skipping."
@@ -186,15 +193,7 @@ EOF
 	MDS_PATH=${MDSPLUS_DIR}/tdi;
 	mkdir -p ${MDSPLUS_DIR};
 	pushd /workspace/tests/32;
-	/source/configure \
-	    --prefix=${MDSPLUS_DIR} \
-	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin \
-	    --libdir=${MDSPLUS_DIR}/lib \
-	    --with-gsi=/usr:gcc32 \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=/source/rt.jar \
-	    --enable-debug --enable-werror --host=${host};
+	config 32 --enable-debug --enable-werror
 	$MAKE
 	$MAKE install
 	set +e;
@@ -238,16 +237,7 @@ EOF
 		MDS_PATH=${MDSPLUS_DIR}/tdi;
 		mkdir -p ${MDSPLUS_DIR};
 		pushd /workspace/tests/32-san-${test};
-		/source/configure \
-		    --prefix=${MDSPLUS_DIR} \
-		    --exec_prefix=${MDSPLUS_DIR} \
-		    --bindir=${MDSPLUS_DIR}/bin \
-		    --libdir=${MDSPLUS_DIR}/lib \
-		    --with-gsi=/usr:gcc32 \
-		    --with-java_target=6 \
-		    --with-java_bootclasspath=/source/rt.jar \
-		    --enable-debug --host=${host} \
-		    --enable-sanitize=${test}
+		config 32 --enable-debug --enable-sanitize=${test}
 		status=$?
 		if [ "$status" == 111 ]; then
 		    echo "Sanitizer ${test} not supported. Skipping."
@@ -393,7 +383,7 @@ if [ "${BRANCH}" = "stable" ]
 then
     BNAME=""
 else
-    BNAME="-${BRANCH}"
+    BNAME="-$(echo ${BRANCH} | sed -e 's/-/_/g')"
 fi
 
 debtopkg() {
@@ -422,15 +412,7 @@ then
 	mkdir -p ${MDSPLUS_DIR};
 	mkdir -p /workspace/releasebld/64;
 	pushd /workspace/releasebld/64;
-	/source/configure \
-	    --prefix=${MDSPLUS_DIR} \
-	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin \
-	    --libdir=${MDSPLUS_DIR}/lib \
-	    --with-gsi=/usr:gcc64 \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=/source/rt.jar \
-	    --host=${host};
+	config 64
 	$MAKE
 	$MAKE install
 	popd;
@@ -439,15 +421,7 @@ then
 	mkdir -p ${MDSPLUS_DIR};
 	mkdir -p /workspace/releasebld/32;
 	pushd /workspace/releasebld/32;
-	/source/configure  \
-	    --prefix=${MDSPLUS_DIR} \
-	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin \
-	    --libdir=${MDSPLUS_DIR}/lib \
-	    --with-gsi=/usr:gcc64 \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=/source/rt.jar \
-	    --host=${host};
+	config 64
 	$MAKE
 	$MAKE install
 	popd
@@ -471,20 +445,11 @@ then
 	if [ "$UPDATEPKG" = "yes" ]
 	then
 	    mkdir -p /source/deploy/packaging/${PLATFORM}
-	    dpkg -c $deb | \
-		grep -v python/dist | \
-		grep -v python/build | \
-		grep -v egg-info | \
-		awk '{print $6}' | sort > ${checkfile}
+	    makelist $deb > ${checkfile}
 	else
 	    set +e
 	    echo "Checking contents of $(basename $deb)"
-	    if ( diff <(dpkg -c $deb | \
-		       grep -v python/dist | \
-		       grep -v python/build | \
-		       grep -v egg-info | \
-		       awk '{print $6}' | \
-		       sort) <( sort ${checkfile} ) )
+	    if ( diff <(makelist $deb) <(sort ${checkfile}) )
 	    then
 		echo "Contents of $(basename $deb) is correct."
 	    else
@@ -560,7 +525,6 @@ EOF
 	    NORMAL $COLOR
 	    exit 1
 	fi
-	
     done
     popd
 fi
