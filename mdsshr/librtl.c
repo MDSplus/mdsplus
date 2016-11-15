@@ -253,9 +253,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 }
 
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
-{
-  (void)notifyFlag;
+EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];

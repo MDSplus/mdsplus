@@ -118,14 +118,14 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
 {
   struct timeval TIMER_NOW_TIME;
   long int esec = 0;
-  long int emsec = 0;
+  int emsec = 0;
 #ifdef HAVE_SYS_RESOURCE_H
   time_t usec = 0, ssec = 0;
   suseconds_t umsec = 0, smsec = 0;
   long int sf = 0, hf = 0;
   struct rusage TIMER_NOW_USAGE;
 #else
-  clock_t usec;
+  double usec_d;
 #endif
 
   gettimeofday(&TIMER_NOW_TIME, 0);
@@ -149,8 +149,8 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
   sprintf(*error, "elapsed=%ld.%02ld user=%ld.%02ld sys=%ld.%02ld sf=%ld hf=%ld\n",
 	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
 #else
-  usec = (clock() - cpu_start) / CLOCKS_PER_SEC;
-  sprintf(*error, "elapsed=%ld.%02d cpu=%g\n", esec, emsec, usec);
+  usec_d = (double)(clock() - cpu_start) / (double)CLOCKS_PER_SEC;
+  sprintf(*error, "elapsed=%ld.%02d cpu=%g\n", esec, emsec, usec_d);
 #endif
   return (1);
 }

@@ -119,7 +119,10 @@ typedef BYTE *LPBYTE;
 typedef const LPBYTE LPCBYTE;
 #include <windows.h>
 #include <sqlfront.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <sqldb.h>
+#pragma GCC diagnostic pop
 #define SYBCHAR         SQLCHAR
 #define SYBTEXT         SQLTEXT
 #define SYBFLT8         SQLFLT8

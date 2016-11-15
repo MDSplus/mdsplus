@@ -488,9 +488,7 @@ STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int
   }
 }
 
-STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
-{
-  (void)p;
+STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p __attribute__ ((unused))){
   int status = 1, i;
   Message *m;
   int selectstat;

@@ -106,7 +106,7 @@ extern "C" {
 #include <treeshr.h>
 
 #ifdef WIN32
-#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value. */
+//#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value. */
 #endif
 
 #ifdef output
