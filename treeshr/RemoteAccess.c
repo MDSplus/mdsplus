@@ -108,7 +108,7 @@ STATIC_THREADSAFE int HostListMutex_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t IOMutex;
 STATIC_THREADSAFE int IOMutex_initialized = 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-#if !defined(_WIN32)
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
