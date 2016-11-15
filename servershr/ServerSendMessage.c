@@ -42,9 +42,10 @@ int ServerSendMessage();
 #include "servershrp.h"
 #include <stdio.h>
 #ifdef _WIN32
-  #include <windows.h>
-  #define random rand
-  #define close closesocket
+ typedef int socklen_t;
+ #include <windows.h>
+ #define random rand
+ #define close closesocket
 #else
  #include <sys/socket.h>
  #include <netinet/in.h>
@@ -178,7 +179,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
     if (addr == 0) {
       int sock = getSocket(conid);
       struct sockaddr_in addr_struct = {0};
-      int len = sizeof(addr_struct);
+      socklen_t len = sizeof(addr_struct);
       if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
 	addr = *(int *)&addr_struct.sin_addr;
     }
