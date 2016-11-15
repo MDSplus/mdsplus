@@ -55,11 +55,6 @@ extern int TdiData();
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
-#ifdef _WIN32
-#define lseek _lseeki64
-#endif
-
-
 typedef ARRAY_COEFF(char, 7) ARRAY_7;
 
 
