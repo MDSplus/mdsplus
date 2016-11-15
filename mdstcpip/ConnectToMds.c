@@ -54,7 +54,7 @@ static int DoLogin(int id)
   Message *m;
 #ifdef _WIN32
   static char user[128];
-  int bsize = 128;
+  DWORD bsize = 128;
 #ifdef _NI_RT_
   char *user_p = "Windows User";
 #else
