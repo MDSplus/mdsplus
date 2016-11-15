@@ -118,7 +118,7 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
 {
   struct timeval TIMER_NOW_TIME;
   long int esec = 0;
-  int emsec = 0;
+  long int emsec = 0;
 #ifdef HAVE_SYS_RESOURCE_H
   time_t usec = 0, ssec = 0;
   suseconds_t umsec = 0, smsec = 0;
@@ -150,7 +150,7 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
 	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
 #else
   usec_d = (double)(clock() - cpu_start) / (double)CLOCKS_PER_SEC;
-  sprintf(*error, "elapsed=%ld.%02d cpu=%g\n", esec, emsec, usec_d);
+  sprintf(*error, "elapsed=%ld.%02ld cpu=%g\n", esec, emsec, usec_d);
 #endif
   return (1);
 }
