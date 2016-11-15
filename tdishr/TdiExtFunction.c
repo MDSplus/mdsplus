@@ -110,7 +110,8 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
         Requires: image found and routine symbol found.
         **********************************************/
   if (status & 1) {
-    new[0] = (struct descriptor *)(long)(narg - 1);
+    struct descriptor_s* narg_dsc = { 4, DTYPE_L, CLASS_S, (narg - 1) }
+    new[0] = (struct descriptor *)narg_dsc;
     new[narg - 1] = (struct descriptor *)out_ptr;
     for (j = 2; j < narg && status & 1; ++j) {
       pfun = (struct descriptor_function *)(new[j - 1] = list[j]);

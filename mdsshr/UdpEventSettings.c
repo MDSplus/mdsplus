@@ -83,7 +83,9 @@ EXPORT int UdpEventGetPort(unsigned short *port) {
 
 EXPORT int UdpEventGetInterface(struct in_addr **interface_addr) {
   int status = 0;
-#ifndef _WIN32
+#ifdef _WIN32
+  (void)interface_addr;
+#else
   if (settings[MULTICAST_IF]) {
     struct ifaddrs *ifaddr=0, *ifa=0;
     if (getifaddrs(&ifaddr) == 0) {

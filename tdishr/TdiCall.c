@@ -141,8 +141,9 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
   MdsFree1Dx(&entry, NULL);
   MdsFree1Dx(&image, NULL);
 
-  newdsc[0] = (struct descriptor *)(long)(narg - 2);
-  for (j = 2; j < narg && status & 1; ++j) {
+    struct descriptor_s* narg_dsc = { 4, DTYPE_L, CLASS_S, (narg - 2) }
+    newdsc[0] = (struct descriptor *)narg_dsc;
+    for (j = 2; j < narg && status & 1; ++j) {
     for (pfun = (struct descriptor_function *)list[j]; pfun && pfun->dtype == DTYPE_DSC;)
       pfun = (struct descriptor_function *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {

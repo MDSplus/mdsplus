@@ -390,13 +390,13 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  static int saved_uic = 0;
   int shot_open;
   NODE *node_ptr;
   A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) initialValue;
   struct descriptor *dsc;
   // compress_utility = utility_update == 2;
-#if !defined(_WIN32)
+#ifndef _WIN32
+  static int saved_uic = 0;
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -468,7 +468,11 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
     local_nci.class = CLASS_R;
     local_nci.dtype = initialValue->dtype;
     local_nci.time_inserted = TreeTimeInserted();
+#ifdef _WIN32
+    local_nci.owner_identifier = 0;
+#else
     local_nci.owner_identifier = saved_uic;
+#endif
     /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
          index. If not, make an empty index and flag that a new index needs to be written.
     ****/
@@ -658,12 +662,12 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  static int saved_uic = 0;
   int shot_open;
   NODE *node_ptr;
   struct descriptor *dsc;
   //  compress_utility = utility_update == 2;
-#if !defined(_WIN32)
+#ifndef _WIN32
+  static int saved_uic = 0;
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -807,13 +811,13 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  static int saved_uic = 0;
   int shot_open;
   NODE *node_ptr;
   DESCRIPTOR_A(data_a, 0, 0, 0, 0);
   A_COEFF_TYPE *a_coeff;
   //  compress_utility = utility_update == 2;
-#if !defined(_WIN32)
+#ifndef _WIN32
+  static int saved_uic = 0;
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -1374,11 +1378,11 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  static int saved_uic = 0;
   int shot_open;
   NODE *node_ptr;
   //  compress_utility = utility_update == 2;
-#if !defined(_WIN32)
+#ifndef _WIN32
+  static int saved_uic = 0;
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -2268,11 +2272,11 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  static int saved_uic = 0;
   int shot_open;
   NODE *node_ptr;
   A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) initialValue;
-#if !defined(_WIN32)
+#ifndef _WIN32
+  static int saved_uic = 0;
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -2342,7 +2346,11 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
     local_nci.dtype = initialValue->dtype;
     local_nci.class = CLASS_R;
     local_nci.time_inserted = TreeTimeInserted();
+#ifdef _WIN32
+    local_nci.owner_identifier = 0;
+#else
     local_nci.owner_identifier = saved_uic;
+#endif
      /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
 	  index. If not, make an empty index and flag that a new index needs to be written.
      ****/
@@ -2539,13 +2547,13 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  static int saved_uic = 0;
   int shot_open;
   NODE *node_ptr;
   DESCRIPTOR_A(data_a, 0, 0, 0, 0);
   A_COEFF_TYPE *a_coeff;
   //  compress_utility = utility_update == 2;
-#if !defined(_WIN32)
+#ifndef _WIN32
+  static int saved_uic = 0;
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
