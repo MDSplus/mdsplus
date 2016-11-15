@@ -87,7 +87,7 @@ EXPORT int LibWait(const float *secs)
 ///
 EXPORT void *LibCallg(void **arglist, void *(*routine) ())
 {
-  switch (*(long *)arglist & 0xff) {
+  switch (*(int*)&arglist[0] & 0xff) {
   case 0:
     return (*routine) ();
   case 1:
@@ -235,7 +235,7 @@ EXPORT void *LibCallg(void **arglist, void *(*routine) ())
 
 #ifdef _WIN32
 
-STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
+STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 {
   HKEY regkey;
   unsigned char *path = NULL;
@@ -253,9 +253,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
 }
 
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
-{
-
+EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];

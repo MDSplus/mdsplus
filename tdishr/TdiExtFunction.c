@@ -110,7 +110,7 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
         Requires: image found and routine symbol found.
         **********************************************/
   if (status & 1) {
-    new[0] = (struct descriptor *)(long)(narg - 1);
+    *(int*)&new[0] = narg - 1;
     new[narg - 1] = (struct descriptor *)out_ptr;
     for (j = 2; j < narg && status & 1; ++j) {
       pfun = (struct descriptor_function *)(new[j - 1] = list[j]);
@@ -159,15 +159,15 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
          Watch, may not be XD.
          *************************/
     if (status & 1) {
-      status = (long)LibCallg(&new[0], routine);
+      struct descriptor_s out = { sizeof(void *) , DTYPE_POINTER, CLASS_S , LibCallg(&new[0], routine) };
+      MdsCopyDxXd((struct descriptor*)&out, out_ptr);
     }
     for (; --ntmp >= 0;)
       MdsFree1Dx(&tmp[ntmp], NULL);
-  }
-	/***************
-     Gather, compile.
-        ***************/
-  else {
+  } else {
+    /***************
+    Gather, compile.
+    ***************/
     struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
     status =
       StrConcat((struct descriptor *)&file,
