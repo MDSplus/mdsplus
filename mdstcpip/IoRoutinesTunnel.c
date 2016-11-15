@@ -145,7 +145,6 @@ static int tunnel_connect(int id, char *protocol, char *host){
   HANDLE g_hChildStd_OUT_Rd = NULL;
   HANDLE g_hChildStd_OUT_Rd_tmp = NULL;
   HANDLE g_hChildStd_OUT_Wr = NULL;
-  HANDLE g_hInputFile = NULL;
   int status;
   _snprintf_s(cmd, len, len - 1, "cmd.exe /Q /C mdsip-client-%s %s mdsip-server-%s", protocol, host,
 	      protocol);
