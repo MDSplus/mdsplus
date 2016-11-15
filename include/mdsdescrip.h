@@ -370,8 +370,8 @@ struct descriptor_function {
 				}
 
 #define DESCRIPTOR_FUNCTION(name, op_code_ptr, nargs) \
-	FUNCTION(nargs) name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
-				(unsigned char *)op_code_ptr, nargs, {0}}
+	FUNCTION(nargs) name = {.length=sizeof(unsigned short), .dtype=DTYPE_FUNCTION, .class=CLASS_R, \
+				.pointer=(unsigned char *)op_code_ptr, .ndesc=nargs}
 
 #define DESCRIPTOR_FUNCTION_0(name, op_code_ptr) \
 	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
