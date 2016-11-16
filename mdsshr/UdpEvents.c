@@ -379,10 +379,16 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
+#ifdef _WIN32
+    // For some reason shutdown does not abort the recvfrom and hangs the process joining
+    // the handleMessage thread. closesocket seems to work though.
+    closesocket(ev->socket);
+#else
     shutdown(ev->socket, SHUT_RDWR);
     close(ev->socket);
+#endif
 //    pthread_cancel(ev->thread);
-    pthread_join(ev->thread,0);    
+    pthread_join(ev->thread,0);
     free(ev);
     return 1;
   } else {
