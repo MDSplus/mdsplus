@@ -22,9 +22,6 @@
 #define NULL (void *)0
 #endif
 
-//#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
-//#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
-
 enum _mdsip_client_types {
   VMS_CLIENT = 1,
   IEEE_CLIENT = 2,
@@ -345,7 +342,7 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// 
+///
 /// Thread Safe version of GetAnswerInfo(), waits for the server reply as \ref
 /// Message holding a descriptor. Then it fills the descriptor info such as
 /// dtype, length, ndims and numbytes passed as a reference to the arguments.

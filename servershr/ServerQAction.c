@@ -17,10 +17,11 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-typedef int SOCKET;
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
+ typedef int SOCKET;
+ #define INVALID_SOCKET -1
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <signal.h>
 #endif
 #include <sys/time.h>
 
@@ -812,7 +813,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
   signal(SIGPIPE, SIG_IGN);
 #endif
   sock = AttachPort(job->h.addr, (short)job->h.port);
-  if (sock >= 0) {
+  if (sock != INVALID_SOCKET) {
     char reply[60];
     int bytes;
     memset(reply, 0, 60);

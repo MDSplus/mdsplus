@@ -47,11 +47,11 @@ int ServerSendMessage();
  #define random rand
  #define close closesocket
 #else
+ #define INVALID_SOCKET -1
  #include <sys/socket.h>
  #include <netinet/in.h>
  #include <netdb.h>
  #include <arpa/inet.h>
- #include <sys/types.h>
 #endif
 #include <signal.h>
 #include <sys/time.h>

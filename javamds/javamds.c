@@ -822,7 +822,7 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
   jvalue args[3];
 
   struct descriptor nodeNameD = { strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName };
-//Returned array: [width, height, bytesPerPixel]        
+//Returned array: [width, height, bytesPerPixel]
   if (isSegmented) {
     status = TreeFindNode((char *)nodeName, &nid);
     (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -888,7 +888,7 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
   args[2].l = jarr;
   //va_arg(args, jarr);
   retObj = (*env)->NewObjectA(env, clazz,  mid, args);
-  (*env)->ReleaseIntArrayElements(env, jarr, retDims, JNI_COMMIT);
+  (*env)->ReleaseIntArrayElements(env, jarr, (jint *)retDims, JNI_COMMIT);
   return retObj;
 }
 /*
@@ -908,7 +908,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfoXXX
   int dims[64];
   int nextRow;
   struct descriptor nodeNameD = { strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName };
-//Returned array: [width, height, bytesPerPixel]        
+//Returned array: [width, height, bytesPerPixel]
   if (isSegmented) {
     status = TreeFindNode((char *)nodeName, &nid);
     (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
