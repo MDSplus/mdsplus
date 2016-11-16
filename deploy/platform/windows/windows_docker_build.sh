@@ -45,6 +45,7 @@ then
 	     --libdir=${MDSPLUS_DIR}/bin_x86_64 \
 	     --host=x86_64-w64-mingw32 \
 	     --with-java_target=6 \
+              --enable-werror \
 	     --with-java_bootclasspath=/source/rt.jar
     $MAKE
     $MAKE install
@@ -58,6 +59,7 @@ then
 	--libdir=${MDSPLUS_DIR}/bin_x86 \
 	--host=i686-w64-mingw32 \
 	--with-java_target=6 \
+        --enable-werror \
 	--with-java_bootclasspath=/source/rt.jar
     $MAKE
     $MAKE install
@@ -177,7 +179,6 @@ EOF
 	    fi
 	done
 	set -e
-	    
     fi
 fi
 

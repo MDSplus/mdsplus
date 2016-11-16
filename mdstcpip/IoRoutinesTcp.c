@@ -9,42 +9,43 @@
 #include <config.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+ #include <unistd.h>
 #endif
 #ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
+ #include <sys/filio.h>
 #endif
 #ifdef _WIN32
-#define ioctl ioctlsocket
-#define FIONREAD_TYPE u_long
-typedef int socklen_t;
-#define snprintf _snprintf
-#define MSG_DONTWAIT 0
-#include <io.h>
-#define close closesocket
-#include <process.h>
-#define getpid _getpid
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
+ #define ioctl ioctlsocket
+ #define FIONREAD_TYPE u_long
+ typedef int socklen_t;
+ #define snprintf _snprintf
+ #define MSG_DONTWAIT 0
+ #include <io.h>
+ #define close closesocket
+ #include <process.h>
+ #define getpid _getpid
+ #ifdef HAVE_PTHREAD_H
+  #include <pthread.h>
+ #else
+  extern int pthread_mutex_init();
+  extern int pthread_mutex_lock();
+  extern int pthread_mutex_unlock();
+ #endif
 #else
-extern int pthread_mutex_init();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
-#endif
-#else
-#define FIONREAD_TYPE int
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <sys/ioctl.h>
-#include <sys/wait.h>
+ #define INVALID_SOCKET -1
+ #define FIONREAD_TYPE int
+ #include <sys/socket.h>
+ #include <netdb.h>
+ #include <netinet/in.h>
+ #include <netinet/tcp.h>
+ #include <arpa/inet.h>
+ #include <sys/ioctl.h>
+ #include <sys/wait.h>
 #endif
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
 #ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
+ #define MSG_NOSIGNAL 0
 #endif
 static ssize_t tcp_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t tcp_recv(int conid, void *buffer, size_t len);
@@ -82,7 +83,7 @@ static fd_set fdactive;
 
 /// List of active sockets
 typedef struct _socket_list {
-  int socket;
+  SOCKET socket;
   struct _socket_list *next;
 } Socket;
 
@@ -286,10 +287,10 @@ static int tcp_disconnect(int conid){
 	  timestr[strlen(timestr) - 1] = 0;
 	  hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
 	  if (hp)
-	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, s,
+	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, (int)s,
 		   getpid(), c->username, hp->h_name, iphost);
 	  else
-	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, s, getpid(),
+	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, (int)s, getpid(),
 		   c->username, iphost);
 	}
       }

@@ -110,8 +110,10 @@ static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused))
   if (msgno == 5701)
     return 0;			/*just a USE DATABASE notice */
   if (severity) {
-    sprintf(msg, (sizeof(msgno) == 8) ? "\nMsg %ld, Level %d, State %d\n" :
-	    "\nMsg %d, Level %d, State %d\n", msgno, severity, msgstate);
+    if (sizeof(msgno) == 8)
+	sprintf(msg,"\nMsg %ld, Level %d, State %d\n", (long)msgno, severity, msgstate);
+    else
+	sprintf(msg,"\nMsg %d, Level %d, State %d\n", (int)msgno, severity, msgstate);
     strcatn(DBMSGTEXT, msg, MAXMSG);
     if (servername)
       if (strlen(servername)) {

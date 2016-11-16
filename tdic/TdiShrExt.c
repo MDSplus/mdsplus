@@ -27,6 +27,14 @@ dele *.exe;
 #if  !defined(int32) && !defined(_AIX)
 #define int32 int
 #endif
+#ifdef _WIN32
+ #include <winsock2.h>
+ #include <windows.h>
+#else
+ #include <netdb.h>
+ #include <sys/socket.h>
+ #define INVALID_SOCKET -1
+#endif
 #include <config.h>
 #include <string.h>
 #include <stdio.h>
@@ -39,11 +47,6 @@ dele *.exe;
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-#ifdef _WIN32
- #include <winsock2.h>
-#else
- #include <sys/types.h>
-#endif
 #ifdef VMS
 #include <ctype.h>
 #define TdiCvt TDI$CVT
@@ -95,10 +98,6 @@ int bTest(struct descriptor *desc);
 struct descriptor_xd *bTest1(struct descriptor *in_bufD);
 #endif
 
-#ifndef _WIN32
-#include <netdb.h>
-#include <sys/socket.h>
-#endif
 /* Return the name of the current connection */
 EXPORT struct descriptor_xd *rMdsCurrent()
 {

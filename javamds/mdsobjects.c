@@ -470,7 +470,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
     args[3].l = validationObj;
 
     record_d = (struct descriptor_r *)desc;
-//printf("CLASS_R %d\n", record_d->dtype);                
+//printf("CLASS_R %d\n", record_d->dtype);
     if (record_d->dtype != DTYPE_PARAM && record_d->dtype != DTYPE_WITH_UNITS
 	&& record_d->dtype != DTYPE_WITH_ERROR) {
       switch (record_d->dtype) {
@@ -1393,7 +1393,7 @@ static unsigned int getCtx1(void *ctx)
 static unsigned int getCtx2(void *ctx)
 {
   if (sizeof(void *) == 8)
-    return (unsigned int)(((unsigned long)ctx & 0xffffffff00000000LL) >> 32);
+    return (unsigned int)((*(unsigned long*)&ctx & 0xffffffff00000000LL) >> 32);
   else
     return 0;
 }
@@ -1450,7 +1450,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree(JNIEnv * env, jclass c
 
 
 #ifdef _WIN32
-static unsigned long *openMutex;
+static void *openMutex;
 static int openMutex_initialized = 0;
 #else
 static pthread_mutex_t openMutex;
@@ -2806,7 +2806,7 @@ struct EventDescr {
   struct EventDescr *nxt;
 };
 #ifdef _WIN32
-static unsigned long *eventMutex;
+static void *eventMutex;
 static int eventMutex_initialized = 0;
 #else
 static pthread_mutex_t eventMutex;

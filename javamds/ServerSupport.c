@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-	Name:	JAVA$RESAMPLE   
+	Name:	JAVA$RESAMPLE
 
 	Type:   C function
 
@@ -30,7 +30,6 @@
 
 		    time range of the signal fits into max_samples
 
-		    
 
  Output arguments: float *out: output vector, already allocated (max_samples elements)
 
@@ -84,7 +83,7 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   actMin = *xmin;
   actMax = *xmax;
   actDelta = *dt;
-
+  maxSegment = numSegments - 1;
   for (currSegment = 0; currSegment < numSegments; currSegment++) {
     status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
     if (status & 1)
