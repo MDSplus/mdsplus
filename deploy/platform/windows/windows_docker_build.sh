@@ -79,12 +79,12 @@ then
     ### Run regular and valgrind tests
     ###
     set +e
-    WINEPATH=Z:\\workspace\\64\\bin_x86_64
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
 	###
 	### Test with valgrind
 	###
+        export WINEPATH=Z:\\workspace\\tests\\64\\bin_x86_64
 	if ( ! $MAKE -k tests-valgrind 2>&1 )
 	then
 	    RED $COLOR
@@ -103,6 +103,7 @@ EOF
     ###
     ### Run standard tests
     ###
+    export WINEPATH=Z:\\workspace\\tests\\64\\bin_x86_64
     if ( ! $MAKE -k tests 2>&1 )
     then
 	RED $COLOR
@@ -136,6 +137,7 @@ EOF
 	    elif [ "$status" = 0 ]; then
 		$MAKE
 		$MAKE install
+                export WINEPATH=Z:\\workspace\\tests\\64-san-${test}\\bin_x86_64
 		if ( ! $MAKE -k tests 2>&1 )
 		then
 		    RED $COLOR
@@ -168,13 +170,12 @@ EOF
     $MAKE
     $MAKE install
     set +e;
-    WINEPATH=Z:\\workspace\\32\\bin_x86
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
 	###
 	### Test with valgrind
 	###
-        export WINEPATH=Z:\\workspace\\64\\bin_x86_64
+        export WINEPATH=Z:\\workspace\\tests\\32\\bin_x86
 	if ( ! $MAKE -k tests-valgrind 2>&1 )
 	then
 	    RED $COLOR
@@ -193,6 +194,7 @@ EOF
     ###
     ### Run standard tests on 32-bit
     ###
+    export WINEPATH=Z:\\workspace\\tests\\32\\bin_x86
     if ( ! $MAKE -k tests 2>&1 )
     then
 	RED $COLOR
@@ -229,6 +231,7 @@ EOF
 	    elif [ "$status" = 0 ]; then
 		$MAKE
 		$MAKE install
+		export WINEPATH=Z:\\workspace\\tests\\32-san-${test}\\bin_x86
 		if ( ! $MAKE -k tests 2>&1 )
 		then
 		    RED $COLOR
