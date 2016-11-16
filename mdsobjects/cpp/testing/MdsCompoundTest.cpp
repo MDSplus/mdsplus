@@ -44,25 +44,25 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     BEGIN_TESTING(Compound);
 
     Compound * com1 = new Compound();
-    
+
     Data * descs[4];
     descs[0] = new Int32(123);
     descs[1] = new String("descriptor 1");
     descs[2] = new Float32(1.234);
     const char * array = "test";
     descs[3] = new Int8Array(array,4);
-    
+
     short dummy_opcode = 0;
-    
+
     // propagate deletion should correctly perform deletion of descriptors.
     Compound  * com2 = new Compound(0,sizeof(short),(char *)&dummy_opcode,4,(char **)descs);
-    
+
     deleteData(com1);
-    
+
     // test for copy constructor ... commented as it should not compile //
     //    com1 = new Compound(*com2);
-    
+
     deleteData(com2);
-    
+
     END_TESTING;
 }

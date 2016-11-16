@@ -1,6 +1,3 @@
-#ifdef _WIN32
-#define NOMINMAX
-#endif
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
