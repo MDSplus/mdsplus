@@ -220,7 +220,7 @@ AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_CONFIGURE],[
          m4_pushdef([dk_configure_cmd], m4_normalize([
            docker exec -t
            --user ${USER}
-           ${DOCKER_CONTAINER} ${SHELL} -l
+	   ${DOCKER_CONTAINER} /bin/bash -l
            -c \"cd $(pwd)\; ${0} DK_ADD_ESCAPE(${dk_configure_args}) DK_ADD_ESCAPE([HAVE_DOCKER=\"no\"]) \";
            exit 0;
          ]))
@@ -468,7 +468,7 @@ m4_ifdef([AM_SUBST_NOTMAKE], [AM_SUBST_NOTMAKE([AX_DOCKER_BUILD_TARGETS])])
 
 AC_DEFUN_LOCAL([m4_ax_docker_build],[DK_WRITE_DSHELLFILE],[
 AS_VAR_READ([DK_DSHELLFILE],m4_escape([
-#!/bin/sh
+#!/bin/bash
 # //////////////////////////////////////////////////////////////////////////// #
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -488,7 +488,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
 fi
 ]))
 
