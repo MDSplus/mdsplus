@@ -378,8 +378,12 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
+    #ifdef _WIN32
+    closesocket(ev->socket);
+    #else
     shutdown(ev->socket, SHUT_RDWR);
     close(ev->socket);
+    #endif
 //    pthread_cancel(ev->thread);
     pthread_join(ev->thread,0);    
     free(ev);
