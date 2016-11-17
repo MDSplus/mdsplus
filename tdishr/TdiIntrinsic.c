@@ -365,9 +365,9 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
       struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
       pre.length = (unsigned short)npre;
-      pre.pointer = cur - nbody - npre;
+      pre.pointer = npre>0 ? cur - nbody - npre : NULL;
       body.length = (unsigned short)nbody;
-      body.pointer = cur - nbody;
+      body.pointer = nbody>0 ? cur - nbody : NULL;
       post.length = (unsigned short)npost;
       post.pointer = cur;
       StrConcat((struct descriptor *)message,
@@ -375,7 +375,6 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
 		&body, &hilite, &post, &newline MDS_END_ARG);
     }
   }
-
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);

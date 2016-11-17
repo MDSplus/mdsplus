@@ -840,6 +840,7 @@ int yyparse()
   if (allocate_stacks())
     YYABORT;
 #endif
+  yyval.mark.w_ok=0;
   //    yypv = &yyv[-1];
   yypv = yyv - 1;
   //    yyps = &yys[-1];
@@ -1025,18 +1026,15 @@ int yyparse()
       switch (yyerrflag) {
       case 0:			/* new error */
 	yyerror((nl_msg(30003, "syntax error")));
-	yynerrs++;
-	goto skip_init;
 	// yyerrlab:
 	/*
 	 ** get globals into registers.
 	 ** we have a user generated syntax type error
-	 */
 	yy_pv = yypv;
 	yy_ps = yyps;
 	yy_state = yystate;
+	 */
 	yynerrs++;
- skip_init:
       case 1:
       case 2:			/* incompletely recovered error */
 	/* try again... */

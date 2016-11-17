@@ -43,7 +43,7 @@ int main(int argc, char **argv)
       TdiExecute((struct descriptor *)&reset_output_unit, &output_unit, &ans MDS_END_ARG);
       tdiputs(line_in);
     }
-    while (line_in[len - 2] == '\\') {
+    if ( len>1 ) while ( line_in[len - 2] == '\\' ){
       fgets(&line_in[len - 2], MAXEXPR - len + 2, in);
       if (!comment)
 	tdiputs(&line_in[len - 2]);
@@ -56,14 +56,6 @@ int main(int argc, char **argv)
       strcat(expr, line_in);
       strcat(line_in, " = ");
       expr_dsc.length = strlen(expr);
-/*
-      expr_dsc.length = strlen(expr)-1;    
-      expr_dsc.length = strlen(expr)-1;    
-      expr[expr_dsc.length++] = ')';
-      expr[expr_dsc.length++] = ')';
-      expr[expr_dsc.length++] = ')';
-      expr[expr_dsc.length++] = ')';
-*/
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
       if (status & 1)
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);

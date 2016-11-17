@@ -552,7 +552,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
     status = 1;
   dlopen_unlock();
   return status;
-}  
+}
 
 EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
@@ -963,7 +963,7 @@ EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
     tv.tv_usec = 0;
   else
     gettimeofday(&tv,0);
-  
+
 #ifdef USE_TM_GMTOFF
   tz_offset = tmval->tm_gmtoff;
 #else
@@ -1054,11 +1054,12 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
 EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
 {
   if (tail->length != 0 && tail->pointer != NULL) {
-    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-    unsigned short len = (unsigned short)(out->length + tail->length);
-    if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
+    int len = (int)out->length + (int)tail->length;
+    if (len > 0xffff)
       return StrSTRTOOLON;
-    StrGet1Dx(&len, &new);
+    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
+    unsigned short us_len = (unsigned short)len;
+    StrGet1Dx(&us_len, &new);
     if (out->pointer) {
       memcpy(new.pointer, out->pointer, out->length);
     }
