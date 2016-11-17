@@ -164,10 +164,9 @@ static SOCKET AddConnection(char *server)
 {
   Connection *cptr;
   SOCKET nsock;
-  char *unique = malloc(128);
+  char unique[128]="\0";
 /* Extract the ip and port numbers */
   if ((nsock = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
-    free(unique);
     printf("hostname [%s] invalid, No Connection\n", server);
     return INVALID_SOCKET;
   }
@@ -208,7 +207,7 @@ static SOCKET AddConnection(char *server)
     Connections = cptr;
   }
 /* Copy in the connection details */
-  cptr->unique = unique;
+  cptr->unique = strdup(unique);
   cptr->sock = nsock;
   strcpy(cptr->serv, server);	/* Copy in the name */
   return (nsock);
