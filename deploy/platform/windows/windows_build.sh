@@ -17,15 +17,15 @@ volume() {
 
 if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
 then
-    RELEASEDIR=${RELEASEDIR}/${BRANCH}
-    mkdir -p ${RELEASEDIR}
+    RELEASEDIR=${RELEASEDIR}
+    mkdir -p ${RELEASEDIR}/${BRANCH}
 else
     RELEASEDIR=""
 fi
 if [ "${PUBLISH}" = "yes" ]
 then
-    PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
-    mkdir -p ${PUBLISHDIR}
+    PUBLISHDIR=${PUBLISHDIR}
+    mkdir -p ${PUBLISHDIR}/${BRANCH}
 fi
 set +e
 docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/${OS}_docker-cid \
