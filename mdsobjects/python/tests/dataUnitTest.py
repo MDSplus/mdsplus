@@ -6,7 +6,7 @@ if sys.path[0] != MDSplus_path:
 
 from MDSplus import *
 
-setenv("PyLib","python%d.%d" % (sys.version_info.major,sys.version_info.minor))
+setenv("PyLib","python%d.%d" % (sys.version_info[0],sys.version_info[1]))
 
 from unittest import TestCase,TestSuite
 import numpy
