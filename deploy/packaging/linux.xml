@@ -591,12 +591,14 @@ fi
   <package name="repo" arch="noarch" summary="Yum Repository Setup for MDSplus" description="Yum Repository Setup for MDSplus">
     <include file="/etc/yum.repos.d/mdsplus%(bname)s.repo"/>
     <include file="/etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus"/>
-    <postinst type="rpm">dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2&gt;/dev/null)</postinst>
+    <postinst type="rpm">
+      rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus &gt;/dev/null 2&gt;/dev/null || true
+    </postinst>
     <postrm type="rpm">
-if [ "$1" == "0" ]
-then
-  nohup rpm -e gpg-pubkey-b09cb563 &gt;dev/null 2&gt;&amp;1 &amp;
-fi
+      if [ "$1" == "0" ]
+      then
+        nohup rpm -e gpg-pubkey-b09cb563 &gt;/dev/null 2&gt;&amp;1 &amp;
+      fi
     </postrm>
   </package>
 
