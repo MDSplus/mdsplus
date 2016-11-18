@@ -1,19 +1,18 @@
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import *
+
 from unittest import TestCase,TestSuite
-from tree import Tree
-from treenode import TreeNode
-from mdsdata import makeData,Data
-from mdsscalar import Uint32
-from mdsarray import makeArray
 from numpy import array,int32
-from compound import Signal,Range
-from _mdsshr import DateToQuad,getenv,setenv
-from mdsdcl import tcl
 import random
 import gc as _gc
-import os,time
-
-
+import time
 import tempfile
+
 _tmpdir=tempfile.mkdtemp()
 
 def setUpModule():    

@@ -1,9 +1,16 @@
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import *
+
+setenv("PyLib","python%d.%d" % (sys.version_info.major,sys.version_info.minor))
+
 from unittest import TestCase,TestSuite
-from mdsdata import *
-from mdsscalar import *
-from mdsarray import *
-from compound import *
 import numpy
+
 
 class dataTests(TestCase):
 
@@ -500,89 +507,4 @@ class dataTests(TestCase):
 def suite():
     tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
     return TestSuite(map(dataTests,tests))
-
-#def test():
-#    """Exercise data operations"""
-#    print (abs(makeData(-10)))
-#    x=makeDataArray([29,30,31])
-#    y=makeDataArray([2,4,8])
-#    print (x+y)
-#    print (x-y)
-#    print (x&y)
-#    print (x==y)
-#    print (x>y)
-#    print (x>=y)
-#    print (x<y)
-#    print (x<=y)
-#    print (x%y)
-#    print (x!=y)
-#    print (-x)
-#    print (x!=0)
-#    print (x|y)
-#    print (+x)
-#    print (x*y)
-#    print (x/y)
-#    print (x//y)
-#    print (x<<y)
-#    print (x>>y)
-#    print (abs(makeData(-10)))
-#    print (float(x))
-#    print (int(x))
-#    print (x.getDouble())
-#    print (x.decompile())
-#    print (x)
-#    print (x.evaluate())
-#    print (x.getByte())
-#    print (x.getInt())
-#    print (x.getShape())
-#    print (x.getByteArray())
-#    print (x.getShortArray())
-#    print (x.getIntArray())
-#    print (x.getLongArray())
-#    print (x.getString())
-#    print (x.getUnits())
-#    x.setUnits('amps')
-#    print (x.getUnits())
-#    x.setError(42)
-#    print (x.getError())
-#    x.setHelp('This is help')
-#    print (x.getHelp())
-#    x=Data.execute('data(1:100.)')
-#    print (x+y)
-#    print (x-y)
-#    print (x&y)
-#    print (x==y)
-#    print (x>y)
-#    print (x>=y)
-#    print (x<y)
-#    print (x<=y)
-#    print (x%y)
-#    print (x!=y)
-#    print (-x)
-#    print (x!=0)
-#    print (x|y)
-#    print (+x)
-#    print (x*y)
-#    print (x/y)
-#    print (x//y)
-#    print (x<<y)
-#    print (x>>y)
-#    print (abs(makeData(-10)))
-#    print (float(x))
-#    print (x.decompile())
-#    print (x)
-#    print (x.evaluate())
-#    print (x.getShape())
-#    print (x.getByteArray())
-#    print (x.getShortArray())
-#    print (x.getIntArray())
-#    print (x.getLongArray())
-#    print (x.getString())
-#    print (x.getUnits())
-#    x.setUnits('amps')
-#    print (x.getUnits())
-#    x.setError(42)
-#    print (x.getError())
-#    x.setHelp('This is help')
-#    print (x.getHelp())
 

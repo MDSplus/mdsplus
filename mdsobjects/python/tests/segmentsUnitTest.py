@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from unittest import TestCase,TestSuite
+import sys,os
 
-from tree import Tree
-from mdsdata import *
-from mdsscalar import *
-from mdsarray import *
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import *
+
+from unittest import TestCase,TestSuite
 
 import numpy as np
 import random
-import os
-import sys
-
-
-
 import tempfile
+
 _tmpdir=tempfile.mkdtemp()
 
 def setUpModule():    

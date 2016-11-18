@@ -1,9 +1,16 @@
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import *
+
 from unittest import TestCase,TestSuite
 
 class exceptionTests(TestCase):
 
     def defaultErrorValues(self):
-        from mdsExceptions import DevNOT_TRIGGERED
         err = DevNOT_TRIGGERED()
         self.assertEquals(err.status, 662470754)
         self.assertEquals(err.severity, 'E')
@@ -12,7 +19,6 @@ class exceptionTests(TestCase):
         self.assertEquals(str(err), '%DEV-E-NOT_TRIGGERED, device was not triggered,  check wires and triggering device')
 
     def customErrorString(self):
-        from mdsExceptions import DevNOT_TRIGGERED
         err = DevNOT_TRIGGERED('This is a custom error string')
         self.assertEquals(err.status, 662470754)
         self.assertEquals(err.severity, 'E')
@@ -21,7 +27,6 @@ class exceptionTests(TestCase):
         self.assertEquals(str(err), '%DEV-E-NOT_TRIGGERED, This is a custom error string')
 
     def tclErrors(self):
-        from mdsExceptions import TclNORMAL
         err = TclNORMAL()
         self.assertEquals(err.status, 2752521)
         self.assertEquals(err.severity, 'S') 
