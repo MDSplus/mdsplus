@@ -1,5 +1,5 @@
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-from threading import Thread,enumerate
+from unittest import TestCase,TestSuite,TestResult
+from threading import Thread
 from tree import Tree
 import tests.treeUnitTest as treeUnitTest
 import tests.dataUnitTest as dataUnitTest
@@ -39,7 +39,7 @@ class threadTest(TestCase):
           for t in threads:
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful=numsuccessful+1                
+                numsuccessful=numsuccessful+1
             else:
                 print( t.result )
         print("successful: ")
@@ -50,8 +50,12 @@ class threadTest(TestCase):
     def runTest(self):
         self.threadTests()
         return
-            
+
 
 def suite():
     tests = ['threadTests']
     return TestSuite(map(threadTest, tests))
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

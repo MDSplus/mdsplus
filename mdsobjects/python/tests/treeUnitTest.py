@@ -1,34 +1,33 @@
-from unittest import TestCase,TestSuite
+from unittest import TestCase
 from tree import Tree
 from treenode import TreeNode
-from mdsdata import makeData,Data
-from mdsscalar import Uint32
+from mdsdata import Data
 from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
 from _mdsshr import DateToQuad,getenv,setenv
-from mdsdcl import tcl
-import random
 import gc as _gc
-import os,time
-
+import os
 
 import tempfile
 _tmpdir=tempfile.mkdtemp()
 
-def setUpModule():    
+def setUpModule():
     pass
 
 def tearDownModule():
     import shutil
     shutil.rmtree(_tmpdir)
-    
-
-
 
 class treeTests(TestCase):
-
     shot=0
+    def _doExceptionTest(self,expr,exc):
+        from mdsdcl import tcl
+        try:
+            tcl(expr,True,True,True)
+            self.fail("TCL: '%s' should have signaled an exception"%expr)
+        except Exception as e:
+            self.assertEqual(e.__class__,exc)
 
     def setUp(self):
         from threading import Lock
@@ -40,7 +39,6 @@ class treeTests(TestCase):
                 treeTests.shot=treeTests.shot+2
         finally:
             l.release()
-        print ("Creating trees in %s" % (_tmpdir,))
         if getenv("TEST_DISTRIBUTED_TREES") is not None:
             hostpart="localhost::"
         else:
@@ -49,16 +47,15 @@ class treeTests(TestCase):
         setenv("pytreesub_path",hostpart+_tmpdir)
         if getenv('testing_path') is None:
             setenv('testing_path',"%s/trees"%(os.path.dirname(os.path.realpath(__file__)),))
-        
-        
+
+
     def tearDown(self):
         pass
-
 
     def editTrees(self):
         pytree=Tree('pytree',self.shot,'new')
         pytree_top=pytree.default
-        subtree=pytree_top.addNode('pytreesub','subtree')
+        pytree_top.addNode('pytreesub','subtree')
         for i in range(10):
             node=pytree_top.addNode('val%02d' % (i,),'numeric')
             node.record=i
@@ -217,9 +214,6 @@ class treeTests(TestCase):
         dev=devs[0].conglomerate_nids
         self.assertEqual(dev[3].original_part_name,':COMMENT')
         self.assertEqual(dev[3].original_part_name,dev[3].getOriginalPartName())
-        """
-        self.assertEqual(ip.owner_id,Uint32(65602548))
-        """
         self.assertEqual(ip.owner_id,ip.getOwnerId())
         self.assertEqual(ip.rlength,168)
         self.assertEqual(ip.rlength,ip.getCompressedLength())
@@ -229,9 +223,6 @@ class treeTests(TestCase):
         self.assertEqual(ip.status,ip.getStatus())
         self.assertEqual((ip.tags==makeArray(['IP','MAGNETICS_IP','MAG_IP','MAGNETICS_PLASMA_CURRENT','MAG_PLASMA_CURRENT'])).all(),True)
         self.assertEqual((ip.tags==ip.getTags()).all(),True)
-        """
-        self.assertEqual(ip.time_inserted.date,' 4-FEB-2005 16:55:28.00')
-        """
         self.assertEqual(ip.time_inserted,ip.getTimeInserted())
         return
 
@@ -249,21 +240,34 @@ class treeTests(TestCase):
         testing = Tree('testing', -1)
         for node in testing.getNodeWild(".compression:*"):
             self.pytree.SIG_CMPRS.record=node.record
-            self.assertTrue((self.pytree.SIG_CMPRS.record == node.record).all(), 
+            self.assertTrue((self.pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
         return
 
     def segments(self):
         signal=self.pytree.SIG01
         signal.record=None
-        signal.do_not_compress=True
-        signal.compress_segments=False
+        signal.compress_on_put=False
         for i in range(2000):
             signal.putRow(100,Range(1,1000).data(),DateToQuad("now"))
         self.pytree.createPulse(100)
-        tcl('compress/override pytree/shot=100')
-        self.assertEqual((signal.record==Tree('pytree',100).SIG01.record).all(),True)
+        signal.compress_segments=True
+        py100 = Tree('pytree',100)
+        py100.compressDatafile()
+        self.assertEqual((signal.record==py100.SIG01.record).all(),True)
+        del(py100)
 
+    def dclInterface(self):
+        import mdsExceptions as Exc
+        from mdsdcl import tcl
+        #print(tcl('compress/override pytree/shot=100',1,1,1))
+        self._doExceptionTest('dispatch/command/server=LOCALHOST:8000 ',Exc.MdsdclIVVERB)
+        self._doExceptionTest('dispatch/command/server show db',Exc.MdsdclIVVERB)
+
+        tcl('set tree pytree/shot=100',0,0,1)
+        self.assertEqual(tcl('show db',1,0,1),"000  PYTREE        shot: 100 [\\PYTREE::TOP]   \n001  TESTING       shot: -1 [\\TESTING::TOP]   \n\n")
+        tcl('close/all',0,0,1)
+        self.assertEqual(tcl('show db',1,0,1),"\n")
 
     def finish(self):
         del(self.pytree)
@@ -280,7 +284,12 @@ class treeTests(TestCase):
         self.getData()
         self.segments()
         self.getCompression()
+        self.dclInterface()
         self.finish()
 
 def suite():
     return treeTests()
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
