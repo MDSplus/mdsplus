@@ -302,7 +302,7 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
       if (dooutput) {
 	tclAppend(output, info = ServerGetInfo(full, ident));
 	tclAppend(output, "\n");
-      } else 
+      } else
 	info = ServerGetInfo(full, ident);
       if (info)
 	free(info);
@@ -379,9 +379,9 @@ static void CommandDone(DispatchedCommand * command)
 
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  char *cli = 0;
-  char *ident = 0;
-  DispatchedCommand *command = malloc(sizeof(DispatchedCommand));
+  char *cli = NULL;
+  char *ident = NULL;
+  DispatchedCommand *command = calloc(1,sizeof(DispatchedCommand));
   int sts = 1;
 
   if (!SyncEfnInit)
@@ -389,32 +389,35 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
   cli_get_value(ctx, "SERVER", &ident);
   cli_get_value(ctx, "TABLE", &cli);
   cli_get_value(ctx, "P1", &command->command);
-  if (cli_present(ctx, "WAIT") & 1) {
-    if (sts & 1) {
-      sts = ServerDispatchCommand(SyncEfn, ident, cli, command->command, 0, 0, &command->sts, 0);
+  if(command->command){
+    if (cli_present(ctx, "WAIT") & 1) {
       if (sts & 1) {
-	WaitfrEf(SyncEfn);
-	sts = command->sts;
+        sts = ServerDispatchCommand(SyncEfn, ident, cli, command->command, 0, 0, &command->sts, 0);
+        if (sts & 1) {
+	  WaitfrEf(SyncEfn);
+	  sts = command->sts;
+        }
       }
-      free(command->command);
-      free(command);
+      if (~sts & 1) {
+        char *msg = MdsGetMsg(sts);
+        *error = malloc(strlen(msg) + 100);
+        sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
+      }
+    } else {
+      sts = ServerDispatchCommand(0, ident, cli,
+	command->command, CommandDone, command, &command->sts, 0);
+      if (~sts & 1) {
+        char *msg = MdsGetMsg(sts);
+        *error = malloc(strlen(msg) + 100);
+        sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
+      }
     }
-    if (~sts & 1) {
-      char *msg = MdsGetMsg(sts);
-      *error = malloc(strlen(msg) + 100);
-      sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
-    }
+    fprintf(stderr,"post: %s",command->command);
+    free(command->command);
   } else {
-    sts = ServerDispatchCommand(0, ident, cli,
-				command->command, CommandDone, command, &command->sts, 0);
-    if (~sts & 1) {
-      char *msg = MdsGetMsg(sts);
-      *error = malloc(strlen(msg) + 100);
-      sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
-      free(command->command);
-      free(command);
-    }
+    sts = MdsdclMISSING_VALUE;
   }
+  free(command);
   if (cli)
     free(cli);
   if (ident)
