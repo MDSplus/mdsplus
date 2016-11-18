@@ -412,7 +412,6 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
         sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
       }
     }
-    fprintf(stderr,"post: %s",command->command);
     free(command->command);
   } else {
     sts = MdsdclMISSING_VALUE;
