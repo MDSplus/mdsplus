@@ -104,70 +104,25 @@ EOF
             then
                 echo "Contents of $(basename $rpm) is correct."
             else
-                RED $COLOR
-                cat <<EOF >&2
-=================================================================
-
-Failure: Problem with contents of $(basename $rpm)
-
-=================================================================
-EOF
-                NORMAL $COLOR
-                badrpm=1
+                checkstatus badrpm "Failure: Problem with contents of $(basename $rpm)" 1
             fi
             set -e
         fi
     done
-    if [ "$badrpm" != "0" ]
-    then
-        RED $COLOR
-        cat <<EOF >&2
-=================================================================
-
-Failure: Problem with contents of one or more rpms. (see above)
-         Build ABORTED
-
-=================================================================
-EOF
-        NORMAL $COLOR
-        exit 1
-    fi
+    checkstatus abort "Failure: Problem with contents of one or more rpms. (see above) ABORT" $badrpm
 }
 
 publish(){
-    ###
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
-    ###
-    if ( ! rsync -a --exclude=repodata /release/RPMS /publish/ )
+    rsync -a --exclude=repodata /release/RPMS /publish/
+    checkstatus abort "Failure: Problem copying release rpms to publish area! ABORT" $?
+    if [ "$abort" = "0" ]
     then
-        RED $COLOR
-        cat <<EOF >&2
-=================================================================
-
-Failure: Problem copying release rpms to publish area!
-         Build ABORTED
-
-=================================================================
-EOF
-        NORMAL $COLOR
-        exit 1
-    fi
-    if ( createrepo -h | grep '\-\-deltas' > /dev/null )
-    then
-        use_deltas="--deltas"
-    fi
-    if ( ! createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS )
-    then
-        RED $COLOR
-        cat <<EOF >&2
-=================================================================
-
-Failure: Problem creating rpm repository in publish area!
-         Build ABORTED
-
-=================================================================
-EOF
-        NORMAL $COLOR
-        exit 1
+        if ( createrepo -h | grep '\-\-deltas' > /dev/null )
+        then
+            use_deltas="--deltas"
+        fi
+        createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS
+        checkstatus abort "Failure: Problem creating rpm repository in publish area! ABORT" $?
     fi
 }
