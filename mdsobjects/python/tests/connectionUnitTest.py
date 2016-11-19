@@ -1,5 +1,11 @@
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import *
 from unittest import TestCase,TestSuite
-from connection import Connection
 from threading import Thread
 
 class connectionTests(TestCase):

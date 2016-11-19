@@ -1,9 +1,16 @@
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import *
+
 from unittest import TestCase,TestSuite,TextTestRunner,TestResult
 from threading import Thread,enumerate
-from tree import Tree
+
 import tests.treeUnitTest as treeUnitTest
 import tests.dataUnitTest as dataUnitTest
-from _mdsshr import getenv
 
 treeUnitTest.tearDownModule=None
 

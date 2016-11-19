@@ -66,11 +66,7 @@ spacedelim() {
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
 export PYTHONDONTWRITEBYTECODE=no
-export PYTHONPATH=/workspace/python
-mkdir -p ${PYTHONPATH}
-ln -sfT /source/mdsobjects/python ${PYTHONPATH}/MDSplus
-export PyLib=python2.7
-export MDS_PATH=/source/tdi
+
 set -e
 if [ "$ARCH" = "amd64" ]
 then
@@ -88,12 +84,16 @@ fi
 if [ "$TEST" = "yes" ]
 then
     ###
-    ### Clean up workspace
+    ### Define PyLib for use in tests which use tdi python functions
     ###
+    export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}')
     if [ "${ARCH}" = "amd64" ]
     then
 	###
 	### Build 64-bit MDSplus with debug to run regular and valgrind tests
+	###
+	###
+	### Clean up workspace
 	###
         rm -Rf /workspace/tests/64
 	MDSPLUS_DIR=/workspace/tests/64/buildroot;
@@ -188,6 +188,9 @@ EOF
 	### Build 32-bit version with debug for testing
 	###
 	set -e
+	###
+	### Clean up workspace
+	###
 	rm -Rf /workspace/tests/32
 	MDSPLUS_DIR=/workspace/tests/32/buildroot;
 	MDS_PATH=${MDSPLUS_DIR}/tdi;

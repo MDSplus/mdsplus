@@ -1735,13 +1735,24 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
 
 EXPORT int MdsPutEnv(char const *cmd)
 {
-  int status;
-  if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))
-    status = 0;
-  else {
-    char *tmp = strcpy(malloc(strlen(cmd) + 1), cmd);
-    putenv(tmp);
-    status = 1;
+  int status = 0;
+  if (cmd != NULL) {
+    if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))
+      status = 0;
+    else {
+      char *tmp = strdup(cmd);
+      char *saveptr = NULL;
+      char *name = strtok_r(tmp,"=",&saveptr);
+      char *value = strtok_r(NULL,"=",&saveptr);
+      if (name != NULL && value != NULL) {
+#ifdef _WIN32
+        status = _putenv_s(name, value);
+#else
+        status = setenv(name,value,1) == 0;
+#endif
+      }
+      free(tmp);
+    }
   }
   return status;
 }

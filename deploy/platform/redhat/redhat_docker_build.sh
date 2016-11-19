@@ -64,11 +64,7 @@ NORMAL() {
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim ${VALGRIND_TOOLS})"
 export PYTHONDONTWRITEBYTECODE=no
-export PYTHONPATH=/workspace/python
-mkdir -p ${PYTHONPATH}
-ln -sfT /source/mdsobjects/python ${PYTHONPATH}/MDSplus
-export PyLib=python2.7
-export MDS_PATH=/source/tdi
+
 set -e
 if [ "$TEST" = "yes" ]
 then
@@ -76,6 +72,10 @@ then
     ### Clean up workspace
     ###
     rm -Rf /workspace/tests
+    ###
+    ### Define PyLib for use in tests which use tdi python functions
+    ###
+    export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}')
     ###
     ### Build 64-bit MDSplus with debug to run regular and valgrind tests
     ###
