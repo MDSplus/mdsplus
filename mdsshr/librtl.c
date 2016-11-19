@@ -1746,7 +1746,7 @@ EXPORT int MdsPutEnv(char const *cmd)
       char *value = strtok_r(NULL,"=",&saveptr);
       if (name != NULL && value != NULL) {
 #ifdef _WIN32
-        status = _putenv_s(name, Value);
+        status = _putenv_s(name, value);
 #else
         status = setenv(name,value,1) == 0;
 #endif
