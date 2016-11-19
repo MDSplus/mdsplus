@@ -1,6 +1,7 @@
 from unittest import TestCase,TestSuite
 from connection import Connection
 from threading import Thread
+from os import name
 
 class connectionTests(TestCase):
 
@@ -8,11 +9,10 @@ class connectionTests(TestCase):
         c=Connection('local://gub')
 
         class ConnectionThread(Thread):
-
             def run(self):
                 for i in range(1000):
                     self.test.assertEqual(int(c.get('%d' % i)),i)
-        
+
         t1=ConnectionThread()
         t1.test=self
         t2=ConnectionThread()
@@ -24,5 +24,11 @@ class connectionTests(TestCase):
 
 
 def suite():
-    tests = ['connectionWithThreads',]
+    tests = []
+    if not name == 'nt':  # windows does not work with local:<path> notation
+        tests+=['connectionWithThreads',]
     return TestSuite(map(connectionTests,tests))
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

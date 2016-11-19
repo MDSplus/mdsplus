@@ -55,6 +55,8 @@ class Scalar(_data.Data):
         if self.__class__.__name__ == 'String':
             self._value = _N.str_(_ver.tostr(value))
             return
+        if isinstance(value,(_data.Data)):
+            value = value.data()
         self._value = _N.__dict__[self.__class__.__name__.lower()](value)
 
     def __getattr__(self,name):
@@ -68,8 +70,8 @@ class Scalar(_data.Data):
     value=property(_getValue)
 
     def __str__(self):
-        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'0X%0uQ',
-                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'0X%0xQU',
+        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'%dQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU',
                  Float32:'%g'}
         ans=formats[self.__class__] % (self._value,)
         if ans=='nan':
