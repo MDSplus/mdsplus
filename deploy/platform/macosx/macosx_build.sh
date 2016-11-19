@@ -2,7 +2,7 @@
 #
 # platform/macosx/macosx_build.sh
 #
-# Invoked by mdsplus/deploy/build.sh for macosx platforms.
+# Invoked by mdsplus/deploy/platform/platform_build.sh for windows platform.
 #
 #
 
@@ -65,7 +65,7 @@ EOF
     fi
     popd
 fi
-    
+
 if [ "$RELEASE" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}
