@@ -11,13 +11,10 @@ test32() {
     testarch 32 i686-w64-mingw32   bin_x86    bin_x86;
 }
 buildrelease() {
-    ###
+    abort=0
     ### Clean up workspace
-    ###
     rm -Rf /workspace/releasebld
-    ###
     ### Build release version of MDSplus and then construct installer rpms
-    ###
     set -e
     MDSPLUS_DIR=/workspace/releasebld/buildroot
     mkdir -p ${MDSPLUS_DIR};
@@ -62,34 +59,27 @@ buildrelease() {
         rsync -a ${MDSPLUS_DIR}/bin_* ./
         curl http://${WINHOST}:8080${topsrcdir}/deploy/winbld.bat
         # see if files are there
-        if ( ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null )
+        ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null
+        checkstatus abort "Failure: Problem building Visual Studio dll." $?
+        if [ "$abort" = "0" ]
         then
             rsync -av --include="*/" --include="*.lib" --include="MdsObjectsCppShr-VS.dll" --exclude="*" /winbld/${tmpdir}/bin_x86* ${MDSPLUS_DIR}/
-        else
-            RED $COLOR
-            cat <<EOF >&2
-============================================
-
-Failure: Problem building Visual Studio dll
-
-============================================
-EOF
-            NORMAL $COLOR
-            exit 1
+            vs="-DVisualStudio"
         fi
-        vs="-DVisualStudio"
         popd
     fi
-    pushd $MDSPLUS_DIR
-    makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD \
-             -DOUTDIR=/release ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
-    popd
-    if [ -d /sign_keys ]
+    if [ "$abort" = "0" ]
     then
-        set +e
-        for timestamp_server in http://timestamp.comodoca.com/authenticode http://timestamp.verisign.com/scripts/timestamp.dll http://timestamp.globalsign.com/scripts/timestamp.dll http://tsa.starfieldtech.com
-        do
-            if ( signcode -spc /sign_keys/mdsplus.spc \
+        pushd $MDSPLUS_DIR
+        makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD \
+             -DOUTDIR=/release ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
+        popd
+        if [ -d /sign_keys ]
+        then
+            set +e
+            for timestamp_server in http://timestamp.comodoca.com/authenticode http://timestamp.verisign.com/scripts/timestamp.dll http://timestamp.globalsign.com/scripts/timestamp.dll http://tsa.starfieldtech.com
+            do
+                if ( signcode -spc /sign_keys/mdsplus.spc \
                                 -v /sign_keys/mdsplus.pvk \
                                 -a sha1 \
                                 -$ individual \
@@ -100,11 +90,12 @@ EOF
 mdsplus
 EOF
                )
-            then
-                break
-            fi
-        done
-        set -e
+                then
+                    break
+                fi
+             done
+             set -e
+        fi
     fi
 }
 publish() {
