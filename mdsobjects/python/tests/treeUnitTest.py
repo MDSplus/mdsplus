@@ -81,7 +81,7 @@ class treeTests(TestCase):
         node.compress_on_put=True
         node.record=Signal(Range(2.,2000.,2.),None,Range(1.,1000.))
         ip=pytreesub_top.addNode('ip','signal')
-        rec=Data.compile("""Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, "ampere"), *, DIM_OF(\\BTOR))""")
+        rec=Data.compile("Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, 'ampere'), *, DIM_OF(\\BTOR))")
         ip.record=rec
         ip.tag='MAG_PLASMA_CURRENT'
         ip.tag='MAGNETICS_PLASMA_CURRENT'
@@ -258,16 +258,38 @@ class treeTests(TestCase):
         del(py100)
 
     def dclInterface(self):
-        import mdsExceptions as Exc
-        from mdsdcl import tcl
-        #print(tcl('compress/override pytree/shot=100',1,1,1))
-        self._doExceptionTest('dispatch/command/server=LOCALHOST:8000 ',Exc.MdsdclIVVERB)
-        self._doExceptionTest('dispatch/command/server show db',Exc.MdsdclIVVERB)
-
-        tcl('set tree pytree/shot=100',0,0,1)
-        self.assertEqual(tcl('show db',1,0,1),"000  PYTREE        shot: 100 [\\PYTREE::TOP]   \n001  TESTING       shot: -1 [\\TESTING::TOP]   \n\n")
-        tcl('close/all',0,0,1)
-        self.assertEqual(tcl('show db',1,0,1),"\n")
+        from subprocess import Popen
+        from os import path
+        from time import sleep
+        hosts='%s%smdsip.hosts'%(path.dirname(__file__),path.sep)
+        mdsip=Popen(['mdsip','-s','-p','8999','-h',hosts])
+        try:
+            import mdsExceptions as Exc
+            from mdsdcl import tcl
+            """ tcl commands """
+            self.assertEqual(tcl('type test',1,1,1)[0],'test\n')
+            tcl('close/all',1,1,1)
+            tcl('set tree pytree/shot=100',1,1,1)
+            self.assertEqual(tcl('show db',1,1,1)[0],'000  PYTREE        shot: 100 [\\PYTREE::TOP]   \n\n')
+            tcl('close/all',1,1,1)
+            self.assertEqual(tcl('show db',1,1,1)[0],'\n')
+            sleep(.1)
+            self.assertEqual(mdsip.poll(),None)
+            """ tcl dispatch """
+            self.assertEqual(tcl('dispatch/command/server=LOCALHOST:8999 type test',1,1,1),(None,None))
+            """ tcl exceptions """
+            self._doExceptionTest('close',Exc.TreeNOT_OPEN)
+            self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
+            self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
+            self._doExceptionTest('dispatch/command/server=LOCALHOST:8999 ',Exc.MdsdclIVVERB)
+            """ tcl dispatch quit """
+            self.assertEqual(mdsip.poll(),None)
+            #tcl('dispatch/command/server=LOCALHOST:8999 quit',1,1,1)
+            #sleep(.1)
+            #self.assertEqual(mdsip.poll() is None,False)
+        finally:
+            if mdsip.poll() is None:
+	        mdsip.terminate()
 
     def finish(self):
         del(self.pytree)

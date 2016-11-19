@@ -1,29 +1,30 @@
 #!/bin/bash
 #
-#
 # debian_docker_build is used to build, test, package and add deb's to a
 # repository for debian based systems.
 #
-
-config(){
-    /source/configure \
-        --prefix=${MDSPLUS_DIR} \
-        --exec_prefix=${MDSPLUS_DIR} \
-        --bindir=${MDSPLUS_DIR}/bin \
-        --libdir=${MDSPLUS_DIR}/lib \
-        --with-java_target=6 \
-        --with-java_bootclasspath=/source/rt.jar \
-        --host=${host} \
-        --with-gsi=/usr:gcc$*
+export PyLib=python2.7
+config_test(){
+    export MDSPLUS_DIR
+    rm -Rf $(dirname "${MDSPLUS_DIR}")
+    MDS_PATH=${MDSPLUS_DIR}/tdi;
+    mkdir -p ${MDSPLUS_DIR};
+    pushd ${MDSPLUS_DIR}/..;
+    config $* --enable-debug --enable-werror;
+    ln -sfT /source/xml ${MDSPLUS_DIR}/xml
 }
-makelist(){
-    dpkg -c $1 | \
-    grep -v python/dist | \
-    grep -v python/build | \
-    grep -v egg-info | \
-    grep -v '/$' | \
-    awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
-    sort
+spacedelim() {
+    if [ ! -z "$1" ]
+    then
+	if [ "$1" = "skip" ]
+	then
+	    ans=""
+	else
+	    IFS=',' read -ra ARR <<< "$1"
+	    ans="${ARR[*]}"
+	fi
+    fi
+    echo $ans
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -43,35 +44,48 @@ NORMAL() {
 	echo -e "\033[m"
     fi
 }
-
-if [ -r /source/deploy/os/${OS}.env ]
-then
-    source /source/deploy/os/${OS}.env
-fi
-printenv
-spacedelim() {
-    if [ ! -z "$1" ]
-    then
-	if [ "$1" = "skip" ]
-	then
-	    ans=""
-	else
-	    IFS=',' read -ra ARR <<< "$1"
-	    ans="${ARR[*]}"
-	fi
-    fi
-    echo $ans
-}
-
 MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
 VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
 export PYTHONDONTWRITEBYTECODE=no
 export PYTHONPATH=/workspace/python
+export MDS_PATH=/source/tdi
+if [ -r /source/deploy/os/${OS}.env ]
+then
+    source /source/deploy/os/${OS}.env
+fi
 mkdir -p ${PYTHONPATH}
 ln -sfT /source/mdsobjects/python ${PYTHONPATH}/MDSplus
-export PyLib=python2.7
-export MDS_PATH=/source/tdi
-set -e
+
+### common end
+
+config() {
+    /source/configure \
+        --prefix=${MDSPLUS_DIR} \
+	--exec_prefix=${MDSPLUS_DIR} \
+	--bindir=${MDSPLUS_DIR}/bin \
+	--libdir=${MDSPLUS_DIR}/lib \
+        --with-java_target=6 \
+        --with-java_bootclasspath=/source/rt.jar \
+        --host=${host} \
+        --with-gsi=/usr:gcc$*
+}
+makelist(){
+    dpkg -c $1 | \
+    grep -v python/dist | \
+    grep -v python/build | \
+    grep -v egg-info | \
+    grep -v '/$' | \
+    awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
+    sort
+}
+debtopkg() {
+    if ( echo $1 | grep mdsplus${2}_${3} >/dev/null )
+    then
+        echo ""
+    else
+        echo ${1:8+${#2}:-${#3}-${#4}-6}
+    fi
+}
 if [ "$ARCH" = "amd64" ]
 then
     if [ -z "$host" ]
@@ -84,192 +98,185 @@ else
 	host=i686-linux
     fi
 fi
-
 if [ "$TEST" = "yes" ]
 then
+  if [ "${ARCH}" = "amd64" ]
+  then
     ###
-    ### Clean up workspace
+    ### Build 64-bit MDSplus with debug to run regular and valgrind tests
     ###
-    if [ "${ARCH}" = "amd64" ]
+    set -e
+    MDSPLUS_DIR=/workspace/tests/64/buildroot;
+    config_test 64
+    $MAKE
+    $MAKE install
+    ###
+    ### Run regular and valgrind tests
+    ###
+    set +e
+    if [ ! -z "$VALGRIND_TOOLS" ]
     then
 	###
-	### Build 64-bit MDSplus with debug to run regular and valgrind tests
+	### Test with valgrind
 	###
-        rm -Rf /workspace/tests/64
-	MDSPLUS_DIR=/workspace/tests/64/buildroot;
-	mkdir -p ${MDSPLUS_DIR};
-	MDS_PATH=${MDSPLUS_DIR}/tdi;
-	pushd /workspace/tests/64;
-	config 64 --enable-debug --enable-werror
-	$MAKE
-	$MAKE install
-	###
-	### Run regular and valgrind tests
-	###
-	set +e
-	if [ ! -z "$VALGRIND_TOOLS" ]
-	then
-	    ###
-	    ### Test with valgrind
-	    ###
-	    if ( ! $MAKE -k tests-valgrind 2>&1 )
-	    then
-		RED $COLOR
-		cat <<EOF >&2
-===========================================
-
-Failure during 64-bit valgrind tests
-
-===========================================
-EOF
-		NORMAL $COLOR
-		tests_valgrind64=1
-	    fi
-	    $MAKE clean_TESTS
-	fi
-	###
-	### Run standard tests
-	###
-	if (! $MAKE -k tests 2>&1 )
+	if ( ! $MAKE -k tests-valgrind 2>&1 )
 	then
 	    RED $COLOR
 	    cat <<EOF >&2
-=====================================
+=======================================================
 
-Failure during 64-bit normal testing.
+Failure doing 64-bit valgrind tests.
 
-=====================================
+=======================================================
 EOF
 	    NORMAL $COLOR
-	    tests_64=1
+	    tests_valgrind64=1
 	fi
-	popd;
-	if [ ! -z "$SANITIZE" ]
-	then
-	    ###
-	    ### Build 64-bit versions with sanitizers and run tests with each sanitizer
-	    ###
-	    for test in $(spacedelim ${SANITIZE}); do
-		echo Doing sanitize $test
-		MDSPLUS_DIR=/workspace/tests/64-san-${test}/buildroot;
-		MDS_PATH=${MDSPLUS_DIR}/tdi;
-		mkdir -p ${MDSPLUS_DIR};
-		pushd /workspace/tests/64-san-${test};
-		config 64 --enable-debug --enable-sanitize=${test}
-		status=$?
-		if [ "$status" = "111" ]; then
-		    echo "Sanitizer ${test} not supported. Skipping."
-		    continue
-		elif [ "$status" = 0 ]; then
-		    $MAKE
-		    $MAKE install
-		    if ( ! $MAKE -k tests 2>&1 )
-		    then
-			RED $COLOR
-			cat <<EOF >&2
-==============================================
+	$MAKE clean_TESTS
+    fi
+    ###
+    ### Run standard tests
+    ###
+    if ( ! $MAKE -k tests 2>&1 )
+    then
+	RED $COLOR
+	cat <<EOF >&2
+======================================================
 
-Failure during 64-bit sanitize test ${test}.
+Failure doing 64-bit normal tests.
 
-=============================================
+======================================================
 EOF
-			NORMAL $COLOR
-			let test_64_san_${test}=1
-		    fi
-		else
-		    echo "configure returned status $status"
-		    let test_64_san_${test}=$status
+	NORMAL $COLOR
+	tests_64=1
+    fi
+    popd
+  fi
+    if [ ! -z "$SANITIZE" ]
+    then
+	###
+	### Build 64-bit versions with sanitizers and run tests with each sanitizer
+	###
+	for test in $(spacedelim ${SANITIZE}); do
+	    echo Doing sanitize $test
+	    MDSPLUS_DIR=/workspace/tests/64-san-${test}/buildroot;
+	    config 64 --enable-sanitize=${test}
+	    status=$?
+	    if [ "$status" = "111" ]; then
+		echo "Sanitizer ${test} not supported. Skipping."
+		continue
+	    elif [ "$status" = 0 ]; then
+		$MAKE
+		$MAKE install
+		if ( ! $MAKE -k tests 2>&1 )
+		then
+		    RED $COLOR
+		    cat <<EOF >&2
+=======================================================
+
+Failure doing 64-bit sanitize test ${test}
+
+=======================================================
+EOF
+		    NORMAL $COLOR
+		    let test_64_san_${test}=1
 		fi
-		popd
-	    done
-	fi
-    else
+	    else
+		echo "configure returned status $?"
+		let test_64_san_${test}=$status
+	    fi
+	    popd
+	done
+    fi
+  else
+    ###
+    ### Build 32-bit version with debug for testing
+    ###
+    set -e
+    MDSPLUS_DIR=/workspace/tests/32/buildroot;
+    config_test 32
+    $MAKE
+    $MAKE install
+    set +e;
+    if [ ! -z "$VALGRIND_TOOLS" ]
+    then
 	###
-	### Build 32-bit version with debug for testing
+	### Test with valgrind
 	###
-	set -e
-	rm -Rf /workspace/tests/32
-	MDSPLUS_DIR=/workspace/tests/32/buildroot;
-	MDS_PATH=${MDSPLUS_DIR}/tdi;
-	mkdir -p ${MDSPLUS_DIR};
-	pushd /workspace/tests/32;
-	config 32 --enable-debug --enable-werror
-	$MAKE
-	$MAKE install
-	set +e;
-	if [ ! -z "$VALGRIND_TOOLS" ]
+	if ( ! $MAKE -k tests-valgrind 2>&1 )
 	then
-	    ###
-	    ### Test with valgrind
-	    ###
-	    if ( ! $MAKE -k tests-valgrind 2>&1 )
-	    then
-		RED $COLOR
-		cat <<EOF >&2
-========================================
+	    RED $COLOR
+	    cat <<EOF 2>&1
+===================================================
 
 Failure during 32-bit valgrind testing.
 
-========================================
+===================================================
 EOF
-		NORMAL $COLOR
-		tests_valgrind32=1
-	    fi
-	    $MAKE clean_TESTS
+	    NORMAL $COLOR
+	    tests_valgrind32=1
 	fi
-	###
-	### Run standard tests on 32-bit
-	###
-	$MAKE -k tests 2>&1;
-	tests_32=$?;
-	popd;
-	if [ ! -z "$SANITIZE" ]
-	then
-	    ###
-	    ### Build and test with sanitizers
-	    ###
-	    for test in $(spacedelim ${SANITIZE}); do
-		if [ "$test" = "thread" ]; then
-		    echo "No 32-bit support for sanitize=thread. Skipping."
-		    break
-		fi
-		MDSPLUS_DIR=/workspace/tests/32-san-${test}/buildroot;
-		MDS_PATH=${MDSPLUS_DIR}/tdi;
-		mkdir -p ${MDSPLUS_DIR};
-		pushd /workspace/tests/32-san-${test};
-		config 32 --enable-debug --enable-sanitize=${test}
-		status=$?
-		if [ "$status" == 111 ]; then
-		    echo "Sanitizer ${test} not supported. Skipping."
-		    break
-		elif [ "$status" = 0 ]; then
-		    $MAKE
-		    $MAKE install
-		    if ( ! $MAKE -k tests 2>&1 )
-		    then
-			RED $COLOR
-			cat <<EOF >&2
-===============================================
-
-Failure during 32-bit sanitize test ${test}
-
-===============================================
-EOF
-			NORMAL $COLOR
-			let test_32_san_${test}=1
-		    fi
-		else
-		    echo "Configure returned a status 0f $status"
-		    let test_32_san_${test}=$status
-		fi
-		popd
-	    done
-	fi;
+	$MAKE clean_TESTS
     fi
+    ###
+    ### Run standard tests on 32-bit
+    ###
+    if ( ! $MAKE -k tests 2>&1 )
+    then
+	RED $COLOR
+	cat <<EOF >&2
+===================================================
+
+Failure during 32-bit normal testing.
+
+===================================================
+EOF
+	NORMAL $COLOR
+	tests_32=1
+    fi
+    popd;
+    if [ ! -z "$SANITIZE" ]
+    then
+	###
+	### Build and test with sanitizers
+	###
+	for test in $(spacedelim ${SANITIZE}); do
+	    if [ "$test" = "thread" ]; then
+		echo "No 32-bit support for sanitize=thread. Skipping."
+		break
+	    fi
+	    MDSPLUS_DIR=/workspace/tests/32-san-${test}/buildroot;
+	    config_test 32 --enable-sanitize=${test}
+	    status=$?
+	    if [ "$status" == 111 ]; then
+		echo "Sanitizer ${test} not supported. Skipping."
+		break
+	    elif [ "$status" = 0 ]; then
+		$MAKE
+		$MAKE install
+		if ( ! $MAKE -k tests 2>&1 )
+		then
+		    RED $COLOR
+		    cat <<EOF >&2
+=======================================================
+
+Failure during 32-bit sanitize ${test} testing.
+
+=======================================================
+EOF
+		    NORMAL $COLOR
+		    let test_32_san_${test}=1
+		fi
+	    else
+		echo "Configure returned a status 0f $status"
+		let test_32_san_${test}=$status
+	    fi
+	    popd
+	done
+    fi;
     ###
     ### Check status of all tests. If errors found print error messages and then exit with failure
     ###
-    echo "Checking test results"
     failed=0;
     if [ ! -z "$tests_64" -a "$tests_64" != "0" ]
     then
@@ -296,7 +303,7 @@ Failure: 64-bit valgrind test suite failed
 EOF
 	NORMAL $COLOR
 	failed=1;
-    fi;
+    fi
     for test in address thread undefined; do
 	eval "status=\$test_64_san_${test}"
 	if [ ! -z "$status" -a "$status" != "0" ]
@@ -352,49 +359,29 @@ Failure: 32-bit santize with ${test} failed
 =================================================================
 EOF
 	    NORMAL $COLOR
-	    failed=1;
+	    failed=1
 	fi
-    done;
+    done
     if [ "$failed" = "1" ]
     then
 	RED $COLOR
 	cat <<EOF >&2
 =================================================================
 
-Failure: One or more tests have failed (see above). Build ABORTED 
+Failure: One or more tests have failed (see above). Build ABORTED
 
 =================================================================
 EOF
 	NORMAL $COLOR
-	exit 1;
-    fi;
-    GREEN $COLOR
-    cat <<EOF >&2
-=================================================================
-
-All tests succeeded
-
-=================================================================
-EOF
-    NORMAL $COLOR
+	exit 1
+    fi
 fi
-
 if [ "${BRANCH}" = "stable" ]
 then
     BNAME=""
 else
     BNAME="-$(echo ${BRANCH} | sed -e 's/-/_/g')"
 fi
-
-debtopkg() {
-    if ( echo $1 | grep mdsplus${2}_${3} >/dev/null )
-    then
-        echo ""
-    else
-        echo ${1:8+${#2}:-${#3}-${#4}-6}
-    fi
-}
-
 if [ "$RELEASE" = "yes" ]
 then
     ###
