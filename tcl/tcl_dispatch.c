@@ -402,6 +402,8 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
         char *msg = MdsGetMsg(sts);
         *error = malloc(strlen(msg) + 100);
         sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
+        free(command->command);
+        free(command);
       }
     } else {
       sts = ServerDispatchCommand(0, ident, cli,
@@ -410,14 +412,14 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
         char *msg = MdsGetMsg(sts);
         *error = malloc(strlen(msg) + 100);
         sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
+        free(command->command);
+        free(command);
       }
     }
-    fprintf(stderr,"post: %s",command->command);
-    free(command->command);
   } else {
     sts = MdsdclMISSING_VALUE;
+    free(command);
   }
-  free(command);
   if (cli)
     free(cli);
   if (ident)
