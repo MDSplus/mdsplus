@@ -56,16 +56,16 @@ checktests() {
     ### Check status of all tests. If errors found print error messages and then exit with failure
     failed=0;
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
-    checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_valgrind64
+    checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
         checkstatus failed "Failure: 64-bit santize with ${test} failed." $(eval "\$test_64_san_${test}")
     done;
     checkstatus failed "Failure: 32-bit test suite failed." $tests_32
-    checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_valgrind32
+    checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
         checkstatus failed "Failure: 32-bit santize with ${test} failed." $(eval "\$test_32_san_${test}")
     done;
-    checkstatus abort "Failure: One or more tests have failed (see above). Build ABORTED" $failed
+    checkstatus abort "Failure: One or more tests have failed (see above). ABORT" $failed
 }
 sanitize() {
     ### Build with sanitizers and run tests with each sanitizer
@@ -83,6 +83,10 @@ sanitize() {
                 $MAKE install
                 $MAKE -k tests 2>&1
                 checkstatus test_$1_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
+                if [ -z $(eval "\$test_$1_san_${test}") ]
+                then
+                    let test_$1_san=1
+                fi
             else
                 echo "configure returned status $?"
                 let test_$1_san_${test}=$status
@@ -93,7 +97,7 @@ sanitize() {
 }
 normaltest() {
     ### Build with debug to run regular and valgrind tests
-    if [ -z "$VALGRIND_TOOLS" ] || [ ! -z "eval \${test_$1_san}" ]
+    if [ -z "$VALGRIND_TOOLS" ]
     then
         set -e
         MDSPLUS_DIR=/workspace/tests/$1/buildroot;
@@ -105,11 +109,11 @@ normaltest() {
         ### Run standard tests
         $MAKE -k tests 2>&1
         checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
-        if [ ! -z "$VALGRIND_TOOLS" ]
+        if [ ! -z "$VALGRIND_TOOLS" ]# && [ -z "$(eval '\$tests_$1')" ]
         then
             ### Test with valgrind
             $MAKE -k tests-valgrind 2>&1
-            checkstatus tests_valgrind$1 "Failure doing $1-bit valgrind tests." $?
+            checkstatus tests_$1_val "Failure doing $1-bit valgrind tests." $?
         fi
         popd
     fi
