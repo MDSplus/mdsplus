@@ -4,7 +4,7 @@
 #
 
 from unittest import TestCase,TestSuite
-from mdsdata import *
+from mdsdata import Data
 
 class simulateSegfault(TestCase):
 
@@ -16,10 +16,12 @@ class simulateSegfault(TestCase):
 
     def runTest(self):
         self.generateSeg()
-    
+
 
 def suite():
     tests = ['generateTest']
     return TestSuite(map(simulateSegfault,tests))
 
-
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

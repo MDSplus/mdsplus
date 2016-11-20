@@ -1,35 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys,os
-
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
-
-from MDSplus import *
-
 from unittest import TestCase,TestSuite
+
+from tree import Tree
+from mdsscalar import Float32
+from mdsarray import Float32Array,Int16Array
 
 import numpy as np
 import random
-import tempfile
+import os
 
+
+
+import tempfile
 _tmpdir=tempfile.mkdtemp()
 
-def setUpModule():    
+def setUpModule():
     pass
 
 def tearDownModule():
     import shutil
     shutil.rmtree(_tmpdir)
-    
+
 
 class segmentsTests(TestCase):
 
     def setUp(self):
         os.environ["seg_tree_path"]=_tmpdir
-        
+
     def tearDown(self):
         pass
 
@@ -41,7 +40,7 @@ class segmentsTests(TestCase):
         ptree.createPulse(1)
         ptree=Tree('seg_tree',1)
         node=ptree.getNode('IMM')
-        
+
         WIDTH = 640
         HEIGHT =480;
         currFrame=np.zeros(WIDTH*HEIGHT, dtype = np.int16);
@@ -58,7 +57,7 @@ class segmentsTests(TestCase):
         shape = segment.getShape()
         node.makeSegment(startTime, endTime, dim, segment)
         retShape = node.getShape()
-        
+
         self.assertEqual(shape[0],retShape[0])
         self.assertEqual(shape[1],retShape[1])
         self.assertEqual(shape[2],retShape[2])
@@ -71,3 +70,7 @@ class segmentsTests(TestCase):
 def suite():
     tests = ['arrayDimensionOrder']
     return TestSuite(map(segmentsTests,tests))
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

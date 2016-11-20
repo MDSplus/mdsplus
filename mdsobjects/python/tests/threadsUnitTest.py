@@ -1,16 +1,9 @@
-import sys,os
-
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
-
-from MDSplus import *
-
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-from threading import Thread,enumerate
-
+from unittest import TestCase,TestSuite,TestResult
+from threading import Thread
+from tree import Tree
 import tests.treeUnitTest as treeUnitTest
 import tests.dataUnitTest as dataUnitTest
+from _mdsshr import getenv
 
 treeUnitTest.tearDownModule=None
 
@@ -46,7 +39,7 @@ class threadTest(TestCase):
           for t in threads:
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful=numsuccessful+1                
+                numsuccessful=numsuccessful+1
             else:
                 print( t.result )
         print("successful: ")
@@ -57,8 +50,12 @@ class threadTest(TestCase):
     def runTest(self):
         self.threadTests()
         return
-            
+
 
 def suite():
     tests = ['threadTests']
     return TestSuite(map(threadTest, tests))
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
