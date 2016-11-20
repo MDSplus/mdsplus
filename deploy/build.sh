@@ -232,6 +232,7 @@ OPTIONS WITH OS SPECIFIC DEFAULT
 EOF
 }
 parsecmd() {
+    unset INTERACTIVE
     for i in $1
     do
 	case $i in
@@ -327,6 +328,9 @@ parsecmd() {
 	    --color)
 		COLOR=yes
 		;;
+	    -i)
+		INTERACTIVE="1"
+		;;
 	    --winhost=*)
 		WINHOST="${i#*=}"
 		;;
@@ -358,7 +362,7 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
-    
+
 #
 # Get the default options for the OS specified.
 #
@@ -600,7 +604,8 @@ OS=${OS} \
   WINBLD="${WINBLD}" \
   WINREMBLD="${WINREMBLD}" \
   GIT_COMMIT="${GIT_COMMIT}" \
-  ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
+  INTERACTIVE="$INTERACTIVE" \
+  ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
     RED $COLOR
