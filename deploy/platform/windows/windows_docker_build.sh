@@ -59,7 +59,7 @@ buildrelease() {
         rsync -a ${MDSPLUS_DIR}/bin_* ./
         curl http://${WINHOST}:8080${topsrcdir}/deploy/winbld.bat
         # see if files are there
-        ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null
+        :&& ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null
         checkstatus abort "Failure: Problem building Visual Studio dll." $?
         if [ "$abort" = "0" ]
         then
@@ -76,7 +76,6 @@ buildrelease() {
         popd
         if [ -d /sign_keys ]
         then
-            set +e
             for timestamp_server in http://timestamp.comodoca.com/authenticode http://timestamp.verisign.com/scripts/timestamp.dll http://timestamp.globalsign.com/scripts/timestamp.dll http://tsa.starfieldtech.com
             do
                 if ( signcode -spc /sign_keys/mdsplus.spc \
@@ -94,7 +93,6 @@ EOF
                     break
                 fi
              done
-             set -e
         fi
     fi
 }

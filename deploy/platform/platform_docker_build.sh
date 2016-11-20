@@ -56,19 +56,20 @@ checktests() {
     ### Check status of all tests. If errors found print error messages and then exit with failure
     failed=0;
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
-    checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_valgrind64
+    checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
         checkstatus failed "Failure: 64-bit santize with ${test} failed." $(eval "\$test_64_san_${test}")
     done;
     checkstatus failed "Failure: 32-bit test suite failed." $tests_32
-    checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_valgrind32
+    checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
         checkstatus failed "Failure: 32-bit santize with ${test} failed." $(eval "\$test_32_san_${test}")
     done;
-    checkstatus abort "Failure: One or more tests have failed (see above). Build ABORTED" $failed
+    checkstatus abort "Failure: One or more tests have failed (see above). ABORT" $failed
 }
 sanitize() {
     ### Build with sanitizers and run tests with each sanitizer
+    SANITIZE="$(spacedelim $SANITIZE)"
     if [ ! -z "$SANITIZE" ]
     then
         for test in $(spacedelim ${SANITIZE}); do
@@ -81,8 +82,12 @@ sanitize() {
             elif [ "$status" = 0 ]; then
                 $MAKE
                 $MAKE install
-                $MAKE -k tests 2>&1
+                :&& $MAKE -k tests 2>&1
                 checkstatus test_$1_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
+                if [ -z $(eval "\$test_$1_san_${test}") ]
+                then
+                    let test_$1_san=1
+                fi
             else
                 echo "configure returned status $?"
                 let test_$1_san_${test}=$status
@@ -93,26 +98,22 @@ sanitize() {
 }
 normaltest() {
     ### Build with debug to run regular and valgrind tests
-    if [ -z "$VALGRIND_TOOLS" ] || [ ! -z "eval \${test_$1_san}" ]
+    VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
+    MDSPLUS_DIR=/workspace/tests/$1/buildroot;
+    export WINEPATH=Z:\\workspace\\tests\\$1\\$3
+    config_test $@
+    $MAKE
+    $MAKE install
+    ### Run standard tests
+    :&& $MAKE -k tests 2>&1
+    checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
+    if [ ! -z "$VALGRIND_TOOLS" ] # && [ -z "$(eval '\$tests_$1')" ]
     then
-        set -e
-        MDSPLUS_DIR=/workspace/tests/$1/buildroot;
-        export WINEPATH=Z:\\workspace\\tests\\$1\\$3
-        config_test $@
-        $MAKE
-        $MAKE install
-        set +e
-        ### Run standard tests
-        $MAKE -k tests 2>&1
-        checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
-        if [ ! -z "$VALGRIND_TOOLS" ]
-        then
-            ### Test with valgrind
-            $MAKE -k tests-valgrind 2>&1
-            checkstatus tests_valgrind$1 "Failure doing $1-bit valgrind tests." $?
-        fi
-        popd
+        ### Test with valgrind
+        :&& $MAKE -k tests-valgrind 2>&1
+        checkstatus tests_$1_val "Failure doing $1-bit valgrind tests." $?
     fi
+    popd
 }
 spacedelim() {
     if [ ! -z "$1" ]
@@ -149,7 +150,6 @@ export PYTHONDONTWRITEBYTECODE=no
 export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}') 
 main(){
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
-    VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     if [ -r /source/deploy/os/${OS}.env ]
     then
         source /source/deploy/os/${OS}.env
@@ -174,11 +174,8 @@ main(){
         publish
     fi
 }
+source /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 if [ "$(basename $0)" = "platform_docker_build.sh" ]
 then
-    . /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
     main
-else
-    . /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
 fi
-

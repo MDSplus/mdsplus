@@ -142,7 +142,7 @@ EOF
         do
             if [ -z "$abort" ] || [ "$abort" = "0" ]
             then
-    	    reprepro -V -C ${BRANCH} includedeb MDSplus $deb
+    	        :&& reprepro -V -C ${BRANCH} includedeb MDSplus $deb
                 checkstatus abort "Failure: Problem installing $deb into repository. ABORT" $?
             fi
         done
@@ -158,12 +158,12 @@ publish() {
     rsync -a /release/${BRANCH}/DEBS/${ARCH} /publish/${BRANCH}/DEBS/
     if [ ! -r /publish/repo ]
     then
-        rsync -a /release/repo /publish/
+        :&& rsync -a /release/repo /publish/
 	checkstatus abort "Failure: Problem copying repo into publish area. ABORT" $?
     else
 	pushd /publish/repo
 	reprepro clearvanished
-	env HOME=/sign_keys reprepro -V --keepunused --keepunreferenced -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
+	:&& env HOME=/sign_keys reprepro -V --keepunused --keepunreferenced -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
        	checkstatus abort "Failure: Problem installing debian into publish repository. ABORT" $?
 	popd
     fi

@@ -98,7 +98,6 @@ EOF
             mkdir -p /source/deploy/packaging/${PLATFORM}/
             makelist $rpm > ${checkfile}
         else
-            set +e
             echo "Checking contents of $(basename $rpm)"
             if ( diff <(makelist $rpm) <(sort ${checkfile}) )
             then
@@ -106,7 +105,6 @@ EOF
             else
                 checkstatus badrpm "Failure: Problem with contents of $(basename $rpm)" 1
             fi
-            set -e
         fi
     done
     checkstatus abort "Failure: Problem with contents of one or more rpms. (see above) ABORT" $badrpm
@@ -114,7 +112,7 @@ EOF
 
 publish(){
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
-    rsync -a --exclude=repodata /release/RPMS /publish/
+    :&& rsync -a --exclude=repodata /release/RPMS /publish/
     checkstatus abort "Failure: Problem copying release rpms to publish area! ABORT" $?
     if [ "$abort" = "0" ]
     then
@@ -122,7 +120,7 @@ publish(){
         then
             use_deltas="--deltas"
         fi
-        createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS
+        :&& createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS
         checkstatus abort "Failure: Problem creating rpm repository in publish area! ABORT" $?
     fi
 }
