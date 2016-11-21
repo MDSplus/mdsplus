@@ -92,8 +92,8 @@ sanitize() {
     SANITIZE="$(spacedelim $SANITIZE)"
     if [ ! -z "$SANITIZE" ]
     then
-        for test in $(spacedelim ${SANITIZE}); do
-            echo Doing sanitize $test
+        for test in ${SANITIZE}; do
+            echo Doing sanitize ${test}
             MDSPLUS_DIR=/workspace/tests/${1}-san-${test}/buildroot;
             config_test $@ --enable-sanitize=${test}
             if [ "$status" = "111" ]; then
