@@ -3,7 +3,8 @@
 
 import __future__
 import sys,os
-os.environ.pop("LD_PRELOAD")
+if "LD_PRELOAD" in os.environ:
+    os.environ.pop("LD_PRELOAD")
 
 
 class testing(object):    
