@@ -117,6 +117,10 @@ sanitize() {
     fi
 }
 normaltest() {
+    gettimeout() {
+        declare -i n=400*$#
+        echo $n
+    }
     ### Build with debug to run regular and valgrind tests
     VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
@@ -124,13 +128,13 @@ normaltest() {
     $MAKE
     $MAKE install
     ### Run standard tests
-    printenv
     :&& tio 200 $MAKE -k tests 2>&1
     checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
-        :&& tio 400 $MAKE -k tests-valgrind 2>&1
+        to=$( gettimeout $VALGRIND_TOOLS )
+        :&& tio $to  $MAKE -k tests-valgrind 2>&1
         checkstatus tests_${1}_val "Failure doing $1-bit valgrind tests." $?
     fi
     popd
