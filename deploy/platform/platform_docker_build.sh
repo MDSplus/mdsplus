@@ -11,6 +11,9 @@ tio(){
     ### conterfights stuck tests
     :&& timeout --preserve-status -k 10 -s SIGINT "$@"
 }
+getenv() {
+    eval "echo \$$1"
+}
 runtests() {
     test64;
     test32;
@@ -75,12 +78,12 @@ checktests() {
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
     checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
-        checkstatus failed "Failure: 64-bit santize with ${test} failed." $(eval "\$tests_64_san_${test}")
+        checkstatus failed "Failure: 64-bit santize with ${test} failed." $(getenv "tests_64_san_${test}")
     done;
     checkstatus failed "Failure: 32-bit test suite failed." $tests_32
     checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
-        checkstatus failed "Failure: 32-bit santize with ${test} failed." $(eval "\$tests_32_san_${test}")
+        checkstatus failed "Failure: 32-bit santize with ${test} failed." $(getenv "tests_32_san_${test}")
     done;
     checkstatus abort "Failure: One or more tests have failed (see above)." $failed
 }
@@ -91,7 +94,7 @@ sanitize() {
     then
         for test in $(spacedelim ${SANITIZE}); do
             echo Doing sanitize $test
-            MDSPLUS_DIR=/workspace/tests/$1-san-${test}/buildroot;
+            MDSPLUS_DIR=/workspace/tests/${1}-san-${test}/buildroot;
             config_test $@ --enable-sanitize=${test}
             if [ "$status" = "111" ]; then
                 echo "Sanitizer ${test} not supported. Skipping."
@@ -99,14 +102,14 @@ sanitize() {
                 $MAKE
                 $MAKE install
                 :&& tio 200 $MAKE -k tests 2>&1
-                checkstatus tests_$1_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
+                checkstatus tests_${1}_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
                 if [ ! -z "$?" ]
                 then
-                    let tests_$1_san=1
+                    let tests_${1}_san=1
                 fi
             else
                 echo "configure returned status $?"
-                let tests_$1_san_${test}=$status
+                let tests_${1}_san_${test}=$status
             fi
             popd
         done
@@ -126,7 +129,7 @@ normaltest() {
     then
         ### Test with valgrind
         :&& tio 300 $MAKE -k tests-valgrind 2>&1
-        checkstatus tests_$1_val "Failure doing $1-bit valgrind tests." $?
+        checkstatus tests_${1}_val "Failure doing $1-bit valgrind tests." $?
     fi
     popd
 }
