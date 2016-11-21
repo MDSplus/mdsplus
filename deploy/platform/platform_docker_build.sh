@@ -102,7 +102,7 @@ sanitize() {
             elif [ "$status" = 0 ]; then
                 $MAKE
                 $MAKE install
-                :&& tio 300 $MAKE -k tests 2>&1
+                :&& tio 400 $MAKE -k tests 2>&1
                 checkstatus tests_${1}_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
                 if [ ! -z "$?" ]
                 then
@@ -118,7 +118,7 @@ sanitize() {
 }
 normaltest() {
     gettimeout() {
-        declare -i n=400*$#
+        declare -i n=600*$#
         echo $n
     }
     ### Build with debug to run regular and valgrind tests
