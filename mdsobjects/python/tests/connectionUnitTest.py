@@ -1,11 +1,17 @@
 from unittest import TestCase,TestSuite
-from connection import Connection
-from threading import Thread
-from os import name
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import Connection
+
 
 class connectionTests(TestCase):
 
     def connectionWithThreads(self):
+        from threading import Thread
         c=Connection('local://gub')
 
         class ConnectionThread(Thread):
@@ -25,7 +31,7 @@ class connectionTests(TestCase):
 
 def suite():
     tests = []
-    if not name == 'nt':  # windows does not work with local:<path> notation
+    if not os.name == 'nt':  # windows does not work with local:<path> notation
         tests+=['connectionWithThreads',]
     return TestSuite(map(connectionTests,tests))
 

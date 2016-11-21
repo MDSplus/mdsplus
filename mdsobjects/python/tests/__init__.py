@@ -6,15 +6,19 @@ Tests of MDSplus
 
 """
 from unittest import TestCase,TestSuite,TextTestRunner
-from tests.treeUnitTest import treeTests
-from tests.threadsUnitTest import suite as threadsSuite
-from tests.dataUnitTest import suite as dataSuite
-from tests.exceptionUnitTest import exceptionTests
-from tests.connectionUnitTest import suite as connectionsSuite
-from _mdsshr import setenv,getenv
+import sys,os
 
-import os
-import sys
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus.tests.treeUnitTest import treeTests
+from MDSplus.tests.threadsUnitTest import suite as threadsSuite
+from MDSplus.tests.dataUnitTest import suite as dataSuite
+from MDSplus.tests.exceptionUnitTest import exceptionTests
+from MDSplus.tests.connectionUnitTest import suite as connectionsSuite
+from MDSplus.tests.segmentsUnitTest import suite as segmentsSuite
+from MDSplus import setenv,getenv
 
 class cleanup(TestCase):
     dir=None
@@ -71,6 +75,7 @@ def test_all(*arg):
     tests.append(dataSuite())
     tests.append(exceptionTests())
     tests.append(connectionsSuite())
+    tests.append(segmentsSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
     return TestSuite(tests)
 
