@@ -6,6 +6,8 @@
 #
 # Build script from within a docker image
 #
+export HOME=/tmp/home
+mkdir -p $HOME
 tio(){
     ### interrupts command and kills if not returning
     ### conterfights stuck tests
@@ -123,6 +125,7 @@ normaltest() {
     $MAKE
     $MAKE install
     ### Run standard tests
+    printenv
     :&& tio 100 $MAKE -k tests 2>&1
     checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
