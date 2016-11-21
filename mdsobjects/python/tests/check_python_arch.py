@@ -1,4 +1,3 @@
-#
 # Use to check if architecture of the MDSplus libraries matches the python used
 #
 # Usage: python check_python_arch.py dirspec-of-mdsplus-libs
@@ -14,7 +13,7 @@ elif sys.platform.startswith('darwin'):
     lib='libMdsShr.dylib'
 else:
     lib='libMdsShr.so'
-    
+
 try:
     ctypes.CDLL(os.path.join(sys.argv[1],lib))
     sys.exit(0)

@@ -1,10 +1,23 @@
 from unittest import TestCase,TestSuite
-from mdsdata import Data,makeData
+import sys,os
+
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus import Data,makeData,makeArray,Uint8,String,setenv
+import MDSplus as m
+
+
+if os.name=='nt':
+    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
+else:
+    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
+setenv("PYTHONPATH",MDSplus_path)
 
 class dataTests(TestCase):
     def _doThreeTest(self,tdiexpr,pyexpr,ans,almost=False):
         """ tests Scalars tdi expression vs. python Expression vs. expected result """
-        from mdsscalar import Uint8
         tdians = Data.execute(tdiexpr)
         if isinstance(pyexpr,(bool,)):
             pyans = pyexpr
@@ -31,7 +44,6 @@ class dataTests(TestCase):
 
     def _doThreeTestArray(self,tdiexpr,pyexpr,ans,almost=False):
         """ tests Arrays tdi expression vs. python Expression vs. expected result """
-        from mdsscalar import Uint8
         from numpy import ndarray, array
         tdians = Data.execute(tdiexpr)
         if isinstance(pyexpr,(ndarray,)):
@@ -58,7 +70,6 @@ class dataTests(TestCase):
     def operatorsAndFunction(self):
         def executeTests(test,a,b,res,almost=False,real=True):
             """ performes tests on operators """
-            import tdibuiltins as c
             res.reverse()
             test('_a+_b',    a+ b,   res.pop(),almost=almost)
             test('_a-_b',    a- b,   res.pop(),almost=almost)
@@ -73,27 +84,27 @@ class dataTests(TestCase):
             #test('_a>>_b',   a>>b,   res.pop())
             #test('-_a',      -a,     res.pop(),almost=almost)
             #test('abs(-_a)', abs(-a),res.pop(),almost=almost)
-            #test('abs1(-_a)',c.ABS1(-a),res.pop(),almost=almost)
-            #test('abssq(-_a)',c.ABSSQ(-a),res.pop(),almost=almost)
+            #test('abs1(-_a)',m.ABS1(-a),res.pop(),almost=almost)
+            #test('abssq(-_a)',m.ABSSQ(-a),res.pop(),almost=almost)
             rcount = 11
             acount = 4+rcount
             if almost:  # some operations only make sence on floating point
-                test('exp(_a)',     c.EXP(a),    res.pop(),almost=almost)
-                test('log(_a)',     c.LOG(a),    res.pop(),almost=almost)
-                test('sin(_a)',     c.SIN(a),    res.pop(),almost=almost)
-                test('cos(_a)',     c.COS(a),    res.pop(),almost=almost)
+                test('exp(_a)',     m.EXP(a),    res.pop(),almost=almost)
+                test('log(_a)',     m.LOG(a),    res.pop(),almost=almost)
+                test('sin(_a)',     m.SIN(a),    res.pop(),almost=almost)
+                test('cos(_a)',     m.COS(a),    res.pop(),almost=almost)
                 if real:  # some operations are only defined for real numbers
-                    test('tan(_a)',     c.TAN(a),    res.pop(),almost=almost)
-                    test('asin(_a/10)', c.ASIN(a/10),res.pop(),almost=almost)
-                    test('acos(_a/10)', c.ACOS(a/10),res.pop(),almost=almost)
-                    test('atan(_a)',    c.ATAN(a),   res.pop(),almost=almost)
-                    test('atan2(_a,1)', c.ATAN2(a,1),res.pop(),almost=almost)
-                    test('log2(_a)',    c.LOG2(a),   res.pop(),almost=almost)
-                    test('log10(_a)',   c.LOG10(a),  res.pop(),almost=almost)
-                    test('sind(_a)',    c.SIND(a),   res.pop(),almost=almost)
-                    test('cosd(_a)',    c.COSD(a),   res.pop(),almost=almost)
-                    test('tand(_a)',    c.TAND(a),   res.pop(),almost=almost)
-                    test('anint(_a/3)', c.ANINT(a/3),res.pop(),almost=almost)
+                    test('tan(_a)',     m.TAN(a),    res.pop(),almost=almost)
+                    test('asin(_a/10)', m.ASIN(a/10),res.pop(),almost=almost)
+                    test('acos(_a/10)', m.ACOS(a/10),res.pop(),almost=almost)
+                    test('atan(_a)',    m.ATAN(a),   res.pop(),almost=almost)
+                    test('atan2(_a,1)', m.ATAN2(a,1),res.pop(),almost=almost)
+                    test('log2(_a)',    m.LOG2(a),   res.pop(),almost=almost)
+                    test('log10(_a)',   m.LOG10(a),  res.pop(),almost=almost)
+                    test('sind(_a)',    m.SIND(a),   res.pop(),almost=almost)
+                    test('cosd(_a)',    m.COSD(a),   res.pop(),almost=almost)
+                    test('tand(_a)',    m.TAND(a),   res.pop(),almost=almost)
+                    test('anint(_a/3)', m.ANINT(a/3),res.pop(),almost=almost)
                 else:  # strip results of real operations
                     res = res[:-rcount]
             else:  # strip results of floating operations
@@ -111,7 +122,6 @@ class dataTests(TestCase):
             def doTest(suffix,cl,scl,ucl,**kw):
                 """ test scalar """
                 import warnings
-                from mdsarray import makeArray
                 results = [cl(13),cl(7),cl(30),cl(10./3),#cl(1000),
                     #ucl(11),ucl(2),
                     #False,True,
@@ -134,20 +144,18 @@ class dataTests(TestCase):
                 warnings.resetwarnings()
                 self.assertEqual(Data.execute('[_a]'),makeArray(a))
                 executeTests(self._doThreeTest,a,b,results,**kw)
-
-            import mdsscalar as s
-            doTest('BU',s.Uint8,  s.Int8,   s.Uint8)
-            doTest('WU',s.Uint16, s.Int16,  s.Uint16)
-            doTest('LU',s.Uint32, s.Int32,  s.Uint32)
-            doTest('QU',s.Uint64, s.Int64,  s.Uint64)
-            doTest('B', s.Int8,   s.Int8,   s.Uint8)
-            doTest('W', s.Int16,  s.Int16,  s.Uint16)
-            doTest('',  s.Int32,  s.Int16,  s.Uint32)
-            doTest('Q', s.Int64,  s.Int16,  s.Uint64)
-            doTest('.', s.Float32,s.Float32,s.Uint32,almost=5)
-            doTest('D0',s.Float64,s.Float64,s.Uint64,almost=4)
-            doTest('*cmplx(1.,0.)',  s.Complex64, s.Complex64, s.Uint64,almost=5,real=False)
-            doTest('*cmplx(1D0,0D0)',s.Complex128,s.Complex128,s.Uint64,almost=4,real=False)
+            doTest('BU',m.Uint8,  m.Int8,   m.Uint8)
+            doTest('WU',m.Uint16, m.Int16,  m.Uint16)
+            doTest('LU',m.Uint32, m.Int32,  m.Uint32)
+            doTest('QU',m.Uint64, m.Int64,  m.Uint64)
+            doTest('B', m.Int8,   m.Int8,   m.Uint8)
+            doTest('W', m.Int16,  m.Int16,  m.Uint16)
+            doTest('',  m.Int32,  m.Int16,  m.Uint32)
+            doTest('Q', m.Int64,  m.Int16,  m.Uint64)
+            doTest('.', m.Float32,m.Float32,m.Uint32,almost=5)
+            doTest('D0',m.Float64,m.Float64,m.Uint64,almost=4)
+            doTest('*cmplx(1.,0.)',  m.Complex64, m.Complex64, m.Uint64,almost=5,real=False)
+            doTest('*cmplx(1D0,0D0)',m.Complex128,m.Complex128,m.Uint64,almost=4,real=False)
 
         def testArrays():
             """ test arrays and signals """
@@ -197,105 +205,98 @@ class dataTests(TestCase):
                 a = Signal(a)
                 executeTests(self._doThreeTestArray,a,b,results(Scl,Sscl,Sucl),**kw)
 
-            import mdsarray as a
-            doTest('BU',a.Uint8Array,  a.Int8Array,   a.Uint8Array)
-            doTest('WU',a.Uint16Array, a.Int16Array,  a.Uint16Array)
-            doTest('LU',a.Uint32Array, a.Int32Array,  a.Uint32Array)
-            doTest('QU',a.Uint64Array, a.Int64Array,  a.Uint64Array)
-            doTest('B', a.Int8Array,   a.Int8Array,   a.Uint8Array)
-            doTest('W', a.Int16Array,  a.Int16Array,  a.Uint16Array)
-            doTest('',  a.Int32Array,  a.Int32Array,  a.Uint32Array)
-            doTest('Q', a.Int64Array,  a.Int64Array,  a.Uint64Array)
-            doTest('.', a.Float32Array,a.Float32Array,a.Uint32Array,almost=5)
-            doTest('D0',a.Float64Array,a.Float64Array,a.Uint64Array,almost=4)
-            doTest('*cmplx(1.,0.)',  a.Complex64Array,a.Complex64Array,  a.Uint64Array,almost=5,real=False)
-            doTest('*cmplx(1D0,0D0)',a.Complex128Array,a.Complex128Array,a.Uint64Array,almost=4,real=False)
+            import MDSplus as m
+            doTest('BU',m.Uint8Array,  m.Int8Array,   m.Uint8Array)
+            doTest('WU',m.Uint16Array, m.Int16Array,  m.Uint16Array)
+            doTest('LU',m.Uint32Array, m.Int32Array,  m.Uint32Array)
+            doTest('QU',m.Uint64Array, m.Int64Array,  m.Uint64Array)
+            doTest('B', m.Int8Array,   m.Int8Array,   m.Uint8Array)
+            doTest('W', m.Int16Array,  m.Int16Array,  m.Uint16Array)
+            doTest('',  m.Int32Array,  m.Int32Array,  m.Uint32Array)
+            doTest('Q', m.Int64Array,  m.Int64Array,  m.Uint64Array)
+            doTest('.', m.Float32Array,m.Float32Array,m.Uint32Array,almost=5)
+            doTest('D0',m.Float64Array,m.Float64Array,m.Uint64Array,almost=4)
+            doTest('*cmplx(1.,0.)',  m.Complex64Array,m.Complex64Array,  m.Uint64Array,almost=5,real=False)
+            doTest('*cmplx(1D0,0D0)',m.Complex128Array,m.Complex128Array,m.Uint64Array,almost=4,real=False)
 
         testScalars()
         #testArrays()
 
     def tdiFunctions(self):
-        import mdsExceptions as Exc
-        import mdsscalar as s
-        import mdsarray as a
-        import tdibuiltins as c
-        import compound as cc
-        c.dTRUE = c.__dict__['$TRUE']
-        c.dFALSE = c.__dict__['$FALSE']
+        m.dTRUE = m.__dict__['$TRUE']
+        m.dFALSE = m.__dict__['$FALSE']
         """Test abort"""
-        self._doExceptionTest('abort()',Exc.TdiABORT)
+        self._doExceptionTest('abort()',m.TdiABORT)
         """Test syntax"""
-        self._doExceptionTest('\033[[A',Exc.TdiBOMB)
+        self._doExceptionTest('\033[[A',m.TdiBOMB)
         self.assertEqual(Data.execute(''),None)
         """Test abs"""
-        self._doThreeTest('abs(cmplx(3.0,4.0))',c.ABS(s.Complex64(3.+4.j)),s.Float32(5.))
+        self._doThreeTest('abs(cmplx(3.0,4.0))',m.ABS(m.Complex64(3.+4.j)),m.Float32(5.))
         """Test abs1"""
-        self._doThreeTest('abs1(cmplx(3.0,4.0))',c.ABS1(s.Complex64(3.+4.j)),s.Float32(7.))
+        self._doThreeTest('abs1(cmplx(3.0,4.0))',m.ABS1(m.Complex64(3.+4.j)),m.Float32(7.))
         """Test abssq"""
-        self._doThreeTest('abssq(cmplx(3.0,4.0))',c.ABSSQ(s.Complex64(3.+4.j)),s.Float32(25.))
+        self._doThreeTest('abssq(cmplx(3.0,4.0))',m.ABSSQ(m.Complex64(3.+4.j)),m.Float32(25.))
         """Test accumulate"""
-        self._doThreeTestArray('accumulate([1,2,3])',c.ACCUMULATE(a.makeArray([1,2,3])),a.Int32Array([1,3,6]))
-        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]])',c.ACCUMULATE(a.makeArray([[1,3,5],[2,4,6]])),a.Int32Array([[1,4,9], [11,15,21]]))
-        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],0)',c.ACCUMULATE(a.makeArray([[1,3,5],[2,4,6]]),0),a.Int32Array([[1,4,9],[2,6,12]]))
-        #self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',c.ACCUMULATE([[1,3,5],[2,4,6]],1),a.Int32Array([[1,3,5],[3,7,11]]))  # tdi issue
-        self._doUnaryArray(Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),c.ACCUMULATE(a.makeArray([[1,3,5],[2,4,6]]),1).getData())
+        self._doThreeTestArray('accumulate([1,2,3])',m.ACCUMULATE(m.makeArray([1,2,3])),m.Int32Array([1,3,6]))
+        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]])',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]])),m.Int32Array([[1,4,9], [11,15,21]]))
+        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],0)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),0),m.Int32Array([[1,4,9],[2,6,12]]))
+        #self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE([[1,3,5],[2,4,6]],1),m.Int32Array([[1,3,5],[3,7,11]]))  # tdi issue
+        self._doUnaryArray(Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1).getData())
         """Test achar"""
-        self._doThreeTest('achar(88)',c.ACHAR(88),s.String('X'))
+        self._doThreeTest('achar(88)',m.ACHAR(88),m.String('X'))
         """Test ADJUSTL"""
-        self._doThreeTest('adjustl(" WORD")',c.ADJUSTL(" WORD"),s.String("WORD "))
+        self._doThreeTest('adjustl(" WORD")',m.ADJUSTL(" WORD"),m.String("WORD "))
         """Test ADJUSTR"""
-        self._doThreeTest('adjustr("WORD ")',c.ADJUSTR("WORD "),s.String(" WORD"))
+        self._doThreeTest('adjustr("WORD ")',m.ADJUSTR("WORD "),m.String(" WORD"))
         """Test AIMAG"""
-        self._doThreeTest('AIMAG(CMPLX(2.0,3.0))',c.AIMAG(c.CMPLX(2.,3.)),s.Float32(3.0))
+        self._doThreeTest('AIMAG(CMPLX(2.0,3.0))',m.AIMAG(m.CMPLX(2.,3.)),m.Float32(3.0))
         """Test AINT"""
-        self._doThreeTest('aint(2.783)',c.AINT(2.783),s.Float32(2.0))
-        self._doThreeTest('aint(-2.783)',c.AINT(-2.783),s.Float32(-2.0))
+        self._doThreeTest('aint(2.783)',m.AINT(2.783),m.Float32(2.0))
+        self._doThreeTest('aint(-2.783)',m.AINT(-2.783),m.Float32(-2.0))
         """Test NE (operates on flattened array, i.e. first 3 values are compared)"""
-        A,B = a.makeArray([1,3,5]),a.makeArray([[0,3,5],[0,0,0],[0,4,8]])
-        self._doThreeTestArray('_A=[1,3,5],_B=[[0,3,5],[0,0,0],[0,4,8]],_A ne _B',c.NE(A,B),a.Uint8Array([1,0,0]))
+        A,B = m.makeArray([1,3,5]),m.makeArray([[0,3,5],[0,0,0],[0,4,8]])
+        self._doThreeTestArray('_A=[1,3,5],_B=[[0,3,5],[0,0,0],[0,4,8]],_A ne _B',m.NE(A,B),m.Uint8Array([1,0,0]))
         """Test NE (operates on flattened array, i.e. first 3 values are compared)"""
-        self._doThreeTestArray('_A eq _B',c.EQ(A,B),a.Uint8Array([0,1,1]))
+        self._doThreeTestArray('_A eq _B',m.EQ(A,B),m.Uint8Array([0,1,1]))
         """Test ALL and ANY"""
-        self._doThreeTest('all([$TRUE,$FALSE,$TRUE])',c.ALL(a.makeArray([1,0,1])),s.Uint8(0))
-        self._doThreeTest('any([$TRUE,$FALSE,$TRUE])',c.ANY(a.makeArray([1,0,1])),s.Uint8(1))
+        self._doThreeTest('all([$TRUE,$FALSE,$TRUE])',m.ALL(m.makeArray([1,0,1])),m.Uint8(0))
+        self._doThreeTest('any([$TRUE,$FALSE,$TRUE])',m.ANY(m.makeArray([1,0,1])),m.Uint8(1))
         A = 0
-        self._doThreeTest('_A=0,all(_A eq _B)',c.ALL(c.EQ(A,B)),False)
-        self._doThreeTest('any(_A ne _B)',c.ANY(c.NE(A,B)),True)
-        self._doThreeTestArray('all(_A ne _B,0)',c.ALL(c.NE(A,B),0),a.Uint8Array([0,0,0]))
-        self._doThreeTestArray('any(_A ne _B,0)',c.ANY(c.NE(A,B),0),a.Uint8Array([1,0,1]))
-        self._doThreeTestArray('all(_A eq _B,1)',c.ALL(c.EQ(A,B),1),a.Uint8Array([1,0,0]))
-        self._doThreeTestArray('any(_A ne _B,1)',c.ANY(c.NE(A,B),1),a.Uint8Array([0,1,1]))
+        self._doThreeTest('_A=0,all(_A eq _B)',m.ALL(m.EQ(A,B)),False)
+        self._doThreeTest('any(_A ne _B)',m.ANY(m.NE(A,B)),True)
+        self._doThreeTestArray('all(_A ne _B,0)',m.ALL(m.NE(A,B),0),m.Uint8Array([0,0,0]))
+        self._doThreeTestArray('any(_A ne _B,0)',m.ANY(m.NE(A,B),0),m.Uint8Array([1,0,1]))
+        self._doThreeTestArray('all(_A eq _B,1)',m.ALL(m.EQ(A,B),1),m.Uint8Array([1,0,0]))
+        self._doThreeTestArray('any(_A ne _B,1)',m.ANY(m.NE(A,B),1),m.Uint8Array([0,1,1]))
         """Test allocated"""
-        self.assertEqual(c.DEALLOCATE('*')>=2,True)  # deallocates _A and _B and more?
-        self.assertEqual(c.ALLOCATED('_xyz'),s.Uint8(0))
-        self.assertEqual(Data.execute('_xyz=0,allocated("_xyz")'),s.Uint8(1))
-        self.assertEqual(c.ALLOCATED('_xyz'),s.Uint8(1))
-        self.assertEqual(c.DEALLOCATE('*'),s.Uint8(1))
-        self.assertEqual(c.ALLOCATED('_xyz'),s.Uint8(0))
+        self.assertEqual(m.DEALLOCATE('*')>=2,True)  # deallocates _A and _B and more?
+        self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
+        self.assertEqual(Data.execute('_xyz=0,allocated("_xyz")'),m.Uint8(1))
+        self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(1))
+        self.assertEqual(m.DEALLOCATE('*'),m.Uint8(1))
+        self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
         """Test AND"""
-        A,B=a.makeArray([0,0,1,1]),a.makeArray([0,1,0,1])
-        self._doThreeTestArray('_A=[0,0,1,1],_B=[0,1,0,1],_A && _B',c.AND(A,B),a.Uint8Array([0,0,0,1]))
+        A,B=m.makeArray([0,0,1,1]),m.makeArray([0,1,0,1])
+        self._doThreeTestArray('_A=[0,0,1,1],_B=[0,1,0,1],_A && _B',m.AND(A,B),m.Uint8Array([0,0,0,1]))
         """Test AND_NOT"""
-        self._doThreeTestArray('_A AND_NOT _B',c.AND_NOT(A,B),a.Uint8Array([0,0,1,0]))
+        self._doThreeTestArray('_A AND_NOT _B',m.AND_NOT(A,B),m.Uint8Array([0,0,1,0]))
         """Test ANINT"""
-        self._doThreeTest('ANINT(2.783)',c.ANINT(2.783),s.Float32(3.0))
+        self._doThreeTest('ANINT(2.783)',m.ANINT(2.783),m.Float32(3.0))
         """Test ARG"""
-        self.assertEqual(Data.execute('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")'),s.Uint8(1))
+        self.assertEqual(Data.execute('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")'),m.Uint8(1))
         """Test ARGD"""
-        self.assertEqual(Data.execute('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")'),s.Uint8(1))
+        self.assertEqual(Data.execute('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")'),m.Uint8(1))
         """Test arg_of"""
-        self._doThreeTest('arg_of(pub->foo(42,43))',c.ARG_OF(cc.Call('pub','foo',42,43)),s.Int32(42))
-        self._doThreeTest('arg_of(pub->foo(42,43),1)',c.ARG_OF(cc.Call('pub','foo',42,43),1),s.Int32(43))
-        self._doThreeTest('arg_of(1+3,1)',c.ARG_OF(c.ADD(1,3),1),s.Int32(3))
+        self._doThreeTest('arg_of(pub->foo(42,43))',m.ARG_OF(m.Call('pub','foo',42,43)),m.Int32(42))
+        self._doThreeTest('arg_of(pub->foo(42,43),1)',m.ARG_OF(m.Call('pub','foo',42,43),1),m.Int32(43))
+        self._doThreeTest('arg_of(1+3,1)',m.ARG_OF(m.ADD(1,3),1),m.Int32(3))
         """Test Array"""
-        self._doThreeTestArray('array(10)',    c.ARRAY(10),  a.Float32Array([0]*10))
-        self._doThreeTestArray('array(10,0)',  c.ARRAY(10,0),a.Int32Array([0]*10))
-        self._doThreeTestArray('array(10,0BU)',c.ARRAY(10,s.Uint8(0)),a.Uint8Array([0]*10))
-        self._doThreeTestArray('zero(100)',    c.ZERO(100),a.Float32Array([0]*100))
+        self._doThreeTestArray('array(10)',    m.ARRAY(10),  m.Float32Array([0]*10))
+        self._doThreeTestArray('array(10,0)',  m.ARRAY(10,0),m.Int32Array([0]*10))
+        self._doThreeTestArray('array(10,0BU)',m.ARRAY(10,m.Uint8(0)),m.Uint8Array([0]*10))
+        self._doThreeTestArray('zero(100)',    m.ZERO(100),m.Float32Array([0]*100))
 
     def tdiPythonInterface(self):
-        from mdsdata import Data
-        from mdsscalar import Uint8,String
         #self.assertEqual(Data.execute("Py('a=None')"),1)
         self.assertEqual(Data.execute("Py('a=None','a')"),None)
         self.assertEqual(Data.execute("Py('a=123','a')"),123)
@@ -303,27 +304,24 @@ class dataTests(TestCase):
         self.assertEqual(Data.execute("pyfun('Uint8','MDSplus',-1)"),Uint8(255))
         self.assertEqual(Data.execute("pyfun('Uint8',*,-1)"),Uint8(255))
         self.assertEqual(Data.execute("pyfun('str',*,123)"),String(123))
-        from apd import List
-        self.assertEqual(Data.execute('_l=list(1,2,3)'), List([1,2,3]))
-        self.assertEqual(Data.execute('apdadd(_l,4,5)'), List([1,2,3,4,5]))
-        self.assertEqual(Data.execute('apdrm(_l,1,3)'),  List([1,3,5]))
-        from apd import Dictionary
-        self.assertEqual(Data.execute('_d=dict(1,"1",2,"2")'), Dictionary([1,'1',2,'2']))
-        self.assertEqual(Data.execute('apdadd(_d,3,"3")'),     Dictionary([1,'1',2,'2',3,"3"]))
-        self.assertEqual(Data.execute('apdrm(_d,2)'),          Dictionary([1,'1',3,"3"]))
+        self.assertEqual(Data.execute('_l=list(1,2,3)'), m.List([1,2,3]))
+        self.assertEqual(Data.execute('apdadd(_l,4,5)'), m.List([1,2,3,4,5]))
+        self.assertEqual(Data.execute('apdrm(_l,1,3)'),  m.List([1,3,5]))
+        self.assertEqual(Data.execute('_d=dict(1,"1",2,"2")'), m.Dictionary([1,'1',2,'2']))
+        self.assertEqual(Data.execute('apdadd(_d,3,"3")'),     m.Dictionary([1,'1',2,'2',3,"3"]))
+        self.assertEqual(Data.execute('apdrm(_d,2)'),          m.Dictionary([1,'1',3,"3"]))
 
     def decompile(self):
-        import mdsscalar as s
-        self.assertEqual(str(s.Uint8(123)),'123BU')
-        self.assertEqual(str(s.Uint16(123)),'123WU')
-        self.assertEqual(str(s.Uint32(123)),'123LU')
-        self.assertEqual(str(s.Uint64(123)),'123QU')
-        self.assertEqual(str(s.Int8(123)),'123B')
-        self.assertEqual(str(s.Int16(123)),'123W')
-        self.assertEqual(str(s.Int32(123)),'123')
-        self.assertEqual(str(s.Int64(123)),'123Q')
-        #self.assertEqual(str(s.Float32(1.2E-3)),'.0012')
-        #self.assertEqual(str(s.Float64(1.2E-3)),'.0012D0')
+        self.assertEqual(str(m.Uint8(123)),'123BU')
+        self.assertEqual(str(m.Uint16(123)),'123WU')
+        self.assertEqual(str(m.Uint32(123)),'123LU')
+        self.assertEqual(str(m.Uint64(123)),'123QU')
+        self.assertEqual(str(m.Int8(123)),'123B')
+        self.assertEqual(str(m.Int16(123)),'123W')
+        self.assertEqual(str(m.Int32(123)),'123')
+        self.assertEqual(str(m.Int64(123)),'123Q')
+        #self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
+        #self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
 
     def runTest(self):
         self.operatorsAndFunction()

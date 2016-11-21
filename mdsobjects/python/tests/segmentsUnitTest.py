@@ -1,53 +1,44 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from unittest import TestCase,TestSuite
+import sys,os
 
-from tree import Tree
-from mdsscalar import Float32
-from mdsarray import Float32Array,Int16Array
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
 
-import numpy as np
-import random
-import os
+from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv
 
-
-
-import tempfile
-_tmpdir=tempfile.mkdtemp()
-
-def setUpModule():
-    pass
-
-def tearDownModule():
-    import shutil
-    shutil.rmtree(_tmpdir)
 
 
 class segmentsTests(TestCase):
 
     def setUp(self):
-        os.environ["seg_tree_path"]=_tmpdir
+        from tempfile import mkdtemp
+        self.tmpdir=mkdtemp()
+        setenv("seg_tree_path",self.tmpdir)
 
     def tearDown(self):
-        pass
+        import shutil, gc
+        del(self.ptree)
+        gc.collect()
+        shutil.rmtree(self.tmpdir)
 
     def arrayDimensionOrder(self):
-        ptree=Tree('seg_tree',-1,'NEW')
-        ptree.addNode('IMM')
-        ptree.write()
-        ptree=Tree('seg_tree',-1)
-        ptree.createPulse(1)
-        ptree=Tree('seg_tree',1)
-        node=ptree.getNode('IMM')
-
+        from numpy import int16,zeros
+        from random import randint
+        self.ptree=Tree('seg_tree',-1,'NEW')
+        self.ptree.addNode('IMM')
+        self.ptree.write()
+        self.ptree=Tree('seg_tree',-1)
+        self.ptree.createPulse(1)
+        self.ptree=Tree('seg_tree',1)
+        node=self.ptree.getNode('IMM')
         WIDTH = 640
-        HEIGHT =480;
-        currFrame=np.zeros(WIDTH*HEIGHT, dtype = np.int16);
+        HEIGHT= 480;
+        currFrame=zeros(WIDTH*HEIGHT, dtype = int16);
         currTime=float(0);
         for i in range(0,WIDTH):
             for j in range(0,HEIGHT):
-                currFrame[i*HEIGHT+j]=random.randint(0,255)
+                currFrame[i*HEIGHT+j]=randint(0,255)
         currTime = float(0)
         startTime = Float32(currTime)
         endTime = Float32(currTime)
@@ -64,7 +55,6 @@ class segmentsTests(TestCase):
 
     def runTest(self):
         self.arrayDimensionOrder()
-
 
 
 def suite():
