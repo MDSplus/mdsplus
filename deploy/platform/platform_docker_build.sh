@@ -14,6 +14,7 @@ tio(){
 runtests() {
     test64;
     test32;
+    set +e
     checktests;
 }
 testarch(){
@@ -34,12 +35,13 @@ config() {
 }
 config_test(){
     export MDSPLUS_DIR;
+    export WINEPATH="Z:${MDSPLUS_DIR}/$3"
     rm -Rf $(dirname "${MDSPLUS_DIR}");
-    MDS_PATH=${MDSPLUS_DIR}/tdi;
     mkdir -p ${MDSPLUS_DIR};
+    cp -rf /source/xml ${MDSPLUS_DIR}/xml;
+    MDS_PATH=${MDSPLUS_DIR}/tdi;
     pushd ${MDSPLUS_DIR}/..;
     config $@ --enable-debug --enable-werror;
-    cp -rf /source/xml ${MDSPLUS_DIR}/xml;
 }
 checkstatus(){
 # checkstatus flagname "error message" $?
@@ -63,10 +65,12 @@ EOF
                 exit $3
             else
                 let $1=$3
+                return $3
             fi
         fi
 }
 checktests() {
+    set +e
     ### Check status of all tests. If errors found print error messages and then exit with failure
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
     checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
@@ -88,7 +92,6 @@ sanitize() {
         for test in $(spacedelim ${SANITIZE}); do
             echo Doing sanitize $test
             MDSPLUS_DIR=/workspace/tests/$1-san-${test}/buildroot;
-            export WINEPATH=Z:\\workspace\\tests\\$1-san-${test}\\$3
             config_test $@ --enable-sanitize=${test}
             if [ "$status" = "111" ]; then
                 echo "Sanitizer ${test} not supported. Skipping."
@@ -97,7 +100,7 @@ sanitize() {
                 $MAKE install
                 :&& tio 200 $MAKE -k tests 2>&1
                 checkstatus tests_$1_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
-                if [ -z $(eval "\$tests_$1_san_${test}") ]
+                if [ ! -z "$?" ]
                 then
                     let tests_$1_san=1
                 fi
@@ -113,7 +116,6 @@ normaltest() {
     ### Build with debug to run regular and valgrind tests
     VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
-    export WINEPATH=Z:\\workspace\\tests\\$1\\$3
     config_test $@
     $MAKE
     $MAKE install
@@ -169,10 +171,8 @@ main(){
     fi
     if [ "$TEST" = "yes" ]
     then
-        if ( ! runtests )
-        then
-            return $?
-        fi
+        set +e
+        runtests
     fi
     if [ "${BRANCH}" = "stable" ]
     then
@@ -182,13 +182,12 @@ main(){
     fi
     if [ "$RELEASE" = "yes" ]
     then
-        if ( ! buildrelease )
-        then
-            return $?
-        fi
+        set +e
+        buildrelease
     fi
     if [ "$PUBLISH" = "yes" ]
     then
+        set +e
         publish
     fi
 }
