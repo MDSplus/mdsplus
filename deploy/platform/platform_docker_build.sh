@@ -6,6 +6,11 @@
 #
 # Build script from within a docker image
 #
+tio(){
+    ### interrupts command and kills if not returning
+    ### conterfights stuck tests
+    :&& timeout --preserve-status -k 10 -s SIGINT "$@"
+}
 runtests() {
     test64;
     test32;
@@ -16,7 +21,7 @@ testarch(){
     normaltest $@;
 }
 config() {
-    /source/configure \
+    :&& /source/configure \
         --prefix=${MDSPLUS_DIR} \
         --exec_prefix=${MDSPLUS_DIR} \
         --host=$2 \
@@ -41,31 +46,39 @@ checkstatus(){
         if [ ! -z "$3" -a "$3" != "0" ]
         then
             RED $COLOR
+            if [ "$1" = "abort" ]
+            then
+                ABORT="                                         Build ABORTED"
+            fi
             cat <<EOF >&2
 ======================================================
 
 $2
-
+$ABORT
 ======================================================
 EOF
             NORMAL $COLOR
-            let $1=1
+            if [ "$1" = "abort" ]
+            then
+                exit $3
+            else
+                let $1=$3
+            fi
         fi
 }
 checktests() {
     ### Check status of all tests. If errors found print error messages and then exit with failure
-    failed=0;
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
     checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
-        checkstatus failed "Failure: 64-bit santize with ${test} failed." $(eval "\$test_64_san_${test}")
+        checkstatus failed "Failure: 64-bit santize with ${test} failed." $(eval "\$tests_64_san_${test}")
     done;
     checkstatus failed "Failure: 32-bit test suite failed." $tests_32
     checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
-        checkstatus failed "Failure: 32-bit santize with ${test} failed." $(eval "\$test_32_san_${test}")
+        checkstatus failed "Failure: 32-bit santize with ${test} failed." $(eval "\$tests_32_san_${test}")
     done;
-    checkstatus abort "Failure: One or more tests have failed (see above). ABORT" $failed
+    checkstatus abort "Failure: One or more tests have failed (see above)." $failed
 }
 sanitize() {
     ### Build with sanitizers and run tests with each sanitizer
@@ -82,15 +95,15 @@ sanitize() {
             elif [ "$status" = 0 ]; then
                 $MAKE
                 $MAKE install
-                :&& $MAKE -k tests 2>&1
-                checkstatus test_$1_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
-                if [ -z $(eval "\$test_$1_san_${test}") ]
+                :&& tio 200 $MAKE -k tests 2>&1
+                checkstatus tests_$1_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
+                if [ -z $(eval "\$tests_$1_san_${test}") ]
                 then
-                    let test_$1_san=1
+                    let tests_$1_san=1
                 fi
             else
                 echo "configure returned status $?"
-                let test_$1_san_${test}=$status
+                let tests_$1_san_${test}=$status
             fi
             popd
         done
@@ -105,12 +118,12 @@ normaltest() {
     $MAKE
     $MAKE install
     ### Run standard tests
-    :&& $MAKE -k tests 2>&1
+    :&& tio 100 $MAKE -k tests 2>&1
     checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
-    if [ ! -z "$VALGRIND_TOOLS" ] # && [ -z "$(eval '\$tests_$1')" ]
+    if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
-        :&& $MAKE -k tests-valgrind 2>&1
+        :&& tio 300 $MAKE -k tests-valgrind 2>&1
         checkstatus tests_$1_val "Failure doing $1-bit valgrind tests." $?
     fi
     popd
@@ -154,10 +167,12 @@ main(){
     then
         source /source/deploy/os/${OS}.env
     fi
-    abort=0
     if [ "$TEST" = "yes" ]
     then
-        runtests
+        if ( ! runtests )
+        then
+            return $?
+        fi
     fi
     if [ "${BRANCH}" = "stable" ]
     then
@@ -165,11 +180,14 @@ main(){
     else
         BNAME="-$(echo ${BRANCH} | sed -e 's/-/_/g')"
     fi
-    if [ "$abort" = "0" ] && [ "$RELEASE" = "yes" ]
+    if [ "$RELEASE" = "yes" ]
     then
-        buildrelease
+        if ( ! buildrelease )
+        then
+            return $?
+        fi
     fi
-    if [ "$abort" = "0" ] && [ "$PUBLISH" = "yes" ]
+    if [ "$PUBLISH" = "yes" ]
     then
         publish
     fi

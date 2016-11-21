@@ -107,22 +107,20 @@ buildrelease() {
 	    set -e
 	fi
     done
-    checkstatus abort "Failure: Problem with contents of one or more debs. (see above) ABORT" $baddeb
-    if [ -z "$abort" ] || [ "$abort" = "0" ]
+    checkstatus abort "Failure: Problem with contents of one or more debs. (see above)" $baddeb
+    echo "Building repo";
+    mkdir -p /release/repo/conf
+    mkdir -p /release/repo/db
+    mkdir -p /release/repo/dists
+    mkdir -p /release/repo/pool
+    if [ "${BRANCH}" = "alpha" -o "${BRANCH}" = "stable" ]
     then
-        echo "Building repo";
-        mkdir -p /release/repo/conf
-        mkdir -p /release/repo/db
-        mkdir -p /release/repo/dists
-        mkdir -p /release/repo/pool
-        if [ "${BRANCH}" = "alpha" -o "${BRANCH}" = "stable" ]
-        then
-    	component=""
-        else
-    	component=" ${BRANCH}"
-        fi
-        arches=$(spacedelim ${ARCHES})
-        cat - <<EOF > /release/repo/conf/distributions
+        component=""
+    else
+        component=" ${BRANCH}"
+    fi
+    arches=$(spacedelim ${ARCHES})
+    cat - <<EOF > /release/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
@@ -130,24 +128,23 @@ Architectures: ${arches}
 Components: alpha stable${component}
 Description: MDSplus packages
 EOF
-        if [ -d /sign_keys/.gnupg ]
-        then
-    	ls -l /sign_keys/.gnupg
+    if [ -d /sign_keys/.gnupg ]
+    then
+        ls -l /sign_keys/.gnupg
     	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
-        fi
-        export HOME=/sign_keys
-        pushd /release/repo
-        reprepro clearvanished
-        for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${major}\.${minor}\.${release}_*")
-        do
-            if [ -z "$abort" ] || [ "$abort" = "0" ]
-            then
-    	        :&& reprepro -V -C ${BRANCH} includedeb MDSplus $deb
-                checkstatus abort "Failure: Problem installing $deb into repository. ABORT" $?
-            fi
-        done
-        popd
     fi
+    export HOME=/sign_keys
+    pushd /release/repo
+    reprepro clearvanished
+    for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${major}\.${minor}\.${release}_*")
+    do
+        if [ -z "$abort" ] || [ "$abort" = "0" ]
+        then
+            :&& reprepro -V -C ${BRANCH} includedeb MDSplus $deb
+            checkstatus abort "Failure: Problem installing $deb into repository." $?
+        fi
+    done
+    popd
 }
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
@@ -159,12 +156,12 @@ publish() {
     if [ ! -r /publish/repo ]
     then
         :&& rsync -a /release/repo /publish/
-	checkstatus abort "Failure: Problem copying repo into publish area. ABORT" $?
+	checkstatus abort "Failure: Problem copying repo into publish area." $?
     else
 	pushd /publish/repo
 	reprepro clearvanished
 	:&& env HOME=/sign_keys reprepro -V --keepunused --keepunreferenced -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
-       	checkstatus abort "Failure: Problem installing debian into publish repository. ABORT" $?
+       	checkstatus abort "Failure: Problem installing debian into publish repository." $?
 	popd
     fi
 }

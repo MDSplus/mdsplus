@@ -107,20 +107,17 @@ EOF
             fi
         fi
     done
-    checkstatus abort "Failure: Problem with contents of one or more rpms. (see above) ABORT" $badrpm
+    checkstatus abort "Failure: Problem with contents of one or more rpms. (see above)" $badrpm
 }
 
 publish(){
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
     :&& rsync -a --exclude=repodata /release/RPMS /publish/
-    checkstatus abort "Failure: Problem copying release rpms to publish area! ABORT" $?
-    if [ "$abort" = "0" ]
+    checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
+    if ( createrepo -h | grep '\-\-deltas' > /dev/null )
     then
-        if ( createrepo -h | grep '\-\-deltas' > /dev/null )
-        then
-            use_deltas="--deltas"
-        fi
-        :&& createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS
-        checkstatus abort "Failure: Problem creating rpm repository in publish area! ABORT" $?
+        use_deltas="--deltas"
     fi
+    :&& createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS
+    checkstatus abort "Failure: Problem creating rpm repository in publish area!" $?
 }
