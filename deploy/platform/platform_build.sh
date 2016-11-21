@@ -57,6 +57,10 @@ rundocker(){
         image=${images[$idx]}
         arch=${arches[$idx]}
         echo "Building installers for ${arch} using ${image}"
+        if [ ! -z "$INTERACTIVE" ]
+        then
+            echo "run /source/deploy/platform/platform_docker_build.sh"
+        fi
         #
         # If there are both 32-bit and 64-bit packages for the platform
         # only build the deb's after both 32-bit and 64-bit builds are

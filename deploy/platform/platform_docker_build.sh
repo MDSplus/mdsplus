@@ -9,9 +9,8 @@
 export HOME=/tmp/home
 mkdir -p $HOME
 tio(){
-    ### interrupts command and kills if not returning
-    ### conterfights stuck tests
-    :&& timeout --preserve-status -k 10 -s SIGINT "$@"
+    :&& /source/deploy/platform/timeout.sh "$@";
+    return $?;
 }
 getenv() {
     eval "echo \$$1"
@@ -103,7 +102,7 @@ sanitize() {
             elif [ "$status" = 0 ]; then
                 $MAKE
                 $MAKE install
-                :&& tio 200 $MAKE -k tests 2>&1
+                :&& tio 300 $MAKE -k tests 2>&1
                 checkstatus tests_${1}_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
                 if [ ! -z "$?" ]
                 then
@@ -126,12 +125,12 @@ normaltest() {
     $MAKE install
     ### Run standard tests
     printenv
-    :&& tio 100 $MAKE -k tests 2>&1
+    :&& tio 200 $MAKE -k tests 2>&1
     checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
-        :&& tio 300 $MAKE -k tests-valgrind 2>&1
+        :&& tio 400 $MAKE -k tests-valgrind 2>&1
         checkstatus tests_${1}_val "Failure doing $1-bit valgrind tests." $?
     fi
     popd
@@ -198,7 +197,7 @@ main(){
     fi
 }
 source /source/deploy/platform/${PLATFORM}/${PLATFORM}_docker_build.sh
-if [ "$(basename $0)" = "platform_docker_build.sh" ]
+if [ ! -z "$0" ] && [ ${0:0:1} != "-" ] && [ "$( basename $0 )" = "platform_docker_build.sh" ]
 then
     main
 fi
