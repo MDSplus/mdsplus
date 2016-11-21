@@ -3,6 +3,7 @@
 
 import __future__
 import sys,os
+os.environ.pop("LD_PRELOAD")
 
 
 class testing(object):    
