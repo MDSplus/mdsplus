@@ -106,8 +106,10 @@ trap "st=143; $do_exit" 15
 
 # TEST_FORMAT HANDLING
 if [ ${TEST_FORMAT} ]; then
- (echo "${TEST_FORMAT}" | grep "tap" > /dev/null) && export TEST_TAPFILE=${log_file/.log/.tap};
- (echo "${TEST_FORMAT}" | grep "xml" > /dev/null) && export TEST_XMLFILE=${log_file/.log/.xml};
+# (echo "${TEST_FORMAT}" | grep "tap" > /dev/null) && export TEST_TAPFILE=${log_file/.log/.tap};
+# (echo "${TEST_FORMAT}" | grep "xml" > /dev/null) && export TEST_XMLFILE=${log_file/.log/.xml};
+ (echo "${TEST_FORMAT}" | grep "tap" > /dev/null) && export TEST_TAPFILE=$(echo $log_file | sed -e 's/\(.log\)$/.tap/');
+ (echo "${TEST_FORMAT}" | grep "xml" > /dev/null) && export TEST_XMLFILE=$(echo $log_file | sed -e 's/\(.log\)$/.xml/');
 fi
 
 

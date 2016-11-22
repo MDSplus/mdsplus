@@ -3,6 +3,8 @@
 
 import __future__
 import sys,os
+if "LD_PRELOAD" in os.environ: 
+    os.environ.pop("LD_PRELOAD") 
 
 
 class testing(object):    
@@ -14,7 +16,7 @@ class testing(object):
     TEST_XMLFILE = 'TEST_XMLFILE'
     
     # list of test formats form TEST_FORMAT env
-    test_format  = re.findall(r"[\w']+", os.getenv(TEST_FORMAT,'tap'))
+    test_format  = re.findall(r"[\w']+", os.getenv(TEST_FORMAT,'log,tap'))
     
     tap_file = os.getenv(TEST_TAPFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.tap')
     xml_file = os.getenv(TEST_XMLFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.xml')
@@ -46,6 +48,8 @@ class testing(object):
             f.write("ok 1 - " + module_name + " # SKIP " + message + "\n")
             f.write("1..1")
             f.close
+	if 'log' in self.test_format:
+	    print(message)
         sys.exit(77)
         
     def run_tap(self, module):                
@@ -56,22 +60,23 @@ class testing(object):
         tests = loader.loadTestsFromModule(module)
         tr.run(tests)
     
-
     def run_nose(self, module_name):
         import nose,shutil
         f = self.test_format
         nose_aux_args = ['-d','-s','-v']
         res = 0
-        
-        try:
-            from tap.plugins._nose import TAP
-	    nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
-        except:
-            f.remove('tap')
-        try:
-            from nose.plugins.xunit import Xunit
-        except ImportError:
-            f.remove('xml')
+
+	if 'tap' in f:
+	    try:
+		from tap.plugins._nose import TAP
+		nose.run(argv=[ sys.argv[1],'', '--with-tap'] + nose_aux_args)
+	    except:
+		f.remove('tap')
+	if 'xml' in f:
+	    try:
+		from nose.plugins.xunit import Xunit
+	    except ImportError:
+		f.remove('xml')
 
         if len(f) > 1:
             if 'log' in f and 'tap' in f and 'xml' in f:
@@ -113,10 +118,7 @@ class testing(object):
 	return res
 
 
-
-
 ts = testing()
-
 def check_arch(file_name):
     if sys.platform.startswith('win'):
         lib='MdsShr.dll'
@@ -143,6 +145,6 @@ if __name__ == '__main__':
     except SystemExit:
         raise
     except:
-        ts.skip_test(sys.argv[1],str(sys.exc_info()[0]))
+	ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
 
 

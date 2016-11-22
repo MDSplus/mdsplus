@@ -777,6 +777,12 @@ SUFFIXES = .log .tap .xml
 @ENABLE_SANITIZE_TRUE@   ( test "${ENABLE_SANITIZE}" != "no" -a -n "${ENABLE_SANITIZE_LIBPATH}" && \
 @ENABLE_SANITIZE_TRUE@     ldd ${MAKESHLIBDIR}/libMdsTestShr.so | grep ${ENABLE_SANITIZE_LIBPATH}  > /dev/null; )
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# .PHONY: $(TEST_SUITE_TAP)
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS) $(TEST_CFLAGS)
@@ -1473,17 +1479,17 @@ log: $(TEST_SUITE_LOG)
 .PHONY: rebuild-tests
 rebuild-tests:
 	@ \
-	echo "//// Rebuilding tests ////"; \
-	rm -f *.$(OBJEXT); \
-	rm -f $(check_PROGRAMS); \
-	if [ -n "$${VALGRIND_BUILD}" ]; then \
-	 echo "building clean tests for valgrind"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
-	else \
-	 echo "building tests using D_TESTING set"; \
-	 $(MAKE) -k $(AM_MAKEFLAGS) all \
-	 CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
-	fi;
+	if [ -n "$(check_PROGRAMS)" ]; then \
+	 echo "//// Rebuilding tests ////"; \
+	 rm -f *.$(OBJEXT); \
+	 rm -f $(check_PROGRAMS); \
+	 if [ -n "$${VALGRIND_BUILD}" ]; then \
+	  $(MAKE) -k $(AM_MAKEFLAGS) all ||:; \
+	 else \
+	  $(MAKE) -k $(AM_MAKEFLAGS) all \
+	  CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" ||:; \
+	 fi; \
+	fi
 
 .PHONY: tests
 tests: rebuild-tests
@@ -1512,12 +1518,6 @@ tests: rebuild-tests
 @ENABLE_SANITIZE_TRUE@  # the -fpie flag for now we will disable it at all.
 @ENABLE_SANITIZE_TRUE@  #
 
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  TAP TARGET   ////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-.PHONY: $(TEST_SUITE_TAP)
-
 # Single tap output
 # ^^^^^^^^^^^^^^^^^
 # Tap target to generate single tap result beside the normal log file. This
@@ -1536,17 +1536,19 @@ $(TEST_LOGS:.log=.tap):
 
 $(TEST_BUILD_TAP):
 	@ \
-	echo "Try to build targets one by one"; \
-	echo "TAP version 13" > $@; \
-	count=0; \
-	for i in $(check_PROGRAMS); do \
+	if [ -n "$(check_PROGRAMS)" ]; then \
+	 echo "Try to build targets one by one"; \
+	 echo "TAP version 13" > $@; \
+	 count=0; \
+	 for i in $(check_PROGRAMS); do \
 	  if ! $(MAKE) -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
 	    { ((count++)); \
 	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
 	    }; \
 	  fi; \
-	done; \
+	 done; \
+	fi; \
 	echo "1..$${count}" >> $@;
 
 # Tap Test Suite
@@ -1556,16 +1558,19 @@ $(TEST_BUILD_TAP):
 # configure should have diabled HAVE_PL_TAP_PARSER.
 #
 # TODO: fix this in the case the only tap is provided as TEST_FORMAT and the
-# test taps are streamed into the .log file directly
+# test taps are streamed into the .log file directly ... for now a workaround
+# was added: both TEST_LOGS and TEST_LOGS.tap are added to ${suite} so in both
+# cases it is able to collect results. remember to add $(TEST_LOGS:.log=.tap)
+# to prerequisites in the future when fix will be done.
 #
 
-$(TEST_SUITE_TAP): $(TEST_BUILD_TAP) $(TEST_LOGS:.log=.tap)
+$(TEST_SUITE_TAP): $(TEST_BUILD_TAP)
 @HAVE_PL_TAP_PARSER_TRUE@	@ ## collate test-build.tap \
 @HAVE_PL_TAP_PARSER_TRUE@	if [ -n "$(VALGRIND_TOOL)" ]; then suite="$@.$(VALGRIND_TOOL)"; \
 @HAVE_PL_TAP_PARSER_TRUE@	else suite="$@"; \
 @HAVE_PL_TAP_PARSER_TRUE@	fi; \
 @HAVE_PL_TAP_PARSER_TRUE@	perl $(top_srcdir)/testing/collate_tap.pl $(TEST_BUILD_TAP) \
-@HAVE_PL_TAP_PARSER_TRUE@	     $(TEST_LOGS:.log=.tap) > $${suite} \
+@HAVE_PL_TAP_PARSER_TRUE@	     $(TEST_LOGS) $(TEST_LOGS:.log=.tap) > $${suite} \
 @HAVE_PL_TAP_PARSER_TRUE@	     || exit 1
 @HAVE_PL_TAP_PARSER_FALSE@	@ ## test parser not available \
 @HAVE_PL_TAP_PARSER_FALSE@	echo "Can not collate tap results" >2;
@@ -1601,6 +1606,12 @@ tests-envdump:
 	for _i in ${TESTS_ENVIRONMENT}; do \
 	 echo "     $${_i}"; \
 	done;
+
+test-env:
+	for _i in ${TESTS_ENVIRONMENT}; do \
+	  export $${_i}; \
+	done; \
+	bash -i
 
 @HAVE_WINE_TRUE@wineconsole:
 @HAVE_WINE_TRUE@	@ \

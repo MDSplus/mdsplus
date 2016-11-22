@@ -160,6 +160,7 @@
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/builtins_other.py
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/constants.py
 ./usr/local/mdsplus/mdsobjects/python/tdibuiltins/mathops.py
+./usr/local/mdsplus/mdsobjects/python/tests/MDSplus
 ./usr/local/mdsplus/mdsobjects/python/tests/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/tests/check_python_arch.py
 ./usr/local/mdsplus/mdsobjects/python/tests/connectionUnitTest.py
