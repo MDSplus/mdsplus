@@ -518,7 +518,7 @@ static int recIsSegmented(struct descriptor *dsc)
     int nid, numSegments, status, i;
     char *path;
     int retClassLen, retDtypeLen;
-    char nciClass, nciDtype;
+    unsigned int nciClass, nciDtype;
     struct nci_itm nciList[] = {{1, NciCLASS, &nciClass, &retClassLen},
 	  {1, NciDTYPE, &nciDtype, &retDtypeLen},
 	  {NciEND_OF_LIST, 0, 0, 0}};
