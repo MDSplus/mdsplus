@@ -3,7 +3,7 @@
 ./usr/local/mdsplus/bin/reboot_dtaq_satelite
 ./usr/local/mdsplus/lib/acq_root_filesystem.tgz
 ./usr/local/mdsplus/lib/acq_root_filesystem.tgz_ffs
-./usr/local/mdsplus/lib/libMIT$DEVICES.so -> libMitDevices.so
+./usr/local/mdsplus/lib/libMIT$DEVICES.so
 ./usr/local/mdsplus/lib/libMitDevices.so
 ./usr/local/mdsplus/lib/libMitDevicesIO.so
 ./usr/local/mdsplus/lib/libMitDevicesMsg.so
