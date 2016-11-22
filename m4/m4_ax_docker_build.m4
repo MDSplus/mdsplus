@@ -488,7 +488,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\\\"\${MAKEFLAGS}\\\"; export MFLAGS=\\\"\${MFLAGS}\\\"; ${SHELL} \${quoted_args}";
 fi
 ]))
 
