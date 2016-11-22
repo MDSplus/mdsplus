@@ -1,12 +1,12 @@
+from unittest import TestCase
 import sys,os
 
 MDSplus_path=os.path.dirname(os.path.abspath(__file__))
 if sys.path[0] != MDSplus_path:
     sys.path.insert(0,MDSplus_path)
 
-from MDSplus import *
+from MDSplus import DevNOT_TRIGGERED, TclNORMAL
 
-from unittest import TestCase,TestSuite
 
 class exceptionTests(TestCase):
 
@@ -29,7 +29,7 @@ class exceptionTests(TestCase):
     def tclErrors(self):
         err = TclNORMAL()
         self.assertEquals(err.status, 2752521)
-        self.assertEquals(err.severity, 'S') 
+        self.assertEquals(err.severity, 'S')
         self.assertEquals(err.fac, 'Tcl')
 
     def runTest(self):
@@ -37,5 +37,10 @@ class exceptionTests(TestCase):
         self.customErrorString()
         self.tclErrors()
 
+
 def suite():
     return exceptionTests()
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

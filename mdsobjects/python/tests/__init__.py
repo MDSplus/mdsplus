@@ -5,17 +5,20 @@ MDSplus tests
 Tests of MDSplus
 
 """
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-from tests.treeUnitTest import treeTests
-from tests.threadsUnitTest import suite as threadsSuite
-from tests.dataUnitTest import suite as dataSuite
-from tests.exceptionUnitTest import exceptionTests
-from tests.connectionUnitTest import suite as connectionsSuite
-from _mdsshr import setenv,getenv
+from unittest import TestCase,TestSuite,TextTestRunner
+import sys,os
 
-import os
-import time
-import warnings
+MDSplus_path=os.path.dirname(os.path.abspath(__file__))
+if sys.path[0] != MDSplus_path:
+    sys.path.insert(0,MDSplus_path)
+
+from MDSplus.tests.treeUnitTest import treeTests
+from MDSplus.tests.threadsUnitTest import suite as threadsSuite
+from MDSplus.tests.dataUnitTest import suite as dataSuite
+from MDSplus.tests.exceptionUnitTest import exceptionTests
+from MDSplus.tests.connectionUnitTest import suite as connectionsSuite
+from MDSplus.tests.segmentsUnitTest import suite as segmentsSuite
+from MDSplus import setenv,getenv
 
 class cleanup(TestCase):
     dir=None
@@ -50,8 +53,6 @@ class cleanup(TestCase):
 
 def test_all(*arg):
     import tempfile
-    import os
-    import sys
     if getenv('waitdbg') is not None:
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
@@ -74,6 +75,9 @@ def test_all(*arg):
     tests.append(dataSuite())
     tests.append(exceptionTests())
     tests.append(connectionsSuite())
+    tests.append(segmentsSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
     return TestSuite(tests)
 
+if __name__=='__main__':
+    TextTestRunner().run(test_all())

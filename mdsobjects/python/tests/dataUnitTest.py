@@ -1,510 +1,339 @@
+from unittest import TestCase,TestSuite
 import sys,os
 
 MDSplus_path=os.path.dirname(os.path.abspath(__file__))
 if sys.path[0] != MDSplus_path:
     sys.path.insert(0,MDSplus_path)
 
-from MDSplus import *
+from MDSplus import Data,makeData,makeArray,Uint8,String,setenv
+import MDSplus as m
 
-setenv("PyLib","python%d.%d" % (sys.version_info[0],sys.version_info[1]))
 
-from unittest import TestCase,TestSuite
-import numpy
-
+if os.name=='nt':
+    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
+else:
+    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
+setenv("PYTHONPATH",MDSplus_path)
 
 class dataTests(TestCase):
+    def _doThreeTest(self,tdiexpr,pyexpr,ans,almost=False):
+        """ tests Scalars tdi expression vs. python Expression vs. expected result """
+        tdians = Data.execute(tdiexpr)
+        if isinstance(pyexpr,(bool,)):
+            pyans = pyexpr
+            if isinstance(tdians,(Uint8,)) and tdians<2:
+                tdians = bool(tdians)
+        else:
+            pyans = pyexpr.getData()
+        if almost:
+            E = almost if isinstance(almost,(int,float)) else 5
+            self.assertAlmostEqual(pyans,tdians,E)
+            self.assertAlmostEqual(pyans,ans,E,msg='%s: %s,%s'%(tdiexpr,pyans,ans))
+        else:
+            self.assertEqual(pyans,tdians)
+            self.assertEqual(pyans,ans,msg='%s: %s,%s'%(tdiexpr,pyans,ans))
 
-    def setUp(self):
-        pass
+    def _doUnaryArray(self,ans1,ans2,msg=None,delta=None):
+        """ compares arrays """
+        if msg is not None:
+            msg = 'Unexpected TDI result for: %s'%msg
+        if delta is not None:
+            self.assertEqual((abs(ans1-ans2)<delta).all(),True,msg=msg)
+        else:
+            self.assertEqual((ans1==ans2).all(),True,msg=msg)
 
-    def basicBinaryOperators(self):
-        def doit(operator,x,y,ans):
-            z=eval('x'+operator+'y')
-            check=None
-            try:
-                check=z==ans
-            except:
+    def _doThreeTestArray(self,tdiexpr,pyexpr,ans,almost=False):
+        """ tests Arrays tdi expression vs. python Expression vs. expected result """
+        from numpy import ndarray, array
+        tdians = Data.execute(tdiexpr)
+        if isinstance(pyexpr,(ndarray,)):
+            pyans = pyexpr
+            if isinstance(tdians,(Uint8,)) and tdians<2:
+                tdians = array(tdians,bool)
+        else:
+            pyans = pyexpr.data()
+        if almost:
+            E = -almost if isinstance(almost,(int,float)) else -7
+            delta = abs(ans+(ans==0).astype(int)) * (10**E)
+        else: delta = None
+        self._doUnaryArray(pyans,tdians,delta=delta)
+        self._doUnaryArray(pyans,ans,tdiexpr,delta=delta)
+
+    def _doExceptionTest(self,expr,exc):
+        try:
+            Data.execute(expr)
+            self.fail("'%s' should have signaled an exception"%expr)
+        except Exception as e:
+            self.assertEqual(e.__class__,exc)
+
+
+    def operatorsAndFunction(self):
+        def executeTests(test,a,b,res,almost=False,real=True):
+            """ performes tests on operators """
+            res.reverse()
+            test('_a+_b',    a+ b,   res.pop(),almost=almost)
+            test('_a-_b',    a- b,   res.pop(),almost=almost)
+            test('_a*_b',    a* b,   res.pop(),almost=almost)
+            test('_a/_b',    a/ b,   res.pop(),almost=almost)
+            #test('_a**_b',   a**b,   res.pop(),almost=almost)
+            #test('_a|_b',    a| b,   res.pop())
+            #test('_a&_b',    a& b,   res.pop())
+            #test('_a==_b',   a==b,   res.pop())
+            #test('_a!=_b',   a!=b,   res.pop())
+            #test('_a<<_b',   a<<b,   res.pop())
+            #test('_a>>_b',   a>>b,   res.pop())
+            #test('-_a',      -a,     res.pop(),almost=almost)
+            #test('abs(-_a)', abs(-a),res.pop(),almost=almost)
+            #test('abs1(-_a)',m.ABS1(-a),res.pop(),almost=almost)
+            #test('abssq(-_a)',m.ABSSQ(-a),res.pop(),almost=almost)
+            rcount = 11
+            acount = 4+rcount
+            if almost:  # some operations only make sence on floating point
+                test('exp(_a)',     m.EXP(a),    res.pop(),almost=almost)
+                test('log(_a)',     m.LOG(a),    res.pop(),almost=almost)
+                test('sin(_a)',     m.SIN(a),    res.pop(),almost=almost)
+                test('cos(_a)',     m.COS(a),    res.pop(),almost=almost)
+                if real:  # some operations are only defined for real numbers
+                    test('tan(_a)',     m.TAN(a),    res.pop(),almost=almost)
+                    test('asin(_a/10)', m.ASIN(a/10),res.pop(),almost=almost)
+                    test('acos(_a/10)', m.ACOS(a/10),res.pop(),almost=almost)
+                    test('atan(_a)',    m.ATAN(a),   res.pop(),almost=almost)
+                    test('atan2(_a,1)', m.ATAN2(a,1),res.pop(),almost=almost)
+                    test('log2(_a)',    m.LOG2(a),   res.pop(),almost=almost)
+                    test('log10(_a)',   m.LOG10(a),  res.pop(),almost=almost)
+                    test('sind(_a)',    m.SIND(a),   res.pop(),almost=almost)
+                    test('cosd(_a)',    m.COSD(a),   res.pop(),almost=almost)
+                    test('tand(_a)',    m.TAND(a),   res.pop(),almost=almost)
+                    test('anint(_a/3)', m.ANINT(a/3),res.pop(),almost=almost)
+                else:  # strip results of real operations
+                    res = res[:-rcount]
+            else:  # strip results of floating operations
+                res = res[:-acount]
+            if real:  # some binary operations are only defined for real numbers
                 pass
-            if isinstance(check,numpy.ndarray):
-                self.assertEqual(check.all(),True)
-            else:
-                self.assertEqual(z,ans)
-            self.assertEqual(type(z),type(ans))
-            return
+                #test('_a mod _b',   a% b,   res.pop(),almost=almost)
+                #test('_a>_b',       a> b,   res.pop())
+                #test('_a>=_b',      a>=b,   res.pop())
+                #test('_a<_b',       a< b,   res.pop())
+                #test('_a<=_b',      a<=b,   res.pop())
 
-        doit('+',Uint8(30),Uint8(2),Uint8(32))
-        doit('-',Uint8(30),Uint8(2),Uint8(28))
-        doit('*',Uint8(30),Uint8(2),Uint8(60))
-        doit('/',Uint8(30),Uint8(2),Uint8(15))
-        doit('|',Uint8(4),Uint8(1),Uint8(5))
-        doit('&',Uint8(255),Uint8(6),Uint8(6))
-        doit('>',Uint8(4),Uint8(1),True)
-        doit('>=',Uint8(4),Uint8(1),True)
-        doit('<',Uint8(4),Uint8(1),False)
-        doit('<=',Uint8(4),Uint8(1),False)
-        doit('==',Uint8(4),Uint8(1),False)
-        doit('!=',Uint8(4),Uint8(1),True)
-        doit('<<',Uint8(1),Uint8(3),Uint8(8))
-        doit('>>',Uint8(16),Uint8(3),Uint8(2))
+        def testScalars():
+            """ test scalars """
+            def doTest(suffix,cl,scl,ucl,**kw):
+                """ test scalar """
+                import warnings
+                results = [cl(13),cl(7),cl(30),cl(10./3),#cl(1000),
+                    #ucl(11),ucl(2),
+                    #False,True,
+                    #cl(80),cl(1),scl(-10),scl(10),scl(10),scl(100),
+                    cl(22026.4658), cl(2.30258509),
+                    cl(-0.54402111), cl(-0.83907153), cl(0.64836083),
+                    cl(1.57079633), cl(0.), cl(1.47112767), cl(1.47112767),
+                    cl(3.32192809), cl(1.),
+                    cl(0.17364818), cl(0.98480775), cl(0.17632698),
+                    cl(3),
+                    cl(1),True,True,False,False,
+                    ]
+                Data.execute('_a=10%s,_b=3%s'%tuple([suffix]*2))
+                a,b = cl(10),cl(3)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    if kw.get('real',True):
+                        self.assertEqual(int(cl(10)),10)
+                        self.assertAlmostEqual(float(cl(10)),10.)
+                warnings.resetwarnings()
+                self.assertEqual(Data.execute('[_a]'),makeArray(a))
+                executeTests(self._doThreeTest,a,b,results,**kw)
+            doTest('BU',m.Uint8,  m.Int8,   m.Uint8)
+            doTest('WU',m.Uint16, m.Int16,  m.Uint16)
+            doTest('LU',m.Uint32, m.Int32,  m.Uint32)
+            doTest('QU',m.Uint64, m.Int64,  m.Uint64)
+            doTest('B', m.Int8,   m.Int8,   m.Uint8)
+            doTest('W', m.Int16,  m.Int16,  m.Uint16)
+            doTest('',  m.Int32,  m.Int16,  m.Uint32)
+            doTest('Q', m.Int64,  m.Int16,  m.Uint64)
+            doTest('.', m.Float32,m.Float32,m.Uint32,almost=5)
+            doTest('D0',m.Float64,m.Float64,m.Uint64,almost=4)
+            doTest('*cmplx(1.,0.)',  m.Complex64, m.Complex64, m.Uint64,almost=5,real=False)
+            doTest('*cmplx(1D0,0D0)',m.Complex128,m.Complex128,m.Uint64,almost=4,real=False)
 
-        doit('+',Uint16(30),Uint16(2),Uint16(32))
-        doit('-',Uint16(30),Uint16(2),Uint16(28))
-        doit('*',Uint16(30),Uint16(2),Uint16(60))
-        doit('/',Uint16(30),Uint16(2),Uint16(15))
-        doit('|',Uint16(4),Uint16(1),Uint16(5))
-        doit('&',Uint16(255),Uint16(6),Uint16(6))
-        doit('>',Uint16(4),Uint16(1),True)
-        doit('>=',Uint16(4),Uint16(1),True)
-        doit('<',Uint16(4),Uint16(1),False)
-        doit('<=',Uint16(4),Uint16(1),False)
-        doit('==',Uint16(4),Uint16(1),False)
-        doit('!=',Uint16(4),Uint16(1),True)
-        doit('<<',Uint16(1),Uint16(3),Uint16(8))
-        doit('>>',Uint16(16),Uint16(3),Uint16(2))
+        def testArrays():
+            """ test arrays and signals """
+            def doTest(suffix,cl,scl,ucl,**kw):
+                """ test array and signal """
+                from mdsarray import makeArray
+                from compound import Signal
+                def results(cl,scl,ucl):
+                    #from numpy import array
+                    return [
+                        cl([13,8,7]),cl([7,0,-3]),cl([30,16,10]),cl([10./3,1,.4]),#cl([1000,256,32]),  # +,-,*,/,**
+                        #cl([11,4,7]),ucl([2,4,0]), # |,&
+                        #array([False,True,False]),  # ==
+                        #array([True,False,True]),   # !=
+                        #cl([80,64,64]),cl([1,0,0]),scl([-10,-4,-2]),scl([10,4,2]),scl([10,4,2]),scl([100,16,4]),  # <<,>>,-,abs
+                        cl([ 22026.4658,  54.5981500,  7.38905610]),  # exp
+                        cl([ 2.30258509,  1.38629436,  0.69314718]),  # log
+                        cl([-0.54402111, -0.7568025 ,  0.90929743]),  # sin
+                        cl([-0.83907153, -0.65364362, -0.41614684]),  # cos
+                        cl([ 0.64836083,  1.15782128, -2.18503986]),  # tan
+                        cl([ 1.57079633,  0.41151685,  0.20135792]),  # asin
+                        cl([ 0.        ,  1.15927948,  1.36943841]),  # acos
+                        cl([ 1.47112767,  1.32581766,  1.10714872]),  # atan
+                        cl([ 1.47112767,  1.32581766,  1.10714872]),  # atan2
+                        cl([ 3.32192809,  2.        ,  1.        ]),  # log2
+                        cl([ 1.        ,  0.60205999,  0.30103   ]),  # log10
+                        cl([ 0.17364818,  0.06975647,  0.0348995 ]),  # sind
+                        cl([ 0.98480775,  0.99756405,  0.99939083]),  # cosd
+                        cl([ 0.17632698,  0.06992681,  0.03492077]),  # tand
+                        cl([3,1,1]),  # anint
+                        cl([1,0,2]),  # %
+                        #array([True,False,False]),  # >
+                        #array([True,True,False]),   # >=
+                        #array([False,False,True]),  # <
+                        #array([False,True,True]),   # <=
+                        ]
+                """ test array """
+                Data.execute('_a=[10%s,4%s,2%s],_b=[3%s,4%s,5%s]'%tuple([suffix]*6))
+                a,b = cl([10,4,2]),cl([3,4,5])
+                self._doThreeTestArray('_a',makeArray(a),makeData(a))
+                executeTests(self._doThreeTestArray,a,b,results(cl,scl,ucl),**kw)
+                """ test signal """
+                Scl  = lambda v: Signal(cl(v))
+                Sscl = lambda v: Signal(scl(v))
+                Sucl = lambda v: Signal(ucl(v))
+                Data.execute('_a=Make_Signal(_a,*)')
+                a = Signal(a)
+                executeTests(self._doThreeTestArray,a,b,results(Scl,Sscl,Sucl),**kw)
 
-        doit('+',Uint32(30),Uint32(2),Uint32(32))
-        doit('-',Uint32(30),Uint32(2),Uint32(28))
-        doit('*',Uint32(30),Uint32(2),Uint32(60))
-        doit('/',Uint32(30),Uint32(2),Uint32(15))
-        doit('|',Uint32(4),Uint32(1),Uint32(5))
-        doit('&',Uint32(255),Uint32(6),Uint32(6))
-        doit('>',Uint32(4),Uint32(1),True)
-        doit('>=',Uint32(4),Uint32(1),True)
-        doit('<',Uint32(4),Uint32(1),False)
-        doit('<=',Uint32(4),Uint32(1),False)
-        doit('==',Uint32(4),Uint32(1),False)
-        doit('!=',Uint32(4),Uint32(1),True)
-        doit('<<',Uint32(1),Uint32(3),Uint32(8))
-        doit('>>',Uint32(16),Uint32(3),Uint32(2))
+            import MDSplus as m
+            doTest('BU',m.Uint8Array,  m.Int8Array,   m.Uint8Array)
+            doTest('WU',m.Uint16Array, m.Int16Array,  m.Uint16Array)
+            doTest('LU',m.Uint32Array, m.Int32Array,  m.Uint32Array)
+            doTest('QU',m.Uint64Array, m.Int64Array,  m.Uint64Array)
+            doTest('B', m.Int8Array,   m.Int8Array,   m.Uint8Array)
+            doTest('W', m.Int16Array,  m.Int16Array,  m.Uint16Array)
+            doTest('',  m.Int32Array,  m.Int32Array,  m.Uint32Array)
+            doTest('Q', m.Int64Array,  m.Int64Array,  m.Uint64Array)
+            doTest('.', m.Float32Array,m.Float32Array,m.Uint32Array,almost=5)
+            doTest('D0',m.Float64Array,m.Float64Array,m.Uint64Array,almost=4)
+            doTest('*cmplx(1.,0.)',  m.Complex64Array,m.Complex64Array,  m.Uint64Array,almost=5,real=False)
+            doTest('*cmplx(1D0,0D0)',m.Complex128Array,m.Complex128Array,m.Uint64Array,almost=4,real=False)
 
-        doit('+',Uint64(30),Uint64(2),Uint64(32))
-        doit('-',Uint64(30),Uint64(2),Uint64(28))
-        doit('*',Uint64(30),Uint64(2),Uint64(60))
-        doit('/',Uint64(30),Uint64(2),Uint64(15))
-        doit('|',Uint64(4),Uint64(1),Uint64(5))
-        doit('&',Uint64(255),Uint64(6),Uint64(6))
-        doit('>',Uint64(4),Uint64(1),True)
-        doit('>=',Uint64(4),Uint64(1),True)
-        doit('<',Uint64(4),Uint64(1),False)
-        doit('<=',Uint64(4),Uint64(1),False)
-        doit('==',Uint64(4),Uint64(1),False)
-        doit('!=',Uint64(4),Uint64(1),True)
-        doit('<<',Uint64(1),Uint64(3),Uint64(8))
-        doit('>>',Uint64(16),Uint64(3),Uint64(2))
-
-        doit('+',Int8(30),Int8(2),Int8(32))
-        doit('-',Int8(30),Int8(2),Int8(28))
-        doit('*',Int8(30),Int8(2),Int8(60))
-        doit('/',Int8(30),Int8(2),Int8(15))
-        doit('|',Int8(4),Int8(1),Uint8(5))
-        doit('&',Int8(255),Int8(6),Uint8(6))
-        doit('>',Int8(4),Int8(1),True)
-        doit('>=',Int8(4),Int8(1),True)
-        doit('<',Int8(4),Int8(1),False)
-        doit('<=',Int8(4),Int8(1),False)
-        doit('==',Int8(4),Int8(1),False)
-        doit('!=',Int8(4),Int8(1),True)
-        doit('<<',Int8(1),Int8(3),Int8(8))
-        doit('>>',Int8(16),Int8(3),Int8(2))
-
-        doit('+',Int16(30),Int16(2),Int16(32))
-        doit('-',Int16(30),Int16(2),Int16(28))
-        doit('*',Int16(30),Int16(2),Int16(60))
-        doit('/',Int16(30),Int16(2),Int16(15))
-        doit('|',Int16(4),Int16(1),Uint16(5))
-        doit('&',Int16(255),Int16(6),Uint16(6))
-        doit('>',Int16(4),Int16(1),True)
-        doit('>=',Int16(4),Int16(1),True)
-        doit('<',Int16(4),Int16(1),False)
-        doit('<=',Int16(4),Int16(1),False)
-        doit('==',Int16(4),Int16(1),False)
-        doit('!=',Int16(4),Int16(1),True)
-        doit('<<',Int16(1),Int16(3),Int16(8))
-        doit('>>',Int16(16),Int16(3),Int16(2))
-
-        doit('+',Int32(30),Int32(2),Int32(32))
-        doit('-',Int32(30),Int32(2),Int32(28))
-        doit('*',Int32(30),Int32(2),Int32(60))
-        doit('/',Int32(30),Int32(2),Int32(15))
-        doit('|',Int32(4),Int32(1),Uint32(5))
-        doit('&',Int32(255),Int32(6),Uint32(6))
-        doit('>',Int32(4),Int32(1),True)
-        doit('>=',Int32(4),Int32(1),True)
-        doit('<',Int32(4),Int32(1),False)
-        doit('<=',Int32(4),Int32(1),False)
-        doit('==',Int32(4),Int32(1),False)
-        doit('!=',Int32(4),Int32(1),True)
-        doit('<<',Int32(1),Int32(3),Int32(8))
-        doit('>>',Int32(16),Int32(3),Int32(2))
-
-        doit('+',Int64(30),Int64(2),Int64(32))
-        doit('-',Int64(30),Int64(2),Int64(28))
-        doit('*',Int64(30),Int64(2),Int64(60))
-        doit('/',Int64(30),Int64(2),Int64(15))
-        doit('|',Int64(4),Int64(1),Uint64(5))
-        doit('&',Int64(255),Int64(6),Uint64(6))
-        doit('>',Int64(4),Int64(1),True)
-        doit('>=',Int64(4),Int64(1),True)
-        doit('<',Int64(4),Int64(1),False)
-        doit('<=',Int64(4),Int64(1),False)
-        doit('==',Int64(4),Int64(1),False)
-        doit('!=',Int64(4),Int64(1),True)
-        doit('<<',Int64(1),Int64(3),Int64(8))
-        doit('>>',Int64(16),Int64(3),Int64(2))
-
-        doit('+',Float32(30),Float32(2),Float32(32))
-        doit('-',Float32(30),Float32(2),Float32(28))
-        doit('*',Float32(30),Float32(2),Float32(60))
-        doit('/',Float32(30),Float32(2),Float32(15))
-        doit('|',Float32(4),Float32(1),Uint32(5))
-        doit('&',Float32(255),Float32(6),Uint32(6))
-        doit('>',Float32(4),Float32(1),True)
-        doit('>=',Float32(4),Float32(1),True)
-        doit('<',Float32(4),Float32(1),False)
-        doit('<=',Float32(4),Float32(1),False)
-        doit('==',Float32(4),Float32(1),False)
-        doit('!=',Float32(4),Float32(1),True)
-        doit('<<',Float32(1),Float32(3),Int32(8))
-        doit('>>',Float32(16),Float32(3),Int32(2))
-
-        doit('+',Float64(30),Float64(2),Float64(32))
-        doit('-',Float64(30),Float64(2),Float64(28))
-        doit('*',Float64(30),Float64(2),Float64(60))
-        doit('/',Float64(30),Float64(2),Float64(15))
-        doit('|',Float64(4),Float64(1),Uint64(5))
-        doit('&',Float64(255),Float64(6),Uint64(6))
-        doit('>',Float64(4),Float64(1),True)
-        doit('>=',Float64(4),Float64(1),True)
-        doit('<',Float64(4),Float64(1),False)
-        doit('<=',Float64(4),Float64(1),False)
-        doit('==',Float64(4),Float64(1),False)
-        doit('!=',Float64(4),Float64(1),True)
-        doit('<<',Float64(1),Float64(3),Int64(8))
-        doit('>>',Float64(16),Float64(3),Int64(2))
-
-        doit('+',Uint8Array([29,30,31]),Uint8(2),Uint8Array([31,32,33]))
-        doit('-',Uint8Array([29,30,31]),Uint8(2),Uint8Array([27,28,29]))
-        doit('*',Uint8Array([29,30,31]),Uint8(2),Uint8Array([58,60,62]))
-        doit('/',Uint8Array([29,30,31]),Uint8(2),Uint8Array([14,15,15]))
-        doit('|',Uint8Array([2,4,8]),Uint8(1),Uint8Array([3,5,9]))
-        doit('&',Uint8Array([3,7,255]),Uint8(6),Uint8Array([2,6,6]))
-        doit('>',Uint8Array([2,4,8]),Uint8(4),numpy.array([False,False,True]))
-        doit('>=',Uint8Array([2,4,8]),Uint8(4),numpy.array([False,True,True]))
-        doit('<',Uint8Array([2,4,8]),Uint8(4),numpy.array([True,False,False]))
-        doit('<=',Uint8Array([2,4,8]),Uint8(4),numpy.array([True,True,False]))
-        doit('==',Uint8Array([2,4,8]),Uint8(4),numpy.array([False,True,False]))
-        doit('!=',Uint8Array([2,4,8]),Uint8(4),numpy.array([True,False,True]))
-        doit('<<',Uint8Array([1,2,4]),Uint8(3),Uint8Array([8,16,32]))
-        doit('>>',Uint8Array([8,16,32]),Uint8(3),Uint8Array([1,2,4]))
-
-        doit('+',Uint16Array([29,30,31]),Uint16(2),Uint16Array([31,32,33]))
-        doit('-',Uint16Array([29,30,31]),Uint16(2),Uint16Array([27,28,29]))
-        doit('*',Uint16Array([29,30,31]),Uint16(2),Uint16Array([58,60,62]))
-        doit('/',Uint16Array([29,30,31]),Uint16(2),Uint16Array([14,15,15]))
-        doit('|',Uint16Array([2,4,8]),Uint16(1),Uint16Array([3,5,9]))
-        doit('&',Uint16Array([3,7,255]),Uint16(6),Uint16Array([2,6,6]))
-        doit('>',Uint16Array([2,4,8]),Uint16(4),numpy.array([False,False,True]))
-        doit('>=',Uint16Array([2,4,8]),Uint16(4),numpy.array([False,True,True]))
-        doit('<',Uint16Array([2,4,8]),Uint16(4),numpy.array([True,False,False]))
-        doit('<=',Uint16Array([2,4,8]),Uint16(4),numpy.array([True,True,False]))
-        doit('==',Uint16Array([2,4,8]),Uint16(4),numpy.array([False,True,False]))
-        doit('!=',Uint16Array([2,4,8]),Uint16(4),numpy.array([True,False,True]))
-        doit('<<',Uint16Array([1,2,4]),Uint16(3),Uint16Array([8,16,32]))
-        doit('>>',Uint16Array([8,16,32]),Uint16(3),Uint16Array([1,2,4]))
-
-        doit('+',Uint32Array([29,30,31]),Uint32(2),Uint32Array([31,32,33]))
-        doit('-',Uint32Array([29,30,31]),Uint32(2),Uint32Array([27,28,29]))
-        doit('*',Uint32Array([29,30,31]),Uint32(2),Uint32Array([58,60,62]))
-        doit('/',Uint32Array([29,30,31]),Uint32(2),Uint32Array([14,15,15]))
-        doit('|',Uint32Array([2,4,8]),Uint32(1),Uint32Array([3,5,9]))
-        doit('&',Uint32Array([3,7,255]),Uint32(6),Uint32Array([2,6,6]))
-        doit('>',Uint32Array([2,4,8]),Uint32(4),numpy.array([False,False,True]))
-        doit('>=',Uint32Array([2,4,8]),Uint32(4),numpy.array([False,True,True]))
-        doit('<',Uint32Array([2,4,8]),Uint32(4),numpy.array([True,False,False]))
-        doit('<=',Uint32Array([2,4,8]),Uint32(4),numpy.array([True,True,False]))
-        doit('==',Uint32Array([2,4,8]),Uint32(4),numpy.array([False,True,False]))
-        doit('!=',Uint32Array([2,4,8]),Uint32(4),numpy.array([True,False,True]))
-        doit('<<',Uint32Array([1,2,4]),Uint32(3),Uint32Array([8,16,32]))
-        doit('>>',Uint32Array([8,16,32]),Uint32(3),Uint32Array([1,2,4]))
-
-        doit('+',Uint64Array([29,30,31]),Uint64(2),Uint64Array([31,32,33]))
-        doit('-',Uint64Array([29,30,31]),Uint64(2),Uint64Array([27,28,29]))
-        doit('*',Uint64Array([29,30,31]),Uint64(2),Uint64Array([58,60,62]))
-        doit('/',Uint64Array([29,30,31]),Uint64(2),Uint64Array([14,15,15]))
-        doit('|',Uint64Array([2,4,8]),Uint64(1),Uint64Array([3,5,9]))
-        doit('&',Uint64Array([3,7,255]),Uint64(6),Uint64Array([2,6,6]))
-        doit('>',Uint64Array([2,4,8]),Uint64(4),numpy.array([False,False,True]))
-        doit('>=',Uint64Array([2,4,8]),Uint64(4),numpy.array([False,True,True]))
-        doit('<',Uint64Array([2,4,8]),Uint64(4),numpy.array([True,False,False]))
-        doit('<=',Uint64Array([2,4,8]),Uint64(4),numpy.array([True,True,False]))
-        doit('==',Uint64Array([2,4,8]),Uint64(4),numpy.array([False,True,False]))
-        doit('!=',Uint64Array([2,4,8]),Uint64(4),numpy.array([True,False,True]))
-        doit('<<',Uint64Array([1,2,4]),Uint64(3),Uint64Array([8,16,32]))
-        doit('>>',Uint64Array([8,16,32]),Uint64(3),Uint64Array([1,2,4]))
-
-        doit('+',Int8Array([29,30,31]),Int8(2),Int8Array([31,32,33]))
-        doit('-',Int8Array([29,30,31]),Int8(2),Int8Array([27,28,29]))
-        doit('*',Int8Array([29,30,31]),Int8(2),Int8Array([58,60,62]))
-        doit('/',Int8Array([29,30,31]),Int8(2),Int8Array([14,15,15]))
-        doit('|',Int8Array([2,4,8]),Int8(1),Uint8Array([3,5,9]))
-        doit('&',Int8Array([3,7,255]),Int8(6),Uint8Array([2,6,6]))
-        doit('>',Int8Array([2,4,8]),Int8(4),numpy.array([False,False,True]))
-        doit('>=',Int8Array([2,4,8]),Int8(4),numpy.array([False,True,True]))
-        doit('<',Int8Array([2,4,8]),Int8(4),numpy.array([True,False,False]))
-        doit('<=',Int8Array([2,4,8]),Int8(4),numpy.array([True,True,False]))
-        doit('==',Int8Array([2,4,8]),Int8(4),numpy.array([False,True,False]))
-        doit('!=',Int8Array([2,4,8]),Int8(4),numpy.array([True,False,True]))
-        doit('<<',Int8Array([1,2,4]),Int8(3),Int8Array([8,16,32]))
-        doit('>>',Int8Array([8,16,32]),Int8(3),Int8Array([1,2,4]))
-
-        doit('+',Int16Array([29,30,31]),Int16(2),Int16Array([31,32,33]))
-        doit('-',Int16Array([29,30,31]),Int16(2),Int16Array([27,28,29]))
-        doit('*',Int16Array([29,30,31]),Int16(2),Int16Array([58,60,62]))
-        doit('/',Int16Array([29,30,31]),Int16(2),Int16Array([14,15,15]))
-        doit('|',Int16Array([2,4,8]),Int16(1),Uint16Array([3,5,9]))
-        doit('&',Int16Array([3,7,255]),Int16(6),Uint16Array([2,6,6]))
-        doit('>',Int16Array([2,4,8]),Int16(4),numpy.array([False,False,True]))
-        doit('>=',Int16Array([2,4,8]),Int16(4),numpy.array([False,True,True]))
-        doit('<',Int16Array([2,4,8]),Int16(4),numpy.array([True,False,False]))
-        doit('<=',Int16Array([2,4,8]),Int16(4),numpy.array([True,True,False]))
-        doit('==',Int16Array([2,4,8]),Int16(4),numpy.array([False,True,False]))
-        doit('!=',Int16Array([2,4,8]),Int16(4),numpy.array([True,False,True]))
-        doit('<<',Int16Array([1,2,4]),Int16(3),Int16Array([8,16,32]))
-        doit('>>',Int16Array([8,16,32]),Int16(3),Int16Array([1,2,4]))
-
-        doit('+',Int32Array([29,30,31]),Int32(2),Int32Array([31,32,33]))
-        doit('-',Int32Array([29,30,31]),Int32(2),Int32Array([27,28,29]))
-        doit('*',Int32Array([29,30,31]),Int32(2),Int32Array([58,60,62]))
-        doit('/',Int32Array([29,30,31]),Int32(2),Int32Array([14,15,15]))
-        doit('|',Int32Array([2,4,8]),Int32(1),Uint32Array([3,5,9]))
-        doit('&',Int32Array([3,7,255]),Int32(6),Uint32Array([2,6,6]))
-        doit('>',Int32Array([2,4,8]),Int32(4),numpy.array([False,False,True]))
-        doit('>=',Int32Array([2,4,8]),Int32(4),numpy.array([False,True,True]))
-        doit('<',Int32Array([2,4,8]),Int32(4),numpy.array([True,False,False]))
-        doit('<=',Int32Array([2,4,8]),Int32(4),numpy.array([True,True,False]))
-        doit('==',Int32Array([2,4,8]),Int32(4),numpy.array([False,True,False]))
-        doit('!=',Int32Array([2,4,8]),Int32(4),numpy.array([True,False,True]))
-        doit('<<',Int32Array([1,2,4]),Int32(3),Int32Array([8,16,32]))
-        doit('>>',Int32Array([8,16,32]),Int32(3),Int32Array([1,2,4]))
-
-        doit('+',Int64Array([29,30,31]),Int64(2),Int64Array([31,32,33]))
-        doit('-',Int64Array([29,30,31]),Int64(2),Int64Array([27,28,29]))
-        doit('*',Int64Array([29,30,31]),Int64(2),Int64Array([58,60,62]))
-        doit('/',Int64Array([29,30,31]),Int64(2),Int64Array([14,15,15]))
-        doit('|',Int64Array([2,4,8]),Int64(1),Uint64Array([3,5,9]))
-        doit('&',Int64Array([3,7,255]),Int64(6),Uint64Array([2,6,6]))
-        doit('>',Int64Array([2,4,8]),Int64(4),numpy.array([False,False,True]))
-        doit('>=',Int64Array([2,4,8]),Int64(4),numpy.array([False,True,True]))
-        doit('<',Int64Array([2,4,8]),Int64(4),numpy.array([True,False,False]))
-        doit('<=',Int64Array([2,4,8]),Int64(4),numpy.array([True,True,False]))
-        doit('==',Int64Array([2,4,8]),Int64(4),numpy.array([False,True,False]))
-        doit('!=',Int64Array([2,4,8]),Int64(4),numpy.array([True,False,True]))
-        doit('<<',Int64Array([1,2,4]),Int64(3),Int64Array([8,16,32]))
-        doit('>>',Int64Array([8,16,32]),Int64(3),Int64Array([1,2,4]))
-
-        doit('+',Float32Array([29,30,31]),Float32(2),Float32Array([31,32,33]))
-        doit('-',Float32Array([29,30,31]),Float32(2),Float32Array([27,28,29]))
-        doit('*',Float32Array([29,30,31]),Float32(2),Float32Array([58,60,62]))
-        doit('/',Float32Array([29,30,31]),Float32(2),Float32Array([14.5,15,15.5]))
-        doit('|',Float32Array([2,4,8]),Float32(1),Uint32Array([3,5,9]))
-        doit('&',Float32Array([3,7,255]),Float32(6),Uint32Array([2,6,6]))
-        doit('>',Float32Array([2,4,8]),Float32(4),numpy.array([False,False,True]))
-        doit('>=',Float32Array([2,4,8]),Float32(4),numpy.array([False,True,True]))
-        doit('<',Float32Array([2,4,8]),Float32(4),numpy.array([True,False,False]))
-        doit('<=',Float32Array([2,4,8]),Float32(4),numpy.array([True,True,False]))
-        doit('==',Float32Array([2,4,8]),Float32(4),numpy.array([False,True,False]))
-        doit('!=',Float32Array([2,4,8]),Float32(4),numpy.array([True,False,True]))
-        doit('<<',Float32Array([1,2,4]),Float32(3),Int32Array([8,16,32]))
-        doit('>>',Float32Array([8,16,32]),Float32(3),Int32Array([1,2,4]))
-
-        doit('+',Float64Array([29,30,31]),Float64(2),Float64Array([31,32,33]))
-        doit('-',Float64Array([29,30,31]),Float64(2),Float64Array([27,28,29]))
-        doit('*',Float64Array([29,30,31]),Float64(2),Float64Array([58,60,62]))
-        doit('/',Float64Array([29,30,31]),Float64(2),Float64Array([14.5,15,15.5]))
-        doit('|',Float64Array([2,4,8]),Float64(1),Uint64Array([3,5,9]))
-        doit('&',Float64Array([3,7,255]),Float64(6),Uint64Array([2,6,6]))
-        doit('>',Float64Array([2,4,8]),Float64(4),numpy.array([False,False,True]))
-        doit('>=',Float64Array([2,4,8]),Float64(4),numpy.array([False,True,True]))
-        doit('<',Float64Array([2,4,8]),Float64(4),numpy.array([True,False,False]))
-        doit('<=',Float64Array([2,4,8]),Float64(4),numpy.array([True,True,False]))
-        doit('==',Float64Array([2,4,8]),Float64(4),numpy.array([False,True,False]))
-        doit('!=',Float64Array([2,4,8]),Float64(4),numpy.array([True,False,True]))
-        doit('<<',Float64Array([1,2,4]),Float64(3),Int64Array([8,16,32]))
-        doit('>>',Float64Array([8,16,32]),Float64(3),Int64Array([1,2,4]))
-
-        doit('+',Int64Array([29,30,31]),Int64Array([2,3,4]),Int64Array([31,33,35]))
-        doit('-',Int64Array([29,30,31]),Int64Array([2,3,4]),Int64Array([27,27,27]))
-        doit('*',Int64Array([29,30,31]),Int64Array([2,3,4]),Int64Array([58,90,124]))
-        doit('/',Int64Array([29,30,31]),Int64Array([2,3,4]),Int64Array([14,10,7]))
-        doit('|',Int64Array([2,4,8]),Int64Array([1,2,3]),Uint64Array([3,6,11]))
-        doit('&',Int64Array([3,7,255]),Int64Array([6,4,7]),Uint64Array([2,4,7]))
-        doit('>',Int64Array([2,4,8]),Int64Array([3,4,5]),numpy.array([False,False,True]))
-        doit('>=',Int64Array([2,4,8]),Int64Array([3,4,5]),numpy.array([False,True,True]))
-        doit('<',Int64Array([2,4,8]),Int64Array([3,4,5]),numpy.array([True,False,False]))
-        doit('<=',Int64Array([2,4,8]),Int64Array([3,4,5]),numpy.array([True,True,False]))
-        doit('==',Int64Array([2,4,8]),Int64Array([3,4,5]),numpy.array([False,True,False]))
-        doit('!=',Int64Array([2,4,8]),Int64Array([3,4,5]),numpy.array([True,False,True]))
-        doit('<<',Int64Array([1,2,4]),Int64Array([3,4,5]),Int64Array([8,32,128]))
-        doit('>>',Int64Array([8,16,32]),Int64Array([3,2,1]),Int64Array([1,4,16]))
-
-        doit('+',Signal(Int64Array([29,30,31]),None,None),Int64Array([2,3,4]),Signal(Int64Array([31,33,35]),None,None))
-        doit('-',Signal(Int64Array([29,30,31]),None,None),Int64Array([2,3,4]),Signal(Int64Array([27,27,27]),None,None))
-        doit('*',Signal(Int64Array([29,30,31]),None,None),Int64Array([2,3,4]),Signal(Int64Array([58,90,124]),None,None))
-        doit('/',Signal(Int64Array([29,30,31]),None,None),Int64Array([2,3,4]),Signal(Int64Array([14,10,7]),None,None))
-        doit('|',Signal(Int64Array([2,4,8]),None,None),Int64Array([1,2,3]),Signal(Uint64Array([3,6,11]),None,None))
-        doit('&',Signal(Int64Array([3,7,255]),None,None),Int64Array([6,4,7]),Signal(Uint64Array([2,4,7]),None,None))
-        doit('>',Signal(Int64Array([2,4,8]),None,None),Int64Array([3,4,5]),numpy.array([False,False,True]))
-        doit('>=',Signal(Int64Array([2,4,8]),None,None),Int64Array([3,4,5]),numpy.array([False,True,True]))
-        doit('<',Signal(Int64Array([2,4,8]),None,None),Int64Array([3,4,5]),numpy.array([True,False,False]))
-        doit('<=',Signal(Int64Array([2,4,8]),None,None),Int64Array([3,4,5]),numpy.array([True,True,False]))
-        doit('==',Signal(Int64Array([2,4,8]),None,None),Int64Array([3,4,5]),numpy.array([False,True,False]))
-        doit('!=',Signal(Int64Array([2,4,8]),None,None),Int64Array([3,4,5]),numpy.array([True,False,True]))
-        doit('<<',Signal(Int64Array([1,2,4]),None,None),Int64Array([3,4,5]),Signal(Int64Array([8,32,128]),None,None))
-        doit('>>',Signal(Int64Array([8,16,32]),None,None),Int64Array([3,2,1]),Signal(Int64Array([1,4,16]),None,None))
-
-        return
-
-    def mathFunctions(self):
-        self.assertEqual(float(Uint8(255)),255.)
-        self.assertEqual(float(Uint16(255)),255.)
-        self.assertEqual(float(Uint32(255)),255.)
-        self.assertEqual(float(Uint64(255)),255.)
-        self.assertEqual(float(Int8(127)),127.)
-        self.assertEqual(float(Int16(255)),255.)
-        self.assertEqual(float(Int32(255)),255.)
-        self.assertEqual(float(Int64(255)),255.)
-        self.assertEqual(float(Float32(255)),255.)
-        self.assertEqual(float(Float64(255)),255.)
-        self.assertEqual(int(Uint8(255)),255)
-        self.assertEqual(int(Uint16(255)),255)
-        self.assertEqual(int(Uint32(255)),255)
-        self.assertEqual(int(Uint64(255)),255)
-        self.assertEqual(int(Int8(127)),127)
-        self.assertEqual(int(Int16(255)),255)
-        self.assertEqual(int(Int32(255)),255)
-        self.assertEqual(int(Int64(255)),255)
-        self.assertEqual(int(Float32(255)),255)
-        self.assertEqual(int(Float64(255)),255)
+        testScalars()
+        #testArrays()
 
     def tdiFunctions(self):
-        self.assertEqual(Data.execute("Py('import MDSplus;a=MDSplus.Uint8(8)','a')"),Uint8(8))
-        def doUnaryArray(expression,ans):
-            self.assertEqual(((Data.execute(expression))==ans).all(),True)
-
+        m.dTRUE = m.__dict__['$TRUE']
+        m.dFALSE = m.__dict__['$FALSE']
         """Test abort"""
-        try:
-            Data.execute('abort()')
-            self.fail("Abort did not signal an error")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            self.assertEqual(str(e),'%TDI-E-ABORT, Program requested abort')
-
+        self._doExceptionTest('abort()',m.TdiABORT)
+        """Test syntax"""
+        self._doExceptionTest('\033[[A',m.TdiBOMB)
+        self.assertEqual(Data.execute(''),None)
         """Test abs"""
-        self.assertEqual(abs(Uint8(255)),Uint8(255))
-        self.assertEqual(abs(Uint16(255)),Uint16(255))
-        self.assertEqual(abs(Uint32(255)),Uint32(255))
-        self.assertEqual(abs(Uint64(255)),Uint64(255))
-        self.assertEqual(abs(Int8(-10)),Int8(10))
-        self.assertEqual(abs(Int16(-10)),Int16(10))
-        self.assertEqual(abs(Int32(-10)),Int32(10))
-        self.assertEqual(abs(Int64(-10)),Int64(10))
-        self.assertEqual(abs(Float32(-10)),Float32(10))
-        self.assertEqual(abs(Float64(-10)),Float64(10))
-        self.assertEqual((abs(Uint8Array([254,255]))==Uint8Array([254,255])).all(),True)
-        self.assertEqual((abs(Uint16Array([254,255]))==Uint16Array([254,255])).all(),True)
-        self.assertEqual((abs(Uint32Array([254,255]))==Uint32Array([254,255])).all(),True)
-        self.assertEqual((abs(Uint64Array([254,255]))==Uint64Array([254,255])).all(),True)
-        self.assertEqual((abs(Int8Array([-10,-20]))==Int8Array([10,20])).all(),True)
-        self.assertEqual((abs(Int16Array([-10,-20]))==Int16Array([10,20])).all(),True)
-        self.assertEqual((abs(Int32Array([-10,-20]))==Int32Array([10,20])).all(),True)
-        self.assertEqual((abs(Int64Array([-10,-20]))==Int64Array([10,20])).all(),True)
-        self.assertEqual((abs(Float32Array([-10,-20]))==Float32Array([10,20])).all(),True)
-        self.assertEqual((abs(Float64Array([-10,-20]))==Float64Array([10,20])).all(),True)
-        self.assertEqual(Data.execute('execute("abs(cmplx(3.0,4.0))")'),Float32(5.0))
+        self._doThreeTest('abs(cmplx(3.0,4.0))',m.ABS(m.Complex64(3.+4.j)),m.Float32(5.))
         """Test abs1"""
-        self.assertEqual(Data.execute('execute("abs1(cmplx(3.0,4.0))")'),Float32(7.0))
+        self._doThreeTest('abs1(cmplx(3.0,4.0))',m.ABS1(m.Complex64(3.+4.j)),m.Float32(7.))
         """Test abssq"""
-        self.assertEqual(Data.execute('execute("abssq(cmplx(3.0,4.0))")'),Float32(25.0))
+        self._doThreeTest('abssq(cmplx(3.0,4.0))',m.ABSSQ(m.Complex64(3.+4.j)),m.Float32(25.))
         """Test accumulate"""
-        self.assertEqual((Data.execute('execute("ACCUMULATE([1,2,3])")')==Int32Array([1,3,6])).all(),True)
-        """ Known to be broken in both documenation and/or implementation
-        self.assertEqual((Data.execute('execute("ACCUMULATE([[1,3,5],[2,4,6]])")')==Int32Array([[1,6,15],[3,10,21]])).all(),True)
-        self.assertEqual((Data.execute('execute("ACCUMULATE([[1,3,5],[2,4,5]],0)")')==Int32Array([[1,3,5],[3,7,11]])).all(),True)
-        self.assertEqual((Data.execute('execute("ACCUMULATE([[1,3,5],[2,4,5]],1)")')==Int32Array([[1,4,9],[2,6,12]])).all(),True)
-        """
+        self._doThreeTestArray('accumulate([1,2,3])',m.ACCUMULATE(m.makeArray([1,2,3])),m.Int32Array([1,3,6]))
+        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]])',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]])),m.Int32Array([[1,4,9], [11,15,21]]))
+        self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],0)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),0),m.Int32Array([[1,4,9],[2,6,12]]))
+        #self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE([[1,3,5],[2,4,6]],1),m.Int32Array([[1,3,5],[3,7,11]]))  # tdi issue
+        self._doUnaryArray(Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1).getData())
         """Test achar"""
-        self.assertEqual(str(Data.execute('achar(88)')),'X')
-        """Test ACOS"""
-        self.assertEqual(Data.execute('abs(acos(.54030231)-1.)<.0000001'),Uint8(1))
-        """Test ACOSD"""
-        self.assertEqual(Data.execute('abs(acosd(0.5)<60.0)<.0000001'),Uint8(1))
-        """Test Add"""
-        self.assertEqual((Data.execute('[2,3,4]+5.0')==Float32Array([7,8,9])).all(),True)
+        self._doThreeTest('achar(88)',m.ACHAR(88),m.String('X'))
         """Test ADJUSTL"""
-        self.assertEqual(str(Data.execute('adjustl(" WORD")')),"WORD ")
+        self._doThreeTest('adjustl(" WORD")',m.ADJUSTL(" WORD"),m.String("WORD "))
         """Test ADJUSTR"""
-        self.assertEqual(str(Data.execute('adjustr("WORD ")'))," WORD")
+        self._doThreeTest('adjustr("WORD ")',m.ADJUSTR("WORD "),m.String(" WORD"))
         """Test AIMAG"""
-        self.assertEqual(Data.execute('execute("AIMAG(CMPLX(2.0,3.0))")'),Float32(3.0))
+        self._doThreeTest('AIMAG(CMPLX(2.0,3.0))',m.AIMAG(m.CMPLX(2.,3.)),m.Float32(3.0))
         """Test AINT"""
-        self.assertEqual(Data.execute('aint(2.783)'),Float32(2.0))
-        self.assertEqual(Data.execute('aint(-2.783)'),Float32(-2.0))
-        """Test ALL"""
-        self.assertEqual(Data.execute('ALL([$TRUE,$FALSE,$TRUE])'),Uint8(0))
-        """ Documenation and/or implementation known to be broken
-        self.assertEqual((Data.execute('_b=[1,3,5],_c=[[0,3,5],[2,4,6],[7,4,8]],all(_b ne _c,0)')==Uint8Array([1,0,0])).all(),True)
-        self.assertEqual((Data.execute('all(_b ne _c,1)')==Uint8Array([0,0])).all().True)
-        """
+        self._doThreeTest('aint(2.783)',m.AINT(2.783),m.Float32(2.0))
+        self._doThreeTest('aint(-2.783)',m.AINT(-2.783),m.Float32(-2.0))
+        """Test NE (operates on flattened array, i.e. first 3 values are compared)"""
+        A,B = m.makeArray([1,3,5]),m.makeArray([[0,3,5],[0,0,0],[0,4,8]])
+        self._doThreeTestArray('_A=[1,3,5],_B=[[0,3,5],[0,0,0],[0,4,8]],_A ne _B',m.NE(A,B),m.Uint8Array([1,0,0]))
+        """Test NE (operates on flattened array, i.e. first 3 values are compared)"""
+        self._doThreeTestArray('_A eq _B',m.EQ(A,B),m.Uint8Array([0,1,1]))
+        """Test ALL and ANY"""
+        self._doThreeTest('all([$TRUE,$FALSE,$TRUE])',m.ALL(m.makeArray([1,0,1])),m.Uint8(0))
+        self._doThreeTest('any([$TRUE,$FALSE,$TRUE])',m.ANY(m.makeArray([1,0,1])),m.Uint8(1))
+        A = 0
+        self._doThreeTest('_A=0,all(_A eq _B)',m.ALL(m.EQ(A,B)),False)
+        self._doThreeTest('any(_A ne _B)',m.ANY(m.NE(A,B)),True)
+        self._doThreeTestArray('all(_A ne _B,0)',m.ALL(m.NE(A,B),0),m.Uint8Array([0,0,0]))
+        self._doThreeTestArray('any(_A ne _B,0)',m.ANY(m.NE(A,B),0),m.Uint8Array([1,0,1]))
+        self._doThreeTestArray('all(_A eq _B,1)',m.ALL(m.EQ(A,B),1),m.Uint8Array([1,0,0]))
+        self._doThreeTestArray('any(_A ne _B,1)',m.ANY(m.NE(A,B),1),m.Uint8Array([0,1,1]))
         """Test allocated"""
-        self.assertEqual(Data.execute('allocated("_xyz")'),Uint8(0))
-        self.assertEqual(Data.execute('_xyz=0,allocated("_xyz")'),Uint8(1))
-        self.assertEqual(Data.execute('allocated(_xyz)'),Uint8(1))
+        self.assertEqual(m.DEALLOCATE('*')>=2,True)  # deallocates _A and _B and more?
+        self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
+        self.assertEqual(Data.execute('_xyz=0,allocated("_xyz")'),m.Uint8(1))
+        self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(1))
+        self.assertEqual(m.DEALLOCATE('*'),m.Uint8(1))
+        self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
         """Test AND"""
-        self.assertEqual((Data.execute('[0,0,1,1] && [0,1,0,1]')==Uint8Array([0,0,0,1])).all(),True)
+        A,B=m.makeArray([0,0,1,1]),m.makeArray([0,1,0,1])
+        self._doThreeTestArray('_A=[0,0,1,1],_B=[0,1,0,1],_A && _B',m.AND(A,B),m.Uint8Array([0,0,0,1]))
         """Test AND_NOT"""
-        self.assertEqual((Data.execute('[0,0,1,1] AND_NOT [0,1,0,1]')==Uint8Array([0,0,1,0])).all(),True)
+        self._doThreeTestArray('_A AND_NOT _B',m.AND_NOT(A,B),m.Uint8Array([0,0,1,0]))
         """Test ANINT"""
-        self.assertEqual(Data.execute('ANINT(2.783)'),Float32(3.0))
-        """Test ANY"""
-        self.assertEqual(Data.execute('any([$TRUE,$FALSE,$TRUE])'),Uint8(1))
-        """ Documentation and/or Implementation known to be broken
-        self.assertEqual((Data.execute('_b=[1,3,5],_c=[[0,3,5],[2,4,6],[7,4,8]],any(_b ne _c,0)')==Uint8Array([1,0,1])).all(),True)
-        self.assertEqual((Data.execute('_b=[1,3,5],_c=[[0,3,5],[2,4,6],[7,4,8]],any(_b ne _c,1)')==Uint8Array([1,1])).all(),True)
-        """
+        self._doThreeTest('ANINT(2.783)',m.ANINT(2.783),m.Float32(3.0))
         """Test ARG"""
-        self.assertEqual(Data.execute('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")'),Uint8(1))
+        self.assertEqual(Data.execute('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")'),m.Uint8(1))
         """Test ARGD"""
-        self.assertEqual(Data.execute('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")'),Uint8(1))
-
+        self.assertEqual(Data.execute('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")'),m.Uint8(1))
         """Test arg_of"""
-        self.assertEqual(Data.execute('arg_of(gub->foo(42,43))'),Int32(42))
-        self.assertEqual(Data.execute('arg_of(pub->foo(42,43),1)'),Int32(43))
-        self.assertEqual(Data.execute('arg_of(execute("Test"))'),String("Test"))
-        self.assertEqual(Data.execute('arg_of(1+3,1)'),Int32(3))
+        self._doThreeTest('arg_of(pub->foo(42,43))',m.ARG_OF(m.Call('pub','foo',42,43)),m.Int32(42))
+        self._doThreeTest('arg_of(pub->foo(42,43),1)',m.ARG_OF(m.Call('pub','foo',42,43),1),m.Int32(43))
+        self._doThreeTest('arg_of(1+3,1)',m.ARG_OF(m.ADD(1,3),1),m.Int32(3))
         """Test Array"""
-        doUnaryArray('array(10)*0',Float32Array([range(10)])*0.0)
-        doUnaryArray('array(10,0)*0',Int32Array([range(10)])*0)
-        doUnaryArray('array(10,0BU)*0BU',Uint8Array([range(10)])*Uint8(0))
-        """Test ASIN"""
-        self.assertEqual(Data.execute('abs(asin(0.84147098) - 1.0) < .000001'),Uint8(1))
-        """Test ASIND"""
-        self.assertEqual(Data.execute('abs(asind(.5) - 30.0) < .000001'),Uint8(1))
-        """Test as_is"""
-        """Test atan"""
-        self.assertEqual(Data.execute('abs(atan(1.5574077)-1.0) < .000001'),Uint8(1))
-        """Test atan2"""
-        self.assertEqual(Data.execute('abs(atan2(1.5574077,1.0) - 1.0) < .000001'),Uint8(1))
+        self._doThreeTestArray('array(10)',    m.ARRAY(10),  m.Float32Array([0]*10))
+        self._doThreeTestArray('array(10,0)',  m.ARRAY(10,0),m.Int32Array([0]*10))
+        self._doThreeTestArray('array(10,0BU)',m.ARRAY(10,m.Uint8(0)),m.Uint8Array([0]*10))
+        self._doThreeTestArray('zero(100)',    m.ZERO(100),m.Float32Array([0]*100))
 
-        doUnaryArray('zero(100)',Float32Array([range(100)])*0.0)
+    def tdiPythonInterface(self):
+        #self.assertEqual(Data.execute("Py('a=None')"),1)
+        self.assertEqual(Data.execute("Py('a=None','a')"),None)
+        self.assertEqual(Data.execute("Py('a=123','a')"),123)
+        self.assertEqual(Data.execute("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')"),Uint8(255))
+        self.assertEqual(Data.execute("pyfun('Uint8','MDSplus',-1)"),Uint8(255))
+        self.assertEqual(Data.execute("pyfun('Uint8',*,-1)"),Uint8(255))
+        self.assertEqual(Data.execute("pyfun('str',*,123)"),String(123))
+        self.assertEqual(Data.execute('_l=list(1,2,3)'), m.List([1,2,3]))
+        self.assertEqual(Data.execute('apdadd(_l,4,5)'), m.List([1,2,3,4,5]))
+        self.assertEqual(Data.execute('apdrm(_l,1,3)'),  m.List([1,3,5]))
+        self.assertEqual(Data.execute('_d=dict(1,"1",2,"2")'), m.Dictionary([1,'1',2,'2']))
+        self.assertEqual(Data.execute('apdadd(_d,3,"3")'),     m.Dictionary([1,'1',2,'2',3,"3"]))
+        self.assertEqual(Data.execute('apdrm(_d,2)'),          m.Dictionary([1,'1',3,"3"]))
+
+    def decompile(self):
+        self.assertEqual(str(m.Uint8(123)),'123BU')
+        self.assertEqual(str(m.Uint16(123)),'123WU')
+        self.assertEqual(str(m.Uint32(123)),'123LU')
+        self.assertEqual(str(m.Uint64(123)),'123QU')
+        self.assertEqual(str(m.Int8(123)),'123B')
+        self.assertEqual(str(m.Int16(123)),'123W')
+        self.assertEqual(str(m.Int32(123)),'123')
+        self.assertEqual(str(m.Int64(123)),'123Q')
+        #self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
+        #self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
 
     def runTest(self):
-        self.basicBinaryOperators()
-        self.mathFunctions()
+        self.operatorsAndFunction()
         self.tdiFunctions()
+        self.decompile()
+        self.tdiPythonInterface()
 
 
 def suite():
-    tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
+    tests = ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
     return TestSuite(map(dataTests,tests))
 
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
