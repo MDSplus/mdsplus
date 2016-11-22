@@ -119,7 +119,7 @@ int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_x
   int status = 1;
   struct descriptor_function *pfun;
   struct descriptor_xd image = EMPTY_XD, entry = EMPTY_XD, tmp[255];
-  int j, max, ntmp = 0, (*routine) ();
+  int j, max = 0, ntmp = 0, (*routine) ();
   struct descriptor *result[2] = { 0, 0 };
   unsigned short code;
   struct descriptor *newdsc[256];
