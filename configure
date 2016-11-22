@@ -3438,7 +3438,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\\\"\${MAKEFLAGS}\\\"; export MFLAGS=\\\"\${MFLAGS}\\\"; ${SHELL} \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3582,7 +3582,7 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
+ docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\\\"\${MAKEFLAGS}\\\"; export MFLAGS=\\\"\${MFLAGS}\\\"; ${SHELL} \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -12379,8 +12379,8 @@ fi
   :
 else
 
-	        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works only in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
-$as_echo "$as_me: WARNING: Valgrind works only in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
+	        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
+$as_echo "$as_me: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
 		enable_valgrind="no"
 
 fi
