@@ -72,6 +72,7 @@ setup(name=name,
                   pname+'.wsgi',
                   pname+'.mdsExceptions'],
       package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
+      data_files={'link': ['tests/MDSplus']},
       include_package_data = True,
       classifiers = [
       'Programming Language :: Python',
