@@ -37,6 +37,7 @@ makelist(){
     grep -v egg-info | \
     grep -v '/$' | \
     awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
+    awk '{split($0,a," -> "); print a[1]}' | \
     sort
 }
 debtopkg() {
