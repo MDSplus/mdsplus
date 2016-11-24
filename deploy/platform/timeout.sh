@@ -15,6 +15,9 @@
     waitandkill 10 $$ SIGTERM 1
     waitandkill  5 $$ SIGKILL 2
 ) 2> /dev/null &
+watchdog=$!
 shift
 :&& exec "$@"
-exit $?
+status=$?
+kill -s SIGTERM $watchdog
+exit $status
