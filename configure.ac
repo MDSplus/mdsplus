@@ -956,7 +956,7 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 dnl Find a Python2 interpreter.  Python versions prior to 2.0 are not
 dnl supported. (2.0 was released on October 16, 2000).
 m4_define([_AM_PYTHON_INTERPRETER_LIST],
-          [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
+	  [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
 AM_PATH_PYTHON([2],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
