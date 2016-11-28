@@ -3,6 +3,9 @@
 # redhat_docker_build.sh is used to build, test, package and add rpms's to a
 # repository for redhat based systems.
 #
+# release:
+# /release/$branch/RPMS/$arch/*.rpm
+#
 # publish:
 # /publish/$branch/RPMS/$arch/*.rpm
 # /publish/$branch/cache/$arch/*.rpm-*
@@ -74,7 +77,6 @@ EOF
     ### Clean up release stage area
     ###
     rm   -Rf /release/${BRANCH}/*
-    mkdir -p /release/${BRANCH}/RPMS;
     BRANCH=${BRANCH} \
           RELEASE_VERSION=${RELEASE_VERSION} \
           BNAME=${BNAME} \
