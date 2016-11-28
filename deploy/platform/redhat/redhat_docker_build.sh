@@ -51,7 +51,6 @@ buildrelease(){
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d;
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
-    mkdir -p /release/${BRANCH}/RPMS;
     cp /source/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
     if [ -d /sign_keys/.gnupg ]
     then
@@ -74,7 +73,8 @@ EOF
     ###
     ### Clean up release stage area
     ###
-    rm -Rf /release/${BRANCH}/*
+    rm   -Rf /release/${BRANCH}/*
+    mkdir -p /release/${BRANCH}/RPMS;
     BRANCH=${BRANCH} \
           RELEASE_VERSION=${RELEASE_VERSION} \
           BNAME=${BNAME} \
