@@ -459,7 +459,7 @@ then
     >&2 echo "Attempting to publish without a --distname=name option."
     exit 1
 fi
-if [ ! -r "${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh" ]
+if [ ! -d "${SRCDIR}/deploy/platform/${PLATFORM}" ]
 then
     >&2 echo "Plaform ${PLATFORM} is not supported."
     exit 1
