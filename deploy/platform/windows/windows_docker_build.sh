@@ -2,6 +2,9 @@
 #
 # windows_docker_build.sh - build windows installer
 #
+# release:
+# /release/$branch/MDSplus-*.exe
+#
 # publish:
 # /publish/$branch/MDSplus-*.exe
 #
@@ -70,7 +73,7 @@ buildrelease() {
     fi
     pushd $MDSPLUS_DIR
     makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD \
-         -DOUTDIR=/release ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
+         -DOUTDIR=/release/${BRANCH} ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
     popd
     if [ -d /sign_keys ]
     then
