@@ -177,10 +177,9 @@ int main(int argc, String * argv)
 
   MrmType class;
   static XrmOptionDescRec options[] = { {"-monitor", "*monitor", XrmoptionSepArg, NULL} };
-  static XtResource resources[] =
-      { {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "CMOD_MONITOR"}
-  ,
-  {"images", "Images", XtRString, sizeof(String), sizeof(String), XtRString, ""}
+  static XtResource resources[] = {
+    {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "ACTION_MONITOR"},
+    {"images",  "Images",  XtRString, sizeof(String), sizeof(String), XtRString, ""}
   };
   MrmHierarchy drm_hierarchy;
   struct {
