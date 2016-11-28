@@ -3453,6 +3453,16 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+ /* DEVNOT_A_PYDEVICE */
+      case 0x277ca5d8:
+        {static const char *text="Device is not a python device.";
+        static const char *msgnam="NOT_A_PYDEVICE";
+        *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
     default: sts = 0;
   }
   if (sts == 0) {
