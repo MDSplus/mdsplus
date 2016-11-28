@@ -118,7 +118,6 @@ EOF
     exit $status
 }
 default_build(){
-    echo "${platform_build} not found. Using default."
     if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
     then
         mkdir -p ${RELEASEDIR}/${BRANCH}
@@ -134,8 +133,10 @@ set +e
 platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
 if [ -f "${platform_build}" ]
 then
-   source ${platform_build} "$@"
+    echo "running ${platform_build}."
+    source ${platform_build} "$@"
 else
-   default_build
-   rundocker
+    echo "Using default script."
+    default_build
+    rundocker
 fi
