@@ -22,7 +22,7 @@ def Py(cmds, *arg):
     varname = arg[0] if len(arg)>0 else None
     #isglobal= arg[1] if len(arg)>1 else False
     arg     = arg[3:]if len(arg)>3 else []
-    MDSplus.Data.execute("deallocate(public _py_exception)")
+    MDSplus.DEALLOCATE('public _py_exception')
     cmdlist=list()
     ans=1
     for cmd in cmds:
