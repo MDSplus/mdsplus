@@ -89,7 +89,7 @@ rundocker(){
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
            $(volume "${RELEASEDIR}" /release) \
-           $(volume "${RELEASEDIR}" /publish) \
+           $(volume "${PUBLISHDIR}" /publish) \
            $(volume "$KEYS" /sign_keys) \
            ${image} $program
         status=$?
