@@ -2,6 +2,10 @@
 #
 # debian_docker_build is used to build, test, package and add deb's to a
 # repository for debian based systems.
+# 
+# publish:
+# /publish/repo   -> repository
+# /publish/$branch/DEBS/$arch/*.deb
 #
 if [ "$ARCH" = "amd64" ]
 then

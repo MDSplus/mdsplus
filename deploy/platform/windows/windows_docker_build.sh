@@ -2,6 +2,9 @@
 #
 # windows_docker_build.sh - build windows installer
 #
+# publish:
+# /publish/$branch/MDSplus-*.exe
+#
 export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
 export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
 test64() {
