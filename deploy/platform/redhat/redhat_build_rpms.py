@@ -126,7 +126,7 @@ def buildRpms():
 
             sys.stdout.flush()
             subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
-            for s in ('BUILD','BUILDROOT','RPMS','SOURCES','SPECS','SRPMS'):
+            for s in ('BUILD','RPMS','SOURCES','SPECS','SRPMS'):
                 try:
                     os.mkdir('/release/%(branch)s/'%info +s)
                 except OSError: pass  # if exists

@@ -4,9 +4,11 @@
 # repository for redhat based systems.
 #
 # release:
+# /release/$branch/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 # /release/$branch/RPMS/$arch/*.rpm
 #
 # publish:
+# /publish/$branch/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 # /publish/$branch/RPMS/$arch/*.rpm
 # /publish/$branch/cache/$arch/*.rpm-*
 #
@@ -118,7 +120,7 @@ EOF
 
 publish(){
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
-    :&& rsync -a --exclude=repodata /release/${BRANCH}/RPMS /publish/${BRANCH}
+    :&& rsync -a --exclude=repodata /release/${BRANCH}/* /publish/${BRANCH}
     checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
     if ( createrepo -h | grep '\-\-deltas' > /dev/null )
     then
