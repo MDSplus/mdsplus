@@ -117,22 +117,25 @@ EOF
     done
     exit $status
 }
-set +e
-if [ -f /source/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh ]
-then
-   /source/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh $@
-else
+default_build(){
+    echo "${platform_build} not found. Using default."
     if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
     then
-        RELEASEDIR=${RELEASEDIR}/${BRANCH}
-        mkdir -p ${RELEASEDIR}
+        mkdir -p ${RELEASEDIR}/${BRANCH}
     else
         RELEASEDIR=""
     fi
     if [ "${PUBLISH}" = "yes" ]
     then
-        PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
-        mkdir -p ${PUBLISHDIR}
+        mkdir -p ${PUBLISHDIR}/${BRANCH}
     fi
-    rundocker
+}
+set +e
+platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
+if [ -f "${platform_build}" ]
+then
+   source ${platform_build} "$@"
+else
+   default_build
+   rundocker
 fi

@@ -80,7 +80,7 @@ buildrelease() {
                   -n MDSplus  \
                   -i http://www.mdsplus.org/ \
                   -t http://timestamp.verisign.com/scripts/timestamp.dll \
-                  -tr 10 /release/MDSplus${bname}-${major}.${minor}-${release}.exe <<EOF
+                  -tr 10 /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe <<EOF
 mdsplus
 EOF
                )
@@ -100,5 +100,5 @@ publish() {
     else
         bname="-${BRANCH}"
     fi
-    rsync -a /release/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}/
+    rsync -a /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}
 }
