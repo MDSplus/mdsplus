@@ -47,6 +47,10 @@ dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
 AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
 
 
+dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
+AX_TARGET_SELFHELP
+
+
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
