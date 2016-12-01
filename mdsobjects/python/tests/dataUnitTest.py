@@ -1,10 +1,6 @@
 from unittest import TestCase,TestSuite
 import sys,os
 
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
-
 from MDSplus import Data,makeData,makeArray,Uint8,String,setenv
 import MDSplus as m
 
@@ -13,7 +9,6 @@ if os.name=='nt':
     setenv("PyLib","python%d%d"  % sys.version_info[0:2])
 else:
     setenv("PyLib","python%d.%d" % sys.version_info[0:2])
-setenv("PYTHONPATH",MDSplus_path)
 
 class dataTests(TestCase):
     def _doThreeTest(self,tdiexpr,pyexpr,ans,almost=False):

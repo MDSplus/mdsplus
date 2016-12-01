@@ -1,10 +1,6 @@
 from unittest import TestCase,TestSuite
 import sys,os
 
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
-
 from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv
 
 
