@@ -99,7 +99,7 @@ buildrelease() {
 	then
 	   continue
 	fi
-	checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.${ARCH}
+	checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.noarch
 	if [ "$UPDATEPKG" = "yes" ]
 	then
 	    mkdir -p /source/deploy/packaging/${PLATFORM}
