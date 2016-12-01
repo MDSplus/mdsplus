@@ -1,9 +1,6 @@
 from unittest import TestCase
 import sys,os
 
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-print(MDSplus_path)
-
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad
 from MDSplus import getenv,setenv,tcl
 from MDSplus import mdsExceptions as Exc
