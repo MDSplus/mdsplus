@@ -1,0 +1,4 @@
+./usr/local/mdsplus/tdi/hdf5/hdf5close.fun
+./usr/local/mdsplus/tdi/hdf5/hdf5list.fun
+./usr/local/mdsplus/tdi/hdf5/hdf5open.fun
+./usr/local/mdsplus/tdi/hdf5/hdf5read.fun
