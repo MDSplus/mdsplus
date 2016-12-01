@@ -13,7 +13,6 @@ if os.name=='nt':
     setenv("PyLib","python%d%d"  % sys.version_info[0:2])
 else:
     setenv("PyLib","python%d.%d" % sys.version_info[0:2])
-setenv("PYTHONPATH",MDSplus_path)
 
 class testing(object):
     import re
