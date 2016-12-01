@@ -7,6 +7,10 @@ srcdir=@srcdir@
 builddir=@builddir@
 VPATH=@srcdir@
 
+# selfhelp target
+@TARGET_SELFHELP@
+HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
+
 JAVA_APS = javamds \
 	   javascope \
            javatraverser \
@@ -65,6 +69,7 @@ PARTS = \
 
 
 .PHONY: all $(PARTS)
+all: ##@build build all active submodules
 all: $(PARTS)
 
 DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
@@ -73,7 +78,7 @@ $(PARTS): $(DIRECTORIES)
 	$(MAKE) -C $@
 
 .PHONY: docs
-docs:
+docs:   ##@docs build documentation using doxygen (ref to docs directory)
 	$(MAKE) -C docs install
 
 
@@ -81,13 +86,14 @@ docs:
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
 .PHONY: clean
+clean: ##@build recusively clean all built objects in submodules
 clean: $(clean_DIRS) clean_TESTS clean_DOCS
 
 .PHONY: $(clean_DIRS)
 $(clean_DIRS):
 	$(MAKE) -C $(@:clean_%=%) clean
 
-clean_DOCS:
+clean_DOCS: ##@docs clean generated documentation
 	$(MAKE) -C docs clean
 
 
@@ -95,24 +101,22 @@ clean_DOCS:
 # Testing 
 
 .PHONY: tests
-tests:
+tests: ##@tests recursively perform tests in submodules
 @ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests
 @ENABLE_TESTS_FALSE@	@echo "Tests disabled"
 
 .PHONY: tests-valgrind
-tests-valgrind:
+tests-valgrind: ##@tests recursively perform tests using valgrind tool
 @ENABLE_TESTS_TRUE@	$(MAKE) $(AM_MAKEFLAGS) -C testing all tests-valgrind
 @ENABLE_TESTS_FALSE@	@echo "Tests disabled"
 
 .PHONY: $(clean_TESTS)
-clean_TESTS:
+clean_TESTS: ##@tests clean all tests results and compiled tests objects
 @ENABLE_TESTS_TRUE@	$(MAKE) -C testing tests-clean
 
 
-
-
-
 .PHONY: full_clean
+full_clean: ##@build perform deep clean of build directories
 full_clean: ./devscripts/rm_if clean
 	@ $< bin bin64 bin32 bin_x86 bin_x86_64
 	@ $< etc
@@ -140,6 +144,7 @@ $(install_DIRS):
 	$(MAKE) -C $(@:install_%=%) install
 
 .PHONY: install
+install: ##@build build and install active modules to prefix directory
 install: $(install_DIRS)
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	$(MKDIR_P) $(prefix)/local/tdi
@@ -159,6 +164,7 @@ install: $(install_DIRS)
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
+
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
