@@ -1958,8 +1958,9 @@ public class Signal implements WaveDataListener
             currY = sliceY;
         else
             currY = y;
-         int startIdx;
+        int startIdx;
          //Check for initial NaN Y values
+        if(currY == null || y == null) return; //To avoid nullpointer exceptions in any condition
         for(startIdx = 0; startIdx < currY.length && new Float(y[startIdx]).isNaN(); startIdx++);
         ymin = ymax = y[startIdx];
         for(int i = startIdx; i < currY.length; i++)

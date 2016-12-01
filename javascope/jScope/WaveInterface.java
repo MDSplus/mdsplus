@@ -1470,7 +1470,7 @@ public class WaveInterface
             return javaTime;
         }catch(Exception exc)
         {
-            return 0;
+            return -1;
         }
     }
 }
