@@ -260,7 +260,6 @@ public class Signal implements WaveDataListener
      * X and Y arrays when mode is MODE_XZ or MODE_YZ
      */
     private double[] sliceX;
-    private long[]   sliceXLong;
     private float[]  sliceY;
     
     
@@ -309,7 +308,6 @@ public class Signal implements WaveDataListener
     float z[];
     
     double xY2D[];
-    long   xY2DLong[];
     float yY2D[];
     float zY2D[];
     
@@ -1050,9 +1048,7 @@ public class Signal implements WaveDataListener
     static String toStringTime(long time)
     {
         DateFormat df = new SimpleDateFormat("HH:mm:sss");
-        Date date = new Date();
-        date.setTime(time);
-        return df.format(date).toString();
+        return df.format(new Date(time));
     }
 
     public String getStringOfXinYZplot()
@@ -3157,7 +3153,7 @@ public class Signal implements WaveDataListener
             return;
         }
         int samplesBefore, samplesAfter;
-        if(regX.length == 0) return;
+        //if(regX.length == 0) return;
 
         if(x == null) x = new double[0];
         if(y == null) y = new float[0];

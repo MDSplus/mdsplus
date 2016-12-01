@@ -13,7 +13,6 @@ class ASCIIDataProvider implements DataProvider
     String error = null;
     String path_exp = null;
     long   curr_shot = -1;
-    float time[];
     float y[];
     float x[];
 
@@ -415,10 +414,8 @@ class ASCIIDataProvider implements DataProvider
     public double GetFloat(String in)
     {
         error = null;
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
-
 
     public long[] GetShots(String in) throws IOException
     {

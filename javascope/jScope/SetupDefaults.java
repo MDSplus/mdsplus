@@ -28,10 +28,10 @@ public class SetupDefaults extends JDialog implements ActionListener
 
    private JTextField    x_grid_lines, y_grid_lines;
    private JTextField    vertical_offset, horizontal_offset;
-   private JComboBox	 grid_mode;
-   private JComboBox     legend_mode;
+   private JComboBox<String> grid_mode;
+   private JComboBox<String> legend_mode;
+   private JComboBox<String> auto_color_mode;
    private JCheckBox     reversed_b;
-   private JComboBox     auto_color_mode;
    private JCheckBox     upd_limits;
    int	   curr_grid_mode = 0,
            x_curr_lines_grid = 3,
@@ -194,13 +194,13 @@ public class SetupDefaults extends JDialog implements ActionListener
         panel1.add(lab);
 
         String grd[] = {"Dotted", "Gray"};
-        grid_mode = new JComboBox(grd);//Grid.GRID_MODE);
+        grid_mode = new JComboBox<>(grd);//Grid.GRID_MODE);
         grid_mode.setSelectedIndex(curr_grid_mode);
         panel1.add(grid_mode);
 
         lab = new JLabel("Legend:");
         panel1.add(lab);
-        legend_mode = new JComboBox();
+        legend_mode = new JComboBox<>();
         legend_mode.addItem("In Graphics");
         legend_mode.addItem("Fixed Bottom");
         legend_mode.addItem("Fixed Right");
@@ -209,7 +209,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
         lab = new JLabel("Auto color:");
         panel1.add(lab);
-        auto_color_mode = new JComboBox();
+        auto_color_mode = new JComboBox<>();
         auto_color_mode.addItem("on shot");
         auto_color_mode.addItem("on expression");
         auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);
@@ -402,7 +402,7 @@ public class SetupDefaults extends JDialog implements ActionListener
       int h_ofs = 0, v_ofs = 0;
 	  try
 	  {
-	    h_ofs = new Integer(horizontal_offset.getText().trim()).intValue();
+	    h_ofs = Integer.parseInt(horizontal_offset.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -413,7 +413,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
 	  try
 	  {
-	    v_ofs = new Integer(vertical_offset.getText().trim()).intValue();
+	    v_ofs = Integer.parseInt(vertical_offset.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -422,8 +422,6 @@ public class SetupDefaults extends JDialog implements ActionListener
 	  Waveform.SetVerticalOffset(v_ofs);
 	  vertical_offset.setText(""+v_ofs);
 
-
-
 	  if(auto_color_mode.getSelectedIndex() == 0)
 	    WaveInterface.auto_color_on_expr = false;
 	  else
@@ -431,7 +429,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
 	  try
 	  {
-	    x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
+	    x_curr_lines_grid = Integer.parseInt(x_grid_lines.getText().trim());
 	  }
 	  catch (NumberFormatException exc)
 	  {
@@ -443,7 +441,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 
 	  try
 	  {
-	    y_curr_lines_grid = new Integer(y_grid_lines.getText().trim()).intValue();
+	    y_curr_lines_grid = Integer.parseInt(y_grid_lines.getText().trim());
       }
 	  catch (NumberFormatException exc)
 	  {
