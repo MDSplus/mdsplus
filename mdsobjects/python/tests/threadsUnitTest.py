@@ -2,10 +2,6 @@ from unittest import TestCase,TestSuite,TestResult
 from threading import Thread
 import sys,os
 
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
-
 from MDSplus import Tree,getenv
 from MDSplus.tests import treeUnitTest,dataUnitTest
 
