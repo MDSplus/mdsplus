@@ -6,20 +6,15 @@ Tests of MDSplus
 
 """
 from unittest import TestCase,TestSuite,TextTestRunner
-import sys,os
-
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
-
+import os,sys
 from treeUnitTest import treeTests
 from threadsUnitTest import suite as threadsSuite
 from dataUnitTest import suite as dataSuite
 from exceptionUnitTest import exceptionTests
 from connectionUnitTest import suite as connectionsSuite
 from segmentsUnitTest import suite as segmentsSuite
+
 from MDSplus import setenv,getenv
-setenv("PYTHONPATH",MDSplus_path)
 
 class cleanup(TestCase):
     dir=None

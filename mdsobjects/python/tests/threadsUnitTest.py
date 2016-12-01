@@ -1,9 +1,8 @@
 from unittest import TestCase,TestSuite,TestResult
 from threading import Thread
-import sys,os
 
+import treeUnitTest,dataUnitTest
 from MDSplus import Tree,getenv
-from MDSplus.tests import treeUnitTest,dataUnitTest
 
 
 class threadJob(Thread):

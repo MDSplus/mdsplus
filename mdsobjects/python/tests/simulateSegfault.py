@@ -2,7 +2,6 @@
 # mdsplus libraries to see if the python test library can manage it.
 #
 from unittest import TestCase,TestSuite
-import sys,os
 
 from MDSplus import Data
 

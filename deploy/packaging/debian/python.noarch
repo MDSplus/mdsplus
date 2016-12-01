@@ -164,7 +164,9 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/check_python_arch.py
 ./usr/local/mdsplus/mdsobjects/python/tests/connectionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/dataUnitTest.py
+./usr/local/mdsplus/mdsobjects/python/tests/devices/TestDevice.py
 ./usr/local/mdsplus/mdsobjects/python/tests/exceptionUnitTest.py
+./usr/local/mdsplus/mdsobjects/python/tests/mdsip.hosts
 ./usr/local/mdsplus/mdsobjects/python/tests/segmentsUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/simulateSegfault.py
 ./usr/local/mdsplus/mdsobjects/python/tests/threadsUnitTest.py

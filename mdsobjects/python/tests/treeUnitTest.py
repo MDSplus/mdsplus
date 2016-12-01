@@ -1,5 +1,5 @@
 from unittest import TestCase
-import sys,os
+import os
 
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad
 from MDSplus import getenv,setenv,tcl
@@ -84,7 +84,6 @@ class treeTests(TestCase):
             node.addDevice('dt200_%02d' % (i,),'dt200')
         node = pytree_top.addNode('SIG_CMPRS', 'signal')
         node.compress_on_put = True
-
         pytree.write()
         pytreesub.write()
 
