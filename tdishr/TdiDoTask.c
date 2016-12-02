@@ -85,10 +85,8 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
 	arglist[j] = (void *)pmethod->arguments[j - 3];
       arglist[ndesc] = (void *)out_ptr;
       arglist[ndesc + 1] = MdsEND_ARG;
-      if (status & 1) {
-        struct descriptor_s out = { sizeof(void *) , DTYPE_POINTER, CLASS_S , LibCallg(arglist, TreeDoMethod) };
-        MdsCopyDxXd((struct descriptor*)&out, out_ptr);
-      }
+      void* result = LibCallg(arglist, TreeDoMethod);
+      status = TdiPutLong((int*)&result, out_ptr);
       StrFree1Dx(&method_d);
       break;
     }
