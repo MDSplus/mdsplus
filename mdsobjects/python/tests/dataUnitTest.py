@@ -1,14 +1,8 @@
 from unittest import TestCase,TestSuite
-import sys,os
 
-from MDSplus import Data,makeData,makeArray,Uint8,String,setenv
+from MDSplus import Data,makeData,makeArray,Uint8,String
 import MDSplus as m
 
-
-if os.name=='nt':
-    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
-else:
-    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
 
 class dataTests(TestCase):
     def _doThreeTest(self,tdiexpr,pyexpr,ans,almost=False):

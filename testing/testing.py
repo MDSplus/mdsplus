@@ -8,11 +8,7 @@ if "LD_PRELOAD" in os.environ:
 MDSplus_path=os.path.dirname(os.path.abspath(__file__))
 if sys.path[0] != MDSplus_path:
     sys.path.insert(0,MDSplus_path)
-from MDSplus import setenv
-if os.name=='nt':
-    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
-else:
-    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
+
 
 class testing(object):
     import re

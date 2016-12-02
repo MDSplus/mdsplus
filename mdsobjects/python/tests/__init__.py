@@ -15,6 +15,11 @@ from connectionUnitTest import suite as connectionsSuite
 from segmentsUnitTest import suite as segmentsSuite
 
 from MDSplus import setenv,getenv
+if os.name=='nt':
+    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
+else:
+    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
+
 
 class cleanup(TestCase):
     dir=None
