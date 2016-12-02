@@ -1,5 +1,4 @@
 from unittest import TestCase
-import sys,os
 
 from MDSplus import DevNOT_TRIGGERED, TclNORMAL
 

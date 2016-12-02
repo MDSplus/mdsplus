@@ -1,8 +1,6 @@
 from unittest import TestCase,TestSuite
-import sys,os
 
 from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv
-
 
 
 class segmentsTests(TestCase):
