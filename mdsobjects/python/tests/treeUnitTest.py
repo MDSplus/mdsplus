@@ -13,6 +13,7 @@ class treeTests(TestCase):
             tcl(expr,True,True,True)
         except Exception as e:
             self.assertEqual(e.__class__,exc)
+            return
         self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     def setUp(self):
