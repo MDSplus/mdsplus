@@ -369,20 +369,15 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 EXPORT char *TranslateLogical(char const *pathname)
 {
-  char *path = NULL;
   char *tpath = getenv(pathname);
-  if (tpath)
-    path = strdup(tpath);
+  if (tpath) return strdup(tpath);
 #ifdef _WIN32
-  if (!path) {
-    path = GetRegistry(HKEY_CURRENT_USER, pathname);
-    if (!path)
-      path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
-    if (path)
-      path = strdup(path);
-  }
+  tpath = GetRegistry(HKEY_CURRENT_USER, pathname);
+  if (tpath) return strdup(tpath);
+  tpath = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+  if (tpath) return strdup(tpath);
 #endif
-  return path;
+  return NULL;
 }
 
 #ifndef va_count

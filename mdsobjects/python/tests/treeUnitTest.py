@@ -11,9 +11,10 @@ class treeTests(TestCase):
     def _doExceptionTest(self,expr,exc):
         try:
             tcl(expr,True,True,True)
-            self.fail("TCL: '%s' should have signaled an exception"%expr)
         except Exception as e:
             self.assertEqual(e.__class__,exc)
+            return
+        self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     def setUp(self):
         from tempfile import mkdtemp
