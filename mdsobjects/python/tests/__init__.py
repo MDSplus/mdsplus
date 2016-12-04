@@ -60,15 +60,6 @@ def test_all(*arg):
     dir=tempfile.mkdtemp()
     print ("Creating trees in %s" % (dir,))
     cleanup.dir=dir
-    if os.getenv("TEST_DISTRIBUTED_TREES") == None:
-        hostpart=""
-    else:
-        hostpart="localhost::"
-    setenv('pytree_path',hostpart+dir)
-    setenv('pytreesub_path',hostpart+dir)
-    if getenv("testing_path") is None:
-      setenv('testing_path',"%s/trees"%(os.path.dirname(os.path.realpath(__file__)),))
-
     tests=list()
     tests.append(treeTests())
     if os.getenv('TEST_THREADS') is not None:
