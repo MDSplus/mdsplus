@@ -627,6 +627,13 @@ def TreeSetDbi(tree,itemname,value):
     if not (status & 1):
         raise _Exceptions.statusToException(status)
 
+def switchDbid(ctx=0):
+    if not ctx:
+        ctx = 0
+    if not isinstance(ctx,_C.c_void_p):
+        ctx = _C.c_void_p(ctx)
+    return _TreeSwitchDbid(ctx)
+
 _descriptor=_mimport('_descriptor')
 descriptor_xd=_descriptor.descriptor_xd
 descriptor_a=_descriptor.descriptor_a
@@ -749,6 +756,8 @@ __TreeStartConglomerate=__TreeShr._TreeStartConglomerate
 __TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeEndConglomerate=__TreeShr._TreeEndConglomerate
 __TreeEndConglomerate.argtypes=[_C.c_void_p]
+_TreeSwitchDbid=__TreeShr.TreeSwitchDbid
+_TreeSwitchDbid.restype=_C.c_void_p
 
 try:
     _TreeUsePrivateCtx=__TreeShr.TreeUsePrivateCtx

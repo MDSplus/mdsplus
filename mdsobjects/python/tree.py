@@ -50,17 +50,65 @@ def _getActiveTree(thread=None):
         ctx = 0
     return ctx
 
-class _TreeCtx(object):
-    ctxs=[]
-    def __init__(self,ctx):
-        self.ctx=ctx
-        _TreeCtx.ctxs.append(ctx)
+class _TreeCtx(object): # HINT: _TreeCtx begin
+    """ The TreeCtx class is used to manage proper garbage collection
+    of open trees. It retains reference counts of tree contexts and
+    closes and frees tree contexts when no longer being used. """
+    lock = _threading.Lock()
+    ctxs={}
+    order=[]
+    def __init__(self,ctx,opened=True):
+        self.ctx = ctx
+        self.register(opened)
+        self.open = True
+    @staticmethod
+    def canClose(ctx):
+        return _TreeCtx.ctxs[ctx] == 1
+    def register(self,opened):
+        self.lock.acquire()
+        try:
+            if self.ctx in self.ctxs:
+                self.ctxs[self.ctx]+=1
+            else:
+                self.ctxs[self.ctx] = 1 if opened else 2
+            # generate ordered set
+            self.order = [self.ctx]+[c for c in self.order if c!=self.ctx]
+        finally:
+            self.lock.release()
     def __del__(self):
-        _TreeCtx.ctxs.remove(self.ctx)
-        if self.ctx not in _TreeCtx.ctxs:
-            status=_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
-            if (status & 1):
-                _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
+        if not self.open: return
+        self.open = False
+        self.lock.acquire()
+        try:
+            self.ctxs[self.ctx]-=1
+            if self.ctxs[self.ctx]==0:
+                self.closeDbid()
+        finally:
+            self.lock.release()
+    def closeDbid(self):
+        del(self.ctxs[self.ctx])
+        self.order = [c for c in self.order if c!=self.ctx]
+        # make sure current Dbid is not active - tdishr
+        ctx = _treeshr.switchDbid()
+        if ctx != 0 and ctx!=self.ctx:
+             _treeshr.switchDbid(ctx)
+        # make sure current Dbid is not active - python
+        ctx = _getActiveTree()
+        if ctx is not None:
+            if ctx!=self.ctx:
+                _setActiveTree(ctx)
+            elif len(_TreeCtx.order)>0:
+                _setActiveTree(_TreeCtx.order[-1])
+            else:
+                _setActiveTree(0)
+        # apparently this was opened by python - so close all trees
+        while True:
+           try:
+               _treeshr.TreeClose(_C.c_void_p(self.ctx),None,0)
+               print("An unexpectedly open tree has been closed!!")
+           except: break
+        # now free current Dbid
+        _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
 
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -68,14 +116,32 @@ class Tree(object):
     _lock=_threading.RLock()
     _id=0
 
-	# support for the with-structure
+    def _checkCtx(self,*args):
+        if len(args) == 0:
+            return 0 if self.ctx is None else self.ctx.value
+        oldctx = args[0]
+        newctx = self._checkCtx()
+        if oldctx == newctx: return
+        if newctx == 0:
+            import gc
+            del(self.tctx)
+            gc.collect()
+        else: self.tctx = _TreeCtx(newctx)
+    # support for the with-structure
     def __enter__(self):
     	return self
-    def __exit__(self, type, value, traceback):
+    def __del__(self):
+        if _TreeCtx.canClose(self.ctx.value):
+            self.__exit__()
+    def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
-        if self.open_for_edit:
-            self.quit()
-
+        try:
+            if self.open_for_edit:
+                 self.quit()
+            else:
+                 self.close()
+        except _Exceptions.TreeNOT_OPEN:
+            pass
 
     def __getattr__(self,name):
         """
@@ -109,12 +175,8 @@ class Tree(object):
             return self.getNode(name)
         if name.lower() == 'default':
             return self.getDefault()
-        if name.lower() == 'top':
+        elif name.lower() == 'top':
             return _treenode.TreeNode(0,self)
-        if name.lower() == 'shot':
-            name='shotid'
-        elif name.lower() == 'tree':
-            name='name'
         try:
             return _treeshr.TreeGetDbi(self,name)
         except KeyError:
@@ -143,14 +205,14 @@ class Tree(object):
         _hard_lock.acquire()
         try:
             if tree is None:
-                try:
-                    ctx=_treeshr.TreeGetContext()
-                except:
+                ctx = _treeshr.switchDbid()
+                if not ctx:
                     ctx=_getActiveTree()
                 if ctx == 0:
                     raise _Exceptions.TreeNOT_OPEN()
                 else:
                     self.ctx=_C.c_void_p(ctx)
+                opened = False
             else:
                 if mode.upper() == 'NORMAL':
                     self.ctx=_treeshr.TreeOpen(tree,shot)
@@ -163,11 +225,14 @@ class Tree(object):
                     self.ctx=_treeshr.TreeOpenReadOnly(tree,shot)
                 else:
                     raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
-            if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
-                _setActiveTree(self.ctx.value)
-                _treeshr.TreeRestoreContext(self.ctx)
-                if tree is not None:
-                    self.tctx=_TreeCtx(self.ctx.value)
+                opened = True
+            if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
+                raise _exc.MDSplusError
+            _setActiveTree(self.ctx.value)
+            _treeshr.switchDbid(self.ctx.value)
+            self.tctx = _TreeCtx(self.ctx.value,opened)
+            self.tree = self.name
+            self.shot = self.shotid
         finally:
             _hard_lock.release()
 
@@ -190,7 +255,7 @@ class Tree(object):
         @type value: various
         @rtype: None
         """
-        if name.lower() in ('modified','name','open_for_edit','open_readonly','shot','shotid','tree'):
+        if name.lower() in ('modified','name','open_for_edit','open_readonly','shotid'):
             raise AttributeError('Read only attribute: '+name)
         elif name == 'default':
             self.setDefault(value)
@@ -450,10 +515,23 @@ class Tree(object):
         """
         if self.open_for_edit:
             Tree.lock()
+            oldctx = self._checkCtx()
             try:
                 _treeshr.TreeQuitTree(self)
             finally:
                 Tree.unlock()
+                self._checkCtx(oldctx)
+        else: self.close()
+
+    def close(self):
+        """Close tree.
+        @rtype: None
+        """
+        oldctx = self._checkCtx()
+        try:
+            _treeshr.TreeClose(self.ctx,self.tree,self.shot)
+        finally:
+            self._checkCtx(oldctx)
 
     def removeTag(self,tag):
         """Remove a tagname from the tree
