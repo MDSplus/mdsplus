@@ -55,13 +55,20 @@ class _TreeCtx(object):
     def __init__(self,ctx):
         self.ctx=ctx
         _TreeCtx.ctxs.append(ctx)
+        self.open = True
     def __del__(self):
-        _TreeCtx.ctxs.remove(self.ctx)
-        if self.ctx not in _TreeCtx.ctxs:
-            status=_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
-            if (status & 1):
-                _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
-
+        self.close()
+    def close(self):
+        if self.open:
+            self.open = False
+            _TreeCtx.ctxs.remove(self.ctx)
+            if self.ctx in _TreeCtx.ctxs:
+                return
+            #_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
+            while True:
+                try: _treeshr.TreeClose(self.ctx,_C.c_void_p(0),_C.c_int32(0))
+                except: break
+            _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
@@ -73,9 +80,7 @@ class Tree(object):
     	return self
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. If tree is open for edit close it. """
-        if self.open_for_edit:
-            self.quit()
-
+        self.quit()
 
     def __getattr__(self,name):
         """
@@ -454,6 +459,17 @@ class Tree(object):
                 _treeshr.TreeQuitTree(self)
             finally:
                 Tree.unlock()
+            self.tctx.close()
+            del(self.tctx)
+        else: self.close()
+
+    def close(self):
+        """Close tree.
+        @rtype: None
+        """
+        _treeshr.TreeClose(self.ctx,_C.c_char_p(self.tree),_C.c_int32(self.shot))
+        self.tctx.close()
+        del(self.tctx)
 
     def removeTag(self,tag):
         """Remove a tagname from the tree

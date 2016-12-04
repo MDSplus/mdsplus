@@ -39,7 +39,6 @@ class treeTests(TestCase):
             treepath="%s"
         self.tmpdir = mkdtemp()
         self.root = os.path.dirname(os.path.realpath(__file__))
-        print(self.root)
         self.env = dict((k,str(v)) for k,v in os.environ.items())
         self.setenv("MDS_PYDEVICE_PATH",'%s/devices'%self.root)
         self.setenv("pytree_path",treepath%self.tmpdir)
@@ -52,7 +51,6 @@ class treeTests(TestCase):
 
     def tearDown(self):
         import shutil, gc
-        tcl('close/all')
         gc.collect()
         shutil.rmtree(self.tmpdir)
 
@@ -303,10 +301,12 @@ class treeTests(TestCase):
             testDispatchCommand('type test')
             self._doTCLTest('dispatch/build')
             self._doTCLTest('dispatch/phase INIT')
-            sleep(.1)
+            sleep(.01)
             self._doTCLTest('dispatch/phase PULSE')
-            sleep(.1)
+            sleep(.01)
             self._doTCLTest('dispatch/phase STORE')
+            sleep(.01)
+            testDispatchCommand('close/all')
             """ tcl exceptions """
             self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
             """ tcl check if still alive """
@@ -329,7 +329,7 @@ class treeTests(TestCase):
         self.getData()
         self.segments()
         self.getCompression()
-        self.dclInterface()
+        #self.dclInterface()
         if not self.inThread:
              self.dispatcher()
 
