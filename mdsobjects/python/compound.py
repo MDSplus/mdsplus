@@ -3,10 +3,11 @@ def _mimport(name, level=1):
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-
+import numpy as _N
 _data=_mimport('mdsdata')
 _dtypes=_mimport('_mdsdtypes')
 _Exceptions=_mimport('mdsExceptions')
+_ver=_mimport('version')
 
 class Compound(_data.Data):
     def __init__(self,*args, **params):
@@ -235,17 +236,24 @@ class _Conglom(Compound):
     information used for locating the external code.
     """
     fields=('image','model','name','qualifiers')
-    def getClass(self, ):
+    def getDevice(self, *args):
         if not self.image=='__python__':
-            raise Exception('Conglom does not represent a python class.')
+            raise _Exceptions.DevNOT_A_PYDEVICE
         model = str(self.model)
         safe_env = {}
-        qualifiers = self.qualifiers.value.tolist()
-        if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
-        exec(compile(qualifiers,'<string>','exec')) in safe_env
-        if not model in safe_env:
-            raise _Exceptions.DevPYDEVICE_NOT_FOUND
-        return safe_env[model]
+        qualifiers = self.qualifiers
+        if isinstance(qualifiers,_data.Data): qualifiers = qualifiers.data()
+        if isinstance(qualifiers,_N.generic): qualifiers = qualifiers.tolist()
+        if isinstance(qualifiers,list):       qualifiers = ';'.join(qualifiers)  # make it a list of statements
+        if isinstance(qualifiers,_ver.basestring):
+            exec(compile(qualifiers,'<string>','exec'),safe_env)
+        if model in safe_env:
+            cls = safe_env[model]
+        else:
+            cls = _device.Device.PyDevice(model,model)
+        if issubclass(cls,(_device.Device,)):
+            return cls if len(args)==0 else cls(*args)
+        raise _Exceptions.DevPYDEVICE_NOT_FOUND
 Conglom=MetaClass('Conglom',(_Conglom,),{})
 
 class _Dependency(Compound):
@@ -385,12 +393,6 @@ class _Signal(Compound):
     dims=property(_getDims)
     """The dimensions of the signal"""
 
-#    def decompile(self):
-#        arglist=list()
-#        for arg in self.args:
-#            arglist.append(makeData(arg).decompile())
-#        return 'Build_Signal('+','.join(arglist)+')'
-
     def dim_of(self,idx=0):
         """Return the signals dimension
         @rtype: Data
@@ -483,3 +485,5 @@ class _Opaque(Compound):
       return opq
     fromFile=staticmethod(fromFile)
 Opaque=MetaClass('Opaque',(_Opaque,),{})
+
+_device=_mimport('mdsdevice')
