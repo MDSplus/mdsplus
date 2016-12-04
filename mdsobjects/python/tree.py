@@ -99,11 +99,14 @@ class Tree(object):
         @return: Value of attribute
         @rtype: various
         """
-        if name.upper() == name:
-            try:
-                return self.getNode(name)
-            except:
-                pass
+        if name.startswith('_'):
+            namesplit = name.split('__',1)
+            if len(namesplit)==2 and namesplit[1]==namesplit[1].upper():
+                return self.getNode('\\%s::%s'%tuple(namesplit[1].split('__',1)+['TOP'])[:2])
+            if name.upper() == name:
+                return self.getNode('\\%s'%name[1:])
+        elif name.upper() == name:
+            return self.getNode(name)
         if name.lower() == 'default':
             return self.getDefault()
         if name.lower() == 'top':
