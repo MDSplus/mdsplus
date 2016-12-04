@@ -1,21 +1,25 @@
 from unittest import TestCase,TestSuite
 
-from MDSplus import Data,makeData,makeArray,Uint8,String
+from numpy import ndarray, array
+from math import log10
 import MDSplus as m
 
 
 class dataTests(TestCase):
-    def _doThreeTest(self,tdiexpr,pyexpr,ans,almost=False):
+    def _doThreeTest(self,tdiexpr,pyexpr,ans,**kwargs):
         """ tests Scalars tdi expression vs. python Expression vs. expected result """
-        tdians = Data.execute(tdiexpr)
+        almost = kwargs.get('almost',False)
+        real = kwargs.get('real',True)
+        tdians = m.Data.execute(tdiexpr)
         if isinstance(pyexpr,(bool,)):
             pyans = pyexpr
-            if isinstance(tdians,(Uint8,)) and tdians<2:
+            if isinstance(tdians,(m.Uint8,)) and tdians<2:
                 tdians = bool(tdians)
         else:
             pyans = pyexpr.getData()
         if almost:
-            E = almost if isinstance(almost,(int,float)) else 5
+            E = almost if isinstance(almost,(int,float)) else 7
+            if tdians>1 if real else tdians.real>1: E = int(E-log10(float(tdians)))
             self.assertAlmostEqual(pyans,tdians,E)
             self.assertAlmostEqual(pyans,ans,E,msg='%s: %s,%s'%(tdiexpr,pyans,ans))
         else:
@@ -31,16 +35,16 @@ class dataTests(TestCase):
         else:
             self.assertEqual((ans1==ans2).all(),True,msg=msg)
 
-    def _doThreeTestArray(self,tdiexpr,pyexpr,ans,almost=False):
+    def _doThreeTestArray(self,tdiexpr,pyexpr,ans,**kwargs):
         """ tests Arrays tdi expression vs. python Expression vs. expected result """
-        from numpy import ndarray, array
-        tdians = Data.execute(tdiexpr)
+        almost = kwargs.get('almost',False)
+        tdians = m.Data.execute(tdiexpr)
         if isinstance(pyexpr,(ndarray,)):
             pyans = pyexpr
-            if isinstance(tdians,(Uint8,)) and tdians<2:
+            if isinstance(tdians,(m.Uint8,)) and tdians<2:
                 tdians = array(tdians,bool)
         else:
-            pyans = pyexpr.data()
+            pyans = pyexpr.getData()
         if almost:
             E = -almost if isinstance(almost,(int,float)) else -7
             delta = abs(ans+(ans==0).astype(int)) * (10**E)
@@ -48,59 +52,53 @@ class dataTests(TestCase):
         self._doUnaryArray(pyans,tdians,delta=delta)
         self._doUnaryArray(pyans,ans,tdiexpr,delta=delta)
 
-    def _doExceptionTest(self,expr,exc):
-        try:
-            Data.execute(expr)
-            self.fail("'%s' should have signaled an exception"%expr)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-
-
     def operatorsAndFunction(self):
-        def executeTests(test,a,b,res,almost=False,real=True):
+        def executeTests(test,a,b,res,**kwargs):
             """ performes tests on operators """
+            almost = kwargs.get('almost',False)
+            real = kwargs.get('real',True)
             res.reverse()
-            test('_a+_b',    a+ b,   res.pop(),almost=almost)
-            test('_a-_b',    a- b,   res.pop(),almost=almost)
-            test('_a*_b',    a* b,   res.pop(),almost=almost)
-            test('_a/_b',    a/ b,   res.pop(),almost=almost)
-            #test('_a**_b',   a**b,   res.pop(),almost=almost)
-            #test('_a|_b',    a| b,   res.pop())
-            #test('_a&_b',    a& b,   res.pop())
+            test('_a+_b',    a+ b,   res.pop(),**kwargs)
+            test('_a-_b',    a- b,   res.pop(),**kwargs)
+            test('_a*_b',    a* b,   res.pop(),**kwargs)
+            test('_a/_b',    a/ b,   res.pop(),**kwargs)
+            #test('_a**_b',   a**b,   res.pop(),**kwargs)
+            #test('_a|_b',    a| b,   res.pop(),**kwargs)
+            #test('_a&_b',    a& b,   res.pop(),**kwargs)
             #test('_a==_b',   a==b,   res.pop())
             #test('_a!=_b',   a!=b,   res.pop())
-            #test('_a<<_b',   a<<b,   res.pop())
-            #test('_a>>_b',   a>>b,   res.pop())
-            #test('-_a',      -a,     res.pop(),almost=almost)
-            #test('abs(-_a)', abs(-a),res.pop(),almost=almost)
-            #test('abs1(-_a)',m.ABS1(-a),res.pop(),almost=almost)
-            #test('abssq(-_a)',m.ABSSQ(-a),res.pop(),almost=almost)
+            #test('_a<<_b',   a<<b,   res.pop(),**kwargs)
+            #test('_a>>_b',   a>>b,   res.pop(),**kwargs)
+            #test('-_a',      -a,     res.pop(),**kwargs)
+            #test('abs(-_a)', abs(-a),res.pop(),**kwargs)
+            #test('abs1(-_a)',m.ABS1(-a),res.pop(),**kwargs)
+            #test('abssq(-_a)',m.ABSSQ(-a),res.pop(),**kwargs)
             rcount = 11
             acount = 4+rcount
             if almost:  # some operations only make sence on floating point
-                test('exp(_a)',     m.EXP(a),    res.pop(),almost=almost)
-                test('log(_a)',     m.LOG(a),    res.pop(),almost=almost)
-                test('sin(_a)',     m.SIN(a),    res.pop(),almost=almost)
-                test('cos(_a)',     m.COS(a),    res.pop(),almost=almost)
+                test('exp(_a)',     m.EXP(a),    res.pop(),**kwargs)
+                test('log(_a)',     m.LOG(a),    res.pop(),**kwargs)
+                test('sin(_a)',     m.SIN(a),    res.pop(),**kwargs)
+                test('cos(_a)',     m.COS(a),    res.pop(),**kwargs)
                 if real:  # some operations are only defined for real numbers
-                    test('tan(_a)',     m.TAN(a),    res.pop(),almost=almost)
-                    test('asin(_a/10)', m.ASIN(a/10),res.pop(),almost=almost)
-                    test('acos(_a/10)', m.ACOS(a/10),res.pop(),almost=almost)
-                    test('atan(_a)',    m.ATAN(a),   res.pop(),almost=almost)
-                    test('atan2(_a,1)', m.ATAN2(a,1),res.pop(),almost=almost)
-                    test('log2(_a)',    m.LOG2(a),   res.pop(),almost=almost)
-                    test('log10(_a)',   m.LOG10(a),  res.pop(),almost=almost)
-                    test('sind(_a)',    m.SIND(a),   res.pop(),almost=almost)
-                    test('cosd(_a)',    m.COSD(a),   res.pop(),almost=almost)
-                    test('tand(_a)',    m.TAND(a),   res.pop(),almost=almost)
-                    test('anint(_a/3)', m.ANINT(a/3),res.pop(),almost=almost)
+                    test('tan(_a)',     m.TAN(a),    res.pop(),**kwargs)
+                    test('asin(_a/10)', m.ASIN(a/10),res.pop(),**kwargs)
+                    test('acos(_a/10)', m.ACOS(a/10),res.pop(),**kwargs)
+                    test('atan(_a)',    m.ATAN(a),   res.pop(),**kwargs)
+                    test('atan2(_a,1)', m.ATAN2(a,1),res.pop(),**kwargs)
+                    test('log2(_a)',    m.LOG2(a),   res.pop(),**kwargs)
+                    test('log10(_a)',   m.LOG10(a),  res.pop(),**kwargs)
+                    test('sind(_a)',    m.SIND(a),   res.pop(),**kwargs)
+                    test('cosd(_a)',    m.COSD(a),   res.pop(),**kwargs)
+                    test('tand(_a)',    m.TAND(a),   res.pop(),**kwargs)
+                    test('anint(_a/3)', m.ANINT(a/3),res.pop(),**kwargs)
                 else:  # strip results of real operations
                     res = res[:-rcount]
             else:  # strip results of floating operations
                 res = res[:-acount]
             if real:  # some binary operations are only defined for real numbers
                 pass
-                #test('_a mod _b',   a% b,   res.pop(),almost=almost)
+                #test('_a mod _b',   a% b,   res.pop(),**kwargs)
                 #test('_a>_b',       a> b,   res.pop())
                 #test('_a>=_b',      a>=b,   res.pop())
                 #test('_a<_b',       a< b,   res.pop())
@@ -123,7 +121,7 @@ class dataTests(TestCase):
                     cl(3),
                     cl(1),True,True,False,False,
                     ]
-                Data.execute('_a=10%s,_b=3%s'%tuple([suffix]*2))
+                m.Data.execute('_a=10%s,_b=3%s'%tuple([suffix]*2))
                 a,b = cl(10),cl(3)
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
@@ -131,7 +129,7 @@ class dataTests(TestCase):
                         self.assertEqual(int(cl(10)),10)
                         self.assertAlmostEqual(float(cl(10)),10.)
                 warnings.resetwarnings()
-                self.assertEqual(Data.execute('[_a]'),makeArray(a))
+                self._doTdiTest('[_a]',m.makeArray(a))
                 executeTests(self._doThreeTest,a,b,results,**kw)
             doTest('BU',m.Uint8,  m.Int8,   m.Uint8)
             doTest('WU',m.Uint16, m.Int16,  m.Uint16)
@@ -150,8 +148,6 @@ class dataTests(TestCase):
             """ test arrays and signals """
             def doTest(suffix,cl,scl,ucl,**kw):
                 """ test array and signal """
-                from mdsarray import makeArray
-                from compound import Signal
                 def results(cl,scl,ucl):
                     #from numpy import array
                     return [
@@ -182,19 +178,18 @@ class dataTests(TestCase):
                         #array([False,True,True]),   # <=
                         ]
                 """ test array """
-                Data.execute('_a=[10%s,4%s,2%s],_b=[3%s,4%s,5%s]'%tuple([suffix]*6))
+                m.Data.execute('_a=[10%s,4%s,2%s],_b=[3%s,4%s,5%s]'%tuple([suffix]*6))
                 a,b = cl([10,4,2]),cl([3,4,5])
-                self._doThreeTestArray('_a',makeArray(a),makeData(a))
+                self._doThreeTestArray('_a',m.makeArray(a),m.makeData(a))
                 executeTests(self._doThreeTestArray,a,b,results(cl,scl,ucl),**kw)
                 """ test signal """
-                Scl  = lambda v: Signal(cl(v))
-                Sscl = lambda v: Signal(scl(v))
-                Sucl = lambda v: Signal(ucl(v))
-                Data.execute('_a=Make_Signal(_a,*)')
-                a = Signal(a)
+                Scl  = lambda v: m.Signal(cl(v))
+                Sscl = lambda v: m.Signal(scl(v))
+                Sucl = lambda v: m.Signal(ucl(v))
+                m.Data.execute('_a=Make_Signal(_a,*)')
+                a = m.Signal(a)
                 executeTests(self._doThreeTestArray,a,b,results(Scl,Sscl,Sucl),**kw)
 
-            import MDSplus as m
             doTest('BU',m.Uint8Array,  m.Int8Array,   m.Uint8Array)
             doTest('WU',m.Uint16Array, m.Int16Array,  m.Uint16Array)
             doTest('LU',m.Uint32Array, m.Int32Array,  m.Uint32Array)
@@ -211,14 +206,30 @@ class dataTests(TestCase):
         testScalars()
         #testArrays()
 
+    def _doExceptionTest(self,expr,exc):
+        try:
+           m.Data.execute(expr)
+        except Exception as e:
+            self.assertEqual(e.__class__,exc)
+            return
+        self.fail("TDI: '%s' should have signaled %s"%(expr,exc))
+
+    def _doTdiTest(self,expr,res):
+        self.assertEqual(m.Data.execute(expr),res)
     def tdiFunctions(self):
         m.dTRUE = m.__dict__['$TRUE']
         m.dFALSE = m.__dict__['$FALSE']
-        """Test abort"""
-        self._doExceptionTest('abort()',m.TdiABORT)
-        """Test syntax"""
-        self._doExceptionTest('\033[[A',m.TdiBOMB)
-        self.assertEqual(Data.execute(''),None)
+        from MDSplus import mdsExceptions as Exc
+        """Test Exceptions"""
+        self._doExceptionTest('abort()',Exc.TdiABORT)
+        self._doExceptionTest('{,}',Exc.TdiSYNTAX)
+        self._doExceptionTest('\033[[A',Exc.TdiBOMB)
+        self._doExceptionTest('abs()',Exc.TdiMISS_ARG)       
+        self._doExceptionTest('abs("")',Exc.TdiINVDTYDSC)       
+        self._doExceptionTest('abs(1,2)',Exc.TdiEXTRA_ARG)       
+        self._doExceptionTest('"',Exc.TdiUNBALANCE)       
+        """Test $Missing/NoData/None"""
+        self._doTdiTest('',None)
         """Test abs"""
         self._doThreeTest('abs(cmplx(3.0,4.0))',m.ABS(m.Complex64(3.+4.j)),m.Float32(5.))
         """Test abs1"""
@@ -230,7 +241,7 @@ class dataTests(TestCase):
         self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]])',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]])),m.Int32Array([[1,4,9], [11,15,21]]))
         self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],0)',m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),0),m.Int32Array([[1,4,9],[2,6,12]]))
         #self._doThreeTestArray('accumulate([[1,3,5],[2,4,6]],1)',m.ACCUMULATE([[1,3,5],[2,4,6]],1),m.Int32Array([[1,3,5],[3,7,11]]))  # tdi issue
-        self._doUnaryArray(Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1).getData())
+        self._doUnaryArray(m.Data.execute('accumulate([[1,3,5],[2,4,6]],1)'),m.ACCUMULATE(m.makeArray([[1,3,5],[2,4,6]]),1).getData())
         """Test achar"""
         self._doThreeTest('achar(88)',m.ACHAR(88),m.String('X'))
         """Test ADJUSTL"""
@@ -260,7 +271,7 @@ class dataTests(TestCase):
         """Test allocated"""
         self.assertEqual(m.DEALLOCATE('*')>=2,True)  # deallocates _A and _B and more?
         self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
-        self.assertEqual(Data.execute('_xyz=0,allocated("_xyz")'),m.Uint8(1))
+        self._doTdiTest('_xyz=0,allocated("_xyz")',m.Uint8(1))
         self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(1))
         self.assertEqual(m.DEALLOCATE('*'),m.Uint8(1))
         self.assertEqual(m.ALLOCATED('_xyz'),m.Uint8(0))
@@ -272,9 +283,9 @@ class dataTests(TestCase):
         """Test ANINT"""
         self._doThreeTest('ANINT(2.783)',m.ANINT(2.783),m.Float32(3.0))
         """Test ARG"""
-        self.assertEqual(Data.execute('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")'),m.Uint8(1))
+        self._doTdiTest('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")',m.Uint8(1))
         """Test ARGD"""
-        self.assertEqual(Data.execute('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")'),m.Uint8(1))
+        self._doTdiTest('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")',m.Uint8(1))
         """Test arg_of"""
         self._doThreeTest('arg_of(pub->foo(42,43))',m.ARG_OF(m.Call('pub','foo',42,43)),m.Int32(42))
         self._doThreeTest('arg_of(pub->foo(42,43),1)',m.ARG_OF(m.Call('pub','foo',42,43),1),m.Int32(43))
@@ -286,19 +297,19 @@ class dataTests(TestCase):
         self._doThreeTestArray('zero(100)',    m.ZERO(100),m.Float32Array([0]*100))
 
     def tdiPythonInterface(self):
-        #self.assertEqual(Data.execute("Py('a=None')"),1)
-        self.assertEqual(Data.execute("Py('a=None','a')"),None)
-        self.assertEqual(Data.execute("Py('a=123','a')"),123)
-        self.assertEqual(Data.execute("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')"),Uint8(255))
-        self.assertEqual(Data.execute("pyfun('Uint8','MDSplus',-1)"),Uint8(255))
-        self.assertEqual(Data.execute("pyfun('Uint8',*,-1)"),Uint8(255))
-        self.assertEqual(Data.execute("pyfun('str',*,123)"),String(123))
-        self.assertEqual(Data.execute('_l=list(1,2,3)'), m.List([1,2,3]))
-        self.assertEqual(Data.execute('apdadd(_l,4,5)'), m.List([1,2,3,4,5]))
-        self.assertEqual(Data.execute('apdrm(_l,1,3)'),  m.List([1,3,5]))
-        self.assertEqual(Data.execute('_d=dict(1,"1",2,"2")'), m.Dictionary([1,'1',2,'2']))
-        self.assertEqual(Data.execute('apdadd(_d,3,"3")'),     m.Dictionary([1,'1',2,'2',3,"3"]))
-        self.assertEqual(Data.execute('apdrm(_d,2)'),          m.Dictionary([1,'1',3,"3"]))
+        #self._doTdiTest("Py('a=None')",1)
+        self._doTdiTest("Py('a=None','a')",None)
+        self._doTdiTest("Py('a=123','a')",123)
+        self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
+        self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
+        self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
+        self._doTdiTest("pyfun('str',*,123)",m.String(123))
+        self._doTdiTest('_l=list(1,2,3)', m.List([1,2,3]))
+        self._doTdiTest('apdadd(_l,4,5)', m.List([1,2,3,4,5]))
+        self._doTdiTest('apdrm(_l,1,3)',  m.List([1,3,5]))
+        self._doTdiTest('_d=dict(1,"1",2,"2")', m.Dictionary([1,'1',2,'2']))
+        self._doTdiTest('apdadd(_d,3,"3")',     m.Dictionary([1,'1',2,'2',3,"3"]))
+        self._doTdiTest('apdrm(_d,2)',          m.Dictionary([1,'1',3,"3"]))
 
     def decompile(self):
         self.assertEqual(str(m.Uint8(123)),'123BU')
