@@ -371,29 +371,26 @@ class Device(_treenode.TreeNode):
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
         import __builtin__,sys
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
-            parts=path.split(';')
-            for part in parts:
-                w=_os.walk(part)
-                for dp,dn,fn in w:
-                    for fname in fn:
-                        if fname.endswith('.py'):
-                            sys.path.insert(0,dp)
-                            try:
-                                devnam=fname[:-3].upper()
-                                __builtin__.__import__(fname[:-3]).__dict__[devnam]
-                                ans.append(devnam+'\0')
-                                ans.append('\0')
-                            except:
-                                pass
-                            finally:
-                                sys.path.remove(dp)
-        if len(ans) == 0:
-            return None
-        else:
+        path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
+        if path is None: return
+        parts=path.split(';')
+        for part in parts:
+            w=_os.walk(part)
+            for dp,dn,fn in w:
+                for fname in fn:
+                    if fname.endswith('.py'):
+                        sys.path.insert(0,dp)
+                        try:
+                            devnam=fname[:-3].upper()
+                            __builtin__.__import__(fname[:-3]).__dict__[devnam]
+                            ans.append(devnam+'\0')
+                            ans.append('\0')
+                        except:
+                            pass
+                        finally:
+                            sys.path.remove(dp)
+        if len(ans) > 0:
             return _mdsdata.Data.execute(str(ans))
-
 
     findPyDevices=staticmethod(findPyDevices)
 
