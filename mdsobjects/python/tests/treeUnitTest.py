@@ -279,14 +279,14 @@ class treeTests(TestCase):
     def dispatcher(self):
         from subprocess import Popen,PIPE,STDOUT
         from time import sleep
+        port = 8800
+        server = 'LOCALHOST:%d'%(port,)
         def testDispatchCommand(command,stdout=None,stderr=None):
             self.assertEqual(tcl('dispatch/command/server=%s %s'  %(server,command),1,1,1),(None,None))
-        try:    port = int(getenv('mdsevent_port'))
-        except: port = 8999
-        server = 'LOCALHOST:%d'%(port,)
         pytree = Tree('pytree',self.shot)
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
+        pytree.close()
         """ using dispatcher """
         hosts = '%s/mdsip.hosts'%self.root
         tcl('set tree %s/shot=%d'%(pytree.tree,pytree.shot),1,1,1)
