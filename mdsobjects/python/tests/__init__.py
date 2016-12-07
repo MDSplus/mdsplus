@@ -7,6 +7,7 @@ Tests of MDSplus
 """
 from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
+import gc;gc.set_debug(gc.DEBUG_LEAK & ~gc.DEBUG_COLLECTABLE)
 from treeUnitTest import treeTests
 from threadsUnitTest import suite as threadsSuite
 from dataUnitTest import suite as dataSuite

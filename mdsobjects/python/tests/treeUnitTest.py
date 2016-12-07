@@ -5,7 +5,6 @@ from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
 from MDSplus import getenv,setenv,tcl
 from MDSplus import mdsExceptions as Exc
 
-
 class treeTests(TestCase):
     shot    = 0
     shotinc = 3
@@ -50,7 +49,7 @@ class treeTests(TestCase):
         setenv(name,value)
 
     def tearDown(self):
-        import shutil, gc
+        import gc,shutil
         gc.collect()
         shutil.rmtree(self.tmpdir)
 
@@ -267,9 +266,10 @@ class treeTests(TestCase):
         """ tcl commands """
         self._doTCLTest('type test','test\n')
         self._doTCLTest('close/all')
+        self._doTCLTest('show db','\n')
         self._doTCLTest('set tree pytree/shot=%d'%self.shot)
         self._doTCLTest('show db','000  PYTREE        shot: %d [\\PYTREE::TOP]   \n\n'%self.shot)
-        self._doTCLTest('close/all')
+        self._doTCLTest('close')
         self._doTCLTest('show db','\n')
         """ tcl exceptions """
         self._doExceptionTest('close',Exc.TreeNOT_OPEN)
@@ -282,7 +282,7 @@ class treeTests(TestCase):
         port = 8800
         server = 'LOCALHOST:%d'%(port,)
         def testDispatchCommand(command,stdout=None,stderr=None):
-            self.assertEqual(tcl('dispatch/command/server=%s %s'  %(server,command),1,1,1),(None,None))
+            self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
         pytree = Tree('pytree',self.shot)
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
