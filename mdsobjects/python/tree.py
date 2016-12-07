@@ -68,6 +68,7 @@ class _TreeCtx(object):
             while True:
                 try: _treeshr.TreeClose(self.ctx,_C.c_void_p(0),_C.c_int32(0))
                 except: break
+            _treeshr._TreeSwitchDbid(_C.c_void_p(0))
             _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -114,9 +115,9 @@ class Tree(object):
             return self.getNode(name)
         if name.lower() == 'default':
             return self.getDefault()
-        if name.lower() == 'top':
+        elif name.lower() == 'top':
             return _treenode.TreeNode(0,self)
-        if name.lower() == 'shot':
+        elif name.lower() == 'shot':
             name='shotid'
         elif name.lower() == 'tree':
             name='name'
@@ -459,17 +460,24 @@ class Tree(object):
                 _treeshr.TreeQuitTree(self)
             finally:
                 Tree.unlock()
-            self.tctx.close()
-            del(self.tctx)
+            self._close()
         else: self.close()
 
     def close(self):
         """Close tree.
         @rtype: None
         """
-        _treeshr.TreeClose(self.ctx,_C.c_char_p(self.tree),_C.c_int32(self.shot))
+        _treeshr.TreeClose(self.ctx,self.tree,self.shot)
+        self._close()
+
+    def _close(self):
+        def notopen(self):
+            raise _Exceptions.TreeNOT_OPEN
         self.tctx.close()
-        del(self.tctx)
+        for k in self.__dict__.keys():
+            del(self.__dict__[k])
+        self.__dict__['__getattribute__'] = notopen
+
 
     def removeTag(self,tag):
         """Remove a tagname from the tree
