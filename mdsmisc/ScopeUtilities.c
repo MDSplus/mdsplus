@@ -537,7 +537,15 @@ static int recIsSegmented(struct descriptor *dsc)
 	 	nid = *(int *)dsc->pointer;
 		status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
-		    return nid; 
+		{
+		    char dtype, dimct;
+		    int dims[64], nextRow;
+		    status = TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
+		    if((status & 1) && dimct == 1)
+		        return nid;
+		    else
+			return 0;
+		}
 		//Now check if the node contains an expression or a direct nid reference
 		status = TreeGetNci(nid, nciList);
 		if((status & 1) && ((nciClass == CLASS_S && (nciDtype == DTYPE_NID ||nciDtype == DTYPE_PATH))||nciClass == CLASS_R))
@@ -1613,3 +1621,51 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     MdsFree1Dx(&yXd, 0);
     return &retXd;
 }
+
+EXPORT struct descriptor_xd *getLastProfile(int *nidPtr)
+{
+    static EMPTYXD(retXd);
+    static EMPTYXD(emptyXd);
+    EMPTYXD(segmentXd);
+    EMPTYXD(dimensionXd);
+    int nid, status, numSegments;
+    ARRAY_COEFF(char *, 16) *segmentD;
+    DESCRIPTOR_A_COEFF(lastProfileD, 0, 0, 0, 16, 0);
+    int i, sampleDim;
+    
+    nid = *nidPtr;
+    status = TreeGetNumSegments(nid, &numSegments);
+    if(!(status & 1) || numSegments == 0)
+    {
+	retXd = emptyXd;
+	return &retXd;
+    }
+    status = TreeGetSegment(nid, numSegments - 1, &segmentXd, &dimensionXd);
+    if(!(status & 1))
+    {
+	retXd = emptyXd;
+	return &retXd;
+    }
+    segmentD = (void *)segmentXd.pointer;
+    if(segmentD->class != CLASS_A)
+    {
+	retXd = emptyXd;
+	return &retXd;
+    }
+    lastProfileD.dtype = segmentD->dtype;
+    lastProfileD.length = segmentD->length;
+    lastProfileD.dimct = segmentD->dimct - 1;
+    sampleDim = 1;
+    for(i = 0; i < segmentD->dimct - 1; i++)
+    {
+	sampleDim *= segmentD->m[i];
+	lastProfileD.m[i] = segmentD->m[i];
+    }
+    lastProfileD.pointer = (char *)segmentD->pointer + (segmentD->m[segmentD->dimct -1 ] - 1)*sampleDim * segmentD->length;
+    lastProfileD.arsize = sampleDim * segmentD->length;
+    status = MdsCopyDxXd((struct descriptor *)&lastProfileD, &retXd);
+    MdsFree1Dx(&segmentXd, 0);
+    MdsFree1Dx(&dimensionXd, 0);
+    return &retXd;
+}
+
