@@ -25,18 +25,7 @@ def PyDoMethod(n,method,*args):
         if not hasattr(Device,method):
             print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
         if not isinstance(device, (Device,)):
-            safe_env = {}
-            try:
-                mod = Device.importPyDeviceModule(model)
-                safe_env[model]=mod.__dict__[model]
-            except:
-                qualifiers = c.qualifiers.value.tolist()
-                if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
-                exec(compile(qualifiers,'<string>','exec')) in safe_env
-            if not model in safe_env:
-                stderr.write("Python device implementation not found for %s after doing %s\n\n" % (model,qualifiers))
-                raise DevPYDEVICE_NOT_FOUND()
-            device = safe_env[model](n)
+            device = c.getDevice(device)
         try:
             methodobj = device.__getattribute__(method)
         except AttributeError:

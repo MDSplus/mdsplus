@@ -68,7 +68,7 @@ class treeTests(TestCase):
                 node.addNode('child','structure')
             node = pytree_top.addNode('SIG_CMPRS', 'signal')
             node.compress_on_put = True
-            Device.importPyDeviceModule('TestDevice').__dict__['TestDevice'].Add(pytree,'TESTDEVICE')
+            Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
             pytree.write()
         with Tree('pytreesub',self.shot,'new') as pytreesub:
             if pytreesub.shot != self.shot:
@@ -289,7 +289,7 @@ class treeTests(TestCase):
         pytree.close()
         """ using dispatcher """
         hosts = '%s/mdsip.hosts'%self.root
-        tcl('set tree %s/shot=%d'%(pytree.tree,pytree.shot),1,1,1)
+        tcl('set tree pytree/shot=%d'%self.shot,1,1,1)
         try:
           mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
                         stdout=PIPE,stderr=STDOUT,bufsize=-1)

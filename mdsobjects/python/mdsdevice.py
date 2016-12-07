@@ -367,6 +367,11 @@ class Device(_treenode.TreeNode):
         raise _exceptions.DevPYDEVICE_NOT_FOUND
     importPyDeviceModule=staticmethod(importPyDeviceModule)
 
+    def PyDevice(module,model=None):
+        if model is None: model=module
+        return Device.importPyDeviceModule(module).__dict__[model]
+    PyDevice=staticmethod(PyDevice)
+
     def findPyDevices():
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
