@@ -89,7 +89,7 @@ rundocker(){
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
            $(volume "${RELEASEDIR}" /release) \
-           $(volume "${RELEASEDIR}" /publish) \
+           $(volume "${PUBLISHDIR}" /publish) \
            $(volume "$KEYS" /sign_keys) \
            ${image} $program
         status=$?
@@ -117,22 +117,26 @@ EOF
     done
     exit $status
 }
-set +e
-if [ -f /source/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh ]
-then
-   /source/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh $@
-else
+default_build(){
     if [ "${RELEASE}" = "yes" -o "${PUBLISH}" = "yes" ]
     then
-        RELEASEDIR=${RELEASEDIR}/${BRANCH}
-        mkdir -p ${RELEASEDIR}
+        mkdir -p ${RELEASEDIR}/${BRANCH}
     else
         RELEASEDIR=""
     fi
     if [ "${PUBLISH}" = "yes" ]
     then
-        PUBLISHDIR=${PUBLISHDIR}/${BRANCH}
-        mkdir -p ${PUBLISHDIR}
+        mkdir -p ${PUBLISHDIR}/${BRANCH}
     fi
+}
+set +e
+platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
+if [ -f "${platform_build}" ]
+then
+    echo "running ${platform_build}."
+    source ${platform_build} "$@"
+else
+    echo "Using default script."
+    default_build
     rundocker
 fi

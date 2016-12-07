@@ -6,20 +6,11 @@
 #
 # Run docker image to build mdsplus
 #
-set -e
+default_build
 if [ "${RELEASE}" = "yes" ]
 then
-    mkdir -p ${RELEASEDIR}/${BRANCH}
-    rm -Rf ${RELEASEDIR}/${BRANCH}/DEBS
-    rm -Rf ${RELEASEDIR}/repo
-    releasedir=${RELEASEDIR}
+  # clean up repobefor creating a new release
+  rm -Rf ${RELEASEDIR}/${BRANCH}/DEBS &>/dev/null
+  rm -Rf ${RELEASEDIR}/repo           &>/dev/null
 fi
-
-if [ "${PUBLISH}" = "yes" ]
-then
-    mkdir -p ${PUBLISHDIR}
-    publishdir=${PUBLISHDIR}
-    releasedir=${RELEASEDIR}
-fi
-set +e
 rundocker

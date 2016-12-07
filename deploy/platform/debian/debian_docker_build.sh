@@ -2,6 +2,14 @@
 #
 # debian_docker_build is used to build, test, package and add deb's to a
 # repository for debian based systems.
+# 
+# release:
+# /release/repo   -> repository
+# /release/$branch/DEBS/$arch/*.deb
+#
+# publish:
+# /publish/repo   -> repository
+# /publish/$branch/DEBS/$arch/*.deb
 #
 if [ "$ARCH" = "amd64" ]
 then
@@ -37,6 +45,7 @@ makelist(){
     grep -v egg-info | \
     grep -v '/$' | \
     awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \
+    awk '{split($0,a," -> "); print a[1]}' | \
     sort
 }
 debtopkg() {
@@ -90,7 +99,7 @@ buildrelease() {
 	then
 	   continue
 	fi
-	checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.${ARCH}
+	checkfile=/source/deploy/packaging/${PLATFORM}/$pkg.noarch
 	if [ "$UPDATEPKG" = "yes" ]
 	then
 	    mkdir -p /source/deploy/packaging/${PLATFORM}

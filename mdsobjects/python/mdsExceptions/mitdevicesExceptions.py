@@ -1387,3 +1387,10 @@ class DevCAMERA_NOT_FOUND(DevException):
   message="Could not find specified camera on the network"
   msgnam="CAMERA_NOT_FOUND"
 
+
+
+class DevNOT_A_PYDEVICE(DevException):
+  status=662480346
+  message="Device is not a python device."
+  msgnam="NOT_A_PYDEVICE"
+

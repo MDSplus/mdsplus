@@ -3,6 +3,15 @@
 # redhat_docker_build.sh is used to build, test, package and add rpms's to a
 # repository for redhat based systems.
 #
+# release:
+# /release/$branch/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+# /release/$branch/RPMS/$arch/*.rpm
+#
+# publish:
+# /publish/$branch/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+# /publish/$branch/RPMS/$arch/*.rpm
+# /publish/$branch/cache/$arch/*.rpm-*
+#
 test64(){
     testarch 64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64;
 }
@@ -47,7 +56,6 @@ buildrelease(){
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d;
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
-    mkdir -p /release/RPMS;
     cp /source/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
     if [ -d /sign_keys/.gnupg ]
     then
@@ -70,7 +78,7 @@ EOF
     ###
     ### Clean up release stage area
     ###
-    rm -Rf /release/*
+    rm   -Rf /release/${BRANCH}/*
     BRANCH=${BRANCH} \
           RELEASE_VERSION=${RELEASE_VERSION} \
           BNAME=${BNAME} \
@@ -78,9 +86,9 @@ EOF
           BUILDROOT=${BUILDROOT} \
           PLATFORM=${PLATFORM} \
           /source/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py;
-    createrepo -q /release/RPMS
+    createrepo -q /release/${BRANCH}/RPMS
     badrpm=0
-    for rpm in $(find /release/RPMS -name '*\.rpm')
+    for rpm in $(find /release/${BRANCH}/RPMS -name '*\.rpm')
     do
         pkg=$(echo $(basename $rpm) | cut -f3 -d-)
         #
@@ -112,12 +120,12 @@ EOF
 
 publish(){
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
-    :&& rsync -a --exclude=repodata /release/RPMS /publish/
+    :&& rsync -a --exclude=repodata /release/${BRANCH}/* /publish/${BRANCH}
     checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
     if ( createrepo -h | grep '\-\-deltas' > /dev/null )
     then
         use_deltas="--deltas"
     fi
-    :&& createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS
+    :&& createrepo -q --update --cachedir /publish/${BRANCH}/cache ${use_deltas} /publish/${BRANCH}/RPMS
     checkstatus abort "Failure: Problem creating rpm repository in publish area!" $?
 }

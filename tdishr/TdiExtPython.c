@@ -19,7 +19,7 @@
 
 #define Py_None _Py_NoneStruct
 
-#define loadrtn(name,check) name=dlsym(handle,#name);	\
+#define loadrtn(name,check) name=dlsym(handle,#name);   \
   if (check && !name) { \
   fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
   return 0;\
@@ -92,19 +92,20 @@ static int Initialize()
       }
 #endif
       handle = dlopen(lib, RTLD_NOW | RTLD_GLOBAL);
-      free(lib);
       if (!handle) {
-	fprintf(stderr, "\n\nUnable to load python library: %s\nError: %s\n\n", lib, dlerror());
-	return 0;
+        fprintf(stderr, "\n\nUnable to load python library: %s\nError: %s\n\n", lib, dlerror());
+        free(lib);
+        return 0;
       }
+      free(lib);
       loadrtn(Py_Initialize, 1);
       (*Py_Initialize) ();
       loadrtn(PyEval_ThreadsInitialized, 1);
       if ((*PyEval_ThreadsInitialized)() == 0) {
         loadrtn(PyEval_InitThreads, 1);
         loadrtn(PyEval_SaveThread, 1);
-	(*PyEval_InitThreads) ();
-	(*PyEval_SaveThread) ();
+        (*PyEval_InitThreads) ();
+        (*PyEval_SaveThread) ();
       }
     }
     loadrtn(PyGILState_Ensure, 1);
@@ -187,13 +188,13 @@ static PyObject *getFunction(char *modulename, char *functionname)
     if (!ans) {
       printf("Error finding function called '%s' in module %s\n", functionname, modulename);
       if ((*PyErr_Occurred)()) {
-	(*PyErr_Print)();
+        (*PyErr_Print)();
       }
     } else {
       if (!(*PyCallable_Check)(ans)) {
-	printf("Error, item called '%s' in module %s is not callable\n", functionname, modulename);
-	(*Py_DecRef)(ans);
-	ans = 0;
+        printf("Error, item called '%s' in module %s is not callable\n", functionname, modulename);
+        (*Py_DecRef)(ans);
+        ans = 0;
       }
     }
     (*Py_DecRef)(module);
@@ -264,14 +265,14 @@ static PyObject *argsToTuple(int nargs, struct descriptor **args)
   if (pointerToObject) {
     for (idx = 0; idx < nargs; idx++) {
       PyObject *arg =
-	(*PyObject_CallFunction)(pointerToObject, (sizeof(void *) == 8) ? "L" : "l", args[idx]);
+        (*PyObject_CallFunction)(pointerToObject, (sizeof(void *) == 8) ? "L" : "l", args[idx]);
       if (arg) {
-	(*PyTuple_SetItem)(ans, idx, arg);
+        (*PyTuple_SetItem)(ans, idx, arg);
       } else {
-	if ((*PyErr_Occurred)()) {
-	  (*PyErr_Print)();
-	}
-	break;
+        if ((*PyErr_Occurred)()) {
+          (*PyErr_Print)();
+        }
+        break;
       }
     }
     (*Py_DecRef)(pointerToObject);
@@ -297,20 +298,20 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
       if (descr!=Py_None){
         descrPtr = (*PyObject_GetAttrString)(descr, "addressof");
         if (descrPtr) {
-  	  MdsCopyDxXd((struct descriptor *)(*PyLong_AsVoidPtr)(descrPtr), outptr);
-  	  (*Py_DecRef)(descrPtr);
+          MdsCopyDxXd((struct descriptor *)(*PyLong_AsVoidPtr)(descrPtr), outptr);
+          (*Py_DecRef)(descrPtr);
         } else {
-  	  printf("Error getting address of descriptor\n");
-  	  if ((*PyErr_Occurred)()) {
-  	    (*PyErr_Print)();
-  	  }
+          printf("Error getting address of descriptor\n");
+          if ((*PyErr_Occurred)()) {
+            (*PyErr_Print)();
+          }
         }
       }
       (*Py_DecRef)(descr);
     } else {
       printf("Error getting descriptor\n");
       if ((*PyErr_Occurred)()) {
-	(*PyErr_Print)();
+        (*PyErr_Print)();
       }
     }
     (*Py_DecRef)(dataObj);
@@ -323,7 +324,7 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
 }
 
 int TdiExtPython(struct descriptor *modname_d,
-		 int nargs, struct descriptor **args, struct descriptor_xd *out_ptr)
+                 int nargs, struct descriptor **args, struct descriptor_xd *out_ptr)
 {
   /* Try to locate a python module in the MDS_PATH search list and if found execute a function with the same name
      as the module in that module passing the arguments and get the answer back from python. */
@@ -348,20 +349,20 @@ int TdiExtPython(struct descriptor *modname_d,
       pyFunction = getFunction(filename, filename);
       free(filename);
       if (pyFunction) {
-	pyArgs = argsToTuple(nargs, args);
-	ans = (*PyObject_CallObject)(pyFunction, pyArgs);
-	if (!ans) {
-	  printf("Error calling fun in %s\n", filename);
-	  if ((*PyErr_Occurred)()) {
-	    (*PyErr_Print)();
-	  }
-	} else {
-	  getAnswer(ans, out_ptr);
-	  (*Py_DecRef)(ans);
-	  status = 1;
-	}
-	(*Py_DecRef)(pyArgs);
-	(*Py_DecRef)(pyFunction);
+        pyArgs = argsToTuple(nargs, args);
+        ans = (*PyObject_CallObject)(pyFunction, pyArgs);
+        if (!ans) {
+          printf("Error calling fun in %s\n", filename);
+          if ((*PyErr_Occurred)()) {
+            (*PyErr_Print)();
+          }
+        } else {
+          getAnswer(ans, out_ptr);
+          (*Py_DecRef)(ans);
+          status = 1;
+        }
+        (*Py_DecRef)(pyArgs);
+        (*Py_DecRef)(pyFunction);
       }
       (*PyGILState_Release)(GIL);
     }

@@ -890,6 +890,7 @@ CPPFLAGS
 LDFLAGS
 CXXFLAGS
 CXX
+TARGET_SELFHELP
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -3058,14 +3059,14 @@ fi
 
    if ${DOCKER_URL+:} false; then :
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "BUILDING IMAGE FOR URL: ${DOCKER_URL}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
-         if ${DOCKER_IMAGE+:} false; then :
+	 if ${DOCKER_IMAGE+:} false; then :
 
 else
   DOCKER_IMAGE=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3082,7 +3083,7 @@ fi
 
       if ${DOCKER_URL+:} false; then :
   echo docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL};
-                 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
+		 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
 fi
 
 
@@ -3090,15 +3091,15 @@ fi
 
    if ${DOCKER_IMAGE+:} false; then :
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
 
-         if ${DOCKER_CONTAINER+:} false; then :
+	 if ${DOCKER_CONTAINER+:} false; then :
 
 else
   DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3150,10 +3151,10 @@ IFS=${_save_IFS}
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
 
 
-         dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
+	 dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
 
 
-         dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
+	 dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
 
    $as_echo "id: ${dk_id} img: ${dk_img}"
    if test -n "${dk_id}" -a -n "${dk_img}"; then :
@@ -3176,48 +3177,48 @@ else
   group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
   user_groups=$(id -G ${USER} | sed 's/ /,/g')
   abs_srcdir=$(cd ${srcdir}; pwd)
-    docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
-    docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+    docker run -d -it --entrypoint=${SHELL} -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
+    docker exec --user root ${DOCKER_CONTAINER} ${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3237,40 +3238,40 @@ esac
 
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3288,50 +3289,50 @@ esac
 else
   if ${DOCKER_CONTAINER+:} false; then :
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3351,40 +3352,40 @@ esac
 
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3418,7 +3419,7 @@ abs_srcdir=$(cd ${srcdir}; pwd)
 
 read -d '' DK_DSHELLFILE << _as_read_EOF
 
-#!/bin/sh
+#!/bin/bash
 # //////////////////////////////////////////////////////////////////////////// #
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3438,7 +3439,8 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\\\"\${MAKEFLAGS}\\\"; export MFLAGS=\\\"\${MFLAGS}\\\"; ${SHELL} \${quoted_args}";
+ [ -t 7 -o -t 0 ] && INT=-ti || INT=
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3508,8 +3510,8 @@ inspect:
 
 start:
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -3519,9 +3521,11 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
 endif
+
+
 
 _as_read_EOF
 
@@ -3534,18 +3538,18 @@ fi
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
-         $as_echo " --------------------------------- "
-         $as_echo " docker-image      = ${DOCKER_IMAGE}"
-         $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-         $as_echo " ac_configure_args = ${ac_configure_args}"
-         $as_echo " --------------------------------- "
+	 $as_echo " --------------------------------- "
+	 $as_echo " docker-image      = ${DOCKER_IMAGE}"
+	 $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+	 $as_echo " ac_configure_args = ${ac_configure_args}"
+	 $as_echo " --------------------------------- "
 
 
 
@@ -3562,7 +3566,7 @@ abs_srcdir=$(cd ${srcdir}; pwd)
 
 read -d '' DK_DSHELLFILE << _as_read_EOF
 
-#!/bin/sh
+#!/bin/bash
 # //////////////////////////////////////////////////////////////////////////// #
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3582,7 +3586,8 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\\\"\${MAKEFLAGS}\\\"; export MFLAGS=\\\"\${MFLAGS}\\\"; ${SHELL} \${quoted_args}";
+ [ -t 7 -o -t 0 ] && INT=-ti || INT=
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3595,7 +3600,7 @@ chmod +x dshell
 
 
 
-                  dk_configure_args=
+	 	 dk_configure_args=
 
 
 
@@ -3654,29 +3659,33 @@ fi
 IFS=${_save_IFS}
 
 
-         as_fn_append dk_configure_args " "
-         if ${DOCKER_IMAGE+:} false; then :
+	 as_fn_append dk_configure_args " "
+	 if ${DOCKER_IMAGE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "
 fi;
-         if ${DOCKER_CONTAINER+:} false; then :
+	 if ${DOCKER_CONTAINER+:} false; then :
   as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
 fi;
-         if ${DOCKER_FILE+:} false; then :
+	 if ${DOCKER_FILE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_FILE=\"${DOCKER_FILE}\" "
 fi;
 
 
 
-         $as_echo " ------------------------- "
-         $as_echo " DOCKER CONFIGURE COMMAND: "
-         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} ${SHELL} -l -c \"cd $(pwd)\; ${0} $(
+	 $as_echo " ------------------------- "
+	 $as_echo " DOCKER CONFIGURE COMMAND: "
+	 $as_echo " ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
+echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) \"; exit 0;          "
-         $as_echo " ------------------------- "
+	 $as_echo " ------------------------- "
 
-                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} ${SHELL} -l -c \"cd $(pwd)\; ${0} $(
+	 	 eval ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
+echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
@@ -3760,8 +3769,8 @@ inspect:
 
 start:
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -3771,9 +3780,11 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
 endif
+
+
 
 _as_read_EOF
 
@@ -4596,6 +4607,54 @@ $as_echo "#define NDEBUG /**/" >>confdefs.h
 
 fi
     ax_enable_debug=$enable_debug
+
+
+
+
+
+
+
+read -d '' TARGET_SELFHELP << _as_read_EOF
+
+
+SH_GREEN  ?= \$(shell tput -Txterm setaf 2)
+SH_WHITE  ?= \$(shell tput -Txterm setaf 7)
+SH_YELLOW ?= \$(shell tput -Txterm setaf 3)
+SH_RESET  ?= \$(shell tput -Txterm sgr0)
+
+HELP_DESCRIPTION ?= Documented targets follow
+
+ifndef SELFHELP_FUNC
+SELFHELP_FUNC = \\\\
+    %help; \\\\
+    while(<>) { \\\\
+	if(/^([a-z0-9_-]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	    push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); \\\\
+	} \\\\
+    }; \\\\
+    print "\\\\n"; \\\\
+    print "| \${HELP_DESCRIPTION}\\\\n"; \\\\
+    print "| \\\\n"; \\\\
+    print "| \${SH_GREEN}usage: make target\${SH_WHITE}\\\\n"; \\\\
+    print "| \\\\n"; \\\\
+    for ( sort keys %help ) { \\\\
+	print "| \${SH_YELLOW}\$\$_\${SH_WHITE}:\\\\n"; \\\\
+	printf("|   %-20s %-60s\\\\n", \$\$_->[0], \$\$_->[1]) for @{\$\$help{\$\$_}}; \\\\
+	print "| \\\\n"; \\\\
+    } \\\\
+    print "\\\\n";
+
+help:   ##@miscellaneous Show this help.
+	@perl -e '\$(SELFHELP_FUNC)' \$(MAKEFILE_LIST)
+endif
+
+
+_as_read_EOF
+
+
+
+
+
 
 
 
@@ -14195,6 +14254,42 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"python-nose not found\"" >&5
 $as_echo "$as_me: WARNING: \"python-nose not found\"" >&2;}
 fi
+
+
+
+
+    if test -z $PYTHON;
+    then
+        if test -z "";
+        then
+            PYTHON="python3"
+        else
+            PYTHON=""
+        fi
+    fi
+    PYTHON_NAME=`basename $PYTHON`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
+$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
+    $PYTHON -c "import tap" 2>/dev/null
+    if test $? -eq 0;
+    then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+        eval HAVE_PYMOD_TAP=yes
+    else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        eval HAVE_PYMOD_TAP=no
+        #
+        if test -n ""
+        then
+            as_fn_error $? "failed to find required module tap" "$LINENO" 5
+            exit 1
+        fi
+    fi
+
+
+
     if test -z $PYTHON;
     then
         if test -z "";
@@ -14667,10 +14762,11 @@ fi
 
    ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->linux"
+   as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
   ;; #(
   #
  # OTHER

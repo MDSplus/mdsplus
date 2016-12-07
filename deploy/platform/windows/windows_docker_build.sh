@@ -2,6 +2,12 @@
 #
 # windows_docker_build.sh - build windows installer
 #
+# release:
+# /release/$branch/MDSplus-*.exe
+#
+# publish:
+# /publish/$branch/MDSplus-*.exe
+#
 export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
 export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
 test64() {
@@ -67,7 +73,7 @@ buildrelease() {
     fi
     pushd $MDSPLUS_DIR
     makensis -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD \
-         -DOUTDIR=/release ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
+         -DOUTDIR=/release/${BRANCH} ${vs} /source/deploy/packaging/${PLATFORM}/mdsplus.nsi
     popd
     if [ -d /sign_keys ]
     then
@@ -80,7 +86,7 @@ buildrelease() {
                   -n MDSplus  \
                   -i http://www.mdsplus.org/ \
                   -t http://timestamp.verisign.com/scripts/timestamp.dll \
-                  -tr 10 /release/MDSplus${bname}-${major}.${minor}-${release}.exe <<EOF
+                  -tr 10 /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe <<EOF
 mdsplus
 EOF
                )
@@ -100,5 +106,5 @@ publish() {
     else
         bname="-${BRANCH}"
     fi
-    rsync -a /release/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}/
+    rsync -a /release/${BRANCH}/MDSplus${bname}-${major}.${minor}-${release}.exe /publish/${BRANCH}
 }

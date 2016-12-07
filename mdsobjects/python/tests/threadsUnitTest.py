@@ -1,22 +1,9 @@
-import sys,os
+from unittest import TestCase,TestSuite,TestResult
+from threading import Thread
 
-MDSplus_path=os.path.dirname(os.path.abspath(__file__))
-if sys.path[0] != MDSplus_path:
-    sys.path.insert(0,MDSplus_path)
+import treeUnitTest,dataUnitTest
+from MDSplus import Tree,getenv
 
-from MDSplus import *
-
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-from threading import Thread,enumerate
-
-import tests.treeUnitTest as treeUnitTest
-import tests.dataUnitTest as dataUnitTest
-
-treeUnitTest.tearDownModule=None
-
-def tearDownMOdule():
-    import shutil
-    shutil.rmtree(treeUnitTest._tmpdir)
 
 class threadJob(Thread):
     """Thread to execute the treeTests"""
@@ -46,19 +33,21 @@ class threadTest(TestCase):
           for t in threads:
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful=numsuccessful+1                
+                numsuccessful=numsuccessful+1
             else:
                 print( t.result )
         print("successful: ")
         print(numsuccessful)
         self.assertEqual(numsuccessful,len(threads))
-        return
 
     def runTest(self):
         self.threadTests()
-        return
-            
+
 
 def suite():
     tests = ['threadTests']
     return TestSuite(map(threadTest, tests))
+
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
