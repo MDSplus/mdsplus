@@ -47,15 +47,16 @@ def getenv(name):
     @return: value of environment variable or None if not defined
     @rtype: str or None
     """
-    tl=_mdsshr.TranslateLogical
-    tl.restype=_C.c_char_p
+    tl = _mdsshr.TranslateLogical
+    tl.restype=_C.c_void_p
+    ptr = tl(_ver.tobytes(name))
+    if ptr is None:
+        return None
+    ptr = _C.c_void_p(ptr)
     try:
-        ans=tl(_ver.tobytes(str(name)))
-        if ans is not None:
-            ans = _ver.tostr(ans)
-    except:
-        ans=""
-    return ans
+        return _ver.tostr(_C.cast(ptr,_C.c_char_p).value)
+    finally:
+        _mdsshr.TranslateLogicalFree(ptr)
 
 def setenv(name,value):
     """set environment variable
