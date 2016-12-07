@@ -305,8 +305,6 @@ class treeTests(TestCase):
             self._doTCLTest('dispatch/phase PULSE')
             sleep(.01)
             self._doTCLTest('dispatch/phase STORE')
-            sleep(.01)
-            testDispatchCommand('close/all')
             """ tcl exceptions """
             self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
             """ tcl check if still alive """
@@ -329,7 +327,7 @@ class treeTests(TestCase):
         self.getData()
         self.segments()
         self.getCompression()
-        #self.dclInterface()
+        self.dclInterface()
         if not self.inThread:
              self.dispatcher()
 
