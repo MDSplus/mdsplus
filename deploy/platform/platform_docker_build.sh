@@ -16,10 +16,12 @@ getenv() {
     eval "echo \$$1"
 }
 runtests() {
-    test64;
-    test32;
-    set +e
+    testarch $(test64);
+    testarch $(test32);
+    if [ -z "NOMAKE" ]; then
+    set +e;
     checktests;
+    fi
 }
 testarch(){
     sanitize   $@;
@@ -99,7 +101,8 @@ sanitize() {
             config_test $@ --enable-sanitize=${test}
             if [ "$status" = "111" ]; then
                 echo "Sanitizer ${test} not supported. Skipping."
-            elif [ "$status" = 0 ]; then
+            elif [ "$status" = "0" ]; then
+              if [ -z "$NOMAKE" ]; then
                 $MAKE
                 $MAKE install
                 :&& tio 1800 $MAKE -k tests 2>&1
@@ -108,6 +111,7 @@ sanitize() {
                 then
                     let tests_${1}_san=1
                 fi
+              fi
             else
                 echo "configure returned status $?"
                 let tests_${1}_san_${test}=$status
@@ -125,6 +129,7 @@ normaltest() {
     VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
     config_test $@
+   if [ -z "$NOMAKE" ]; then
     $MAKE
     $MAKE install
     ### Run standard tests
@@ -137,6 +142,7 @@ normaltest() {
         :&& tio $to  $MAKE -k tests-valgrind 2>&1
         checkstatus tests_${1}_val "Failure doing $1-bit valgrind tests." $?
     fi
+   fi
     popd
 }
 spacedelim() {

@@ -11,10 +11,10 @@
 export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
 export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
 test64() {
-    testarch 64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64;
+    echo "64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64";
 }
 test32() {
-    testarch 32 i686-w64-mingw32   bin_x86    bin_x86;
+    echo "32 i686-w64-mingw32   bin_x86    bin_x86";
 }
 buildrelease() {
     abort=0

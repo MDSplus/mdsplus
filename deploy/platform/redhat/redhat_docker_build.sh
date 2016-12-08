@@ -13,10 +13,10 @@
 # /publish/$branch/cache/$arch/*.rpm-*
 #
 test64(){
-    testarch 64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64;
+    echo "64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64";
 }
 test32(){
-    testarch 32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32;
+    echo "32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32";
 }
 makelist(){
     rpm2cpio $1 | \
