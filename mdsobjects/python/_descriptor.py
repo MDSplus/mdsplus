@@ -553,14 +553,15 @@ class descriptor_xd(_C.Structure):
           return None
         else:
           return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
-
     value=property(_getValue)
 
-    def __del__(self):
-        try:
-          _mdsshr.MdsFree1Dx(self)
-        except:
-          pass
+    def free(self):
+        _mdsshr.MdsFree1Dx(self)
+    def __enter__(self):
+        return self
+    def __exit__(self,*args):
+        try: self.free()
+        except: pass
 
 class descriptor_r(_C.Structure):
     if _os.name=='nt' and _struct.calcsize("P")==8:
