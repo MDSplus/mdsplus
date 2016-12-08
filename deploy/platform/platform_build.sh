@@ -60,6 +60,7 @@ rundocker(){
         if [ ! -z "$INTERACTIVE" ]
         then
             echo "run /source/deploy/platform/platform_docker_build.sh"
+            echo "or  NOMAKE=1 /source/deploy/platform/platform_docker_build.sh"
         fi
         #
         # If there are both 32-bit and 64-bit packages for the platform

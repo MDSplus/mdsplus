@@ -24,17 +24,17 @@ else
     fi
 fi
 test64(){
-    testarch 64 x86_64-linux bin lib --with-gsi=/usr:gcc64
+    echo "64 x86_64-linux bin lib --with-gsi=/usr:gcc64"
 }
 test32(){
-    testarch 32 i686-linux   bin lib --with-gsi=/usr:gcc32
+    echo "32 i686-linux   bin lib --with-gsi=/usr:gcc32"
 }
 runtests() {
   if [ "${ARCH}" = "amd64" ]
   then
-      test64
+      testarch $(test64)
   else
-      test32
+      testarch $(test32)
   fi
   checktests
 }
