@@ -78,7 +78,6 @@ public class ContourSignal
   boolean automaticLimits = true;
 
   private boolean xflag[][];
-  private boolean equalZ1;
   private boolean equalZ2;
   private boolean edge = false;
 
@@ -137,9 +136,6 @@ public class ContourSignal
     int rPoint[]   = null;
     int succCase[] = null;
 
-    Point firstPoint = new Point();
-    Point currPoint  = new Point();
-
     Point2D.Double firstCPoint = new Point2D.Double();
     Point2D.Double currCPoint = new Point2D.Double();
 
@@ -188,7 +184,6 @@ public class ContourSignal
               xflag[i][j]   = true;
             } catch(Exception exc) {}
           }
-          firstPoint = new Point(ri, rj);
         }
         else
         {
@@ -277,7 +272,6 @@ public class ContourSignal
                   contour.addElement(( currCPoint = new Point2D.Double(xc, yc) ) );
                   ri += xNear[rPoint[l]];
                   rj += yNear[rPoint[l]];
-                  currPoint = new Point(ri, rj);
                   edgeCase = succCase[l];
                   break;
                 }
@@ -465,7 +459,6 @@ public class ContourSignal
                 xc = x1 + (x2 - x1) * c1;
                 yc = y1 + (y2 - y1) * c1;
                 contour.addElement( ( currCPoint = new Point2D.Double(xc, yc) ) );
-                currPoint = new Point(ri, rj);
 
                 if(!found && border == 4)
                 {
@@ -474,8 +467,6 @@ public class ContourSignal
                 }
               }
             }
-            //System.out.println("First " + firstPoint );
-            //System.out.println("" + numIteractions + " Curr " + currPoint );
             //System.out.println("Edge case" + edgeCase );
             numIteractions++;
             if(numIteractions > maxIteractions)

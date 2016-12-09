@@ -98,7 +98,6 @@ public class jScopeMultiWave
         */
     }
 
-
     public void Refresh()
     {
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -114,7 +113,6 @@ public class jScopeMultiWave
             public void run()
             {
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
-                boolean cache_state = mwi.cache_enabled;
                 try {
                     mwi.refresh();
                 }catch(Exception exc){}

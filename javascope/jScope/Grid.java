@@ -62,19 +62,9 @@ public class Grid
     
     static public double evalStep(double min, double max, int numStep)
     {
-        double step = 0;
-        
         double delta = Math.abs(max - min);
         int pow = (int) Math.log10(delta) - 1;
-        
-        double k = Math.pow(10, pow);
-        
-        int n1 = (int) ( delta / ( 2.  * k) );
-        int n2 = (int) ( delta / ( 5.  * k)  );
-        int n3 = (int) ( delta / ( 10. * k)  );
-        
-        return ( 2. * k );
-        
+        return 2. * Math.pow(10, pow);
     }
     
     private int BuildGridNew(double val[], int mode, 
@@ -542,15 +532,15 @@ public class Grid
 
                         Date date = new Date();
                         date.setTime(datel);
-                        currStringSubSec = dfSubSec.format(date).toString();
-                        curr_string = df.format(date).toString();
+                        currStringSubSec = dfSubSec.format(date);
+                        curr_string = df.format(date);
 
                         DateFormat df1 = new SimpleDateFormat("d-MMM-yyyy");
 
                         //--df1.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         //GABdf1.setTimeZone(TimeZone.getDefault());
 
-                        String new_date_string = df1.format(date).toString();
+                        String new_date_string = df1.format(date);
 
                         if(i == 0 || !new_date_string.equals(prev_date_string))
                         {
@@ -691,8 +681,5 @@ public class Grid
 
     public static void main(String args[])
     {
-        double step = Grid.evalStep(0., 1., 10);
-        step = Grid.evalStep(0., 10., 10);
-        step = Grid.evalStep(0., 100., 5);
     }
 }

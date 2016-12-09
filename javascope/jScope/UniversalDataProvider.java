@@ -154,13 +154,12 @@ class UniversalDataProvider implements DataProvider
         error = null;
         return new String(in);
     }
+
     public double GetFloat(String in)
     {
         error = null;
-        Double f = new Double(in);
-        return f.doubleValue();
+        return Double.parseDouble(in);
     }
-
 
     public long[] GetShots(String in)
     {

@@ -14,7 +14,6 @@ public class TwuAccess implements DataAccess
     String ip_addr = null;
     String shot_str = null;
     String signal = null;
-    String experiment = null;
     TwuDataProvider tw = null;
         
     public static void main(String args[])
@@ -71,7 +70,7 @@ public class TwuAccess implements DataAccess
 
     public String getExperiment()
     {
-        return experiment;
+        return null;
     }
 
     public DataProvider getDataProvider()

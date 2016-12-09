@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 
 public class MdsConnection
 {
-        static public int    DEFAULT_PORT = 8000;
-        static public String DEFAULT_USER = "JAVA_USER";
+        public static final int    DEFAULT_PORT = 8000;
+        public static final String DEFAULT_USER = "JAVA_USER";
         static final  int    MAX_NUM_EVENTS = 256;
 
                 
@@ -128,8 +128,6 @@ public class MdsConnection
 	                    }
 
 	                    curr_message = null;
-	                    //if(pending_count == 0)
-	                    //    MdsConnection.this.NotifyMessage();
 	                }
         	    }
 	        }
@@ -153,7 +151,6 @@ public class MdsConnection
 				    dispatchConnectionEvent(ce);}
 				}).start();
 	                //MdsConnection.this.dispatchConnectionEvent(ce);
-	                //MdsConnection.this.NotifyMessage();
 	            }
 	        }
 	    }
@@ -179,12 +176,6 @@ public class MdsConnection
                 return msg;
 	    }
 	} // End MRT class
-
-	private synchronized void NotifyMessage()
-	{
-	    notify();
-            System.out.printf("-- Notify");
-	}
 
     public MdsConnection ()
     {
@@ -421,7 +412,7 @@ public class MdsConnection
 	    }
 	    catch(IOException e)
 	        {
-	            error.concat("Could not get IO for "+provider + e);
+	            error = "Could not get IO for " + provider + e;
 	            return 0;
 	        }
 
@@ -440,7 +431,7 @@ public class MdsConnection
 	    }
 	    catch(IOException e)
 	        {
-	            error.concat("Could not get IO for "+provider + e);
+	            error = "Could not get IO for " + provider + e;
 	        }
 
     }

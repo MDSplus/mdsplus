@@ -15,7 +15,7 @@ import java.awt.geom.*;
 public class Waveform 
     extends JComponent implements SignalListener{
 
-  public static int MAX_POINTS = 1000;
+  public static final int MAX_POINTS = 1000;
   static public boolean is_debug = false;
 
   public static final Color[] COLOR_SET = {
@@ -217,8 +217,7 @@ public class Waveform
              curr_f /= (double) 10, exp++) {
           ;
         }
-        out = (new Float(Math.round(curr_f * 100) / 100.)).toString() + "e" +
-            (new Integer(exp)).toString();
+        out = Float.toString((float)(Math.round(curr_f * 100) / 100.)) + "e" + Integer.toString(exp);
       }
       else
       if (abs_f < 1E-3 && abs_f > 0) {
@@ -226,13 +225,11 @@ public class Waveform
              exp--) {
           ;
         }
-        out = (new Float(curr_f)).toString() + "e" +
-            (new Integer(exp)).toString();
+        out = Float.toString((float)curr_f) + "e" + Integer.toString(exp);
       }
       else {
         int i;
-        out = (new Float(f)).toString();
-        out.trim();
+        out = Float.toString((float)f);
         if (f < 1. && f > -1.) { //remove last 0s
           for (i = out.length() - 1; out.charAt(i) == '0'; i--) {
             ;
@@ -244,7 +241,7 @@ public class Waveform
     else {
       out = ( (f > 0) ? "+" : "-") + "inf";
     }
-    out.trim();
+    out = out.trim();
     return out;
   }
 
@@ -1529,7 +1526,7 @@ public class Waveform
       first_set_point = false;
 
       if (p != null) {
-        if(curr_point_y != Double.NaN)
+        if (!Double.isNaN(curr_point_y))
            p.y = wm.YPixel(curr_point_y, d);
 
         curr_x = wave_point_x;
