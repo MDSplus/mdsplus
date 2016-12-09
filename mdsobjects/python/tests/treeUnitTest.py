@@ -1,5 +1,6 @@
 from unittest import TestCase
 import os
+from re import match
 
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
 from MDSplus import getenv,setenv,tcl
@@ -10,8 +11,19 @@ class treeTests(TestCase):
     shotinc = 3
     inThread = False
 
-    def _doTCLTest(self,expr,std=None,err=None):
-        self.assertEqual(tcl(expr,True,True,True),(std,err))
+    def _doTCLTest(self,expr,out=None,err=None,re=False):
+        def checkre(pattern,string):
+            if pattern is None:
+                self.assertIsNone(string)
+            else:
+                self.assertIsNotNone(string)
+                self.assertIsNotNone(match(pattern,str(string)),'"%s"\nnot matched by\n"%s"'%(string,pattern))
+        outerr = tcl(expr,True,True,True)
+        if not re:
+            self.assertEqual(outerr,(out,err))
+        else:
+            checkre(out,outerr[0])
+            checkre(err,outerr[1])
 
     def _doExceptionTest(self,expr,exc):
         try:
@@ -281,6 +293,7 @@ class treeTests(TestCase):
         from time import sleep
         port = 8800
         server = 'LOCALHOST:%d'%(port,)
+        show_server = "Checking server: %s\n[^,]+, [^:]+:%d, logging enabled, Inactive\n"%(server,port)
         def testDispatchCommand(command,stdout=None,stderr=None):
             self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
         pytree = Tree('pytree',self.shot)
@@ -297,14 +310,19 @@ class treeTests(TestCase):
             sleep(.1)
             self.assertEqual(mdsip.poll(),None)
             """ tcl dispatch """
+            self._doTCLTest('show server %s'%server,out=show_server,re=True)
             testDispatchCommand('set verify')
             testDispatchCommand('type test')
             self._doTCLTest('dispatch/build')
             self._doTCLTest('dispatch/phase INIT')
             sleep(.01)
+            self._doTCLTest('show server %s'%server,out=show_server,re=True)
             self._doTCLTest('dispatch/phase PULSE')
             sleep(.01)
+            self._doTCLTest('show server %s'%server,out=show_server,re=True)
             self._doTCLTest('dispatch/phase STORE')
+            sleep(.01)
+            self._doTCLTest('show server %s'%server,out=show_server,re=True)
             """ tcl exceptions """
             self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
             """ tcl check if still alive """
