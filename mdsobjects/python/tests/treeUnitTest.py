@@ -1,15 +1,31 @@
-from unittest import TestCase
+from unittest import TestCase,TestSuite
 import os
 from re import match
+from threading import Lock
 
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
 from MDSplus import getenv,setenv,tcl
 from MDSplus import mdsExceptions as Exc
 
 class treeTests(TestCase):
-    shot    = 0
+    lock = Lock()
+    shotdic = {}
     shotinc = 3
     inThread = False
+    @classmethod
+    def getShot(cls):
+        from threading import current_thread
+        ident = current_thread().ident
+        if not ident in cls.shotdic:
+            cls.lock.acquire()
+            try:
+                cls.shotdic[ident] = len(cls.shotdic)*cls.shotinc+1
+            finally:
+                cls.lock.release()
+        return cls.shotdic[ident]
+    @property
+    def shot(self):
+        return treeTests.getShot()
 
     def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
@@ -32,41 +48,29 @@ class treeTests(TestCase):
             self.assertEqual(e.__class__,exc)
             return
         self.fail("TCL: '%s' should have signaled an exception"%expr)
-
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         from tempfile import mkdtemp
-        from threading import Lock
-        l=Lock()
-        l.acquire()
-        try:
-            if self.shot == treeTests.shot:
-                self.shot = treeTests.shot+1
-                treeTests.shot+= treeTests.shotinc
-        finally:
-            l.release()
         if getenv("TEST_DISTRIBUTED_TREES") is not None:
             treepath="localhost::%s"
         else:
             treepath="%s"
-        self.tmpdir = mkdtemp()
-        self.root = os.path.dirname(os.path.realpath(__file__))
-        self.env = dict((k,str(v)) for k,v in os.environ.items())
-        self.setenv("MDS_PYDEVICE_PATH",'%s/devices'%self.root)
-        self.setenv("pytree_path",treepath%self.tmpdir)
-        self.setenv("pytreesub_path",treepath%self.tmpdir)
+        cls.tmpdir = mkdtemp()
+        cls.root = os.path.dirname(os.path.realpath(__file__))
+        cls.env = dict((k,str(v)) for k,v in os.environ.items())
+        cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
+        cls._setenv("pytree_path",treepath%cls.tmpdir)
+        cls._setenv("pytreesub_path",treepath%cls.tmpdir)
         if getenv("testing_path") is None:
-            self.setenv("testing_path","%s/trees"%self.root)
-    def setenv(self,name,value):
-        self.env[name] = str(value)
+            cls._setenv("testing_path","%s/trees"%cls.root)
+        treeTests.buildTrees(cls.getShot())
+    @classmethod
+    def _setenv(cls,name,value):
+        cls.env[name] = str(value)
         setenv(name,value)
-
-    def tearDown(self):
-        import gc,shutil
-        gc.collect()
-        shutil.rmtree(self.tmpdir)
-
-    def editTrees(self):
-        with Tree('pytree',self.shot,'new') as pytree:
+    @staticmethod
+    def buildTrees(shot):
+        with Tree('pytree',shot,'new') as pytree:
             pytree_top=pytree.default
             pytree_top.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
@@ -81,9 +85,9 @@ class treeTests(TestCase):
             node.compress_on_put = True
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
             pytree.write()
-        with Tree('pytreesub',self.shot,'new') as pytreesub:
-            if pytreesub.shot != self.shot:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, self.shot))
+        with Tree('pytreesub',shot,'new') as pytreesub:
+            if pytreesub.shot != shot:
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, shot))
             pytreesub_top=pytreesub.default
             node=pytreesub_top.addNode('.rog','structure')
             for i in range(10):
@@ -109,6 +113,12 @@ class treeTests(TestCase):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
+    @classmethod
+    def tearDownClass(cls):
+        import gc,shutil
+        gc.collect()
+        shutil.rmtree(cls.tmpdir)
+
 
     def openTrees(self):
         pytree = Tree('pytree',self.shot)
@@ -336,7 +346,7 @@ class treeTests(TestCase):
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
 
     def runTest(self):
-        self.editTrees()
+        self.buildTrees()
         self.openTrees()
         self.getNode()
         self.setDefault()
@@ -350,7 +360,9 @@ class treeTests(TestCase):
              self.dispatcher()
 
 def suite():
-    return treeTests()
+
+    tests = ['openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression','dclInterface','dispatcher']
+    return TestSuite(map(treeTests,tests))
 
 if __name__=='__main__':
     import sys
