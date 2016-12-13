@@ -8,12 +8,12 @@ Tests of MDSplus
 from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
 import gc;gc.set_debug(gc.DEBUG_LEAK & ~gc.DEBUG_COLLECTABLE)
-from treeUnitTest import treeTests
-from threadsUnitTest import suite as threadsSuite
-from dataUnitTest import suite as dataSuite
-from exceptionUnitTest import exceptionTests
+from treeUnitTest       import suite as treeSuite
+from threadsUnitTest    import suite as threadsSuite
+from dataUnitTest       import suite as dataSuite
+from exceptionUnitTest  import suite as exceptionSuite
 from connectionUnitTest import suite as connectionsSuite
-from segmentsUnitTest import suite as segmentsSuite
+from segmentsUnitTest   import suite as segmentsSuite
 
 from MDSplus import setenv,getenv
 if os.name=='nt':
@@ -62,11 +62,11 @@ def test_all(*arg):
     print ("Creating trees in %s" % (dir,))
     cleanup.dir=dir
     tests=list()
-    tests.append(treeTests())
+    tests.append(treeSuite())
     if os.getenv('TEST_THREADS') is not None:
         tests.append(threadsSuite())
     tests.append(dataSuite())
-    tests.append(exceptionTests())
+    tests.append(exceptionSuite())
     tests.append(connectionsSuite())
     tests.append(segmentsSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
