@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite
 
 from MDSplus import Connection
-
+import os
 
 class connectionTests(TestCase):
 

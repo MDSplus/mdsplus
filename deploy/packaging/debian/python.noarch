@@ -137,15 +137,7 @@
 ./usr/local/mdsplus/mdsobjects/python/ident.py
 ./usr/local/mdsplus/mdsobjects/python/js/mdsScope.js
 ./usr/local/mdsplus/mdsobjects/python/makedoc.sh
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/__init__.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/camshrExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/mdsdclExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/mdsshrExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/mitdevicesExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/servershrExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/tclExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/tdishrExceptions.py
-./usr/local/mdsplus/mdsobjects/python/mdsExceptions/treeshrExceptions.py
+./usr/local/mdsplus/mdsobjects/python/mdsExceptions.py
 ./usr/local/mdsplus/mdsobjects/python/mdsarray.py
 ./usr/local/mdsplus/mdsobjects/python/mdsdata.py
 ./usr/local/mdsplus/mdsobjects/python/mdsdcl.py
