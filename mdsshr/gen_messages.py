@@ -12,7 +12,6 @@ def gen_include(root,file,faclist,msglistm,f_test):
     print file
     
     f_inc=open("../include/%sh" % file.lower()[0:-3],'w')
-    f_py=open("../mdsobjects/python/mdsExceptions/%sExceptions.py" % file.lower()[0:-len("_messages.xml")],'w')
     f_inc.write("""
 #pragma once
 /*
@@ -26,21 +25,9 @@ def gen_include(root,file,faclist,msglistm,f_test):
 
 """ % file)
     f_py.write("""
-########################################################
-# This module was generated using mdsshr/gen_device.py
-# To add new status messages modify:
-#     %s
-# and then in mdsshr do:
-#     python gen_devices.py
-########################################################
 
-def _mimport(name, level=1):
-    try:
-        return __import__(name, globals(), level=level)
-    except:
-        return __import__(name, globals())
+########################### generated from %s ########################
 
-MDSplusException=_mimport('__init__').MDSplusException
 """ % file)
     for f in root.getiterator('facility'):
         facnam = f.get('name')
@@ -83,13 +70,89 @@ class %(fac)s%(msgnam)s(%(fac)sException):
   message="%(message)s"
   msgnam="%(msgnam)s"
 
-""" % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text})
+MDSplusException.statusDict[%(msgn_nosev)s] = %(fac)s%(msgnam)s
+""" % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
             msglist.append({'msgnum':hex(msgn_nosev),'text':text,
                             'fac':facnam,'msgnam':msgnam,
                             'facabb':facabb})
     f_inc.close()
-    f_py.close()
 
+f_py=open("../mdsobjects/python/mdsExceptions.py",'w')
+f_py.write("""
+########################################################
+# This module was generated using mdsshr/gen_device.py
+# To add new status messages modify one of the
+# "xxxx_messages.xml files (or add a new one)
+# and then in mdsshr do:
+#     python gen_devices.py
+########################################################
+
+class MDSplusException(Exception):
+  statusDict={}
+  severities=["W", "S", "E", "I", "F", "?", "?", "?"]
+  def __new__(cls,*argv):
+      if len(argv)==0 or cls is not MDSplusException:
+          return super(MDSplusException,cls).__new__(cls,*argv)
+      status = int(argv[0])
+      code   = status & -8
+      if code in cls.statusDict:
+          cls = cls.statusDict[code]
+      elif status == MDSplusError.status:
+          cls = MDSplusError
+      elif status == MDSplusSuccess.status:
+          cls = MDSplusSuccess
+      else:
+          cls = MDSplusUnknown
+      return cls.__new__(cls,*argv)
+  def __init__(self,status=None):
+    if isinstance(status,int):
+      self.status=status
+    if not hasattr(self,'status'):
+      self.status=-2
+      self.msgnam='Unknown'
+      self.message='Unknown exception'
+      self.fac='MDSplus'
+    if isinstance(status,str):
+      self.message = status
+    self.severity=self.severities[self.status & 7]
+    super(Exception,self).__init__(self.message)
+
+  def __str__(self):
+    return "%%%s-%s-%s, %s" % (self.fac.upper(),
+                               self.severity,
+                               self.msgnam,
+                               self.message)
+
+class MDSplusError(MDSplusException):
+  fac="MDSplus"
+  severity="E"
+  msgnam="Error"
+  message="Failure to complete operation"
+  status=-8|2  # serverity E
+  def __init__(*args): pass
+
+class MDSplusSuccess(MDSplusException):
+  fac="MDSplus"
+  severity="S"
+  msgnam="Success"
+  message="Successful execution"
+  status=1
+  def __init__(*args): pass
+
+class MDSplusUnknown(MDSplusException):
+  fac="MDSplus"
+  msgnam="Unknown"
+  def __init__(self,status):
+    self.status=status
+    self.severity=self.severities[self.status & 7]
+    self.message="Operation returned unknown status value: %s" % str(status)
+  def __repr__(self):
+    return 'MDSplusUnknown(%s)'%(str(self.status),)
+
+def statusToException(status):
+    return MDSplusException(status)
+
+""")
 f_test=None
 if len(sys.argv) > 1:
     f_test=open('testmsg.h','w');
@@ -142,6 +205,8 @@ f_getmsg.write("""
   }
   return sts;
 }""")
+
 f_getmsg.close()
+f_py.close()
 if f_test:
     f_test.close()

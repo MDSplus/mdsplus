@@ -1,12 +1,4 @@
-static const char *FAC_Tcl = "TCL";
-static const char *FAC_Tdi = "TDI";
-static const char *FAC_Lib = "LIB";
-static const char *FAC_Str = "STR";
-static const char *FAC_Ss = "SS";
-static const char *FAC_Cam = "CAM";
 static const char *FAC_Server = "SERVER";
-static const char *FAC_Mdsdcl = "MDSDCL";
-static const char *FAC_Tree = "TREE";
 static const char *FAC_DEV = "DEV";
 static const char *FAC_RETICON = "RETICON";
 static const char *FAC_J221 = "J221";
@@ -37,541 +29,19 @@ static const char *FAC_H908 = "H908";
 static const char *FAC_DSP2904 = "DSP2904";
 static const char *FAC_PY = "PY";
 static const char *FAC_DT196B = "DT196B";
+static const char *FAC_Lib = "LIB";
+static const char *FAC_Str = "STR";
+static const char *FAC_Ss = "SS";
+static const char *FAC_Cam = "CAM";
+static const char *FAC_Tcl = "TCL";
+static const char *FAC_Mdsdcl = "MDSDCL";
+static const char *FAC_Tree = "TREE";
+static const char *FAC_Tdi = "TDI";
 
 
 int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
     int sts;
     switch (status & (-8)) {
-
-/* TclNORMAL */
-      case 0x2a0008:
-        {static const char *text="Normal successful completion";
-        static const char *msgnam="NORMAL";
-        *fac_out = FAC_Tcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TclFAILED_ESSENTIAL */
-      case 0x2a0010:
-        {static const char *text="Essential action failed";
-        static const char *msgnam="FAILED_ESSENTIAL";
-        *fac_out = FAC_Tcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiBREAK */
-      case 0xfd38008:
-        {static const char *text="BREAK was not in DO FOR SWITCH or WHILE";
-        static const char *msgnam="BREAK";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiCASE */
-      case 0xfd38010:
-        {static const char *text="CASE was not in SWITCH statement";
-        static const char *msgnam="CASE";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiCONTINUE */
-      case 0xfd38018:
-        {static const char *text="CONTINUE was not in DO FOR or WHILE";
-        static const char *msgnam="CONTINUE";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiEXTRANEOUS */
-      case 0xfd38020:
-        {static const char *text="Some characters were unused, bad number maybe";
-        static const char *msgnam="EXTRANEOUS";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiRETURN */
-      case 0xfd38028:
-        {static const char *text="Extraneous RETURN statement, not from a FUN";
-        static const char *msgnam="RETURN";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiABORT */
-      case 0xfd38030:
-        {static const char *text="Program requested abort";
-        static const char *msgnam="ABORT";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiBAD_INDEX */
-      case 0xfd38038:
-        {static const char *text="Index or subscript is too small or too big";
-        static const char *msgnam="BAD_INDEX";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiBOMB */
-      case 0xfd38040:
-        {static const char *text="Bad punctuation, could not compile the text";
-        static const char *msgnam="BOMB";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiEXTRA_ARG */
-      case 0xfd38048:
-        {static const char *text="Too many arguments for function, watch commas";
-        static const char *msgnam="EXTRA_ARG";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiGOTO */
-      case 0xfd38050:
-        {static const char *text="GOTO target label not found";
-        static const char *msgnam="GOTO";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiINVCLADSC */
-      case 0xfd38058:
-        {static const char *text="Storage class not valid, must be scalar or array";
-        static const char *msgnam="INVCLADSC";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiINVCLADTY */
-      case 0xfd38060:
-        {static const char *text="Invalid mixture of storage class and data type";
-        static const char *msgnam="INVCLADTY";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiINVDTYDSC */
-      case 0xfd38068:
-        {static const char *text="Storage data type is not valid";
-        static const char *msgnam="INVDTYDSC";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiINV_OPC */
-      case 0xfd38070:
-        {static const char *text="Invalid operator code in a function";
-        static const char *msgnam="INV_OPC";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiINV_SIZE */
-      case 0xfd38078:
-        {static const char *text="Number of elements does not match declaration";
-        static const char *msgnam="INV_SIZE";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiMISMATCH */
-      case 0xfd38080:
-        {static const char *text="Shape of arguments does not match";
-        static const char *msgnam="MISMATCH";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiMISS_ARG */
-      case 0xfd38088:
-        {static const char *text="Missing argument is required for function";
-        static const char *msgnam="MISS_ARG";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNDIM_OVER */
-      case 0xfd38090:
-        {static const char *text="Number of dimensions is over the allowed 8";
-        static const char *msgnam="NDIM_OVER";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNO_CMPLX */
-      case 0xfd38098:
-        {static const char *text="There are no complex forms of this function";
-        static const char *msgnam="NO_CMPLX";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNO_OPC */
-      case 0xfd380a0:
-        {static const char *text="No support for this function, today";
-        static const char *msgnam="NO_OPC";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNO_OUTPTR */
-      case 0xfd380a8:
-        {static const char *text="An output pointer is required";
-        static const char *msgnam="NO_OUTPTR";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNO_SELF_PTR */
-      case 0xfd380b0:
-        {static const char *text="No $VALUE is defined for signal or validation";
-        static const char *msgnam="NO_SELF_PTR";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNOT_NUMBER */
-      case 0xfd380b8:
-        {static const char *text="Value is not a scalar number and must be";
-        static const char *msgnam="NOT_NUMBER";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiNULL_PTR */
-      case 0xfd380c0:
-        {static const char *text="Null pointer where value needed";
-        static const char *msgnam="NULL_PTR";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiRECURSIVE */
-      case 0xfd380c8:
-        {static const char *text="Overly recursive function, calls itself maybe";
-        static const char *msgnam="RECURSIVE";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiSIG_DIM */
-      case 0xfd380d0:
-        {static const char *text="Signal dimension does not match data shape";
-        static const char *msgnam="SIG_DIM";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiSYNTAX */
-      case 0xfd380d8:
-        {static const char *text="Bad punctuation or misspelled word or number";
-        static const char *msgnam="SYNTAX";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiTOO_BIG */
-      case 0xfd380e0:
-        {static const char *text="Conversion of number lost significant digits";
-        static const char *msgnam="TOO_BIG";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiUNBALANCE */
-      case 0xfd380e8:
-        {static const char *text="Unbalanced () [] {} '' " " or /**/";
-        static const char *msgnam="UNBALANCE";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiUNKNOWN_VAR */
-      case 0xfd380f0:
-        {static const char *text="Unknown/undefined variable name";
-        static const char *msgnam="UNKNOWN_VAR";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiSTRTOOLON */
-      case 0xfd380f8:
-        {static const char *text="string is too long (greater than 65535)";
-        static const char *msgnam="STRTOOLON";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TdiTIMEOUT */
-      case 0xfd38100:
-        {static const char *text="task did not complete in alotted time";
-        static const char *msgnam="TIMEOUT";
-        *fac_out = FAC_Tdi;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibINSVIRMEM */
-      case 0x158210:
-        {static const char *text="Insufficient virtual memory";
-        static const char *msgnam="INSVIRMEM";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibINVARG */
-      case 0x158230:
-        {static const char *text="Invalid argument";
-        static const char *msgnam="INVARG";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibINVSTRDES */
-      case 0x158220:
-        {static const char *text="Invalid string descriptor";
-        static const char *msgnam="INVSTRDES";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibKEYNOTFOU */
-      case 0x1582f8:
-        {static const char *text="Key not found";
-        static const char *msgnam="KEYNOTFOU";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibNOTFOU */
-      case 0x158270:
-        {static const char *text="Entity not found";
-        static const char *msgnam="NOTFOU";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibQUEWASEMP */
-      case 0x1582e8:
-        {static const char *text="Queue was empty";
-        static const char *msgnam="QUEWASEMP";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* LibSTRTRU */
-      case 0x158010:
-        {static const char *text="String truncated";
-        static const char *msgnam="STRTRU";
-        *fac_out = FAC_Lib;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrMATCH */
-      case 0x248418:
-        {static const char *text="Strings match";
-        static const char *msgnam="MATCH";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrNOMATCH */
-      case 0x248208:
-        {static const char *text="Strings do not match";
-        static const char *msgnam="NOMATCH";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrNOELEM */
-      case 0x248218:
-        {static const char *text="Not enough delimited characters";
-        static const char *msgnam="NOELEM";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrINVDELIM */
-      case 0x248210:
-        {static const char *text="Not enough delimited characters";
-        static const char *msgnam="INVDELIM";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* StrSTRTOOLON */
-      case 0x248070:
-        {static const char *text="String too long";
-        static const char *msgnam="STRTOOLON";
-        *fac_out = FAC_Str;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* SsINTOVF */
-      case 0x478:
-        {static const char *text="Integer overflow";
-        static const char *msgnam="INTOVF";
-        *fac_out = FAC_Ss;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamDONE_Q */
-      case 0x8018008:
-        {static const char *text="I/O completed with X=1, Q=1";
-        static const char *msgnam="DONE_Q";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamDONE_NOQ */
-      case 0x8018010:
-        {static const char *text="I/O completed with X=1, Q=0";
-        static const char *msgnam="DONE_NOQ";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamDONE_NOX */
-      case 0x8019000:
-        {static const char *text="I/O completed with X=0 - probable failure";
-        static const char *msgnam="DONE_NOX";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamSERTRAERR */
-      case 0x8019800:
-        {static const char *text="serial transmission error on highway";
-        static const char *msgnam="SERTRAERR";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamSCCFAIL */
-      case 0x8019840:
-        {static const char *text="serial crate controller failure";
-        static const char *msgnam="SCCFAIL";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* CamOFFLINE */
-      case 0x8019868:
-        {static const char *text="crate is offline";
-        static const char *msgnam="OFFLINE";
-        *fac_out = FAC_Cam;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
 
 /* ServerNOT_DISPATCHED */
       case 0xfe18008:
@@ -648,1016 +118,6 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         {static const char *text="None";
         static const char *msgnam="INVALID_ACTION_OPERATION";
         *fac_out = FAC_Server;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclSUCCESS */
-      case 0x8020008:
-        {static const char *text="Normal successful completion";
-        static const char *msgnam="SUCCESS";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclEXIT */
-      case 0x8020010:
-        {static const char *text="Normal exit";
-        static const char *msgnam="EXIT";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclERROR */
-      case 0x8020018:
-        {static const char *text="Unsuccessful execution of command";
-        static const char *msgnam="ERROR";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclNORMAL */
-      case 0x8020328:
-        {static const char *text="Normal successful completion";
-        static const char *msgnam="NORMAL";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclPRESENT */
-      case 0x8020330:
-        {static const char *text="Entity is present";
-        static const char *msgnam="PRESENT";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclIVVERB */
-      case 0x8020338:
-        {static const char *text="No such command";
-        static const char *msgnam="IVVERB";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclABSENT */
-      case 0x8020340:
-        {static const char *text="Entity is absent";
-        static const char *msgnam="ABSENT";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclNEGATED */
-      case 0x8020348:
-        {static const char *text="Entity is present but negated";
-        static const char *msgnam="NEGATED";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclNOTNEGATABLE */
-      case 0x8020350:
-        {static const char *text="Entity cannot be negated";
-        static const char *msgnam="NOTNEGATABLE";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclIVQUAL */
-      case 0x8020358:
-        {static const char *text="Invalid qualifier";
-        static const char *msgnam="IVQUAL";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclPROMPT_MORE */
-      case 0x8020360:
-        {static const char *text="More input required for command";
-        static const char *msgnam="PROMPT_MORE";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclTOO_MANY_PRMS */
-      case 0x8020368:
-        {static const char *text="Too many parameters specified";
-        static const char *msgnam="TOO_MANY_PRMS";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclTOO_MANY_VALS */
-      case 0x8020370:
-        {static const char *text="Too many values";
-        static const char *msgnam="TOO_MANY_VALS";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* MdsdclMISSING_VALUE */
-      case 0x8020378:
-        {static const char *text="Qualifier value needed";
-        static const char *msgnam="MISSING_VALUE";
-        *fac_out = FAC_Mdsdcl;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeALREADY_OFF */
-      case 0xfd18028:
-        {static const char *text="Node is already OFF";
-        static const char *msgnam="ALREADY_OFF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeALREADY_ON */
-      case 0xfd18030:
-        {static const char *text="Node is already ON";
-        static const char *msgnam="ALREADY_ON";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeALREADY_OPEN */
-      case 0xfd18038:
-        {static const char *text="Tree is already OPEN";
-        static const char *msgnam="ALREADY_OPEN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeALREADY_THERE */
-      case 0xfd18088:
-        {static const char *text="Node is already in the tree";
-        static const char *msgnam="ALREADY_THERE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeBADRECORD */
-      case 0xfd180b8:
-        {static const char *text="Data corrupted: cannot read record";
-        static const char *msgnam="BADRECORD";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeBOTH_OFF */
-      case 0xfd18098:
-        {static const char *text="Both this node and its parent are off";
-        static const char *msgnam="BOTH_OFF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeBUFFEROVF */
-      case 0xfd18110:
-        {static const char *text="Output buffer overflow";
-        static const char *msgnam="BUFFEROVF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeCONGLOMFULL */
-      case 0xfd18120:
-        {static const char *text="Current conglomerate is full";
-        static const char *msgnam="CONGLOMFULL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeCONGLOM_NOT_FULL */
-      case 0xfd18128:
-        {static const char *text="Current conglomerate is not yet full";
-        static const char *msgnam="CONGLOM_NOT_FULL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeCONTINUING */
-      case 0xfd18960:
-        {static const char *text="Operation continuing: note following error";
-        static const char *msgnam="CONTINUING";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeDUPTAG */
-      case 0xfd180c8:
-        {static const char *text="Tag name already in use";
-        static const char *msgnam="DUPTAG";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeEDITTING */
-      case 0xfd18190:
-        {static const char *text="Tree file open for edit: operation not permitted";
-        static const char *msgnam="EDITTING";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeILLEGAL_ITEM */
-      case 0xfd18108:
-        {static const char *text="Invalid item code or part number specified";
-        static const char *msgnam="ILLEGAL_ITEM";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeILLPAGCNT */
-      case 0xfd180d0:
-        {static const char *text="Illegal page count, error mapping tree file";
-        static const char *msgnam="ILLPAGCNT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVDFFCLASS */
-      case 0xfd18138:
-        {static const char *text="Invalid data fmt: only CLASS_S can have data in NCI";
-        static const char *msgnam="INVDFFCLASS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVDTPUSG */
-      case 0xfd18188:
-        {static const char *text="Attempt to store datatype which conflicts with the designated usage of this node";
-        static const char *msgnam="INVDTPUSG";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVPATH */
-      case 0xfd18100:
-        {static const char *text="Invalid tree pathname specified";
-        static const char *msgnam="INVPATH";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVRECTYP */
-      case 0xfd18140:
-        {static const char *text="Record type invalid for requested operation";
-        static const char *msgnam="INVRECTYP";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVTREE */
-      case 0xfd180c0:
-        {static const char *text="Invalid tree identification structure";
-        static const char *msgnam="INVTREE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeMAXOPENEDIT */
-      case 0xfd180d8:
-        {static const char *text="Too many files open for edit";
-        static const char *msgnam="MAXOPENEDIT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNEW */
-      case 0xfd18018:
-        {static const char *text="New tree created";
-        static const char *msgnam="NEW";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNMN */
-      case 0xfd18060:
-        {static const char *text="No More Nodes";
-        static const char *msgnam="NMN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNMT */
-      case 0xfd18068:
-        {static const char *text="No More Tags";
-        static const char *msgnam="NMT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNNF */
-      case 0xfd18070:
-        {static const char *text="Node Not Found";
-        static const char *msgnam="NNF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNODATA */
-      case 0xfd180e0:
-        {static const char *text="No data available for this node";
-        static const char *msgnam="NODATA";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNODNAMLEN */
-      case 0xfd18148:
-        {static const char *text="Node name too long (12 chars max)";
-        static const char *msgnam="NODNAMLEN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOEDIT */
-      case 0xfd180f0:
-        {static const char *text="Tree file is not open for edit";
-        static const char *msgnam="NOEDIT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOLOG */
-      case 0xfd181a8:
-        {static const char *text="Experiment pathname (xxx_path) not defined";
-        static const char *msgnam="NOLOG";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOMETHOD */
-      case 0xfd180b0:
-        {static const char *text="Method not available for this object";
-        static const char *msgnam="NOMETHOD";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOOVERWRITE */
-      case 0xfd18180:
-        {static const char *text="Write-once node: overwrite not permitted";
-        static const char *msgnam="NOOVERWRITE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNORMAL */
-      case 0xfd18008:
-        {static const char *text="Normal successful completion";
-        static const char *msgnam="NORMAL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOTALLSUBS */
-      case 0xfd18020:
-        {static const char *text="Main tree opened but not all subtrees found/or connected";
-        static const char *msgnam="NOTALLSUBS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOTCHILDLESS */
-      case 0xfd180f8:
-        {static const char *text="Node must be childless to become subtree reference";
-        static const char *msgnam="NOTCHILDLESS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOT_IN_LIST */
-      case 0xfd181c0:
-        {static const char *text="Tree being opened was not in the list";
-        static const char *msgnam="NOT_IN_LIST";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOTMEMBERLESS */
-      case 0xfd18170:
-        {static const char *text="Subtree reference can not have members";
-        static const char *msgnam="NOTMEMBERLESS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOTOPEN */
-      case 0xfd180e8:
-        {static const char *text="No tree file currently open";
-        static const char *msgnam="NOTOPEN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOTSON */
-      case 0xfd18178:
-        {static const char *text="Subtree reference cannot be a member";
-        static const char *msgnam="NOTSON";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOT_CONGLOM */
-      case 0xfd18160:
-        {static const char *text="Head node of conglomerate does not contain a DTYPE_CONGLOM record";
-        static const char *msgnam="NOT_CONGLOM";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOT_OPEN */
-      case 0xfd180a8:
-        {static const char *text="Tree not currently open";
-        static const char *msgnam="NOT_OPEN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOWRITEMODEL */
-      case 0xfd18198:
-        {static const char *text="Data for this node can not be written into the MODEL file";
-        static const char *msgnam="NOWRITEMODEL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOWRITESHOT */
-      case 0xfd181a0:
-        {static const char *text="Data for this node can not be written into the SHOT file";
-        static const char *msgnam="NOWRITESHOT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNO_CONTEXT */
-      case 0xfd18040:
-        {static const char *text="There is no active search to end";
-        static const char *msgnam="NO_CONTEXT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeOFF */
-      case 0xfd180a0:
-        {static const char *text="Node is OFF";
-        static const char *msgnam="OFF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeON */
-      case 0xfd18048:
-        {static const char *text="Node is ON";
-        static const char *msgnam="ON";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeOPEN */
-      case 0xfd18050:
-        {static const char *text="Tree is OPEN (no edit)";
-        static const char *msgnam="OPEN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeOPEN_EDIT */
-      case 0xfd18058:
-        {static const char *text="Tree is OPEN for edit";
-        static const char *msgnam="OPEN_EDIT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreePARENT_OFF */
-      case 0xfd18090:
-        {static const char *text="Parent of this node is OFF";
-        static const char *msgnam="PARENT_OFF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeREADERR */
-      case 0xfd181b8:
-        {static const char *text="Error reading record for node";
-        static const char *msgnam="READERR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeREADONLY */
-      case 0xfd181b0:
-        {static const char *text="Tree was opened with readonly access";
-        static const char *msgnam="READONLY";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeRESOLVED */
-      case 0xfd18010:
-        {static const char *text="Indirect reference successfully resolved";
-        static const char *msgnam="RESOLVED";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeSUCCESS */
-      case 0xfd18640:
-        {static const char *text="Operation successful";
-        static const char *msgnam="SUCCESS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeTAGNAMLEN */
-      case 0xfd18150:
-        {static const char *text="Tagname too long (max 24 chars)";
-        static const char *msgnam="TAGNAMLEN";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeTNF */
-      case 0xfd18078:
-        {static const char *text="Tag Not Found";
-        static const char *msgnam="TNF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeTREENF */
-      case 0xfd18080:
-        {static const char *text="Tree Not Found";
-        static const char *msgnam="TREENF";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeUNRESOLVED */
-      case 0xfd18130:
-        {static const char *text="Not an indirect node reference: No action taken";
-        static const char *msgnam="UNRESOLVED";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeUNSPRTCLASS */
-      case 0xfd18118:
-        {static const char *text="Unsupported descriptor class";
-        static const char *msgnam="UNSPRTCLASS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeUNSUPARRDTYPE */
-      case 0xfd18168:
-        {static const char *text="Complex data types not supported as members of arrays";
-        static const char *msgnam="UNSUPARRDTYPE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeWRITEFIRST */
-      case 0xfd18158:
-        {static const char *text="Tree has been modified:  write or quit first";
-        static const char *msgnam="WRITEFIRST";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeFAILURE */
-      case 0xfd18fa0:
-        {static const char *text="Operation NOT successful";
-        static const char *msgnam="FAILURE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeLOCK_FAILURE */
-      case 0xfd18fb0:
-        {static const char *text="Error locking file, perhaps NFSLOCKING not enabled on this system";
-        static const char *msgnam="LOCK_FAILURE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeFILE_NOT_FOUND */
-      case 0xfd18fa8:
-        {static const char *text="File or Directory Not Found";
-        static const char *msgnam="FILE_NOT_FOUND";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeCANCEL */
-      case 0xfd18c80:
-        {static const char *text="User canceled operation";
-        static const char *msgnam="CANCEL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOSEGMENTS */
-      case 0xfd18fb8:
-        {static const char *text="No segments exist in this node";
-        static const char *msgnam="NOSEGMENTS";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVDTYPE */
-      case 0xfd18fc0:
-        {static const char *text="Invalid datatype for data segment";
-        static const char *msgnam="INVDTYPE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVSHAPE */
-      case 0xfd18fc8:
-        {static const char *text="Invalid shape for this data segment";
-        static const char *msgnam="INVSHAPE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVSHOT */
-      case 0xfd18fd8:
-        {static const char *text="Invalid shot number - must be -1 (model), 0 (current), or Positive";
-        static const char *msgnam="INVSHOT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeINVTAG */
-      case 0xfd18fe8:
-        {static const char *text="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores";
-        static const char *msgnam="INVTAG";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOPATH */
-      case 0xfd18ff0:
-        {static const char *text="No 'treename'_path environment variable defined. Cannot locate tree files.";
-        static const char *msgnam="NOPATH";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeTREEFILEREADERR */
-      case 0xfd18ff8:
-        {static const char *text="Error reading in tree file contents.";
-        static const char *msgnam="TREEFILEREADERR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeMEMERR */
-      case 0xfd19000:
-        {static const char *text="Memory allocation error.";
-        static const char *msgnam="MEMERR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOCURRENT */
-      case 0xfd19008:
-        {static const char *text="No current shot number set for this tree.";
-        static const char *msgnam="NOCURRENT";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeFOPENW */
-      case 0xfd19010:
-        {static const char *text="Error opening file for read-write.";
-        static const char *msgnam="FOPENW";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeFOPENR */
-      case 0xfd19018:
-        {static const char *text="Error opening file read-only.";
-        static const char *msgnam="FOPENR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeFCREATE */
-      case 0xfd19020:
-        {static const char *text="Error creating new file.";
-        static const char *msgnam="FCREATE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeCONNECTFAIL */
-      case 0xfd19028:
-        {static const char *text="Error connecting to remote server.";
-        static const char *msgnam="CONNECTFAIL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNCIWRITE */
-      case 0xfd19030:
-        {static const char *text="Error writing node characterisitics to file.";
-        static const char *msgnam="NCIWRITE";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeDELFAIL */
-      case 0xfd19038:
-        {static const char *text="Error deleting file.";
-        static const char *msgnam="DELFAIL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeRENFAIL */
-      case 0xfd19040:
-        {static const char *text="Error renaming file.";
-        static const char *msgnam="RENFAIL";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeEMPTY */
-      case 0xfd19048:
-        {static const char *text="Empty string provided.";
-        static const char *msgnam="EMPTY";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreePARSEERR */
-      case 0xfd19050:
-        {static const char *text="Invalid node search string.";
-        static const char *msgnam="PARSEERR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNCIREAD */
-      case 0xfd19058:
-        {static const char *text="Error reading node characteristics from file.";
-        static const char *msgnam="NCIREAD";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeNOVERSION */
-      case 0xfd19060:
-        {static const char *text="No version available.";
-        static const char *msgnam="NOVERSION";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeDFREAD */
-      case 0xfd19068:
-        {static const char *text="Error reading from datafile.";
-        static const char *msgnam="DFREAD";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeCLOSEERR */
-      case 0xfd19070:
-        {static const char *text="Error closing temporary tree file.";
-        static const char *msgnam="CLOSEERR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeMOVEERROR */
-      case 0xfd19078:
-        {static const char *text="Error replacing original treefile with new one.";
-        static const char *msgnam="MOVEERROR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeOPENEDITERR */
-      case 0xfd19080:
-        {static const char *text="Error reopening new treefile for write access.";
-        static const char *msgnam="OPENEDITERR";
-        *fac_out = FAC_Tree;
-        *msgnam_out = msgnam;
-        *text_out = text;
-        sts = 1;}
-        break;
-
-/* TreeREADONLY_TREE */
-      case 0xfd19088:
-        {static const char *text="Tree is marked as readonly. No write operations permitted.";
-        static const char *msgnam="READONLY_TREE";
-        *fac_out = FAC_Tree;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3453,11 +1913,1551 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
- /* DEVNOT_A_PYDEVICE */
+/* DEVNOT_A_PYDEVICE */
       case 0x277ca5d8:
         {static const char *text="Device is not a python device.";
         static const char *msgnam="NOT_A_PYDEVICE";
         *fac_out = FAC_DEV;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibINSVIRMEM */
+      case 0x158210:
+        {static const char *text="Insufficient virtual memory";
+        static const char *msgnam="INSVIRMEM";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibINVARG */
+      case 0x158230:
+        {static const char *text="Invalid argument";
+        static const char *msgnam="INVARG";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibINVSTRDES */
+      case 0x158220:
+        {static const char *text="Invalid string descriptor";
+        static const char *msgnam="INVSTRDES";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibKEYNOTFOU */
+      case 0x1582f8:
+        {static const char *text="Key not found";
+        static const char *msgnam="KEYNOTFOU";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibNOTFOU */
+      case 0x158270:
+        {static const char *text="Entity not found";
+        static const char *msgnam="NOTFOU";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibQUEWASEMP */
+      case 0x1582e8:
+        {static const char *text="Queue was empty";
+        static const char *msgnam="QUEWASEMP";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* LibSTRTRU */
+      case 0x158010:
+        {static const char *text="String truncated";
+        static const char *msgnam="STRTRU";
+        *fac_out = FAC_Lib;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrMATCH */
+      case 0x248418:
+        {static const char *text="Strings match";
+        static const char *msgnam="MATCH";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrNOMATCH */
+      case 0x248208:
+        {static const char *text="Strings do not match";
+        static const char *msgnam="NOMATCH";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrNOELEM */
+      case 0x248218:
+        {static const char *text="Not enough delimited characters";
+        static const char *msgnam="NOELEM";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrINVDELIM */
+      case 0x248210:
+        {static const char *text="Not enough delimited characters";
+        static const char *msgnam="INVDELIM";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* StrSTRTOOLON */
+      case 0x248070:
+        {static const char *text="String too long";
+        static const char *msgnam="STRTOOLON";
+        *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* SsINTOVF */
+      case 0x478:
+        {static const char *text="Integer overflow";
+        static const char *msgnam="INTOVF";
+        *fac_out = FAC_Ss;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamDONE_Q */
+      case 0x8018008:
+        {static const char *text="I/O completed with X=1, Q=1";
+        static const char *msgnam="DONE_Q";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamDONE_NOQ */
+      case 0x8018010:
+        {static const char *text="I/O completed with X=1, Q=0";
+        static const char *msgnam="DONE_NOQ";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamDONE_NOX */
+      case 0x8019000:
+        {static const char *text="I/O completed with X=0 - probable failure";
+        static const char *msgnam="DONE_NOX";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamSERTRAERR */
+      case 0x8019800:
+        {static const char *text="serial transmission error on highway";
+        static const char *msgnam="SERTRAERR";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamSCCFAIL */
+      case 0x8019840:
+        {static const char *text="serial crate controller failure";
+        static const char *msgnam="SCCFAIL";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* CamOFFLINE */
+      case 0x8019868:
+        {static const char *text="crate is offline";
+        static const char *msgnam="OFFLINE";
+        *fac_out = FAC_Cam;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TclNORMAL */
+      case 0x2a0008:
+        {static const char *text="Normal successful completion";
+        static const char *msgnam="NORMAL";
+        *fac_out = FAC_Tcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TclFAILED_ESSENTIAL */
+      case 0x2a0010:
+        {static const char *text="Essential action failed";
+        static const char *msgnam="FAILED_ESSENTIAL";
+        *fac_out = FAC_Tcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclSUCCESS */
+      case 0x8020008:
+        {static const char *text="Normal successful completion";
+        static const char *msgnam="SUCCESS";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclEXIT */
+      case 0x8020010:
+        {static const char *text="Normal exit";
+        static const char *msgnam="EXIT";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclERROR */
+      case 0x8020018:
+        {static const char *text="Unsuccessful execution of command";
+        static const char *msgnam="ERROR";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclNORMAL */
+      case 0x8020328:
+        {static const char *text="Normal successful completion";
+        static const char *msgnam="NORMAL";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclPRESENT */
+      case 0x8020330:
+        {static const char *text="Entity is present";
+        static const char *msgnam="PRESENT";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclIVVERB */
+      case 0x8020338:
+        {static const char *text="No such command";
+        static const char *msgnam="IVVERB";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclABSENT */
+      case 0x8020340:
+        {static const char *text="Entity is absent";
+        static const char *msgnam="ABSENT";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclNEGATED */
+      case 0x8020348:
+        {static const char *text="Entity is present but negated";
+        static const char *msgnam="NEGATED";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclNOTNEGATABLE */
+      case 0x8020350:
+        {static const char *text="Entity cannot be negated";
+        static const char *msgnam="NOTNEGATABLE";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclIVQUAL */
+      case 0x8020358:
+        {static const char *text="Invalid qualifier";
+        static const char *msgnam="IVQUAL";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclPROMPT_MORE */
+      case 0x8020360:
+        {static const char *text="More input required for command";
+        static const char *msgnam="PROMPT_MORE";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclTOO_MANY_PRMS */
+      case 0x8020368:
+        {static const char *text="Too many parameters specified";
+        static const char *msgnam="TOO_MANY_PRMS";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclTOO_MANY_VALS */
+      case 0x8020370:
+        {static const char *text="Too many values";
+        static const char *msgnam="TOO_MANY_VALS";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MdsdclMISSING_VALUE */
+      case 0x8020378:
+        {static const char *text="Qualifier value needed";
+        static const char *msgnam="MISSING_VALUE";
+        *fac_out = FAC_Mdsdcl;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeALREADY_OFF */
+      case 0xfd18028:
+        {static const char *text="Node is already OFF";
+        static const char *msgnam="ALREADY_OFF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeALREADY_ON */
+      case 0xfd18030:
+        {static const char *text="Node is already ON";
+        static const char *msgnam="ALREADY_ON";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeALREADY_OPEN */
+      case 0xfd18038:
+        {static const char *text="Tree is already OPEN";
+        static const char *msgnam="ALREADY_OPEN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeALREADY_THERE */
+      case 0xfd18088:
+        {static const char *text="Node is already in the tree";
+        static const char *msgnam="ALREADY_THERE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeBADRECORD */
+      case 0xfd180b8:
+        {static const char *text="Data corrupted: cannot read record";
+        static const char *msgnam="BADRECORD";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeBOTH_OFF */
+      case 0xfd18098:
+        {static const char *text="Both this node and its parent are off";
+        static const char *msgnam="BOTH_OFF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeBUFFEROVF */
+      case 0xfd18110:
+        {static const char *text="Output buffer overflow";
+        static const char *msgnam="BUFFEROVF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCONGLOMFULL */
+      case 0xfd18120:
+        {static const char *text="Current conglomerate is full";
+        static const char *msgnam="CONGLOMFULL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCONGLOM_NOT_FULL */
+      case 0xfd18128:
+        {static const char *text="Current conglomerate is not yet full";
+        static const char *msgnam="CONGLOM_NOT_FULL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCONTINUING */
+      case 0xfd18960:
+        {static const char *text="Operation continuing: note following error";
+        static const char *msgnam="CONTINUING";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeDUPTAG */
+      case 0xfd180c8:
+        {static const char *text="Tag name already in use";
+        static const char *msgnam="DUPTAG";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeEDITTING */
+      case 0xfd18190:
+        {static const char *text="Tree file open for edit: operation not permitted";
+        static const char *msgnam="EDITTING";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeILLEGAL_ITEM */
+      case 0xfd18108:
+        {static const char *text="Invalid item code or part number specified";
+        static const char *msgnam="ILLEGAL_ITEM";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeILLPAGCNT */
+      case 0xfd180d0:
+        {static const char *text="Illegal page count, error mapping tree file";
+        static const char *msgnam="ILLPAGCNT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVDFFCLASS */
+      case 0xfd18138:
+        {static const char *text="Invalid data fmt: only CLASS_S can have data in NCI";
+        static const char *msgnam="INVDFFCLASS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVDTPUSG */
+      case 0xfd18188:
+        {static const char *text="Attempt to store datatype which conflicts with the designated usage of this node";
+        static const char *msgnam="INVDTPUSG";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVPATH */
+      case 0xfd18100:
+        {static const char *text="Invalid tree pathname specified";
+        static const char *msgnam="INVPATH";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVRECTYP */
+      case 0xfd18140:
+        {static const char *text="Record type invalid for requested operation";
+        static const char *msgnam="INVRECTYP";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVTREE */
+      case 0xfd180c0:
+        {static const char *text="Invalid tree identification structure";
+        static const char *msgnam="INVTREE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeMAXOPENEDIT */
+      case 0xfd180d8:
+        {static const char *text="Too many files open for edit";
+        static const char *msgnam="MAXOPENEDIT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNEW */
+      case 0xfd18018:
+        {static const char *text="New tree created";
+        static const char *msgnam="NEW";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNMN */
+      case 0xfd18060:
+        {static const char *text="No More Nodes";
+        static const char *msgnam="NMN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNMT */
+      case 0xfd18068:
+        {static const char *text="No More Tags";
+        static const char *msgnam="NMT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNNF */
+      case 0xfd18070:
+        {static const char *text="Node Not Found";
+        static const char *msgnam="NNF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNODATA */
+      case 0xfd180e0:
+        {static const char *text="No data available for this node";
+        static const char *msgnam="NODATA";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNODNAMLEN */
+      case 0xfd18148:
+        {static const char *text="Node name too long (12 chars max)";
+        static const char *msgnam="NODNAMLEN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOEDIT */
+      case 0xfd180f0:
+        {static const char *text="Tree file is not open for edit";
+        static const char *msgnam="NOEDIT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOLOG */
+      case 0xfd181a8:
+        {static const char *text="Experiment pathname (xxx_path) not defined";
+        static const char *msgnam="NOLOG";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOMETHOD */
+      case 0xfd180b0:
+        {static const char *text="Method not available for this object";
+        static const char *msgnam="NOMETHOD";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOOVERWRITE */
+      case 0xfd18180:
+        {static const char *text="Write-once node: overwrite not permitted";
+        static const char *msgnam="NOOVERWRITE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNORMAL */
+      case 0xfd18008:
+        {static const char *text="Normal successful completion";
+        static const char *msgnam="NORMAL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOTALLSUBS */
+      case 0xfd18020:
+        {static const char *text="Main tree opened but not all subtrees found/or connected";
+        static const char *msgnam="NOTALLSUBS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOTCHILDLESS */
+      case 0xfd180f8:
+        {static const char *text="Node must be childless to become subtree reference";
+        static const char *msgnam="NOTCHILDLESS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOT_IN_LIST */
+      case 0xfd181c0:
+        {static const char *text="Tree being opened was not in the list";
+        static const char *msgnam="NOT_IN_LIST";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOTMEMBERLESS */
+      case 0xfd18170:
+        {static const char *text="Subtree reference can not have members";
+        static const char *msgnam="NOTMEMBERLESS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOTOPEN */
+      case 0xfd180e8:
+        {static const char *text="No tree file currently open";
+        static const char *msgnam="NOTOPEN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOTSON */
+      case 0xfd18178:
+        {static const char *text="Subtree reference cannot be a member";
+        static const char *msgnam="NOTSON";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOT_CONGLOM */
+      case 0xfd18160:
+        {static const char *text="Head node of conglomerate does not contain a DTYPE_CONGLOM record";
+        static const char *msgnam="NOT_CONGLOM";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOT_OPEN */
+      case 0xfd180a8:
+        {static const char *text="Tree not currently open";
+        static const char *msgnam="NOT_OPEN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOWRITEMODEL */
+      case 0xfd18198:
+        {static const char *text="Data for this node can not be written into the MODEL file";
+        static const char *msgnam="NOWRITEMODEL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOWRITESHOT */
+      case 0xfd181a0:
+        {static const char *text="Data for this node can not be written into the SHOT file";
+        static const char *msgnam="NOWRITESHOT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNO_CONTEXT */
+      case 0xfd18040:
+        {static const char *text="There is no active search to end";
+        static const char *msgnam="NO_CONTEXT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeOFF */
+      case 0xfd180a0:
+        {static const char *text="Node is OFF";
+        static const char *msgnam="OFF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeON */
+      case 0xfd18048:
+        {static const char *text="Node is ON";
+        static const char *msgnam="ON";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeOPEN */
+      case 0xfd18050:
+        {static const char *text="Tree is OPEN (no edit)";
+        static const char *msgnam="OPEN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeOPEN_EDIT */
+      case 0xfd18058:
+        {static const char *text="Tree is OPEN for edit";
+        static const char *msgnam="OPEN_EDIT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreePARENT_OFF */
+      case 0xfd18090:
+        {static const char *text="Parent of this node is OFF";
+        static const char *msgnam="PARENT_OFF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeREADERR */
+      case 0xfd181b8:
+        {static const char *text="Error reading record for node";
+        static const char *msgnam="READERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeREADONLY */
+      case 0xfd181b0:
+        {static const char *text="Tree was opened with readonly access";
+        static const char *msgnam="READONLY";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeRESOLVED */
+      case 0xfd18010:
+        {static const char *text="Indirect reference successfully resolved";
+        static const char *msgnam="RESOLVED";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeSUCCESS */
+      case 0xfd18640:
+        {static const char *text="Operation successful";
+        static const char *msgnam="SUCCESS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeTAGNAMLEN */
+      case 0xfd18150:
+        {static const char *text="Tagname too long (max 24 chars)";
+        static const char *msgnam="TAGNAMLEN";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeTNF */
+      case 0xfd18078:
+        {static const char *text="Tag Not Found";
+        static const char *msgnam="TNF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeTREENF */
+      case 0xfd18080:
+        {static const char *text="Tree Not Found";
+        static const char *msgnam="TREENF";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeUNRESOLVED */
+      case 0xfd18130:
+        {static const char *text="Not an indirect node reference: No action taken";
+        static const char *msgnam="UNRESOLVED";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeUNSPRTCLASS */
+      case 0xfd18118:
+        {static const char *text="Unsupported descriptor class";
+        static const char *msgnam="UNSPRTCLASS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeUNSUPARRDTYPE */
+      case 0xfd18168:
+        {static const char *text="Complex data types not supported as members of arrays";
+        static const char *msgnam="UNSUPARRDTYPE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeWRITEFIRST */
+      case 0xfd18158:
+        {static const char *text="Tree has been modified:  write or quit first";
+        static const char *msgnam="WRITEFIRST";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeFAILURE */
+      case 0xfd18fa0:
+        {static const char *text="Operation NOT successful";
+        static const char *msgnam="FAILURE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeLOCK_FAILURE */
+      case 0xfd18fb0:
+        {static const char *text="Error locking file, perhaps NFSLOCKING not enabled on this system";
+        static const char *msgnam="LOCK_FAILURE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeFILE_NOT_FOUND */
+      case 0xfd18fa8:
+        {static const char *text="File or Directory Not Found";
+        static const char *msgnam="FILE_NOT_FOUND";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCANCEL */
+      case 0xfd18c80:
+        {static const char *text="User canceled operation";
+        static const char *msgnam="CANCEL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOSEGMENTS */
+      case 0xfd18fb8:
+        {static const char *text="No segments exist in this node";
+        static const char *msgnam="NOSEGMENTS";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVDTYPE */
+      case 0xfd18fc0:
+        {static const char *text="Invalid datatype for data segment";
+        static const char *msgnam="INVDTYPE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVSHAPE */
+      case 0xfd18fc8:
+        {static const char *text="Invalid shape for this data segment";
+        static const char *msgnam="INVSHAPE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVSHOT */
+      case 0xfd18fd8:
+        {static const char *text="Invalid shot number - must be -1 (model), 0 (current), or Positive";
+        static const char *msgnam="INVSHOT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeINVTAG */
+      case 0xfd18fe8:
+        {static const char *text="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores";
+        static const char *msgnam="INVTAG";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOPATH */
+      case 0xfd18ff0:
+        {static const char *text="No 'treename'_path environment variable defined. Cannot locate tree files.";
+        static const char *msgnam="NOPATH";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeTREEFILEREADERR */
+      case 0xfd18ff8:
+        {static const char *text="Error reading in tree file contents.";
+        static const char *msgnam="TREEFILEREADERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeMEMERR */
+      case 0xfd19000:
+        {static const char *text="Memory allocation error.";
+        static const char *msgnam="MEMERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOCURRENT */
+      case 0xfd19008:
+        {static const char *text="No current shot number set for this tree.";
+        static const char *msgnam="NOCURRENT";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeFOPENW */
+      case 0xfd19010:
+        {static const char *text="Error opening file for read-write.";
+        static const char *msgnam="FOPENW";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeFOPENR */
+      case 0xfd19018:
+        {static const char *text="Error opening file read-only.";
+        static const char *msgnam="FOPENR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeFCREATE */
+      case 0xfd19020:
+        {static const char *text="Error creating new file.";
+        static const char *msgnam="FCREATE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCONNECTFAIL */
+      case 0xfd19028:
+        {static const char *text="Error connecting to remote server.";
+        static const char *msgnam="CONNECTFAIL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNCIWRITE */
+      case 0xfd19030:
+        {static const char *text="Error writing node characterisitics to file.";
+        static const char *msgnam="NCIWRITE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeDELFAIL */
+      case 0xfd19038:
+        {static const char *text="Error deleting file.";
+        static const char *msgnam="DELFAIL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeRENFAIL */
+      case 0xfd19040:
+        {static const char *text="Error renaming file.";
+        static const char *msgnam="RENFAIL";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeEMPTY */
+      case 0xfd19048:
+        {static const char *text="Empty string provided.";
+        static const char *msgnam="EMPTY";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreePARSEERR */
+      case 0xfd19050:
+        {static const char *text="Invalid node search string.";
+        static const char *msgnam="PARSEERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNCIREAD */
+      case 0xfd19058:
+        {static const char *text="Error reading node characteristics from file.";
+        static const char *msgnam="NCIREAD";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeNOVERSION */
+      case 0xfd19060:
+        {static const char *text="No version available.";
+        static const char *msgnam="NOVERSION";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeDFREAD */
+      case 0xfd19068:
+        {static const char *text="Error reading from datafile.";
+        static const char *msgnam="DFREAD";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeCLOSEERR */
+      case 0xfd19070:
+        {static const char *text="Error closing temporary tree file.";
+        static const char *msgnam="CLOSEERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeMOVEERROR */
+      case 0xfd19078:
+        {static const char *text="Error replacing original treefile with new one.";
+        static const char *msgnam="MOVEERROR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeOPENEDITERR */
+      case 0xfd19080:
+        {static const char *text="Error reopening new treefile for write access.";
+        static const char *msgnam="OPENEDITERR";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TreeREADONLY_TREE */
+      case 0xfd19088:
+        {static const char *text="Tree is marked as readonly. No write operations permitted.";
+        static const char *msgnam="READONLY_TREE";
+        *fac_out = FAC_Tree;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiBREAK */
+      case 0xfd38008:
+        {static const char *text="BREAK was not in DO FOR SWITCH or WHILE";
+        static const char *msgnam="BREAK";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiCASE */
+      case 0xfd38010:
+        {static const char *text="CASE was not in SWITCH statement";
+        static const char *msgnam="CASE";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiCONTINUE */
+      case 0xfd38018:
+        {static const char *text="CONTINUE was not in DO FOR or WHILE";
+        static const char *msgnam="CONTINUE";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiEXTRANEOUS */
+      case 0xfd38020:
+        {static const char *text="Some characters were unused, bad number maybe";
+        static const char *msgnam="EXTRANEOUS";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiRETURN */
+      case 0xfd38028:
+        {static const char *text="Extraneous RETURN statement, not from a FUN";
+        static const char *msgnam="RETURN";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiABORT */
+      case 0xfd38030:
+        {static const char *text="Program requested abort";
+        static const char *msgnam="ABORT";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiBAD_INDEX */
+      case 0xfd38038:
+        {static const char *text="Index or subscript is too small or too big";
+        static const char *msgnam="BAD_INDEX";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiBOMB */
+      case 0xfd38040:
+        {static const char *text="Bad punctuation, could not compile the text";
+        static const char *msgnam="BOMB";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiEXTRA_ARG */
+      case 0xfd38048:
+        {static const char *text="Too many arguments for function, watch commas";
+        static const char *msgnam="EXTRA_ARG";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiGOTO */
+      case 0xfd38050:
+        {static const char *text="GOTO target label not found";
+        static const char *msgnam="GOTO";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiINVCLADSC */
+      case 0xfd38058:
+        {static const char *text="Storage class not valid, must be scalar or array";
+        static const char *msgnam="INVCLADSC";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiINVCLADTY */
+      case 0xfd38060:
+        {static const char *text="Invalid mixture of storage class and data type";
+        static const char *msgnam="INVCLADTY";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiINVDTYDSC */
+      case 0xfd38068:
+        {static const char *text="Storage data type is not valid";
+        static const char *msgnam="INVDTYDSC";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiINV_OPC */
+      case 0xfd38070:
+        {static const char *text="Invalid operator code in a function";
+        static const char *msgnam="INV_OPC";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiINV_SIZE */
+      case 0xfd38078:
+        {static const char *text="Number of elements does not match declaration";
+        static const char *msgnam="INV_SIZE";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiMISMATCH */
+      case 0xfd38080:
+        {static const char *text="Shape of arguments does not match";
+        static const char *msgnam="MISMATCH";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiMISS_ARG */
+      case 0xfd38088:
+        {static const char *text="Missing argument is required for function";
+        static const char *msgnam="MISS_ARG";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNDIM_OVER */
+      case 0xfd38090:
+        {static const char *text="Number of dimensions is over the allowed 8";
+        static const char *msgnam="NDIM_OVER";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNO_CMPLX */
+      case 0xfd38098:
+        {static const char *text="There are no complex forms of this function";
+        static const char *msgnam="NO_CMPLX";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNO_OPC */
+      case 0xfd380a0:
+        {static const char *text="No support for this function, today";
+        static const char *msgnam="NO_OPC";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNO_OUTPTR */
+      case 0xfd380a8:
+        {static const char *text="An output pointer is required";
+        static const char *msgnam="NO_OUTPTR";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNO_SELF_PTR */
+      case 0xfd380b0:
+        {static const char *text="No $VALUE is defined for signal or validation";
+        static const char *msgnam="NO_SELF_PTR";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNOT_NUMBER */
+      case 0xfd380b8:
+        {static const char *text="Value is not a scalar number and must be";
+        static const char *msgnam="NOT_NUMBER";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiNULL_PTR */
+      case 0xfd380c0:
+        {static const char *text="Null pointer where value needed";
+        static const char *msgnam="NULL_PTR";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiRECURSIVE */
+      case 0xfd380c8:
+        {static const char *text="Overly recursive function, calls itself maybe";
+        static const char *msgnam="RECURSIVE";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiSIG_DIM */
+      case 0xfd380d0:
+        {static const char *text="Signal dimension does not match data shape";
+        static const char *msgnam="SIG_DIM";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiSYNTAX */
+      case 0xfd380d8:
+        {static const char *text="Bad punctuation or misspelled word or number";
+        static const char *msgnam="SYNTAX";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiTOO_BIG */
+      case 0xfd380e0:
+        {static const char *text="Conversion of number lost significant digits";
+        static const char *msgnam="TOO_BIG";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiUNBALANCE */
+      case 0xfd380e8:
+        {static const char *text="Unbalanced () [] {} '' " " or /**/";
+        static const char *msgnam="UNBALANCE";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiUNKNOWN_VAR */
+      case 0xfd380f0:
+        {static const char *text="Unknown/undefined variable name";
+        static const char *msgnam="UNKNOWN_VAR";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiSTRTOOLON */
+      case 0xfd380f8:
+        {static const char *text="string is too long (greater than 65535)";
+        static const char *msgnam="STRTOOLON";
+        *fac_out = FAC_Tdi;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* TdiTIMEOUT */
+      case 0xfd38100:
+        {static const char *text="task did not complete in alotted time";
+        static const char *msgnam="TIMEOUT";
+        *fac_out = FAC_Tdi;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
