@@ -346,7 +346,7 @@ class treeTests(TestCase):
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
 
     def runTest(self):
-        self.buildTrees()
+        self.buildTrees(self.shot)
         self.openTrees()
         self.getNode()
         self.setDefault()
