@@ -1,29 +1,29 @@
 import xml.etree.ElementTree as ET
 import sys,os
 
+sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sevs = {'warning':0,'success':1,'error':2,'informational':3,'fatal':4}
 faclist = []
 facnums = {}
 msglist = []
 
 
-def gen_include(root,file,faclist,msglistm,f_test):
+def gen_include(root,filename,faclist,msglistm,f_test):
     pfaclist = []
-    print file
-    
-    f_inc=open("../include/%sh" % file.lower()[0:-3],'w')
+    print filename
+    f_inc=open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w')
     f_inc.write("""
 #pragma once
 /*
 
- This header was generated using mdsshr/gen_device.py
- To add new status messages modify: 
+ This header was generated using mdsshr/gen_messages.py
+ To add new status messages modify:
      %s
  and then in mdsshr do:
      python gen_devices.py
 */
 
-""" % file)
+""" % filename)
     f_py.write("""
 
 ########################### generated from %s ########################
@@ -77,7 +77,7 @@ MDSplusException.statusDict[%(msgn_nosev)s] = %(fac)s%(msgnam)s
                             'facabb':facabb})
     f_inc.close()
 
-f_py=open("../mdsobjects/python/mdsExceptions.py",'w')
+f_py=open("%s/mdsobjects/python/mdsExceptions.py"%sourcedir,'w')
 f_py.write("""
 ########################################################
 # This module was generated using mdsshr/gen_device.py
@@ -152,21 +152,33 @@ class MDSplusUnknown(MDSplusException):
 def statusToException(status):
     return MDSplusException(status)
 
+def checkStatus(status,ignore=[]):
+    if (status & 1)==0:
+        exception = MDSplusException(status)
+        if exception in ignore:
+            print(exception.message)
+        else:
+            raise MDSplusException(status)
 """)
+
+xmllist = {}
+for root,dirs,files in os.walk(sourcedir):
+    for filename in files:
+        if filename.endswith('messages.xml'):
+            xmllist[filename.lower()] = "%s/%s"%(root,filename)
+
 f_test=None
 if len(sys.argv) > 1:
-    f_test=open('testmsg.h','w');
-f_getmsg=open('MdsGetStdMsg.c','w')
+    f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
+f_getmsg=open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w')
+for filename,filepath in xmllist.items():
+    try:
+        tree=ET.parse(filepath)
+        root=tree.getroot()
+        gen_include(root,filename,faclist,msglist,f_test)
+    except Exception,e:
+        print e
 
-for root,dirs,files in os.walk('../'):
-    for file in files:
-        if file.endswith('messages.xml'):
-            try:
-                tree=ET.parse(root+'/'+file)
-                root=tree.getroot()
-                gen_include(root,file,faclist,msglist,f_test)
-            except Exception,e:
-                print e
 for fac in faclist:
     f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (fac,fac.upper()))
 f_getmsg.write("""

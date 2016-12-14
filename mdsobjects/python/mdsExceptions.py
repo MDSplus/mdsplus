@@ -72,81 +72,16 @@ class MDSplusUnknown(MDSplusException):
 def statusToException(status):
     return MDSplusException(status)
 
+def checkStatus(status,ignore=[]):
+    if (status & 1)==0:
+        exception = MDSplusException(status)
+        if exception in ignore:
+            print(exception.message)
+        else:
+            raise MDSplusException(status)
 
 
-########################### generated from servershr_messages.xml ########################
-
-
-
-class ServerException(MDSplusException):
-  fac="Server"
-
-
-class ServerNOT_DISPATCHED(ServerException):
-  status=266436616
-  message="action not dispatched, depended on failed action"
-  msgnam="NOT_DISPATCHED"
-
-MDSplusException.statusDict[266436616] = ServerNOT_DISPATCHED
-
-
-class ServerINVALID_DEPENDENCY(ServerException):
-  status=266436626
-  message="action dependency cannot be evaluated"
-  msgnam="INVALID_DEPENDENCY"
-
-MDSplusException.statusDict[266436624] = ServerINVALID_DEPENDENCY
-
-
-class ServerCANT_HAPPEN(ServerException):
-  status=266436634
-  message="action contains circular dependency or depends on action which was not dispatched"
-  msgnam="CANT_HAPPEN"
-
-MDSplusException.statusDict[266436632] = ServerCANT_HAPPEN
-
-
-class ServerINVSHOT(ServerException):
-  status=266436642
-  message="invalid shot number, cannot dispatch actions in model"
-  msgnam="INVSHOT"
-
-MDSplusException.statusDict[266436640] = ServerINVSHOT
-
-
-class ServerABORT(ServerException):
-  status=266436658
-  message="Server action was aborted"
-  msgnam="ABORT"
-
-MDSplusException.statusDict[266436656] = ServerABORT
-
-
-class ServerPATH_DOWN(ServerException):
-  status=266436674
-  message="Path to server lost"
-  msgnam="PATH_DOWN"
-
-MDSplusException.statusDict[266436672] = ServerPATH_DOWN
-
-
-class ServerSOCKET_ADDR_ERROR(ServerException):
-  status=266436682
-  message="Cannot obtain ip address socket is bound to."
-  msgnam="SOCKET_ADDR_ERROR"
-
-MDSplusException.statusDict[266436680] = ServerSOCKET_ADDR_ERROR
-
-
-class ServerINVALID_ACTION_OPERATION(ServerException):
-  status=266436690
-  message="None"
-  msgnam="INVALID_ACTION_OPERATION"
-
-MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION
-
-
-########################### generated from mitdevices_messages.xml ########################
+########################### generated from XTreeGetTimedRecord.c ########################
 
 
 
@@ -1710,327 +1645,7 @@ class DevNOT_A_PYDEVICE(DevException):
 MDSplusException.statusDict[662480344] = DevNOT_A_PYDEVICE
 
 
-########################### generated from mdsshr_messages.xml ########################
-
-
-
-class LibException(MDSplusException):
-  fac="Lib"
-
-
-class LibINSVIRMEM(LibException):
-  status=1409556
-  message="Insufficient virtual memory"
-  msgnam="INSVIRMEM"
-
-MDSplusException.statusDict[1409552] = LibINSVIRMEM
-
-
-class LibINVARG(LibException):
-  status=1409588
-  message="Invalid argument"
-  msgnam="INVARG"
-
-MDSplusException.statusDict[1409584] = LibINVARG
-
-
-class LibINVSTRDES(LibException):
-  status=1409572
-  message="Invalid string descriptor"
-  msgnam="INVSTRDES"
-
-MDSplusException.statusDict[1409568] = LibINVSTRDES
-
-
-class LibKEYNOTFOU(LibException):
-  status=1409788
-  message="Key not found"
-  msgnam="KEYNOTFOU"
-
-MDSplusException.statusDict[1409784] = LibKEYNOTFOU
-
-
-class LibNOTFOU(LibException):
-  status=1409652
-  message="Entity not found"
-  msgnam="NOTFOU"
-
-MDSplusException.statusDict[1409648] = LibNOTFOU
-
-
-class LibQUEWASEMP(LibException):
-  status=1409772
-  message="Queue was empty"
-  msgnam="QUEWASEMP"
-
-MDSplusException.statusDict[1409768] = LibQUEWASEMP
-
-
-class LibSTRTRU(LibException):
-  status=1409041
-  message="String truncated"
-  msgnam="STRTRU"
-
-MDSplusException.statusDict[1409040] = LibSTRTRU
-
-
-class StrException(MDSplusException):
-  fac="Str"
-
-
-class StrMATCH(StrException):
-  status=2393113
-  message="Strings match"
-  msgnam="MATCH"
-
-MDSplusException.statusDict[2393112] = StrMATCH
-
-
-class StrNOMATCH(StrException):
-  status=2392584
-  message="Strings do not match"
-  msgnam="NOMATCH"
-
-MDSplusException.statusDict[2392584] = StrNOMATCH
-
-
-class StrNOELEM(StrException):
-  status=2392600
-  message="Not enough delimited characters"
-  msgnam="NOELEM"
-
-MDSplusException.statusDict[2392600] = StrNOELEM
-
-
-class StrINVDELIM(StrException):
-  status=2392592
-  message="Not enough delimited characters"
-  msgnam="INVDELIM"
-
-MDSplusException.statusDict[2392592] = StrINVDELIM
-
-
-class StrSTRTOOLON(StrException):
-  status=2392180
-  message="String too long"
-  msgnam="STRTOOLON"
-
-MDSplusException.statusDict[2392176] = StrSTRTOOLON
-
-
-class SsException(MDSplusException):
-  fac="Ss"
-
-
-class SsINTOVF(SsException):
-  status=1148
-  message="Integer overflow"
-  msgnam="INTOVF"
-
-MDSplusException.statusDict[1144] = SsINTOVF
-
-
-########################### generated from camshr_messages.xml ########################
-
-
-
-class CamException(MDSplusException):
-  fac="Cam"
-
-
-class CamDONE_Q(CamException):
-  status=134316041
-  message="I/O completed with X=1, Q=1"
-  msgnam="DONE_Q"
-
-MDSplusException.statusDict[134316040] = CamDONE_Q
-
-
-class CamDONE_NOQ(CamException):
-  status=134316049
-  message="I/O completed with X=1, Q=0"
-  msgnam="DONE_NOQ"
-
-MDSplusException.statusDict[134316048] = CamDONE_NOQ
-
-
-class CamDONE_NOX(CamException):
-  status=134320128
-  message="I/O completed with X=0 - probable failure"
-  msgnam="DONE_NOX"
-
-MDSplusException.statusDict[134320128] = CamDONE_NOX
-
-
-class CamSERTRAERR(CamException):
-  status=134322178
-  message="serial transmission error on highway"
-  msgnam="SERTRAERR"
-
-MDSplusException.statusDict[134322176] = CamSERTRAERR
-
-
-class CamSCCFAIL(CamException):
-  status=134322242
-  message="serial crate controller failure"
-  msgnam="SCCFAIL"
-
-MDSplusException.statusDict[134322240] = CamSCCFAIL
-
-
-class CamOFFLINE(CamException):
-  status=134322282
-  message="crate is offline"
-  msgnam="OFFLINE"
-
-MDSplusException.statusDict[134322280] = CamOFFLINE
-
-
-########################### generated from tcl_messages.xml ########################
-
-
-
-class TclException(MDSplusException):
-  fac="Tcl"
-
-
-class TclNORMAL(TclException):
-  status=2752521
-  message="Normal successful completion"
-  msgnam="NORMAL"
-
-MDSplusException.statusDict[2752520] = TclNORMAL
-
-
-class TclFAILED_ESSENTIAL(TclException):
-  status=2752528
-  message="Essential action failed"
-  msgnam="FAILED_ESSENTIAL"
-
-MDSplusException.statusDict[2752528] = TclFAILED_ESSENTIAL
-
-
-########################### generated from mdsdcl_messages.xml ########################
-
-
-
-class MdsdclException(MDSplusException):
-  fac="Mdsdcl"
-
-
-class MdsdclSUCCESS(MdsdclException):
-  status=134348809
-  message="Normal successful completion"
-  msgnam="SUCCESS"
-
-MDSplusException.statusDict[134348808] = MdsdclSUCCESS
-
-
-class MdsdclEXIT(MdsdclException):
-  status=134348817
-  message="Normal exit"
-  msgnam="EXIT"
-
-MDSplusException.statusDict[134348816] = MdsdclEXIT
-
-
-class MdsdclERROR(MdsdclException):
-  status=134348824
-  message="Unsuccessful execution of command"
-  msgnam="ERROR"
-
-MDSplusException.statusDict[134348824] = MdsdclERROR
-
-
-class MdsdclNORMAL(MdsdclException):
-  status=134349609
-  message="Normal successful completion"
-  msgnam="NORMAL"
-
-MDSplusException.statusDict[134349608] = MdsdclNORMAL
-
-
-class MdsdclPRESENT(MdsdclException):
-  status=134349617
-  message="Entity is present"
-  msgnam="PRESENT"
-
-MDSplusException.statusDict[134349616] = MdsdclPRESENT
-
-
-class MdsdclIVVERB(MdsdclException):
-  status=134349626
-  message="No such command"
-  msgnam="IVVERB"
-
-MDSplusException.statusDict[134349624] = MdsdclIVVERB
-
-
-class MdsdclABSENT(MdsdclException):
-  status=134349632
-  message="Entity is absent"
-  msgnam="ABSENT"
-
-MDSplusException.statusDict[134349632] = MdsdclABSENT
-
-
-class MdsdclNEGATED(MdsdclException):
-  status=134349640
-  message="Entity is present but negated"
-  msgnam="NEGATED"
-
-MDSplusException.statusDict[134349640] = MdsdclNEGATED
-
-
-class MdsdclNOTNEGATABLE(MdsdclException):
-  status=134349650
-  message="Entity cannot be negated"
-  msgnam="NOTNEGATABLE"
-
-MDSplusException.statusDict[134349648] = MdsdclNOTNEGATABLE
-
-
-class MdsdclIVQUAL(MdsdclException):
-  status=134349658
-  message="Invalid qualifier"
-  msgnam="IVQUAL"
-
-MDSplusException.statusDict[134349656] = MdsdclIVQUAL
-
-
-class MdsdclPROMPT_MORE(MdsdclException):
-  status=134349666
-  message="More input required for command"
-  msgnam="PROMPT_MORE"
-
-MDSplusException.statusDict[134349664] = MdsdclPROMPT_MORE
-
-
-class MdsdclTOO_MANY_PRMS(MdsdclException):
-  status=134349674
-  message="Too many parameters specified"
-  msgnam="TOO_MANY_PRMS"
-
-MDSplusException.statusDict[134349672] = MdsdclTOO_MANY_PRMS
-
-
-class MdsdclTOO_MANY_VALS(MdsdclException):
-  status=134349682
-  message="Too many values"
-  msgnam="TOO_MANY_VALS"
-
-MDSplusException.statusDict[134349680] = MdsdclTOO_MANY_VALS
-
-
-class MdsdclMISSING_VALUE(MdsdclException):
-  status=134349690
-  message="Qualifier value needed"
-  msgnam="MISSING_VALUE"
-
-MDSplusException.statusDict[134349688] = MdsdclMISSING_VALUE
-
-
-########################### generated from treeshr_messages.xml ########################
+########################### generated from XTreeGetTimedRecord.c ########################
 
 
 
@@ -2734,7 +2349,127 @@ class TreeREADONLY_TREE(TreeException):
 MDSplusException.statusDict[265392264] = TreeREADONLY_TREE
 
 
-########################### generated from tdishr_messages.xml ########################
+########################### generated from XTreeGetTimedRecord.c ########################
+
+
+
+class LibException(MDSplusException):
+  fac="Lib"
+
+
+class LibINSVIRMEM(LibException):
+  status=1409556
+  message="Insufficient virtual memory"
+  msgnam="INSVIRMEM"
+
+MDSplusException.statusDict[1409552] = LibINSVIRMEM
+
+
+class LibINVARG(LibException):
+  status=1409588
+  message="Invalid argument"
+  msgnam="INVARG"
+
+MDSplusException.statusDict[1409584] = LibINVARG
+
+
+class LibINVSTRDES(LibException):
+  status=1409572
+  message="Invalid string descriptor"
+  msgnam="INVSTRDES"
+
+MDSplusException.statusDict[1409568] = LibINVSTRDES
+
+
+class LibKEYNOTFOU(LibException):
+  status=1409788
+  message="Key not found"
+  msgnam="KEYNOTFOU"
+
+MDSplusException.statusDict[1409784] = LibKEYNOTFOU
+
+
+class LibNOTFOU(LibException):
+  status=1409652
+  message="Entity not found"
+  msgnam="NOTFOU"
+
+MDSplusException.statusDict[1409648] = LibNOTFOU
+
+
+class LibQUEWASEMP(LibException):
+  status=1409772
+  message="Queue was empty"
+  msgnam="QUEWASEMP"
+
+MDSplusException.statusDict[1409768] = LibQUEWASEMP
+
+
+class LibSTRTRU(LibException):
+  status=1409041
+  message="String truncated"
+  msgnam="STRTRU"
+
+MDSplusException.statusDict[1409040] = LibSTRTRU
+
+
+class StrException(MDSplusException):
+  fac="Str"
+
+
+class StrMATCH(StrException):
+  status=2393113
+  message="Strings match"
+  msgnam="MATCH"
+
+MDSplusException.statusDict[2393112] = StrMATCH
+
+
+class StrNOMATCH(StrException):
+  status=2392584
+  message="Strings do not match"
+  msgnam="NOMATCH"
+
+MDSplusException.statusDict[2392584] = StrNOMATCH
+
+
+class StrNOELEM(StrException):
+  status=2392600
+  message="Not enough delimited characters"
+  msgnam="NOELEM"
+
+MDSplusException.statusDict[2392600] = StrNOELEM
+
+
+class StrINVDELIM(StrException):
+  status=2392592
+  message="Not enough delimited characters"
+  msgnam="INVDELIM"
+
+MDSplusException.statusDict[2392592] = StrINVDELIM
+
+
+class StrSTRTOOLON(StrException):
+  status=2392180
+  message="String too long"
+  msgnam="STRTOOLON"
+
+MDSplusException.statusDict[2392176] = StrSTRTOOLON
+
+
+class SsException(MDSplusException):
+  fac="Ss"
+
+
+class SsINTOVF(SsException):
+  status=1148
+  message="Integer overflow"
+  msgnam="INTOVF"
+
+MDSplusException.statusDict[1144] = SsINTOVF
+
+
+########################### generated from XTreeGetTimedRecord.c ########################
 
 
 
@@ -2996,3 +2731,275 @@ class TdiTIMEOUT(TdiException):
   msgnam="TIMEOUT"
 
 MDSplusException.statusDict[265519360] = TdiTIMEOUT
+
+
+########################### generated from XTreeGetTimedRecord.c ########################
+
+
+
+class MdsdclException(MDSplusException):
+  fac="Mdsdcl"
+
+
+class MdsdclSUCCESS(MdsdclException):
+  status=134348809
+  message="Normal successful completion"
+  msgnam="SUCCESS"
+
+MDSplusException.statusDict[134348808] = MdsdclSUCCESS
+
+
+class MdsdclEXIT(MdsdclException):
+  status=134348817
+  message="Normal exit"
+  msgnam="EXIT"
+
+MDSplusException.statusDict[134348816] = MdsdclEXIT
+
+
+class MdsdclERROR(MdsdclException):
+  status=134348824
+  message="Unsuccessful execution of command"
+  msgnam="ERROR"
+
+MDSplusException.statusDict[134348824] = MdsdclERROR
+
+
+class MdsdclNORMAL(MdsdclException):
+  status=134349609
+  message="Normal successful completion"
+  msgnam="NORMAL"
+
+MDSplusException.statusDict[134349608] = MdsdclNORMAL
+
+
+class MdsdclPRESENT(MdsdclException):
+  status=134349617
+  message="Entity is present"
+  msgnam="PRESENT"
+
+MDSplusException.statusDict[134349616] = MdsdclPRESENT
+
+
+class MdsdclIVVERB(MdsdclException):
+  status=134349626
+  message="No such command"
+  msgnam="IVVERB"
+
+MDSplusException.statusDict[134349624] = MdsdclIVVERB
+
+
+class MdsdclABSENT(MdsdclException):
+  status=134349632
+  message="Entity is absent"
+  msgnam="ABSENT"
+
+MDSplusException.statusDict[134349632] = MdsdclABSENT
+
+
+class MdsdclNEGATED(MdsdclException):
+  status=134349640
+  message="Entity is present but negated"
+  msgnam="NEGATED"
+
+MDSplusException.statusDict[134349640] = MdsdclNEGATED
+
+
+class MdsdclNOTNEGATABLE(MdsdclException):
+  status=134349650
+  message="Entity cannot be negated"
+  msgnam="NOTNEGATABLE"
+
+MDSplusException.statusDict[134349648] = MdsdclNOTNEGATABLE
+
+
+class MdsdclIVQUAL(MdsdclException):
+  status=134349658
+  message="Invalid qualifier"
+  msgnam="IVQUAL"
+
+MDSplusException.statusDict[134349656] = MdsdclIVQUAL
+
+
+class MdsdclPROMPT_MORE(MdsdclException):
+  status=134349666
+  message="More input required for command"
+  msgnam="PROMPT_MORE"
+
+MDSplusException.statusDict[134349664] = MdsdclPROMPT_MORE
+
+
+class MdsdclTOO_MANY_PRMS(MdsdclException):
+  status=134349674
+  message="Too many parameters specified"
+  msgnam="TOO_MANY_PRMS"
+
+MDSplusException.statusDict[134349672] = MdsdclTOO_MANY_PRMS
+
+
+class MdsdclTOO_MANY_VALS(MdsdclException):
+  status=134349682
+  message="Too many values"
+  msgnam="TOO_MANY_VALS"
+
+MDSplusException.statusDict[134349680] = MdsdclTOO_MANY_VALS
+
+
+class MdsdclMISSING_VALUE(MdsdclException):
+  status=134349690
+  message="Qualifier value needed"
+  msgnam="MISSING_VALUE"
+
+MDSplusException.statusDict[134349688] = MdsdclMISSING_VALUE
+
+
+########################### generated from XTreeGetTimedRecord.c ########################
+
+
+
+class ServerException(MDSplusException):
+  fac="Server"
+
+
+class ServerNOT_DISPATCHED(ServerException):
+  status=266436616
+  message="action not dispatched, depended on failed action"
+  msgnam="NOT_DISPATCHED"
+
+MDSplusException.statusDict[266436616] = ServerNOT_DISPATCHED
+
+
+class ServerINVALID_DEPENDENCY(ServerException):
+  status=266436626
+  message="action dependency cannot be evaluated"
+  msgnam="INVALID_DEPENDENCY"
+
+MDSplusException.statusDict[266436624] = ServerINVALID_DEPENDENCY
+
+
+class ServerCANT_HAPPEN(ServerException):
+  status=266436634
+  message="action contains circular dependency or depends on action which was not dispatched"
+  msgnam="CANT_HAPPEN"
+
+MDSplusException.statusDict[266436632] = ServerCANT_HAPPEN
+
+
+class ServerINVSHOT(ServerException):
+  status=266436642
+  message="invalid shot number, cannot dispatch actions in model"
+  msgnam="INVSHOT"
+
+MDSplusException.statusDict[266436640] = ServerINVSHOT
+
+
+class ServerABORT(ServerException):
+  status=266436658
+  message="Server action was aborted"
+  msgnam="ABORT"
+
+MDSplusException.statusDict[266436656] = ServerABORT
+
+
+class ServerPATH_DOWN(ServerException):
+  status=266436674
+  message="Path to server lost"
+  msgnam="PATH_DOWN"
+
+MDSplusException.statusDict[266436672] = ServerPATH_DOWN
+
+
+class ServerSOCKET_ADDR_ERROR(ServerException):
+  status=266436682
+  message="Cannot obtain ip address socket is bound to."
+  msgnam="SOCKET_ADDR_ERROR"
+
+MDSplusException.statusDict[266436680] = ServerSOCKET_ADDR_ERROR
+
+
+class ServerINVALID_ACTION_OPERATION(ServerException):
+  status=266436690
+  message="None"
+  msgnam="INVALID_ACTION_OPERATION"
+
+MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION
+
+
+########################### generated from XTreeGetTimedRecord.c ########################
+
+
+
+class CamException(MDSplusException):
+  fac="Cam"
+
+
+class CamDONE_Q(CamException):
+  status=134316041
+  message="I/O completed with X=1, Q=1"
+  msgnam="DONE_Q"
+
+MDSplusException.statusDict[134316040] = CamDONE_Q
+
+
+class CamDONE_NOQ(CamException):
+  status=134316049
+  message="I/O completed with X=1, Q=0"
+  msgnam="DONE_NOQ"
+
+MDSplusException.statusDict[134316048] = CamDONE_NOQ
+
+
+class CamDONE_NOX(CamException):
+  status=134320128
+  message="I/O completed with X=0 - probable failure"
+  msgnam="DONE_NOX"
+
+MDSplusException.statusDict[134320128] = CamDONE_NOX
+
+
+class CamSERTRAERR(CamException):
+  status=134322178
+  message="serial transmission error on highway"
+  msgnam="SERTRAERR"
+
+MDSplusException.statusDict[134322176] = CamSERTRAERR
+
+
+class CamSCCFAIL(CamException):
+  status=134322242
+  message="serial crate controller failure"
+  msgnam="SCCFAIL"
+
+MDSplusException.statusDict[134322240] = CamSCCFAIL
+
+
+class CamOFFLINE(CamException):
+  status=134322282
+  message="crate is offline"
+  msgnam="OFFLINE"
+
+MDSplusException.statusDict[134322280] = CamOFFLINE
+
+
+########################### generated from XTreeGetTimedRecord.c ########################
+
+
+
+class TclException(MDSplusException):
+  fac="Tcl"
+
+
+class TclNORMAL(TclException):
+  status=2752521
+  message="Normal successful completion"
+  msgnam="NORMAL"
+
+MDSplusException.statusDict[2752520] = TclNORMAL
+
+
+class TclFAILED_ESSENTIAL(TclException):
+  status=2752528
+  message="Essential action failed"
+  msgnam="FAILED_ESSENTIAL"
+
+MDSplusException.statusDict[2752528] = TclFAILED_ESSENTIAL

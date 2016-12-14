@@ -2,8 +2,8 @@
 #pragma once
 /*
 
- This header was generated using mdsshr/gen_device.py
- To add new status messages modify: 
+ This header was generated using mdsshr/gen_messages.py
+ To add new status messages modify:
      tdishr_messages.xml
  and then in mdsshr do:
      python gen_devices.py
