@@ -58,6 +58,8 @@ class treeTests(TestCase):
         cls.tmpdir = mkdtemp()
         cls.root = os.path.dirname(os.path.realpath(__file__))
         cls.env = dict((k,str(v)) for k,v in os.environ.items())
+        cls.envx= {}
+        cls._setenv('PyLib',getenv('PyLib'))
         cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
         cls._setenv("pytree_path",treepath%cls.tmpdir)
         cls._setenv("pytreesub_path",treepath%cls.tmpdir)
@@ -66,7 +68,9 @@ class treeTests(TestCase):
         treeTests.buildTrees(cls.getShot())
     @classmethod
     def _setenv(cls,name,value):
-        cls.env[name] = str(value)
+        value = str(value)
+        cls.env[name]  = value
+        cls.envx[name] = value
         setenv(name,value)
     @staticmethod
     def buildTrees(shot):
@@ -299,13 +303,19 @@ class treeTests(TestCase):
         self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
 
     def dispatcher(self):
-        from subprocess import Popen,PIPE,STDOUT
         from time import sleep
-        port = 8800
-        server = 'LOCALHOST:%d'%(port,)
-        show_server = "Checking server: %s\n[^,]+, [^:]+:%d, logging enabled, Inactive\n"%(server,port)
         def testDispatchCommand(command,stdout=None,stderr=None):
             self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
+        server = os.getenv('ACTION_SERVER')
+        if server is None:
+            from subprocess import Popen,PIPE,STDOUT
+            port = int(os.getenv('ACTION_PORT','8800'))
+            server = 'LOCALHOST:%d'%(port,)
+        else:
+            Popen = None
+            for envpair in self.envx.items():
+                testDispatchCommand('env %s=%s'%envpair)
+        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
         pytree = Tree('pytree',self.shot)
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
@@ -313,12 +323,16 @@ class treeTests(TestCase):
         """ using dispatcher """
         hosts = '%s/mdsip.hosts'%self.root
         tcl('set tree pytree/shot=%d'%self.shot,1,1,1)
+        log = None
         try:
-          mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
-                        stdout=PIPE,stderr=STDOUT,bufsize=-1)
+          if Popen:
+              log = file('mdsip.log','w')
+              mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
+                             stdout=log,stderr=STDOUT)
           try:
             sleep(.1)
-            self.assertEqual(mdsip.poll(),None)
+            if Popen:
+                self.assertEqual(mdsip.poll(),None)
             """ tcl dispatch """
             self._doTCLTest('show server %s'%server,out=show_server,re=True)
             testDispatchCommand('set verify')
@@ -336,17 +350,18 @@ class treeTests(TestCase):
             """ tcl exceptions """
             self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
             """ tcl check if still alive """
-            self.assertEqual(mdsip.poll(),None)
+            if Popen:
+                self.assertEqual(mdsip.poll(),None)
           finally:
-            if mdsip.poll() is None:
+            if Popen and mdsip.poll() is None:
                 mdsip.terminate()
         finally:
+            if log: log.close()
             self._doTCLTest('close/all')
         pytree = Tree('pytree',self.shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
 
     def runTest(self):
-        self.buildTrees(self.shot)
         self.openTrees()
         self.getNode()
         self.setDefault()
