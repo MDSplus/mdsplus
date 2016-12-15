@@ -8,14 +8,10 @@
 # publish:
 # /publish/$branch/MDSplus-*.exe
 #
+test64="64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64"
+test32="32 i686-w64-mingw32   bin_x86    bin_x86"
 export JNI_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk
 export JNI_MD_INCLUDE_DIR=/source/3rd-party-apis/windows-jdk/win32
-test64() {
-    echo "64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64";
-}
-test32() {
-    echo "32 i686-w64-mingw32   bin_x86    bin_x86";
-}
 buildrelease() {
     abort=0
     ### Clean up workspace
@@ -26,13 +22,13 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    config 64 x86_64-w64-mingw32 bin_x86_64 bin_x86_64
+    config ${test64}
     $MAKE
     $MAKE install
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    config 32 i686-w64-mingw32   bin_x86    bin_x86
+    config ${test32}
     $MAKE
     $MAKE install
     popd

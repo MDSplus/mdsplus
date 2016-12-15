@@ -16,11 +16,15 @@ getenv() {
     eval "echo \$$1"
 }
 runtests() {
-    testarch $(test64);
-    testarch $(test32);
-    if [ -z "NOMAKE" ]; then
-    set +e;
-    checktests;
+    # run tests with the platform specific params read from test32 and test64
+    testarch ${test64};
+    testarch ${test32};
+    if [ -z "$NOMAKE" ]; then
+        echo "TEST RESULTS:"
+        checktests;
+        GREEN $COLOR
+        echo "SUCCESS"
+        NORMAL $COLOR
     fi
 }
 testarch(){
@@ -81,11 +85,13 @@ checktests() {
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
     checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
+        echo tests_64_san_${test} $(getenv "tests_64_san_${test}")
         checkstatus failed "Failure: 64-bit santize with ${test} failed." $(getenv "tests_64_san_${test}")
     done;
     checkstatus failed "Failure: 32-bit test suite failed." $tests_32
     checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
+        echo tests_64_san_${test} $(getenv "tests_64_san_${test}")
         checkstatus failed "Failure: 32-bit santize with ${test} failed." $(getenv "tests_32_san_${test}")
     done;
     checkstatus abort "Failure: One or more tests have failed (see above)." $failed
@@ -107,10 +113,6 @@ sanitize() {
                 $MAKE install
                 :&& tio 1800 $MAKE -k tests 2>&1
                 checkstatus tests_${1}_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
-                if [ ! -z "$?" ]
-                then
-                    let tests_${1}_san=1
-                fi
               fi
             else
                 echo "configure returned status $?"

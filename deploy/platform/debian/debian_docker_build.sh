@@ -11,6 +11,8 @@
 # /publish/repo   -> repository
 # /publish/$branch/DEBS/$arch/*.deb
 #
+test64="64 x86_64-linux bin lib --with-gsi=/usr:gcc64"
+test32="32 i686-linux   bin lib --with-gsi=/usr:gcc32"
 if [ "$ARCH" = "amd64" ]
 then
     if [ -z "$host" ]
@@ -23,12 +25,6 @@ else
 	host=i686-linux
     fi
 fi
-test64(){
-    echo "64 x86_64-linux bin lib --with-gsi=/usr:gcc64"
-}
-test32(){
-    echo "32 i686-linux   bin lib --with-gsi=/usr:gcc32"
-}
 runtests() {
   if [ "${ARCH}" = "amd64" ]
   then
@@ -70,7 +66,7 @@ buildrelease() {
 	mkdir -p ${MDSPLUS_DIR};
 	mkdir -p /workspace/releasebld/64;
 	pushd /workspace/releasebld/64;
-	config 64 x86_64-linux bin lib --with-gsi=/usr:gcc64
+	config ${test64}
 	$MAKE
 	$MAKE install
 	popd;

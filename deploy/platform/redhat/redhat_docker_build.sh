@@ -12,12 +12,8 @@
 # /publish/$branch/RPMS/$arch/*.rpm
 # /publish/$branch/cache/$arch/*.rpm-*
 #
-test64(){
-    echo "64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64";
-}
-test32(){
-    echo "32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32";
-}
+test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
+test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32"
 makelist(){
     rpm2cpio $1 | \
         cpio --list --quiet | \
@@ -39,7 +35,7 @@ buildrelease(){
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    config 64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64
+    config ${test64}
     $MAKE
     $MAKE install
     popd;
