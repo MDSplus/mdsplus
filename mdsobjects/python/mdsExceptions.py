@@ -81,7 +81,7 @@ def checkStatus(status,ignore=[]):
             raise MDSplusException(status)
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from mitdevices_messages.xml ########################
 
 
 
@@ -1645,7 +1645,7 @@ class DevNOT_A_PYDEVICE(DevException):
 MDSplusException.statusDict[662480344] = DevNOT_A_PYDEVICE
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from treeshr_messages.xml ########################
 
 
 
@@ -2349,7 +2349,7 @@ class TreeREADONLY_TREE(TreeException):
 MDSplusException.statusDict[265392264] = TreeREADONLY_TREE
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from mdsshr_messages.xml ########################
 
 
 
@@ -2469,7 +2469,7 @@ class SsINTOVF(SsException):
 MDSplusException.statusDict[1144] = SsINTOVF
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from tdishr_messages.xml ########################
 
 
 
@@ -2733,7 +2733,7 @@ class TdiTIMEOUT(TdiException):
 MDSplusException.statusDict[265519360] = TdiTIMEOUT
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from mdsdcl_messages.xml ########################
 
 
 
@@ -2853,7 +2853,7 @@ class MdsdclMISSING_VALUE(MdsdclException):
 MDSplusException.statusDict[134349688] = MdsdclMISSING_VALUE
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from servershr_messages.xml ########################
 
 
 
@@ -2925,7 +2925,7 @@ class ServerINVALID_ACTION_OPERATION(ServerException):
 MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from camshr_messages.xml ########################
 
 
 
@@ -2981,7 +2981,7 @@ class CamOFFLINE(CamException):
 MDSplusException.statusDict[134322280] = CamOFFLINE
 
 
-########################### generated from XTreeGetTimedRecord.c ########################
+########################### generated from tcl_messages.xml ########################
 
 
 

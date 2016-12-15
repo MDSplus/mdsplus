@@ -6,7 +6,7 @@
  To add new status messages modify:
      camshr_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 #define CamDONE_Q               0x8018009

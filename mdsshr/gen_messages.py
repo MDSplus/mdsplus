@@ -20,7 +20,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
  To add new status messages modify:
      %s
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 """ % filename)
@@ -28,13 +28,13 @@ def gen_include(root,filename,faclist,msglistm,f_test):
 
 ########################### generated from %s ########################
 
-""" % file)
+""" % filename)
     for f in root.getiterator('facility'):
         facnam = f.get('name')
         facnum = int(f.get('value'))
         if facnum in facnums:
-            raise Exception("Reused facility value %d, in %s. Previously used in %s" % (facnum, file, facnums[facnum]))
-        facnums[facnum]=file
+            raise Exception("Reused facility value %d, in %s. Previously used in %s" % (facnum, filename, facnums[facnum]))
+        facnums[facnum]=filename
         ffacnam = facnam
         faclist.append(facnam)
         for status in f.getiterator('status'):
