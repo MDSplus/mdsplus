@@ -6,7 +6,7 @@
  To add new status messages modify:
      treeshr_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 #define TreeALREADY_OFF          0xfd1802b

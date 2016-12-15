@@ -85,13 +85,11 @@ checktests() {
     checkstatus failed "Failure: 64-bit test suite failed." $tests_64
     checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
-        echo tests_64_san_${test} $(getenv "tests_64_san_${test}")
         checkstatus failed "Failure: 64-bit santize with ${test} failed." $(getenv "tests_64_san_${test}")
     done;
     checkstatus failed "Failure: 32-bit test suite failed." $tests_32
     checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
-        echo tests_64_san_${test} $(getenv "tests_64_san_${test}")
         checkstatus failed "Failure: 32-bit santize with ${test} failed." $(getenv "tests_32_san_${test}")
     done;
     checkstatus abort "Failure: One or more tests have failed (see above)." $failed

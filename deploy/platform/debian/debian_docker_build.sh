@@ -28,9 +28,9 @@ fi
 runtests() {
   if [ "${ARCH}" = "amd64" ]
   then
-      testarch $(test64)
+      testarch ${test64}
   else
-      testarch $(test32)
+      testarch ${test32}
   fi
   checktests
 }

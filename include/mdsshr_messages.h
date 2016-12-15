@@ -6,7 +6,7 @@
  To add new status messages modify:
      mdsshr_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 #define LibINSVIRMEM            0x158214

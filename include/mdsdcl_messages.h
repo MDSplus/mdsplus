@@ -6,7 +6,7 @@
  To add new status messages modify:
      mdsdcl_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 #define MdsdclSUCCESS              0x8020009

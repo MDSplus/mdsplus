@@ -6,7 +6,7 @@
  To add new status messages modify:
      servershr_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 #define ServerNOT_DISPATCHED       0xfe18008

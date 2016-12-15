@@ -6,7 +6,7 @@
  To add new status messages modify:
      mitdevices_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
 
 #define DEVBAD_ENDIDX           0x277c800a
