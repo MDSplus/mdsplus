@@ -326,7 +326,7 @@ class treeTests(TestCase):
         log = None
         try:
           if Popen:
-              log = file('mdsip.log','w')
+              log = open('mdsip.log','w')
               mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
                              stdout=log,stderr=STDOUT)
           try:

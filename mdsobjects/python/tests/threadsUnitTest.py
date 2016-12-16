@@ -1,7 +1,14 @@
 from unittest import TestCase,TestSuite,TestResult
 from threading import Thread
 
-import treeUnitTest,dataUnitTest
+def _mimport(name, level=1):
+    try:
+        return __import__(name, globals(), level=level)
+    except:
+        return __import__(name, globals())
+
+treeUnitTest = _mimport('treeUnitTest')
+dataUnitTest = _mimport('dataUnitTest')
 from MDSplus import Tree
 
 

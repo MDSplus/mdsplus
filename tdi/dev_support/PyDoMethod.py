@@ -1,5 +1,5 @@
 from MDSplus import Device, List
-from MDSplus import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSuccess
+from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSuccess
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
@@ -8,7 +8,7 @@ def PyDoMethod(n,method,*args):
             return methodobj(*args)
         except TypeError:
             exc = exc_info()[1]
-            print exc
+            print(exc)
             if exc.message.startswith(method+'()'):
                 print('Your device method %s.%s requires at least one argument.' % (model,method))
                 print('No argument has been provided as it is probably not required by the method.')
