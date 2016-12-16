@@ -308,7 +308,7 @@ class treeTests(TestCase):
             self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
         server = os.getenv('ACTION_SERVER')
         if server is None:
-            from subprocess import Popen,PIPE,STDOUT
+            from subprocess import Popen,STDOUT
             port = int(os.getenv('ACTION_PORT','8800'))
             server = 'LOCALHOST:%d'%(port,)
         else:

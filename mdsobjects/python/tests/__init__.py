@@ -5,22 +5,27 @@ MDSplus tests
 Tests of MDSplus
 
 """
+def _mimportSuite(name, level=1):
+    try:
+        return __import__(name, globals(), level=level).suite
+    except:
+        return __import__(name, globals()).suite
+
 from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
 import gc;gc.set_debug(gc.DEBUG_LEAK & ~gc.DEBUG_COLLECTABLE)
-from treeUnitTest       import suite as treeSuite
-from threadsUnitTest    import suite as threadsSuite
-from dataUnitTest       import suite as dataSuite
-from exceptionUnitTest  import suite as exceptionSuite
-from connectionUnitTest import suite as connectionsSuite
-from segmentsUnitTest   import suite as segmentsSuite
-
 from MDSplus import setenv,getenv
 if os.name=='nt':
     setenv("PyLib","python%d%d"  % sys.version_info[0:2])
 else:
     setenv("PyLib","python%d.%d" % sys.version_info[0:2])
 
+treeSuite=       _mimportSuite('treeUnitTest')
+threadsSuite=    _mimportSuite('threadsUnitTest')
+dataSuite=       _mimportSuite('dataUnitTest')
+exceptionSuite=  _mimportSuite('exceptionUnitTest')
+connectionsSuite=_mimportSuite('connectionUnitTest')
+segmentsSuite=   _mimportSuite('segmentsUnitTest')
 
 class cleanup(TestCase):
     dir=None
