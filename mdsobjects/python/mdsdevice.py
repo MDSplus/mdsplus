@@ -4,8 +4,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import os as _os
-from os import getenv as _getenv
+import os as _os,sys as _sys
 _treeshr=_mimport('_treeshr')
 _mdsshr=_mimport('_mdsshr')
 _treenode=_mimport('treenode')
@@ -90,7 +89,7 @@ class Device(_treenode.TreeNode):
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    debug = _getenv('DEBUG_DEVICES')
+    debug = _os.getenv('DEBUG_DEVICES')
     gtkThread = None
 
     """ debug safe import """
@@ -344,7 +343,6 @@ class Device(_treenode.TreeNode):
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        import __builtin__,sys,os
         path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
         name = name.lower()
         if name in Device.__cached_py_device_modules:
@@ -353,17 +351,17 @@ class Device(_treenode.TreeNode):
           check_name=name+".py"
           parts=path.split(';')
           for part in parts:
-            w=os.walk(part)
+            w=_os.walk(part)
             for dp,dn,fn in w:
               for fname in fn:
                 if fname.lower() == check_name:
-                  sys.path.insert(0,dp)
+                  _sys.path.insert(0,dp)
                   try:
-                    device = __builtin__.__import__(fname[:-3])
+                    device = __import__(fname[:-3])
                     Device.__cached_py_device_modules[name] = device
                     return device
                   finally:
-                    sys.path.remove(dp)
+                    _sys.path.remove(dp)
         raise _exceptions.DevPYDEVICE_NOT_FOUND
     importPyDeviceModule=staticmethod(importPyDeviceModule)
 
@@ -375,7 +373,7 @@ class Device(_treenode.TreeNode):
     def findPyDevices():
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
-        import __builtin__,sys
+        import sys
         path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
         if path is None: return
         parts=path.split(';')
@@ -387,7 +385,7 @@ class Device(_treenode.TreeNode):
                         sys.path.insert(0,dp)
                         try:
                             devnam=fname[:-3].upper()
-                            __builtin__.__import__(fname[:-3]).__dict__[devnam]
+                            __import__(fname[:-3]).__dict__[devnam]
                             ans.append(devnam+'\0')
                             ans.append('\0')
                         except:
