@@ -354,7 +354,9 @@ class treeTests(TestCase):
                 self.assertEqual(mdsip.poll(),None)
           finally:
             if Popen and mdsip.poll() is None:
+                self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
                 mdsip.terminate()
+                mdsip.wait()
         finally:
             if log: log.close()
             self._doTCLTest('close/all')
