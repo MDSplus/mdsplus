@@ -13,7 +13,7 @@ def _mimportSuite(name, level=1):
 
 from unittest import TestCase,TestSuite,TextTestRunner
 import os,sys
-import gc;gc.set_debug(gc.DEBUG_LEAK & ~gc.DEBUG_COLLECTABLE)
+import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 from MDSplus import setenv,getenv
 if os.name=='nt':
     setenv("PyLib","python%d%d"  % sys.version_info[0:2])

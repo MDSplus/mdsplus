@@ -75,17 +75,16 @@ class treeTests(TestCase):
     @staticmethod
     def buildTrees(shot):
         with Tree('pytree',shot,'new') as pytree:
-            pytree_top=pytree.default
-            pytree_top.addNode('pytreesub','subtree').include_in_pulse=True
+            pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
-                node=pytree_top.addNode('val%02d' % (i,),'numeric')
+                node=pytree.addNode('val%02d' % (i,),'numeric')
                 node.record=i
-                node=pytree_top.addNode('sig%02d' % (i,),'signal')
+                node=pytree.top.addNode('sig%02d' % (i,),'signal')
                 node.record=Signal(i,None,i)
-                node=pytree_top.addNode('child%02d' % (i,),'structure')
+                node=pytree.top.addNode('child%02d' % (i,),'structure')
                 node.addNode('text','text')
                 node.addNode('child','structure')
-            node = pytree_top.addNode('SIG_CMPRS', 'signal')
+            node = pytree.addNode('SIG_CMPRS', 'signal')
             node.compress_on_put = True
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
             pytree.write()
@@ -386,7 +385,7 @@ if __name__=='__main__':
     if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
         import objgraph
     else:      objgraph = None
-    import gc;gc.set_debug(gc.DEBUG_LEAK & ~gc.DEBUG_COLLECTABLE)
+    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
     from unittest import TextTestRunner
     TextTestRunner().run(suite())
     if objgraph:
