@@ -96,7 +96,7 @@ STATIC_CONSTANT DESCRIPTOR_RANGE(fake0, 0, 0, 0);
 STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(vector0, &OpcVector);
 int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int j1, left, right, *pcnt = 0, *ptest;
   int k0, k1;
   int special = narg > 1 && list[1] == TdiItoXSpecial;
@@ -136,13 +136,13 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
   else {
     status = TdiGetData(omits, list[0], &dimen);
 
-    if (status & 1 && dimen.pointer->dtype == DTYPE_WITH_UNITS) {
+    if (STATUS_OK && dimen.pointer->dtype == DTYPE_WITH_UNITS) {
       status = TdiUnits(dimen.pointer, &units MDS_END_ARG);
-      if (status & 1)
+      if STATUS_OK
 	status = TdiGetData(&omits[1], &dimen, &dimen);
     }
   }
-  if (status & 1)
+  if STATUS_OK
     switch (dimen.pointer->dtype) {
 		/*********************
         They just have a list.
@@ -159,42 +159,42 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
       pdim = (struct descriptor_dimension *)dimen.pointer;
       status = TdiEvaluate(pdim->window, &window MDS_END_ARG);
       pwin = (struct descriptor_window *)window.pointer;
-      if (status & 1 && pwin && pwin->dtype == DTYPE_WITH_UNITS) {
+      if (STATUS_OK && pwin && pwin->dtype == DTYPE_WITH_UNITS) {
 	status = TdiEvaluate(((struct descriptor_with_units *)pwin)->data, &tmp MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = MdsCopyDxXd((struct descriptor *)&tmp, &window);
       }
-      if (status & 1)
+      if STATUS_OK
 	status = TdiEvaluate(pdim->axis, &axis MDS_END_ARG);
       paxis = (struct descriptor_range *)axis.pointer;
-      if (status & 1 && paxis && paxis->dtype == DTYPE_WITH_UNITS) {
+      if (STATUS_OK && paxis && paxis->dtype == DTYPE_WITH_UNITS) {
 	status = TdiEvaluate(((struct descriptor_with_units *)paxis)->data, &tmp MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = MdsCopyDxXd((struct descriptor *)&tmp, &axis);
       }
       paxis = (struct descriptor_range *)axis.pointer;
       pwin = (struct descriptor_window *)window.pointer;
       break;
     }
-  if (status & 1 && pwin && pwin->dtype == DTYPE_WINDOW) ;
+  if (STATUS_OK && pwin && pwin->dtype == DTYPE_WINDOW) ;
   else
     pwin = 0;
-  if (status & 1 && pwin && pwin->startidx)
+  if (STATUS_OK && pwin && pwin->startidx)
     status = TdiGetLong(pwin->startidx, &k0);
   else
     k0 = -HUGE;
-  if (status & 1 && pwin && pwin->endingidx)
+  if (STATUS_OK && pwin && pwin->endingidx)
     status = TdiGetLong(pwin->endingidx, &k1);
   else
     k1 = HUGE;
-  if (status & 1) {		/*bug 2/26/91 include status test both ways */
+  if STATUS_OK {		/*bug 2/26/91 include status test both ways */
     if (pwin && pwin->value_at_idx0)
       status = TdiData(pwin->value_at_idx0, &xat0 MDS_END_ARG);
     else
       status = TdiData(0, &xat0 MDS_END_ARG);
   }
 
-  if (status & 1) {
+  if STATUS_OK {
     switch (paxis->dtype) {
     case DTYPE_SLOPE:
       pslope = (struct descriptor_slope *)paxis;
@@ -231,7 +231,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	    vec[1].arguments[jseg] = &done;
 	break;
       }
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
 	break;
 			/*********************
                 WARNING falls through.
@@ -239,7 +239,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
     case DTYPE_RANGE:
       status = TdiGetArgs(opcode, nran = paxis->ndesc, &paxis->begin, sig, uni, dat, cats);
       nseg = HUGE;
-      if (status & 1) {		/*bug 2/26/91 include status set in bracket */
+      if STATUS_OK {		/*bug 2/26/91 include status set in bracket */
 	for (j1 = nran; --j1 >= 0;)
 	  if (dat[j1].pointer->class == CLASS_A) {
 	    jseg = ((struct descriptor_a *)dat[j1].pointer)->arsize / (int)dat[j1].pointer->length;
@@ -256,11 +256,11 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 				 * I_TO_X: combined units.
 				 * X_TO_I: no units.
 				 ************************/
-      if (status & 1)
+      if STATUS_OK
 	status = Tdi2Range(nran, uni, dat, cats, 0);
-      if (flag && units.pointer == 0 && uni[0].pointer && status & 1)
+      if (flag && units.pointer == 0 && uni[0].pointer && STATUS_OK)
 	status = MdsCopyDxXd((struct descriptor *)&uni[0], &units);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
 	goto firstbad;
       tslo = nran > 2 && cats[2].in_dtype != DTYPE_MISSING;
 
@@ -297,17 +297,17 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
       }
       status = TdiCvtArgs(nran, dat, cats);
       TdiFaultClear(0);
-      if (status & 1)
+      if STATUS_OK
 	status = TdiSubtract(dat[end].pointer, dat[beg].pointer, &cnt MDS_END_ARG);
-      if (tslo && status & 1)
+      if (tslo && STATUS_OK)
 	status = TdiDivide(&cnt, dat[delta].pointer, &cnt MDS_END_ARG);
-      if (!(TdiFaultClear(0) & 1) && status & 1)
+      if (!(TdiFaultClear(0) & 1) && STATUS_OK)
 	status = TdiFixRoprand(&cnt, &dhuge, &cnt);
-      if (status & 1)
+      if STATUS_OK
 	status = TdiDim(&cnt, &dmone, &cnt MDS_END_ARG);
-      if (status & 1)
+      if STATUS_OK
 	status = TdiMin(&cnt, &dhuge, &cnt MDS_END_ARG);
-      if (status & 1 && cnt.pointer->dtype != DTYPE_L)
+      if (STATUS_OK && cnt.pointer->dtype != DTYPE_L)
 	status = TdiNint(&cnt, &cnt MDS_END_ARG);
 
 				/*********************************************************
@@ -320,20 +320,20 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
  counted:
       kseg = 0;
       if (nseg > 1 || !big_beg) {
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiSubtract(dat[beg].pointer, xat0.pointer, &tmp MDS_END_ARG);
-	if (tslo && status & 1)
+	if (tslo && STATUS_OK)
 	  status = TdiDivide(&tmp, dat[delta].pointer, &tmp MDS_END_ARG);
-	if (!(TdiFaultClear(0) & 1) && status & 1)
+	if (!(TdiFaultClear(0) & 1) && STATUS_OK)
 	  status = TdiFixRoprand(&tmp, &dmhuge, &tmp);
       }
       left = -HUGE;
       if (!pwin)
 	left = 0;		/*bug 2/26/91 missing window */
       else if (nseg > 1) {
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiGt(tmp.pointer, 0, out_ptr MDS_END_ARG);
-	if (status & 1) {
+	if STATUS_OK {
 	  plogical = out_ptr->pointer->pointer;
 	  for (; kseg < nseg - 1 && !*++plogical; ++kseg) ;
 	}
@@ -344,7 +344,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 				 * Trigger time xat0 implies next clock is at index 0, thus round down, make more negative.
 				 * Correct xat0 for good beg of single segment.
 				 **********************************************************************************************/
-      if ((kseg > 0 || !big_beg) && status & 1) {
+      if ((kseg > 0 || !big_beg) && STATUS_OK) {
 	if (pwin) {
 	  if (tmp.pointer->dtype == DTYPE_L)
 	    left = *((int *)tmp.pointer->pointer + kseg);
@@ -353,12 +353,12 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	    tst1.class = CLASS_S;
 	    tst1.pointer += tst1.length * kseg;
 	    status = TdiFloor(&tst1, &uni1 MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiMax(&uni1, &dmhuge, &tmp MDS_END_ARG);
 	    MdsFree1Dx(&uni1, NULL);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiMin(&tmp, &dhuge, &tmp MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiGetLong(tmp.pointer, &left);
 	  }
 	}
@@ -372,11 +372,11 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	  else {
 	    int1 = dk0;
 	    int1.pointer = (char *)&left;
-	    if (status & 1)
+	    if STATUS_OK
 	      status = MdsCopyDxXd(&int1, &tmp);
-	    if (tslo && status & 1)
+	    if (tslo && STATUS_OK)
 	      status = TdiMultiply(&tmp, dat[delta].pointer, &tmp MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiSubtract(&dat[beg], &tmp, &xat0 MDS_END_ARG);
 	    if (!big_end)
 	      right = left + *(int *)cnt.pointer->pointer;
@@ -390,7 +390,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 				 * If beg[0] undefined, set beg[0]=end[0] with cnt[0]=1.
 				 * If both are undefined (nseg==1) xat0 will be used.
 				 ******************************************************/
-      if (nseg > 1 && status & 1) {
+      if (nseg > 1 && STATUS_OK) {
 	ptest = pcnt = (int *)cnt.pointer->pointer;
 	for (jseg = kseg; --jseg >= 0;)
 	  left -= *ptest++;	/*bug 2/26/91 increment ptest */
@@ -409,40 +409,40 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
                 When we can't get left side, use right of first segment for limit.
 				 *****************************************************************/
       if (kseg == 0 && big_beg && (nseg > 1 || !big_end)) {
-	if (status & 1) {
+	if STATUS_OK {
 	  tst1 = *dat[end].pointer;
 	  tst1.class = CLASS_S;
 	  status = TdiSubtract(&tst1, xat0.pointer, &tmp MDS_END_ARG);
 	}
-	if (tslo && status & 1) {
+	if (tslo && STATUS_OK) {
 	  del1 = *dat[delta].pointer;
 	  del1.class = CLASS_S;
 	  status = TdiDivide(&tmp, &del1, &tmp MDS_END_ARG);
 	}
-	if (status & 1) {
+	if STATUS_OK {
 	  if (tmp.pointer->dtype == DTYPE_L)
 	    right = *(int *)tmp.pointer->pointer;
 	  else {
 	    if (!(TdiFaultClear(0) & 1))
 	      status = TdiFixRoprand(&tmp, &dhuge, &tmp);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiFloor(&tmp, &tmp MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiMax(&tmp, &dmhuge, &tmp MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiMin(&tmp, &dhuge, &tmp MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiGetLong(&tmp, &right);
 	  }
 	}
 	if (nseg == 1 && right < HUGE) {
 	  int1 = dk0;
 	  int1.pointer = (char *)&right;
-	  if (status & 1)
+	  if STATUS_OK
 	    status = MdsCopyDxXd(&int1, &tmp);
-	  if (tslo && status & 1)
+	  if (tslo && STATUS_OK)
 	    status = TdiMultiply(&tmp, &del1, &tmp MDS_END_ARG);
-	  if (status & 1)
+	  if STATUS_OK
 	    status = TdiSubtract(&tst1, &tmp, &xat0 MDS_END_ARG);
 	}
 	++right;
@@ -466,7 +466,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 				 * GET_ARGS does not free.
 				 *******************************/
  select:
-      if (status & 1) {
+      if STATUS_OK {
 	if (special) {
 	  int limits[2];
 	  array_int dlimits = *(array_int *) & duo;
@@ -524,34 +524,34 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 					 ******************************************************************/
       }
       if (nseg > 1 && (flag || arg1)) {
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiBsearch(out_ptr->pointer,
 			      flag ? cnt.pointer : dat[beg].pointer, &done, &tmp MDS_END_ARG);
-	if (status & 1 && dat[beg].pointer->class == CLASS_A)
+	if (STATUS_OK && dat[beg].pointer->class == CLASS_A)
 	  status = TdiMap(&dat[beg], tmp.pointer, &dat[beg] MDS_END_ARG);
-	if (status & 1 && dat[end].pointer->class == CLASS_A)
+	if (STATUS_OK && dat[end].pointer->class == CLASS_A)
 	  status = TdiMap(&dat[end], tmp.pointer, &dat[end] MDS_END_ARG);
-	if (status & 1 && cnt.pointer->class == CLASS_A)
+	if (STATUS_OK && cnt.pointer->class == CLASS_A)
 	  status = TdiMap(&cnt, tmp.pointer, &cnt MDS_END_ARG);
-	if (tslo && status & 1 && dat[delta].pointer->class == CLASS_A)
+	if (tslo && STATUS_OK && dat[delta].pointer->class == CLASS_A)
 	  status = TdiMap(&dat[delta], &tmp, &dat[delta] MDS_END_ARG);
-	if (tslo && status & 1)
+	if (tslo && STATUS_OK)
 	  status = TdiMultiply(&cnt, dat[delta].pointer, &cnt MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiSubtract(&dat[beg], &cnt, &xat0 MDS_END_ARG);
       }
 
       if (flag) {
-	if (tslo && status & 1)
+	if (tslo && STATUS_OK)
 	  status = TdiMultiply(out_ptr, &dat[delta], out_ptr MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiAdd(out_ptr, &xat0, out_ptr MDS_END_ARG);
-	/*      if (nseg > 1 && status & 1) status = TdiMin(out_ptr, &dat[end], out_ptr MDS_END_ARG); */
+	/*      if (nseg > 1 && STATUS_OK) status = TdiMin(out_ptr, &dat[end], out_ptr MDS_END_ARG); */
       } else if (arg1) {
-	/*      if (nseg > 1 && status & 1) status = TdiMin(out_ptr, &dat[end], out_ptr MDS_END_ARG); */
-	if (status & 1)
+	/*      if (nseg > 1 && STATUS_OK) status = TdiMin(out_ptr, &dat[end], out_ptr MDS_END_ARG); */
+	if STATUS_OK
 	  status = TdiSubtract(out_ptr, &xat0, out_ptr MDS_END_ARG);
-	if (tslo && status & 1)
+	if (tslo && STATUS_OK)
 	  status = TdiDivide(out_ptr, &dat[delta], out_ptr MDS_END_ARG);
       }
       MdsFree1Dx(&cnt, NULL);
@@ -562,7 +562,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
                 For given list, order of operations is must preserve original shape.
                 MAP preserves shape of second arg and single segment uses scalars.
 				 *******************************************************************/
-      if (status & 1 && k0 != 0 && !arg1 && !special) {
+      if (STATUS_OK && k0 != 0 && !arg1 && !special) {
 	DESCRIPTOR_RANGE(range, 0, 0, 0);
 	range.ndesc = 2;
 	range.begin = &dk0;
@@ -573,7 +573,7 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 				/********************************
                 Embed result in units and signal.
 				 ********************************/
-      if (status & 1)
+      if STATUS_OK
 	status = TdiMasterData(narg > 1, &sig1, &units, &cmode, out_ptr);
       MdsFree1Dx(&sig1, NULL);
  firstbad:
@@ -597,17 +597,17 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
       paxis = (struct descriptor_range *)axis.pointer;
       pmode = paxis->dtype == DTYPE_T ? 0 : &dmone;
       j1 = paxis->length;
-      if (status & 1)
+      if STATUS_OK
 	status = TdiSort(paxis, &tmp MDS_END_ARG);
-      if ((pwin || flag || arg1) && status & 1) {
+      if ((pwin || flag || arg1) && STATUS_OK) {
 	status = TdiMap(paxis, tmp.pointer, &window MDS_END_ARG);
       }
       if (pwin) {
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiBsearch(&xat0, paxis, pmode, &xat0 MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiGetLong(&xat0, &left);
-	if (status & 1) {
+	if STATUS_OK {
 	  N_ELEMENTS(paxis, right);
 	}
 	left = -left;
@@ -617,17 +617,17 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	if (k1 > right)
 	  k1 = right;
       } else {
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiLbound(axis.pointer, &dk0 MDS_END_ARG);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiUbound(axis.pointer, &dk1 MDS_END_ARG);
       }
-      if (status & 1) {
+      if STATUS_OK {
 	if (special) {
 	  if (flag) {
 	    unsigned short num = (unsigned short)j1;
 	    status = MdsGet1DxA((struct descriptor_a *)&duo, &num, &paxis->dtype, out_ptr);
-	    if (status & 1) {
+	    if STATUS_OK {
 	      _MOVC3(j1, (char *)window.pointer->pointer, out_ptr->pointer->pointer);
 	      _MOVC3(j1,
 		     (char *)window.pointer->pointer + j1 * (k1 -
@@ -655,19 +655,19 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	      status = TdiMap(&axis, list[1], out_ptr MDS_END_ARG);	/*straight mapping */
 	  } else {
 	    status = TdiBsearch(list[1], &window, pmode, out_ptr MDS_END_ARG);	/*lookup */
-	    if (k0 != 0 && status & 1)
+	    if (k0 != 0 && STATUS_OK)
 	      status = TdiAdd(out_ptr, &dk0, out_ptr MDS_END_ARG);	/*offset */
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG);	/*unorder */
 	  }
 	}
       }
-      if (status & 1 && k0 != 0 && out_ptr != NULL
+      if (STATUS_OK && k0 != 0 && out_ptr != NULL
 	  && out_ptr->pointer != NULL && out_ptr->pointer->class == CLASS_A) {
 	DESCRIPTOR_RANGE(range, 0, 0, 0);
 	status = TdiSetRange(&range, out_ptr, out_ptr MDS_END_ARG);
       }
-      if (status & 1)
+      if STATUS_OK
 	status = TdiMasterData(0, &sig1, &units, &cmode, out_ptr);
       break;
     }

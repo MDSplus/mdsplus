@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3And   
+                Name:   Tdi3And
 
                 Type:   C function
 
@@ -8,7 +8,7 @@
 
                 Date:   18-FEB-1993
 
-                Purpose: Logical LOW-BIT tests on two operands 
+                Purpose: Logical LOW-BIT tests on two operands
 
         For AB  = 00,01,10,11
         FALSE   = 0,0,0,0       use 0b
@@ -30,7 +30,7 @@ NEOR =  EOR_NOT = 1,0,0,1       (is EQV)
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -177,7 +177,7 @@ int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3AndNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -200,7 +200,7 @@ int Tdi3AndNot(struct descriptor *in1, struct descriptor *in2, struct descriptor
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3Nand(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -223,7 +223,7 @@ int Tdi3Nand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3NandNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -246,7 +246,7 @@ int Tdi3NandNot(struct descriptor *in1, struct descriptor *in2, struct descripto
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3Or(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -269,7 +269,7 @@ int Tdi3Or(struct descriptor *in1, struct descriptor *in2, struct descriptor *ou
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3Nor(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -292,7 +292,7 @@ int Tdi3Nor(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3NorNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -315,7 +315,7 @@ int Tdi3NorNot(struct descriptor *in1, struct descriptor *in2, struct descriptor
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3OrNot(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -338,7 +338,7 @@ int Tdi3OrNot(struct descriptor *in1, struct descriptor *in2, struct descriptor 
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3Neqv(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -361,7 +361,7 @@ int Tdi3Neqv(struct descriptor *in1, struct descriptor *in2, struct descriptor *
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 int Tdi3Eqv(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -384,7 +384,7 @@ int Tdi3Eqv(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   default:
     return TdiINVDTYDSC;
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 /*  CMS REPLACEMENT HISTORY, Element Tdi3And.C */

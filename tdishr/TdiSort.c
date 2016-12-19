@@ -245,7 +245,7 @@ STATIC_ROUTINE int GTR_T(unsigned char *a, unsigned char *b, int len)
 
 int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int inc, hi, lo = -2, mid, *poutput;
   int upcase = 0, cmode = -1, len, mode = 0, ni = 0, nt = 0;
   char *pinput, *ptable;
@@ -254,21 +254,21 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descript
   struct TdiCatStruct cats[3];
 
   status = TdiGetArgs(opcode, 2, list, sig, uni, dat, cats);
-  if (narg > 2 && status & 1)
+  if (narg > 2 && STATUS_OK)
     status = TdiGetLong(list[2], &mode);
-  if (status & 1)
+  if STATUS_OK
     status = Tdi2Bsearch(2, uni, dat, cats);
-  if (status & 1)
+  if STATUS_OK
     status = TdiCvtArgs(2, dat, cats);
-  if (status & 1) {
+  if STATUS_OK {
     N_ELEMENTS(dat[0].pointer, ni);
   }
-  if (status & 1) {
+  if STATUS_OK {
     N_ELEMENTS(dat[1].pointer, nt);
   }
-  if (status & 1)
+  if STATUS_OK
     status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
-  if (status & 1) {
+  if STATUS_OK {
     if (ni <= 0) {		/* null output */
     } else if (nt <= 0) {
       status = TdiNULL_PTR;	/* cannot lookup */
@@ -367,9 +367,9 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descript
 	if (narg > 3)
 	  status = TdiGetLong(list[3], &upcase);
 	if (upcase & 1) {
-	  if (status & 1)
+	  if STATUS_OK
 	    status = StrUpcase(dat[0].pointer, dat[0].pointer);
-	  if (status & 1)
+	  if STATUS_OK
 	    status = StrUpcase(dat[1].pointer, dat[1].pointer);
 	}
 	break;
@@ -380,7 +380,7 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descript
       }
     }
   }
-  if (status & 1) {
+  if STATUS_OK {
     len = dat[0].pointer->length;
     pinput = dat[0].pointer->pointer;
     ptable = dat[1].pointer->pointer;
@@ -445,7 +445,7 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descript
     MdsFree1Dx(&uni[0], NULL);
   MdsFree1Dx(&dat[1], NULL);
   MdsFree1Dx(&dat[0], NULL);
-  if (status & 1)
+  if STATUS_OK
     status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
   if (sig[0].pointer)
     MdsFree1Dx(&sig[0], NULL);
@@ -467,7 +467,7 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descript
 */
 int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   STATIC_THREADSAFE int64_t ran = 0;
   int i, j, keep, l, r, jstack, *ndx;
   int upcase = 0, cmode = -1, len, n = 0;
@@ -480,7 +480,7 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
-  if (status & 1)
+  if STATUS_OK
     switch (dat[0].pointer->dtype) {
     case DTYPE_BU:
       gtr = (int (*)())&GTR_BU;
@@ -547,19 +547,19 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_
       gtr = (int (*)())&GTR_T;
       if (narg > 1)
 	status = TdiGetLong(list[1], &upcase);
-      if (status & 1 & upcase & 1)
+      if (STATUS_OK && IS_OK(upcase))
 	status = StrUpcase(dat[0].pointer, dat[0].pointer);
       break;
     default:
       status = TdiINVDTYDSC;
       break;
     }
-  if (status & 1)
+  if STATUS_OK
     status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
-  if (status & 1) {
+  if STATUS_OK {
     N_ELEMENTS(dat[0].pointer, n);
   }
-  if (!(status & 1) || n <= 0)
+  if (STATUS_NOT_OK || n <= 0)
     goto done;
 
   len = dat[0].pointer->length;
@@ -644,7 +644,7 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_
     MdsFree1Dx(&uni[0], NULL);
   MdsFree1Dx(&dat[0], NULL);
   if (sig[0].pointer) {
-    if (status & 1)
+    if STATUS_OK
       status = TdiMasterData(1, &sig[0], uni, &cmode, out_ptr);
     MdsFree1Dx(&sig[0], NULL);
   }
@@ -659,13 +659,13 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_
 */
 int Tdi1SortVal(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiSort(tmp.pointer, narg > 1 ? list[1] : 0, out_ptr MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiMap(&tmp, out_ptr, out_ptr MDS_END_ARG);
   if (tmp.pointer)
     MdsFree1Dx(&tmp, NULL);
@@ -679,14 +679,14 @@ int Tdi1SortVal(int opcode __attribute__ ((unused)), int narg, struct descriptor
 */
 int Tdi1Union(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int j, n, len;
   char *pi, *po;
 
   status = TdiIntrinsic(OpcVector, narg, list, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     status = TdiSortVal(out_ptr, out_ptr MDS_END_ARG);
-  if (status & 1) {
+  if STATUS_OK {
     struct descriptor_with_units *pdwu = (struct descriptor_with_units *)out_ptr->pointer;
     struct descriptor_a *pdo =
 	pdwu->dtype ==
@@ -777,13 +777,13 @@ int Tdi1Union(int opcode __attribute__ ((unused)), int narg, struct descriptor *
 */
 int Tdi1IsIn(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor *pupcase = narg > 2 ? list[2] : 0;
 
   status = TdiSortVal(list[1], pupcase, out_ptr MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiBsearch(list[0], out_ptr, 0, pupcase, out_ptr MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiGe(out_ptr, 0, out_ptr MDS_END_ARG);
   return status;
 }

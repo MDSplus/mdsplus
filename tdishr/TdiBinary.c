@@ -59,7 +59,7 @@ int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
   case CLASS_A:
     a = (struct descriptor_a *)out_ptr;
     if ((*out_count = (a->arsize / out_ptr->length)) <= 0)
-      return 1;
+      return MDSplusSUCCESS;
     break;
   default:
     return TdiINVCLADSC;
@@ -91,5 +91,5 @@ int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
     return TdiINVCLADSC;
   }
 
-  return 1;
+  return MDSplusSUCCESS;
 }

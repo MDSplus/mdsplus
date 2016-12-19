@@ -36,20 +36,20 @@ extern int TdiConvert();
 
 int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int lena, lenm, numa, numm, numv = 0, bytes, j, cmode = -1;
   char *pi, *pm, *po;
   struct descriptor_xd sig[3], uni[3], dat[3];
   struct TdiCatStruct cats[4];
 
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
-  if (status & 1 && dat[0].pointer->class != CLASS_A)
+  if (STATUS_OK && dat[0].pointer->class != CLASS_A)
     status = TdiINVCLADSC;
-  if (status & 1)
+  if STATUS_OK
     status = Tdi2Pack(narg, uni, dat, cats, 0);
-  if (status & 1)
+  if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
-  if (status & 1) {
+  if STATUS_OK {
     struct descriptor_a *parr = (struct descriptor_a *)dat[0].pointer;
     bytes = parr->arsize;
     lena = parr->length;
@@ -118,7 +118,7 @@ int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_
       dat[0] = EMPTY_XD;
     }
   }
-  if (status & 1)
+  if STATUS_OK
     status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
   for (j = narg; --j >= 0;) {
     MdsFree1Dx(&sig[j], NULL);

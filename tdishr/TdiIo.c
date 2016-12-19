@@ -8,6 +8,7 @@
 #include <dvidef.h>
 #endif
 
+#include <status.h>
 #include <STATICdef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,14 +44,14 @@ extern int TdiDecompile();
 */
 int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 {
-  int status;
+  INIT_STATUS;
   STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_L;
   STATIC_CONSTANT unsigned short len = sizeof(int);
 
   if (out_ptr == 0)
     return 1;
   status = MdsGet1DxS(&len, &dtype, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     *(int *)out_ptr->pointer->pointer = *data;
   return status;
 }
@@ -71,7 +72,7 @@ STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 */
 STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 {
-  int status;
+  INIT_STATUS;
   struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
   status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
   if (unit_d.length != sizeof(*unit))
@@ -87,7 +88,7 @@ STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 */
 STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
 {
-  int status;
+  INIT_STATUS;
   struct descriptor_d unit_d = { 0, DTYPE_T, CLASS_D, 0 };
   status = TdiEvaluate(in_ptr, &unit_d MDS_END_ARG);
   if (unit_d.length != sizeof(*unit))
@@ -107,7 +108,7 @@ int Tdi1DateTime(int opcode __attribute__ ((unused)),
 		 struct descriptor *list[],
 		 struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int time[2] = { 0, 0 }, *ptime;
   unsigned short len;
   STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
@@ -120,11 +121,11 @@ int Tdi1DateTime(int opcode __attribute__ ((unused)),
     ptime = time;
   } else
     ptime = 0;
-  if (status & 1)
+  if STATUS_OK
     status = MdsGet1DxS(&length, &dtype, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     status = LibSysAscTim(&len, out_ptr->pointer, ptime);
-  if (status & 1)
+  if STATUS_OK
     out_ptr->pointer->length = len;
   return status;
 }
@@ -156,16 +157,16 @@ int Tdi1Fseek(int opcode __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   FILE *unit;
   int offset = 0, origin = 0, err;
 
   status = TdiGetOutUnit(list[0], &unit);
-  if (status & 1 && narg > 1)
+  if (STATUS_OK && narg > 1)
     status = TdiGetLong(list[1], &offset);
-  if (status & 1 && narg > 2)
+  if (STATUS_OK && narg > 2)
     status = TdiGetLong(list[2], &origin);
-  if (status & 1) {
+  if STATUS_OK {
     err = fseek(unit, offset, origin);
     status = TdiPutLong((int *)&err, out_ptr);
   }
@@ -181,7 +182,7 @@ int Tdi1Ftell(int opcode __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   FILE *unit;
   int pos;
 
@@ -202,19 +203,19 @@ int Tdi1Fopen(int opcode __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   FILE *unit;
   struct descriptor_d dname = { 0, DTYPE_T, CLASS_D, 0 };
   struct descriptor_d dmode = { 0, DTYPE_T, CLASS_D, 0 };
 
   status = TdiData(list[0], &dname MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiData(list[1], &dmode MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = StrAppend(&dname, (struct descriptor *)&dNUL);
-  if (status & 1)
+  if STATUS_OK
     status = StrAppend(&dmode, (struct descriptor *)&dNUL);
-  if (status & 1) {
+  if STATUS_OK {
     unit = fopen(dname.pointer, dmode.pointer);
     status = TdiPutUnit(unit, out_ptr);
   }
@@ -232,7 +233,7 @@ int Tdi1Spawn(int opcode __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int stat1;
   struct descriptor_d cmd = EMPTY_D;
   struct descriptor_d inp = EMPTY_D;
@@ -240,11 +241,11 @@ int Tdi1Spawn(int opcode __attribute__ ((unused)),
 
   if (narg > 0 && list[0])
     status = TdiText(list[0], &cmd MDS_END_ARG);
-  if (narg > 1 && list[1] && status & 1)
+  if (narg > 1 && list[1] && STATUS_OK)
     status = TdiText(list[1], &inp MDS_END_ARG);
-  if (narg > 2 && list[2] && status & 1)
+  if (narg > 2 && list[2] && STATUS_OK)
     status = TdiText(list[2], &out MDS_END_ARG);
-  if (status & 1) {
+  if STATUS_OK {
     stat1 = LibSpawn((struct descriptor *)&cmd, 1, 0);
     status = TdiPutLong(&stat1, out_ptr);
   }
@@ -259,11 +260,11 @@ int Tdi1Wait(int opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)), struct descriptor *list[],
 	     struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
-  int status = 1;
+  INIT_STATUS;
   float time;
 
   status = TdiGetFloat(list[0], &time);
-  if (status & 1)
+  if STATUS_OK
     status = LibWait(&time);
   return status;
 }
@@ -285,7 +286,7 @@ int Tdi1Write(int opcode __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int j, stat1, bytes = 0, col = 0, len;
   FILE *unit = 0;
   struct descriptor *pd, *ptmp;
@@ -295,7 +296,7 @@ int Tdi1Write(int opcode __attribute__ ((unused)),
   STATIC_CONSTANT int width = 132;
 
   status = TdiGetOutUnit(list[0], &unit);
-  if (status & 1)
+  if STATUS_OK
     for (j = 1; j < narg; ++j) {
       stat1 = TdiEvaluate(list[j], &tmp MDS_END_ARG);
       if (!(stat1 & 1))
@@ -370,7 +371,7 @@ int Tdi1Write(int opcode __attribute__ ((unused)),
     }
   if (col > 0)
     bytes += kprintf(unit, "\n");
-  if (status & 1)
+  if STATUS_OK
     status = TdiPutLong((int *)&bytes, out_ptr);
   MdsFree1Dx(&tmp, NULL);
   return status;
@@ -387,10 +388,10 @@ int Tdi1Read(int opcode __attribute__ ((unused)),
 	     struct descriptor *list[],
 	     struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   FILE *unit = 0;
   status = TdiGetInUnit(list[0], &unit);
-  if (status & 1) {
+  if STATUS_OK {
     char line[4096];
     char *ans;
     struct descriptor line_d = { 0, DTYPE_T, CLASS_S, 0 };
@@ -400,7 +401,7 @@ int Tdi1Read(int opcode __attribute__ ((unused)),
       line_d.pointer = line;
       status = MdsCopyDxXd(&line_d, out_ptr);
     } else
-      status = 0;
+      status = MDSplusERROR;
   }
   return status;
 }

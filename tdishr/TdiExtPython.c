@@ -238,11 +238,11 @@ static char *findModule(struct descriptor *modname_d, char **modname_out)
   struct descriptor modfile_d = { strlen(moduleFile), DTYPE_T, CLASS_S, moduleFile };
   struct descriptor ans_d = { 0, DTYPE_T, CLASS_D, 0 };
   void *ctx = 0;
-  int status;
+  INIT_STATUS;
   status = LibFindFileRecurseCaseBlind(&modfile_d, &ans_d, &ctx);
   LibFindFileEnd(&ctx);
   char *dirspec = NULL;
-  if (status & 1) {
+  if STATUS_OK {
     dirspec = MdsDescrToCstring((struct descriptor *)&ans_d);
     char *modnam = (char *)malloc(modlen + 1);
     strncpy(modnam, &dirspec[strlen(dirspec) - modlen - strlen(ftype)], modlen);
@@ -359,7 +359,7 @@ int TdiExtPython(struct descriptor *modname_d,
         } else {
           getAnswer(ans, out_ptr);
           (*Py_DecRef)(ans);
-          status = 1;
+          status = MDSplusSUCCESS;
         }
         (*Py_DecRef)(pyArgs);
         (*Py_DecRef)(pyFunction);
