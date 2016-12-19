@@ -5,9 +5,14 @@ Goal is to generate code that work on both python2x and python3x.
 """
 from numpy import generic as npscalar
 from numpy import ndarray as nparray
+from numpy import string_ as npbytes
+from numpy import unicode_ as npunicode
 from sys import version_info as pyver
+import os
 ispy3 = pyver>(3,)
 ispy2 = pyver<(3,)
+isNt = os.name=='nt'
+npstr = npunicode if ispy3 else npbytes
 # __builtins__ is dict
 has_long      = 'long'       in __builtins__
 has_unicode   = 'unicode'    in __builtins__
@@ -18,38 +23,30 @@ has_xrange    = 'xrange'     in __builtins__
 has_mapclass  = isinstance(map,(type,))
 
 def load_library(name):
-    import ctypes as C
-    import os
-    import platform
-    if platform.system() == 'Darwin':
-        if not os.getenv('DYLD_LIBRARY_PATH'):
-            if os.getenv('MDSPLUS_DIR'):
-                os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
-            else:
-                os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
-    libnam = None
-    if pyver>(2,5,):
-        from ctypes.util import find_library
-        libnam = find_library(name)
+    import ctypes as C,platform
+    if os.sys.platform.startswith('darwin') and not os.getenv('DYLD_LIBRARY_PATH'):
+        if os.getenv('MDSPLUS_DIR'):
+            os.environ['DYLD_LIBRARY_PATH'] = os.path.join(os.getenv('MDSPLUS_DIR'),'lib')
+        else:
+            os.environ['DYLD_LIBRARY_PATH'] = '/usr/local/mdsplus/lib'
+    from ctypes.util import find_library
+    libnam = find_library(name)
     if libnam is None:
-        try:
-            return C.CDLL('lib'+name+'.so')
-        except:
-            try:
-                return C.CDLL(name+'.dll')
-            except:
-                try:
-                    return C.CDLL('lib'+name+'.dylib')
-                except:
-                    raise Exception("Error finding library: "+name)
+        if os.sys.platform.startswith('win'):
+            return C.CDLL('%s.dll'%name)
+        if os.sys.platform.startswith('darwin'):
+            return C.CDLL('lib%s.dylib'%name)
+        try: return C.CDLL('lib%s.so'%name)
+        except:raise Exception("Error finding library: "+name)
     else:
-        try:
-            return C.CDLL(libnam)
-        except:
-            try:
-                return C.CDLL(name)
-            except:
-                return C.CDLL(os.path.basename(libnam))
+        try:   return C.CDLL(libnam)
+        except:pass
+        try:   return C.CDLL(name)
+        except:pass
+        try:   return C.CDLL(os.path.basename(libnam))
+        except:print('Could not load CDLL: '+libnam)
+
+from types import GeneratorType as generator  # analysis:ignore
 
 # substitute missing builtins
 if has_long:
@@ -84,15 +81,15 @@ if has_unicode:
     varstr = unicode
 else:
     varstr = bytes
-
-# numpy char types
-npunicode = 'U'
-npbytes = 'S'
-if ispy2:
-    npstr = npbytes
+if has_xrange:
+    xrange = xrange
 else:
-    npstr = npunicode
+    xrange = range
 
+if has_xrange:
+    xrange = xrange
+else:
+    xrange = range
 
 def _decode(string):
     try:
@@ -100,10 +97,8 @@ def _decode(string):
     except:
         return string.decode('CP1252', 'backslashreplace')
 
-
 def _encode(string):
     return string.encode('utf-8', 'backslashreplace')
-
 
 def _tostring(string, targ, nptarg, conv, lstres):
     if isinstance(string, targ):  # short cut
@@ -123,28 +118,30 @@ def _tostring(string, targ, nptarg, conv, lstres):
 
 
 def tostr(string):
-    if ispy2:
-        return _tostring(string, str, npbytes, _encode, bytes)
-    else:
-        return _tostring(string, str, npunicode, _decode, unicode)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tostr(item) for item in string)
+    return _tostring(string, str, npstr, _decode, str)
 
+
+if ispy2:
+    _bytes = bytes
+    def _unicode(string):
+        return _decode(str(string))
+else:
+    def _bytes(string):
+        return _encode(str(string))
+    _unicode = unicode
 
 def tobytes(string):
-    if ispy2:
-        return _tostring(string, bytes, npbytes, _encode, bytes)
-    else:
-        def _bytes(string):
-            return _encode(str(string))
-        return _tostring(string, bytes, npbytes, _encode, _bytes)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tobytes(item) for item in string)
+    return _tostring(string, bytes, npbytes, _encode, _bytes)
 
 
 def tounicode(string):
-    if ispy3:
-        return _tostring(string, unicode, npbytes, _encode, unicode)
-    else:
-        def _unicode(string):
-            return _decode(str(string))
-        return _tostring(string, unicode, npunicode, _decode, _unicode)
+    if isinstance(string,(list, tuple)):
+        return string.__class__(tounicode(item) for item in string)
+    return _tostring(string, unicode, npunicode, _decode, _unicode)
 
 # Extract the code attribute of a function. Different implementations
 # are for Python 2/3 compatibility.
