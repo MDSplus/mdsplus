@@ -2833,6 +2833,16 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* SsSUCCESS */
+      case 0x0:
+        {static const char *text="Success";
+        static const char *msgnam="SUCCESS";
+        *fac_out = FAC_Ss;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* SsINTOVF */
       case 0x478:
         {static const char *text="Integer overflow";

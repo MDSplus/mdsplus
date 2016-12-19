@@ -2461,6 +2461,14 @@ class _SsException(MDSplusException):
   fac="Ss"
 
 
+class SsSUCCESS(_SsException):
+  status=1
+  message="Success"
+  msgnam="SUCCESS"
+
+MDSplusException.statusDict[0] = SsSUCCESS
+
+
 class SsINTOVF(_SsException):
   status=1148
   message="Integer overflow"

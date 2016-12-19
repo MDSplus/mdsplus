@@ -17,6 +17,7 @@
     <status name="STRTOOLON" value="4110" severity="Fatal" text="String too long"/>
   </facility>
   <facility name="Ss" value="0">
+    <status name="SUCCESS"  value="0"  severity="Success" text="Success"/>
     <status name="INTOVF" value="143" severity="Fatal" text="Integer overflow"/>
   </facility>
 </messages>
