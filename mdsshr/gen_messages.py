@@ -29,7 +29,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
 ########################### generated from %s ########################
 
 """ % filename)
-    for f in root.getiterator('facility'):
+    for f in root.iter('facility'):
         facnam = f.get('name')
         facnum = int(f.get('value'))
         if facnum in facnums:
@@ -37,7 +37,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
         facnums[facnum]=filename
         ffacnam = facnam
         faclist.append(facnam)
-        for status in f.getiterator('status'):
+        for status in f.iter('status'):
             facnam = ffacnam
             msgnam = status.get('name')
             msgnum = int(status.get('value'))
@@ -62,7 +62,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
 
 class _%(fac)sException(MDSplusException):
   fac="%(fac)s"
-""" % {'fac':facnam.capitalize()})
+""" % {'fac':facnam})
             f_py.write("""
 
 class %(fac)s%(msgnam)s(_%(fac)sException):
@@ -71,7 +71,7 @@ class %(fac)s%(msgnam)s(_%(fac)sException):
   msgnam="%(msgnam)s"
 
 MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
-""" % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
+""" % {'fac':facnam,'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
             msglist.append({'msgnum':hex(msgn_nosev),'text':text,
                             'fac':facnam,'msgnam':msgnam,
                             'facabb':facabb})
@@ -180,7 +180,7 @@ for msg in msglist:
       case %(msgnum)s:
         {static const char *text="%(text)s";
         static const char *msgnam="%(msgnam)s";
-        *fac_out = FAC_%(fac)s;
+        *fac_out = FAC_%(facu)s;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}

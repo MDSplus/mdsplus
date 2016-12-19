@@ -1,33 +1,33 @@
-static const char *FAC_DEV = "DEV";
-static const char *FAC_RETICON = "RETICON";
+static const char *FAC_Dev = "DEV";
+static const char *FAC_Reticon = "RETICON";
 static const char *FAC_J221 = "J221";
-static const char *FAC_TIMING = "TIMING";
+static const char *FAC_Timing = "TIMING";
 static const char *FAC_B2408 = "B2408";
-static const char *FAC_FERA = "FERA";
-static const char *FAC_HM650 = "HM650";
-static const char *FAC_HV4032 = "HV4032";
-static const char *FAC_HV1440 = "HV1440";
-static const char *FAC_JOERGER = "JOERGER";
-static const char *FAC_U_OF_M = "U_OF_M";
-static const char *FAC_IDL = "IDL";
-static const char *FAC_B5910A = "B5910A";
+static const char *FAC_Fera = "FERA";
+static const char *FAC_Hm650 = "HM650";
+static const char *FAC_Hv4032 = "HV4032";
+static const char *FAC_Hv1440 = "HV1440";
+static const char *FAC_Joerger = "JOERGER";
+static const char *FAC_U_of_m = "U_OF_M";
+static const char *FAC_Idl = "IDL";
+static const char *FAC_B5910a = "B5910A";
 static const char *FAC_J412 = "J412";
-static const char *FAC_TR16 = "TR16";
+static const char *FAC_Tr16 = "TR16";
 static const char *FAC_A14 = "A14";
 static const char *FAC_L6810 = "L6810";
-static const char *FAC_J_DAC = "J_DAC";
-static const char *FAC_INCAA = "INCAA";
+static const char *FAC_J_dac = "J_DAC";
+static const char *FAC_Incaa = "INCAA";
 static const char *FAC_L8212 = "L8212";
-static const char *FAC_MPB = "MPB";
+static const char *FAC_Mpb = "MPB";
 static const char *FAC_L8828 = "L8828";
 static const char *FAC_L8818 = "L8818";
-static const char *FAC_J_TR612 = "J_TR612";
+static const char *FAC_J_tr612 = "J_TR612";
 static const char *FAC_L8206 = "L8206";
 static const char *FAC_H912 = "H912";
 static const char *FAC_H908 = "H908";
-static const char *FAC_DSP2904 = "DSP2904";
-static const char *FAC_PY = "PY";
-static const char *FAC_DT196B = "DT196B";
+static const char *FAC_Dsp2904 = "DSP2904";
+static const char *FAC_Py = "PY";
+static const char *FAC_Dt196b = "DT196B";
 static const char *FAC_Tree = "TREE";
 static const char *FAC_Lib = "LIB";
 static const char *FAC_Str = "STR";
@@ -44,7 +44,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
     int sts;
     switch (status & (-8)) {
 
-/* DEVBAD_ENDIDX */
+/* DevBAD_ENDIDX */
       case 0x277c8008:
         {static const char *text="unable to read end index for channel";
         static const char *msgnam="BAD_ENDIDX";
@@ -54,7 +54,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_FILTER */
+/* DevBAD_FILTER */
       case 0x277c8010:
         {static const char *text="illegal filter selected";
         static const char *msgnam="BAD_FILTER";
@@ -64,7 +64,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_FREQ */
+/* DevBAD_FREQ */
       case 0x277c8018:
         {static const char *text="illegal digitization frequency selected";
         static const char *msgnam="BAD_FREQ";
@@ -74,7 +74,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_GAIN */
+/* DevBAD_GAIN */
       case 0x277c8020:
         {static const char *text="illegal gain selected";
         static const char *msgnam="BAD_GAIN";
@@ -84,7 +84,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_HEADER */
+/* DevBAD_HEADER */
       case 0x277c8028:
         {static const char *text="unable to read header selection";
         static const char *msgnam="BAD_HEADER";
@@ -94,7 +94,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_HEADER_IDX */
+/* DevBAD_HEADER_IDX */
       case 0x277c8030:
         {static const char *text="unknown header configuration index";
         static const char *msgnam="BAD_HEADER_IDX";
@@ -104,7 +104,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_MEMORIES */
+/* DevBAD_MEMORIES */
       case 0x277c8038:
         {static const char *text="unable to read number of memory modules";
         static const char *msgnam="BAD_MEMORIES";
@@ -114,7 +114,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_MODE */
+/* DevBAD_MODE */
       case 0x277c8040:
         {static const char *text="illegal mode selected";
         static const char *msgnam="BAD_MODE";
@@ -124,7 +124,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_NAME */
+/* DevBAD_NAME */
       case 0x277c8048:
         {static const char *text="unable to read module name";
         static const char *msgnam="BAD_NAME";
@@ -134,7 +134,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_OFFSET */
+/* DevBAD_OFFSET */
       case 0x277c8050:
         {static const char *text="illegal offset selected";
         static const char *msgnam="BAD_OFFSET";
@@ -144,7 +144,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_STARTIDX */
+/* DevBAD_STARTIDX */
       case 0x277c8058:
         {static const char *text="unable to read start index for channel";
         static const char *msgnam="BAD_STARTIDX";
@@ -154,7 +154,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVNOT_TRIGGERED */
+/* DevNOT_TRIGGERED */
       case 0x277c8060:
         {static const char *text="device was not triggered,  check wires and triggering device";
         static const char *msgnam="NOT_TRIGGERED";
@@ -164,7 +164,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVFREQ_TO_HIGH */
+/* DevFREQ_TO_HIGH */
       case 0x277c8068:
         {static const char *text="the frequency is set to high for the requested number of channels";
         static const char *msgnam="FREQ_TO_HIGH";
@@ -174,7 +174,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVINVALID_NOC */
+/* DevINVALID_NOC */
       case 0x277c8070:
         {static const char *text="the NOC (number of channels) requested is greater than the physical number of channels";
         static const char *msgnam="INVALID_NOC";
@@ -184,7 +184,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVRANGE_MISMATCH */
+/* DevRANGE_MISMATCH */
       case 0x277c8078:
         {static const char *text="the range specified on the menu doesn't match the range setting on the device";
         static const char *msgnam="RANGE_MISMATCH";
@@ -194,7 +194,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAMACERR */
+/* DevCAMACERR */
       case 0x277c8080:
         {static const char *text="Error doing CAMAC IO";
         static const char *msgnam="CAMACERR";
@@ -204,7 +204,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_VERBS */
+/* DevBAD_VERBS */
       case 0x277c8088:
         {static const char *text="Error reading interpreter list (:VERBS)";
         static const char *msgnam="BAD_VERBS";
@@ -214,7 +214,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_COMMANDS */
+/* DevBAD_COMMANDS */
       case 0x277c8090:
         {static const char *text="Error reading command list";
         static const char *msgnam="BAD_COMMANDS";
@@ -224,7 +224,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_ADNR */
+/* DevCAM_ADNR */
       case 0x277c8098:
         {static const char *text="CAMAC: Address not recognized (2160)";
         static const char *msgnam="CAM_ADNR";
@@ -234,7 +234,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_ERR */
+/* DevCAM_ERR */
       case 0x277c80a0:
         {static const char *text="CAMAC: Error reported by crate controler";
         static const char *msgnam="CAM_ERR";
@@ -244,7 +244,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_LOSYNC */
+/* DevCAM_LOSYNC */
       case 0x277c80a8:
         {static const char *text="CAMAC: Lost Syncronization error";
         static const char *msgnam="CAM_LOSYNC";
@@ -254,7 +254,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_LPE */
+/* DevCAM_LPE */
       case 0x277c80b0:
         {static const char *text="CAMAC: Longitudinal Parity error";
         static const char *msgnam="CAM_LPE";
@@ -264,7 +264,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_TMO */
+/* DevCAM_TMO */
       case 0x277c80b8:
         {static const char *text="CAMAC: Highway time out error";
         static const char *msgnam="CAM_TMO";
@@ -274,7 +274,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_TPE */
+/* DevCAM_TPE */
       case 0x277c80c0:
         {static const char *text="CAMAC: Transverse Parity error";
         static const char *msgnam="CAM_TPE";
@@ -284,7 +284,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_STE */
+/* DevCAM_STE */
       case 0x277c80c8:
         {static const char *text="CAMAC: Serial Transmission error";
         static const char *msgnam="CAM_STE";
@@ -294,7 +294,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_DERR */
+/* DevCAM_DERR */
       case 0x277c80d0:
         {static const char *text="CAMAC: Delayed error from SCC";
         static const char *msgnam="CAM_DERR";
@@ -304,7 +304,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_SQ */
+/* DevCAM_SQ */
       case 0x277c80d8:
         {static const char *text="CAMAC: I/O completion with Q = 1";
         static const char *msgnam="CAM_SQ";
@@ -314,7 +314,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_NOSQ */
+/* DevCAM_NOSQ */
       case 0x277c80e0:
         {static const char *text="CAMAC: I/O completion with Q = 0";
         static const char *msgnam="CAM_NOSQ";
@@ -324,7 +324,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_SX */
+/* DevCAM_SX */
       case 0x277c80e8:
         {static const char *text="CAMAC: I/O completion with X = 1";
         static const char *msgnam="CAM_SX";
@@ -334,7 +334,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAM_NOSX */
+/* DevCAM_NOSX */
       case 0x277c80f0:
         {static const char *text="CAMAC: I/O completion with X = 0";
         static const char *msgnam="CAM_NOSX";
@@ -344,7 +344,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVINV_SETUP */
+/* DevINV_SETUP */
       case 0x277c80f8:
         {static const char *text="device was not properly set up";
         static const char *msgnam="INV_SETUP";
@@ -354,7 +354,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVPYDEVICE_NOT_FOUND */
+/* DevPYDEVICE_NOT_FOUND */
       case 0x277c8100:
         {static const char *text="Python device class not found.";
         static const char *msgnam="PYDEVICE_NOT_FOUND";
@@ -364,7 +364,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVPY_INTERFACE_LIBRARY_NOT_FOUND */
+/* DevPY_INTERFACE_LIBRARY_NOT_FOUND */
       case 0x277c8108:
         {static const char *text="The needed device hardware interface library could not be loaded.";
         static const char *msgnam="PY_INTERFACE_LIBRARY_NOT_FOUND";
@@ -374,7 +374,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVIO_STUCK */
+/* DevIO_STUCK */
       case 0x277c8110:
         {static const char *text="I/O to Device is stuck. Check network connection and board status.";
         static const char *msgnam="IO_STUCK";
@@ -384,7 +384,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVUNKOWN_STATE */
+/* DevUNKOWN_STATE */
       case 0x277c8118:
         {static const char *text="Device returned unrecognized state string";
         static const char *msgnam="UNKOWN_STATE";
@@ -394,7 +394,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVWRONG_TREE */
+/* DevWRONG_TREE */
       case 0x277c8120:
         {static const char *text="Attempt to digitizerinto different tree than it was armed with";
         static const char *msgnam="WRONG_TREE";
@@ -404,7 +404,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVWRONG_PATH */
+/* DevWRONG_PATH */
       case 0x277c8128:
         {static const char *text="Attempt to store digitizer into different path than it was armed with";
         static const char *msgnam="WRONG_PATH";
@@ -414,7 +414,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVWRONG_SHOT */
+/* DevWRONG_SHOT */
       case 0x277c8130:
         {static const char *text="Attempt to store digitizer into different shot than it was armed with";
         static const char *msgnam="WRONG_SHOT";
@@ -424,7 +424,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVOFFLINE */
+/* DevOFFLINE */
       case 0x277c8138:
         {static const char *text="Device is not on line.  Check network connection";
         static const char *msgnam="OFFLINE";
@@ -434,7 +434,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVTRIGGERED_NOT_STORED */
+/* DevTRIGGERED_NOT_STORED */
       case 0x277c8140:
         {static const char *text="Device was triggered but not stored.";
         static const char *msgnam="TRIGGERED_NOT_STORED";
@@ -444,7 +444,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVNO_NAME_SPECIFIED */
+/* DevNO_NAME_SPECIFIED */
       case 0x277c8148:
         {static const char *text="Device name must be specifed - pleas fill it in.";
         static const char *msgnam="NO_NAME_SPECIFIED";
@@ -454,7 +454,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_ACTIVE_CHAN */
+/* DevBAD_ACTIVE_CHAN */
       case 0x277c8150:
         {static const char *text="Active channels either not available or invalid";
         static const char *msgnam="BAD_ACTIVE_CHAN";
@@ -464,7 +464,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_TRIG_SRC */
+/* DevBAD_TRIG_SRC */
       case 0x277c8158:
         {static const char *text="Trigger source either not available or invalid";
         static const char *msgnam="BAD_TRIG_SRC";
@@ -474,7 +474,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_CLOCK_SRC */
+/* DevBAD_CLOCK_SRC */
       case 0x277c8160:
         {static const char *text="Clock source either not available or invalid";
         static const char *msgnam="BAD_CLOCK_SRC";
@@ -484,7 +484,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_PRE_TRIG */
+/* DevBAD_PRE_TRIG */
       case 0x277c8168:
         {static const char *text="Pre trigger samples either not available or invalid";
         static const char *msgnam="BAD_PRE_TRIG";
@@ -494,7 +494,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_POST_TRIG */
+/* DevBAD_POST_TRIG */
       case 0x277c8170:
         {static const char *text="Clock source either not available or invalid";
         static const char *msgnam="BAD_POST_TRIG";
@@ -504,7 +504,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_CLOCK_FREQ */
+/* DevBAD_CLOCK_FREQ */
       case 0x277c8178:
         {static const char *text="Clock frequency either not available or invalid";
         static const char *msgnam="BAD_CLOCK_FREQ";
@@ -514,7 +514,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVTRIGGER_FAILED */
+/* DevTRIGGER_FAILED */
       case 0x277c8180:
         {static const char *text="Device trigger method failed";
         static const char *msgnam="TRIGGER_FAILED";
@@ -524,7 +524,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVERROR_READING_CHANNEL */
+/* DevERROR_READING_CHANNEL */
       case 0x277c8188:
         {static const char *text="Error reading data for channel from device";
         static const char *msgnam="ERROR_READING_CHANNEL";
@@ -534,7 +534,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVERROR_DOING_INIT */
+/* DevERROR_DOING_INIT */
       case 0x277c8190:
         {static const char *text="Error sending ARM command to device";
         static const char *msgnam="ERROR_DOING_INIT";
@@ -544,7 +544,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONNORMAL */
+/* ReticonNORMAL */
       case 0x277c8198:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -554,7 +554,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONBAD_FRAMES */
+/* ReticonBAD_FRAMES */
       case 0x277c81a0:
         {static const char *text="frame count must be less than or equal to 2048";
         static const char *msgnam="BAD_FRAMES";
@@ -564,7 +564,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONBAD_FRAME_SELECT */
+/* ReticonBAD_FRAME_SELECT */
       case 0x277c81a8:
         {static const char *text="frame interval must be 1,2,4,8,16,32 or 64";
         static const char *msgnam="BAD_FRAME_SELECT";
@@ -574,7 +574,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONBAD_NUM_STATES */
+/* ReticonBAD_NUM_STATES */
       case 0x277c81b0:
         {static const char *text="number of states must be between 1 and 4";
         static const char *msgnam="BAD_NUM_STATES";
@@ -584,7 +584,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONBAD_PERIOD */
+/* ReticonBAD_PERIOD */
       case 0x277c81b8:
         {static const char *text="period must be .5,1,2,4,8,16,32,64,128,256,512,1024,2048,4096 or 8192 msec";
         static const char *msgnam="BAD_PERIOD";
@@ -594,7 +594,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONBAD_PIXEL_SELECT */
+/* ReticonBAD_PIXEL_SELECT */
       case 0x277c81c0:
         {static const char *text="pixel selection must be an array of 256 boolean values";
         static const char *msgnam="BAD_PIXEL_SELECT";
@@ -604,7 +604,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONDATA_CORRUPTED */
+/* ReticonDATA_CORRUPTED */
       case 0x277c81c8:
         {static const char *text="data in memory is corrupted or framing error detected, no data stored";
         static const char *msgnam="DATA_CORRUPTED";
@@ -614,7 +614,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* RETICONTOO_MANY_FRAMES */
+/* ReticonTOO_MANY_FRAMES */
       case 0x277c81d0:
         {static const char *text="over 8192 frame start indicators in data read from memory";
         static const char *msgnam="TOO_MANY_FRAMES";
@@ -654,7 +654,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGINVCLKFRQ */
+/* TimingINVCLKFRQ */
       case 0x277c84b8:
         {static const char *text="Invalid clock frequency";
         static const char *msgnam="INVCLKFRQ";
@@ -664,7 +664,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGINVDELDUR */
+/* TimingINVDELDUR */
       case 0x277c84c0:
         {static const char *text="Invalid pulse delay or duration, must be less than 655 seconds";
         static const char *msgnam="INVDELDUR";
@@ -674,7 +674,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGINVOUTCTR */
+/* TimingINVOUTCTR */
       case 0x277c84c8:
         {static const char *text="Invalid output mode selected";
         static const char *msgnam="INVOUTCTR";
@@ -684,7 +684,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGINVPSEUDODEV */
+/* TimingINVPSEUDODEV */
       case 0x277c84d0:
         {static const char *text="Invalid pseudo device attached to this decoder channel";
         static const char *msgnam="INVPSEUDODEV";
@@ -694,7 +694,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGINVTRGMOD */
+/* TimingINVTRGMOD */
       case 0x277c84d8:
         {static const char *text="Invalid trigger mode selected";
         static const char *msgnam="INVTRGMOD";
@@ -704,7 +704,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGNOPSEUDODEV */
+/* TimingNOPSEUDODEV */
       case 0x277c84e0:
         {static const char *text="No Pseudo device attached to this channel ... disabling";
         static const char *msgnam="NOPSEUDODEV";
@@ -714,7 +714,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TIMINGTOO_MANY_EVENTS */
+/* TimingTOO_MANY_EVENTS */
       case 0x277c84e8:
         {static const char *text="More than 16 events used by this decoder";
         static const char *msgnam="TOO_MANY_EVENTS";
@@ -754,7 +754,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERANORMAL */
+/* FeraNORMAL */
       case 0x277c87d8:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -764,7 +764,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERADIGNOTSTRARRAY */
+/* FeraDIGNOTSTRARRAY */
       case 0x277c87e0:
         {static const char *text="The digitizer names must be an array of strings";
         static const char *msgnam="DIGNOTSTRARRAY";
@@ -774,7 +774,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERANODIG */
+/* FeraNODIG */
       case 0x277c87e8:
         {static const char *text="The digitizer names must be specified";
         static const char *msgnam="NODIG";
@@ -784,7 +784,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERAMEMNOTSTRARRAY */
+/* FeraMEMNOTSTRARRAY */
       case 0x277c87f0:
         {static const char *text="The memory names must be an array of strings";
         static const char *msgnam="MEMNOTSTRARRAY";
@@ -794,7 +794,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERANOMEM */
+/* FeraNOMEM */
       case 0x277c87f8:
         {static const char *text="The memory names must be specified";
         static const char *msgnam="NOMEM";
@@ -804,7 +804,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERAPHASE_LOST */
+/* FeraPHASE_LOST */
       case 0x277c8800:
         {static const char *text="Data phase lost No FERA data stored";
         static const char *msgnam="PHASE_LOST";
@@ -814,7 +814,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERACONFUSED */
+/* FeraCONFUSED */
       case 0x277c8808:
         {static const char *text="Fera Data inconsitant.  Data for this point zered.";
         static const char *msgnam="CONFUSED";
@@ -824,7 +824,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERAOVER_RUN */
+/* FeraOVER_RUN */
       case 0x277c8810:
         {static const char *text="Possible FERA memory overrun, too many triggers.";
         static const char *msgnam="OVER_RUN";
@@ -834,7 +834,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* FERAOVERFLOW */
+/* FeraOVERFLOW */
       case 0x277c8818:
         {static const char *text="Possible FERA data saturated.  Data point zeroed";
         static const char *msgnam="OVERFLOW";
@@ -844,7 +844,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HM650NORMAL */
+/* Hm650NORMAL */
       case 0x277c8968:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -854,7 +854,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HM650DLYCHNG */
+/* Hm650DLYCHNG */
       case 0x277c8970:
         {static const char *text="HM650 requested delay can not be processed by hardware.";
         static const char *msgnam="DLYCHNG";
@@ -864,7 +864,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV4032NORMAL */
+/* Hv4032NORMAL */
       case 0x277c8af8:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -874,7 +874,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV4032WRONG_POD_TYPE */
+/* Hv4032WRONG_POD_TYPE */
       case 0x277c8b00:
         {static const char *text="HV40321A n and p can only be used with the HV4032 device";
         static const char *msgnam="WRONG_POD_TYPE";
@@ -884,7 +884,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV1440NORMAL */
+/* Hv1440NORMAL */
       case 0x277c8c88:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -894,7 +894,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV1440WRONG_POD_TYPE */
+/* Hv1440WRONG_POD_TYPE */
       case 0x277c8c90:
         {static const char *text="HV1443 can only be used with the HV1440 device";
         static const char *msgnam="WRONG_POD_TYPE";
@@ -904,7 +904,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV1440BAD_FRAME */
+/* Hv1440BAD_FRAME */
       case 0x277c8c98:
         {static const char *text="HV1440 could not read the frame";
         static const char *msgnam="BAD_FRAME";
@@ -914,7 +914,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV1440BAD_RANGE */
+/* Hv1440BAD_RANGE */
       case 0x277c8ca0:
         {static const char *text="HV1440 could not read the range";
         static const char *msgnam="BAD_RANGE";
@@ -924,7 +924,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV1440OUTRNG */
+/* Hv1440OUTRNG */
       case 0x277c8ca8:
         {static const char *text="HV1440 out of range";
         static const char *msgnam="OUTRNG";
@@ -934,7 +934,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* HV1440STUCK */
+/* Hv1440STUCK */
       case 0x277c8cb0:
         {static const char *text="HV1440 not responding with Q";
         static const char *msgnam="STUCK";
@@ -944,7 +944,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* JOERGERBAD_PRE_TRIGGER */
+/* JoergerBAD_PRE_TRIGGER */
       case 0x277c8e18:
         {static const char *text="bad pretrigger specified, specify a value of 0,1,2,3,4,5,6 or 7";
         static const char *msgnam="BAD_PRE_TRIGGER";
@@ -954,7 +954,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* JOERGERBAD_ACT_MEMORY */
+/* JoergerBAD_ACT_MEMORY */
       case 0x277c8e20:
         {static const char *text="bad active memory specified, specify a value of 1,2,3,4,5,6,7 or 8";
         static const char *msgnam="BAD_ACT_MEMORY";
@@ -964,7 +964,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* JOERGERBAD_GAIN */
+/* JoergerBAD_GAIN */
       case 0x277c8e28:
         {static const char *text="bad gain specified, specify a value of 1,2,4 or 8";
         static const char *msgnam="BAD_GAIN";
@@ -974,7 +974,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MBAD_WAVE_LENGTH */
+/* U_of_mBAD_WAVE_LENGTH */
       case 0x277c8fa8:
         {static const char *text="bad wave length specified, specify value between 0 and 13000";
         static const char *msgnam="BAD_WAVE_LENGTH";
@@ -984,7 +984,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MBAD_SLIT_WIDTH */
+/* U_of_mBAD_SLIT_WIDTH */
       case 0x277c8fb0:
         {static const char *text="bad slit width specified, specify value between 0 and 500";
         static const char *msgnam="BAD_SLIT_WIDTH";
@@ -994,7 +994,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MBAD_NUM_SPECTRA */
+/* U_of_mBAD_NUM_SPECTRA */
       case 0x277c8fb8:
         {static const char *text="bad number of spectra specified, specify value between 1 and 100";
         static const char *msgnam="BAD_NUM_SPECTRA";
@@ -1004,7 +1004,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MBAD_GRATING */
+/* U_of_mBAD_GRATING */
       case 0x277c8fc0:
         {static const char *text="bad grating type specified, specify value between 1 and 5";
         static const char *msgnam="BAD_GRATING";
@@ -1014,7 +1014,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MBAD_EXPOSURE */
+/* U_of_mBAD_EXPOSURE */
       case 0x277c8fc8:
         {static const char *text="bad exposure time specified, specify value between 30 and 3000";
         static const char *msgnam="BAD_EXPOSURE";
@@ -1024,7 +1024,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MBAD_FILTER */
+/* U_of_mBAD_FILTER */
       case 0x277c8fd0:
         {static const char *text="bad neutral density filter specified, specify value between 0 and 5";
         static const char *msgnam="BAD_FILTER";
@@ -1034,7 +1034,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MGO_FILE_ERROR */
+/* U_of_mGO_FILE_ERROR */
       case 0x277c8fd8:
         {static const char *text="error creating new go file";
         static const char *msgnam="GO_FILE_ERROR";
@@ -1044,7 +1044,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* U_OF_MDATA_FILE_ERROR */
+/* U_of_mDATA_FILE_ERROR */
       case 0x277c8fe0:
         {static const char *text="error opening datafile";
         static const char *msgnam="DATA_FILE_ERROR";
@@ -1054,7 +1054,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* IDLNORMAL */
+/* IdlNORMAL */
       case 0x277c9138:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -1064,7 +1064,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* IDLERROR */
+/* IdlERROR */
       case 0x277c9140:
         {static const char *text="IDL returned a non zero error code";
         static const char *msgnam="ERROR";
@@ -1074,7 +1074,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* B5910ABAD_CHAN */
+/* B5910aBAD_CHAN */
       case 0x277c92c8:
         {static const char *text="error evaluating data for channel !SL";
         static const char *msgnam="BAD_CHAN";
@@ -1084,7 +1084,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* B5910ABAD_CLOCK */
+/* B5910aBAD_CLOCK */
       case 0x277c92d0:
         {static const char *text="invalid internal clock range specified";
         static const char *msgnam="BAD_CLOCK";
@@ -1094,7 +1094,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* B5910ABAD_ITERATIONS */
+/* B5910aBAD_ITERATIONS */
       case 0x277c92d8:
         {static const char *text="invalid number of iterations specified";
         static const char *msgnam="BAD_ITERATIONS";
@@ -1104,7 +1104,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* B5910ABAD_NOC */
+/* B5910aBAD_NOC */
       case 0x277c92e0:
         {static const char *text="invalid number of active channels specified";
         static const char *msgnam="BAD_NOC";
@@ -1114,7 +1114,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* B5910ABAD_SAMPS */
+/* B5910aBAD_SAMPS */
       case 0x277c92e8:
         {static const char *text="number of samples specificed invalid";
         static const char *msgnam="BAD_SAMPS";
@@ -1154,7 +1154,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16NORMAL */
+/* Tr16NORMAL */
       case 0x277c95e8:
         {static const char *text="successful completion";
         static const char *msgnam="NORMAL";
@@ -1164,7 +1164,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_MEMSIZE */
+/* Tr16BAD_MEMSIZE */
       case 0x277c95f0:
         {static const char *text="Memory size must be in 128K, 256K, 512k, 1024K";
         static const char *msgnam="BAD_MEMSIZE";
@@ -1174,7 +1174,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_ACTIVEMEM */
+/* Tr16BAD_ACTIVEMEM */
       case 0x277c95f8:
         {static const char *text="Active Mem must be power of 2 8K to 1024K";
         static const char *msgnam="BAD_ACTIVEMEM";
@@ -1184,7 +1184,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_ACTIVECHAN */
+/* Tr16BAD_ACTIVECHAN */
       case 0x277c9600:
         {static const char *text="Active channels must be in 1,2,4,8,16";
         static const char *msgnam="BAD_ACTIVECHAN";
@@ -1194,7 +1194,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_PTS */
+/* Tr16BAD_PTS */
       case 0x277c9608:
         {static const char *text="PTS must be power of 2 32 to 1024K";
         static const char *msgnam="BAD_PTS";
@@ -1204,7 +1204,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_FREQUENCY */
+/* Tr16BAD_FREQUENCY */
       case 0x277c9610:
         {static const char *text="Invalid clock frequency";
         static const char *msgnam="BAD_FREQUENCY";
@@ -1214,7 +1214,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_MASTER */
+/* Tr16BAD_MASTER */
       case 0x277c9618:
         {static const char *text="Master must be 0 or 1";
         static const char *msgnam="BAD_MASTER";
@@ -1224,7 +1224,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* TR16BAD_GAIN */
+/* Tr16BAD_GAIN */
       case 0x277c9620:
         {static const char *text="Gain must be 1, 2, 4, or 8";
         static const char *msgnam="BAD_GAIN";
@@ -1404,7 +1404,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* J_DACOUTRNG */
+/* J_dacOUTRNG */
       case 0x277c9a98:
         {static const char *text="Joerger DAC Channels out of range.  Bad chans code !XW";
         static const char *msgnam="OUTRNG";
@@ -1414,7 +1414,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* INCAABAD_ACTIVE_CHANS */
+/* IncaaBAD_ACTIVE_CHANS */
       case 0x277c9c28:
         {static const char *text="bad active channels selection";
         static const char *msgnam="BAD_ACTIVE_CHANS";
@@ -1424,7 +1424,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* INCAABAD_MASTER */
+/* IncaaBAD_MASTER */
       case 0x277c9c30:
         {static const char *text="bad master selection, must be 0 or 1";
         static const char *msgnam="BAD_MASTER";
@@ -1434,7 +1434,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* INCAABAD_EXT_1MHZ */
+/* IncaaBAD_EXT_1MHZ */
       case 0x277c9c38:
         {static const char *text="bad ext 1mhz selection, must be 0 or 1";
         static const char *msgnam="BAD_EXT_1MHZ";
@@ -1444,7 +1444,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* INCAABAD_PTSC */
+/* IncaaBAD_PTSC */
       case 0x277c9c40:
         {static const char *text="bad PTSC setting";
         static const char *msgnam="BAD_PTSC";
@@ -1524,7 +1524,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* MPBBADTIME */
+/* MpbBADTIME */
       case 0x277c9f48:
         {static const char *text="Could not read time";
         static const char *msgnam="BADTIME";
@@ -1534,7 +1534,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* MPBBADFREQ */
+/* MpbBADFREQ */
       case 0x277c9f50:
         {static const char *text="Could not read frequency";
         static const char *msgnam="BADFREQ";
@@ -1624,7 +1624,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* J_TR612BAD_ACTMEM */
+/* J_tr612BAD_ACTMEM */
       case 0x277ca2b8:
         {static const char *text="ACTMEM value out of range, must be 0-7 where 0=1/8th and 7 = all";
         static const char *msgnam="BAD_ACTMEM";
@@ -1634,7 +1634,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* J_TR612BAD_PRETRIG */
+/* J_tr612BAD_PRETRIG */
       case 0x277ca2c0:
         {static const char *text="PRETRIG value out of range, must be 0-7 where 0 = none and 7 = 7/8 pretrigger samples";
         static const char *msgnam="BAD_PRETRIG";
@@ -1644,7 +1644,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* J_TR612BAD_MODE */
+/* J_tr612BAD_MODE */
       case 0x277ca2c8:
         {static const char *text="MODE value out of range, must be 0 (for normal) or 1 (for burst mode)";
         static const char *msgnam="BAD_MODE";
@@ -1654,7 +1654,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* J_TR612BAD_FREQUENCY */
+/* J_tr612BAD_FREQUENCY */
       case 0x277ca2d0:
         {static const char *text="FREQUENCY value out of range, must be 0-4 where 0=3MHz,1=2MHz,2=1MHz,3=100KHz,4=external";
         static const char *msgnam="BAD_FREQUENCY";
@@ -1734,7 +1734,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DSP2904CHANNEL_READ_ERROR */
+/* Dsp2904CHANNEL_READ_ERROR */
       case 0x277ca4e8:
         {static const char *text="Error reading channel";
         static const char *msgnam="CHANNEL_READ_ERROR";
@@ -1744,7 +1744,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* PYUNHANDLED_EXCEPTION */
+/* PyUNHANDLED_EXCEPTION */
       case 0x277ca538:
         {static const char *text="Python device raised and exception, see log files for more details";
         static const char *msgnam="UNHANDLED_EXCEPTION";
@@ -1754,7 +1754,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DT196BNO_SAMPLES */
+/* Dt196bNO_SAMPLES */
       case 0x277ca588:
         {static const char *text="Module did not acquire any samples";
         static const char *msgnam="NO_SAMPLES";
@@ -1764,7 +1764,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCANNOT_LOAD_SETTINGS */
+/* DevCANNOT_LOAD_SETTINGS */
       case 0x277ca5a0:
         {static const char *text="Error loading settings from XML";
         static const char *msgnam="CANNOT_LOAD_SETTINGS";
@@ -1774,7 +1774,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCANNOT_GET_BOARD_STATE */
+/* DevCANNOT_GET_BOARD_STATE */
       case 0x277ca5a8:
         {static const char *text="Cannot retrieve state of daq board";
         static const char *msgnam="CANNOT_GET_BOARD_STATE";
@@ -1784,7 +1784,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVACQCMD_FAILED */
+/* DevACQCMD_FAILED */
       case 0x277ca5b0:
         {static const char *text="Error executing acqcmd on daq board";
         static const char *msgnam="ACQCMD_FAILED";
@@ -1794,7 +1794,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVACQ2SH_FAILED */
+/* DevACQ2SH_FAILED */
       case 0x277ca5b8:
         {static const char *text="Error executing acq2sh command on daq board";
         static const char *msgnam="ACQ2SH_FAILED";
@@ -1804,7 +1804,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVBAD_PARAMETER */
+/* DevBAD_PARAMETER */
       case 0x277ca5c0:
         {static const char *text="Invalid parameter specified for device";
         static const char *msgnam="BAD_PARAMETER";
@@ -1814,7 +1814,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCOMM_ERROR */
+/* DevCOMM_ERROR */
       case 0x277ca5c8:
         {static const char *text="Error communicating with device";
         static const char *msgnam="COMM_ERROR";
@@ -1824,7 +1824,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVCAMERA_NOT_FOUND */
+/* DevCAMERA_NOT_FOUND */
       case 0x277ca5d0:
         {static const char *text="Could not find specified camera on the network";
         static const char *msgnam="CAMERA_NOT_FOUND";
@@ -1834,7 +1834,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
-/* DEVNOT_A_PYDEVICE */
+/* DevNOT_A_PYDEVICE */
       case 0x277ca5d8:
         {static const char *text="Device is not a python device.";
         static const char *msgnam="NOT_A_PYDEVICE";
@@ -1848,7 +1848,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18028:
         {static const char *text="Node is already OFF";
         static const char *msgnam="ALREADY_OFF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1858,7 +1858,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18030:
         {static const char *text="Node is already ON";
         static const char *msgnam="ALREADY_ON";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1868,7 +1868,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18038:
         {static const char *text="Tree is already OPEN";
         static const char *msgnam="ALREADY_OPEN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1878,7 +1878,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18088:
         {static const char *text="Node is already in the tree";
         static const char *msgnam="ALREADY_THERE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1888,7 +1888,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180b8:
         {static const char *text="Data corrupted: cannot read record";
         static const char *msgnam="BADRECORD";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1898,7 +1898,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18098:
         {static const char *text="Both this node and its parent are off";
         static const char *msgnam="BOTH_OFF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1908,7 +1908,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18110:
         {static const char *text="Output buffer overflow";
         static const char *msgnam="BUFFEROVF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1918,7 +1918,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18120:
         {static const char *text="Current conglomerate is full";
         static const char *msgnam="CONGLOMFULL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1928,7 +1928,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18128:
         {static const char *text="Current conglomerate is not yet full";
         static const char *msgnam="CONGLOM_NOT_FULL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1938,7 +1938,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18960:
         {static const char *text="Operation continuing: note following error";
         static const char *msgnam="CONTINUING";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1948,7 +1948,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180c8:
         {static const char *text="Tag name already in use";
         static const char *msgnam="DUPTAG";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1958,7 +1958,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18190:
         {static const char *text="Tree file open for edit: operation not permitted";
         static const char *msgnam="EDITTING";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1968,7 +1968,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18108:
         {static const char *text="Invalid item code or part number specified";
         static const char *msgnam="ILLEGAL_ITEM";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1978,7 +1978,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180d0:
         {static const char *text="Illegal page count, error mapping tree file";
         static const char *msgnam="ILLPAGCNT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1988,7 +1988,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18138:
         {static const char *text="Invalid data fmt: only CLASS_S can have data in NCI";
         static const char *msgnam="INVDFFCLASS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -1998,7 +1998,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18188:
         {static const char *text="Attempt to store datatype which conflicts with the designated usage of this node";
         static const char *msgnam="INVDTPUSG";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2008,7 +2008,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18100:
         {static const char *text="Invalid tree pathname specified";
         static const char *msgnam="INVPATH";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2018,7 +2018,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18140:
         {static const char *text="Record type invalid for requested operation";
         static const char *msgnam="INVRECTYP";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2028,7 +2028,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180c0:
         {static const char *text="Invalid tree identification structure";
         static const char *msgnam="INVTREE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2038,7 +2038,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180d8:
         {static const char *text="Too many files open for edit";
         static const char *msgnam="MAXOPENEDIT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2048,7 +2048,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18018:
         {static const char *text="New tree created";
         static const char *msgnam="NEW";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2058,7 +2058,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18060:
         {static const char *text="No More Nodes";
         static const char *msgnam="NMN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2068,7 +2068,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18068:
         {static const char *text="No More Tags";
         static const char *msgnam="NMT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2078,7 +2078,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18070:
         {static const char *text="Node Not Found";
         static const char *msgnam="NNF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2088,7 +2088,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180e0:
         {static const char *text="No data available for this node";
         static const char *msgnam="NODATA";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2098,7 +2098,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18148:
         {static const char *text="Node name too long (12 chars max)";
         static const char *msgnam="NODNAMLEN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2108,7 +2108,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180f0:
         {static const char *text="Tree file is not open for edit";
         static const char *msgnam="NOEDIT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2118,7 +2118,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd181a8:
         {static const char *text="Experiment pathname (xxx_path) not defined";
         static const char *msgnam="NOLOG";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2128,7 +2128,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180b0:
         {static const char *text="Method not available for this object";
         static const char *msgnam="NOMETHOD";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2138,7 +2138,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18180:
         {static const char *text="Write-once node: overwrite not permitted";
         static const char *msgnam="NOOVERWRITE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2148,7 +2148,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18008:
         {static const char *text="Normal successful completion";
         static const char *msgnam="NORMAL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2158,7 +2158,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18020:
         {static const char *text="Main tree opened but not all subtrees found/or connected";
         static const char *msgnam="NOTALLSUBS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2168,7 +2168,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180f8:
         {static const char *text="Node must be childless to become subtree reference";
         static const char *msgnam="NOTCHILDLESS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2178,7 +2178,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd181c0:
         {static const char *text="Tree being opened was not in the list";
         static const char *msgnam="NOT_IN_LIST";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2188,7 +2188,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18170:
         {static const char *text="Subtree reference can not have members";
         static const char *msgnam="NOTMEMBERLESS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2198,7 +2198,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180e8:
         {static const char *text="No tree file currently open";
         static const char *msgnam="NOTOPEN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2208,7 +2208,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18178:
         {static const char *text="Subtree reference cannot be a member";
         static const char *msgnam="NOTSON";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2218,7 +2218,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18160:
         {static const char *text="Head node of conglomerate does not contain a DTYPE_CONGLOM record";
         static const char *msgnam="NOT_CONGLOM";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2228,7 +2228,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180a8:
         {static const char *text="Tree not currently open";
         static const char *msgnam="NOT_OPEN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2238,7 +2238,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18198:
         {static const char *text="Data for this node can not be written into the MODEL file";
         static const char *msgnam="NOWRITEMODEL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2248,7 +2248,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd181a0:
         {static const char *text="Data for this node can not be written into the SHOT file";
         static const char *msgnam="NOWRITESHOT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2258,7 +2258,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18040:
         {static const char *text="There is no active search to end";
         static const char *msgnam="NO_CONTEXT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2268,7 +2268,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd180a0:
         {static const char *text="Node is OFF";
         static const char *msgnam="OFF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2278,7 +2278,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18048:
         {static const char *text="Node is ON";
         static const char *msgnam="ON";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2288,7 +2288,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18050:
         {static const char *text="Tree is OPEN (no edit)";
         static const char *msgnam="OPEN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2298,7 +2298,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18058:
         {static const char *text="Tree is OPEN for edit";
         static const char *msgnam="OPEN_EDIT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2308,7 +2308,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18090:
         {static const char *text="Parent of this node is OFF";
         static const char *msgnam="PARENT_OFF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2318,7 +2318,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd181b8:
         {static const char *text="Error reading record for node";
         static const char *msgnam="READERR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2328,7 +2328,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd181b0:
         {static const char *text="Tree was opened with readonly access";
         static const char *msgnam="READONLY";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2338,7 +2338,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18010:
         {static const char *text="Indirect reference successfully resolved";
         static const char *msgnam="RESOLVED";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2348,7 +2348,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18640:
         {static const char *text="Operation successful";
         static const char *msgnam="SUCCESS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2358,7 +2358,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18150:
         {static const char *text="Tagname too long (max 24 chars)";
         static const char *msgnam="TAGNAMLEN";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2368,7 +2368,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18078:
         {static const char *text="Tag Not Found";
         static const char *msgnam="TNF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2378,7 +2378,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18080:
         {static const char *text="Tree Not Found";
         static const char *msgnam="TREENF";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2388,7 +2388,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18130:
         {static const char *text="Not an indirect node reference: No action taken";
         static const char *msgnam="UNRESOLVED";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2398,7 +2398,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18118:
         {static const char *text="Unsupported descriptor class";
         static const char *msgnam="UNSPRTCLASS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2408,7 +2408,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18168:
         {static const char *text="Complex data types not supported as members of arrays";
         static const char *msgnam="UNSUPARRDTYPE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2418,7 +2418,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18158:
         {static const char *text="Tree has been modified:  write or quit first";
         static const char *msgnam="WRITEFIRST";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2428,7 +2428,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fa0:
         {static const char *text="Operation NOT successful";
         static const char *msgnam="FAILURE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2438,7 +2438,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fb0:
         {static const char *text="Error locking file, perhaps NFSLOCKING not enabled on this system";
         static const char *msgnam="LOCK_FAILURE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2448,7 +2448,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fa8:
         {static const char *text="File or Directory Not Found";
         static const char *msgnam="FILE_NOT_FOUND";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2458,7 +2458,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18c80:
         {static const char *text="User canceled operation";
         static const char *msgnam="CANCEL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2468,7 +2468,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fb8:
         {static const char *text="No segments exist in this node";
         static const char *msgnam="NOSEGMENTS";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2478,7 +2478,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fc0:
         {static const char *text="Invalid datatype for data segment";
         static const char *msgnam="INVDTYPE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2488,7 +2488,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fc8:
         {static const char *text="Invalid shape for this data segment";
         static const char *msgnam="INVSHAPE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2498,7 +2498,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fd8:
         {static const char *text="Invalid shot number - must be -1 (model), 0 (current), or Positive";
         static const char *msgnam="INVSHOT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2508,7 +2508,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18fe8:
         {static const char *text="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores";
         static const char *msgnam="INVTAG";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2518,7 +2518,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18ff0:
         {static const char *text="No 'treename'_path environment variable defined. Cannot locate tree files.";
         static const char *msgnam="NOPATH";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2528,7 +2528,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd18ff8:
         {static const char *text="Error reading in tree file contents.";
         static const char *msgnam="TREEFILEREADERR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2538,7 +2538,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19000:
         {static const char *text="Memory allocation error.";
         static const char *msgnam="MEMERR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2548,7 +2548,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19008:
         {static const char *text="No current shot number set for this tree.";
         static const char *msgnam="NOCURRENT";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2558,7 +2558,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19010:
         {static const char *text="Error opening file for read-write.";
         static const char *msgnam="FOPENW";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2568,7 +2568,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19018:
         {static const char *text="Error opening file read-only.";
         static const char *msgnam="FOPENR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2578,7 +2578,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19020:
         {static const char *text="Error creating new file.";
         static const char *msgnam="FCREATE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2588,7 +2588,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19028:
         {static const char *text="Error connecting to remote server.";
         static const char *msgnam="CONNECTFAIL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2598,7 +2598,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19030:
         {static const char *text="Error writing node characterisitics to file.";
         static const char *msgnam="NCIWRITE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2608,7 +2608,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19038:
         {static const char *text="Error deleting file.";
         static const char *msgnam="DELFAIL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2618,7 +2618,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19040:
         {static const char *text="Error renaming file.";
         static const char *msgnam="RENFAIL";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2628,7 +2628,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19048:
         {static const char *text="Empty string provided.";
         static const char *msgnam="EMPTY";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2638,7 +2638,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19050:
         {static const char *text="Invalid node search string.";
         static const char *msgnam="PARSEERR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2648,7 +2648,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19058:
         {static const char *text="Error reading node characteristics from file.";
         static const char *msgnam="NCIREAD";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2658,7 +2658,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19060:
         {static const char *text="No version available.";
         static const char *msgnam="NOVERSION";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2668,7 +2668,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19068:
         {static const char *text="Error reading from datafile.";
         static const char *msgnam="DFREAD";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2678,7 +2678,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19070:
         {static const char *text="Error closing temporary tree file.";
         static const char *msgnam="CLOSEERR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2688,7 +2688,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19078:
         {static const char *text="Error replacing original treefile with new one.";
         static const char *msgnam="MOVEERROR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2698,7 +2698,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19080:
         {static const char *text="Error reopening new treefile for write access.";
         static const char *msgnam="OPENEDITERR";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2708,7 +2708,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd19088:
         {static const char *text="Tree is marked as readonly. No write operations permitted.";
         static const char *msgnam="READONLY_TREE";
-        *fac_out = FAC_Tree;
+        *fac_out = FAC_TREE;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2718,7 +2718,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x158210:
         {static const char *text="Insufficient virtual memory";
         static const char *msgnam="INSVIRMEM";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2728,7 +2728,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x158230:
         {static const char *text="Invalid argument";
         static const char *msgnam="INVARG";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2738,7 +2738,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x158220:
         {static const char *text="Invalid string descriptor";
         static const char *msgnam="INVSTRDES";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2748,7 +2748,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x1582f8:
         {static const char *text="Key not found";
         static const char *msgnam="KEYNOTFOU";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2758,7 +2758,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x158270:
         {static const char *text="Entity not found";
         static const char *msgnam="NOTFOU";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2768,7 +2768,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x1582e8:
         {static const char *text="Queue was empty";
         static const char *msgnam="QUEWASEMP";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2778,7 +2778,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x158010:
         {static const char *text="String truncated";
         static const char *msgnam="STRTRU";
-        *fac_out = FAC_Lib;
+        *fac_out = FAC_LIB;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2788,7 +2788,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x248418:
         {static const char *text="Strings match";
         static const char *msgnam="MATCH";
-        *fac_out = FAC_Str;
+        *fac_out = FAC_STR;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2798,7 +2798,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x248208:
         {static const char *text="Strings do not match";
         static const char *msgnam="NOMATCH";
-        *fac_out = FAC_Str;
+        *fac_out = FAC_STR;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2808,7 +2808,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x248218:
         {static const char *text="Not enough delimited characters";
         static const char *msgnam="NOELEM";
-        *fac_out = FAC_Str;
+        *fac_out = FAC_STR;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2818,7 +2818,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x248210:
         {static const char *text="Not enough delimited characters";
         static const char *msgnam="INVDELIM";
-        *fac_out = FAC_Str;
+        *fac_out = FAC_STR;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2828,7 +2828,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x248070:
         {static const char *text="String too long";
         static const char *msgnam="STRTOOLON";
-        *fac_out = FAC_Str;
+        *fac_out = FAC_STR;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2838,7 +2838,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x10000:
         {static const char *text="Warning";
         static const char *msgnam="WARNING";
-        *fac_out = FAC_MDSplus;
+        *fac_out = FAC_MDSPLUS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2848,7 +2848,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x10008:
         {static const char *text="Success";
         static const char *msgnam="SUCCESS";
-        *fac_out = FAC_MDSplus;
+        *fac_out = FAC_MDSPLUS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2858,7 +2858,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x10010:
         {static const char *text="Error";
         static const char *msgnam="ERROR";
-        *fac_out = FAC_MDSplus;
+        *fac_out = FAC_MDSPLUS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2868,7 +2868,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x10020:
         {static const char *text="Fatal";
         static const char *msgnam="FATAL";
-        *fac_out = FAC_MDSplus;
+        *fac_out = FAC_MDSPLUS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2878,7 +2878,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x0:
         {static const char *text="Success";
         static const char *msgnam="SUCCESS";
-        *fac_out = FAC_Ss;
+        *fac_out = FAC_SS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2888,7 +2888,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x478:
         {static const char *text="Integer overflow";
         static const char *msgnam="INTOVF";
-        *fac_out = FAC_Ss;
+        *fac_out = FAC_SS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2898,7 +2898,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case -0x8:
         {static const char *text="This status is meant for internal use only, you should never have seen this message.";
         static const char *msgnam="INTERNAL";
-        *fac_out = FAC_Ss;
+        *fac_out = FAC_SS;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2908,7 +2908,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38008:
         {static const char *text="BREAK was not in DO FOR SWITCH or WHILE";
         static const char *msgnam="BREAK";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2918,7 +2918,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38010:
         {static const char *text="CASE was not in SWITCH statement";
         static const char *msgnam="CASE";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2928,7 +2928,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38018:
         {static const char *text="CONTINUE was not in DO FOR or WHILE";
         static const char *msgnam="CONTINUE";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2938,7 +2938,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38020:
         {static const char *text="Some characters were unused, bad number maybe";
         static const char *msgnam="EXTRANEOUS";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2948,7 +2948,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38028:
         {static const char *text="Extraneous RETURN statement, not from a FUN";
         static const char *msgnam="RETURN";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2958,7 +2958,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38030:
         {static const char *text="Program requested abort";
         static const char *msgnam="ABORT";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2968,7 +2968,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38038:
         {static const char *text="Index or subscript is too small or too big";
         static const char *msgnam="BAD_INDEX";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2978,7 +2978,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38040:
         {static const char *text="Bad punctuation, could not compile the text";
         static const char *msgnam="BOMB";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2988,7 +2988,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38048:
         {static const char *text="Too many arguments for function, watch commas";
         static const char *msgnam="EXTRA_ARG";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -2998,7 +2998,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38050:
         {static const char *text="GOTO target label not found";
         static const char *msgnam="GOTO";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3008,7 +3008,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38058:
         {static const char *text="Storage class not valid, must be scalar or array";
         static const char *msgnam="INVCLADSC";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3018,7 +3018,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38060:
         {static const char *text="Invalid mixture of storage class and data type";
         static const char *msgnam="INVCLADTY";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3028,7 +3028,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38068:
         {static const char *text="Storage data type is not valid";
         static const char *msgnam="INVDTYDSC";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3038,7 +3038,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38070:
         {static const char *text="Invalid operator code in a function";
         static const char *msgnam="INV_OPC";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3048,7 +3048,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38078:
         {static const char *text="Number of elements does not match declaration";
         static const char *msgnam="INV_SIZE";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3058,7 +3058,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38080:
         {static const char *text="Shape of arguments does not match";
         static const char *msgnam="MISMATCH";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3068,7 +3068,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38088:
         {static const char *text="Missing argument is required for function";
         static const char *msgnam="MISS_ARG";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3078,7 +3078,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38090:
         {static const char *text="Number of dimensions is over the allowed 8";
         static const char *msgnam="NDIM_OVER";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3088,7 +3088,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38098:
         {static const char *text="There are no complex forms of this function";
         static const char *msgnam="NO_CMPLX";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3098,7 +3098,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380a0:
         {static const char *text="No support for this function, today";
         static const char *msgnam="NO_OPC";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3108,7 +3108,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380a8:
         {static const char *text="An output pointer is required";
         static const char *msgnam="NO_OUTPTR";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3118,7 +3118,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380b0:
         {static const char *text="No $VALUE is defined for signal or validation";
         static const char *msgnam="NO_SELF_PTR";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3128,7 +3128,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380b8:
         {static const char *text="Value is not a scalar number and must be";
         static const char *msgnam="NOT_NUMBER";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3138,7 +3138,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380c0:
         {static const char *text="Null pointer where value needed";
         static const char *msgnam="NULL_PTR";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3148,7 +3148,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380c8:
         {static const char *text="Overly recursive function, calls itself maybe";
         static const char *msgnam="RECURSIVE";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3158,7 +3158,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380d0:
         {static const char *text="Signal dimension does not match data shape";
         static const char *msgnam="SIG_DIM";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3168,7 +3168,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380d8:
         {static const char *text="Bad punctuation or misspelled word or number";
         static const char *msgnam="SYNTAX";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3178,7 +3178,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380e0:
         {static const char *text="Conversion of number lost significant digits";
         static const char *msgnam="TOO_BIG";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3188,7 +3188,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380e8:
         {static const char *text="Unbalanced () [] {} '' " " or /**/";
         static const char *msgnam="UNBALANCE";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3198,7 +3198,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380f0:
         {static const char *text="Unknown/undefined variable name";
         static const char *msgnam="UNKNOWN_VAR";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3208,7 +3208,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd380f8:
         {static const char *text="string is too long (greater than 65535)";
         static const char *msgnam="STRTOOLON";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3218,7 +3218,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfd38100:
         {static const char *text="task did not complete in alotted time";
         static const char *msgnam="TIMEOUT";
-        *fac_out = FAC_Tdi;
+        *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3228,7 +3228,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020008:
         {static const char *text="Normal successful completion";
         static const char *msgnam="SUCCESS";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3238,7 +3238,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020010:
         {static const char *text="Normal exit";
         static const char *msgnam="EXIT";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3248,7 +3248,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020018:
         {static const char *text="Unsuccessful execution of command";
         static const char *msgnam="ERROR";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3258,7 +3258,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020328:
         {static const char *text="Normal successful completion";
         static const char *msgnam="NORMAL";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3268,7 +3268,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020330:
         {static const char *text="Entity is present";
         static const char *msgnam="PRESENT";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3278,7 +3278,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020338:
         {static const char *text="No such command";
         static const char *msgnam="IVVERB";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3288,7 +3288,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020340:
         {static const char *text="Entity is absent";
         static const char *msgnam="ABSENT";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3298,7 +3298,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020348:
         {static const char *text="Entity is present but negated";
         static const char *msgnam="NEGATED";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3308,7 +3308,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020350:
         {static const char *text="Entity cannot be negated";
         static const char *msgnam="NOTNEGATABLE";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3318,7 +3318,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020358:
         {static const char *text="Invalid qualifier";
         static const char *msgnam="IVQUAL";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3328,7 +3328,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020360:
         {static const char *text="More input required for command";
         static const char *msgnam="PROMPT_MORE";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3338,7 +3338,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020368:
         {static const char *text="Too many parameters specified";
         static const char *msgnam="TOO_MANY_PRMS";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3348,7 +3348,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020370:
         {static const char *text="Too many values";
         static const char *msgnam="TOO_MANY_VALS";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3358,7 +3358,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8020378:
         {static const char *text="Qualifier value needed";
         static const char *msgnam="MISSING_VALUE";
-        *fac_out = FAC_Mdsdcl;
+        *fac_out = FAC_MDSDCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3368,7 +3368,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18008:
         {static const char *text="action not dispatched, depended on failed action";
         static const char *msgnam="NOT_DISPATCHED";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3378,7 +3378,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18010:
         {static const char *text="action dependency cannot be evaluated";
         static const char *msgnam="INVALID_DEPENDENCY";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3388,7 +3388,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18018:
         {static const char *text="action contains circular dependency or depends on action which was not dispatched";
         static const char *msgnam="CANT_HAPPEN";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3398,7 +3398,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18020:
         {static const char *text="invalid shot number, cannot dispatch actions in model";
         static const char *msgnam="INVSHOT";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3408,7 +3408,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18030:
         {static const char *text="Server action was aborted";
         static const char *msgnam="ABORT";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3418,7 +3418,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18040:
         {static const char *text="Path to server lost";
         static const char *msgnam="PATH_DOWN";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3428,7 +3428,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18048:
         {static const char *text="Cannot obtain ip address socket is bound to.";
         static const char *msgnam="SOCKET_ADDR_ERROR";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3438,7 +3438,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0xfe18050:
         {static const char *text="None";
         static const char *msgnam="INVALID_ACTION_OPERATION";
-        *fac_out = FAC_Server;
+        *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3448,7 +3448,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8018008:
         {static const char *text="I/O completed with X=1, Q=1";
         static const char *msgnam="DONE_Q";
-        *fac_out = FAC_Cam;
+        *fac_out = FAC_CAM;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3458,7 +3458,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8018010:
         {static const char *text="I/O completed with X=1, Q=0";
         static const char *msgnam="DONE_NOQ";
-        *fac_out = FAC_Cam;
+        *fac_out = FAC_CAM;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3468,7 +3468,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8019000:
         {static const char *text="I/O completed with X=0 - probable failure";
         static const char *msgnam="DONE_NOX";
-        *fac_out = FAC_Cam;
+        *fac_out = FAC_CAM;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3478,7 +3478,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8019800:
         {static const char *text="serial transmission error on highway";
         static const char *msgnam="SERTRAERR";
-        *fac_out = FAC_Cam;
+        *fac_out = FAC_CAM;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3488,7 +3488,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8019840:
         {static const char *text="serial crate controller failure";
         static const char *msgnam="SCCFAIL";
-        *fac_out = FAC_Cam;
+        *fac_out = FAC_CAM;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3498,7 +3498,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x8019868:
         {static const char *text="crate is offline";
         static const char *msgnam="OFFLINE";
-        *fac_out = FAC_Cam;
+        *fac_out = FAC_CAM;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3508,7 +3508,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x2a0008:
         {static const char *text="Normal successful completion";
         static const char *msgnam="NORMAL";
-        *fac_out = FAC_Tcl;
+        *fac_out = FAC_TCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
@@ -3518,7 +3518,7 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
       case 0x2a0010:
         {static const char *text="Essential action failed";
         static const char *msgnam="FAILED_ESSENTIAL";
-        *fac_out = FAC_Tcl;
+        *fac_out = FAC_TCL;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}
