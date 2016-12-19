@@ -1,5 +1,5 @@
 from MDSplus import Device, List
-from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSuccess
+from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSUCCESS
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
@@ -31,7 +31,7 @@ def PyDoMethod(n,method,*args):
         except AttributeError:
             raise TreeNOMETHOD()
         result = domethod(methodobj,args)
-        status = MDSplusSuccess.status
+        status = MDSplusSUCCESS.status
     except MDSplusException as exc:
         status = exc.status
     except Exception as exc:
