@@ -14,10 +14,10 @@ class treeTests(TestCase):
     def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
             if pattern is None:
-                self.assertIsNone(string)
+                self.assertEqual(string is None,True)
             else:
-                self.assertIsNotNone(string)
-                self.assertIsNotNone(match(pattern,str(string)),'"%s"\nnot matched by\n"%s"'%(string,pattern))
+                self.assertEqual(string is None,False)
+                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
         outerr = tcl(expr,True,True,True)
         if not re:
             self.assertEqual(outerr,(out,err))
