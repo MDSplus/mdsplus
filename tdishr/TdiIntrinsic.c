@@ -343,10 +343,11 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
         Compiler errors get special help.
         ********************************/
   if (opcode == OpcCompile && message->length < MAXMESS) {
+    int len = TdiRefZone.a_end-TdiRefZone.a_begin;
     char *cur = MINMAX(TdiRefZone.a_begin, TdiRefZone.a_cur, TdiRefZone.a_end);
-    int npre = MINMAX(0, TdiRefZone.l_ok, MAXLINE);
-    int nbody = cur - TdiRefZone.a_begin - npre;
-    int npost = TdiRefZone.a_end - cur;
+    int npre = MINMAX(0,MINMAX(0, TdiRefZone.l_ok, MAXLINE),len-2);
+    int nbody = MINMAX(0,cur - TdiRefZone.a_begin - npre,len-npre-1);
+    int npost = MINMAX(0,TdiRefZone.a_end - cur,len-npre-nbody-1);
     nbody = MINMAX(0, nbody, MAXLINE);
     npost = MINMAX(0, npost, MAXLINE);
     if (npre + nbody + npost > MAXLINE)
@@ -371,7 +372,7 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       post.length = (unsigned short)npost;
       post.pointer = cur;
       StrConcat((struct descriptor *)message,
-		(struct descriptor *)message, &compile_err, &pre, &hilite,
+      		(struct descriptor *)message, &compile_err, &pre, &hilite,
 		&body, &hilite, &post, &newline MDS_END_ARG);
     }
   }
