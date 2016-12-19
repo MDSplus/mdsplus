@@ -21,4 +21,5 @@
 #define StrNOELEM               0x248218
 #define StrINVDELIM             0x248210
 #define StrSTRTOOLON            0x248074
+#define SsSUCCESS              0x1
 #define SsINTOVF               0x47c

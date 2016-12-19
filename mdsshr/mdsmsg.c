@@ -45,10 +45,6 @@ EXPORT char *MdsGetMsg(		/* Return: addr of "status" string      */
   STATIC_CONSTANT const char *severity[] = { "W", "S", "E", "I", "F", "?", "?", "?" };
   int (*getmsg) (int, const char **, const char **, const char **);
 
-  if (sts == 1) {
-    strcpy((MdsShrGetThreadStatic())->MdsGetMsg_text, "%SS-S-SUCCESS, Success");
-    return (MdsShrGetThreadStatic())->MdsGetMsg_text;
-  }
   status = MdsGetStdMsg(sts, &facnam, &msgnam, &msgtext);
   if (status & 1) {
     sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
