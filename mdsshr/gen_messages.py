@@ -60,17 +60,17 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                 pfaclist.append(facnam)
                 f_py.write("""
 
-class %(fac)sException(MDSplusException):
+class _%(fac)sException(MDSplusException):
   fac="%(fac)s"
 """ % {'fac':facnam.capitalize()})
             f_py.write("""
 
-class %(fac)s%(msgnam)s(%(fac)sException):
+class %(fac)s%(msgnam)s(_%(fac)sException):
   status=%(status)d
   message="%(message)s"
   msgnam="%(msgnam)s"
 
-MDSplusException.statusDict[%(msgn_nosev)s] = %(fac)s%(msgnam)s
+MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
 """ % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
             msglist.append({'msgnum':hex(msgn_nosev),'text':text,
                             'fac':facnam,'msgnam':msgnam,
