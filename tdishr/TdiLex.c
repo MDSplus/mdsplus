@@ -1,5 +1,6 @@
 #include <STATICdef.h>
 #include "stdio.h"
+#include <treeshr_messages.h>
 #define U(x) ((x)&0377)
 #define NLSTATE yyprevious=YYNEWLINE
 #define BEGIN yybgin = yysvec + 1 +
@@ -632,7 +633,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
       _MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);
       StrFree1Dx(&abs_dsc);
     } else {
-      TdiRefZone.l_status = 0;
+      TdiRefZone.l_status = TreeNOT_OPEN;
       token = LEX_ERROR;
     }
   }
