@@ -31,6 +31,7 @@ static const char *FAC_DT196B = "DT196B";
 static const char *FAC_Tree = "TREE";
 static const char *FAC_Lib = "LIB";
 static const char *FAC_Str = "STR";
+static const char *FAC_MDSplus = "MDSPLUS";
 static const char *FAC_Ss = "SS";
 static const char *FAC_Tdi = "TDI";
 static const char *FAC_Mdsdcl = "MDSDCL";
@@ -2828,6 +2829,46 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         {static const char *text="String too long";
         static const char *msgnam="STRTOOLON";
         *fac_out = FAC_Str;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MDSplusWARNING */
+      case 0x10000:
+        {static const char *text="Warning";
+        static const char *msgnam="WARNING";
+        *fac_out = FAC_MDSplus;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MDSplusSUCCESS */
+      case 0x10008:
+        {static const char *text="Success";
+        static const char *msgnam="SUCCESS";
+        *fac_out = FAC_MDSplus;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MDSplusERROR */
+      case 0x10010:
+        {static const char *text="Error";
+        static const char *msgnam="ERROR";
+        *fac_out = FAC_MDSplus;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
+/* MDSplusFATAL */
+      case 0x10020:
+        {static const char *text="Fatal";
+        static const char *msgnam="FATAL";
+        *fac_out = FAC_MDSplus;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}

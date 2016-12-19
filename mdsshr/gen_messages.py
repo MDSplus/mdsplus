@@ -97,10 +97,6 @@ class MDSplusException(Exception):
       code   = status & -8
       if code in cls.statusDict:
           cls = cls.statusDict[code]
-      elif status == MDSplusError.status:
-          cls = MDSplusError
-      elif status == MDSplusSuccess.status:
-          cls = MDSplusSuccess
       else:
           cls = MDSplusUnknown
       return cls.__new__(cls,*argv)
@@ -122,22 +118,6 @@ class MDSplusException(Exception):
                                self.severity,
                                self.msgnam,
                                self.message)
-
-class MDSplusError(MDSplusException):
-  fac="MDSplus"
-  severity="E"
-  msgnam="Error"
-  message="Failure to complete operation"
-  status=-8|2  # serverity E
-  def __init__(*args): pass
-
-class MDSplusSuccess(MDSplusException):
-  fac="MDSplus"
-  severity="S"
-  msgnam="Success"
-  message="Successful execution"
-  status=1
-  def __init__(*args): pass
 
 class MDSplusUnknown(MDSplusException):
   fac="MDSplus"
