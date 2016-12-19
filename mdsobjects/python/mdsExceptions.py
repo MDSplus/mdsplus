@@ -2434,40 +2434,40 @@ class StrSTRTOOLON(_StrException):
 MDSplusException.statusDict[2392176] = StrSTRTOOLON
 
 
-class _MdsplusException(MDSplusException):
-  fac="Mdsplus"
+class _MDSplusException(MDSplusException):
+  fac="MDSplus"
 
 
-class MdsplusWARNING(_MdsplusException):
+class MDSplusWARNING(_MDSplusException):
   status=65536
   message="Warning"
   msgnam="WARNING"
 
-MDSplusException.statusDict[65536] = MdsplusWARNING
+MDSplusException.statusDict[65536] = MDSplusWARNING
 
 
-class MdsplusSUCCESS(_MdsplusException):
+class MDSplusSUCCESS(_MDSplusException):
   status=65545
   message="Success"
   msgnam="SUCCESS"
 
-MDSplusException.statusDict[65544] = MdsplusSUCCESS
+MDSplusException.statusDict[65544] = MDSplusSUCCESS
 
 
-class MdsplusERROR(_MdsplusException):
+class MDSplusERROR(_MDSplusException):
   status=65554
   message="Error"
   msgnam="ERROR"
 
-MDSplusException.statusDict[65552] = MdsplusERROR
+MDSplusException.statusDict[65552] = MDSplusERROR
 
 
-class MdsplusFATAL(_MdsplusException):
+class MDSplusFATAL(_MDSplusException):
   status=65572
   message="Fatal"
   msgnam="FATAL"
 
-MDSplusException.statusDict[65568] = MdsplusFATAL
+MDSplusException.statusDict[65568] = MDSplusFATAL
 
 
 class _SsException(MDSplusException):

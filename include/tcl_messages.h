@@ -8,5 +8,5 @@
 #pragma once
 #include <status.h>
 
-#define TclNORMAL               0x2a0009
-#define TclFAILED_ESSENTIAL     0x2a0010
+#define TclNORMAL                0x2a0009
+#define TclFAILED_ESSENTIAL      0x2a0010

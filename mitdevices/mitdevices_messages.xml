@@ -1,183 +1,183 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <messages>
-  <facility name="DEV" value="10108">
+  <facility name="Dev" value="10108">
     <status name="BAD_ENDIDX" value="4097" severity="Error"
 	    text="unable to read end index for channel"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_FILTER" value="4098" severity="Error"
 	    text="illegal filter selected"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_FREQ" value="4099" severity="Error"
 	    text="illegal digitization frequency selected"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_GAIN" value="4100" severity="Error"
 	    text="illegal gain selected"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_HEADER" value="4101" severity="Error"
 	    text="unable to read header selection"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_HEADER_IDX" value="4102" severity="Error"
 	    text="unknown header configuration index"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_MEMORIES" value="4103" severity="Error"
 	    text="unable to read number of memory modules"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_MODE" value="4104" severity="Error"
 	    text="illegal mode selected"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_NAME" value="4105" severity="Error"
 	    text="unable to read module name"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_OFFSET" value="4106" severity="Error"
 	    text="illegal offset selected"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_STARTIDX" value="4107" severity="Error"
 	    text="unable to read start index for channel"
-	    facabb="DEV"/>
+	    />
     <status name="NOT_TRIGGERED" value="4108" severity="Error"
 	    text="device was not triggered,  check wires and triggering device"
-	    facabb="DEV"/>
+	    />
     <status name="FREQ_TO_HIGH" value="4109" severity="Error"
 	    text="the frequency is set to high for the requested number of channels"
-	    facabb="DEV"/>
+	    />
     <status name="INVALID_NOC" value="4110" severity="Error"
 	    text="the NOC (number of channels) requested is greater than the physical number of channels"
-	    facabb="DEV"/>
+	    />
     <status name="RANGE_MISMATCH" value="4111" severity="Error"
 	    text="the range specified on the menu doesn't match the range setting on the device"
-	    facabb="DEV"/>
+	    />
     <status name="CAMACERR" value="4112" severity="Error"
 	    text="Error doing CAMAC IO"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_VERBS" value="4113" severity="Error"
 	    text="Error reading interpreter list (:VERBS)"
-	    facabb="DEV"/>
+	    />
     <status name="BAD_COMMANDS" value="4114" severity="Error"
 	    text="Error reading command list"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_ADNR" value="4115" severity="Error"
 	    text="CAMAC: Address not recognized (2160)"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_ERR" value="4116" severity="Error"
 	    text="CAMAC: Error reported by crate controler"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_LOSYNC" value="4117" severity="Error"
 	    text="CAMAC: Lost Syncronization error"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_LPE" value="4118" severity="Error"
 	    text="CAMAC: Longitudinal Parity error"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_TMO" value="4119" severity="Error"
 	    text="CAMAC: Highway time out error"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_TPE" value="4120" severity="Error"
 	    text="CAMAC: Transverse Parity error"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_STE" value="4121" severity="Error"
 	    text="CAMAC: Serial Transmission error"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_DERR" value="4122" severity="Error"
 	    text="CAMAC: Delayed error from SCC"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_SQ" value="4123" severity="Error"
 	    text="CAMAC: I/O completion with Q = 1"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_NOSQ" value="4124" severity="Error"
 	    text="CAMAC: I/O completion with Q = 0"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_SX" value="4125" severity="Error"
 	    text="CAMAC: I/O completion with X = 1"
-	    facabb="DEV"/>
+	    />
     <status name="CAM_NOSX" value="4126" severity="Error"
 	    text="CAMAC: I/O completion with X = 0"
-	    facabb="DEV"/>
+	    />
     <status name="INV_SETUP" value="4127" severity="Error"
 	    text="device was not properly set up"
-	    facabb="DEV"/>
+	    />
     <status name="PYDEVICE_NOT_FOUND" value="4128" severity="Error"
             text="Python device class not found."
-            facabb="DEV"/>
+            />
     <status name="PY_INTERFACE_LIBRARY_NOT_FOUND" value ="4129" severity="Error"
             text="The needed device hardware interface library could not be loaded."
-            facabb="DEV"/>
+            />
     <status name="IO_STUCK" value ="4130" severity="Error"
            text="I/O to Device is stuck. Check network connection and board status."
-           facabb="DEV"/>
+           />
     <status name="UNKOWN_STATE" value ="4131" severity="Error"
           text="Device returned unrecognized state string"
-          facabb="DEV"/>
+          />
     <status name="WRONG_TREE" value="4132" severity="Error"
           text="Attempt to digitizerinto different tree than it was armed with"
-          facabb="DEV"/>
+          />
     <status name="WRONG_PATH" value="4133" severity="Error"
           text="Attempt to store digitizer into different path than it was armed with"
-          facabb="DEV"/>
+          />
     <status name="WRONG_SHOT" value="4134" severity="Error"
           text="Attempt to store digitizer into different shot than it was armed with"
-          facabb="DEV"/>
+          />
     <status name="OFFLINE" value ="4135" severity="Error"
             text="Device is not on line.  Check network connection"
-            facabb="DEV"/>
+            />
     <status name="TRIGGERED_NOT_STORED" value ="4136" severity="Error"
            text="Device was triggered but not stored."
-           facabb="DEV"/>
+           />
     <status name="NO_NAME_SPECIFIED" value ="4137" severity="Error"
           text="Device name must be specifed - pleas fill it in."
-          facabb="DEV"/>
+          />
     <status name="BAD_ACTIVE_CHAN" value ="4138" severity="Error"
           text="Active channels either not available or invalid"
-          facabb="DEV"/>
+          />
     <status name="BAD_TRIG_SRC" value ="4139" severity="Error"
          text="Trigger source either not available or invalid"
-         facabb="DEV"/>
+         />
     <status name="BAD_CLOCK_SRC" value ="4140" severity="Error"
          text="Clock source either not available or invalid"
-         facabb="DEV"/>
+         />
     <status name="BAD_PRE_TRIG" value ="4141" severity="Error"
         text="Pre trigger samples either not available or invalid"
-        facabb="DEV"/>
+        />
     <status name="BAD_POST_TRIG" value ="4142" severity="Error"
         text="Clock source either not available or invalid"
-        facabb="DEV"/>
+        />
     <status name="BAD_CLOCK_FREQ" value ="4143" severity="Error"
         text="Clock frequency either not available or invalid"
-        facabb="DEV"/>
+        />
 
     <status name="TRIGGER_FAILED" value ="4144" severity="Error"
         text="Device trigger method failed"
-        facabb="DEV"/>
+        />
     <status name="ERROR_READING_CHANNEL" value ="4145" severity="Error"
         text="Error reading data for channel from device"
-        facabb="DEV"/>
+        />
     <status name="ERROR_DOING_INIT" value ="4146" severity="Error"
         text="Error sending ARM command to device"
-        facabb="DEV"/>
+        />
 
 
     <status name="NORMAL" value="4147" severity="Success"
 	    text="successful completion"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="BAD_FRAMES" value="4148" severity="Error"
 	    text="frame count must be less than or equal to 2048"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="BAD_FRAME_SELECT" value="4149" severity="Error"
 	    text="frame interval must be 1,2,4,8,16,32 or 64"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="BAD_NUM_STATES" value="4150" severity="Error"
 	    text="number of states must be between 1 and 4"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="BAD_PERIOD" value="4151" severity="Error"
 	    text="period must be .5,1,2,4,8,16,32,64,128,256,512,1024,2048,4096 or 8192 msec"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="BAD_PIXEL_SELECT" value="4152" severity="Error"
 	    text="pixel selection must be an array of 256 boolean values"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="DATA_CORRUPTED" value="4153" severity="Error"
 	    text="data in memory is corrupted or framing error detected, no data stored"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="TOO_MANY_FRAMES" value="4154" severity="Error"
 	    text="over 8192 frame start indicators in data read from memory"
-	    facnam="RETICON$_" facabb="RETICON"/>
+	    facnam="Reticon$_" facabb="Reticon"/>
     <status name="NORMAL" value="4197" severity="Success"
 	    text="successful completion"
 	    facnam="J221$_" facabb="J221"/>
@@ -189,25 +189,25 @@
 	    facnam="J221$_" facabb="J221"/>
     <status name="INVCLKFRQ" value="4247" severity="Error"
 	    text="Invalid clock frequency"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="INVDELDUR" value="4248" severity="Error"
 	    text="Invalid pulse delay or duration, must be less than 655 seconds"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="INVOUTCTR" value="4249" severity="Error"
 	    text="Invalid output mode selected"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="INVPSEUDODEV" value="4250" severity="Error"
 	    text="Invalid pseudo device attached to this decoder channel"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="INVTRGMOD" value="4251" severity="Error"
 	    text="Invalid trigger mode selected"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="NOPSEUDODEV" value="4252" severity="Info"
 	    text="No Pseudo device attached to this channel ... disabling"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="TOO_MANY_EVENTS" value="4253" severity="Error"
 	    text="More than 16 events used by this decoder"
-	    facnam="TIMING$_" facabb="TIMING"/>
+	    facnam="Timing$_" facabb="Timing"/>
     <status name="NORMAL" value="4297" severity="Success"
 	    text="successful completion"
 	    facnam="B2408$_" facabb="B2408"/>
@@ -219,115 +219,115 @@
 	    facnam="B2408$_" facabb="B2408"/>
     <status name="NORMAL" value="4347" severity="Success"
 	    text="successful completion"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="DIGNOTSTRARRAY" value="4348" severity="Error"
 	    text="The digitizer names must be an array of strings"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="NODIG" value="4349" severity="Error"
 	    text="The digitizer names must be specified"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="MEMNOTSTRARRAY" value="4350" severity="Error"
 	    text="The memory names must be an array of strings"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="NOMEM" value="4351" severity="Error"
 	    text="The memory names must be specified"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="PHASE_LOST" value="4352" severity="Error"
 	    text="Data phase lost No FERA data stored"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="CONFUSED" value="4353" severity="Fatal"
 	    text="Fera Data inconsitant.  Data for this point zered."
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="OVER_RUN" value="4354" severity="Fatal"
 	    text="Possible FERA memory overrun, too many triggers."
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="OVERFLOW" value="4355" severity="Info"
 	    text="Possible FERA data saturated.  Data point zeroed"
-	    facnam="FERA$_" facabb="FERA"/>
+	    facnam="Fera$_" facabb="Fera"/>
     <status name="NORMAL" value="4397" severity="Success"
 	    text="successful completion"
-	    facnam="HM650$_" facabb="HM650"/>
+	    facnam="Hm650$_" facabb="Hm650"/>
     <status name="DLYCHNG" value="4398" severity="Fatal"
 	    text="HM650 requested delay can not be processed by hardware."
-	    facnam="HM650$_" facabb="HM650"/>
+	    facnam="Hm650$_" facabb="Hm650"/>
      <status name="NORMAL" value="4447" severity="Success"
 	    text="successful completion"
-	    facnam="HV4032$_" facabb="HV4032"/>
+	    facnam="Hv4032$_" facabb="Hv4032"/>
      <status name="WRONG_POD_TYPE" value="4448" severity="Error"
 	    text="HV40321A n and p can only be used with the HV4032 device"
-	    facnam="HV4032$_" facabb="HV4032"/>
+	    facnam="Hv4032$_" facabb="Hv4032"/>
      <status name="NORMAL" value="4497" severity="Success"
 	    text="successful completion"
-	    facnam="HV1440$_" facabb="HV1440"/>
+	    facnam="Hv1440$_" facabb="Hv1440"/>
      <status name="WRONG_POD_TYPE" value="4498" severity="Error"
 	    text="HV1443 can only be used with the HV1440 device"
-	    facnam="HV1440$_" facabb="HV1440"/>
+	    facnam="Hv1440$_" facabb="Hv1440"/>
      <status name="BAD_FRAME" value="4499" severity="Error"
 	    text="HV1440 could not read the frame"
-	    facnam="HV1440$_" facabb="HV1440"/>
+	    facnam="Hv1440$_" facabb="Hv1440"/>
      <status name="BAD_RANGE" value="4500" severity="Error"
 	    text="HV1440 could not read the range"
-	    facnam="HV1440$_" facabb="HV1440"/>
+	    facnam="Hv1440$_" facabb="Hv1440"/>
      <status name="OUTRNG" value="4501" severity="Error"
 	    text="HV1440 out of range"
-	    facnam="HV1440$_" facabb="HV1440"/>
+	    facnam="Hv1440$_" facabb="Hv1440"/>
      <status name="STUCK" value="4502" severity="Error"
 	    text="HV1440 not responding with Q"
-	    facnam="HV1440$_" facabb="HV1440"/>
+	    facnam="Hv1440$_" facabb="Hv1440"/>
      <status name="BAD_PRE_TRIGGER" value="4547" severity="Error"
 	    text="bad pretrigger specified, specify a value of 0,1,2,3,4,5,6 or 7"
-	    facnam="JOERGER$_" facabb="JOERGER"/>
+	    facnam="Joerger$_" facabb="Joerger"/>
      <status name="BAD_ACT_MEMORY" value="4548" severity="Error"
 	    text="bad active memory specified, specify a value of 1,2,3,4,5,6,7 or 8"
-	    facnam="JOERGER$_" facabb="JOERGER"/>
+	    facnam="Joerger$_" facabb="Joerger"/>
      <status name="BAD_GAIN" value="4549" severity="Error"
 	    text="bad gain specified, specify a value of 1,2,4 or 8"
-	    facnam="JOERGER$_" facabb="JOERGER"/>
+	    facnam="Joerger$_" facabb="Joerger"/>
      <status name="BAD_WAVE_LENGTH" value="4597" severity="Error"
 	    text="bad wave length specified, specify value between 0 and 13000"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="BAD_SLIT_WIDTH" value="4598" severity="Error"
 	    text="bad slit width specified, specify value between 0 and 500"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="BAD_NUM_SPECTRA" value="4599" severity="Error"
 	    text="bad number of spectra specified, specify value between 1 and 100"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="BAD_GRATING" value="4600" severity="Error"
 	    text="bad grating type specified, specify value between 1 and 5"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="BAD_EXPOSURE" value="4601" severity="Error"
 	    text="bad exposure time specified, specify value between 30 and 3000"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="BAD_FILTER" value="4602" severity="Error"
 	    text="bad neutral density filter specified, specify value between 0 and 5"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="GO_FILE_ERROR" value="4603" severity="Error"
 	    text="error creating new go file"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="DATA_FILE_ERROR" value="4604" severity="Error"
 	    text="error opening datafile"
-	    facnam="U_OF_M$_" facabb="U_OF_M"/>
+	    facnam="U_of_m$_" facabb="U_of_m"/>
      <status name="NORMAL" value="4647" severity="Success"
 	    text="successful completion"
-	    facnam="IDL$_" facabb="IDL"/>
+	    facnam="Idl$_" facabb="Idl"/>
      <status name="ERROR" value="4648" severity="Error"
 	    text="IDL returned a non zero error code"
-	    facnam="IDL$_" facabb="IDL"/>
+	    facnam="Idl$_" facabb="Idl"/>
      <status name="BAD_CHAN" value="4697" severity="Error"
 	    text="error evaluating data for channel !SL"
-	    facnam="B5910A$_" facabb="B5910A"/>
+	    facnam="B5910a$_" facabb="B5910a"/>
      <status name="BAD_CLOCK" value="4698" severity="Error"
 	    text="invalid internal clock range specified"
-	    facnam="B5910A$_" facabb="B5910A"/>
+	    facnam="B5910a$_" facabb="B5910a"/>
      <status name="BAD_ITERATIONS" value="4699" severity="Error"
 	    text="invalid number of iterations specified"
-	    facnam="B5910A$_" facabb="B5910A"/>
+	    facnam="B5910a$_" facabb="B5910a"/>
      <status name="BAD_NOC" value="4700" severity="Error"
 	    text="invalid number of active channels specified"
-	    facnam="B5910A$_" facabb="B5910A"/>
+	    facnam="B5910a$_" facabb="B5910a"/>
      <status name="BAD_SAMPS" value="4701" severity="Error"
 	    text="number of samples specificed invalid"
-	    facnam="B5910A$_" facabb="B5910A"/>
+	    facnam="B5910a$_" facabb="B5910a"/>
      <status name="NOT_SORTED" value="4747" severity="Error"
 	    text="times specified for J412 module were not sorted"
 	    facnam="J412$_" facabb="J412"/>
@@ -339,28 +339,28 @@
 	    facnam="J412$_" facabb="J412"/>
      <status name="NORMAL" value="4797" severity="Success"
 	    text="successful completion"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_MEMSIZE" value="4798" severity="Error"
 	    text="Memory size must be in 128K, 256K, 512k, 1024K"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_ACTIVEMEM" value="4799" severity="Error"
 	    text="Active Mem must be power of 2 8K to 1024K"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_ACTIVECHAN" value="4800" severity="Error"
 	    text="Active channels must be in 1,2,4,8,16"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_PTS" value="4801" severity="Error"
 	    text="PTS must be power of 2 32 to 1024K"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_FREQUENCY" value="4802" severity="Error"
 	    text="Invalid clock frequency"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_MASTER" value="4803" severity="Error"
 	    text="Master must be 0 or 1"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="BAD_GAIN" value="4804" severity="Error"
 	    text="Gain must be 1, 2, 4, or 8"
-	    facnam="TR16$_" facabb="TR16"/>
+	    facnam="Tr16$_" facabb="Tr16"/>
      <status name="NORMAL" value="4847" severity="Success"
 	    text="successful completion"
 	    facnam="A14$_" facabb="A14"/>
@@ -414,19 +414,19 @@
 	    facnam="L6810$_" facabb="L6810"/>
      <status name="OUTRNG" value="4947" severity="Error"
 	    text="Joerger DAC Channels out of range.  Bad chans code !XW"
-	    facnam="J_DAC$_" facabb="J_DAC"/>
+	    facnam="J_dac$_" facabb="J_dac"/>
      <status name="BAD_ACTIVE_CHANS" value="4997" severity="Error"
 	    text="bad active channels selection"
-	    facnam="INCAA$_" facabb="INCAA"/>
+	    facnam="Incaa$_" facabb="Incaa"/>
      <status name="BAD_MASTER" value="4998" severity="Error"
 	    text="bad master selection, must be 0 or 1"
-	    facnam="INCAA$_" facabb="INCAA"/>
+	    facnam="Incaa$_" facabb="Incaa"/>
      <status name="BAD_EXT_1MHZ" value="4999" severity="Error"
 	    text="bad ext 1mhz selection, must be 0 or 1"
-	    facnam="INCAA$_" facabb="INCAA"/>
+	    facnam="Incaa$_" facabb="Incaa"/>
      <status name="BAD_PTSC" value="5000" severity="Error"
 	    text="bad PTSC setting"
-	    facnam="INCAA$_" facabb="INCAA"/>
+	    facnam="Incaa$_" facabb="Incaa"/>
      <status name="BAD_HEADER" value="5047" severity="Error"
 	    text="Invalid header jumper information (e.g. 49414944432)"
 	    facnam="L8212$_" facabb="L8212"/>
@@ -450,10 +450,10 @@
 	    facnam="L8212$_" facabb="L8212"/>
      <status name="BADTIME" value="5097" severity="Error"
 	    text="Could not read time"
-	    facnam="MPB$_" facabb="MPB"/>
+	    facnam="Mpb$_" facabb="Mpb"/>
      <status name="BADFREQ" value="5098" severity="Error"
 	    text="Could not read frequency"
-	    facnam="MPB$_" facabb="MPB"/>
+	    facnam="Mpb$_" facabb="Mpb"/>
      <status name="BAD_OFFSET" value="5147" severity="Error"
 	    text="Offset for L8828 must be between 0 and 255"
 	    facnam="L8828$_" facabb="L8828"/>
@@ -480,16 +480,16 @@
 	    facnam="L8818$_" facabb="L8818"/>
      <status name="BAD_ACTMEM" value="5207" severity="Error"
 	    text="ACTMEM value out of range, must be 0-7 where 0=1/8th and 7 = all"
-	    facnam="J_TR612$_" facabb="J_TR612"/>
+	    facnam="J_tr612$_" facabb="J_tr612"/>
      <status name="BAD_PRETRIG" value="5208" severity="Error"
 	    text="PRETRIG value out of range, must be 0-7 where 0 = none and 7 = 7/8 pretrigger samples"
-	    facnam="J_TR612$_" facabb="J_TR612"/>
+	    facnam="J_tr612$_" facabb="J_tr612"/>
      <status name="BAD_MODE" value="5209" severity="Error"
 	    text="MODE value out of range, must be 0 (for normal) or 1 (for burst mode)"
-	    facnam="J_TR612$_" facabb="J_TR612"/>
+	    facnam="J_tr612$_" facabb="J_tr612"/>
      <status name="BAD_FREQUENCY" value="5210" severity="Error"
 	    text="FREQUENCY value out of range, must be 0-4 where 0=3MHz,1=2MHz,2=1MHz,3=100KHz,4=external"
-	    facnam="J_TR612$_" facabb="J_TR612"/>
+	    facnam="J_tr612$_" facabb="J_tr612"/>
      <status name="NODATA" value="5247" severity="Fatal"
 	    text="no data has been written to memory"
 	    facnam="L8206$_" facabb="L8206"/>
@@ -513,37 +513,37 @@
 	    facnam="H908$_" facabb="H908"/>
      <status name="CHANNEL_READ_ERROR" value="5277" severity="Error"
 	    text="Error reading channel"
-	    facnam="DSP2904$_" facabb="DSP2904"/>
+	    facnam="Dsp2904$_" facabb="Dsp2904"/>
      <status name="UNHANDLED_EXCEPTION" value="5287" severity="Error"
 	    text="Python device raised and exception, see log files for more details"
-	    facnam="PY$_" facabb="PY"/>
+	    facnam="Py$_" facabb="Py"/>
      <status name="NO_SAMPLES" value="5297" severity="Error"
 	    text="Module did not acquire any samples"
-	    facnam="DT196B$_" facabb="DT196B"/>
+	    facnam="Dt196b$_" facabb="Dt196b"/>
     <status name="CANNOT_LOAD_SETTINGS" value="5300" severity="Error"
           text="Error loading settings from XML"
-          facabb="DEV"/>
+          />
     <status name="CANNOT_GET_BOARD_STATE" value="5301" severity="Error"
           text="Cannot retrieve state of daq board"
-          facabb="DEV"/>
+          />
     <status name="ACQCMD_FAILED" value="5302" severity="Error"
           text="Error executing acqcmd on daq board"
-          facabb="DEV"/>
+          />
     <status name="ACQ2SH_FAILED" value="5303" severity="Error"
           text="Error executing acq2sh command on daq board"
-          facabb="DEV"/>
+          />
     <status name="BAD_PARAMETER" value="5304" severity="Error"
           text="Invalid parameter specified for device"
-          facabb="DEV"/>
+          />
     <status name="COMM_ERROR" value="5305" severity="Error"
           text="Error communicating with device"
-          facabb="DEV"/>
+          />
     <status name="CAMERA_NOT_FOUND" value="5306" severity="Error"
           text="Could not find specified camera on the network"
-          facabb="DEV"/>
+          />
     <status name="NOT_A_PYDEVICE" value="5307" severity="Error"
           text="Device is not a python device."
-          facabb="DEV"/>
+          />
 
 
    </facility>
