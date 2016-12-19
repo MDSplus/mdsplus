@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import sys,os
 
 sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sevs = {'warning':0,'success':1,'error':2,'informational':3,'fatal':4}
+sevs = {'warning':0,'success':1,'error':2,'info':3,'fatal':4,'internal':7}
 faclist = []
 facnums = {}
 msglist = []
