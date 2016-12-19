@@ -202,7 +202,7 @@
     <status name="INVTRGMOD" value="4251" severity="Error"
 	    text="Invalid trigger mode selected"
 	    facnam="TIMING$_" facabb="TIMING"/>
-    <status name="NOPSEUDODEV" value="4252" severity="Informational"
+    <status name="NOPSEUDODEV" value="4252" severity="Info"
 	    text="No Pseudo device attached to this channel ... disabling"
 	    facnam="TIMING$_" facabb="TIMING"/>
     <status name="TOO_MANY_EVENTS" value="4253" severity="Error"
@@ -211,7 +211,7 @@
     <status name="NORMAL" value="4297" severity="Success"
 	    text="successful completion"
 	    facnam="B2408$_" facabb="B2408"/>
-    <status name="OVERFLOW" value="4298" severity="Informational"
+    <status name="OVERFLOW" value="4298" severity="Info"
 	    text="Triggers received after overflow"
 	    facnam="B2408$_" facabb="B2408"/>
     <status name="TRIG_LIM" value="4299" severity="Fatal"
@@ -241,7 +241,7 @@
     <status name="OVER_RUN" value="4354" severity="Fatal"
 	    text="Possible FERA memory overrun, too many triggers."
 	    facnam="FERA$_" facabb="FERA"/>
-    <status name="OVERFLOW" value="4355" severity="Informational"
+    <status name="OVERFLOW" value="4355" severity="Info"
 	    text="Possible FERA data saturated.  Data point zeroed"
 	    facnam="FERA$_" facabb="FERA"/>
     <status name="NORMAL" value="4397" severity="Success"

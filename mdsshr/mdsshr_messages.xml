@@ -19,5 +19,6 @@
   <facility name="Ss" value="0">
     <status name="SUCCESS"  value="0"  severity="Success" text="Success"/>
     <status name="INTOVF" value="143" severity="Fatal" text="Integer overflow"/>
+    <status name="INTERNAL" value="-1" severity="Internal" text="This status is meant for internal use only, you should never have seen this message."/>
   </facility>
 </messages>

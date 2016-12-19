@@ -2477,6 +2477,14 @@ class SsINTOVF(_SsException):
 MDSplusException.statusDict[1144] = SsINTOVF
 
 
+class SsINTERNAL(_SsException):
+  status=-1
+  message="This status is meant for internal use only, you should never have seen this message."
+  msgnam="INTERNAL"
+
+MDSplusException.statusDict[-8] = SsINTERNAL
+
+
 ########################### generated from tdishr_messages.xml ########################
 
 

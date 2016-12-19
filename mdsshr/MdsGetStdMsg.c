@@ -2853,6 +2853,16 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* SsINTERNAL */
+      case -0x8:
+        {static const char *text="This status is meant for internal use only, you should never have seen this message.";
+        static const char *msgnam="INTERNAL";
+        *fac_out = FAC_Ss;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* TdiBREAK */
       case 0xfd38008:
         {static const char *text="BREAK was not in DO FOR SWITCH or WHILE";

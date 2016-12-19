@@ -23,3 +23,4 @@
 #define StrSTRTOOLON            0x248074
 #define SsSUCCESS              0x1
 #define SsINTOVF               0x47c
+#define SsINTERNAL             -0x1
