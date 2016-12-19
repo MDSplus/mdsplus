@@ -1,13 +1,12 @@
-
-#pragma once
 /*
-
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      tdishr_messages.xml
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 #define TdiBREAK                0xfd38008
 #define TdiCASE                 0xfd38010

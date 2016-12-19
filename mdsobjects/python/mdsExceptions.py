@@ -60,7 +60,6 @@ def checkStatus(status,ignore=[]):
         else:
             raise MDSplusException(status)
 
-
 ########################### generated from mitdevices_messages.xml ########################
 
 
@@ -1624,7 +1623,6 @@ class DevNOT_A_PYDEVICE(_DevException):
 
 MDSplusException.statusDict[662480344] = DevNOT_A_PYDEVICE
 
-
 ########################### generated from treeshr_messages.xml ########################
 
 
@@ -2328,7 +2326,6 @@ class TreeREADONLY_TREE(_TreeException):
 
 MDSplusException.statusDict[265392264] = TreeREADONLY_TREE
 
-
 ########################### generated from mdsshr_messages.xml ########################
 
 
@@ -2499,7 +2496,6 @@ class SsINTERNAL(_SsException):
   msgnam="INTERNAL"
 
 MDSplusException.statusDict[-8] = SsINTERNAL
-
 
 ########################### generated from tdishr_messages.xml ########################
 
@@ -2764,7 +2760,6 @@ class TdiTIMEOUT(_TdiException):
 
 MDSplusException.statusDict[265519360] = TdiTIMEOUT
 
-
 ########################### generated from mdsdcl_messages.xml ########################
 
 
@@ -2884,7 +2879,6 @@ class MdsdclMISSING_VALUE(_MdsdclException):
 
 MDSplusException.statusDict[134349688] = MdsdclMISSING_VALUE
 
-
 ########################### generated from servershr_messages.xml ########################
 
 
@@ -2956,7 +2950,6 @@ class ServerINVALID_ACTION_OPERATION(_ServerException):
 
 MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION
 
-
 ########################### generated from camshr_messages.xml ########################
 
 
@@ -3011,7 +3004,6 @@ class CamOFFLINE(_CamException):
   msgnam="OFFLINE"
 
 MDSplusException.statusDict[134322280] = CamOFFLINE
-
 
 ########################### generated from tcl_messages.xml ########################
 

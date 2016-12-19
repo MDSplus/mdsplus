@@ -1,13 +1,12 @@
-
-#pragma once
 /*
-
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      mdsdcl_messages.xml
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 #define MdsdclSUCCESS              0x8020009
 #define MdsdclEXIT                 0x8020011

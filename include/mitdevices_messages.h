@@ -1,13 +1,12 @@
-
-#pragma once
 /*
-
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      mitdevices_messages.xml
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 #define DEVBAD_ENDIDX           0x277c800a
 #define DEVBAD_FILTER           0x277c8012

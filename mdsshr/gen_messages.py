@@ -12,20 +12,19 @@ def gen_include(root,filename,faclist,msglistm,f_test):
     pfaclist = []
     print filename
     f_inc=open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w')
-    f_inc.write("""
-#pragma once
-/*
-
+    f_inc.write(
+"""/*
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      %s
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 """ % filename)
     f_py.write("""
-
 ########################### generated from %s ########################
 
 """ % filename)

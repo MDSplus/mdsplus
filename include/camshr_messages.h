@@ -1,13 +1,12 @@
-
-#pragma once
 /*
-
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      camshr_messages.xml
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 #define CamDONE_Q               0x8018009
 #define CamDONE_NOQ             0x8018011
