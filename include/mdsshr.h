@@ -3,8 +3,15 @@
 #define MdsCOMPRESSIBLE 3
 #include <config.h>
 #include <mdsdescrip.h>
+#include <mdsshr_messages.h>
 #include <mdstypes.h>
 #include <stdio.h>
+
+#define IS_OK(status)     (status & SsSUCCESS)
+#define STATUS_OK         IS_OK(status)
+#define IS_NOT_OK(status) (!IS_OK(status))
+#define STATUS_NOT_OK     (!STATUS_OK)
+#define INIT_STATUS       int status = MDSplusSUCCESS
 
 #ifdef __cplusplus
 extern "C" {
