@@ -152,21 +152,20 @@ void SendMonitor(int mode, int idx)
   }
 }
 
-#ifdef _WIN32
-STATIC_ROUTINE char *now(char *buf __attribute__ ((unused)))
-#else
+//#ifdef _WIN32
+//STATIC_ROUTINE char *now(char *buf __attribute__ ((unused)))
+//#else
 STATIC_ROUTINE char *now(char *buf)
-#endif
+//#endif
 {
   time_t tim = time(0);
-  tim = time(0);
 #ifdef _WIN32
-  return ctime(&tim);
+  buf = ctime(&tim);
 #else
   ctime_r(&tim, buf);
+#endif
   buf[strlen(buf) - 1] = 0;
   return buf;
-#endif
 }
 
 STATIC_ROUTINE void ActionDone(int idx)
