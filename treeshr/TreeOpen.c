@@ -290,7 +290,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
 
 static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 {
-  TREE_INFO *local_info = dblist ? dblist->tree_info : 0;
+  TREE_INFO *local_info = dblist ? dblist->tree_info : NULL;
   TREE_INFO *previous_info;
   int status;
 
@@ -333,6 +333,8 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	    free(local_info->tag_info);
 	  if (local_info->edit->external_pages)
 	    free(local_info->external);
+          if (local_info->edit->deleted_nid_list)
+            free(local_info->edit->deleted_nid_list);
 	  free(local_info->edit);
 	}
 
@@ -399,9 +401,9 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
       dblist->modified = 0;
       dblist->remote = 0;
       free(dblist->experiment);
-      dblist->experiment = 0;
+      dblist->experiment = NULL;
       free(dblist->main_treenam);
-      dblist->main_treenam = 0;
+      dblist->main_treenam = NULL;
     }
   }
   return status;
