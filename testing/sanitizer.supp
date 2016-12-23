@@ -1,5 +1,6 @@
 leak:libMdsIpUDT
 race:libMdsIpUDT
+leak:MdsShrGetThreadStatic
 leak:TreeGetThreadStatic
 leak:TdiThreadStatic
 leak:TRACE
