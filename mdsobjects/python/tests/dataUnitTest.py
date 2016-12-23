@@ -324,5 +324,14 @@ def suite():
     return TestSuite(map(dataTests,tests))
 
 if __name__=='__main__':
+    import sys
+    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
+        import objgraph
+    else:      objgraph = None
+    import gc;gc.set_debug(gc.DEBUG_LEAK & ~gc.DEBUG_COLLECTABLE)
     from unittest import TextTestRunner
     TextTestRunner().run(suite())
+    if objgraph:
+         gc.collect()
+         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
+

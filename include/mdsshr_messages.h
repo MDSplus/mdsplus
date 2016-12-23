@@ -21,4 +21,10 @@
 #define StrNOELEM               0x248218
 #define StrINVDELIM             0x248210
 #define StrSTRTOOLON            0x248074
+#define MDSplusWARNING              0x10000
+#define MDSplusSUCCESS              0x10009
+#define MDSplusERROR                0x10012
+#define MDSplusFATAL                0x10024
+#define SsSUCCESS              0x1
 #define SsINTOVF               0x47c
+#define SsINTERNAL             -0x1

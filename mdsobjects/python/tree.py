@@ -55,13 +55,21 @@ class _TreeCtx(object):
     def __init__(self,ctx):
         self.ctx=ctx
         _TreeCtx.ctxs.append(ctx)
+        self.open = True
     def __del__(self):
-        _TreeCtx.ctxs.remove(self.ctx)
-        if self.ctx not in _TreeCtx.ctxs:
-            status=_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
-            if (status & 1):
-                _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
-
+        self.close()
+    def close(self):
+        if self.open:
+            self.open = False
+            _TreeCtx.ctxs.remove(self.ctx)
+            if self.ctx in _TreeCtx.ctxs:
+                return
+            #_treeshr.TreeCloseAll(_C.c_void_p(self.ctx))
+            while True:
+                try: _treeshr.TreeClose(self.ctx,_C.c_void_p(0),_C.c_int32(0))
+                except: break
+            _treeshr._TreeSwitchDbid(_C.c_void_p(0))
+            _treeshr._TreeFreeDbid(_C.c_void_p(self.ctx))
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
@@ -73,9 +81,7 @@ class Tree(object):
     	return self
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. If tree is open for edit close it. """
-        if self.open_for_edit:
-            self.quit()
-
+        self.quit()
 
     def __getattr__(self,name):
         """
@@ -99,16 +105,19 @@ class Tree(object):
         @return: Value of attribute
         @rtype: various
         """
-        if name.upper() == name:
-            try:
-                return self.getNode(name)
-            except:
-                pass
+        if name.startswith('_'):
+            namesplit = name.split('__',1)
+            if len(namesplit)==2 and namesplit[1]==namesplit[1].upper():
+                return self.getNode('\\%s::%s'%tuple(namesplit[1].split('__',1)+['TOP'])[:2])
+            if name.upper() == name:
+                return self.getNode('\\%s'%name[1:])
+        elif name.upper() == name:
+            return self.getNode(name)
         if name.lower() == 'default':
             return self.getDefault()
-        if name.lower() == 'top':
+        elif name.lower() == 'top':
             return _treenode.TreeNode(0,self)
-        if name.lower() == 'shot':
+        elif name.lower() == 'shot':
             name='shotid'
         elif name.lower() == 'tree':
             name='name'
@@ -451,6 +460,24 @@ class Tree(object):
                 _treeshr.TreeQuitTree(self)
             finally:
                 Tree.unlock()
+            self._close()
+        else: self.close()
+
+    def close(self):
+        """Close tree.
+        @rtype: None
+        """
+        _treeshr.TreeClose(self.ctx,self.tree,self.shot)
+        self._close()
+
+    def _close(self):
+        def notopen(self):
+            raise _Exceptions.TreeNOT_OPEN
+        self.tctx.close()
+        for k in self.__dict__.keys():
+            del(self.__dict__[k])
+        self.__dict__['__getattribute__'] = notopen
+
 
     def removeTag(self,tag):
         """Remove a tagname from the tree

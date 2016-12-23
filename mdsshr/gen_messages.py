@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import sys,os
 
 sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sevs = {'warning':0,'success':1,'error':2,'informational':3,'fatal':4}
+sevs = {'warning':0,'success':1,'error':2,'info':3,'fatal':4,'internal':7}
 faclist = []
 facnums = {}
 msglist = []
@@ -29,7 +29,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
 ########################### generated from %s ########################
 
 """ % filename)
-    for f in root.getiterator('facility'):
+    for f in root.iter('facility'):
         facnam = f.get('name')
         facnum = int(f.get('value'))
         if facnum in facnums:
@@ -37,7 +37,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
         facnums[facnum]=filename
         ffacnam = facnam
         faclist.append(facnam)
-        for status in f.getiterator('status'):
+        for status in f.iter('status'):
             facnam = ffacnam
             msgnam = status.get('name')
             msgnum = int(status.get('value'))
@@ -60,18 +60,18 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                 pfaclist.append(facnam)
                 f_py.write("""
 
-class %(fac)sException(MDSplusException):
+class _%(fac)sException(MDSplusException):
   fac="%(fac)s"
-""" % {'fac':facnam.capitalize()})
+""" % {'fac':facnam})
             f_py.write("""
 
-class %(fac)s%(msgnam)s(%(fac)sException):
+class %(fac)s%(msgnam)s(_%(fac)sException):
   status=%(status)d
   message="%(message)s"
   msgnam="%(msgnam)s"
 
-MDSplusException.statusDict[%(msgn_nosev)s] = %(fac)s%(msgnam)s
-""" % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
+MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
+""" % {'fac':facnam,'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
             msglist.append({'msgnum':hex(msgn_nosev),'text':text,
                             'fac':facnam,'msgnam':msgnam,
                             'facabb':facabb})
@@ -97,10 +97,6 @@ class MDSplusException(Exception):
       code   = status & -8
       if code in cls.statusDict:
           cls = cls.statusDict[code]
-      elif status == MDSplusError.status:
-          cls = MDSplusError
-      elif status == MDSplusSuccess.status:
-          cls = MDSplusSuccess
       else:
           cls = MDSplusUnknown
       return cls.__new__(cls,*argv)
@@ -122,22 +118,6 @@ class MDSplusException(Exception):
                                self.severity,
                                self.msgnam,
                                self.message)
-
-class MDSplusError(MDSplusException):
-  fac="MDSplus"
-  severity="E"
-  msgnam="Error"
-  message="Failure to complete operation"
-  status=-8|2  # serverity E
-  def __init__(*args): pass
-
-class MDSplusSuccess(MDSplusException):
-  fac="MDSplus"
-  severity="S"
-  msgnam="Success"
-  message="Successful execution"
-  status=1
-  def __init__(*args): pass
 
 class MDSplusUnknown(MDSplusException):
   fac="MDSplus"
@@ -200,7 +180,7 @@ for msg in msglist:
       case %(msgnum)s:
         {static const char *text="%(text)s";
         static const char *msgnam="%(msgnam)s";
-        *fac_out = FAC_%(fac)s;
+        *fac_out = FAC_%(facu)s;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}

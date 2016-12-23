@@ -20,29 +20,25 @@ def Py(cmds, *arg):
     The lock argument is no longer used but retained for compatibility.
     """
     varname = arg[0] if len(arg)>0 else None
-    isglobal= arg[1] if len(arg)>1 else False
+    #isglobal= arg[1] if len(arg)>1 else False
     arg     = arg[3:]if len(arg)>3 else []
     MDSplus.Data.execute("deallocate(public _py_exception)")
     cmdlist=list()
     ans=1
     for cmd in cmds:
-        cmdlist.append(str(cmd))
+        cmdlist.append(MDSplus.version.tostr(cmd))
     cmds="\n".join(cmdlist)
-    if isglobal:
-        ns = globals()
-        ns['arg'] = arg
-    else:
-        ns = {"arg":arg,'MDSplus':MDSplus}
+    env = {"arg":arg,'MDSplus':MDSplus}
     try:
-        exec( cmds ) in ns
+        exec(compile(cmds,'<string>','exec'),globals(),env)
     except Exception as exc:
         _tb.print_exc()
         MDSplus.String(exc).setTdiVar("_py_exception")
         ans = 0
     if varname is not None:
-        varname=str(varname)
-        if varname in ns:
-            ans=ns[varname]
+        varname=MDSplus.version.tostr(varname)
+        if varname in env:
+            ans=env[varname]
         else:
             ans=None
     return ans

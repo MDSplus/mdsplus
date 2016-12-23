@@ -57,23 +57,23 @@ STATIC_THREADSAFE pthread_mutex_t yacc_mutex;
 int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[],
 		struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   EMPTYXD(tmp);
   struct descriptor *text_ptr;
   LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
   if (TdiThreadStatic()->compiler_recursing == 1) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
-    return 0;
+    return TdiRECURSIVE;
   }
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
   text_ptr = tmp.pointer;
-  if (status & 1 && text_ptr->dtype != DTYPE_T)
+  if (STATUS_OK && text_ptr->dtype != DTYPE_T)
     status = TdiINVDTYDSC;
-  if (status & 1) {
+  if STATUS_OK {
     if (text_ptr->length > 0) {
       if (TdiThreadStatic()->compiler_recursing == 1) {
 	fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported\n");
-	return 0;
+	return TdiRECURSIVE;
       }
       TdiThreadStatic()->compiler_recursing = 1;
       if (!TdiRefZone.l_zone)
@@ -92,9 +92,9 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
       TdiRefZone.l_narg = narg - 1;
       TdiRefZone.l_iarg = 0;
       TdiRefZone.a_list = &list[0];
-      if (status & 1) {
+      if STATUS_OK {
 	TdiYyReset();
-	if (TdiYacc() && TdiRefZone.l_status & 1)
+	if (TdiYacc() && IS_OK(TdiRefZone.l_status))
 	  status = TdiSYNTAX;
 	else
 	  status = TdiRefZone.l_status;
@@ -103,7 +103,7 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 	/************************
                   Move from temporary zone.
         ************************/
-      if (status & 1) {
+      if STATUS_OK {
 	if (TdiRefZone.a_result == 0)
 	  MdsFree1Dx(out_ptr, NULL);
 	else
@@ -125,11 +125,11 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 */
 int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
-  if (status & 1)
+  if STATUS_OK
     status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
   return status;
