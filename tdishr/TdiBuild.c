@@ -27,7 +27,7 @@ extern int TdiMasterData();
 int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
 
   status = MdsCopyDxXd(list[0], out_ptr);
   return status;
@@ -55,7 +55,7 @@ int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
 */
 int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor *ptr;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   DESCRIPTOR_FUNCTION(build, 0, 255);
@@ -93,7 +93,7 @@ int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor
       ptr = (struct descriptor *)ptr->pointer;
     build.arguments[k] = ptr;
   }
-  if (status & 1)
+  if STATUS_OK
     status = MdsCopyDxXd((struct descriptor *)&build, out_ptr);
   return status;
 }
@@ -106,7 +106,7 @@ int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor
 */
 int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
   int cmode = 0;
@@ -114,16 +114,16 @@ int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descri
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
   cats[1].out_dtype = cats[1].in_dtype;
   cats[1].out_cat = cats[1].in_cat;
-  if (status & 1)
+  if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 	/*********************************
         Change from text to path or event.
         *********************************/
-  if (status & 1) {
+  if STATUS_OK {
     dat[0].pointer->dtype = TdiRefFunction[opcode].o1;
     status = MdsCopyDxXd((struct descriptor *)&dat[0], out_ptr);
   }
-  if (status & 1)
+  if STATUS_OK
     status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
   if (sig[0].pointer)
     MdsFree1Dx(&sig[0], NULL);
@@ -143,7 +143,7 @@ int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descri
 */
 int Tdi1Make(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor *ptr;
   int j, k, modif;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -176,7 +176,7 @@ int Tdi1Make(int opcode, int narg, struct descriptor *list[], struct descriptor_
     j = 1;
   } else
     j = 0;
-  for (k = 0; j < narg && status & 1; ++j, ++k) {
+  for (k = 0; j < narg && STATUS_OK; ++j, ++k) {
     xd[k] = EMPTY_XD;
     if (list[j])
       status = TdiEvaluate(list[j], &xd[k] MDS_END_ARG);
@@ -187,7 +187,7 @@ int Tdi1Make(int opcode, int narg, struct descriptor *list[], struct descriptor_
       ptr = 0;
     build.arguments[k] = ptr;
   }
-  if (status & 1)
+  if STATUS_OK
     status = MdsCopyDxXd((struct descriptor *)&build, out_ptr);
   for (; --k >= 0;)
     MdsFree1Dx(&xd[k], NULL);

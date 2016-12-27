@@ -285,11 +285,11 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
   MAKE_S(table[type].dtype, table[type].length, mark_ptr->rptr);
 
   status = ConvertFloating(&str_dsc, mark_ptr->rptr);
-  if (status & 1 && bad > 0 && str[bad - 1] != '\0')
+  if (STATUS_OK && bad > 0 && str[bad - 1] != '\0')
     status = TdiEXTRANEOUS;
 
   mark_ptr->builtin = -1;
-  if (status & 1)
+  if STATUS_OK
     return (LEX_VALUE);
   TdiRefZone.l_status = status;
   return (LEX_ERROR);
@@ -403,10 +403,11 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
     4, DTYPE_LU, DTYPE_L}, {
     8, DTYPE_QU, DTYPE_Q}, {
   16, DTYPE_OU, DTYPE_O},};
+  INIT_STATUS;
   unsigned char sign, *now = str, *end = &str[str_len];
   unsigned char *qptr, qq[num1], qtst;
   int carry = 0, radix;
-  int length, is_signed, status = 1, tst, type;
+  int length, is_signed, tst, type;
 
 	/******************************
         Remove leading blanks and tabs.
@@ -589,7 +590,7 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
       if (*qptr != qtst)
 	status = TdiTOO_BIG;
 
-  if (status & 1) {
+  if STATUS_OK {
 #ifdef WORDS_BIGENDIAN
     int i;
     unsigned char *ptr = mark_ptr->rptr->pointer;

@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import sys,os
 
 sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sevs = {'warning':0,'success':1,'error':2,'informational':3,'fatal':4}
+sevs = {'warning':0,'success':1,'error':2,'info':3,'fatal':4,'internal':7}
 faclist = []
 facnums = {}
 msglist = []
@@ -12,32 +12,31 @@ def gen_include(root,filename,faclist,msglistm,f_test):
     pfaclist = []
     print filename
     f_inc=open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w')
-    f_inc.write("""
-#pragma once
-/*
-
+    f_inc.write(
+"""/*
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      %s
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 """ % filename)
     f_py.write("""
-
 ########################### generated from %s ########################
 
 """ % filename)
-    for f in root.getiterator('facility'):
+    for f in root.iter('facility'):
         facnam = f.get('name')
         facnum = int(f.get('value'))
         if facnum in facnums:
             raise Exception("Reused facility value %d, in %s. Previously used in %s" % (facnum, filename, facnums[facnum]))
         facnums[facnum]=filename
         ffacnam = facnam
-        faclist.append(facnam)
-        for status in f.getiterator('status'):
+        faclist.append(facnam.upper())
+        for status in f.iter('status'):
             facnam = ffacnam
             msgnam = status.get('name')
             msgnum = int(status.get('value'))
@@ -51,30 +50,32 @@ def gen_include(root,filename,faclist,msglistm,f_test):
             if f_test and facnam != 'Mdsdcl':
                 f_test.write("printf(\"%(msg)s = %%0x, msgnum=%%d,\\n msg=%%s\\n\",%(msg)s,(%(msg)s&0xffff)>>3,MdsGetMsg(%(msg)s));\n" % {'msg':facnam+msgnam})
             msgn_nosev = msgn & (-8)
-            f_inc.write("#define %s%-20s %s\n" % (facnam,msgnam,hex(msgn)))
+            f_inc.write("#define %-24s %s\n" % (facnam+msgnam,hex(msgn)))
             if (facabb):
                 facnam=facabb
-            if (sfacnam or facabb) and facnam not in faclist:
-                    faclist.append(facnam)
+            facu = facnam.upper()
+            if (sfacnam or facabb) and facu not in faclist:
+                    faclist.append(facu)
+            msg = {'msgnum':hex(msgn_nosev),'text':text,
+                   'fac':facnam,'facu':facu,'facabb':facabb,'msgnam':msgnam,
+                   'status':msgn,'message':text,'msgn_nosev':msgn_nosev}
             if not facnam in pfaclist:
                 pfaclist.append(facnam)
                 f_py.write("""
 
-class %(fac)sException(MDSplusException):
+class _%(fac)sException(MDSplusException):
   fac="%(fac)s"
-""" % {'fac':facnam.capitalize()})
+""" % {'fac':facnam})
+            msglist.append(msg)
             f_py.write("""
 
-class %(fac)s%(msgnam)s(%(fac)sException):
+class %(fac)s%(msgnam)s(_%(fac)sException):
   status=%(status)d
   message="%(message)s"
   msgnam="%(msgnam)s"
 
-MDSplusException.statusDict[%(msgn_nosev)s] = %(fac)s%(msgnam)s
-""" % {'fac':facnam.capitalize(),'msgnam':msgnam.upper(),'status':msgn,'message':text,'msgn_nosev':msgn_nosev})
-            msglist.append({'msgnum':hex(msgn_nosev),'text':text,
-                            'fac':facnam,'msgnam':msgnam,
-                            'facabb':facabb})
+MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
+""" % msg)
     f_inc.close()
 
 f_py=open("%s/mdsobjects/python/mdsExceptions.py"%sourcedir,'w')
@@ -97,10 +98,6 @@ class MDSplusException(Exception):
       code   = status & -8
       if code in cls.statusDict:
           cls = cls.statusDict[code]
-      elif status == MDSplusError.status:
-          cls = MDSplusError
-      elif status == MDSplusSuccess.status:
-          cls = MDSplusSuccess
       else:
           cls = MDSplusUnknown
       return cls.__new__(cls,*argv)
@@ -122,22 +119,6 @@ class MDSplusException(Exception):
                                self.severity,
                                self.msgnam,
                                self.message)
-
-class MDSplusError(MDSplusException):
-  fac="MDSplus"
-  severity="E"
-  msgnam="Error"
-  message="Failure to complete operation"
-  status=-8|2  # serverity E
-  def __init__(*args): pass
-
-class MDSplusSuccess(MDSplusException):
-  fac="MDSplus"
-  severity="S"
-  msgnam="Success"
-  message="Successful execution"
-  status=1
-  def __init__(*args): pass
 
 class MDSplusUnknown(MDSplusException):
   fac="MDSplus"
@@ -170,7 +151,6 @@ for root,dirs,files in os.walk(sourcedir):
 f_test=None
 if len(sys.argv) > 1:
     f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
-f_getmsg=open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w')
 for filename,filepath in xmllist.items():
     try:
         tree=ET.parse(filepath)
@@ -179,28 +159,25 @@ for filename,filepath in xmllist.items():
     except Exception,e:
         print e
 
-for fac in faclist:
-    f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (fac,fac.upper()))
+f_getmsg=open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w')
+exceptionDict=[]
+
+for facu in faclist:
+    f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu,facu))
 f_getmsg.write("""
 
 int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
     int sts;
     switch (status & (-8)) {
 """)
-exceptionDict=[]
-facList=[]
-for msg in msglist:
-        facList.append(msg['fac'])
-
 
 for msg in msglist:
-    msg['facu']=msg['fac'].upper()
     f_getmsg.write("""
 /* %(fac)s%(msgnam)s */
       case %(msgnum)s:
         {static const char *text="%(text)s";
         static const char *msgnam="%(msgnam)s";
-        *fac_out = FAC_%(fac)s;
+        *fac_out = FAC_%(facu)s;
         *msgnam_out = msgnam;
         *text_out = text;
         sts = 1;}

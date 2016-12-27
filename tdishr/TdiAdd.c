@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Add   
+                Name:   Tdi3Add
 
                 Type:   C function
 
@@ -8,11 +8,11 @@
 
                 Date:   18-FEB-1993
 
-                Purpose: Add two operands 
+                Purpose: Add two operands
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+        Call sequence:
 
 int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -480,7 +480,6 @@ int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
-  int status;
   unsigned int lb[2];
   unsigned int sub[2];
   lb[0] = b[0];
@@ -494,14 +493,12 @@ int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
       sub[i]++;
   }
   swapquad(sub);
-  status = TdiAddQuadword(a, sub, ans);
-  return status;
+  return TdiAddQuadword(a, sub, ans);
 }
 
 int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
-  int status;
   unsigned int lb[4];
   unsigned int sub[4];
   memcpy(lb, b, 16);
@@ -514,6 +511,5 @@ int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
       sub[i]++;
   }
   swapocta(sub);
-  status = TdiAddOctaword(a, sub, ans);
-  return status;
+  return TdiAddOctaword(a, sub, ans);
 }

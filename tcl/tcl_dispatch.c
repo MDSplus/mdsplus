@@ -379,10 +379,10 @@ static void CommandDone(DispatchedCommand * command)
 
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
+  INIT_STATUS;
   char *cli = NULL;
   char *ident = NULL;
   DispatchedCommand *command = calloc(1,sizeof(DispatchedCommand));
-  int sts = 1;
 
   if (!SyncEfnInit)
     InitSyncEfn();
@@ -391,25 +391,24 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
   cli_get_value(ctx, "P1", &command->command);
   if(command->command){
     if (cli_present(ctx, "WAIT") & 1) {
-      if (sts & 1) {
-        sts = ServerDispatchCommand(SyncEfn, ident, cli, command->command, 0, 0, &command->sts, 0);
-        if (sts & 1) {
+      if STATUS_OK {
+        status = ServerDispatchCommand(SyncEfn, ident, cli, command->command, 0, 0, &command->sts, 0);
+        if STATUS_OK {
 	  WaitfrEf(SyncEfn);
-	  sts = command->sts;
+	  status = command->sts;
         }
       }
-      if (~sts & 1) {
-        char *msg = MdsGetMsg(sts);
+      if STATUS_NOT_OK {
+        char *msg = MdsGetMsg(status);
         *error = malloc(strlen(msg) + 100);
         sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
       }
       free(command->command);
       free(command);
     } else {
-      sts = ServerDispatchCommand(0, ident, cli,
-	command->command, CommandDone, command, &command->sts, 0);
-      if (~sts & 1) {
-        char *msg = MdsGetMsg(sts);
+      status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, 0);
+      if STATUS_NOT_OK {
+        char *msg = MdsGetMsg(status);
         *error = malloc(strlen(msg) + 100);
         sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
         free(command->command);
@@ -417,14 +416,14 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
       }
     }
   } else {
-    sts = MdsdclMISSING_VALUE;
+    status = MdsdclMISSING_VALUE;
     free(command);
   }
   if (cli)
     free(cli);
   if (ident)
     free(ident);
-  return sts;
+  return status;
 }
 
 	/***************************************************************

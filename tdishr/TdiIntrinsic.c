@@ -188,7 +188,7 @@ STATIC_ROUTINE int interlude(int (*f1) (),
 			     int opcode,
 			     int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 #if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
   __try {
 #endif
@@ -206,7 +206,7 @@ STATIC_CONSTANT EMPTYXD(emptyxd);
 
 int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp;
   int stat1 = 1;
@@ -238,7 +238,7 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       if (fixed[i])
 	free(fixed_list[i]);
   }
-  if (status & 1
+  if (STATUS_OK
       || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
 
     if (!out_ptr)
@@ -397,7 +397,7 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int option = -1;
   int mess_stat = (TdiThreadStatic())->TdiIntrinsic_mess_stat;
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);

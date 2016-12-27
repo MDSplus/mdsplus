@@ -1,13 +1,12 @@
-
-#pragma once
 /*
-
  This header was generated using mdsshr/gen_messages.py
  To add new status messages modify:
      treeshr_messages.xml
  and then in mdsshr do:
      python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 #define TreeALREADY_OFF          0xfd1802b
 #define TreeALREADY_ON           0xfd18033

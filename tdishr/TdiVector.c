@@ -28,7 +28,7 @@ extern int Tdi2Vector();
 
 int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   array miss = { sizeof(char), DTYPE_MISSING, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 0,
 									 0}, 1, 0
   };
@@ -51,7 +51,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         ************************************/
 
   status = (psig = malloc(virt)) != NULL;
-  if (status & 1) {
+  if STATUS_OK {
     puni = (struct descriptor_xd(*)[])&(*psig)[narg];
     pdat = (struct descriptor_xd(*)[])&(*puni)[narg];
     pnelem = (int (*)[])&(*pdat)[narg];
@@ -61,13 +61,13 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
 	/******************************************
         Fetch signals and data and data's category.
         ******************************************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiGetArgs(opcode, narg, list, (*psig), (*puni), (*pdat), (*pcats));
 
 	/*****************************************
         Save and accumulate lengths of all inputs.
         *****************************************/
-  if (status & 1)
+  if STATUS_OK
     for (j = narg; --j >= 0;) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;
       if ((*pcats)[j].digits > (*pcats)[narg].digits)
@@ -97,7 +97,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         Shape: [[3,1],[3,4]] is [3,5].
         Shape: [[3],[3,4]] is [3,5].
         ********************************/
-  if (!(status & 1)) ;
+  if (STATUS_NOT_OK) ;
   else if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
     n = 0;
     for (j = 0; j < narg; ++j) {
@@ -133,20 +133,20 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
     arr.aflags.coeff = 0;
   }
 
-  if (status & 1)
+  if STATUS_OK
     status = Tdi2Vector(narg, (*puni), (*pdat), (*pcats), 0);
 
 	/*********************
         Find type conversions.
         *********************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiCvtArgs(0, (*pdat), &(*pcats)[narg]);
 
 	/***************************
         Get an array to hold it all.
         Size is 1 so arsize = nelem.
         ***************************/
-  if (status & 1)
+  if STATUS_OK
     status =
 	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits,
 		   &(*pcats)[narg].out_dtype, out_ptr);
@@ -156,12 +156,12 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
         Recycle arr as temporary pointer.
         Class and flags are the same.
         *********************************/
-  if (status & 1) {
+  if STATUS_OK {
     struct descriptor *pout = out_ptr->pointer;
     arr.length = pout->length;
     arr.dtype = pout->dtype;
     arr.pointer = pout->pointer;
-    for (j = 0; j < narg && status & 1; ++j) {
+    for (j = 0; j < narg && STATUS_OK; ++j) {
       arr.arsize = (*pnelem)[j] * arr.length;
       status = TdiConvert((*pdat)[j].pointer, &arr MDS_END_ARG);
       arr.pointer += arr.arsize;
@@ -171,7 +171,7 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
 	/*************************
         Remove signal, keep units.
         *************************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiMasterData(0, (*psig), (*puni), &cmode, out_ptr);
 
 	/********************

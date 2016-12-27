@@ -98,17 +98,17 @@ extern int TdiLexPath();
 #define YYMAXDEPTH      250
 
 #define yyparse         TdiYacc
-#define _RESOLVE(arg)   if (TdiYacc_RESOLVE(&arg.rptr)) {yyerror(0);}
-#define _FULL1(opcode,arg1,out)                 if (TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {yyerror(0);}
-#define _FULL2(opcode,arg1,arg2,out)            if (TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {yyerror(0);}
+#define _RESOLVE(arg)   			if IS_NOT_OK(TdiYacc_RESOLVE(&arg.rptr)) {yyerror(0);}
+#define _FULL1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(255, 1, opcode, &out, &arg1)) {yyerror(0);}
+#define _FULL2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2)) {yyerror(0);}
 	/*****************************
         Two args for image->routine.
         *****************************/
-#define _JUST0(opcode,out)                      if (TdiYacc_BUILD(2, 0, opcode, &out)) {yyerror(0);}
-#define _JUST1(opcode,arg1,out)                 if (TdiYacc_BUILD(3, 1, opcode, &out, &arg1)) {yyerror(0);}
-#define _JUST2(opcode,arg1,arg2,out)            if (TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2)) {yyerror(0);}
-#define _JUST3(opcode,arg1,arg2,arg3,out)       if (TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {yyerror(0);}
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if (TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {yyerror(0);}
+#define _JUST0(opcode,out)                      if IS_NOT_OK(TdiYacc_BUILD(2, 0, opcode, &out)) {yyerror(0);}
+#define _JUST1(opcode,arg1,out)                 if IS_NOT_OK(TdiYacc_BUILD(3, 1, opcode, &out, &arg1)) {yyerror(0);}
+#define _JUST2(opcode,arg1,arg2,out)            if IS_NOT_OK(TdiYacc_BUILD(2, 2, opcode, &out, &arg1, &arg2)) {yyerror(0);}
+#define _JUST3(opcode,arg1,arg2,arg3,out)       if IS_NOT_OK(TdiYacc_BUILD(3, 3, opcode, &out, &arg1, &arg2, &arg3)) {yyerror(0);}
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  if IS_NOT_OK(TdiYacc_BUILD(4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4)) {yyerror(0);}
 
 STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
 
@@ -755,11 +755,11 @@ __YYSCLASS char *yyreds[] = {
 #define YYERROR         goto yyerrlab
 
 #ifndef __RUNTIME_YYMAXDEPTH
-#define YYACCEPT        {return(0);}
-#define YYABORT         {return(1);}
+#define YYACCEPT        {return MDSplusSUCCESS;}
+#define YYABORT         {return MDSplusERROR;}
 #else
-#define YYACCEPT        {free_stacks(); return(0);}
-#define YYABORT         {free_stacks(); return(1);}
+#define YYACCEPT        {free_stacks(); return MDSplusSUCCESS;}
+#define YYABORT         {free_stacks(); return MDSplusERROR;}
 #endif
 
 #define YYBACKUP( newtoken, newvalue )\
@@ -1203,7 +1203,7 @@ int yyparse()
 	  ++yyval.mark.rptr->ndesc;
 	} else {
 	  TdiRefZone.l_status = TdiEXTRA_ARG;
-	  return (1);
+	  return MDSplusERROR;
       } else {
 	unsigned int vmlen = sizeof(struct descriptor_range);
 	LibGetVm(&vmlen, (void **)&yyval.mark.rptr, &TdiRefZone.l_zone);
@@ -1549,7 +1549,7 @@ int yyparse()
 	  break;
       if (j < 0) {
 	TdiRefZone.l_status = TdiINVDTYDSC;
-	return (1);
+	return MDSplusERROR;
       }
       yyval.mark.rptr->dtype = DTYPE_CALL;
       yyval.mark.rptr->length = 1;
@@ -1817,9 +1817,9 @@ STATIC_ROUTINE int allocate_stacks()
 
   if (yys == 0 || yyv == 0) {
     yyerror((nl_msg(30004, "unable to allocate space for yacc stacks")));
-    return (1);
+    return MDSplusERROR;
   } else
-    return (0);
+    return MDSplusSUCCESS;
 
 }
 
