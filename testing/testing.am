@@ -66,8 +66,21 @@ tests: rebuild-tests
 # //////////////////////////////////////////////////////////////////////////// #
 
 if ENABLE_SANITIZE
-  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
-  TESTS_ENVIRONMENT += ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1
+
+  # // sanitizer options specific (overload this in your Makefile.am) //
+  LSAN_OPTIONS       ?=
+  ASAN_OPTIONS       ?=
+  TSAN_OPTIONS       ?=
+  UBSAN_OPTIONS      ?=
+
+  # // suppressions files (overload this in your Makefile.am) //
+  LSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-lsan.supp
+  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-asan.supp
+  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-tsan.supp
+  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/gcc-ubsan.supp
+
+  TESTS_ENVIRONMENT += ${ENABLE_SANITIZE_OPTIONS}=${${ENABLE_SANITIZE_OPTIONS}_SUPP}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1
+  TESTS_ENVIRONMENT += LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS}
   TESTS_ENVIRONMENT += LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH}
   TESTS_ENVIRONMENT += TEST_TIMEUNIT=5
 endif
