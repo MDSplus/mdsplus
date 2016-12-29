@@ -21,7 +21,7 @@ TESTS = \
 #        mdslib_ctest
 
 VALGRIND_SUPPRESSIONS_FILES = \
-                              $(top_srcdir)/testing/valgrind-mdsplus.supp
+			      $(top_srcdir)/conf/valgrind-mdsplus.supp
 
 #
 # Files produced by tests that must be purged
