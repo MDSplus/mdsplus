@@ -413,6 +413,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 				    "([F[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jfloats = (*env)->NewFloatArray(env, length);
       (*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *) float_buf);
+      free((char *)float_buf);
       args[0].l = jfloats;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -432,6 +433,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 				    "([D[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
       jdoubles = (*env)->NewDoubleArray(env, length);
       (*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *) double_buf);
+      free((char *)double_buf);
       args[0].l = jdoubles;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
