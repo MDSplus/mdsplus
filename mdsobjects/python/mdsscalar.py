@@ -231,12 +231,12 @@ class String(Scalar):
     def __contains__(self,y):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
-        return str(self._value).find(str(y)) != -1
+        return str(self).find(str(y)) != -1
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
         if len(self._value) > 0:
-            return str(self._value)
+            return _ver.tostr(self._value)
         else:
             return ''
     def __len__(self):
