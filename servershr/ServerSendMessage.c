@@ -104,8 +104,6 @@ int ServerBadSocket(SOCKET socket);
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); \
-if (!(status & 1)) goto send_error;
 
 static int StartReceiver(short *port);
 int ServerConnect(char *server);
@@ -172,23 +170,24 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
     int numbytes;
     int *dptr;
     va_list vlist;
-    void *mem = 0;
+    void *mem = NULL;
     struct descrip *arg;
     if (conid_out)
       *conid_out = conid;
-    if (addr == 0) {
+    if (!addr) {
       int sock = getSocket(conid);
       struct sockaddr_in addr_struct = {0};
       socklen_t len = sizeof(addr_struct);
       if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
 	addr = *(int *)&addr_struct.sin_addr;
+      if (!addr) {
+        perror("Error getting the address the socket is bound to.\n");
+        if (ast)
+          ast(astparam);
+        return ServerSOCKET_ADDR_ERROR;
+      }
     }
-    if (addr)
-      jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
-    else {
-      perror("Error getting the address the socket is bound to.\n");
-      return ServerSOCKET_ADDR_ERROR;
-    }
+    jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
     if (before_ast)
       flags |= SrvJobBEFORE_NOTIFY;
     sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
@@ -227,23 +226,18 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       }
     }
     strcat(cmd, ")");
-    SndArgChk(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
+    status = SendArg(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
+    if STATUS_NOT_OK {
+        perror("Error sending message to server");
+        CleanupJob(status, jobid);
+        return status;
+    }
     status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
+    if STATUS_NOT_OK
+        perror("Error: no response from server");
     if (mem)
       free(mem);
-    if (!addr) {
-      if (retstatus)
-	*retstatus = status;
-      if (ast)
-	(*ast) (astparam, "Job Done");
-    }
   }
-
-  return status;
-
- send_error:
-  perror("Error sending message to server");
-  CleanupJob(status, jobid);
   return status;
 }
 
