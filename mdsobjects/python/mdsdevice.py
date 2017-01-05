@@ -4,10 +4,11 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import os as _os
-from os import getenv as _getenv
+import os as _os,sys as _sys
 _treeshr=_mimport('_treeshr')
+_mdsshr=_mimport('_mdsshr')
 _treenode=_mimport('treenode')
+_exceptions=_mimport('mdsExceptions')
 _compound=_mimport('compound')
 _ident=_mimport('ident')
 _mdsarray=_mimport('mdsarray')
@@ -88,7 +89,7 @@ class Device(_treenode.TreeNode):
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    debug = _getenv('DEBUG_DEVICES')
+    debug = _os.getenv('DEBUG_DEVICES')
     gtkThread = None
 
     """ debug safe import """
@@ -338,58 +339,61 @@ class Device(_treenode.TreeNode):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)
 
-
+    __cached_py_device_modules = {}
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-
-        import __builtin__
-        import sys
-        check_name=name.lower()+".py"
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
-            parts=path.split(';')
-            for part in parts:
-                w=_os.walk(part)
-                for dp,dn,fn in w:
-                    for fname in fn:
-                        if fname.lower() == check_name:
-                            sys.path.insert(0,dp)
-                            try:
-                                ans=__builtin__.__import__(fname[:-3])
-                            finally:
-                                sys.path.remove(dp)
-                            return ans
+        path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
+        name = name.lower()
+        if name in Device.__cached_py_device_modules:
+            return Device.__cached_py_device_modules[name]
+        if path is not None:
+          check_name=name+".py"
+          parts=path.split(';')
+          for part in parts:
+            w=_os.walk(part)
+            for dp,dn,fn in w:
+              for fname in fn:
+                if fname.lower() == check_name:
+                  _sys.path.insert(0,dp)
+                  try:
+                    device = __import__(fname[:-3])
+                    Device.__cached_py_device_modules[name] = device
+                    return device
+                  finally:
+                    _sys.path.remove(dp)
+        raise _exceptions.DevPYDEVICE_NOT_FOUND
     importPyDeviceModule=staticmethod(importPyDeviceModule)
+
+    def PyDevice(module,model=None):
+        if model is None: model=module
+        return Device.importPyDeviceModule(module).__dict__[model]
+    PyDevice=staticmethod(PyDevice)
 
     def findPyDevices():
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
-        import __builtin__
         import sys
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
-            parts=path.split(';')
-            for part in parts:
-                w=_os.walk(part)
-                for dp,dn,fn in w:
-                    for fname in fn:
-                        if fname.endswith('.py'):
-                            sys.path.insert(0,dp)
-                            try:
-                                devnam=fname[:-3].upper()
-                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
-                                ans.append(devnam+'\0')
-                                ans.append('\0')
-                            except:
-                                pass
-                            finally:
-                                sys.path.remove(dp)
-        if len(ans) == 0:
-            return None
-        else:
+        path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
+        if path is None: return
+        parts=path.split(';')
+        for part in parts:
+            w=_os.walk(part)
+            for dp,dn,fn in w:
+                for fname in fn:
+                    if fname.endswith('.py'):
+                        sys.path.insert(0,dp)
+                        try:
+                            devnam=fname[:-3].upper()
+                            __import__(fname[:-3]).__dict__[devnam]
+                            ans.append(devnam+'\0')
+                            ans.append('\0')
+                        except:
+                            pass
+                        finally:
+                            sys.path.remove(dp)
+        if len(ans) > 0:
             return _mdsdata.Data.execute(str(ans))
-
 
     findPyDevices=staticmethod(findPyDevices)
 

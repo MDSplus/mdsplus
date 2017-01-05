@@ -123,16 +123,25 @@ class testing(object):
 ts = testing()
 def check_arch(file_name):
     if sys.platform.startswith('win'):
-        lib='MdsShr.dll'
+        lib   = '%s.dll'
+        pylib = 'python%d.%d'
     elif sys.platform.startswith('darwin'):
-        lib='libMdsShr.dylib'
+        lib   = 'lib%s.dylib'
+        pylib = 'python%d.%d'
     else:
-        lib='libMdsShr.so'
+        lib   = 'lib%s.so'
+        pylib = 'python%d.%d'
     try:
-        ts.check_loadlib(lib)
+        ts.check_loadlib(lib%'MdsShr')
     except OSError:
         ts.skip_test(os.path.basename(file_name),
                      'Unable to load MDSplus core libs')
+    try:
+        pylib = lib%(pylib%sys.version_info[0:2])
+        ts.check_loadlib(pylib)
+    except OSError:
+        ts.skip_test(os.path.basename(file_name),
+                     'Unable to load python lib "%s"'%(pylib,))
 
 
 if __name__ == '__main__':
