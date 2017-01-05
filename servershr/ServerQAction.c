@@ -79,16 +79,16 @@ extern int MdsGetClientAddr();
 extern char *MdsGetServerPortname();
 
 static int Logging = 1;
-static SrvJob *LastQueueEntry;
-static SrvJob *FirstQueueEntry;
-static SrvJob *CurrentJob;
-static MonitorList *Monitors;
-static ClientList *Clients = 0;
+static SrvJob *LastQueueEntry = NULL;
+static SrvJob *FirstQueueEntry = NULL;
+static SrvJob *CurrentJob = NULL;
+static MonitorList *Monitors = NULL;
+static ClientList *Clients = NULL;
 static int WorkerThreadRunning = 0;
 static pthread_t WorkerThread;
 static pthread_cond_t JobWaitCondition;
 static pthread_mutex_t JobWaitMutex;
-static char *current_job_text = 0;
+static char *current_job_text = NULL;
 static int Debug = 0;
 static int QueueLocked = 0;
 int ProgLoc = 0;
@@ -101,7 +101,7 @@ EXPORT struct descriptor *ServerInfo()
   static DESCRIPTOR(nothing, "");
   static EMPTYXD(xd);
   int status = ShowCurrentJob(&xd);
-  if (status & 1 && xd.pointer)
+  if (STATUS_OK && xd.pointer)
     return xd.pointer;
   else
     return (struct descriptor *)&nothing;
@@ -117,7 +117,7 @@ EXPORT int ServerDebug(int setting)
 EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
-  int status=ServerINVALID_ACTION_OPERATION;
+  int status = ServerINVALID_ACTION_OPERATION;
   switch (*op) {
   case SrvRemoveLast:
     {
@@ -193,7 +193,7 @@ EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *o
   case SrvSetLogging:
     {
       Logging = *(int *)p1;
-      status = 1;
+      status = MDSplusSUCCESS;
       break;
     }
   case SrvCommand:
@@ -233,7 +233,7 @@ EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *o
       if (job.h.addr)
 	status = QJob((SrvJob *) & job);
       else
-	status = 0;
+	status = MDSplusERROR;
       break;
     }
   case SrvShow:
@@ -268,8 +268,8 @@ static int QJob(SrvJob * job)
 
 static int RemoveLast()
 {
+  INIT_STATUS_ERROR;
   SrvJob *job;
-  int status;
   LockQueue();
   job = LastQueueEntry;
   if (job) {
@@ -281,9 +281,7 @@ static int RemoveLast()
 
     FreeJob(job);
     printf("Removed pending action");
-    status = 1;
-  } else {
-    status = 0;
+    status = MDSplusSUCCESS;
   }
   UnlockQueue();
   return status;
@@ -395,7 +393,7 @@ static void *Worker(void *arg __attribute__ ((unused)) )
   }
   LeftWorkerLoop++;
   pthread_cleanup_pop(1);
-  return 0;
+  return NULL;
 }
 
 static SrvJob *GetCurrentJob()
@@ -436,14 +434,14 @@ EXPORT int GetDoingNid()
 
 static int DoSrvAction(SrvJob * job_in)
 {
-  int status;
+  INIT_STATUS_ERROR;
   SrvActionJob *job = (SrvActionJob *) job_in;
   char *job_text, *old_job_text;
   sprintf((job_text =
 	   (char *)malloc(100)), "Doing nid %d in %s shot %d", job->nid, job->tree, job->shot);
   current_job_text = job_text;
   status = TreeOpen(job->tree, job->shot, 0);
-  if (status & 1) {
+  if STATUS_OK {
     int retstatus;
     DESCRIPTOR_NID(nid_dsc, 0);
     DESCRIPTOR_LONG(ans_dsc, 0);
@@ -474,7 +472,7 @@ static int DoSrvAction(SrvJob * job_in)
       printf("%s, %s\n", Now(), current_job_text);
       fflush(stdout);
     }
-    if (status & 1)
+    if STATUS_OK
       status = retstatus;
   }
   if (job_in->h.addr)
@@ -484,10 +482,10 @@ static int DoSrvAction(SrvJob * job_in)
 
 static int DoSrvClose(SrvJob * job_in)
 {
-  int status;
+  INIT_STATUS_ERROR;
   char *job_text = strcpy((char *)malloc(32), "Closing trees");
   current_job_text = job_text;
-  while ((status = TreeClose(0, 0)) & 1) ;
+  while IS_OK(status = TreeClose(0, 0));
   status = (status == TreeNOT_OPEN) ? TreeNORMAL : status;
   if (job_in->h.addr)
     SendReply(job_in, SrvJobFINISHED, status, 0, 0);
@@ -496,7 +494,7 @@ static int DoSrvClose(SrvJob * job_in)
 
 static int DoSrvCreatePulse(SrvJob * job_in)
 {
-  int status;
+  INIT_STATUS_ERROR;
   SrvCreatePulseJob *job = (SrvCreatePulseJob *) job_in;
   char *job_text = malloc(100);
   sprintf(job_text, "Creating pulse for %s shot %d", ((SrvCreatePulseJob *) job)->tree,
@@ -510,7 +508,7 @@ static int DoSrvCreatePulse(SrvJob * job_in)
 
 static int DoSrvCommand(SrvJob * job_in)
 {
-  int status;
+  INIT_STATUS_ERROR;
   SrvCommandJob *job = (SrvCommandJob *) job_in;
   char *set_table = strcpy(malloc(strlen(job->table) + 24), "set command ");
   char *job_text = (char *)malloc(strlen(job->command) + strlen(job->table) + 60);
@@ -539,40 +537,31 @@ static int DoSrvCommand(SrvJob * job_in)
 
 static int AddMonitorClient(SrvJob * job)
 {
-  MonitorList *new;
-  MonitorList *curr;
-
-  for (curr = Monitors; curr; curr = curr->next) {
-    if (job->h.addr == curr->addr && job->h.port == curr->port)
-      return (1);
-  }
-  new = (MonitorList *) malloc(sizeof(MonitorList));
-  new->addr = job->h.addr;
-  new->port = job->h.port;
-  new->next = Monitors;
-  Monitors = new;
-  return (1);
+  MonitorList *mlist;
+  for (mlist = Monitors ; mlist ; mlist = mlist->next)
+    if (job->h.addr == mlist->addr && job->h.port == mlist->port)
+      return MDSplusSUCCESS;
+  mlist = (MonitorList *) malloc(sizeof(MonitorList));
+  mlist->addr = job->h.addr;
+  mlist->port = job->h.port;
+  mlist->next = Monitors;
+  Monitors = mlist;
+  return MDSplusSUCCESS;
 }
 
-static void SendToMonitor(MonitorList * m, MonitorList * prev, SrvJob * job_in)
+static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
 {
-  int status;
+  INIT_STATUS_ERROR;
   SrvMonitorJob *job = (SrvMonitorJob *) job_in;
-
-/*
- char msg[1024];
- sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
-*/
-  char *msg = 0;
+  char *msg = NULL;// char msg[1024];
+  // sprintf(msg,"%s %d %d %d %d %s",job->tree,job->shot,job->nid,job->on,job->mode,job->server);
   struct descriptor_d fullpath = { 0, DTYPE_T, CLASS_D, 0 };
   DESCRIPTOR(fullpath_d, "FULLPATH");
   DESCRIPTOR(nullstr, "\0");
   DESCRIPTOR_NID(niddsc, 0);
   char *status_text = MdsGetMsg(job->status);
-
   status = TreeOpen(job->tree, job->shot, 0);
-  if (status & 1) {
-
+  if STATUS_OK {
     niddsc.pointer = (char *)&job->nid;
     status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
     StrAppend(&fullpath, (struct descriptor *)&nullstr);
@@ -593,33 +582,34 @@ static void SendToMonitor(MonitorList * m, MonitorList * prev, SrvJob * job_in)
   status = SendReply(job_in, SrvJobFINISHED, 1, strlen(msg), msg);
   if (msg)
     free(msg);
-  if (!(status & 1)) {
+  if STATUS_NOT_OK {
     if (prev)
-      prev->next = m->next;
+        prev->next = m->next;
     else
-      Monitors = m->next;
+        Monitors = m->next;
     free(m);
   }
 }
 
 static int SendToMonitors(SrvJob * job)
 {
-  MonitorList *m, *prev;
+  MonitorList *m, *prev, *next;
   int prev_addr = job->h.addr;
   short prev_port = job->h.port;
-  for (prev = 0, m = Monitors; m; prev = m, m = m->next) {
+  for (prev = NULL , m = Monitors ; m ; m = next) {
     job->h.addr = m->addr;
     job->h.port = m->port;
+    next = m->next;
     SendToMonitor(m, prev, job);
   }
   job->h.addr = prev_addr;
   job->h.port = prev_port;
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 static void DoSrvMonitor(SrvJob * job_in)
 {
-  int status;
+  INIT_STATUS_ERROR;
   SrvMonitorJob *job = (SrvMonitorJob *) job_in;
   status = (job->mode == MonitorCheckin) ? AddMonitorClient(job_in) : SendToMonitors(job_in);
   SendReply(job_in, (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED, status, 0, 0);
@@ -666,7 +656,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
   ans_d.pointer = ans_c;
   MdsCopyDxXd(&ans_d, ans);
   free(ans_c);
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 static void KillThread()
@@ -713,18 +703,18 @@ static void WaitForJob()
 static int StartThread()
 {
   static int JobWaitInitialized = 0;
-  int status;
+  int c_status;
   pthread_attr_t att;
   if (JobWaitInitialized == 0) {
-    status = pthread_mutex_init(&JobWaitMutex, pthread_mutexattr_default);
-    if (status) {
+    c_status = pthread_mutex_init(&JobWaitMutex, pthread_mutexattr_default);
+    if (c_status) {
       perror("Error creating pthread mutex");
-      exit(status);
+      exit(c_status);
     }
-    status = pthread_cond_init(&JobWaitCondition, pthread_condattr_default);
-    if (status) {
+    c_status = pthread_cond_init(&JobWaitCondition, pthread_condattr_default);
+    if (c_status) {
       perror("Error creating pthread condition");
-      exit(status);
+      exit(c_status);
     }
     JobWaitInitialized = 1;
   }
@@ -733,18 +723,18 @@ static int StartThread()
     pthread_attr_setstacksize(&att, 0xffffff);
     WorkerThreadRunning = 1;
     pthread_attr_setdetachstate(&att, PTHREAD_CREATE_DETACHED);
-    status = pthread_create(&WorkerThread, &att, Worker, 0);
-    if (status) {
+    c_status = pthread_create(&WorkerThread, &att, Worker, 0);
+    if (c_status) {
       perror("Error creating pthread");
-      exit(status);
+      exit(c_status);
     }
   }
-  status = pthread_cond_signal(&JobWaitCondition);
-  if (status) {
+  c_status = pthread_cond_signal(&JobWaitCondition);
+  if (c_status) {
     perror("Error signalling condition");
-    exit(status);
+    exit(c_status);
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 static SOCKET AttachPort(int addr, short port)
@@ -772,7 +762,7 @@ static SOCKET AttachPort(int addr, short port)
       shutdown(sock, 2);
       close(sock);
       perror("Error establishing reply connection to mdstcl client (i.e. dispatcher)");
-      return -1;
+      return INVALID_SOCKET;
     }
     new = (ClientList *) malloc(sizeof(ClientList));
     l = Clients;
@@ -807,7 +797,7 @@ static void RemoveClient(SrvJob * job)
 
 static int SendReply(SrvJob * job, int replyType, int status_in, int length, char *msg)
 {
-  int status = 0;
+  INIT_STATUS_ERROR;
   SOCKET sock;
 #ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
@@ -823,11 +813,11 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
       if (length) {
 	bytes = send(sock, msg, length, 0);
 	if (bytes == length)
-	  status = 1;
+	  status = MDSplusSUCCESS;
       } else
-	status = 1;
+	status = MDSplusSUCCESS;
     }
-    if (!(status & 1))
+    if STATUS_NOT_OK
       RemoveClient(job);
   }
 #ifndef _WIN32
