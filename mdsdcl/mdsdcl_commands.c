@@ -15,6 +15,7 @@
 #include        <mdsshr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <pthread.h>
 #include <dcl.h>
 #include "dcl_p.h"
 
@@ -50,32 +51,60 @@ static int STOP_ON_FAIL = 1;
 *  05-Nov-1997  TRG  Create.
 *
 ************************************************************************/
+static int static_mutex_initialized = 0;
+static pthread_mutex_t static_mutex;
+
+static void lock_static()
+{
+  if (!static_mutex_initialized) {
+      static_mutex_initialized = 1;
+      pthread_mutex_init(&static_mutex, 0);
+    }
+  pthread_mutex_lock(&static_mutex);
+}
+
+static void unlock_static()
+{
+  if (!static_mutex_initialized) {
+      static_mutex_initialized = 1;
+      pthread_mutex_init(&static_mutex, 0);
+    }
+  pthread_mutex_unlock(&static_mutex);
+}
 
 static char *PROMPT = 0;
 static char *DEF_FILE = 0;
 
 void mdsdclSetPrompt(const char *prompt)
 {
+  lock_static();
   if (PROMPT)
     free(PROMPT);
   PROMPT = strdup(prompt);
+  unlock_static();
 }
 
 EXPORT char *mdsdclGetPrompt()
 {
+  char *ans;
+  lock_static();
   if (PROMPT == NULL)
     PROMPT = strdup("Command> ");
-  return strdup(PROMPT);
+  ans = strdup(PROMPT);
+  unlock_static();
+  return ans;
 }
 
 void mdsdclSetDefFile(const char *deffile)
 {
+  lock_static();
   if (DEF_FILE)
     free(DEF_FILE);
   if (deffile[0] == '*')
     DEF_FILE = strdup(deffile + 1);
   else
     DEF_FILE = strdup(deffile);
+  unlock_static();
 }
 
 	/****************************************************************
@@ -360,9 +389,8 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute
 	free(def_file);
 	def_file = tmp;
       }
-      if (DEF_FILE)
-	free(DEF_FILE);
-      DEF_FILE = def_file;
+      mdsdclSetDefFile(def_file);
+      free(def_file);
     }
     cli_get_value(ctx, "HISTORY", &history);
     if (history) {
@@ -584,6 +612,7 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
   if (indirect) {
     FILE *f = NULL;
     char line[4096];
+    lock_static();
     if (DEF_FILE &&
 	(strlen(DEF_FILE) > 0) && !((strlen(name) > strlen(DEF_FILE)) &&
 				    (strcmp(name + strlen(name) - strlen(DEF_FILE), DEF_FILE) ==
@@ -592,6 +621,7 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
       defname = strcat(realloc(defname, strlen(defname) + strlen(DEF_FILE) + 1), DEF_FILE);
       f = fopen(defname, "r");
     }
+    unlock_static();
     if (f == NULL)
       f = fopen(name, "r");
     if (f == NULL) {
