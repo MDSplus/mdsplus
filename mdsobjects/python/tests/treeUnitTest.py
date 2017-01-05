@@ -333,7 +333,7 @@ class treeTests(TestCase):
               mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
                              stdout=log,stderr=STDOUT)
           try:
-            sleep(.1)
+            sleep(5)
             if Popen:
                 self.assertEqual(mdsip.poll(),None)
             """ tcl dispatch """
@@ -342,13 +342,13 @@ class treeTests(TestCase):
             testDispatchCommand('type test')
             self._doTCLTest('dispatch/build')
             self._doTCLTest('dispatch/phase INIT')
-            sleep(.01)
+            sleep(1)
             self._doTCLTest('show server %s'%server,out=show_server,re=True)
             self._doTCLTest('dispatch/phase PULSE')
-            sleep(.01)
+            sleep(1)
             self._doTCLTest('show server %s'%server,out=show_server,re=True)
             self._doTCLTest('dispatch/phase STORE')
-            sleep(.01)
+            sleep(1)
             self._doTCLTest('show server %s'%server,out=show_server,re=True)
             """ tcl exceptions """
             self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
