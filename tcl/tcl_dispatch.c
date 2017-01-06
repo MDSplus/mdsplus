@@ -355,7 +355,7 @@ typedef struct {
 
 static void CommandDone(DispatchedCommand * command)
 {
-  if (!(command->sts & 1)) {
+  if IS_NOT_OK(command->sts) {
     char *msg = MdsGetMsg(command->sts);
     fprintf(stderr, "Error: Command failed - '%s'\n"
 	    "Error message was: %s\n", command->command, msg);
@@ -367,7 +367,7 @@ static void CommandDone(DispatchedCommand * command)
 
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  INIT_STATUS;
+  INIT_STATUS,stat1=0;
   char *cli = NULL;
   char *ident = NULL;
   DispatchedCommand *command = calloc(1,sizeof(DispatchedCommand));
@@ -375,29 +375,19 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
   cli_get_value(ctx, "TABLE", &cli);
   cli_get_value(ctx, "P1", &command->command);
   if(command->command){
-    command->sts = MDSplusERROR;
     int sync = IS_OK(cli_present(ctx, "WAIT"));
     if (sync) {
+      command->sts = MDSplusSUCCESS;
       SYNCINIT;
-      status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, 0, 0, &command->sts, 0);
-      if STATUS_OK
-        SYNCWAIT;
-      else {
-        char *msg = MdsGetMsg(status);
-        *error = malloc(100 + strlen(command->command) + strlen(msg));
-        sprintf(*error, "Error: Problem dispatching command: %s\n" "Error message was: %s\n", command->command, msg);
-      }
-      status = command->sts;
-      free(command->command);
-      free(command);
-    } else {
+      status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, CommandDone, command, &stat1, 0);
+      if STATUS_OK SYNCWAIT;
+    } else
       status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, 0);
-      if STATUS_NOT_OK {
-        char *msg = MdsGetMsg(status);
-        *error = malloc(100 + strlen(msg));
-        sprintf(*error, "Error: Problem dispatching async command.\n" "Error message was: %s\n", msg);
-      }
-    }
+    if STATUS_NOT_OK {
+      char *msg = MdsGetMsg(status);
+      *error = malloc(100 + strlen(msg));
+      sprintf(*error, "Error: Problem dispatching async command.\n" "Error message was: %s\n", msg);
+    } else if (sync) status = stat1;
   } else {
     status = MdsdclMISSING_VALUE;
     free(command);
