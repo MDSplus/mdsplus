@@ -326,7 +326,7 @@ then
 	. ${SRCDIR}/trigger.version
 	if [ "$NEW_RELEASE" = "yes" ]
 	then
-	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" >/dev/null <<EOF
+	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
@@ -335,6 +335,22 @@ then
 $(git log --decorate=full ${LAST_RELEASE_COMMIT}..HEAD | awk '{print $0"\\n"}')"
 }
 EOF
+	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+	   then
+	       RED $COLOR
+	       cat <<EOF >&2
+=========================================================
+
+Failed to tag a new release on github. Response/error
+content follows.
+FAILURE
+
+=========================================================
+EOF
+	       cat ${WORKSPACE}/tag_release.log
+	       NORMAL $COLOR
+	       exit 1
+	   fi
 	fi
     else
 	RED $COLOR
