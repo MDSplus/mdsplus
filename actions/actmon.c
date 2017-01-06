@@ -149,7 +149,7 @@ static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
 static int current_on;
-static const char *asterisks = "****************************************************************";
+static const char *asterisks = "********************************************";
 #define MaxLogLines 4000
 #define EventEfn 1
 #define DOING 1
@@ -549,8 +549,7 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
   int items;
   if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0))
     return;
-  sprintf(text, "%s %12d %-10.10s %-32.32s %-20.20s %s", time, current_shot, mode, status, server,
-	  path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
     XmListAddItemUnselected(LogWidget, item, 0);
@@ -593,7 +592,7 @@ static void PutError(char *time, String mode, char *status, char *server, char *
 
   if (ErrorWidgetOff)
     return;
-  sprintf(text, "%s %12d %s %-36.36s %-20.20s %s", time, current_shot, mode, status, server, path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   XmListAddItemUnselected(ErrorWidget, item, 0);
   XmStringFree(item);
