@@ -382,7 +382,7 @@ EOF
 	    ${WORKSPACE}/configure --disable-java >/dev/null 2>&1
 	    rsync -a ${WORKSPACE}/mdsobjects/python mdsobjects/
 	    cd mdsobjects/python
-	    python setup.py sdist upload
+	    HOME=${KEYS} python setup.py sdist upload
 	    cd $WORKSPACE
 	    rm -Rf $tmpdir
 	fi
