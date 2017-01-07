@@ -104,8 +104,6 @@ int ServerBadSocket(SOCKET socket);
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); \
-if (!(status & 1)) goto send_error;
 
 static int StartReceiver(short *port);
 int ServerConnect(char *server);
@@ -153,97 +151,91 @@ static SOCKET getSocket(int conid)
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs_in, ...)
 {
-  static unsigned int addr = 0;
   short port = 0;
   int conid;
+  if (!StartReceiver(&port) || ((conid = ServerConnect(server)) < 0)) {
+    if (ast)
+      ast(astparam);
+    return ServerPATH_DOWN;
+  }
+  INIT_STATUS;
   int flags = 0;
-  int status = ServerPATH_DOWN;
   int jobid;
   int i;
-
-  if (StartReceiver(&port) && ((conid = ServerConnect(server)) >= 0)) {
-    char cmd[4096];
-    unsigned char numargs = max(0, min(numargs_in, 8));
-    unsigned char idx = 0;
-    char dtype;
-    short len;
-    char ndims;
-    int dims[8];
-    int numbytes;
-    int *dptr;
-    va_list vlist;
-    void *mem = 0;
-    struct descrip *arg;
-    if (conid_out)
-      *conid_out = conid;
-    if (addr == 0) {
-      int sock = getSocket(conid);
-      struct sockaddr_in addr_struct = {0};
-      socklen_t len = sizeof(addr_struct);
-      if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
-	addr = *(int *)&addr_struct.sin_addr;
-    }
-    if (addr)
-      jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
-    else {
-      perror("Error getting the address the socket is bound to.\n");
-      return ServerSOCKET_ADDR_ERROR;
-    }
-    if (before_ast)
-      flags |= SrvJobBEFORE_NOTIFY;
-    sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
-    va_start(vlist, numargs_in);
-    for (i = 0; i < numargs; i++) {
-      strcat(cmd, ",");
-      arg = va_arg(vlist, struct descrip *);
-      if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG
-	  && *(int *)arg->ptr == MonitorCheckin)
-	MonJob = jobid;
-      switch (arg->dtype) {
-      case DTYPE_CSTRING:
-	{
-	  int j;
-	  int k;
-	  char *c = (char *)arg->ptr;
-	  int len = strlen(c);
-	  strcat(cmd, "\"");
-	  for (j = 0, k = strlen(cmd); j < len; j++, k++) {
-	    if (c[j] == '"' || c[j] == '\\')
-	      cmd[k++] = '\\';
-	    cmd[k] = c[j];
-	  }
-	  cmd[k] = 0;
-	  strcat(cmd, "\"");
-	  break;
-	}
+  unsigned int addr = 0;
+  char cmd[4096];
+  unsigned char numargs = max(0, min(numargs_in, 8));
+  unsigned char idx = 0;
+  char dtype;
+  char ndims;
+  int dims[8];
+  int numbytes;
+  int *dptr;
+  va_list vlist;
+  void *mem = NULL;
+  struct descrip *arg;
+  if (conid_out)
+    *conid_out = conid;
+  int sock = getSocket(conid);
+  struct sockaddr_in addr_struct = {0};
+  socklen_t len = sizeof(addr_struct);
+  if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
+    addr = *(int *)&addr_struct.sin_addr;
+  if (!addr) {
+    perror("Error getting the address the socket is bound to.\n");
+    if (ast)
+      ast(astparam);
+    return ServerSOCKET_ADDR_ERROR;
+  }
+  jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
+  if (before_ast)
+    flags |= SrvJobBEFORE_NOTIFY;
+  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
+  va_start(vlist, numargs_in);
+  for (i = 0; i < numargs; i++) {
+    strcat(cmd, ",");
+    arg = va_arg(vlist, struct descrip *);
+    if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG
+        && *(int *)arg->ptr == MonitorCheckin)
+      MonJob = jobid;
+    switch (arg->dtype) {
+      case DTYPE_CSTRING: {
+        int j;
+        int k;
+        char *c = (char *)arg->ptr;
+        int len = strlen(c);
+        strcat(cmd, "\"");
+        for (j = 0, k = strlen(cmd); j < len; j++, k++) {
+          if (c[j] == '"' || c[j] == '\\')
+            cmd[k++] = '\\';
+            cmd[k] = c[j];
+          }
+          cmd[k] = 0;
+          strcat(cmd, "\"");
+          break;
+        }
       case DTYPE_LONG:
-	sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
-	break;
+        sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
+        break;
       case DTYPE_CHAR:
-	sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
-	break;
+        sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
+        break;
       default:
-	printf("shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
-      }
-    }
-    strcat(cmd, ")");
-    SndArgChk(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
-    status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
-    if (mem)
-      free(mem);
-    if (!addr) {
-      if (retstatus)
-	*retstatus = status;
-      if (ast)
-	(*ast) (astparam, "Job Done");
+        printf("shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
     }
   }
-
-  return status;
-
- send_error:
-  perror("Error sending message to server");
-  CleanupJob(status, jobid);
+  strcat(cmd, ")");
+  status = SendArg(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
+  if STATUS_NOT_OK {
+      perror("Error sending message to server");
+      CleanupJob(status, jobid);
+      return status;
+  }
+  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
+  if STATUS_NOT_OK
+      perror("Error: no response from server");
+  if (mem)
+    free(mem);
   return status;
 }
 
