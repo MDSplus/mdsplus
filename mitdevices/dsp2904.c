@@ -36,7 +36,7 @@ EXPORT int dsp2904___add(int *head_nid)
   return 1;
 }
 
-EXPORT int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int dsp2904___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   typedef struct _ModeReg {
@@ -55,7 +55,7 @@ EXPORT int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   int counter_preset_nid = setup->head_nid + DSP2904_N_COUNTER_PRESET;
   int t_preset;
   int timer_preset_nid = setup->head_nid + DSP2904_N_TIMER_PRESET;
-  float option;
+  //float option;
   mode.gate = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_GATE);
   mode.wrap = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_WRAP);
   mode.bits32 = XmdsIsOn(setup->head_nid + DSP2904_N_COUNTER_BITS_32);
@@ -91,7 +91,7 @@ EXPORT int dsp2904___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
 #undef pio
 #endif
 #define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->traq_name, a, f, d, mem,0), &one, 0),status)
-EXPORT int dsp2904___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int dsp2904___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   int t_bits_32;
@@ -108,10 +108,10 @@ EXPORT int dsp2904___store(struct descriptor *niddsc, InStoreStruct * setup)
     unsigned:24;
   } dig_status;
   int samples;
-  unsigned short *low_word;
-  unsigned short *high_word;
-  unsigned short (*data_long)[2];
-  int channel;
+  unsigned short *low_word = 0;
+  unsigned short *high_word = 0;
+  unsigned short (*data_long)[2] = 0;
+  //int channel;
   int timer_bits_32 = setup->head_nid + DSP2904_N_TIMER_BITS_32;
   int counter_bits_32 = setup->head_nid + DSP2904_N_COUNTER_BITS_32;
   int timer_nid = setup->head_nid + DSP2904_N_TIMER;
@@ -122,6 +122,8 @@ EXPORT int dsp2904___store(struct descriptor *niddsc, InStoreStruct * setup)
     return DEV$_NOT_TRIGGERED;
   }
   samples = Input(setup, 3) * 1024;
+  if (samples <= 0)
+    return DEV$_NOT_TRIGGERED;
   t_bits_32 = TreeIsOn(timer_bits_32) & 1;
   c_bits_32 = TreeIsOn(counter_bits_32) & 1;
   low_word = malloc(samples * 2);
@@ -197,7 +199,7 @@ static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned sho
     unsigned short bytcnt;
     unsigned int dummy;
   } iosb = {
-  0, 0};
+    0, 0, 0};
   int try;
   int try_outer;
   for (try_outer = 0; try_outer < 3; try_outer++) {
@@ -210,7 +212,7 @@ static int ReadChannel(InStoreStruct * setup, int channel, int num, unsigned sho
     pio(10, 0, 0, 16);
     for (points_to_read = num; points_to_read && (status & 1); points_to_read = num - points_read) {
       int count = points_to_read > 32767 ? 32767 : points_to_read;
-      status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read, 16, (short *)&iosb);
+      status = CamQstopw(setup->traq_name, 0, 2, count, buffer + points_read, 16, (unsigned short *)&iosb);
       status = (status & 1) ? iosb.status : status;
       if (iosb.bytcnt == 0)
 	break;
@@ -246,7 +248,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize)
   return status;
 }
 
-EXPORT int dsp2904__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int dsp2904__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "DSP2904.uid" };
   static MrmRegisterArg uilnames[] = { {"FixMenu", (XtPointer) FixMenu} };

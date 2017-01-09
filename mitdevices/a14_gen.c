@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "a14_gen.h"
-EXPORT int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "A14");
@@ -138,7 +138,7 @@ EXPORT int a14__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_pt
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int a14__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int a14__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		   struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -225,34 +225,34 @@ extern int a14___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int a14__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
     short code;
     int value;
-  } clock_divide_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 10, 4, 20, 5, 40, 6, 100, 0, 0};
+      } clock_divide_t[] = {
+    {0, 1}, {1, 2}, {2, 4}, {3, 10}, {4, 20}, {5, 40}, {6, 100}, {0, 0}};
   static struct {
     short code;
     int value;
   } clk_polarity_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } str_polarity_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } stp_polarity_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } gated_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);
@@ -283,7 +283,7 @@ EXPORT int a14__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
 extern int a14___start();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int a14__start(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__start(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStartStruct)
   struct descriptor_xd work_xd[1];
@@ -301,7 +301,7 @@ EXPORT int a14__start(struct descriptor *nid_d_ptr, struct descriptor *method_d_
 extern int a14___stop();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int a14__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__stop(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStopStruct)
   struct descriptor_xd work_xd[1];
@@ -319,7 +319,7 @@ EXPORT int a14__stop(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
 extern int a14___store();
 #define free_xd_array { int i; for(i=0; i<3;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int a14__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a14__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[3];

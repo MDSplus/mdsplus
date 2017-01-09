@@ -174,7 +174,7 @@
 #define ACQ$_WRONG_SHOT         (MSG_MASK + 2015 * MSG_FACNUM_M + 1206 * MSG_MSGNUM_M + MSG_ERROR)
 
 #ifdef MSG_LIBRARY
-
+#include <stdlib.h>
 EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 {
   static struct msg {
@@ -553,7 +553,7 @@ EXPORT int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     ACQ$_WRONG_SHOT, "ACQ", "WRONG_SHOT",
 	  "Attempt to store ACQ module into different shot than it was armed with"}
   };
-  int i;
+  size_t i;
   int status = 0;
   for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++) {
     if (msgs[i].sts == sts) {

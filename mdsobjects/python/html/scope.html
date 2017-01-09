@@ -95,9 +95,18 @@ canvas, .FramePanelSvg {
 <script type="text/javascript">
 window.onresize = function(){resizeScope()};
 window.onload = function() {
-	var configName = location.search.substr(1, location.search.indexOf('=') - 1);
-	if(configName == 'config')
-	    startMdsScope(location.search.substr(location.search.indexOf('=')+1));
+	var configIdx = location.search.indexOf('config=');
+	if(configIdx > 0)
+	{
+	    var shotIdx = location.search.indexOf('shot=');
+	    if(shotIdx > 0)
+	    {
+		var shotName = location.search.substr(shotIdx+5);
+		startMdsScope(location.search.substring(configIdx+7, location.search.indexOf('&')), shotName)
+	    }
+	    else
+	    	startMdsScope(location.search.substr(location.search.indexOf('=')+1), "");
+	}
 };
 </script>
 

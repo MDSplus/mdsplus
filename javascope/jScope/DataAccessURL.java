@@ -7,7 +7,7 @@ import java.io.IOException;
 class DataAccessURL  
 {
     
-    static Vector dataAccessVector = new Vector();
+    static Vector<DataAccess> dataAccessVector = new Vector<>();
         
     static public void addProtocol(DataAccess dataAccess)
     {
@@ -26,17 +26,10 @@ class DataAccessURL
     
     static public DataAccess getDataAccess(String url) throws IOException
     {
-        DataAccess da = null;
-        
-        for(int i = 0 ; i < dataAccessVector.size(); da = null, i++)
-        {
-            da = (DataAccess)dataAccessVector.elementAt(i);
-            if(da.supports(url))
-                break;
-        }
-        if(da == null)
-            throw(new IOException("Protocol not recognized"));       
-        return da;
+        for (DataAccess da : dataAccessVector)
+            if (da.supports(url))
+                return da;
+        throw(new IOException("Protocol not recognized"));
     }
     
     static public Signal getSignal(String url, String name, String passwd) throws IOException
@@ -102,17 +95,12 @@ class DataAccessURL
         else
             throw(new IOException("Protocol not recognized"));
     }
-    
-    
+
     static public void close()
     {
-        DataAccess da = null;
-        for(int i = 0 ; i < dataAccessVector.size(); i++)
-        {
-            da = (DataAccess)dataAccessVector.elementAt(i);
-            if(da != null)
+        for (DataAccess da : dataAccessVector)
+            if (da != null)
                 da.close();
-        }
     }
 
     static public int getNumProtocols()

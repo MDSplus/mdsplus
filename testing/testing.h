@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //  ASSERT  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
+/*
 //# define assert(expr)							\
 //    ((expr)								\
 //    ? __ASSERT_VOID_CAST (0)						\
@@ -44,7 +44,7 @@
 //  (expr) ? \
 //     _mark_point(__FILE__, __LINE__) : \
 //     __assert_fail(expr, __FILE__, __LINE__, __ASSERT_FUNCTION)
-
+*/
 
 
 # ifndef __ASSERT_FUNCTION
@@ -86,7 +86,8 @@ int  __setup_parent() { return 0; }
 int  __setup_child()  { return 0; }
 void __test_exit() { exit(0); }
 void __test_timeout(double seconds) { (void)seconds; }
-void __test_init(const char *test_name, const char *file, const int line) {}
+  void __test_init(const char *test_name __attribute__ ((unused)), const char *file __attribute__ ((unused)),
+		   const int line __attribute__ ((unused))) {}
 void __test_end() { atexit(__test_exit); }
 
 void __test_abort(int code, const char *__msg, const char *__file,

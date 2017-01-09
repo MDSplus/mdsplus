@@ -149,7 +149,7 @@ static void PopSocket(UDTSOCKET socket)
   unlock_socket_list();
 }
 
-static void ABORT(int sigval)
+static void ABORT(int sigval __attribute__ ((unused)))
 {
   SocketList *s;
   lock_socket_list();
@@ -370,7 +370,7 @@ static int UDTV6_reuseCheck(char *host, char *unique, size_t buflen)
   }
 }
 
-static int UDTV6_connect(int conid, char *protocol, char *host)
+static int UDTV6_connect(int conid, char *protocol __attribute__ ((unused)), char *host)
 {
   struct sockaddr_in6 sin;
   UDTSOCKET s;
@@ -442,7 +442,7 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;
@@ -485,7 +485,7 @@ static int UDTV6_listen(int argc, char **argv)
     struct addrinfo hints;
     struct addrinfo *result, *rp;
     char *matchString[] = { "multi" };
-    UDTSOCKET s;
+    UDTSOCKET s = -1;
     struct sockaddr_in6 sin;
     UDTSOCKET readfds[1024];
     int status;

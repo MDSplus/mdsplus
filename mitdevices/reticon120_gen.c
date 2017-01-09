@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "reticon120_gen.h"
-EXPORT int reticon120__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int reticon120__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "RETICON120");
@@ -122,7 +122,7 @@ EXPORT int reticon120__add(struct descriptor *name_d_ptr, struct descriptor *dum
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int reticon120__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int reticon120__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 			  struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -201,7 +201,7 @@ extern int reticon120___init();
 #define free_xd_array { int i; for(i=0; i<3;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int reticon120__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int reticon120__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[3];
@@ -223,7 +223,7 @@ EXPORT int reticon120__init(struct descriptor *nid_d_ptr, struct descriptor *met
 extern int reticon120___store();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int reticon120__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int reticon120__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[2];
@@ -242,7 +242,7 @@ EXPORT int reticon120__store(struct descriptor *nid_d_ptr, struct descriptor *me
 extern int reticon120___trigger();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int reticon120__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int reticon120__trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[2];

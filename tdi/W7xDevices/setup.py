@@ -7,6 +7,7 @@ try:
     else:
         name="mdsplus_%s_w7xdevices" % branch
 except:
+    import os
     if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
         branch="_"+os.environ["BRANCH"]
     else:

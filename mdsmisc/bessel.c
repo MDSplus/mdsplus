@@ -467,7 +467,7 @@ EXPORT double **BesselStartRebuild(double r, int mc_max, int ms_max, int l_max)
   return j_temp;
 }
 
-EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, double **j_temp, int mode,
+EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max __attribute__ ((unused)), int l_max, double **j_temp, int mode,
 			  int is_cosine)
 {
   double result = 0;
@@ -486,7 +486,7 @@ EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, d
   return result;
 }
 
-EXPORT double BesselRebuild(double r, double theta, double *a, int mc_max, int ms_max, int l_max,
+EXPORT double BesselRebuild(double r __attribute__ ((unused)), double theta, double *a, int mc_max, int ms_max, int l_max,
 		     double **j_temp)
 {
   double result = 0, sum;
@@ -566,7 +566,7 @@ EXPORT Filter *BessInvar(float *fp, float *fs, float *ap, float *as, float *fc, 
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindBessPoles);
 }
 
-static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc, int *N,
+static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
 			      double *gain)
 {
   double norm_wp, norm_ws;

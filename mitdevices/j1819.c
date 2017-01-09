@@ -55,7 +55,7 @@ static int one = 1;
 #define fstop(f,a,n,d)  return_on_error(DevCamChk(CamFStopw(setup->name, a, f, n, d, 24, 0), &one, 0),status)
 #define return_on_error(func,statret) status = func; if (!(status & 1)) return statret
 
-EXPORT int j1819___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int j1819___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   int mem_cntrl;
@@ -70,7 +70,7 @@ EXPORT int j1819___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-EXPORT int j1819___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int j1819___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   static int start = 1;
   static DESCRIPTOR_LONG(start_dsc, &start);
@@ -126,7 +126,7 @@ EXPORT int j1819___store(struct descriptor *niddsc, InStoreStruct * setup)
   return 1;
 }
 
-EXPORT int j1819___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int j1819___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(28, 0, 0);

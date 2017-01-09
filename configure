@@ -642,7 +642,6 @@ SYBASE_LIB
 SYBASE_INC
 SRBINCLUDE
 SRBLIB
-SOCKETLIB
 SHARETYPEMOD
 SHARETYPEJNI
 SHARETYPE
@@ -655,7 +654,6 @@ RELEASE_COMMIT
 RELEASE_RELEASE
 RELEASE_MINOR
 RELEASE_MAJOR
-NSLLIB
 NEED_SEMUN
 PYTHON_INCLUDE_DIR
 MOTIF_LD_LDARC
@@ -679,12 +677,10 @@ LINKSHARED
 LIBRT
 LIBXEXT
 LIBXP
-LIBSOCKET
 LIBRESOLV
 LIBREADLINE
 LIBPRE
 LIBPATH
-LIBNSL
 LIBM
 LIBDL
 LD_LDARC
@@ -722,6 +718,7 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+WARNFLAGS
 DOXYGEN_PAPER_SIZE
 DX_COND_latex_FALSE
 DX_COND_latex_TRUE
@@ -840,6 +837,7 @@ READLINE_TRUE
 READLINE_LIBS
 READLINE_LDFLAGS
 READLINE_CPPFLAGS
+LIBSOCKET
 MAKEETCDIR
 THREAD
 VS_FALSE
@@ -851,6 +849,7 @@ GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
+JAVAVERSION
 READLINK
 JAVAC_PATH_NAME
 RPATHLINK
@@ -891,6 +890,7 @@ CPPFLAGS
 LDFLAGS
 CXXFLAGS
 CXX
+TARGET_SELFHELP
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -1018,6 +1018,7 @@ enable_doxygen_chi
 enable_doxygen_html
 enable_doxygen_ps
 enable_doxygen_pdf
+enable_werror
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1705,6 +1706,7 @@ Optional Features:
   --disable-doxygen-html  don't generate doxygen plain HTML documentation
   --enable-doxygen-ps     generate doxygen PostScript documentation
   --disable-doxygen-pdf   don't generate doxygen PDF documentation
+  --enable-werror         Treat all warnings as errors
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1714,7 +1716,8 @@ Optional Packages:
   --with-docker-url       specify docker url
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
-                          specify version of compiled classes (i.e. 6)
+                          specify version of compiled mdsobjects classes (i.e.
+                          6)
   --with-java_bootclasspath=bootclasspath
                           specify the bootclasspath option for use with
                           --with-java_target (i.e.
@@ -3056,14 +3059,14 @@ fi
 
    if ${DOCKER_URL+:} false; then :
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "BUILDING IMAGE FOR URL: ${DOCKER_URL}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
-         if ${DOCKER_IMAGE+:} false; then :
+	 if ${DOCKER_IMAGE+:} false; then :
 
 else
   DOCKER_IMAGE=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3080,7 +3083,7 @@ fi
 
       if ${DOCKER_URL+:} false; then :
   echo docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL};
-                 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
+		 eval docker build ${dk_build_args} -t ${DOCKER_IMAGE} ${DOCKER_URL}
 fi
 
 
@@ -3088,15 +3091,15 @@ fi
 
    if ${DOCKER_IMAGE+:} false; then :
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER IN DOCKER IMAGE: ${DOCKER_IMAGE}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
 
-         if ${DOCKER_CONTAINER+:} false; then :
+	 if ${DOCKER_CONTAINER+:} false; then :
 
 else
   DOCKER_CONTAINER=build_$(echo $(pwd) | md5sum | awk '{print $1}')
@@ -3148,10 +3151,10 @@ IFS=${_save_IFS}
    $as_echo "Starting container from image: ${DOCKER_IMAGE}"
 
 
-         dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
+	 dk_id=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.ID}}")
 
 
-         dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
+	 dk_img=$(docker ps -a -f name=${DOCKER_CONTAINER} --format "{{.Image}}")
 
    $as_echo "id: ${dk_id} img: ${dk_img}"
    if test -n "${dk_id}" -a -n "${dk_img}"; then :
@@ -3174,48 +3177,48 @@ else
   group_entry=$(awk -F: "{if (\$3 == \"${user_group}\") {print \$0} }" /etc/group)
   user_groups=$(id -G ${USER} | sed 's/ /,/g')
   abs_srcdir=$(cd ${srcdir}; pwd)
-    docker run -d -it --entrypoint=/bin/sh -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
-    docker exec --user root ${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+    docker run -d -it --entrypoint=${SHELL} -e USER=${USER} -e DISPLAY=${DISPLAY} -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v ${abs_srcdir}:${abs_srcdir} -v ${user_home}:${user_home} -v $(pwd):$(pwd) -w $(pwd) --name ${DOCKER_CONTAINER} ${DOCKER_IMAGE};
+    docker exec --user root ${DOCKER_CONTAINER} ${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 fi
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3235,40 +3238,40 @@ esac
 
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3286,50 +3289,50 @@ esac
 else
   if ${DOCKER_CONTAINER+:} false; then :
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "STARTING CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
   DOCKER_CONTAINER=${DOCKER_CONTAINER}
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3349,40 +3352,40 @@ esac
 
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=created --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=created
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=restarting --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=restarting
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=running --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=running
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=paused --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=paused
 else
   eval
 fi
 
 
-         id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
-         if test -n "${id_cnt_status}"; then :
+	 id_cnt_status=$(docker ps -a -f name=${DOCKER_CONTAINER} -f status=exited --format "{{.ID}}")
+	 if test -n "${id_cnt_status}"; then :
   eval dk_status=exited
 else
   eval
@@ -3416,7 +3419,7 @@ abs_srcdir=$(cd ${srcdir}; pwd)
 
 read -d '' DK_DSHELLFILE << _as_read_EOF
 
-#!/bin/sh
+#!/bin/bash
 # //////////////////////////////////////////////////////////////////////////// #
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3436,7 +3439,8 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
+ [ -t 7 -o -t 0 ] && INT=-ti || INT=
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3506,8 +3510,8 @@ inspect:
 
 start:
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -3517,9 +3521,11 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
 endif
+
+
 
 _as_read_EOF
 
@@ -3532,18 +3538,18 @@ fi
    if ${DOCKER_CONTAINER+:} false; then :
 
 
-          $as_echo
-          sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
+	  $as_echo
+	  sed 'h;s/./\//g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## // "EXECUTING CONFIGURE IN DOCKER CONTAINER: ${DOCKER_CONTAINER}" ////// ##
 _ASBOX
-          $as_echo
+	  $as_echo
 
 
-         $as_echo " --------------------------------- "
-         $as_echo " docker-image      = ${DOCKER_IMAGE}"
-         $as_echo " docker-container  = ${DOCKER_CONTAINER}"
-         $as_echo " ac_configure_args = ${ac_configure_args}"
-         $as_echo " --------------------------------- "
+	 $as_echo " --------------------------------- "
+	 $as_echo " docker-image      = ${DOCKER_IMAGE}"
+	 $as_echo " docker-container  = ${DOCKER_CONTAINER}"
+	 $as_echo " ac_configure_args = ${ac_configure_args}"
+	 $as_echo " --------------------------------- "
 
 
 
@@ -3560,7 +3566,7 @@ abs_srcdir=$(cd ${srcdir}; pwd)
 
 read -d '' DK_DSHELLFILE << _as_read_EOF
 
-#!/bin/sh
+#!/bin/bash
 # //////////////////////////////////////////////////////////////////////////// #
 # //// DOCKER SHELL  ///////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -3580,7 +3586,8 @@ quoted_args="\$(printf " %q" "\$\@")"
 if [ -n "\${MAKESHELL}" ]; then
  \${MAKESHELL} \${quoted_args};
 else
- docker exec -t --user \${USER} \${DOCKER_CONTAINER} ${SHELL} -l -c "cd \$(pwd); export MAKESHELL=${SHELL}; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; ${SHELL} \${quoted_args}";
+ [ -t 7 -o -t 0 ] && INT=-ti || INT=
+ docker exec \${INT} --user \${USER} \${DOCKER_CONTAINER} /bin/bash -l -c "cd \$(pwd); export MAKESHELL=/bin/bash; export MAKEFLAGS=\${MAKEFLAGS}; export MFLAGS=\${MFLAGS}; /bin/bash \${quoted_args}";
 fi
 
 _as_read_EOF
@@ -3593,7 +3600,7 @@ chmod +x dshell
 
 
 
-                  dk_configure_args=
+	 	 dk_configure_args=
 
 
 
@@ -3652,29 +3659,33 @@ fi
 IFS=${_save_IFS}
 
 
-         as_fn_append dk_configure_args " "
-         if ${DOCKER_IMAGE+:} false; then :
+	 as_fn_append dk_configure_args " "
+	 if ${DOCKER_IMAGE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_IMAGE=\"${DOCKER_IMAGE}\" "
 fi;
-         if ${DOCKER_CONTAINER+:} false; then :
+	 if ${DOCKER_CONTAINER+:} false; then :
   as_fn_append dk_configure_args "DOCKER_CONTAINER=\"${DOCKER_CONTAINER}\" "
 fi;
-         if ${DOCKER_FILE+:} false; then :
+	 if ${DOCKER_FILE+:} false; then :
   as_fn_append dk_configure_args "DOCKER_FILE=\"${DOCKER_FILE}\" "
 fi;
 
 
 
-         $as_echo " ------------------------- "
-         $as_echo " DOCKER CONFIGURE COMMAND: "
-         $as_echo " docker exec -t --user ${USER} ${DOCKER_CONTAINER} ${SHELL} -l -c \"cd $(pwd)\; ${0} $(
+	 $as_echo " ------------------------- "
+	 $as_echo " DOCKER CONFIGURE COMMAND: "
+	 $as_echo " ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
+echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) \"; exit 0;          "
-         $as_echo " ------------------------- "
+	 $as_echo " ------------------------- "
 
-                  eval docker exec -t --user ${USER} ${DOCKER_CONTAINER} ${SHELL} -l -c \"cd $(pwd)\; ${0} $(
+	 	 eval ENABLE_KCONFIG=no docker exec -t --user ${USER} ${DOCKER_CONTAINER} bash -l -c \"cd $(pwd)\; $(
+echo ENABLE_KCONFIG=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
+) ${0} $(
 echo ${dk_configure_args} | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
 ) $(
 echo HAVE_DOCKER=\"no\" | sed 's/\\/\\\\/g' | sed 's/\"/\\\"/g';
@@ -3758,8 +3769,8 @@ inspect:
 
 start:
 	@echo "Starting docker container:";
-	docker run -d -it --entrypoint=/bin/sh -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
-	docker exec --user root \${DOCKER_CONTAINER} sh -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
+	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
+	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
 stop:
 	@echo "Stopping docker container:";
@@ -3769,9 +3780,11 @@ stop:
 shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
-	 sh -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
 endif
+
+
 
 _as_read_EOF
 
@@ -4594,6 +4607,54 @@ $as_echo "#define NDEBUG /**/" >>confdefs.h
 
 fi
     ax_enable_debug=$enable_debug
+
+
+
+
+
+
+
+read -d '' TARGET_SELFHELP << _as_read_EOF
+
+
+SH_GREEN  ?= \$(shell tput -Txterm setaf 2)
+SH_WHITE  ?= \$(shell tput -Txterm setaf 7)
+SH_YELLOW ?= \$(shell tput -Txterm setaf 3)
+SH_RESET  ?= \$(shell tput -Txterm sgr0)
+
+HELP_DESCRIPTION ?= Documented targets follow
+
+ifndef SELFHELP_FUNC
+SELFHELP_FUNC = \\\\
+    %help; \\\\
+    while(<>) { \\\\
+	if(/^([a-z0-9_-]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	    push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); \\\\
+	} \\\\
+    }; \\\\
+    print "\\\\n"; \\\\
+    print "| \${HELP_DESCRIPTION}\\\\n"; \\\\
+    print "| \\\\n"; \\\\
+    print "| \${SH_GREEN}usage: make target\${SH_WHITE}\\\\n"; \\\\
+    print "| \\\\n"; \\\\
+    for ( sort keys %help ) { \\\\
+	print "| \${SH_YELLOW}\$\$_\${SH_WHITE}:\\\\n"; \\\\
+	printf("|   %-20s %-60s\\\\n", \$\$_->[0], \$\$_->[1]) for @{\$\$help{\$\$_}}; \\\\
+	print "| \\\\n"; \\\\
+    } \\\\
+    print "\\\\n";
+
+help:   ##@miscellaneous Show this help.
+	@perl -e '\$(SELFHELP_FUNC)' \$(MAKEFILE_LIST)
+endif
+
+
+_as_read_EOF
+
+
+
+
+
 
 
 
@@ -7235,90 +7296,6 @@ rm -rf conftest*
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
-$as_echo_n "checking for socket in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_socket+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket ();
-int
-main ()
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_socket=yes
-else
-  ac_cv_lib_socket_socket=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
-$as_echo "$ac_cv_lib_socket_socket" >&6; }
-if test "x$ac_cv_lib_socket_socket" = xyes; then :
-  SOCKETLIB="-l socket"
-else
-  SOCKELIB=""
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for inet_addr in -lnsl" >&5
-$as_echo_n "checking for inet_addr in -lnsl... " >&6; }
-if ${ac_cv_lib_nsl_inet_addr+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char inet_addr ();
-int
-main ()
-{
-return inet_addr ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_nsl_inet_addr=yes
-else
-  ac_cv_lib_nsl_inet_addr=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_inet_addr" >&5
-$as_echo "$ac_cv_lib_nsl_inet_addr" >&6; }
-if test "x$ac_cv_lib_nsl_inet_addr" = xyes; then :
-  NSLLIB="-l nsl"
-else
-  NSLLIB=""
-fi
-
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
@@ -7642,15 +7619,20 @@ fi
 
 # Check whether --with-java_target was given.
 if test "${with_java_target+set}" = set; then :
-  withval=$with_java_target; JAVACFLAGS="$JAVACFLAGS -source $withval -target $withval"
+  withval=$with_java_target; JAVAVERSION="-source $withval -target $withval"
+else
+  JAVAVERSION=
 fi
 
 
 
 # Check whether --with-java_bootclasspath was given.
 if test "${with_java_bootclasspath+set}" = set; then :
-  withval=$with_java_bootclasspath; JAVACFLAGS="$JAVACFLAGS -bootclasspath $withval"
+  withval=$with_java_bootclasspath; as_fn_append JAVAVERSION " -bootclasspath $withval"
+else
+  as_fn_append JAVAVERSION
 fi
+
 
 
 case $enable_java in #(
@@ -8048,7 +8030,6 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
@@ -8086,33 +8067,36 @@ case "$host" in
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$FC";
        LD="gcc"
-       if ( uname -m | grep 64 > /dev/null )
+       if ( echo $host| grep 64 > /dev/null )
        then
-         if ( echo $host| grep 64 > /dev/null )
+         if [ -d /usr/lib64 ]
          then
-           if [ -d /usr/lib64 ]
-           then
-             D64="64"
-           else
-             D64=""
-           fi
-           SYB64=$D64
-           TARGET_ARCH="-m64"
-           UILCMD=uil
-           uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
+           D64="64"
          else
-           TARGET_ARCH="-m32"
-           UILCMD=uil32
-           uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_builddir)/lib32/"
-           MAKESHLIBDIR="\$(top_builddir)/lib32/"
-           MAKEUIDDIR="\$(top_builddir)/uid32/"
-           MAKEBINDIR="\$(top_builddir)/bin32/"
+           D64=""
          fi
+         SYB64=$D64
+         TARGET_ARCH="-m64"
+         UILCMD=uil
+         uiddir="${uiddir}${D64}"
+         MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+         MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+         MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	 MAKEBINDIR="\$(top_builddir)/bin${D64}/"
+       else
+         if [ -d /usr/lib64 ]
+         then
+           D32="32"
+         else
+           D32=""
+         fi
+         TARGET_ARCH="-m32"
+         UILCMD=uil32
+         uiddir="${uiddir}${D32}"
+         MAKELIBDIR="\$(top_builddir)/lib${D32}/"
+         MAKESHLIBDIR="\$(top_builddir)/lib${D32}/"
+         MAKEUIDDIR="\$(top_builddir)/uid${D32}/"
+         MAKEBINDIR="\$(top_builddir)/bin${D32}/"
        fi
        FCFLAGS="$FCFLAGS -fno-range-check"
        FOR_LDFLAGS="-lg2c"
@@ -8378,39 +8362,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-# The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of long long" >&5
-$as_echo_n "checking size of long long... " >&6; }
-if ${ac_cv_sizeof_long_long+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (long long))" "ac_cv_sizeof_long_long"        "$ac_includes_default"; then :
-
-else
-  if test "$ac_cv_type_long_long" = yes; then
-     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (long long)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof_long_long=0
-   fi
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_long_long" >&5
-$as_echo "$ac_cv_sizeof_long_long" >&6; }
-
-
-
-cat >>confdefs.h <<_ACEOF
-#define SIZEOF_LONG_LONG $ac_cv_sizeof_long_long
-_ACEOF
-
-
 
 # Stuff that only non-automake dirs need
 MAKEETCDIR="\$(top_builddir)/etc/"
@@ -8475,6 +8426,94 @@ $as_echo "no" >&6; }
         LINKMODULE="$LINKSHARED"
 fi
 
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
+$as_echo_n "checking for library containing gethostbyname... " >&6; }
+if ${ac_cv_search_gethostbyname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gethostbyname ();
+int
+main ()
+{
+return gethostbyname ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' nsl socket; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_gethostbyname=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_gethostbyname+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_gethostbyname+:} false; then :
+
+else
+  ac_cv_search_gethostbyname=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_gethostbyname" >&5
+$as_echo "$ac_cv_search_gethostbyname" >&6; }
+ac_res=$ac_cv_search_gethostbyname
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  if test "x$ac_cv_search_gethostbyname" = x"none required"; then :
+
+else
+  LIBSOCKET=$ac_cv_search_gethostbyname
+fi
+else
+                                  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in ws2_32" >&5
+$as_echo_n "checking for gethostbyname in ws2_32... " >&6; }
+                LIBSOCKET="-lws2_32"
+                mds_old_LIBS="$LIBS"
+                LIBS="$LIBSOCKET $LIBS"
+                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <winsock2.h>
+int
+main ()
+{
+gethostbyname ("");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }; { LIBSOCKET=; unset LIBSOCKET;}
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+                LIBS=$mds_old_LIBS
+fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pow in -lm" >&5
@@ -8601,213 +8640,6 @@ if test "x$ac_cv_lib_dl_dlopen" = xyes; then :
   LIBDL="-ldl"
 else
   LIBDL=""
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lc" >&5
-$as_echo_n "checking for gethostbyname in -lc... " >&6; }
-if ${ac_cv_lib_c_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_c_gethostbyname=yes
-else
-  ac_cv_lib_c_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_gethostbyname" >&5
-$as_echo "$ac_cv_lib_c_gethostbyname" >&6; }
-if test "x$ac_cv_lib_c_gethostbyname" = xyes; then :
-  LIBNSL=""
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lsocket" >&5
-$as_echo_n "checking for gethostbyname in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_gethostbyname=yes
-else
-  ac_cv_lib_socket_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_gethostbyname" >&5
-$as_echo "$ac_cv_lib_socket_gethostbyname" >&6; }
-if test "x$ac_cv_lib_socket_gethostbyname" = xyes; then :
-  LIBNSL="-lsocket"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
-$as_echo_n "checking for gethostbyname in -lnsl... " >&6; }
-if ${ac_cv_lib_nsl_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_nsl_gethostbyname=yes
-else
-  ac_cv_lib_nsl_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_gethostbyname" >&5
-$as_echo "$ac_cv_lib_nsl_gethostbyname" >&6; }
-if test "x$ac_cv_lib_nsl_gethostbyname" = xyes; then :
-  LIBNSL="-lnsl"
-else
-  LIBNSL=""
-fi
-
-fi
-
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lc" >&5
-$as_echo_n "checking for socket in -lc... " >&6; }
-if ${ac_cv_lib_c_socket+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket ();
-int
-main ()
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_c_socket=yes
-else
-  ac_cv_lib_c_socket=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_c_socket" >&5
-$as_echo "$ac_cv_lib_c_socket" >&6; }
-if test "x$ac_cv_lib_c_socket" = xyes; then :
-  LIBSOCKET=""
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
-$as_echo_n "checking for socket in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_socket+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket ();
-int
-main ()
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_socket=yes
-else
-  ac_cv_lib_socket_socket=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
-$as_echo "$ac_cv_lib_socket_socket" >&6; }
-if test "x$ac_cv_lib_socket_socket" = xyes; then :
-  LIBSOCKET="-lsocket"
-else
-  LIBSOCKET=""
-fi
-
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for getgrgid in -lc" >&5
@@ -11967,7 +11799,7 @@ fi
 
 
   if test "$PYTHON" = :; then
-      as_fn_error $? "no suitable Python interpreter found" "$LINENO" 5
+      :
   else
 
 
@@ -12113,7 +11945,6 @@ $as_echo "$am_cv_python_pyexecdir" >&6; }
 
 
   fi
-
 
 
  if test "$PYTHON" != :; then
@@ -14931,10 +14762,11 @@ fi
 
    ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->linux"
+   as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
   ;; #(
   #
  # OTHER
@@ -16979,9 +16811,27 @@ fi
 RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
+# Determine common warning options to apply to C, C++, and Fortran languages
+WARNFLAGS="-Wall -Wextra"
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to treat warnings as errors" >&5
+$as_echo_n "checking whether to treat warnings as errors... " >&6; }
+# Check whether --enable-werror was given.
+if test "${enable_werror+set}" = set; then :
+  enableval=$enable_werror;
+else
+  enable_werror=no
+fi
 
+case $enable_werror in #(
+  yes) :
+    as_fn_append WARNFLAGS " -Werror" ;; #(
+  *) :
+     ;;
+esac
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_werror" >&5
+$as_echo "$enable_werror" >&6; }
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
@@ -17152,15 +17002,11 @@ fi
 
 
 
-
-
-
-
 ac_config_headers="$ac_config_headers include/config.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rpm/mdsipd.xinetd rpm/mdsipsd.xinetd scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdi/MitDevices/_version.py tdi/RfxDevices/_version.py tdi/W7xDevices/_version.py tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdsdcl/mdsdcl_show_version.c mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile mdsobjects/python/_version.py mdsobjects/python/docs/Makefile mdsobjects/python/tests/Makefile mdsobjects/java/Makefile mdsobjects/java/docs/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdi/MitDevices/_version.py tdi/RfxDevices/_version.py tdi/W7xDevices/_version.py tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -18056,8 +17902,6 @@ do
     "rpm/Makefile") CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;
     "rpm/envsyms") CONFIG_FILES="$CONFIG_FILES rpm/envsyms" ;;
     "rpm/post_install_script") CONFIG_FILES="$CONFIG_FILES rpm/post_install_script" ;;
-    "rpm/mdsipd.xinetd") CONFIG_FILES="$CONFIG_FILES rpm/mdsipd.xinetd" ;;
-    "rpm/mdsipsd.xinetd") CONFIG_FILES="$CONFIG_FILES rpm/mdsipsd.xinetd" ;;
     "scripts/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
     "servershr/Makefile") CONFIG_FILES="$CONFIG_FILES servershr/Makefile" ;;
     "setevent/Makefile") CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;

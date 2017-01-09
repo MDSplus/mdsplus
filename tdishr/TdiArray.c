@@ -44,11 +44,9 @@ extern int CvtConvertFloat();
 
 extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-  array_coeff arr = { 1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAXDIM, 0 };
-  array_int cvt = { sizeof(int), DTYPE_L, CLASS_A, (int *)0, 0, 0, {0, 1, 1, 0, 0}, 1,
-  0
-  };
+  INIT_STATUS;
+  array_coeff arr = { 1, DTYPE_B, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0}, MAXDIM, 0, 0, {0}};
+  array_int cvt = { sizeof(int), DTYPE_L, CLASS_A, (int *)0, 0, 0, {0, 1, 1, 0, 0}, 1, 0};
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned short length;
@@ -62,9 +60,9 @@ extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct des
     arr.class = CLASS_S;
   else {
     status = TdiData(list[0], &tmp MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK {
     N_ELEMENTS(tmp.pointer, ndim)};
-    if (status & 1) {
+    if STATUS_OK {
       arr.dimct = (unsigned char)ndim;
       arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);
       arr.a0 = 0;
@@ -94,9 +92,9 @@ extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct des
       length = list[1]->length;
       break;
     default:
-      if (status & 1)
+      if STATUS_OK
 	status = TdiData(list[1], &tmp MDS_END_ARG);
-      if (status & 1) {
+      if STATUS_OK {
 	dtype = tmp.pointer->dtype;
 	length = tmp.pointer->length;
       }
@@ -107,7 +105,7 @@ extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct des
 	/*****************************
         Size is product of dimensions.
         *****************************/
-  if (status & 1) {
+  if STATUS_OK {
     if (arr.class == CLASS_A) {
       for (arr.arsize = 1, j = ndim; --j >= 0;)
 	arr.arsize *= arr.m[j];
@@ -119,7 +117,7 @@ extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct des
 	/*********************
         Put some data into it.
         *********************/
-  if (status & 1)
+  if STATUS_OK
     status = (*fun_ptr->f3) (out_ptr->pointer);
   return status;
 }
@@ -128,21 +126,23 @@ extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct des
         Create un-initialized array.
                 var = ARRAY([size-vector], [mold-type])
 */
-int Tdi3Array(int *out_ptr)
+
+int Tdi3Array(/*int *out_ptr*/)
 {
-  return 1;
+  return MDSplusSUCCESS;
 }
+
 
 /*---------------------------------------------------------------------
         Create a ramp of integers starting from zero.
 */
 int Tdi3Ramp(struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   STATIC_CONSTANT int i0 = 0, i1 = 1;
   STATIC_CONSTANT struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
   STATIC_CONSTANT struct descriptor con1 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i1 };
-  int status = 1, n;
-  int i;
+  int i,n;
 
 #define LoadRamp(type) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)i; break;}
 #define LoadRampF(type,dtype,native) { type *ptr = (type *)out_ptr->pointer; type tmp; \
@@ -176,13 +176,13 @@ int Tdi3Ramp(struct descriptor *out_ptr)
       if (n > 1) {
 	int step = new.length;
 	new.pointer += step;
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiConvert(&con1, &new);
 	if (n > 2) {
 	  struct descriptor_a modify = *(struct descriptor_a *)out_ptr;
 	  modify.pointer += step;
 	  modify.arsize -= step;
-	  if (status & 1)
+	  if STATUS_OK
 	    status = Tdi3Add(out_ptr, &new, &modify);
 	}
       }
@@ -204,10 +204,10 @@ int Tdi3Ramp(struct descriptor *out_ptr)
 
 int Tdi3Random(struct descriptor_a *out_ptr)
 {
+  INIT_STATUS;
   double half = .5;
   double norm = half / 2147483648.;
-  int status = 1, n;
-  int i;
+  int i, n;
 
   if (Tdi_RandomSeed == 1234567) {
 #ifdef _WIN32
@@ -294,8 +294,5 @@ int Tdi3Zero(struct descriptor_a *out_ptr)
 {
   STATIC_CONSTANT int i0 = 0;
   STATIC_CONSTANT struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
-  int status;
-
-  status = TdiConvert(&con0, out_ptr);
-  return status;
+  return TdiConvert(&con0, out_ptr);
 }

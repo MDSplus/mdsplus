@@ -77,8 +77,7 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
 			int time[]	/* <r> date/time to display: quadword       */
     )
 {
-  int flags = 0;
-  short len;
+  unsigned short len;
   static char datime[24];
   static DESCRIPTOR(dsc_datime, datime);
 
@@ -102,7 +101,7 @@ void tclAppend(char **output, char *str)
 	 * TclDirectory:
 	 * Perform directory function
 	 ****************************************************************/
-EXPORT int TclDirectory(void *ctx, char **error, char **output)
+EXPORT int TclDirectory(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   char *tagnam;
   char msg[128];
@@ -123,7 +122,7 @@ EXPORT int TclDirectory(void *ctx, char **error, char **output)
   int parent_nid;
   char nodnamC[12 + 1];
   int relationship;
-  int previous_relationship;
+  int previous_relationship = 0;
   unsigned char nodeUsage;
   NCI_ITM general_info_list[] = {
     {4, NciPARENT, &parent_nid, 0}

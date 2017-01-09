@@ -17,7 +17,7 @@ EXPORT struct descriptor *whoami()
   if (ans.pointer == 0) {
 #ifdef _WIN32
     static char user[128];
-    int bsize = 128;
+    DWORD bsize = 128;
     ans.pointer = GetUserName(user, &bsize) ? user : "Windows User";
 #elif __MWERKS__
     ans.pointer = "Macintosh User";

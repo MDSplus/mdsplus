@@ -19,23 +19,23 @@
    All the init routines use one common function which takes the number
    of channels as an argument.
 */
-static int L8212__INIT(struct descriptor *niddsc_ptr, InInitStruct * setup, int chans);
-int l8212_04___init(struct descriptor *niddsc, InInitStruct * setup)
+static int L8212__INIT(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup, int chans);
+int l8212_04___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   return L8212__INIT(niddsc, setup, 4);
 }
 
-int l8212_08___init(struct descriptor *niddsc, InInitStruct * setup)
+int l8212_08___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   return L8212__INIT(niddsc, setup, 8);
 }
 
-int l8212_16___init(struct descriptor *niddsc, InInitStruct * setup)
+int l8212_16___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   return L8212__INIT(niddsc, setup, 16);
 }
 
-int l8212_32___init(struct descriptor *niddsc, InInitStruct * setup)
+int l8212_32___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   return L8212__INIT(niddsc, setup, 32);
 }
@@ -43,23 +43,23 @@ int l8212_32___init(struct descriptor *niddsc, InInitStruct * setup)
 /*
    All the trigger routines use the same common function.
 */
-static int L8212__TRIGGER(struct descriptor *niddsc_ptr, InTriggerStruct * setup);
-int l8212_04___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+static int L8212__TRIGGER(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup);
+int l8212_04___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   return L8212__TRIGGER(niddsc, setup);
 }
 
-int l8212_08___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+int l8212_08___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   return L8212__TRIGGER(niddsc, setup);
 }
 
-int l8212_16___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+int l8212_16___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   return L8212__TRIGGER(niddsc, setup);
 }
 
-int l8212_32___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+int l8212_32___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   return L8212__TRIGGER(niddsc, setup);
 }
@@ -68,24 +68,24 @@ int l8212_32___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
    All the store routines use one common function which takes the number
    of channels as an argument.
 */
-static int L8212_SETUP(struct descriptor *niddsc, Widget parent, int chans);
-static int L8212__STORE(struct descriptor *niddsc_ptr, InStoreStruct * setup, int chans);
-int l8212_04___store(struct descriptor *niddsc, InStoreStruct * setup)
+static int L8212_SETUP(struct descriptor *niddsc __attribute__ ((unused)), Widget parent, int chans);
+static int L8212__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int chans);
+int l8212_04___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   return L8212__STORE(niddsc, setup, 4);
 }
 
-int l8212_08___store(struct descriptor *niddsc, InStoreStruct * setup)
+int l8212_08___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   return L8212__STORE(niddsc, setup, 8);
 }
 
-int l8212_16___store(struct descriptor *niddsc, InStoreStruct * setup)
+int l8212_16___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   return L8212__STORE(niddsc, setup, 16);
 }
 
-int l8212_32___store(struct descriptor *niddsc, InStoreStruct * setup)
+int l8212_32___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   return L8212__STORE(niddsc, setup, 32);
 }
@@ -94,22 +94,22 @@ int l8212_32___store(struct descriptor *niddsc, InStoreStruct * setup)
    All the store routines use one common function which takes the number
    of channels as an argument.
 */
-EXPORT int l8212_32__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_32__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 32);
 }
 
-EXPORT int l8212_16__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_16__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 16);
 }
 
-EXPORT int l8212_08__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_08__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 8);
 }
 
-EXPORT int l8212_04__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8212_04__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   return L8212_SETUP(niddsc, parent, 4);
 }
@@ -139,7 +139,7 @@ static int four = 4;
 #define pioq(f,a) {\
   return_on_error(DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,&one),status);}
 
-static int L8212__INIT(struct descriptor *niddsc_ptr, InInitStruct * setup, int chans)
+static int L8212__INIT(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup, int chans)
 {
 
   int status;
@@ -255,7 +255,7 @@ static int NOCToCode(int chans, int noc, int *noc_code)
   return 1;
 }
 
-static int L8212__TRIGGER(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
+static int L8212__TRIGGER(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0);
@@ -270,7 +270,6 @@ static int L8212__TRIGGER(struct descriptor *niddsc_ptr, InTriggerStruct * setup
 //extern unsigned short OpcAdd;
 //extern unsigned short OpcMultiply;
 //extern unsigned short OpcValue;
-#pragma extern_model restore
 
 static void L8212$HeaderToPTS(int memories, char *header_ptr, int *pts_ptr);
 static void PTStoMinMax(int chans, int mems, char *header, int pts, int *min_ptr, int *max_ptr);
@@ -305,7 +304,7 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
           *freq_ptr = freqs[(chans<32)?0:1][period];\
 	}
 
-static int L8212__STORE(struct descriptor *niddsc_ptr, InStoreStruct * setup, int chans)
+static int L8212__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int chans)
 {
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
@@ -345,9 +344,9 @@ static int L8212__STORE(struct descriptor *niddsc_ptr, InStoreStruct * setup, in
   short *channel_data_ptr;
   int status;
   int chan;
-  int samples_to_read;
-  int i;
-  int pts;
+  //int samples_to_read;
+  //int i;
+  //int pts;
   int stop_trig_nid;
   int use_qrep = 0;
   int name_nid;
@@ -390,7 +389,7 @@ static int L8212__STORE(struct descriptor *niddsc_ptr, InStoreStruct * setup, in
 
       raw.m[0] = raw.bounds[0].u - raw.bounds[0].l + 1;
       if (raw.m[0] > 0) {
-	samples_to_read = raw.bounds[0].u - min_idx + 1;
+	//samples_to_read = raw.bounds[0].u - min_idx + 1;
 	status = ReadChannel(setup->name, samples_per_channel, chan, channel_data_ptr, use_qrep);
 	if (status & 1) {
 	  raw.pointer = (char *)(channel_data_ptr + (raw.bounds[0].l - min_idx));
@@ -461,8 +460,8 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
     unsigned short bytcnt;
     unsigned short fill[2];
   } iosb;
-  int lamchks = 10;
-  unsigned short dum_read;
+  //int lamchks = 10;
+  //unsigned short dum_read;
   int status;
 
   pio(16, 0, &chan)
@@ -483,17 +482,17 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
 static void clock_initialize_proc(Widget parent, Widget clock_menu);
 static void pts_initialize_proc(Widget w);
 
-static void chans_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * reason);
-static void clock_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * reason);
-static void header_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * reason);
-static void mems_changed_proc(Widget w, int *tag, XmScaleCallbackStruct * reason);
+static void chans_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRowColumnCallbackStruct * reason);
+static void clock_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRowColumnCallbackStruct * reason);
+static void header_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRowColumnCallbackStruct * reason);
+static void mems_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmScaleCallbackStruct * reason);
 static Boolean apply_proc(Widget w);
 static void reset_proc(Widget w);
 static void reset(Widget w);
 static void L8212$HeaderToPTS(int mems, char *header, int pts[]);
 static void ChangePts(Widget pts_menu, char *header, int mems);
 
-static int L8212_SETUP(struct descriptor *niddsc, Widget parent, int chans)
+static int L8212_SETUP(struct descriptor *niddsc __attribute__ ((unused)), Widget parent, int chans)
 {
   Widget dbox;
   static String uids[] = { "L8212.uid", "L8212_HEADERS.uid" };
@@ -611,7 +610,7 @@ static int L8212_SETUP(struct descriptor *niddsc, Widget parent, int chans)
   return status;
 }
 
-static void mems_changed_proc(Widget w, int *tag, XmScaleCallbackStruct * reason)
+static void mems_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmScaleCallbackStruct * reason)
 {
   Widget pts_menu = XtNameToWidget(XtParent(w), "pts_menu");
   struct descriptor_xd *header_xd =
@@ -624,7 +623,7 @@ static void mems_changed_proc(Widget w, int *tag, XmScaleCallbackStruct * reason
   }
 }
 
-static void chans_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * reason)
+static void chans_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRowColumnCallbackStruct * reason)
 {
   Widget parent = XtParent(XtParent(w));
   Widget clock_menu = XtNameToWidget(parent, "clock_menu");
@@ -644,19 +643,19 @@ static void chans_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * r
   }
 }
 
-static void clock_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * reason)
+static void clock_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRowColumnCallbackStruct * reason)
 {
   Widget parent = XtParent(XtParent(w));
   Widget clock_menu = XtNameToWidget(parent, "clock_menu");
   int num_buttons;
-  int *buttons = XmdsNidOptionMenuGetButtons(clock_menu, &num_buttons);
+  int *buttons __attribute__ ((unused)) = XmdsNidOptionMenuGetButtons(clock_menu, &num_buttons);
   if (*(int *)&reason->data == (num_buttons - 2))
     XtManageChild(XtNameToWidget(parent, "external_clock"));
   else
     XtUnmanageChild(XtNameToWidget(parent, "external_clock"));
 }
 
-static void header_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct * reason)
+static void header_changed_proc(Widget w, int *tag __attribute__ ((unused)), XmRowColumnCallbackStruct * reason)
 {
   Widget pts_menu = XtNameToWidget(XtParent(XtParent(w)), "pts_menu");
   int mems;

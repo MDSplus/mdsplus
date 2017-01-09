@@ -38,7 +38,7 @@ extern int DevLong();
 //extern unsigned short OpcMultiply;
 //extern unsigned short OpcValue;
 
-EXPORT int incaa4___arm(struct descriptor *niddsc, InArmStruct * setup)
+EXPORT int incaa4___arm(struct descriptor *niddsc __attribute__ ((unused)), InArmStruct * setup)
 {
   int status;
   float freq;
@@ -73,27 +73,27 @@ EXPORT int incaa4___arm(struct descriptor *niddsc, InArmStruct * setup)
   return status;
 }
 
-EXPORT int incaa4___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int incaa4___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = incaa4___arm(niddsc, (InArmStruct *) setup);
   pio(25, 0, 0);
   return status;
 }
 
-EXPORT int incaa4___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int incaa4___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0);
   return status;
 }
 
-EXPORT int incaa4___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int incaa4___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-  static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
+  //static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -108,8 +108,8 @@ EXPORT int incaa4___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   static DESCRIPTOR_NID(ext_clock_d, &clock_in_nid);
   static float coefficient = 20.0 / 4096;
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
-  static int key;
-  static DESCRIPTOR_LONG(key_d, &key);
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(dvalue, (unsigned char *)&OpcValue, 0);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &dvalue);
   static DESCRIPTOR(volts_str, "volts");
@@ -129,13 +129,13 @@ EXPORT int incaa4___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   int samples_to_read;
   int mar = 64 * 1024 / 4;
   int samps_per_chan;
-  int i;
-  int polarity;
+  //int i;
+  //int polarity;
   CSRegister csreg = { 4, 4, 0, 1, 1, 0, 0, 1 };
   int min_idx;
   int max_idx;
   int start_addr = 0;
-  int tries;
+  //int tries;
   int memsize;
   trig_in_nid = setup->head_nid + INCAA4_N_TRIG_IN;
   clock_in_nid = setup->head_nid + INCAA4_N_CLOCK_IN;

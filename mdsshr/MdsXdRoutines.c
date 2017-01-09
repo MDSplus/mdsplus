@@ -26,11 +26,21 @@
 #define LibVM_BOUNDARY_TAGS  1
 #define LibVM_EXTEND_AREA    32
 #define LibVM_TAIL_LARGE     128
-#define align(bytes,size) ((((unsigned long)(bytes) + (size) - 1)/(size)) * (size))
 #define compression_threshold 128
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
+inline static size_t _sizeAligned(size_t bytes) {
+  size_t b_mod = bytes % sizeof(void *);
+  return (b_mod == 0) ? bytes : (bytes + sizeof(void *) - b_mod);
+}
+
+inline static char *_align(char *ptr, size_t offset, size_t size) {
+  uintptr_t p_mod = (uintptr_t)(ptr + offset) % size;
+  return (p_mod == 0) ? ptr + offset: (ptr + offset + size - p_mod);
+}
+
 void MdsFixDscLength(struct descriptor *in);
+//static void _checkAlign(struct descriptor *in);
 
 STATIC_CONSTANT void *MdsVM_ZONE = 0;
 
@@ -126,14 +136,11 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	  in.length = path.length;
 	  in.pointer = path.pointer;
 	}
-	align_size = (in.dtype == DTYPE_T && in.length) ? 1 : in.length;
+	align_size = ((in.dtype == DTYPE_T || in.dtype == DTYPE_PATH) && in.length) ? 1 : in.length;
 	if (po) {
 	  *po = in;
 	  po->class = CLASS_S;
-	  po->pointer =
-	      in.length ? (char *)po + align((char *)po - (char *)0 + sizeof(struct descriptor),
-					     align_size)
-	      - ((char *)po - (char *)0) : 0;
+	  po->pointer = in.length ? _align((char *)po, sizeof(struct descriptor), align_size) : 0;
 	  if (in.length)
 	    _MOVC3(in.length, (char *)in.pointer, (char *)po->pointer);
 	}
@@ -167,7 +174,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = align(sizeof(struct descriptor_xs) + in.l_length, sizeof(void *));
+	bytes = _sizeAligned(sizeof(struct descriptor_xs) + in.l_length);
       }
       break;
 
@@ -183,7 +190,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	    _MOVC3(pi->length, (char *)pi->pointer, (char *)po->pointer);
 	  }
 	}
-	bytes = align(bytes + pi->length, sizeof(void *));
+	bytes = _sizeAligned(bytes + pi->length);
       /******************************
       Each descriptor must be copied.
       ******************************/
@@ -195,7 +202,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			     fixup_path, fixup_path_arg, compressible);
 	    if (po)
 	      po->dscptrs[j] = size ? (struct descriptor *)((char *)po + bytes) : 0;
-	    bytes = align(bytes + size, sizeof(void *));
+	    bytes = _sizeAligned(bytes + size);
 	  }
       }
       break;
@@ -214,7 +221,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
 	}
-	bytes = align(bytes + pi->arsize, sizeof(void *));
+	bytes = _sizeAligned(bytes + pi->arsize);
 	if (pi->arsize > compression_threshold)
 	  *compressible = 1;
 	free(pi);
@@ -236,9 +243,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	bytes = dscsize + pi->arsize + align_size;
 	if (po) {
 	  _MOVC3(dscsize, (char *)pi, (char *)po);
-	  po->pointer =
-	      (char *)po + align((char *)po - (char *)0 + dscsize,
-				 align_size) - ((char *)po - (char *)0);
+	  po->pointer = _align((char *)po, dscsize, align_size);
 	  if (pi->arsize > 0 && pi->pointer != NULL )
 	    _MOVC3(pi->arsize, pi->pointer, po->pointer);
 	  if (pi->aflags.coeff)
@@ -266,7 +271,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 	  _MOVC3(bytes, (char *)pi, (char *)po);
 	  pdo = (struct descriptor **)(po->pointer = (char *)po + bytes);
 	}
-	bytes = align(bytes + pi->arsize, sizeof(void *));
+	bytes = _sizeAligned(bytes + pi->arsize);
 
       /******************************
       Each descriptor must be copied.
@@ -278,7 +283,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			   compressible);
 	  if (po)
 	    *pdo++ = size ? (struct descriptor *)((char *)po + bytes) : 0;
-	  bytes = align(bytes + size, sizeof(void *));
+	  bytes = _sizeAligned(bytes + size);
 	}
       }
       break;
@@ -287,15 +292,13 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
       {
 	struct descriptor_a *pi = (struct descriptor_a *)in_ptr;
 	struct descriptor_a *po = (struct descriptor_a *)out_dsc_ptr;
-	bytes = align(sizeof(struct descriptor_a)
+	bytes = _sizeAligned(sizeof(struct descriptor_a)
 		      + (pi->aflags.coeff ? sizeof(char *) + sizeof(int) * pi->dimct : 0)
-		      + (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0), sizeof(void *));
+		      + (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0));
 	if (po) {
 	  _MOVC3(bytes, (char *)pi, (char *)po);
 	  if (pi->pointer)
-	    po->pointer =
-		(char *)po + align((char *)po - (char *)0 + bytes,
-				   sizeof(void *)) - ((char *)po - (char *)0);
+	    po->pointer = _align((char *)po, bytes, sizeof(void *));
 	  else
 	    po->pointer = NULL;
 	}
@@ -308,7 +311,7 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
 			   po ? (struct descriptor_xd *)(po->pointer) : 0,
 			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
 			   compressible);
-	  bytes = align(bytes + size, sizeof(void *));
+	  bytes = _sizeAligned(bytes + size);
 	}
       }
       break;
@@ -318,6 +321,9 @@ STATIC_ROUTINE int copy_dx(struct descriptor_xd const *in_dsc_ptr,
       break;
     }
   *bytes_used_ptr = bytes;
+  /*  if (out_dsc_ptr) {
+    _checkAlign((struct descriptor *)out_dsc_ptr);
+    }*/
   return status;
 }
 
@@ -408,3 +414,49 @@ void MdsFixDscLength(struct descriptor *in)
     break;
   }
 }
+/*
+static void _checkAlign(struct descriptor *in)
+{
+  if (in->pointer) {
+    size_t aligned_with = 1;
+    switch (in->dtype) {
+    case DTYPE_B:
+    case DTYPE_BU:
+    case DTYPE_T:
+    case DTYPE_PATH:
+      aligned_with = 1;
+      break;
+    case DTYPE_W:
+    case DTYPE_WU:
+      aligned_with = 2;
+      break;
+    case DTYPE_L:
+    case DTYPE_LU:
+    case DTYPE_F:
+    case DTYPE_FS:
+    case DTYPE_NID:
+      aligned_with = 4;
+      break;
+    case DTYPE_D:
+    case DTYPE_G:
+    case DTYPE_FT:
+    case DTYPE_Q:
+    case DTYPE_QU:
+      aligned_with = 8;
+      break;
+    case DTYPE_O:
+    case DTYPE_OU:
+      aligned_with = 16;
+    break;
+    }
+    if (aligned_with != 1) {
+      char *ptr = _align(in->pointer, 0, aligned_with);
+      if ( ptr != in->pointer ) {
+	printf("Unaligned! dtype=%d, class=%d, length=%d, pointer=%p (aligned=%p)\n",
+	       in->dtype, in->class, in->length, in->pointer, ptr);
+	exit(1);
+      }
+    }
+  }
+}
+*/

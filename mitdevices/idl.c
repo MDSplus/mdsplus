@@ -16,7 +16,7 @@ static int (*execute) (char *cmd);
 
 static void InitIdl()
 {
-  int zero;
+  //int zero;
   if (!idl_initialized) {
     DESCRIPTOR(image, "IDL");
     DESCRIPTOR(execute_d, "execute");
@@ -31,7 +31,7 @@ static void InitIdl()
   }
 }
 
-EXPORT int idl___execute(struct descriptor *niddsc, InExecuteStruct * setup)
+EXPORT int idl___execute(struct descriptor *niddsc __attribute__ ((unused)), InExecuteStruct * setup)
 {
   static char *initialize[] = { "close,/all", "!ERROR = 0", "retall" };
   int status = IDL$_ERROR;

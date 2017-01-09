@@ -9,7 +9,7 @@
 
        Date:    7-SEP-1993
 
-       Purpose: 
+       Purpose:
         Routine for simple operations on one VMS data types and classes.
         BU-H    = ABS(BU-HC)    absolute value, abs(x)=sqrt(real**2+imag**2)
         BU-H    = ABS1(BU-HC)   absolute value, abs1(x)=abs(real)+abs(imag)
@@ -105,6 +105,10 @@ STATIC_CONSTANT const int roprand = 0x8000;
 #define start_operate1(itype,otype) {\
   itype *in=(itype *)(in_ptr->pointer); \
   otype *out=(otype *)(out_ptr->pointer); \
+  for (i=0;i<out_count;i++) {
+
+#define start_operate2(type) {\
+  type *out=(type *)(out_ptr->pointer); \
   for (i=0;i<out_count;i++) {
 
 #define end_operate } break; }
@@ -239,12 +243,12 @@ int MthJIGNNT();
 
 int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -297,12 +301,12 @@ int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
 int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -356,12 +360,12 @@ int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
 int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -396,37 +400,37 @@ int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
 int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
   case DTYPE_B:
   case DTYPE_BU:
-    start_operate(char) out[i] = 0;
-    end_operate case DTYPE_W:case DTYPE_WU:start_operate(short int) out[i] = 0;
-    end_operate case DTYPE_L:case DTYPE_LU:start_operate(int) out[i] = 0;
-    end_operate case DTYPE_Q:case DTYPE_QU:start_operate(Int64) zero64;
+    start_operate2(char) out[i] = 0;
+    end_operate case DTYPE_W:case DTYPE_WU:start_operate2(short int) out[i] = 0;
+    end_operate case DTYPE_L:case DTYPE_LU:start_operate2(int) out[i] = 0;
+    end_operate case DTYPE_Q:case DTYPE_QU:start_operate2(Int64) zero64;
     end_operate case DTYPE_O:case DTYPE_OU:out_count = out_count * 2;
-    start_operate(Int64)
+    start_operate2(Int64)
 	zero64;
-    end_operate case DTYPE_F:start_operate(float)
+    end_operate case DTYPE_F:start_operate2(float)
     float ans = (float)0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_F, 0);
-    end_operate case DTYPE_FS:start_operate(float)
+    end_operate case DTYPE_FS:start_operate2(float)
     float ans = (float)0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_FS, 0);
-    end_operate case DTYPE_G:start_operate(double)
+    end_operate case DTYPE_G:start_operate2(double)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_G, 0);
-    end_operate case DTYPE_D:start_operate(double)
+    end_operate case DTYPE_D:start_operate2(double)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_D, 0);
-    end_operate case DTYPE_FT:start_operate(double)
+    end_operate case DTYPE_FT:start_operate2(double)
     double ans = 0.0;
     CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_FT, 0);
     end_operate case DTYPE_FC:case DTYPE_FSC:start_operate(int) out[i] = in[i * 2 + 1];
@@ -443,12 +447,12 @@ int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
 int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -479,12 +483,12 @@ int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
 int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -509,13 +513,13 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
   return status;
 }
 
-int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind, struct descriptor *out_ptr)
+int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((unused)), struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -542,11 +546,11 @@ int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind, struct descr
 
 int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -576,14 +580,14 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
   return status;
 }
 
-int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind, struct descriptor *out_ptr)
+int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((unused)), struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {
@@ -620,12 +624,12 @@ int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind, struct descript
 
 int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i;
 
   status = TdiUnary(in_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in_ptr->dtype) {

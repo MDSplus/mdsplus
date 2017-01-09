@@ -90,7 +90,7 @@ using namespace testing;
 
 
 
-int main(int argc, char *argv[])
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(Tree);
 

@@ -25,7 +25,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l2256___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   pio(9, 0)
@@ -33,16 +33,16 @@ EXPORT int l2256___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-EXPORT int l2256___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l2256___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-EXPORT int l2256___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l2256___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
-  static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
+  //static struct descriptor name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -59,8 +59,8 @@ EXPORT int l2256___store(struct descriptor *niddsc, InStoreStruct * setup)
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
   static float offset = 0;
   static struct descriptor_s offset_d = { 4, DTYPE_NATIVE_FLOAT, CLASS_S, (char *)&offset };
-  static int key;
-  static DESCRIPTOR_LONG(key_d, &key);
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
   static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d, &value);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
@@ -76,19 +76,19 @@ EXPORT int l2256___store(struct descriptor *niddsc, InStoreStruct * setup)
   int channel_nid = setup->head_nid + L2256_N_INPUT;
   short channel_data[1024];
   int status = 1;
-  int maxidx;
-  int minidx;
-  int i;
+  //int maxidx;
+  //int minidx;
+  //int i;
   int pts;
 
-#pragma member_alignment save
-#pragma nomember_alignment
+  //#pragma member_alignment save
+  //#pragma nomember_alignment
   struct {
  unsigned __attribute__ ((packed)) frequency:3;
  unsigned __attribute__ ((packed)) pre:3;
  unsigned __attribute__ ((packed)) offset:8;
   } reg;
-#pragma member_alignment restore
+  //#pragma member_alignment restore
 
   if (TreeIsOn(channel_nid) & 1) {
     value.ndesc = 0;

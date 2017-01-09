@@ -5,7 +5,7 @@ builddir=@builddir@
 VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
 @MINGW_TRUE@ DEF=${srcdir}/mdsdclshr.def
-@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv  @LIBDL@ @SOCKETLIB@ 
+@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv  @LIBDL@ $(LIBSOCKET)
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
 
 SOURCES = 		\
@@ -44,6 +44,9 @@ cmdExecute.o: cmdExecute.c
 
 cmdHelp.o: cmdHelp.c
 	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
+
+cmdParseLex.o: cmdParseLex.c
+	$(COMPILE.c) $(CFLAGS) -Wno-unused-parameter -c $^
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF)

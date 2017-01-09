@@ -14,7 +14,7 @@ static int one = 1;
 #define return_on_error(f) if (!((status = f) & 1)) return status;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0))
 
-EXPORT int joerger_adcp___init(struct descriptor *nid_dsc, InInitStruct * setup)
+EXPORT int joerger_adcp___init(struct descriptor *nid_dsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   pio(24, 0, 0)

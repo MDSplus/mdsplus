@@ -2207,7 +2207,7 @@ Widget XmCreateScrolledListTree(Widget parent, char *name, Arg * args, Cardinal 
 {
   Widget sw;
   char *sname;
-  int i;
+  Cardinal i;
   Arg *al;
 
   sname = XtMalloc(strlen(name) + 3);

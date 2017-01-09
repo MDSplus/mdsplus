@@ -61,7 +61,7 @@ which actually perform digital filtering.
 #include "filter.h"
 #include <config.h>
 
-EXPORT Complex *FindFactors(Complex * poles, double fc, int n, double gain)
+EXPORT Complex *FindFactors(Complex * poles, double fc, int n, double gain __attribute__ ((unused)))
 {
   int i, j;
   double currA;

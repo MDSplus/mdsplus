@@ -14,28 +14,28 @@
 
 extern int TdiGetLong();
 
-int Tdi1ShowVm(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ShowVm()
 {
   /*
-  int status = 1;
+  INIT_STATUS;
   int code, contex = 0, j = 1, mask, zone_id = 0;
 
   if (narg > 0 && list[0])
     status = TdiGetLong(list[0], &code);
   else
     code = 3;
-  if (narg > 1 && list[1] && status & 1)
+  if (narg > 1 && list[1] && STATUS_OK)
     status = TdiGetLong(list[1], &mask);
   else
     mask = -1;
-  while (status & 1) {
+  while STATUS_OK {
     status = LibFindVmZone(&contex, &zone_id);
-    if (status & 1 && zone_id && j & mask)
+    if (STATUS_OK && zone_id && j & mask)
       status = LibShowVmZone(&zone_id, &code);
     j <<= 1;
   }
   if (status == LibNOTFOU)
-    status = 1;
+    status = MDSplusSUCCESS;
   return status;
   */
   return 0;

@@ -38,9 +38,9 @@ public class MdsPlusBrowseSignals extends jScopeBrowseSignals
                     value = st.nextToken("&").substring(1);
                     pr.put(name, value);
                     
-                    tree = (String)pr.getProperty("experiment");
-                    shot = (String)pr.getProperty("shot");
-                    sig_path = (String)pr.getProperty("path");
+                    tree = pr.getProperty("experiment");
+                    shot = pr.getProperty("shot");
+                    sig_path = pr.getProperty("path");
                     
                 }
             }

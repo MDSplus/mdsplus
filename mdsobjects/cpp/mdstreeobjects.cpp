@@ -1,6 +1,3 @@
-#ifdef _WIN32
-#define NOMINMAX
-#endif
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
@@ -145,17 +142,17 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 }
 
 Tree::~Tree()
-{    
+{
     if( isModified() ) {
         int status = _TreeQuitTree(&ctx, name.c_str(), shot);
         if(!(status & 1))
-            throw MdsException(status); 
+            throw MdsException(status);
     } else {
         int status = _TreeClose(&ctx, name.c_str(), shot);
         if(!(status & 1))
             throw MdsException(status);
     }
-    TreeFreeDbid(ctx);    
+    TreeFreeDbid(ctx);
 }
 
 // WINDOWS dll force export new and delete //
@@ -175,7 +172,7 @@ void Tree::edit(const bool st)
     if( isReadOnly() )
         throw MdsException("Tree is read only");
     int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot) :
-                      _TreeOpen(&ctx, name.c_str(), shot,0);     
+                      _TreeOpen(&ctx, name.c_str(), shot,0);
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -279,7 +276,7 @@ TreeNodeArray *Tree::getNodeWild(char const *path)
 void Tree::setDefault(TreeNode *treeNode)
 {
 	int status = _TreeSetDefaultNid(ctx, treeNode->getNid());
-	if(!(status & 1)) 
+	if(!(status & 1))
 		throw MdsException(status);
 }
 
@@ -288,7 +285,7 @@ TreeNode *Tree::getDefault()
 	int nid;
 
 	int status = _TreeGetDefaultNid(ctx, &nid);
-	if(!(status & 1)) 
+	if(!(status & 1))
 		throw MdsException(status);
 	return new TreeNode(nid, this);
 }
@@ -357,13 +354,13 @@ void Tree::setViewDate(char *date)
 	if(!(status & 1))
 		throw MdsException("Invalid date format");
 	status = TreeSetViewDate(&qtime);
-	if(!(status & 1)) 
+	if(!(status & 1))
 		throw MdsException(status);
 }
 
 void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 {
-	int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0, 
+	int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0,
 		(delta)?delta->convertToDsc():0);
 	if(!(status & 1))
 		throw MdsException(status);
@@ -538,7 +535,7 @@ char *TreeNode::getPath()
 
 std::string TreeNode::getPathStr()
 {
-	resolveNid();    
+    resolveNid();
     return AutoString(getPath()).string;
 }
 
@@ -551,7 +548,7 @@ char *TreeNode::getMinPath() {
 }
 
 std::string TreeNode::getMinPathStr() {
-	return AutoString(getMinPath()).string;    
+	return AutoString(getMinPath()).string;
 }
 
 char *TreeNode::getFullPath() {
@@ -868,13 +865,13 @@ const char *TreeNode::getClass() {
 	char type = getNci<char>(tree->getCtx(), nid, NciCLASS);
 	return MdsClassString(type);
 }
-	
+
 const char *TreeNode::getDType() {
 	resolveNid();
 	char type = getNci<char>(tree->getCtx(), nid, NciDTYPE);
 	return MdsDtypeString(type);
 }
-	
+
 const char *TreeNode::getUsage() {
 	resolveNid();
 	int usage = getNci<int>(tree->getCtx(), nid, NciUSAGE);
@@ -911,7 +908,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 {
 	int nNidsLen, retLen;
 	int nNids;
-	struct nci_itm nciList[] = 
+	struct nci_itm nciList[] =
 		{{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
@@ -921,8 +918,8 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 		throw MdsException(status);
 
 	int *nids = new int[nNids];
-	struct nci_itm nciList1[] = 
-		{{4*nNids, NciCONGLOMERATE_ELT, (char *)nids, &retLen},
+	struct nci_itm nciList1[] =
+	  {{(short)(4*nNids), NciCONGLOMERATE_ELT, (char *)nids, &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
 	status = _TreeGetNci(tree->getCtx(), nid, nciList1);
@@ -933,7 +930,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 	delete [] nids;
 	return resArray;
 }
-	
+
 int TreeNode::getDepth() {
 	resolveNid();
 	return getNci<int>(tree->getCtx(), nid, NciDEPTH);
@@ -941,8 +938,8 @@ int TreeNode::getDepth() {
 
 #ifdef _WIN32
 #define pthread_mutex_t int
-static void LockMdsShrMutex(){}
-static void UnlockMdsShrMutex(){}
+//static void LockMdsShrMutex(){}
+//static void UnlockMdsShrMutex(){}
 #endif
 
 void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
@@ -1003,7 +1000,6 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 	}
 	makeSegment(start, end, time, initialData);
 }
-		
 
 void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
 {
@@ -1044,10 +1040,6 @@ void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *i
 	}
 	makeSegment(start, end, time, initialData);
 }
-		
-
-
-
 
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
@@ -1128,12 +1120,11 @@ void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 	*end = (Data*)convertFromDsc(endDsc, tree);
 	freeDsc(endDsc);
 }
-	
+
 Array *TreeNode::getSegment(int segIdx)
 {
 	void *dataDsc;
 	void *timeDsc;
-	
 	resolveNid();
 	//if(tree) tree->lock();
 	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
@@ -1154,7 +1145,6 @@ Data *TreeNode::getSegmentDim(int segIdx)
 {
 	void *dataDsc;
 	void *timeDsc;
-	
 	resolveNid();
 	//if(tree) tree->lock();
 	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
@@ -1446,7 +1436,7 @@ void TreeNodeArray::operator delete(void *p)
 StringArray *TreeNodeArray::getPath()
 {
 /* WRONG!! AutoArray cannot wok here because AutoArray objects are instantiated several times and then go
-out of scope, this triggering multiple deallocation of the same C string and crashing the program  
+out of scope, this triggering multiple deallocation of the same C string and crashing the program
 
 	std::vector<AutoArray<char> > paths;
 	for(int i = 0; i < numNodes; ++i)
@@ -1647,7 +1637,7 @@ Tree *MDSplus::getActiveTree()
 	char name[1024];
 	int shot;
 	int retNameLen, retShotLen;
-	
+
 	DBI_ITM dbiItems[] = {
 		{1024, DbiNAME, name, &retNameLen},
 		{sizeof(int), DbiSHOTID, &shot, &retShotLen},

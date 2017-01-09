@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "a3204_gen.h"
-EXPORT int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "A3204");
@@ -128,7 +128,7 @@ EXPORT int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int a3204__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int a3204__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		     struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -207,29 +207,33 @@ extern int a3204___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int a3204__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a3204__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
     short code;
     float value;
   } input_1_gain_t[] = {
-  0, .5, 1, 1., 2, 2., 3, 4., 4, 8., 5, 16., 6, 32., 7, 64., 8, 128., 9, 256., 10, 512., 0, 0};
+    {0, .5}, {1, 1.}, {2, 2.}, {3, 4.}, {4, 8.}, {5, 16.},
+    {6, 32.}, {7, 64.}, {8, 128.}, {9, 256.}, {10, 512.}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_2_gain_t[] = {
-  0, .5, 1, 1., 2, 2., 3, 4., 4, 8., 5, 16., 6, 32., 7, 64., 8, 128., 9, 256., 10, 512., 0, 0};
+    {0, .5}, {1, 1.}, {2, 2.}, {3, 4.}, {4, 8.}, {5, 16.},
+    {6, 32.}, {7, 64.}, {8, 128.}, {9, 256.}, {10, 512.}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_3_gain_t[] = {
-  0, .5, 1, 1., 2, 2., 3, 4., 4, 8., 5, 16., 6, 32., 7, 64., 8, 128., 9, 256., 10, 512., 0, 0};
+    {0, .5}, {1, 1.}, {2, 2.}, {3, 4.}, {4, 8.}, {5, 16.},
+    {6, 32.}, {7, 64.}, {8, 128.}, {9, 256.}, {10, 512.}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_4_gain_t[] = {
-  0, .5, 1, 1., 2, 2., 3, 4., 4, 8., 5, 16., 6, 32., 7, 64., 8, 128., 9, 256., 10, 512., 0, 0};
+    {0, .5}, {1, 1.}, {2, 2.}, {3, 4.}, {4, 8.}, {5, 16.},
+    {6, 32.}, {7, 64.}, {8, 128.}, {9, 256.}, {10, 512.}, {0, 0}};
   struct descriptor_xd work_xd[1];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 1);
@@ -257,7 +261,7 @@ EXPORT int a3204__init(struct descriptor *nid_d_ptr, struct descriptor *method_d
 extern int a3204___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int a3204__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int a3204__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

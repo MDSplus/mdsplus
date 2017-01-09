@@ -150,10 +150,10 @@ EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples, i
   int lend = *samples;
   int linc = *active_chans;
   unsigned length = lstart + lend * linc * sizeof(short);
-  int in, out;
+  int out;
   int fd;
   short *region;
-  int i;
+  //int i;
 
   /* printf("Starting DMARead lstart = %d lend = %d linc = %d, length = %d\n", lstart, lend, linc, length); */
   if ((fd = open(fname, O_RDWR)) < 0) {

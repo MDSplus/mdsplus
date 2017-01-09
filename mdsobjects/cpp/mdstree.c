@@ -282,7 +282,7 @@ int setTreeXNci(void *dbid, int nid, const char *name, void *dataDsc)
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   int status;
 
-  status = _TreeSetXNci(dbid, nid, name, dataXd);
+  status = _TreeSetXNci(dbid, nid, name, (struct descriptor *)dataXd);
 	freeDsc(dataXd);
   return status;
 }

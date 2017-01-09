@@ -61,6 +61,14 @@ public class SPIDERSetup extends DeviceSetup {
         deviceWave3 = new DeviceWave();
         jPanel10 = new javax.swing.JPanel();
         deviceWave4 = new DeviceWave();
+        jPanel13 = new javax.swing.JPanel();
+        deviceWave6 = new DeviceWave();
+        jPanel14 = new javax.swing.JPanel();
+        deviceWave7 = new DeviceWave();
+        jPanel15 = new javax.swing.JPanel();
+        deviceWave8 = new DeviceWave();
+        jPanel16 = new javax.swing.JPanel();
+        deviceWave9 = new DeviceWave();
         jPanel12 = new javax.swing.JPanel();
         deviceWave5 = new DeviceWave();
 
@@ -188,7 +196,7 @@ public class SPIDERSetup extends DeviceSetup {
         deviceWave1.setUpdateExpression("");
         jPanel7.add(deviceWave1, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane2.addTab("Wave 1", jPanel7);
+        jTabbedPane2.addTab("BiasPlateI/VRef", jPanel7);
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
@@ -197,7 +205,7 @@ public class SPIDERSetup extends DeviceSetup {
         deviceWave2.setUpdateExpression("");
         jPanel8.add(deviceWave2, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane2.addTab("Wave 2", jPanel8);
+        jTabbedPane2.addTab("ExtractionGridVRef", jPanel8);
 
         jPanel9.setLayout(new java.awt.BorderLayout());
 
@@ -206,7 +214,7 @@ public class SPIDERSetup extends DeviceSetup {
         deviceWave3.setUpdateExpression("");
         jPanel9.add(deviceWave3, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane2.addTab("Wave 3", jPanel9);
+        jTabbedPane2.addTab("PlasmaGridIRef", jPanel9);
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -215,12 +223,48 @@ public class SPIDERSetup extends DeviceSetup {
         deviceWave4.setUpdateExpression("");
         jPanel10.add(deviceWave4, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane2.addTab("Wave 4", jPanel10);
+        jTabbedPane2.addTab("RFPowerRef", jPanel10);
+
+        jPanel13.setLayout(new java.awt.BorderLayout());
+
+        deviceWave6.setIdentifier("");
+        deviceWave6.setOffsetNid(41);
+        deviceWave6.setUpdateExpression("");
+        jPanel13.add(deviceWave6, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab("BiasI/VRef", jPanel13);
+
+        jPanel14.setLayout(new java.awt.BorderLayout());
+
+        deviceWave7.setIdentifier("");
+        deviceWave7.setOffsetNid(47);
+        deviceWave7.setUpdateExpression("");
+        jPanel14.add(deviceWave7, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab("RF_FREQ", jPanel14);
+
+        jPanel15.setLayout(new java.awt.BorderLayout());
+
+        deviceWave8.setIdentifier("");
+        deviceWave8.setOffsetNid(53);
+        deviceWave8.setUpdateExpression("");
+        jPanel15.add(deviceWave8, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab("RF_PHY", jPanel15);
+
+        jPanel16.setLayout(new java.awt.BorderLayout());
+
+        deviceWave9.setIdentifier("");
+        deviceWave9.setOffsetNid(59);
+        deviceWave9.setUpdateExpression("");
+        jPanel16.add(deviceWave9, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane2.addTab("RF_REFLECT", jPanel16);
 
         jPanel12.setLayout(new java.awt.BorderLayout());
 
         deviceWave5.setIdentifier("");
-        deviceWave5.setOffsetNid(41);
+        deviceWave5.setOffsetNid(65);
         deviceWave5.setUpdateExpression("");
         jPanel12.add(deviceWave5, java.awt.BorderLayout.CENTER);
 
@@ -255,10 +299,18 @@ public class SPIDERSetup extends DeviceSetup {
     private DeviceWave deviceWave3;
     private DeviceWave deviceWave4;
     private DeviceWave deviceWave5;
+    private DeviceWave deviceWave6;
+    private DeviceWave deviceWave7;
+    private DeviceWave deviceWave8;
+    private DeviceWave deviceWave9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

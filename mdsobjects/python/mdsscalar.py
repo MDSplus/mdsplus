@@ -55,6 +55,8 @@ class Scalar(_data.Data):
         if self.__class__.__name__ == 'String':
             self._value = _N.str_(_ver.tostr(value))
             return
+        if isinstance(value,(_data.Data)):
+            value = value.data()
         self._value = _N.__dict__[self.__class__.__name__.lower()](value)
 
     def __getattr__(self,name):
@@ -68,8 +70,8 @@ class Scalar(_data.Data):
     value=property(_getValue)
 
     def __str__(self):
-        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'0X%0uQ',
-                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'0X%0xQU',
+        formats={Int8:'%dB',Int16:'%dW',Int32:'%d',Int64:'%dQ',
+                 Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU',
                  Float32:'%g'}
         ans=formats[self.__class__] % (self._value,)
         if ans=='nan':
@@ -176,10 +178,27 @@ class Uint32(Scalar):
 
 class Uint64(Scalar):
     """64-bit unsigned number"""
+    _utc0 = _N.uint64("35067168000000000")
+    _utc1 = 1E7
+    @staticmethod
+    def fromTime(value):
+        """converts from seconds since 01-JAN-1970 00:00:00.00
+        For example:
+           import MDSplus
+           import time
+           mdstime=MDSplus.Uint64.fromTime(time.time()-time.altzone)
+           print(mdstime.date)
+        """
+        return Uint64(int(value * Uint64._utc1) + Uint64._utc0)
 
     def _getDate(self):
         return _data.Data.execute('date_time($)',self)
     date=property(_getDate)
+
+    def _getTime(self):
+        """returns date in seconds since 01-JAN-1970 00:00:00.00"""
+        return float(self.value - Uint64._utc0) / Uint64._utc1
+    time=property(_getTime)
 
 class Float32(Scalar):
     """32-bit floating point number"""
@@ -212,12 +231,12 @@ class String(Scalar):
     def __contains__(self,y):
         """Contains: x.__contains__(y) <==> y in x
         @rtype: Bool"""
-        return str(self._value).find(str(y)) != -1
+        return str(self).find(str(y)) != -1
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
         if len(self._value) > 0:
-            return str(self._value)
+            return _ver.tostr(self._value)
         else:
             return ''
     def __len__(self):

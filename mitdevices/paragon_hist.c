@@ -49,24 +49,24 @@ typedef struct _time {
   int lo, hi;
 } TIME;
 
-static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort);
+static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int sort);
 
 static int ParseHistorian(char *line, struct descriptor *name, float *value, TIME * time);
 static void StoreSignal(int nid,
 			int num,
 			float *values, TIME * times, struct descriptor_xd *limits, int sort);
 
-int paragon_hist___store(struct descriptor *niddsc, InStoreStruct * setup)
+int paragon_hist___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   return Store(niddsc, setup, 0);
 }
 
-int paragon_hist___insert(struct descriptor *niddsc, InInsertStruct * setup)
+int paragon_hist___insert(struct descriptor *niddsc __attribute__ ((unused)), InInsertStruct * setup)
 {
   return Store(niddsc, (InStoreStruct *) setup, 1);
 }
 
-static int Store(struct descriptor *niddsc_ptr, InStoreStruct * setup, int sort)
+static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int sort)
 {
   static struct descriptor_d rpt_name = { 0, DTYPE_T, CLASS_D, 0 };
   static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
@@ -209,7 +209,7 @@ static void StoreSignal(int nid,
   if (status & 1) {
     static struct descriptor_xd value = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
     static struct descriptor_xd time = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-    static DESCRIPTOR(sorted_times, "SORT($)");
+    //static DESCRIPTOR(sorted_times, "SORT($)");
     static DESCRIPTOR(dim_of, "DIM_OF($)");
     static DESCRIPTOR(val_of, "DATA($)");
     static DESCRIPTOR(set_range, "SET_RANGE(SIZE($1), $1)");
@@ -257,7 +257,7 @@ static int ParseHistorian(char *line, struct descriptor *name, float *value, TIM
   static char name_c[24];
   static struct descriptor name_dsc = { sizeof(name_c), DTYPE_T, CLASS_S, name_c };
   static float fval;
-  static struct descriptor fval_dsc = { sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char *)&fval };
+  //static struct descriptor fval_dsc = { sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char *)&fval };
 
   if (sscanf(line, format, &month, &day, &year, &hrs, &mins, &secs, &frac, name_c, what, &fval) ==
       10) {

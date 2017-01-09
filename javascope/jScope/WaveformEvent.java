@@ -118,7 +118,6 @@ public class WaveformEvent
                          String name,
                          int pixels_x[], int start_pixel_x,
                          int pixels_y[], int start_pixel_y)
-                         //int pixels_signal[], float frames_time[])
     {
         super(source, PROFILE_UPDATE);
         this.x_pixel = x_pixel;
@@ -127,8 +126,6 @@ public class WaveformEvent
         this.name = name;
         this.pixels_x = pixels_x;
         this.pixels_y = pixels_y;
-        this.pixels_signal = pixels_signal;
-        this.frames_time = frames_time;
         this.start_pixel_x = start_pixel_x;
         this.start_pixel_y = start_pixel_y;
     }
@@ -140,7 +137,6 @@ public class WaveformEvent
                          String name,
                          float values_x[], int start_pixel_x,
                          float values_y[], int start_pixel_y)
-                         //float values_signal[], float frames_time[])
     {
         super(source, PROFILE_UPDATE);
         this.x_pixel = x_pixel;
@@ -149,8 +145,6 @@ public class WaveformEvent
         this.name = name;
         this.values_x = values_x;
         this.values_y = values_y;
-        this.values_signal = values_signal;
-        this.frames_time = frames_time;
         this.start_pixel_x = start_pixel_x;
         this.start_pixel_y = start_pixel_y;
     }
@@ -216,7 +210,7 @@ public class WaveformEvent
             return dateFormat.format(date).toString();
 
         }
-        return dateFormat.format(date).toString();
+        return dateFormat.format(date);
     }
     public String toString()
     {

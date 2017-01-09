@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 
  Local variables:                                                             */
 
-  int i;
+  size_t i;
   static String hierarchy_name[] = { "dwpad.uid", "dwscope.uid" };
   String fallback_resources[] = { "*default_label.labelString: Default node:",
     "*exp_label.labelString: Experiment:", NULL
@@ -310,7 +310,9 @@ static void LabelSetString(Widget w, String string)
   XmStringFree(label);
 }
 
-static void ExitWithCheck(Widget w, int *tag, XtPointer callback_data)
+static void ExitWithCheck(Widget w __attribute__ ((unused)),
+			  int *tag __attribute__ ((unused)),
+			  XtPointer callback_data __attribute__ ((unused)))
 {
   if (Modified)
     XtManageChild(WriteBeforeExitWidget);
@@ -318,12 +320,15 @@ static void ExitWithCheck(Widget w, int *tag, XtPointer callback_data)
     exit(1);
 }
 
-static void Exit(Widget w, int *tag, XtPointer callback_data)
+static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
+		 XtPointer callback_data __attribute__ ((unused)))
 {
   exit(1);
 }
 
-static void ApplyCustomizeWindow(Widget w, int *tag, XtPointer callback_data)
+static void ApplyCustomizeWindow(Widget w __attribute__ ((unused)),
+				 int *tag __attribute__ ((unused)),
+				 XtPointer callback_data __attribute__ ((unused)))
 {
   String title = XmTextGetString(XtNameToWidget(CustomizeWindowWidget, "window_title"));
   String icon = XmTextGetString(XtNameToWidget(CustomizeWindowWidget, "icon_name"));
@@ -357,7 +362,9 @@ static void ApplyCustomizeWindow(Widget w, int *tag, XtPointer callback_data)
   return;
 }
 
-static void ResetCustomizeWindow(Widget w, int *tag, XtPointer callback_data)
+static void ResetCustomizeWindow(Widget w __attribute__ ((unused)),
+				 int *tag __attribute__ ((unused)),
+				 XtPointer callback_data __attribute__ ((unused)))
 {
   char number[12];
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "window_title"), PadTitle);
@@ -370,7 +377,9 @@ static void ResetCustomizeWindow(Widget w, int *tag, XtPointer callback_data)
   XmToggleButtonSetState(XtNameToWidget(CustomizeWindowWidget, "font_box.big_font"), PadBigFont, 1);
 }
 
-static void ApplyLabel(Widget w, int *tag, XtPointer callback_data)
+static void ApplyLabel(Widget w __attribute__ ((unused)),
+		       int *tag __attribute__ ((unused)),
+		       XtPointer callback_data __attribute__ ((unused)))
 {
   WaveInfo *info;
   XtVaGetValues(CurrentWidget, XmNuserData, &info, NULL);
@@ -382,7 +391,9 @@ static void ApplyLabel(Widget w, int *tag, XtPointer callback_data)
   }
 }
 
-static void ApplyDataSetup(Widget w, int *tag, XtPointer callback_data)
+static void ApplyDataSetup(Widget w __attribute__ ((unused)),
+			   int *tag __attribute__ ((unused)),
+			   XtPointer callback_data __attribute__ ((unused)))
 {
   WaveInfo *info;
   int change_mask;
@@ -394,7 +405,8 @@ static void ApplyDataSetup(Widget w, int *tag, XtPointer callback_data)
   return;
 }
 
-static void Ok(Widget w, int *tag, XtPointer callback_data)
+static void Ok(Widget w, int *tag __attribute__ ((unused)),
+	       XtPointer callback_data __attribute__ ((unused)))
 {
   if (ApplyStatus & 1)
     XtUnmanageChild(XtParent(w));
@@ -408,7 +420,9 @@ static void UpdatePopups()
     ResetLabel(NULL, NULL, NULL);
 }
 
-static void EraseDataSetup(Widget w, int *tag, XtPointer callback_data)
+static void EraseDataSetup(Widget w __attribute__ ((unused)),
+			   int *tag __attribute__ ((unused)),
+			   XtPointer callback_data __attribute__ ((unused)))
 {
   WaveInfo *info;
   XtVaGetValues(PendingWidget, XmNuserData, &info, NULL);
@@ -419,7 +433,7 @@ static void EraseDataSetup(Widget w, int *tag, XtPointer callback_data)
     UpdatePopups();
 }
 
-static void /*XtCallbackProc */ Restore(Widget w, int *option,
+static void /*XtCallbackProc */ Restore(Widget w __attribute__ ((unused)), int *option,
 					XmFileSelectionBoxCallbackStruct * reason)
 {
   int opt = option ? *option : 0;
@@ -467,7 +481,7 @@ static void /*XtCallbackProc */ Restore(Widget w, int *option,
   }
 }
 
-static void /*XtCallbackProc */ Save(Widget w, int *option,
+static void /*XtCallbackProc */ Save(Widget w __attribute__ ((unused)), int *option,
 				     XmFileSelectionBoxCallbackStruct * reason)
 {
   int opt = option ? *option : 0;
@@ -515,7 +529,8 @@ static void /*XtCallbackProc */ Save(Widget w, int *option,
   }
 }
 
-static void ResetLabel(Widget w, int *tag, XtPointer callback_data)
+static void ResetLabel(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
+		       XtPointer callback_data __attribute__ ((unused)))
 {
   WaveInfo *info;
   XmString title = XmStringCreateSimple(SetupTitle());
@@ -527,7 +542,9 @@ static void ResetLabel(Widget w, int *tag, XtPointer callback_data)
   XtUnmanageChild(Button3Widget);
 }
 
-static void ResetDataSetup(Widget w, int *tag, XtPointer callback_data)
+static void ResetDataSetup(Widget w __attribute__ ((unused)),
+			   int *tag __attribute__ ((unused)),
+			   XtPointer callback_data __attribute__ ((unused)))
 {
   WaveInfo *info;
   CurrentWidget = PendingWidget;
@@ -535,8 +552,8 @@ static void ResetDataSetup(Widget w, int *tag, XtPointer callback_data)
   LoadDataSetup(DataSetupWidget, SetupTitle(), info);
 }
 
-static void Setup(Widget w, XtPointer client_data, XButtonEvent * event,
-		  Boolean * continue_to_dispatch)
+static void Setup(Widget w, XtPointer client_data __attribute__ ((unused)), XButtonEvent * event,
+		  Boolean * continue_to_dispatch __attribute__ ((unused)))
 {
   int i;
   int num_waves;
@@ -589,7 +606,9 @@ static void SetPadVideo(Widget w, Boolean reverse)
   }
 }
 
-static void Cut(Widget w, XEvent * event, String * params, Cardinal * num_params)
+static void Cut(Widget w, XEvent * event __attribute__ ((unused)),
+		String * params __attribute__ ((unused)),
+		Cardinal * num_params __attribute__ ((unused)))
 {
   if (w == SelectedWidget)
     XtDisownSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)));
@@ -601,7 +620,7 @@ static void Cut(Widget w, XEvent * event, String * params, Cardinal * num_params
   }
 }
 
-static Boolean ConvertSelection(Widget w, Atom * selection, Atom * target, Atom * type,
+static Boolean ConvertSelection(Widget w, Atom * selection __attribute__ ((unused)), Atom * target, Atom * type,
 				XtPointer * value, unsigned int *length, int *format)
 {
   int r = 0;
@@ -614,7 +633,7 @@ static Boolean ConvertSelection(Widget w, Atom * selection, Atom * target, Atom 
   return ConvertWaveToSelection(w, prefix, info, *target, type, value, length, format);
 }
 
-static void LoseSelection(Widget w, Atom * selection)
+static void LoseSelection(Widget w, Atom * selection __attribute__ ((unused)))
 {
   SetPadVideo(w, 0);
   if (SelectedWidget == w)
@@ -662,7 +681,7 @@ static void ResetWindow(String geometry, String title, String icon, int cols, in
     XParseGeometry(geometry, &x, &y, &width, &height);
     if (x >= WidthOfScreen(XtScreen(PadWidget)))
       x = WidthOfScreen(XtScreen(PadWidget)) - 50;
-    if ((y + height) > HeightOfScreen(XtScreen(PadWidget)))
+    if ((int)(y + height) > HeightOfScreen(XtScreen(PadWidget)))
       y = HeightOfScreen(XtScreen(PadWidget)) - height - 50;
     if (width > 200 && height > 100)
       XtVaSetValues(MainWidget, XtNwidth, width, XtNheight, height, NULL);
@@ -722,16 +741,21 @@ static void RestoreDatabase(String dbname)
   XrmDestroyDatabase(paddb);
 }
 
-static void Paste(Widget w, XEvent * event, String * params, Cardinal * num_params)
+static void Paste(Widget w, XEvent * event __attribute__ ((unused)),
+		  String * params __attribute__ ((unused)),
+		  Cardinal * num_params __attribute__ ((unused)))
 {
   XtGetSelectionValue(w, XA_PRIMARY, XA_TARGETS, (XtSelectionCallbackProc) PasteTypesComplete, 0,
 		      XtLastTimestampProcessed(XtDisplay(w)));
 }
 
-static void PasteTypesComplete(Widget w, XtPointer cdata, Atom * selection, Atom * type,
-			       XtPointer value, unsigned int *length, int *format)
+static void PasteTypesComplete(Widget w, XtPointer cdata __attribute__ ((unused)),
+			       Atom * selection __attribute__ ((unused)),
+			       Atom * type __attribute__ ((unused)),
+			       XtPointer value, unsigned int *length,
+			       int *format __attribute__ ((unused)))
 {
-  int i;
+  unsigned int i;
   Atom req_type = XA_STRING;
   Atom *values = (Atom *) value;
   for (i = 0; i < *length; i++)
@@ -745,8 +769,10 @@ static void PasteTypesComplete(Widget w, XtPointer cdata, Atom * selection, Atom
     XtFree(value);
 }
 
-static void PasteComplete(Widget w, XtPointer cdata, Atom * selection, Atom * type, XtPointer value,
-			  unsigned int *length, int *format)
+static void PasteComplete(Widget w, XtPointer cdata __attribute__ ((unused)),
+			  Atom * selection __attribute__ ((unused)), Atom * type, XtPointer value,
+			  unsigned int *length,
+			  int *format __attribute__ ((unused)))
 {
   WaveInfo *info;
   XtVaGetValues(w, XmNuserData, &info, NULL);

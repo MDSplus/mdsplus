@@ -94,7 +94,7 @@ struct HEADER {
   int e;
 };
 
-STATIC_CONSTANT char FIELDSY = BITSY + BITSX;
+STATIC_CONSTANT signed char FIELDSY = BITSY + BITSX;
 STATIC_CONSTANT int FIELDSX = 2;
 
 int MdsCmprs(int const *nitems_ptr,
@@ -117,8 +117,8 @@ int MdsCmprs(int const *nitems_ptr,
   int maxim, mark, old, best, test;
   int ye, xe, yn, xn, xsum, *ptally;
   int tally[MAXY + 1];
-  char yn_c;
-  char ye_c;
+  signed char yn_c;
+  signed char ye_c;
   int diff[MAXX], exce[MAXX];
   STATIC_CONSTANT int signif[65] =
       { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -304,7 +304,7 @@ Do this in runs.
       return LibSTRTRU;
     header.n = X_AND_Y(xn - 1, yn);
     header.e = X_AND_Y(xe, ye - 1);
-    MdsPk((char *)&FIELDSY, &FIELDSX, (int *)ppack, (int *)&header, (int *)bit_ptr);
+    MdsPk(&FIELDSY, &FIELDSX, (int *)ppack, (int *)&header, (int *)bit_ptr);
     yn_c = (char)yn;
     ye_c = (char)ye;
     MdsPk(&yn_c, (int *)&xn, (int *)ppack, (int *)diff, (int *)bit_ptr);
@@ -348,7 +348,7 @@ Note the sign-extended unpacking.
 ********************************/
   memset(ppack + pack_dsc_ptr->arsize, -1, 4);
   while (nitems > 0) {
-    char nbits = (char)FIELDSY;
+    signed char nbits = FIELDSY;
     if ((*bit_ptr + 2 * (BITSY + BITSX)) > limit)
       break;
     MdsUnpk(&nbits, (int *)&FIELDSX, (int *)ppack, (int *)&header, (int *)bit_ptr);
@@ -363,13 +363,17 @@ Note the sign-extended unpacking.
       break;
     nitems -= j;
     nbits = (char)yn;
-    MdsUnpk(&nbits, (int *)&xn, (int *)ppack, (int *)diff, (int *)bit_ptr);
+    MdsUnpk(&nbits, &xn, (int *)ppack, diff, (int *)bit_ptr);
     if (xe) {
       *bit_ptr -= yn * (xhead - j);
       pe = exce;
       nbits = (char)ye;
-      MdsUnpk(&nbits, &xe, (int *)ppack, (int *)pe, (int *)bit_ptr);
+      MdsUnpk(&nbits, &xe, (int *)ppack, pe, (int *)bit_ptr);
       mark = -1 << (-yn - 1);
+    }
+    else {
+      pe = diff;
+      mark = 0;
     }
 
   /***********************************

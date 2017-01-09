@@ -50,7 +50,7 @@ struct _range {
   unsigned unused:4;
 };
 
-int joerger_tr612___init(struct descriptor *niddsc, InInitStruct * setup)
+int joerger_tr612___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   struct _pre_mem reg1;
@@ -67,14 +67,14 @@ int joerger_tr612___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-int joerger_tr612___stop(struct descriptor *niddsc, InStopStruct * setup)
+int joerger_tr612___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
 {
   int status;
   pio(25, 1, 0, 0)
       return status;
 }
 
-int joerger_tr612___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+int joerger_tr612___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0, 0)
@@ -89,7 +89,7 @@ static int ReadChannel(InStoreStruct * setup, int max_samps, int chan, short *da
 #define JOERGER_TR612_N_INP_STARTIDX   1
 #define JOERGER_TR612_N_INP_ENDIDX     2
 
-int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct * setup)
+int joerger_tr612___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   static int max_samples;
   static DESCRIPTOR_LONG(max_samples_d, &max_samples);
@@ -127,7 +127,7 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct * setup)
   int status;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
   struct _range range1;
   struct _range range2;
   struct _pre_mem reg1;

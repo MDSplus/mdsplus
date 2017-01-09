@@ -29,13 +29,13 @@ static int framesize = 0;
 static pthread_t thread_id = 0;
 static int max_frames = 0;
 static int debug_flag;
-static int width;
-static int height;
+static unsigned int width;
+static unsigned int height;
 static int bytes;
 static char model[43] = "\0";
 static int needSwap = 0;
 
-static void CleanUp(void *arg)
+static void CleanUp(void *arg __attribute__ ((unused)))
 {
   if (debug_flag)
     printf("Starting Cleanup\n");
@@ -52,7 +52,7 @@ static void CleanUp(void *arg)
 
 static void swapbytes(unsigned char *dest, unsigned char *src, unsigned int sz)
 {
-  register int i;
+  register unsigned int i;
   register unsigned char t;
   for (i = 0; i < sz; i += 2) {
     t = src[i];
@@ -61,13 +61,14 @@ static void swapbytes(unsigned char *dest, unsigned char *src, unsigned int sz)
   }
 }
 
-EXPORT void *CaptureFrames(void *arg)
+EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
 {
-  uint64_t start_time = 0;
+  uint64_t start_time;
 
   int i;
   pthread_cleanup_push(CleanUp, NULL);
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &i);
+  start_time = 0;
 
     /*-----------------------------------------------------------------------
      *  have the camera start sending us data
@@ -101,6 +102,7 @@ EXPORT void *CaptureFrames(void *arg)
     next_frame++;
   }
   pthread_cleanup_pop(1);
+  return (0);
 }
 
 /*
@@ -188,7 +190,7 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   dc1394video_modes_t modes;
 
   unsigned int bits_per_pixel;
-  int i;
+  size_t i;
   debug_flag = debug;
   max_frames = max_frames_in;
   if (thread_id) {
@@ -251,7 +253,7 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
     exit(0);
   }
   for (i = 0; i < modes.num; i++)
-    if (mode == modes.modes[i])
+    if (mode == (int)modes.modes[i])
       break;
 
   if (i == modes.num) {
@@ -374,7 +376,7 @@ EXPORT int dc1394ReadTimes(double *data)
     return (0);
 }
 
-EXPORT int dc1394ReadFrames(char *data)
+EXPORT int dc1394ReadFrames(unsigned char *data)
 {
   int status;
   if (buf) {
@@ -400,7 +402,7 @@ EXPORT void dc1394GetCameraModel(char *string)
   strcpy(string, model);
 }
 
-EXPORT void dc1394Done(void *arg)
+EXPORT void dc1394Done(void *arg __attribute__ ((unused)))
 {
 }
 

@@ -13,16 +13,11 @@
 
 
 
-int Tdi1Constant(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Constant(int opcode, int narg __attribute__ ((unused)),
+		 struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
-  int status = 1;
 
-/*
-     struct descriptor *(*fun)()=(struct descriptor *(*)())*TdiRefFunction[opcode].f3;
-        status = MdsCopyDxXd(fun(),out_ptr);
-*/
   return MdsCopyDxXd(((struct descriptor * (*)())*TdiRefFunction[opcode].f3) (), out_ptr);
-  return status;
 }
 
 /*------------------------------------------------
@@ -130,7 +125,7 @@ DATUM(FLOAT, 2Pi, (float)6.2831853072)	/* circumference/radius    */
     UERR(FLOAT, Na, (float)6.0221367e23, (float)0.0000036e23, "/mol")	/*NA or L Avogadro number  */
     UNITS(FLOAT, P0, (float)1.01325e5, "Pa")	/*atm      atmospheric pressure(exact) */
     DATUM(FLOAT, Pi, (float)3.1415926536)	/* circumference/diameter  */
-    UERR(FLOAT, Qe, (float)1.60217733e-19, (float)0.000000493 - 19, "C")	/*e        charge on electron      */
+    UERR(FLOAT, Qe, (float)1.60217733e-19, (float)0.000000493e-19, "C")	/*e        charge on electron      */
     UERR(FLOAT, Re, (float)2.81794092e-15, (float)0.00000038e-15, "m")	/*re       classical electron radius */
     DATUM(FROP, Roprand, RR)	/* reserved operand        */
     UERR(FLOAT, Rydberg, (float)1.0973731534e7, (float)0.0000000013e7, "/m")	/*Rinf Rydberg constant    */

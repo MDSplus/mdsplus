@@ -58,7 +58,7 @@ static int one = 1;
 static time_t start_time;
 static time_t max_time = -1;
 
-EXPORT int t4012___init(struct descriptor *nid, InInitStruct * setup)
+EXPORT int t4012___init(struct descriptor *nid __attribute__ ((unused)), InInitStruct * setup)
 {
   int try;
   int status;
@@ -154,20 +154,20 @@ EXPORT int t4012___init(struct descriptor *nid, InInitStruct * setup)
   return status;
 }
 
-EXPORT int t4012___trigger(struct descriptor *nid, InTriggerStruct * setup)
+EXPORT int t4012___trigger(struct descriptor *nid __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0);
   return status;
 }
 
-static float setupfreqs[] =
-    { 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1, .5, .2, .1, .05, .02, .01 };
+//static float setupfreqs[] =
+//    { 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1, .5, .2, .1, .05, .02, .01 };
 static float freqs[] =
     { 2E-7, 5E-7, 1E-6, 2E-6, 5E-6, 1E-5, 2E-5, 5E-5, 1E-4, 2E-4, 5E-4, 1E-3, 2E-3, 5E-3, 1E-2,
 2E-2, 5E-2, 1E-1 };
 
-EXPORT int t4012___store(int *niddsc, InStoreStruct * setup)
+EXPORT int t4012___store(int *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int channels;
   int pts;
@@ -219,7 +219,7 @@ EXPORT int t4012___store(int *niddsc, InStoreStruct * setup)
   static int _roprand = 32768;
   static DESCRIPTOR_FLOAT(roprand, &_roprand);
   static FUNCTION(1) value = {
-  2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, 0};
+    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
   static DESCRIPTOR_FUNCTION_2(subtract_exp, (unsigned char *)&OpcSubtract, &value, &offset_d);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &subtract_exp);
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -360,14 +360,14 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
   int chunk_address = 0x0B000 | chunk;
   int points_to_read;
   int status = 1;
-  int tries;
+  //int tries;
   for (points_to_read = chunksize; status & 1 && points_to_read; points_to_read = chunksize) {
     struct {
       unsigned short status;
       unsigned short bytcnt;
       unsigned int dummy;
     } iosb = {
-    0, 0};
+      0, 0, 0};
     int try;
     static DESCRIPTOR_A(calib_a, sizeof(*calib), DTYPE_NATIVE_FLOAT, 0, 2 * sizeof(*calib));
     static DESCRIPTOR_NID(nid_dsc, 0);
@@ -384,7 +384,7 @@ static int ReadChannel(InStoreStruct * setup, int chunk, int samples, unsigned s
     return_on_error(DevCamChk
 		    (CamQstopw
 		     (setup->name, 0, 2, points_to_read, buffer + *samples_read, 16,
-		      (short *)&iosb), &one, 0), status);
+		      (unsigned short *)&iosb), &one, 0), status);
     status = status & 1 ? iosb.status : status;
     *samples_read += iosb.bytcnt / 2;
     if (iosb.bytcnt / 2 != points_to_read)
@@ -422,7 +422,7 @@ static int AccessTraq(InStoreStruct * setup, int data, int memsize, void *arglis
   return status;
 }
 
-EXPORT int t4012__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int t4012__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "T4012.uid" };
   static int nid;

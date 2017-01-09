@@ -50,7 +50,7 @@ int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr, unsigned int
   case CLASS_A:
     a = (struct descriptor_a *)out_ptr;
     if ((*out_count = out_ptr->length ? a->arsize / out_ptr->length : 0) <= 0)
-      return 1;
+      return MDSplusSUCCESS;
     break;
   default:
     return TdiINVCLADSC;
@@ -69,7 +69,7 @@ int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr, unsigned int
     return TdiINVCLADSC;
   }
 
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 /*  CMS REPLACEMENT HISTORY, Element Tdi3$UNARY.C */

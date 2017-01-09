@@ -102,7 +102,7 @@ EXPORT struct descriptor *StepResample(struct descriptor *in_sig, struct descrip
   new_y->arsize = new_elements;
   new_y_b = new_y->pointer;
   sig_elements = sig_y->arsize / sig_y->length;
-  if (!sig_elements || (sig_elements != (sig_x->arsize / sig_x->length)))
+  if (!sig_elements || (sig_elements != (int)(sig_x->arsize / sig_x->length)))
     return 0;
   sig_y_b[sig_elements - 1] = sig_y_b[sig_elements - 2];
   for (i = 0; i < new_elements; i++) {

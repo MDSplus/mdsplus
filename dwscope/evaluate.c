@@ -143,19 +143,20 @@ static Boolean Error(Boolean brief, String topic, String * error, struct descrip
   return 0;
 }
 
-static void DestroyXd(Widget w, struct descriptor_xd *xd)
+static void DestroyXd(Widget w __attribute__ ((unused)), struct descriptor_xd *xd)
 {
   MdsFree1Dx(xd, 0);
   free(xd);
+}
+
+static inline int minInt(int a, int b) {
+  return a < b ? a : b;
 }
 
 Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean * event,
 		     String database, String shot, String default_node, String x, String y,
 		     XmdsWaveformValStruct * x_ret, XmdsWaveformValStruct * y_ret, String * error)
 {
-
-#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
-#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 
   static DESCRIPTOR(rowv, "_ROW=$");
   static DESCRIPTOR(colv, "_COLUMN=$");
@@ -237,7 +238,7 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean * event,
 	MdsFree1Dx(&sig, 0);
 	if (status) {
 	  struct descriptor_a *x_a = (struct descriptor_a *)x_xd.pointer;
-	  count = (x_a->class == CLASS_A) ? min(x_a->arsize / sizeof(float), count) : 1;
+	  count = (x_a->class == CLASS_A) ? minInt(x_a->arsize / sizeof(float), count) : 1;
 	  if (count >= 1) {
 	    x_ret->size = (x_a->class == CLASS_A) ? x_a->arsize : sizeof(float);
 	    x_ret->addr = x_a->pointer;
@@ -329,7 +330,7 @@ void SetupEventInput(XtAppContext app_context, Widget w)
 #else
 
 static int event_pipe[2];
-static void EventAst(void *astparam, int dlen, char *data)
+static void EventAst(void *astparam, int dlen __attribute__ ((unused)), char *data __attribute__ ((unused)))
 {
   Boolean *received = (Boolean *) astparam;
   char buf[1];
@@ -359,7 +360,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
   EventUpdate(client_data, source, id);
 }
 
-void SetupEventInput(XtAppContext app_context, Widget w)
+void SetupEventInput(XtAppContext app_context, Widget w __attribute__ ((unused)))
 {
   pipe(event_pipe);
   XtAppAddInput(app_context, event_pipe[0], (XtPointer) XtInputReadMask, DoEventUpdate, 0);
@@ -622,18 +623,18 @@ static long ConnectToMdsEvents(char *event_host)
 {
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
-  char host[512];
-  sscanf(host, "%[^:]:%s", hostpart, portpart);
+  char host[256];
+  sscanf(event_host, "%[^:]:%s", hostpart, portpart);
   if (strlen(portpart) == 0)
     strcpy(portpart, "mdsipe");
-  sprintf(host, "%s:%s", hostpart, portpart);
+  snprintf(host, 99, "%s:%s", hostpart, portpart);
   return ConnectToMds(host);
 }
 
 static long ConnectEvents()
 {
   static long sock = -1;
-  if (!sock) {
+  if (sock == -1) {
     char *event_host = getenv("MDS_EVENT_HOST");
     if (event_host)
       sock = ConnectToMdsEvents(event_host);
@@ -644,7 +645,7 @@ static long ConnectEvents()
 #define FreeDescrip(x) if (x.ptr != NULL) {free(x.ptr); x.ptr = NULL;}
 #define Descrip(name,type,ptr) struct descrip name = {type,0,{0,0,0,0,0,0,0},0,ptr}
 
-static Boolean Error(Boolean brief, String topic, String * error, String text, struct descrip *dsc)
+static Boolean Error(Boolean brief __attribute__ ((unused)), String topic, String * error, String text, struct descrip *dsc)
 {
 /*
   if (brief)
@@ -683,7 +684,7 @@ static int Nelements(struct descrip *in)
     return 1;
 }
 
-static void Destroy(Widget w, String ptr)
+static void Destroy(Widget w __attribute__ ((unused)), String ptr)
 {
   free(ptr);
 }
@@ -844,7 +845,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
   EventUpdate(client_data, source, id);
 }
 
-void SetupEventInput(XtAppContext app_context, Widget w)
+void SetupEventInput(XtAppContext app_context, Widget w __attribute__ ((unused)))
 {
   int sock = ConnectEvents();
   if (sock != -1)

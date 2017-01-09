@@ -27,6 +27,8 @@
 #define LoadChar(in,outp)  (outp)[0] = ((char *)&in)[0]
 #define FixLength(a) if (a.length == 0) MdsFixDscLength((struct descriptor *)&a)
 void MdsFixDscLength(struct descriptor *in);
+  
+  
 #ifdef WORDS_BIGENDIAN
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \
@@ -639,7 +641,7 @@ STATIC_ROUTINE int copy_dx_rec(struct descriptor *in_ptr, char *out_ptr, unsigne
 	array_coeff *inp = (array_coeff *) in_ptr;
 	struct descriptor **dsc = (struct descriptor **)(((char *)in_ptr) + offset(inp->pointer));
 	char *begin = out_ptr;
-	char *dscptr;
+	char *dscptr = NULL;
 	num_dsc = inp->arsize / inp->length;
 	if (out_ptr) {
 	  int dscsize = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)

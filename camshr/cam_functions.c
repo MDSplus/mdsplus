@@ -200,6 +200,19 @@ extern int RemCamGetStat();
 extern int RemCamError();
 extern int RemCamStatus();
 extern int RemCamBytcnt();
+extern int RemCamPiow();
+extern int RemCamQrepw();
+extern int RemCamPioQrepw();
+extern int RemCamFQstopw();
+extern int RemCamFStopw();
+extern int RemCamFQrepw();
+extern int RemCamQrepw();
+extern int RemCamQscanw();
+extern int RemCamQstopw();
+extern int RemCamStopw();
+extern int RemCamSetMAXBUF();
+extern int RemCamGetMAXBUF();
+
 
 EXPORT int CamVerbose(int mode)
 {
@@ -635,7 +648,7 @@ static int JorwayDoIo(CamKey Key,
   char dev_name[7];
   int IsDataCommand, scsiDevice;
   int status;
-  unsigned char *cmd;
+  unsigned char *cmd = 0;
   unsigned char cmdlen;
   int direction;
   int bytcnt;
@@ -725,7 +738,7 @@ static int JorwayDoIo(CamKey Key,
     *iosb = LastIosb;		// [2002.12.11]
 
  JorwayDoIo_Exit:
-  if (MSGLVL(DETAILS)) {
+  if (MSGLVL(DETAILS) && (cmd != NULL)) {
     printf("%s(): iosb->status [0x%x]\n", J_ROUTINE_NAME, iosb->status);
     printf("%s(): iosb->x      [0x%x]\n", J_ROUTINE_NAME, iosb->x);
     printf("%s(): iosb->q      [0x%x]\n", J_ROUTINE_NAME, iosb->q);
@@ -742,12 +755,12 @@ static int Jorway73ADoIo(CamKey Key,
 			 BYTE A,
 			 BYTE F,
 			 int Count,
-			 BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced)
+			 BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced __attribute__ ((unused)))
 {
   char dev_name[7];
   int IsDataCommand, scsiDevice;
   int status;
-  unsigned char *cmd;
+  unsigned char *cmd = 0;
   unsigned char cmdlen;
   int direction;
   int bytcnt;
@@ -811,7 +824,7 @@ static int Jorway73ADoIo(CamKey Key,
     __u8 transfer_len[3];
     __u8 zero5;
   } LongDATAcommand = {
-  0x21, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    0x21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0}, 0};
   static char modes[4] = { 2, 2, 3, 1 };	/* QStop, QIgnore, QRep, QScan */
   static char singlemodes[4] = { 0, 2, 3, 1 };
   if (MSGLVL(FUNCTION_NAME))
@@ -884,7 +897,7 @@ static int Jorway73ADoIo(CamKey Key,
     *iosb = LastIosb;		// [2002.12.11]
 
  Jorway73ADoIo_Exit:
-  if (MSGLVL(FUNCTION_NAME + 1)) {
+  if (MSGLVL(FUNCTION_NAME + 1) && (cmd != NULL)) {
     // This is only rough - depends on the nature of the "overloaded" vars
     printf("scsi_mode opcode=%d, dmode=%d, modes[dmode]=%d, [1]=%d, [3]=%d, [5]=%d [7]=%d\n",
 	   cmd[0], dmode, modes[dmode], cmd[1], cmd[3], cmd[5], cmd[7]);

@@ -35,7 +35,7 @@ typedef struct _f0a1 {
 
 static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr, int use_enhanced);
 
-int joerger_tr16___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+int joerger_tr16___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in_struct)
 {
   int status;
   int *gains = &in_struct->input_01_gain;
@@ -65,7 +65,7 @@ int joerger_tr16___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
   return status;
 }
 
-int joerger_tr16___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
+int joerger_tr16___trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), InTriggerStruct * in_struct)
 {
   int status;
   pio(25, 0, 0, one);		/* Trigger the module */
@@ -83,7 +83,7 @@ int joerger_tr16___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_st
 //extern unsigned short OpcMultiply;
 //extern unsigned short OpcValue;
 
-int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+int joerger_tr16___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) return status;
@@ -105,8 +105,8 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
   static DESCRIPTOR_NID(ext_clock_d, &c_nids[JOERGER_TR16_N_EXT_CLOCK_IN]);
   static float coefficient;
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
-  static int key;
-  static DESCRIPTOR_LONG(key_d, &key);
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
   static float frequencies[] =
       { 1. / 160E3, 1. / 80E3, 1. / 40E3, 1. / 20E3, 1. / 10E3, 1. / 5E3, 1. / 2.5E3, 0.0 };
@@ -124,11 +124,11 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
   int put_status = 1;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
   int ret_status = 1;
 
-  static F0A0 f0a0 = { 0, 0, 0 };
-  static F0A1 f0a1 = { 0, 0, 0 };
+  static F0A0 f0a0 = { 0 };
+  static F0A1 f0a1 = { 0 };
   int min_idx;
   int max_idx;
   int active_mem;
@@ -211,9 +211,9 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
 static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr, int use_enhanced)
 {
   int status;
-  int samples_read = 0;
+  //int samples_read = 0;
   int samples_to_read = *samples_ptr;
-  int read_size;
+  //int read_size;
   pio(17, 0, &chan, one);
   pio(17, 0, &chan, one);
   /*

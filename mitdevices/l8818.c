@@ -40,12 +40,12 @@ typedef struct {
   unsigned user:1;
 } L8818Control;
 
-EXPORT int l8818___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l8818___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   L8818Control ctrl;
-  float freq;
+  //float freq;
   int status;
-  int active_mem_code;
+  //int active_mem_code;
   ctrl.active_mem = (setup->active_mem / 16) - 1;
   ctrl.pre_trig = setup->pre_trig;
   ctrl.clock = setup->clock_convert;
@@ -58,14 +58,14 @@ EXPORT int l8818___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-EXPORT int l8818___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l8818___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-EXPORT int l8818___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8818___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
@@ -73,7 +73,7 @@ EXPORT int l8818___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 
   L8818Control ctrl;
 
-  static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
+  //static struct descriptor_d name = { 0, DTYPE_T, CLASS_D, 0 };
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(unsigned char), DTYPE_BU, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -91,8 +91,8 @@ EXPORT int l8818___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
   static short offset = 0;
   static struct descriptor_s offset_d = { 2, DTYPE_W, CLASS_S, (char *)&offset };
-  static int key;
-  static DESCRIPTOR_LONG(key_d, &key);
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
   static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d, &value);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
@@ -107,7 +107,7 @@ EXPORT int l8818___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   unsigned char *data_ptr;
   int status;
   int start_addr = 0;
-  int dummy;
+  //int dummy;
 
   int max_mem;
   int pre_trig;

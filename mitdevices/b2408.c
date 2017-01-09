@@ -14,7 +14,7 @@ static int one = 1;
 #define stop(f,a,c,d)  return_on_error(DevCamChk(CamStopw(setup->name, a, f, c, &d, 24, 0), &one, 0),status)
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-EXPORT int b2408___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int b2408___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = 1;
   pio(26, 0, 0, 16);
@@ -34,9 +34,8 @@ typedef struct _status_reg {
   unsigned:8;
 } StatusReg;
 
-EXPORT int b2408___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int b2408___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
-  int i;
   int j;
   int npts;
   int status = 1;

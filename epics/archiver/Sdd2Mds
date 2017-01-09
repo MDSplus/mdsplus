@@ -1,0 +1,24 @@
+#!/bin/sh
+#####################################################
+# Automatic building of MDSplus pulse file from ITER SDD description (Codac Core stsrem v 5.1)
+# The SDD descriptiopn defines:
+# 1) The adc devices
+# 2) The signal names and their origin (device+channel)
+# 3) the corresponding PV name
+# If the first argument is "shot", a pulse file definiong the ADC devices, signals and PV names is created
+# If the first argument is "trend", a pulse file fit for the MDSplus Channel archiver is created
+# The xsl files (sdd2IOBList.xsl, sdd2VariablesList.xsl, sdd2SignalsList.xsl) must be located in the current directory
+######################################################
+if [  $# -ne "4" ] && [ $# -ne "3" ];
+then
+	echo 'Syntax  : Sdd2Mds <shot|trend> <SDD xml> <ExperimentName> [debug]'
+else
+#	cd /home/codac-dev/SPIDER/scripts
+	xsltproc sdd2IOBList.xsl $2.xml >  $2_IOB.xml
+	xsltproc sdd2VariablesList.xsl $2.xml >  $2_var.xml
+	xsltproc sdd2SignalsList.xsl $2.xml >  $2_sig.xml
+	java -cp /usr/local/mdsplus/java/classes/mdsobjects.jar:. Xml2Mds $1 $2_var $2_sig $2_IOB $3 $4
+	rm $2_IOB.xml
+	rm $2_var.xml
+	rm $2_sig.xml
+fi

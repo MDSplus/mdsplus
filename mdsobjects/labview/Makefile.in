@@ -2,7 +2,7 @@ include @top_builddir@/Makefile.inc
 
 VPATH = @srcdir@
 LD=@CXX@
-CFLAGS=@CFLAGS@ -I@LV_CINTOOLS@ -fPIC @TARGET_ARCH@
+CFLAGS+=-I@LV_CINTOOLS@ -fPIC @TARGET_ARCH@
 CXXFLAGS=-Wno-deprecated -fPIC @CFLAGS@ -I@LV_CINTOOLS@ @TARGET_ARCH@ @CXXFLAGS@
 CLIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr
 @MINGW_TRUE@ LV_LIB="@LV_CINTOOLS@/labview-$(host_cpu).lib"

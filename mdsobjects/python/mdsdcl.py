@@ -30,12 +30,12 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False):
     """
     if return_error:
       xd_error=_desc.descriptor_xd()
-      error_p=_C.pointer(xd_error)
+      error_p=_C.byref(xd_error)
     else:
       error_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
     if return_out:
       xd_output = _desc.descriptor_xd()
-      out_p=_C.pointer(xd_output)
+      out_p=_C.byref(xd_output)
     else:
       out_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
     status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)

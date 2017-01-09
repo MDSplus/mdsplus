@@ -1,5 +1,3 @@
-import dt100
-
 class Transport:
         def connectMaster(self):
                 pass
@@ -13,8 +11,7 @@ class Transport:
         def acq2sh(self,  command):
                 pass
 
-
-
 def factory(uut):
-        # if uut is a single number -> local file transport
-        return dt100.Dt100(uut)
+    import dt100
+    # if uut is a single number -> local file transport
+    return dt100.DT100(uut)

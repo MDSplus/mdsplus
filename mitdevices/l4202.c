@@ -19,7 +19,7 @@ static int zero = 0;
 #define stop(name,f,a,c,d)  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 24, 0), &one, 0),status)
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-EXPORT int l4202___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l4202___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   int tries;
@@ -61,7 +61,7 @@ EXPORT int l4202___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-EXPORT int l4202___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l4202___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   struct {
     unsigned first:12;

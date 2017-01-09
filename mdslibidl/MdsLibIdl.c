@@ -55,20 +55,24 @@ EXPORT int IdlMdsClose(int argc, void **argv)
 
 EXPORT int IdlMdsOpen(int argc, void **argv)
 {
-  int status;
-  BlockSig(SIGALRM);
-  status = TreeOpen((char *)argv[0], ((char *)argv[1] - (char *)0), 0);
-  UnBlockSig(SIGALRM);
+  int status = 0;
+  if (argc == 2) {
+    BlockSig(SIGALRM);
+    status = TreeOpen((char *)argv[0], ((char *)argv[1] - (char *)0), 0);
+    UnBlockSig(SIGALRM);
+  }
   return status;
 }
 
 EXPORT int IdlMdsSetDefault(int argc, void **argv)
 {
-  int status;
+  int status=0;
   int nid;
-  BlockSig(SIGALRM);
-  status = TreeSetDefault((char *)argv[0], &nid);
-  UnBlockSig(SIGALRM);
+  if (argc == 1) {
+    BlockSig(SIGALRM);
+    status = TreeSetDefault((char *)argv[0], &nid);
+    UnBlockSig(SIGALRM);
+  }
   return status;
 }
 
@@ -533,12 +537,15 @@ EXPORT int IdlMdsPut(int argc, void **argv)
 
 EXPORT int IdlGetAns(int argc, void **argv)
 {
-  if (mdsValueAnswer.pointer->class == CLASS_S) {
-    memcpy(argv[0], mdsValueAnswer.pointer->pointer, mdsValueAnswer.pointer->length);
-  } else if (mdsValueAnswer.pointer->class == CLASS_A) {
-    memcpy(argv[0], mdsValueAnswer.pointer->pointer,
-	   ((struct descriptor_a *)mdsValueAnswer.pointer)->arsize);
+  int status = 1;
+  if (argc == 1) {
+    if (mdsValueAnswer.pointer->class == CLASS_S) {
+      memcpy(argv[0], mdsValueAnswer.pointer->pointer, mdsValueAnswer.pointer->length);
+    } else if (mdsValueAnswer.pointer->class == CLASS_A) {
+      memcpy(argv[0], mdsValueAnswer.pointer->pointer,
+	     ((struct descriptor_a *)mdsValueAnswer.pointer)->arsize);
+    }
   }
   MdsFree1Dx(&mdsValueAnswer, NULL);
-  return 1;
+  return status;
 }

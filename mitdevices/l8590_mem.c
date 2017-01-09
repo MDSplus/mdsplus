@@ -18,7 +18,7 @@
 
 //extern unsigned short OpcValue;
 
-extern int l8590_sclr___get_setup(struct descriptor *niddsc, InGet_setupStruct * setup);
+extern int l8590_sclr___get_setup(struct descriptor *niddsc __attribute__ ((unused)), InGet_setupStruct * setup);
 extern int GenDeviceFree();
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) {\
@@ -34,9 +34,9 @@ static int zero = 0;
 #define pio(name,f,a,d) return_on_error(DevCamChk(CamPiow(name,a,f,d,16,0),&one,0),status);
 #define stop(name,f,a,cnt,d) return_on_error(DevCamChk(CamStopw(name,a,f,cnt,d,16,0),&one,0),status);
 
-int l8590_mem___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+int l8590_mem___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
-  static DESCRIPTOR(sclr_wild, "L8590_%");
+  //static DESCRIPTOR(sclr_wild, "L8590_%");
   int status;
   int old_def;
   void *ctx;
@@ -67,7 +67,7 @@ int l8590_mem___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+int l8590_mem___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int total_chans = 0;
   int total_samps = 0;
@@ -77,7 +77,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   int active[L8590_MEM_K_MAX_SCALERS];
   int samples[L8590_MEM_K_MAX_SCALERS];
   int old_def;
-  int status;
+  int status=1;
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(unsigned short), DTYPE_WU, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
@@ -86,7 +86,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   static int latch_nid;
   static DESCRIPTOR_NID(latch, &latch_nid);
   static FUNCTION(1) dvalue = {
-  2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, 0};
+    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
   static DESCRIPTOR_SIGNAL_1(signal, &dvalue, &counts, &latch);
   int setup_status = 0;
   latch_nid = setup->head_nid + L8590_MEM_N_LATCH;
@@ -169,7 +169,7 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 
 static void Load(Widget w);
 
-EXPORT int l8590_mem__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8590_mem__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "L8590_MEM.uid" };
   static int nid;
@@ -196,7 +196,7 @@ static void Load(Widget w)
   l8590_memname = TreeGetPath(nid);
   XmListDeleteAllItems(w);
   for (i = 1; i < 17; i++) {
-    int ctx = 0;
+    //int ctx = 0;
     int dig_nid;
     int status;
     XmString item;

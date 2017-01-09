@@ -14,6 +14,7 @@ bin32/
 bin64/
 bin_x86/
 bin_x86_64/
+build/
 etc/
 lib/
 lib32/
@@ -92,3 +93,4 @@ autom4te.cache
 
 # python version module
 _version.py
+*.log

@@ -95,7 +95,7 @@ void test_Int64() {
 
     Data * data = new Int64(value);
     MdsDataTest::test_data_numerics(data,value);
-    MdsDataTest::test_data_string(data,"0X7bQ");
+    MdsDataTest::test_data_string(data,"123Q");
     deleteData(data);
 }
 
@@ -106,7 +106,7 @@ void test_Int64Array() {
 
     Data * data = new Int64Array(&value[0],value.size());
     MdsDataTest::test_data_numerics(data,value);
-    MdsDataTest::test_data_string(data,"[0X1Q,0X2Q,0X3Q,0X7bQ]");
+    MdsDataTest::test_data_string(data,"[1Q,2Q,3Q,123Q]");
 
     deleteData(data);
 }
@@ -185,7 +185,7 @@ void test_Uint64() {
 
     Data * data = new Uint64(value);
     MdsDataTest::test_data_numerics(data,value);
-    MdsDataTest::test_data_string(data,"0X7bQU");
+    MdsDataTest::test_data_string(data,"123QU");
     deleteData(data);
 }
 
@@ -196,7 +196,7 @@ void test_Uint64Array() {
 
     Data * data = new Uint64Array(&value[0],value.size());
     MdsDataTest::test_data_numerics(data,value);
-    MdsDataTest::test_data_string(data,"[0X1QU,0X2QU,0X3QU,0X7bQU]");
+    MdsDataTest::test_data_string(data,"[1QU,2QU,3QU,123QU]");
 
     deleteData(data);
 }
@@ -310,7 +310,7 @@ void test_Complex64Array() {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-int main(int argc, char *argv[])
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(Data);
 

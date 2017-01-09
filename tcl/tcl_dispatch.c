@@ -34,12 +34,14 @@ extern int TdiData();
 
 #define IS_WILD(T)   (strcspn(T,"*%") < strlen(T))
 
-static int SyncEfnInit = 0;
 #ifdef vms
-static int SyncEfn = 0;
+#define SYNCINIT
+#define SYNCPASS NULL
+#define SYNCWAIT ServerWait(0)
 #else
-static int SyncId;
-static int *SyncEfn = &SyncId;
+#define SYNCINIT int SyncId = 0
+#define SYNCPASS &SyncId
+#define SYNCWAIT ServerWait(SyncId)
 #endif
 
 static void *dispatch_table = 0;
@@ -48,10 +50,10 @@ extern int ServerFailedEssential();
 
 extern int TdiIdentOf();
 
-	/****************************************************************
-	 * TclDispatch_close:
-	 ****************************************************************/
-EXPORT int TclDispatch_close(void *ctx, char **error, char **output)
+/****************************************************************
+ * TclDispatch_close:
+ ****************************************************************/
+EXPORT int TclDispatch_close(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
 {
   char *ident = 0;
 
@@ -66,10 +68,10 @@ EXPORT int TclDispatch_close(void *ctx, char **error, char **output)
   return 1;
 }
 
-	/**************************************************************
-	 * TclDispatch_build:
-	 **************************************************************/
-EXPORT int TclDispatch_build(void *ctx, char **error, char **output)
+/**************************************************************
+ * TclDispatch_build:
+ **************************************************************/
+EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts;
   char *monitor = 0;
@@ -90,21 +92,10 @@ EXPORT int TclDispatch_build(void *ctx, char **error, char **output)
   return sts;
 }
 
-	/***************************************************************
-	 * TclDispatch:
-	 ***************************************************************/
-
-static void InitSyncEfn()
-{
-  SyncEfnInit = 1;
-}
-
-static void WaitfrEf(int *id)
-{
-  ServerWait(*id);
-}
-
-EXPORT int TclDispatch(void *ctx, char **error, char **output)
+/***************************************************************
+ * TclDispatch:
+ ***************************************************************/
+EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *treenode = 0;
   int sts;
@@ -112,8 +103,6 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output)
   int nid;
   int waiting = cli_present(ctx, "WAIT") != MdsdclNEGATED;
   cli_get_value(ctx, "NODE", &treenode);
-  if (!SyncEfnInit)
-    InitSyncEfn();
   sts = TreeFindNode(treenode, &nid);
   if (sts & 1) {
     struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)0 };
@@ -134,12 +123,13 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output)
       };
       TreeGetDbi(itmlst);
       StrAppend(&ident, (struct descriptor *)&nullstr);
+      SYNCINIT;
       sts =
-	  ServerDispatchAction(SyncEfn, ident.pointer, treename, shot, nid, 0, 0,
+	  ServerDispatchAction(SYNCPASS, ident.pointer, treename, shot, nid, 0, 0,
 			       waiting ? &iostatus : 0, 0, 0);
       if (sts & 1) {
 	if (waiting) {
-	  WaitfrEf(SyncEfn);
+	  SYNCWAIT;
 	  sts = iostatus;
 	}
       }
@@ -156,12 +146,12 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output)
   return sts;
 }
 
-	/**************************************************************
-	 * TclDispatch_abort_server:
-	 * TclDispatch_stop_server:
-	 * TclDispatch_start_server:
-	 **************************************************************/
-EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output)
+/**************************************************************
+ * TclDispatch_abort_server:
+ * TclDispatch_stop_server:
+ * TclDispatch_start_server:
+ **************************************************************/
+EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   char *ident = 0;
@@ -179,7 +169,7 @@ EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   char *ident = 0;
@@ -202,7 +192,7 @@ EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   char *ident = 0;
@@ -225,10 +215,10 @@ EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-	/***************************************************************
-	 * TclDispatch_set_server:
-	 ***************************************************************/
-EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output)
+/***************************************************************
+ * TclDispatch_set_server:
+ ***************************************************************/
+EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts = 1;
   int logqual;
@@ -263,10 +253,10 @@ EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output)
   return sts;
 }
 
-	/**************************************************************
-	 * TclDispatch_show_server:
-	 **************************************************************/
-EXPORT int TclDispatch_show_server(void *ctx, char **error, char **output)
+/**************************************************************
+ * TclDispatch_show_server:
+ **************************************************************/
+EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   int sts = 1;
   char *ident = 0;
@@ -302,7 +292,7 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error, char **output)
       if (dooutput) {
 	tclAppend(output, info = ServerGetInfo(full, ident));
 	tclAppend(output, "\n");
-      } else 
+      } else
 	info = ServerGetInfo(full, ident);
       if (info)
 	free(info);
@@ -318,10 +308,10 @@ static void printIt(char *output)
   fprintf(stdout, "%s\n", output);
 }
 
-	/*****************************************************************
-	 * TclDispatch_phase:
-	 *****************************************************************/
-EXPORT int TclDispatch_phase(void *ctx, char **error, char **output)
+/*****************************************************************
+ * TclDispatch_phase:
+ *****************************************************************/
+EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *phase = 0;
   char *synch_str = 0;
@@ -332,14 +322,12 @@ EXPORT int TclDispatch_phase(void *ctx, char **error, char **output)
   void (*output_rtn) () = cli_present(ctx, "LOG") & 1 ? printIt : 0;
 
   cli_get_value(ctx, "MONITOR", &monitor);
-  if (!SyncEfnInit)
-    InitSyncEfn();
   cli_get_value(ctx, "PHASE_NAME", &phase);
   cli_get_value(ctx, "SYNCH", &synch_str);
   sscanf(synch_str, "%d", &synch);
   synch = synch >= 1 ? synch : 1;
   if (dispatch_table)
-    sts = ServerDispatchPhase(SyncEfn, dispatch_table,
+    sts = ServerDispatchPhase(NULL, dispatch_table,
 			      phase, (char)noaction, synch, output_rtn, monitor);
   else
     *error = strdup("Error: No dispatch table found. Forgot to do DISPATCH/BUILD?\n");
@@ -357,9 +345,9 @@ EXPORT int TclDispatch_phase(void *ctx, char **error, char **output)
   return sts;
 }
 
-	/**************************************************************
-	 * TclDispatch_command:
-	 **************************************************************/
+/**************************************************************
+ * TclDispatch_command:
+ **************************************************************/
 typedef struct {
   int sts;
   char *command;
@@ -367,7 +355,7 @@ typedef struct {
 
 static void CommandDone(DispatchedCommand * command)
 {
-  if (!(command->sts & 1)) {
+  if IS_NOT_OK(command->sts) {
     char *msg = MdsGetMsg(command->sts);
     fprintf(stderr, "Error: Command failed - '%s'\n"
 	    "Error message was: %s\n", command->command, msg);
@@ -377,55 +365,44 @@ static void CommandDone(DispatchedCommand * command)
   return;
 }
 
-EXPORT int TclDispatch_command(void *ctx, char **error, char **output)
+EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  char *cli = 0;
-  char *ident = 0;
-  DispatchedCommand *command = malloc(sizeof(DispatchedCommand));
-  int sts = 1;
-
-  if (!SyncEfnInit)
-    InitSyncEfn();
+  INIT_STATUS,stat1=0;
+  char *cli = NULL;
+  char *ident = NULL;
+  DispatchedCommand *command = calloc(1,sizeof(DispatchedCommand));
   cli_get_value(ctx, "SERVER", &ident);
   cli_get_value(ctx, "TABLE", &cli);
   cli_get_value(ctx, "P1", &command->command);
-  if (cli_present(ctx, "WAIT") & 1) {
-    if (sts & 1) {
-      sts = ServerDispatchCommand(SyncEfn, ident, cli, command->command, 0, 0, &command->sts, 0);
-      if (sts & 1) {
-	WaitfrEf(SyncEfn);
-	sts = command->sts;
-      }
-      free(command->command);
-      free(command);
-    }
-    if (~sts & 1) {
-      char *msg = MdsGetMsg(sts);
-      *error = malloc(strlen(msg) + 100);
-      sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
-    }
+  if(command->command){
+    int sync = IS_OK(cli_present(ctx, "WAIT"));
+    if (sync) {
+      command->sts = MDSplusSUCCESS;
+      SYNCINIT;
+      status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, CommandDone, command, &stat1, 0);
+      if STATUS_OK SYNCWAIT;
+    } else
+      status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, 0);
+    if STATUS_NOT_OK {
+      char *msg = MdsGetMsg(status);
+      *error = malloc(100 + strlen(msg));
+      sprintf(*error, "Error: Problem dispatching async command.\n" "Error message was: %s\n", msg);
+    } else if (sync) status = stat1;
   } else {
-    sts = ServerDispatchCommand(0, ident, cli,
-				command->command, CommandDone, command, &command->sts, 0);
-    if (~sts & 1) {
-      char *msg = MdsGetMsg(sts);
-      *error = malloc(strlen(msg) + 100);
-      sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
-      free(command->command);
-      free(command);
-    }
+    status = MdsdclMISSING_VALUE;
+    free(command);
   }
   if (cli)
     free(cli);
   if (ident)
     free(ident);
-  return sts;
+  return status;
 }
 
-	/***************************************************************
-	 * TclDispatch_check:
-	 ***************************************************************/
-EXPORT int TclDispatch_check(void *ctx, char **error, char **output)
+/***************************************************************
+ * TclDispatch_check:
+ ***************************************************************/
+EXPORT int TclDispatch_check(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   if (ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET") & 1)) {
     *error = strdup("Error: A essential action failed!\n");

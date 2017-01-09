@@ -135,7 +135,7 @@ static void GetPodSettings(int nid, int *settings);
 static int one = 1;
 extern int DevWait(float);
 
-EXPORT int hv4032___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int hv4032___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = 1;
   int pod;
@@ -183,7 +183,7 @@ static void GetPodSettings(int nid, int *settings)
   return;
 }
 
-EXPORT int hv4032___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int hv4032___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status = 1;
   int i;
@@ -214,7 +214,7 @@ EXPORT int hv4032___store(struct descriptor *niddsc, InStoreStruct * setup)
   return status;
 }
 
-EXPORT int hv4032___on(struct descriptor *niddsc, InOnStruct * setup)
+EXPORT int hv4032___on(struct descriptor *niddsc __attribute__ ((unused)), InOnStruct * setup)
 {
   int status = 1;
   send_hv2(1, 0, 5);
@@ -222,7 +222,7 @@ EXPORT int hv4032___on(struct descriptor *niddsc, InOnStruct * setup)
   return status;
 }
 
-EXPORT int hv4032___off(struct descriptor *niddsc_ptr, InOffStruct * setup)
+EXPORT int hv4032___off(struct descriptor *niddsc_ptr __attribute__ ((unused)), InOffStruct * setup)
 {
   int status = 1;
   send_hv2(0, 0, 5);

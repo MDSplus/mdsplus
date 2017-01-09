@@ -1089,7 +1089,7 @@ remove 28/06/2005
             throw (new IOException("missing columns keyword"));
         else
         {
-            columns = new Integer(prop).intValue();
+            columns = Integer.parseInt(prop);
             pw = new float[MAX_COLUMN];
         }
 
@@ -1125,7 +1125,7 @@ remove 28/06/2005
                     throw (new IOException("missing rows_in_column_1 keyword"));
                 break;
             }
-            int r = new Integer(prop).intValue();
+            int r = Integer.parseInt(prop);
             read_rows[c - 1] = r;
         }
 
@@ -1138,7 +1138,7 @@ remove 28/06/2005
                 {
                     throw (new IOException("missing vpane_" + c + " keyword"));
                 }
-                int w = new Integer(prop).intValue();
+                int w = Integer.parseInt(prop);
                 pw[c - 1] = (float) w;
             }
         }
@@ -1288,18 +1288,10 @@ remove 28/06/2005
                         ph[k++] = (float) 1. / rows[j];
                     break;
                 }
-                ph[k] = (float) (w.wi.height / height);
+                ph[k] = w.wi.height / height;
             }
         }
         invalidate();
-    }
-
-    private boolean IsIpAddress(String addr)
-    {
-        if (addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
-            return true;
-        else
-            return false;
     }
 
     private JFrame GetFrameParent()
@@ -1656,14 +1648,11 @@ remove 28/06/2005
 
         if (add_sig)
             resetSplitPosition();
-        
-
     }
 
     public void SaveAsText(jScopeMultiWave w, boolean all)
     {
-
-        Vector panel = new Vector();
+        Vector<Waveform> panel = new Vector<>();
         MdsWaveInterface wi;
         jScopeMultiWave wave;
 	    
@@ -1724,7 +1713,6 @@ remove 28/06/2005
             }
             else
                 done = true;
-
         }
 
         if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -1736,7 +1724,6 @@ remove 28/06/2005
                 {
                     for (int i = 0; i < GetWaveformCount(); i++)
                         panel.addElement(GetWavePanel(i));
-
                 }
                 else
                     panel.addElement(w);
@@ -1876,7 +1863,6 @@ remove 28/06/2005
                         out.newLine();
                     }
                     out.close();
-
                 }
                 catch (IOException e)
                 {
@@ -1884,7 +1870,6 @@ remove 28/06/2005
                 }
             }
         }
-        file_diag = null;
     }
     
     ProgressMonitor progressMonitor;
@@ -1899,5 +1884,4 @@ remove 28/06/2005
     {
         progressMonitor.close();
     }
-    
 }

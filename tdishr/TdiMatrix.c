@@ -58,7 +58,7 @@ STATIC_ROUTINE int copy(int len, int n, char *x, int incx, char *y, int incy)
 
 int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int cmode = -1, nside = 0;
   struct descriptor_xd fill = EMPTY_XD;
   struct descriptor *fillptr;
@@ -69,10 +69,10 @@ int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descrip
 
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
   pv = (struct descriptor_a *)dat[0].pointer;
-  if (status & 1) {
+  if STATUS_OK {
     N_ELEMENTS(pv, nside);
   }
-  if (status & 1) {
+  if STATUS_OK {
     proto.m[0] = nside;
     proto.m[1] = nside;
     proto.length = pv->length;
@@ -83,15 +83,15 @@ int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descrip
     } else
       fillptr = (struct descriptor *)&missing;
   }
-  if (status & 1)
+  if STATUS_OK
     status = MdsGet1DxA((struct descriptor_a *)&proto, &pv->length, &pv->dtype, out_ptr);
   po = (struct descriptor_a *)out_ptr->pointer;
-  if (status & 1)
+  if STATUS_OK
     status = TdiConvert(fillptr, po MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = copy(pv->length, nside, pv->pointer, pv->length,
 		  po->pointer, pv->length * (nside + 1));
-  if (status & 1)
+  if STATUS_OK
     status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
   MdsFree1Dx(&fill, NULL);
   MdsFree1Dx(&dat[0], NULL);

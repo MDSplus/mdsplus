@@ -988,11 +988,11 @@ Fix bug : shot expression must be always evaluated.
         {
             prop = pr.getProperty(prompt + ".height");
             if (prop != null)
-                height = new Integer(prop).intValue();
+                height = Integer.parseInt(prop);
 
             prop = pr.getProperty(prompt + ".grid_mode");
             if (prop != null)
-                in_grid_mode = new Integer(prop).intValue();
+                in_grid_mode = Integer.parseInt(prop);
 
             cin_xlabel = pr.getProperty(prompt + ".x_label");
 
@@ -1205,14 +1205,14 @@ Fix bug : shot expression must be always evaluated.
             prop = pr.getProperty(prompt + ".num_expr");
             if (prop != null)
             {
-                num_expr = new Integer(prop).intValue();
+                num_expr = Integer.parseInt(prop);
                 //     num_expr = (num_expr > 0) ? num_expr : 1;
             }
 
             prop = pr.getProperty(prompt + ".num_shot");
             if (prop != null)
             {
-                num_shot = new Integer(prop).intValue();
+                num_shot = Integer.parseInt(prop);
                 num_shot = (num_shot > 0) ? num_shot : 1;
                 if (num_expr != 0)
                 {
@@ -1224,7 +1224,7 @@ Fix bug : shot expression must be always evaluated.
             prop = pr.getProperty(prompt + ".global_defaults");
             if (prop != null)
             {
-                defaults = new Integer(prop).intValue();
+                defaults = Integer.parseInt(prop);
             }
 
             int expr_idx;
@@ -1289,25 +1289,18 @@ Fix bug : shot expression must be always evaluated.
                      */
                     prop = pr.getProperty(prompt + ".mode_1D_" + idx + "_" + s);
                     if (prop != null)
-                    {
-                        mode1D[expr_idx +
-                            s] = mode1DStringToCode( (String) prop);
-                    }
+                        mode1D[expr_idx + s] = mode1DStringToCode(prop);
 
                     prop = pr.getProperty(prompt + ".mode_2D_" + idx + "_" + s);
                     if (prop != null)
-                    {
-                        mode2D[expr_idx +
-                            s] = mode2DStringToCode( (String) prop);
-                    }
+                        mode2D[expr_idx + s] = mode2DStringToCode(prop);
 
                     prop = pr.getProperty(prompt + ".color_" + idx + "_" + s);
                     if (prop != null)
                     {
                         try
                         {
-                            colors_idx[expr_idx +
-                                s] = new Integer(prop).intValue();
+                            colors_idx[expr_idx + s] = Integer.parseInt(prop);
                         }
                         catch (Exception e)
                         {
@@ -1320,7 +1313,7 @@ Fix bug : shot expression must be always evaluated.
                     {
                         try
                         {
-                            markers[expr_idx + s] = new Integer(prop).intValue();
+                            markers[expr_idx + s] = Integer.parseInt(prop);
                         }
                         catch (Exception e)
                         {
@@ -1334,8 +1327,7 @@ Fix bug : shot expression must be always evaluated.
                     {
                         try
                         {
-                            markers_step[expr_idx +
-                                s] = new Integer(prop).intValue();
+                            markers_step[expr_idx + s] = Integer.parseInt(prop);
                         }
                         catch (Exception e)
                         {

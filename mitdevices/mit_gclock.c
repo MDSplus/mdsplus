@@ -15,14 +15,14 @@ typedef struct descriptor *Dptr;
 extern int mit_gclock___get_setup(Dptr, InGet_setupStruct *);
 extern int GenDeviceFree();
 
-EXPORT int mit_gclock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup,
+EXPORT int mit_gclock__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup,
 			  EventMask * event_mask, Dptr * output)
 {
   int status;
   InGet_setupStruct s;
   status = mit_gclock___get_setup(niddsc_ptr, &s);
   if (status & 1) {
-    float duty_cycle;
+    float duty_cycle = 0.;
     int invert = 0;
     static float frequency[2];
     float max_period;

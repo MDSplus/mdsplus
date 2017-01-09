@@ -12,7 +12,7 @@
  * TclSetVersions:
  **************************************************************/
 
-EXPORT int TclSetVersions(void *ctx, char **error, char **output)
+EXPORT int TclSetVersions(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int status = 1;
 
@@ -47,7 +47,7 @@ EXPORT int TclSetVersions(void *ctx, char **error, char **output)
   return status;
 }
 
-EXPORT int TclShowVersions(void *ctx, char **error, char **output)
+EXPORT int TclShowVersions(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   int in_model, in_pulse, status;
   DBI_ITM itmlst[] =

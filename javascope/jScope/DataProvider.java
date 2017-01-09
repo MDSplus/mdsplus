@@ -24,12 +24,12 @@ public interface DataProvider
          * For example the MdsDataProvider allows the definition of TDI variables which may be useful
          * for configuring remote data access.
          * jScope allows the definition of an arbitrary set of environment variable using the
-         * customize->public variables... option. As jScope does not make any assumption on the
+         * customize--public variables... option. As jScope does not make any assumption on the
          * syntax of the defined variables, each variable definition is passed to the Data provider
-         * by means of the SetEnvironment method, whose argument is a String which defines <name value>
+         * by means of the SetEnvironment method, whose argument is a String which defines name value
          * pairs. If the DataProvider implementation does not support such a feature, it simply returns.
          *
-         * @param exp The variable definition expressed as <name value> pair.
+         * @param exp The variable definition expressed as name value pair.
          * @exception java.io.IOException
          */
 
@@ -53,7 +53,6 @@ public interface DataProvider
          *
          * @param in The specification of the label or title.
          * @return The evaluated label or title.
-         * @exception java.io.IOException
          */
         public String  GetString(String in) throws IOException;
 
@@ -67,37 +66,24 @@ public interface DataProvider
          *
          * @param in The specification of the value.
          * @return The evaluated value.
-         * @exception java.io.IOException
          */
         public double   GetFloat(String in) throws IOException;
 
         /**
-         * Method GetWaveData is called by jScope when a waveform has to be evaluated and only the Y
+         * Method GetWaveData called by jScope when a waveform has to be evaluated and only the Y
          * axis is defined. In this case jScope assumes that the specification is enough and it is up
          * to the data provider implementation to retrieve X and Y axis.
          * The evaluated signal is not directly returned as a vector, rather as a object implementing
-         * the WaveData interface. The WaveData interface defines the following methods:
-         *
-         * <br>- int GetNumDimensions() returns the number of dimensions. Currently only signals (dimension=1)
-         * 		are supported.
-         * <br>- float[] GetFloatData() returns the Y axis of the signal as a float array. For bidimensional
-         * 	signals (not yet supported) the array is organized in row order;
-         * <br>- float[] GetXData() returns the X axis of the signal;
-         * <br>- float[] GetYData()  returns the Y axis for a bidimensional signal;
-         * <br>- String GetTitle()   returns the associated title (if no title is defined in the setup data popup dialog);
-         * <br>- String GetXLabel()   returns the associated X label(if no X label is defined in the setup data popup dialog);
-         * <br>- String GetYLabel()   returns the associated Y label(if no Y label is defined in the setup data popup dialog);
-         * <br>- String GetZLabel()   returns the associated Z label(if no Z label is defined in the setup data popup dialog);
-         *
-         * @param in The specification of the signal, typed in the Y axis field of the setup data source
+         * the WaveData interface. 
+          * @param in The specification of the signal, typed in the Y axis field of the setup data source
          * popup form, or in the lower right window of jScope.
-         * @return The evaluated signal, embedded in a WaveData object, or null if an error is encountered.
+         * @return The evaluated signal embedded in a WaveData object, or null if an error is encountered.
          * @see WaveData
          */
         public WaveData GetWaveData(String in);
 
         /**
-         * Method GetWaveData is called by jScope when a waveform has to be avaluated and both X and
+         * Method GetWaveData called by jScope when a waveform has to be evaluated and both X and
          * Y axis are defined.
          * The evaluated signal is not directly treturned as a vector, rather as a object implementing
          * the WaveData interface. jScope the uses the returned object to retieve X and Y axis.
@@ -110,12 +96,16 @@ public interface DataProvider
         public WaveData GetWaveData(String in_y, String in_x);
 
 
+        /** 
+         * Enable tunneling activation. Return False if no ssh tunneling required. 
+	 * @return Tunneling flag
+	 **/ 
         public boolean SupportsTunneling();
 
 
         /**
          * If an error is encountered in the evaluation of a signal (GetWaveData or
-         * GetResampledWaveData returning null or generation IOException), jScope calls ErrorString
+         * GetResampledWaveData returning null or generating IOException), jScope calls ErrorString
          * method to retrieve the description of the error just occurred.
          *
          * @return A verbose description of the last error.
@@ -139,8 +129,7 @@ public interface DataProvider
          * processUpdateEvent (defined in UpdateEventListener interface) to request the display update to
          * jScope.
          * <br>
-         * If the DataProvider implementation does not support asynchronous events, the method is defined
-         * empty.
+         * If the DataProvider implementation does not support asynchronous events, the method is void
          * <br>
          *
          * @param l The passed instance of UpdateEventListener.
@@ -164,19 +153,7 @@ public interface DataProvider
 
         /**
          * GetFrameData is called by jScope to retrieve and display a frame sequence. The frame sequence
-         * is returned by means of an object implementing the FramesData interface.
-         * The methods defined in the FrameData interface are the following:
-         * <br>- int GetFrameType() returning the type of the corresponding frames, as returned by GetFrameAt, which can be:
-         * <br>	-FramesData.BITMAP if the frames are returned by method GetFrameAt as a byte matrix
-         * <br>	-FrameData.AWT_IMAGE   if the frames are returned by method GetFrameAt as the
-         * <br>	content of a gif or jpg file
-         * <br>	-FrameData.JAI_IMAGE  if the frames are returned by method GetFrameAt as the content of
-         * 	every other file format supported by JAI.
-         *
-         * <br>- int GetNumFrames() returning the number of frames in the sequence
-         * <br>- Dimension GetFrameDimension() returning the dimension of the single frame
-         * <br>- float [] GetFrameTimes returning the times associated with each frame
-         * <br>- byte[] GetFrameAt(int idx) returning the corresponding frame
+         * is returned by means of an object implementing the FrameData interface.
          *
          * @param in_frame The frame sequence specification as defined in the frames field of the setup data popup dialog
          * @param start_time Initial considered time for the frame sequence.
@@ -230,21 +207,20 @@ public interface DataProvider
         public void    RemoveConnectionListener(ConnectionListener l);
 
         /**
-         * Some DataProvider implemenations, such as Jet RDA provider, may require additional information
+         * Some DataProvider implemenations  may require additional information
          * (e.g. username and password) typed by users in a login form. As jScope does not make any assumption
          * on this kind of information it is up to the DataProvider implementation to realize such a form
-         * (if any). For this reason jScope calls method InquireCredential passingf as argument the container JFrame.
+         * (if any). For this reason jScope calls method InquireCredential passing as argument the container JFrame.
          * InquireCredentials may return:
          * <br>	-DataProvider.LOGIN_OK if the DataProvider has been succesfully validated
          * <br>	-DataProvider.LOGIN_ERROR if the DataProvided did not succeed in validation
          * <br>	-DataProvider.LOGIN_CANCEL if the login proess has been aborted by user (usually pressing
-         * <br>	a canel button)
+         * <br>	a cancel button)
          * <br>
          * Only in the first case jScope will proceede with the usega of the DataProvider implementation. In the
          * secon case a warning dialog is shown, and in the third case the DataProvider is simply discarded.
          *
          * @param f The container Frame.
-         * @param user Local username as specified in the property file or in the Network->Edit server list... dialog
          * @return The status of the DataProvider specific validation process
          */
         public int     InquireCredentials(JFrame f, DataServerItem server_item);
@@ -263,9 +239,9 @@ public interface DataProvider
         public void    SetArgument(String arg) throws IOException;
 
         /**
-         * Evaluate the passed string to provide am array of shot numbers. 
-         * For MDSplus data provider it will carry out the execution of the corresponding expression 
+         * Evaluate the passed string to provide an array of shot numbers. 
+        *  @param inShots The shot(s) specification as typed in the "Shot" field of jScope panel
          */
-        public long[]   GetShots(String in) throws IOException;
+        public long[]   GetShots(String inShots) throws IOException;
         
      }

@@ -59,6 +59,8 @@ int commit_entry(int dbType)
   case CRATE_DB:
     dbptr = (void *)CRATEdb;
     break;
+  default:
+    return 0;
   }
 
   // commit changes to file

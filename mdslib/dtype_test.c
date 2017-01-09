@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   } else {
     int test = strcmp(argv[1], "-local");
     if (test != 0)
-      printf("\nConnecting to: %s    Socket: %d\n", argv[1], MdsConnect(argv[1]));
+      printf("\nConnecting to: %s    Socket: %d\n", argv[1], (int)MdsConnect(argv[1]));
   }
 
   /**** Run tests ****/
@@ -165,6 +165,6 @@ int main(int argc, char *argv[])
   printf("\n");
   printf("\n");
 
-  exit((status  & 1)==0);
+  return (status & 1)==0;
 
 }

@@ -38,6 +38,7 @@
     EDIT          - Open a tree or create a new tree for subsequent editing.
     REMOVE TAG    - Remove a tagname.
     RENAME        - Rename a node in a tree.
+    SET READONLY  - Mark tree as readonly. No changes to data or nci permitted.
     SET VERSIONS  - Enable data version support in a tree.
     WRITE         - Write out a modified tree committing edit changes.
 
@@ -886,6 +887,7 @@
     <keyword name="CURRENT" syntax="set_current"/>"
     <keyword name="DEFAULT" syntax="set_default"/>"
     <keyword name="NODE" syntax="set_node"/>"
+    <keyword name="READONLY" syntax="set_readonly"/>
     <keyword name="SERVER" syntax="set_server"/>"
     <keyword name="TREE" syntax="set_tree"/>"
     <keyword name="VIEW" syntax="set_view"/>"
@@ -1113,6 +1115,25 @@
     <keyword name="STATISTICS" default="2" type="NUMBER"/>
   </type>
 
+  <syntax name="set_readonly">
+    <help name="SET READONLY">
+      Command: SET READONLY
+      Purpose: Make tree readonly.
+      Format: SET READONLY [/OFF]
+      Description:
+
+      The SET READONLY command is used to make a tree readonly. No store of
+      data or change of node characteristics is permitted. This is an edit
+      operation and a WRITE command must be performed to save the readonly
+      property of a tree. Use the /OFF qualifier to disable the readonly
+      setting to make the tree writable again.
+
+    </help>
+    <routine name="TclSetReadonly"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <qualifier name="OFF"/>
+  </syntax>
+
   <syntax name="set_tree">
     <help name="SET TREE">
       Command: SET TREE
@@ -1336,6 +1357,7 @@
 
   <syntax name="show_version">
     <helpmissing />
+    <image name="Mdsdcl"/>
     <routine name="mdsdcl_show_version"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>

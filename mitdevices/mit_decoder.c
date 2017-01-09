@@ -13,11 +13,11 @@
 
 
 static int GetEvent(char *name, EventMask * mask);
-static int GetOcta(int event_nid, EventMask * events);
+//static int GetOcta(int event_nid, EventMask * events);
 static void OctaOr(EventMask * src, EventMask * dst);
 static int OctaFFS(EventMask * src, int *next_bit);
 static int OctaIsSet(EventMask * base, int bit);
-static int GetSetup(int chan_nid, DecoderSetup * regs);
+//static int GetSetup(int chan_nid, DecoderSetup * regs);
 static int GetPseudoDevNid(struct descriptor_xd *pseudo_xd, int *dev_nid);
 static int one = 1;
 #define STOP_CHAN 6
@@ -32,12 +32,12 @@ return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&data,16,0),&one,0),sta
 return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&data,16,0),&one,0),status);}
 #endif
 
-int mit_decoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+int mit_decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
-  static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
+  //static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
   EventMask events[7];
-  EventMask all_events = { 0, 0, 0, 0 };
+  EventMask all_events = { {0, 0, 0, 0} };
   unsigned char chan_flags = 0;
   int chan;
   int start_bit;
@@ -45,7 +45,7 @@ int mit_decoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   int event_bit;
   int event_ind;
   DecoderSetup regs[5];
-  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0 };	/* always low, start low */
+  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low */
   unsigned short cam_data;
   pio(2, 24, 0, "Disable Lam and code recognizer ");	/* Disable Lam and code recognizer */
   pio(0, 16, 0xFFEF, "Enable 16 bit buses ");	/* Enable 16 bit buses */
@@ -75,7 +75,7 @@ int mit_decoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
     memset(&events[chan], 0, sizeof(EventMask));
     regs[chan] = channelOffRegs;
     if (TreeIsOn(dev_nid) & 1) {
-      unsigned short cam_data = chan + 1;
+      //unsigned short cam_data = chan + 1;
       chan_flags |= (1 << chan);
       status = TreeGetRecord(dev_nid, &pseudo_xd);
       if (!(status & 1)) {

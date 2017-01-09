@@ -1,0 +1,17 @@
+# default: off
+# description: The mdsips server serves gsi enabled mdsip sessions; it uses the \
+#       standard mdsip.hosts and logs into /var/log/mdsplus.
+service mdsips
+{
+        disabled        = yes
+        socket_type     = stream
+        wait            = no
+        cps             = 1000 5
+        instances       = UNLIMITED
+        per_source      = UNLIMITED
+        user            = root
+        server          = /usr/local/mdsplus/bin/mdsipsd
+        server_args     = mdsips /var/log/mdsplus/mdsipsd
+        log_on_failure  += HOST
+        log_on_success  += HOST
+}

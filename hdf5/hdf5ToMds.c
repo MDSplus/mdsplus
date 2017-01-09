@@ -52,8 +52,8 @@ static int AddNode(const char *h5name, int usage)
   int status;
   int memlen = ((strlen(h5name) < 12) ? 12 : strlen(h5name)) + 2;
   char *name = strcpy(malloc(memlen), (usage != TreeUSAGE_STRUCTURE) ? ":" : ".");
-  int i;
-  int len;
+  size_t i;
+  size_t len;
   int idx = 1;
   int nid;
   for (i = 0; i < strlen(h5name) &&
@@ -183,10 +183,9 @@ static void PutData(hid_t obj, int nid, char dtype, int htype, int size, int n_d
   }
 }
 
-static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
+static int mds_find_attr(hid_t attr_id, const char *name, void *op_data __attribute__ ((unused)))
 {
   hid_t obj, type;
-  int status;
   int nid;
   int oldnid;
   printf("\tmds_find_attr - %s\n", name);
@@ -234,7 +233,8 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 	dtype = 0;
 	break;
       }
-      PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
+      if (dtype)
+        PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
       break;
     case H5T_FLOAT:
       nid = AddNode(name, TreeUSAGE_NUMERIC);
@@ -253,7 +253,8 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 	dtype = 0;
 	break;
       }
-      PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
+      if (dtype)
+        PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
       break;
     case H5T_TIME:
       printf("dataset is time ---- UNSUPPORTED\n");
@@ -279,7 +280,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);
@@ -299,6 +300,22 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
     case H5T_VLEN:
       printf("dataset is vlen ---- UNSUPPORTED\n");
       break;
+    case H5T_NO_CLASS:
+      printf("dataset is no_class ---- UNSUPPORTED\n");
+      break;
+    case H5T_REFERENCE:
+      printf("dataset is reference ---- UNSUPPORTED\n");
+      break;
+    case H5T_ENUM:
+      printf("dataset is enum ---- UNSUPPORTED\n");
+      break;
+    case H5T_NCLASSES:
+      printf("dataset is nclasses ---- UNSUPPORTED\n");
+      break;
+    default:
+      printf("dataset is UNRECOGNIZED dataset ---- UNSUPPORTED\n");
+      break;
+
     }
     H5Tclose(type);
     H5Aclose(obj);
@@ -311,8 +328,6 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 {
   hid_t obj, type;
   H5G_stat_t statbuf;
-  unsigned int idx = 0;
-  int status;
   int nid;
   int defnid;
   int *first_time = (int *)op_data;
@@ -379,7 +394,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	  dtype = 0;
 	  break;
 	}
-	PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 0);
+        if (dtype)
+	  PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 0);
 	break;
       case H5T_FLOAT:
 	precision = H5Tget_precision(type);
@@ -397,7 +413,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	  dtype = 0;
 	  break;
 	}
-	PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 0);
+        if (dtype)
+	  PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 0);
 	break;
       case H5T_TIME:
 	printf("dataset is time ---- UNSUPPORTED\n");
@@ -421,7 +438,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);
@@ -440,6 +457,21 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
       case H5T_VLEN:
 	printf("dataset is vlen ---- UNSUPPORTED\n");
 	break;
+      case H5T_NO_CLASS:
+        printf("dataset is no_clasee ---- UNSUPPORTED\n");
+        break;
+      case H5T_REFERENCE:
+        printf("dataset is reference ---- UNSUPPORTED\n");
+        break;
+      case H5T_ENUM:
+        printf("dataset is enum ---- UNSUPPORTED\n");
+        break;
+      case H5T_NCLASSES:
+        printf("dataset is nclasses ---- UNSUPPORTED\n");
+        break;
+      default:
+        printf("dataset is UNRECOGNIZED CASE ---- UNSUPPORTED\n");
+        break;
       }
       H5Tclose(type);
       H5Dclose(obj);
@@ -474,11 +506,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
  */
 int main(int argc, const char *argv[])
 {
-  hid_t fid, gid;
+  hid_t fid;
   const char *fname = NULL;
-  void *edata;
-  hid_t(*func) (void *);
-  int i;
   int first_time = 1;
   int status;
 

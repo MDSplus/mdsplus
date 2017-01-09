@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$DISPATCH_PHASE   
+		Name:   SERVER$DISPATCH_PHASE
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   21-APR-1992
 
-    		Purpose: Dispatch a phase 
+		Purpose: Dispatch a phase
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phasenam, char *noact,
                           int *sync, void (*output_rtn)(), struct descriptor *monitor)
@@ -47,18 +47,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <mds_stdarg.h>
 #include <tdishr_messages.h>
 #include <errno.h>
-
-#ifdef _WIN32
-extern int pthread_cond_signal();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
-extern int pthread_mutex_init();
-extern int pthread_cond_init();
-extern int pthread_cond_timedwait();
-#define ETIMEDOUT 42
-#else
 #include <sys/time.h>
-#endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
@@ -139,7 +128,6 @@ void SendMonitor(int mode, int idx)
 {
   if (MonitorOn) {
     ActionInfo *actions = table->actions;
-    struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
     char tree[13];
     char *cptr;
     int i;
@@ -158,30 +146,26 @@ void SendMonitor(int mode, int idx)
 	server[i] = cptr[i];
     server[i] = 0;
     pthread_mutex_lock(&send_msg_mutex);
-    MonitorOn = ServerSendMessage(0, Monitor, SrvMonitor, 0, 0, 0, 0, 0, 8,
-				  MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
-				  MakeDescrip(&p2, DTYPE_LONG, 0, 0, &table->shot),
-				  MakeDescrip(&p3, DTYPE_LONG, 0, 0, &actions[idx].phase),
-				  MakeDescrip(&p4, DTYPE_LONG, 0, 0, &actions[idx].nid),
-				  MakeDescrip(&p5, DTYPE_LONG, 0, 0, &on),
-				  MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
-				  MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, server),
-				  MakeDescrip(&p8, DTYPE_LONG, 0, 0, &actions[idx].status));
+    MonitorOn = ServerSendMonitor(Monitor, tree, table->shot, actions[idx].phase,
+				  actions[idx].nid, on, mode, server, actions[idx].status);
     pthread_mutex_unlock(&send_msg_mutex);
   }
 }
 
+//#ifdef _WIN32
+//STATIC_ROUTINE char *now(char *buf __attribute__ ((unused)))
+//#else
 STATIC_ROUTINE char *now(char *buf)
+//#endif
 {
   time_t tim = time(0);
-  tim = time(0);
 #ifdef _WIN32
-  return ctime(&tim);
+  buf = ctime(&tim);
 #else
   ctime_r(&tim, buf);
+#endif
   buf[strlen(buf) - 1] = 0;
   return buf;
-#endif
 }
 
 STATIC_ROUTINE void ActionDone(int idx)
@@ -356,17 +340,12 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 	      : (AbortInProgress ? 1 : NoOutstandingActions(first_g, last_g)))) {
     ProgLoc = 600;
     pthread_mutex_lock(&JobWaitMutex);
-#ifdef _WIN32
-    status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
-#else
     {
       struct timespec abstime;
       struct timeval tmval;
-
       gettimeofday(&tmval, 0);
       abstime.tv_sec = tmval.tv_sec + 1;
       abstime.tv_nsec = tmval.tv_usec * 1000;
-
       ProgLoc = 601;
       status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &abstime);
       ProgLoc = 602;
@@ -374,7 +353,6 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
     if (status == -1 && errno == 11)
       status = ETIMEDOUT;
-#endif
 #endif
     pthread_mutex_unlock(&JobWaitMutex);
     ProgLoc = 603;
@@ -419,7 +397,7 @@ STATIC_ROUTINE char *DetailProc(int full)
   return msg;
 }
 
-EXPORT int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
+EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in,
 			int sync, void (*output_rtn) (), char *monitor)
 {
   int i;
@@ -592,9 +570,6 @@ STATIC_ROUTINE void WakeCompletedActionQueue()
 STATIC_ROUTINE void WaitForActionDoneQueue()
 {
   pthread_mutex_lock(&wake_completed_mutex);
-#ifdef _WIN32
-  pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, 1000);
-#else
   {
     struct timespec abstime;
     struct timeval tmval;
@@ -603,7 +578,6 @@ STATIC_ROUTINE void WaitForActionDoneQueue()
     abstime.tv_nsec = tmval.tv_usec * 1000;
     pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, &abstime);
   }
-#endif
   pthread_mutex_unlock(&wake_completed_mutex);
 }
 
@@ -693,9 +667,6 @@ STATIC_ROUTINE void WakeSendMonitorQueue()
 STATIC_ROUTINE void WaitForSendMonitorQueue()
 {
   pthread_mutex_lock(&wake_send_monitor_mutex);
-#ifdef _WIN32
-  pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, 1000);
-#else
   {
     struct timespec abstime;
     struct timeval tmval;
@@ -705,7 +676,6 @@ STATIC_ROUTINE void WaitForSendMonitorQueue()
     abstime.tv_nsec = tmval.tv_usec * 1000;
     pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, &abstime);
   }
-#endif
   pthread_mutex_unlock(&wake_send_monitor_mutex);
 }
 

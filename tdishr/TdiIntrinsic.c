@@ -104,7 +104,10 @@ STATIC_ROUTINE void numb(int count)
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TdiTrace(int opcode __attribute__ ((unused)),
+	     int narg __attribute__ ((unused)),
+	     struct descriptor *list[] __attribute__ ((unused)),
+	     struct descriptor_xd *out_ptr)
 {
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
   if (message->length > MAXMESS)
@@ -121,7 +124,10 @@ int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_
   return 1;
 }
 
-int TRACE(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TRACE(int opcode,
+	  int narg,
+	  struct descriptor *list[],
+	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
@@ -182,7 +188,7 @@ STATIC_ROUTINE int interlude(int (*f1) (),
 			     int opcode,
 			     int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 #if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
   __try {
 #endif
@@ -200,7 +206,7 @@ STATIC_CONSTANT EMPTYXD(emptyxd);
 
 int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp;
   int stat1 = 1;
@@ -232,7 +238,7 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       if (fixed[i])
 	free(fixed_list[i]);
   }
-  if (status & 1
+  if (STATUS_OK
       || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
 
     if (!out_ptr)
@@ -337,10 +343,11 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
         Compiler errors get special help.
         ********************************/
   if (opcode == OpcCompile && message->length < MAXMESS) {
+    int len = TdiRefZone.a_end-TdiRefZone.a_begin;
     char *cur = MINMAX(TdiRefZone.a_begin, TdiRefZone.a_cur, TdiRefZone.a_end);
-    int npre = MINMAX(0, TdiRefZone.l_ok, MAXLINE);
-    int nbody = cur - TdiRefZone.a_begin - npre;
-    int npost = TdiRefZone.a_end - cur;
+    int npre = MINMAX(0,MINMAX(0, TdiRefZone.l_ok, MAXLINE),len-2);
+    int nbody = MINMAX(0,cur - TdiRefZone.a_begin - npre,len-npre-1);
+    int npost = MINMAX(0,TdiRefZone.a_end - cur,len-npre-nbody-1);
     nbody = MINMAX(0, nbody, MAXLINE);
     npost = MINMAX(0, npost, MAXLINE);
     if (npre + nbody + npost > MAXLINE)
@@ -359,17 +366,16 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
       struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
       pre.length = (unsigned short)npre;
-      pre.pointer = cur - nbody - npre;
+      pre.pointer = npre>0 ? cur - nbody - npre : NULL;
       body.length = (unsigned short)nbody;
-      body.pointer = cur - nbody;
+      body.pointer = nbody>0 ? cur - nbody : NULL;
       post.length = (unsigned short)npost;
       post.pointer = cur;
       StrConcat((struct descriptor *)message,
-		(struct descriptor *)message, &compile_err, &pre, &hilite,
+      		(struct descriptor *)message, &compile_err, &pre, &hilite,
 		&body, &hilite, &post, &newline MDS_END_ARG);
     }
   }
-
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
@@ -386,9 +392,12 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
                 2 to print the current message
                 4 to clear the message buffer
 */
-int Tdi1Debug(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Debug(int opcode __attribute__ ((unused)),
+	      int narg,
+	      struct descriptor *list[],
+	      struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int option = -1;
   int mess_stat = (TdiThreadStatic())->TdiIntrinsic_mess_stat;
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);

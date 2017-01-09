@@ -35,7 +35,7 @@
 #include "tdirefzone.h"
 
 #include "tdiyacc.h"
-YYSTYPE YYLVAL = { 0 };
+YYSTYPE YYLVAL = { {0} };
 
 #define LEX_OK 0
 #define OK 0

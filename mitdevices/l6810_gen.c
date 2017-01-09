@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "l6810_gen.h"
-EXPORT int l6810__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int l6810__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "L6810");
@@ -136,7 +136,7 @@ EXPORT int l6810__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int l6810__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int l6810__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		     struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -219,59 +219,61 @@ extern int l6810___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int l6810__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
     short code;
     int value;
   } active_mem_t[] = {
-  0, 1,
-	1, 2,
-	2, 4,
-	3, 8,
-	4, 16, 5, 32, 6, 64, 7, 128, 8, 256, 9, 512, 10, 1024, 11, 2048, 12, 4096, 13, 8192, 0, 0};
+    {0, 1},
+    {1, 2},
+    {2, 4},
+    {3, 8},
+    {4, 16}, {5, 32}, {6, 64}, {7, 128}, {8, 256}, {9, 512},
+    {10, 1024}, {11, 2048}, {12, 4096}, {13, 8192}, {0, 0}};
   static struct {
     short code;
     int value;
   } active_chans_t[] = {
-  0, 1, 1, 2, 2, 4, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {0, 0}};
   static struct {
     short code;
     int value;
   } freq_t[] = {
-  0, 0,
-	1, 20,
-	2, 50,
-	3, 100,
-	4, 200,
-	5, 500,
-	6, 1000,
-	7, 2000,
-	8, 5000,
-	9, 10000,
-	10, 20000,
-	11, 50000, 12, 100000, 13, 200000, 14, 500000, 15, 1000000, 16, 2000000, 17, 5000000, 0, 0};
+    {0, 0},
+    {1, 20},
+    {2, 50},
+    {3, 100},
+    {4, 200},
+    {5, 500},
+    {6, 1000},
+    {7, 2000},
+    {8, 5000},
+    {9, 10000},
+    {10, 20000},
+    {11, 50000}, {12, 100000}, {13, 200000}, {14, 500000},
+    {15, 1000000}, {16, 2000000}, {17, 5000000}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_01_full_scale_t[] = {
-  0, .4096, 1, 1.024, 2, 2.048, 3, 4.096, 4, 10.24, 5, 25.6, 6, 51.2, 7, 102.4, 0, 0};
+  {0, .4096}, {1, 1.024}, {2, 2.048}, {3, 4.096}, {4, 10.24}, {5, 25.6}, {6, 51.2}, {7, 102.4}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_02_full_scale_t[] = {
-  0, .4096, 1, 1.024, 2, 2.048, 3, 4.096, 4, 10.24, 5, 25.6, 6, 51.2, 7, 102.4, 0, 0};
+  {0, .4096}, {1, 1.024}, {2, 2.048}, {3, 4.096}, {4, 10.24}, {5, 25.6}, {6, 51.2}, {7, 102.4}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_03_full_scale_t[] = {
-  0, .4096, 1, 1.024, 2, 2.048, 3, 4.096, 4, 10.24, 5, 25.6, 6, 51.2, 7, 102.4, 0, 0};
+  {0, .4096}, {1, 1.024}, {2, 2.048}, {3, 4.096}, {4, 10.24}, {5, 25.6}, {6, 51.2}, {7, 102.4}, {0, 0}};
   static struct {
     short code;
     float value;
   } input_04_full_scale_t[] = {
-  0, .4096, 1, 1.024, 2, 2.048, 3, 4.096, 4, 10.24, 5, 25.6, 6, 51.2, 7, 102.4, 0, 0};
+  {0, .4096}, {1, 1.024}, {2, 2.048}, {3, 4.096}, {4, 10.24}, {5, 25.6}, {6, 51.2}, {7, 102.4}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);
@@ -316,7 +318,7 @@ EXPORT int l6810__init(struct descriptor *nid_d_ptr, struct descriptor *method_d
 extern int l6810___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int l6810__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810__trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -334,7 +336,7 @@ EXPORT int l6810__trigger(struct descriptor *nid_d_ptr, struct descriptor *metho
 extern int l6810___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int l6810__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int l6810__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

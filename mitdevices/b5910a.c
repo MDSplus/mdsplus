@@ -19,6 +19,8 @@
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxDialogButton.h>
+#define DEVRANGE_MISMATCH       0x277c807a
+#define DEVBAD_ACTIVE_CHAN      0x277c8152
 static float fval = 0;
 static DESCRIPTOR_FLOAT(float_d, &fval);
 
@@ -84,7 +86,7 @@ static void UpdateXdBox(Widget w, int count, float *x, float *y, Boolean * selec
 
  Executable:                                                                  */
 
-EXPORT int b5910a__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int b5910a__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "B5910A.uid" };
   static int nid;
@@ -213,8 +215,8 @@ static void ResetWave(Widget w)
 	float *knot_y;
 	int num_knots = 0;
 	int j;
-	int knot = 0;
-	int on_state;
+	//int knot = 0;
+	//	int on_state;
 	Widget xdbw = XmdsXdBoxDialogButtonGetXdBox(XtNameToWidget(Top(w), xd_name(i)));
 	Widget dw = XtNameToWidget(Top(w), d_name(i));
 	Widget fw = XtNameToWidget(Top(w), fit_name(i));
@@ -294,7 +296,7 @@ static void ResetWave(Widget w)
   MdsFree1Dx(&times_xd, 0);
 }
 
-static void Crosshairs(Widget w, int tag, XmdsWaveformCrosshairsCBStruct * c)
+static void Crosshairs(Widget w, int tag __attribute__ ((unused)), XmdsWaveformCrosshairsCBStruct * c)
 {
   int i;
   Widget *children;
@@ -319,17 +321,17 @@ static void OutputValue(Widget w, float x, float y)
   XtFree(label);
 }
 
-static void AutoY(Widget w, int *idx, XmPushButtonCallbackStruct * cb)
+static void AutoY(Widget w, int *idx, XmPushButtonCallbackStruct * cb __attribute__ ((unused)))
 {
-  int i;
-  float *xmin;
-  float *xmax;
+  //int i;
+  //float *xmin;
+  //float *xmax;
 
   Widget wave = XtNameToWidget(Top(w), d_name(*idx - 1));
   XtVaSetValues(wave, XmdsNyMin, 0, XmdsNyMax, 0, NULL);
 }
 
-static void SameX(Widget w, int *idx, XmPushButtonCallbackStruct * cb)
+static void SameX(Widget w, int *idx, XmPushButtonCallbackStruct * cb __attribute__ ((unused)))
 {
   int i;
   float *xmin;
@@ -344,7 +346,7 @@ static void SameX(Widget w, int *idx, XmPushButtonCallbackStruct * cb)
     }
 }
 
-static void SetPointerMode(Widget w, int *mode, XmToggleButtonCallbackStruct * cb)
+static void SetPointerMode(Widget w, int *mode, XmToggleButtonCallbackStruct * cb __attribute__ ((unused)))
 {
   int i;
   XmString label;
@@ -376,7 +378,7 @@ static void SetPointerMode(Widget w, int *mode, XmToggleButtonCallbackStruct * c
   XmStringFree(label);
 }
 
-static void Align(int w, int tag, XmdsWaveformLimitsCBStruct * l)
+static void Align(int w __attribute__ ((unused)), int tag __attribute__ ((unused)), XmdsWaveformLimitsCBStruct * l __attribute__ ((unused)))
 {
 }
 
@@ -388,7 +390,7 @@ static int NumKnots(int count, Boolean * selected)
   return num_knots;
 }
 
-static void AddPoint(Widget w, int tag, XmdsWavedrawValueCBStruct * v)
+static void AddPoint(Widget w, int tag __attribute__ ((unused)), XmdsWavedrawValueCBStruct * v)
 {
   Boolean *pendown;
   Boolean *selected;
@@ -424,13 +426,13 @@ static void AddPoint(Widget w, int tag, XmdsWavedrawValueCBStruct * v)
   return;
 }
 
-static void DeletePoint(Widget w, int tag, XmdsWavedrawValueCBStruct * v)
+static void DeletePoint(Widget w, int tag __attribute__ ((unused)), XmdsWavedrawValueCBStruct * v)
 {
   UpdateXdBox(w, v->count, v->x, v->y, v->selected);
   return;
 }
 
-static void Move(Widget w, int tag, XmdsWavedrawValueCBStruct * v)
+static void Move(Widget w, int tag __attribute__ ((unused)), XmdsWavedrawValueCBStruct * v)
 {
   v->y[v->idx] = v->newy;
   if (((v->idx < v->count - 1) && (v->newx >= v->x[v->idx + 1]) && (v->selected[v->idx + 1])) ||
@@ -506,13 +508,13 @@ static void UpdateXdBox(Widget w, int count, float *x, float *y, Boolean * selec
   }
 }
 
-static void Limits(Widget w, int tag, XmdsWaveformLimitsCBStruct * l)
+static void Limits(Widget w __attribute__ ((unused)), int tag __attribute__ ((unused)), XmdsWaveformLimitsCBStruct * l __attribute__ ((unused)))
 {
 }
 
-static void Fit(Widget w, int tag, XmdsWavedrawFitCBStruct * c)
+static void Fit(Widget w, int tag __attribute__ ((unused)), XmdsWavedrawFitCBStruct * c)
 {
-  int fit;
+  //int fit;
   char name[10] = "*";
   strcat(name, XtName(w));
   strcat(name, "_fit");
@@ -523,7 +525,7 @@ static void Fit(Widget w, int tag, XmdsWavedrawFitCBStruct * c)
     Spline(c->count, c->x, c->y, c->selected, c->pen_down);
 }
 
-static void FitChange(Widget w, int tag, XmRowColumnCallbackStruct * cb)
+static void FitChange(Widget w, int tag __attribute__ ((unused)), XmRowColumnCallbackStruct * cb)
 {
   int i;
   for (i = 0; i < 4; i++) {
@@ -803,7 +805,7 @@ static char *fit_name(int channel)
 #define return_on_error(call,retstatus)\
  if (!((status = (call)) & 1)) {return retstatus;}
 
-EXPORT int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int b5910a___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
 
   int status;
@@ -818,7 +820,7 @@ EXPORT int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   } reg = {
   0, 0, 0, 0, 0, 0}, state;
   short mem_data[32768];
-  int clock_range;
+  //int clock_range;
   static DESCRIPTOR(dt_expr, "SLOPE_OF($)");
   static float dt;
   static DESCRIPTOR_FLOAT(dt_dsc, &dt);
@@ -861,6 +863,8 @@ EXPORT int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
     case 3:
       data = setup->channel_4;
       break;
+    default:
+      return DEVBAD_ACTIVE_CHAN;
     }
     status = TdiExecute((struct descriptor *)&chan_exp, data, &y MDS_END_ARG);
     if (status & 1) {
@@ -890,6 +894,8 @@ EXPORT int b5910a___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 	max_counts = 4095;
 	min_counts = 0;
 	break;
+      default:
+	return DEVRANGE_MISMATCH;
       }
       for (i = 0; i < setup->samples; i++) {
 	float counts_f = yval[i] / volts_per_bit;

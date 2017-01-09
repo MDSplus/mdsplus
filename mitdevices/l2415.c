@@ -13,7 +13,7 @@ static int one = 1;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0),status)
 #define qrep(f,a,count,d)  return_on_error(DevCamChk(CamQrepw(setup->name, a, f, count, d, 16, 0), &one, &one),status)
 
-EXPORT int l2415___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l2415___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = 1;
   unsigned short int word_out;
@@ -24,7 +24,7 @@ EXPORT int l2415___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-EXPORT int l2415___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l2415___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   static int polarity_nid;
   static int range_nid;

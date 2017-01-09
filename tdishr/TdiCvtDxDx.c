@@ -9,6 +9,7 @@
 */
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <status.h>
 #include <STATICdef.h>
 
 
@@ -18,7 +19,7 @@ extern int TdiGetShape();
 
 int TdiCvtDxDx(struct descriptor *in_ptr, unsigned char *dtype_ptr, struct descriptor_xd *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 
 	/*********************************
         No conversion needed, just memory.
@@ -40,7 +41,7 @@ int TdiCvtDxDx(struct descriptor *in_ptr, unsigned char *dtype_ptr, struct descr
     struct descriptor_xd xs = { 0, DTYPE_DSC, CLASS_XS, 0, 0 };
     xs.pointer = in_ptr;
     status = TdiGetShape(1, &xs, 0, *dtype_ptr, &mode, out_ptr);
-    if (status & 1)
+    if STATUS_OK
       status = TdiConvert(in_ptr, out_ptr->pointer);
   }
   return status;

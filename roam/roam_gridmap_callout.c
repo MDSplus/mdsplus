@@ -4,6 +4,9 @@
 #include <globus_gridmap_callout_error.h>
 #include <stdlib.h>
 
+#ifdef HAVE_STDARG_H
+#undef HAVE_STDARG_H
+#endif
 #ifdef HAVE_GETADDRINFO
 #undef HAVE_GETADDRINFO
 #endif

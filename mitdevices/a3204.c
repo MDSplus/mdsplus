@@ -12,7 +12,7 @@ static int one = 1;
 #define max(a,b) (((a) <= (b)) ? (b) : (a))
 #define SignalError(call) status = call; if (!(status & 1)) { return status; }
 #define pio(f,a,dv) {int d = dv;\
- if (!((status = DevCamChk(CamPiow(setup->name,a,f,&dv,16,0),&one,&one)) & 1)) return status;}
+ if (!((status = DevCamChk(CamPiow(setup->name,a,f,&d,16,0),&one,&one)) & 1)) return status;}
 extern int DevCamChk();
 
 
@@ -31,7 +31,7 @@ static int InitChannel(InInitStruct * setup, int chan, int gain, float offset)
   return status;
 }
 
-EXPORT int a3204___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int a3204___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   status = InitChannel(setup, 0, setup->input_1_gain_convert, setup->input_1_offset);
@@ -43,7 +43,7 @@ EXPORT int a3204___init(struct descriptor *niddsc, InInitStruct * setup)
 
 static int StoreChannel(InStoreStruct * setup, int chan)
 {
-  int status;
+  int status=1;
   int input_nid = setup->head_nid + A3204_N_INPUT_1 + chan * (A3204_N_INPUT_2 - A3204_N_INPUT_1);
   int filter_on_nid = input_nid + A3204_N_INPUT_1_FILTER_ON - A3204_N_INPUT_1;
   int output_nid = input_nid + A3204_N_INPUT_1_OUTPUT - A3204_N_INPUT_1;
@@ -75,7 +75,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
   return status;
 }
 
-EXPORT int a3204___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int a3204___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
   int i;

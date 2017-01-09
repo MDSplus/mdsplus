@@ -2,8 +2,8 @@ SUBDIRS = backends/check .
 
 include @top_builddir@/Makefile.inc
 
-AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH)
-AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH)
+AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH) $(WARNFLAGS)
+AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH) $(WARNFLAGS)
            
 #
 # Static Base library

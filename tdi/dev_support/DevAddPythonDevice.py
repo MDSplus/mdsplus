@@ -14,7 +14,7 @@ def DevAddPythonDevice(path, model):
     """
     model = model.data().upper().rstrip()
     mod = Device.importPyDeviceModule(model)
-    path = str(path.data()).replace('\\\\','\\')
+    path = str(path.data())
     if mod is not None and model in mod.__dict__:
         try:
             mod.__dict__[model].Add(Tree(), path)
@@ -32,10 +32,8 @@ def DevAddPythonDevice(path, model):
 
     for idx in range(0, len(models), 2):
         try:
-            modname = models[idx].data().upper()
-            modname = modname[0:modname.find('\0')]
-            package = models[idx+1].data()
-            package = package[0:package.find('\0')]
+            modname = models[idx].data().upper().rstrip()
+            package = models[idx+1].data().rstrip()
             if model == modname:
                 cls = __import__(package).__dict__[model]
                 break

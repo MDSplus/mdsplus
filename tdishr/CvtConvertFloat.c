@@ -95,34 +95,34 @@
 ** _round                       - Rounds the standard intermediate data type
 **                                according to specified rounding rules.
 **
-** unpack_vax_f                 - Converts VAX F_Floating point to the 
+** unpack_vax_f                 - Converts VAX F_Floating point to the
 **                                standard intermediate data type
 **
-** unpack_vax_d                 - Converts VAX D_Floating point to the 
+** unpack_vax_d                 - Converts VAX D_Floating point to the
 **                                standard intermediate data type
 **
-** unpack_vax_g                 - Converts VAX G_Floating point to the 
+** unpack_vax_g                 - Converts VAX G_Floating point to the
 **                                standard intermediate data type
 **
-** unpack_vax_h                 - Converts VAX H_Floating point to the 
+** unpack_vax_h                 - Converts VAX H_Floating point to the
 **                                standard intermediate data type
 **
-** unpack_ieee_s                - Converts IEEE S point to the standard 
+** unpack_ieee_s                - Converts IEEE S point to the standard
 **                                intermediate data type
 **
-** unpack_ieee_t                - Converts IEEE T point to the standard 
+** unpack_ieee_t                - Converts IEEE T point to the standard
 **                                intermediate data type
 **
-** unpack_ieee_x                - Converts IEEE X point to the standard 
+** unpack_ieee_x                - Converts IEEE X point to the standard
 **                                intermediate data type
 **
-** unpack_ibm_long              - Converts IBM Long to the standard 
+** unpack_ibm_long              - Converts IBM Long to the standard
 **                                intermediate data type
 **
-** unpack_ibm_short             - Converts IBM Short to the standard 
+** unpack_ibm_short             - Converts IBM Short to the standard
 **                                intermediate data type
 **
-** unpack_cray                  - Converts Cray floating point to the standard 
+** unpack_cray                  - Converts Cray floating point to the standard
 **                                intermediate data type
 **
 ** debug_indent_print           - idented debug information printing routine
@@ -240,7 +240,7 @@ typedef struct {unsigned int low2; unsigned low:16; unsigned hi : 4; unsigned ex
 **  [4]: ----------------> lsb
 **  [5]: 28 unused bits, invalid bit, infinity bit, zero bit, negative bit
 **
-**  All fraction bits are explicit and are normalized 
+**  All fraction bits are explicit and are normalized
 **  s.t. 0.5 <= fraction < 1.0
 **
 **=============================================================================
@@ -471,67 +471,67 @@ STATIC_CONSTANT U_Int_32 const cray[] = {
 **-----------------------------------------------------------------------------
 */
 STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, U_Int_32 options);
+				     CVT_VAX_F output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, U_Int_32 options);
+				     CVT_VAX_D output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, U_Int_32 options);
+				     CVT_VAX_G output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, U_Int_32 options);
+				     CVT_VAX_H output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, U_Int_32 options);
+				      CVT_IEEE_S output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, U_Int_32 options);
+				      CVT_IEEE_T output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, U_Int_32 options);
+				      CVT_IEEE_X output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, U_Int_32 options);
+				     CVT_IBM_LONG output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, U_Int_32 options);
+				     CVT_IBM_SHORT output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, U_Int_32 options);
+				    CVT_CRAY output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
-			   U_Int_32 round_bit_position, U_Int_32 options);
+			   U_Int_32 round_bit_position, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options);
+				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options);
+				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options);
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options);
+				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL intermediate_value, U_Int_32 options);
+				  UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL intermediate_value, U_Int_32 options);
+				  UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL intermediate_value, U_Int_32 options);
+				  UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options);
+				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL intermediate_value, U_Int_32 options);
+				 UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value,
-				UNPACKED_REAL intermediate_value, U_Int_32 options);
+				UNPACKED_REAL intermediate_value, U_Int_32 options __attribute__ ((unused)));
 
 extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
 			   U_Int_32 input_type, void *output_value, U_Int_32 output_type)
@@ -550,7 +550,7 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
 **          VAX H_Floating
 **          IEEE Single
 **          IEEE Double
-**          IEEE Extended 
+**          IEEE Extended
 **          IBM floating point
 **          Cray floating point
 **
@@ -609,12 +609,12 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
   CVT_STATUS return_status;
   UNPACKED_REAL intermediate_value;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
-  /*      
+  /*
    ** Validate the options parameter.
    ** ==========================================================================
    */
@@ -675,7 +675,7 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
     break;
   }
 
-  /*      
+  /*
    ** ==========================================================================
    **
    ** Unpack the input value based upon the input_type parameter.  Unpacking
@@ -691,7 +691,7 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
    **  [4]: ----------------> lsb
    **  [5]: 28 unused bits, invalid bit, infinity bit, zero bit, negative bit
    **
-   **  All fraction bits are explicit and are normalized 
+   **  All fraction bits are explicit and are normalized
    **  s.t. 0.5 <= fraction < 1.0
    **
    ** ==========================================================================
@@ -742,9 +742,9 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
     break;
   }
 
-  /*      
+  /*
    ** Pack the output value by converting the intermediate value to the type
-   ** specified by the output_type parameter.  
+   ** specified by the output_type parameter.
    ** ==========================================================================
    */
   switch (output_type) {
@@ -793,12 +793,11 @@ extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
     break;
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
-  return return_status & 1;
-
+  return return_status;
 }
 
 STATIC_ROUTINE void FlipDouble(int *in)
@@ -809,7 +808,7 @@ STATIC_ROUTINE void FlipDouble(int *in)
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, U_Int_32 options)
+				     CVT_VAX_F output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -858,19 +857,19 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -890,7 +889,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Round the intermediate value at bit position 24.
    ** ==========================================================================
    */
@@ -940,32 +939,32 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
      ** =======================================================================
      */
     else {
-      /* 
+      /*
        ** Adjust bias of exponent.
        **-----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 128);
 
-      /* 
+      /*
        ** Make room for exponent and sign bit.
        **-----------------------------------------------------------------------
        */
       intermediate_value[1] >>= 8;
 
-      /* 
+      /*
        ** Clear implicit bit.
        **-----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x007FFFFFL;
 
-      /* 
+      /*
        ** OR in exponent and sign bit.
        **-----------------------------------------------------------------------
        */
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 23);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      /* 
+      /*
        ** Adjust for VAX 16 bit floating format.
        **-----------------------------------------------------------------------
        */
@@ -976,7 +975,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -985,7 +984,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, U_Int_32 options)
+				     CVT_VAX_D output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -995,7 +994,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
 **      structure and to create a VAX d_floating number with those bits.
 **
 **      A VAX d_floating number in (16 bit words) looks like:
-** 
+**
 **          [0]: Sign bit, 8 exp bits (bias 128), 7 fraction bits
 **          [1]: 16 more fraction bits
 **          [2]: 16 more fraction bits
@@ -1036,19 +1035,19 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -1070,14 +1069,14 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Round the intermediate value at bit position 56.
    ** ==========================================================================
    */
   else {
     _round(intermediate_value, 56, options);
 
-    /*    
+    /*
      ** Check for underflow.
      ** ========================================================================
      */
@@ -1087,7 +1086,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
 	RAISE(cvt_s_underflow);
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -1114,18 +1113,18 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /*          
+      /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 128);
 
-      /*          
+      /*
        ** Make room for the exponent and the sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -1133,20 +1132,20 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
       intermediate_value[2] |= (intermediate_value[1] << 24);
       intermediate_value[1] >>= 8;
 
-      /*          
+      /*
        ** Clear implicit bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x007FFFFFL;
 
-      /*          
+      /*
        ** OR in exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 23);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      /*          
+      /*
        ** Adjust for VAX 16 bit floating format.
        ** ----------------------------------------------------------------------
        */
@@ -1164,7 +1163,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
     memcpy(&((char *)output_value)[4], temp, 4);
   }
 #endif
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -1173,7 +1172,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, U_Int_32 options)
+				     CVT_VAX_G output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1183,7 +1182,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
 **      structure and to create a VAX g_floating number with those bits.
 **
 **      A VAX g_floating number in (16 bit words) looks like:
-** 
+**
 **        [0]: Sign bit, 11 exp bits (bias 1024), 4 fraction bits
 **        [1]: 16 more fraction bits
 **        [2]: 16 more fraction bits
@@ -1224,19 +1223,19 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -1256,14 +1255,14 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Round the intermediate value at bit position 53.
    ** ==========================================================================
    */
   else {
     _round(intermediate_value, 53, options);
 
-    /*    
+    /*
      ** Check for underflow.
      ** ========================================================================
      */
@@ -1273,7 +1272,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
 	RAISE(cvt_s_underflow);
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -1294,18 +1293,18 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /*          
+      /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 1024);
 
-      /*          
+      /*
        ** Make room for the exponent and the sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -1313,20 +1312,20 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
       intermediate_value[2] |= (intermediate_value[1] << 21);
       intermediate_value[1] >>= 11;
 
-      /*          
+      /*
        ** Clear implicit bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] &= 0x000FFFFFL;
 
-      /*          
+      /*
        ** OR in exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[1] |= (intermediate_value[U_R_EXP] << 20);
       intermediate_value[1] |= (intermediate_value[U_R_FLAGS] << 31);
 
-      /*          
+      /*
        ** Adjust for VAX 16 bit floating format.
        ** ----------------------------------------------------------------------
        */
@@ -1345,7 +1344,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
     memcpy(&((char *)output_value)[4], temp, 4);
   }
 #endif
-  /*      
+  /*
    ** Exit the routine.
    ** ==========================================================================
    */
@@ -1354,7 +1353,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, U_Int_32 options)
+				     CVT_VAX_H output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1364,7 +1363,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
 **      structure and to create a VAX h_floating number with those bits.
 **
 **      A VAX h_floating number in (16 bit words) looks like:
-** 
+**
 **        [0]: Sign bit, 15 exp bits (bias 16384)
 **        [1]: 16 fraction bits
 **        [2]: 16 more fraction bits
@@ -1409,19 +1408,19 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
 **=============================================================================
 */
 {
-  /*      
+  /*
    ** Local variable definition.
    ** ==========================================================================
    */
   CVT_STATUS return_status;
 
-  /*      
+  /*
    ** Initialization.
    ** ==========================================================================
    */
   return_status = cvt_s_normal;
 
-  /*      
+  /*
    ** Check for unusual situations in the intermediate value.
    ** ie. zero, infinity or invalid numbers.
    ** ==========================================================================
@@ -1441,14 +1440,14 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
     }
   }
 
-  /*      
+  /*
    ** Round the intermediate value at bit position 113.
    ** ==========================================================================
    */
   else {
     _round(intermediate_value, 113, options);
 
-    /*    
+    /*
      ** Check for underflow.
      ** ========================================================================
      */
@@ -1458,7 +1457,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
 	RAISE(cvt_s_underflow);
     }
 
-    /*    
+    /*
      ** Check for overflow.
      ** ========================================================================
      */
@@ -1479,18 +1478,18 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
       RAISE(cvt_s_overflow);
     }
 
-    /*    
+    /*
      ** Pack up the output value and return it.
      ** ========================================================================
      */
     else {
-      /*          
+      /*
        ** Adjust the bias of the exponent.
        ** ----------------------------------------------------------------------
        */
       intermediate_value[U_R_EXP] -= (U_R_BIAS - 16384);
 
-      /*          
+      /*
        ** Make room for exponent and sign bit.
        ** ----------------------------------------------------------------------
        */
@@ -1537,7 +1536,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, U_Int_32 options)
+				      CVT_IEEE_S output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -1762,7 +1761,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, U_Int_32 options)
+				      CVT_IEEE_T output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2040,7 +2039,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, U_Int_32 options)
+				      CVT_IEEE_X output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2337,7 +2336,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, U_Int_32 options)
+				     CVT_IBM_LONG output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2547,7 +2546,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, U_Int_32 options)
+				     CVT_IBM_SHORT output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2745,7 +2744,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, U_Int_32 options)
+				    CVT_CRAY output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -2938,7 +2937,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
-			   U_Int_32 round_bit_position, U_Int_32 options)
+			   U_Int_32 round_bit_position, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3179,7 +3178,7 @@ STATIC_ROUTINE void _round(UNPACKED_REAL intermediate_value,
 }
 
 STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options)
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3297,7 +3296,7 @@ STATIC_ROUTINE void unpack_vax_f(CVT_VAX_F input_value,
 }
 
 STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options)
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3427,7 +3426,7 @@ STATIC_ROUTINE void unpack_vax_d(CVT_VAX_D input_value,
 }
 
 STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options)
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3558,7 +3557,7 @@ STATIC_ROUTINE void unpack_vax_g(CVT_VAX_G input_value,
 }
 
 STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options)
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3687,7 +3686,7 @@ STATIC_ROUTINE void unpack_vax_h(CVT_VAX_H input_value,
 }
 
 STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL output_value, U_Int_32 options)
+				  UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -3875,7 +3874,7 @@ STATIC_ROUTINE void unpack_ieee_s(CVT_IEEE_S input_value,
 }
 
 STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL output_value, U_Int_32 options)
+				  UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4099,7 +4098,7 @@ STATIC_ROUTINE void unpack_ieee_t(CVT_IEEE_T input_value,
 }
 
 STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL output_value, U_Int_32 options)
+				  UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4411,7 +4410,7 @@ STATIC_ROUTINE void unpack_ieee_x(CVT_IEEE_X input_value,
 }
 
 STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options)
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4573,7 +4572,7 @@ STATIC_ROUTINE void unpack_ibm_l(CVT_IBM_LONG input_value,
 }
 
 STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL output_value, U_Int_32 options)
+				 UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **
@@ -4728,7 +4727,7 @@ STATIC_ROUTINE void unpack_ibm_s(CVT_IBM_SHORT input_value,
 
 }
 
-STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, U_Int_32 options)
+STATIC_ROUTINE void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, U_Int_32 options __attribute__ ((unused)))
 /*
 **=============================================================================
 **

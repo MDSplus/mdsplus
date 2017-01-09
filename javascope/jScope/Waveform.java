@@ -15,7 +15,7 @@ import java.awt.geom.*;
 public class Waveform 
     extends JComponent implements SignalListener{
 
-  public static int MAX_POINTS = 1000;
+  public static final int MAX_POINTS = 1000;
   static public boolean is_debug = false;
 
   public static final Color[] COLOR_SET = {
@@ -217,8 +217,7 @@ public class Waveform
              curr_f /= (double) 10, exp++) {
           ;
         }
-        out = (new Float(Math.round(curr_f * 100) / 100.)).toString() + "e" +
-            (new Integer(exp)).toString();
+        out = Float.toString((float)(Math.round(curr_f * 100) / 100.)) + "e" + Integer.toString(exp);
       }
       else
       if (abs_f < 1E-3 && abs_f > 0) {
@@ -226,13 +225,11 @@ public class Waveform
              exp--) {
           ;
         }
-        out = (new Float(curr_f)).toString() + "e" +
-            (new Integer(exp)).toString();
+        out = Float.toString((float)curr_f) + "e" + Integer.toString(exp);
       }
       else {
         int i;
-        out = (new Float(f)).toString();
-        out.trim();
+        out = Float.toString((float)f);
         if (f < 1. && f > -1.) { //remove last 0s
           for (i = out.length() - 1; out.charAt(i) == '0'; i--) {
             ;
@@ -244,7 +241,7 @@ public class Waveform
     else {
       out = ( (f > 0) ? "+" : "-") + "inf";
     }
-    out.trim();
+    out = out.trim();
     return out;
   }
 
@@ -797,14 +794,13 @@ public class Waveform
                      update_timestamp);
           grid = null;
           not_drawn = true;
-          //July 2014 in order to force resolution adjustment
-          try {
-            waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
-            setXlimits((double)MinXSignal(), (double)MaxXSignal());
-          }catch(Exception exc)
-          {
+            //July 2014 in order to force resolution adjustment
+            try {
+                waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
+                setXlimits(MinXSignal(), MaxXSignal());
+            } catch(Exception exc) {
               System.out.println(exc);
-          }
+            }
         }
 
         prev_point_x = prev_point_y = -1;
@@ -1530,7 +1526,7 @@ public class Waveform
       first_set_point = false;
 
       if (p != null) {
-        if(curr_point_y != Double.NaN)
+        if (!Double.isNaN(curr_point_y))
            p.y = wm.YPixel(curr_point_y, d);
 
         curr_x = wave_point_x;
@@ -2461,7 +2457,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
           unfreeze();
     }
     //GABRIELE AUGUST 2014
-    setXlimits((double)r.start_xs, (double)r.end_xs);
+    setXlimits(r.start_xs, r.end_xs);
     waveform_signal.setXLimits( r.start_xs, r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
@@ -2505,42 +2501,35 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   public void SetXScale(Waveform w) {
-    double xmin, xmax;
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
-
 
     waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     ReportChanges();
   }
 
   public void SetYScale(Waveform w) {
-    double ymin, ymax;
-
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
+
     waveform_signal.setYmin(w.waveform_signal.getYmin(), Signal.SIMPLE);
     waveform_signal.setYmax(w.waveform_signal.getYmax(), Signal.SIMPLE);
     ReportChanges();
   }
 
   public void SetXScaleAutoY(Waveform w) {
-
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
-    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
  
+    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     waveform_signal.AutoscaleY();
     ReportChanges();
   }
 
   public void ResetScales() {
-    if (waveform_signal == null) {
+    if (waveform_signal == null)
       return;
-    }
+
     waveform_signal.ResetScales();
     undo_zoom.clear();
     unfreeze();
@@ -2588,20 +2577,19 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     }
   }
 
-  public void performZoom() {
-    double start_xs, end_xs, start_ys, end_ys;
-    Dimension d = getWaveSize();
+    public void performZoom() {
+        if(wm == null)
+            return;
 
-    if(wm == null) return;
+        Dimension d = getWaveSize();
+        double start_xs = wm.XValue(start_x, d);
+        double end_xs = wm.XValue(end_x, d);
+        double start_ys = wm.YValue(start_y, d);
+        double end_ys = wm.YValue(end_y, d);
 
-    start_xs = wm.XValue(start_x, d);
-    end_xs = wm.XValue(end_x, d);
-    start_ys = wm.YValue(start_y, d);
-    end_ys = wm.YValue(end_y, d);
-
-    ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
-    ReportLimits(r, true);
-  }
+        ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
+        ReportLimits(r, true);
+    }
 
   public void SetTitle(String title) {
     this.title = title;
@@ -2742,13 +2730,12 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   {
       if(frames != null)
       {
-          ((Frames)frames).shiftImagePixel(bitShift, bitClip);
+          frames.shiftImagePixel(bitShift, bitClip);
           not_drawn = true;
           repaint();
       }
   }
 
-  
   public ColorMap getColorMap()
   {
       return frames.getColorMap();
@@ -2768,7 +2755,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
      not_drawn = true;
      repaint();
   }
-
 
   public synchronized void addWaveformListener(WaveformListener l) {
     if (l == null) {
@@ -2820,10 +2806,9 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   {
       waveform_signal.freeze();
   }
- void unfreeze()
-  {
-      waveform_signal.unfreeze();
-  }
-  
-  
+
+    void unfreeze()
+    {
+        waveform_signal.unfreeze();
+    }
 }

@@ -174,18 +174,18 @@ static int DualClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setu
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-static int GetEventNum(char *name, unsigned int *mask);
-static int GetOcta(int event_nid, unsigned int *events);
+//static int GetEventNum(char *name, unsigned int *mask);
+//static int GetOcta(int event_nid, unsigned int *events);
 static void OctaOr(unsigned int *src, unsigned int *dst);
 static int OctaFFS(unsigned int *src, int *next_bit);
 static int OctaIsSet(unsigned int *base, int bit);
-static int GetSetup(int chan_nid, DecoderSetup * regs);
-static int GetPseudoDevNid(struct descriptor_xd *pseudo_xd, int *dev_nid);
+//static int GetSetup(int chan_nid, DecoderSetup * regs);
+//static int GetPseudoDevNid(struct descriptor_xd *pseudo_xd, int *dev_nid);
 
-EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int mpb__decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
-  static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
+  //static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
   unsigned int events[5][4];
   unsigned int all_events[4] = { 0, 0, 0, 0 };
   unsigned char chan_flags = 0;
@@ -195,7 +195,7 @@ EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * s
   int event_bit;
   int event_ind;
   DecoderSetup regs[5];
-  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0 };	/* always low, start low */
+  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low */
   unsigned short cam_data;
   pio(2, 24, 0, "Disable Lam and code recognizer ");	/* Disable Lam and code recognizer */
   pio(0, 16, 0xFFEF, "Enable 16 bit buses ");	/* Enable 16 bit buses */
@@ -214,7 +214,7 @@ EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * s
         not at Terminal Count)
   ***************************/
   for (chan = 0; chan < 5; chan++) {
-    static DecoderSetup reg = { 4, 1, 0, 0, 0 };	/* always low, start low, count up */
+    static DecoderSetup reg = { 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low, count up */
     unsigned short step_cmd = 0xFFF0 | (chan + 1);
     unsigned short regv = *(unsigned short *)&reg;
     cam_data = chan + 0xFF01;
@@ -244,9 +244,9 @@ EXPORT int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct * s
     memset(events[chan], 0, sizeof(int) * 4);
     regs[chan] = channelOffRegs;
     if (TreeIsOn(dev_nid) & 1) {
-      unsigned short cam_data = chan + 1;
+      //unsigned short cam_data = chan + 1;
       int mode = -1;
-      int cstat = 0;
+      int cstat __attribute__ ((unused)) = 0;
       chan_flags |= (1 << chan);
       GetInt(0, setup->head_nid, chan, CHANNEL_MODE, &mode);
       switch (mode) {
@@ -383,7 +383,7 @@ static int OctaIsSet(unsigned int *base, int bit)
   int bit_number = bit % 32;
   return (base[longword] & (1 << bit_number)) ? 1 : 0;
 }
-
+/*
 static int GetEventNum(char *name, unsigned int *mask)
 {
   static DESCRIPTOR(expr, "BYTE_UNSIGNED(DATA(EVENT_LOOKUP($)))");
@@ -399,8 +399,8 @@ static int GetEventNum(char *name, unsigned int *mask)
   }
   return status & 1;
 }
-
-EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+*/
+EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "MPB__DECODER.uid" };
   Widget w;
@@ -423,7 +423,7 @@ EXPORT int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *
   return 1;
 }
 
-static void Reset(Widget w, XtPointer client_data, XmAnyCallbackStruct * cb)
+static void Reset(Widget w, XtPointer client_data __attribute__ ((unused)), XmAnyCallbackStruct * cb __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < 5; i++) {
@@ -437,7 +437,7 @@ static void Reset(Widget w, XtPointer client_data, XmAnyCallbackStruct * cb)
   }
 }
 
-static void Show(Widget w, Widget top, XmAnyCallbackStruct * cb)
+static void Show(Widget w, Widget top, XmAnyCallbackStruct * cb __attribute__ ((unused)))
 {
   int i;
   String text = malloc(4000);
@@ -829,11 +829,11 @@ static int GateGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_out
   int status;
   float dt;
   float period;
-  int pulses;
+  //int pulses;
   int source;
   static float dt1;
   static float dt2;
-  static float dt3;
+  //static float dt3;
   float delay;
   float duration;
   float pulse_time;
@@ -887,8 +887,8 @@ static int GateGetSetup(Widget w, int nid, int channel, DecoderSetup * setup_out
     static DESCRIPTOR_NID(snid_dsc, &snid);
     static DESCRIPTOR(single_exp, "$1 + $2");
     static DESCRIPTOR(double_exp, "$1 + [$2,$3]");
-    static DESCRIPTOR(output_exp,
-		      "PACK($1+$2,REPLICATE([1,0],0,SIZE($1)/2)) : PACK($1,REPLICATE([0,1],0,SIZE($1)/2)) : $3");
+    //static DESCRIPTOR(output_exp,
+    //		      "PACK($1+$2,REPLICATE([1,0],0,SIZE($1)/2)) : PACK($1,REPLICATE([0,1],0,SIZE($1)/2)) : $3");
     int event_nid;
     static DESCRIPTOR_FLOAT(dt1_dsc, &dt1);
     static DESCRIPTOR_FLOAT(dt2_dsc, &dt2);
@@ -923,11 +923,11 @@ static int DualClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setu
   int status;
   float dt;
   float period;
-  int pulses;
+  //int pulses;
   int source;
-  static float dt1;
-  static float dt2;
-  static float dt3;
+  //static float dt1;
+  //static float dt2;
+  //static float dt3;
   static float frequency_1;
   static float frequency_2;
   status = GetFloat(w, nid, channel, CHANNEL_P1, &frequency_1);
@@ -948,7 +948,7 @@ static int DualClockGetSetup(Widget w, int nid, int channel, DecoderSetup * setu
   setup.clock_source = source;
   setup.falling_edge = 0;
   setup.gating = GATE_NONE;
-  pulses = dt / period + .5;
+  //pulses = dt / period + .5;
   setup.load = 1 / frequency_1 / period / 2 + .5;
   setup.hold = 1 / frequency_2 / period / 2 + .5;
   if (setup.load == 0)

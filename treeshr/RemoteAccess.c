@@ -108,7 +108,7 @@ STATIC_THREADSAFE int HostListMutex_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t IOMutex;
 STATIC_THREADSAFE int IOMutex_initialized = 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-#if !defined(_WIN32)
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -365,12 +365,13 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
   return status;
 }
 
-int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size)
+int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)),
+		       int stack_size __attribute__ ((unused)))
 {
   return 1;
 }
 
-int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook)
+int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused)))
 {
   struct descrip ans = empty_ans;
   int status;
@@ -469,7 +470,7 @@ struct _FindNodeStruct {
   int *ptr;
 };
 
-int FindNodeEndRemote(PINO_DATABASE * dblist, void **ctx_inout)
+int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ctx_inout)
 {
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (ctx) {
@@ -519,7 +520,7 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out, v
   return status;
 }
 
-char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr)
+char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __attribute ((unused)))
 {
   struct descrip ans = empty_ans;
   char exp[64];
@@ -1245,9 +1246,9 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
     void *dptr;
     void *msg = 0;
     if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
-	&& (length >= sizeof(int))) {
+	&& ((size_t)length >= sizeof(int))) {
       ret = 0;
-      memcpy(&ret, dptr, (length > sizeof(ret)) ? sizeof(ret) : length);
+      memcpy(&ret, dptr, ((size_t)length > sizeof(ret)) ? sizeof(ret) : (size_t)length);
     }
     if (msg)
       free(msg);

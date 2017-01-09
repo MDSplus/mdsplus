@@ -34,7 +34,7 @@ static Boolean apply_proc(Widget w);
 static void pts_activate_proc(Widget w);
 static void pts_dismiss_proc(Widget w);
 
-EXPORT int l8210___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8210___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   pio(9, 0, 0);
@@ -49,7 +49,7 @@ static int ReadChannel(InStoreStruct * setup, int *max_samps_ptr, int chan, int 
 static int DevXToI(float start_time, float end_time, struct descriptor_dimension *dimension,
 		   int min_idx, int max_idx, int *start_idx, int *end_idx);
 
-EXPORT int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8210___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
@@ -86,12 +86,12 @@ EXPORT int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct * setup)
   int min_idx;
   int max_idx;
   int num_chans;
-  int vm_size;
+  //int vm_size;
   short *channel_data_ptr;
   int status;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
   float wait_time;
   stop_trig_nid = setup->head_nid + L8210_N_STOP_TRIG;
   ext_clock_in_nid = setup->head_nid + L8210_N_EXT_CLOCK_IN;
@@ -316,7 +316,7 @@ static int DevXToI(float start_time,
 
  Executable:                                                                  */
 
-EXPORT int l8210__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int l8210__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   Widget dbox;
   static String uids[] = { "L8210.uid", "L8210_HEADERS.uid" };
@@ -369,7 +369,7 @@ static void pts_activate_proc(Widget w)
   struct descriptor_xd *header_xd = XmdsNidOptionMenuGetXd(header_w);
   static char header[7];
   static struct descriptor header_dsc = { sizeof(header), DTYPE_T, CLASS_S, header };
-  int status = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
+  int status __attribute__ ((unused)) = TdiText((struct descriptor *)header_xd, &header_dsc MDS_END_ARG);
   int i;
   XmScaleGetValue(mems_w, &mems);
   L8210HeaderToPTS(header, (char *)&mems, pts);

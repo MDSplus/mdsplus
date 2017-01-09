@@ -149,7 +149,7 @@ static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
 static int current_on;
-static const char *asterisks = "****************************************************************";
+static const char *asterisks = "********************************************";
 #define MaxLogLines 4000
 #define EventEfn 1
 #define DOING 1
@@ -177,10 +177,9 @@ int main(int argc, String * argv)
 
   MrmType class;
   static XrmOptionDescRec options[] = { {"-monitor", "*monitor", XrmoptionSepArg, NULL} };
-  static XtResource resources[] =
-      { {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "CMOD_MONITOR"}
-  ,
-  {"images", "Images", XtRString, sizeof(String), sizeof(String), XtRString, ""}
+  static XtResource resources[] = {
+    {"monitor", "Monitor", XtRString, sizeof(String), 0, XtRString, "ACTION_MONITOR"},
+    {"images",  "Images",  XtRString, sizeof(String), sizeof(String), XtRString, ""}
   };
   MrmHierarchy drm_hierarchy;
   struct {
@@ -217,7 +216,7 @@ int main(int argc, String * argv)
   return 0;
 }
 
-static void Exit(Widget w, int *tag, XtPointer callback_data)
+static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
 {
   exit(0);
 }
@@ -236,7 +235,8 @@ static Widget FindTop(Widget w)
   return w;
 }
 
-static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb)
+static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
+			  XmListCallbackStruct * cb __attribute__ ((unused)))
 {
   static ServerList *server;
   int idx;
@@ -250,7 +250,7 @@ static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb)
   }
 }
 
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb)
+static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused)))
 {
   static int operation;
   static Widget dialog = NULL;
@@ -320,7 +320,7 @@ static void SetKillSensitive(Widget top)
   }
 }
 
-static void ConfirmServerAbort(Widget w, void *tag, void *cb)
+static void ConfirmServerAbort(Widget w, void *tag __attribute__ ((unused)), void *cb __attribute__ ((unused)))
 {
   int *op_ptr;
   int operation;
@@ -354,7 +354,7 @@ static void ConfirmServerAbort(Widget w, void *tag, void *cb)
   }
 }
 
-static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct * cb)
+static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonCallbackStruct * cb)
 {
   Widget dw = 0;
   switch (*tag) {
@@ -478,7 +478,7 @@ static void QEvent(LinkedEvent * ev)
   unlock_event_queue();
 }
 
-static void MessageAst(int dummy, char *reply)
+static void MessageAst(int dummy __attribute__ ((unused)), char *reply)
 {
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = 0;
@@ -549,8 +549,7 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
   int items;
   if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0))
     return;
-  sprintf(text, "%s %12d %-10.10s %-32.32s %-20.20s %s", time, current_shot, mode, status, server,
-	  path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
     XmListAddItemUnselected(LogWidget, item, 0);
@@ -593,7 +592,7 @@ static void PutError(char *time, String mode, char *status, char *server, char *
 
   if (ErrorWidgetOff)
     return;
-  sprintf(text, "%s %12d %s %-36.36s %-20.20s %s", time, current_shot, mode, status, server, path);
+  sprintf(text, "%s %12d %-10.10s %-44.44s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   XmListAddItemUnselected(ErrorWidget, item, 0);
   XmStringFree(item);

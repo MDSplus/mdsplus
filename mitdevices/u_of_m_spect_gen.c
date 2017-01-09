@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "u_of_m_spect_gen.h"
-EXPORT int u_of_m_spect__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int u_of_m_spect__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "U_OF_M_SPECT");
@@ -97,7 +97,7 @@ EXPORT int u_of_m_spect__add(struct descriptor *name_d_ptr, struct descriptor *d
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int u_of_m_spect__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int u_of_m_spect__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 			    struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -160,7 +160,7 @@ extern int u_of_m_spect___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int u_of_m_spect__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int u_of_m_spect__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[2];
@@ -191,7 +191,7 @@ EXPORT int u_of_m_spect__init(struct descriptor *nid_d_ptr, struct descriptor *m
 extern int u_of_m_spect___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int u_of_m_spect__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int u_of_m_spect__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];

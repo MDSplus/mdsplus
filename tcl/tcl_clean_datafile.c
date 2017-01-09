@@ -21,7 +21,7 @@ extern int TdiExecute();
 	/****************************************************************
 	 * TclCleanDatafile:
 	 ****************************************************************/
-EXPORT int TclCleanDatafile(void *ctx, char **error, char **output)
+EXPORT int TclCleanDatafile(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts;
   int shot;

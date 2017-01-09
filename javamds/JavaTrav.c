@@ -96,7 +96,7 @@ static void RaiseException(JNIEnv * env, char *msg, int status)
   /* //free(msg); */
 }
 
-JNIEXPORT jint JNICALL Java_Database_create(JNIEnv * env, jobject obj, jint shot) {
+JNIEXPORT jint JNICALL Java_Database_create(JNIEnv * env, jobject obj __attribute__ ((unused)), jint shot) {
   int status;
   //jfieldID name_fid;
   //jclass cls = (*env)->GetObjectClass(env, obj);
@@ -177,7 +177,7 @@ JNIEXPORT jint JNICALL Java_Database_openNew(JNIEnv * env, jobject obj) {
 
 }
 
-JNIEXPORT void JNICALL Java_Database_write(JNIEnv * env, jobject obj, jint context) {
+JNIEXPORT void JNICALL Java_Database_write(JNIEnv * env, jobject obj, jint context __attribute__ ((unused))) {
   int status;
   jfieldID name_fid, shot_fid;
   jclass cls = (*env)->GetObjectClass(env, obj);
@@ -196,7 +196,7 @@ JNIEXPORT void JNICALL Java_Database_write(JNIEnv * env, jobject obj, jint conte
     RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT void JNICALL Java_Database_close(JNIEnv * env, jobject obj, jint context)
+JNIEXPORT void JNICALL Java_Database_close(JNIEnv * env, jobject obj, jint context __attribute__ ((unused)))
 {
   int status = 1;
 
@@ -217,7 +217,7 @@ JNIEXPORT void JNICALL Java_Database_close(JNIEnv * env, jobject obj, jint conte
     RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT void JNICALL Java_Database_quit(JNIEnv * env, jobject obj, jint context)
+JNIEXPORT void JNICALL Java_Database_quit(JNIEnv * env, jobject obj, jint context __attribute__ ((unused)))
 {
   int status;
   jfieldID name_fid, shot_fid;
@@ -239,7 +239,7 @@ JNIEXPORT void JNICALL Java_Database_quit(JNIEnv * env, jobject obj, jint contex
 }
 
 JNIEXPORT jobject JNICALL Java_Database_getData
-    (JNIEnv * env, jobject obj, jobject jnid, jint context)
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused)))
 {
 
   int nid, status;
@@ -288,7 +288,7 @@ printf("Parte DescripToObject\n");
 }
 
 JNIEXPORT jobject JNICALL Java_Database_evaluateData
-    (JNIEnv * env, jobject obj, jobject jnid, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, status;
 
   jfieldID nid_fid;
@@ -320,7 +320,7 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateData
 }
 
 JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
-    (JNIEnv * env, jobject obj, jobject jdata, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jdata, jint context __attribute__ ((unused))) {
   int status;
   jobject ris;
   EMPTYXD(xd);
@@ -340,7 +340,7 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
 }
 
 JNIEXPORT void JNICALL Java_Database_putRow
-    (JNIEnv * env, jobject obj, jobject jnid, jobject jdata, jlong time, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jobject jdata, jlong time, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls;
@@ -364,7 +364,7 @@ JNIEXPORT void JNICALL Java_Database_putRow
 }
 
 JNIEXPORT void JNICALL Java_Database_putData
-    (JNIEnv * env, jobject obj, jobject jnid, jobject jdata, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jobject jdata, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls;
@@ -386,11 +386,11 @@ JNIEXPORT void JNICALL Java_Database_putData
     RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj, jobject jnid, jint jflags) {
+JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint jflags) {
     int nid, status;
     int flags = (int)jflags;
     NCI_ITM itmlst[] =
-    { {0, NciSET_FLAGS, (unsigned char *)&flags, 0}, {0, NciEND_OF_LIST} };
+      { {0, NciSET_FLAGS, (unsigned char *)&flags, 0}, {0, NciEND_OF_LIST, 0, 0} };
     jfieldID nid_fid;
     jclass cls = (*env)->GetObjectClass(env, jnid);
     nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
@@ -400,11 +400,11 @@ JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj, jobject
         RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj, jobject jnid, jint jflags) {
+JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint jflags) {
     int nid, status;
     int flags = (int)jflags;
     NCI_ITM itmlst[] =
-    { {0, NciCLEAR_FLAGS, (unsigned char *)&flags, 0}, {0, NciEND_OF_LIST} };
+      { {0, NciCLEAR_FLAGS, (unsigned char *)&flags, 0}, {0, NciEND_OF_LIST, 0, 0} };
     jfieldID nid_fid;
     jclass cls = (*env)->GetObjectClass(env, jnid);
     nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
@@ -414,7 +414,7 @@ JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj, jobje
         RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj, jobject jnid) {
+JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
@@ -436,7 +436,7 @@ JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj, jobject
 }
 
 JNIEXPORT jobject JNICALL Java_Database_getInfo
-    (JNIEnv * env, jobject obj, jobject jnid, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
@@ -507,7 +507,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
-JNIEXPORT jstring JNICALL Java_Database_getOriginalPartName(JNIEnv * env, jobject obj, jobject jnid) {
+JNIEXPORT jstring JNICALL Java_Database_getOriginalPartName(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid) {
   static char part_name[512];
   static int part_name_len;
   int nid, status;
@@ -528,7 +528,7 @@ JNIEXPORT jstring JNICALL Java_Database_getOriginalPartName(JNIEnv * env, jobjec
 }
 
 JNIEXPORT void JNICALL Java_Database_setTags
-    (JNIEnv * env, jobject obj, jobject jnid, jobjectArray jtags, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jobjectArray jtags, jint context __attribute__ ((unused))) {
   int nid, status, n_tags, i;
   jobject jtag;
   const char *tag;
@@ -557,7 +557,7 @@ JNIEXPORT void JNICALL Java_Database_setTags
 }
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getTags
-    (JNIEnv * env, jobject obj, jobject jnid, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, n_tags, i;
   jobject jtag;
   jobjectArray jtags;
@@ -588,7 +588,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
 }
 
 JNIEXPORT void JNICALL Java_Database_setSubtree
-    (JNIEnv * env, jobject obj, jobject jnid, jint context)
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused)))
 {
 
   int nid, status;
@@ -610,7 +610,7 @@ JNIEXPORT void JNICALL Java_Database_setSubtree
 }
 
 JNIEXPORT void JNICALL Java_Database_renameNode
-    (JNIEnv * env, jobject obj, jobject jnid, jstring jname, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jstring jname, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
@@ -624,7 +624,7 @@ JNIEXPORT void JNICALL Java_Database_renameNode
 }
 
 JNIEXPORT jobject JNICALL Java_Database_addNode
-    (JNIEnv * env, jobject obj, jstring jname, jint usage, jint context)
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jstring jname, jint usage, jint context __attribute__ ((unused)))
 {
 
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
@@ -647,7 +647,7 @@ JNIEXPORT jobject JNICALL Java_Database_addNode
 }
 
 JNIEXPORT jobjectArray JNICALL Java_Database_startDelete
-    (JNIEnv * env, jobject obj, jobjectArray jnids, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobjectArray jnids, jint context __attribute__ ((unused))) {
   int nid, len, i, num_to_delete;
   jfieldID nid_fid;
   jmethodID constr;
@@ -676,12 +676,12 @@ JNIEXPORT jobjectArray JNICALL Java_Database_startDelete
   return jout_nids;
 }
 
-JNIEXPORT void JNICALL Java_Database_executeDelete(JNIEnv * env, jobject obj, jint context) {
+JNIEXPORT void JNICALL Java_Database_executeDelete(JNIEnv * env __attribute__ ((unused)), jobject obj __attribute__ ((unused)), jint context __attribute__ ((unused))) {
   TreeDeleteNodeExecute();
 }
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getSons
-    (JNIEnv * env, jobject obj, jobject jnid, jint context)
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused)))
 {
   int nid, status, i;
   jfieldID nid_fid;
@@ -735,7 +735,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
 #define MAX_NODES 5000
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getWild
-    (JNIEnv * env, jobject obj, jint usage_mask, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jint usage_mask, jint context __attribute__ ((unused))) {
   int i, num_nids = 0;
   void *ctx = 0;
   int nids[MAX_NODES];
@@ -765,7 +765,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getWild
 }
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
-    (JNIEnv * env, jobject obj, jobject jnid, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, status, i;
   jfieldID nid_fid;
   jobject jnids;
@@ -790,16 +790,16 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
     return NULL;
   }
 
-  if (num_nids > 0) {
-    nids = (int *)malloc(num_nids * sizeof(nid));
-    nci_list2[0].buffer_length = sizeof(int) * num_nids;
-    nci_list2[0].pointer = nids;
-    status = TreeGetNci(nid, nci_list2);
-    if (!(status & 1))
-    {
-      RaiseException(env, MdsGetMsg(status), status);
-      return NULL;
-    }
+  if (num_nids == 0)
+    return NULL;
+
+  nids = (int *)malloc(num_nids * sizeof(nid));
+  nci_list2[0].buffer_length = sizeof(int) * num_nids;
+  nci_list2[0].pointer = nids;
+  status = TreeGetNci(nid, nci_list2);
+  if (!(status & 1)) {
+    RaiseException(env, MdsGetMsg(status), status);
+    return NULL;
   }
   constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
@@ -808,14 +808,13 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
     jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     (*env)->SetObjectArrayElement(env, jnids, i, jnid);
   }
-  if (num_nids > 0)
-    free(nids);
+  free(nids);
 
 /* //printf("\nEnd getMembers");*/
   return jnids;
 }
 
-JNIEXPORT jboolean JNICALL Java_Database_isOn(JNIEnv * env, jobject obj, jobject jnid, jint context) {
+JNIEXPORT jboolean JNICALL Java_Database_isOn(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
@@ -828,7 +827,7 @@ JNIEXPORT jboolean JNICALL Java_Database_isOn(JNIEnv * env, jobject obj, jobject
 }
 
 JNIEXPORT void JNICALL Java_Database_setOn
-    (JNIEnv * env, jobject obj, jobject jnid, jboolean on, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jboolean on, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
@@ -849,7 +848,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
 }
 
 JNIEXPORT jobject JNICALL Java_Database_resolve
-    (JNIEnv * env, jobject obj, jobject jpath_data, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jpath_data, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID path_fid;
   jclass cls = (*env)->GetObjectClass(env, jpath_data);
@@ -875,7 +874,7 @@ JNIEXPORT jobject JNICALL Java_Database_resolve
 }
 
 JNIEXPORT void JNICALL Java_Database_setDefault
-    (JNIEnv * env, jobject obj, jobject jnid, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
 
   int nid, status;
   jfieldID nid_fid;
@@ -887,7 +886,7 @@ JNIEXPORT void JNICALL Java_Database_setDefault
     RaiseException(env, MdsGetMsg(status), status);
 }
 
-JNIEXPORT jobject JNICALL Java_Database_getDefault(JNIEnv * env, jobject obj, jint context) {
+JNIEXPORT jobject JNICALL Java_Database_getDefault(JNIEnv * env, jobject obj __attribute__ ((unused)), jint context __attribute__ ((unused))) {
   jclass cls;
   jmethodID constr;
   jvalue args[1];
@@ -905,7 +904,7 @@ JNIEXPORT jobject JNICALL Java_Database_getDefault(JNIEnv * env, jobject obj, ji
 }
 
 JNIEXPORT jobject JNICALL Java_Database_addDevice
-    (JNIEnv * env, jobject obj, jstring jpath, jstring jmodel, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jstring jpath, jstring jmodel, jint context __attribute__ ((unused))) {
   int nid, status;
   const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
   const char *model = (*env)->GetStringUTFChars(env, jmodel, 0);
@@ -1191,7 +1190,7 @@ EXPORT int doAction(int nid)
   return status;
 }
 
-JNIEXPORT jint JNICALL Java_Database_doAction(JNIEnv * env, jobject obj, jobject jnid, jint context) {
+JNIEXPORT jint JNICALL Java_Database_doAction(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, status;
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
@@ -1242,7 +1241,7 @@ static char *MdsGetString(char *in)
 }
 
 JNIEXPORT void JNICALL Java_Database_doDeviceMethod
-    (JNIEnv * env, jobject obj, jobject jnid, jstring jmethod, jint context) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jstring jmethod, jint context __attribute__ ((unused))) {
   int status, nid;
   jfieldID nid_fid;
   const char *method;
@@ -1287,13 +1286,13 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
   }
 }
 
-JNIEXPORT jlong JNICALL Java_Database_saveContext(JNIEnv * env, jobject obj) {
+JNIEXPORT jlong JNICALL Java_Database_saveContext(JNIEnv * env __attribute__ ((unused)), jobject obj __attribute__ ((unused))) {
   void *context = TreeSaveContext();
 /*//	printf("Saved context: %x\n", context);*/
-  return (long)context;
+  return *(jlong*)&context;
 }
 
-JNIEXPORT void JNICALL Java_Database_restoreContext(JNIEnv * env, jobject obj, void *context) {
+JNIEXPORT void JNICALL Java_Database_restoreContext(JNIEnv * env __attribute__ ((unused)), jobject obj __attribute__ ((unused)), void *context) {
   //char **ctx = (char **)context;
 
   if (context == 0)
@@ -1302,7 +1301,7 @@ JNIEXPORT void JNICALL Java_Database_restoreContext(JNIEnv * env, jobject obj, v
   TreeRestoreContext((void *)context);
 }
 
-JNIEXPORT jint JNICALL Java_Database_getCurrentShot(JNIEnv * env, jobject obj, jstring jname) {
+JNIEXPORT jint JNICALL Java_Database_getCurrentShot(JNIEnv * env, jobject obj __attribute__ ((unused)), jstring jname) {
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   int shot = TreeGetCurrentShotId((char *)name);
   (*env)->ReleaseStringUTFChars(env, jname, name);
@@ -1310,19 +1309,19 @@ JNIEXPORT jint JNICALL Java_Database_getCurrentShot(JNIEnv * env, jobject obj, j
 }
 
 JNIEXPORT void JNICALL Java_Database_setCurrentShot
-    (JNIEnv * env, jobject obj, jstring jname, jint jshot) {
+(JNIEnv * env, jobject obj __attribute__ ((unused)), jstring jname, jint jshot) {
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   TreeSetCurrentShotId((char *)name, (int)jshot);
   (*env)->ReleaseStringUTFChars(env, jname, name);
 }
 
-JNIEXPORT void JNICALL Java_Database_setEvent(JNIEnv * env, jobject obj, jstring jname) {
+JNIEXPORT void JNICALL Java_Database_setEvent(JNIEnv * env, jobject obj __attribute__ ((unused)), jstring jname) {
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   MDSEvent((char *)name, 0, 0);
   (*env)->ReleaseStringUTFChars(env, jname, name);
 }
 
-JNIEXPORT jstring JNICALL Java_Database_getMdsMessage(JNIEnv * env, jobject obj, jint status) {
+JNIEXPORT jstring JNICALL Java_Database_getMdsMessage(JNIEnv * env, jobject obj __attribute__ ((unused)), jint status) {
   char *msg = MdsGetMsg(status);
   return (*env)->NewStringUTF(env, msg);
 }

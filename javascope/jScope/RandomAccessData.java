@@ -54,7 +54,7 @@ public void readFully(byte data[]) {
  */
 int readInt() throws java.io.IOException {
 	int x;
-	int pos = (int)position;
+	int pos = position;
 	x = (short)(buffer[pos] & 0xFF);
 	x <<= 8;
 	x |= (short)(buffer[pos+1] & 0xFF);
@@ -72,7 +72,7 @@ int readInt() throws java.io.IOException {
  */
 short readShort() throws java.io.IOException {
 	short x;
-	int pos = (int)position;
+	int pos = position;
 	x = (short)(buffer[pos] & 0xFF);
 	x <<= 8;
 	x |= (short)(buffer[pos+1] & 0xFF);

@@ -1,7 +1,6 @@
 
 import sys
 import socket
-import pytz
 import datetime
 
 import MDSplus
@@ -46,20 +45,19 @@ def bnc_report (ok) : return ' . . . OK' if ok else ' . . . Not OK'
 
 class BNC845 (MDSplus.Device) :
 	"""Control functions for the BNC generator supplied by FZ Juelich, based on BNCCommunication.py by A. Kraemer-Flecken (a.kraemer-flecken@fz-juelich.de).  Can be tested with script sim_bncgen from the MDSplusW7X project."""
-
-	parts=[{'path': ':HOST',         'type': 'TEXT',    'value': '192.168.0.100'},
-	       {'path': ':PORT',         'type': 'NUMERIC', 'value': 18},
-	       {'path': ':TRIG_SRC',     'type': 'TEXT',    'value': 'external'},
-	       {'path': ':TRIG_SLOPE',   'type': 'TEXT',    'value': 'pos'},
-	       {'path': ':BLANKING',     'type': 'NUMERIC', 'value': 0}, # on/off
-	       {'path': ':POWER',        'type': 'NUMERIC', 'value': 10}, # dBm
-	       {'path': ':OFFSET',       'type': 'NUMERIC', 'value': 30}, # MHz
-	       {'path': ':SWEEPS',       'type': 'NUMERIC', 'value': 3},
-	       {'path': ':STEPS',        'type': 'NUMERIC', 'value': MDSplus.Float64Array([[5000, 23.2], [10000, 23.4], [15000, 23.6], [20000, 23.8], [25000, 24.0], [30000, 24.2], [35000, 24.4], [40000, 24.6], [45000, 24.8]])}, # ms, GHz
-	       {'path': ':DEINI_ACTION', 'type': 'ACTION',  'valueExpr': "Action(Dispatch('MAIN_SERVER', 'DEINIT', 1, None), Method(None, 'off',  head))"},
-	       {'path': ':INIT_ACTION',  'type': 'ACTION',  'valueExpr': "Action(Dispatch('MAIN_SERVER', 'INIT',   1, None), Method(None, 'init', head))"},
-	       {'path': ':INIT_LOG',     'type': 'TEXT'},
-	       {'path': ':INIT_CONFIG',  'type': 'TEXT'}]
+	parts=[{'path': ':HOST',         'type': 'TEXT',    'options':('no_write_shot',), 'value': '192.168.0.100'},
+	       {'path': ':PORT',         'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 18},
+	       {'path': ':TRIG_SRC',     'type': 'TEXT',    'options':('no_write_shot',), 'value': 'external'},
+	       {'path': ':TRIG_SLOPE',   'type': 'TEXT',    'options':('no_write_shot',), 'value': 'pos'},
+	       {'path': ':BLANKING',     'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 0}, # on/off
+	       {'path': ':POWER',        'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 10}, # dBm
+	       {'path': ':OFFSET',       'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 30}, # MHz
+	       {'path': ':SWEEPS',       'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 3},
+	       {'path': ':STEPS',        'type': 'NUMERIC', 'options':('no_write_shot',), 'value': MDSplus.Float64Array([[5000, 23.2], [10000, 23.4], [15000, 23.6], [20000, 23.8], [25000, 24.0], [30000, 24.2], [35000, 24.4], [40000, 24.6], [45000, 24.8]])}, # ms, GHz
+	       {'path': ':DEINI_ACTION', 'type': 'ACTION',  'options':('no_write_shot',), 'valueExpr': "Action(Dispatch('MAIN_SERVER', 'DEINIT', 1, None), Method(None, 'off',  head))"},
+	       {'path': ':INIT_ACTION',  'type': 'ACTION',  'options':('no_write_shot',), 'valueExpr': "Action(Dispatch('MAIN_SERVER', 'INIT',   1, None), Method(None, 'init', head))"},
+	       {'path': ':INIT_LOG',     'type': 'TEXT',    'options':('no_write_model','write_once')},
+	       {'path': ':INIT_CONFIG',  'type': 'TEXT',    'options':('no_write_model','write_once')}]
 
 	def init (self, disable_rf=None) :
 
@@ -102,7 +100,7 @@ class BNC845 (MDSplus.Device) :
 
 		#### program BNC ####
 
-		log = str(datetime.datetime.now(pytz.UTC)) + '\n' # first line of INIT_LOG
+		log = str(datetime.datetime.utcnow()) + '\n' # first line of INIT_LOG
 
 		(sock, remote_ip) = bnc_connect(host, port)
 		log += 'Connected to %s (%s)\n' % (host, remote_ip)

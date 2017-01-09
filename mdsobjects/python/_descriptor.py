@@ -15,7 +15,6 @@ _mdsclasses=_mimport('_mdsclasses')
 _data=_mimport('mdsdata')
 _ident=_mimport('ident')
 _apd=_mimport('apd')
-_compound=_mimport('compound')
 _mdsshr=_mimport('_mdsshr')
 _ver=_mimport('version')
 _array=_mimport('mdsarray')
@@ -554,14 +553,18 @@ class descriptor_xd(_C.Structure):
           return None
         else:
           return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
-
     value=property(_getValue)
 
+    def free(self):
+        if self.pointer:
+            _mdsshr.MdsFree1Dx(self)
+            self.pointer = None
+    def __enter__(self):
+        return self
+    def __exit__(self,*args):
+        self.free()
     def __del__(self):
-        try:
-          _mdsshr.MdsFree1Dx(self)
-        except:
-          pass
+        self.free()
 
 class descriptor_r(_C.Structure):
     if _os.name=='nt' and _struct.calcsize("P")==8:
@@ -760,3 +763,4 @@ class descriptor_a(_C.Structure):
 _tdishr=_mimport('_tdishr')
 _treenode=_mimport('treenode')
 _tree=_mimport('tree')
+_compound=_mimport('compound')

@@ -52,7 +52,7 @@ struct setup {
   short int mem_size;
 };
 
-EXPORT int l6810a___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+EXPORT int l6810a___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in_struct)
 {
   int status;
   int dummy;
@@ -117,7 +117,7 @@ EXPORT int l6810a___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
   return 1;
 }
 
-EXPORT int l6810a___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
+EXPORT int l6810a___trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), InTriggerStruct * in_struct)
 {
   int status;
   pio(25, 0, 0, 1);		/* Trigger the module */
@@ -139,7 +139,7 @@ EXPORT int l6810a___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_s
 
 static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr);
 
-EXPORT int l6810a___store(struct descriptor *niddsc_ptr, InStoreStruct * in_struct)
+EXPORT int l6810a___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * in_struct)
 {
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) return status;
@@ -183,7 +183,7 @@ EXPORT int l6810a___store(struct descriptor *niddsc_ptr, InStoreStruct * in_stru
   int status;
   int chan;
   int samples_to_read;
-  int i;
+  //int i;
 
   int min_idx;
   int max_idx;
