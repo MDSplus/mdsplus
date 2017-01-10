@@ -343,38 +343,28 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
         Compiler errors get special help.
         ********************************/
   if (opcode == OpcCompile && message->length < MAXMESS) {
-    int len = TdiRefZone.a_end-TdiRefZone.a_begin;
-    char *cur = MINMAX(TdiRefZone.a_begin, TdiRefZone.a_cur, TdiRefZone.a_end);
-    int npre = MINMAX(0,MINMAX(0, TdiRefZone.l_ok, MAXLINE),len-2);
-    int nbody = MINMAX(0,cur - TdiRefZone.a_begin - npre,len-npre-1);
-    int npost = MINMAX(0,TdiRefZone.a_end - cur,len-npre-nbody-1);
-    nbody = MINMAX(0, nbody, MAXLINE);
-    npost = MINMAX(0, npost, MAXLINE);
-    if (npre + nbody + npost > MAXLINE)
-      npre = 0;
-    if (nbody + npost > MAXLINE) {
-      npre = MAXLINE - nbody - npost;
-      if ((int)npre < 0)
-	npre = 0;
-      if (nbody + npost > MAXLINE)
-	npost = MINMAX(0, npost, MAXFRAC);
-      if (nbody + npost > MAXLINE)
-	nbody = MAXLINE - npost;
-    }
-    {
-      struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
-      struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
-      struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
-      pre.length = (unsigned short)npre;
-      pre.pointer = npre>0 ? cur - nbody - npre : NULL;
-      body.length = (unsigned short)nbody;
-      body.pointer = nbody>0 ? cur - nbody : NULL;
-      post.length = (unsigned short)npost;
-      post.pointer = cur;
-      StrConcat((struct descriptor *)message,
-      		(struct descriptor *)message, &compile_err, &pre, &hilite,
-		&body, &hilite, &post, &newline MDS_END_ARG);
-    }
+    struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
+    struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
+    struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
+    // b------x----c----e
+    // '-l_ok-'-xc-'-ce-'
+    char *b = TdiRefZone.a_begin;
+    char *e = TdiRefZone.a_end;
+    char *c = MINMAX(b, TdiRefZone.a_cur, e);
+    char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
+    body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
+    body.pointer = body.length>0 ? x : NULL;
+    post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
+    if (body.length + post.length > MAXLINE)
+        post.length = MINMAX(0, post.length, MAXFRAC);
+    post.pointer = post.length>0 ? c : NULL;
+    pre.length = (unsigned short)MINMAX(0, x-b, MAXLINE);
+    if (pre.length + body.length + post.length > MAXLINE)
+        pre.length = 0;
+    pre.pointer = pre.length>0 ? x - pre.length : NULL;
+    StrConcat((struct descriptor *)message,
+              (struct descriptor *)message, &compile_err, &pre, &hilite,
+              &body, &hilite, &post, &newline MDS_END_ARG);
   }
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
