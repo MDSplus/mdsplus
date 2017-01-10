@@ -780,7 +780,6 @@ ENABLE_TESTS_TRUE
 ENABLE_TESTS
 HAVE_WINEPATH
 HAVE_WINEBOOT
-NOSETESTS
 ENABLE_SANITIZE_LIBPATH
 ENABLE_SANITIZE_OPTIONS
 ENABLE_SANITIZE
@@ -3476,7 +3475,7 @@ export SHELL
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker:
+docker: ##@docker get docker build help
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -3504,24 +3503,25 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect:
+inspect: ##@docker get container info (use: "make docker inspect")
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start:
+start: ##@docker run the docker container (use: "make docker start")
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
 	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
-stop:
+stop:  ##@docker stop and remove the docker container (use: "make docker stop")
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell:
+shell: ##@docker launch a shell inside the container (use: "make docker shell")
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
 	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+
 
 endif
 
@@ -3735,7 +3735,7 @@ export SHELL
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker:
+docker: ##@docker get docker build help
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -3763,24 +3763,25 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect:
+inspect: ##@docker get container info (use: "make docker inspect")
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start:
+start: ##@docker run the docker container (use: "make docker start")
 	@echo "Starting docker container:";
 	docker run -d -it --entrypoint=\${SHELL} -e USER=\${USER} -e DISPLAY=\${DISPLAY} -e http_proxy=\${http_proxy} -e https_proxy=\${https_proxy} -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v \${abs_top_srcdir}:\${abs_top_srcdir} -v \${abs_top_builddir}:\${abs_top_builddir} -v \${user_home}:\${user_home} -w \${abs_top_builddir} --name \${DOCKER_CONTAINER} \${DOCKER_IMAGE};
 	docker exec --user root \${DOCKER_CONTAINER} \${SHELL} -c " echo ${user_entry} >> /etc/passwd; echo ${group_entry} >> /etc/group; ";
 
-stop:
+stop:  ##@docker stop and remove the docker container (use: "make docker stop")
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell:
+shell: ##@docker launch a shell inside the container (use: "make docker shell")
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
 	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+
 
 endif
 
@@ -4628,7 +4629,7 @@ ifndef SELFHELP_FUNC
 SELFHELP_FUNC = \\\\
     %help; \\\\
     while(<>) { \\\\
-	if(/^([a-z0-9_-]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	if(/^([a-zA-Z0-9_-]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
 	    push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); \\\\
 	} \\\\
     }; \\\\
@@ -14211,178 +14212,8 @@ fi
  abs_srcdir=$(cd ${srcdir}; pwd)
 
 
-  # Extract the first word of "nosetests", so it can be a program name with args.
-set dummy nosetests; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_NOSETESTS+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$NOSETESTS"; then
-  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_NOSETESTS="nosetests"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-NOSETESTS=$ac_cv_prog_NOSETESTS
-if test -n "$NOSETESTS"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
-$as_echo "$NOSETESTS" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  if test x"${NOSETESTS}" != x""; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"python-nose not found\"" >&5
-$as_echo "$as_me: WARNING: \"python-nose not found\"" >&2;}
-fi
-
-
-
-
-    if test -z $PYTHON;
-    then
-        if test -z "";
-        then
-            PYTHON="python3"
-        else
-            PYTHON=""
-        fi
-    fi
-    PYTHON_NAME=`basename $PYTHON`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
-$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
-    $PYTHON -c "import tap" 2>/dev/null
-    if test $? -eq 0;
-    then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        eval HAVE_PYMOD_TAP=yes
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        eval HAVE_PYMOD_TAP=no
-        #
-        if test -n ""
-        then
-            as_fn_error $? "failed to find required module tap" "$LINENO" 5
-            exit 1
-        fi
-    fi
-
-
-
-    if test -z $PYTHON;
-    then
-        if test -z "";
-        then
-            PYTHON="python3"
-        else
-            PYTHON=""
-        fi
-    fi
-    PYTHON_NAME=`basename $PYTHON`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking $PYTHON_NAME module: tap" >&5
-$as_echo_n "checking $PYTHON_NAME module: tap... " >&6; }
-    $PYTHON -c "import tap" 2>/dev/null
-    if test $? -eq 0;
-    then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        eval HAVE_PYMOD_TAP=yes
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        eval HAVE_PYMOD_TAP=no
-        #
-        if test -n ""
-        then
-            as_fn_error $? "failed to find required module tap" "$LINENO" 5
-            exit 1
-        fi
-    fi
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking python class tap.TAPTestRunner" >&5
-$as_echo_n "checking python class tap.TAPTestRunner... " >&6; }
-        if  test "$PYTHON" == : ; then :
-  as_fn_error $? "no python executable was found" "$LINENO" 5; as_fn_exit $?
-fi
-
-        $PYTHON -c "import inspect,tap; exit(inspect.isclass(tap.TAPTestRunner) != True);" 2>/dev/null
-        if test $? -eq 0; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; eval have_tappy="yes"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; };  eval
-fi
-
-  # Extract the first word of "nosetests", so it can be a program name with args.
-set dummy nosetests; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_NOSETESTS+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$NOSETESTS"; then
-  ac_cv_prog_NOSETESTS="$NOSETESTS" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_NOSETESTS="nosetests"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-NOSETESTS=$ac_cv_prog_NOSETESTS
-if test -n "$NOSETESTS"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $NOSETESTS" >&5
-$as_echo "$NOSETESTS" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  if test x"${have_tappy}" == x"yes" -a x"${NOSETESTS}" != x""; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Tap plugin for python-nose not found\"" >&5
-$as_echo "$as_me: WARNING: \"Tap plugin for python-nose not found\"" >&2;}
-fi
-
-
  as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
  as_fn_append PY_LOG_FLAGS ""
-
 
  case "${build_os}:${host}" in #(
   #
@@ -14762,11 +14593,10 @@ fi
 
    ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->linux"
-   as_fn_append TESTS_ENVIRONMENT "PATH=${MAKEBINDIR}:\${PATH} "
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
   ;; #(
   #
  # OTHER

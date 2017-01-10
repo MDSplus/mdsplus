@@ -99,13 +99,17 @@ endif DX_COND_latex
 ## GENERAL ENV To be passed into config file  ##
 ## ------------------------------------------ ##
 
-DX_INSTALLDIR = $(abs_top_builddir)
-DX_DESTDIR    = ${DX_INSTALLDIR}/${DX_DOCDIR}
-DX_TAGDIR     = ${DX_INSTALLDIR}/docs/dtags
-DX_DESTTAG    = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
-DX_SEARCHFILE = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.xml
-DX_LAYOUT     = ${top_srcdir}/docs/config/general_layout.xml
-DX_PARENT_TAG = docs.tag
+
+
+DX_INSTALLDIR  = $(abs_top_builddir)
+DX_DESTDIR     = ${DX_INSTALLDIR}/${DX_DOCDIR}
+DX_TAGDIR      = ${DX_INSTALLDIR}/docs/dtags
+DX_DESTTAG     = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
+DX_SEARCHFILE  = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.xml
+DX_LAYOUT     ?= ${top_srcdir}/docs/config/general_layout.xml
+DX_LOGO       ?= ${top_srcdir}/docs/config/style/logo.jpg
+DX_IMAGE_PATH ?= img
+DX_PARENT_TAG  = docs.tag
 
 if HAVE_CUTE_DOXYGEN
  DX_HTML_HEADER     = ${top_srcdir}/docs/config/style/header.html
@@ -119,16 +123,20 @@ DX_STYLE_FILES = ${DX_HTML_HEADER} \
 
 
 DX_ENVCOMMON = \
-               DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
-               DX_PAGES='${DX_PAGES}' \
+	       srcdir='${srcdir}' \
+	       top_srcdir='${top_srcdir}' \
+	       DX_PACKAGE_NAME='${DX_PACKAGE_NAME}' \
+	       DX_PAGES='${addprefix $(srcdir)/,${DX_PAGES}}' \
+	       DX_EXCLUDE_PAGES='${addprefix $(srcdir)/,${DX_EXCLUDE_PAGES}}' \
+	       DX_IMAGE_PATH='${addprefix $(srcdir)/,${DX_IMAGE_PATH}}' \
                DX_INSTALLDIR='${DX_INSTALLDIR}' \
-               DX_EXCLUDE_PAGES='${DX_EXCLUDE_PAGES}' \
                DX_TITLE='${DX_TITLE}' \
                DX_BRIEF='${DX_BRIEF}' \
                DX_HTML_HEADER='${DX_HTML_HEADER}' \
                DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
                DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}' \
-               DX_LAYOUT='${DX_LAYOUT}'
+	       DX_LAYOUT='${DX_LAYOUT}' \
+	       DX_LOGO='${DX_LOGO}'
 
 
 DX_DESTENV = ${DX_ENV} \
@@ -144,9 +152,9 @@ DX_DESTENV = ${DX_ENV} \
 
 
 
+.ONESHELL:
 .PHONY: doxygen-run doxygen-doc build_tag install_tag test_nav $(DX_PS_GOAL) $(DX_PDF_GOAL)
 .INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
-.ONESHELL:
 
 test_nav:
 	if [ -a ${DX_DESTDIR}/html/nav.html ] ; then rm ${DX_DESTDIR}/html/nav.html; fi
@@ -179,7 +187,7 @@ test_nav:
 	echo "</project_nav>" >> ${DX_DESTDIR}/html/nav.xml;
 
 
-.ONESHELL:
+
 ${DX_DESTTAG}: ${DX_PAGES}
 	$(MKDIR_P) ${DX_DESTDIR}
 	${MKDIR_P} ${DX_TAGDIR}
@@ -195,7 +203,7 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	DX_TAGFILES= \
 	$(DX_DOXYGEN) $(DX_CONFIG) 2>&1 > /dev/null;
 
-.ONESHELL:
+
 ${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
 	##
 	## generate taglist to keep track of geenerated symbols.
@@ -216,8 +224,6 @@ install_tag: ${DX_TAGDIR}/taglist.txt test_nav
 
 
 
-
-.ONESHELL:
 ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES} 
 	$(MKDIR_P) ${DX_DESTDIR} 
 	
