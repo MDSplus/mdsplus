@@ -1,5 +1,6 @@
-from unittest import TestCase,TestSuite,TestResult
+from unittest import TestCase,TestSuite,TextTestRunner
 from threading import Thread
+from cStringIO import StringIO
 
 def _mimport(name, level=1):
     try:
@@ -17,42 +18,68 @@ class threadJob(Thread):
     def run(self):
         """Run test1.test() function"""
         Tree.usePrivateCtx()
-#        self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
-        self.result=TestResult()
-        self.test.suite().run(self.result)
+        stream = StringIO()
+        try:
+            self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test.suite())
+        finally:
+            stream.reset()
+            self.stream = stream.read()
+            stream.close()
 
 class threadTest(TestCase):
 
-    def threadTests(self):
-        numsuccessful=0
-        threads=list()
-        for i in range(2):
-            t=threadJob()
-            t.shot=i*2+3
-            t.test=treeUnitTest
-            t.test.inThread = True
-            threads.append(t)
+    def dataThreadTests(self):
+        numtests  = 10
+        numsuccess= 0
+        threads=[]
+        for i in range(numtests):
             d=threadJob()
             d.test=dataUnitTest
             threads.append(d)
         for t in threads:
             t.start()
-        for t in threads:
+        for i,t in enumerate(threads):
             t.join()
             if t.result.wasSuccessful():
-                numsuccessful+=1
+                numsuccess += 1
             else:
-                print( t.result )
-        print("successful: ")
-        print(numsuccessful)
-        self.assertEqual(numsuccessful,len(threads))
+                print('### begin thread %2d #########################################'%i)
+                print(t.stream)
+                print('### end   thread %2d #########################################'%i)
+        self.assertEqual(numsuccess,numtests)
+
+    def treeThreadTests(self):
+        numtests  = 10
+        numsuccess= 0
+        threads=[]
+        treeUnitTest.treeTests.inThread = True
+        try:
+            for i in range(numtests):
+                t=threadJob()
+                t.shot=i*numtests+3
+                t.test=treeUnitTest
+                threads.append(t)
+            for t in threads:
+                t.start()
+            for i,t in enumerate(threads):
+                t.join()
+                if t.result.wasSuccessful():
+                    numsuccess += 1
+                else:
+                    print('### begin thread %2d #########################################'%i)
+                    print(t.stream)
+                    print('### end   thread %2d #########################################'%i)
+        finally:
+            treeUnitTest.inThread = False
+        self.assertEqual(numsuccess,numtests)
 
     def runTest(self):
-        self.threadTests()
+        self.dataThreadTests()
+        #self.treeThreadTests() old python is not thread safe
 
 
 def suite():
-    tests = ['threadTests']
+    tests = ['dataThreadTests'] #,'treeThreadTests']
     return TestSuite(map(threadTest, tests))
 
 if __name__=='__main__':
@@ -61,7 +88,6 @@ if __name__=='__main__':
         import objgraph
     else:      objgraph = None
     import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    from unittest import TextTestRunner
     TextTestRunner().run(suite())
     if objgraph:
          gc.collect()
