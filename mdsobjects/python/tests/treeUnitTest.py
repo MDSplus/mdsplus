@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite
 import os
 from re import match
-from threading import Lock
+from threading import Lock,current_thread
 
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
@@ -11,21 +11,12 @@ class treeTests(TestCase):
     lock = Lock()
     shotdic = {}
     shotinc = 3
+    instances = 0
     inThread = False
-    @classmethod
-    def getShot(cls):
-        from threading import current_thread
-        ident = current_thread().ident
-        if not ident in cls.shotdic:
-            cls.lock.acquire()
-            try:
-                cls.shotdic[ident] = len(cls.shotdic)*cls.shotinc+1
-            finally:
-                cls.lock.release()
-        return cls.shotdic[ident]
+
     @property
     def shot(self):
-        return treeTests.getShot()
+        return self.shotdic[current_thread().ident]
 
     def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
@@ -48,32 +39,40 @@ class treeTests(TestCase):
             self.assertEqual(e.__class__,exc)
             return
         self.fail("TCL: '%s' should have signaled an exception"%expr)
+
     @classmethod
     def setUpClass(cls):
-        from tempfile import mkdtemp
-        if getenv("TEST_DISTRIBUTED_TREES") is not None:
-            treepath="localhost::%s"
-        else:
-            treepath="%s"
-        cls.tmpdir = mkdtemp()
-        cls.root = os.path.dirname(os.path.realpath(__file__))
-        cls.env = dict((k,str(v)) for k,v in os.environ.items())
-        cls.envx= {}
-        cls._setenv('PyLib',getenv('PyLib'))
-        cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
-        cls._setenv("pytree_path",treepath%cls.tmpdir)
-        cls._setenv("pytreesub_path",treepath%cls.tmpdir)
-        if getenv("testing_path") is None:
-            cls._setenv("testing_path","%s/trees"%cls.root)
-        treeTests.buildTrees(cls.getShot())
+        with cls.lock:
+            if cls.instances==0:
+                from tempfile import mkdtemp
+                if getenv("TEST_DISTRIBUTED_TREES") is not None:
+                    treepath="localhost::%s"
+                else:
+                    treepath="%s"
+                cls.tmpdir = mkdtemp()
+                cls.root = os.path.dirname(os.path.realpath(__file__))
+                cls.env = dict((k,str(v)) for k,v in os.environ.items())
+                cls.envx= {}
+                cls._setenv('PyLib',getenv('PyLib'))
+                cls._setenv("MDS_PYDEVICE_PATH",'%s/devices'%cls.root)
+                cls._setenv("pytree_path",treepath%cls.tmpdir)
+                cls._setenv("pytreesub_path",treepath%cls.tmpdir)
+                if getenv("testing_path") is None:
+                    cls._setenv("testing_path","%s/trees"%cls.root)
+            shot = len(cls.shotdic)*cls.shotinc+1
+            cls.shotdic[current_thread().ident] = shot
+            cls.instances += 1
+        treeTests.buildTrees(shot)
     @classmethod
     def _setenv(cls,name,value):
         value = str(value)
         cls.env[name]  = value
         cls.envx[name] = value
         setenv(name,value)
-    @staticmethod
-    def buildTrees(shot):
+    @classmethod
+    def buildTrees(cls,shot):
+        if cls.inThread:
+            print('opening tree %s:%d'%('pytree',shot))
         with Tree('pytree',shot,'new') as pytree:
             pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
@@ -120,7 +119,10 @@ class treeTests(TestCase):
     def tearDownClass(cls):
         import gc,shutil
         gc.collect()
-        shutil.rmtree(cls.tmpdir)
+        with cls.lock:
+            cls.instances -= 1
+            if not cls.instances>0:
+                shutil.rmtree(cls.tmpdir)
 
 
     def openTrees(self):
@@ -375,13 +377,14 @@ class treeTests(TestCase):
         self.getData()
         self.segments()
         self.getCompression()
-        self.dclInterface()
         if not self.inThread:
+             self.dclInterface()
              self.dispatcher()
 
 def suite():
-
-    tests = ['openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression','dclInterface','dispatcher']
+    tests = ['openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
+    if not treeTests.inThread:
+        tests += ['dclInterface','dispatcher']
     return TestSuite(map(treeTests,tests))
 
 if __name__=='__main__':
