@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl @(#)$RCSfile$ $Revision$
 AC_PREREQ([2.69])
-AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
+AC_INIT([MDSplus], [7.1a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 

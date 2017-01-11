@@ -580,8 +580,8 @@ MAKEFLAGS=
 # Identity of this package.
 PACKAGE_NAME='MDSplus'
 PACKAGE_TARNAME='mdsplus'
-PACKAGE_VERSION='6.0a'
-PACKAGE_STRING='MDSplus 6.0a'
+PACKAGE_VERSION='7.1a'
+PACKAGE_STRING='MDSplus 7.1a'
 PACKAGE_BUGREPORT='mdsplus@lists.psfc.mit.edu'
 PACKAGE_URL=''
 
