@@ -14210,6 +14210,7 @@ fi
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
  abs_srcdir=$(cd ${srcdir}; pwd)
 
+ if test "x$HAVE_PYTHON" = xyes; then :
 
   # Extract the first word of "nosetests", so it can be a program name with args.
 set dummy nosetests; ac_word=$2
@@ -14254,7 +14255,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"python-nose not found\"" >&5
 $as_echo "$as_me: WARNING: \"python-nose not found\"" >&2;}
 fi
-
 
 
 
@@ -14379,9 +14379,14 @@ else
 $as_echo "$as_me: WARNING: \"Tap plugin for python-nose not found\"" >&2;}
 fi
 
+	    as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
+	    as_fn_append PY_LOG_FLAGS ""
 
- as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
- as_fn_append PY_LOG_FLAGS ""
+else
+
+ as_fn_append PY_LOG_COMPILER "sh -c \"exit 77\"; :"
+
+fi
 
 
  case "${build_os}:${host}" in #(
