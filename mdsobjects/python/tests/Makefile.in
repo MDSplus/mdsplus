@@ -502,7 +502,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -678,7 +677,7 @@ TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
         treeUnitTest.py \
-        $(test -z "$do_threads"||echo threadsUnitTest.py) \
+        threadsUnitTest.py \
         segmentsUnitTest.py
 
 
@@ -701,7 +700,7 @@ VALGRIND_SUPPRESSIONS_FILES_PY = \
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES =
+MOSTLYCLEANFILES = 
 check_SCRIPTS = $(TESTS)
 all: all-am
 

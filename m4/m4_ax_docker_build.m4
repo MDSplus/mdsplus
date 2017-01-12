@@ -395,7 +395,7 @@ export SHELL
 
 .PHONY: docker
 ifeq (docker,\$(MAKECMDGOALS))
-docker:
+docker: ##@docker get docker build help
 	@ \
 	echo ; \
 	echo " This build was set to work with Docker: "; \
@@ -423,11 +423,11 @@ ifeq (docker,\$(filter docker,\$(MAKECMDGOALS)))
 export SHELL = \${local_SHELL}
 
 .PHONY: info start stop shell inspect run
-inspect:
+inspect: ##@docker get container info (use: "make docker inspect")
 	@echo "info:";
 	docker inspect \${DOCKER_CONTAINER}
 
-start:
+start: ##@docker run the docker container (use: "make docker start")
 	@echo "Starting docker container:";
 	m4_normalize( docker run -d -it --entrypoint=\${SHELL}
 			     -e USER=\${USER}
@@ -448,12 +448,12 @@ start:
 				    echo ${group_entry} >> /etc/group;
 				  ";)
 
-stop:
+stop:  ##@docker stop and remove the docker container (use: "make docker stop")
 	@echo "Stopping docker container:";
 	docker stop \${DOCKER_CONTAINER};
 	docker rm \${DOCKER_CONTAINER};
 
-shell:
+shell: ##@docker launch a shell inside the container (use: "make docker shell")
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
 	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
