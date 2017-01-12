@@ -678,7 +678,7 @@ TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
         treeUnitTest.py \
-        $(test -z "$do_threads"||echo threadsUnitTest.py) \
+        threadsUnitTest.py \
         segmentsUnitTest.py
 
 
@@ -701,7 +701,7 @@ VALGRIND_SUPPRESSIONS_FILES_PY = \
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES =
+MOSTLYCLEANFILES = 
 check_SCRIPTS = $(TESTS)
 all: all-am
 
