@@ -21,7 +21,7 @@ TESTS = \
 
 
 VALGRIND_SUPPRESSIONS_FILES = \
-                              $(top_srcdir)/testing/valgrind-mdsplus.supp \
+			      $(top_srcdir)/conf/valgrind-mdsplus.supp \
                               $(srcdir)/valgrind-mdsshr.supp
                               
 
