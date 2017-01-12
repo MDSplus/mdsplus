@@ -3523,6 +3523,7 @@ shell:
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
 	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
 
+
 endif
 
 
@@ -3781,6 +3782,7 @@ shell:
 	@echo "Starting docker shell";
 	docker exec -ti --user \${USER} \${DOCKER_CONTAINER} \
 	 \${SHELL} -c "cd \$(shell pwd); export MAKESHELL=\${SHELL}; bash"
+
 
 endif
 
@@ -14766,7 +14768,7 @@ fi
    as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
-   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
   ;; #(
   #
  # OTHER
