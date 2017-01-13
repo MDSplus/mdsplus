@@ -1,4 +1,5 @@
 
+include @top_builddir@/Makefile.inc
 include config/doxygen.am
 
 
