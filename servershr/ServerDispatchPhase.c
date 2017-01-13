@@ -76,7 +76,8 @@ STATIC_ROUTINE void RecordStatus(int s, int e);
 STATIC_ROUTINE void Dispatch(int i);
 STATIC_ROUTINE void WaitForActions(int conditionals, int first_g, int last_g, int first_c,
 				   int last_c);
-STATIC_CONSTANT const int zero = 0;
+
+// STATIC_CONSTANT const int zero = 0;
 
 typedef struct _complete {
   int idx;

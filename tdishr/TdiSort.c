@@ -115,7 +115,7 @@ STATIC_ROUTINE int GTR_L(int *a, int *b)
 
 STATIC_ROUTINE int NEQ_Q(unsigned int a[2], unsigned int b[2])
 {
-  return a[0] != b[0] || a[1] != a[1];
+  return a[0] != b[0] || a[1] != b[1];
 }
 
 STATIC_ROUTINE int GTR_Q(unsigned int a[2], unsigned int b[2])

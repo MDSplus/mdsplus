@@ -58,7 +58,7 @@ TESTS = \
 #
 
 VALGRIND_SUPPRESSIONS_FILES = \
-                              $(top_srcdir)/testing/valgrind-mdsplus.supp \
+			      $(top_srcdir)/conf/valgrind-mdsplus.supp \
                               $(top_srcdir)/mdsshr/testing/valgrind-mdsshr.supp \
                               $(srcdir)/valgrind-mdsobjects-cpp.supp
 
