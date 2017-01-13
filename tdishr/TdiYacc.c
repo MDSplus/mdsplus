@@ -841,9 +841,9 @@ int yyparse()
     YYABORT;
 #endif
   yyval.mark.w_ok=0;
-  //    yypv = &yyv[-1];
+  //  yypv = &yyv[-1];
   yypv = yyv - 1;
-  //    yyps = &yys[-1];
+  //  yyps = &yys[-1];
   yyps = yys - 1;
   yystate = 0;
   yytmp = 0;

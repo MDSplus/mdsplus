@@ -293,7 +293,7 @@ int main(int argc, char **argv)
       expr[prefixlen] = 0;
       strcat(expr, line_in);
       if (!(comment = line_in[len - 1] == ';'))
-	strcat(line_in, " = ");
+          strcat(line_in, " = ");
 	expr_dsc.length = strlen(expr);
 /*
       expr_dsc.length = strlen(expr)-1;    

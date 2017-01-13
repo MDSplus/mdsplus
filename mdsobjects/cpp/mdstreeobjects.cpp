@@ -145,12 +145,14 @@ Tree::~Tree()
 {
     if( isModified() ) {
         int status = _TreeQuitTree(&ctx, name.c_str(), shot);
-        if(!(status & 1))
-            throw MdsException(status);
+        (void)status;
+//        if(!(status & 1))
+//            throw MdsException(status);
     } else {
         int status = _TreeClose(&ctx, name.c_str(), shot);
-        if(!(status & 1))
-            throw MdsException(status);
+        (void)status;
+//        if(!(status & 1))
+//            throw MdsException(status);
     }
     TreeFreeDbid(ctx);
 }

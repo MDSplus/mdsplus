@@ -207,7 +207,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
         strcat(cmd, "\"");
         for (j = 0, k = strlen(cmd); j < len; j++, k++) {
           if (c[j] == '"' || c[j] == '\\')
-            cmd[k++] = '\\';
+              cmd[k++] = '\\';
             cmd[k] = c[j];
           }
           cmd[k] = 0;
