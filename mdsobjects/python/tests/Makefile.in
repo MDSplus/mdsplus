@@ -678,9 +678,11 @@ TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
         treeUnitTest.py \
-        $(test -z "$do_threads"||echo threadsUnitTest.py) \
         segmentsUnitTest.py
 
+
+#  threadsUnitTest.py
+#  simulateSegfault.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 VALGRIND_TESTS = \
@@ -701,7 +703,7 @@ VALGRIND_SUPPRESSIONS_FILES_PY = \
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES =
+MOSTLYCLEANFILES = mdsip.log
 check_SCRIPTS = $(TESTS)
 all: all-am
 
@@ -1208,7 +1210,6 @@ test-env:
 @HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
-       #simulateSegfault.py 
 
 clean-local: clean-local-tests
 
