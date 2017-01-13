@@ -14,9 +14,10 @@ TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
         treeUnitTest.py \
-        threadsUnitTest.py \
         segmentsUnitTest.py
-       #simulateSegfault.py 
+
+#  threadsUnitTest.py
+#  simulateSegfault.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 VALGRIND_TESTS = \
@@ -47,7 +48,7 @@ VALGRIND_FLAGS = \
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES =
+MOSTLYCLEANFILES = mdsip.log
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
