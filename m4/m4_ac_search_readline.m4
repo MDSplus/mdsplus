@@ -35,8 +35,8 @@ AC_DEFUN([AC_SEARCH_READLINE],
         
         dnl // setting test program flags //
         LIBS="-l$_combo $LIBS"
-        CPPFLAGS="${_readline_cppflags} $CPPFLAGS"
-        LDFLAGS="${_readline_ldflags} $LDFLAGS"
+        CPPFLAGS="${_readline_cppflags} $CPPFLAGS $TARGET_ARCH"
+        LDFLAGS="${_readline_ldflags} $LDFLAGS $TARGET_ARCH"
 
         AC_MSG_CHECKING([whether readline via "$_combo" is present and sane])
         dnl ////////////////////////////////////////////////////////////////////
