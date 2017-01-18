@@ -51,7 +51,7 @@ AC_ARG_ENABLE(xmltest,
     if test "x$enable_xmltest" = "xyes" ; then
       ac_save_CPPFLAGS="$CPPFLAGS"
       ac_save_LIBS="$LIBS"
-      CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS"
+      CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS $TARGET_ARCH"
       LIBS="$XML_LIBS $LIBS"
 dnl
 dnl Now check if the installed libxml is sufficiently new.

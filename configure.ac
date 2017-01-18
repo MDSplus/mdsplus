@@ -70,6 +70,25 @@ AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
+m4_pattern_allow([AC_CHECK_LIB])
+m4_rename([AC_CHECK_LIB],[ORIGINAL_AC_CHECK_LIB])
+AC_DEFUN([AC_CHECK_LIB],
+[
+  CFLAGS_s="$CFLAGS"
+  CFLAGS="$TARGET_ARCH $CFLAGS"
+  ORIGINAL_AC_CHECK_LIB([$1],[$2],[$3],[$4])
+  CFLAGS="$CFLAGS_s"
+  ])
+
+m4_pattern_allow([AC_SEARCH_LIBS])
+m4_rename([AC_SEARCH_LIBS],[ORIGINAL_AC_SEARCH_LIBS])
+AC_DEFUN([AC_SEARCH_LIBS],
+[
+  CFLAGS_s="$CFLAGS"
+  CFLAGS="$TARGET_ARCH $CFLAGS"
+  ORIGINAL_AC_SEARCH_LIBS([$1],[$2],[$3],[$4])
+  CFLAGS="$CFLAGS_s"
+  ])
 
 #FIXME: Remove this when Makefile.inc goes away
 #AS_CASE(["$MKDIR_P"],
@@ -712,7 +731,7 @@ AM_CONDITIONAL(XML, test x"$have_xml" = x"yes")
 if test "x$have_xml" = "xyes"; then
  dnl test also for headers usability required by mdsdcl
  CPPFLAGS_save="$CPPFLAGS"
- CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS"
+ CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS $TARGET_ARCH"
  AC_CHECK_HEADERS(libxml/tree.h libxml/parser.h libxml/xpath.h libxml/xpathInternals.h
   ,,AC_MSG_ERROR(libxml2 development files was not found and must be installed.))
  CPPFLAGS="$CPPFLAGS_save"
@@ -864,7 +883,7 @@ then
     SYBASE_INC=""
     SYBASE_LIB=""
     OLDLIBS="$LIBS"
-    AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
+    AC_SEARCH_LIBS([dbsqlexec],[sybdb],[SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB=""],)
     LIBS="$OLDLIBS"
     if test "$SYBASE_LIB" = ""
     then
