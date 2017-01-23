@@ -238,6 +238,22 @@ fi
 BRANCH=${GIT_BRANCH##*/}
 opts="$opts --branch=$BRANCH"
 
+if [ "$BUILD_CAUSE" = "GHPRBCAUSE" ]
+then
+  if [ $(${SRCDIR}/deploy/commit_type_check.sh origin/$ghprbTargetBranch ${SRCDIR}/deploy/inv_commit_title.msg) = "BADCOMMIT" ]
+  then
+      RED $COLOR
+      cat <<EOF >&2
+=========================================================
+
+WARNING: Pull request contains an invalid commit title.
+
+=========================================================
+EOF
+#      exit 1
+  fi
+fi
+
 #
 # Make sure submodules have been updated
 #
@@ -266,8 +282,28 @@ then
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
-	NEW_RELEASE=yes
-	let RELEASEV=$RELEASEV+1;
+	version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
+	if [ $version_inc = "BADCOMMIT" ]
+	then
+	    RED $COLOR
+	    cat <<EOF >&2
+=========================================================
+
+WARNING: Commit contains an invalid commit title.
+
+=========================================================
+EOF
+	    #	    exit 1
+	fi
+	if [ $version_inc = "MINOR" ]
+	then
+	    NEW_RELEASE=yes
+	    let MINOR=$MINOR+1
+	elif [ $version_inc = "PATCH" -o $version_inc = "BADCOMMIT" ]
+	then
+	    NEW_RELEASE=yes
+	    let RELEASEV=$RELEASEV+1
+	fi
 	RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     fi
     RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
