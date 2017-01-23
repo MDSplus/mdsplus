@@ -18,7 +18,7 @@ Where:
             Does not trigger a new release version.)
   Docs     (commit affects MDSplus documentation.
             Does not trigger a new release version.)
-  Test     (changes to or additional regression tests.
+  Tests    (changes to or additional regression tests.
             Does not trigger a new release version.)
 
 The check on the <commit-type> is case insensitive.
