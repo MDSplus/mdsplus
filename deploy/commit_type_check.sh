@@ -10,26 +10,31 @@
 #
 
 git log $1..HEAD --no-merges --decorate=short --pretty=format:"%<(80,trunc)%s%n%ce" |
-    awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
+awk -v EMAILMSG="$2" -F: '{ IGNORECASE=1
                if ( VERSION == "" ) {
                  VERSION="SAME"
                  FAIL="FALSE"
                }
-               TITLE=$0 
-               switch ($1) { 
+               TITLE=$0
+               switch ($1) {
                case "Feature":
+	       case "Revert \"Feature":
                  VERSION="MINOR"
                  OK="1"
                  break
                case "Fix":
+	       case "Revert \"Fix":
                  if ( VERSION == "SAME" ) {
                    VERSION="PATCH"
                  }
                  OK="1"
                  break 
-               case "Tests": 
+               case "Tests":
+	       case "Revert \"Tests":
                case "Docs": 
+	       case "Revert \"Docs":
                case "Build":
+	       case "Revert \"Build":
                  OK="1"
                  break
                default:
