@@ -70,24 +70,12 @@ AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
-m4_pattern_allow([AC_CHECK_LIB])
-m4_rename([AC_CHECK_LIB],[ORIGINAL_AC_CHECK_LIB])
-AC_DEFUN([AC_CHECK_LIB],
+AC_DEFUN([MDSPLUS_SEARCH_LIBS],
 [
-  CFLAGS_s="$CFLAGS"
+  MDSPLUS_SEARCH_LIBS_CFLAGS="$CFLAGS"
   CFLAGS="$TARGET_ARCH $CFLAGS"
-  ORIGINAL_AC_CHECK_LIB([$1],[$2],[$3],[$4])
-  CFLAGS="$CFLAGS_s"
-  ])
-
-m4_pattern_allow([AC_SEARCH_LIBS])
-m4_rename([AC_SEARCH_LIBS],[ORIGINAL_AC_SEARCH_LIBS])
-AC_DEFUN([AC_SEARCH_LIBS],
-[
-  CFLAGS_s="$CFLAGS"
-  CFLAGS="$TARGET_ARCH $CFLAGS"
-  ORIGINAL_AC_SEARCH_LIBS([$1],[$2],[$3],[$4])
-  CFLAGS="$CFLAGS_s"
+  AC_SEARCH_LIBS([$1],[$2],[$3],[$4])
+  CFLAGS="$MDSPLUS_SEARCH_LIBS_CFLAGS"
   ])
 
 #FIXME: Remove this when Makefile.inc goes away
@@ -564,9 +552,9 @@ case "$host" in
 esac
 
 dnl see if we have libdc1394 libraries and what version
-AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
-AC_CHECK_LIB(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
-AC_CHECK_LIB(raw1394,raw1394_get_libversion ,raw1394=yes)
+MDSPLUS_SEARCH_LIBS(dc1394,dc1394_new ,dc1394_v2=yes)
+MDSPLUS_SEARCH_LIBS(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
+MDSPLUS_SEARCH_LIBS(raw1394,raw1394_get_libversion ,raw1394=yes)
 if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
   DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
 else
@@ -614,9 +602,9 @@ fi
 
 dnl Checks for libraries.
 
-AC_SEARCH_LIBS([gethostbyname], [nsl socket],
+MDSPLUS_SEARCH_LIBS([gethostbyname], [nsl socket],
                [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
-               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because 
+               [dnl Can't search ws2_32 for gethostbyname using MDSPLUS_SEARCH_LIBS, because 
                 dnl it requires #include <winsocks2.h> to work. 
                 AC_MSG_CHECKING([for gethostbyname in ws2_32]) 
                 LIBSOCKET="-lws2_32"
@@ -628,14 +616,14 @@ AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                                [AC_MSG_RESULT([no]); AS_UNSET([LIBSOCKET])])
                 LIBS=$mds_old_LIBS])
 AC_SUBST([LIBSOCKET])
-AC_CHECK_LIB([m], [pow], [LIBM="-lm"], [LIBM=""])
-AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
-AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
-AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
-AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
-AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
+MDSPLUS_SEARCH_LIBS([m], [pow], [LIBM="-lm"], [LIBM=""])
+MDSPLUS_SEARCH_LIBS(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
+MDSPLUS_SEARCH_LIBS(dl,dlopen,LIBDL="-ldl",LIBDL="")
+MDSPLUS_SEARCH_LIBS(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
+MDSPLUS_SEARCH_LIBS(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
+MDSPLUS_SEARCH_LIBS(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 OLDLIBS="$LIBS"
-AC_SEARCH_LIBS([clock_gettime],[rt],,,)
+MDSPLUS_SEARCH_LIBS([clock_gettime],[rt],,,)
 LIBS="$OLDLIBS"
 CLOCK_GETTIME_LIB=""
 if test "$ac_cv_search_clock_gettime" != "no"
@@ -650,10 +638,10 @@ fi
 
 
 
-AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY,,"Define if you have the gettimeofday function."))
-AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO,,"Define if you have the getaddrinfo routine"))
-AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP,,"Define if you have the strsep routine"))
-AC_CHECK_LIB(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine"))
+MDSPLUS_SEARCH_LIBS(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY,,"Define if you have the gettimeofday function."))
+MDSPLUS_SEARCH_LIBS(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO,,"Define if you have the getaddrinfo routine"))
+MDSPLUS_SEARCH_LIBS(c,strsep,AC_DEFINE(HAVE_STRSEP,,"Define if you have the strsep routine"))
+MDSPLUS_SEARCH_LIBS(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine"))
 AC_ARG_ENABLE(d3d,
 	[  --enable-d3d            build d3d ptdata access library ],
 	if test "$enableval" = yes; then
@@ -698,7 +686,7 @@ fi
 
 dnl //// discontinued implementation ////
 dnl LIBS_save="$LIBS"
-dnl   AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
+dnl   MDSPLUS_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
 dnl LIBS="$LIBS_save"
 dnl if test "$ac_cv_search_readline" = "no"
 dnl then
@@ -709,7 +697,7 @@ dnl else
 dnl   LIBREADLINE="$ac_cv_search_readline"
 dnl   TDIC="tdic"
 dnl fi
-dnl AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS,,"define variable in code"))
+dnl MDSPLUS_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS,,"define variable in code"))
 dnl AC_CHECK_HEADERS(readline/readline.h readline/history.h)
 
 
@@ -776,7 +764,7 @@ dnl Check for default hdf5 header and library
 HDF5_APS=""
 AC_CHECK_HEADERS(hdf5.h,DO_HDF5="yes")
 if test "$DO_HDF5" = yes; then
-  AC_CHECK_LIB(hdf5,H5Fopen,DO_HDF5="yes",DO_HDF5="no")
+  MDSPLUS_SEARCH_LIBS(hdf5,H5Fopen,DO_HDF5="yes",DO_HDF5="no")
   if test "$DO_HDF5" = yes; then
     HDF5_APS="\$(HDF5_APS)"
     HDF5_INCS=""
@@ -883,7 +871,7 @@ then
     SYBASE_INC=""
     SYBASE_LIB=""
     OLDLIBS="$LIBS"
-    AC_SEARCH_LIBS([dbsqlexec],[sybdb],[SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB=""],)
+    MDSPLUS_SEARCH_LIBS([dbsqlexec],[sybdb],[SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB=""],)
     LIBS="$OLDLIBS"
     if test "$SYBASE_LIB" = ""
     then
@@ -967,8 +955,8 @@ fi
 
 
 XM_LIBS="-lMrm -lXm"
-AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
-AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+MDSPLUS_SEARCH_LIBS(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
+MDSPLUS_SEARCH_LIBS(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
@@ -994,7 +982,7 @@ AC_SUBST(PYTHON_ARCHITECTURE)
 ## MdsTestShr CHECK backend related ##
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
-AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+MDSPLUS_SEARCH_LIBS([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
              [LIBRT="-lrt"],[LIBRT=""])
 
 

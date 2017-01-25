@@ -71,7 +71,7 @@ int main(int argc, char **argv)
                      [have_readline=no],
                     dnl action if cross compiling:
                     dnl If cross compilation is done the configure is not able to run the test
-                      AC_SEARCH_LIBS([readline],[$_combo],[have_readline=yes],[have_readline=no])
+                      MDSPLUS_SEARCH_LIBS([readline],[$_combo],[have_readline=yes],[have_readline=no])
                     ) dnl AC_TRY_RUN
         
         AC_MSG_RESULT([$have_readline])
