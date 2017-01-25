@@ -19,7 +19,7 @@ AC_DEFUN([AX_SANITIZER_CHECK],[
      m4_pushdef([_XSAN],m4_toupper($1))
 
      LDD=ldd
-     AC_CHECK_LIB(_xsan,[_init],[have_[]_xsan=yes])     
+     MDSPLUS_SEARCH_LIBS(_xsan,[_init],[have_[]_xsan=yes])     
      AS_VAR_IF([have_[]_xsan],[yes],
                [AS_VAR_SET([CPPFLAGS_save],[$CPPFLAGS])
                 AS_VAR_SET([LIBS_save],[$LIBS])
