@@ -16,6 +16,10 @@ CLEANFILES += $(bin_SCRIPTS)
 $(bin_SCRIPTS): jScope.template
 	$(INSTALL) -d scripts
 	$(INSTALL) $< $@
+
+clean-local:
+	-rm -rf scripts
+
 endif
 
 

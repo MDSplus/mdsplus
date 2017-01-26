@@ -31,7 +31,7 @@ HDF5_APS = hdf5
 D3D_PACKAGE = d3dshr
 
 PARTS = \
-        mdsshr \
+mdsshr \
         treeshr \
         tdishr \
         tditest \
@@ -96,7 +96,21 @@ $(clean_DIRS):
 clean_DOCS: ##@docs clean generated documentation
 	$(MAKE) -C docs clean
 
+.PHONY: distclean
 
+distclean: ##@build make source directory look like original sources
+	@cpwd=$$(pwd); \
+	cd @top_srcdir@; \
+	if [ -r .git ]; \
+	then \
+	  git clean -x -f -d -q; \
+	else \
+	  if [ "$$(pwd)" == "$$cpwd" ]; \
+	     then make full_clean > /dev/null; \
+	  fi; \
+	  rm -Rf ./mdsobjects/python/build; \
+	fi; \
+	cd $$cpwd
 
 # Testing 
 
@@ -117,18 +131,14 @@ clean_TESTS: ##@tests clean all tests results and compiled tests objects
 
 .PHONY: full_clean
 full_clean: ##@build perform deep clean of build directories
-full_clean: ./devscripts/rm_if clean
-	@ $< bin bin64 bin32 bin_x86 bin_x86_64
-	@ $< etc
-	@ $< lib lib64 lib32
-	@ $< java/classes
-	@ $< java
-	@ $< uid uid64 uid32
-	@ $< config.cache
-	@ $< config.log
-	@ $< `find . -name '*.in' | \
-	      grep -v configure.in | grep -v makekit.in | \
-	      $(AWK) '{print substr($$1,0,length($$1)-3)}'`
+full_clean: clean
+	@rm -Rf bin bin64 bin32 bin_x86 bin_x86_64 etc \
+		lib lib64 lib32 java uid uid64 uid32 \
+		config.cache config.log config.status aclocal.m4 \
+		include/stamp-h1 autom4te.cache \
+		$$(find . -name '.deps') \
+		`find . -name '*.in' | \
+	      	$(AWK) '{print substr($$1,0,length($$1)-3)}'`
 
 .PHONY: depend
 depend:

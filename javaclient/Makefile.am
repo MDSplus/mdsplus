@@ -13,3 +13,6 @@ MdsPlus.jar: classjava.stamp
 	$(JAR) c0f $@ $(CLASSES)
 
 CLEANFILES = $(CLASSES) MdsPlus.jar
+
+clean-local:
+	-rm -rf $(JAVAROOT)/MdsPlus

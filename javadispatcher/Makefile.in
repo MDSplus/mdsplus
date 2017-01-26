@@ -483,10 +483,10 @@ java_JAVA = Action.java ActionServer.java Balancer.java \
 	ServersInfoPanel.java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLEANFILES = $(CLASSES) jDispatcher.jar
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
+CLEANFILES = $(CLASSES) jDispatcher.jar $(bin_SCRIPTS)
 all: all-am
 
 .SUFFIXES:
