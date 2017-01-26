@@ -1,1 +1,1 @@
---platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/docker:debian_wheezy-32,mdsplus/docker:debian_wheezy-64 --distname=DebianWheezy --arch=i386,amd64
+--platform=debian --dockerimage=mdsplus/docker:debian_wheezy-32,mdsplus/docker:debian_wheezy-64 --distname=DebianWheezy --arch=i386,amd64
