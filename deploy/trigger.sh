@@ -49,10 +49,16 @@ OPTIONS
        Use for pull request tests so kits will be built and checked but
        release tags won't be used to compute release number.
 
+    --valgrind
+       Enable valgrind testing for this build
+
     --valgrind=test-list|skip
        Normally the build jobs will perform valgrind tests when testing
        using the test suite that the platform supports. If this is set
        to skip then no valgrind tests will be performed by the build jobs.
+
+    --sanitize
+       Enable sanitize testing for this build
 
     --sanitize=test-list|skip
        Similar to the --valgrind=skip option this can be used to prevent
@@ -148,7 +154,13 @@ parsecmd() {
 	    --publish)
 		PUBLISH=yes
 		;;
+	    --valgrind)
+		opts="${opts} ${i}"
+		;;
 	    --valgrind=*)
+		opts="${opts} ${i}"
+		;;
+	    --sanitize)
 		opts="${opts} ${i}"
 		;;
 	    --sanitize=*)
@@ -250,6 +262,7 @@ WARNING: Pull request contains an invalid commit title.
 
 =========================================================
 EOF
+      NORMAL $COLOR
 #      exit 1
   fi
 fi
@@ -283,29 +296,84 @@ then
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
 	version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
-	if [ $version_inc = "BADCOMMIT" ]
-	then
-	    RED $COLOR
-	    cat <<EOF >&2
+	case "$version_inc" in
+	    BADCOMMIT)
+		RED $COLOR
+		cat <<EOF >&2
 =========================================================
 
 WARNING: Commit contains an invalid commit title.
 
 =========================================================
 EOF
-	    #	    exit 1
-	fi
-	if [ $version_inc = "MINOR" ]
-	then
-	    NEW_RELEASE=yes
-	    let MINOR=$MINOR+1
-	elif [ $version_inc = "PATCH" -o $version_inc = "BADCOMMIT" ]
-	then
-	    NEW_RELEASE=yes
-	    let RELEASEV=$RELEASEV+1
-	fi
-	RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
+		NORMAL $COLOR
+		#exit 1
+		NEW_RELEASE=yes
+		let RELEASEV=$RELEASEV+1
+		;;
+	    SAME)
+		GREEN $COLOR
+		cat <<EOF >&2
+=========================================================
+
+INFO: All commits are of category Build, Docs or Tests.
+      No new release generated.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+		NEW_RELEASE=no
+		;;
+	    MINOR)
+		GREEN $COLOR
+		cat <<EOF >&2
+=========================================================
+
+INFO: New features added. New release will be a minor
+      version increase.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+		NEW_RELEASE=yes
+		let MINOR=$MINOR+1
+		;;
+	    PATCH)
+		GREEN $COLOR
+		cat <<EOF >&2
+=========================================================
+
+INFO: No new features added. Fix commits added so
+      new release will be generated with patch version
+      incremented.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR
+		NEW_RELEASE=yes
+		let RELEASEV=$RELEASEV+1
+		;;
+	    *)
+		GREEN $RED
+		cat <<EOF >&2
+=========================================================
+
+INFO: Unknown release check return of $version_inc
+      A patch releases will be created.
+
+=========================================================
+
+EOF
+		NORMAL $COLOR		
+	    	NEW_RELEASE=yes
+		let RELEASEV=$RELEASEV+1
+		;;
+	esac
     fi
+    RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
     git log --decorate=full > ${SRCDIR}/ChangeLog
     opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"

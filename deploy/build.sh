@@ -203,6 +203,9 @@ OPTIONS WITH OS SPECIFIC DEFAULT
        operation. The default --distname option will be set if using a
        supported operating system.
 
+    --valgrind
+       Enable valgrind testing for this build.
+
     --valgrind=tests
        Select a set of valgrind tests to perform on the MDSplus code if
        the --test option is included. This is a comma delimited list of
@@ -211,6 +214,9 @@ OPTIONS WITH OS SPECIFIC DEFAULT
        supported operating system a default list of tests supported for
        that operating system will be used unless overriden in the
        command line.
+
+    --sanitize
+       Enable sanitize testing for this build.
 
     --sanitize=tests
        Select a set of sanitize tests to perform on the MDSplus code if
@@ -280,14 +286,20 @@ parsecmd() {
 	    --platform=*)
 		PLATFORM="${i#*=}"
 		;;
+	    --valgrind)
+		ENABLE_VALGRIND=yes
+		;;
 	    --valgrind=*)
-		if [ -z "$VALGRIND_TOOLS" ]
+		if [ "${ENABLE_VALGRIND}" = "yes" ]
 		then
 		    VALGRIND_TOOLS="${i#*=}"
 		fi
 		;;
+	    --sanitize)
+		ENABLE_SANITIZE=yes
+		;;
 	    --sanitize=*)
-		if [ -z "$SANITIZE" ]
+		if [ "$ENABLE_SANITIZE" = "yes" ]
 		then
 		    SANITIZE="${i#*=}"
 		fi
