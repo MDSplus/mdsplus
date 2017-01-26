@@ -808,9 +808,10 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@MINGW_TRUE@clean-local:
 clean: clean-am
 
-clean-am: clean-generic clean-javaJAVA mostlyclean-am
+clean-am: clean-generic clean-javaJAVA clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -880,9 +881,9 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binSCRIPTS install-data install-data-am \
+	clean-local cscopelist-am ctags-am distclean distclean-generic \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binSCRIPTS install-data install-data-am \
 	install-dist_docsDATA install-dist_javaDATA \
 	install-dist_javaJAVA install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
@@ -901,6 +902,9 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 @MINGW_FALSE@$(bin_SCRIPTS): jScope.template
 @MINGW_FALSE@	$(INSTALL) -d scripts
 @MINGW_FALSE@	$(INSTALL) $< $@
+
+@MINGW_FALSE@clean-local:
+@MINGW_FALSE@	-rm -rf scripts
 $(java_DATA): classjava.stamp
 jScope.jar: colors1.tbl
 	$(MKDIR_P) @builddir@/jdocs
