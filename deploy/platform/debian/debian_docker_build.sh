@@ -136,7 +136,7 @@ EOF
     if [ -d /sign_keys/.gnupg ]
     then
         ls -l /sign_keys/.gnupg
-    	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
+    	echo "SignWith: B1E664BFFCBB6F4614FB4A7C5D83C3E21325A989" >> /release/repo/conf/distributions
     fi
     export HOME=/sign_keys
     pushd /release/repo
