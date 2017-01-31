@@ -70,25 +70,6 @@ AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************
 #if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
 #	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
 #fi
-m4_pattern_allow([AC_CHECK_LIB])
-m4_rename([AC_CHECK_LIB],[ORIGINAL_AC_CHECK_LIB])
-AC_DEFUN([AC_CHECK_LIB],
-[
-  CFLAGS_s="$CFLAGS"
-  CFLAGS="$TARGET_ARCH $CFLAGS"
-  ORIGINAL_AC_CHECK_LIB([$1],[$2],[$3],[$4])
-  CFLAGS="$CFLAGS_s"
-  ])
-
-m4_pattern_allow([AC_SEARCH_LIBS])
-m4_rename([AC_SEARCH_LIBS],[ORIGINAL_AC_SEARCH_LIBS])
-AC_DEFUN([AC_SEARCH_LIBS],
-[
-  CFLAGS_s="$CFLAGS"
-  CFLAGS="$TARGET_ARCH $CFLAGS"
-  ORIGINAL_AC_SEARCH_LIBS([$1],[$2],[$3],[$4])
-  CFLAGS="$CFLAGS_s"
-  ])
 
 #FIXME: Remove this when Makefile.inc goes away
 #AS_CASE(["$MKDIR_P"],
@@ -563,20 +544,26 @@ case "$host" in
        X_EXTRA_LIBS="-lXmu";;
 esac
 
+#
+# Add TARGET_ARCH to CFLAGS so that all library searches will look for libraries of the correct arch
+#
+CFLAGS="${CFLAGS} ${TARGET_ARCH}"
+#
+
+AC_DEFUN([MDS_SEARCH_LIBS],[
+	LIBS_SAVE=${LIBS}
+	AC_SEARCH_LIBS([$1],[$2],[$3],[$4],[$5])
+	LIBS=${LIBS_SAVE}
+	])
+
 dnl see if we have libdc1394 libraries and what version
-AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
-AC_CHECK_LIB(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
-AC_CHECK_LIB(raw1394,raw1394_get_libversion ,raw1394=yes)
-if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
-  DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
-else
-  DC1394_SUPPORT2=""
-fi
-if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
-  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
-else
-  DC1394_SUPPORT=""
-fi
+MDS_SEARCH_LIBS([raw1394_get_libversion],[raw1394],
+[
+  MDS_SEARCH_LIBS([dc1394_new],[dc1394],
+  [ DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE" ])
+  MDS_SEARCH_LIBS([dc1394_get_camera_info],[dc1394],
+  [ DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE" ])
+])
 
 AC_CHECK_SIZEOF(long)
 
@@ -628,15 +615,13 @@ AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                                [AC_MSG_RESULT([no]); AS_UNSET([LIBSOCKET])])
                 LIBS=$mds_old_LIBS])
 AC_SUBST([LIBSOCKET])
-AC_CHECK_LIB([m], [pow], [LIBM="-lm"], [LIBM=""])
-AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
-AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
-AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
-AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
-AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
-OLDLIBS="$LIBS"
-AC_SEARCH_LIBS([clock_gettime],[rt],,,)
-LIBS="$OLDLIBS"
+MDS_SEARCH_LIBS([pow],[m], [LIBM="-lm"], [LIBM=""])
+MDS_SEARCH_LIBS([__dn_skipname],[resolv],LIBRESOLV="-lresolv",LIBRESOLV="")
+MDS_SEARCH_LIBS([dlopen],[dl],LIBDL="-ldl",LIBDL="")
+MDS_SEARCH_LIBS([getgrgid],[c],[AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name.")])
+MDS_SEARCH_LIBS([getpwuid],[c],[AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid.")])
+MDS_SEARCH_LIBS([gethostbyname],[dnet_stub],[DNET_STUB="-ldnet_stub"],[DNET_STUB=""])
+MDS_SEARCH_LIBS([clock_gettime],[rt])
 CLOCK_GETTIME_LIB=""
 if test "$ac_cv_search_clock_gettime" != "no"
 then
@@ -650,10 +635,10 @@ fi
 
 
 
-AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY,,"Define if you have the gettimeofday function."))
-AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO,,"Define if you have the getaddrinfo routine"))
-AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP,,"Define if you have the strsep routine"))
-AC_CHECK_LIB(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine"))
+MDS_SEARCH_LIBS([gettimeofday],[c],[AC_DEFINE(HAVE_GETTIMEOFDAY,,"Define if you have the gettimeofday function.")])
+MDS_SEARCH_LIBS([getaddrinfo],[c],[AC_DEFINE(HAVE_GETADDRINFO,,"Define if you have the getaddrinfo routine")])
+MDS_SEARCH_LIBS([strsep],[c],[AC_DEFINE(HAVE_STRSEP,,"Define if you have the strsep routine")])
+MDS_SEARCH_LIBS([getrusage],[c],[AC_DEFINE(HAVE_GETRUSAGE,,"Define if you have the getrusage routine")])
 AC_ARG_ENABLE(d3d,
 	[  --enable-d3d            build d3d ptdata access library ],
 	if test "$enableval" = yes; then
@@ -695,23 +680,6 @@ if test x"$have_readline" = x"yes"; then
 else
   AC_MSG_ERROR(readline library was not found and must be installed.)
 fi
-
-dnl //// discontinued implementation ////
-dnl LIBS_save="$LIBS"
-dnl   AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
-dnl LIBS="$LIBS_save"
-dnl if test "$ac_cv_search_readline" = "no"
-dnl then
-dnl   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
-dnl   TDIC=""
-dnl   LIBREADLINE=""
-dnl else
-dnl   LIBREADLINE="$ac_cv_search_readline"
-dnl   TDIC="tdic"
-dnl fi
-dnl AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS,,"define variable in code"))
-dnl AC_CHECK_HEADERS(readline/readline.h readline/history.h)
-
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
@@ -772,24 +740,23 @@ fi
 
 AC_CHECK_HEADERS([stdint.h])
 
-dnl Check for default hdf5 header and library
-HDF5_APS=""
-AC_CHECK_HEADERS(hdf5.h,DO_HDF5="yes")
-if test "$DO_HDF5" = yes; then
-  AC_CHECK_LIB(hdf5,H5Fopen,DO_HDF5="yes",DO_HDF5="no")
-  if test "$DO_HDF5" = yes; then
-    HDF5_APS="\$(HDF5_APS)"
-    HDF5_INCS=""
-    HDF5_LIBS=""
-  fi
-
 dnl Check for user specified  hdf5 header and library
 if test -n "$HDF5_DIR" -a -r "$HDF5_DIR"
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
       HDF5_LIBS="$HDF5_LIBS -L$HDF5_DIR/lib"
-fi	
+else	
+dnl Check for default hdf5 header and library
+  AC_CHECK_HEADERS(hdf5.h,
+  [
+    MDS_SEARCH_LIBS([H5Fopen],[hdf5],
+    [
+      HDF5_APS="\$(HDF5_APS)"
+      HDF5_INCS=""
+      HDF5_LIBS=""
+    ])
+  ])
 fi
 
 dnl Check for jdk files
@@ -882,9 +849,7 @@ elif test "$(echo $SYBASE_LIB | grep '\-L')" = ""
 then
     SYBASE_INC=""
     SYBASE_LIB=""
-    OLDLIBS="$LIBS"
-    AC_SEARCH_LIBS([dbsqlexec],[sybdb],[SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB=""],)
-    LIBS="$OLDLIBS"
+    MDS_SEARCH_LIBS([dbsqlexec],[sybdb],[SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB=""],)
     if test "$SYBASE_LIB" = ""
     then
       AC_MSG_CHECKING(for SYBASE open/client or freetds)
@@ -967,8 +932,8 @@ fi
 
 
 XM_LIBS="-lMrm -lXm"
-AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
-AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+MDS_SEARCH_LIBS([XextAddDisplay],[Xext],[LIBXEXT="-lXext"],[LIBXEXT=""])
+MDS_SEARCH_LIBS([XpGetDocumentData],[Xp],[LIBXP="-lXp"],[LIBXP=""])
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  PYTHON   ///////////////////////////////////////////////////////////// ##
@@ -994,7 +959,8 @@ AC_SUBST(PYTHON_ARCHITECTURE)
 ## MdsTestShr CHECK backend related ##
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
-AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+
+MDS_SEARCH_LIBS([clock_gettime, timer_create, timer_settime, timer_delete],[rt], 
              [LIBRT="-lrt"],[LIBRT=""])
 
 
@@ -1136,6 +1102,13 @@ AS_CASE([$enable_werror],
         [])
 AC_SUBST([WARNFLAGS])
 AC_MSG_RESULT([$enable_werror])
+
+#
+# All library searches should be done at this point so remote TARGET_ARCH
+# from CFLAGS as the Make macros will insert TARGET_ARCH later as needed.
+#
+CFLAGS=`echo "${CFLAGS}" | ${AWK} '{gsub("'${TARGET_ARCH}'","");print $0;}'`
+#
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
