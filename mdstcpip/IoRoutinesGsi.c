@@ -17,6 +17,9 @@
 #ifdef _GNU_SOURCE
 #undef _GNU_SOURCE
 #endif
+#ifdef SIZEOF_LONG
+#undef SIZEOF_LONG
+#endif
 
 #include <STATICdef.h>
 #include <signal.h>
@@ -24,7 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <config.h>
 #include <time.h>
 #include <sys/wait.h>
 
