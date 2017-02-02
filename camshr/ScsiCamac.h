@@ -12,7 +12,10 @@
 
 #if OS == LINUX
 // for Linux of x86
-#include <linux/types.h>
+#include <stdint.h>
+#define __u8 uint8_t
+#define __u16 uint16_t
+#define __u32 uint32_t
 #endif
 
 #define QSTOP_MODE        		0
