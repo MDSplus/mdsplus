@@ -128,9 +128,6 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* "Define if you have the strsep routine" */
-#undef HAVE_STRSEP
-
 /* Define to 1 if `it_interval' is a member of `struct itimerspec'. */
 #undef HAVE_STRUCT_ITIMERSPEC_IT_INTERVAL
 

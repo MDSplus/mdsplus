@@ -141,7 +141,7 @@ AC_DEFUN([TS_SELECT],[
  dnl TS_CHECK_PYTHON_TAP( [$PYTHON],,
  dnl  [AC_MSG_WARN("Tap plugin for python-nose not found")])
 
- AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+ AS_VAR_APPEND([PY_LOG_COMPILER],  ["sh -c LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} ${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
 
  AS_CASE(["${build_os}:${host}"],
