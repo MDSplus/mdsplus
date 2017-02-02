@@ -7565,14 +7565,18 @@ $as_echo "$ax_cv_c_compiler_version" >&6; }
 
 
 
+
+
+
+
+
   case "${build}:${host}:${ax_cv_c_compiler_vendor}" in #(
   #
     # LINUX-GNU_64->LINUX-GNU_32 with GCC
     #
     x86_64*linux*:i?86-*linux*:*gnu*) :
 
-     as_fn_append CC " -m32"
-     as_fn_append CXX " -m32" ;; #(
+     as_fn_append TARGET_ARCH " -m32" ;; #(
   *) :
     # default
 
@@ -7651,12 +7655,10 @@ case "$host" in #(
 esac
 
 #AC_CONFIG_HEADER(include/config.h)
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the C preprocessor" >&5
+
+   ac_compile='$CC -c $CFLAGS $CPPFLAGS $TARGET_ARCH conftest.$ac_ext >&5'
+   ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $TARGET_ARCH $LDFLAGS conftest.$ac_ext $LIBS >&5'
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the C preprocessor" >&5
 $as_echo_n "checking how to run the C preprocessor... " >&6; }
 # On Suns, sometimes $CPP names a directory.
 if test -n "$CPP" && test -d "$CPP"; then
@@ -7782,11 +7784,9 @@ as_fn_error $? "C preprocessor \"$CPP\" fails sanity check
 See \`config.log' for more details" "$LINENO" 5; }
 fi
 
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+   ac_compile='$CC -c $CFLAGS $CPPFLAGS $TARGET_ARCH conftest.$ac_ext >&5'
+   ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $TARGET_ARCH $LDFLAGS conftest.$ac_ext $LIBS >&5'
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
@@ -9353,11 +9353,9 @@ MAKEETCDIR="\$(top_builddir)/etc/"
 
 
 
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+   ac_compile='$CC -c $CFLAGS $CPPFLAGS $TARGET_ARCH conftest.$ac_ext >&5'
+   ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $TARGET_ARCH $LDFLAGS conftest.$ac_ext $LIBS >&5'
 
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -9378,11 +9376,9 @@ $as_echo "#define HAVE_LL_CONSTANTS
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+   ac_compile='$CC -c $CFLAGS $CPPFLAGS $TARGET_ARCH conftest.$ac_ext >&5'
+   ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $TARGET_ARCH $LDFLAGS conftest.$ac_ext $LIBS >&5'
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if JNI libraries are different" >&5
