@@ -50,7 +50,6 @@ AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
 AX_TARGET_SELFHELP
 
-
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
@@ -62,33 +61,16 @@ AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
 
+
+dnl // Adds -m32 if it is missing //////////////////////////////////////////////
+AX_GCC_XCOMPILE_32
+
+
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
 AC_MSG_RESULT([before VISIBILITY])
 gl_VISIBILITY
 AC_MSG_RESULT([**********VISIBILITY*********$CFLAG_VISIBILITY*******************])
-#if test -n "$CFLAG_VISIBILITY" && test "$is_w32" != yes; then
-#	CFLAGS="$CFLAGS $CFLAG_VISIBILITY"
-#fi
-m4_pattern_allow([AC_CHECK_LIB])
-m4_rename([AC_CHECK_LIB],[ORIGINAL_AC_CHECK_LIB])
-AC_DEFUN([AC_CHECK_LIB],
-[
-  CFLAGS_s="$CFLAGS"
-  CFLAGS="$TARGET_ARCH $CFLAGS"
-  ORIGINAL_AC_CHECK_LIB([$1],[$2],[$3],[$4])
-  CFLAGS="$CFLAGS_s"
-  ])
-
-m4_pattern_allow([AC_SEARCH_LIBS])
-m4_rename([AC_SEARCH_LIBS],[ORIGINAL_AC_SEARCH_LIBS])
-AC_DEFUN([AC_SEARCH_LIBS],
-[
-  CFLAGS_s="$CFLAGS"
-  CFLAGS="$TARGET_ARCH $CFLAGS"
-  ORIGINAL_AC_SEARCH_LIBS([$1],[$2],[$3],[$4])
-  CFLAGS="$CFLAGS_s"
-  ])
 
 #FIXME: Remove this when Makefile.inc goes away
 #AS_CASE(["$MKDIR_P"],
