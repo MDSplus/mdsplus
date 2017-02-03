@@ -14,7 +14,7 @@
 #define MDS_MAC
 #define MDS_PTHREAD
 
-#elif defined (__gnu_linux__)
+#elif defined (__linux__) && defined(__GNUC__)
 #define MDS_LINUX
 #define MDS_PTHREAD
 
