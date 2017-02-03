@@ -5,7 +5,7 @@
 #include <time.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <sys/unistd.h>
+#include <unistd.h>
 
 #include <string.h>
 extern char *strsignal(int);
@@ -194,7 +194,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 ///
 
 void __mark_point(const char *__assertion, const char *__file,
-                  unsigned int __line, const char *__function
+                  ASSERT_LINE_TYPE __line, const char *__function
 		  __attribute__ ((unused)))
 {
     if(!suite) __test_init(__assertion,__file,__line);
@@ -207,7 +207,7 @@ void __mark_point(const char *__assertion, const char *__file,
 ///
 
 void __assert_fail (const char *__assertion, const char *__file,
-                    unsigned int __line, const char *__function
+                    ASSERT_LINE_TYPE __line, const char *__function
 		    __attribute__ ((unused)))
 {
     if(!suite) __test_init(__assertion,__file,__line);
