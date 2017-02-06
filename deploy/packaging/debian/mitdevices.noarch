@@ -69,8 +69,6 @@
 ./usr/local/mdsplus/tdi/MitDevices/__init__.py
 ./usr/local/mdsplus/tdi/MitDevices/_version.py
 ./usr/local/mdsplus/tdi/MitDevices/a14__part_name.fun
-./usr/local/mdsplus/tdi/MitDevices/a14_adjust.fun
-./usr/local/mdsplus/tdi/MitDevices/a14_clock_divide.fun
 ./usr/local/mdsplus/tdi/MitDevices/a3248.py
 ./usr/local/mdsplus/tdi/MitDevices/a3248__dw_setup.fun
 ./usr/local/mdsplus/tdi/MitDevices/acq.py
