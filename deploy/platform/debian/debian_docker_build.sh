@@ -133,12 +133,19 @@ Architectures: ${arches}
 Components: alpha stable${component}
 Description: MDSplus packages
 EOF
-    if [ -d /sign_keys/.gnupg ]
+    GPG_HOME=""
+    if [ -d /sign_keys/${OS}/.gnupg ]
     then
-        ls -l /sign_keys/.gnupg
-    	echo "SignWith: B1E664BFFCBB6F4614FB4A7C5D83C3E21325A989" >> /release/repo/conf/distributions
+	GPG_HOME="/sign_keys/${OS}"
+    elif [ -d /sign_keys/.gnupg ]
+    then
+	GPG_HOME="/sign_keys"
     fi
-    export HOME=/sign_keys
+    if [ ! -z "$GPG_HOME" ]
+    then
+    	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
+	export HOME="$GPG_HOME"
+    fi
     pushd /release/repo
     reprepro clearvanished
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${major}\.${minor}\.${release}_*")
