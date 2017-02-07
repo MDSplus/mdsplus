@@ -47,6 +47,7 @@
 ./usr/local/mdsplus/tdi/cacheshr
 ./usr/local/mdsplus/tdi/cacheshr/GetCheckedSegment.fun
 ./usr/local/mdsplus/tdi/cvttime.fun
+./usr/local/mdsplus/tdi/dev_data_support
 ./usr/local/mdsplus/tdi/dev_data_support/a14_adjust.fun
 ./usr/local/mdsplus/tdi/dev_data_support/a14_clock_divide.fun
 ./usr/local/mdsplus/tdi/dev_support
