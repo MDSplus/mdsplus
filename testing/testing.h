@@ -11,7 +11,7 @@
 #define __STRING(x)	#x
 #else
 #include <sys/cdefs.h>
-#ifdef __arm__
+#ifndef __THROW
 #define __THROW
 #endif
 #endif
