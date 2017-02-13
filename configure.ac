@@ -666,6 +666,7 @@ if test x"$have_readline" = x"yes"; then
 
   dnl  CPPFLAGS_save="${CPPFLAGS}"
   CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
+  LDFLAGS="${READLINE_LDFLAGS} ${LDFLAGS}"
   AC_CHECK_HEADERS(readline/readline.h readline/history.h
      ,,AC_MSG_ERROR("libreadline headers was not found"))     
   dnl this appears to be used so I add it here also.

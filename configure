@@ -9436,6 +9436,7 @@ if test x"$have_readline" = x"yes"; then
   TDIC="tdic"
 
     CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
+  LDFLAGS="${READLINE_LDFLAGS} ${LDFLAGS}"
   for ac_header in readline/readline.h readline/history.h
 
 do :
