@@ -9435,8 +9435,7 @@ if test x"$have_readline" = x"yes"; then
   LIBREADLINE="${READLINE_LIBS}"
   TDIC="tdic"
 
-  CPPFLAGS_save="${CPPFLAGS}"
-  CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
+    CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
   for ac_header in readline/readline.h readline/history.h
 
 do :
@@ -9464,10 +9463,7 @@ _ACEOF
 fi
 done
 
-  CPPFLAGS=$CPPFLAGS_save
-else
-  as_fn_error $? "readline library was not found and must be installed." "$LINENO" 5
-fi
+      fi
 
 
 
