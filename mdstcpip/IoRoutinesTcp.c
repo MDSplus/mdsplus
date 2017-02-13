@@ -372,10 +372,10 @@ static void SetSocketOptions(SOCKET s, int reuse){
       if (winsize) {
           sendbuf = atoi(winsize);
           recvbuf = atoi(winsize);
+          set_window_size = 1;
         }
       debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
       init = 0;
-      set_window_size = 1;
     }
 #ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
