@@ -366,6 +366,7 @@ static void SetSocketOptions(SOCKET s, int reuse){
   socklen_t len;
   static int debug_winsize = 0;
   static int init = 1;
+  static int set_window_size = 0;
   if (init) {
       char *winsize = getenv("TCP_WINDOW_SIZE");
       if (winsize) {
@@ -374,12 +375,15 @@ static void SetSocketOptions(SOCKET s, int reuse){
         }
       debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
       init = 0;
+      set_window_size = 1;
     }
 #ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
 #endif
-  setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
-  setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
+  if(set_window_size) {
+      setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
+      setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
+  }
   if (debug_winsize) {
       getsockopt(s, SOL_SOCKET, SO_RCVBUF, (void *)&recvbuf, &len);
       fprintf(stderr, "Got a recvbuf of %d\n", recvbuf);
