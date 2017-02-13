@@ -22,13 +22,11 @@ CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 java_JAVA = $(SOURCES)
 
 # Build the final jar
-java_DATA = jTraverser.jar DeviceBeans.jar TreeServer_Stub.class
+java_DATA = jTraverser.jar DeviceBeans.jar 
 
-TreeServer_Stub.class: classjava.stamp
-	$(RMIC) TreeServer
 
-jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(addprefix -C ${srcdir} ,$(GIFS))
+jTraverser.jar: $(GIFS) classjava.stamp
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
 	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
@@ -156,7 +154,6 @@ SOURCES = \
 	Tree.java\
 	TreeDialog.java\
 	TreeNode.java\
-	TreeServer.java\
 	UnsupportedDataException.java\
 	WindowData.java\
 	WindowEditor.java\
