@@ -215,7 +215,7 @@ class Device(_treenode.TreeNode):
         @rtype: Device
         """
         if name == 'part_name' or name == 'original_part_name':
-            return self.ORIGINAL_PART_NAME(None)
+            return self.ORIGINAL_PART_NAME()
         try:
             return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
         except KeyError:
