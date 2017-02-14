@@ -1,5 +1,5 @@
-from MDSplus import Device, List
-from MDSplus import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSUCCESS
+from MDSplus import TreeNode, Device, List
+from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION,MDSplusSUCCESS
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
@@ -16,20 +16,25 @@ def PyDoMethod(n,method,*args):
                 return methodobj(None)
             else:
                 raise exc
+    method = str(method)
+    model = n.__class__.__name__
+    result = None
     try:
-        device = n.conglomerate_nids[0]
-        c = device.record
-        model = str(c.model)
-        method = str(method)
-        result = None
-        if not hasattr(Device,method):
-            print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
-        if not isinstance(device, (Device,)):
-            device = c.getDevice(device)
-        try:
-            methodobj = device.__getattribute__(method)
-        except AttributeError:
-            raise TreeNOMETHOD()
+        if method in TreeNode.__dict__:
+            methodobj = n.__getattribute__(method)
+        else:
+            device = n.conglomerate_nids[0]
+            c = device.record
+            model = str(c.model)
+            result = None
+            if not isinstance(device, (Device,)):
+                device = c.getDevice(device)
+            try:
+                methodobj = device.__getattribute__(method)
+            except AttributeError:
+                raise TreeNOMETHOD()
+            if not method in Device.__dict__:
+                print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
         result = domethod(methodobj,args)
         status = MDSplusSUCCESS.status
     except MDSplusException as exc:
