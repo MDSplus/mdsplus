@@ -175,6 +175,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	    } else {
 	      (*TdiExecute)(&dollar_d,statd,ans_xd, MdsEND_ARG);
 	    }
+            if (statd) status = *(int*)statd->pointer;
 	  }
 	  else {
 	    (*TdiExecute)(&dollar_d,&stat_d,ans_xd, MdsEND_ARG);
