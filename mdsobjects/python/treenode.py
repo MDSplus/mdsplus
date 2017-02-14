@@ -46,7 +46,7 @@ class TreeNode(_data.Data):
     @ivar tree: Tree instance that this node belongs to.
     @type tree: Tree
     """
-
+    _original_part_name=None
     def __new__(cls,nid,tree=None):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
@@ -78,6 +78,36 @@ class TreeNode(_data.Data):
             self.tree=_tree.Tree()
         else:
             self.tree=tree
+        if self.conglomerate_elt>0:
+            nids=self.conglomerate_nids.nid_number
+            self.head=int(nids[0])
+            if self.head==self.nid:
+                self._original_part_name = ""
+            else:
+                try:
+                    dev = TreeNode(self.head,self.tree)
+                    dev = dev.record.getDevice(dev)
+                    idx = self.nid-self.head-1
+                    self._original_part_name = dev.part_names[idx]
+                except Exception as e:
+                    print(e)
+        else:
+            self.head=None
+
+    def ORIGINAL_PART_NAME(self):
+        """Method to return the original part name.
+        Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
+        @return: Part name of this node
+        @rtype: str
+        """
+        if self.head is None:
+            return None
+        if self.head == self.nid:
+            return ""
+        if self._original_part_name is None:
+            self._original_part_name = self.original_part_name
+        return self._original_part_name
+    PART_NAME=ORIGINAL_PART_NAME
 
     def __hasBadTreeReferences__(self,tree):
        return self.tree != tree

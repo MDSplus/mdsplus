@@ -227,7 +227,7 @@ class Tree(object):
                     raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
                 opened = True
             if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
-                raise _exc.MDSplusError
+                raise _Exceptions.MDSplusError
             _setActiveTree(self.ctx.value)
             _treeshr.switchDbid(self.ctx.value)
             self.tctx = _TreeCtx(self.ctx.value,opened)

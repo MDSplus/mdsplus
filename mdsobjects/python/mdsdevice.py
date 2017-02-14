@@ -185,27 +185,7 @@ class Device(_treenode.TreeNode):
         @rtype: None
         """
         if isinstance(node,_treenode.TreeNode):
-            try:
-                self.nids=node.conglomerate_nids.nid_number
-                self.head=int(self.nids[0])
-            except Exception:
-                self.head=node.nid
             super(Device,self).__init__(node.nid,node.tree)
-
-    def ORIGINAL_PART_NAME(self):
-        """Method to return the original part name.
-        Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @return: Part name of this node
-        @rtype: str
-        """
-        name = ""
-        if self.nid != self.head:
-            try:
-                name = self.part_names[self.nid-self.head-1].upper()
-            except:
-                pass
-        return name
-    PART_NAME=ORIGINAL_PART_NAME
 
     def __getattr__(self,name):
         """Return TreeNode of subpart if name matches mangled node name.
