@@ -70,7 +70,7 @@ static int Initialize()
     char *envsym = getenv("PyLib");
     if (!envsym) {
       fprintf(stderr,"\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\nPlease define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
-      return 0;
+      return MDSplusERROR;
     }
 #ifdef RTLD_NOLOAD
     /*** See if python routines are already available ***/
@@ -95,7 +95,7 @@ static int Initialize()
       if (!handle) {
         fprintf(stderr, "\n\nUnable to load python library: %s\nError: %s\n\n", lib, dlerror());
         free(lib);
-        return 0;
+        return MDSplusERROR;
       }
       free(lib);
       loadrtn(Py_Initialize, 1);
@@ -143,7 +143,7 @@ static int Initialize()
     loadrtn(PyList_GetItem, 1);
     loadrtn(PyObject_Str,1);
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 static char *getStringFromPyObj(PyObject *obj) {
@@ -176,7 +176,7 @@ static PyObject *getFunction(char *modulename, char *functionname)
      if an error.
    */
   PyObject *module;
-  PyObject *ans = 0;
+  PyObject *ans = NULL;
   module = (*PyImport_ImportModule)(modulename);
   if (!module) {
     printf("Error importing module %s\n", modulename);
@@ -194,7 +194,7 @@ static PyObject *getFunction(char *modulename, char *functionname)
       if (!(*PyCallable_Check)(ans)) {
         printf("Error, item called '%s' in module %s is not callable\n", functionname, modulename);
         (*Py_DecRef)(ans);
-        ans = 0;
+        ans = NULL;
       }
     }
     (*Py_DecRef)(module);
@@ -209,17 +209,16 @@ static void addToPath(char *dirspec)
   Py_ssize_t idx, listlen;
   PyObject *sys_path;
   PyObject *path;
-  int found = 0;
+  int found = B_FALSE;
   sys_path = (*PySys_GetObject)("path");
   listlen = (*PyList_Size)(sys_path);
-  for (idx = 0; idx < listlen && (found == 0); idx++) {
+  for (idx = 0; idx < listlen && (found == B_FALSE); idx++) {
     PyObject *pathPart;
     pathPart = (*PyList_GetItem)(sys_path, idx);
-    if (strcmp(getStringFromPyObj((*PyObject_Str)(pathPart)), dirspec) == 0) {
-      found = 1;
-    }
+    if (strcmp(getStringFromPyObj((*PyObject_Str)(pathPart)), dirspec) == 0)
+      found = B_TRUE;
   }
-  if (found != 1) {
+  if (found == B_FALSE) {
     path = pyObjFromString(dirspec);
     (*PyList_Insert)(sys_path, (Py_ssize_t) 0, path);
   }
@@ -328,7 +327,7 @@ int TdiExtPython(struct descriptor *modname_d,
 {
   /* Try to locate a python module in the MDS_PATH search list and if found execute a function with the same name
      as the module in that module passing the arguments and get the answer back from python. */
-  int status = TdiUNKNOWN_VAR;
+  INIT_STATUS;
   char *filename;
 #ifndef _WIN32
   struct sigaction offact;
@@ -339,7 +338,8 @@ int TdiExtPython(struct descriptor *modname_d,
 #endif
   char *dirspec = findModule(modname_d, &filename);
   if (dirspec) {
-    if (Initialize()) {
+    status = Initialize();
+    if STATUS_OK {
       PyThreadState *GIL = (*PyGILState_Ensure)();
       PyObject *ans;
       PyObject *pyFunction;
@@ -352,21 +352,25 @@ int TdiExtPython(struct descriptor *modname_d,
         pyArgs = argsToTuple(nargs, args);
         ans = (*PyObject_CallObject)(pyFunction, pyArgs);
         if (!ans) {
-          printf("Error calling fun in %s\n", filename);
-          if ((*PyErr_Occurred)()) {
+          PyObject* exc = PyErr_Occurred();
+          if (exc) {
+            printf("Error calling fun in %s\n", filename);
             (*PyErr_Print)();
+            PyObject *status_obj = (*PyObject_GetAttrString)(exc, "status");
+            status = (int)(*PyLong_AsLong)(status_obj);
+            if (status==0) status = MDSplusERROR;
+            (*Py_DecRef)(status_obj);
           }
         } else {
           getAnswer(ans, out_ptr);
           (*Py_DecRef)(ans);
-          status = MDSplusSUCCESS;
         }
         (*Py_DecRef)(pyArgs);
         (*Py_DecRef)(pyFunction);
-      }
+      } else status = TdiUNKNOWN_VAR;
       (*PyGILState_Release)(GIL);
     }
-  }
+  } else status = TdiUNKNOWN_VAR;
 #ifndef _WIN32
   sigaction(SIGCHLD, &oldact, NULL);
 #endif
