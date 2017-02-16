@@ -1,9 +1,8 @@
-from MDSplus import TreeNode, Device, List
+from MDSplus import TreeNode, Device
 from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
-    print(("PyDoMethod",n,method,args))
     def domethod(methodobj,args):
         try:
             return methodobj(*args)
@@ -28,13 +27,13 @@ def PyDoMethod(n,method,*args):
             try:
                 methodobj = device.__getattribute__(method)
             except AttributeError:
-                raise TreeNOMETHOD()
+                raise TreeNOMETHOD
             if not method in Device.__dict__:
                 print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
-        return List([1,domethod(methodobj,args)])
-    except MDSplusException as exc:
-        return List([exc.status,None])
+        return domethod(methodobj,args)
+    except MDSplusException:
+        raise
     except Exception as exc:
         stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
-        return List([PyUNHANDLED_EXCEPTION.status,None])
+        raise PyUNHANDLED_EXCEPTION
 
