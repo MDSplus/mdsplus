@@ -367,7 +367,7 @@ static void CommandDone(DispatchedCommand * command)
 
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  INIT_STATUS,stat1=0;
+  INIT_STATUS,stat1=ServerPATH_DOWN;
   char *cli = NULL;
   char *ident = NULL;
   DispatchedCommand *command = calloc(1,sizeof(DispatchedCommand));
@@ -381,8 +381,10 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
       SYNCINIT;
       status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, CommandDone, command, &stat1, 0);
       if STATUS_OK SYNCWAIT;
-    } else
-      status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, 0);
+    } else {
+     command->sts = ServerPATH_DOWN;
+     status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, 0);
+    }
     if STATUS_NOT_OK {
       char *msg = MdsGetMsg(status);
       *error = malloc(100 + strlen(msg));
