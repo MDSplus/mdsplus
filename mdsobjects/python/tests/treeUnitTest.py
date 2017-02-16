@@ -16,7 +16,7 @@ class treeTests(TestCase):
 
     @property
     def shot(self):
-        return self.shotdic[current_thread().ident]
+        return self.__class__.shotdic[current_thread().ident]
 
     def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
@@ -386,15 +386,17 @@ def suite():
         tests += ['dclInterface','dispatcher']
     return TestSuite(map(treeTests,tests))
 
+def run():
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
+
 if __name__=='__main__':
     import sys
     if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
         import objgraph
     else:      objgraph = None
     import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    from unittest import TextTestRunner
-    TextTestRunner().run(suite())
+    run()
     if objgraph:
          gc.collect()
          objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
