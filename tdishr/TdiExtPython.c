@@ -347,7 +347,6 @@ int TdiExtPython(struct descriptor *modname_d,
       addToPath(dirspec);
       free(dirspec);
       pyFunction = getFunction(filename, filename);
-      free(filename);
       if (pyFunction) {
         pyArgs = argsToTuple(nargs, args);
         ans = (*PyObject_CallObject)(pyFunction, pyArgs);
@@ -368,6 +367,7 @@ int TdiExtPython(struct descriptor *modname_d,
         (*Py_DecRef)(pyArgs);
         (*Py_DecRef)(pyFunction);
       } else status = TdiUNKNOWN_VAR;
+      free(filename);
       (*PyGILState_Release)(GIL);
     }
   } else status = TdiUNKNOWN_VAR;

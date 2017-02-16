@@ -1,11 +1,12 @@
-from MDSplus import TreeNode, Device, makeData
+from MDSplus import TreeNode, Device, List
 from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
+    print(("PyDoMethod",n,method,args))
     def domethod(methodobj,args):
         try:
-            return makeData(methodobj(*args))
+            return methodobj(*args)
         except TypeError as exc:
             if exc.message.startswith(method+'()'):
                 print('Your device method %s.%s requires at least one argument.' % (model,method))
@@ -30,10 +31,10 @@ def PyDoMethod(n,method,*args):
                 raise TreeNOMETHOD()
             if not method in Device.__dict__:
                 print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
-        return makeData(domethod(methodobj,args))
-    except MDSplusException:
-        raise
+        return List([1,domethod(methodobj,args)])
+    except MDSplusException as exc:
+        return List([exc.status,None])
     except Exception as exc:
         stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
-        raise PyUNHANDLED_EXCEPTION
+        return List([PyUNHANDLED_EXCEPTION.status,None])
 
