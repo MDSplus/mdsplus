@@ -1,4 +1,4 @@
-from unittest import TestCase,TestSuite
+from unittest import TestCase,TestSuite,TextTestRunner
 from threading import Thread
 from cStringIO import StringIO
 

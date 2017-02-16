@@ -241,10 +241,15 @@ class treeTests(TestCase):
         self.assertEqual(ip.no_write_model,ip.isNoWriteModel())
         self.assertEqual(ip.write_once,False)
         self.assertEqual(ip.write_once,ip.isWriteOnce())
-        devs=pytree.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
-        dev=devs[0].conglomerate_nids
-        self.assertEqual(dev[3].original_part_name,':COMMENT')
-        self.assertEqual(dev[3].original_part_name,dev[3].getOriginalPartName())
+        pydev = pytree.TESTDEVICE
+        part = pydev.conglomerate_nids[1]
+        self.assertEqual(part.PART_NAME(),':ACTIONSERVER')
+        self.assertEqual(part.original_part_name,str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")',part)))
+        self.assertEqual(pydev.__class__,Device.PyDevice('TestDevice'))
+        devs = pytree.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
+        part = devs[0].conglomerate_nids[3]
+        self.assertEqual(part.original_part_name,':COMMENT')
+        self.assertEqual(part.original_part_name,str(Data.execute('GETNCI($,"ORIGINAL_PART_NAME")',part)))
         self.assertEqual(ip.owner_id,ip.getOwnerId())
         self.assertEqual(ip.rlength,168)
         self.assertEqual(ip.rlength,ip.getCompressedLength())
@@ -299,6 +304,8 @@ class treeTests(TestCase):
         self._doTCLTest('show db','\n')
         self._doTCLTest('set tree pytree/shot=%d'%self.shot)
         self._doTCLTest('show db','000  PYTREE        shot: %d [\\PYTREE::TOP]   \n\n'%self.shot)
+        self._doTCLTest('do TESTDEVICE:TASK_TEST')
+        self._doExceptionTest('do TESTDEVICE:TASK_ERROR',Exc.DevUNKOWN_STATE)
         self._doTCLTest('close')
         self._doTCLTest('show db','\n')
         """ tcl exceptions """
@@ -323,10 +330,10 @@ class treeTests(TestCase):
         pytree = Tree('pytree',self.shot)
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
-        pytree.close()
+        #pytree.close()
         """ using dispatcher """
         hosts = '%s/mdsip.hosts'%self.root
-        tcl('set tree pytree/shot=%d'%self.shot,1,1,1)
+        #tcl('set tree pytree/shot=%d'%self.shot,1,1,1)
         log = None
         try:
           if Popen:
