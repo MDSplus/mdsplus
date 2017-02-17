@@ -1003,7 +1003,6 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 @MINGW_FALSE@$(bin_SCRIPTS): $(srcdir)/jTraverser.template
 @MINGW_FALSE@	cp $< $@
 
-
 jTraverser.jar: $(GIFS) classjava.stamp
 	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 

@@ -14535,7 +14535,7 @@ fi
  abs_srcdir=$(cd ${srcdir}; pwd)
 
 
- as_fn_append PY_LOG_COMPILER "sh -c LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} ${PYTHON} -B \$(top_srcdir)/testing/testing.py"
+ as_fn_append PY_LOG_COMPILER "sh -c \"LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} ${PYTHON} -B \$(top_srcdir)/testing/testing.py\""
  as_fn_append PY_LOG_FLAGS ""
 
  case "${build_os}:${host}" in #(
