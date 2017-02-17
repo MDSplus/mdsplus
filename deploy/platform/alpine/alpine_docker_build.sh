@@ -43,17 +43,25 @@ buildrelease() {
     release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     set -e
     MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
-    mkdir -p ${MDSPLUS_DIR};
-    mkdir -p /workspace/releasebld/${ARCH};
-    pushd /workspace/releasebld/${ARCH};
-    config ${ARCH} ${host} bin lib $(getglobus ${ARCH}) $(getjava ${ARCH})
+    mkdir -p ${MDSPLUS_DIR}
+    mkdir -p /workspace/releasebld/${ARCH}
+#    rm -Rf /workspace/releasebld/${ARCH}/*
+    pushd /workspace/releasebld/${ARCH}
+    config ${ARCH} ${host} bin lib $(getjava ${ARCH})
     $MAKE
     $MAKE install
     popd;
+    BUILDROOT=/workspace/releasebld/buildroot \
+    BRANCH=${BRANCH} \
+    RELEASE_VERSION=${RELEASE_VERSION} \
+    ARCH=${ARCH} \
+    DISTNAME=${DISTNAME} \
+    HOME=/ /source/deploy/platform/alpine/alpine_build_apks.py
 }
 
 publish() {
-    ::
+    
+    rsync -a /release/${BRANCH} /publish/
 }
 
 

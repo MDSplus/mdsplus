@@ -380,6 +380,16 @@ then
 fi
 
     </postrm>
+    <post-install>
+ln -sf /mdsplus /usr/local/
+ln -sf /usr/local/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
+ln -sf /usr/local/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
+    </post-install>
+    <pre-deinstall>
+rm -f /usr/local/mdsplus
+rm -f /etc/profile.d/mdsplus.sh
+rm -f /etc/profile.d/mdsplus.csh
+    </pre-deinstall>
 
   </package>
 
@@ -569,6 +579,20 @@ fi
       popd &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
+    <post-install>
+      oldpwd="$(pwd)"
+      cd /mdsplus/mdsobjects/python
+      python setup.py -q install
+      rm -Rf build dist MDSplus.egg-info
+      cd "$oldpwd"
+    </post-install>
+    <pre-deinstall>
+      rm -Rf $(python -c $(python -c "import site; print(site.getsitepackages()[0])")/mdsplus*
+    </pre-deinstall>
+    <pre-upgrade>
+      rm -Rf $(python -c $(python -c "import site; print(site.getsitepackages()[0])")/mdsplus*
+    </pre-upgrade>
+      
     <prerm>
 
       if [ "$1" == "0" ]
@@ -633,11 +657,17 @@ AutoReqProv: yes
    <xinetd/>
    <java/>
  </external_packages>
+ <external_packages platform="alpine">
+   <python-devel package="python-dev"/>
+   <setuptools package="py-setuptools"/>
+   <numpy package="py-numpy"/>
+   <java package="openjdk8"/>
+ </external_packages>
  <external_packages platform="debian">
    <python-devel package="python-dev"/>
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>
-   <xinetd/>
+   <xinetd package="busybox"/>
    <java package="default-jre"/>
  </external_packages>
 </deploy>

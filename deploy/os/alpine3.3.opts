@@ -1,1 +1,1 @@
---platform=alpine --dockerimage=mdsplus/docker:alpine-3.3-x86,mdsplus/docker:alpine-3.3-x86_64,mdsplus/docker:alpine-3.3-armhf --distname=alpine3.3 --arch=x86,x86_64,armhf
+--platform=alpine --dockerimage=mdsplus/docker:alpine-3.3-x86,mdsplus/docker:alpine-3.3-x86_64,mdsplus/docker:alpine-3.3-armhf --distname=alpine/3.3 --arch=x86,x86_64,armhf
