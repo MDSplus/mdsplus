@@ -6,11 +6,8 @@
 #
 # Run docker image to build mdsplus
 #
+# Enable arm emulation support in host kernel
+#docker run --rm --privileged multiarch/qemu-user-static:register --reset
+#
 default_build
-#if [ "${RELEASE}" = "yes" ]
-#then
-#  # clean up repobefor creating a new release
-#  rm -Rf ${RELEASEDIR}/${BRANCH}/DEBS &>/dev/null
-#  rm -Rf ${RELEASEDIR}/repo           &>/dev/null
-#fi
 rundocker
