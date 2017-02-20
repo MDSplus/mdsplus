@@ -133,34 +133,34 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])])
 
-# Add address sanitizer options to flags, if requested. Only useful for GCC
-# version 4.8 and later.
-AC_ARG_ENABLE([sanitize-address],
-  [AS_HELP_STRING(
-    [--enable-sanitize-address],
-    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
-  )],
-  [enable_san_a="$enableval"],
-  [enable_san_a="no"]
-)
+dnl # Add address sanitizer options to flags, if requested. Only useful for GCC
+dnl # version 4.8 and later.
+dnl AC_ARG_ENABLE([sanitize-address],
+dnl  [AS_HELP_STRING(
+dnl    [--enable-sanitize-address],
+dnl    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
+dnl  )],
+dnl  [enable_san_a="$enableval"],
+dnl  [enable_san_a="no"]
+dnl )
 
-AC_ARG_ENABLE([sanitize-undefined],
-  [AS_HELP_STRING(
-    [--enable-sanitize-undefined],
-    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
-  )],
-  [enable_san_u="$enableval"],
-  [enable_san_u="no"]
-)
+dnl AC_ARG_ENABLE([sanitize-undefined],
+dnl  [AS_HELP_STRING(
+dnl    [--enable-sanitize-undefined],
+dnl    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
+dnl  )],
+dnl  [enable_san_u="$enableval"],
+dnl  [enable_san_u="no"]
+dnl )
 
-AC_ARG_ENABLE([sanitize-thread],
-  [AS_HELP_STRING(
-    [--enable-sanitize-address],
-    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
-  )],
-  [enable_san_t="$enableval"],
-  [enable_san_t="no"]
-)
+dnl AC_ARG_ENABLE([sanitize-thread],
+dnl  [AS_HELP_STRING(
+dnl    [--enable-sanitize-address],
+dnl    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
+dnl  )],
+dnl  [enable_san_t="$enableval"],
+dnl  [enable_san_t="no"]
+dnl )
 
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
@@ -1017,7 +1017,7 @@ AX_PERL_MODULE_VERSION(TAP::Parser 0 TAP::Parser::Aggregator 0,
 AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 
  # check for valgrind
- AX_VALGRIND_CHECK
+ AX_VALGRIND_CHECK([ENABLE_VALGRIND])
 
  # check for sanitizer
  AX_ENABLE_SANITIZE([ENABLE_SANITIZE],

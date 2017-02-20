@@ -94,15 +94,19 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-#  TESTS_ENVIRONMENT += LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH}
 @ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${${ENABLE_SANITIZE_OPTIONS}_SUPP}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
 @ENABLE_SANITIZE_TRUE@	LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS} \
+@ENABLE_SANITIZE_TRUE@	TEST_LD_PRELOAD=${TEST_LD_PRELOAD} \
 @ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
 @ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
 @ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
 TESTS = $(am__EXEEXT_1) $(PY_TESTS) $(am__EXEEXT_2)
+XFAIL_TESTS = error_test$(EXEEXT) example4$(EXEEXT) \
+	example_assert$(EXEEXT) fork_fail$(EXEEXT) \
+	timeout_fail$(EXEEXT) py_fail.py $(am__EXEEXT_3)
+@ENABLE_VALGRIND_TRUE@am__append_3 = leak_test
 bin_PROGRAMS = example3$(EXEEXT) example_assert$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = testing/selftest
@@ -452,6 +456,7 @@ am__set_TESTS_bases = \
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
 am__EXEEXT_2 =
+@ENABLE_VALGRIND_TRUE@am__EXEEXT_3 = leak_test$(EXEEXT)
 TEST_SUITE_LOG = test-suite.log
 LOG_COMPILE = $(LOG_COMPILER) $(AM_LOG_FLAGS) $(LOG_FLAGS)
 am__set_b = \
@@ -535,6 +540,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -681,7 +687,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
@@ -807,7 +812,8 @@ C_TESTS = \
           timeout_fail
 
 PY_TESTS = \
-           pyex1.py
+	   pyex1.py \
+	   py_fail.py
 
 PL_TESTS = 
 example3_SOURCES = example3.cpp
@@ -819,6 +825,16 @@ example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
 MOSTLYCLEANFILES = \
                    *.out \
                    libMdsTestDummy.so
+
+
+# DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
+# python will finally introduce the patch to detect if valgrind is running ..
+# take a look at the file for details. You can also disable this if you are
+# using a Python compiled with --without-pymalloc (only for valgrind as it is 5
+# times slower to run)
+#
+VALGRIND_SUPPRESSIONS_FILES_PY = \
+	 ${top_srcdir}/conf/valgrind-python-disableleak.supp
 
 check_SCRIPTS = $(PY_TESTS) $(PL_TESTS)
 all: all-am
@@ -1469,8 +1485,8 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 include @top_builddir@/Makefile.inc
-TEST_FORMAT    ?= log,tap
-AM_MAKEFLAGS   ?= V=0
+TEST_FORMAT     ?= log,tap
+AM_MAKEFLAGS    ?= V=0
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
@@ -1523,6 +1539,14 @@ tests: rebuild-tests
 @ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-asan.supp
 @ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-tsan.supp
 @ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/gcc-ubsan.supp
+
+@ENABLE_SANITIZE_TRUE@  # Preloaded libraries to be exported within the test-driver script. This was
+@ENABLE_SANITIZE_TRUE@  # done to avoid having libraries for 32bit preloaded when we trigger the
+@ENABLE_SANITIZE_TRUE@  # shell executable to run script. NOTE: This could harm a possible preload
+@ENABLE_SANITIZE_TRUE@  # order that we would add in the future ... maybe an AM_LD_PRELOAD should be
+@ENABLE_SANITIZE_TRUE@  # foreseen.
+@ENABLE_SANITIZE_TRUE@  #
+@ENABLE_SANITIZE_TRUE@  TEST_LD_PRELOAD    ?= ${ENABLE_SANITIZE_LIBPATH}
 
 @ENABLE_SANITIZE_TRUE@  # // NOTE:
 @ENABLE_SANITIZE_TRUE@  # somtimes thread sanitizer does not work with python... probably because of
