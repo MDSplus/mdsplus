@@ -56,12 +56,12 @@ class TreeNode(_data.Data):
         _mdsdevice=_mimport('mdsdevice')
         node = super(TreeNode,cls).__new__(cls)
         if head is None and not isinstance(node,_mdsdevice.Device):
+            TreeNode.__init__(node,nid,tree=tree)
             try:
-                TreeNode.__init__(node,nid,tree=tree)
                 if node.usage == "DEVICE":
+                    node._head = 0
                     return node.record.getDevice(node)
-            except:
-                pass
+            except: pass
         return node
 
     def __init__(self,n,tree=None,head=None):
@@ -85,9 +85,11 @@ class TreeNode(_data.Data):
             nids=self.conglomerate_nids.nid_number
             head_nid=int(nids[0])
             if head_nid==self.nid:
-                self._head = self
+                self._head = 0
             else:
-                self._head = TreeNode(head_nid,self.tree)
+                self._head = TreeNode(head_nid,self.tree,0)
+        if isinstance(self,(int,)):
+            return self
         return self._head
 
     _original_part_name = None
@@ -102,8 +104,8 @@ class TreeNode(_data.Data):
         if self.head.nid is self.nid:
             return ""
         if self._original_part_name is None:
-            device = self._head.record.getDevice()
-            self._original_part_name = device.parts[self.nid-self._head.nid-1]['path']
+            device = self.head.record.getDevice()
+            self._original_part_name = device.parts[self.nid-self.head.nid-1]['path']
         return self._original_part_name
     PART_NAME=ORIGINAL_PART_NAME
 

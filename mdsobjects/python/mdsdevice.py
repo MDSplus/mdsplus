@@ -147,7 +147,7 @@ class Device(_treenode.TreeNode):
     parts      = []
     part_names = tuple()
     part_dict  = {}
-    def __new__(cls,node):
+    def __new__(cls,node,tree=None,head=0):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
@@ -156,8 +156,8 @@ class Device(_treenode.TreeNode):
         """
         if cls is Device:
             try:
-                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
-                return head.record.getDevice(head)
+                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree,0)
+                return head.record.getDevice(head,head=0)
             except:
                 raise TypeError("Cannot create instances of Device class")
         else:
@@ -169,16 +169,18 @@ class Device(_treenode.TreeNode):
                     except:
                         pass
                 cls.__initialized = True
-            return super(Device,cls).__new__(cls,node)
+            return super(Device,cls).__new__(cls,node,tree,head)
 
-    def __init__(self,node,tree=None):
+    def __init__(self,node,tree=None,head=0):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
         @rtype: None
         """
         if isinstance(node,_treenode.TreeNode):
-            super(Device,self).__init__(node.nid,node.tree)
+            super(Device,self).__init__(node.nid,node.tree,head)
+        else:
+            super(Device,self).__init__(node,tree,head)
 
     def __getattr__(self,name):
         """Return TreeNode of subpart if name matches mangled node name.
