@@ -144,6 +144,7 @@ class Device(_treenode.TreeNode):
     """ /debug safe import """
 
     __initialized = False
+    parts      = []
     part_names = tuple()
     part_dict  = {}
     def __new__(cls,node):
