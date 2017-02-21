@@ -157,7 +157,7 @@ class Device(_treenode.TreeNode):
         if cls is Device:
             try:
                 head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree,0)
-                return head.record.getDevice(head,head=0)
+                return head.record.getDevice(head)
             except:
                 raise TypeError("Cannot create instances of Device class")
         else:
@@ -314,13 +314,21 @@ class Device(_treenode.TreeNode):
     waitForSetups=classmethod(waitForSetups)
 
     __cached_py_device_modules = {}
+    __cached_mds_pydevice_path = ""
+    __cached_py_device_not_found = []
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
+        path = _mdsshr.getenv("MDS_PYDEVICE_PATH")
+        if not path == Device.__cached_mds_pydevice_path:
+            Device.__cached_py_device_modules   = {}
+            Device.__cached_py_device_not_found = []
+            Device.__cached_mds_pydevice_path = path
         name = name.lower()
         if name in Device.__cached_py_device_modules:
             return Device.__cached_py_device_modules[name]
+        if name in Device.__cached_py_device_modules:
+            raise _exceptions.DevPYDEVICE_NOT_FOUND
         if path is not None:
           check_name=name+".py"
           parts=path.split(';')
@@ -336,6 +344,7 @@ class Device(_treenode.TreeNode):
                     return device
                   finally:
                     _sys.path.remove(dp)
+        Device.__cached_py_device_not_found.append(name)
         raise _exceptions.DevPYDEVICE_NOT_FOUND
     importPyDeviceModule=staticmethod(importPyDeviceModule)
 

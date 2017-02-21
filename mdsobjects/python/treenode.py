@@ -56,7 +56,7 @@ class TreeNode(_data.Data):
         _mdsdevice=_mimport('mdsdevice')
         node = super(TreeNode,cls).__new__(cls)
         if head is None and not isinstance(node,_mdsdevice.Device):
-            TreeNode.__init__(node,nid,tree=tree)
+            TreeNode.__init__(node,nid,tree)
             try:
                 if node.usage == "DEVICE":
                     node._head = 0
