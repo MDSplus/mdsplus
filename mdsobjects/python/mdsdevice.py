@@ -143,22 +143,9 @@ class Device(_treenode.TreeNode):
             Device._debug(' failed: %s\n'%exc)
     """ /debug safe import """
 
-    def __class_init__(cls):
-        if not hasattr(cls,'initialized'):
-            if hasattr(cls,'parts'):
-                cls.part_names=list()
-                for elt in cls.parts:
-                    cls.part_names.append(elt['path'])
-            if hasattr(cls,'part_names') and not hasattr(cls,'part_dict'):
-                cls.part_dict=dict()
-                for i in range(len(cls.part_names)):
-                    try:
-                        cls.part_dict[cls.part_names[i][1:].lower().replace(':','_').replace('.','_')]=i+1
-                    except:
-                        pass
-            cls.initialized=True
-    __class_init__=classmethod(__class_init__)
-
+    __initialized = False
+    part_names = tuple()
+    part_dict  = {}
     def __new__(cls,node):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
@@ -166,16 +153,21 @@ class Device(_treenode.TreeNode):
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        if cls.__name__ == 'Device':
+        if cls is Device:
             try:
                 head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
-                model=str(head.record.model)
-                return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
+                return head.record.getDevice(head)
             except:
-                pass
-            raise TypeError("Cannot create instances of Device class")
+                raise TypeError("Cannot create instances of Device class")
         else:
-            cls.__class_init__();
+            if not cls.__initialized:
+                cls.part_names = tuple(elt['path'] for elt in cls.parts)
+                for i,partname in enumerate(cls.part_names):
+                    try:
+                       cls.part_dict[partname[1:].lower().replace(':','_').replace('.','_')]=i+1
+                    except:
+                        pass
+                cls.__initialized = True
             return super(Device,cls).__new__(cls,node)
 
     def __init__(self,node,tree=None):
@@ -227,7 +219,6 @@ class Device(_treenode.TreeNode):
         """
         parent = tree
         if isinstance(tree, _treenode.TreeNode): tree = tree.tree
-        cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         if isinstance(name,_ident.Ident):
             name=name.data()
