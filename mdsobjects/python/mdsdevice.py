@@ -197,7 +197,7 @@ class Device(_treenode.TreeNode):
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME()
         try:
-            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
+            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self))
         except KeyError:
             return super(Device,self).__getattr__(name)
 
@@ -210,7 +210,7 @@ class Device(_treenode.TreeNode):
         @rtype: None
         """
         try:
-            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            _treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 

@@ -46,8 +46,7 @@ class TreeNode(_data.Data):
     @ivar tree: Tree instance that this node belongs to.
     @type tree: Tree
     """
-    _original_part_name=None
-    def __new__(cls,nid,tree=None):
+    def __new__(cls,nid,tree=None,head=None):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
@@ -56,17 +55,16 @@ class TreeNode(_data.Data):
         """
         _mdsdevice=_mimport('mdsdevice')
         node = super(TreeNode,cls).__new__(cls)
-        if not isinstance(node,_mdsdevice.Device):
+        if head is None and not isinstance(node,_mdsdevice.Device):
             try:
                 TreeNode.__init__(node,nid,tree=tree)
                 if node.usage == "DEVICE":
-                    model=str(node.record.model)
-                    return _mdsdevice.Device.importPyDeviceModule(model).__dict__[model.upper()](node)
+                    return node.record.getDevice(node)
             except:
                 pass
         return node
 
-    def __init__(self,n,tree=None):
+    def __init__(self,n,tree=None,head=None):
         """Initialze TreeNode
         @param n: Index of the node in the tree.
         @type n: int
@@ -74,26 +72,25 @@ class TreeNode(_data.Data):
         @type tree: Tree
         """
         self.__dict__['nid']=int(n);
+        self._head = head
         if tree is None:
             self.tree=_tree.Tree()
         else:
             self.tree=tree
-        if self.conglomerate_elt>0:
-            nids=self.conglomerate_nids.nid_number
-            self.head=int(nids[0])
-            if self.head==self.nid:
-                self._original_part_name = ""
-            else:
-                try:
-                    dev = TreeNode(self.head,self.tree)
-                    dev = dev.record.getDevice(dev)
-                    idx = self.nid-self.head-1
-                    self._original_part_name = dev.part_names[idx]
-                except Exception as e:
-                    print(e)
-        else:
-            self.head=None
 
+    _head = None
+    @property
+    def head(self):
+        if self._head is None and self.conglomerate_elt>0:
+            nids=self.conglomerate_nids.nid_number
+            head_nid=int(nids[0])
+            if head_nid==self.nid:
+                self._head = self
+            else:
+                self._head = TreeNode(head_nid,self.tree)
+        return self._head
+
+    _original_part_name = None
     def ORIGINAL_PART_NAME(self):
         """Method to return the original part name.
         Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
@@ -102,10 +99,11 @@ class TreeNode(_data.Data):
         """
         if self.head is None:
             return None
-        if self.head == self.nid:
+        if self.head.nid is self.nid:
             return ""
         if self._original_part_name is None:
-            self._original_part_name = self.original_part_name
+            device = self._head.record.getDevice()
+            self._original_part_name = device.parts[self.nid-self._head.nid-1]['path']
         return self._original_part_name
     PART_NAME=ORIGINAL_PART_NAME
 
