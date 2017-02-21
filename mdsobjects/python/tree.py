@@ -468,10 +468,7 @@ class Tree(object):
         @return: TreeNodeArray of nodes matching the wildcard path specification and usage types.
         @rtype: TreeNodeArray
         """
-        nids=list()
-        for n in self.getNodeWildIter(name,*usage):
-            nids.append(n.nid)
-        return _treenode.TreeNodeArray(nids,self)
+        return _treenode.TreeNodeArray([n for n in _treeshr.TreeFindNodeWild(self.ctx, name, *usage)],self)
 
     def getVersionDate():
         """Get date used for retrieving versions
