@@ -40,7 +40,7 @@ class MdsTimeout(MdsshrException):
 class MdsNoMoreEvents(MdsshrException):
     pass
 
-def getenv(name):
+def getenv(name,*default):
     """get environment variable value
     @param name: name of environment variable
     @type name: str
@@ -51,6 +51,8 @@ def getenv(name):
     tl.restype=_C.c_void_p
     ptr = tl(_ver.tobytes(name))
     if ptr is None:
+        if len(default)>0:
+            return default[0]
         return None
     ptr = _C.c_void_p(ptr)
     try:
