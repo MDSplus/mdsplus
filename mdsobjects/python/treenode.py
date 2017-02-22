@@ -84,9 +84,9 @@ class TreeNode(_data.Data):
                 if head_nid==self.nid: self._head = 0
                 else: self._head = TreeNode(head_nid,self.tree,0)
             else: self._head = -1
-        if isinstance(self,(int,)):
-            return self
-        return self._head 
+        if isinstance(self._head,(TreeNode,)):
+            return self._head
+        return self
 
     _original_part_name = None
     def ORIGINAL_PART_NAME(self):
