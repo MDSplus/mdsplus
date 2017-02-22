@@ -1207,17 +1207,16 @@ class TreeNode(_data.Data):
 
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
-    def __init__(self,path,tree=None):
+    def __init__(self,path,tree=None,head=None):
         self.tree_path=_data.makeData(_ver.tostr(path));
         if tree is None:
             self.tree=_tree.Tree()
         else:
             self.tree=tree
-        return
+        self._head = head
 
     def __hasBadTreeReferences__(self,tree):
        return False
-
 
     def __str__(self):
         """Convert path to string."""
