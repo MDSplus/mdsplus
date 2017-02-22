@@ -143,49 +143,44 @@ class Device(_treenode.TreeNode):
             Device._debug(' failed: %s\n'%exc)
     """ /debug safe import """
 
-    def __class_init__(cls):
-        if not hasattr(cls,'initialized'):
-            if hasattr(cls,'parts'):
-                cls.part_names=list()
-                for elt in cls.parts:
-                    cls.part_names.append(elt['path'])
-            if hasattr(cls,'part_names') and not hasattr(cls,'part_dict'):
-                cls.part_dict=dict()
-                for i in range(len(cls.part_names)):
-                    try:
-                        cls.part_dict[cls.part_names[i][1:].lower().replace(':','_').replace('.','_')]=i+1
-                    except:
-                        pass
-            cls.initialized=True
-    __class_init__=classmethod(__class_init__)
-
-    def __new__(cls,node):
+    __initialized = False
+    parts      = []
+    part_names = tuple()
+    part_dict  = {}
+    def __new__(cls,node,tree=None,head=0):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        if cls.__name__ == 'Device':
+        if cls is Device:
             try:
-                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
-                model=str(head.record.model)
-                return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
+                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree,0)
+                return head.record.getDevice(head)
             except:
-                pass
-            raise TypeError("Cannot create instances of Device class")
+                raise TypeError("Cannot create instances of Device class")
         else:
-            cls.__class_init__();
-            return super(Device,cls).__new__(cls,node)
+            if not cls.__initialized:
+                cls.part_names = tuple(elt['path'] for elt in cls.parts)
+                for i,partname in enumerate(cls.part_names):
+                    try:
+                       cls.part_dict[partname[1:].lower().replace(':','_').replace('.','_')]=i+1
+                    except:
+                        pass
+                cls.__initialized = True
+            return super(Device,cls).__new__(cls,node,tree,head)
 
-    def __init__(self,node,tree=None):
+    def __init__(self,node,tree=None,head=0):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
         @rtype: None
         """
         if isinstance(node,_treenode.TreeNode):
-            super(Device,self).__init__(node.nid,node.tree)
+            super(Device,self).__init__(node.nid,node.tree,head)
+        else:
+            super(Device,self).__init__(node,tree,head)
 
     def __getattr__(self,name):
         """Return TreeNode of subpart if name matches mangled node name.
@@ -196,9 +191,9 @@ class Device(_treenode.TreeNode):
         """
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME()
-        try:
-            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
-        except KeyError:
+        if name in self.part_dict:
+            return _treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self)
+        else:
             return super(Device,self).__getattr__(name)
 
     def __setattr__(self,name,value):
@@ -210,7 +205,7 @@ class Device(_treenode.TreeNode):
         @rtype: None
         """
         try:
-            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            _treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
@@ -227,7 +222,6 @@ class Device(_treenode.TreeNode):
         """
         parent = tree
         if isinstance(tree, _treenode.TreeNode): tree = tree.tree
-        cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         if isinstance(name,_ident.Ident):
             name=name.data()
@@ -320,13 +314,21 @@ class Device(_treenode.TreeNode):
     waitForSetups=classmethod(waitForSetups)
 
     __cached_py_device_modules = {}
+    __cached_mds_pydevice_path = ""
+    __cached_py_device_not_found = []
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-        path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
+        path = _mdsshr.getenv("MDS_PYDEVICE_PATH")
+        if not path == Device.__cached_mds_pydevice_path:
+            Device.__cached_py_device_modules   = {}
+            Device.__cached_py_device_not_found = []
+            Device.__cached_mds_pydevice_path = path
         name = name.lower()
         if name in Device.__cached_py_device_modules:
             return Device.__cached_py_device_modules[name]
+        if name in Device.__cached_py_device_modules:
+            raise _exceptions.DevPYDEVICE_NOT_FOUND
         if path is not None:
           check_name=name+".py"
           parts=path.split(';')
@@ -342,6 +344,7 @@ class Device(_treenode.TreeNode):
                     return device
                   finally:
                     _sys.path.remove(dp)
+        Device.__cached_py_device_not_found.append(name)
         raise _exceptions.DevPYDEVICE_NOT_FOUND
     importPyDeviceModule=staticmethod(importPyDeviceModule)
 

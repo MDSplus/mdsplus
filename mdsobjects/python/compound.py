@@ -236,7 +236,7 @@ class _Conglom(Compound):
     information used for locating the external code.
     """
     fields=('image','model','name','qualifiers')
-    def getDevice(self, *args):
+    def getDevice(self, *args,**kwargs):
         if not self.image=='__python__':
             raise _Exceptions.DevNOT_A_PYDEVICE
         model = str(self.model)
@@ -252,7 +252,7 @@ class _Conglom(Compound):
         else:
             cls = _device.Device.PyDevice(model,model)
         if issubclass(cls,(_device.Device,)):
-            return cls if len(args)==0 else cls(*args)
+            return cls if len(args)+len(kwargs)==0 else cls(*args,**kwargs)
         raise _Exceptions.DevPYDEVICE_NOT_FOUND
 Conglom=MetaClass('Conglom',(_Conglom,),{})
 

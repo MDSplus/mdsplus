@@ -112,6 +112,10 @@ if [ ${TEST_FORMAT} ]; then
  (echo "${TEST_FORMAT}" | grep "xml" > /dev/null) && export TEST_XMLFILE=$(echo $log_file | sed -e 's/\(.log\)$/.xml/');
 fi
 
+# add LD_PRELOAD just before the test LOG_COMPILER execution
+if [ ${TEST_LD_PRELOAD} ]; then
+ export LD_PRELOAD=${TEST_LD_PRELOAD};
+fi
 
 # Test script is run here.
 "$@" >$log_file 2>&1

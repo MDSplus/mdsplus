@@ -377,17 +377,16 @@ class descriptor(_C.Structure):
                     val=_C.c_float(0)
                     _CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
                     raise Exception("_dtypes.DTYPE_FC is not yet supported")
-                    return _scalar.makeScalar(_N.float32(val.value))
                 if (self.dtype == _dtypes.DTYPE_DC):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
-                    return None
                 if (self.dtype == _dtypes.DTYPE_NID):
+                    
                     return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
-                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                        return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
                     else:
-                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                        return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):

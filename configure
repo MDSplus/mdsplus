@@ -791,9 +791,9 @@ VALGRIND_HAVE_TOOL_drd
 VALGRIND_HAVE_TOOL_helgrind
 VALGRIND_HAVE_TOOL_memcheck
 VALGRIND_LIB
-VALGRIND_ENABLED
-VALGRIND_ENABLED_FALSE
-VALGRIND_ENABLED_TRUE
+ENABLE_VALGRIND
+ENABLE_VALGRIND_FALSE
+ENABLE_VALGRIND_TRUE
 VALGRIND
 HAVE_PL_TAP_PARSER_FALSE
 HAVE_PL_TAP_PARSER_TRUE
@@ -986,9 +986,6 @@ enable_largefile
 enable_shared
 enable_perf
 enable_java
-enable_sanitize_address
-enable_sanitize_undefined
-enable_sanitize_thread
 with_jdk
 with_java_target
 with_java_bootclasspath
@@ -1679,15 +1676,6 @@ Optional Features:
   --disable-shared        Prevent building shared libraries
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
-  --enable-sanitize-address
-                          Enable memory error detection using address
-                          sanitizer [default=no]
-  --enable-sanitize-undefined
-                          Enable undefined behavior detection using undefined
-                          sanitizer [default=no]
-  --enable-sanitize-address
-                          Enable race condition detection using thread
-                          sanitizer [default=no]
   --enable-d3d            build d3d ptdata access library
   --disable-xmltest       Do not try to compile and run a test LIBXML program
   --enable-valgrind       Whether to enable Valgrind on the unit tests
@@ -7405,33 +7393,7 @@ else
 fi
 
 
-# Add address sanitizer options to flags, if requested. Only useful for GCC
-# version 4.8 and later.
-# Check whether --enable-sanitize-address was given.
-if test "${enable_sanitize_address+set}" = set; then :
-  enableval=$enable_sanitize_address; enable_san_a="$enableval"
-else
-  enable_san_a="no"
 
-fi
-
-
-# Check whether --enable-sanitize-undefined was given.
-if test "${enable_sanitize_undefined+set}" = set; then :
-  enableval=$enable_sanitize_undefined; enable_san_u="$enableval"
-else
-  enable_san_u="no"
-
-fi
-
-
-# Check whether --enable-sanitize-thread was given.
-if test "${enable_sanitize_thread+set}" = set; then :
-  enableval=$enable_sanitize_thread; enable_san_t="$enableval"
-else
-  enable_san_t="no"
-
-fi
 
 
 
@@ -12702,16 +12664,20 @@ fi
 
  # check for valgrind
 
+
+
 		# Check whether --enable-valgrind was given.
-if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind; enable_valgrind=$enableval
+if test "${ENABLE_VALGRIND+set}" = set; then :
+  enableval=$ENABLE_VALGRIND; ENABLE_VALGRIND=$enableval
 else
-  enable_valgrind="yes"
+  ENABLE_VALGRIND="yes"
 fi
 
 
-	# Check for Valgrind.
-	# Extract the first word of "valgrind", so it can be a program name with args.
+	if test "x$ENABLE_VALGRIND" = xyes; then :
+
+	  # check for valgrind program
+	  # Extract the first word of "valgrind", so it can be a program name with args.
 set dummy valgrind; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -12748,35 +12714,64 @@ $as_echo "no" >&6; }
 fi
 
 
-
-	if test "$enable_valgrind" = "yes" -a "$VALGRIND" = ""; then :
+	  if test "${VALGRIND}" = ""; then :
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Could not find valgrind; either install it or reconfigure with --disable-valgrind" >&5
 $as_echo "$as_me: WARNING: Could not find valgrind; either install it or reconfigure with --disable-valgrind" >&2;}
-		enable_valgrind="no"
+		ENABLE_VALGRIND=no
 
 fi
-
-	# Enable valgrind only in debug mode (WARNING $enable_debug must be used to selec debug mode)
-	if test "$enable_valgrind" = "yes" -a x"$enable_debug" = x"yes"; then :
+	  # Enable valgrind only in debug mode (WARNING $enable_debug must be used to selec debug mode)
+	  if test "x$enable_debug" = xyes; then :
   :
 else
 
-	        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
-$as_echo "$as_me: WARNING: Valgrind works onli in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
-		enable_valgrind="no"
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Valgrind works only in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&5
+$as_echo "$as_me: WARNING: Valgrind works only in debug mode, either reconfigure with --enable-debug or --disable-valgrind" >&2;}
+	    ENABLE_VALGRIND=no
 
 fi
 
-	 if test "$enable_valgrind" = "yes" ; then
-  VALGRIND_ENABLED_TRUE=
-  VALGRIND_ENABLED_FALSE='#'
+fi
+
+	# Looking for Valgrind specific headers
+	if test "x$ENABLE_VALGRIND" = xyes; then :
+  ac_fn_c_check_header_mongrel "$LINENO" "valgrind/valgrind.h" "ac_cv_header_valgrind_valgrind_h" "$ac_includes_default"
+if test "x$ac_cv_header_valgrind_valgrind_h" = xyes; then :
+  have_valgrind_h=yes
 else
-  VALGRIND_ENABLED_TRUE='#'
-  VALGRIND_ENABLED_FALSE=
+  have_valgrind_h=no
 fi
 
-	VALGRIND_ENABLED=$enable_valgrind
+
+		  ac_fn_c_check_header_mongrel "$LINENO" "valgrind/memcheck.h" "ac_cv_header_valgrind_memcheck_h" "$ac_includes_default"
+if test "x$ac_cv_header_valgrind_memcheck_h" = xyes; then :
+  have_valgrind_memcheck_h=yes
+else
+  have_valgrind_memcheck_h=no
+fi
+
+
+fi
+	if test "x$have_valgrind_h" = xyes; then :
+
+$as_echo "#define HAVE_VALGRIND_H 1" >>confdefs.h
+
+fi
+	if test "x$have_valgrind_memcheck_h" = xyes; then :
+
+$as_echo "#define HAVE_VALGRIND_MEMCHECK_H 1" >>confdefs.h
+
+fi
+
+	# AM CONDITIONAL
+	 if test "${ENABLE_VALGRIND}" = "yes" ; then
+  ENABLE_VALGRIND_TRUE=
+  ENABLE_VALGRIND_FALSE='#'
+else
+  ENABLE_VALGRIND_TRUE='#'
+  ENABLE_VALGRIND_FALSE=
+fi
 
 
 
@@ -12795,8 +12790,12 @@ fi
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable Valgrind on the unit tests" >&5
 $as_echo_n "checking whether to enable Valgrind on the unit tests... " >&6; }
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_valgrind" >&5
-$as_echo "$enable_valgrind" >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ENABLE_VALGRIND}" >&5
+$as_echo "${ENABLE_VALGRIND}" >&6; }
+
+
+
+
 
 	# Check for Valgrind tools we care about.
 
@@ -12960,6 +12959,7 @@ VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_lo
 # Internal use
 valgrind_log_files = $(addprefix valgrind-suite-,$(addsuffix .log,$(VALGRIND_TOOLS))) \
                      $(TEST_LOGS:.log=-valgrind-*.log) \
+		     $(TEST_LOGS:.log=-valgrind-*.log.core.*) \
                      $(TEST_LOGS:.log=-valgrind-*.xml) \
                      $(TEST_LOGS:.log=-valgrind-*.supp)
 
@@ -13002,8 +13002,7 @@ VALGRIND_LOG_COMPILER = \
 
 .PHONY: tests-valgrind tests-valgrind-tool
 .PHONY: tests-valgrind-suppressions tests-valgrind-suppressions-tool
-ifeq ($(VALGRIND_ENABLED),yes)
-
+ifeq ($(ENABLE_VALGRIND),yes)
 
 _print_valgrind_hello = \
   echo ""; \
@@ -13016,6 +13015,7 @@ _print_valgrind_hello = \
     echo "        $${supp}"; \
   done
 
+$(VALGRIND_LOGS):
 
 tests-valgrind:
 	@ \
@@ -13080,6 +13080,7 @@ MOSTLYCLEANFILES += $(valgrind_log_files)
 '
 
 VALGRIND_CHECK_RULES="${VALGRIND_CHECK_RULES_PRE} ${VALGRIND_CHECK_RULES}"
+
 
 
 
@@ -14534,8 +14535,7 @@ fi
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
  abs_srcdir=$(cd ${srcdir}; pwd)
 
-
- as_fn_append PY_LOG_COMPILER "sh -c LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} ${PYTHON} -B \$(top_srcdir)/testing/testing.py"
+      as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
  as_fn_append PY_LOG_FLAGS ""
 
  case "${build_os}:${host}" in #(
@@ -14905,7 +14905,10 @@ done
 
 else
 
- as_fn_append LOG_COMPILER "sh -c \"exit 77\"; :"
+ LOG_COMPILER="sh -c \"exit 77\"; :"
+
+
+ PY_LOG_COMPILER="sh -c \"exit 77\"; :"
 
 fi
   ;; #(
@@ -17352,8 +17355,8 @@ if test -z "${HAVE_PL_TAP_PARSER_TRUE}" && test -z "${HAVE_PL_TAP_PARSER_FALSE}"
   as_fn_error $? "conditional \"HAVE_PL_TAP_PARSER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${VALGRIND_ENABLED_TRUE}" && test -z "${VALGRIND_ENABLED_FALSE}"; then
-  as_fn_error $? "conditional \"VALGRIND_ENABLED\" was never defined.
+if test -z "${ENABLE_VALGRIND_TRUE}" && test -z "${ENABLE_VALGRIND_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_VALGRIND\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_SANITIZE_TRUE}" && test -z "${ENABLE_SANITIZE_FALSE}"; then

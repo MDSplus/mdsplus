@@ -9,12 +9,13 @@ import ctypes as _C
 _ver=_mimport('version')
 _desc=_mimport('_descriptor')
 _mdsshr=_mimport('_mdsshr')
+_tree=_mimport('tree')
+_treeshr=_mimport('_treeshr')
 _Exceptions=_mimport('mdsExceptions')
 
 _mdsdcl=_ver.load_library('Mdsdcl')
 _mdsdcl_do_command_dsc=_mdsdcl.mdsdcl_do_command_dsc
 _mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _C.POINTER(_desc.descriptor_xd), _C.POINTER(_desc.descriptor_xd)]
-
 
 def dcl(command,return_out=False,return_error=False,raise_exception=False):
     """Execute a dcl command
@@ -38,7 +39,16 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False):
       out_p=_C.byref(xd_output)
     else:
       out_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
-    status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
+
+    actx = _tree._getActiveTree()
+    ctx = _treeshr.switchDbid(actx)
+    try:
+      status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
+    finally:
+        ctx = _treeshr.switchDbid(ctx)
+        if ctx is not None and ctx != 0:
+          if not ctx in _tree._TreeCtx.ctxs:
+            _tree._TreeCtx(ctx,ctx!=actx)
     if (status & 1) == 0 and raise_exception:
       raise _Exceptions.statusToException(status)
     if return_out and return_error:

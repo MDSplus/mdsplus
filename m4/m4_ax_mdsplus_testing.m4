@@ -112,16 +112,10 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 
-AC_DEFUN([TS_SET_SKIP_CMD],[
-          AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
-         ])
-
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
- AS_VAR_APPEND([$1],["sh -c \"exit 77\"; :"])
+ AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
 ])
-
-
 
 dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS SELECT HOST  ////////////////////////////////////////////////////////
@@ -140,8 +134,8 @@ AC_DEFUN([TS_SELECT],[
  dnl  [AC_MSG_WARN("python-nose not found")])
  dnl TS_CHECK_PYTHON_TAP( [$PYTHON],,
  dnl  [AC_MSG_WARN("Tap plugin for python-nose not found")])
-
- AS_VAR_APPEND([PY_LOG_COMPILER],  ["sh -c LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} ${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+ dnl LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH};
+ AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
 
  AS_CASE(["${build_os}:${host}"],
@@ -174,7 +168,8 @@ AC_DEFUN([TS_SELECT],[
  # (see Bug #26263 for details)
       AS_VAR_APPEND([VALGRIND_memcheck_FLAGS],"--workaround-gcc296-bugs=yes  ")
      ],
-     [TS_LOG_SKIP([LOG_COMPILER])])
+     [TS_LOG_SKIP([LOG_COMPILER])
+      TS_LOG_SKIP([PY_LOG_COMPILER])])
  ],
  #
  # LINUX->LINUX
