@@ -468,7 +468,7 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
   };
 
   status = TdiGetData(omits, in_ptr, &tmp);
-  if STATUS_OK
+  if STATUS_OK {
     switch (tmp.pointer->dtype) {
     case DTYPE_T:
     case DTYPE_PATH:
@@ -485,6 +485,8 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
       status = TdiINVDTYDSC;
       break;
     }
+    MdsFree1Dx(&tmp, NULL);
+  }
   return status;
 }
 
