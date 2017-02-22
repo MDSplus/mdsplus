@@ -101,7 +101,7 @@ class TreeNode(_data.Data):
         """
         if self.head is None:
             return None
-        if self.head.nid is self.nid:
+        if self.head.nid == self.nid:
             return ""
         if self._original_part_name is None:
             device = self.head.record.getDevice()
