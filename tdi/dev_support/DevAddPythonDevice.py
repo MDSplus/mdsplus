@@ -1,5 +1,5 @@
 from MDSplus import Data, Tree, Device
-from MDSplus.mdsExceptions import DevPYDEVICE_NOT_FOUND,MDSplusException
+from MDSplus.mdsExceptions import DevPYDEVICE_NOT_FOUND,MDSplusException,MDSplusSUCCESS,MDSplusERROR
 import sys
 def DevAddPythonDevice(path, model):
     """Add a python device to the tree by:
@@ -13,20 +13,23 @@ def DevAddPythonDevice(path, model):
     These Strings have to be manipulated to produce simple str() values.
     """
     model = model.data().upper().rstrip()
-    mod = Device.importPyDeviceModule(model)
-    path = str(path.data())
-    if mod is not None and model in mod.__dict__:
-        try:
-            mod.__dict__[model].Add(Tree(), path)
-            return 1
-        except:
-            e=sys.exc_info()[1]
-            if isinstance(e,MDSplusException):
-                return e.status
-            else:
-                print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
-                return 0
-        
+    try:
+        mod = Device.importPyDeviceModule(model)
+        path = str(path.data())
+        if mod is not None and model in mod.__dict__:
+            try:
+                mod.__dict__[model].Add(Tree(), path)
+                return
+            except:
+                e=sys.exc_info()[1]
+                if isinstance(e,MDSplusException):
+                    raise e
+                else:
+                    print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
+                    raise MDSplusERROR
+    except DevPYDEVICE_NOT_FOUND:
+        pass
+
     models = Data.execute('MdsDevices()')
     cls = None
 
@@ -42,13 +45,13 @@ def DevAddPythonDevice(path, model):
     if cls is not None:
         try:
             cls.Add(Tree(), path)
-            return 1
+            return
         except:
             e=sys.exc_info()[1]
             if isinstance(e,MDSplusException):
-                return e.status
+                raise e
             else:
                 print ("Error adding device instance of %s: %s" % (model, sys.exc_info()[1]))
-                return 0
-    return DevPYDEVICE_NOT_FOUND.status
-    
+                raise MDSplusERROR
+    raise DevPYDEVICE_NOT_FOUND
+

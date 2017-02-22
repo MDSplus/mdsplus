@@ -79,8 +79,8 @@ int64_t TreeGetDatafileSize()
 
 int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 {
+  INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int status;
   NODE *parent;
   NODE *new_ptr;
   char *node_name;
@@ -107,12 +107,12 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
    if not it is an error.
 ******************************************************/
   status = TreeFindParent(dblist, upcase_name, &parent, &node_name, &node_type);
-  if (status & 1) {
+  if STATUS_OK {
   /****************************************************
     make sure that the node is not already there
   *****************************************************/
     status = _TreeFindNode(dbid, upcase_name, &nid);
-    if (status & 1)
+    if STATUS_OK
       status = TreeALREADY_THERE;
     else if (status == TreeNNF) {
     /***********************************************
@@ -132,9 +132,9 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
       If OK so far so grab a new node, Fill in the name
       and insert it into the list of brothers.
     *************************************************/
-      if ((status & 1) && ((node_type == BROTHER_TYPE_NOWILD) || (node_type == MEMBER_TYPE_NOWILD))) {
+      if (STATUS_OK && ((node_type == BROTHER_TYPE_NOWILD) || (node_type == MEMBER_TYPE_NOWILD))) {
 	status = TreeNewNode(dblist, &new_ptr, &parent);
-	if (status & 1) {
+	if STATUS_OK {
 	  size_t i;
 	  unsigned short idx = *conglom_index;
 	  strncpy(new_ptr->name, node_name, sizeof(new_ptr->name));
@@ -153,7 +153,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  }
 	  *nid_out = node_to_nid(dblist, new_ptr, 0);
 	}
-	if (status & 1) {
+	if STATUS_OK {
 	  NCI new_nci;
 	  NCI scratch_nci;
 	  NID nid;
@@ -162,7 +162,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  parent_nid = node_to_nid(dblist, parent, 0);
 	  node_to_nid(dblist, new_ptr, &nid);
 	  status = TreeGetNciLw(dblist->tree_info, nid.node, &scratch_nci);
-	  if (status & 1) {
+	  if STATUS_OK {
 	    if (_TreeIsOn(dblist, *(int *)&parent_nid) & 1)
 	      new_nci.flags &= ~NciM_PARENT_STATE;
 	    else
@@ -176,7 +176,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	status = TreeINVPATH;
     }
   }
-  if (status & 1)
+  if STATUS_OK
     dblist->modified = 1;
   free(upcase_name);
   return status;
@@ -184,10 +184,9 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 
 int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort)
 {
-  int status;
+  INIT_STATUS_AS TreeNORMAL;
   NODE *pre_ptr;
   NODE *tmp_ptr;
-  status = TreeNORMAL;		/* Assume success */
   child_ptr->parent = node_offset(parent_ptr, child_ptr);	/* fill in the parent pointer */
   child_ptr->brother = 0;	/* Assume it will be only child */
   if (parent_ptr->child == 0) {	/* If first child */
@@ -222,20 +221,16 @@ int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort)
 
 int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort)
 {
-  int status;
   NODE *tmp_ptr;
   NODE *pre_ptr;
 /*------------------------------------------------------------------------------
-
  Executable:
 */
-  status = TreeNORMAL;		/* Assume success */
   member_ptr->parent = node_offset(parent_ptr, member_ptr);	/* fill in the parent pointer */
   member_ptr->brother = 0;	/* Assume it will be only member */
   if (parent_ptr->member == 0) {	/* If first member */
     parent_ptr->member = node_offset(member_ptr, parent_ptr);	/*   hook it up */
   } else {			/* else */
-
     if (sort) {
       for (pre_ptr = 0, tmp_ptr = member_of(parent_ptr);	/*   for all members < this one */
 	   tmp_ptr
@@ -245,11 +240,9 @@ int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort)
 	member_ptr->brother = node_offset(member_of(parent_ptr), member_ptr);	/*     make bro old first child */
 	parent_ptr->member = node_offset(member_ptr, parent_ptr);	/*     make it first child  */
       } else {			/*   else */
-
 	if (pre_ptr->brother == 0)	/*     if it will be last child */
 	  member_ptr->brother = 0;	/*       it has no brother */
 	else {			/*     else */
-
 	  member_ptr->brother = node_offset(brother_of(0, pre_ptr), member_ptr);	/*       its bro is the previous's bro */
 	}
 	pre_ptr->brother = node_offset(member_ptr, pre_ptr);	/*     the previous's bro is this one */
@@ -260,12 +253,12 @@ int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort)
       tmp_ptr->brother = node_offset(member_ptr, tmp_ptr);	/*   make this child its brother */
     }
   }
-  return status;		/* return the status */
+  return TreeNORMAL;		/* return the status */
 }
 
 STATIC_ROUTINE int TreeNewNode(PINO_DATABASE * db_ptr, NODE ** node_ptrptr, NODE ** trn_node_ptrptr)
 {
-  int status = TreeNORMAL;
+  INIT_STATUS_AS TreeNORMAL;
   NODE *node_ptr;
   TREE_INFO *info_ptr = db_ptr->tree_info;
   TREE_HEADER *header_ptr = info_ptr->header;
@@ -273,11 +266,9 @@ STATIC_ROUTINE int TreeNewNode(PINO_DATABASE * db_ptr, NODE ** node_ptrptr, NODE
   See if we need to expand the
   free list.
 *********************************/
-
   if (header_ptr->free == -1)
     status = TreeExpandNodes(db_ptr, 1, &trn_node_ptrptr);
-
-  if (status & 1) {
+  if STATUS_OK {
 
   /**************************************
     Use the first node on the free list.
@@ -309,8 +300,8 @@ STATIC_ROUTINE int TreeNewNode(PINO_DATABASE * db_ptr, NODE ** node_ptrptr, NODE
 
 int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
 {
+  INIT_STATUS_AS TreeNORMAL;
   int *saved_node_numbers;
-  int status = TreeNORMAL;
   NODE *node_ptr;
   NODE *ptr;
   TREE_INFO *info_ptr;
@@ -336,10 +327,10 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
     empty_node.child = -(int)sizeof(NODE);;
     empty_node_array = (NODE *) malloc(empty_node_size);
     if (empty_node_array == NULL)
-      return 0;
+      return MDSplusERROR;
     empty_nci_array = (NCI *) malloc(empty_nci_size);
     if (empty_nci_array == NULL)
-      return 0;
+      return MDSplusERROR;
     for (i = 0; i < EXTEND_NODES; i++) {
       empty_node_array[i] = empty_node;
       empty_nci_array[i] = empty_nci;
@@ -408,7 +399,6 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
       info_ptr->root = info_ptr->node + saved_node_numbers[i++];
       db_ptr->default_node = info_ptr->node + saved_node_numbers[i++];
       free(saved_node_numbers);
-
     } else
       return status;
   }
@@ -448,14 +438,13 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
 
 int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid)
 {
+  INIT_STATUS_AS TreeNORMAL, addstatus = TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int status = 1;
   struct descriptor expdsc = { 0, DTYPE_T, CLASS_S, 0 };
   char exp[256];
   void *arglist[4] = { (void *)3 };
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
   STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
-  int addstatus = 0;
   DESCRIPTOR_LONG(statdsc, 0);
   STATIC_THREADSAFE int (*addr) ();
   statdsc.pointer = (char *)&addstatus;
@@ -467,7 +456,7 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
     sprintf(exp, "DevAddDevice('%s', '%s')", path, congtype);
   if (addr == 0)
     status = LibFindImageSymbol(&tdishr, &tdiexecute, &addr);
-  if (status & 1) {
+  if STATUS_OK {
     void *old_dbid = *TreeCtx();
     expdsc.length = (unsigned short)strlen(exp);
     expdsc.pointer = exp;
@@ -477,9 +466,9 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
     *TreeCtx() = dbid;
     status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
     *TreeCtx() = old_dbid;
-    if (status & 1) {
+    if STATUS_OK {
       status = addstatus;
-      if (status & 1) {
+      if STATUS_OK {
 	status = _TreeFindNode(dbid, path, nid);
       }
     }
@@ -494,9 +483,9 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
 
 int _TreeStartConglomerate(void *dbid, int size)
 {
+  INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int i;
-  int status;
   TREE_INFO *info_ptr;
   TREE_HEADER *header_ptr;
   NODE *next_node_ptr;
@@ -524,7 +513,7 @@ int _TreeStartConglomerate(void *dbid, int size)
   is found looking for it.  If nessesary expand the
   node pool and continue looking.
 ******************************************************/
-  for (status = TreeNORMAL, i = 0; (status & 1) && i < size - 1;) {
+  for (i = 0; STATUS_OK && i < size - 1;) {
     if (i == 0)
       starting_node_ptr = this_node_ptr;
     if (this_node_ptr->parent) {
@@ -548,7 +537,7 @@ int _TreeStartConglomerate(void *dbid, int size)
   pointer points to this block of nodes.  If
   nessesary move the pointers around to  make it so.
 ****************************************************/
-  if (status & 1) {
+  if STATUS_OK {
     if (starting_node_ptr->child != 0) {
       if (parent_of(0, this_node_ptr)) {
 	set_parent(child_of(0, starting_node_ptr), parent_of(0, this_node_ptr));
@@ -571,7 +560,6 @@ int _TreeStartConglomerate(void *dbid, int size)
 int _TreeEndConglomerate(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int status;
   unsigned short conglom_size;
   unsigned short conglom_index;
 /*****************************************************
@@ -579,26 +567,23 @@ int _TreeEndConglomerate(void *dbid)
 *****************************************************/
   if (!(IS_OPEN_FOR_EDIT(dblist)))
     return TreeNOEDIT;
-
   conglom_size = dblist->tree_info->edit->conglomerate_size;
   conglom_index = dblist->tree_info->edit->conglomerate_index;
   dblist->tree_info->edit->conglomerate_size = 0;
   dblist->tree_info->edit->conglomerate_index = 0;
   dblist->setup_info = dblist->tree_info->edit->conglomerate_setup;
   if (conglom_size < conglom_index)
-    status = TreeCONGLOMFULL;
+    return TreeCONGLOMFULL;
   else if (conglom_size > conglom_index)
-    status = TreeCONGLOM_NOT_FULL;
+    return TreeCONGLOM_NOT_FULL;
   else
-    status = TreeNORMAL;
-  return status;
+    return TreeNORMAL;
 }
 
 STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr);
 
 #ifdef WORDS_BIGENDIAN
-STATIC_ROUTINE TREE_HEADER *HeaderOut(TREE_HEADER * hdr)
-{
+STATIC_ROUTINE TREE_HEADER *HeaderOut(TREE_HEADER * hdr) {
   TREE_HEADER *ans = (TREE_HEADER *) malloc(sizeof(TREE_HEADER));
   ((char *)ans)[1] = (char)((hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0));
   ans->free = swapint((char *)&hdr->free);
@@ -608,8 +593,7 @@ STATIC_ROUTINE TREE_HEADER *HeaderOut(TREE_HEADER * hdr)
   return ans;
 }
 
-STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER * hdr)
-{
+STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER * hdr) {
   free(hdr);
 }
 
@@ -620,12 +604,10 @@ STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER * hdr)
 
 int64_t _TreeGetDatafileSize(void *dbid)
 {
-  int status;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   TREE_INFO *info = dblist->tree_info;
   if ((!info->data_file) || info->data_file->get == 0) {
-    status = TreeOpenDatafileR(info);
-    if (!(status & 1))
+    if IS_NOT_OK(TreeOpenDatafileR(info))
       return -1;
   }
   return MDS_IO_LSEEK(info->data_file->get, 0, SEEK_END);
@@ -633,8 +615,8 @@ int64_t _TreeGetDatafileSize(void *dbid)
 
 int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 {
+    INIT_STATUS_AS TreeNOT_OPEN;
     PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
-    int status;
     size_t header_pages;
     size_t node_pages;
     size_t tags_pages;
@@ -642,7 +624,6 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
     size_t external_pages;
     PINO_DATABASE *db;
     PINO_DATABASE *prev_db;
-    status = TreeNOT_OPEN;
     if (dblist) {
         if (exp_ptr) {
             char uptree[13];
@@ -667,16 +648,15 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             }
         } else
             status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
-        if (status & 1) {
+        if STATUS_OK {
             /**************************************
-     Compute number of pages to allocate for
-     each part of the tree file.
-     Create a file of the correct size then
-     write out each part of the tree file.
-     Close the file.
-     Write out the characteristics file.
-     **************************************/
-            
+            Compute number of pages to allocate for
+            each part of the tree file.
+            Create a file of the correct size then
+            write out each part of the tree file.
+            Close the file.
+            Write out the characteristics file.
+            **************************************/
             int ntreefd;
             TREE_INFO *info_ptr = (*dblist)->tree_info;
             char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
@@ -687,10 +667,10 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             tags_pages = (info_ptr->header->tags * 4 + 511) / 512;
             tag_info_pages = (info_ptr->header->tags * sizeof(TAG_INFO) + 511) / 512;
             external_pages = (info_ptr->header->externals * 4 + 511) / 512;
-            
             strcat(nfilenam, "#");
             ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
             if (ntreefd != -1) {
+                status = MDSplusERROR;
                 ssize_t num;
                 TREE_HEADER *header = HeaderOut(info_ptr->header);
                 num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
@@ -712,20 +692,18 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 if (num != (ssize_t)(external_pages * 512))
                     goto error_exit;
                 status = TreeWriteNci(info_ptr);
-                if ((status & 1) == 0)
+                if STATUS_NOT_OK
                     goto error_exit;
                 status = TreeNORMAL;
                 if (info_ptr->channel > -1)
                     status = MDS_IO_CLOSE(info_ptr->channel);
                 info_ptr->channel = -2;
                 MDS_IO_REMOVE(info_ptr->filespec);
-                status = MDS_IO_CLOSE(ntreefd);
-                if (status == -1) {
+                if (MDS_IO_CLOSE(ntreefd) == -1) {
                     status = TreeCLOSEERR;
                     goto error_exit;
                 }
-                status = MDS_IO_RENAME(nfilenam, info_ptr->filespec);
-                if (status == -1) {
+                if (MDS_IO_RENAME(nfilenam, info_ptr->filespec) == -1) {
                     status = TreeMOVEERROR;
                     goto error_exit;
                 }
@@ -734,9 +712,8 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                     status = TreeOPENEDITERR;
                     goto error_exit;
                 }
-                status = MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);
-                status = 1;
-                
+                MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);
+                status = TreeNORMAL;
                 (*dblist)->modified = 0;
                 TreeCallHook(WriteTree, info_ptr, 0);
             } else {
@@ -749,7 +726,6 @@ error_exit:
         }
     }
     return status;
-    
 }
 
 STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr)
@@ -788,12 +764,11 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr)
     }
     *nodecount_ptr = nodes;
   }
-  return;
 }
 
 STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
 {
-  int status = TreeNORMAL;
+  INIT_STATUS_AS TreeNORMAL;
   if (info->header->nodes > info->edit->first_in_mem) {
     int numnodes = info->header->nodes - info->edit->first_in_mem;
     int i;
@@ -818,6 +793,7 @@ STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
 
 int _TreeSetSubtree(void *dbid, int nid)
 {
+  INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid_ptr = (NID *) & nid;
   NODE *node_ptr;
@@ -826,7 +802,6 @@ int _TreeSetSubtree(void *dbid, int nid)
   int pages_needed;
   int pages_allocated;
   int i;
-  int status;
   int *new_external_ptr;
 
 /**************************************************
@@ -875,7 +850,7 @@ int _TreeSetSubtree(void *dbid, int nid)
   if (pages_needed > pages_allocated) {
     new_external_ptr = malloc(pages_needed * 512);
     status = new_external_ptr == 0 ? TreeMEMERR : TreeNORMAL;
-    if ((status & 1) != 1) {
+    if STATUS_NOT_OK {
       return status;
     }
     memcpy(new_external_ptr, dblist->tree_info->external, (numext - 1) * 4);
@@ -948,11 +923,10 @@ int _TreeSetNoSubtree(void *dbid, int nid)
 
 int _TreeQuitTree(void **dbid, char const *exp_ptr, int shotid)
 {
+  INIT_STATUS_AS TreeNOT_OPEN;
   PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
-  int status;
   PINO_DATABASE *db;
   PINO_DATABASE *prev_db;
-  status = TreeNOT_OPEN;
   if (*dblist) {
     if (exp_ptr) {
       char uptree[13];
