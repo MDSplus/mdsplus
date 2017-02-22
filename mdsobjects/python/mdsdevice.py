@@ -191,9 +191,9 @@ class Device(_treenode.TreeNode):
         """
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME()
-        try:
-            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self))
-        except KeyError:
+        if name in self.part_dict:
+            return _treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self)
+        else:
             return super(Device,self).__getattr__(name)
 
     def __setattr__(self,name,value):

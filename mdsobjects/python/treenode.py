@@ -53,9 +53,8 @@ class TreeNode(_data.Data):
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        _mdsdevice=_mimport('mdsdevice')
         node = super(TreeNode,cls).__new__(cls)
-        if head is None and not isinstance(node,_mdsdevice.Device):
+        if head is None and not isinstance(node,(_mdsdevice.Device,TreePath)):
             TreeNode.__init__(node,nid,tree)
             try:
                 if node.usage == "DEVICE":
@@ -73,24 +72,21 @@ class TreeNode(_data.Data):
         """
         self.__dict__['nid']=int(n);
         self._head = head
-        if tree is None:
-            self.tree=_tree.Tree()
-        else:
-            self.tree=tree
+        self.tree=_tree.Tree() if tree is None else tree
 
     _head = None
     @property
     def head(self):
-        if self._head is None and self.conglomerate_elt>0:
-            nids=self.conglomerate_nids.nid_number
-            head_nid=int(nids[0])
-            if head_nid==self.nid:
-                self._head = 0
-            else:
-                self._head = TreeNode(head_nid,self.tree,0)
+        if self._head is None:
+            if self.conglomerate_elt>0:
+                nids=self.conglomerate_nids.nid_number
+                head_nid=int(nids[0])
+                if head_nid==self.nid: self._head = 0
+                else: self._head = TreeNode(head_nid,self.tree,0)
+            else: self._head = -1
         if isinstance(self,(int,)):
             return self
-        return self._head
+        return self._head 
 
     _original_part_name = None
     def ORIGINAL_PART_NAME(self):
@@ -99,9 +95,7 @@ class TreeNode(_data.Data):
         @return: Part name of this node
         @rtype: str
         """
-        if self.head is None:
-            return None
-        if self.head.nid == self.nid:
+        if self.head is self:
             return ""
         if self._original_part_name is None:
             device = self.head.record.getDevice()
@@ -1390,3 +1384,5 @@ class TreeNodeArray(_data.Data):
         finally:
             _tree.Tree.unlock()
         return ans
+
+_mdsdevice=_mimport('mdsdevice')
