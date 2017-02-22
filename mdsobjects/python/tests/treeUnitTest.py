@@ -124,7 +124,6 @@ class treeTests(TestCase):
             if not cls.instances>0:
                 shutil.rmtree(cls.tmpdir)
 
-
     def openTrees(self):
         pytree = Tree('pytree',self.shot)
         self.assertEqual(str(pytree),'Tree("PYTREE",'+str(self.shot)+',"Normal")')
@@ -311,10 +310,10 @@ class treeTests(TestCase):
         from time import sleep
         def testDispatchCommand(command,stdout=None,stderr=None):
             self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
-        server = os.getenv('ACTION_SERVER')
+        server = getenv('ACTION_SERVER')
         if server is None:
             from subprocess import Popen,STDOUT
-            port = int(os.getenv('ACTION_PORT','8800'))
+            port = int(getenv('ACTION_PORT','8800'))
             server = 'LOCALHOST:%d'%(port,)
         else:
             Popen = None
@@ -378,8 +377,8 @@ class treeTests(TestCase):
         self.segments()
         self.getCompression()
         if not self.inThread:
-             self.dclInterface()
-             self.dispatcher()
+            self.dclInterface()
+            self.dispatcher()
 
 def suite():
     tests = ['openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']

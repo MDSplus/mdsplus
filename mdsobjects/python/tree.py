@@ -67,12 +67,12 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
     def register(self,opened):
         self.lock.acquire()
         try:
-            if self.ctx in self.ctxs:
-                self.ctxs[self.ctx]+=1
+            if self.ctx in _TreeCtx.ctxs:
+                _TreeCtx.ctxs[self.ctx]+=1
             else:
-                self.ctxs[self.ctx] = 1 if opened else 2
+                _TreeCtx.ctxs[self.ctx] = 1 if opened else 2
             # generate ordered set
-            self.order = [self.ctx]+[c for c in self.order if c!=self.ctx]
+            _TreeCtx.order = [self.ctx]+[c for c in _TreeCtx.order if c!=self.ctx]
         finally:
             self.lock.release()
     def __del__(self):
@@ -80,14 +80,14 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         self.open = False
         self.lock.acquire()
         try:
-            self.ctxs[self.ctx]-=1
-            if self.ctxs[self.ctx]==0:
+            _TreeCtx.ctxs[self.ctx]-=1
+            if _TreeCtx.ctxs[self.ctx]==0:
                 self.closeDbid()
         finally:
             self.lock.release()
     def closeDbid(self):
-        del(self.ctxs[self.ctx])
-        self.order = [c for c in self.order if c!=self.ctx]
+        del(_TreeCtx.ctxs[self.ctx])
+        _TreeCtx.order = [c for c in _TreeCtx.order if c!=self.ctx]
         # make sure current Dbid is not active - tdishr
         ctx = _treeshr.switchDbid()
         if ctx != 0 and ctx!=self.ctx:
