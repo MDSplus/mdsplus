@@ -25,7 +25,7 @@ then
     host=$(gethost ${ARCH})
 fi
 
-export CFLAGS="-DASSERT_LINE_TYPE=int"
+export CFLAGS="-DASSERT_LINE_TYPE=int -fsigned-char"
 
 runtests() {
     testarch ${ARCH} ${host} bin lib $(getjava ${ARCH})

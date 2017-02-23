@@ -122,8 +122,10 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     test_tree_open("tcp");
 
     // udt //
+    
+#ifndef __ARM_ARCH
     test_tree_open("udt");
-
+#endif
 
     END_TESTING;
 }

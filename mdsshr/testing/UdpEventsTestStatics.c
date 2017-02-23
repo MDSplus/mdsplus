@@ -252,7 +252,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     test_popEvent();
     
     // generate a suppression for pthread_cancel valgrind issue //
-    test_pthread_cancel_Suppresstion();
+    //test_pthread_cancel_Suppresstion();
     
 
     return 0;
