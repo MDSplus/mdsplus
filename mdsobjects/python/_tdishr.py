@@ -30,7 +30,9 @@ def _TdiShrFun(function,errormessage,expression,args=None):
     arguments = [_C.byref(descriptor(expression))]+parseArguments(args)+[_C.byref(xd),_C.c_void_p(-1)]
     status = function(*arguments)
     if (status & 1 != 0):
-        return xd.value
+        value = xd.value
+        xd.free()
+        return value
     else:
         raise _Exceptions.statusToException(status)
 
