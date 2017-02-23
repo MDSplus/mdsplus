@@ -126,11 +126,11 @@ class treeTests(TestCase):
 
     def openTrees(self):
         pytree = Tree('pytree',self.shot)
-        self.assertEqual(str(pytree),'Tree("PYTREE",'+str(self.shot)+',"Normal")')
+        self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%(self.shot,))
         pytree.createPulse(self.shot+1)
         Tree.setCurrent('pytree',self.shot+1)
         pytree2=Tree('pytree',self.shot+1)
-        self.assertEqual(str(pytree2),'Tree("PYTREE",'+str(self.shot+1)+',"Normal")')
+        self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
 
     def getNode(self):
         pytree=Tree('pytree',self.shot,'ReadOnly')
@@ -302,10 +302,15 @@ class treeTests(TestCase):
         self._doTCLTest('type test','test\n')
         self._doTCLTest('close/all')
         self._doTCLTest('show db','\n')
-        self._doTCLTest('set tree pytree/shot=%d'%self.shot)
+        self._doTCLTest('set tree pytree/shot=%d'%(self.shot,))
         self._doTCLTest('show db','000  PYTREE        shot: %d [\\PYTREE::TOP]   \n\n'%self.shot)
+        self._doTCLTest('edit PYTREE/shot=%d'%(self.shot,))
+        self._doTCLTest('add node TCL_NUM/usage=numeric')
+        self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
         self._doTCLTest('do TESTDEVICE:TASK_TEST')
         self._doExceptionTest('do TESTDEVICE:TASK_ERROR',Exc.DevUNKOWN_STATE)
+        self._doExceptionTest('close',Exc.TreeWRITEFIRST)
+        self._doTCLTest('write')
         self._doTCLTest('close')
         self._doTCLTest('show db','\n')
         """ tcl exceptions """
@@ -330,10 +335,8 @@ class treeTests(TestCase):
         pytree = Tree('pytree',self.shot)
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
-        #pytree.close()
         """ using dispatcher """
         hosts = '%s/mdsip.hosts'%self.root
-        #tcl('set tree pytree/shot=%d'%self.shot,1,1,1)
         log = None
         try:
           if Popen:
