@@ -250,7 +250,7 @@ class _Conglom(Compound):
         if model in safe_env:
             cls = safe_env[model]
         else:
-            cls = _device.Device.PyDevice(model,model)
+            cls = _device.Device.PyDevice(model)
         if issubclass(cls,(_device.Device,)):
             return cls if len(args)+len(kwargs)==0 else cls(*args,**kwargs)
         raise _Exceptions.DevPYDEVICE_NOT_FOUND

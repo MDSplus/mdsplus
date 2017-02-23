@@ -349,8 +349,45 @@ class Device(_treenode.TreeNode):
     importPyDeviceModule=staticmethod(importPyDeviceModule)
 
     def PyDevice(module,model=None):
-        if model is None: model=module
-        return Device.importPyDeviceModule(module).__dict__[model]
+        """Find a python device class by:
+        1) finding the model in the list defined by
+           the tdi function, MdsDevices.
+        2) try importing the package for the model and calling its Add method.
+        The StringArray returned by MdsDevices() contains String instances
+        containing blank filled values containing an \0 character embedded.
+        These Strings have to be manipulated to produce simple str() values.
+        """
+        cls = None
+        cls_list = []
+        if model is None:
+            model=module
+            MODEL=model.upper()
+            models = _mdsdata.Data.execute('MdsDevices()').data()
+            for idx in range(0, len(models), 2):
+                modname = models[idx].rstrip()
+                MODNAME = modname.upper()
+                if MODEL == MODNAME:
+                    package = models[idx+1].rstrip()
+                    try:
+                        return __import__(package).__dict__[modname]
+                    except ImportError: pass
+            module = Device.importPyDeviceModule(model)
+        else:
+            MODEL = model.upper()
+            module = __import__(module)
+        if module is None:
+            raise _exc.DevPYDEVICE_NOT_FOUND
+        if model in module.__dict__:
+            return module.__dict__[model]
+        cls_list = [k for k,v in module.__dict__.items()
+                    if isinstance(v,(Device.__class__,))
+                   and issubclass(v,Device)
+                   and k.upper() == MODEL]
+        if len(cls_list)==1:
+            return module.__dict__[cls_list[0]]
+        if len(cls_list)>1:
+            print ("Error adding device %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
+        raise _exc.DevPYDEVICE_NOT_FOUND
     PyDevice=staticmethod(PyDevice)
 
     def findPyDevices():
@@ -377,6 +414,5 @@ class Device(_treenode.TreeNode):
                             sys.path.remove(dp)
         if len(ans) > 0:
             return _mdsdata.Data.execute(str(ans))
-
     findPyDevices=staticmethod(findPyDevices)
 
