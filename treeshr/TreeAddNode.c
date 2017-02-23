@@ -96,7 +96,6 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 *****************************************************/
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
-
   upcase_name = (char *)malloc(len + 1);
   for (i = 0; i < len; i++)
     upcase_name[i] = toupper(name[i]);
@@ -140,7 +139,6 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  strncpy(new_ptr->name, node_name, sizeof(new_ptr->name));
 	  for (i = strlen(node_name); i < sizeof(new_ptr->name); i++)
 	    new_ptr->name[i] = ' ';
-	  free(node_name);
 	  new_ptr->child = 0;
 	  LoadShort(idx, &new_ptr->conglomerate_elt);
 	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE
@@ -175,6 +173,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
       } else
 	status = TreeINVPATH;
     }
+    free(node_name);
   }
   if STATUS_OK
     dblist->modified = 1;
