@@ -571,7 +571,7 @@ fi
     <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
-      packages=$(find %{python_sitelib} -maxdepth 1 -name mdsplus* | grep -iv devices)
+      packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
       rm -Rf $packages %{python_sitelib}/MDSplus
       pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
       python setup.py -q install
@@ -597,7 +597,7 @@ fi
 
       if [ "$1" == "0" ]
       then
-          packages=$(find %{python_sitelib} -maxdepth 1 -name mdsplus* | grep -iv devices)
+          packages=$(find %{python_sitelib} -maxdepth 1 -name 'mdsplus*' | grep -iv devices)
          rm -Rf $packages %{python_sitelib}/MDSplus
       fi
 
