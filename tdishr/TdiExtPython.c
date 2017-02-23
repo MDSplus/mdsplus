@@ -1,3 +1,4 @@
+
 #include <config.h>
 #include <dlfcn.h>
 #include <stdio.h>
@@ -16,7 +17,6 @@
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
-
 #define Py_None _Py_NoneStruct
 
 #define loadrtn(name,check) name=dlsym(handle,#name);   \
@@ -27,6 +27,7 @@
 typedef void* PyThreadState;
 static PyThreadState *(*PyGILState_Ensure)() = NULL;
 static void (*PyGILState_Release)(PyThreadState *) = NULL;
+extern int MdsGetStdMsg();
 
 typedef void* PyObject;
 typedef ssize_t Py_ssize_t;
@@ -345,6 +346,12 @@ int TdiExtPython(struct descriptor *modname_d,
               PyObject *status_obj = (*PyObject_GetAttrString)(exc, "status");
               status = (int)(*PyLong_AsLong)(status_obj);
               (*Py_DecRef)(status_obj);
+              if STATUS_NOT_OK {
+                char *fac_out=NULL, *msgnam_out=NULL, *text_out=NULL;
+                const char *f = "WSEIF???";
+                MdsGetStdMsg(status,&fac_out,&msgnam_out,&text_out);
+                printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
+               }
             } else {
               printf("Error calling fun in %s\n", filename);
               (*PyErr_Print)();
