@@ -175,7 +175,7 @@ STATIC_ROUTINE void ActionDone(int idx)
   char logmsg[1024];
   if (idx >= 0) {
     ActionInfo *actions = table->actions;
-    if (actions[idx].event) {
+    if (actions[idx].event){
       pthread_mutex_lock(&send_msg_mutex);
       MDSEvent(actions[idx].event, sizeof(int), (char *)&table->shot);
       pthread_mutex_unlock(&send_msg_mutex);
@@ -183,12 +183,14 @@ STATIC_ROUTINE void ActionDone(int idx)
     DoSendMonitor(MonitorDone, idx);
     if (Output) {
       char buf[30];
+      pthread_mutex_lock(&send_msg_mutex);
       if (actions[idx].status & 1)
 	sprintf(logmsg, "%s, Action %s completed", now(buf), actions[idx].path);
       else {
 	char *emsg = MdsGetMsg(actions[idx].status);
 	sprintf(logmsg, "%s, Action %s failed, %s", now(buf), actions[idx].path, emsg);
       }
+      pthread_mutex_unlock(&send_msg_mutex);
       (*Output) (logmsg);
     }
     if (!AbortInProgress) {
@@ -196,31 +198,41 @@ STATIC_ROUTINE void ActionDone(int idx)
       char expression[60];
       struct descriptor expression_d = { 0, DTYPE_T, CLASS_S, 0 };
       expression_d.pointer = expression;
+      pthread_mutex_lock(&send_msg_mutex);
       expression_d.length =
-	  sprintf(expression, "PUBLIC _ACTION_%08X = %d", actions[idx].nid, actions[idx].status);
+      sprintf(expression, "PUBLIC _ACTION_%08X = %d", actions[idx].nid, actions[idx].status);
+      pthread_mutex_unlock(&send_msg_mutex);
       TdiExecute(&expression_d, &xd MDS_END_ARG);
       MdsFree1Dx(&xd, NULL);
+      pthread_mutex_lock(&send_msg_mutex);
       for (i = 0; i < actions[idx].num_references; i++) {
-	int dstat;
-	int doit;
-	int cidx = actions[idx].referenced_by[i];
-	if (!actions[cidx].done) {
-	  if ((dstat = TdiGetLong(actions[cidx].condition, &doit)) & 1) {
-	    if (doit) {
-	      Dispatch(cidx);
-	    } else {
-	      actions[cidx].status = ServerNOT_DISPATCHED;
-	      DoActionDone(cidx);
-	    }
-	  } else if (dstat != TdiUNKNOWN_VAR) {
-	    actions[cidx].status = ServerINVALID_DEPENDENCY;
-	    DoActionDone(cidx);
-	  }
-	}
+        int dstat;
+        int doit;
+        int cidx = actions[idx].referenced_by[i];
+        if (!actions[cidx].done) {
+          if ((dstat = TdiGetLong(actions[cidx].condition, &doit)) & 1) {
+            if (doit) {
+              pthread_mutex_unlock(&send_msg_mutex);
+              Dispatch(cidx);
+              pthread_mutex_lock(&send_msg_mutex);
+            } else {
+              actions[cidx].status = ServerNOT_DISPATCHED;
+              pthread_mutex_unlock(&send_msg_mutex);
+              DoActionDone(cidx);
+              pthread_mutex_lock(&send_msg_mutex);
+            }
+          } else if (dstat != TdiUNKNOWN_VAR) {
+            actions[cidx].status = ServerINVALID_DEPENDENCY;
+            pthread_mutex_unlock(&send_msg_mutex);
+            DoActionDone(cidx);
+            pthread_mutex_lock(&send_msg_mutex);
+          }
+        }
       }
-    }
+    } else pthread_mutex_lock(&send_msg_mutex);
     actions[idx].done = 1;
     actions[idx].recorded = 0;
+    pthread_mutex_unlock(&send_msg_mutex);
   }
   pthread_mutex_lock(&JobWaitMutex);
   pthread_cond_signal(&JobWaitCondition);
