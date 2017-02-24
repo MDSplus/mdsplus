@@ -13,10 +13,12 @@ class treeTests(TestCase):
     shotinc = 3
     instances = 0
     inThread = False
-
+    @property
+    def index(self):
+        return treeTests.shotdic[current_thread().ident]
     @property
     def shot(self):
-        return self.__class__.shotdic[current_thread().ident]
+        return self.index*treeTests.shotinc+1
 
     def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
@@ -59,10 +61,12 @@ class treeTests(TestCase):
                 cls._setenv("pytreesub_path",treepath%cls.tmpdir)
                 if getenv("testing_path") is None:
                     cls._setenv("testing_path","%s/trees"%cls.root)
-            shot = len(cls.shotdic)*cls.shotinc+1
-            cls.shotdic[current_thread().ident] = shot
             cls.instances += 1
-        treeTests.buildTrees(shot)
+            index = len(cls.shotdic)
+            if cls.inThread:
+                print('thread - %d'%(index,))
+            cls.shotdic[current_thread().ident] = index
+        treeTests.buildTrees(index*cls.shotinc+1)
     @classmethod
     def _setenv(cls,name,value):
         value = str(value)
@@ -71,8 +75,6 @@ class treeTests(TestCase):
         setenv(name,value)
     @classmethod
     def buildTrees(cls,shot):
-        if cls.inThread:
-            print('opening tree %s:%d'%('pytree',shot))
         with Tree('pytree',shot,'new') as pytree:
             pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
@@ -115,6 +117,7 @@ class treeTests(TestCase):
                 node=pytreesub_top.addNode('child%02d' % (i,),'structure')
                 node.addDevice('dt200_%02d' % (i,),'dt200').on=False
             pytreesub.write()
+
     @classmethod
     def tearDownClass(cls):
         import gc,shutil
@@ -128,9 +131,10 @@ class treeTests(TestCase):
         pytree = Tree('pytree',self.shot)
         self.assertEqual(str(pytree),'Tree("PYTREE",%d,"Normal")'%(self.shot,))
         pytree.createPulse(self.shot+1)
-        Tree.setCurrent('pytree',self.shot+1)
-        pytree2=Tree('pytree',self.shot+1)
-        self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
+        if not treeTests.inThread:
+            Tree.setCurrent('pytree',self.shot+1)
+            pytree2=Tree('pytree',0)
+            self.assertEqual(str(pytree2),'Tree("PYTREE",%d,"Normal")'%(self.shot+1,))
 
     def getNode(self):
         pytree=Tree('pytree',self.shot,'ReadOnly')
@@ -340,7 +344,7 @@ class treeTests(TestCase):
         log = None
         try:
           if Popen:
-              log = open('mdsip.log','w')
+              log = open('mdsip_%d.log'%self.index,'w')
               mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
                              stdout=log,stderr=STDOUT)
           try:

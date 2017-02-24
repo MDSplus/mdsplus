@@ -23,6 +23,13 @@ class testing(object):
     tap_file = os.getenv(TEST_TAPFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.tap')
     xml_file = os.getenv(TEST_XMLFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.xml')
 
+    def check_unittest_version(self, module_name ):
+        if module_name.startswith('thread'):
+            import unittest
+            if '__version__' in unittest.__dict__:
+                return float(unittest.__version__)>=2.7
+        return True
+
     def check_module(self, module_name ):
         from modulefinder import ModuleFinder
         finder = ModuleFinder(debug=2)
@@ -131,17 +138,21 @@ def check_arch(file_name):
     else:
         lib   = 'lib%s.so'
         pylib = 'python%d.%d'
+    module_name = os.path.basename(file_name)
     try:
         ts.check_loadlib(lib%'MdsShr')
     except OSError:
-        ts.skip_test(os.path.basename(file_name),
+        ts.skip_test(module_name,
                      'Unable to load MDSplus core libs')
     try:
         pylib = lib%(pylib%sys.version_info[0:2])
         ts.check_loadlib(pylib)
     except OSError:
-        ts.skip_test(os.path.basename(file_name),
+        ts.skip_test(module_name,
                      'Unable to load python lib "%s"'%(pylib,))
+    if not ts.check_unittest_version(module_name):
+        ts.skip_test(module_name,
+                     'Unfit unittest version < 2.7')
 
 
 if __name__ == '__main__':
