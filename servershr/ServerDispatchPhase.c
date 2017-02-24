@@ -303,11 +303,12 @@ STATIC_ROUTINE int NoOutstandingActions(int s, int e)
 {
   int i;
   ActionInfo *actions = table->actions;
-  for (i = s; i < e; i++) {
+  pthread_mutex_lock(&send_msg_mutex);
+  for (i = s; i < e; i++)
     if (actions[i].dispatched && !actions[i].done)
-      return 0;
-  }
-  return 1;
+      break;
+  pthread_mutex_unlock(&send_msg_mutex);
+  return i==e;
 }
 
 STATIC_ROUTINE void RecordStatus(int s, int e)
