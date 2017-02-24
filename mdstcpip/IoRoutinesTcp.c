@@ -60,6 +60,13 @@ static IoRoutines tcp_routines =
   tcp_disconnect
 };
 
+typedef struct _IoRoutineTcpInfo {
+    int rcvbuf; /// < SO_RCVBUF
+    int sndbuf; /// < SO_SNDBUF
+    int reuse;  /// < reuse address
+} IoRoutineTcpInfo;
+
+
 /// Connected client definition for client list
 typedef struct _client {
   int sock;
@@ -359,38 +366,29 @@ static int tcp_flush(int conid){
 /// \param reuse set SO_REUSEADDR to be able to reuse the same address.
 ///
 static void SetSocketOptions(SOCKET s, int reuse){
-//  fprintf(stderr,"Set socket OPTIONS on socket: %i //// \n",s);
-
-  STATIC_CONSTANT int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
+  // fprintf(stderr,"Set socket OPTIONS on socket: %i //// \n",s);
+  int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
   int one = 1;
-  socklen_t len;
-  static int debug_winsize = 0;
-  static int init = 1;
-  static int set_window_size = 0;
-  if (init) {
-      char *winsize = getenv("TCP_WINDOW_SIZE");
-      if (winsize) {
-          sendbuf = atoi(winsize);
-          recvbuf = atoi(winsize);
-          set_window_size = 1;
-        }
-      debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
-      init = 0;
-    }
+  //  socklen_t len;
+
 #ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
 #endif
-  if(set_window_size) {
+  char * tcp_window_size = getenv("TCP_WINDOW_SIZE");
+  if(tcp_window_size && strlen(tcp_window_size)) {
+      recvbuf = sendbuf = atoi(tcp_window_size);
+      printf("Set size = %d : %d\n",recvbuf,sendbuf);
       setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
       setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
   }
-  if (debug_winsize) {
-      getsockopt(s, SOL_SOCKET, SO_RCVBUF, (void *)&recvbuf, &len);
-      fprintf(stderr, "Got a recvbuf of %d\n", recvbuf);
-      getsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *)&sendbuf, &len);
-      fprintf(stderr, "Got a sendbuf of %d\n", sendbuf);
-      fprintf(stderr, "Compression level: %d\n", GetCompressionLevel() );
-    }
+  //  if (debug_winsize) {
+  //      fprintf(stderr, "Socket id %d\n", s);
+  //      getsockopt(s, SOL_SOCKET, SO_RCVBUF, (void *)&recvbuf, &len);
+  //      fprintf(stderr, "Got a recvbuf of %d\n", recvbuf);
+  //      getsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *)&sendbuf, &len);
+  //      fprintf(stderr, "Got a sendbuf of %d\n", sendbuf);
+  //      fprintf(stderr, "Compression level: %d\n", GetCompressionLevel() );
+  //    }
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
   setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *)&one, sizeof(one));
   if (reuse)
