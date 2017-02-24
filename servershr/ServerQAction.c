@@ -630,9 +630,10 @@ static void LogPrefix(char *ans_c)
 
 static int ShowCurrentJob(struct descriptor_xd *ans)
 {
-  char *job_text = current_job_text;
   char *ans_c;
   struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
+  LockQueue();
+  char *job_text = current_job_text;
   if (job_text == 0) {
     ans_c = malloc(1024);
     LogPrefix(ans_c);
@@ -652,6 +653,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
       strcat(ans_c, job_text);
     }
   }
+  UnlockQueue();
   ans_d.length = strlen(ans_c);
   ans_d.pointer = ans_c;
   MdsCopyDxXd(&ans_d, ans);
