@@ -3835,6 +3835,7 @@ public:
  	void checkDataAvailability();
 
 private:
+    MDS_DEBUG_ACCESS
     void lockLocal();
     void unlockLocal();
     void lockGlobal();
