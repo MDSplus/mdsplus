@@ -232,7 +232,9 @@ STATIC_ROUTINE void Before(int idx)
 {
   ActionInfo *actions = table->actions;
   char logmsg[1024];
+  pthread_mutex_lock(&send_msg_mutex);
   actions[idx].doing = 1;
+  pthread_mutex_unlock(&send_msg_mutex);
   DoSendMonitor(MonitorDoing, idx);
   if (Output) {
     char server[33];
