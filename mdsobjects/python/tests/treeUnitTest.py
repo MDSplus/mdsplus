@@ -3,7 +3,7 @@ import os
 from re import match
 from threading import Lock,current_thread
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Conglom
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
 from MDSplus import mdsExceptions as Exc
 
@@ -88,6 +88,7 @@ class treeTests(TestCase):
             node = pytree.addNode('SIG_CMPRS', 'signal')
             node.compress_on_put = True
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
+            Device.PyDevice('CYGNET4K').Add(pytree,'CYGNET4K').on=False
             pytree.write()
         with Tree('pytreesub',shot,'new') as pytreesub:
             if pytreesub.shot != shot:
@@ -143,6 +144,8 @@ class treeTests(TestCase):
         self.assertEqual(ip.nid,pytree._IP.nid)
         self.assertEqual(ip.nid,pytree.__PYTREESUB.IP.nid)
         self.assertEqual(ip.nid,pytree.__PYTREESUB__IP.nid)
+        self.assertEqual(pytree.TESTDEVICE.__class__,Device.PyDevice('TESTDEVICE'))
+        self.assertEqual(pytree.CYGNET4K.__class__,Device.PyDevice('CYGNET4K'))
 
     def setDefault(self):
         pytree = Tree('pytree',self.shot,'ReadOnly')
