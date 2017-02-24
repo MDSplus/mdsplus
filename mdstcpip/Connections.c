@@ -131,7 +131,7 @@ int NewConnection(char *protocol)
 
 ///
 /// Authorize client by username calling protocol IoRoutine.
-/// 
+///
 /// \param id of the connection to use
 /// \param username of the user to be authorized for access
 /// \return true if authorized user found, false otherwise
@@ -160,7 +160,7 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     char *user = 0;
     char *user_p = 0;
     int status;
-    
+
     // SET INFO //
     SetConnectionInfo(*id, info_name, readfd, info, info_len);
     m_user = GetMdsMsg(*id, &status);
@@ -170,7 +170,7 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       return 0;
     }
     m.h.msglen = sizeof(MsgHdr);
-    
+
     // AUTHORIZE //
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING)) {
       user = malloc(m_user->h.length + 1);
@@ -179,22 +179,23 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     }
     user_p = user ? user : "?";
     ok = AuthorizeClient(*id, user_p);
-    
+
     // SET COMPRESSION //
     if (ok & 1) {
       SetConnectionCompression(*id, m_user->h.status & 0xf);
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
     } else
       *usr = 0;
+    if (user) free(user);
     m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
-    
+
     if (m_user)
       MdsIpFree(m_user);
-    
+
     // reply to client //
     SendMdsMsg(*id, &m, 0);
-    
+
     if (!(ok & 1)) {
       fprintf(stderr, "Access denied\n");
       DisconnectConnection(*id);
