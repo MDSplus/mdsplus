@@ -415,7 +415,6 @@ static SOCKET CreatePort(short starting_port, short *port_out)
 static int ThreadRunning = 0;
 static pthread_mutex_t worker_mutex;
 static pthread_cond_t worker_condition;
-static int worker_cond_init = 1;
 
 static int start_receiver(short *port_out)
 {
@@ -437,11 +436,8 @@ static int start_receiver(short *port_out)
     pthread_attr_setstacksize(&attr, ssize * 16);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 #endif
-    if (worker_cond_init) {
-      pthread_mutex_init(&worker_mutex, pthread_mutexattr_default);
-      pthread_cond_init(&worker_condition, pthread_condattr_default);
-      worker_cond_init = 0;
-    }
+    if (!pthread_mutex_init(&worker_mutex, pthread_mutexattr_default))
+        pthread_cond_init(&worker_condition, pthread_condattr_default);
 #ifndef _WIN32
     c_status = pthread_create(&thread, &attr, Worker, (void *)&sock);
     pthread_attr_destroy(&attr);
@@ -840,52 +836,30 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fd
   }
 }
 
-static int client_mutex_initialized = 0;
 static pthread_mutex_t client_mutex;
 
 static void lock_client_list()
 {
-
-  if (!client_mutex_initialized) {
-    client_mutex_initialized = 1;
-    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   pthread_mutex_lock(&client_mutex);
 }
 
 static void unlock_client_list()
 {
-
-  if (!client_mutex_initialized) {
-    client_mutex_initialized = 1;
-    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   pthread_mutex_unlock(&client_mutex);
 }
 
-static int job_mutex_initialized = 0;
 static pthread_mutex_t job_mutex;
 
 static void lock_job_list()
 {
-
-  if (!job_mutex_initialized) {
-    job_mutex_initialized = 1;
-    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
   pthread_mutex_lock(&job_mutex);
 }
 
 static void unlock_job_list()
 {
-
-  if (!job_mutex_initialized) {
-    job_mutex_initialized = 1;
-    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
   pthread_mutex_unlock(&job_mutex);
 }
