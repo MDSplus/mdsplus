@@ -239,8 +239,10 @@ STATIC_ROUTINE void Before(int idx)
   if (Output) {
     char server[33];
     char buf[30];
+    pthread_mutex_lock(&send_msg_mutex);
     sprintf(logmsg, "%s, %s is beginning action %s", now(buf), Server(server, actions[idx].server),
 	    actions[idx].path);
+    pthread_mutex_unlock(&send_msg_mutex);
     (*Output) (logmsg);
   }
   return;
