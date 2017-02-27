@@ -154,7 +154,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
   short port = 0;
   int conid;
   if (!StartReceiver(&port) || ((conid = ServerConnect(server)) < 0)) {
-    if (ast)
+    if (ast && astparam)
       ast(astparam);
     return ServerPATH_DOWN;
   }
@@ -183,7 +183,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
     addr = *(int *)&addr_struct.sin_addr;
   if (!addr) {
     perror("Error getting the address the socket is bound to.\n");
-    if (ast)
+    if (ast && astparam)
       ast(astparam);
     return ServerSOCKET_ADDR_ERROR;
   }
@@ -738,7 +738,6 @@ static void RemoveClient(Client * c, fd_set * fdactive)
 {
   Job *j;
   int client_found = 0;
-  int found = 1;
   int conid = -1;
   lock_client_list();
   if (ClientList == c) {
@@ -771,15 +770,14 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (j->conid == conid)
       j->marked_for_delete = 1;
   unlock_job_list();
-  while (found) {
-    found = 0;
+  for(;;) {
     lock_job_list();
     for (j = Jobs; j && !j->marked_for_delete; j = j->next) ;
     unlock_job_list();
     if (j) {
-      found = 1;
-      DoCompletionAst(j->jobid, ServerPATH_DOWN, 0, 1);
+      DoCompletionAst(j->jobid, ServerPATH_DOWN, NULL, 1);
       RemoveJob(j);
+      return;
     }
   }
 }

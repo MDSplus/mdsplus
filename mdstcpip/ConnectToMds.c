@@ -2,11 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <status.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef _WIN32
+ #include <winsock2.h>
+#else
+ #include <pwd.h>
+ #define INVALID_SOCKET -1
+#endif
+
+
 #ifndef _WIN32
-#include <pwd.h>
 #endif
 
 #include "mdsip_connections.h"
@@ -50,7 +58,7 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 ///
 static int DoLogin(int id)
 {
-  int status;
+  INIT_STATUS;
   Message *m;
   char *user_p;
 #ifdef _WIN32
@@ -99,16 +107,16 @@ static int DoLogin(int id)
   memcpy(m->bytes, user_p, length);
   status = SendMdsMsg(id, m, 0);
   free(m);
-  if (status & 1) {
+  if STATUS_OK {
     m = GetMdsMsg(id, &status);
-    if (m == 0 || !(status & 1)) {
+    if (m == 0 || STATUS_NOT_OK) {
       printf("Error in connect\n");
-      return -1;
+      return MDSplusERROR;
     } else {
-      if (!(m->h.status & 1)) {
+      if IS_NOT_OK(m->h.status) {
 	printf("Error in connect: Access denied\n");
 	free(m);
-	return -1;
+	return MDSplusERROR;
       }
       // SET CLIENT COMPRESSION FROM SERVER //
       SetConnectionCompression(id, (m->h.status & 0x1e) >> 1);
@@ -117,10 +125,11 @@ static int DoLogin(int id)
       free(m);
   } else {
     perror("Error connecting to server");
-    return -1;
+    return MDSplusERROR;
   }
   return status;
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +141,7 @@ static int DoLogin(int id)
 ///
 int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
-  int status;
+  int ok = -1;
   char *host = 0;
   char *protocol = 0;
   IoRoutines *io;
@@ -140,23 +149,19 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
   io = LoadIo(protocol);
   if (io) {
     if (io->reuseCheck)
-      status = io->reuseCheck(host, unique, buflen);
+      ok = io->reuseCheck(host, unique, buflen);
     else {
       strncpy(unique, hostin, buflen);
-      status = 0;
+      ok = 0;
     }
-  } else {
+  } else
     memset(unique, 0, buflen);
-    status = -1;
-  }
   if (protocol)
     free(protocol);
   if (host)
     free(host);
-  return status;
+  return ok;
 }
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
