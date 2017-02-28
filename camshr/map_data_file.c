@@ -49,7 +49,7 @@
 int map_data_file(int dbType)
 {
   char *FileName=0;
-  int db_size, fd=ERROR, *FileIsMapped;
+  int db_size, fd=ERROR, *FileIsMapped = FALSE;
   int status = SUCCESS;
   extern int CTSdbFileIsMapped;
   extern int CRATEdbFileIsMapped;
