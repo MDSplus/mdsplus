@@ -2326,6 +2326,14 @@ class TreeREADONLY_TREE(_TreeException):
 
 MDSplusException.statusDict[265392264] = TreeREADONLY_TREE
 
+
+class TreeWRITETREEERR(_TreeException):
+  status=265392274
+  message="Error writing .tree file"
+  msgnam="WRITETREEERR"
+
+MDSplusException.statusDict[265392272] = TreeWRITETREEERR
+
 ########################### generated from mdsshr_messages.xml ########################
 
 

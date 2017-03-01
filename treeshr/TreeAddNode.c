@@ -695,8 +695,10 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 TREE_HEADER *header = HeaderOut(info_ptr->header);
                 num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
                 FreeHeaderOut(header);
-                if (num != (ssize_t)(header_pages * 512))
+                status = TreeWRITETREEERR;
+                if (num != (ssize_t)(header_pages * 512)) {
                     goto error_exit;
+                }
                 num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
                 if (num != (ssize_t)(node_pages * 512))
                     goto error_exit;
@@ -712,6 +714,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 status = TreeWriteNci(info_ptr);
                 if ((status & 1) == 0)
                     goto error_exit;
+                status = TreeNORMAL;
                 if (info_ptr->channel > -1)
                     status = MDS_IO_CLOSE(info_ptr->channel);
                 info_ptr->channel = -2;
