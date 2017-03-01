@@ -2714,6 +2714,16 @@ int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, cons
         sts = 1;}
         break;
 
+/* TreeWRITETREEERR */
+      case 0xfd19090:
+        {static const char *text="Error writing .tree file";
+        static const char *msgnam="WRITETREEERR";
+        *fac_out = FAC_TREE;
+        *msgnam_out = msgnam;
+        *text_out = text;
+        sts = 1;}
+        break;
+
 /* LibINSVIRMEM */
       case 0x158210:
         {static const char *text="Insufficient virtual memory";
