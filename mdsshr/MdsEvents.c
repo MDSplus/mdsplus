@@ -1,6 +1,7 @@
 #include <config.h>
 #include <STATICdef.h>
 #include <mdsshr.h>
+#include <status.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include <stdio.h>
@@ -920,7 +921,7 @@ STATIC_CONSTANT void KillHandler()
 {
   void *dummy;
   external_shutdown = 1;
-  write(fds[1], "x", 1) == 1 ? 0 : -1;
+  write(fds[1], "x", 1);
   pthread_join(external_thread, &dummy);
   close(fds[0]);
   close(fds[1]);
@@ -930,16 +931,12 @@ STATIC_CONSTANT void KillHandler()
 
 STATIC_ROUTINE void handleRemoteAst()
 {
+  INIT_STATUS;
   char buf[16];
-  int status = 1, i;
+  int i;
   Message *m;
   int tablesize = FD_SETSIZE, selectstat;
   fd_set readfds;
-
-  if (!(status & 1)) {
-    printf("%s\n", MdsGetMsg(status));
-    return;
-  }
   while (1) {
     FD_ZERO(&readfds);
     for (i = 0; i < num_receive_servers; i++)
@@ -952,13 +949,13 @@ STATIC_ROUTINE void handleRemoteAst()
       return;
     }
     if (external_shutdown) {
-      status = read(fds[0], buf, 1) == 1 ? 0 : -1;
+      read(fds[0], buf, 1);
       pthread_exit(0);
     }
     for (i = 0; i < num_receive_servers; i++) {
       if (receive_ids[i] > 0 && FD_ISSET(receive_sockets[i], &readfds)) {
 	m = GetMdsMsg_(receive_ids[i], &status);
-	if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo))) {
+	if (STATUS_OK && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo))) {
 	  MdsEventInfo *event = (MdsEventInfo *) m->bytes;
 	  ((void (*)())(*event->astadr)) (event->astprm, 12, event->data);
 	}
