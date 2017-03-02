@@ -423,7 +423,7 @@ NORMAL() {
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION} ]
+    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
     then
 	GREEN $COLOR
 	cat <<EOF
@@ -642,6 +642,6 @@ EOF
     NORMAL $COLOR
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}
+	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}
     fi
 fi
