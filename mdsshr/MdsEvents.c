@@ -167,7 +167,7 @@ static char *eventName(char const *eventnam_in) {
   }
   return eventnam;
 }
-  
+
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
@@ -458,15 +458,6 @@ STATIC_ROUTINE char *getEnvironmentVar(char const *name)
     return NULL;
   return trans;
 }
-
-#ifndef _WIN32
-STATIC_ROUTINE int searchOpenServer(char *server)
-/* Avoid doing MdsConnect on a server already connected before */
-/* for now, allow socket duplications */
-{
-  return 0;
-}
-#endif
 
 STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int *num_servers)
 {
@@ -971,22 +962,22 @@ STATIC_ROUTINE void handleRemoteAst()
 }
 #endif
 
-STATIC_ROUTINE int searchOpenServer()
-/* Avoid doing MdsConnect on a server already connected before */
-/* for now, allow socket duplications */
-{
-  return 0;
-}
-
 /*
     for(i = 0; i < num_receive_servers; i++)
-	if(receive_servers[i] && !strcmp(server, receive_servers[i])) 
+	if(receive_servers[i] && !strcmp(server, receive_servers[i]))
 	    return receive_sockets[i];
     for(i = 0; i < num_send_servers; i++)
-	if(send_servers[i] && !strcmp(server, send_servers[i])) 
+	if(send_servers[i] && !strcmp(server, send_servers[i]))
    return 0;
 }
 */
+
+STATIC_ROUTINE int searchOpenServer(char *server __attribute__ ((unused)))
+/* Avoid doing MdsConnect on a server already connected before
+ * for now, allow socket duplications
+ */{
+  return 0;
+}
 
 STATIC_THREADSAFE pthread_mutex_t initMutex;
 STATIC_THREADSAFE int initMutex_initialized = 0;
