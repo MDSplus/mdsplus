@@ -609,13 +609,13 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	  status = TdiGetLong(&xat0, &left);
 	if STATUS_OK {
 	  N_ELEMENTS(paxis, right);
-	}
-	left = -left;
-	right += left - 1;
-	if (k0 < left)
-	  k0 = left;
-	if (k1 > right)
-	  k1 = right;
+	  left = -left;
+	  right += left - 1;
+	  if (k0 < left)
+	    k0 = left;
+	  if (k1 > right)
+	    k1 = right;
+        }
       } else {
 	if STATUS_OK
 	  status = TdiLbound(axis.pointer, &dk0 MDS_END_ARG);
