@@ -121,7 +121,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 
  Local variables:                                                             */
 
-static int height_page;
+static float height_page;
 enum crosshairsmode {
   move_xh, first_xh, last_xh
 };
@@ -2494,7 +2494,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 	      lastpoint = imin;
 	      if (np == 100) {
 		fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-			height_page * resolution - point[lastpoint].y);
+			(int)(height_page * resolution - point[lastpoint].y));
 		np = 0;
 	      }
 	    }
@@ -2505,7 +2505,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 	      lastpoint = imax;
 	      if (np == 100) {
 		fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-			height_page * resolution - point[lastpoint].y);
+			(int)(height_page * resolution - point[lastpoint].y));
 		np = 0;
 	      }
 	    }
@@ -2524,7 +2524,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 	  lastpoint = i;
 	  if (np == 100) {
 	    fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-		    height_page * resolution - point[lastpoint].y);
+		(int)(height_page * resolution - point[lastpoint].y));
 	    np = 0;
 	  }
 	}
@@ -2540,7 +2540,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 		    point[i].y - point[lastpoint].y);
 	    np++;
 	  }
-	  fprintf(printfid, "%d %d %d v\n", np, point[i].x, height_page * resolution - point[i].y);
+	  fprintf(printfid, "%d %d %d v\n", np, point[i].x, (int)(height_page * resolution - point[i].y));
 	  np = 0;
 	}
 	pen_down = 0;
@@ -2553,7 +2553,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
     }
     if (np) {
       fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-	      height_page * resolution - point[lastpoint].y);
+	(int)(height_page * resolution - point[lastpoint].y));
     }
     fprintf(printfid, "grestore\n");
   }
@@ -2592,8 +2592,8 @@ static void DrawRectangles(Display * display, Window win, GC gc, XRectangle * re
 	   could be in the grid.  However, for our application, this test is good enough. */
 
 	fprintf(printfid, "%d %d %d %d dorectangle\n",
-		rectangle[i].x, height_page * resolution - rectangle[i].y, rectangle[i].width,
-		rectangle[i].height);
+		rectangle[i].x,(int)(height_page * resolution - rectangle[i].y),
+                rectangle[i].width,rectangle[i].height);
     }
     fprintf(printfid, "grestore\n");
   }

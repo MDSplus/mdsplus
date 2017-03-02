@@ -134,7 +134,7 @@ struct numeric_cast_inf_rule {
 
 template <typename Target, typename Source, class Enable = void >
 struct NumericCastImpl {
-    static Target numeric_cast(Source value ) {}
+    static Target numeric_cast(Source value __attribute__ ((unused))) {}
 };
 
 // Integer -> Integer

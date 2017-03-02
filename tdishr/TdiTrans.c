@@ -96,7 +96,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   struct descriptor_xd sig[3], uni[3], dat[3];
   struct TdiCatStruct cats[4];
   struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-  int cmode = -1, dim = -1, j, mul = 0, ncopies, rank = 0, ndim;
+  int cmode = -1, dim = -1, j, mul = 0, ncopies = 0, rank = 0, ndim;
   int step_bef = 0, step_dim = 0, step_aft = 0;
   int count_bef = 1, count_dim = 1, count_aft = 1;
   unsigned short digits, head;
