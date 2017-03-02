@@ -176,7 +176,7 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
   sf = TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt;
   hf = TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt;
   sprintf(*error, "elapsed=%ld.%02ld user=%ld.%02ld sys=%ld.%02ld sf=%ld hf=%ld\n",
-	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
+	  esec, emsec, usec, (long int)umsec, ssec, (long int)smsec, sf, hf);
 #else
   usec_d = (double)(clock() - cpu_start) / (double)CLOCKS_PER_SEC;
   sprintf(*error, "elapsed=%ld.%02ld cpu=%g\n", esec, emsec, usec_d);
