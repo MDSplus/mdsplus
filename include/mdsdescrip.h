@@ -143,7 +143,7 @@ struct descriptor_a {
             {rows, columns}}
 
 #define DESCRIPTOR_A_BOUNDS(name, len, type, ptr, dimct, arsize) \
-  ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0}}}
+  ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0,0}}}
 
 /************************************************
   CLASS_XD extended dynamic descriptor definition.
