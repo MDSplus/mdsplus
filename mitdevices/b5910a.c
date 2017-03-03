@@ -310,7 +310,7 @@ static void Crosshairs(Widget w, int tag __attribute__ ((unused)), XmdsWaveformC
 
 static Widget Top(Widget w)
 {
-  for (w = w; w && ((XtName(w) == 0) || strcmp(XtName(w), "B5910A")); w = XtParent(w)) ;
+  for ( ; w && ((XtName(w) == 0) || strcmp(XtName(w), "B5910A")); w = XtParent(w)) ;
   return w;
 }
 

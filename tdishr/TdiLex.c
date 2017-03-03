@@ -160,7 +160,9 @@ STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
         Nested comments allowed. Len is not used.
         Limitation:     Not ANSI C standard use of delimiters.
 */
-STATIC_ROUTINE int TdiLexComment()
+STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
+                                 unsigned char *str __attribute__ ((unused)),
+                                 struct marker *mark_ptr __attribute__ ((unused)))
 {
   char c, c1;
   int count = 1;
