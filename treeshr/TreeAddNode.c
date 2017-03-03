@@ -950,7 +950,8 @@ int _TreeQuitTree(void **dbid, char const *exp_ptr, int shotid)
       }
     } else
       status = (*dblist)->open_for_edit ? TreeNORMAL : TreeNOT_OPEN;
-    if ((status & 1) && ((*dblist)->open)) {
+    if (STATUS_OK && ((*dblist)->open)) {
+      _TreeDeleteNodesDiscard(*dbid);
       (*dblist)->modified = 0;
       status = _TreeClose(dbid, 0, 0);
     }
