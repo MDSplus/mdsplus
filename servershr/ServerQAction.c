@@ -10,7 +10,7 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
-#include <pthread.h>
+#include <pthread_port.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -24,14 +24,6 @@
  #include <signal.h>
 #endif
 #include <sys/time.h>
-
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#else
-#undef select
-#endif
 
 typedef struct _MonitorList {
   int addr;
@@ -86,15 +78,17 @@ static MonitorList *Monitors = NULL;
 static ClientList *Clients = NULL;
 static int WorkerThreadRunning = 0;
 static pthread_t WorkerThread;
-static pthread_cond_t JobWaitCondition;
-static pthread_mutex_t JobWaitMutex;
+static pthread_cond_t JobWaitCondition = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t JobWaitMutex = PTHREAD_MUTEX_INITIALIZER;
 static char *current_job_text = NULL;
 static int Debug = 0;
 static int QueueLocked = 0;
-int ProgLoc = 0;
 static int WorkerDied = 0;
 static int LeftWorkerLoop = 0;
 static int CondWStat = 0;
+
+//static pthread_mutex_t ProgLocLock = PTHREAD_MUTEX_INITIALIZER;
+int ProgLoc = 0;
 
 EXPORT struct descriptor *ServerInfo()
 {
@@ -523,7 +517,7 @@ static int DoSrvCommand(SrvJob * job_in)
   ProgLoc = 65;
   free(set_table);
   ProgLoc = 66;
-  if (status & 1) {
+  if STATUS_OK {
     ProgLoc = 67;
     status = mdsdcl_do_command(job->command);
     ProgLoc = 68;
@@ -622,10 +616,11 @@ static void LogPrefix(char *ans_c)
   gethostname(hname, 512);
   sprintf(ans_c, "%s, %s:%s, %s, ", Now(), hname, port ? port : "?",
 	  Logging == 0 ? "logging disabled" : "logging enabled");
-  if (Debug)
-    sprintf(ans_c + strlen(ans_c), "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
+  if (Debug) {
+      sprintf(ans_c + strlen(ans_c), "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
 	    "\n            LeftWorkerLoop = %d CondWStat = %d\n",
 	    QueueLocked, ProgLoc, WorkerDied, LeftWorkerLoop, CondWStat);
+    }
 }
 
 static int ShowCurrentJob(struct descriptor_xd *ans)
@@ -689,13 +684,11 @@ static void WaitForJob()
   {
     struct timespec abstime;
     struct timeval tmval;
-    ProgLoc = 12;
     gettimeofday(&tmval, 0);
+    ProgLoc = 13;
     abstime.tv_sec = tmval.tv_sec + 1;
     abstime.tv_nsec = tmval.tv_usec * 1000;
-
     CondWStat = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &abstime);
-    ProgLoc = 13;
   }
   ProgLoc = 14;
   pthread_mutex_unlock(&JobWaitMutex);
@@ -704,22 +697,8 @@ static void WaitForJob()
 
 static int StartThread()
 {
-  static int JobWaitInitialized = 0;
   int c_status;
   pthread_attr_t att;
-  if (JobWaitInitialized == 0) {
-    c_status = pthread_mutex_init(&JobWaitMutex, pthread_mutexattr_default);
-    if (c_status) {
-      perror("Error creating pthread mutex");
-      exit(c_status);
-    }
-    c_status = pthread_cond_init(&JobWaitCondition, pthread_condattr_default);
-    if (c_status) {
-      perror("Error creating pthread condition");
-      exit(c_status);
-    }
-    JobWaitInitialized = 1;
-  }
   if (WorkerThreadRunning == 0) {
     pthread_attr_init(&att);
     pthread_attr_setstacksize(&att, 0xffffff);
@@ -731,11 +710,9 @@ static int StartThread()
       exit(c_status);
     }
   }
-  c_status = pthread_cond_signal(&JobWaitCondition);
-  if (c_status) {
-    perror("Error signalling condition");
-    exit(c_status);
-  }
+  pthread_mutex_lock(&JobWaitMutex);
+  pthread_cond_signal(&JobWaitCondition);
+  pthread_mutex_unlock(&JobWaitMutex);
   return MDSplusSUCCESS;
 }
 
