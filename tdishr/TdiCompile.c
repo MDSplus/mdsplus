@@ -16,20 +16,12 @@ extern unsigned short OpcCompile;
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <STATICdef.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#else
-#undef select
-#endif
+
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 
-
+extern void lock_buffer_key();
+extern void unlock_buffer_key();
 
 extern int TdiEvaluate();
 extern int TdiYacc();
@@ -82,11 +74,13 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
       In case we bomb out, probably not needed.
       ****************************************/
       TdiRefZone.l_status = TdiBOMB;
+      lock_buffer_key();
       if (TdiRefZone.a_begin)
         free(TdiRefZone.a_begin);
       TdiRefZone.a_begin = TdiRefZone.a_cur =
 	  memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
       TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
+      unlock_buffer_key();
       TdiRefZone.l_ok = 0;
       TdiRefZone.l_narg = narg - 1;
       TdiRefZone.l_iarg = 0;

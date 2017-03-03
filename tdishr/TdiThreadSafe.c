@@ -12,6 +12,16 @@ STATIC_THREADSAFE pthread_key_t buffer_key;
 
 /* Once-only initialisation of the key */
 STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
+STATIC_THREADSAFE pthread_rwlock_t buffer_key_mutex = PTHREAD_RWLOCK_INITIALIZER;
+
+void lock_buffer_key() {
+  pthread_rwlock_wrlock(&buffer_key_mutex);
+}
+
+void unlock_buffer_key() {
+  pthread_rwlock_unlock(&buffer_key_mutex);
+}
+
 
 STATIC_ROUTINE void buffer_key_alloc();
 
@@ -19,6 +29,7 @@ STATIC_ROUTINE void buffer_key_alloc();
 ThreadStatic *TdiThreadStatic()
 {
   ThreadStatic *p;
+  lock_buffer_key();
   pthread_once(&buffer_key_once, buffer_key_alloc);
   p = (ThreadStatic *) pthread_getspecific(buffer_key);
   if (p == NULL) {
@@ -42,6 +53,7 @@ ThreadStatic *TdiThreadStatic()
     p->compiler_recursing = 0;
     pthread_setspecific(buffer_key, (void *)p);
   }
+  unlock_buffer_key();
   return p;
 }
 
@@ -65,7 +77,7 @@ STATIC_ROUTINE void buffer_key_alloc()
 
 void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
 {
-  if (!*initialized) {
+  if (!initialized || !*initialized) {
 #ifdef HAVE_PTHREAD_H
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
@@ -79,7 +91,8 @@ void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
 #else
     pthread_mutex_init(mutex);
 #endif
-    *initialized = 1;
+    if (initialized)
+      *initialized = 1;
   }
   pthread_mutex_lock(mutex);
 }
