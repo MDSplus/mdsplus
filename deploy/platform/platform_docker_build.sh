@@ -82,15 +82,23 @@ EOF
 checktests() {
     set +e
     ### Check status of all tests. If errors found print error messages and then exit with failure
-    checkstatus failed "Failure: 64-bit test suite failed." $tests_64
+    checkstatus failed "Failure: 64-bit make failed."                 $make_64
+    checkstatus failed "Failure: 64-bit install failed."           $install_64
+    checkstatus failed "Failure: 64-bit test suite failed."          $tests_64
     checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
     for test in address thread undefined; do
-        checkstatus failed "Failure: 64-bit santize with ${test} failed." $(getenv "tests_64_san_${test}")
+        checkstatus failed "Failure: 64-bit santize with ${test} make failed."    $(getenv "make_64_san_${test}")
+        checkstatus failed "Failure: 64-bit santize with ${test} install failed." $(getenv "install_64_san_${test}")
+        checkstatus failed "Failure: 64-bit santize with ${test} tests failed."   $(getenv "tests_64_san_${test}")
     done;
-    checkstatus failed "Failure: 32-bit test suite failed." $tests_32
+    checkstatus failed "Failure: 32-bit make failed."                 $make_32
+    checkstatus failed "Failure: 32-bit install failed."           $install_32
+    checkstatus failed "Failure: 32-bit test suite failed."          $tests_32
     checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
     for test in address thread undefined; do
-        checkstatus failed "Failure: 32-bit santize with ${test} failed." $(getenv "tests_32_san_${test}")
+        checkstatus failed "Failure: 32-bit santize with ${test} make failed."    $(getenv "make_64_san_${test}")
+        checkstatus failed "Failure: 32-bit santize with ${test} install failed." $(getenv "install_64_san_${test}")
+        checkstatus failed "Failure: 32-bit santize with ${test} tests failed."   $(getenv "tests_64_san_${test}")
     done;
     checkstatus abort "Failure: One or more tests have failed (see above)." $failed
 }
@@ -108,9 +116,11 @@ sanitize() {
             elif [ "$status" = "0" ]; then
               if [ -z "$NOMAKE" ]; then
                 $MAKE
+                checkstatus make_${1}_san_${test} "Failure compiling $1-bit with sanitize-${test}." $?
                 $MAKE install
+                checkstatus install_${1}_san_${test} "Failure installing $1-bit with sanitize-${test}." $?
                 :&& tio 1800 $MAKE -k tests 2>&1
-                checkstatus tests_${1}_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
+                checkstatus tests_${1}_san_${test} "Failure testing $1-bit with sanitize-${test}." $?
               fi
             else
                 echo "configure returned status $?"
@@ -131,16 +141,18 @@ normaltest() {
     config_test $@
    if [ -z "$NOMAKE" ]; then
     $MAKE
+    checkstatus make_$1 "Failure compiling $1-bit." $?
     $MAKE install
+    checkstatus install_$1 "Failure installing $1-bit." $?
     ### Run standard tests
     :&& tio 600 $MAKE -k tests 2>&1
-    checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
+    checkstatus tests_$1 "Failure testing $1-bit." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
         to=$( gettimeout $VALGRIND_TOOLS )
         :&& tio $to  $MAKE -k tests-valgrind 2>&1
-        checkstatus tests_${1}_val "Failure doing $1-bit valgrind tests." $?
+        checkstatus tests_${1}_val "Failure testing $1-bit with valgrind." $?
     fi
    fi
     popd
