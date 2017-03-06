@@ -390,4 +390,15 @@
    fun:SHA1_Update
 }
 
+{
+   manually added: python-c-interface (zack-vii)
+   Helgrind:Race
+   fun:PyGILState_Ensure
+   fun:TdiExtPython
+}
 
+{
+   manually added: pyhon-c-interface (zack-vii)
+   Helgrind:Race
+   fun:PyThreadState_Swap
+}
