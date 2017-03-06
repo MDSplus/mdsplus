@@ -26,10 +26,13 @@ java_DATA = jTraverser.jar DeviceBeans.jar
 
 
 jTraverser.jar: $(GIFS) classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
+	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 # Giant list of source files follow
 

@@ -787,7 +787,8 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 .PRECIOUS: Makefile
 
 jDispatcher.jar: classjava.stamp
-	$(JAR) c0f $@ $(CLASSES)
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(CLASSES)
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@
