@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread_port.h>
 #ifndef _WIN32
 #include <signal.h>
 #endif
@@ -19,11 +20,14 @@
 #endif
 #define Py_None _Py_NoneStruct
 
-#define loadrtn(name,check) name=dlsym(handle,#name);   \
+#define loadrtn(name,check) name=dlsym(handle,#name); \
   if (check && !name) { \
   fprintf(stderr,"\n\nError finding python routine: %s\n\n",#name); \
-  return LibNOTFOU;\
+  return LibNOTFOU; \
 }
+//"
+
+static pthread_mutex_t libpython_mutex = PTHREAD_MUTEX_INITIALIZER;
 typedef void* PyThreadState;
 static PyThreadState *(*PyGILState_Ensure)() = NULL;
 static void (*PyGILState_Release)(PyThreadState *) = NULL;
@@ -60,8 +64,7 @@ static PyObject *(*PyList_GetItem) () = NULL;
 static PyObject *(*PyObject_Str) () = NULL;
 static int (*PyObject_IsSubclass) () = NULL;
 
-static int Initialize()
-{
+static int Initialize(){
   if (!PyGILState_Ensure) {
     void (*Py_Initialize) () = NULL;
     void (*PyEval_InitThreads)() = NULL;
@@ -326,7 +329,9 @@ int TdiExtPython(struct descriptor *modname_d,
 #endif
   char *dirspec = findModule(modname_d, &filename);
   if (dirspec) {
+    pthread_mutex_lock(&libpython_mutex);
     status = Initialize();
+    pthread_mutex_unlock(&libpython_mutex);
     if STATUS_OK {
       PyThreadState *GIL = (*PyGILState_Ensure)();
       PyObject *ans;
@@ -368,7 +373,8 @@ int TdiExtPython(struct descriptor *modname_d,
       } else status = TdiUNKNOWN_VAR;
       free(filename);
       (*PyGILState_Release)(GIL);
-    }
+    } else
+      free(dirspec);
   } else status = TdiUNKNOWN_VAR;
 #ifndef _WIN32
   sigaction(SIGCHLD, &oldact, NULL);

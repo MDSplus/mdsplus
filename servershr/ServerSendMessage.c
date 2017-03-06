@@ -105,7 +105,7 @@ int ServerBadSocket(SOCKET socket);
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
-static int StartReceiver(short *port);
+static int start_receiver(short *port);
 int ServerConnect(char *server);
 static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
@@ -153,7 +153,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
 {
   short port = 0;
   int conid;
-  if (!StartReceiver(&port) || ((conid = ServerConnect(server)) < 0)) {
+  if (start_receiver(&port) || ((conid = ServerConnect(server)) < 0)) {
     if (ast && astparam)
       ast(astparam);
     return ServerPATH_DOWN;
@@ -380,7 +380,7 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
   SOCKET s;
-  int status;
+  int c_status = -1;
   int tries = 0;
   int one = 1;
   InitializeSockets();
@@ -394,17 +394,17 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(int));
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
-  for (tries = 0, status = -1; (status < 0) && (tries < 500); tries++) {
+  for (tries = 0 ; (c_status < 0) && (tries < 500); tries++) {
     port = starting_port + (random() & 0xff);
     sin.sin_port = htons(port);
-    status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
+    c_status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
   }
-  if (status < 0) {
+  if (c_status < 0) {
     perror("Error binding to service\n");
     return INVALID_SOCKET;
   }
-  status = listen(s, 5);
-  if (status < 0) {
+  c_status = listen(s, 5);
+  if (c_status < 0) {
     perror("Error from listen\n");
     return INVALID_SOCKET;
   }
@@ -415,60 +415,56 @@ static SOCKET CreatePort(short starting_port, short *port_out)
 static int ThreadRunning = 0;
 static pthread_mutex_t worker_mutex;
 static pthread_cond_t worker_condition;
-static int worker_cond_init = 1;
 
-static int StartReceiver(short *port_out)
+static int start_receiver(short *port_out)
 {
+  int c_status = C_OK;
   static short port = 0;
   static SOCKET sock;
   static pthread_t thread;
-  int status = 1;
   if (port == 0) {
     sock = CreatePort((short)8800, &port);
     if (sock == INVALID_SOCKET)
-      return -2;
+      return C_ERROR;
   }
   if (!ThreadRunning) {
 #ifndef _WIN32
     size_t ssize;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    status = pthread_attr_getstacksize(&attr, &ssize);
-    status = pthread_attr_setstacksize(&attr, ssize * 16);
-    status = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_getstacksize(&attr, &ssize);
+    pthread_attr_setstacksize(&attr, ssize * 16);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 #endif
-    if (worker_cond_init) {
-      pthread_mutex_init(&worker_mutex, pthread_mutexattr_default);
-      pthread_cond_init(&worker_condition, pthread_condattr_default);
-      worker_cond_init = 0;
-    }
+    if (!pthread_mutex_init(&worker_mutex, pthread_mutexattr_default))
+        pthread_cond_init(&worker_condition, pthread_condattr_default);
 #ifndef _WIN32
-    status = pthread_create(&thread, &attr, Worker, (void *)&sock);
+    c_status = pthread_create(&thread, &attr, Worker, (void *)&sock);
     pthread_attr_destroy(&attr);
 #else
-    status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
+    c_status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
 #endif
-    if (status != 0) {
+    if (c_status != C_OK) {
       perror("error creating dispatch receiver thread\n");
-      status = -2;
     } else {
-      while ((ThreadRunning == 0) && (pthread_mutex_lock(&worker_mutex) == 0)) {
-	if (!ThreadRunning)
-	{
+      while (pthread_mutex_lock(&worker_mutex) == 0) {
+	if (!ThreadRunning) {
 	  struct timespec abstime;
 	  struct timeval tmval;
 	  gettimeofday(&tmval, 0);
 	  abstime.tv_sec = tmval.tv_sec + 1;
 	  abstime.tv_nsec = tmval.tv_usec * 1000;
 	  pthread_cond_timedwait(&worker_condition, &worker_mutex, &abstime);
-	}
-	pthread_mutex_unlock(&worker_mutex);
+          pthread_mutex_unlock(&worker_mutex);
+	} else {
+          pthread_mutex_unlock(&worker_mutex);
+          break;
+        }
       }
-      status = 1;
     }
   }
   *port_out = port;
-  return status;
+  return c_status;
 }
 
 static void ThreadExit(void *arg __attribute__ ((unused)))
@@ -840,52 +836,30 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fd
   }
 }
 
-static int client_mutex_initialized = 0;
 static pthread_mutex_t client_mutex;
 
 static void lock_client_list()
 {
-
-  if (!client_mutex_initialized) {
-    client_mutex_initialized = 1;
-    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   pthread_mutex_lock(&client_mutex);
 }
 
 static void unlock_client_list()
 {
-
-  if (!client_mutex_initialized) {
-    client_mutex_initialized = 1;
-    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   pthread_mutex_unlock(&client_mutex);
 }
 
-static int job_mutex_initialized = 0;
 static pthread_mutex_t job_mutex;
 
 static void lock_job_list()
 {
-
-  if (!job_mutex_initialized) {
-    job_mutex_initialized = 1;
-    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
   pthread_mutex_lock(&job_mutex);
 }
 
 static void unlock_job_list()
 {
-
-  if (!job_mutex_initialized) {
-    job_mutex_initialized = 1;
-    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
   pthread_mutex_unlock(&job_mutex);
 }

@@ -250,7 +250,6 @@ void _TreeDeleteNodesWrite(void *dbid) {
   static NCI empty_nci;
   NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
       (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
-
   TREE_EDIT *edit = dblist->tree_info->edit;
   DELETED_NID *dnid,*next;
   NCI old_nci;
@@ -283,6 +282,17 @@ void _TreeDeleteNodesWrite(void *dbid) {
     TreeGetNciLw(dblist->tree_info, nidx, &old_nci);
     TreePutNci(dblist->tree_info, nidx, &empty_nci, 1);
     TreeUnLockNci(dblist->tree_info, 0, nidx);
+  }
+}
+
+
+void _TreeDeleteNodesDiscard(void *dbid) {
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  TREE_EDIT *edit = dblist->tree_info->edit;
+  DELETED_NID *dnid,*next;
+  for (dnid=edit->deleted_nid_list,edit->deleted_nid_list=0; dnid; dnid=next) {
+    next=dnid->next;
+    free(dnid);
   }
 }
 

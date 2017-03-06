@@ -13,8 +13,9 @@ TEST_EXTENSIONS = .py
 
 TESTS = \
         dataUnitTest.py \
+        segmentsUnitTest.py \
         treeUnitTest.py \
-        segmentsUnitTest.py
+        threadsUnitTest.py
 
 #  threadsUnitTest.py
 #  simulateSegfault.py
