@@ -105,7 +105,7 @@ class MDSplusException(Exception):
     if isinstance(status,int):
       self.status=status
     if not hasattr(self,'status'):
-      self.status=-2
+      self.status=PyUNHANDLED_EXCEPTION.status
       self.msgnam='Unknown'
       self.message='Unknown exception'
       self.fac='MDSplus'

@@ -242,31 +242,29 @@ def TreeTurnOff(n):
 def TreeOpen(tree,shot):
     ctx=_C.c_void_p(0)
     status = __TreeOpen(_C.byref(ctx),_ver.tobytes(tree),shot,0)
-    if (status & 1):
-        return ctx
-    else:
+    if not (status & 1):
         raise _Exceptions.statusToException(status)
+    return ctx
 
 def TreeOpenReadOnly(tree,shot):
     ctx=_C.c_void_p(0)
     status = __TreeOpen(_C.byref(ctx),_ver.tobytes(tree),shot,1)
-    if (status & 1):
-        return ctx
-    else:
+    if not (status & 1):
         raise _Exceptions.statusToException(status)
+    return ctx
 
 def TreeOpenNew(tree,shot):
     ctx=_C.c_void_p(0)
     status = __TreeOpenNew(_C.byref(ctx),_ver.tobytes(tree),shot)
-    if (status & 1):
-        return ctx
-    else:
-        raise _Exceptions.statusToException(status)
-
-def TreeOpenEdit(tree):
-    status = __TreeOpenEdit(_C.byref(tree.ctx),_ver.tobytes(tree.tree),tree.shot)
     if not (status & 1):
         raise _Exceptions.statusToException(status)
+    return ctx
+
+def TreeOpenEdit(tree,shot,ctx=_C.c_void_p(0)):
+    status = __TreeOpenEdit(_C.byref(ctx),_ver.tobytes(tree),shot)
+    if not (status & 1):
+        raise _Exceptions.statusToException(status)
+    return ctx
 
 def TreeQuitTree(tree):
     status = __TreeQuitTree(_C.byref(tree.ctx),_ver.tobytes(tree.tree),tree.shot)

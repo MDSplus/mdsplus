@@ -74,5 +74,8 @@ def test_all(*arg):
 
     return TestSuite(tests)
 
-if __name__=='__main__':
+def run():
     TextTestRunner().run(test_all())
+
+if __name__=='__main__':
+    run()

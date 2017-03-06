@@ -389,55 +389,43 @@ static void ParseTime(LinkedEvent * event)
     event->time = strtok(0, " ");
 }
 
-static int ParseMsg(char *msg, LinkedEvent * event)
+static int parseMsg(char *msg, LinkedEvent * event)
 {
   char *tmp;
+  if (!msg) return C_ERROR;
   event->msg = strcpy(malloc(strlen(msg) + 1), msg);
   event->tree = strtok(event->msg, " ");
-  if (!event->tree)
-    return 0;
+  if (!event->tree) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->shot = atoi(tmp);
-  if (event->shot <= 0)
-    return 0;
+  if (event->shot <= 0) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->phase = atoi(tmp);
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->nid = atoi(tmp);
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->on = atoi(tmp);
-  if (event->on != 0 && event->on != 1)
-    return 0;
+  if (event->on != 0 && event->on != 1) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->mode = atoi(tmp);
   event->server = strtok(0, " ");
-  if (!event->server)
-    return 0;
+  if (!event->server) return C_ERROR;
   tmp = strtok(0, " ");
-  if (!tmp)
-    return 0;
+  if (!tmp) return C_ERROR;
   event->status = atoi(tmp);
   event->fullpath = strtok(0, " ");
-  if (!event->fullpath)
-    return 0;
+  if (!event->fullpath) return C_ERROR;
   event->time = strtok(0, ";");
-  if (!event->time)
-    return 0;
+  if (!event->time) return C_ERROR;
   event->status_text = strtok(0, ";");
-  if (!event->status_text)
-    return 0;
+  if (!event->status_text) return C_ERROR;
   ParseTime(event);
-  return 1;
+ return C_OK;
 }
 
 static LinkedEvent *GetQEvent()
@@ -478,18 +466,19 @@ static void QEvent(LinkedEvent * ev)
   unlock_event_queue();
 }
 
-static void MessageAst(int dummy __attribute__ ((unused)), char *reply)
+static void MessageAst(void* dummy __attribute__ ((unused)), char *reply)
 {
+  if (!dummy) return;
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
-  event->msg = 0;
-  if (reply && ParseMsg(reply, event)) {
+  event->msg = NULL;
+  if (!parseMsg(reply, event)) {
     QEvent(event);
-  } else {
-    if (event->msg)
-      free(event->msg);
-    free(event);
-    CheckIn(0);
+    return;
   }
+  if (event->msg)
+    free(event->msg);
+  free(event);
+  CheckIn(0);
 }
 
 static void EventUpdate(LinkedEvent * event)
@@ -701,15 +690,15 @@ static void Done(LinkedEvent * event)
 static void CheckIn(String monitor_in)
 {
   static String monitor;
-  int status = 0;
+  INIT_STATUS_ERROR;
   if (monitor_in)
     monitor = monitor_in;
-  while (!(status & 1)) {
+  for (;;) {
     status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    if (!(status & 1)) {
-      printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
-      sleep(2);
-    }
+    printf("%d",status);
+    if STATUS_OK return;
+    printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
+    sleep(2);
   }
 }
 /*

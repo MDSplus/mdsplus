@@ -43,19 +43,19 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
   struct descriptor_function *pfun;
   int nid, *pnid;
 
-	/*****************************
-        Cannot evaluate a null pointer
-        *****************************/
+  /*****************************
+  Cannot evaluate a null pointer
+  *****************************/
   if (list[0] == 0)
     return MdsCopyDxXd(&missing, out_ptr);
 
   switch (list[0]->class) {
   case CLASS_XD:
-		/***************************************************
-                If input is an class XD and dtype DSC and points to
-                real stuff, we can just copy its descriptor.
-                Release any lingering output unless it is our input.
-                ***************************************************/
+    /***************************************************
+    If input is an class XD and dtype DSC and points to
+    real stuff, we can just copy its descriptor.
+    Release any lingering output unless it is our input.
+    ***************************************************/
     switch (list[0]->dtype) {
     case DTYPE_DSC:
       if (list[0]->pointer == 0)
@@ -82,9 +82,9 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
       }
       break;
     }
-/*****************************************************************************
-WARNING falls through if an XD but not DSC of usable data (no known examples).
-*****************************************************************************/
+  /*****************************************************************************
+  WARNING falls through if an XD but not DSC of usable data (no known examples).
+  *****************************************************************************/
   case CLASS_S:
   case CLASS_D:
   case CLASS_XS:
@@ -125,7 +125,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
     case DTYPE_FUNCTION:
       pfun = (struct descriptor_function *)list[0];
       status = TdiIntrinsic(*(unsigned short *)pfun->pointer,
-			    pfun->ndesc, pfun->arguments, out_ptr);
+          pfun->ndesc, pfun->arguments, out_ptr);
       break;
     case DTYPE_PARAM:
     case DTYPE_SIGNAL:
@@ -153,9 +153,9 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
 		  pfun->arguments, out_ptr);
       break;
     default:
-			/***********************
-                        NEED error if full list.
-                        ***********************/
+      /***********************
+      NEED error if full list.
+      ***********************/
       if (list[0]->dtype < DTYPE_PARAM)
 	status = TdiINVCLADTY;
       else
@@ -163,19 +163,19 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
       break;
     }
     break;
-	/***************************************
-        Must expand compressed data. 24-Apr-1991
-        ***************************************/
   case CLASS_CA:
+    /***************************************
+    Must expand compressed data. 24-Apr-1991
+    ***************************************/
     status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
     if STATUS_OK
       status = TdiImpose(list[0], out_ptr);
     break;
   case CLASS_A:
-		/*******************************
-                Arrays of most types.
-                NEED array(dsc/nid/path)=?
-                *******************************/
+    /*************************
+    Arrays of most types.
+    NEED array(dsc/nid/path)=?
+    *************************/
     status = SsINTERNAL;
     break;
   case CLASS_APD:
@@ -195,10 +195,10 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
     status = TdiINVCLADSC;
     break;
   }
-	/****************************
-        VMS type or MDS special type.
-        Make a descriptor, class XD.
-        ****************************/
+  /****************************
+  VMS type or MDS special type.
+  Make a descriptor, class XD.
+  ****************************/
   if (status == SsINTERNAL)
     status = MdsCopyDxXd(list[0], out_ptr);
   if (list[0]->pointer)

@@ -217,8 +217,7 @@ class Tree(object):
                 if mode.upper() == 'NORMAL':
                     self.ctx=_treeshr.TreeOpen(tree,shot)
                 elif mode.upper() == 'EDIT':
-                    self.ctx=_treeshr.TreeOpen(tree,shot)
-                    self.edit()
+                    self.ctx=_treeshr.TreeOpenEdit(tree,shot)
                 elif mode.upper() == 'NEW':
                     self.ctx=_treeshr.TreeOpenNew(tree,shot)
                 elif mode.upper() == 'READONLY':
@@ -378,7 +377,7 @@ class Tree(object):
         @rtype: None"""
         Tree.lock()
         try:
-            _treeshr.TreeOpenEdit(self)
+            _treeshr.TreeOpenEdit(self.tree,self.shot,self.ctx)
         finally:
             Tree.unlock()
 
