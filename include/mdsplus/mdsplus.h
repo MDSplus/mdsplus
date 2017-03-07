@@ -48,4 +48,8 @@
 #define MDS_API_LOCAL
 #endif
 
+#ifndef MDS_DEBUG_ACCESS
+#define MDS_DEBUG_ACCESS
+#endif
+
 #endif

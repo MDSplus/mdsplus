@@ -653,7 +653,7 @@ public class jScopeFacade
         try
         {
 
-            String path = "docs/jScope.html";
+	    String path = "jdocs/jScope.html";
             URL url = getClass().getClassLoader().getResource(path);
             help_dialog.connectToBrowser(url);
         }

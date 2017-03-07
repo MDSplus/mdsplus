@@ -37,7 +37,8 @@ java_JAVA += ServersInfoPanel.java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
 jDispatcher.jar: classjava.stamp
-	$(JAR) c0f $@ $(CLASSES)
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(CLASSES)
 
 
 if MINGW 

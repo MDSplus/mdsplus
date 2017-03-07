@@ -1004,10 +1004,13 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 @MINGW_FALSE@	cp $< $@
 
 jTraverser.jar: $(GIFS) classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
-	$(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
+	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

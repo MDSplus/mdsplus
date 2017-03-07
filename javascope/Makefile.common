@@ -8,24 +8,6 @@ DOCS = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	UpdateEvent.html UpdateEventListener.html \
 	WaveData.html WaveDisplay.html
 
-TOPDOCS = jScope.html \
-	CompositeWaveDisplay.html \
-	ConnectionEvent.html ConnectionListener.html \
-	DataProvider.html \
-	FrameData.html \
-	ReadMe.html \
-	TWU_image_message.html \
-	UpdateEvent.html UpdateEventListener.html \
-	WaveData.html WaveDisplay.html
-
-SUBDOCS = jScope.html jScope.jpg popup.jpg \
-	CompositeWaveDisplay.html \
-	ConnectionEvent.html ConnectionListener.html \
-	DataProvider.html \
-	FrameData.html \
-	data_setup.jpg frame_popup.jpg image_setup.jpg \
-	UpdateEvent.html UpdateEventListener.html \
-	WaveData.html
 
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
