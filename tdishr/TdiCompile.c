@@ -53,7 +53,8 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
   EMPTYXD(tmp);
   struct descriptor *text_ptr;
   LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
-  if (TdiThreadStatic()->compiler_recursing == 1) {
+  GET_TDITHREADSTATIC_P;
+  if (TdiThreadStatic_p->compiler_recursing == 1) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
     return TdiRECURSIVE;
   }
@@ -63,11 +64,11 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
     status = TdiINVDTYDSC;
   if STATUS_OK {
     if (text_ptr->length > 0) {
-      if (TdiThreadStatic()->compiler_recursing == 1) {
+      if (TdiThreadStatic_p->compiler_recursing == 1) {
 	fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported\n");
 	return TdiRECURSIVE;
       }
-      TdiThreadStatic()->compiler_recursing = 1;
+      TdiThreadStatic_p->compiler_recursing = 1;
       if (!TdiRefZone.l_zone)
 	status = LibCreateVmZone(&TdiRefZone.l_zone);
       /****************************************
@@ -76,7 +77,7 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
       TdiRefZone.l_status = TdiBOMB;
       lock_buffer_key();
       if (TdiRefZone.a_begin)
-        free(TdiRefZone.a_begin);
+          free(TdiRefZone.a_begin);
       TdiRefZone.a_begin = TdiRefZone.a_cur =
 	  memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
       TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
@@ -102,7 +103,7 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 	  status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
       }
       LibResetVmZone(&TdiRefZone.l_zone);
-      TdiThreadStatic()->compiler_recursing = 0;
+      TdiThreadStatic_p->compiler_recursing = 0;
     }
   }
   MdsFree1Dx(&tmp, NULL);

@@ -206,15 +206,15 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp;
   struct descriptor *dsc_ptr;
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  GET_TDITHREADSTATIC_P;
+  struct descriptor_d *message = &(TdiThreadStatic_p->TdiIntrinsic_message);
   tmp = emptyxd;
-  TdiThreadStatic()->TdiIntrinsic_recursion_count =
-      TdiThreadStatic()->TdiIntrinsic_recursion_count + 1;
+  TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
     status = TdiMISS_ARG;
   else if (narg > fun_ptr->m2)
     status = TdiEXTRA_ARG;
-  else if (TdiThreadStatic()->TdiIntrinsic_recursion_count > 1800)
+  else if (TdiThreadStatic_p->TdiIntrinsic_recursion_count > 1800)
     status = TdiRECURSIVE;
   else {
     struct descriptor *fixed_list[256];
@@ -356,12 +356,20 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
     StrConcat((struct descriptor *)message,
               (struct descriptor *)message, &compile_err, &pre, &hilite,
               &body, &hilite, &post, &newline MDS_END_ARG);
+    if (TdiRefZone.a_begin) {
+       free(TdiRefZone.a_begin);
+       TdiRefZone.a_begin = NULL;
+    }
   }
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
- done:TdiThreadStatic()->TdiIntrinsic_recursion_count = 0;
-  TdiThreadStatic()->TdiIntrinsic_mess_stat = status;
+ done:TdiThreadStatic_p->TdiIntrinsic_recursion_count--;
+  TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
+  if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count && TdiRefZone.a_begin) {
+      free(TdiRefZone.a_begin);
+      TdiRefZone.a_begin = NULL;
+  }
   return status;
 }
 

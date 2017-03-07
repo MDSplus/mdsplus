@@ -86,8 +86,6 @@ extern unsigned short
     OpcPostInc,
     OpcPreInc, OpcStatement, OpcSubscript, OpcUnaryMinus, OpcUnaryPlus, OpcUsing, OpcVector;
 
-struct TdiZoneStruct TdiRefZone = { 0 };
-
 extern int TdiYacc_RESOLVE();
 extern int TdiLex();
 extern int TdiYacc_IMMEDIATE();
@@ -774,6 +772,7 @@ __YYSCLASS char *yyreds[] = {
         yylval = newvalue;\
         goto yynewstate;\
 }
+//"
 #define YYRECOVERING()  (!!yyerrflag)
 #ifndef YYDEBUG
 #define YYDEBUG  1		/* make debugging available */
@@ -831,6 +830,7 @@ int yychar;			/* current input token number */
 */
 int yyparse()
 {
+  GET_TDITHREADSTATIC_P;
   register YYSTYPE *yypvt;	/* top of value stack for $vars */
 
   /*
@@ -1811,6 +1811,7 @@ int yyparse()
 
 STATIC_ROUTINE int allocate_stacks()
 {
+  GET_THREADSTATIC_P;
   /* allocate the yys and yyv stacks */
   yys = (int *)malloc(yymaxdepth * sizeof(int));
   yyv = (YYSTYPE *) malloc(yymaxdepth * sizeof(YYSTYPE));
