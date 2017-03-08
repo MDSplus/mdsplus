@@ -39,8 +39,8 @@ int main(int argc, char **argv )
   try
   {
     tree = (Tree *)treePtr;
-    node=tree->getNode((char *)"\\CAMERATEST::TOP:FLIR:FRAMES"); 		
-    nodeMeta=tree->getNode((char *)"\\CAMERATEST::TOP:FLIR:FRAMES_METAD");  	
+    node=tree->getNode((char *)"\\CAMERAS::TOP:IRCAM_1:FRAMES");		
+    nodeMeta=tree->getNode((char *)"\\CAMERAS::TOP:IRCAM_1:FRAMES_METAD");  	
     dataNid=node->getNid();						//Node id to save the acquired frames
   }catch ( MdsException *exc )
     { std::cout << "ERROR reading data" << exc->what() << "\n"; }
@@ -129,7 +129,7 @@ if(argv[4]!=NULL)
 //FLIR
 
     FLIR_SC65X *FlirCam;
-    FlirCam = new FLIR_SC65X("192.168.35.83");           //192.168.50.20
+    FlirCam = new FLIR_SC65X("169.254.76.254");   //vecchia 169.254.169.249        //nuova 169.254.76.254   //192.168.50.20
     if(!FlirCam->checkLastOp())
     {
 		printf("Unable to connect!!!\n");
@@ -143,7 +143,7 @@ if(argv[4]!=NULL)
 	int skipFrame = 0;
 	int width=0;
 	int height=0;
-	unsigned int payloadSize=0;
+	int payloadSize=0;
 	int x,y=0;
 
 	FlirCam->setObjectParameters(291.15, 292.15, 1.0, 0.95, 0.5, 294.15, 1.0, 0.0);
@@ -156,17 +156,19 @@ if(argv[4]!=NULL)
 	printf("Start x:%d Start y:%d Width:%d Height:%d\n", x, y, width, height);
 
 	printf("\nGETTING ALL CAMERA PARAMETERS: start\n");
-	FlirCam->printAllParameters();
+//	FlirCam->printAllParameters();
 	printf("\nGETTING ALL CAMERA PARAMETERS: end\n\n");
 
-/*  ancora da testare
+    printf("TEST OF FOCUS POSITION.\n");              
     int focusPos = 0;  
     FlirCam->getFocusAbsPosition(&focusPos);
-    printf("Focus position: %d\n", focusPos);
-    FlirCam->setFocusAbsPosition(84);
+    printf("Current Focus position: %d\n", focusPos);
+    focusPos=37;
+    printf("Try to set focus position @: %d\n", focusPos);
+  //  FlirCam->setFocusAbsPosition(focusPos);
     FlirCam->getFocusAbsPosition(&focusPos);
-    printf("Focus position: %d\n", focusPos);               
- */
+    printf("New Focus position: %d\n", focusPos);               
+
                 
 	FlirCam->startAcquisition(&width, &height, &payloadSize); 
 
@@ -185,17 +187,14 @@ if(argv[4]!=NULL)
 	printf("Executing auto calibration and auto focus...\n");
 	FlirCam->setCalibMode(0);
 	FlirCam->executeAutoCalib();
-    FlirCam->executeAutoFocus();
+   //     FlirCam->executeAutoFocus();
 
     for(int i=1; i<=atoi(argv[3]); i++)  //acquire i=argv[3] frames
     { 
       frameNumber++;
-
-	  FlirCam->getFrame(&status, frame, metaData);
-      
+      FlirCam->getFrame(&status, frame, metaData);  
       gettimeofday(&tv, NULL); 				  
       timeStamp = ((tv.tv_sec)*1000) + ((tv.tv_usec)/1000); // timeStamp [ms]
-     
       switch(status)
       {		 
 	 	case 1: printf("get frame %d complete @ %ld\n", frameNumber, timeStamp); break;
@@ -207,8 +206,8 @@ if(argv[4]!=NULL)
       if(status==1 or status==4)  
       {  
 		 //SAVE FRAME IN MDSPLUS
-/*
-	     res=camSaveFrame(frame, width, height, &timeStamp, 14, treePtr, dataNid, -1, frameNumber);
+
+/*	     res=camSaveFrame(frame, width, height, &timeStamp, 14, treePtr, dataNid, -1, frameNumber);
     	 if(res==-1)
    		 {
        		printf("Error in 'camSaveFrame'...\n"); 

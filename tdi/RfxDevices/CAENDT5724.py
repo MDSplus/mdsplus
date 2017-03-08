@@ -1,9 +1,9 @@
-from MDSplus import *
-from numpy import *
-from threading import *
-import time
-import sys
-from ctypes import *
+from MDSplus import mdsExceptions, Device, Data, Window, Range, Dimension, TreePath, Signal
+from MDSplus import mdsExceptions, Int32, Float32, Float64, Int16Array, Float64Array
+from numpy import ndarray
+from threading import Thread, Condition
+from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
+from time import sleep
 
 class CAENDT5724(Device):
     print 'CAENDT5724'
@@ -145,7 +145,6 @@ class CAENDT5724(Device):
         global caenLib
         global caenInterfaceLib
 
-        from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
         class DT5720Data(Structure):
           _fields_ = [("eventSize", c_int), ("boardGroup", c_int), ("counter", c_int), ("time", c_int), ("data", c_short * (self.segmentSamples * self.nActChans))]
 
@@ -340,19 +339,10 @@ class CAENDT5724(Device):
  
 
 
-
-    """  
-    def stop_store(self,arg):
-      print "Stop Worker"
-      self.worker.stop()
-      return 1
-    """
 ################################# INIT ###############################
-    def init(self,arg):
+    def init(self):
       global caenLib
-      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-      import time
-
+ 
       if self.restoreInfo() == 0 : 
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open DT5724 Device' )
         return 0
@@ -460,15 +450,7 @@ class CAENDT5724(Device):
         status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x108C + chan * 0x100), byref(firmware), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         print "firmware  AMC FPGA Addr ", hex(vmeAddress + 0x108C + chan * 0x100), hex((firmware.value >> 16) & 0x0000ffff), " Version ", hex((firmware.value >> 8) & 0x000000ff), ".", hex((firmware.value ) & 0x000000ff)
         """
-        #Set offset
         
-        #offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()
-        #if(offset > 1.125):
-        #  offset = 1.125
-        #if(offset < -1.125):
-        #  offset = -1.125
-        #offset = (offset / 1.) * 32767
-
         dac_offset = getattr(self, 'channel_%d_dac_offset'%(chan+1)).data()
 
 	#Channel offset compensation
@@ -477,8 +459,9 @@ class CAENDT5724(Device):
         except:
           offset = 0;
 	
-        #offset = offset - 0.0194666 + 0.00219 -0.0001
+        #Set offset
         offset = offset + dac_offset
+        print 'Offset V ',offset
         if(offset > 1.125):
           offset = 1.125
         if(offset < -1.125):
@@ -633,10 +616,8 @@ class CAENDT5724(Device):
 
 ################################ TRIGGER ###################################
 
-    def trigger(self,arg):
-      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-      import time
-
+    def trigger(self):
+ 
       if ( self.restoreInfo() != self.HANDLE_RESTORE and self.worker.stopReq == True ) :
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'DT5724 Device not initialized' )
         return 0
@@ -656,11 +637,7 @@ class CAENDT5724(Device):
 
 
 ################################# START STORE ###############################
-    def start_store(self, arg):
-      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-      import time
-
-      print "self", self
+    def start_store(self):
 
       if ( self.restoreInfo() != self.HANDLE_RESTORE ) :
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'DT5724 Device not initialized' )
@@ -825,9 +802,7 @@ class CAENDT5724(Device):
 
 
 #################################### STOP STORE ###################################
-    def stop_store(self,arg):
-      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-      import time
+    def stop_store(self):
 
       print "Stop Store"
 
@@ -850,5 +825,6 @@ class CAENDT5724(Device):
       print "Fine Stop Store"
 
       return 1
+
 
       

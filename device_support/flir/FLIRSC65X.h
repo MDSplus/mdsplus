@@ -39,7 +39,7 @@ int setAcquisitionMode(int camHandle, int storeEnabled, int acqSkipFrameNumber )
 int executeAutoFocus(int camHandle);
 int setCalibMode(int camHandle, int calMode);
 int executeAutoCalib(int camHandle);
-int startAcquisition(int camHandle, int *width, int *height, unsigned int *payloadSize);
+int startAcquisition(int camHandle, int *width, int *height, int *payloadSize);
 int stopAcquisition(int camHandle);
 int getFrame(int camHandle, int *status, void *frame, void *metaData);
 int frameConv(int camHandle, unsigned short *frame, int width, int height);
@@ -47,11 +47,11 @@ int startFramesAcquisition(int camHandle);
 int stopFramesAcquisition(int camHandle);
 
 
-int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, int autoAdjustLimit, 
-									const char *streamingServer, int streamingPort, int lowLim, int highLim);
+int setStreamingMode(int camHandle, IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, int lowLim, int highLim, const char *deviceName);
 
 int setTriggerMode(int camHandle, int triggerMode, double burstDuration, int numTrigger );
-int setTreeInfo( int camHandle,  void *treePtr, int framesNid, int timebaseNid, int framesMetadNid);
+int softwareTrigger(int camHandle);
+int setTreeInfo( int camHandle,  void *treePtr, int framesNid, int timebaseNid, int framesMetadNid, int frame0TimeNid);
 
 void  getLastError(int camHandle, char *msg);
 
@@ -78,6 +78,7 @@ class FLIR_SC65X
 
 		int 	 storeEnabled;
 		int 	 triggerMode;
+                int      startStoreTrg;
 		int      autoCalibration;
 		int      irFrameFormat;
 
@@ -86,11 +87,12 @@ class FLIR_SC65X
 		char     streamingServer[512];
 		int 	 streamingPort;
 		int      autoScale;
-		unsigned int 	 lowLim; 
-		unsigned int    highLim;
-		int 	 minLim; 
-		int      maxLim;
-		int      autoAdjustLimit;
+		unsigned int lowLim; 
+		unsigned int highLim;
+		unsigned int minLim; 
+		unsigned int maxLim;
+		bool     autoAdjustLimit;
+		char     deviceName[64];
 
 		int	 imageMode; 	
 		int      acqSkipFrameNumber;
@@ -101,6 +103,7 @@ class FLIR_SC65X
 		int      framesNid; 
 		int      timebaseNid; 
 		int      framesMetadNid;
+                int      frame0TimeNid;
 
 		int	     acqFlag;
 		int      acqStopped;
@@ -138,23 +141,23 @@ class FLIR_SC65X
                 int setFocusAbsPosition(int focusPos);                
                 int setCalibMode(int calibMode);
 
-				int setAcquisitionMode( int storeEnabled, int acqSkipFrameNumber );
-				int setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled, int autoAdjustLimit, 
-										const char *streamingServer, int streamingPort, int lowLim, int highLim);
+		int setAcquisitionMode( int storeEnabled, int acqSkipFrameNumber );
+		int setStreamingMode( IRFMT_ENUM irFormat, int streamingEnabled, bool autoAdjustLimit, const char *streamingServer, int streamingPort, unsigned int lowLim, unsigned int highLim, const char *deviceName);
 
-				int setTriggerMode( int triggerMode, double burstDuration, int numTrigger );
-				int setTreeInfo( void *treePtr, int frameNid, int timebaseNid, int framesMetadNid);
+		int setTriggerMode( int triggerMode, double burstDuration, int numTrigger );
+		int setTreeInfo( void *treePtr, int frameNid, int timebaseNid, int framesMetadNid, int frame0TimeNid);
 
 
                 int executeAutoFocus();
                 int executeAutoCalib();
 
-				void getLastError(char *msg);
-				void printLastError(const char *format, const char *msg);
+		void getLastError(char *msg);
+		void printLastError(const char *format, const char *msg);
 			
 		//acquisition
-                int startAcquisition(int *width, int *height, unsigned int *payloadSize);	
+                int startAcquisition(int *width, int *height, int *payloadSize);	
                 int stopAcquisition();
+                int softwareTrigger();
                 int getFrame(int *status, void *frame, void *metaData);
                 int frameConv(unsigned short *frame, int width, int height);
 				int startFramesAcquisition();

@@ -4,16 +4,21 @@
 #include <string.h>
 using namespace std;
 #include <iostream>
-//tcp sender
+//TCP SENDER
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
 
+//FFMPEG TEXT OVERLAY
+#include <time.h>
+#include <fcntl.h>
+
 #include "camstreamutils.h"
 
-//***********************************************
+//debug mode if defined
+//#define debug
 
 
 
@@ -24,16 +29,19 @@ class StreamingFrame {
     void *frameMetadata;
     int width;
     int height;
-	int irFrameFormat;
-	bool adjLimit;
-	unsigned int minLim; 
-	unsigned int maxLim;
-	int tcpStreamHandle;
+    int irFrameFormat;
+    bool adjLimit;
+    unsigned int *lowLim; 
+    unsigned int *highLim;
+    unsigned int minLim; 
+    unsigned int maxLim;
+    int tcpStreamHandle;
+    const char *deviceName;
 
     StreamingFrame *nxt;
 
  public:
-    StreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int irFrameFormat, bool adjLimit, unsigned int minLim, unsigned int maxLim)
+    StreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName)
     {
 		this->tcpStreamHandle = tcpStreamHandle; 
 		this->frame = frame;
@@ -41,11 +49,12 @@ class StreamingFrame {
 		this->width = width;
 		this->height = height;
 		this->irFrameFormat = irFrameFormat;
-
 		this->adjLimit = adjLimit;
+		this->lowLim = lowLim;
+		this->highLim = highLim;
 		this->minLim = minLim;
 		this->maxLim = maxLim;
-
+                this->deviceName = deviceName;
 		nxt = 0;
     }
 
@@ -59,20 +68,46 @@ class StreamingFrame {
 		return nxt;
     }
 
-    void streaming( unsigned int *lowLim, unsigned int *highLim )
+    void streaming()
     {
+        //printf("lowLim: %d highLim: %d minLim: %d maxLim: %d\n", *lowLim, *highLim, minLim, maxLim);
 
-
-	    unsigned char *frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
+	unsigned char *frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
     	//if ( irFrameFormat == radiometric )
     	if ( irFrameFormat == 0 )
         	flirRadiometricConv(frame, width, height, frameMetadata) ;
 
     	camFrameTo8bit((unsigned short *) frame, width, height, frame8bit, adjLimit, lowLim, highLim, minLim, maxLim);
+
+        struct tm *tm;    //date & time used in FFMPEG_OVERLAY_***DEVICE-NAME*** file
+        time_t t;
+        char str_datetime[25];
+        t = time(NULL);
+        tm = localtime(&t);
+        strcpy(str_datetime,"");
+        strftime(str_datetime, sizeof(str_datetime), "%d-%m-%Y  %H:%M:%S", tm);
+
+        char textString[100];
+        sprintf(textString, "%s - %s - Min.:%d Max.:%d",this->deviceName, str_datetime, *lowLim, *highLim);  //text overlay example: IRCAM01 - 2017-02-06 10:08:00 - Min.:10 Max.:50
+
+        char filename[40];
+        sprintf(filename, "FFMPEG_OVERLAY_%s.txt", this->deviceName);
+       
+        camFFMPEGoverlay(filename, textString);
+        
     	camSendFrameOnTcp(&tcpStreamHandle, width, height, frame8bit);
 
-		free(frame8bit);
+	free(frame8bit);
+/*
+	if(pixelSize<=8)
+	    delete (char *) frame;
+	else if(pixelSize<=16)
+	    delete (short *)frame;
+	else if(pixelSize<=32)
+	    delete (int *) frame;
+*/
+        delete (short *)frame;
     }
 };
 
@@ -96,10 +131,9 @@ class StreamingFrameList
 		threadCreated = false;
     }
 
-    void addStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int irFrameFormat, bool adjLimit, unsigned int minLim, unsigned int maxLim)
+    void addStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName)
     {
-		StreamingFrame *newItem = new StreamingFrame(tcpStreamHandle, frame, frameMetadata,  width,height,  irFrameFormat,  adjLimit, minLim,  maxLim);
-
+		StreamingFrame *newItem = new StreamingFrame(tcpStreamHandle, frame, frameMetadata,  width,height,  irFrameFormat,  adjLimit, lowLim, highLim, minLim,  maxLim, deviceName);
 		pthread_mutex_lock(&mutex);
 		if(streamingHead == NULL)
 		{
@@ -112,15 +146,11 @@ class StreamingFrameList
 		}
 		pthread_cond_signal(&itemAvailable);
 		pthread_mutex_unlock(&mutex);
-
     }
 
 
     void executeItems()
     {
-		unsigned int lowLim; 
-		unsigned int highLim;
-
 		while(true)
 		{
 			pthread_mutex_lock(&mutex);
@@ -155,7 +185,7 @@ class StreamingFrameList
 			if(nItems > 0  &&  (nItems % 20 ) == 0) printf("THREAD ACTIVATED: %d streaming items pending\n", nItems);
 	
 			pthread_mutex_unlock(&mutex);
-			currItem->streaming(&lowLim, &highLim);
+			currItem->streaming();  
 			delete currItem;
 		}
     }
@@ -203,45 +233,39 @@ void camStopStreaming(void *listPtr)
     }
 }
 
-void camStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int pixelSize, int irFrameFormat, bool adjLimit, unsigned int minLim, unsigned int maxLim, void *streamingListPtr)
+void camStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int pixelSize, int irFrameFormat, bool adjLimit, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim, const char *deviceName, void *streamingListPtr)
 {
     void *bufFrame;
     void *bufMdata;
     int frameSize = width * height;
-	int metaSize = 3 * width;
+    int metaSize = 3 * width;
 
     if(pixelSize<=8)
     {
-	     bufFrame = new char[frameSize];  
+	 bufFrame = new char[frameSize];  
     	 memcpy(bufFrame, frame, frameSize * sizeof(char));
     }
     else if(pixelSize<=16)
     {
-	     bufFrame = new short[frameSize];
+	 bufFrame = new short[frameSize];
     	 memcpy(bufFrame, frame, frameSize * sizeof(short));
     } 
     else if(pixelSize<=32)
     {
-	     bufFrame = new int[frameSize]; 
+	 bufFrame = new int[frameSize]; 
     	 memcpy(bufFrame, frame, frameSize * sizeof(int));
     }
 	
     bufMdata = new char[metaSize];  
     memcpy(bufMdata, frameMetadata, metaSize);
-
     StreamingFrameList *streamingList = (StreamingFrameList *)streamingListPtr;
-
-    streamingList->addStreamingFrame(tcpStreamHandle, bufFrame, bufMdata,  width, height,  irFrameFormat,  adjLimit, minLim,  maxLim);
+    streamingList->addStreamingFrame(tcpStreamHandle, bufFrame, bufMdata,  width, height,  irFrameFormat,  adjLimit, lowLim, highLim, minLim, maxLim, deviceName);
 
 }
 
 
 //***********************************************
 
-
-
-//debug mode if defined
-//#define debug
 
 int camOpenTcpConnection(int StreamingPort, int *kSockHandle, int width, int height)  
 {
@@ -365,15 +389,16 @@ int camSendFrameOnTcp(int *kSockHandle, int width, int height, void *frame8bit)
 
 int camFrameTo8bit(unsigned short *frame, int width, int height, unsigned char *frame8bit, bool adjLimits, unsigned int *lowLim, unsigned int *highLim, unsigned int minLim, unsigned int maxLim)
 {
-	//for FLIR 655
-  	//unsigned int minLim = 2000; // 200 K or -73 deg Celsius
-  	//unsigned int maxLim = 62000; // 6200 K
-	
-    unsigned short minpix, maxpix;
+     //when adjLimits==0, lowLim and highLim are used to adjust the frame. minLim and maxLim are NOT used.
+     //minLim & maxLim depend on specific camera and are used only if adjLimits==1. In this case lowLim and highLim are calculated in the frame but cannot exceed the minLim and maxLim.
+     //frame8bit is the 8 bit resized version of frame using the passed or calculated min and max limits
+
+        unsigned short minpix, maxpix;
 	if (adjLimits)
 	{
 		minpix = USHRT_MAX;
 		maxpix = 0;
+
 		for(int i=0; i<width*height; i++) 
 		{
 			if ((frame[i] > minLim) && (frame[i] < minpix))
@@ -421,4 +446,49 @@ int camFrameTo8bit(unsigned short *frame, int width, int height, unsigned char *
 }
 
 
+//IMPORTANT: the file used by drawtext filter in ffmpeg is reload every frame processed and so any operation on it MUST BE an atomic operation!!!
+int camFFMPEGoverlay(const char *filename, const char *textString)
+{
+  char pathname[100];
+  strcpy(pathname,"");  	      // Clear local filename 
+  strcat(pathname,getenv("HOME"));    // get home dir 
+  strcat(pathname, "/");
+  strcat(pathname, filename);         // append my filename 
+
+  char tmp_pathname[strlen(pathname)+2];				//temp file to modify let the operation be atomic
+  snprintf(tmp_pathname,sizeof(tmp_pathname),"%s~",pathname);
+
+  mode_t default_mode=S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
+  int fd=open(tmp_pathname,O_RDWR|O_CREAT|O_TRUNC,default_mode);
+  if (fd==-1) 
+  {
+    printf("Failed to open new file for writing\n");
+    return -1;
+  }
+
+  size_t count = write(fd, textString, strlen(textString));
+
+  if(count!=strlen(textString))
+  {
+     printf("Failed to write new content on file\n");
+     return -1;
+  }
+  if (fsync(fd)==-1) 
+  {
+     printf("Failed to flush new file content to disc\n");
+     return -1;
+  }
+  if (close(fd)==-1) 
+  {
+    printf("Failed to close new file\n");
+    return -1;
+  }
+  if (rename(tmp_pathname,pathname)==-1) 
+  {
+    printf("Failed to move new file to final location\n");
+    return -1;
+  }
+
+ return 0;
+}
 
