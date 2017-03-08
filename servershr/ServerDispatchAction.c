@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$DISPATCH_ACTION   
+		Name:   SERVER$DISPATCH_ACTION
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   17-APR-1992
 
-    		Purpose: Create a single tree pulse file 
+    		Purpose: Create a single tree pulse file
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$descriptor *tree, int *shot, int *nid,
                         void (*ast)(), int astprm, int *netid, void (*link_down)(),void (*before_ast)())
