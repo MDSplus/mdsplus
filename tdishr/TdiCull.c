@@ -15,7 +15,7 @@
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
-#include "tdithreadsafe.h"
+#include "tdirefzone.h"
 #include <tdishr_messages.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
