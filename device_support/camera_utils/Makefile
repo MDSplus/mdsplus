@@ -5,7 +5,7 @@ CC=g++
 CFLAGSmdsutils=  -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I. -I$(MDSPLUS_DIR)/include
 CFLAGSstreamutils= -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I.
 ##############
-LDFLAGSstreamutils = -shared -lrt -pthread
+LDFLAGSstreamutils = -shared -lrt -pthread -L../flir -lflirutils
 LDFLAGSmdsutils = -shared -lrt -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr
 
 SOURCESstreamutils=camstreamutils.cpp 
@@ -40,4 +40,11 @@ clean:
 	rm $(OBJmdsutils)
 	rm $(SHAREDLIBmdsutils)	
 
+install:
+	cp -f $(SHAREDLIBstreamutils) $(MDSPLUS_DIR)/lib
+	cp -f $(SHAREDLIBmdsutils) $(MDSPLUS_DIR)/lib 
+
+uninstall:
+	rm -f $(MDSPLUS_DIR)/lib/$(SHAREDLIBstreamutils)
+	rm -f $(MDSPLUS_DIR)/lib/$(SHAREDLIBmdsutils)
 

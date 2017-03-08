@@ -49,6 +49,7 @@ def _mimport(name):
 
 ACQIPPSETUP = _mimport('ACQIPPSETUP')
 CAENDT5720 = _mimport('CAENDT5720')
+CAENDT5724 = _mimport('CAENDT5724')
 CAENV1740 = _mimport('CAENV1740')
 CONTIPPSETUP = _mimport('CONTIPPSETUP')
 CYGNET4K = _mimport('CYGNET4K')

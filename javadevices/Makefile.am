@@ -129,6 +129,7 @@ MCUSetup.java\
 SIS3820Setup.java\
 FEMTOSetup.java\
 CAENDT5720Setup.java\
+CAENDT5724Setup.java\
 RFXVConfigSetup.java\
 MARTESetup.java\
 MARTE_MHD_BRSetup.java\

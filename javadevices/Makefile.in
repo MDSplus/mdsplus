@@ -580,7 +580,7 @@ DIO2_ENCDECSetup.java\
 MARTE_DEVICESetup.java \
 RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
-CAENDT5724Setup.java
+CAENDT5724Setup.java 
 
 all: all-am
 

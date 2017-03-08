@@ -13,6 +13,9 @@
 DRIVER_INCLUDE=/usr/local/kappasdk/include
 DRIVER_LIB=/usr/local/kappasdk/lib
 
+ifeq ("$(wildcard $(DRIVER_LIB))","")
+  $(error  KAPPA ZELOS SDK camera driver not installed)
+endif
 
 CC=g++
 CFLAGS=-o3 -c -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I$(DRIVER_INCLUDE) -I$(MDSPLUS_DIR)/include -I../camera_utils
