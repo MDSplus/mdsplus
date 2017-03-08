@@ -36,7 +36,7 @@
 static int one = 1;
 #define pio(f,a) {int status; \
                   if (!((status = DevCamChk(CamPiow(in->name, a, f, 0, 16, 0), &one, &one)) &1)) return status; }
-EXPORT int h911___init(struct descriptor *nid_d_ptr, InInitStruct * in)
+EXPORT int h911___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in)
 {
   pio(24, 0);			/* standby mode */
   pio(26, 0);			/* armed mode */
@@ -51,7 +51,7 @@ EXPORT int h911___init(struct descriptor *nid_d_ptr, InInitStruct * in)
                               if (!((status = DevCamChk(CamStopw(in->name, a, f, c, d, 16, 0), &one, &one)) &1))  \
                                 return status; }
 
-EXPORT int h911___store(struct descriptor *nid_d_ptr, InStoreStruct * in)
+EXPORT int h911___store(struct descriptor *nid_d_ptr __attribute__ ((unused)), InStoreStruct * in)
 {
 
   struct _status_reg {

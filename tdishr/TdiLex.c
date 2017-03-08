@@ -1,5 +1,6 @@
 #include <STATICdef.h>
 #include "stdio.h"
+#include <treeshr_messages.h>
 #define U(x) ((x)&0377)
 #define NLSTATE yyprevious=YYNEWLINE
 #define BEGIN yybgin = yysvec + 1 +
@@ -106,7 +107,7 @@ extern "C" {
 #include <treeshr.h>
 
 #ifdef WIN32
-#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value. */
+//#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value. */
 #endif
 
 #ifdef output
@@ -159,7 +160,9 @@ STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
         Nested comments allowed. Len is not used.
         Limitation:     Not ANSI C standard use of delimiters.
 */
-STATIC_ROUTINE int TdiLexComment(int len, unsigned char *str, struct marker *mark_ptr)
+STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
+                                 unsigned char *str __attribute__ ((unused)),
+                                 struct marker *mark_ptr __attribute__ ((unused)))
 {
   char c, c1;
   int count = 1;
@@ -273,6 +276,9 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
     case 'T':
       type = 7;
       break;
+    default:
+      type = 0;
+      break;
     }
     str[idx - 1] = 'E';
   } else
@@ -281,11 +287,11 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
   MAKE_S(table[type].dtype, table[type].length, mark_ptr->rptr);
 
   status = ConvertFloating(&str_dsc, mark_ptr->rptr);
-  if (status & 1 && bad > 0 && str[bad - 1] != '\0')
+  if (STATUS_OK && bad > 0 && str[bad - 1] != '\0')
     status = TdiEXTRANEOUS;
 
   mark_ptr->builtin = -1;
-  if (status & 1)
+  if STATUS_OK
     return (LEX_VALUE);
   TdiRefZone.l_status = status;
   return (LEX_ERROR);
@@ -399,10 +405,11 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
     4, DTYPE_LU, DTYPE_L}, {
     8, DTYPE_QU, DTYPE_Q}, {
   16, DTYPE_OU, DTYPE_O},};
+  INIT_STATUS;
   unsigned char sign, *now = str, *end = &str[str_len];
   unsigned char *qptr, qq[num1], qtst;
   int carry = 0, radix;
-  int length, is_signed, status = 1, tst, type;
+  int length, is_signed, tst, type;
 
 	/******************************
         Remove leading blanks and tabs.
@@ -585,7 +592,7 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
       if (*qptr != qtst)
 	status = TdiTOO_BIG;
 
-  if (status & 1) {
+  if STATUS_OK {
 #ifdef WORDS_BIGENDIAN
     int i;
     unsigned char *ptr = mark_ptr->rptr->pointer;
@@ -629,7 +636,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
       _MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);
       StrFree1Dx(&abs_dsc);
     } else {
-      TdiRefZone.l_status = 0;
+      TdiRefZone.l_status = TreeNOT_OPEN;
       token = LEX_ERROR;
     }
   }
@@ -667,7 +674,9 @@ STATIC_ROUTINE int TdiLexBinEq(int token)
   return token;
 }
 
-STATIC_ROUTINE int TdiLexPunct(int len, unsigned char *str, struct marker *mark_ptr)
+STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
+			       unsigned char *str,
+			       struct marker *mark_ptr)
 {
   char c0 = str[0], c1 = input();
 
@@ -821,7 +830,9 @@ STATIC_ROUTINE int TdiLexPunct(int len, unsigned char *str, struct marker *mark_
         NEED overflow check on octal and hex. Watch sign extend of char.
 */
 
-int TdiLexQuote(int len, unsigned char *str, struct marker *mark_ptr)
+int TdiLexQuote(int len __attribute__ ((unused)),
+		unsigned char *str,
+		struct marker *mark_ptr)
 {
   char c, c1, *cptr = TdiRefZone.a_cur;
   int cur = 0, limit;
@@ -1679,12 +1690,12 @@ int yyinput()
   return (input());
 }
 
-void yyoutput(int c)
+void yyoutput()
 {
   //  output(c);
 }
 
-void yyunput(int c)
+void yyunput(int c __attribute__ ((unused)))
 {
   unput(c);
 }

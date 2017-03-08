@@ -70,8 +70,8 @@
 ./usr/local/mdsplus/tdi/MitDevices/__init__.py
 ./usr/local/mdsplus/tdi/MitDevices/_version.py
 ./usr/local/mdsplus/tdi/MitDevices/a14__part_name.fun
-./usr/local/mdsplus/tdi/MitDevices/a14_adjust.fun
-./usr/local/mdsplus/tdi/MitDevices/a14_clock_divide.fun
+./usr/local/mdsplus/tdi/MitDevices/a3248.py
+./usr/local/mdsplus/tdi/MitDevices/a3248__dw_setup.fun
 ./usr/local/mdsplus/tdi/MitDevices/acq.py
 ./usr/local/mdsplus/tdi/MitDevices/acq132.py
 ./usr/local/mdsplus/tdi/MitDevices/acq196.py
@@ -81,6 +81,11 @@
 ./usr/local/mdsplus/tdi/MitDevices/acq216_ftp.py
 ./usr/local/mdsplus/tdi/MitDevices/acq_ftp.py
 ./usr/local/mdsplus/tdi/MitDevices/acq_inetd.conf
+./usr/local/mdsplus/tdi/MitDevices/aeon_arm.fun
+./usr/local/mdsplus/tdi/MitDevices/aeon_checktrigger.fun
+./usr/local/mdsplus/tdi/MitDevices/aeon_getchannel.fun
+./usr/local/mdsplus/tdi/MitDevices/aeon_getsetup.fun
+./usr/local/mdsplus/tdi/MitDevices/aeon_trigger.fun
 ./usr/local/mdsplus/tdi/MitDevices/b5910a$chan.fun
 ./usr/local/mdsplus/tdi/MitDevices/b5910a.fun
 ./usr/local/mdsplus/tdi/MitDevices/chs_a14__add.fun
@@ -164,6 +169,11 @@
 ./usr/local/mdsplus/tdi/MitDevices/job_que.fun
 ./usr/local/mdsplus/tdi/MitDevices/job_start.fun
 ./usr/local/mdsplus/tdi/MitDevices/job_wait.fun
+./usr/local/mdsplus/tdi/MitDevices/jrg_adc32a__add.fun
+./usr/local/mdsplus/tdi/MitDevices/jrg_adc32a__dw_setup.fun
+./usr/local/mdsplus/tdi/MitDevices/jrg_adc32a__init.fun
+./usr/local/mdsplus/tdi/MitDevices/jrg_adc32a__part_name.fun
+./usr/local/mdsplus/tdi/MitDevices/jrg_adc32a__store.fun
 ./usr/local/mdsplus/tdi/MitDevices/jrg_tr1612_24_bit_data_read.fun
 ./usr/local/mdsplus/tdi/MitDevices/jrg_tr1612__add.fun
 ./usr/local/mdsplus/tdi/MitDevices/jrg_tr1612__init.fun

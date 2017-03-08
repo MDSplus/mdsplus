@@ -45,14 +45,14 @@ STATIC_CONSTANT unsigned short size_l = sizeof(int);
 
 int Tdi1Bound(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   array_bounds *pa = 0;
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
   int dim, rank = 0;
 
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
-  if (status & 1) {
+  if STATUS_OK {
     pa = (array_bounds *) dat[0].pointer;
     if (pa)
       switch (pa->class) {
@@ -73,26 +73,26 @@ int Tdi1Bound(int opcode, int narg, struct descriptor *list[], struct descriptor
       status = TdiNULL_PTR;
   }
   if (narg > 1 && list[1] != 0) {
-    if (status & 1)
+    if STATUS_OK
       status = TdiGetLong(list[1], &dim);
-    if (status & 1 && dim >= rank)
+    if (STATUS_OK && dim >= rank)
       status = TdiBAD_INDEX;
-    if (status & 1)
+    if STATUS_OK
       status = MdsGet1DxS(&size_l, &dtype_l, out_ptr);
   } else if (opcode == OpcSize) {
     dim = -1;
-    if (status & 1)
+    if STATUS_OK
       status = MdsGet1DxS(&size_l, &dtype_l, out_ptr);
-    if (rank == 0 && status & 1)
+    if (rank == 0 && STATUS_OK)
       *(int *)out_ptr->pointer->pointer = pa->dtype != DTYPE_MISSING;
   } else {
     array adsc = *(array *) & adsc0;
     dim = -1;
     adsc.arsize = sizeof(int) * rank;
-    if (status & 1)
+    if STATUS_OK
       status = MdsGet1DxA((struct descriptor_a *)&adsc, &size_l, &dtype_l, out_ptr);
   }
-  if (status & 1 && rank > 0)
+  if (STATUS_OK && rank > 0)
     (*TdiRefFunction[opcode].f3) (pa, dim, out_ptr->pointer->pointer);
   MdsFree1Dx(&dat[0], NULL);
   MdsFree1Dx(&uni[0], NULL);
@@ -220,7 +220,7 @@ void Tdi3Ubound(array_bounds * pa, int dim, int *pbound)
 */
 int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   array_bounds *pa = 0;
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
@@ -229,7 +229,7 @@ int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descripto
   unsigned int dim, rank = 0;
 
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
-  if (status & 1) {
+  if STATUS_OK {
     pa = (array_bounds *) dat[0].pointer;
     if (pa)
       switch (pa->class) {
@@ -247,24 +247,24 @@ int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descripto
       status = TdiNULL_PTR;
   }
   if (narg > 1 && list[1] != 0) {
-    if (status & 1)
+    if STATUS_OK
       status = TdiGetLong(list[1], &dim);
-    if (status & 1 && dim >= rank)
+    if (STATUS_OK && dim >= rank)
       status = TdiBAD_INDEX;
-    if (status & 1)
+    if STATUS_OK
       status = (*TdiRefFunction[opcode].f3) (sig[0].pointer, pa, dim, out_ptr);
   } else {
-    if (status & 1 && rank > MAXDIM)
+    if (STATUS_OK && rank > MAXDIM)
       status = TdiNDIM_OVER;
     else {
-      for (dim = 0; status & 1 && dim < rank; ++dim) {
+      for (dim = 0; STATUS_OK && dim < rank; ++dim) {
 	outs[dim] = EMPTY_XD;
 	status = (*TdiRefFunction[opcode].f3) (sig[0].pointer, pa, dim, &outs[dim]);
 	new[dim] = (struct descriptor *)&outs[dim];
       }
-      if (status & 1)
+      if STATUS_OK
 	status = TdiIntrinsic(OpcVector, rank, new, out_ptr);
-      if (opcode == OpcEsize && status & 1)
+      if (opcode == OpcEsize && STATUS_OK)
 	status = TdiProduct(out_ptr, out_ptr MDS_END_ARG);
       for (; (int)--dim >= 0;)
 	MdsFree1Dx(&outs[dim], NULL);
@@ -282,16 +282,14 @@ int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descripto
 int Tdi3Elbound(struct descriptor_signal *psig,
 		array_bounds * pa, int dim, struct descriptor_xd *pout)
 {
-  int status = 1;
-
+  INIT_STATUS;
   if (psig && dim < psig->ndesc - 2 && psig->dimensions[dim]) {
     status = TdiItoX(psig->dimensions[dim], TdiItoXSpecial, pout MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK
       pout->pointer->class = CLASS_S;
-    }
   } else {
     status = MdsGet1DxS(&size_l, &dtype_l, pout);
-    if (status & 1)
+    if STATUS_OK
       Tdi3Lbound(pa, dim, (int *)pout->pointer->pointer);
   }
   return status;
@@ -303,17 +301,16 @@ int Tdi3Elbound(struct descriptor_signal *psig,
 int Tdi3Eubound(struct descriptor_signal *psig,
 		array_bounds * pa, int dim, struct descriptor_xd *pout)
 {
-  int status = 1;
-
+  INIT_STATUS;
   if (psig && dim < psig->ndesc - 2 && psig->dimensions[dim]) {
     status = TdiItoX(psig->dimensions[dim], TdiItoXSpecial, pout MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK {
       pout->pointer->class = CLASS_S;
       pout->pointer->pointer += pout->pointer->length;
     }
   } else {
     status = MdsGet1DxS(&size_l, &dtype_l, pout);
-    if (status & 1)
+    if STATUS_OK
       Tdi3Ubound(pa, dim, (int *)pout->pointer->pointer);
   }
   return status;
@@ -325,12 +322,11 @@ int Tdi3Eubound(struct descriptor_signal *psig,
 int Tdi3Eshape(struct descriptor_signal *psig,
 	       array_bounds * pa, int dim, struct descriptor_xd *pout)
 {
+  INIT_STATUS;
   struct descriptor hold;
-  int status = 1;
-
   if (psig && dim < psig->ndesc - 2 && psig->dimensions[dim]) {
     status = TdiItoX(psig->dimensions[dim], TdiItoXSpecial, pout MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK {
       pout->pointer->class = CLASS_S;
       hold = *pout->pointer;
       hold.pointer += hold.length;
@@ -338,7 +334,7 @@ int Tdi3Eshape(struct descriptor_signal *psig,
     }
   } else {
     status = MdsGet1DxS(&size_l, &dtype_l, pout);
-    if (status & 1)
+    if STATUS_OK
       Tdi3Shape(pa, dim, (int *)pout->pointer->pointer);
   }
   return status;

@@ -7,6 +7,7 @@ try:
     else:
         name="mdsplus_%s_rfxdevices" % branch
 except:
+    import os
     if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
         branch="_"+os.environ["BRANCH"]
     else:

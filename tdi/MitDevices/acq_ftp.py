@@ -20,9 +20,9 @@ class ACQ_FTP(MDSplus.Device):
     methods:
       debugging() - is debugging enabled.  Controlled by environment variable DEBUG_DEVICES
 
-    
+
     """
-    
+
     acq_parts=[
         {'path':':NODE','type':'text','value':'192.168.0.254'},
         {'path':':COMMENT','type':'text'},
@@ -35,7 +35,7 @@ class ACQ_FTP(MDSplus.Device):
 
 
     parts2=[
-        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},       
+        {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},
         {'path':':TRIG_SRC','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
         {'path':':TRIG_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
         {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
@@ -68,7 +68,7 @@ class ACQ_FTP(MDSplus.Device):
     debug=None
 
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi', ' ']
-    
+
 
     def debugging(self):
 	if self.debug == None :
@@ -99,7 +99,7 @@ class ACQ_FTP(MDSplus.Device):
 	    binValues.read(f,end-start+1)
             ans = numpy.array(binValues, dtype=numpy.int16)
 	    if inc > 1 :
-		asns = ans[::inc]
+		ans = ans[::inc]
             f.close()
         except Exception,e :
 	   print "readRawData - %s" % e
@@ -108,7 +108,7 @@ class ACQ_FTP(MDSplus.Device):
 
     def timeoutHandler(self,sig,stack):
         raise Exception("Timeout occurred")
-        
+
     def getState(self):
         """Get the current state"""
         import socket,signal
@@ -124,7 +124,7 @@ class ACQ_FTP(MDSplus.Device):
         signal.alarm(0)
         s.close()
         return state
-                  
+
     def doInit(self,tree,shot,path):
         """Tell the board to arm"""
         import socket,signal
@@ -185,7 +185,7 @@ class ACQ_FTP(MDSplus.Device):
         if self.debugging() :
             print "sending command %s."%(cmd,)
         try:
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
         except:
             print "could not connect to the board %s"% (boardip,)
         try:
@@ -201,9 +201,9 @@ class ACQ_FTP(MDSplus.Device):
 
     def acqcmd(self, arg):
         boardip = self.getBoardIp()
-        
+
         try:
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
         except:
             print "could not connect to the board %s"% (boardip,)
         try:
@@ -216,9 +216,9 @@ class ACQ_FTP(MDSplus.Device):
 
     def acq2sh(self, arg):
         boardip = self.getBoardIp()
-        
+
         try:
-            UUT = acq200.Acq200(transport.factory(boardip))
+            UUT = acq200.ACQ200(transport.factory(boardip))
         except:
             print "could not connect to the board %s"% (boardip,)
         try:

@@ -40,7 +40,7 @@ int XmdsSetSubvalues(XtPointer record, XtResourceList resources, Cardinal num_re
 int XmdsSetSubvalues(XtPointer record, XtResourceList resources, Cardinal num_resources,
 		     ArgList args, Cardinal argcount)
 {
-  int i;
+  Cardinal i;
   for (i = 0; i < num_resources; i++) {
     if (*((int *)&resources[i].resource_offset) >= 0) {
       resources[i].resource_name = XrmStringToQuark(resources[i].resource_name) + (char *)0;

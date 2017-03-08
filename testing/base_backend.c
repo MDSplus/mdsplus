@@ -9,7 +9,7 @@
 
 
 void __assert_fail (const char *__assertion, const char *__file,
-                    unsigned int __line, const char *__function)
+                    ASSERT_LINE_TYPE __line, const char *__function)
 {    
     printf(" .-----------------------------------. \n"
            " |  Assertion failed during test     | \n"
@@ -36,9 +36,10 @@ void __test_abort(int code, const char *__msg, const char *__file,
 }
 
 
-void __test_setfork(int value) {}
+void __test_setfork(int value __attribute__ ((unused))) {}
 
-void __test_init(const char *test_name, const char *file, const int line) {}
+void __test_init(const char *test_name __attribute__ ((unused)), const char *file __attribute__ ((unused)),
+		 const int line __attribute__ ((unused))) {}
 
 void __test_end() {}
 
@@ -46,9 +47,13 @@ int  __setup_parent() {return 0;}
 
 int  __setup_child() {return 0;}
 
-void __test_assert_fail(const char *file, int line, const char *expr, ...) {}
+void __test_assert_fail(const char *file __attribute__ ((unused)), int line __attribute__ ((unused)),
+			const char *expr __attribute__ ((unused)), ...) {}
 
-void __mark_point(const char *__assertion, const char *__file, unsigned int __line, const char *__function) {}
+void __mark_point(const char *__assertion __attribute__ ((unused)),
+		  const char *__file __attribute__ ((unused)),
+		  ASSERT_LINE_TYPE __line __attribute__ ((unused)),
+		  const char *__function __attribute__ ((unused))) {}
 
 void __test_exit() { exit(0); }
 

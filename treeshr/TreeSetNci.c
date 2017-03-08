@@ -414,7 +414,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
 
 +-----------------------------------------------------------------------------*/
 
-int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush)
+int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush __attribute__ ((unused)))
 {
   int status;
   status = TreeNORMAL;

@@ -56,7 +56,7 @@ char tclUsageToNumber(const char *usage, char **error)
   return -1;
 }
 
-EXPORT int TclAddNode(void *ctx, char **error, char **output)
+EXPORT int TclAddNode(void *ctx, char **error, char **output __attribute__ ((unused)))
 {				/* Return: status                 */
   int nid;
   int sts;

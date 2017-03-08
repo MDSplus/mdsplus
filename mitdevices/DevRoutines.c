@@ -47,7 +47,7 @@ EXPORT int DevCamChk(int status, int *expect_x, int *expect_q)
   return 1;
 }
 
-EXPORT int DevNids(struct descriptor *niddsc, int size, char *buffer)
+EXPORT int DevNids(struct descriptor *niddsc __attribute__ ((unused)), int size, char *buffer)
 {
   NCI_ITM nci_lst[] = { {0, NciCONGLOMERATE_NIDS, 0, 0}, {0, NciEND_OF_LIST, 0, 0} };
   nci_lst[0].buffer_length = size;

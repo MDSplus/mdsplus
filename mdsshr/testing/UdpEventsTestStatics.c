@@ -34,7 +34,7 @@ static char * _new_unique_event_name(const char *prefix, ...) {
 }
 
 static int astCount = 0;
-void eventAst(void *arg, int len, char *buf) {
+void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused)) ) {
     printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
@@ -244,7 +244,7 @@ void test_pthread_cancel_Suppresstion() {
 
 
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {    
     test_initialize();
     test_handleMessage();
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
     test_popEvent();
     
     // generate a suppression for pthread_cancel valgrind issue //
-    test_pthread_cancel_Suppresstion();
+    //test_pthread_cancel_Suppresstion();
     
 
     return 0;

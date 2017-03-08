@@ -20,7 +20,7 @@
 	/****************************************************************
 	 * TclCompressDatafile:
 	 ****************************************************************/
-EXPORT int TclCompressDatafile(void *ctx, char **error, char **output)
+EXPORT int TclCompressDatafile(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int shot;
   int sts;

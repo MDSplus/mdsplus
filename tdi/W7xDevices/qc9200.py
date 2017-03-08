@@ -17,23 +17,22 @@ def qc_talk (ser, msg) :
 
 class QC9200 (Device) :
     """Limited control for the Quantum Composers Sapphire 9200 Series Pulse Generator."""
-    if Device.debug: print('QC9200')
-    parts=[{'path': ':PORT',        'type': 'TEXT',    'value': 'COM3','options':('no_write_shot',)}, # likely /dev/ttyACM0 on Linux
-           {'path': ':TRIG_LEVEL',  'type': 'NUMERIC', 'value': 2.5,'options':('no_write_shot',)},
-           {'path': ':TRIG_EDGE',   'type': 'TEXT',    'value': 'RISING','options':('no_write_shot',)}, # or FALLING
-           {'path': ':PERIOD',      'type': 'NUMERIC', 'value': 0.1,'options':('no_write_shot',)},      # seconds
-           {'path': ':N_BURST',     'type': 'NUMERIC', 'value': 5,'options':('no_write_shot',)},
-           {'path': ':ACT_INIT',    'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'INIT',   1, None), Method(None, 'init',   head))",'options':('no_write_shot',)},
-           {'path': ':ACT_DEINIT',  'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'DEINIT', 1, None), Method(None, 'disarm', head))",'options':('no_write_shot',)},
-           {'path': ':INIT_CONFIG', 'type': 'TEXT',                                              'options':('no_write_model','write_once')}, # includes "plus" status, *IDN?, list of channels
-           {'path': ':ACT_TEST',    'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'START', 1, None), Method(None, 'trigger', head))",'options':('no_write_shot','disabled')},
+    parts=[{'path': ':PORT',        'type': 'TEXT',    'options':('no_write_shot',), 'value': 'COM3'}, # likely /dev/ttyACM0 on Linux
+           {'path': ':TRIG_LEVEL',  'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 2.5},
+           {'path': ':TRIG_EDGE',   'type': 'TEXT',    'options':('no_write_shot',), 'value': 'RISING'}, # or FALLING
+           {'path': ':PERIOD',      'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 0.1},      # seconds
+           {'path': ':N_BURST',     'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 5},
+           {'path': ':ACT_INIT',    'type': 'ACTION',  'options':('no_write_shot',), 'valueExpr': "Action(Dispatch('DAQ_SERVER', 'INIT',   1, None), Method(None, 'init',   head))"},
+           {'path': ':ACT_DEINIT',  'type': 'ACTION',  'options':('no_write_shot',), 'valueExpr': "Action(Dispatch('DAQ_SERVER', 'DEINIT', 1, None), Method(None, 'disarm', head))"},
+           {'path': ':INIT_CONFIG', 'type': 'TEXT',    'options':('no_write_model','write_once')}, # includes "plus" status, *IDN?, list of channels
+           {'path': ':ACT_TEST',    'type': 'ACTION',  'options':('no_write_shot','disabled'), 'valueExpr': "Action(Dispatch('DAQ_SERVER', 'START', 1, None), Method(None, 'trigger', head))"},
           ]
     for ch in ('A', 'B', 'C', 'D') :
         parts.append({'path': '.CHANNEL_%s'          % ch, 'type': 'STRUCTURE','options':('no_write_shot',)})
-        parts.append({'path': '.CHANNEL_%s:DELAY'    % ch, 'type': 'NUMERIC', 'value': 0.0,'options':('no_write_shot',)})      # seconds
-        parts.append({'path': '.CHANNEL_%s:WIDTH'    % ch, 'type': 'NUMERIC', 'value': 10e-3,'options':('no_write_shot',)})    # seconds
-        parts.append({'path': '.CHANNEL_%s:LEVEL'    % ch, 'type': 'NUMERIC', 'value': 5.0,'options':('no_write_shot',)})      # Volts
-        parts.append({'path': '.CHANNEL_%s:POLARITY' % ch, 'type': 'TEXT',    'value': 'NORMAL','options':('no_write_shot',)}) # or INVERTED
+        parts.append({'path': '.CHANNEL_%s:DELAY'    % ch, 'type': 'NUMERIC',  'options':('no_write_shot',), 'value': 0.0})      # seconds
+        parts.append({'path': '.CHANNEL_%s:WIDTH'    % ch, 'type': 'NUMERIC',  'options':('no_write_shot',), 'value': 10e-3})    # seconds
+        parts.append({'path': '.CHANNEL_%s:LEVEL'    % ch, 'type': 'NUMERIC',  'options':('no_write_shot',), 'value': 5.0})      # Volts
+        parts.append({'path': '.CHANNEL_%s:POLARITY' % ch, 'type': 'TEXT',     'options':('no_write_shot',), 'value': 'NORMAL'}) # or INVERTED
 
     def init (self, arg) :
 

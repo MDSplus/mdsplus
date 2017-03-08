@@ -45,13 +45,14 @@ static jint DYN_JNI_CreateJavaVM(JavaVM ** jvm, void **env, JavaVMInitArgs * vm_
 static void *MdsGetArray(char *in, int *out_dim, int type);
 
 /*Support routine for MdsHelper */
-JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString(JNIEnv * env, jclass cld, jint jstatus) {
+JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString(JNIEnv * env,
+							jclass cld __attribute__ ((unused)), jint jstatus) {
   char *error_msg = MdsGetMsg(jstatus);
   return (*env)->NewStringUTF(env, error_msg);
 }
 
 JNIEXPORT void JNICALL Java_MdsHelper_generateEvent
-    (JNIEnv * env, jclass cld, jstring jevent, jint jshot) {
+(JNIEnv * env, jclass cld __attribute__ ((unused)), jstring jevent, jint jshot) {
   const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
   int shot = jshot;
 
@@ -187,18 +188,18 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   *out_dim = 0;
   switch (type) {
   case FLOAT:
-    sprintf(expanded_in, "_xxx = %s;fs_float(_xxx)", in);
+    sprintf(expanded_in, "_xxx = (%s;);fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
-    sprintf(expanded_in, "_xxx = %s;ft_float(_xxx)", in);
+    sprintf(expanded_in, "_xxx = (%s;);ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
-    sprintf(expanded_in, "long(%s)", in);
+    sprintf(expanded_in, "long(%s;)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
@@ -433,7 +434,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 }
 
 /* Implementation of the native methods for LocalProvider class in jScope */
-JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_UpdateNative(JNIEnv * env, jobject obj,
+JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_UpdateNative(JNIEnv * env, jobject obj __attribute__ ((unused)),
 								  jstring exp, jlong shot)
 {
   const char *exp_char;
@@ -445,14 +446,14 @@ JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_UpdateNative(JNIEnv * env, 
   (*env)->ReleaseStringUTFChars(env, exp, exp_char);
 }
 
-JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_ErrorString(JNIEnv * env, jobject obj)
+JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_ErrorString(JNIEnv * env, jobject obj __attribute__ ((unused)))
 {
   if (!error_message[0])
     return NULL;
   return (*env)->NewStringUTF(env, error_message);
 }
 
-JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_GetString(JNIEnv * env, jobject obj,
+JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_GetString(JNIEnv * env, jobject obj __attribute__ ((unused)),
 								  jstring in)
 {
   const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
@@ -466,7 +467,7 @@ JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_GetString(JNIEnv * env, 
 }
 
 JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_GetFloatArrayNative(JNIEnv * env,
-										jobject obj,
+										jobject obj __attribute__ ((unused)),
 										jstring in)
 {
   jfloatArray jarr;
@@ -487,7 +488,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_GetFloatArrayNative(
 }
 
 JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNative(JNIEnv * env,
-										  jobject obj,
+										  jobject obj __attribute__ ((unused)),
 										  jstring in)
 {
   jdoubleArray jarr;
@@ -510,7 +511,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNativ
 }
 
 JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(JNIEnv * env,
-										jobject obj,
+										jobject obj __attribute__ ((unused)),
 										jstring in)
 {
   jlongArray jarr;
@@ -530,7 +531,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
   return jarr;
 }
 
-JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv * env, jobject obj,
+JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv * env, jobject obj __attribute__ ((unused)),
 								      jstring in)
 {
   jintArray jarr;
@@ -553,7 +554,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv * e
   return jarr;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv * env, jobject obj,
+JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv * env, jobject obj __attribute__ ((unused)),
 									jstring in)
 {
   jbyteArray jarr;
@@ -575,7 +576,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *
 }
 
 //JNIEXPORT jfloat JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv *env, jobject obj, jstring in)
-JNIEXPORT jdouble JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv * env, jobject obj,
+JNIEXPORT jdouble JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv * env, jobject obj __attribute__ ((unused)),
 								       jstring in)
 {
   double ris;
@@ -587,7 +588,7 @@ JNIEXPORT jdouble JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv * 
 }
 
 JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_SetEnvironmentSpecific(JNIEnv * env,
-									    jobject obj, jstring in,
+									    jobject obj __attribute__ ((unused)), jstring in,
 									    jstring jdefNode)
 {
   int status, nid;
@@ -624,7 +625,7 @@ JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_SetEnvironmentSpecific(JNIE
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_jScope_LocalDataProvider_isSegmentedNode
-    (JNIEnv * env, jclass cls, jstring jNodeName) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName) {
   int status, nid, numSegments;
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
 
@@ -650,7 +651,7 @@ static int needSwap()
  * Signature: (Ljava/lang/String;II)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
-    (JNIEnv * env, jclass cls, jstring jNodeName, jint segmentIdx, jint segmentOffset) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName, jint segmentIdx, jint segmentOffset) {
   int status, nid, i, nSamples;
   //int numSegments;
   jbyteArray jarr;
@@ -684,7 +685,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
     printf("INTERNAL ERROR IN GET SEGMENT FRAMES!!!\n");
     return NULL;
   }
-  if (arrPtr->dimct > 2 && arrPtr->m[2] <= segmentOffset) {
+  if (arrPtr->dimct > 2 && (int)arrPtr->m[2] <= segmentOffset) {
     printf("INTERNAL ERROR IN GET SEGMENT FRAMES!!!\n");
     return NULL;
   }
@@ -728,7 +729,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
  * Signature: (Ljava/lang/String;II)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
-    (JNIEnv * env, jclass cls, jstring jNodeName, jint startIdx, jint endIdx) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName, jint startIdx, jint endIdx) {
   EMPTYXD(xd);
   ARRAY_COEFF(char *, 3)*arrPtr;
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
@@ -758,7 +759,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
     printf("INTERNAL ERROR IN GET ALL FRAMES!!!\n");
     return NULL;
   }
-  if (arrPtr->dimct > 2 && arrPtr->m[2] < endIdx) {
+  if (arrPtr->dimct > 2 && (int)arrPtr->m[2] < endIdx) {
     strcpy(error_message, "INTERNAL ERROR IN GET ALL FRAMES  !!!");
     printf("INTERNAL ERROR IN GET ALL FRAMES!!!\n");
     return NULL;
@@ -802,7 +803,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
  * Signature: (Ljava/lang/String;)[I
  */
 JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
-    (JNIEnv * env, jclass cls, jstring jNodeName, jboolean isSegmented) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName, jboolean isSegmented) {
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   EMPTYXD(xd);
   ARRAY_COEFF(char *, 3) * arrPtr;
@@ -821,7 +822,7 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
   jvalue args[3];
 
   struct descriptor nodeNameD = { strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName };
-//Returned array: [width, height, bytesPerPixel]        
+//Returned array: [width, height, bytesPerPixel]
   if (isSegmented) {
     status = TreeFindNode((char *)nodeName, &nid);
     (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -887,7 +888,7 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
   args[2].l = jarr;
   //va_arg(args, jarr);
   retObj = (*env)->NewObjectA(env, clazz,  mid, args);
-  (*env)->ReleaseIntArrayElements(env, jarr, retDims, JNI_COMMIT);
+  (*env)->ReleaseIntArrayElements(env, jarr, (jint *)retDims, JNI_COMMIT);
   return retObj;
 }
 /*
@@ -896,7 +897,7 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
  * Signature: (Ljava/lang/String;)[I
  */
 JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfoXXX
-    (JNIEnv * env, jclass cls, jstring jNodeName, jboolean isSegmented) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName, jboolean isSegmented) {
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   EMPTYXD(xd);
   ARRAY_COEFF(char *, 3) * arrPtr;
@@ -907,7 +908,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfoXXX
   int dims[64];
   int nextRow;
   struct descriptor nodeNameD = { strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName };
-//Returned array: [width, height, bytesPerPixel]        
+//Returned array: [width, height, bytesPerPixel]
   if (isSegmented) {
     status = TreeFindNode((char *)nodeName, &nid);
     (*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -1048,7 +1049,7 @@ static int isSingleFramePerSegment(int nid)
  * Signature: (Ljava/lang/String;Ljava/lang/String;FF)[F
  */
 JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
-    (JNIEnv * env, jclass cls, jstring jNodeName, jstring jTimeName, jfloat startTime,
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName, jstring jTimeName __attribute__ ((unused)), jfloat startTime,
      jfloat endTime) {
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   EMPTYXD(startXd);
@@ -1141,7 +1142,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
  * Signature: (Ljava/lang/String;Ljava/lang/String;)[F
  */
 JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getAllTimes
-    (JNIEnv * env, jclass cls, jstring jNodeName, jstring jTimeName) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName __attribute__ ((unused)), jstring jTimeName) {
   EMPTYXD(xd);
   int status;
   const char *timeName = (*env)->GetStringUTFChars(env, jTimeName, 0);
@@ -1178,7 +1179,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getAllTimes
  * Signature: (Ljava/lang/String;FF)[I
  */
 JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getSegmentIdxs
-    (JNIEnv * env, jclass cls, jstring jNodeName, jfloat startTime, jfloat endTime) {
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jNodeName, jfloat startTime, jfloat endTime) {
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   int status, nid, nSegments, startIdx, endIdx, idx, currIdx;
   jintArray jarr;
@@ -1252,7 +1253,8 @@ static void releaseJNIEnv()
   (*jvm)->DetachCurrentThread(jvm);
 }
 
-static void handleEvent(void *nameIdx, int dim, char *buf)
+static void handleEvent(void *nameIdx, int dim __attribute__ ((unused)),
+			char *buf __attribute__ ((unused)))
 {
   jmethodID mid;
   jvalue args[1];
@@ -1294,7 +1296,7 @@ JNIEXPORT jint JNICALL Java_jScope_LocalDataProvider_registerEvent
 }
 
 JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_unregisterEvent
-    (JNIEnv * env, jobject obj, jint evId) {
+(JNIEnv * env __attribute__ ((unused)), jobject obj __attribute__ ((unused)), jint evId) {
 
   MDSEventCan(evId);
 }
@@ -1593,7 +1595,7 @@ EXPORT void deviceSetup(char *deviceName, char *treeName, int shot, char *rootNa
  * Signature: (Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_connectToMds
-  (JNIEnv *env, jobject jobj, jstring jurl)
+(JNIEnv *env, jobject jobj __attribute__ ((unused)), jstring jurl)
 {
     const char *url = (*env)->GetStringUTFChars(env, jurl, 0);
     int connectionId = ConnectToMds((char *)url);
@@ -1607,7 +1609,7 @@ JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_connectToMds
  * Signature: (I[BZ)I
  */
 JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_send
-  (JNIEnv *env, jobject jobj, jint connectionId, jbyteArray jbuf, jboolean noWait)
+(JNIEnv *env, jobject jobj __attribute__ ((unused)), jint connectionId, jbyteArray jbuf, jboolean noWait)
 {
     int size = (*env)->GetArrayLength(env, jbuf);
     char *buf = (char *)(*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
@@ -1622,7 +1624,7 @@ JNIEXPORT jint JNICALL Java_jScope_MdsIpProtocolWrapper_send
  * Signature: (II)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
-  (JNIEnv *env, jobject jobj, jint connectionId, jint size)
+(JNIEnv *env, jobject jobj __attribute__ ((unused)), jint connectionId, jint size)
 {
     jbyte *readBuf = malloc(size);
     int retSize;
@@ -1646,7 +1648,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_MdsIpProtocolWrapper_recv
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_flush
-  (JNIEnv *env, jobject jobj, jint connectionId)
+(JNIEnv *env __attribute__ ((unused)), jobject jobj __attribute__ ((unused)), jint connectionId)
 {
     IoRoutines *ior = GetConnectionIo(connectionId);
     ior->flush(connectionId);
@@ -1658,7 +1660,7 @@ JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_flush
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_disconnect
-  (JNIEnv *env, jobject jobj, jint connectionId)
+(JNIEnv *env __attribute__ ((unused)), jobject jobj __attribute__ ((unused)), jint connectionId)
 {
     DisconnectConnection(connectionId);
     //IoRoutines *ior = GetConnectionIo(connectionId);

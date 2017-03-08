@@ -26,7 +26,7 @@
 
        Date:    7-SEP-1993
 
-       Purpose: 
+       Purpose:
         To test major VMS data types and classes.
                 out = in1 OP in2
         or      out = LLT(in1, in2)
@@ -186,13 +186,13 @@ break;
         if (!(equal_until_last & (k < maxlen-1 && ' ' == in[k]))) {\
           if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) \
             {out[i] = not_op 0; break;} \
-          else breakout \
+          else {breakout}		\
         } \
       } else \
         if (!(equal_until_last & (k < maxlen-1 && in1[k] == in2[k]))) {\
           if (!(in1[k] op in2[k])) \
             {out[i] = not_op 0; break;} \
-          else breakout \
+          else {breakout}		\
         } \
       k++; \
     } \
@@ -220,15 +220,15 @@ break;
 int Tdi3_Eq(struct descriptor *in1_ptr,
 	    struct descriptor *in2_ptr, struct descriptor *out_ptr, int op)
 {
+  INIT_STATUS;
   int out_count = 1;
-  int status;
   register int i, j, k;
   int l, minlen, maxlen, *i1, *i2;
   int s1 = (in1_ptr->class != CLASS_A);
   int s2 = (in2_ptr->class != CLASS_A);
 
   status = TdiBinary(in1_ptr, in2_ptr, out_ptr, &out_count);
-  if (status != 1)
+  if STATUS_NOT_OK
     return status;
 
   switch (in1_ptr->dtype) {
@@ -292,7 +292,7 @@ int Tdi3Lt(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descri
 int Tdi3Ne(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
   int status = Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
-  if (status & 1)
+  if STATUS_OK
     status = Tdi3Not(out_ptr, out_ptr);
   return status;
 }

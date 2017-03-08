@@ -10,9 +10,9 @@
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 static int one = 1;
-EXPORT int joerger_adc___store(int *niddsc, InStoreStruct * setup)
+EXPORT int joerger_adc___store(int *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
-  int status;
+  int status = 1;
   int data_nid = setup->head_nid + JOERGER_ADC_N_DATA;
   if (TreeIsOn(data_nid) & 1) {
     static short raw[64];

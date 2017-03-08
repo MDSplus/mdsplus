@@ -39,7 +39,7 @@ JNIEXPORT jstring JNICALL Java_Data_toString(JNIEnv * env, jobject obj)
   return ris;
 }
 
-JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls, jstring jexpr) {
+JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jexpr) {
   EMPTYXD(xd);
   int status, ris = 0;
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls, jstring jexp
   return ris;
 }
 
-JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls, jstring jsource) {
+JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jsource) {
   EMPTYXD(out_xd);
   //EMPTYXD(dec_xd);
   int status;
@@ -208,7 +208,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       args[0].d = ((float *)desc->pointer)[0];
       args[1].d = ((float *)desc->pointer)[1];
       args[2].i = desc->dtype;
-      printf("DESCRIPTOR TO OBJECT: Re: %f Im %f\n", args[0].d, args[1].d);
+     // printf("DESCRIPTOR TO OBJECT: Re: %f Im %f\n", args[0].d, args[1].d);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
     case DTYPE_T:
@@ -275,7 +275,10 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       array_d = (struct descriptor_a *)ca_xd.pointer;
     else
       array_d = (struct descriptor_a *)desc;
-    length = array_d->arsize / array_d->length;
+    if(array_d->length == 0)  //Empty string descriptor
+      length = 0;
+    else
+      length = array_d->arsize / array_d->length;
     switch (array_d->dtype) {
     case DTYPE_MISSING:
       cls = (*env)->FindClass(env, "IntArray");
@@ -422,6 +425,8 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+    default:
+      return NULL;
     }
   case CLASS_R:
     record_d = (struct descriptor_r *)desc;
@@ -502,6 +507,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
       cls = (*env)->FindClass(env, "SlopeData");
       constr = (*env)->GetStaticMethodID(env, cls, "getData", "()LData;");
       break;
+    default:  return NULL;
     }
     obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
     data_cls = (*env)->FindClass(env, "Data");
@@ -546,6 +552,8 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
     }
     args[0].l = jobjects;
     return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+  default:
+    return NULL;
   }
   return 0;
 }

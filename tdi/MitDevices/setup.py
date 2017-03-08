@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os
 try:
     exec(open('_version.py').read())
     if branch == "stable":
@@ -7,6 +6,7 @@ try:
     else:
         name="mdsplus_%s_mitdevices" % branch
 except:
+    import os
     if "BRANCH" in os.environ and os.environ["BRANCH"] != "stable":
         branch="_"+os.environ["BRANCH"]
     else:

@@ -363,13 +363,17 @@ Note the sign-extended unpacking.
       break;
     nitems -= j;
     nbits = (char)yn;
-    MdsUnpk(&nbits, (int *)&xn, (int *)ppack, (int *)diff, (int *)bit_ptr);
+    MdsUnpk(&nbits, &xn, (int *)ppack, diff, (int *)bit_ptr);
     if (xe) {
       *bit_ptr -= yn * (xhead - j);
       pe = exce;
       nbits = (char)ye;
-      MdsUnpk(&nbits, &xe, (int *)ppack, (int *)pe, (int *)bit_ptr);
-      mark = -1 << (-yn - 1);
+      MdsUnpk(&nbits, &xe, (int *)ppack, pe, (int *)bit_ptr);
+      mark = 0xFFFFFFFF << (-yn - 1);
+    }
+    else {
+      pe = diff;
+      mark = 0;
     }
 
   /***********************************

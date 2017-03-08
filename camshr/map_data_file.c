@@ -48,8 +48,8 @@
 //-------------------------------------------------------------------------
 int map_data_file(int dbType)
 {
-  char *FileName;
-  int db_size, fd, *FileIsMapped;
+  char *FileName=0;
+  int db_size, fd=ERROR, *FileIsMapped = FALSE;
   int status = SUCCESS;
   extern int CTSdbFileIsMapped;
   extern int CRATEdbFileIsMapped;
@@ -116,6 +116,9 @@ int map_data_file(int dbType)
       goto MapData_Exit;
     }
 
+  default:
+    return 0;
+
     break;
   }
 
@@ -127,6 +130,8 @@ int map_data_file(int dbType)
   if (fd != ERROR)		// still open ...
     close(fd);			// ... finished with file descriptor
 
+  if (FileName == NULL)
+    return status;
   if (status != SUCCESS)
     printf("Error mapping %s\n", FileName);
   if (MSGLVL(DETAILS)) {

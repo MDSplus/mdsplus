@@ -2,7 +2,6 @@
 #define MDSTESTUTILS_TYPE_TRAITS_H
 
 
-
 namespace testing {
 
 

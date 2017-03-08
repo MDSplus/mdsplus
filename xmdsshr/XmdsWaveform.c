@@ -36,11 +36,11 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 #define compare_sign(a,b) ( ((a)>0 && (b)>0) ? 1 : (((a)<0 && (b)<0) ? 1 : 0) )
 #define interp(x1,y1,x2,y2,x) ( ((y2)-(y1)) * ( (x) / ((x2)-(x1)) ) + ( ( (y1) * ( (x2) / ((x2)-(x1)) ) ) - \
-                                                                        ( (y2) * ( (x1) / ((x2)-(x1)) ) ) ) )
+         ( (y2) * ( (x1) / ((x2)-(x1)) ) ) ) )
 #define pointsPerIo 1024
 #define recsPerIo 256
 #define roprand 32768
-#define missing 0x80000000
+#define missing (int)0x80000000
 #define huge 1E37
 
 #define xMin(widget)          ((widget)->waveform.x.minval)
@@ -121,7 +121,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 
  Local variables:                                                             */
 
-static int height_page;
+static float height_page;
 enum crosshairsmode {
   move_xh, first_xh, last_xh
 };
@@ -874,7 +874,7 @@ static void ZoomOut(XmdsWaveformWidget w, XButtonEvent * event)
 static void Point(XmdsWaveformWidget w, XButtonEvent * event)
 {
   XEvent ev;
-  XmdsWaveformCrosshairsCBStruct crosshair = { XmdsCRCrosshairs, 0 };
+  XmdsWaveformCrosshairsCBStruct crosshair = { XmdsCRCrosshairs, 0, 0, 0};
   float x, y;
   /* flush the event que for crosshair events */
   while (XCheckTypedWindowEvent(XtDisplay(w), XtWindow(w), event->type, &ev))
@@ -1323,7 +1323,7 @@ static void DrawGrid(XmdsWaveformWidget w)
     char *tptr;
     char *eptr;
     int line;
-    int length;
+    size_t length;
     int lineheight =
 	waveformFontStruct(w)->max_bounds.ascent + waveformFontStruct(w)->max_bounds.descent + 2;
     float lasty = -1E20;
@@ -1335,7 +1335,7 @@ static void DrawGrid(XmdsWaveformWidget w)
       float x;
       float y;
       char *tmpstr;
-      length = lf ? lf - tptr : strlen(tptr);
+      length = lf ? (size_t)(lf - tptr) : strlen(tptr);
       tmpstr = strncpy(malloc(length + 1), tptr, length);
       tmpstr[length] = 0;
       twidth = (waveformPrint) ? 0 : XTextWidth(waveformFontStruct(w), tptr, length);
@@ -1707,7 +1707,7 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req, XmdsWa
   if (((!old) || (field##ValStruct(req) != field##ValStruct(old))) && field##ValStruct(req)) {\
     field##ValStruct(new) = (XmdsWaveformValStruct *)memcpy(XtNew(XmdsWaveformValStruct),field##ValStruct(req),\
                                      sizeof(XmdsWaveformValStruct));\
-    waveformCount(new) = min(field##ValStruct(req)->size/sizeof(type),(minsize));\
+    waveformCount(new) = min((int)(field##ValStruct(req)->size/sizeof(type)),(minsize)); \
     field##Value(new) = (type *)field##ValStruct(req)->addr;\
     field##ValPtr(new) = (type *)NULL;\
     changed = TRUE;\
@@ -1854,7 +1854,7 @@ static void Update(Widget w_in, XmdsWaveformValStruct * x, XmdsWaveformValStruct
   xValStruct(w) =
       (XmdsWaveformValStruct *) memcpy(XtNew(XmdsWaveformValStruct), x,
 				       sizeof(XmdsWaveformValStruct));
-  waveformCount(w) = min(x->size / sizeof(float), waveformCount(w));
+  waveformCount(w) = min((int)(x->size / sizeof(float)), waveformCount(w));
   xValue(w) = (float *)x->addr;
   xValPtr(w) = 0;
 /*
@@ -2494,7 +2494,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 	      lastpoint = imin;
 	      if (np == 100) {
 		fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-			height_page * resolution - point[lastpoint].y);
+			(int)(height_page * resolution - point[lastpoint].y));
 		np = 0;
 	      }
 	    }
@@ -2505,7 +2505,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 	      lastpoint = imax;
 	      if (np == 100) {
 		fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-			height_page * resolution - point[lastpoint].y);
+			(int)(height_page * resolution - point[lastpoint].y));
 		np = 0;
 	      }
 	    }
@@ -2524,7 +2524,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 	  lastpoint = i;
 	  if (np == 100) {
 	    fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-		    height_page * resolution - point[lastpoint].y);
+		(int)(height_page * resolution - point[lastpoint].y));
 	    np = 0;
 	  }
 	}
@@ -2540,7 +2540,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
 		    point[i].y - point[lastpoint].y);
 	    np++;
 	  }
-	  fprintf(printfid, "%d %d %d v\n", np, point[i].x, height_page * resolution - point[i].y);
+	  fprintf(printfid, "%d %d %d v\n", np, point[i].x, (int)(height_page * resolution - point[i].y));
 	  np = 0;
 	}
 	pen_down = 0;
@@ -2553,7 +2553,7 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
     }
     if (np) {
       fprintf(printfid, "%d %d %d v\n", np, point[lastpoint].x,
-	      height_page * resolution - point[lastpoint].y);
+	(int)(height_page * resolution - point[lastpoint].y));
     }
     fprintf(printfid, "grestore\n");
   }
@@ -2592,8 +2592,8 @@ static void DrawRectangles(Display * display, Window win, GC gc, XRectangle * re
 	   could be in the grid.  However, for our application, this test is good enough. */
 
 	fprintf(printfid, "%d %d %d %d dorectangle\n",
-		rectangle[i].x, height_page * resolution - rectangle[i].y, rectangle[i].width,
-		rectangle[i].height);
+		rectangle[i].x,(int)(height_page * resolution - rectangle[i].y),
+                rectangle[i].width,rectangle[i].height);
     }
     fprintf(printfid, "grestore\n");
   }

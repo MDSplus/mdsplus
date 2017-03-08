@@ -1,13 +1,12 @@
-
-#pragma once
 /*
-
- This header was generated using mdsshr/gen_device.py
- To add new status messages modify: 
+ This header was generated using mdsshr/gen_messages.py
+ To add new status messages modify:
      treeshr_messages.xml
  and then in mdsshr do:
-     python gen_devices.py
+     python gen_messages.py
 */
+#pragma once
+#include <status.h>
 
 #define TreeALREADY_OFF          0xfd1802b
 #define TreeALREADY_ON           0xfd18033
@@ -96,3 +95,4 @@
 #define TreeMOVEERROR            0xfd1907a
 #define TreeOPENEDITERR          0xfd19082
 #define TreeREADONLY_TREE        0xfd1908a
+#define TreeWRITETREEERR         0xfd19092

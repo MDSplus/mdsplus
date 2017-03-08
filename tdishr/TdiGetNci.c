@@ -181,9 +181,12 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
-int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1GetNci(int opcode __attribute__ ((unused)),
+	       int narg,
+	       struct descriptor *list[],
+	       struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
   STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 960);
   struct descriptor_a *holda_ptr = 0;
@@ -202,7 +205,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 
   if (list[0]) {
     status = TdiGetData(omits, list[0], &nids);
-    if (status & 1) {
+    if STATUS_OK {
       len = nids.pointer->length;
       class = nids.pointer->class;
       dtype = nids.pointer->dtype;
@@ -210,7 +213,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
       N_ELEMENTS(nids.pointer, nelem);
 		/*** scalar non-text/path gives scalar if possible ***/
 		/*** a non-array text/path element without wilds gives scalar if possible ***/
-      if (status & 1 && class != CLASS_A)
+      if (STATUS_OK && class != CLASS_A)
 	switch (dtype) {
 	case DTYPE_T:
 	case DTYPE_PATH:
@@ -237,11 +240,11 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 	/**********************
         String of item to find.
         **********************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiData(list[1], &tmp MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = TdiUpcase(&tmp, &string MDS_END_ARG);
-  if (status & 1) {
+  if STATUS_OK {
     key_ptr =
 	(struct item *)bsearch(&string, table, numtab, siztab, (int (*)(const void *, const void *))
 			       compare);
@@ -254,11 +257,11 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
         ********************/
   if (narg > 2 && list[2]) {
     usage_mask = 0;
-    if (status & 1)
+    if STATUS_OK
       status = TdiData(list[2], &tmp MDS_END_ARG);
-    if (status & 1)
+    if STATUS_OK
       status = TdiUpcase(&tmp, &tmp MDS_END_ARG);
-    if (status & 1) {
+    if STATUS_OK {
       struct descriptor allow = *tmp.pointer;
       int length;
       struct descriptor usage = { 0, DTYPE_T, CLASS_S, 0 };
@@ -289,11 +292,11 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 	/********************
         Guess at holder size.
         ********************/
-  if (status & 1) {
+  if STATUS_OK {
     step = key_ptr->item_length == 0 ? sizeof(struct descriptor_xd) : key_ptr->item_length;
     status = MdsGet1DxA((struct descriptor_a *)&arr0, &step, &key_ptr->item_dtype, &holdxd);
   }
-  if (status & 1) {
+  if STATUS_OK {
     holda_ptr = (struct descriptor_a *)holdxd.pointer;
     hold_ptr = holda_ptr->pointer;
     memset(hold_ptr, 255, holda_ptr->arsize);
@@ -301,7 +304,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 	/**************************************
         Loop over arrays of NIDs or TEXT names.
         **************************************/
-  for (; status & 1 && --nelem >= 0; dat_ptr += len) {
+  for (; STATUS_OK && --nelem >= 0; dat_ptr += len) {
 		/**************
                 Convert to NID.
                 **************/
@@ -315,7 +318,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 	path_d.length = (unsigned short)len;
 	path_d.pointer = dat_ptr;
 	path = MdsDescrToCstring(&path_d);
-	if (status & 1)
+	if STATUS_OK
 	  status = TreeFindNodeWild(path, &nid, &pctx, usage_mask);
 	MdsFree(path);
       }
@@ -323,7 +326,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 	TreeFindNodeEnd(&pctx);
 	pctx = NULL;
 	if (status == TreeNMN)
-	  status = 1;
+	  status = MDSplusSUCCESS;
 	continue;
       }
       wild = 1;
@@ -342,9 +345,9 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
                 ****************************/
     if ((unsigned int)(outcount * step) >= holda_ptr->arsize) {
       holda_ptr->arsize *= 2;
-      if (status & 1)
+      if STATUS_OK
 	status = MdsGet1DxA(holda_ptr, &step, &key_ptr->item_dtype, &tmp);
-      if (status & 1) {
+      if STATUS_OK {
 	memset(tmp.pointer->pointer, 255, holda_ptr->arsize);
 	memcpy(tmp.pointer->pointer, holda_ptr->pointer, holda_ptr->arsize / 2);
       }
@@ -357,7 +360,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
 	/*****************************
         Store either data or pointers.
         *****************************/
-    if (!(status & 1))
+    if (STATUS_NOT_OK)
       break;
     if (key_ptr->item_code == NID_NUMBER)
       *(int *)hold_ptr = nid;
@@ -376,9 +379,9 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
       masked[0].code = key_ptr->item_code;
       masked[0].pointer = (unsigned char *)&flag;
       masked[0].return_length_address = &retlen;
-      if (status & 1)
+      if STATUS_OK
 	status = TreeGetNci(nid, masked);
-      if (status & 1)
+      if STATUS_OK
 /*
                         {
                           char ans=0;
@@ -407,10 +410,10 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
       tested[0].return_length_address = &retlen;
       status = TreeGetNci(nid, tested);
       *(struct descriptor_xd *)hold_ptr = EMPTY_XD;
-      if (status & 1)
+      if STATUS_OK
 	status = MdsGet1DxA((struct descriptor_a *)&arr, &dlen,
 			    &dtype, (struct descriptor_xd *)hold_ptr);
-      if (status & 1) {
+      if STATUS_OK {
 	struct descriptor_a *aptr = (struct descriptor_a *)
 	    (((struct descriptor_xd *)hold_ptr)->pointer);
 	NCI_ITM listed[2] = { {0, 0, 0, 0}, EOL };
@@ -434,7 +437,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
       texted[0].return_length_address = &retlen;
       *(struct descriptor_d *)hold_ptr = EMPTY_D;
       status = TreeGetNci(nid, texted);
-      if (status & 1 && texted[0].pointer) {
+      if (STATUS_OK && texted[0].pointer) {
 	unsigned short len = (unsigned short)strlen((char *)texted[0].pointer);
 	if (maxlen < len)
 	  maxlen = len;
@@ -460,12 +463,12 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
     }
     ++outcount;
     hold_ptr += step;
- skip:if (status & 1 && wild)
+ skip:if (STATUS_OK && wild)
       goto more;
   }
   MdsFree1Dx(&nids, NULL);
   MdsFree1Dx(&tmp, NULL);
-  if (status & 1) {
+  if STATUS_OK {
     holda_ptr->arsize = hold_ptr - holda_ptr->pointer;
     if (key_ptr->item_length) {
       if (outcount == 1 && class != CLASS_A)
@@ -481,7 +484,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
       arr.arsize = outcount;
       status =
 	  MdsGet1DxA((struct descriptor_a *)&arr, &maxlen, &dtype, (struct descriptor_xd *)out_ptr);
-      if (status & 1) {
+      if STATUS_OK {
 	char *p;
 	struct descriptor_xd *dp;
 	int j;
@@ -496,7 +499,7 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
       unsigned short dlen = sizeof(int *);
       unsigned char dtype = (unsigned char)DTYPE_L;
       status = MdsGet1DxA(holda_ptr, &dlen, &dtype, &tmp);
-      if (status & 1) {
+      if STATUS_OK {
 	char **xd_ptr = (char **)tmp.pointer->pointer;
 	hold_ptr = holda_ptr->pointer;
 	for (j = outcount; --j >= 0; hold_ptr += step)
@@ -510,9 +513,9 @@ int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descripto
     for (j = outcount, hold_ptr -= step; --j >= 0; hold_ptr -= step)
       MdsFree1Dx((struct descriptor_xd *)hold_ptr, NULL);
   MdsFree1Dx(&holdxd, NULL);
-  if (status & 1 && key_ptr->item_dtype == DTYPE_NID && out_ptr->pointer)
+  if (STATUS_OK && key_ptr->item_dtype == DTYPE_NID && out_ptr->pointer)
     out_ptr->pointer->dtype = DTYPE_NID;
-  if (status & 1 && out_ptr->pointer && out_ptr->pointer->class == CLASS_A &&
+  if (STATUS_OK && out_ptr->pointer && out_ptr->pointer->class == CLASS_A &&
       ((struct descriptor_a *)(out_ptr->pointer))->arsize == 0)
     status = TreeNNF;
 

@@ -217,9 +217,7 @@ public class MdsDataProvider
                 pixel_size = d.readInt();
                 int width = d.readInt();
                 int height = d.readInt();
-                int img_size = height * width;
                 int n_frame = d.readInt();
-                Vector f_time = new Vector();
 
                 dim = new Dimension(width, height);
                 if (in_x == null || in_x.length() == 0)
@@ -416,7 +414,7 @@ public class MdsDataProvider
             var_idx+=2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
@@ -459,7 +457,7 @@ public class MdsDataProvider
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
                 args.addElement(new Descriptor(null, fixedY));
                 try {
@@ -682,6 +680,10 @@ public class MdsDataProvider
         {
             return getData(xmin, xmax, numPoints, false);
         }
+        public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+        {
+            return getData((double)xmin, (double)xmax, numPoints, true);
+        }
         public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
         {
              String xExpr, yExpr;
@@ -693,7 +695,7 @@ public class MdsDataProvider
 
              if(segmentMode == SEGMENTED_UNKNOWN)
              {
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, in_y));
                 try {                 
                     byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
@@ -712,7 +714,7 @@ public class MdsDataProvider
                 yExpr =  in_y;
                 _jscope_set = true;
                 if(in_x == null)
-                    xExpr = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var )";
+                    xExpr = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var );";
                 else
                     xExpr = in_x;
             }
@@ -721,7 +723,7 @@ public class MdsDataProvider
                 if(in_x == null)
                 {
                     yExpr =  in_y;
-                    xExpr = "__jScope_var = (" +in_y+") ; DIM_OF(__jScope_var)";
+                    xExpr = "__jScope_var = (" +in_y+") ; DIM_OF(__jScope_var);";
                 }
                 else
                 {
@@ -730,7 +732,7 @@ public class MdsDataProvider
                 }
             }            
             
-                Vector args = new Vector();
+                Vector<Descriptor> args = new Vector<>();
                 args.addElement(new Descriptor(null, yExpr));
                 if(in_x == null)
                     args.addElement(new Descriptor(null, ""));
@@ -903,7 +905,7 @@ public class MdsDataProvider
         private long x2DLong[];
         public double[] getX2D()
         {
-            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0)";
+            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0);";
             try {
                 RealArray realArray = GetRealArray(in);
                 if( realArray.isLong() )
@@ -927,7 +929,7 @@ public class MdsDataProvider
           
         public float[] getY2D()
         {
-            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1)";
+            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1);";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
@@ -943,14 +945,14 @@ public class MdsDataProvider
         }
         public float[] getX_X2D()
         {
-            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 0)";
+            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 0);";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
         }
         public float[] getX_Y2D()
         {
-            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 1)";
+            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 1);";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
@@ -963,7 +965,7 @@ public class MdsDataProvider
         public boolean isXLong(){return isXLong;}
 
         //Async update management
-        Vector<WaveDataListener> waveDataListenersV = new Vector<WaveDataListener>();
+        Vector<WaveDataListener> waveDataListenersV = new Vector<>();
 
 
         public void addWaveDataListener(WaveDataListener listener)
@@ -1005,7 +1007,7 @@ public class MdsDataProvider
             }
         }
         boolean enabled = true;
-        Vector<UpdateDescriptor>requestsV = new Vector<UpdateDescriptor>();
+        Vector<UpdateDescriptor>requestsV = new Vector<>();
         void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long delay)
         {
@@ -1170,12 +1172,10 @@ public class MdsDataProvider
 
     protected void finalize()
     {
-        int status;
-        String err = new String("");
         if (open)
             mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
         if (connected)
-            status = mds.DisconnectFromMds();
+            mds.DisconnectFromMds();
     }
     //To be overridden by any DataProvider implementation with added dynamic generation
     public jScope.AsynchDataSource getAsynchSource()
@@ -1247,7 +1247,6 @@ public class MdsDataProvider
 
     public synchronized byte[] GetAllFrames(String in_frame) throws IOException
     {
-        byte img_buf[], out[] = null;
         float time[];
         int shape[];
         int pixel_size = 8;
@@ -1276,7 +1275,7 @@ public class MdsDataProvider
 
         //in = in_frame;
         in = "_jScope_img";
-        img_buf = GetByteArray(in);
+        byte[] img_buf = GetByteArray(in);
         if (img_buf == null)
             return null;
 
@@ -1300,23 +1299,16 @@ public class MdsDataProvider
         }
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream d = new DataOutputStream(b);
-
-        d.writeInt(pixel_size);
-
-        d.writeInt(shape[0]);
-        d.writeInt(shape[1]);
-        d.writeInt(num_time);
-
-        for (int i = 0; i < num_time; i++)
-            d.writeFloat(time[i]);
-
-        d.write(img_buf);
-        img_buf = null;
-        out = b.toByteArray();
-        d.close();
-
-        return out;
+        try (DataOutputStream d = new DataOutputStream(b)) {
+            d.writeInt(pixel_size);
+            d.writeInt(shape[0]);
+            d.writeInt(shape[1]);
+            d.writeInt(num_time);
+            for (int i = 0; i < num_time; i++)
+                d.writeFloat(time[i]);
+            d.write(img_buf);
+            return b.toByteArray();
+	}
     }
 
     public synchronized float[] GetFrameTimes(String in_frame)
@@ -1582,7 +1574,7 @@ public class MdsDataProvider
             Calendar cal = Calendar.getInstance();
             //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
-            //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
+//            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
             Date date = df.parse(in + " GMT");
             //Date date = df.parse(in);
             cal.setTime(date);
@@ -1623,7 +1615,7 @@ public class MdsDataProvider
             }
         }
         else
-            return new Float(in).floatValue();
+            return Float.parseFloat(in);
         return 0;
     }
 
@@ -1916,15 +1908,12 @@ public class MdsDataProvider
         }
         if (open && def_node_changed)
         {
-            Descriptor descr;
-            if (default_node != null)
-            {
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
-                if( (descr.int_data[0] & 1 ) == 0   )
+            if (default_node != null) {
+                Descriptor descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
+                if ((descr.int_data[0] & 1 ) == 0)
                     mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
-            }
-            else
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
+            } else
+                mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
 
             def_node_changed = false;
         }
@@ -1948,27 +1937,17 @@ public class MdsDataProvider
 
     protected boolean NotYetNumber(String in)
     {
-        boolean ris;
-        ris = false;
-        try
-        {
-            Float f = new Float(in);
+        try {
+            Float.parseFloat(in);
+	    return false;
+        } catch (NumberFormatException e) {
+            return true;
         }
-        catch (NumberFormatException e)
-        {
-            ris = true;
-        }
-
-        return ris;
     }
 
     public synchronized void AddUpdateEventListener(UpdateEventListener l,
         String event_name) throws IOException
     {
-
-        int eventid;
-        String error;
-
         if (event_name == null || event_name.trim().length() == 0)
             return;
         CheckConnection();
@@ -1978,9 +1957,6 @@ public class MdsDataProvider
     public synchronized void RemoveUpdateEventListener(UpdateEventListener l,
         String event_name) throws IOException
     {
-        int eventid;
-        String error;
-
         if (event_name == null || event_name.trim().length() == 0)
             return;
         CheckConnection();
@@ -1989,29 +1965,20 @@ public class MdsDataProvider
 
     public synchronized void AddConnectionListener(ConnectionListener l)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.addConnectionListener(l);
+        if (mds != null)
+            mds.addConnectionListener(l);
     }
 
     public synchronized void RemoveConnectionListener(ConnectionListener l)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.removeConnectionListener(l);
+        if (mds != null)
+            mds.removeConnectionListener(l);
     }
 
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
-        if (mds == null)
-        {
-            return;
-        }
-        mds.dispatchConnectionEvent(e);
+        if (mds != null)
+            mds.dispatchConnectionEvent(e);
     }
 
     public boolean SupportsTunneling()
@@ -2019,10 +1986,8 @@ public class MdsDataProvider
         return true;
     }
 
-
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
-
         mds.setUser(server_item.user);
         is_tunneling = false;
         if (server_item.tunnel_port != null &&

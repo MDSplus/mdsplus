@@ -24,13 +24,15 @@ def _TdiShrFun(function,errormessage,expression,args=None):
             if args:
                 if isinstance(args[0],tuple):
                     return(parseArguments(args[0]))
-            return([_C.pointer(descriptor(arg)) for arg in args])
+            return([_C.byref(descriptor(arg)) for arg in args])
         raise TypeError('Arguments must be passed as a tuple')
     xd = _descriptor.descriptor_xd()
-    arguments = [_C.pointer(descriptor(expression))]+parseArguments(args)+[_C.pointer(xd),_C.c_void_p(-1)]
+    arguments = [_C.byref(descriptor(expression))]+parseArguments(args)+[_C.byref(xd),_C.c_void_p(-1)]
     status = function(*arguments)
     if (status & 1 != 0):
-        return xd.value
+        value = xd.value
+        xd.free()
+        return value
     else:
         raise _Exceptions.statusToException(status)
 

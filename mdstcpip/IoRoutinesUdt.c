@@ -147,7 +147,7 @@ static void PopSocket(UDTSOCKET socket)
   unlock_socket_list();
 }
 
-static void ABORT(int sigval)
+static void ABORT(int sigval __attribute__ ((unused)))
 {
   SocketList *s;
   lock_socket_list();
@@ -353,7 +353,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
   hp = gethostbyname(host);
   if (hp == NULL) {
       addr = inet_addr(host);
-      if (addr != 0xffffffff)
+      if (addr != -1)
         hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
     }
   if (hp == 0) {
@@ -402,7 +402,7 @@ static int UDT_reuseCheck(char *host, char *unique, size_t buflen)
     }
 }
 
-static int UDT_connect(int conid, char *protocol, char *host)
+static int UDT_connect(int conid, char *protocol __attribute__ ((unused)), char *host)
 {
   struct sockaddr_in sin;
   UDTSOCKET s;
@@ -474,7 +474,7 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;

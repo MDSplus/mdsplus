@@ -153,7 +153,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     , {
     GEN_DEV$_X_IO_ERR, "GEN_DEV", "X_IO_ERR", " Hardware Error: X response failed"}
   };
-  int i;
+  size_t i;
   int status = 0;
   for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++) {
     if (msgs[i].sts == sts) {

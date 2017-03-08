@@ -96,6 +96,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
@@ -231,6 +232,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -319,7 +321,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -378,7 +379,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
@@ -628,7 +628,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-javaJAVA mostlyclean-am
+clean-am: clean-generic clean-javaJAVA clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -695,21 +695,25 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-javaDATA install-javaJAVA \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
-	uninstall uninstall-am uninstall-javaDATA uninstall-javaJAVA
+	clean-local cscopelist-am ctags-am distclean distclean-generic \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-javaDATA \
+	install-javaJAVA install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags-am uninstall uninstall-am \
+	uninstall-javaDATA uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
 MdsPlus.jar: classjava.stamp
 	$(JAR) c0f $@ $(CLASSES)
+
+clean-local:
+	-rm -rf $(JAVAROOT)/MdsPlus
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

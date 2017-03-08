@@ -74,7 +74,7 @@
 #ifndef _ACQ32IOCTL_H_
 #define _ACQ32IOCTL_H_
 
-#include <linux/ioctl.h>
+#include <sys/ioctl.h>
 
 /*
  * whence arg for seek

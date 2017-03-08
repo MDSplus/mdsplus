@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "mit_gate_gen.h"
-EXPORT int mit_gate__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int mit_gate__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "MIT_GATE");
@@ -59,7 +59,7 @@ EXPORT int mit_gate__add(struct descriptor *name_d_ptr, struct descriptor *dummy
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int mit_gate__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int mit_gate__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 			struct descriptor_d *out_d)
 {
   int element = 0, status;

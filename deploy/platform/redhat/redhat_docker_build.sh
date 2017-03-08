@@ -1,382 +1,28 @@
 #!/bin/bash
 #
-#
 # redhat_docker_build.sh is used to build, test, package and add rpms's to a
 # repository for redhat based systems.
 #
+# release:
+# /release/$branch/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+# /release/$branch/RPMS/$arch/*.rpm
 #
-if [ -r /source/deploy/os/${OS}.env ]
-then
-    source /source/deploy/os/${OS}.env
-fi
-spacedelim() {
-    if [ ! -z "$1" ]
-    then
-	if [ "$1" = "skip" ]
-	then
-	    ans=""
-	else
-	    IFS=',' read -ra ARR <<< "$1"
-	    ans="${ARR[*]}"
-	fi
-    fi
-    echo $ans
+# publish:
+# /publish/$branch/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+# /publish/$branch/RPMS/$arch/*.rpm
+# /publish/$branch/cache/$arch/*.rpm-*
+#
+test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
+test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32"
+makelist(){
+    rpm2cpio $1 | \
+        cpio --list --quiet | \
+        grep -v python/dist | \
+        grep -v python/build | \
+        grep -v egg-info | \
+        sort
 }
-
-RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
-}
-GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
-}
-NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
-}
-
-MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
-VALGRIND_TOOLS="$(spacedelim ${VALGRIND_TOOLS})"
-export PYTHONDONTWRITEBYTECODE=no
-set -e
-if [ "$TEST" = "yes" ]
-then
-    ###
-    ### Clean up workspace
-    ###
-    rm -Rf /workspace/tests
-    ###
-    ### Build 64-bit MDSplus with debug to run regular and valgrind tests
-    ###
-    MDSPLUS_DIR=/workspace/tests/64/buildroot;
-    mkdir -p ${MDSPLUS_DIR};
-    MDS_PATH=${MDSPLUS_DIR}/tdi;
-    pushd /workspace/tests/64;
-    /source/configure  \
-	--prefix=${MDSPLUS_DIR} \
-	--exec_prefix=${MDSPLUS_DIR} \
-	--bindir=${MDSPLUS_DIR}/bin64 \
-	--libdir=${MDSPLUS_DIR}/lib64 \
-	--with-gsi=/usr:gcc64 \
-	--with-java_target=6 \
-	--with-java_bootclasspath=/source/rt.jar \
-	--enable-debug --enable-werror --host=x86_64-linux;
-    $MAKE
-    $MAKE install
-    ###
-    ### Run regular and valgrind tests
-    ###
-    set +e
-    if [ ! -z "$VALGRIND_TOOLS" ]
-    then
-	###
-	### Test with valgrind
-	###
-	if ( ! $MAKE -k tests-valgrind 2>&1 )
-	then
-	    RED $COLOR
-	    cat <<EOF >&2
-=======================================================
-
-Failure doing 64-bit valgrind tests.
-
-=======================================================
-EOF
-	    NORMAL $COLOR
-	    tests_valgrind64=1
-	fi
-	$MAKE clean_TESTS
-    fi
-    ###
-    ### Run standard tests
-    ###
-    if ( ! $MAKE -k tests 2>&1 )
-    then
-	RED $COLOR
-	cat <<EOF >&2
-======================================================
-
-Failure doing 64-bit normal tests.
-
-======================================================
-EOF
-	NORMAL $COLOR
-	tests_64=1
-    fi
-    popd
-    if [ ! -z "$SANITIZE" ]
-    then
-	###
-	### Build 64-bit versions with sanitizers and run tests with each sanitizer
-	###
-	for test in $(spacedelim ${SANITIZE}); do
-	    echo Doing sanitize $test
-	    MDSPLUS_DIR=/workspace/tests/64-san-${test}/buildroot;
-	    MDS_PATH=${MDSPLUS_DIR}/tdi;
-	    mkdir -p ${MDSPLUS_DIR};
-	    pushd /workspace/tests/64-san-${test};
-	    /source/configure \
-		--prefix=${MDSPLUS_DIR} \
-		--exec_prefix=${MDSPLUS_DIR} \
-		--bindir=${MDSPLUS_DIR}/bin64 \
-		--libdir=${MDSPLUS_DIR}/lib64 \
-		--with-gsi=/usr:gcc64 \
-		--with-java_target=6 \
-		--with-java_bootclasspath=/source/rt.jar \
-		--enable-debug --host=x86_64-linux \
-		--enable-sanitize=${test}
-	    status=$?
-	    if [ "$status" = "111" ]; then
-		echo "Sanitizer ${test} not supported. Skipping."
-		continue
-	    elif [ "$status" = 0 ]; then
-		$MAKE
-		$MAKE install
-		if ( ! $MAKE -k tests 2>&1 )
-		then
-		    RED $COLOR
-		    cat <<EOF >&2
-=======================================================
-
-Failure doing 64-bit sanitize test ${test}
-
-=======================================================
-EOF
-		    NORMAL $COLOR
-		    let test_64_san_${test}=1
-		fi
-	    else
-		echo "configure returned status $?"
-		let test_64_san_${test}=$status
-	    fi
-	    popd
-	done
-    fi
-    ###
-    ### Build 32-bit version with debug for testing
-    ###
-    set -e
-    MDSPLUS_DIR=/workspace/tests/32/buildroot;
-    MDS_PATH=${MDSPLUS_DIR}/tdi;
-    mkdir -p ${MDSPLUS_DIR};
-    pushd /workspace/tests/32;
-    /source/configure \
-	--prefix=${MDSPLUS_DIR} \
-	--exec_prefix=${MDSPLUS_DIR} \
-	--bindir=${MDSPLUS_DIR}/bin32 \
-	--libdir=${MDSPLUS_DIR}/lib32 \
-	--with-gsi=/usr:gcc32 \
-	--with-java_target=6 \
-	--with-java_bootclasspath=/source/rt.jar \
-	--enable-debug --enable-werror --host=i686-linux;
-    $MAKE
-    $MAKE install
-    set +e;
-    if [ ! -z "$VALGRIND_TOOLS" ]
-    then
-	###
-	### Test with valgrind
-	###
-	if ( ! $MAKE -k tests-valgrind 2>&1 )
-	then
-	    RED $COLOR
-	    cat <<EOF 2>&1
-===================================================
-
-Failure during 32-bit valgrind testing.
-
-===================================================
-EOF
-	    NORMAL $COLOR
-	    tests_valgrind32=1
-	fi
-	$MAKE clean_TESTS
-    fi
-    ###
-    ### Run standard tests on 32-bit
-    ###
-    if ( ! $MAKE -k tests 2>&1 )
-    then
-	RED $COLOR
-	cat <<EOF >&2
-===================================================
-
-Failure during 32-bit normal testing.
-
-===================================================
-EOF
-	NORMAL $COLOR
-	tests_32=1
-    fi
-    popd;
-    if [ ! -z "$SANITIZE" ]
-    then
-	###
-	### Build and test with sanitizers
-	###
-	for test in $(spacedelim ${SANITIZE}); do
-	    if [ "$test" = "thread" ]; then
-		echo "No 32-bit support for sanitize=thread. Skipping."
-		break
-	    fi
-	    MDSPLUS_DIR=/workspace/tests/32-san-${test}/buildroot;
-	    MDS_PATH=${MDSPLUS_DIR}/tdi;
-	    mkdir -p ${MDSPLUS_DIR};
-	    pushd /workspace/tests/32-san-${test};
-	    /source/configure \
-		--prefix=${MDSPLUS_DIR} \
-		--exec_prefix=${MDSPLUS_DIR} \
-		--bindir=${MDSPLUS_DIR}/bin32 \
-		--libdir=${MDSPLUS_DIR}/lib32 \
-		--with-gsi=/usr:gcc32 \
-		--with-java_target=6 \
-		--with-java_bootclasspath=/source/rt.jar \
-		--enable-debug --host=i686-linux \
-		--enable-sanitize=${test}
-	    status=$?
-	    if [ "$status" == 111 ]; then
-		echo "Sanitizer ${test} not supported. Skipping."
-		break
-	    elif [ "$status" = 0 ]; then
-		$MAKE
-		$MAKE install
-		if ( ! $MAKE -k tests 2>&1 )
-		then
-		    RED $COLOR
-		    cat <<EOF >&2
-=======================================================
-
-Failure during 32-bit sanitize ${test} testing.
-
-=======================================================
-EOF
-		    NORMAL $COLOR
-		    let test_32_san_${test}=1
-		fi
-	    else
-		echo "Configure returned a status 0f $status"
-		let test_32_san_${test}=$status
-	    fi
-	    popd
-	done
-    fi;
-    ###
-    ### Check status of all tests. If errors found print error messages and then exit with failure
-    ###
-    failed=0;
-    if [ ! -z "$tests_64" -a "$tests_64" != "0" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: 64-bit test suite failed
-
-=================================================================
-EOF
-	NORMAL $COLOR
-	failed=1;
-    fi;
-    if [ ! -z "$tests_valgrind64" -a "$tests_valgrind64" != "0" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: 64-bit valgrind test suite failed
-
-=================================================================
-EOF
-	NORMAL $COLOR
-	failed=1;
-    fi
-    for test in address thread undefined; do
-	eval "status=\$test_64_san_${test}"
-	if [ ! -z "$status" -a "$status" != "0" ]
-	then
-	    RED $COLOR
-	    cat <<EOF >&2
-=================================================================
-
-Failure: 64-bit santize with ${test} failed
-
-=================================================================
-EOF
-	    NORMAL $COLOR
-	    failed=1;
-	fi
-    done;
-    if [ ! -z "$tests_32" -a "$tests_32" != "0" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: 32-bit test suite failed
-
-=================================================================
-EOF
-	NORMAL $COLOR
-	failed=1;
-    fi;
-    if [ ! -z "$tests_valgrind32" -a "$tests_valgrind32" != "0" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: 32-bit valgrind test suite failed
-
-=================================================================
-EOF
-	NORMAL $COLOR
-	failed=1;
-    fi;
-    for test in address thread undefined; do
-	eval "status=\$test_32_san_${test}"
-	if [ ! -z "$status" -a "$status" != "0" ]
-	then
-	    RED $COLOR
-	    cat <<EOF >&2
-=================================================================
-
-Failure: 32-bit santize with ${test} failed
-
-=================================================================
-EOF
-	    NORMAL $COLOR
-	    failed=1
-	fi
-    done
-    if [ "$failed" = "1" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: One or more tests have failed (see above). Build ABORTED 
-
-=================================================================
-EOF
-	NORMAL $COLOR
-	exit 1
-    fi
-fi
-if [ "${BRANCH}" = "stable" ]
-then
-    BNAME=""
-else
-    BNAME="-${BRANCH}"
-fi
-if [ "$RELEASE" = "yes" ]
-then
+buildrelease(){
     ###
     ### Clean up workspace
     ###
@@ -389,31 +35,13 @@ then
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    /source/configure \
-	    --prefix=${MDSPLUS_DIR} \
-	    --exec_prefix=${MDSPLUS_DIR} \
-	    --bindir=${MDSPLUS_DIR}/bin64 \
-	    --libdir=${MDSPLUS_DIR}/lib64 \
-	    --with-gsi=/usr:gcc64 \
-	    --with-java_target=6 \
-	    --with-java_bootclasspath=/source/rt.jar \
-	    --host=x86_64-linux;
+    config ${test64}
     $MAKE
     $MAKE install
     popd;
-    MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
-    mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    /source/configure  \
-	--prefix=${MDSPLUS_DIR} \
-	--exec_prefix=${MDSPLUS_DIR} \
-	--bindir=${MDSPLUS_DIR}/bin32 \
-	--libdir=${MDSPLUS_DIR}/lib32 \
-	--with-gsi=/usr:gcc64 \
-	--with-java_target=6 \
-	--with-java_bootclasspath=/source/rt.jar \
-	--host=i686-linux;
+    config 32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc64
     $MAKE
     $MAKE install
     popd
@@ -424,14 +52,13 @@ then
     ###
     mkdir -p ${BUILDROOT}/etc/yum.repos.d;
     mkdir -p ${BUILDROOT}/etc/pki/rpm-gpg/;
-    mkdir -p /release/RPMS;
     cp /source/deploy/platform/redhat/RPM-GPG-KEY-MDSplus ${BUILDROOT}/etc/pki/rpm-gpg/;
     if [ -d /sign_keys/.gnupg ]
     then
-	GPGCHECK="1"
+        GPGCHECK="1"
     else
-	echo "WARNING: Signing Keys Unavailable. Building unsigned RPMS"
-	GPGCHECK="0"
+        echo "WARNING: Signing Keys Unavailable. Building unsigned RPMS"
+        GPGCHECK="0"
     fi
     cat - > ${BUILDROOT}/etc/yum.repos.d/mdsplus${BNAME}.repo <<EOF
 [MDSplus${BNAME}]
@@ -447,116 +74,54 @@ EOF
     ###
     ### Clean up release stage area
     ###
-    rm -Rf /release/*
-    
+    rm   -Rf /release/${BRANCH}/*
     BRANCH=${BRANCH} \
-	  RELEASE_VERSION=${RELEASE_VERSION} \
-	  BNAME=${BNAME} \
-	  DISTNAME=${DISTNAME} \
-	  BUILDROOT=${BUILDROOT} \
-	  PLATFORM=${PLATFORM} \
-	  /source/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py;
-    createrepo -q /release/RPMS
+          RELEASE_VERSION=${RELEASE_VERSION} \
+          BNAME=${BNAME} \
+          DISTNAME=${DISTNAME} \
+          BUILDROOT=${BUILDROOT} \
+          PLATFORM=${PLATFORM} \
+          /source/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py;
+    createrepo -q /release/${BRANCH}/RPMS
     badrpm=0
-    for rpm in $(find /release/RPMS -name '*\.rpm')
+    for rpm in $(find /release/${BRANCH}/RPMS -name '*\.rpm')
     do
-	pkg=$(echo $(basename $rpm) | cut -f3 -d-)
-	#
-	# Skip main installer which only has package dependencies and no files
-	# Skip the repo rpm which will contain the branch name
-	#
-	if ( echo ${pkg} | grep '\.' >/dev/null ) || ( echo ${pkg} | grep repo >/dev/null )
-	then
-	    continue
-	fi
-	pkg=${pkg}.$(echo $(basename $rpm) | cut -f5 -d- | cut -f3 -d.)
-	checkfile=/source/deploy/packaging/${PLATFORM}/$pkg
-	if [ "$UPDATEPKG" = "yes" ]
-	then
-	    mkdir -p /source/deploy/packaging/${PLATFORM}/
-	    rpm2cpio $rpm | \
-		cpio --list --quiet | \
-		grep -v python/dist | \
-		grep -v python/build | \
-		grep -v egg-info > ${checkfile}
-	else
-	    set +e
-	    echo "Checking contents of $(basename $rpm)"
-	    if ( rpm2cpio $rpm | \
-		       cpio --list --quiet | \
-		       grep -v python/dist | \
-		       grep -v python/build | \
-		       grep -v egg-info | \
-		       diff - ${checkfile} )
-	    then
-		echo "Contents of $(basename $rpm) is correct."
-	    else
-		RED $COLOR
-		cat <<EOF >&2
-=================================================================
-
-Failure: Problem with contents of $(basename $rpm)
-
-=================================================================
-EOF
-		NORMAL $COLOR
-		badrpm=1
-	    fi
-	    set -e
-	fi
+        pkg=$(echo $(basename $rpm) | cut -f3 -d-)
+        #
+        # Skip main installer which only has package dependencies and no files
+        # Skip the repo rpm which will contain the branch name
+        #
+        if ( echo ${pkg} | grep '\.' >/dev/null ) || ( echo ${pkg} | grep repo >/dev/null )
+        then
+            continue
+        fi
+        pkg=${pkg}.$(echo $(basename $rpm) | cut -f5 -d- | cut -f3 -d.)
+        checkfile=/source/deploy/packaging/${PLATFORM}/$pkg
+        if [ "$UPDATEPKG" = "yes" ]
+        then
+            mkdir -p /source/deploy/packaging/${PLATFORM}/
+            makelist $rpm > ${checkfile}
+        else
+            echo "Checking contents of $(basename $rpm)"
+            if ( diff <(makelist $rpm) <(sort ${checkfile}) )
+            then
+                echo "Contents of $(basename $rpm) is correct."
+            else
+                checkstatus badrpm "Failure: Problem with contents of $(basename $rpm)" 1
+            fi
+        fi
     done
-    if [ "$badrpm" != "0" ]
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
+    checkstatus abort "Failure: Problem with contents of one or more rpms. (see above)" $badrpm
+}
 
-Failure: Problem with contents of one or more rpms. (see above)
-         Build ABORTED
-
-=================================================================
-EOF
-	NORMAL $COLOR
-	exit 1
-    fi
-fi
-
-if [ "$PUBLISH" = "yes" ]
-then
-    ###
+publish(){
     ### DO NOT CLEAN /publish as it may contain valid older release rpms
-    ###
-    if ( ! rsync -a --exclude=repodata /release/RPMS /publish/ )
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: Problem copying release rpms to publish area!
-         Build ABORTED
-
-=================================================================
-EOF
-	NORMAL $COLOR
-       	exit 1
-    fi
+    :&& rsync -a --exclude=repodata /release/${BRANCH}/* /publish/${BRANCH}
+    checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
     if ( createrepo -h | grep '\-\-deltas' > /dev/null )
     then
-	use_deltas="--deltas"
+        use_deltas="--deltas"
     fi
-    if ( ! createrepo -q --update --cachedir /publish/cache ${use_deltas} /publish/RPMS )
-    then
-	RED $COLOR
-	cat <<EOF >&2
-=================================================================
-
-Failure: Problem creating rpm repository in publish area!
-         Build ABORTED
-
-=================================================================
-EOF
-	NORMAL $COLOR
-       	exit 1
-    fi
-fi
-
+    :&& createrepo -q --update --cachedir /publish/${BRANCH}/cache ${use_deltas} /publish/${BRANCH}/RPMS
+    checkstatus abort "Failure: Problem creating rpm repository in publish area!" $?
+}

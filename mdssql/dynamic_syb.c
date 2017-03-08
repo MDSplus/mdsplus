@@ -18,11 +18,15 @@ typedef BYTE *LPBYTE;
 typedef const LPBYTE LPCBYTE;
 #include <windows.h>
 #include <sqlfront.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <sqldb.h>
+#pragma GCC diagnostic pop
 #define dbloginfree dbfreelogin
 #endif
 #include <config.h>
 #include <mdsdescrip.h>
+#include <status.h>
 static LOGINREC *loginrec = 0;
 static DBPROCESS *dbproc = 0;
 
@@ -69,7 +73,7 @@ static void SetMsgLen() {
   DBMSGTEXT_DSC.length=strlen(DBMSGTEXT);
 }
 
-static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,
+static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused)), int dberr, int oserr,
 		       cnst char *dberrstr, cnst char *oserrstr)
 {
 #ifdef WIN32
@@ -98,7 +102,7 @@ static int Err_Handler(DBPROCESS * dbproc, int severity, int dberr, int oserr,
 }
 
 /*------------------------------MESSAGE HANDLER------------------------------*/
-static int Msg_Handler(DBPROCESS * dbproc, DBINT msgno, int msgstate, int severity,
+  static int Msg_Handler(DBPROCESS * dbproc __attribute__ ((unused)), DBINT msgno, int msgstate, int severity,
 		       cnst char *msgtext, cnst char *servername, cnst char *procname,
 		       DBUSMALLINT line)
 {
@@ -107,8 +111,10 @@ static int Msg_Handler(DBPROCESS * dbproc, DBINT msgno, int msgstate, int severi
   if (msgno == 5701)
     return 0;			/*just a USE DATABASE notice */
   if (severity) {
-    sprintf(msg, (sizeof(msgno) == 8) ? "\nMsg %ld, Level %d, State %d\n" :
-	    "\nMsg %d, Level %d, State %d\n", msgno, severity, msgstate);
+    if (sizeof(msgno) == 8)
+	sprintf(msg,"\nMsg %ld, Level %d, State %d\n", (long)msgno, severity, msgstate);
+    else
+	sprintf(msg,"\nMsg %d, Level %d, State %d\n", (int)msgno, severity, msgstate);
     strcatn(DBMSGTEXT, msg, MAXMSG);
     if (servername)
       if (strlen(servername)) {
@@ -170,7 +176,7 @@ EXPORT int Login_Sybase(char *host, char *user, char *pass)
     loginrec = 0;
   }
   if (dbinit() == FAIL)
-    Fatal("Login_Sybase: Can't init DB-library\n");
+    Fatal("%s","Login_Sybase: Can't init DB-library\n");
   dbmsghandle(Msg_Handler);
   dberrhandle(Err_Handler);
   loginrec = dblogin();
@@ -242,7 +248,7 @@ int *prows;
     parsed[0] = '\0';
     status = USER_GETS(ptext, parsed, &nmarks, user_args);
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = dbcmd(dbproc, nmarks ? parsed : ptext);
   if (status != SUCCEED)
@@ -252,11 +258,11 @@ int *prows;
     int rowcount = 0, rblob = strncmp("sElEcT", nmarks ? parsed : ptext, 6);
     while ((status = dbresults(dbproc)) == SUCCEED) {
       status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
-      if (status == SUCCEED)
+      if (STATUS_OK)
 	while ((status = dbnextrow(dbproc)) != NO_MORE_ROWS) {
 	  ++rowcount;
 	  status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
-	  if (!status)
+	  if (STATUS_NOT_OK)
 	    goto close;
 	}
     }

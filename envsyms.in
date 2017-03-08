@@ -26,6 +26,10 @@ XAPPLRESDIR ${MDSPLUS} <:
 #
 IDL_PATH \+${MDSPLUS}/idl <:
 #
+# MDSIP_CONNECT_TIMEOUT - default timeout for MDSIP connects
+#
+MDSIP_CONNECT_TIMEOUT 1
+#
 # LIBRARY path
 #
 @LIBPATH@ ${MDSPLUS}/lib <:

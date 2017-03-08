@@ -20,7 +20,7 @@
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
-EXPORT int TclWfevent(void *ctx, char **error, char **output)
+EXPORT int TclWfevent(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   char *event = 0;
   char *timeout = 0;

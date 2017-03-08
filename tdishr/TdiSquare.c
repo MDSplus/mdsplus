@@ -4,6 +4,7 @@
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <mdsdescrip.h>
+#include <status.h>
 #include <STATICdef.h>
 
 
@@ -25,7 +26,7 @@ int Tdi3Square(struct descriptor *in_ptr, struct descriptor *out_ptr)
         F90 elemental, convert complex call to molded type.
 */
 int Tdi3Cmplx(struct descriptor *x_ptr,
-	      struct descriptor *y_ptr, struct descriptor *mold_ptr, struct descriptor *out_ptr)
+	      struct descriptor *y_ptr, struct descriptor *mold_ptr __attribute__ ((unused)), struct descriptor *out_ptr)
 {
   return Tdi3Complex(x_ptr, y_ptr, out_ptr);
 }
@@ -35,12 +36,12 @@ int Tdi3Cmplx(struct descriptor *x_ptr,
 */
 int Tdi3Ceiling(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int status;
+  INIT_STATUS;
 
   status = Tdi3UnaryMinus(in_ptr, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     status = Tdi3Floor(out_ptr, out_ptr);
-  if (status & 1)
+  if STATUS_OK
     status = Tdi3UnaryMinus(out_ptr, out_ptr);
   return status;
 }

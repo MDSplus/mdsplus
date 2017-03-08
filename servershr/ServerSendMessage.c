@@ -12,7 +12,7 @@
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int ServerSendMessage();
 
@@ -32,7 +32,7 @@ int ServerSendMessage();
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+  #include <unistd.h>
 #endif
 #include <string.h>
 #include <servershr.h>
@@ -41,30 +41,31 @@ int ServerSendMessage();
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
-#if defined(_WIN32)
-#include <windows.h>
-#define random rand
-#define close closesocket
+#ifdef _WIN32
+ typedef int socklen_t;
+ #include <windows.h>
+ #define random rand
+ #define close closesocket
 #else
+ #define INVALID_SOCKET -1
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <netdb.h>
+ #include <arpa/inet.h>
+#endif
 #include <signal.h>
-#include <setjmp.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 #include <sys/time.h>
 #include <pthread.h>
-#define INVALID_SOCKET -1
-#endif
+
 #define HAS_CONDITION 987654
 #define NOT_DONE 1212121
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
+  #define pthread_attr_default NULL
+  #define pthread_mutexattr_default NULL
+  #define pthread_condattr_default NULL
 #else
-#undef select
+  #undef select
 #endif
 
 extern short ArgLen();
@@ -99,14 +100,12 @@ static int MonJob = -1;
 static int JobId = 0;
 static Client *ClientList = 0;
 
-int ServerBadSocket(int socket);
+int ServerBadSocket(SOCKET socket);
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); \
-if (!(status & 1)) goto send_error;
 
-static int StartReceiver(short *port);
+static int start_receiver(short *port);
 int ServerConnect(char *server);
 static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
@@ -116,117 +115,127 @@ static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
 static unsigned int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
-static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
+static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
 static void lock_client_list();
 static void unlock_client_list();
 static void lock_job_list();
 static void unlock_job_list();
 extern int pthread_cond_timedwait();
 
+static void InitializeSockets()
+{
+#ifdef _WIN32
+  static int initialized = 0;
+  if (!initialized) {
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+    WSAStartup(wVersionRequested, &wsaData);
+    initialized = 1;
+  }
+#endif
+}
+
+
+
 extern void *GetConnectionInfo();
-static int getSocket(int conid)
+static SOCKET getSocket(int conid)
 {
   size_t len;
   char *info_name;
-  int readfd;
+  SOCKET readfd;
   GetConnectionInfo(conid, &info_name, &readfd, &len);
-  return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : -1;
+  return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : INVALID_SOCKET;
 }
 
 int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs_in, ...)
 {
-  static unsigned int addr = 0;
-  short port;
+  short port = 0;
   int conid;
+  if (start_receiver(&port) || ((conid = ServerConnect(server)) < 0)) {
+    if (ast && astparam)
+      ast(astparam);
+    return ServerPATH_DOWN;
+  }
+  INIT_STATUS;
   int flags = 0;
-  int status = ServerPATH_DOWN;
   int jobid;
   int i;
-
-  if (StartReceiver(&port) && ((conid = ServerConnect(server)) >= 0)) {
-    char cmd[4096];
-    unsigned char numargs = max(0, min(numargs_in, 8));
-    unsigned char idx = 0;
-    char dtype;
-    short len;
-    char ndims;
-    int dims[8];
-    int numbytes;
-    int *dptr;
-    va_list vlist;
-    void *mem = 0;
-    struct descrip *arg;
-    if (conid_out)
-      *conid_out = conid;
-    if (addr == 0) {
-      int sock = getSocket(conid);
-      struct sockaddr_in addr_struct = {0};
-      unsigned int len = sizeof(addr_struct);
-      if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
-		addr = *(int *)&addr_struct.sin_addr;
-    }
-    if (addr)
-      jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
-    else {
-      perror("Error getting the address the socket is bound to.\n");
-      return ServerSOCKET_ADDR_ERROR;
-    }
-    if (before_ast)
-      flags |= SrvJobBEFORE_NOTIFY;
-    sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
-    va_start(vlist, numargs_in);
-    for (i = 0; i < numargs; i++) {
-      strcat(cmd, ",");
-      arg = va_arg(vlist, struct descrip *);
-      if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG
-	  && *(int *)arg->ptr == MonitorCheckin)
-	MonJob = jobid;
-      switch (arg->dtype) {
-      case DTYPE_CSTRING:
-	{
-	  int j;
-	  int k;
-	  char *c = (char *)arg->ptr;
-	  int len = strlen(c);
-	  strcat(cmd, "\"");
-	  for (j = 0, k = strlen(cmd); j < len; j++, k++) {
-	    if (c[j] == '"' || c[j] == '\\')
-	      cmd[k++] = '\\';
-	    cmd[k] = c[j];
-	  }
-	  cmd[k] = 0;
-	  strcat(cmd, "\"");
-	  break;
-	}
+  unsigned int addr = 0;
+  char cmd[4096];
+  unsigned char numargs = max(0, min(numargs_in, 8));
+  unsigned char idx = 0;
+  char dtype;
+  char ndims;
+  int dims[8];
+  int numbytes;
+  int *dptr;
+  va_list vlist;
+  void *mem = NULL;
+  struct descrip *arg;
+  if (conid_out)
+    *conid_out = conid;
+  int sock = getSocket(conid);
+  struct sockaddr_in addr_struct = {0};
+  socklen_t len = sizeof(addr_struct);
+  if (getsockname(sock, (struct sockaddr *)&addr_struct, &len) == 0)
+    addr = *(int *)&addr_struct.sin_addr;
+  if (!addr) {
+    perror("Error getting the address the socket is bound to.\n");
+    if (ast && astparam)
+      ast(astparam);
+    return ServerSOCKET_ADDR_ERROR;
+  }
+  jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
+  if (before_ast)
+    flags |= SrvJobBEFORE_NOTIFY;
+  sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
+  va_start(vlist, numargs_in);
+  for (i = 0; i < numargs; i++) {
+    strcat(cmd, ",");
+    arg = va_arg(vlist, struct descrip *);
+    if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG
+        && *(int *)arg->ptr == MonitorCheckin)
+      MonJob = jobid;
+    switch (arg->dtype) {
+      case DTYPE_CSTRING: {
+        int j;
+        int k;
+        char *c = (char *)arg->ptr;
+        int len = strlen(c);
+        strcat(cmd, "\"");
+        for (j = 0, k = strlen(cmd); j < len; j++, k++) {
+          if (c[j] == '"' || c[j] == '\\')
+              cmd[k++] = '\\';
+            cmd[k] = c[j];
+          }
+          cmd[k] = 0;
+          strcat(cmd, "\"");
+          break;
+        }
       case DTYPE_LONG:
-	sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
-	break;
+        sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
+        break;
       case DTYPE_CHAR:
-	sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
-	break;
+        sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
+        break;
       default:
-	printf("shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
-      }
-    }
-    strcat(cmd, ")");
-    SndArgChk(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
-    status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
-    if (mem)
-      free(mem);
-    if (!addr) {
-      if (retstatus)
-	*retstatus = status;
-      if (ast)
-	(*ast) (astparam, "Job Done");
+        printf("shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
     }
   }
-
-  return status;
-
- send_error:
-  perror("Error sending message to server");
-  CleanupJob(status, jobid);
+  strcat(cmd, ")");
+  status = SendArg(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
+  if STATUS_NOT_OK {
+      perror("Error sending message to server");
+      CleanupJob(status, jobid);
+      return status;
+  }
+  status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
+  if STATUS_NOT_OK
+      perror("Error: no response from server");
+  if (mem)
+    free(mem);
   return status;
 }
 
@@ -365,53 +374,39 @@ static void CleanupJob(int status, int jobid)
   }
 }
 
-static int CreatePort(short starting_port, short *port_out)
+static SOCKET CreatePort(short starting_port, short *port_out)
 {
   short port;
   static struct sockaddr_in sin;
   long sendbuf = 6000, recvbuf = 6000;
-  int s;
-  int status;
+  SOCKET s;
+  int c_status = -1;
   int tries = 0;
   int one = 1;
+  InitializeSockets();
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) {
-#ifdef _WIN32
-    int error = WSAGetLastError();
-    if (error == WSANOTINITIALISED) {
-      WSADATA wsaData;
-      WORD wVersionRequested;
-      wVersionRequested = MAKEWORD(1, 1);
-      WSAStartup(wVersionRequested, &wsaData);
-      s = socket(AF_INET, SOCK_STREAM, 0);
-      if (s == INVALID_SOCKET) {
-	perror("Error getting Connection Socket\n");
-	return (-1);
-      }
-    }
-#else
     perror("Error getting Connection Socket\n");
-    return (-1);
-#endif
+    return s;
   }
   setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(long));
   setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(long));
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&one, sizeof(int));
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
-  for (tries = 0, status = -1; (status < 0) && (tries < 500); tries++) {
+  for (tries = 0 ; (c_status < 0) && (tries < 500); tries++) {
     port = starting_port + (random() & 0xff);
     sin.sin_port = htons(port);
-    status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
+    c_status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
   }
-  if (status < 0) {
+  if (c_status < 0) {
     perror("Error binding to service\n");
-    return (-1);
+    return INVALID_SOCKET;
   }
-  status = listen(s, 5);
-  if (status < 0) {
+  c_status = listen(s, 5);
+  if (c_status < 0) {
     perror("Error from listen\n");
-    return (-1);
+    return INVALID_SOCKET;
   }
   *port_out = port;
   return s;
@@ -420,64 +415,56 @@ static int CreatePort(short starting_port, short *port_out)
 static int ThreadRunning = 0;
 static pthread_mutex_t worker_mutex;
 static pthread_cond_t worker_condition;
-static int worker_cond_init = 1;
 
-static int StartReceiver(short *port_out)
+static int start_receiver(short *port_out)
 {
+  int c_status = C_OK;
   static short port = 0;
-  static int sock;
+  static SOCKET sock;
   static pthread_t thread;
-  int status = 1;
   if (port == 0) {
     sock = CreatePort((short)8800, &port);
-    if (sock < 0)
-      return (0);
+    if (sock == INVALID_SOCKET)
+      return C_ERROR;
   }
   if (!ThreadRunning) {
 #ifndef _WIN32
     size_t ssize;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    status = pthread_attr_getstacksize(&attr, &ssize);
-    status = pthread_attr_setstacksize(&attr, ssize * 16);
-    status = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_getstacksize(&attr, &ssize);
+    pthread_attr_setstacksize(&attr, ssize * 16);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 #endif
-    if (worker_cond_init) {
-      pthread_mutex_init(&worker_mutex, pthread_mutexattr_default);
-      pthread_cond_init(&worker_condition, pthread_condattr_default);
-      worker_cond_init = 0;
-    }
+    if (!pthread_mutex_init(&worker_mutex, pthread_mutexattr_default))
+        pthread_cond_init(&worker_condition, pthread_condattr_default);
 #ifndef _WIN32
-    status = pthread_create(&thread, &attr, Worker, (void *)&sock);
+    c_status = pthread_create(&thread, &attr, Worker, (void *)&sock);
     pthread_attr_destroy(&attr);
 #else
-    status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
+    c_status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
 #endif
-    if (status != 0) {
+    if (c_status != C_OK) {
       perror("error creating dispatch receiver thread\n");
-      status = 0;
     } else {
-      while ((ThreadRunning == 0) && (pthread_mutex_lock(&worker_mutex) == 0)) {
-	if (!ThreadRunning)
-#ifdef _WIN32
-	  pthread_cond_timedwait(&worker_condition, &worker_mutex, 1000);
-#else
-	{
+      while (pthread_mutex_lock(&worker_mutex) == 0) {
+	if (!ThreadRunning) {
 	  struct timespec abstime;
 	  struct timeval tmval;
 	  gettimeofday(&tmval, 0);
 	  abstime.tv_sec = tmval.tv_sec + 1;
 	  abstime.tv_nsec = tmval.tv_usec * 1000;
 	  pthread_cond_timedwait(&worker_condition, &worker_mutex, &abstime);
-	}
-#endif
-	pthread_mutex_unlock(&worker_mutex);
+          pthread_mutex_unlock(&worker_mutex);
+	} else {
+          pthread_mutex_unlock(&worker_mutex);
+          break;
+        }
       }
-      status = 1;
     }
   }
   *port_out = port;
-  return status;
+  return c_status;
 }
 
 static void ThreadExit(void *arg __attribute__ ((unused)))
@@ -495,7 +482,7 @@ static void signal_handler(int dummy)
 }
 */
 
-static void ResetFdactive(int rep, int sock, fd_set * active)
+static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
 {
   Client *c;
   if (rep > 0) {
@@ -518,7 +505,7 @@ static void ResetFdactive(int rep, int sock, fd_set * active)
   FD_SET(sock, active);
   lock_client_list();
   for (c = ClientList; c; c = c->next) {
-    if (c->reply_sock >= 0)
+    if (c->reply_sock != INVALID_SOCKET)
       FD_SET(c->reply_sock, active);
   }
   unlock_client_list();
@@ -532,10 +519,11 @@ static void *Worker(void *sockptr)
   int sock = *(int *)sockptr;
   int tablesize = FD_SETSIZE;
   int num = 0;
-  int last_client_addr = 0;
+  int last_client_addr;
   int rep;
   fd_set readfds, fdactive;
   pthread_cleanup_push(ThreadExit, 0);
+  last_client_addr = 0;
   /*
      signal(SIGSEGV, signal_handler);
      signal(SIGBUS, signal_handler);
@@ -555,7 +543,7 @@ static void *Worker(void *sockptr)
     while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1) {
       rep = 0;
       if (FD_ISSET(sock, &readfds)) {
-	unsigned int len = sizeof(struct sockaddr_in);
+	socklen_t len = sizeof(struct sockaddr_in);
 	AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
 	Client *c, *next;
@@ -563,11 +551,11 @@ static void *Worker(void *sockptr)
 	while (!done) {
 	  lock_client_list();
 	  for (c = ClientList, next = c ? c->next : 0;
-	       c && (c->reply_sock < 0 || !FD_ISSET(c->reply_sock, &readfds));
+	       c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
 	       c = next, next = c ? c->next : 0) ;
 	  unlock_client_list();
-	  if (c && c->reply_sock >= 0 && FD_ISSET(c->reply_sock, &readfds)) {
-	    int reply_sock = c->reply_sock;
+	  if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
+	    SOCKET reply_sock = c->reply_sock;
 	    last_client_addr = c->addr;
 	    DoMessage(c, &fdactive);
 	    FD_CLR(reply_sock, &readfds);
@@ -587,10 +575,10 @@ static void *Worker(void *sockptr)
   return (0);
 }
 
-int ServerBadSocket(int socket)
+int ServerBadSocket(SOCKET socket)
 {
   int status = 1;
-  if (socket >= 0) {
+  if (socket != INVALID_SOCKET) {
     int tablesize = FD_SETSIZE;
     fd_set fdactive;
     struct timeval timeout = { 0, 1000 };
@@ -746,7 +734,6 @@ static void RemoveClient(Client * c, fd_set * fdactive)
 {
   Job *j;
   int client_found = 0;
-  int found = 1;
   int conid = -1;
   lock_client_list();
   if (ClientList == c) {
@@ -763,7 +750,7 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   unlock_client_list();
   if (client_found) {
     conid = c->conid;
-    if (c->reply_sock >= 0) {
+    if (c->reply_sock != INVALID_SOCKET) {
       shutdown(c->reply_sock, 2);
       close(c->reply_sock);
       if (fdactive)
@@ -779,15 +766,14 @@ static void RemoveClient(Client * c, fd_set * fdactive)
     if (j->conid == conid)
       j->marked_for_delete = 1;
   unlock_job_list();
-  while (found) {
-    found = 0;
+  for(;;) {
     lock_job_list();
     for (j = Jobs; j && !j->marked_for_delete; j = j->next) ;
     unlock_job_list();
     if (j) {
-      found = 1;
-      DoCompletionAst(j->jobid, ServerPATH_DOWN, 0, 1);
+      DoCompletionAst(j->jobid, ServerPATH_DOWN, NULL, 1);
       RemoveJob(j);
+      return;
     }
   }
 }
@@ -819,7 +805,7 @@ static void AddClient(unsigned int addr, short port, int conid)
 {
   Client *c;
   Client *new = (Client *) malloc(sizeof(Client));
-  new->reply_sock = -1;
+  new->reply_sock = INVALID_SOCKET;
   new->conid = conid;
   new->addr = addr;
   new->port = port;
@@ -833,16 +819,16 @@ static void AddClient(unsigned int addr, short port, int conid)
   unlock_client_list();
 }
 
-static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
+static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
   unsigned int addr = *(unsigned int *)&sin->sin_addr;
   Client *c;
   lock_client_list();
-  for (c = ClientList; c && (c->addr != addr || c->reply_sock != -1); c = c->next) ;
+  for (c = ClientList; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;
   unlock_client_list();
   if (c) {
     c->reply_sock = reply_sock;
-    if (reply_sock >= 0)
+    if (reply_sock != INVALID_SOCKET)
       FD_SET(reply_sock, fdactive);
   } else {
     shutdown(reply_sock, 2);
@@ -850,52 +836,30 @@ static void AcceptClient(int reply_sock, struct sockaddr_in *sin, fd_set * fdact
   }
 }
 
-static int client_mutex_initialized = 0;
 static pthread_mutex_t client_mutex;
 
 static void lock_client_list()
 {
-
-  if (!client_mutex_initialized) {
-    client_mutex_initialized = 1;
-    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   pthread_mutex_lock(&client_mutex);
 }
 
 static void unlock_client_list()
 {
-
-  if (!client_mutex_initialized) {
-    client_mutex_initialized = 1;
-    pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   pthread_mutex_unlock(&client_mutex);
 }
 
-static int job_mutex_initialized = 0;
 static pthread_mutex_t job_mutex;
 
 static void lock_job_list()
 {
-
-  if (!job_mutex_initialized) {
-    job_mutex_initialized = 1;
-    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
   pthread_mutex_lock(&job_mutex);
 }
 
 static void unlock_job_list()
 {
-
-  if (!job_mutex_initialized) {
-    job_mutex_initialized = 1;
-    pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  }
-
+  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
   pthread_mutex_unlock(&job_mutex);
 }

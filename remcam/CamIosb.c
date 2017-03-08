@@ -4,7 +4,7 @@
 
 extern unsigned short RemCamLastIosb[4];
 
-EXPORT int CamVerbose(int flag)
+EXPORT int CamVerbose(int flag __attribute__ ((unused)))
 {
   return 1;
 }

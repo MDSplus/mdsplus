@@ -1,0 +1,10 @@
+
+leak:libMdsIpUDT
+leak:MdsShrGetThreadStatic
+leak:TreeGetThreadStatic
+leak:TdiThreadStatic
+leak:TRACE
+
+leak:*libpython*
+leak:*numpy*
+leak:python*/lib-dynload

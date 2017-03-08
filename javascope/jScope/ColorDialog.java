@@ -14,10 +14,10 @@ class ColorDialog
     extends JDialog
     implements ActionListener, ItemListener
 {
-    JList colorList;
-    DefaultListModel listModel = new DefaultListModel();
+    JList<String> colorList;
+    DefaultListModel<String> listModel = new DefaultListModel<>();
     JTextField colorName;
-    JComboBox color;
+    JComboBox<String> color;
     JSlider red, green, blue;
     JButton ok, reset, cancel, add, erase;
     jScopeFacade main_scope;
@@ -25,8 +25,8 @@ class ColorDialog
     Canvas color_test;
     int red_i, green_i, blue_i;
     boolean changed = false;
-    Vector color_set = new Vector();
-    Vector color_set_clone;
+    Vector<Item> color_set = new Vector<>();
+    Vector<Item> color_set_clone;
     Color color_vector[];
     String color_name[];
     int colorMapIndex[] = null;
@@ -92,9 +92,9 @@ class ColorDialog
         SetColorVector();
         GetColorsName();
 
-        color = new JComboBox();
-        for (int i = 0; i < color_name.length; i++)
-            color.addItem(color_name[i]);
+        color = new JComboBox<>();
+        for (String name : color_name)
+            color.addItem(name);
 
         color.addItemListener(this);
         gridbag.setConstraints(color, c);
@@ -109,7 +109,7 @@ class ColorDialog
 
         c.gridwidth = 2;
         c.gridheight = 5;
-        colorList = new JList(listModel);
+        colorList = new JList<>(listModel);
         JScrollPane scrollColorList = new JScrollPane(colorList);
         colorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         colorList.addListSelectionListener(
@@ -120,7 +120,7 @@ class ColorDialog
                 int color_idx = ( (JList) e.getSource()).getSelectedIndex();
                 if (color_idx >= 0 && color_idx < color_set.size())
                 {
-                    Item c_item = (Item) color_set.elementAt(color_idx);
+                    Item c_item = color_set.elementAt(color_idx);
                     ColorDialog.this.SetSliderToColor(c_item.color);
                     ColorDialog.this.colorName.setText(c_item.name);
                 }
@@ -143,12 +143,12 @@ class ColorDialog
         gridbag.setConstraints(label, c);
         getContentPane().add(label);
 
-        Hashtable labelTable = new Hashtable();
-        labelTable.put(new Integer(0), new JLabel("0"));
-        labelTable.put(new Integer(64), new JLabel("64"));
-        labelTable.put(new Integer(128), new JLabel("128"));
-        labelTable.put(new Integer(192), new JLabel("192"));
-        labelTable.put(new Integer(255), new JLabel("255"));
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put(0, new JLabel("0"));
+        labelTable.put(64, new JLabel("64"));
+        labelTable.put(128, new JLabel("128"));
+        labelTable.put(192, new JLabel("192"));
+        labelTable.put(255, new JLabel("255"));
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
@@ -266,9 +266,9 @@ class ColorDialog
         }
     }
 
-    private Vector CopyColorItemsVector(Vector in)
+    private Vector<Item> CopyColorItemsVector(Vector<Item> in)
     {
-        Vector out = new Vector(in.size());
+        Vector<Item> out = new Vector<>(in.size());
         for (int i = 0; i < in.size(); i++)
             out.addElement(new Item( ( (Item) in.elementAt(i)).name,
                                     ( (Item) in.elementAt(i)).color));
@@ -382,10 +382,7 @@ class ColorDialog
         {
             color_name = new String[color_set.size()];
             for (int i = 0; i < color_set.size(); i++)
-            {
-                color_name[i] = new String( ( (Item) color_set.elementAt(i)).
-                                           name);
-            }
+                color_name[i] = color_set.elementAt(i).name;
         }
         return color_name;
     }
@@ -536,11 +533,11 @@ class ColorDialog
     {
         int pos;
         String tmp = str.substring(str.indexOf("=") + 1, pos = str.indexOf(","));
-        int r = new Integer(tmp).intValue();
+        int r = Integer.parseInt(tmp);
         tmp = str.substring(pos + 3, pos = str.indexOf(",", pos + 1));
-        int g = new Integer(tmp).intValue();
+        int g = Integer.parseInt(tmp);
         tmp = str.substring(pos + 3, str.indexOf("]", pos + 1));
-        int b = new Integer(tmp).intValue();
+        int b = Integer.parseInt(tmp);
         int c = (r << 16 | g << 8 | b);
         return (new Color(c));
     }
@@ -549,7 +546,7 @@ class ColorDialog
     {
         String prop;
         int idx = 0;
-        Vector newColorMap = new Vector();
+        Vector<Integer> newColorMap = new Vector<>();
 	removeAllColorItems();
 
          //Syntax  Scope.color_x: <name>,java.awt.Color[r=xxx,g=xxx,b=xxx]

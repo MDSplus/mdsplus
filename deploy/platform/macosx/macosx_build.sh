@@ -2,7 +2,7 @@
 #
 # platform/macosx/macosx_build.sh
 #
-# Invoked by mdsplus/deploy/build.sh for macosx platforms.
+# Invoked by mdsplus/deploy/platform/platform_build.sh for windows platform.
 #
 #
 
@@ -65,7 +65,7 @@ EOF
     fi
     popd
 fi
-    
+
 if [ "$RELEASE" = "yes" ]
 then
     mkdir -p ${RELEASEDIR}/${BRANCH}
@@ -99,7 +99,7 @@ then
 	--title "MDSplus%(pkgflavor)s" \
 	--version "%(major)d.%(minor)d.%(release)d" \
 	--scripts ${SRCDIR}/macosx/scripts \
-	--install-to "/usr/local" \
+	--install-to "/" \
 	--target "10.5" \
 	-r ${WORKSPACE}/releasebld/buildroot -v -i "MDSplus${BNAME}" \
 	-o ${RELEASEDIR}/${BRANCH}/MDSplus${BNAME}-${VERS[0]}-${VERS[1]}-${VERS[2]}-osx.pkg

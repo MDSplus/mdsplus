@@ -38,9 +38,12 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 #include <config.h>
 #include <strroutines.h>
 
-EXPORT char *ServerFindServers(void **ctx, char *wild_match)
-{
-#ifndef _WIN32
+#ifdef _WIN32
+EXPORT char *ServerFindServers(void **ctx __attribute__ ((unused)), char *wild_match __attribute__ ((unused))){
+  return 0;
+}
+#else
+EXPORT char *ServerFindServers(void **ctx, char *wild_match){
   char *ans = 0;
   DIR *dir = (DIR *) * ctx;
   if (dir == 0) {
@@ -76,7 +79,5 @@ EXPORT char *ServerFindServers(void **ctx, char *wild_match)
     }
   }
   return ans;
-#else
-  return 0;
-#endif
 }
+#endif

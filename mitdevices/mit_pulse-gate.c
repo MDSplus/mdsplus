@@ -16,22 +16,22 @@ extern int mit_pulse___get_setup(Dptr, InGet_setupStruct *);
 extern int mit_decoder__get_event(int *, EventMask *);
 extern int GenDeviceFree();
 
-static int GetSetup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+static int GetSetup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
 		    Dptr * output, int gate);
 
-EXPORT int mit_pulse__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+EXPORT int mit_pulse__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
 			 Dptr * output)
 {
   return GetSetup(niddsc_ptr, method, setup, event_mask, output, 0);
 }
 
-EXPORT int mit_gate__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+EXPORT int mit_gate__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
 			Dptr * output)
 {
   return GetSetup(niddsc_ptr, method, setup, event_mask, output, 1);
 }
 
-static int GetSetup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+static int GetSetup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
 		    Dptr * output, int gate)
 {
   int status;

@@ -71,6 +71,9 @@ int get_file_count(int dbType)
     FileIsMapped = &CRATEdbFileIsMapped;
     sprintf(dbFileName, "%s", CRATE_DB_FILE);
     break;
+
+  default:
+    return 0;
   }
 
   if (MSGLVL(FUNCTION_NAME))

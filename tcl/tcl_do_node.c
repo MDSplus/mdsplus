@@ -22,26 +22,25 @@ extern int TdiDoTask();
 	/***************************************************************
 	 * TclDoNode:
 	 ***************************************************************/
-EXPORT int TclDoNode(void *ctx, char **error, char **output)
+EXPORT int TclDoNode(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  int sts;
-  char *nodnam = 0;
-  static int retstatus;
-  static int nid;
-  static DESCRIPTOR_NID(niddsc, &nid);
-  static DESCRIPTOR_LONG(retstatus_d, &retstatus);
-
+  INIT_STATUS, retstatus;
+  char *nodnam = NULL;
+  int nid;
+  DESCRIPTOR_NID(niddsc, &nid);
+  DESCRIPTOR_LONG(retstatus_d, &retstatus);
   cli_get_value(ctx, "NODE", &nodnam);
-  if ((sts = TreeFindNode(nodnam, &nid)) & 1) {
-    sts = TdiDoTask(&niddsc, &retstatus_d MDS_END_ARG);
-    if (sts & 1)
-      sts = retstatus;
+  status = TreeFindNode(nodnam, &nid);
+  if STATUS_OK {
+    status = TdiDoTask(&niddsc, &retstatus_d MDS_END_ARG);
+    if STATUS_OK
+      status = retstatus;
   }
-  if (~sts & 1) {
-    char *msg = MdsGetMsg(sts);
+  if STATUS_NOT_OK {
+    char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + strlen(nodnam) + 100);
     sprintf(*error, "Error: problem doing node %s\n" "Error message was: %s\n", nodnam, msg);
   }
   free(nodnam);
-  return sts;
+  return status;
 }

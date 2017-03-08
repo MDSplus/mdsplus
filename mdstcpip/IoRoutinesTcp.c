@@ -9,42 +9,43 @@
 #include <config.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+ #include <unistd.h>
 #endif
 #ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
+ #include <sys/filio.h>
 #endif
 #ifdef _WIN32
-#define ioctl ioctlsocket
-#define FIONREAD_TYPE u_long
-typedef int socklen_t;
-#define snprintf _snprintf
-#define MSG_DONTWAIT 0
-#include <io.h>
-#define close closesocket
-#include <process.h>
-#define getpid _getpid
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
+ #define ioctl ioctlsocket
+ #define FIONREAD_TYPE u_long
+ typedef int socklen_t;
+ #define snprintf _snprintf
+ #define MSG_DONTWAIT 0
+ #include <io.h>
+ #define close closesocket
+ #include <process.h>
+ #define getpid _getpid
+ #ifdef HAVE_PTHREAD_H
+  #include <pthread.h>
+ #else
+  extern int pthread_mutex_init();
+  extern int pthread_mutex_lock();
+  extern int pthread_mutex_unlock();
+ #endif
 #else
-extern int pthread_mutex_init();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
-#endif
-#else
-#define FIONREAD_TYPE int
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <sys/ioctl.h>
-#include <sys/wait.h>
+ #define INVALID_SOCKET -1
+ #define FIONREAD_TYPE int
+ #include <sys/socket.h>
+ #include <netdb.h>
+ #include <netinet/in.h>
+ #include <netinet/tcp.h>
+ #include <arpa/inet.h>
+ #include <sys/ioctl.h>
+ #include <sys/wait.h>
 #endif
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
 #ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
+ #define MSG_NOSIGNAL 0
 #endif
 static ssize_t tcp_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t tcp_recv(int conid, void *buffer, size_t len);
@@ -58,6 +59,13 @@ static IoRoutines tcp_routines =
 { tcp_connect, tcp_send, tcp_recv, tcp_flush, tcp_listen, tcp_authorize, tcp_reuseCheck,
   tcp_disconnect
 };
+
+typedef struct _IoRoutineTcpInfo {
+    int rcvbuf; /// < SO_RCVBUF
+    int sndbuf; /// < SO_SNDBUF
+    int reuse;  /// < reuse address
+} IoRoutineTcpInfo;
+
 
 /// Connected client definition for client list
 typedef struct _client {
@@ -82,7 +90,7 @@ static fd_set fdactive;
 
 /// List of active sockets
 typedef struct _socket_list {
-  int socket;
+  SOCKET socket;
   struct _socket_list *next;
 } Socket;
 
@@ -138,7 +146,7 @@ static void unlock_socket_list()
   pthread_mutex_unlock(&socket_mutex);
 }
 
-static void PushSocket(int socket)
+static void PushSocket(SOCKET socket)
 {
   Socket *oldhead;
   lock_socket_list();
@@ -149,7 +157,7 @@ static void PushSocket(int socket)
   unlock_socket_list();
 }
 
-static void PopSocket(int socket)
+static void PopSocket(SOCKET socket)
 {
   Socket *p, *s;
   lock_socket_list();
@@ -173,7 +181,7 @@ static void PopSocket(int socket)
 
 static int tcp_authorize(int conid, char *username)
 {
-  int s = getSocket(conid);
+  SOCKET s = getSocket(conid);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   struct sockaddr_in sin;
@@ -187,10 +195,10 @@ static int tcp_authorize(int conid, char *username)
     timestr[strlen(timestr) - 1] = 0;
     hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
     if (hp && hp->h_name)
-      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr, s, getpid(),
+      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr, (int)s, getpid(),
 	     username, hp->h_name, iphost);
     else
-      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, s, getpid(), username,
+      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, (int)s, getpid(), username,
 	     iphost);
     matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
     strcat(matchString[0], "@");
@@ -219,12 +227,11 @@ static int tcp_authorize(int conid, char *username)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait)
-{
-  int s = getSocket(conid);
+static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait){
+  SOCKET s = getSocket(conid);
   int options = nowait ? MSG_DONTWAIT : 0;
   ssize_t sent = -1;
-  if (s != -1) {
+  if (s != INVALID_SOCKET) {
       sent = send(s, bptr, num, options | MSG_NOSIGNAL);
     }
   return sent;
@@ -235,8 +242,7 @@ static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static void ABORT(int sigval)
-{
+static void ABORT(int sigval __attribute__ ((unused))){
   Socket *s;
   lock_socket_list();
   for (s = SocketList; s; s = s->next) {
@@ -245,11 +251,10 @@ static void ABORT(int sigval)
   unlock_socket_list();
 }
 
-static ssize_t tcp_recv(int conid, void *bptr, size_t num)
-{
-  int s = getSocket(conid);
+static ssize_t tcp_recv(int conid, void *bptr, size_t num){
+  SOCKET s = getSocket(conid);
   ssize_t recved = -1;
-  if (s != -1) {
+  if (s != INVALID_SOCKET) {
       struct sockaddr sin;
       socklen_t n = sizeof(sin);
       PushSocket(s);
@@ -269,16 +274,15 @@ static ssize_t tcp_recv(int conid, void *bptr, size_t num)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static int tcp_disconnect(int conid)
-{
-  int s = getSocket(conid);
+static int tcp_disconnect(int conid){
+  SOCKET s = getSocket(conid);
   int status = 0;
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   struct sockaddr_in sin;
   socklen_t n = sizeof(sin);
   struct hostent *hp = 0;
-  if (s != -1) {
+  if (s != INVALID_SOCKET) {
     Client *c, **p;
     for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
     if (c) {
@@ -290,10 +294,10 @@ static int tcp_disconnect(int conid)
 	  timestr[strlen(timestr) - 1] = 0;
 	  hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
 	  if (hp)
-	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, s,
+	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, (int)s,
 		   getpid(), c->username, hp->h_name, iphost);
 	  else
-	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, s, getpid(),
+	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, (int)s, getpid(),
 		   c->username, iphost);
 	}
       }
@@ -316,10 +320,9 @@ static int tcp_disconnect(int conid)
 ///
 /// Flush pending TCP packets
 ///
-static int tcp_flush(int conid)
-{
-  int sock = getSocket(conid);
-  if (sock != -1) {
+static int tcp_flush(int conid){
+  SOCKET sock = getSocket(conid);
+  if (sock != INVALID_SOCKET) {
 #if !defined(__sparc__)
       struct timeval timout = { 0, 1 };
       int status;
@@ -337,8 +340,8 @@ static int tcp_flush(int conid)
           if (FD_ISSET(sock, &readfds)) {
               status = ioctl(sock, FIONREAD, &nbytes);
               if (nbytes > 0 && status != -1) {
-                  nbytes =
-                      recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
+		nbytes =
+		  recv(sock, buffer, sizeof(buffer) > (size_t)nbytes ? nbytes : (FIONREAD_TYPE)sizeof(buffer), MSG_NOSIGNAL);
                   if (nbytes > 0)
                     tries = 0;
                 }
@@ -355,43 +358,25 @@ static int tcp_flush(int conid)
 
 
 ///
-/// set socket options on the socket s for TCP protocol. This sets the receive 
-/// buffer, the send buffer, the SO_OOBINLINE, the SO_KEEPALIVE and TCP_NODELAY 
+/// set socket options on the socket s for TCP protocol. This sets the receive
+/// buffer, the send buffer, the SO_OOBINLINE, the SO_KEEPALIVE and TCP_NODELAY
 /// .. at the moment
-/// 
+///
 /// \param s socket to set options to
 /// \param reuse set SO_REUSEADDR to be able to reuse the same address.
 ///
-static void SetSocketOptions(SOCKET s, int reuse)
-{
-//  fprintf(stderr,"Set socket OPTIONS on socket: %i //// \n",s);
-  
-  STATIC_CONSTANT int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
+static void SetSocketOptions(SOCKET s, int reuse){
+  int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
   int one = 1;
-  socklen_t len;
-  static int debug_winsize = 0;
-  static int init = 1;
-  if (init) {
-      char *winsize = getenv("TCP_WINDOW_SIZE");
-      if (winsize) {
-          sendbuf = atoi(winsize);
-          recvbuf = atoi(winsize);
-        }
-      debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
-      init = 0;
-    }
 #ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
 #endif
-  setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
-  setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
-  if (debug_winsize) {
-      getsockopt(s, SOL_SOCKET, SO_RCVBUF, (void *)&recvbuf, &len);
-      fprintf(stderr, "Got a recvbuf of %d\n", recvbuf);
-      getsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *)&sendbuf, &len);
-      fprintf(stderr, "Got a sendbuf of %d\n", sendbuf);
-      fprintf(stderr, "Compression level: %d\n", GetCompressionLevel() );
-    }
+  const char * tcp_window_size = getenv("TCP_WINDOW_SIZE");
+  if(tcp_window_size && strlen(tcp_window_size)) {
+      recvbuf = sendbuf = atoi(tcp_window_size);
+      setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
+      setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
+  }
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
   setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *)&one, sizeof(one));
   if (reuse)
@@ -401,8 +386,7 @@ static void SetSocketOptions(SOCKET s, int reuse)
 
 
 
-static short GetPort(char *name)
-{
+static short GetPort(char *name){
   short port;
   struct servent *sp;
   port = htons((short)atoi(name));
@@ -417,8 +401,7 @@ static short GetPort(char *name)
   return port;
 }
 
-static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
-{
+static int getHostAndPort(char *hostin, struct sockaddr_in *sin){
   struct hostent *hp = NULL;
   int addr;
   size_t i;
@@ -437,7 +420,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
   hp = gethostbyname(host);
   if (hp == NULL) {
       addr = inet_addr(host);
-      if (addr != 0xffffffff)
+      if (addr != -1)
         hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
     }
   if (hp == 0) {
@@ -477,8 +460,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static int tcp_reuseCheck(char *host, char *unique, size_t buflen)
-{
+static int tcp_reuseCheck(char *host, char *unique, size_t buflen){
   struct sockaddr_in sin;
   int status = getHostAndPort(host, &sin);
   if (status == 1) {
@@ -498,21 +480,20 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-static int tcp_connect(int conid, char *protocol, char *host)
-{
+static int tcp_connect(int conid, char *protocol __attribute__ ((unused)), char *host){
   struct sockaddr_in sin;
-  int s;
+  SOCKET s;
   int status = getHostAndPort(host, &sin);
   if (status == 1) {
-      struct timeval connectTimer = { 0, 0 };
       InitializeSockets();
       s = socket(AF_INET, SOCK_STREAM, 0);
-      if (s == -1) {
+      if (s == INVALID_SOCKET) {
           perror("Error creating socket");
           return -1;
         }
-      connectTimer.tv_sec = GetMdsConnectTimeout();
 #ifndef _WIN32
+      struct timeval connectTimer = { 0, 0 };
+      connectTimer.tv_sec = GetMdsConnectTimeout();
       if (connectTimer.tv_sec) {
           status = fcntl(s, F_SETFL, O_NONBLOCK);
           status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
@@ -542,17 +523,16 @@ static int tcp_connect(int conid, char *protocol, char *host)
         status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
       if (status == -1) {
           shutdown(s, 2);
-          s = -1;
+          s = INVALID_SOCKET;
         }
-      if (s == -1) {
+      if (s == INVALID_SOCKET) {
           perror("Error in connect to service\n");
           fflush(stderr);
           return -1;
         }
       SetSocketOptions(s, 0);
-      SetConnectionInfo(conid, "tcp", s, 0, 0);                
+      SetConnectionInfo(conid, "tcp", s, 0, 0);
       return 0;
-      
     } else if (status == 0) {
       fprintf(stderr, "Connect failed, unknown host\n");
       fflush(stderr);
@@ -574,8 +554,7 @@ static int tcp_connect(int conid, char *protocol, char *host)
 
 
 #ifdef _WIN32
-VOID CALLBACK ShutdownEvent(PVOID arg, BOOLEAN fired)
-{
+VOID CALLBACK ShutdownEvent(PVOID arg __attribute__ ((unused)), BOOLEAN fired __attribute__ ((unused))){
   fprintf(stderr, "Service shut down\n");
   exit(0);
 }
@@ -587,10 +566,10 @@ static int getSocketHandle(char *name)
   char *logfile = malloc(strlen(logdir)+strlen(portnam)+50);
   HANDLE h;
   int ppid;
-  int psock;
+  SOCKET psock;
   char shutdownEventName[120];
   HANDLE shutdownEvent, waitHandle;
-  if (name == 0 || sscanf(name, "%d:%d", &ppid, &psock) != 2) {
+  if (name == 0 || sscanf(name, "%d:%d", &ppid, (int*)&psock) != 2) {
     fprintf(stderr, "Mdsip single connection server can only be started from windows service\n");
     exit(1);
   }
@@ -602,18 +581,18 @@ static int getSocketHandle(char *name)
   if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS, TRUE, ppid),
                        (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
                        PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
-      fprintf(stderr, "Attempting to duplicate socket from pid %d socket %d\n", ppid, psock);
+      fprintf(stderr, "Attempting to duplicate socket from pid %d socket %d\n", ppid, (int)psock);
       perror("Error duplicating socket from parent");
       exit(1);
     }
   sprintf(shutdownEventName, "MDSIP_%s_SHUTDOWN", GetPortname());
-  shutdownEvent = CreateEvent(NULL, FALSE, FALSE, (LPCWSTR) shutdownEventName);
+  shutdownEvent = CreateEvent(NULL, FALSE, FALSE, (LPCTSTR) shutdownEventName);
   if (!RegisterWaitForSingleObject(&waitHandle, shutdownEvent, ShutdownEvent, NULL, INFINITE, 0))
     perror("Error registering for shutdown event");
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;
@@ -653,12 +632,11 @@ static int tcp_listen(int argc, char **argv)
   else if (GetPortname() == 0)
     SetPortname("mdsip");
   InitializeSockets();
-  
+
   if (GetMulti()) {
       //////////////////////////////////////////////////////////////////////////
       // MULTIPLE CONNECTION MODE              /////////////////////////////////
       // multiple connections with own context /////////////////////////////////
-      
       unsigned short port = GetPort(GetPortname());
       char *matchString[] = { "multi" };
       int s;
@@ -695,10 +673,10 @@ static int tcp_listen(int argc, char **argv)
           printf("Error from listen\n");
           exit(1);
         }
-      
+
       // LISTEN LOOP ///////////////////////////////////////////////////////////
       while (1) {
-          readfds = fdactive;                    
+          readfds = fdactive;
           // SELECT select read ready from socket list //
           if (select(tablesize, &readfds, 0, 0, 0) != -1) {
               error_count = 0;
@@ -770,12 +748,11 @@ static int tcp_listen(int argc, char **argv)
                 }
             }
         }				// end LISTEN LOOP //
-      
     } else {
       //////////////////////////////////////////////////////////////////////////
       // SERVER MODE                                ////////////////////////////
       // multiple connections with the same context ////////////////////////////
-      
+
 #ifdef _WIN32
       int sock = getSocketHandle(options[1].value);
 #else
@@ -783,8 +760,7 @@ static int tcp_listen(int argc, char **argv)
 #endif
       int id;			// set by AcceptConnection
       char *username;		// set by AcceptConnection
-      int status;      
-      status = AcceptConnection("tcp", "tcp", sock, 0, 0, &id, &username);
+      int status = AcceptConnection("tcp", "tcp", sock, 0, 0, &id, &username);
       if (status & 1) {
           struct sockaddr_in sin;
           socklen_t n = sizeof(sin);

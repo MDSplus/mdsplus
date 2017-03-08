@@ -34,12 +34,10 @@ static void CompressString(struct descriptor *in, int upcase)
 }
 
 #ifdef _WIN32
-static int BecomeUser(char *remuser, struct descriptor *local_user)
-{
+static int BecomeUser(char *remuser __attribute__ ((unused)), struct descriptor *local_user __attribute__ ((unused))){
   return 1;
 }
 #else
-
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok = 1;
@@ -58,7 +56,7 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
     }
     pwd = user ? getpwnam(user) : 0;
     if (!pwd && remuser == user) {
-      int i;
+      size_t i;
       for (i = 0; i < strlen(user); i++)
 	user[i] = tolower(user[i]);
       pwd = getpwnam(user);

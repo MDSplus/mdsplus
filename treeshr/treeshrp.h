@@ -240,7 +240,8 @@ PACK_START
 } NODE;
 
 #ifdef EMPTY_NODE
-static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} };
+static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} ,
+			   0, 0, 0, 0, 0, 0, 0, 0};
 #endif
 
 static inline int node_offset(NODE * a, NODE * b)
@@ -720,6 +721,7 @@ int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const c
 		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern void _TreeDeleteNodesWrite(void *dbid);
+extern void _TreeDeleteNodesDiscard(void *dbid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);

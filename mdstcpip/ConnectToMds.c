@@ -2,11 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <status.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef _WIN32
+ #include <winsock2.h>
+#else
+ #include <pwd.h>
+ #define INVALID_SOCKET -1
+#endif
+
+
 #ifndef _WIN32
-#include <pwd.h>
 #endif
 
 #include "mdsip_connections.h"
@@ -43,69 +51,72 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 
 ///
 /// Execute login inside server using given connection
-/// 
+///
 /// \param id of connection (on client) to be used
 /// \return status o login into server 1 if success, -1 if not authorized or error
 /// occurred
 ///
 static int DoLogin(int id)
 {
-  int status;
+  INIT_STATUS;
   Message *m;
+  char *user_p;
 #ifdef _WIN32
-  static char user[128];
-  int bsize = 128;
+  char user[128];
+  DWORD bsize = 128;
 #ifdef _NI_RT_
-  char *user_p = "Windows User";
+  user_p = "Windows User";
 #else
-  char *user_p = GetUserName(user, &bsize) ? user : "Windows User";
+  user_p = GetUserName(user, &bsize) ? user : "Windows User";
 #endif
 #elif __MWERKS__
-  static char user[128];
-  int bsize = 128;
-  char *user_p = "Macintosh User";
-#elif __APPLE__
-  char *user_p;
-  struct passwd *pwd;
-  pwd = getpwuid(geteuid());
-  user_p = pwd->pw_name;
+  user_p = "Macintosh User";
 #else
-  char *user_p;
-  struct passwd *passStruct = getpwuid(geteuid());
-  if (!passStruct) {
-    /* 
+#define BUFSIZE 256
+  char buf[BUFSIZE];
+  struct passwd pwd = {0};
+  struct passwd *pwd_p = &pwd;
+  getpwuid_r(geteuid(),&pwd,buf,BUFSIZE,&pwd_p);
+  if (!pwd_p) {
+#ifdef __APPLE__
+    user_p = "Apple User";
+#else
+    /*
      *  On some RHEL6/64 systems 32 bit
      *  calls to getpwuid return 0
      *  temporary fix to call getlogin()
      *  in that case.
      */
-    user_p = getlogin();
-    if (!user_p)
-      user_p = "Linux";
-  } else
-    user_p = passStruct->pw_name;
+    getlogin_r(buf,BUFSIZE);
+    if (strlen(buf)>0)
+      user_p = buf;
+    else
+      user_p = "Linux User";
 #endif
-  m = malloc(sizeof(MsgHdr) + strlen(user_p));
-  memset(m, 0, sizeof(MsgHdr) + strlen(user_p));
+  } else
+    user_p = pwd_p->pw_name;
+#endif
+  unsigned int length = strlen(user_p);
+  m = calloc(1, sizeof(MsgHdr) + length);
   m->h.client_type = SENDCAPABILITIES;
-  m->h.length = (short)strlen(user_p);
-  m->h.msglen = sizeof(MsgHdr) + m->h.length;
+  m->h.length = (short)length;
+  m->h.msglen = sizeof(MsgHdr) + length;
   m->h.dtype = DTYPE_CSTRING;
   m->h.status = GetConnectionCompression(id);
   m->h.ndims = 0;
-  memcpy(m->bytes, user_p, m->h.length);
+  memcpy(m->bytes, user_p, length);
   status = SendMdsMsg(id, m, 0);
   free(m);
-  if (status & 1) {
+  if STATUS_OK {
     m = GetMdsMsg(id, &status);
-    if (m == 0 || !(status & 1)) {
+    if (m == 0 || STATUS_NOT_OK) {
       printf("Error in connect\n");
-      return -1;
+      return MDSplusERROR;
     } else {
-      if (!(m->h.status & 1)) {
+      if IS_NOT_OK(m->h.status) {
 	printf("Error in connect: Access denied\n");
 	free(m);
-	return -1;
+	return MDSplusERROR;
       }
       // SET CLIENT COMPRESSION FROM SERVER //
       SetConnectionCompression(id, (m->h.status & 0x1e) >> 1);
@@ -114,10 +125,11 @@ static int DoLogin(int id)
       free(m);
   } else {
     perror("Error connecting to server");
-    return -1;
+    return MDSplusERROR;
   }
   return status;
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,10 +138,10 @@ static int DoLogin(int id)
 
 ///
 /// Trigger reuse check funcion for IoRoutines on host.
-/// 
+///
 int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
-  int status;
+  int ok = -1;
   char *host = 0;
   char *protocol = 0;
   IoRoutines *io;
@@ -137,23 +149,19 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
   io = LoadIo(protocol);
   if (io) {
     if (io->reuseCheck)
-      status = io->reuseCheck(host, unique, buflen);
+      ok = io->reuseCheck(host, unique, buflen);
     else {
       strncpy(unique, hostin, buflen);
-      status = 0;
+      ok = 0;
     }
-  } else {
+  } else
     memset(unique, 0, buflen);
-    status = -1;
-  }
   if (protocol)
     free(protocol);
   if (host)
     free(host);
-  return status;
+  return ok;
 }
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////

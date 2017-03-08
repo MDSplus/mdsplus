@@ -103,7 +103,7 @@ int main(int argc, String * argv)
   return status;
 }
 
-static void Modify(Widget w, XtPointer tag, XmListCallbackStruct * cb)
+static void Modify(Widget w, XtPointer tag __attribute__ ((unused)), XmListCallbackStruct * cb)
 {
   int i;
   Widget xdbox = XtNameToWidget(XtParent(XtParent(w)), "*modify_xdbox");
@@ -114,7 +114,7 @@ static void Modify(Widget w, XtPointer tag, XmListCallbackStruct * cb)
   }
 }
 
-static void ToggleEssential(Widget w, XtPointer tag, XmListCallbackStruct * cb)
+static void ToggleEssential(Widget w, XtPointer tag __attribute__ ((unused)), XmListCallbackStruct * cb)
 {
   int i;
   for (i = 0; i < num_actions && actions[i].item_idx != cb->item_position; i++) ;
@@ -307,8 +307,8 @@ static int Refresh()
 
 static int CompareActions(Info * a, Info * b)
 {
-  return a->included == b->included ? (a->on == b->on ? (a->phase == b->phase ? a->idx - b->idx
-							 : a->phase - b->phase)
-				       : b->on - a->on)
-      : b->included - a->included;
+  return (a->included == b->included) ? ((a->on == b->on) ? ((a->phase == b->phase) ? (int)a->idx - (int)b->idx
+							     : (int)a->phase - (int)b->phase)
+					 : (int)b->on - (int)a->on)
+    : (int)b->included - (int)a->included;
 }

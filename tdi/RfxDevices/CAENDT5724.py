@@ -342,7 +342,6 @@ class CAENDT5724(Device):
 ################################# INIT ###############################
     def init(self):
       global caenLib
- 
       if self.restoreInfo() == 0 : 
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open DT5724 Device' )
         return 0
@@ -450,7 +449,7 @@ class CAENDT5724(Device):
         status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x108C + chan * 0x100), byref(firmware), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         print "firmware  AMC FPGA Addr ", hex(vmeAddress + 0x108C + chan * 0x100), hex((firmware.value >> 16) & 0x0000ffff), " Version ", hex((firmware.value >> 8) & 0x000000ff), ".", hex((firmware.value ) & 0x000000ff)
         """
-        
+
         dac_offset = getattr(self, 'channel_%d_dac_offset'%(chan+1)).data()
 
 	#Channel offset compensation
@@ -826,5 +825,3 @@ class CAENDT5724(Device):
 
       return 1
 
-
-      

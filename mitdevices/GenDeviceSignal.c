@@ -21,7 +21,7 @@
 
 extern int GenDeviceCallData();
 
-EXPORT int GenDeviceSignal(int head_nid, unsigned int status_id_1, unsigned int status_id_2)
+EXPORT int GenDeviceSignal(int head_nid, unsigned int status_id_1 __attribute__ ((unused)), unsigned int status_id_2)
 {
   char *pathname = 0;
   pathname = TreeGetPath(head_nid);

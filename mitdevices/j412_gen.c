@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "j412_gen.h"
-EXPORT int j412__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int j412__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "J412");
@@ -60,7 +60,7 @@ EXPORT int j412__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int j412__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int j412__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		    struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -99,7 +99,7 @@ extern int j412___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int j412__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int j412__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[2];

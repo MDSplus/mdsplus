@@ -37,7 +37,7 @@ extern int DevLong();
 //extern unsigned short OpcMultiply;
 //extern unsigned short OpcValue;
 
-EXPORT int incaa16___arm(struct descriptor *niddsc, InArmStruct * setup)
+EXPORT int incaa16___arm(struct descriptor *niddsc __attribute__ ((unused)), InArmStruct * setup)
 {
   int status;
   float freq;
@@ -70,21 +70,21 @@ EXPORT int incaa16___arm(struct descriptor *niddsc, InArmStruct * setup)
   return status;
 }
 
-EXPORT int incaa16___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int incaa16___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = incaa16___arm(niddsc, (InArmStruct *) setup);
   pio(25, 0, 0);
   return status;
 }
 
-EXPORT int incaa16___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int incaa16___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0);
   return status;
 }
 
-EXPORT int incaa16___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int incaa16___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)

@@ -32,7 +32,7 @@ return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&data,16,0),&one,0),sta
 return_on_error(DevCamChk(CamPiow(setup->name,addr,fcode,&data,16,0),&one,0),status);}
 #endif
 
-int mit_decoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+int mit_decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   //static struct descriptor_xd xd = { 0, DTYPE_T, CLASS_XD, 0, 0 };
@@ -45,7 +45,7 @@ int mit_decoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   int event_bit;
   int event_ind;
   DecoderSetup regs[5];
-  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0 };	/* always low, start low */
+  static DecoderSetup channelOffRegs = { 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low */
   unsigned short cam_data;
   pio(2, 24, 0, "Disable Lam and code recognizer ");	/* Disable Lam and code recognizer */
   pio(0, 16, 0xFFEF, "Enable 16 bit buses ");	/* Enable 16 bit buses */

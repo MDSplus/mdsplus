@@ -1022,7 +1022,7 @@ static void mdsdclSetupCommands(xmlDocPtr doc)
 
 EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 {
-  int i;
+  size_t i;
   char *name = 0;
   char *commands;
   char *commands_part;
@@ -1343,7 +1343,8 @@ EXPORT int cli_get_value(void *ctx, const char *name, char **value)
   return ans;
 }
 
-int mdsdcl_get_input_nosymbols(char *prompt, char **input)
+int mdsdcl_get_input_nosymbols(char *prompt __attribute__ ((unused)),
+			       char **input __attribute__ ((unused)))
 {
   return 1;
 }

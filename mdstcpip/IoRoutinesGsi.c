@@ -17,6 +17,9 @@
 #ifdef _GNU_SOURCE
 #undef _GNU_SOURCE
 #endif
+#ifdef SIZEOF_LONG
+#undef SIZEOF_LONG
+#endif
 
 #include <STATICdef.h>
 #include <signal.h>
@@ -181,7 +184,7 @@ static int gsi_authorize(int conid, char *username)
   return ans;
 }
 
-static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options)
+static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options __attribute__ ((unused)))
 {
   globus_size_t nbytes;
   globus_result_t result;
@@ -249,7 +252,7 @@ static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
   return ans;
 }
 
-static int gsi_connect(int conid, char *protocol, char *host_in)
+static int gsi_connect(int conid, char *protocol __attribute__ ((unused)), char *host_in)
 {
   static int activated = 0;
   static globus_xio_stack_t stack_gsi;
@@ -306,12 +309,12 @@ static int gsi_connect(int conid, char *protocol, char *host_in)
   return 0;
 }
 
-static void readCallback(globus_xio_handle_t xio_handle,
-			 globus_result_t result,
-			 globus_byte_t * buffer,
-			 globus_size_t len,
-			 globus_size_t nbytes,
-			 globus_xio_data_descriptor_t data_desc, void *userarg)
+static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused)),
+			 globus_result_t result __attribute__ ((unused)),
+			 globus_byte_t * buffer __attribute__ ((unused)),
+			 globus_size_t len __attribute__ ((unused)),
+			 globus_size_t nbytes __attribute__ ((unused)),
+			 globus_xio_data_descriptor_t data_desc __attribute__ ((unused)), void *userarg)
 {
   int id = userarg ? *(int *)userarg : -1;
   if (id > 0) {
@@ -327,7 +330,7 @@ static void readCallback(globus_xio_handle_t xio_handle,
 }
 
 static void acceptCallback(globus_xio_server_t server,
-			   globus_xio_handle_t xio_handle, globus_result_t result, void *userarg)
+			   globus_xio_handle_t xio_handle, globus_result_t result __attribute__ ((unused)), void *userarg)
 {
   globus_result_t res;
   char *username;

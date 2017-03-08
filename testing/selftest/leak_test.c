@@ -1,12 +1,15 @@
 
 #include <stdlib.h>
+
+#include "config.h"
 #include "testing.h"
 
-
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    BEGIN_TESTING(leak test);
+    if(!getenv("VALGRIND_TOOL") || strcmp("memcheck",getenv("VALGRIND_TOOL")))
+        SKIP_TEST("This test is supposed to run with valgrind memcheck");
 
+    BEGIN_TESTING(leak test);
     volatile int undef;
     if(undef) {
         printf(".");
@@ -14,7 +17,6 @@ int main(int argc, char *argv[])
     else {
         printf(",");
     }
-
     TEST1(1);    
     END_TESTING
 }

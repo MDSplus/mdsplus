@@ -230,14 +230,6 @@ public class WaveformMetrics
             return ris;
     }
 
-    private IndexColorModel getColorModel()
-    {
-        byte rgb[] = new byte[256], b = 0;
-        for (int i = 0; i < 256; i++, b++)
-            rgb[i] = b;
-        return new IndexColorModel(8, 256, rgb, rgb, rgb);
-    }
-
     private void drawRectagle(Graphics g, IndexColorModel cm, int x, int y, int w, int h, int cIdx)
     {
         g.setColor(new Color(cm.getRed(cIdx), cm.getGreen(cIdx),

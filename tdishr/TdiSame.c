@@ -11,6 +11,7 @@
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
+#include <status.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -31,7 +32,7 @@ extern int TdiFaultHandler();
 
 int Tdi1Same(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_xd sig[3], uni[3], dat[3];
   struct TdiCatStruct cats[4];
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -52,19 +53,19 @@ int Tdi1Same(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	/******************************************
         Adjust category needed to match data types.
         ******************************************/
-  if (status & 1)
+  if STATUS_OK
     status = (*fun_ptr->f2) (narg, uni, dat, cats, &routine, fun_ptr->o1, fun_ptr->o2);
 
 	/******************************
         Do the needed type conversions.
         ******************************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 
 	/******************
         Find correct shape.
         ******************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiGetShape(narg, dat, cats[narg].digits, cats[narg].out_dtype, &cmode, out_ptr);
 
 	/********************************
@@ -72,7 +73,7 @@ int Tdi1Same(int opcode, int narg, struct descriptor *list[], struct descriptor_
         No action for simple conversions.
         Default is for MIN/MAX pairwise.
         ********************************/
-  if (status & 1) {
+  if STATUS_OK {
     if (routine == &Tdi3undef || routine == 0) {
       MdsFree1Dx(out_ptr, NULL);
       *out_ptr = dat[0];
@@ -95,7 +96,7 @@ int Tdi1Same(int opcode, int narg, struct descriptor *list[], struct descriptor_
     /********************
       Embed data in signal.
      ********************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
 
 	/********************

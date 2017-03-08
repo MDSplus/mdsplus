@@ -1,8 +1,0 @@
-./
-./usr/
-./usr/local/
-./usr/local/mdsplus/
-./usr/local/mdsplus/lib/
-./usr/local/mdsplus/lib/libIdlMdsEvent.so
-./usr/local/mdsplus/lib/libIdlMdsWidgets.so
-./usr/local/mdsplus/lib/libMdsLibIdl.so

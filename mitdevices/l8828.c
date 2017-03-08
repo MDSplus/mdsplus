@@ -33,7 +33,7 @@ typedef struct {
   unsigned user:1;
 } L8828Control;
 
-EXPORT int l8828___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l8828___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   L8828Control ctrl;
   //float freq;
@@ -51,14 +51,14 @@ EXPORT int l8828___init(struct descriptor *niddsc, InInitStruct * setup)
       return status;
 }
 
-EXPORT int l8828___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int l8828___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0)
       return status;
 }
 
-EXPORT int l8828___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8828___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 
 #define min(a,b) ((a) <= (b)) ? (a) : (b)

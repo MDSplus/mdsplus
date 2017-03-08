@@ -152,7 +152,7 @@ static void PopSocket(int socket)
   unlock_socket_list();
 }
 
-static void ABORT(int sigval)
+static void ABORT(int sigval __attribute__ ((unused)))
 {
   SocketList *s;
   lock_socket_list();
@@ -282,7 +282,7 @@ static int tcp_flush(int conid)
 #if !defined(__sparc__)
     struct timeval timout = { 0, 1 };
     int status;
-    int nbytes;
+    ssize_t nbytes;
     int tries = 0;
     char buffer[1000];
     fd_set readfds, writefds;
@@ -297,7 +297,7 @@ static int tcp_flush(int conid)
 	status = ioctl(sock, FIONREAD, &nbytes);
 	if (nbytes > 0 && status != -1) {
 	  nbytes =
-	      recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
+	    recv(sock, buffer, (sizeof(buffer) > (size_t)nbytes) ? (size_t)nbytes : sizeof(buffer), MSG_NOSIGNAL);
 	  if (nbytes > 0)
 	    tries = 0;
 	}
@@ -313,30 +313,16 @@ static int tcp_flush(int conid)
 
 static void SetSocketOptions(SOCKET s, int reuse)
 {
-  STATIC_CONSTANT int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
+  int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
   int one = 1;
-  socklen_t len;
-  static int debug_winsize = 0;
-  static int init = 1;
-  if (init) {
-    char *winsize = getenv("TCP_WINDOW_SIZE");
-    if (winsize) {
-      sendbuf = atoi(winsize);
-      recvbuf = atoi(winsize);
-    }
-    debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
-    init = 0;
-  }
 #ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
 #endif
-  setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
-  setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
-  if (debug_winsize) {
-    getsockopt(s, SOL_SOCKET, SO_RCVBUF, (void *)&recvbuf, &len);
-    fprintf(stderr, "Got a recvbuf of %d\n", recvbuf);
-    getsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *)&sendbuf, &len);
-    fprintf(stderr, "Got a sendbuf of %d\n", sendbuf);
+  char * tcp_window_size = getenv("TCP_WINDOW_SIZE");
+  if(tcp_window_size && strlen(tcp_window_size)) {
+      recvbuf = sendbuf = atoi(tcp_window_size);
+      setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
+      setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&sendbuf, sizeof(int));
   }
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
   setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *)&one, sizeof(one));
@@ -421,7 +407,7 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen)
   }
 }
 
-static int tcp_connect(int conid, char *protocol, char *host)
+static int tcp_connect(int conid, char *protocol __attribute__ ((unused)), char *host)
 {
   struct sockaddr_in6 sin;
   int s;
@@ -531,7 +517,7 @@ static int getSocketHandle(char *name)
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num)
+static void ChildSignalHandler(int num __attribute__ ((unused)))
 {
   sigset_t set, oldset;
   pid_t pid;

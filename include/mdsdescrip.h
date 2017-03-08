@@ -136,14 +136,14 @@ struct descriptor_a {
 	ARRAY(char) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,0,0}, 1, arsize}
 
 #define DESCRIPTOR_A_COEFF(name, len, type, ptr, dimct, arsize) \
-	ARRAY_COEFF(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, dimct, arsize}
+  ARRAY_COEFF(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, dimct, arsize, 0, {0}}
 
 #define DESCRIPTOR_A_COEFF_2(name, len, type, ptr, arsize, rows, columns) \
 	ARRAY_COEFF(char, 2) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, 2, arsize, (char *)ptr,\
             {rows, columns}}
 
 #define DESCRIPTOR_A_BOUNDS(name, len, type, ptr, dimct, arsize) \
-	ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize}
+  ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0,0}}}
 
 /************************************************
   CLASS_XD extended dynamic descriptor definition.
@@ -303,7 +303,7 @@ struct descriptor_signal {
 
 #define DESCRIPTOR_SIGNAL(name, ndims, data, raw) \
 	SIGNAL(ndims) name = {0, DTYPE_SIGNAL, CLASS_R, 0, ndims + 2, __fill_value__\
-        (struct descriptor *)data, (struct descriptor *)raw}
+			      (struct descriptor *)data, (struct descriptor *)raw,{0}}
 
 #define DESCRIPTOR_SIGNAL_1(name, data, raw, dimension) \
 	SIGNAL(1) name = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__\
@@ -370,7 +370,8 @@ struct descriptor_function {
 				}
 
 #define DESCRIPTOR_FUNCTION(name, op_code_ptr, nargs) \
-	FUNCTION(nargs) name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)op_code_ptr, nargs}
+	FUNCTION(nargs) name = {.length=sizeof(unsigned short), .dtype=DTYPE_FUNCTION, .class=CLASS_R, \
+				.pointer=(unsigned char *)op_code_ptr, .ndesc=nargs}
 
 #define DESCRIPTOR_FUNCTION_0(name, op_code_ptr) \
 	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
@@ -591,7 +592,7 @@ struct descriptor_call {
 
 #define DESCRIPTOR_CALL(name, dtype_ptr, nargs, image, routine) \
 	CALL(nargs) name = {sizeof(unsigned short), DTYPE_CALL, CLASS_R, (unsigned char *)dtype_ptr, nargs+2, __fill_value__\
-	(struct descriptor *)image, (struct descriptor *)routine}
+			    (struct descriptor *)image, (struct descriptor *)routine, {0}}
 
 #define DTYPE_WITH_ERROR	213
 

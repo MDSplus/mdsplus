@@ -203,6 +203,9 @@ OPTIONS WITH OS SPECIFIC DEFAULT
        operation. The default --distname option will be set if using a
        supported operating system.
 
+    --valgrind
+       Enable valgrind testing for this build.
+
     --valgrind=tests
        Select a set of valgrind tests to perform on the MDSplus code if
        the --test option is included. This is a comma delimited list of
@@ -211,6 +214,9 @@ OPTIONS WITH OS SPECIFIC DEFAULT
        supported operating system a default list of tests supported for
        that operating system will be used unless overriden in the
        command line.
+
+    --sanitize
+       Enable sanitize testing for this build.
 
     --sanitize=tests
        Select a set of sanitize tests to perform on the MDSplus code if
@@ -232,6 +238,7 @@ OPTIONS WITH OS SPECIFIC DEFAULT
 EOF
 }
 parsecmd() {
+    unset INTERACTIVE
     for i in $1
     do
 	case $i in
@@ -279,14 +286,20 @@ parsecmd() {
 	    --platform=*)
 		PLATFORM="${i#*=}"
 		;;
+	    --valgrind)
+		ENABLE_VALGRIND=yes
+		;;
 	    --valgrind=*)
-		if [ -z "$VALGRIND_TOOLS" ]
+		if [ "${ENABLE_VALGRIND}" = "yes" ]
 		then
 		    VALGRIND_TOOLS="${i#*=}"
 		fi
 		;;
+	    --sanitize)
+		ENABLE_SANITIZE=yes
+		;;
 	    --sanitize=*)
-		if [ -z "$SANITIZE" ]
+		if [ "$ENABLE_SANITIZE" = "yes" ]
 		then
 		    SANITIZE="${i#*=}"
 		fi
@@ -295,7 +308,7 @@ parsecmd() {
 		BRANCH="${i#*=}"
 		;;
 	    --workspace=*)
-		WORKSPACE="${i#*=}"
+		NEW_WORKSPACE="${i#*=}"
 		;;
 	    --releasedir=*)
 		RELEASEDIR="${i#*=}"
@@ -327,8 +340,11 @@ parsecmd() {
 	    --color)
 		COLOR=yes
 		;;
+	    -i)
+		INTERACTIVE="1"
+		;;
 	    --winhost=*)
-		WINDOWSHOST="${i#*=}"
+		WINHOST="${i#*=}"
 		;;
 	    --winbld=*)
 		WINBLD="${i#*=}"
@@ -358,7 +374,7 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
-    
+
 #
 # Get the default options for the OS specified.
 #
@@ -407,7 +423,7 @@ NORMAL() {
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION} ]
+    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
     then
 	GREEN $COLOR
 	cat <<EOF
@@ -455,16 +471,19 @@ then
     >&2 echo "Attempting to publish without a --distname=name option."
     exit 1
 fi
-if [ ! -r "${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh" ]
+if [ ! -d "${SRCDIR}/deploy/platform/${PLATFORM}" ]
 then
     >&2 echo "Plaform ${PLATFORM} is not supported."
     exit 1
 fi
-if [ -z "$WORKSPACE" ]
+if [ -z "$NEW_WORKSPACE" ]
 then
-    WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+    if [ -z "$WORKSPACE" ]
+    then
+       WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+    fi
 else
-    WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
+    WORKSPACE=$(realpath ${NEW_WORKSPACE})
 fi
 
 if [ "$TEST" = "yes" -a "$TEST_RELEASE" = "yes" ]
@@ -597,7 +616,8 @@ OS=${OS} \
   WINBLD="${WINBLD}" \
   WINREMBLD="${WINREMBLD}" \
   GIT_COMMIT="${GIT_COMMIT}" \
-  ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
+  INTERACTIVE="$INTERACTIVE" \
+  ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
     RED $COLOR
@@ -622,6 +642,6 @@ EOF
     NORMAL $COLOR
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}
+	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}
     fi
 fi

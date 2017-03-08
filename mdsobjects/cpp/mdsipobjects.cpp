@@ -523,7 +523,7 @@ void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void GetMany::insert(char * beforeName, char *name, char *expr, Data **args, int nArgs)
+void GetMany::insert(char * beforeName UNUSED_ARGUMENT, char *name, char *expr, Data **args, int nArgs)
 {
 	int nItems = len();
 	int idx;
@@ -618,7 +618,7 @@ void PutMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args, int nArgs) {
+void PutMany::insert(char * beforeName UNUSED_ARGUMENT, char *nodeName, char *expr, Data **args, int nArgs) {
 	int nItems = len();
 	int idx;
 	String nameKey("node");

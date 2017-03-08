@@ -25,7 +25,7 @@ static pthread_mutex_t second_lock;
 
 static int astCount = 0;
 
-void eventAst(void *arg, int len, char *buf) {
+void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
     printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
@@ -39,7 +39,7 @@ void eventAst(void *arg, int len, char *buf) {
 
 static int first = 0,second = 0;
 
-void eventAstFirst(void *arg, int len, char *buf) {
+void eventAstFirst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
     printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
@@ -48,7 +48,7 @@ void eventAstFirst(void *arg, int len, char *buf) {
     pthread_mutex_unlock(&first_lock);
 }
 
-void eventAstSecond(void *arg, int len, char *buf) {
+void eventAstSecond(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
     printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
@@ -60,13 +60,13 @@ void eventAstSecond(void *arg, int len, char *buf) {
 
 
 static void wait() {
-    static const struct timespec tspec = {0,10000000};
+    static const struct timespec tspec = {0,100000000};
     nanosleep(&tspec,0);
 }
 
 int main(int argc, char **args)
 {
-    int status;
+    int status=0;
     int i,iterations,ev_id;
     char *eventname = alloca(100);
     pthread_mutex_init(&astCount_lock, NULL);

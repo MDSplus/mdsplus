@@ -8,6 +8,7 @@
 #include <mdstypes.h>
 #include <tdishr.h>
 #include <xtreeshr.h>
+#include <ncidef.h>
 #define MAX_LIMIT 1E10
 
 static int recIsSegmented(struct descriptor *dsc);
@@ -516,6 +517,16 @@ static int recIsSegmented(struct descriptor *dsc)
 {
     int nid, numSegments, status, i;
     char *path;
+    int retClassLen, retDtypeLen;
+    unsigned int nciClass, nciDtype;
+    struct nci_itm nciList[] = {{1, NciCLASS, &nciClass, &retClassLen},
+	  {1, NciDTYPE, &nciDtype, &retDtypeLen},
+	  {NciEND_OF_LIST, 0, 0, 0}};
+	  
+    EMPTYXD(xd);
+	  
+    int retNid;
+  
     struct descriptor_r *rDsc;
     if(!dsc) return FALSE;
 
@@ -527,6 +538,18 @@ static int recIsSegmented(struct descriptor *dsc)
 		status = TreeGetNumSegments(nid, &numSegments);
 		if((status & 1) && numSegments > 0)
 		    return nid; 
+		//Now check if the node contains an expression or a direct nid reference
+		status = TreeGetNci(nid, nciList);
+		if((status & 1) && ((nciClass == CLASS_S && (nciDtype == DTYPE_NID ||nciDtype == DTYPE_PATH))||nciClass == CLASS_R))
+		{
+		    status = TreeGetRecord(nid, &xd);
+		    if((status & 1) && xd.l_length > 0)
+		    {
+		        retNid = recIsSegmented(xd.pointer);
+			MdsFree1Dx(&xd, 0);
+			return retNid;
+		    }
+		}
 		return 0;
 	    }
 	    else if(dsc->dtype == DTYPE_PATH)
@@ -632,8 +655,8 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
 	double delta;
 	struct descriptor deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char *)&delta}; 
 	int64_t estimatedSamples;
-	int estimatedSegmentSamples;
-	double estimatedDuration;
+	int estimatedSegmentSamples = 0;
+	double estimatedDuration = 0;
 
 //printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
 
@@ -743,7 +766,7 @@ EXPORT struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, fl
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)
@@ -1053,7 +1076,7 @@ EXPORT struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, int64_t 
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)
@@ -1336,7 +1359,7 @@ EXPORT struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXM
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)
@@ -1403,9 +1426,19 @@ static void compressDataLongX(float *y, int64_t *x, int nSamples, int reqPoints,
     }
 
 //From here, consider xMin and xMax
-    for(startIdx = 0; startIdx < nSamples && x[startIdx] < xMin; startIdx++);
+    if(xMin == 0)
+      startIdx = 0;
+    else
+    {
+      for(startIdx = 0; startIdx < nSamples && x[startIdx] < xMin; startIdx++);
+    }
     if(startIdx == nSamples) startIdx--;
-    for(endIdx = startIdx; endIdx < nSamples && x[endIdx] < xMax; endIdx++);
+    if(xMax == 0)
+      endIdx = nSamples - 1;
+    else
+    {
+      for(endIdx = startIdx; endIdx < nSamples && x[endIdx] < xMax; endIdx++);
+    }
     if(endIdx == nSamples) endIdx--;
     if((endIdx - startIdx) < 10 * reqPoints)
 	deltaSamples = 1;
@@ -1533,7 +1566,7 @@ EXPORT struct descriptor_xd *GetXYWaveLongTimes(char *sigName, int64_t *inXMin, 
     xArrD = (struct descriptor_a *)xXd.pointer;
     yArrD = (struct descriptor_a *)yXd.pointer;
     nSamples = yArrD->arsize/yArrD->length;
-    if(nSamples > xArrD->arsize/xArrD->length)
+    if(nSamples > (int)(xArrD->arsize/xArrD->length))
 	nSamples = xArrD->arsize/xArrD->length;
  
     if(yArrD->dtype == DTYPE_FLOAT)

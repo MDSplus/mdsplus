@@ -12,7 +12,7 @@
  * TclSetVersions:
  **************************************************************/
 
-EXPORT int TclSetReadonly(void *ctx, char **error, char **output)
+EXPORT int TclSetReadonly(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int status = 1;
 

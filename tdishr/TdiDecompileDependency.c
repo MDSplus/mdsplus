@@ -40,7 +40,8 @@ STATIC_CONSTANT DESCRIPTOR(RIGHT_PAREN, ")");
 
 STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct descriptor_d *pout)
 {
-  int now = 0, status = 1;
+  INIT_STATUS;
+  int now = 0;
   struct descriptor *pwhich = 0;
 
   switch (pin->dtype) {
@@ -77,15 +78,15 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
       status = TdiINV_OPC;
       break;
     }
-    if (status & 1 && now < prec)
+    if (STATUS_OK && now < prec)
       status = StrAppend(pout, (struct descriptor *)&LEFT_PAREN);
-    if (status & 1)
+    if STATUS_OK
       status = DependencyGet(now - 1, (struct descriptor_r *)pin->dscptrs[0], pout);
-    if (status & 1)
+    if STATUS_OK
       status = StrAppend(pout, pwhich);
-    if (status & 1)
+    if STATUS_OK
       status = DependencyGet(now + 1, (struct descriptor_r *)pin->dscptrs[1], pout);
-    if (status & 1 && now < prec)
+    if (STATUS_OK && now < prec)
       status = StrAppend(pout, (struct descriptor *)&RIGHT_PAREN);
     break;
   case DTYPE_CONDITION:
@@ -103,9 +104,9 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
       status = TdiINV_OPC;
       break;
     }
-    if (status & 1)
+    if STATUS_OK
       status = StrAppend(pout, pwhich);
-    if (status & 1)
+    if STATUS_OK
       status = DependencyGet(P_UNARY, (struct descriptor_r *)pin->dscptrs[0], pout);
     break;
   default:
@@ -116,10 +117,11 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
 }
 
 /*------------------------------------------------------------------*/
-int Tdi1DecompileDependency(int opcode, int narg, struct descriptor *list[],
+int Tdi1DecompileDependency(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+			    struct descriptor *list[],
 			    struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
   struct descriptor *pdep = list[0];
 
@@ -127,7 +129,7 @@ int Tdi1DecompileDependency(int opcode, int narg, struct descriptor *list[],
     pdep = (struct descriptor *)pdep->pointer;
   if (pdep)
     status = DependencyGet(P_WEAK, (struct descriptor_r *)pdep, &answer);
-  if (status & 1)
+  if STATUS_OK
     status = MdsCopyDxXd((struct descriptor *)&answer, out_ptr);
   StrFree1Dx(&answer);
   return status;

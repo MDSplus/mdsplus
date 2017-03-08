@@ -446,6 +446,9 @@ class Data(object):
         @rtype: Data"""
         return Data.execute('$^$',self,y)
 
+    def __round__(self,*args):
+        return round(self.data(),*args)
+
     def _getDescriptor(self):
         """Return descriptor for passing data to MDSplus library routines.
         @rtype: descriptor
@@ -483,6 +486,15 @@ class Data(object):
         @rtype: Data"""
         return _tdishr.TdiExecute(expr,args)
     execute=staticmethod(execute)
+
+    def assignTo(self,varname):
+        """Set tdi variable with this data
+        @param varname: The name of the public tdi variable to create
+        @type varname: string
+        @rtype: Data
+        @return: Returns new value of the tdi variable
+        """
+        return self.execute("%s=$"%(varname,),self)
 
     def setTdiVar(self,tdivarname):
         """Set tdi public variable with this data
@@ -551,6 +563,18 @@ class Data(object):
         _scalar=_mimport('mdsscalar')
         return isinstance(x,_scalar.Scalar)
     _isScalar=staticmethod(_isScalar)
+
+
+    def getData(self,*altvalue):
+        """Return primitimive value of the data.
+        @rtype: Scalar,Array
+        """
+        try:
+            return self.execute("data($)",(self,))
+        except _Exceptions.TreeNODATA:
+            if len(altvalue):
+                return altvalue[0]
+            raise
 
     def getByte(self):
         """Convert this data into a byte. Implemented at this class level by returning TDI

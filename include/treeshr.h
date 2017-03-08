@@ -53,6 +53,8 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeCreatePulseFile(int shot, int numnids, int *nids);
   extern EXPORT int _TreeCreatePulseFile(void *dbid, int shot, int numnids, int *nids);
   extern EXPORT int TreeCreateTreeFiles(char *tree, int shot, int source_shot);
+  extern EXPORT void *TreeDbid();
+  extern EXPORT void *_TreeDbid(void **dbid);
   extern EXPORT void TreeDeleteNodeExecute(void);
   extern EXPORT void _TreeDeleteNodeExecute(void *dbid);
   extern EXPORT int TreeDeleteNodeGetNid(int *nid);

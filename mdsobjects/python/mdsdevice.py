@@ -4,10 +4,11 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import os as _os
-from os import getenv as _getenv
+import os as _os,sys as _sys
 _treeshr=_mimport('_treeshr')
+_mdsshr=_mimport('_mdsshr')
 _treenode=_mimport('treenode')
+_exceptions=_mimport('mdsExceptions')
 _compound=_mimport('compound')
 _ident=_mimport('ident')
 _mdsarray=_mimport('mdsarray')
@@ -88,72 +89,98 @@ class Device(_treenode.TreeNode):
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    debug = _getenv('DEBUG_DEVICES')
+    debug = _os.getenv('DEBUG_DEVICES')
     gtkThread = None
 
-    def __class_init__(cls):
-        if not hasattr(cls,'initialized'):
-            if hasattr(cls,'parts'):
-                cls.part_names=list()
-                for elt in cls.parts:
-                    cls.part_names.append(elt['path'])
-            if hasattr(cls,'part_names') and not hasattr(cls,'part_dict'):
-                cls.part_dict=dict()
-                for i in range(len(cls.part_names)):
-                    try:
-                        cls.part_dict[cls.part_names[i][1:].lower().replace(':','_').replace('.','_')]=i+1
-                    except:
-                        pass
-            cls.initialized=True
-    __class_init__=classmethod(__class_init__)
+    """ debug safe import """
+    if debug:
+        if int(debug)<0:
+            @staticmethod
+            def _debugDevice(dev):
+                from MDSplus import Device
+                import types
+                def dummy(self,*args,**kvargs):
+                    return 1
+                db = {}
+                for d in dev.mro()[-4::-1]: #mro[-3] is Device
+                    for k,v in d.__dict__.items():
+                        if isinstance(v,(types.FunctionType,)):
+                            db[k] = dummy
+                        else:
+                            db[k] = v
+                return type(dev.__name__,(Device,),db)
+        else:
+            @staticmethod
+            def _debugDevice(device):
+                return device
+        @staticmethod
+        def _debug(s,p=tuple()):
+            from sys import stdout as _stdout
+            _stdout.write(s % p)
+    else:
+        @staticmethod
+        def _debug(s,p=tuple()):
+            pass
+        @staticmethod
+        def _debugDevice(device):
+            return device
+    @staticmethod
+    def _mimport(loc,glob,filename,name=None):
+        if isinstance(name,(tuple,list)):
+            for n in name:
+                Device._mimport(loc,glob,filename,n)
+            return
+        if name is None: name = filename
+        Device._debug('loading %-21s',(name+':'))
+        try:
+            try:
+                device = __import__(filename, glob, fromlist=[name], level=1).__getattribute__(name)
+            except:
+                device = __import__(filename, glob, fromlist=[name]).__getattribute__(name)
+            Device._debug(' successful\n')
+            loc[name] = Device._debugDevice(device)
+        except Exception as exc:
+            Device._debug(' failed: %s\n'%exc)
+    """ /debug safe import """
 
-    def __new__(cls,node):
+    __initialized = False
+    parts      = []
+    part_names = tuple()
+    part_dict  = {}
+    def __new__(cls,node,tree=None,head=0):
         """Create class instance. Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
-        if cls.__name__ == 'Device':
+        if cls is Device:
             try:
-                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree)
-                model=str(head.record.model)
-                return cls.importPyDeviceModule(model).__dict__[model.upper()](head)
+                head=_treenode.TreeNode(node.conglomerate_nids.nid_number[0],node.tree,0)
+                return head.record.getDevice(head)
             except:
-                pass
-            raise TypeError("Cannot create instances of Device class")
+                raise TypeError("Cannot create instances of Device class")
         else:
-            cls.__class_init__();
-            return super(Device,cls).__new__(cls,node)
+            if not cls.__initialized:
+                cls.part_names = tuple(elt['path'] for elt in cls.parts)
+                for i,partname in enumerate(cls.part_names):
+                    try:
+                       cls.part_dict[partname[1:].lower().replace(':','_').replace('.','_')]=i+1
+                    except:
+                        pass
+                cls.__initialized = True
+            return super(Device,cls).__new__(cls,node,tree,head)
 
-    def __init__(self,node,tree=None):
+    def __init__(self,node,tree=None,head=0):
         """Initialize a Device instance
         @param node: Conglomerate node of this device
         @type node: TreeNode
         @rtype: None
         """
         if isinstance(node,_treenode.TreeNode):
-            try:
-                self.nids=node.conglomerate_nids.nid_number
-                self.head=int(self.nids[0])
-            except Exception:
-                self.head=node.nid
-            super(Device,self).__init__(node.nid,node.tree)
-
-    def ORIGINAL_PART_NAME(self):
-        """Method to return the original part name.
-        Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
-        @return: Part name of this node
-        @rtype: str
-        """
-        name = ""
-        if self.nid != self.head:
-            try:
-                name = self.part_names[self.nid-self.head-1].upper()
-            except:
-                pass
-        return name
-    PART_NAME=ORIGINAL_PART_NAME
+            super(Device,self).__init__(node.nid,node.tree,head)
+        else:
+            super(Device,self).__init__(node,tree,head)
 
     def __getattr__(self,name):
         """Return TreeNode of subpart if name matches mangled node name.
@@ -163,10 +190,10 @@ class Device(_treenode.TreeNode):
         @rtype: Device
         """
         if name == 'part_name' or name == 'original_part_name':
-            return self.ORIGINAL_PART_NAME(None)
-        try:
-            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
-        except KeyError:
+            return self.ORIGINAL_PART_NAME()
+        if name in self.part_dict:
+            return _treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self)
+        else:
             return super(Device,self).__getattr__(name)
 
     def __setattr__(self,name,value):
@@ -178,7 +205,7 @@ class Device(_treenode.TreeNode):
         @rtype: None
         """
         try:
-            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            _treenode.TreeNode(self.part_dict[name]+self.head.nid,self.tree,self).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
@@ -195,7 +222,6 @@ class Device(_treenode.TreeNode):
         """
         parent = tree
         if isinstance(tree, _treenode.TreeNode): tree = tree.tree
-        cls.__class_init__()
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         if isinstance(name,_ident.Ident):
             name=name.data()
@@ -287,58 +313,106 @@ class Device(_treenode.TreeNode):
         Device.gtkThread.join()
     waitForSetups=classmethod(waitForSetups)
 
-
+    __cached_py_device_modules = {}
+    __cached_mds_pydevice_path = ""
+    __cached_py_device_not_found = []
     def importPyDeviceModule(name):
         """Find a device support module with a case insensitive lookup of
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
-
-        import __builtin__
-        import sys
-        check_name=name.lower()+".py"
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
-            parts=path.split(';')
-            for part in parts:
-                w=_os.walk(part)
-                for dp,dn,fn in w:
-                    for fname in fn:
-                        if fname.lower() == check_name:
-                            sys.path.insert(0,dp)
-                            try:
-                                ans=__builtin__.__import__(fname[:-3])
-                            finally:
-                                sys.path.remove(dp)
-                            return ans
+        path = _mdsshr.getenv("MDS_PYDEVICE_PATH")
+        if not path == Device.__cached_mds_pydevice_path:
+            Device.__cached_py_device_modules   = {}
+            Device.__cached_py_device_not_found = []
+            Device.__cached_mds_pydevice_path = path
+        name = name.lower()
+        if name in Device.__cached_py_device_modules:
+            return Device.__cached_py_device_modules[name]
+        if name in Device.__cached_py_device_modules:
+            raise _exceptions.DevPYDEVICE_NOT_FOUND
+        if path is not None:
+          check_name=name+".py"
+          parts=path.split(';')
+          for part in parts:
+            w=_os.walk(part)
+            for dp,dn,fn in w:
+              for fname in fn:
+                if fname.lower() == check_name:
+                  _sys.path.insert(0,dp)
+                  try:
+                    device = __import__(fname[:-3])
+                    Device.__cached_py_device_modules[name] = device
+                    return device
+                  finally:
+                    _sys.path.remove(dp)
+        Device.__cached_py_device_not_found.append(name)
+        raise _exceptions.DevPYDEVICE_NOT_FOUND
     importPyDeviceModule=staticmethod(importPyDeviceModule)
+
+    def PyDevice(module,model=None):
+        """Find a python device class by:
+        1) finding the model in the list defined by
+           the tdi function, MdsDevices.
+        2) try importing the package for the model and calling its Add method.
+        The StringArray returned by MdsDevices() contains String instances
+        containing blank filled values containing an \0 character embedded.
+        These Strings have to be manipulated to produce simple str() values.
+        """
+        cls = None
+        cls_list = []
+        if model is None:
+            model=module
+            MODEL=model.upper()
+            models = _mdsdata.Data.execute('MdsDevices()').data()
+            for idx in range(0, len(models), 2):
+                modname = models[idx].rstrip()
+                MODNAME = modname.upper()
+                if MODEL == MODNAME:
+                    package = models[idx+1].rstrip()
+                    try:
+                        return __import__(package).__dict__[modname]
+                    except ImportError: pass
+            module = Device.importPyDeviceModule(model)
+        else:
+            MODEL = model.upper()
+            module = __import__(module)
+        if module is None:
+            raise _exc.DevPYDEVICE_NOT_FOUND
+        if model in module.__dict__:
+            return module.__dict__[model]
+        cls_list = [k for k,v in module.__dict__.items()
+                    if isinstance(v,(Device.__class__,))
+                   and issubclass(v,Device)
+                   and k.upper() == MODEL]
+        if len(cls_list)==1:
+            return module.__dict__[cls_list[0]]
+        if len(cls_list)>1:
+            print ("Error adding device %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
+        raise _exc.DevPYDEVICE_NOT_FOUND
+    PyDevice=staticmethod(PyDevice)
 
     def findPyDevices():
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
-        import __builtin__
         import sys
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
-            parts=path.split(';')
-            for part in parts:
-                w=_os.walk(part)
-                for dp,dn,fn in w:
-                    for fname in fn:
-                        if fname.endswith('.py'):
-                            sys.path.insert(0,dp)
-                            try:
-                                devnam=fname[:-3].upper()
-                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
-                                ans.append(devnam+'\0')
-                                ans.append('\0')
-                            except:
-                                pass
-                            finally:
-                                sys.path.remove(dp)
-        if len(ans) == 0:
-            return None
-        else:
+        path=_mdsshr.getenv("MDS_PYDEVICE_PATH")
+        if path is None: return
+        parts=path.split(';')
+        for part in parts:
+            w=_os.walk(part)
+            for dp,dn,fn in w:
+                for fname in fn:
+                    if fname.endswith('.py'):
+                        sys.path.insert(0,dp)
+                        try:
+                            devnam=fname[:-3].upper()
+                            __import__(fname[:-3]).__dict__[devnam]
+                            ans.append(devnam+'\0')
+                            ans.append('\0')
+                        except:
+                            pass
+                        finally:
+                            sys.path.remove(dp)
+        if len(ans) > 0:
             return _mdsdata.Data.execute(str(ans))
-
-
     findPyDevices=staticmethod(findPyDevices)
 

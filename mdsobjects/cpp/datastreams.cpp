@@ -331,7 +331,7 @@ EXPORT void *getNewSamplesSerializedXd()
 
 
 ///Periodically check the list of registered data items for new data availability
-void *monitorStreamInfo(void *par)
+void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 {
 	struct timespec waitTime;
 	waitTime.tv_sec = 0;

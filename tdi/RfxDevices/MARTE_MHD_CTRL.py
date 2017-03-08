@@ -40,11 +40,11 @@ class MARTE_MHD_CTRL(MARTE_GENERIC):
     'staticDecoupler', 'outCoilEnabled', 'supercoilIdx', 'reconfiguredModes',
     'refCutoffFreq_1','refCutoffFreq_2','refCutoffFreq_3','refCutoffFreq_4','refCutoffFreq_5','refCutoffFreq_6','refCutoffFreq_7','refCutoffFreq_8',
     'freezeStartTime', 'freezeEndTime', 'startBpAutozero', 'endBpAutozero']
-    parValues = ( ['0','0','0','0','0','TdiCompile("zero(192, 0.)")', '0'] +
+    parValues = ( ['0','0','0','0','0','ZERO(192,0.)', '0'] +
                 (['0']*88)*2 + # References and FF References
-                (['0']+['TdiCompile("zero(192, 0.)")']*4+['0']*3)*8 +  # Mode Controller
-                (['TdiCompile("zero(192, 0.)")']*5+['0']*3)*8 +  # VS Controller
-                 ['TdiCompile("diagonal(zero(192,0.)+1)")','TdiCompile("zero(192, 0.)+1")','TdiCompile("zero(192, 0.)-1")','TdiCompile("zero(192, 0.)")'] +
+                (['0']+['ZERO(192,0.)']*4+['0']*3)*8 +  # Mode Controller
+                (['ZERO(192,0.)']*5+['0']*3)*8 +  # VS Controller
+                 ['DIAGONAL(ADD(ZERO(192,0.),1.))','ADD(ZERO(192,0.),1.)','ADD(ZERO(192,0.),-1.)','ZERO(192,0.)'] +
                  ['0']*8 + ['-1']*4)  # Start and end of freeze and Bp Autozero time
     parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})

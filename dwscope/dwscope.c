@@ -461,7 +461,7 @@ static char *GetPrinterList()
   return printers;
 }
 
-static void Shrink(Widget w, XEvent * event)
+static void Shrink(Widget w, XEvent * event __attribute__ ((unused)))
 {
   if (XmToggleButtonGadgetGetState(XtNameToWidget(w, "*disable_icon_updates"))) {
     UpdateWhenExpand = XmToggleButtonGadgetGetState(XtNameToWidget(w, "*updates"));
@@ -469,13 +469,14 @@ static void Shrink(Widget w, XEvent * event)
   }
 }
 
-static void Expand(Widget w, XEvent * event)
+static void Expand(Widget w, XEvent * event __attribute__ ((unused)))
 {
   if (XmToggleButtonGadgetGetState(XtNameToWidget(w, "*disable_icon_updates")) && UpdateWhenExpand)
     XmToggleButtonGadgetSetState(XtNameToWidget(w, "*updates"), TRUE, TRUE);
 }
 
-static void /*XtCallbackProc */ UpdatesMenuButton(Widget w, int *mode, XtPointer callback_data)
+static void /*XtCallbackProc */ UpdatesMenuButton(Widget w, int *mode __attribute__ ((unused)),
+						  XtPointer callback_data __attribute__ ((unused)))
 {
   XmToggleButtonGadgetSetState(XtNameToWidget(MainWidget, "*updates"),
 			       !XmToggleButtonGadgetGetState(w), TRUE);
@@ -529,7 +530,7 @@ void PositionMark()
     XtUnmanageChild(MarkWidget);
 }
 
-static void /*XtCallbackProc */ Crosshairs(Widget w, XtPointer client_data,
+static void /*XtCallbackProc */ Crosshairs(Widget w, XtPointer client_data __attribute__ ((unused)),
 					   XmdsWaveformCrosshairsCBStruct * cb)
 {
   static Widget value_w = 0;
@@ -566,12 +567,14 @@ static void /*XtCallbackProc */ Crosshairs(Widget w, XtPointer client_data,
     XmTextFieldSetSelection(value_w, 0, strlen(label), cb->event->xbutton.time);
 }
 
-static void /*XtCallbackProc */ Exit(Widget w, XtPointer client_data, XmAnyCallbackStruct * reason)
+static void /*XtCallbackProc */ Exit(Widget w __attribute__ ((unused)),
+				     XtPointer client_data __attribute__ ((unused)),
+				     XmAnyCallbackStruct * reason __attribute__ ((unused)))
 {
   exit(1);
 }
 
-static void /*XtCallbackProc */ SetPointerMode(Widget w, int *mode, int *reason)
+static void /*XtCallbackProc */ SetPointerMode(Widget w, int *mode, int *reason __attribute__ ((unused)))
 {
   if (XmToggleButtonGetState(w)) {
     int r;
@@ -587,7 +590,8 @@ static void /*XtCallbackProc */ SetPointerMode(Widget w, int *mode, int *reason)
   }
 }
 
-static void /*XtCallbackProc */ SetPointerModeMenu(Widget w, int *mode, int *reason)
+static void /*XtCallbackProc */ SetPointerModeMenu(Widget w __attribute__ ((unused)),
+						   int *mode, int *reason __attribute__ ((unused)))
 {
   int r;
   int c;
@@ -644,7 +648,8 @@ static void RemoveZeros(String string, int *length)
   return;
 }
 
-static void /*XtCallbackProc */ Align(int w, XtPointer client_data, XmdsWaveformLimitsCBStruct * l)
+static void /*XtCallbackProc */ Align(int w __attribute__ ((unused)),
+				      XtPointer client_data __attribute__ ((unused)), XmdsWaveformLimitsCBStruct * l)
 {
   int r;
   int c;
@@ -653,7 +658,9 @@ static void /*XtCallbackProc */ Align(int w, XtPointer client_data, XmdsWaveform
       XtVaSetValues(Wave[c][r].w, XmdsNxMin, l->xminval, XmdsNxMax, l->xmaxval, NULL);
 }
 
-static void /*XtCallbackProc */ GridStyle(Widget w, XtPointer client_data, XmAnyCallbackStruct * cb)
+static void /*XtCallbackProc */ GridStyle(Widget w __attribute__ ((unused)),
+					  XtPointer client_data __attribute__ ((unused)),
+					  XmAnyCallbackStruct * cb __attribute__ ((unused)))
 {
   int lines = XmToggleButtonGadgetGetState(w);
   int r;
@@ -664,8 +671,8 @@ static void /*XtCallbackProc */ GridStyle(Widget w, XtPointer client_data, XmAny
 		    lines ? XmdsGRID_STYLE_LINES : XmdsGRID_STYLE_TICKS, NULL);
 }
 
-static void /*XtCallbackProc */ Ok(Widget w, XtPointer client_data,
-				   XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ Ok(Widget w, XtPointer client_data __attribute__ ((unused)),
+				   XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   if (ApplyStatus & 1)
     XtUnmanageChild(XtParent(w));
@@ -687,8 +694,8 @@ static String SetupTitle()
   return title;
 }
 
-static void /*XtCallbackProc */ Autoscale(Widget w, String type,
-					  XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ Autoscale(Widget w __attribute__ ((unused)), String type,
+					  XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   int r;
   int c;
@@ -811,8 +818,8 @@ static void /*XtCallbackProc */ Autoscale(Widget w, String type,
   PositionMark();
 }
 
-static void /*XtCallbackProc */ Refresh(Widget w, XtPointer client_data,
-					XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ Refresh(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)),
+					XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   UpdateWaveform(0, PendingWave, 0, -1, -1);
 }
@@ -866,7 +873,7 @@ static void /*XtCallbackProc */ Restore(Widget w, int *option,
   }
 }
 
-static void /*XtCallbackProc */ Save(Widget w, int *option,
+static void /*XtCallbackProc */ Save(Widget w __attribute__ ((unused)), int *option,
 				     XmFileSelectionBoxCallbackStruct * reason)
 {
   int opt = option ? *option : 0;
@@ -1007,8 +1014,8 @@ static void RaiseWindows()
   XRaiseWindow(XtDisplay(MainWidget), XtWindow(XtNameToWidget(TopWidget, "*pane_separator")));
 }
 
-static void /*XtCallbackProc */ ResetDataSetup(Widget w, int *global,
-					       XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ ResetDataSetup(Widget w __attribute__ ((unused)), int *global,
+					       XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   if (*global == 1)
     PendingWave = &GlobalWave;
@@ -1022,8 +1029,9 @@ static void /*XtCallbackProc */ ResetDataSetup(Widget w, int *global,
   LoadDataSetup(DataSetupWidget, SetupTitle(), CurrentWave);
 }
 
-static void /*XtCallbackProc */ ResetCustomizeWindow(Widget w, XtPointer client_data,
-						     XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ ResetCustomizeWindow(Widget w __attribute__ ((unused)),
+						     XtPointer client_data __attribute__ ((unused)),
+						     XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   int i;
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "window_title"), ScopeTitle);
@@ -1038,8 +1046,9 @@ static void /*XtCallbackProc */ ResetCustomizeWindow(Widget w, XtPointer client_
 
 #include <signal.h>
 
-static void /*XtCallbackProc */ ResetCustomizePrint(Widget w, XtPointer client_data,
-						    XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ ResetCustomizePrint(Widget w __attribute__ ((unused)),
+						    XtPointer client_data __attribute__ ((unused)),
+						    XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   Widget *children;
   int numchildren;
@@ -1076,8 +1085,8 @@ static void /*XtCallbackProc */ ResetCustomizePrint(Widget w, XtPointer client_d
 */
 }
 
-static void /*XtCallbackProc */ CreateCustomizeFont(Widget w, XtPointer client_data,
-						    XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ CreateCustomizeFont(Widget w, XtPointer client_data __attribute__ ((unused)),
+						    XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   int c_count;
   String *courier_fonts =
@@ -1113,8 +1122,8 @@ static void /*XtCallbackProc */ CreateCustomizeFont(Widget w, XtPointer client_d
   XFreeFontNames(times_fonts);
 }
 
-static void Setup(Widget w, XtPointer client_data, XButtonEvent * event,
-		  Boolean * continue_to_dispatch)
+static void Setup(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XButtonEvent * event,
+		  Boolean * continue_to_dispatch __attribute__ ((unused)))
 {
   if (event->button == Button3) {
     if ((event->type == ButtonPress) && !(event->state & (Button1Mask | Button2Mask))) {
@@ -1134,8 +1143,9 @@ static void Setup(Widget w, XtPointer client_data, XButtonEvent * event,
   }
 }
 
-static void /*XtCallbackProc */ ApplyCustomizeWindow(Widget w, XtPointer client_data,
-						     XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ ApplyCustomizeWindow(Widget w __attribute__ ((unused)),
+						     XtPointer client_data __attribute__ ((unused)),
+						     XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   int c;
   int r;
@@ -1193,8 +1203,9 @@ static void /*XtCallbackProc */ ApplyCustomizeWindow(Widget w, XtPointer client_
   return;
 }
 
-static void /*XtCallbackProc */ ApplyCustomizePrint(Widget w, XtPointer client_data,
-						    XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ ApplyCustomizePrint(Widget w __attribute__ ((unused)),
+						    XtPointer client_data __attribute__ ((unused)),
+						    XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   Widget printer_select = XtNameToWidget(MainWidget, "*printer_select");
   Widget option;
@@ -1237,7 +1248,9 @@ static void SetFont(String font)
   }
 }
 
-static void ResetCustomizeFont(Widget w, XtPointer client_data, XmAnyCallbackStruct * callback_data)
+static void ResetCustomizeFont(Widget w __attribute__ ((unused)),
+			       XtPointer client_data __attribute__ ((unused)),
+			       XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   String font;
   XFontStruct *font_struct;
@@ -1252,7 +1265,7 @@ static void ResetCustomizeFont(Widget w, XtPointer client_data, XmAnyCallbackStr
   XFree(font);
 }
 
-static void /*XtCallbackProc */ ApplyFont(Widget w, XtPointer client_data,
+static void /*XtCallbackProc */ ApplyFont(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)),
 					  XmSelectionBoxCallbackStruct * callback_data)
 {
   String font;
@@ -1261,7 +1274,8 @@ static void /*XtCallbackProc */ ApplyFont(Widget w, XtPointer client_data,
     SetFont(font);
 }
 
-void /*XtInputCallbackProc */ EventUpdate(XtPointer client_data, int *source, XtInputId * id)
+void /*XtInputCallbackProc */ EventUpdate(XtPointer client_data __attribute__ ((unused)),
+					  int *source __attribute__ ((unused)), XtInputId * id __attribute__ ((unused)))
 {
   int r;
   int c;
@@ -1319,7 +1333,9 @@ static Boolean UpdateWaveformsWorkproc(XtPointer settings)
   return FALSE;
 }
 
-static void /*XtCallbackProc */ ApplyOverride(Widget w, int *mode, XtPointer callback_data)
+static void /*XtCallbackProc */ ApplyOverride(Widget w __attribute__ ((unused)),
+					      int *mode __attribute__ ((unused)),
+					      XtPointer callback_data __attribute__ ((unused)))
 {
   static struct _UpdateWaveformsInfo info;
   if (UpdateWaveformsWorkProcID != 0) {
@@ -1341,7 +1357,8 @@ static void /*XtCallbackProc */ ApplyOverride(Widget w, int *mode, XtPointer cal
   }
 }
 
-static void /*XtCallbackProc */ Updates(Widget w, int *mode, XtPointer callback_data)
+static void /*XtCallbackProc */ Updates(Widget w, int *mode __attribute__ ((unused)),
+					XtPointer callback_data __attribute__ ((unused)))
 {
   UpdatesOn = XmToggleButtonGadgetGetState(w);
   if (UpdatesOn)
@@ -1350,7 +1367,8 @@ static void /*XtCallbackProc */ Updates(Widget w, int *mode, XtPointer callback_
 			       !XmToggleButtonGadgetGetState(w), FALSE);
 }
 
-static void /*XtCallbackProc */ ApplyDataSetup(Widget w, int *mode, XtPointer callback_data)
+static void /*XtCallbackProc */ ApplyDataSetup(Widget w, int *mode,
+					       XtPointer callback_data __attribute__ ((unused)))
 {
   int change_mask;
   if (CurrentWave != &GlobalWave) {
@@ -1426,8 +1444,9 @@ static void FreeWave(WaveInfo * info)
     XtFree(info->pad_label);
 }
 
-static void /*XtActionProc */ MoveVerticalPane(Widget w, XEvent * event, String * params,
-					       Cardinal * num_params)
+static void /*XtActionProc */ MoveVerticalPane(Widget w, XEvent * event,
+					       String * params __attribute__ ((unused)),
+					       Cardinal * num_params __attribute__ ((unused)))
 {
   Position main_x_root;
   Position main_y_root;
@@ -1475,10 +1494,10 @@ static XrmDatabase MdsGetFileDatabase(String file_spec)
     char line_text[8192];
     char doubled[8192];
     while (fgets(line_text, 8192, file)) {
-      int i;
-      int j;
+      size_t i;
+      size_t j;
       int put_it = 0;
-      int size = strlen(line_text);
+      size_t size = strlen(line_text);
       for (i = 0; i < size; i++)
 	if (line_text[i] == ':')
 	  break;
@@ -1542,8 +1561,9 @@ static void Unbusy()
     XUnmapWindow(XtDisplay(MainWidget), BusyWindow);
 }
 
-static void /*XtCallbackProc */ PrintAll(Widget w, XtPointer client_data,
-					 XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ PrintAll(Widget w __attribute__ ((unused)),
+					 XtPointer client_data __attribute__ ((unused)),
+					 XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
 
 #ifndef _NO_DPS
@@ -1606,8 +1626,9 @@ static void /*XtCallbackProc */ PrintAll(Widget w, XtPointer client_data,
   return;
 }
 
-static void /*XtCallbackProc */ Print(Widget w, XtPointer client_data,
-				      XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ Print(Widget w __attribute__ ((unused)),
+				      XtPointer client_data __attribute__ ((unused)),
+				      XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
 #ifndef _NO_DPS
   int count;
@@ -1666,8 +1687,8 @@ static void /*XtCallbackProc */ Print(Widget w, XtPointer client_data,
   return;
 }
 
-static void /*XtCallbackProc */ Clear(Widget w, XtPointer client_data,
-				      XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ Clear(Widget w, XtPointer client_data __attribute__ ((unused)),
+				      XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   if (SelectedWave && SelectedWave == GetPending(w))
     XtDisownSelection(SelectedWave->w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)));
@@ -1686,7 +1707,7 @@ static WaveInfo *GetPending(Widget w)
   return &Wave[c][r];
 }
 
-static void /*XtCallbackProc */ Cut(Widget w, XtPointer client_data,
+static void /*XtCallbackProc */ Cut(Widget w, XtPointer client_data __attribute__ ((unused)),
 				    XmAnyCallbackStruct * callback_struct)
 {
   WaveInfo *pending = GetPending(w);
@@ -1699,7 +1720,7 @@ static void /*XtCallbackProc */ Cut(Widget w, XtPointer client_data,
   }
 }
 
-static Boolean /*XtConvertSelectionProc */ ConvertSelection(Widget w, Atom * selection,
+static Boolean /*XtConvertSelectionProc */ ConvertSelection(Widget w, Atom * selection __attribute__ ((unused)),
 							    Atom * target, Atom * type,
 							    XtPointer * value,
 							    unsigned long *length, int *format)
@@ -1717,15 +1738,16 @@ static Boolean /*XtConvertSelectionProc */ ConvertSelection(Widget w, Atom * sel
   return ConvertWaveToSelection(w, prefix, &Wave[c][r], *target, type, value, length, format);
 }
 
-static void /*XtLoseSelectionProc */ LoseSelection(Widget w, Atom * selection)
+static void /*XtLoseSelectionProc */ LoseSelection(Widget w, Atom * selection __attribute__ ((unused)))
 {
   XmdsWaveformReverse(w, 0);
   if (SelectedWave && (SelectedWave->w == w))
     SelectedWave = 0;
 }
 
-static void /*XtActionProc */ Paste(Widget w, XEvent * event, String * params,
-				    Cardinal * num_params)
+static void /*XtActionProc */ Paste(Widget w, XEvent * event __attribute__ ((unused)),
+				    String * params __attribute__ ((unused)),
+				    Cardinal * num_params __attribute__ ((unused)))
 {
   WaveInfo *pending = GetPending(w);
   if (pending)
@@ -1735,11 +1757,13 @@ static void /*XtActionProc */ Paste(Widget w, XEvent * event, String * params,
 }
 
 static void /*XtSelectionCallbackProc */ PasteTypesComplete(Widget w, XtPointer cdata,
-							    Atom * selection, Atom * type,
+							    Atom * selection __attribute__ ((unused)),
+							    Atom * type __attribute__ ((unused)),
 							    XtPointer value,
-							    unsigned long *length, int *format)
+							    unsigned long *length,
+							    int *format __attribute__ ((unused)))
 {
-  int i;
+  unsigned long i;
   Atom req_type = XA_STRING;
   Atom *values = (Atom *) value;
   for (i = 0; i < *length; i++)
@@ -1753,9 +1777,11 @@ static void /*XtSelectionCallbackProc */ PasteTypesComplete(Widget w, XtPointer 
     XtFree(value);
 }
 
-static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, WaveInfo * info, Atom * selection,
+static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, WaveInfo * info,
+						       Atom * selection __attribute__ ((unused)),
 						       Atom * type, XtPointer value,
-						       unsigned long *length, int *format)
+						       unsigned long *length,
+						       int *format __attribute__ ((unused)))
 {
   if (ConvertSelectionToWave(w, *type, *length, value, info)) {
     UpdateWaveform(0, info, 0, -1, -1);
@@ -1766,22 +1792,22 @@ static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, WaveInfo * info
     XtFree(value);
 }
 
-static void /*XtCallbackProc */ RegisterPane(Widget w, XtPointer client_data,
-					     XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ RegisterPane(Widget w, XtPointer client_data __attribute__ ((unused)),
+					     XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   Pane[NumPanes++] = w;
   NumWaves = 0;
 }
 
-static void /*XtCallbackProc */ RegisterWave(Widget w, XtPointer client_data,
-					     XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ RegisterWave(Widget w, XtPointer client_data __attribute__ ((unused)),
+					     XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   Wave[NumPanes - 1][NumWaves].w = w;
   ResetWave(&Wave[NumPanes - 1][NumWaves++]);
 }
 
-static void /*XtCallbackProc */ RegisterSash(Widget w, XtPointer client_data,
-					     XmAnyCallbackStruct * callback_data)
+static void /*XtCallbackProc */ RegisterSash(Widget w, XtPointer client_data __attribute__ ((unused)),
+					     XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
 {
   Sash[NumSashs++] = w;
 }
@@ -1822,7 +1848,7 @@ static int UpdateWaveform(Boolean complain, WaveInfo * info, Boolean event, int 
     float *ymin;
     float *ymax;
     Boolean update = 1;
-    int r;
+    int r=0;
     int c;
     int idx = 0;
     Boolean brief = !(complain
@@ -1960,9 +1986,9 @@ static void RestoreDatabase(String dbname, Widget w)
   XtUnmanageChildren(widgets, num);
   XParseGeometry(GetResource(scopedb, "Scope.geometry", "600x500+200+200"), &x, &y, &width,
 		 &height);
-  if (x >= WidthOfScreen(XtScreen(w)))
+  if (x >= (int)WidthOfScreen(XtScreen(w)))
     x = WidthOfScreen(XtScreen(w)) - 50;
-  if ((y + height) > HeightOfScreen(XtScreen(w)))
+  if ((int)(y + height) > (int)HeightOfScreen(XtScreen(w)))
     y = HeightOfScreen(XtScreen(w)) - height - 50;
   SetFont(GetResource
 	  (scopedb, "Scope.font", "-*-NEW CENTURY SCHOOLBOOK-MEDIUM-R-*--*-120-*-*-*-*-ISO8859-1"));
@@ -2063,7 +2089,7 @@ static void WriteDatabase(String dbname, Boolean zoom)
   String text;
   String filename = XtNewString(dbname);
   String font;
-  int i;
+  size_t i;
   FILE *file;
   XFontStruct *font_struct;
   for (i = 0; i < strlen(filename); i++)
@@ -2124,8 +2150,8 @@ static void WriteDatabase(String dbname, Boolean zoom)
     PopupComplaint(MainWidget, "Error writing setup file");
 }
 
-static void /*XtActionProc */ Resize(Widget w, XEvent * event, String * params,
-				     Cardinal * num_params)
+static void /*XtActionProc */ Resize(Widget w, XEvent * event, String * params __attribute__ ((unused)),
+				     Cardinal * num_params __attribute__ ((unused)))
 {
   int c;
   int r;
@@ -2161,7 +2187,7 @@ static void /*XtActionProc */ Resize(Widget w, XEvent * event, String * params,
   return;
 }
 
-static void /*XtActionProc */ EqualPanes(Widget w, XEvent * event, String * string,
+static void /*XtActionProc */ EqualPanes(Widget w, XEvent * event __attribute__ ((unused)), String * string,
 					 Cardinal * num_strings)
 {
   int c;

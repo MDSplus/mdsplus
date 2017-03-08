@@ -114,7 +114,7 @@ static int NElements(int nid);
 static char *ArrayRef(int nid, int num);
 static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int clock_nid, int nid);
 
-EXPORT int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
 
   int status = 1;
@@ -170,7 +170,7 @@ EXPORT int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-EXPORT int fera___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 
   int mem_status = 1;

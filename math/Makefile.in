@@ -3,6 +3,8 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
+#### Remove following line after code causing warnings is fixed ####
+FCFLAGS+=-Wno-compare-reals -Wno-uninitialized
 @MINGW_TRUE@ DEF=${srcdir}/MdsMath.def
 
 SOURCES = \
@@ -49,6 +51,10 @@ OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
 %.o_i386 : %.f
 	$(COMPILE.f) $< $(OUTPUT_OPTION)
+
+## suppressing conversion error warning ##
+umach.o umach.o_i386: umach.f
+	$(COMPILE.f) $< $(OUTPUT_OPTION) -Wno-conversion
 
 EXPORTS = MdsMath.export
 

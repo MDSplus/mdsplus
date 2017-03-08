@@ -163,4 +163,7 @@ ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
 MARTE_DEVICESetup.java \
 RFXVICONTROLSetup.java \
-REDPYTADCSetup.java
+REDPYTADCSetup.java \
+JRG_ADC32ASetup.java \
+A3248Setup.java
+

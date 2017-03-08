@@ -1,45 +1,39 @@
-from MDSplus import Int32, Device
-from MDSplus.mdsExceptions import TreeNOMETHOD,DevPYDEVICE_NOT_FOUND
+from MDSplus import TreeNode, Device
+from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION
 from sys import stderr,exc_info
 
 def PyDoMethod(n,method,*args):
-    c = n.conglomerate_nids[0].record
-    model = str(c.model)
-    method = str(method)
-    safe_env = {}
-    try:
-        mod = Device.importPyDeviceModule(model)
-        safe_env[model]=mod.__dict__[model]
-    except:
-        qualifiers = c.qualifiers.value.tolist()
-        if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
-        exec(compile(qualifiers,'<string>','exec')) in safe_env
-    if not model in safe_env:
-        stderr.write("Python device implementation not found for %s after doing %s\n\n" % (model,qualifiers))
-        return [Int32(DevPYDEVICE_NOT_FOUND.status),None]
-    try:
-        device = safe_env[model](n)
+    def domethod(methodobj,args):
         try:
-            methodobj = device.__getattribute__(method)
-        except AttributeError:
-            return [TreeNOMETHOD.status,None]
-        try:
-            return [Int32(1),methodobj(*args)]
-        except TypeError:
-            exc = exc_info()[1]
-            print exc
+            return methodobj(*args)
+        except TypeError as exc:
             if exc.message.startswith(method+'()'):
                 print('Your device method %s.%s requires at least one argument.' % (model,method))
                 print('No argument has been provided as it is probably not required by the method.')
                 print('MDSplus does not require device methods to accept an argument anymore.\n')
-                return [Int32(1),methodobj(None)]
-            else:
-                raise exc
-    except:
-        exc = exc_info()[1]
-        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
-
-        if hasattr(exc,'status'):
-            return [exc.status,None]
+                return methodobj(None)
+            else: raise
+    method = str(method)
+    model = n.__class__.__name__
+    try:
+        if method in TreeNode.__dict__:
+            methodobj = n.__getattribute__(method)
         else:
-            return [Int32(0),None]
+            device = n.conglomerate_nids[0]
+            c = device.record
+            model = str(c.model)
+            if not isinstance(device, (Device,)):
+                device = c.getDevice(device)
+            try:
+                methodobj = device.__getattribute__(method)
+            except AttributeError:
+                raise TreeNOMETHOD
+            if not method in Device.__dict__:
+                print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
+        return domethod(methodobj,args)
+    except MDSplusException:
+        raise
+    except Exception as exc:
+        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
+        raise PyUNHANDLED_EXCEPTION
+

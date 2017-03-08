@@ -45,7 +45,7 @@ extern int IsRoprand();
 #define GC_GC(lena,pa,lenb,pb,numb)
 #define FTC_FTC(lena,pa,lenb,pb,numb)
 /************* Straight binary conversions *************************/
-#define CONVERT_BINARY(ti,to,pa,pb,numb) { ti *ip = (ti *)pa; to *op = (to *)pb; while (numb-- > 0) *op++ = (to)*ip++; status = 1;}
+#define CONVERT_BINARY(ti,to,pa,pb,numb) { ti *ip = (ti *)pa; to *op = (to *)pb; while (numb-- > 0) *op++ = (to)*ip++; status = MDSplusSUCCESS;}
 #define BU_WU(lena,pa,lenb,pb,numb) CONVERT_BINARY(unsigned char,unsigned short,pa,pb,numb)
 #define BU_LU(lena,pa,lenb,pb,numb) CONVERT_BINARY(unsigned char,unsigned int,pa,pb,numb)
 #define BU_B(lena,pa,lenb,pb,numb) CONVERT_BINARY(unsigned char,char,pa,pb,numb)
@@ -82,39 +82,39 @@ extern int IsRoprand();
 
 #define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
                    while (numb-- > 0) {for(i=1;i<nints;i++) *op++ = (unsigned int)0; *op++ = (unsigned int)*ip++; }\
-                   status = 1;}
+                   status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
                    while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; for(i=1;i<nints;i++) *op++ = extend; *op++ = (int)*ip++; }\
-                   status = 1;}
+                   status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; \
                    while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i+lena-lenb]; pa += lena;}\
-                   status = 1;}
+                   status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
                while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
                for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}\
-               status = 1;}
+               status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
                while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
                for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}\
-               status = 1;}
+               status = MDSplusSUCCESS;}
 #else
 #define CONVERT_BINARY_ZETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; unsigned int *op = (unsigned int *)pb; \
                    while (numb-- > 0) {*op++ = (unsigned int)*ip++; for(i=1;i<nints;i++) *op++ = (unsigned int)0;}\
-                   status = 1;}
+                   status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SETEND(ti,pa,pb,numb,nints) { int i; ti *ip = (ti *)pa; int *op = (int *)pb; \
                    while (numb-- > 0) {int extend = (*ip < 0) ? -1 : 0; *op++ = (int)*ip++; for(i=1;i<nints;i++) *op++ = extend;}\
-                   status = 1;}
+                   status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_SMALLER(pa,pb,numb,lena,lenb) {int i; \
                    while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i]; pa += lena;}\
-                   status = 1;}
+                   status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
                while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
                for (i=lena; i<lenb; i++) *pb++ = (char)0;}\
-               status = 1;}
+               status = MDSplusSUCCESS;}
 #define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
                while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
                for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}\
-               status = 1;}
+               status = MDSplusSUCCESS;}
 #endif
 
 #define BU_QU(lena,pa,lenb,pb,numb) CONVERT_BINARY_ZETEND(unsigned char,pa,pb,numb,2)
@@ -185,18 +185,18 @@ extern int IsRoprand();
      while (i-- > 0) {double tmp = *op; CvtConvertFloat(&tmp, DTYPE_NATIVE_DOUBLE, op++, otype, 0);}}
 
 #define BINARY_TO_FLOAT(ti,pa,pb,numb,otype)  \
-  {int i=numb; ti *ip=(ti*)pa; float *op=(float*)pb; while (i-- > 0) *op++ =(float)*ip++; status = 1; CONVERT_FLOAT(pb,numb,otype)}
+  {int i=numb; ti *ip=(ti*)pa; float *op=(float*)pb; while (i-- > 0) *op++ =(float)*ip++; status = MDSplusSUCCESS; CONVERT_FLOAT(pb,numb,otype)}
 
 #define BINARY_TO_DOUBLE(ti,pa,pb,numb,otype)  \
-  {int i=numb; ti *ip=(ti*)pa; double *op=(double*)pb; while (i-- > 0) *op++ =(double)*ip++; status = 1;\
+  {int i=numb; ti *ip=(ti*)pa; double *op=(double*)pb; while (i-- > 0) *op++ =(double)*ip++; status = MDSplusSUCCESS;\
    CONVERT_DOUBLE(pb,numb,otype)}
 
 #define BINARY_TO_FLOATC(ti,pa,pb,numb,otype)  \
-  {int i=numb; ti *ip=(ti*)pa; float *op=(float*)pb; while (i-- > 0) {*op++ =(float)*ip++; *op++ = (float)0.0;} status = 1; \
+  {int i=numb; ti *ip=(ti*)pa; float *op=(float*)pb; while (i-- > 0) {*op++ =(float)*ip++; *op++ = (float)0.0;} status = MDSplusSUCCESS; \
    CONVERT_FLOAT(pb,numb*2,otype)}
 
 #define BINARY_TO_DOUBLEC(ti,pa,pb,numb,otype)  \
-  {int i=numb; ti *ip=(ti*)pa; double *op=(double*)pb; while (i-- > 0) {*op++ =(double)*ip++; *op++ = (double)0.0;} status = 1; \
+  {int i=numb; ti *ip=(ti*)pa; double *op=(double*)pb; while (i-- > 0) {*op++ =(double)*ip++; *op++ = (double)0.0;} status = MDSplusSUCCESS; \
    CONVERT_DOUBLE(pb,numb*2,otype)}
 
 #define BU_F(lena,pa,lenb,pb,numb) BINARY_TO_FLOAT(unsigned char, pa, pb, numb, DTYPE_F)
@@ -262,20 +262,20 @@ extern int IsRoprand();
 /**************** Long Binary to Floating Point *******************************/
 #define LBINARY_TO_FLOAT(pa,pb,numb,size,is_signed,otype)  \
   {int i=numb; unsigned int *ip=(unsigned int*)pa; float *op=(float*)pb;\
-   while (i-- > 0) {*op++ =(float)WideIntToDouble(ip,size,is_signed); ip += size;} status = 1; CONVERT_FLOAT(pb,numb,otype)}
+   while (i-- > 0) {*op++ =(float)WideIntToDouble(ip,size,is_signed); ip += size;} status = MDSplusSUCCESS; CONVERT_FLOAT(pb,numb,otype)}
 
 #define LBINARY_TO_DOUBLE(pa,pb,numb,size,is_signed,otype)  \
   {int i=numb; unsigned int *ip=(unsigned int*)pa; double *op=(double*)pb;\
-   while (i-- > 0) {*op++ =(double)WideIntToDouble(ip,size,is_signed); ip += size;} status = 1; CONVERT_DOUBLE(pb,numb,otype)}
+   while (i-- > 0) {*op++ =(double)WideIntToDouble(ip,size,is_signed); ip += size;} status = MDSplusSUCCESS; CONVERT_DOUBLE(pb,numb,otype)}
 
 #define LBINARY_TO_FLOATC(pa,pb,numb,size,is_signed,otype)  \
   {int i=numb; unsigned int *ip=(unsigned int*)pa; float *op=(float*)pb;\
-   while (i-- > 0) {*op++ =(float)WideIntToDouble(ip,size,is_signed); *op++ = (float)0.0; ip += size;} status = 1; \
+   while (i-- > 0) {*op++ =(float)WideIntToDouble(ip,size,is_signed); *op++ = (float)0.0; ip += size;} status = MDSplusSUCCESS; \
    CONVERT_FLOAT(pb,numb*2,otype)}
 
 #define LBINARY_TO_DOUBLEC(pa,pb,numb,size,is_signed,otype)  \
   {int i=numb; unsigned int *ip=(unsigned int*)pa; double *op=(double*)pb;\
-   while (i-- > 0) {*op++ =(double)WideIntToDouble(ip,size,is_signed); *op++ = (double)0.0; ip += size;} status = 1; \
+   while (i-- > 0) {*op++ =(double)WideIntToDouble(ip,size,is_signed); *op++ = (double)0.0; ip += size;} status = MDSplusSUCCESS; \
    CONVERT_DOUBLE(pb,numb*2,otype)}
 
 #define QU_F(lena,pa,lenb,pb,numb) LBINARY_TO_FLOAT(pa,pb,numb,2,0,DTYPE_F)
@@ -323,25 +323,25 @@ extern int IsRoprand();
   {int i=numb; float *ip=(float*)pa; to *op=(to*)pb; \
    while (i-- > 0) { float tmp; \
      if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_FLOAT,0); else tmp = *ip++; \
-     *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp));} status = 1;}
+     *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp));} status = MDSplusSUCCESS;}
 
 #define DOUBLE_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; double *ip=(double*)pa; to *op=(to*)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
-     *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp));} status = 1;}
+     *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp));} status = MDSplusSUCCESS;}
 
 #define FLOATC_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; float *ip=(float*)pa; to *op=(to*)pb; \
    while (i-- > 0) { float tmp; \
      if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_FLOAT,0); else tmp = *ip++; \
-     *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp)); ip++;} status = 1;}
+     *op++ = (to)max((float)((to)mino),min((float)((to)maxo),tmp)); ip++;} status = MDSplusSUCCESS;}
 
 #define DOUBLEC_TO_BINARY(itype,pa,pb,numb,to,mino,maxo)  \
   {int i=numb; double *ip=(double*)pa; to *op=(to*)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
-     *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp)); ip++;} status = 1;}
+     *op++ = (to)max((double)((to)mino),min((double)((to)maxo),tmp)); ip++;} status = MDSplusSUCCESS;}
 
 #define F_BU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned char,0,0xff)
 #define F_WU(lena,pa,lenb,pb,numb) FLOAT_TO_BINARY(DTYPE_F,pa,pb,numb,unsigned short,0,0xffff)
@@ -409,25 +409,25 @@ extern int IsRoprand();
   {int i=numb; float *ip=(float*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = (double)*ip++; \
-     DoubleToWideInt(&tmp, size, op); op += size;} status = 1;}
+     DoubleToWideInt(&tmp, size, op); op += size;} status = MDSplusSUCCESS;}
 
 #define DOUBLE_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; double *ip=(double*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
-     DoubleToWideInt(&tmp, size, op); op += size;} status = 1;}
+     DoubleToWideInt(&tmp, size, op); op += size;} status = MDSplusSUCCESS;}
 
 #define FLOATC_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; float *ip=(float*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_NATIVE_FLOAT) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = (double)*ip++; \
-     DoubleToWideInt(&tmp, size, op); op += size; ip++;} status = 1;}
+     DoubleToWideInt(&tmp, size, op); op += size; ip++;} status = MDSplusSUCCESS;}
 
 #define DOUBLEC_TO_LBINARY(itype,pa,pb,numb,size)  \
   {int i=numb; double *ip=(double*)pa; unsigned int *op=(unsigned int *)pb; \
    while (i-- > 0) { double tmp; \
      if (itype != DTYPE_NATIVE_DOUBLE) CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE,0); else tmp = *ip++; \
-     DoubleToWideInt(&tmp, size, op); op += size; ip++;} status = 1;}
+     DoubleToWideInt(&tmp, size, op); op += size; ip++;} status = MDSplusSUCCESS;}
 
 #define F_QU(lena,pa,lenb,pb,numb)  FLOAT_TO_LBINARY(DTYPE_F,pa,pb,numb,2)
 #define F_OU(lena,pa,lenb,pb,numb)  FLOAT_TO_LBINARY(DTYPE_F,pa,pb,numb,4)
@@ -486,7 +486,7 @@ typedef union {
    binary_##ot *op=(binary_##ot*)pb; \
    while (i-- > 0) { \
      binary_##it tmp = *ip++; \
-     CvtConvertFloat(&tmp, itype, op++, otype,0);} status = 1;}
+     CvtConvertFloat(&tmp, itype, op++, otype,0);} status = MDSplusSUCCESS;}
 
 #define FLOAT_TO_COMPLEX(itype,it,pa,otype,ot,pb,numb)  \
   {int i=numb; binary_##it *ip=(binary_##it*)pa; binary_##ot *op=(binary_##ot*)pb; \
@@ -494,12 +494,12 @@ typedef union {
    while (i-- > 0) { if (itype == otype) *op++ = *(binary_##ot *)ip++; else { \
           binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} \
    *op++ = zero;\
-   } status = 1;}
+   } status = MDSplusSUCCESS;}
 
 #define COMPLEX_TO_FLOAT(itype,it,pa,otype,ot,pb,numb)  \
   {int i=numb; binary_##it *ip=(binary_##it*)pa; binary_##ot *op=(binary_##ot*)pb; \
    while (i-- > 0) { if (itype == otype) *op++ = *(binary_##ot *)ip++; else { \
-          binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} ip++;} status = 1;}
+          binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} ip++;} status = MDSplusSUCCESS;}
 
 #define COMPLEX_TO_COMPLEX(itype,it,pa,otype,ot,pb,numb) FLOAT_TO_FLOAT(itype,it,pa,otype,ot,pb,numb*2)
 
@@ -598,7 +598,7 @@ typedef union {
   {it *ip = (it*)pa; char *op = (char *)pb; int i=numb; while(i-- > 0) {\
    char text[64]; int nfill; int n=cvt;  nfill = lenb - n; \
    strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (nfill <= 0) ? lenb : n); \
-   if (nfill > 0) memset(op,32,nfill); op += lenb;} status = 1;}
+   if (nfill > 0) memset(op,32,nfill); op += lenb;} status = MDSplusSUCCESS;}
 
 /******************* CODE *********************/
 void DoubleToWideInt();
@@ -847,7 +847,7 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int
    int nfill; nfill = lenb - lena; \
    if (ip) \
       memcpy(op, ip, (nfill <= 0) ? lenb : lena); \
-   if (nfill > 0) memset(op+lena,32,nfill); op += lenb; ip += lena;} status = 1;}
+   if (nfill > 0) memset(op+lena,32,nfill); op += lenb; ip += lena;} status = MDSplusSUCCESS;}
 
 #define T_T(lena,pa,lenb,pb,numb) TEXT_TO_TEXT(pa,lena,pb,lenb,numb)
 
@@ -948,7 +948,7 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
 	for (; --numb >= 0; pb += lenb)
 	  memmove((void *)pb, (void *)pa, lenb);
       }
-    status = 1;
+    status = MDSplusSUCCESS;
   } else if (dtypeb >= MAXTYPE)
     status = TdiINVDTYDSC;
  /** scalar => vector convert once as scalar and copy as needed **/

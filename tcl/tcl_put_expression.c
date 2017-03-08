@@ -30,7 +30,7 @@ extern int TdiCompile();
 	 * TclPutExpression:
 	 * Put an INTEGER (?) expression into a node.
 	 ***************************************************************/
-EXPORT int TclPutExpression(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
+EXPORT int TclPutExpression(void *ctx, char **error, char **output __attribute__ ((unused)), char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *ascValue = 0;

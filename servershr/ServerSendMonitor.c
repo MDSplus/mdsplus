@@ -41,7 +41,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
     if (path) free(path);
   }
   else {
-    struct descrip p1, p2, p3, p4, p5, p6, p7, p8;    
+    struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
     status = ServerSendMessage(0, monitor, SrvMonitor, 0, 0, 0, 0, 0, 8,
 				  MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
 				  MakeDescrip(&p2, DTYPE_LONG, 0, 0, &shot),

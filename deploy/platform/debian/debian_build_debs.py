@@ -120,7 +120,7 @@ set -e
 dn=$(dirname %(file)s)
 mkdir -p %(tmpdir)s/DEBIAN
 mkdir -p "%(tmpdir)s/${dn}"
-cp -av %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
+cp -a %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
 """ % info,shell=True).wait() != 0:
                     raise Exception("Error building deb")
                 sys.stdout.flush()

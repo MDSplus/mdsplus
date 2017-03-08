@@ -537,7 +537,7 @@ int Tdi3Min(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 
 int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
-  int status;
+  INIT_STATUS;
   typedef struct {
     double l[2];
   } octaword_aligned;
@@ -555,7 +555,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     return TdiINVDTYDSC;
   }
   status = Tdi3Subtract(in1, in2, out);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     return status;
 
   dzero.length = in1->length;

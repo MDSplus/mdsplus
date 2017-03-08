@@ -55,7 +55,7 @@ public class RowColumnContainer extends JComponent
     */
    protected float pw[];
 
-   private Vector real_position = new Vector();
+   private Vector<Point> real_position = new Vector<>();
 
    private Point split_pos = null;
 

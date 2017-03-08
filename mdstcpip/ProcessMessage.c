@@ -55,11 +55,6 @@ extern int TdiData();
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
-#ifdef _WIN32
-#define lseek _lseeki64
-#endif
-
-
 typedef ARRAY_COEFF(char, 7) ARRAY_7;
 
 
@@ -1007,7 +1002,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 #endif
 	if (nbytes > 0) {
 	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, 0, 0);
-	  if (nbytes != num)
+	  if ((size_t)nbytes != num)
 	    perror("READ_K wrong byte count");
 	  ans_d.pointer = buf;
 	  ans_d.arsize = nbytes;
@@ -1034,7 +1029,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	TreePerfWrite(nbytes);
 #endif
 	ans_d.pointer = (char *)&nbytes;
-	if (nbytes != (size_t) message->h.dims[0])
+	if (nbytes != (ssize_t) message->h.dims[0])
 	  perror("WRITE_K wrong byte count");
 	ans =
 	    BuildResponse(connection->client_type,
@@ -1115,7 +1110,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	lock_file(fd, offset, num, 1, &deleted);
 	lseek(fd, offset, SEEK_SET);
 	nbytes = read(fd, buf, num);
-	if (nbytes != num)
+	if (nbytes != (ssize_t)num)
 	  perror("READ_X wrong byte count");
 #ifdef USE_PERF
 	TreePerfRead(nbytes);

@@ -112,16 +112,10 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 
-AC_DEFUN([TS_SET_SKIP_CMD],[
-          AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
-         ])
-
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
- AS_VAR_APPEND([$1],["sh -c \"exit 77\"; :"])
+ AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
 ])
-
-
 
 dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS SELECT HOST  ////////////////////////////////////////////////////////
@@ -136,15 +130,13 @@ AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([LOG_DRIVER],["\$(SHELL) \$(top_srcdir)/conf/test-driver"])
  AS_VAR_SET([abs_srcdir],$(cd ${srcdir}; pwd))
 
- TS_CHECK_NOSETESTS( [$PYTHON],,
-  [AC_MSG_WARN("python-nose not found")])
-
- TS_CHECK_PYTHON_TAP( [$PYTHON],,
-  [AC_MSG_WARN("Tap plugin for python-nose not found")])
-
+ dnl TS_CHECK_NOSETESTS( [$PYTHON],,
+ dnl  [AC_MSG_WARN("python-nose not found")])
+ dnl TS_CHECK_PYTHON_TAP( [$PYTHON],,
+ dnl  [AC_MSG_WARN("Tap plugin for python-nose not found")])
+ dnl LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH};
  AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
-
 
  AS_CASE(["${build_os}:${host}"],
  #
@@ -176,7 +168,8 @@ AC_DEFUN([TS_SELECT],[
  # (see Bug #26263 for details)
       AS_VAR_APPEND([VALGRIND_memcheck_FLAGS],"--workaround-gcc296-bugs=yes  ")
      ],
-     [TS_LOG_SKIP([LOG_COMPILER])])
+     [TS_LOG_SKIP([LOG_COMPILER])
+      TS_LOG_SKIP([PY_LOG_COMPILER])])
  ],
  #
  # LINUX->LINUX
@@ -185,10 +178,11 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->linux")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
  ],
  #
  # OTHER

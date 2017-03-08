@@ -37,9 +37,9 @@ java_JAVA += ServersInfoPanel.java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
 jDispatcher.jar: classjava.stamp
-	$(JAR) c0f $@ $(CLASSES)
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(CLASSES)
 
-CLEANFILES = $(CLASSES) jDispatcher.jar
 
 if MINGW 
 bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
@@ -47,6 +47,8 @@ else
 bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
 endif
+
+CLEANFILES = $(CLASSES) jDispatcher.jar $(bin_SCRIPTS)
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@

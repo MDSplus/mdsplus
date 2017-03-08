@@ -11,6 +11,10 @@ import jScope.FrameData;
 import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 public class WaveInterface
@@ -66,10 +70,6 @@ public class WaveInterface
 // Used for asynchronous Update
     public boolean asynch_update = true;
     Signal wave_signals[];
-    double wave_xmin, wave_xmax;
-    int wave_timestamp;
-    boolean request_pending;
-    double orig_xmin, orig_xmax;
     protected boolean evaluated[];
 
 
@@ -93,6 +93,9 @@ public class WaveInterface
 
     ColorMap colorMap = new ColorMap();
 
+    boolean xLimitsLong;
+    long xminLong = 0;
+    long xmaxLong = 0;
 
 
     public WaveInterface()
@@ -154,7 +157,6 @@ public class WaveInterface
         title = null;
         xlabel = null;
         ylabel = null;
-        zlabel = null;
         is_image = false;
         keep_ratio = true;
         horizontal_flip = false;
@@ -839,6 +841,12 @@ public class WaveInterface
                 error = dp.ErrorString();
                 return 0;
             }
+            long timeLong = getDate(in_xmin);
+            if(timeLong != -1)
+            {
+                xLimitsLong = true;
+                xminLong = timeLong;
+            }
         }
         else
             xmin = (!is_image) ? -Double.MAX_VALUE : -1;
@@ -852,6 +860,12 @@ public class WaveInterface
             {
                 error = dp.ErrorString();
                 return 0;
+            }
+            long timeLong = getDate(in_xmax);
+            if(timeLong != -1)
+            {
+                xLimitsLong = true;
+                xmaxLong = timeLong;
             }
         }
         else
@@ -1038,16 +1052,13 @@ public class WaveInterface
                 w_error[curr_wave] = null;
                 signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);
                 evaluated[curr_wave] = true;
-                if (signals[curr_wave] == null)
-                {
+                if (signals[curr_wave] == null) {
                     w_error[curr_wave] = curr_error;
                     evaluated[curr_wave] = false;
-                }
-                else
-                {
+                } else {
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
                     setLimits(signals[curr_wave]);
-                 }
+                }
             }
         }
         modified = false;
@@ -1055,22 +1066,15 @@ public class WaveInterface
 
     private void CreateNewFramesClass(int image_type) throws IOException
     {
-
-        if (image_type == FrameData.JAI_IMAGE)
-        {
-            try
-            {
+        if (image_type == FrameData.JAI_IMAGE) {
+            try {
                 Class cl = Class.forName("jScope.FrameJAI");
                 frames = (Frames) cl.newInstance();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw (new IOException(
                     "Java Advanced Imaging must be installed to show this type of image"));
             }
-        }
-        else
-        {
+        } else {
             frames = new Frames();
             frames.setColorMap(colorMap);
         }
@@ -1151,7 +1155,6 @@ public class WaveInterface
         return curr_shots;
     }
 
-    
     static String processShotExpression(String shotExpr, String exp)
     {
         
@@ -1216,7 +1219,6 @@ public class WaveInterface
                 else
                     error = "Shot syntax error\n";
             }
-            shot_list = null;
             throw (new IOException(error));
         }
         return shot_list;
@@ -1275,7 +1277,6 @@ public class WaveInterface
         return out_signal;
     }
 
-
     private Signal GetSignalFromProvider(int curr_wave, double xmin, double xmax) throws
         IOException
     {
@@ -1286,7 +1287,7 @@ public class WaveInterface
         int xDimension = 1;
         int yDimension = 1;
         Signal out_signal;
-        String xlabel = null, ylabel = null, zlabel = null, title = null;
+        String xlabel = null, ylabel = null, title = null;
 
         if (shots != null && shots.length != 0)
             dp.Update(experiment, shots[curr_wave]);
@@ -1337,7 +1338,6 @@ public class WaveInterface
             {
                 low_err = dp.GetWaveData(in_low_err[curr_wave]);
             }
-
         }
         else // X field not defined
         {
@@ -1379,14 +1379,32 @@ public class WaveInterface
             curr_error = dp.ErrorString();
             return null;
         }
-        wd.setContinuousUpdate(isContinuousUpdate);
+        //Check for bidimensional X axis
+        if(in_x[curr_wave] != null)
+        {
+            xwd = dp.GetWaveData(in_x[curr_wave]);
+            if(xwd.getNumDimension() == 1)
+                xwd = null; //xwd is different from null ONLY for bidimensional X axis 
+        }
+        
+        
+        //wd.setContinuousUpdate(isContinuousUpdate);
         boolean hasErrors = up_err != null || low_err != null;
         if( xDimension == 1)
-            out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
+        {
+            if(xLimitsLong)
+                out_signal = new Signal(wd, xwd, xminLong, xmaxLong, low_err, up_err);
+            else
+                out_signal = new Signal(wd, xwd, xmin, xmax, low_err, up_err);
+        }
         else
-            out_signal = new Signal(wd, xwd, xmin, xmax);
-            
-        
+        {
+           if(xLimitsLong)
+                out_signal = new Signal(wd, xwd, xminLong, xmaxLong);
+            else
+                out_signal = new Signal(wd, xwd, xmin, xmax);
+        }
+
         if(yDimension > 1)
             out_signal.setMode2D(mode2D[curr_wave]);
         else
@@ -1398,7 +1416,6 @@ public class WaveInterface
                 title = wd.GetTitle();
             }catch(Exception exc){}
         }
-
 
         if (up_err != null && low_err != null)
             out_signal.AddAsymError(up_err, low_err);
@@ -1413,8 +1430,25 @@ public class WaveInterface
                 ylabel = wd.GetYLabel();
             }catch(Exception exc){}
         }
-        out_signal.setLabels(title, xlabel, ylabel, zlabel);
+        out_signal.setLabels(title, xlabel, ylabel, null);
         return out_signal;
     }
-
+    //Try to convert the passed string to a date. Return the converted time in long format if it succeeds, -1 otherwise
+    long getDate(String inVal)
+    {
+         try {
+            Calendar cal = Calendar.getInstance();
+            //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+//            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm z");
+            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
+//            Date date = df.parse(inVal + " GMT");
+            Date date = df.parse(inVal);
+            cal.setTime(date);
+            long javaTime = cal.getTime().getTime();
+            return javaTime;
+        }catch(Exception exc)
+        {
+            return -1;
+        }
+    }
 }

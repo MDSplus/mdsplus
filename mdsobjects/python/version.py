@@ -14,6 +14,8 @@ has_unicode   = 'unicode'    in __builtins__
 has_basestring= 'basestring' in __builtins__
 has_bytes     = 'bytes'      in __builtins__
 has_buffer    = 'buffer'     in __builtins__
+has_xrange    = 'xrange'     in __builtins__
+has_mapclass  = isinstance(map,(type,))
 
 def load_library(name):
     import ctypes as C
@@ -72,6 +74,10 @@ if has_buffer:
     buffer = buffer
 else:
     buffer = memoryview
+if has_mapclass:
+    mapclass = map
+else:
+    mapclass = tuple
 
 # helper variant string
 if has_unicode:

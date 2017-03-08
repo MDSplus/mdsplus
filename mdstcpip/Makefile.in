@@ -170,9 +170,12 @@ install: $(bindir) $(libdir) $(sysconfdir)
 	$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
-	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
-	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
-	$(INSTALL) -m 755 $(MdsIpLOCAL) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpLOCAL) @libdir@
+@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpSSH))
+@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpHTTP))
+@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpLOCAL))
         ifdef MdsIpGSI
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
         endif

@@ -3,7 +3,7 @@
 #include <testing.h>
 
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     TEST_FORK(0);
     BEGIN_TESTING(no fork success) 
