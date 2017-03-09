@@ -44,21 +44,20 @@ static void eventAst(void *astprm, int msglen __attribute__ ((unused)), char *ms
 
 EXPORT int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
 {
-  static int usingEvents=-1;
+  static int usingEvents = -1;
+  const char*        event_str = "event:";
+  const unsigned int event_len = strlen(event_str);
   if (usingEvents==-1) {
-    char *mon_env=getenv(server);
-    if (mon_env == 0) {
-      mon_env=server;
-    }
-    if ((strncasecmp(mon_env,"event:",strlen("event:")) == 0) &&
-	(strlen(mon_env) > strlen("event:"))) {
+    char *svr_env = getenv(server);
+    if (!svr_env)
+      svr_env = server;
+    if ((strlen(svr_env) > event_len)
+     && (strncasecmp(svr_env,event_str,event_len) == 0)) {
       int evid;
       appAst=ast;
-      usingEvents = MDSEventAst(strdup(mon_env+strlen("event:")),
-			 eventAst, astprm, &evid) & 1;
-    } else {
-      usingEvents = 0;
-    }
+      usingEvents = MDSEventAst(strdup(svr_env+event_len), eventAst, astprm, &evid) & 1;
+    } else
+      usingEvents = B_FALSE;
   }
   if (usingEvents)
     return MDSplusSUCCESS;
@@ -68,13 +67,13 @@ EXPORT int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
     int zero = 0;
     int mode = MonitorCheckin;
     return ServerSendMessage(0, server, SrvMonitor, 0, 0, ast, astprm, 0, 8,
-      MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
-      MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
-      MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
-      MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
-      MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
-      MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
-      MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
-      MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
+			MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
+			MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
+			MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
+			MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
+			MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
+			MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
+			MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
+			MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
   }
 }
