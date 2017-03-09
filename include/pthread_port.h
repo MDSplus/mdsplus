@@ -1,7 +1,7 @@
 #ifndef PTHREAD_PORT_H
 #define PTHREAD_PORT_H
-#ifdef HAVE_PTHREAD_H
 #include <status.h>
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #else//HAVE_PTHREAD_H
 #define pthread_mutex_t HANDLE
@@ -20,6 +20,19 @@ typedef void *pthread_t;
 #define pthread_condattr_default NULL
 #endif
 #endif//_WIN32
+#include <time.h>
+#include <sys/time.h>
+#if defined(__MACH__) && !defined(CLOCK_REALTIME)
+#define CLOCK_REALTIME 0
+// clock_gettime is not implemented on older versions of OS X (< 10.12).
+// If implemented, CLOCK_REALTIME will have already been defined.
+#define clock_gettime(clk_id_unused, timespec) {\
+struct timeval now;\
+int rv = gettimeofday(&now, NULL);\
+(timespec)->tv_sec  = rv ? 0 : now.tv_sec;\
+(timespec)->tv_nsec = rv ? 0 : now.tv_usec * 1000;\
+}
+#endif
 
 typedef struct _Condition {
   pthread_cond_t  cond;
