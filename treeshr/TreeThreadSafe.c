@@ -82,7 +82,6 @@ void LockTreeMutex(pthread_mutex_t * mutex, int *initialized)
   pthread_mutex_lock(mutex);
 }
 
-void UnlockTreeMutex(pthread_mutex_t * mutex)
-{
+void UnlockTreeMutex(pthread_mutex_t * mutex){
   pthread_mutex_unlock(mutex);
 }
