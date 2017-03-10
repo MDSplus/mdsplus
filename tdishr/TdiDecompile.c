@@ -15,7 +15,6 @@
 unsigned int TdiDECOMPILE_MAX = 0xffff;
 
 extern unsigned short OpcDecompile;
-extern unsigned int TdiIndent;
 
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -28,6 +27,7 @@ extern unsigned int TdiIndent;
 #include <treeshr.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
+#include <tdithreadsafe.h>
 #ifdef max
 #undef max
 #endif
@@ -45,9 +45,9 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
-
-  TdiIndent = 1;
+  TdiThreadStatic_p->TdiIndent = 1;
   if (narg > 1 && list[1])
     status = TdiGetLong(list[1], &TdiDECOMPILE_MAX);
   else

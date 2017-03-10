@@ -52,6 +52,7 @@ ThreadStatic *TdiThreadStatic()
     p->TdiVar_new_narg_d.pointer = (char *)&p->TdiVar_new_narg;
     p->compiler_recursing = 0;
     pthread_setspecific(buffer_key, (void *)p);
+    p->TdiIndent = 1;
   }
   unlock_buffer_key();
   return p;

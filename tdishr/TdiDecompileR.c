@@ -23,7 +23,6 @@
 
 
 extern unsigned int LEX_CONST;
-unsigned int TdiIndent = 1;
 extern int Tdi0Decompile();
 extern int TdiSingle();
 
@@ -130,9 +129,9 @@ void TdiDecompileDeindent(struct descriptor_d *pout)
   return;
 }
 
-STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout)
-{
-  newline.length = (unsigned short)(((TdiIndent += step) < 8 ? TdiIndent : 8) + 1);
+STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout){
+  GET_TDITHREADSTATIC_P;
+  newline.length = (unsigned short)(((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8) + 1);
   return StrAppend(pout, (struct descriptor *)&newline);
 }
 

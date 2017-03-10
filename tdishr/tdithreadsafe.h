@@ -23,6 +23,7 @@ typedef struct _thread_static {
   struct descriptor *TdiRANGE_PTRS[3];
   struct descriptor_xd *TdiSELF_PTR;
   struct TdiZoneStruct TdiRefZone;
+  unsigned int TdiIndent;
 } ThreadStatic;
 
 extern ThreadStatic *TdiThreadStatic();
