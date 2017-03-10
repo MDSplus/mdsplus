@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite
 import os
 from re import match
-from threading import Lock,current_thread
+from threading import Lock
 
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Conglom
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
@@ -9,17 +9,13 @@ from MDSplus import mdsExceptions as Exc
 
 class treeTests(TestCase):
     lock = Lock()
-    shotdic = {}
     shotinc = 3
     instances = 0
     inThread = False
-    @property
-    def index(self):
-        return treeTests.shotdic[current_thread().ident]
+    index = 0
     @property
     def shot(self):
         return self.index*treeTests.shotinc+1
-
     def _doTCLTest(self,expr,out=None,err=None,re=False):
         def checkre(pattern,string):
             if pattern is None:
@@ -62,20 +58,20 @@ class treeTests(TestCase):
                 if getenv("testing_path") is None:
                     cls._setenv("testing_path","%s/trees"%cls.root)
             cls.instances += 1
-            index = len(cls.shotdic)
             if cls.inThread:
-                print('thread - %d'%(index,))
-            cls.shotdic[current_thread().ident] = index
-        treeTests.buildTrees(index*cls.shotinc+1)
+                print('threads up: %d'%(cls.instances,))
+
     @classmethod
     def _setenv(cls,name,value):
         value = str(value)
         cls.env[name]  = value
         cls.envx[name] = value
         setenv(name,value)
-    @classmethod
-    def buildTrees(cls,shot):
-        with Tree('pytree',shot,'new') as pytree:
+
+    def buildTrees(self):
+        with Tree('pytree',self.shot,'new') as pytree:
+            if pytree.shot != self.shot:
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytree.shot, shot.shot))
             pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
                 node=pytree.addNode('val%02d' % (i,),'numeric')
@@ -90,9 +86,9 @@ class treeTests(TestCase):
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
             Device.PyDevice('CYGNET4K').Add(pytree,'CYGNET4K').on=False
             pytree.write()
-        with Tree('pytreesub',shot,'new') as pytreesub:
-            if pytreesub.shot != shot:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, shot))
+        with Tree('pytreesub',self.shot,'new') as pytreesub:
+            if pytreesub.shot != self.shot:
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, shot.shot))
             pytreesub_top=pytreesub.default
             node=pytreesub_top.addNode('.rog','structure')
             for i in range(10):
@@ -385,6 +381,7 @@ class treeTests(TestCase):
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
 
     def runTest(self):
+        self.buildTrees()
         self.openTrees()
         self.getNode()
         self.setDefault()
@@ -397,11 +394,18 @@ class treeTests(TestCase):
             self.dclInterface()
             self.dispatcher()
 
+    @staticmethod
+    def getTests():
+        tests = ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
+        if not treeTests.inThread:
+            tests += ['dclInterface','dispatcher']
+        return tests
+    @staticmethod
+    def getTestCases():
+        return map(treeTests,treeTests.getTests())
+
 def suite():
-    tests = ['openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
-    if not treeTests.inThread:
-        tests += ['dclInterface','dispatcher']
-    return TestSuite(map(treeTests,tests))
+    return TestSuite(treeTests.getTestCases())
 
 def run():
     from unittest import TextTestRunner
