@@ -13,6 +13,7 @@
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"
+#include "tdithreadsafe.h"
 #include <strroutines.h>
 #include <mds_stdarg.h>
 

@@ -52,7 +52,6 @@ typedef struct _bounds {
 } BOUNDS;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern int TdiDECOMPILE_MAX;
 extern unsigned short OpcCompile;
 extern int TdiFaultHandlerNoFixup();
 extern int Tdi0Decompile();
@@ -151,9 +150,8 @@ int TRACE(int opcode, int narg,
   } else
     add("%TDI Unknown opcode ");
   add("(");
-  TdiDECOMPILE_MAX = 5;
   for (j = 0; j < narg;) {
-    if (Tdi0Decompile(list[j], PREC_COMMA, &text) & 1) {
+    if IS_OK(Tdi0Decompile(list[j], PREC_COMMA, &text, 5)) {
       if (message->length - now + text.length < MAXLINE - 2)
 	StrAppend(message, (struct descriptor *)&text);
       else {
