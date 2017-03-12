@@ -516,7 +516,7 @@ EXPORT int ServerDisconnect(char *server_in)
   short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server /%s/ unknown\n", server_in);
+    printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
     if (addr != 0) {
@@ -560,7 +560,7 @@ EXPORT int ServerConnect(char *server_in)
   short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server /%s/ unknown\n", server_in);
+    printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
     if (addr != 0) {

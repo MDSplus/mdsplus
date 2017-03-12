@@ -625,7 +625,7 @@ STATIC_ROUTINE void DoActionDone(int i){
   pthread_t thread;
   QueueCompletedAction(i); /***** must be done before starting thread ****/
   CONDITION_START_THREAD(ActionDoneRunning, thread, , ActionDoneThread, NULL);
-  if STATUS_OK perror("DoActionDone: pthread creation failed");
+  if STATUS_NOT_OK perror("DoActionDone: pthread creation failed");
 }
 
 STATIC_THREADSAFE Condition SendMonitorRunning = CONDITION_INITIALIZER;
@@ -704,5 +704,5 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx){
   pthread_t thread;
   QueueSendMonitor(mode, idx);/***** must be done before starting thread ****/
   CONDITION_START_THREAD(SendMonitorRunning, thread, , SendMonitorThread,NULL);
-  if STATUS_OK perror("DoSendMonitor: pthread creation failed");
+  if STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
 }
