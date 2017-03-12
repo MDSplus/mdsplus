@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$DISPATCH_CLOSE   
+		Name:   SERVER$DISPATCH_CLOSE
 
 		Type:   C function
 
@@ -9,11 +9,11 @@
 		Date:   17-APR-1992
 
     		Purpose: Tell all servers which performed actions in dispatch
-                         table to close their trees 
+                         table to close their trees
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
@@ -31,8 +31,7 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
 #include <servershr.h>
 #include "servershrp.h"
-static char *Server(char *out, char *srv)
-{
+static char *Server(char *out, char *srv){
   int i;
   for (i = 0; i < 32; i++)
     out[i] = srv[i] == ' ' ? 0 : srv[i];
@@ -40,16 +39,14 @@ static char *Server(char *out, char *srv)
   return out;
 }
 
-EXPORT int ServerDispatchClose(void *vtable)
-{
+EXPORT int ServerDispatchClose(void *vtable){
   char server[33];
   DispatchTable *table = (DispatchTable *) vtable;
-  int i;
   ActionInfo *action = table->actions;
   int num_actions = table->num;
+  int i, j;
   for (i = 0; i < num_actions; i++) {
     if (action[i].dispatched && !action[i].closed) {
-      int j;
       ServerCloseTrees(Server(server, action[i].server));
       for (j = i + 1; j < num_actions; j++) {
 	if (action[i].netid == action[j].netid)
@@ -57,5 +54,5 @@ EXPORT int ServerDispatchClose(void *vtable)
       }
     }
   }
-  return 1;
+  return MDSplusSUCCESS;
 }

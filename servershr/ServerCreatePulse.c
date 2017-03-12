@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$CREATE_PULSE   
+		Name:   SERVER$CREATE_PULSE
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   17-APR-1992
 
-    		Purpose: Create a single tree pulse file 
+    		Purpose: Create a single tree pulse file
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descriptor *tree, int *shot,
                         void (*ast)(), int astprm, int *netid, void (*link_down)())
@@ -38,6 +38,6 @@ EXPORT int ServerCreatePulse(int *id, char *server, char *tree, int shot,
 {
   struct descrip p1, p2;
   return ServerSendMessage(id, server, SrvAction, retstatus, 0, ast, astprm, before_ast, 2,
-			   MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree), MakeDescrip(&p2, DTYPE_LONG,
-										    0, 0, &shot));
+			MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
+			MakeDescrip(&p2, DTYPE_LONG, 0, 0, &shot));
 }
