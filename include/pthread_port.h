@@ -1,27 +1,47 @@
 #ifndef PTHREAD_PORT_H
 #define PTHREAD_PORT_H
+#define _GNU_SOURCE
+#include <stdlib.h>
 #include <status.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#else//HAVE_PTHREAD_H
-#define pthread_mutex_t HANDLE
-#define pthread_once_t int
-typedef void *pthread_t;
-#define PTHREAD_ONCE_INIT 0
-#endif//HAVE_PTHREAD_H
 #ifdef _WIN32
 #ifndef NO_WINDOWS_H
 #include <windows.h>
 #endif
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else//HAVE_PTHREAD_H
+#define pthread_mutex_t HANDLE
+#define pthread_cond_t HANDLE
+#define pthread_once_t int
+typedef void *pthread_t;
+#define PTHREAD_ONCE_INIT 0
+#ifndef PTHREAD_MUTEX_RECURSIVE
+#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+#endif
+//#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+//#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {0x4000}
+//#endif
+#endif//HAVE_PTHREAD_H
 #else//_WIN32
+#include <pthread.h>
+#endif//_WIN32
+
+#if defined(PTHREAD_RECURSIVE_MUTEX_NP) && !defined(PTHREAD_RECURSIVE_MUTEX)
+#define PTHREAD_RECURSIVE_MUTEX PTHREAD_RECURSIVE_MUTEX_NP
+#endif
+#if defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP) && !defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER)
+#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#endif
+
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
 #define pthread_condattr_default NULL
 #endif
-#endif//_WIN32
+
 #include <time.h>
 #include <sys/time.h>
+
 #if defined(__MACH__) && !defined(CLOCK_REALTIME)
 #define CLOCK_REALTIME 0
 // clock_gettime is not implemented on older versions of OS X (< 10.12).
