@@ -28,7 +28,10 @@
   int64_t ViewDate;
   int nid_reference;
   int path_reference;
+  NCI TemplateNci;
 } TreeThreadStatic;
+
+#define TREEGETTHREADSTATIC_P TreeThreadStatic * TreeGetThreadStatic_p = TreeGetThreadStatic()
 
 extern TreeThreadStatic *TreeGetThreadStatic();
 extern void **TreeCtx();

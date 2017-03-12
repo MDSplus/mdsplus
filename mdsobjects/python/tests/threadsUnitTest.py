@@ -12,30 +12,28 @@ treeUnitTest = _mimport('treeUnitTest')
 dataUnitTest = _mimport('dataUnitTest')
 from MDSplus import Tree
 
-
 class threadJob(Thread):
+    def __init__(self,testclass,test,idx):
+        super(threadJob,self).__init__()
+        self.isDaemon = True
+        self.test = testclass(test)
+        self.test.index = idx
     """Thread to execute the treeTests"""
     def run(self):
         """Run test1.test() function"""
         Tree.usePrivateCtx()
         stream = StringIO()
         try:
-            self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test.suite())
+            self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test)
         finally:
             stream.reset()
             self.stream = stream.read()
             stream.close()
 
 class threadTest(TestCase):
-
-    def dataThreadTests(self):
-        numtests  = 10
+    def doThreadTestCase(self,testclass,test,numthreads):
         numsuccess= 0
-        threads=[]
-        for i in range(numtests):
-            d=threadJob()
-            d.test=dataUnitTest
-            threads.append(d)
+        threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
         for t in threads:
             t.start()
         for i,t in enumerate(threads):
@@ -43,35 +41,27 @@ class threadTest(TestCase):
             if t.result.wasSuccessful():
                 numsuccess += 1
             else:
-                print('### begin thread %2d #########################################'%i)
+                print('### begin thread %2d: %s##################'%(i,testcase._testMethodName))
                 print(t.stream)
-                print('### end   thread %2d #########################################'%i)
-        self.assertEqual(numsuccess,numtests)
+                print('### end   thread %2d: %s##################'%(i,testcase._testMethodName))
+        self.assertEqual(numsuccess,numthreads,test)
+
+    def dataThreadTests(self):
+        numthreads = 3
+        for test in dataUnitTest.dataTests.getTests():
+            self.doThreadTestCase(dataUnitTest.dataTests,test,numthreads)
 
     def treeThreadTests(self):
-        numtests  = 10
-        numsuccess= 0
-        threads=[]
+        numthreads = 3
         treeUnitTest.treeTests.inThread = True
+        treeUnitTest.treeTests.setUpClass()
         try:
-            for i in range(numtests):
-                t=threadJob()
-                t.shot=i*numtests+3
-                t.test=treeUnitTest
-                threads.append(t)
-            for t in threads:
-                t.start()
-            for i,t in enumerate(threads):
-                t.join()
-                if t.result.wasSuccessful():
-                    numsuccess += 1
-                else:
-                    print('### begin thread %2d #########################################'%i)
-                    print(t.stream)
-                    print('### end   thread %2d #########################################'%i)
+            for test in treeUnitTest.treeTests.getTests():
+                self.doThreadTestCase(treeUnitTest.treeTests,test,numthreads)
         finally:
-            treeUnitTest.inThread = False
-        self.assertEqual(numsuccess,numtests)
+            treeUnitTest.treeTests.inThread = False
+            while treeUnitTest.treeTests.instances>0:
+                treeUnitTest.treeTests.tearDownClass()
 
     def runTest(self):
         self.dataThreadTests()
