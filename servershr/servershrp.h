@@ -5,7 +5,6 @@
  #ifdef _WIN32
   #include <time.h>
  #else
-  #include <pthread.h>
   #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
    extern void pthread_lock_global_np();
    extern void pthread_unlock_global_np();
@@ -109,6 +108,7 @@ typedef struct {
   unsigned recorded:1;
   char *path;
   char *event;
+  pthread_rwlock_t lock;
 } ActionInfo;
 
 typedef struct {
