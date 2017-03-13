@@ -12,24 +12,12 @@ STATIC_THREADSAFE pthread_key_t buffer_key;
 
 /* Once-only initialisation of the key */
 STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-STATIC_THREADSAFE pthread_rwlock_t buffer_key_mutex = PTHREAD_RWLOCK_INITIALIZER;
-
-void lock_buffer_key() {
-  pthread_rwlock_wrlock(&buffer_key_mutex);
-}
-
-void unlock_buffer_key() {
-  pthread_rwlock_unlock(&buffer_key_mutex);
-}
-
-
 STATIC_ROUTINE void buffer_key_alloc();
 
 /* Return the thread-specific buffer */
 ThreadStatic *TdiThreadStatic()
 {
   ThreadStatic *p;
-  lock_buffer_key();
   pthread_once(&buffer_key_once, buffer_key_alloc);
   p = (ThreadStatic *) pthread_getspecific(buffer_key);
   if (p == NULL) {
@@ -54,13 +42,11 @@ ThreadStatic *TdiThreadStatic()
     pthread_setspecific(buffer_key, (void *)p);
     p->TdiIndent = 1;
   }
-  unlock_buffer_key();
   return p;
 }
 
 /* Free the thread-specific buffer */
-STATIC_ROUTINE void buffer_destroy(void *buf)
-{
+STATIC_ROUTINE void buffer_destroy(void *buf){
   if (buf != NULL) {
     ThreadStatic *ts = (ThreadStatic *) buf;
     StrFree1Dx(&ts->TdiIntrinsic_message);
@@ -71,24 +57,20 @@ STATIC_ROUTINE void buffer_destroy(void *buf)
 }
 
 /* Allocate the key */
-STATIC_ROUTINE void buffer_key_alloc()
-{
+STATIC_ROUTINE void buffer_key_alloc(){
   pthread_key_create(&buffer_key, buffer_destroy);
 }
 
-void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
-{
+void LockTdiMutex(pthread_mutex_t * mutex, int *initialized){
   if (!initialized || !*initialized) {
 #ifdef HAVE_PTHREAD_H
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-#if !defined(PTHREAD_MUTEX_RECURSIVE)
-#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#endif
 #ifndef __sun
     pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
 #endif
     pthread_mutex_init(mutex, &m_attr);
+    pthread_mutexattr_destroy(&m_attr);
 #else
     pthread_mutex_init(mutex);
 #endif
@@ -98,7 +80,6 @@ void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
   pthread_mutex_lock(mutex);
 }
 
-void UnlockTdiMutex(pthread_mutex_t * mutex)
-{
+void UnlockTdiMutex(pthread_mutex_t * mutex){
   pthread_mutex_unlock(mutex);
 }

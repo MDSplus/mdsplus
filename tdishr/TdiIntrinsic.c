@@ -44,8 +44,6 @@
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-extern void lock_buffer_key();
-extern void unlock_buffer_key();
 typedef struct _bounds {
   int l;
   int u;
@@ -335,12 +333,10 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
     struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
     // b------x----c----e
     // '-l_ok-'-xc-'-ce-'
-    lock_buffer_key();
     char *b = TdiRefZone.a_begin;
     char *e = TdiRefZone.a_end;
     char *c = MINMAX(b, TdiRefZone.a_cur, e);
     char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
-    unlock_buffer_key();
     body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
     body.pointer = body.length>0 ? x : NULL;
     post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
