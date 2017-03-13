@@ -618,6 +618,7 @@ STATIC_ROUTINE void ActionDoneThread(){
   while (DequeueCompletedAction(&i))
     ActionDone(i);
   pthread_cleanup_pop(1);
+  pthread_exit(NULL);
 }
 
 STATIC_ROUTINE void DoActionDone(int i){
@@ -697,6 +698,7 @@ STATIC_ROUTINE void SendMonitorThread(){
   while (DequeueSendMonitor(&mode, &i))
     SendMonitor(mode, i);
   pthread_cleanup_pop(1);
+  pthread_exit(NULL);
 }
 
 STATIC_ROUTINE void DoSendMonitor(int mode, int idx){

@@ -668,6 +668,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) )
   }
   LeftWorkerLoop++;
   pthread_cleanup_pop(1);
+  pthread_exit(NULL);
 }
 
 static int StartWorker(){
