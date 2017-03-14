@@ -24,6 +24,7 @@ else:
 treeSuite=       _mimportSuite('treeUnitTest')
 threadsSuite=    _mimportSuite('threadsUnitTest')
 dataSuite=       _mimportSuite('dataUnitTest')
+dclSuite=        _mimportSuite('dclUnitTest')
 exceptionSuite=  _mimportSuite('exceptionUnitTest')
 connectionsSuite=_mimportSuite('connectionUnitTest')
 segmentsSuite=   _mimportSuite('segmentsUnitTest')
@@ -64,13 +65,14 @@ def test_all(*arg):
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
     tests=list()
-    tests.append(treeSuite())
-    if os.getenv('TEST_THREADS') is not None:
-        tests.append(threadsSuite())
+    tests.append(dclSuite())
     tests.append(dataSuite())
     tests.append(exceptionSuite())
     tests.append(connectionsSuite())
     tests.append(segmentsSuite())
+    tests.append(treeSuite())
+    if os.getenv('TEST_THREADS') is not None:
+        tests.append(threadsSuite())
 
     return TestSuite(tests)
 
