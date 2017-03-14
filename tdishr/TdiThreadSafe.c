@@ -27,7 +27,7 @@ STATIC_ROUTINE void buffer_destroy(void *buf){
 }
 
 /* Return the thread-specific buffer */
-ThreadStatic *TdiThreadStatic(){
+ThreadStatic *TdiGetThreadStatic(){
   ThreadStatic *p;
   RDLOCK_BUFFER;
   if (!is_init) {

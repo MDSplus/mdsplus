@@ -5,7 +5,7 @@
   #define YYLTYPE void *
   #define yylex dcl_lex
   #include "dcl_p.h"
-  #include <dcl.h>
+  #include <mdsdclthreadsafe.h>
   #include <mdsdcl_messages.h>
   #include "dcllex.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);

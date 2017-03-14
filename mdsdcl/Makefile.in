@@ -9,6 +9,7 @@ VPATH = @srcdir@
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
 
 SOURCES = 		\
+mdsdclThreadSafe.c     	\
 cmdExecute.c         	\
 cmdHelp.c               \
 cmdParseLex.c           \
@@ -38,6 +39,9 @@ install: $(libdir) $(bindir)
 @MAKELIBDIR@@LIBPRE@Mdsdcl.a: $(OBJECTS)
 		$(AR) -cr $@ $^
 		@RANLIB@ $@
+
+mdsdclThreadSafe.o: mdsdclThreadSafe.c
+	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
 
 cmdExecute.o: cmdExecute.c
 	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^

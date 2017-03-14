@@ -18,6 +18,7 @@
 #include <pthread_port.h>
 #include <dcl.h>
 #include "dcl_p.h"
+#include "mdsdclthreadsafe.h"
 
 typedef struct dclMacroList {
   char *name;			/*!<  macro name */
@@ -51,75 +52,6 @@ static int STOP_ON_FAIL = 1;
 *  05-Nov-1997  TRG  Create.
 *
 ************************************************************************/
-typedef struct _ThreadStatic {
-char *prompt;
-char *def_file;
-} ThreadStatic;
-/* Key for the thread-specific buffer */
-STATIC_THREADSAFE int is_init = B_FALSE;
-STATIC_THREADSAFE pthread_key_t buffer_key;
-/* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_rwlock_t buffer_lock   = PTHREAD_RWLOCK_INITIALIZER;
-#define WRLOCK_BUFFER pthread_rwlock_wrlock(&buffer_lock);
-#define RDLOCK_BUFFER pthread_rwlock_rdlock(&buffer_lock);
-#define UNLOCK_BUFFER pthread_rwlock_unlock(&buffer_lock);
-
-#define PROMPT   (ThreadStatic_p->prompt)
-#define DEF_FILE (ThreadStatic_p->def_file)
-/* Free the thread-specific buffer */
-STATIC_ROUTINE void buffer_destroy(void *buf){
-  if (buf) {
-    ThreadStatic *ThreadStatic_p = (ThreadStatic *)buf;
-    if (ThreadStatic_p) {
-      if (PROMPT) free(PROMPT);
-      if (DEF_FILE) free(DEF_FILE);
-    }
-    free(buf);
-  }
-}
-/* Return the thread-specific buffer */
-STATIC_ROUTINE ThreadStatic *GetThreadStatic(){
-  ThreadStatic *p;
-  RDLOCK_BUFFER;
-  if (!is_init) {
-    UNLOCK_BUFFER;
-    WRLOCK_BUFFER;
-    pthread_key_create(&buffer_key, buffer_destroy);
-    is_init = B_TRUE;
-  }
-  p = (ThreadStatic *) pthread_getspecific(buffer_key);
-  if (p == NULL) {
-    p = (ThreadStatic *) memset(calloc(1, sizeof(ThreadStatic)), 0, sizeof(ThreadStatic));
-    pthread_setspecific(buffer_key, (void *)p);
-  }
-  UNLOCK_BUFFER;
-  return p;
-}
-#define GET_THREADSTATIC_P ThreadStatic *ThreadStatic_p = GetThreadStatic()
-
-void mdsdclSetPrompt(const char *prompt){
-  GET_THREADSTATIC_P;
-  if (PROMPT) free(PROMPT);
-  PROMPT = strdup(prompt);
-}
-
-EXPORT char *mdsdclGetPrompt(){
-  char *ans;
-  GET_THREADSTATIC_P;
-  if (!PROMPT)
-    PROMPT = strdup("Command> ");
-  ans = strdup(PROMPT);
-  return ans;
-}
-
-void mdsdclSetDefFile(const char *deffile){
-  GET_THREADSTATIC_P;
-  if (DEF_FILE) free(DEF_FILE);
-  if (deffile[0] == '*')
-    DEF_FILE = strdup(deffile + 1);
-  else
-    DEF_FILE = strdup(deffile);
-}
 
 	/****************************************************************
 	 * mdsdcl_exit:

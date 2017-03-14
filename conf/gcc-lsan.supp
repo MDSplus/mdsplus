@@ -1,8 +1,9 @@
 
 leak:libMdsIpUDT
 leak:MdsShrGetThreadStatic
+leak:mdsdclGetThreadStatic
 leak:TreeGetThreadStatic
-leak:TdiThreadStatic
+leak:TdiGetThreadStatic
 leak:TRACE
 
 leak:*libpython*

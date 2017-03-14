@@ -69,7 +69,7 @@
   int yydebug=0;
   #define YYLTYPE void *
   #define yylex dcl_lex
-  #include "dcl_p.h"
+  #include "mdsdclthreadsafe.h"
   #include <dcl.h>
   #include <mdsdcl_messages.h>
   #include "dcllex.h"

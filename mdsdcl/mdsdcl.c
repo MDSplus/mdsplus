@@ -7,6 +7,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include "mdsdclthreadsafe.h"
 
 extern int mdsdcl_do_command(char const *command);
 
