@@ -8,17 +8,34 @@
 #include <strroutines.h>
 #include <string.h>
 /* Key for the thread-specific buffer */
+STATIC_THREADSAFE int is_init = B_FALSE;
 STATIC_THREADSAFE pthread_key_t buffer_key;
+STATIC_THREADSAFE pthread_rwlock_t buffer_lock   = PTHREAD_RWLOCK_INITIALIZER;
+#define WRLOCK_BUFFER pthread_rwlock_wrlock(&buffer_lock);
+#define RDLOCK_BUFFER pthread_rwlock_rdlock(&buffer_lock);
+#define UNLOCK_BUFFER pthread_rwlock_unlock(&buffer_lock);
 
-/* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-STATIC_ROUTINE void buffer_key_alloc();
+/* Free the thread-specific buffer */
+STATIC_ROUTINE void buffer_destroy(void *buf){
+  if (buf != NULL) {
+    ThreadStatic *ts = (ThreadStatic *) buf;
+    StrFree1Dx(&ts->TdiIntrinsic_message);
+    LibResetVmZone(&ts->TdiVar_private.head_zone);
+    LibResetVmZone(&ts->TdiVar_private.data_zone);
+    free(buf);
+  }
+}
 
 /* Return the thread-specific buffer */
-ThreadStatic *TdiThreadStatic()
-{
+ThreadStatic *TdiThreadStatic(){
   ThreadStatic *p;
-  pthread_once(&buffer_key_once, buffer_key_alloc);
+  RDLOCK_BUFFER;
+  if (!is_init) {
+    UNLOCK_BUFFER;
+    WRLOCK_BUFFER;
+    pthread_key_create(&buffer_key, buffer_destroy);
+    is_init = B_TRUE;
+  }
   p = (ThreadStatic *) pthread_getspecific(buffer_key);
   if (p == NULL) {
     p = (ThreadStatic *) memset(malloc(sizeof(ThreadStatic)), 0, sizeof(ThreadStatic));
@@ -42,23 +59,8 @@ ThreadStatic *TdiThreadStatic()
     pthread_setspecific(buffer_key, (void *)p);
     p->TdiIndent = 1;
   }
+  UNLOCK_BUFFER;
   return p;
-}
-
-/* Free the thread-specific buffer */
-STATIC_ROUTINE void buffer_destroy(void *buf){
-  if (buf != NULL) {
-    ThreadStatic *ts = (ThreadStatic *) buf;
-    StrFree1Dx(&ts->TdiIntrinsic_message);
-    LibResetVmZone(&ts->TdiVar_private.head_zone);
-    LibResetVmZone(&ts->TdiVar_private.data_zone);
-    free(buf);
-  }
-}
-
-/* Allocate the key */
-STATIC_ROUTINE void buffer_key_alloc(){
-  pthread_key_create(&buffer_key, buffer_destroy);
 }
 
 void LockTdiMutex(pthread_mutex_t * mutex, int *initialized){

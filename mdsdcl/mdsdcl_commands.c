@@ -56,10 +56,14 @@ char *prompt;
 char *def_file;
 } ThreadStatic;
 /* Key for the thread-specific buffer */
+STATIC_THREADSAFE int is_init = B_FALSE;
 STATIC_THREADSAFE pthread_key_t buffer_key;
 /* Once-only initialisation of the key */
-STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
-STATIC_ROUTINE void buffer_key_alloc();
+STATIC_THREADSAFE pthread_rwlock_t buffer_lock   = PTHREAD_RWLOCK_INITIALIZER;
+#define WRLOCK_BUFFER pthread_rwlock_wrlock(&buffer_lock);
+#define RDLOCK_BUFFER pthread_rwlock_rdlock(&buffer_lock);
+#define UNLOCK_BUFFER pthread_rwlock_unlock(&buffer_lock);
+
 #define PROMPT   (ThreadStatic_p->prompt)
 #define DEF_FILE (ThreadStatic_p->def_file)
 /* Free the thread-specific buffer */
@@ -73,18 +77,22 @@ STATIC_ROUTINE void buffer_destroy(void *buf){
     free(buf);
   }
 }
-STATIC_ROUTINE void buffer_key_alloc(){
-  pthread_key_create(&buffer_key, buffer_destroy);
-}
 /* Return the thread-specific buffer */
 STATIC_ROUTINE ThreadStatic *GetThreadStatic(){
   ThreadStatic *p;
-  pthread_once(&buffer_key_once, buffer_key_alloc);
+  RDLOCK_BUFFER;
+  if (!is_init) {
+    UNLOCK_BUFFER;
+    WRLOCK_BUFFER;
+    pthread_key_create(&buffer_key, buffer_destroy);
+    is_init = B_TRUE;
+  }
   p = (ThreadStatic *) pthread_getspecific(buffer_key);
   if (p == NULL) {
     p = (ThreadStatic *) memset(calloc(1, sizeof(ThreadStatic)), 0, sizeof(ThreadStatic));
     pthread_setspecific(buffer_key, (void *)p);
   }
+  UNLOCK_BUFFER;
   return p;
 }
 #define GET_THREADSTATIC_P ThreadStatic *ThreadStatic_p = GetThreadStatic()
