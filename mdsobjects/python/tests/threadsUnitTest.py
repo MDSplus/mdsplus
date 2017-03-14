@@ -8,8 +8,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-treeUnitTest = _mimport('treeUnitTest')
-dataUnitTest = _mimport('dataUnitTest')
 from MDSplus import Tree
 
 class threadJob(Thread):
@@ -31,7 +29,7 @@ class threadJob(Thread):
             stream.close()
 
 class threadTest(TestCase):
-    def doThreadTestCase(self,testclass,test,numthreads):
+    def doThreadsTestCase(self,testclass,test,numthreads):
         numsuccess= 0
         threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
         for t in threads:
@@ -41,35 +39,48 @@ class threadTest(TestCase):
             if t.result.wasSuccessful():
                 numsuccess += 1
             else:
-                print('### begin thread %2d: %s##################'%(i,testcase._testMethodName))
+                print('### begin thread %2d: %s##################'%(i,test))
                 print(t.stream)
-                print('### end   thread %2d: %s##################'%(i,testcase._testMethodName))
+                print('### end   thread %2d: %s##################'%(i,test))
         self.assertEqual(numsuccess,numthreads,test)
 
-    def dataThreadTests(self):
+    def dataThreadsTests(self):
+        dataUnitTest = _mimport('dataUnitTest')
         numthreads = 3
         for test in dataUnitTest.dataTests.getTests():
-            self.doThreadTestCase(dataUnitTest.dataTests,test,numthreads)
+            self.doThreadsTestCase(dataUnitTest.dataTests,test,numthreads)
 
-    def treeThreadTests(self):
+    def dclThreadsTests(self):
+        dclUnitTest = _mimport('dclUnitTest')
+        numthreads = 3
+        dclUnitTest.dclTests.setUpClass()
+        try:
+            self.doThreadsTestCase(dclUnitTest.dclTests,'dclInterface',numthreads)
+        finally:
+            while dclUnitTest.dclTests.instances>0:
+                dclUnitTest.dclTests.tearDownClass()
+
+    def treeThreadsTests(self):
+        treeUnitTest = _mimport('treeUnitTest')
         numthreads = 3
         treeUnitTest.treeTests.inThread = True
         treeUnitTest.treeTests.setUpClass()
         try:
             for test in treeUnitTest.treeTests.getTests():
-                self.doThreadTestCase(treeUnitTest.treeTests,test,numthreads)
+                self.doThreadsTestCase(treeUnitTest.treeTests,test,numthreads)
         finally:
             treeUnitTest.treeTests.inThread = False
             while treeUnitTest.treeTests.instances>0:
                 treeUnitTest.treeTests.tearDownClass()
 
     def runTest(self):
-        self.dataThreadTests()
-        #self.treeThreadTests() old python is not thread safe
+        self.dataThreadsTests()
+        #self.dclThreadsTests()  old python is not thread safe
+        #self.treeThreadsTests() old python is not thread safe
 
 
 def suite():
-    tests = ['dataThreadTests'] #,'treeThreadTests']
+    tests = ['dataThreadsTests']#,'dclThreadsTests','treeThreadsTests']
     return TestSuite(map(threadTest, tests))
 
 def run():
