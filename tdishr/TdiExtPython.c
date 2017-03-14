@@ -79,12 +79,13 @@ static int Initialize(){
 #ifdef _WIN32
       envsym = "python27";
       const char * aspath = "C:\\Python27\\python27.dll";
+      _putenv_s("PyLib",envsym);
 #else
       envsym = "python2.7";
       const char * aspath = "/usr/lib/python2.7.so.1";
+      setenv("PyLib",envsym,B_FALSE);
 #endif
       fprintf(stderr,"\nYou should defined the PyLib environment variable!\nPlease define PyLib to be the name of your python library, i.e. '%s' or '%s'.\nWe will try '%s' as default.\n\n",envsym,aspath,envsym);
-      setenv("PyLib",envsym,B_FALSE);
     }
 #ifdef RTLD_NOLOAD
     /*** See if python routines are already available ***/
