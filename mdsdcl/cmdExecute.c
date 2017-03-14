@@ -1375,8 +1375,7 @@ static pthread_mutex_t dcl_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 void dclLock()  {pthread_mutex_lock  (&dcl_mutex);}
 #else
 static pthread_mutex_t dcl_mutex;
-void dclLock()
-{
+void dclLock(){
   static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
   static int initialized = 0;
   pthread_mutex_lock(&initMutex);
@@ -1384,12 +1383,12 @@ void dclLock()
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
     pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&lock, &m_attr);
+    pthread_mutex_init(&dcl_mutex, &m_attr);
     pthread_mutexattr_destroy(&m_attr);
     initialized = 1;
   }
   pthread_mutex_unlock(&initMutex);
-  pthread_mutex_lock(&lock);
+  pthread_mutex_lock(&dcl_mutex);
 }
 #endif
 void dclUnlock(){pthread_mutex_unlock(&dcl_mutex);}
