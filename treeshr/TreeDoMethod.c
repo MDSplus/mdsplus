@@ -92,9 +92,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 {
   INIT_STATUS;
   va_list incrmtr;
-  static short conglomerate_elt;
-  static unsigned char data_type;
-  static int head_nid;
+  short conglomerate_elt;
+  unsigned char data_type;
+  int head_nid;
   NCI_ITM itmlst[] = { {1, NciDTYPE, &data_type, 0},
   {2, NciCONGLOMERATE_ELT, (unsigned char *)&conglomerate_elt, 0},
   {4, NciCONGLOMERATE_NIDS, (unsigned char *)&head_nid, 0},

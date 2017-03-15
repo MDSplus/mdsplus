@@ -838,7 +838,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
         TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("\\n3")), MdsException );
 
 
-        n1->addDevice("device","DIO2");
+        delete n1->addDevice("device","DIO2");
 
     }
 

@@ -1,11 +1,11 @@
 %{
+  #include <mdsdclthreadsafe.h>
   #include <stdio.h>
   #include <stdlib.h>
   int yydebug=0;
   #define YYLTYPE void *
   #define yylex dcl_lex
   #include "dcl_p.h"
-  #include <dcl.h>
   #include <mdsdcl_messages.h>
   #include "dcllex.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
@@ -26,7 +26,7 @@
 %token QUALIFIER
 %token EQUALS
 %token VALUE
-%token PVALUE
+%token PVALUE_
 %token COMMA
 %token END
 %token COMMENT
@@ -36,7 +36,7 @@
 %type <value_list> pvalue_list
 %type <qualifier> qualifier
 %type <str> QUALIFIER VERB VALUE CMDFILE
-%type <pvalue> PVALUE
+%type <pvalue> PVALUE_
 
 %start command
 
@@ -134,7 +134,7 @@ VALUE {
 }
 
 pvalue_list:
-PVALUE {
+PVALUE_ {
   dclValuePtr dclvalue=$PVALUE;
   char *value=dclvalue->value;
   $$=malloc(sizeof(dclValueList));
@@ -157,7 +157,7 @@ PVALUE {
   free(dclvalue);
   $$->values[0]=value;
 }
-| pvalue_list COMMA PVALUE {
+| pvalue_list COMMA PVALUE_ {
   dclValuePtr dclvalue=$PVALUE;
   free(dclvalue->restOfLine);
   $$->values=realloc($$->values,sizeof(char *)*($$->count+1));

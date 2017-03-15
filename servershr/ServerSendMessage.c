@@ -57,9 +57,6 @@ int ServerSendMessage();
 #include <sys/time.h>
 #include <pthread.h>
 
-#define HAS_CONDITION 987654
-#define NOT_DONE 1212121
-
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
   #define pthread_attr_default NULL
   #define pthread_mutexattr_default NULL
@@ -72,12 +69,18 @@ extern short ArgLen();
 
 extern int GetAnswerInfoTS();
 
+/* Job must be a subclass of Condition
+ *typedef struct _Condition {
+ *  pthread_cond_t  cond;
+ *  pthread_mutex_t mutex;
+ *  int             value;
+ *} Condition;
+ */
 typedef struct _Job {
-  int has_condition;
   pthread_cond_t condition;
   pthread_mutex_t mutex;
   int done;
-  int marked_for_delete;
+  int has_condition;
   int *retstatus;
   void (*ast) ();
   void *astparam;
@@ -86,6 +89,11 @@ typedef struct _Job {
   int conid;
   struct _Job *next;
 } Job;
+static pthread_mutex_t jobs_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define LOCK_JOBS   pthread_mutex_lock(&jobs_mutex)
+#define UNLOCK_JOBS pthread_mutex_unlock(&jobs_mutex)
+static Job *Jobs = 0;
+
 
 typedef struct _client {
   SOCKET reply_sock;
@@ -94,11 +102,13 @@ typedef struct _client {
   short port;
   struct _client *next;
 } Client;
+static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define LOCK_CLIENTS   pthread_mutex_lock(&clients_mutex)
+#define UNLOCK_CLIENTS pthread_mutex_unlock(&clients_mutex)
+static Client *Clients = 0;
 
-static Job *Jobs = 0;
 static int MonJob = -1;
 static int JobId = 0;
-static Client *ClientList = 0;
 
 int ServerBadSocket(SOCKET socket);
 
@@ -110,33 +120,26 @@ int ServerConnect(char *server);
 static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
 static void CleanupJob(int status, int jobid);
-static void *Worker(void *sockptr);
+static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
 static unsigned int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
-static void lock_client_list();
-static void unlock_client_list();
-static void lock_job_list();
-static void unlock_job_list();
-extern int pthread_cond_timedwait();
 
 static void InitializeSockets()
 {
 #ifdef _WIN32
-  static int initialized = 0;
+  static int initialized = B_FALSE;
   if (!initialized) {
     WSADATA wsaData;
     WORD wVersionRequested;
     wVersionRequested = MAKEWORD(1, 1);
     WSAStartup(wVersionRequested, &wsaData);
-    initialized = 1;
+    initialized = B_TRUE;
   }
 #endif
 }
-
-
 
 extern void *GetConnectionInfo();
 static SOCKET getSocket(int conid)
@@ -200,8 +203,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       MonJob = jobid;
     switch (arg->dtype) {
       case DTYPE_CSTRING: {
-        int j;
-        int k;
+        int j, k;
         char *c = (char *)arg->ptr;
         int len = strlen(c);
         strcat(cmd, "\"");
@@ -221,7 +223,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
         sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
         break;
       default:
-        printf("shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
+        fprintf(stderr,"shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
     }
   }
   strcat(cmd, ")");
@@ -233,91 +235,71 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
   }
   status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
   if STATUS_NOT_OK
-      perror("Error: no response from server");
+    perror("Error: no response from server");
   if (mem)
     free(mem);
   return status;
 }
 
-static void RemoveJob(Job * job)
-{
+//caller must hold Jobs lock
+static void RemoveJob_lock(Job * job){
   Job *j, *prev;
-  lock_job_list();
-  for (j = Jobs, prev = 0; j && j != job; prev = j, j = j->next) ;
+  for (j = Jobs, prev = NULL; j && j != job; prev=j, j=j->next);
   if (j) {
     if (prev)
       prev->next = j->next;
     else
       Jobs = j->next;
-    if (j->has_condition != HAS_CONDITION)
+    if (!j->has_condition)
       free(j);
   }
-  unlock_job_list();
 }
 
-static void DoCompletionAst(int jobid, int status, char *msg, int removeJob)
-{
+
+//caller must hold Jobs lock
+static void DoCompletionAst_lock(int jobid, int status, char *msg, int removeJob){
   Job *j;
-  lock_job_list();
-  for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  unlock_job_list();
-  if (!j) {
-    lock_job_list();
-    for (j = Jobs; j && (j->jobid != MonJob); j = j->next) ;
-    unlock_job_list();
-  }
+  for (j=Jobs ; j && (j->jobid != jobid); j=j->next);
+  if (!j) for (j=Jobs ; j && (j->jobid != MonJob); j=j->next);
   if (j) {
-    int has_condition = j->has_condition == HAS_CONDITION;
+    int has_condition = j->has_condition;
     if (j->retstatus)
       *j->retstatus = status;
     if (j->ast)
       (*j->ast) (j->astparam, msg);
     if (removeJob && j->jobid != MonJob)
-      RemoveJob(j);
+      RemoveJob_lock(j);
     /**** If job has a condition, RemoveJob will not remove it. ***/
-    if (has_condition) {
-      pthread_mutex_lock(&j->mutex);
-      j->done = 1;
-      pthread_cond_signal(&j->condition);
-      pthread_mutex_unlock(&j->mutex);
-    }
+    if (has_condition)
+      CONDITION_SIGNAL(j);
   }
 }
 
 void ServerWait(int jobid)
 {
   Job *j;
-  lock_job_list();
+  LOCK_JOBS;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  unlock_job_list();
-  if (j) {
-    if (j->has_condition == HAS_CONDITION) {
-      while ((pthread_mutex_lock(&j->mutex) == 0)) {
-	if (j->done == NOT_DONE)
-	  pthread_cond_wait(&j->condition, &j->mutex);
-	pthread_mutex_unlock(&j->mutex);
-	if (j->done != NOT_DONE)
-	  break;
-      }
-      pthread_mutex_lock(&j->mutex);
-      pthread_cond_destroy(&j->condition);
-      pthread_mutex_unlock(&j->mutex);
-      pthread_mutex_destroy(&j->mutex);
-      free(j);
-    }
+  UNLOCK_JOBS;
+  if (j && j->has_condition) {
+    CONDITION_WAIT(j);
+    CONDITION_DESTROY(j);
+    free(j);
   }
 }
 
 static void DoBeforeAst(int jobid)
 {
   Job *j;
-  lock_job_list();
+  LOCK_JOBS;
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  unlock_job_list();
-  if (j) {
-    if (j->before_ast)
-      (*j->before_ast) (j->astparam);
-  }
+  if (j && j->before_ast) {
+    void *astparam        = j->astparam;
+    void (*before_ast) () = j->before_ast;
+    UNLOCK_JOBS;
+    before_ast(astparam);
+  } else
+    UNLOCK_JOBS;
 }
 
 static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
@@ -328,23 +310,20 @@ static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astpara
   j->ast = ast;
   j->astparam = astparam;
   j->before_ast = before_ast;
-  j->marked_for_delete = 0;
   j->conid = conid;
-  lock_job_list();
+  LOCK_JOBS;
   j->jobid = ++JobId;
   if (msgid) {
-    pthread_mutex_init(&j->mutex, pthread_mutexattr_default);
-    pthread_cond_init(&j->condition, pthread_condattr_default);
-    j->has_condition = HAS_CONDITION;
-    j->done = NOT_DONE;
+    CONDITION_INIT(j)
+    j->has_condition = B_TRUE;
     *msgid = j->jobid;
   } else {
-    j->has_condition = 0;
-    j->done = 1;
+    j->has_condition = B_FALSE;
+    j->done = B_TRUE;
   }
   j->next = Jobs;
   Jobs = j;
-  unlock_job_list();
+  UNLOCK_JOBS;
   return j->jobid;
 }
 
@@ -352,26 +331,20 @@ static void CleanupJob(int status, int jobid)
 {
   Job *j;
   int conid;
-  lock_job_list();
-  for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
-  unlock_job_list();
+  LOCK_JOBS;
+  for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
   if (j) {
-    int done = 0;
     conid = j->conid;
     DisconnectFromMds(conid);
-    while (!done) {
-      done = 1;
-      lock_job_list();
-      for (j = Jobs; j; j = j->next)
-	if (j->conid == conid)
-	  break;
-      unlock_job_list();
-      if (j != 0) {
-	done = 0;
-	DoCompletionAst(j->jobid, status, 0, 1);
-      }
+    DoCompletionAst_lock(j->jobid, status, 0, 1);
+    for (;;) {
+      for (j=Jobs ; j && (j->conid != conid) ; j=j->next);
+      if (j)
+        DoCompletionAst_lock(j->jobid, status, 0, 1);
+      else break;
     }
   }
+  UNLOCK_JOBS;
 }
 
 static SOCKET CreatePort(short starting_port, short *port_out)
@@ -412,13 +385,11 @@ static SOCKET CreatePort(short starting_port, short *port_out)
   return s;
 }
 
-static int ThreadRunning = 0;
-static pthread_mutex_t worker_mutex;
-static pthread_cond_t worker_condition;
+static Condition ReceiverRunning = CONDITION_INITIALIZER;
 
 static int start_receiver(short *port_out)
 {
-  int c_status = C_OK;
+  INIT_STATUS;
   static short port = 0;
   static SOCKET sock;
   static pthread_t thread;
@@ -427,115 +398,56 @@ static int start_receiver(short *port_out)
     if (sock == INVALID_SOCKET)
       return C_ERROR;
   }
-  if (!ThreadRunning) {
-#ifndef _WIN32
-    size_t ssize;
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_getstacksize(&attr, &ssize);
-    pthread_attr_setstacksize(&attr, ssize * 16);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-#endif
-    if (!pthread_mutex_init(&worker_mutex, pthread_mutexattr_default))
-        pthread_cond_init(&worker_condition, pthread_condattr_default);
-#ifndef _WIN32
-    c_status = pthread_create(&thread, &attr, Worker, (void *)&sock);
-    pthread_attr_destroy(&attr);
-#else
-    c_status = pthread_create(&thread, pthread_attr_default, Worker, (void *)&sock);
-#endif
-    if (c_status != C_OK) {
-      perror("error creating dispatch receiver thread\n");
-    } else {
-      while (pthread_mutex_lock(&worker_mutex) == 0) {
-	if (!ThreadRunning) {
-	  struct timespec abstime;
-	  struct timeval tmval;
-	  gettimeofday(&tmval, 0);
-	  abstime.tv_sec = tmval.tv_sec + 1;
-	  abstime.tv_nsec = tmval.tv_usec * 1000;
-	  pthread_cond_timedwait(&worker_condition, &worker_mutex, &abstime);
-          pthread_mutex_unlock(&worker_mutex);
-	} else {
-          pthread_mutex_unlock(&worker_mutex);
-          break;
-        }
-      }
-    }
-  }
+  CONDITION_START_THREAD(ReceiverRunning, thread, *16, ReceiverThread, &sock);
   *port_out = port;
-  return c_status;
+  return STATUS_NOT_OK;
 }
 
-static void ThreadExit(void *arg __attribute__ ((unused)))
-{
+static void ReceiverExit(void *arg __attribute__ ((unused))){
   printf("ServerSendMessage thread exitted\n");
-  ThreadRunning = 0;
+  CONDITION_RESET(&ReceiverRunning);
 }
-
-/*
-static jmp_buf Env;
-
-static void signal_handler(int dummy)
-{
-  longjmp(Env, 1);
-}
-*/
 
 static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
 {
   Client *c;
   if (rep > 0) {
-    int done = 0;
-    while (!done) {
-      lock_client_list();
-      for (c = ClientList; c; c = c->next) {
+    LOCK_CLIENTS;
+    do {
+      for (c = Clients; c; c = c->next)
 	if (ServerBadSocket(c->reply_sock)) {
-	  unlock_client_list();
+	  UNLOCK_CLIENTS;
 	  printf("removed client in ResetFdactive\n");
 	  RemoveClient(c, 0);
+          LOCK_CLIENTS;
 	  break;
 	}
-      }
-      unlock_client_list();
-      done = (c == 0);
-    }
+    } while (c);
+    UNLOCK_CLIENTS;
   }
   FD_ZERO(active);
   FD_SET(sock, active);
-  lock_client_list();
-  for (c = ClientList; c; c = c->next) {
+  LOCK_CLIENTS;
+  for (c = Clients; c; c = c->next) {
     if (c->reply_sock != INVALID_SOCKET)
       FD_SET(c->reply_sock, active);
   }
-  unlock_client_list();
+  UNLOCK_CLIENTS;
   printf("reset fdactive in ResetFdactive\n");
   return;
 }
 
-static void *Worker(void *sockptr)
-{
+static void ReceiverThread(void *sockptr){
   struct sockaddr_in sin;
   int sock = *(int *)sockptr;
   int tablesize = FD_SETSIZE;
   int num = 0;
   int last_client_addr;
   int rep;
+  pthread_cleanup_push(ReceiverExit, NULL);
   fd_set readfds, fdactive;
-  pthread_cleanup_push(ThreadExit, 0);
   last_client_addr = 0;
-  /*
-     signal(SIGSEGV, signal_handler);
-     signal(SIGBUS, signal_handler);
-     if (setjmp(Env) != 0) {
-     printf("Signal handler called in Worker\n");
-     return;
-     }
-   */
-  pthread_mutex_lock(&worker_mutex);
-  ThreadRunning = 1;
-  pthread_cond_signal(&worker_condition);
-  pthread_mutex_unlock(&worker_mutex);
+  CONDITION_SIGNAL(&ReceiverRunning);
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   for (rep = 0; rep < 10; rep++) {
@@ -543,41 +455,40 @@ static void *Worker(void *sockptr)
     while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1) {
       rep = 0;
       if (FD_ISSET(sock, &readfds)) {
-	socklen_t len = sizeof(struct sockaddr_in);
-	AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
+        socklen_t len = sizeof(struct sockaddr_in);
+        AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
-	Client *c, *next;
-	int done = 0;
-	while (!done) {
-	  lock_client_list();
-	  for (c = ClientList, next = c ? c->next : 0;
-	       c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
-	       c = next, next = c ? c->next : 0) ;
-	  unlock_client_list();
-	  if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
-	    SOCKET reply_sock = c->reply_sock;
-	    last_client_addr = c->addr;
-	    DoMessage(c, &fdactive);
-	    FD_CLR(reply_sock, &readfds);
-	  } else
-	    done = 1;
-	}
+        Client *c, *next;
+        LOCK_CLIENTS;
+        for (;;) {
+          for (c = Clients, next = c ? c->next : 0;
+               c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
+               c = next, next = c ? c->next : 0) ;
+          if (c && c->reply_sock != INVALID_SOCKET && FD_ISSET(c->reply_sock, &readfds)) {
+            SOCKET reply_sock = c->reply_sock;
+            last_client_addr = c->addr;
+            UNLOCK_CLIENTS;
+            DoMessage(c, &fdactive);
+            LOCK_CLIENTS;
+            FD_CLR(reply_sock, &readfds);
+          } else
+            break;
+        }
+        UNLOCK_CLIENTS;
       }
       readfds = fdactive;
     }
-    perror("Dispatcher select loop failed");
-    printf("Last client addr = %d\n", last_client_addr);
+    fprintf(stderr,"Dispatcher select loop failed\nLast client addr = %d\n", last_client_addr);
     ResetFdactive(rep, sock, &fdactive);
   }
-  printf("Cannot recover from select errors in ServerSendMessage, exitting\n");
-  exit(0);
+  fprintf(stderr,"Cannot recover from select errors in ServerSendMessage, exitting\n");
   pthread_cleanup_pop(1);
-  return (0);
+  exit(0);
 }
 
 int ServerBadSocket(SOCKET socket)
 {
-  int status = 1;
+  int status = C_ERROR;
   if (socket != INVALID_SOCKET) {
     int tablesize = FD_SETSIZE;
     fd_set fdactive;
@@ -586,7 +497,7 @@ int ServerBadSocket(SOCKET socket)
     FD_SET(socket, &fdactive);
     status = select(tablesize, &fdactive, 0, 0, &timeout);
   }
-  return !(status == 0);
+  return status!=C_OK;
 }
 
 EXPORT int ServerDisconnect(char *server_in)
@@ -600,7 +511,7 @@ EXPORT int ServerDisconnect(char *server_in)
   short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server /%s/ unknown\n", server_in);
+    printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
     if (addr != 0) {
@@ -617,9 +528,9 @@ EXPORT int ServerDisconnect(char *server_in)
 	port = htons((short)atoi(portpart));
       if (port) {
 	Client *c;
-	lock_client_list();
-	for (c = ClientList; c && (c->addr != addr || c->port != port); c = c->next) ;
-	unlock_client_list();
+	LOCK_CLIENTS;
+	for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
+	UNLOCK_CLIENTS;
 	if (c) {
 	  RemoveClient(c, 0);
 	  status = 1;
@@ -644,7 +555,7 @@ EXPORT int ServerConnect(char *server_in)
   short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server /%s/ unknown\n", server_in);
+    printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
     if (addr != 0) {
@@ -661,9 +572,9 @@ EXPORT int ServerConnect(char *server_in)
 	port = htons((short)atoi(portpart));
       if (port) {
 	Client *c;
-	lock_client_list();
-	for (c = ClientList; c && (c->addr != addr || c->port != port); c = c->next) ;
-	unlock_client_list();
+	LOCK_CLIENTS;
+	for (c = Clients; c && (c->addr != addr || c->port != port); c = c->next) ;
+	UNLOCK_CLIENTS;
 	if (c) {
 	  if (ServerBadSocket(getSocket(c->conid)))
 	    RemoveClient(c, 0);
@@ -716,7 +627,9 @@ static void DoMessage(Client * c, fd_set * fdactive)
   }
   switch (replyType) {
   case SrvJobFINISHED:
-    DoCompletionAst(jobid, status, msg, 1);
+    LOCK_JOBS;
+    DoCompletionAst_lock(jobid, status, msg, 1);
+    UNLOCK_JOBS;
     break;
   case SrvJobSTARTING:
     DoBeforeAst(jobid);
@@ -726,28 +639,27 @@ static void DoMessage(Client * c, fd_set * fdactive)
   default:
     RemoveClient(c, fdactive);
   }
-  if (msglen != 0)
+  if (msglen)
     free(msg);
 }
 
 static void RemoveClient(Client * c, fd_set * fdactive)
 {
-  Job *j;
   int client_found = 0;
   int conid = -1;
-  lock_client_list();
-  if (ClientList == c) {
+  LOCK_CLIENTS;
+  if (Clients == c) {
     client_found = 1;
-    ClientList = c->next;
+    Clients = c->next;
   } else {
     Client *cp;
-    for (cp = ClientList; cp && cp->next != c; cp = cp->next) ;
+    for (cp = Clients; cp && cp->next != c; cp = cp->next) ;
     if (cp && cp->next == c) {
       client_found = 1;
       cp->next = c->next;
     }
   }
-  unlock_client_list();
+  UNLOCK_CLIENTS;
   if (client_found) {
     conid = c->conid;
     if (c->reply_sock != INVALID_SOCKET) {
@@ -756,26 +668,20 @@ static void RemoveClient(Client * c, fd_set * fdactive)
       if (fdactive)
 	FD_CLR(c->reply_sock, fdactive);
     }
-    if (c->conid >= 0) {
+    if (c->conid >= 0)
       DisconnectFromMds(c->conid);
-    }
     free(c);
   }
-  lock_job_list();
-  for (j = Jobs; j; j = j->next)
-    if (j->conid == conid)
-      j->marked_for_delete = 1;
-  unlock_job_list();
-  for(;;) {
-    lock_job_list();
-    for (j = Jobs; j && !j->marked_for_delete; j = j->next) ;
-    unlock_job_list();
+  LOCK_JOBS;
+  Job *j;
+  for (;;) {
+    for (j = Jobs; j && (j->conid != conid) ; j = j->next);
     if (j) {
-      DoCompletionAst(j->jobid, ServerPATH_DOWN, NULL, 1);
-      RemoveJob(j);
-      return;
-    }
+      DoCompletionAst_lock(j->jobid, ServerPATH_DOWN, NULL, 1);
+      RemoveJob_lock(j);
+    } else break;
   }
+  UNLOCK_JOBS;
 }
 
 static unsigned int GetHostAddr(char *host)
@@ -810,22 +716,22 @@ static void AddClient(unsigned int addr, short port, int conid)
   new->addr = addr;
   new->port = port;
   new->next = 0;
-  lock_client_list();
-  for (c = ClientList; c && c->next != 0; c = c->next) ;
+  LOCK_CLIENTS;
+  for (c = Clients; c && c->next != 0; c = c->next) ;
   if (c)
     c->next = new;
   else
-    ClientList = new;
-  unlock_client_list();
+    Clients = new;
+  UNLOCK_CLIENTS;
 }
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
   unsigned int addr = *(unsigned int *)&sin->sin_addr;
   Client *c;
-  lock_client_list();
-  for (c = ClientList; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;
-  unlock_client_list();
+  LOCK_CLIENTS;
+  for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;
+  UNLOCK_CLIENTS;
   if (c) {
     c->reply_sock = reply_sock;
     if (reply_sock != INVALID_SOCKET)
@@ -834,32 +740,4 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fd
     shutdown(reply_sock, 2);
     close(reply_sock);
   }
-}
-
-static pthread_mutex_t client_mutex;
-
-static void lock_client_list()
-{
-  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  pthread_mutex_lock(&client_mutex);
-}
-
-static void unlock_client_list()
-{
-  pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
-  pthread_mutex_unlock(&client_mutex);
-}
-
-static pthread_mutex_t job_mutex;
-
-static void lock_job_list()
-{
-  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  pthread_mutex_lock(&job_mutex);
-}
-
-static void unlock_job_list()
-{
-  pthread_mutex_init(&job_mutex, pthread_mutexattr_default);
-  pthread_mutex_unlock(&job_mutex);
 }

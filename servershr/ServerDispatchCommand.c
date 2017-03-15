@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$DISPATCH_COMMAND   
+		Name:   SERVER$DISPATCH_COMMAND
 
 		Type:   C function
 
@@ -12,7 +12,7 @@
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$descriptor *cli, struct dsc$descriptor *command,
                         void (*ast)(), int astprm, int *netid, void (*link_down)(), void (*before_ast)())
@@ -37,9 +37,7 @@ EXPORT int ServerDispatchCommand(int *id, char *server, char *cli, char *command
 			  void (*ast) (), void *astprm, int *retstatus, void (*before_ast) ())
 {
   struct descrip p1, p2;
-  return ServerSendMessage(id, server, SrvCommand, retstatus, 0, ast, astprm, before_ast,
-			   2, MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cli), MakeDescrip(&p2,
-										      DTYPE_CSTRING,
-										      0, 0,
-										      command));
+  return ServerSendMessage(id, server, SrvCommand, retstatus, 0, ast, astprm, before_ast, 2,
+			MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cli),
+			MakeDescrip(&p2, DTYPE_CSTRING, 0, 0, command));
 }

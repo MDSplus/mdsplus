@@ -166,7 +166,7 @@ STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
 {
   char c, c1;
   int count = 1;
-
+  GET_TDITHREADSTATIC_P;
   while (count) {
     if ((c = input()) == '/') {
       if ((c1 = input()) == '*')
@@ -225,6 +225,7 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
 {
   struct descriptor_s str_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int bad, idx, status, tst, type;
+  GET_TDITHREADSTATIC_P;
   STATIC_CONSTANT struct {
     unsigned short length;
     unsigned char dtype;
@@ -306,7 +307,7 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
 {
   int j, token;
   unsigned char *str_l;
-
+  GET_TDITHREADSTATIC_P;
 /*
         upcase(str,len);
 */
@@ -395,6 +396,7 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
 
 STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker *mark_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   STATIC_ROUTINE struct {
     unsigned short length;
     unsigned char udtype, sdtype;
@@ -613,6 +615,7 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
 */
 int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   int nid, token = LEX_VALUE;
   unsigned char *str_l;
   str_l = (unsigned char *)strncpy((char *)malloc(len + 1), (char *)str, len);
@@ -649,6 +652,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
 */
 STATIC_ROUTINE int TdiLexPoint(int len, unsigned char *str, struct marker *mark_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   int lenx = len - 2;
   while (str[lenx + 1] == '.' || str[lenx + 1] == ':')
     --lenx;
@@ -665,6 +669,7 @@ STATIC_ROUTINE int TdiLexPoint(int len, unsigned char *str, struct marker *mark_
 */
 STATIC_ROUTINE int TdiLexBinEq(int token)
 {
+  GET_TDITHREADSTATIC_P;
   char cx;
 
   while ((cx = input()) == ' ' || cx == '\t') ;
@@ -678,6 +683,7 @@ STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
 			       unsigned char *str,
 			       struct marker *mark_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   char c0 = str[0], c1 = input();
 
   mark_ptr->rptr = 0;
@@ -834,6 +840,7 @@ int TdiLexQuote(int len __attribute__ ((unused)),
 		unsigned char *str,
 		struct marker *mark_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   char c, c1, *cptr = TdiRefZone.a_cur;
   int cur = 0, limit;
 
@@ -927,6 +934,7 @@ int TdiLexQuote(int len __attribute__ ((unused)),
 #define YYNEWLINE 10
 int yylex()
 {
+  GET_TDITHREADSTATIC_P;
   int nstr;
   while ((nstr = yylook()) >= 0)
   switch (nstr) {
@@ -1494,6 +1502,7 @@ extern "C" {
 #endif				/* YY_NOPROTO */
 int yylook()
 {
+  GET_TDITHREADSTATIC_P;
   register struct yysvf *yystate, **lsp;
   register struct yywork *yyt;
   struct yysvf *yyz;
@@ -1687,6 +1696,7 @@ int yyback(int *p, int m)
 	/* the following are only used in the lex library */
 int yyinput()
 {
+  GET_TDITHREADSTATIC_P;
   return (input());
 }
 
@@ -1697,5 +1707,6 @@ void yyoutput()
 
 void yyunput(int c __attribute__ ((unused)))
 {
+  GET_TDITHREADSTATIC_P;
   unput(c);
 }

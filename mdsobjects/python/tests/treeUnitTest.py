@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite
 import os
 from re import match
-from threading import Lock,current_thread
+from threading import Lock
 
 from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Conglom
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
@@ -9,30 +9,13 @@ from MDSplus import mdsExceptions as Exc
 
 class treeTests(TestCase):
     lock = Lock()
-    shotdic = {}
     shotinc = 3
     instances = 0
     inThread = False
-    @property
-    def index(self):
-        return treeTests.shotdic[current_thread().ident]
+    index = 0
     @property
     def shot(self):
         return self.index*treeTests.shotinc+1
-
-    def _doTCLTest(self,expr,out=None,err=None,re=False):
-        def checkre(pattern,string):
-            if pattern is None:
-                self.assertEqual(string is None,True)
-            else:
-                self.assertEqual(string is None,False)
-                self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
-        outerr = tcl(expr,True,True,True)
-        if not re:
-            self.assertEqual(outerr,(out,err))
-        else:
-            checkre(out,outerr[0])
-            checkre(err,outerr[1])
 
     def _doExceptionTest(self,expr,exc):
         try:
@@ -62,20 +45,20 @@ class treeTests(TestCase):
                 if getenv("testing_path") is None:
                     cls._setenv("testing_path","%s/trees"%cls.root)
             cls.instances += 1
-            index = len(cls.shotdic)
             if cls.inThread:
-                print('thread - %d'%(index,))
-            cls.shotdic[current_thread().ident] = index
-        treeTests.buildTrees(index*cls.shotinc+1)
+                print('threads up: %d'%(cls.instances,))
+
     @classmethod
     def _setenv(cls,name,value):
         value = str(value)
         cls.env[name]  = value
         cls.envx[name] = value
         setenv(name,value)
-    @classmethod
-    def buildTrees(cls,shot):
-        with Tree('pytree',shot,'new') as pytree:
+
+    def buildTrees(self):
+        with Tree('pytree',self.shot,'new') as pytree:
+            if pytree.shot != self.shot:
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytree.shot, shot.shot))
             pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
                 node=pytree.addNode('val%02d' % (i,),'numeric')
@@ -90,9 +73,9 @@ class treeTests(TestCase):
             Device.PyDevice('TestDevice').Add(pytree,'TESTDEVICE')
             Device.PyDevice('CYGNET4K').Add(pytree,'CYGNET4K').on=False
             pytree.write()
-        with Tree('pytreesub',shot,'new') as pytreesub:
-            if pytreesub.shot != shot:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, shot))
+        with Tree('pytreesub',self.shot,'new') as pytreesub:
+            if pytreesub.shot != self.shot:
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, shot.shot))
             pytreesub_top=pytreesub.default
             node=pytreesub_top.addNode('.rog','structure')
             for i in range(10):
@@ -300,91 +283,8 @@ class treeTests(TestCase):
         pytree3.compressDatafile()
         self.assertEqual((signal.record==pytree3.SIG01.record).all(),True)
 
-    def dclInterface(self):
-        self.assertEqual(dcl('help set verify',1,1,0)[1],None)
-        self.assertEqual(tcl('help set tree',1,1,0)[1],None)
-        self.assertEqual(ccl('help set xandq',1,1,0)[1],None)
-        self.assertEqual(cts('help addcrate',1,1,0)[1],None)
-        """ tcl commands """
-        self._doTCLTest('type test','test\n')
-        self._doTCLTest('close/all')
-        self._doTCLTest('show db','\n')
-        self._doTCLTest('set tree pytree/shot=%d'%(self.shot,))
-        self._doTCLTest('show db','000  PYTREE        shot: %d [\\PYTREE::TOP]   \n\n'%self.shot)
-        self._doTCLTest('edit PYTREE/shot=%d'%(self.shot,))
-        self._doTCLTest('add node TCL_NUM/usage=numeric')
-        self._doTCLTest('add node TCL_PY_DEV/model=TESTDEVICE')
-        self._doTCLTest('do TESTDEVICE:TASK_TEST')
-        self._doExceptionTest('do TESTDEVICE:TASK_ERROR',Exc.DevUNKOWN_STATE)
-        self._doExceptionTest('close',Exc.TreeWRITEFIRST)
-        self._doTCLTest('write')
-        self._doTCLTest('close')
-        self._doTCLTest('show db','\n')
-        """ tcl exceptions """
-        self._doExceptionTest('close',Exc.TreeNOT_OPEN)
-        self._doExceptionTest('dispatch/command/server=xXxXxXx type test',Exc.ServerPATH_DOWN)
-        self._doExceptionTest('dispatch/command/server type test',Exc.MdsdclIVVERB)
-
-    def dispatcher(self):
-        from time import sleep
-        def testDispatchCommand(command,stdout=None,stderr=None):
-            self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
-        server = getenv('ACTION_SERVER')
-        if server is None:
-            from subprocess import Popen,STDOUT
-            port = int(getenv('ACTION_PORT','8800'))
-            server = 'LOCALHOST:%d'%(port,)
-        else:
-            Popen = None
-            for envpair in self.envx.items():
-                testDispatchCommand('env %s=%s'%envpair)
-        show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
-        pytree = Tree('pytree',self.shot)
-        pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
-        pytree.TESTDEVICE.ACTIONSERVER.record = server
-        """ using dispatcher """
-        hosts = '%s/mdsip.hosts'%self.root
-        log = None
-        try:
-          if Popen:
-              log = open('mdsip_%d.log'%self.index,'w')
-              mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
-                             stdout=log,stderr=STDOUT)
-          try:
-            sleep(5)
-            if Popen:
-                self.assertEqual(mdsip.poll(),None)
-            """ tcl dispatch """
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            testDispatchCommand('set verify')
-            testDispatchCommand('type test')
-            self._doTCLTest('dispatch/build')
-            self._doTCLTest('dispatch/phase INIT')
-            sleep(1)
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            self._doTCLTest('dispatch/phase PULSE')
-            sleep(1)
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            self._doTCLTest('dispatch/phase STORE')
-            sleep(1)
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            """ tcl exceptions """
-            self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
-            """ tcl check if still alive """
-            if Popen:
-                self.assertEqual(mdsip.poll(),None)
-          finally:
-            if Popen and mdsip.poll() is None:
-                self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
-                mdsip.terminate()
-                mdsip.wait()
-        finally:
-            if log: log.close()
-            self._doTCLTest('close/all')
-        pytree = Tree('pytree',self.shot,'ReadOnly')
-        self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
-
     def runTest(self):
+        self.buildTrees()
         self.openTrees()
         self.getNode()
         self.setDefault()
@@ -393,15 +293,16 @@ class treeTests(TestCase):
         self.getData()
         self.segments()
         self.getCompression()
-        if not self.inThread:
-            self.dclInterface()
-            self.dispatcher()
+
+    @staticmethod
+    def getTests():
+        return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
+    @staticmethod
+    def getTestCases():
+        return map(treeTests,treeTests.getTests())
 
 def suite():
-    tests = ['openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
-    if not treeTests.inThread:
-        tests += ['dclInterface','dispatcher']
-    return TestSuite(map(treeTests,tests))
+    return TestSuite(treeTests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

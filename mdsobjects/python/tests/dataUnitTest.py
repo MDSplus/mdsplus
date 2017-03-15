@@ -329,10 +329,15 @@ class dataTests(TestCase):
         self.decompile()
         self.tdiPythonInterface()
 
+    @staticmethod
+    def getTests():
+        return ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
+    @staticmethod
+    def getTestCases():
+        return map(dataTests,dataTests.getTests())
 
 def suite():
-    tests = ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
-    return TestSuite(map(dataTests,tests))
+    return TestSuite(dataTests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

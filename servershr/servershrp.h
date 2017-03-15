@@ -1,17 +1,10 @@
 #ifndef SERVERSHRP_H
  #define SERVERSHRP_H
  #include <config.h>
+ #include <pthread_port.h>
  #ifdef _WIN32
-  #include <windows.h>
   #include <time.h>
-  #ifdef HAVE_PTHREAD_H
-   #include <pthread.h>
-  #else
-   typedef void *pthread_t;
-   #define close closesocket
-  #endif
  #else
-  #include <pthread.h>
   #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
    extern void pthread_lock_global_np();
    extern void pthread_unlock_global_np();
@@ -115,6 +108,7 @@ typedef struct {
   unsigned recorded:1;
   char *path;
   char *event;
+  pthread_rwlock_t lock;
 } ActionInfo;
 
 typedef struct {
@@ -142,5 +136,4 @@ extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, i
 extern int ServerConnect(char *);
 extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid, int on,
 			     int mode, char *server, int actstatus);
-
 #endif

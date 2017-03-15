@@ -33,7 +33,6 @@
 #define DTYPE_YY                DTYPE_HC
 
 #include "tdirefzone.h"
-
 #include "tdiyacc.h"
 YYSTYPE YYLVAL = { {0} };
 

@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$ABORT_SERVER   
+		Name:   SERVER$ABORT_SERVER
 
 		Type:   C function
 
@@ -12,7 +12,7 @@
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 

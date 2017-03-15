@@ -65,7 +65,9 @@ static PyObject *(*PyObject_Str) () = NULL;
 static int (*PyObject_IsSubclass) () = NULL;
 
 static int Initialize(){
-  if (!PyGILState_Ensure) {
+  if (PyGILState_Ensure)
+    return MDSplusSUCCESS;
+  else {
     void (*Py_Initialize) () = NULL;
     void (*PyEval_InitThreads)() = NULL;
     int  (*PyEval_ThreadsInitialized)() = NULL;
@@ -74,8 +76,16 @@ static int Initialize(){
     char *lib;
     char *envsym = getenv("PyLib");
     if (!envsym) {
-      fprintf(stderr,"\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\nPlease define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
-      return MDSplusERROR;
+#ifdef _WIN32
+      envsym = "python27";
+      const char * aspath = "C:\\Python27\\python27.dll";
+      _putenv_s("PyLib",envsym);
+#else
+      envsym = "python2.7";
+      const char * aspath = "/usr/lib/python2.7.so.1";
+      setenv("PyLib",envsym,B_FALSE);
+#endif
+      fprintf(stderr,"\nYou should defined the PyLib environment variable!\nPlease define PyLib to be the name of your python library, i.e. '%s' or '%s'.\nWe will try '%s' as default.\n\n",envsym,aspath,envsym);
     }
 #ifdef RTLD_NOLOAD
     /*** See if python routines are already available ***/
@@ -148,8 +158,8 @@ static int Initialize(){
     loadrtn(PyList_GetItem, 1);
     loadrtn(PyObject_Str,1);
     loadrtn(PyObject_IsSubclass,1);
+    return MDSplusSUCCESS;
   }
-  return MDSplusSUCCESS;
 }
 
 static char *getStringFromPyObj(PyObject *obj) {
