@@ -2,6 +2,8 @@
 leak:libMdsIpUDT
 leak:MdsShrGetThreadStatic
 leak:mdsdclGetThreadStatic
+leak:mdsdclSetPrompt
+leak:mdsdclSetDefFile
 leak:TreeGetThreadStatic
 leak:TdiGetThreadStatic
 leak:TRACE
