@@ -1,5 +1,5 @@
 from unittest import TestCase, TestSuite
-from MDSplus import Tree, Device, getenv,setenv
+from MDSplus import Tree, Device, Data, getenv, setenv
 from threading import Lock
 
 class devicesTest(TestCase):
@@ -28,7 +28,6 @@ class devicesTest(TestCase):
             for name in sorted(devices.__dict__.keys()):
                 cls = devices.__dict__[name]
                 if isinstance(cls, type) and issubclass(cls, Device):
-                    print(name)
                     pathparts = name.split('_')
                     node = t.top
                     if len(name)>9 and len(pathparts)>1:
@@ -41,12 +40,25 @@ class devicesTest(TestCase):
                     #t.write()
 
     def MitDevices(self):
-        self.DevicesTests(__import__('MitDevices'))
+        import MitDevices
+        self.DevicesTests(MitDevices)
+        names = [s for s in (str(s).strip() for s in Data.execute('MitDevices()')[::2]) if not s in MitDevices.__dict__];names.sort()
+        _names = ['CHS_A14', 'DC1394', 'DC1394A', 'DIO2', 'DT196AO', 'DT200', 'DT_ACQ16', 'INCAA_TR10', 'JRG_ADC32A', 'JRG_TR1612', 'L6810', 'MATROX']
+        passed = []
+        with Tree('devtree',-1,'new') as t:
+            for name in names:
+               try:
+                t.addDevice(name,name)
+                passed.append(name)
+               except: pass
+        self.assertEqual(passed,_names)
+
     def RfxDevices(self):
         self.DevicesTests(__import__('RfxDevices'))
     def W7xDevices(self):
         self.DevicesTests(__import__('W7xDevices'))
-
+    def tdiDevices(self):
+        pass
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
