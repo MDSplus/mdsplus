@@ -13,7 +13,6 @@ from MDSplus import Tree
 class threadJob(Thread):
     def __init__(self,testclass,test,idx):
         super(threadJob,self).__init__()
-        self.isDaemon = True
         self.test = testclass(test)
         self.test.index = idx
     """Thread to execute the treeTests"""
