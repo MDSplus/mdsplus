@@ -12,8 +12,8 @@ TEST_EXTENSIONS = .py
 
 
 TESTS = \
-        dclUnitTest.py \
         dataUnitTest.py \
+        dclUnitTest.py \
         segmentsUnitTest.py \
         treeUnitTest.py \
         threadsUnitTest.py
@@ -23,8 +23,8 @@ TESTS = \
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 VALGRIND_TESTS = \
-        dclUnitTest.py \
         dataUnitTest.py \
+        dclUnitTest.py \
         segmentsUnitTest.py \
         treeUnitTest.py \
         threadsUnitTest.py
