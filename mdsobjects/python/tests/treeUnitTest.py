@@ -1,11 +1,9 @@
 from unittest import TestCase,TestSuite
 import os
-from re import match
 from threading import Lock
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Conglom
-from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
-from MDSplus import mdsExceptions as Exc
+from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device
+from MDSplus import getenv,setenv
 
 class treeTests(TestCase):
     lock = Lock()
@@ -16,14 +14,6 @@ class treeTests(TestCase):
     @property
     def shot(self):
         return self.index*treeTests.shotinc+1
-
-    def _doExceptionTest(self,expr,exc):
-        try:
-            tcl(expr,True,True,True)
-        except Exception as e:
-            self.assertEqual(e.__class__,exc)
-            return
-        self.fail("TCL: '%s' should have signaled an exception"%expr)
 
     @classmethod
     def setUpClass(cls):
@@ -58,7 +48,7 @@ class treeTests(TestCase):
     def buildTrees(self):
         with Tree('pytree',self.shot,'new') as pytree:
             if pytree.shot != self.shot:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytree.shot, shot.shot))
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytree.shot, self.shot))
             pytree.default.addNode('pytreesub','subtree').include_in_pulse=True
             for i in range(10):
                 node=pytree.addNode('val%02d' % (i,),'numeric')
@@ -75,7 +65,7 @@ class treeTests(TestCase):
             pytree.write()
         with Tree('pytreesub',self.shot,'new') as pytreesub:
             if pytreesub.shot != self.shot:
-                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, shot.shot))
+                raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, self.shot))
             pytreesub_top=pytreesub.default
             node=pytreesub_top.addNode('.rog','structure')
             for i in range(10):
@@ -284,22 +274,15 @@ class treeTests(TestCase):
         self.assertEqual((signal.record==pytree3.SIG01.record).all(),True)
 
     def runTest(self):
-        self.buildTrees()
-        self.openTrees()
-        self.getNode()
-        self.setDefault()
-        self.nodeLinkage()
-        self.nciInfo()
-        self.getData()
-        self.segments()
-        self.getCompression()
+        for test in self.getTests():
+            self.__getattribute__(test)()
 
     @staticmethod
     def getTests():
         return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']
-    @staticmethod
-    def getTestCases():
-        return map(treeTests,treeTests.getTests())
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
     return TestSuite(treeTests.getTestCases())

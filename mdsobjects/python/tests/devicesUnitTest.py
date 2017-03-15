@@ -1,5 +1,5 @@
 from unittest import TestCase, TestSuite
-from MDSplus import Tree, Device, Data, getenv, setenv
+from MDSplus import Tree, Device, Data, setenv
 from threading import Lock
 
 class devicesTest(TestCase):
@@ -57,8 +57,7 @@ class devicesTest(TestCase):
         self.DevicesTests(__import__('RfxDevices'))
     def W7xDevices(self):
         self.DevicesTests(__import__('W7xDevices'))
-    def tdiDevices(self):
-        pass
+
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
@@ -87,4 +86,3 @@ if __name__=='__main__':
     if objgraph:
          gc.collect()
          objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])
-
