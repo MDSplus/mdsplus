@@ -14532,8 +14532,7 @@ fi
  LOG_DRIVER="\$(SHELL) \$(top_srcdir)/conf/test-driver"
  abs_srcdir=$(cd ${srcdir}; pwd)
 
-      as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
- as_fn_append PY_LOG_FLAGS ""
+      as_fn_append PY_LOG_FLAGS ""
 
  case "${build_os}:${host}" in #(
   #
@@ -14874,19 +14873,16 @@ esac
 
 
 
-
-if ${_mds_path+:} false; then :
-
-else
-  _mds_path=
-fi
-for _i in "${abs_srcdir}/tdi"; do
- as_fn_append _mds_path "$(shell winepath -w $_i 2>/dev/null);";
-done
-
-      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='${_mds_path}' "
       as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
-      as_fn_append TESTS_ENVIRONMENT "WINEPATH='${WINEPATH}' "
+      as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
+      as_fn_append TESTS_ENVIRONMENT "WINEPATH='Z:\\python27;${WINEPATH}' "
+      as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='Z:\\python27' "
+      as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='Z:\\python27\\Lib;Z:\\python27\\Lib\\site-packages;Z:\$(abs_top_srcdir)/testing' "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='Z:\$(abs_top_srcdir)/tdi' "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
+      as_fn_append TESTS_ENVIRONMENT "PyLib='python27' "
+      PYTHON='wine cmd /c Z:\$(abs_top_srcdir)/testing/python.bat'
+      as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
       as_fn_append LOG_COMPILER "wine "
 
  # WINE Valgrind tuning ..
@@ -14921,6 +14917,7 @@ fi
    as_fn_append TESTS_ENVIRONMENT "MDS_PATH=\$(abs_top_srcdir)/tdi "
    as_fn_append TESTS_ENVIRONMENT "${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) "
    as_fn_append TESTS_ENVIRONMENT "PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes"
+   as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
   ;; #(
   #
  # OTHER

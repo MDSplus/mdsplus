@@ -135,7 +135,6 @@ AC_DEFUN([TS_SELECT],[
  dnl TS_CHECK_PYTHON_TAP( [$PYTHON],,
  dnl  [AC_MSG_WARN("Tap plugin for python-nose not found")])
  dnl LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH};
- AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
 
  AS_CASE(["${build_os}:${host}"],
@@ -151,10 +150,16 @@ AC_DEFUN([TS_SELECT],[
      [
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
-      TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='${_mds_path}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEDEBUG=-all ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='Z:\\python27;${WINEPATH}' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='Z:\\python27' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='Z:\\python27\\Lib;Z:\\python27\\Lib\\site-packages;Z:\$(abs_top_srcdir)/testing' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='Z:\$(abs_top_srcdir)/tdi' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib='python27' ")
+      AS_VAR_SET([PYTHON],'wine cmd /c Z:\$(abs_top_srcdir)/testing/python.bat')
+      AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
 
  # WINE Valgrind tuning ..
@@ -182,7 +187,8 @@ AC_DEFUN([TS_SELECT],[
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  ],
  #
  # OTHER
