@@ -131,7 +131,7 @@ ts = testing()
 def check_arch(file_name):
     if sys.platform.startswith('win'):
         lib   = '%s.dll'
-        pylib = 'python%d.%d'
+        pylib = 'python%d%d'
     elif sys.platform.startswith('darwin'):
         lib   = 'lib%s.dylib'
         pylib = 'python%d.%d'

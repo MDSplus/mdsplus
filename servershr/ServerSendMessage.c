@@ -81,7 +81,6 @@ typedef struct _Job {
   pthread_mutex_t mutex;
   int done;
   int has_condition;
-  int marked_for_delete;
   int *retstatus;
   void (*ast) ();
   void *astparam;
@@ -245,7 +244,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
 //caller must hold Jobs lock
 static void RemoveJob_lock(Job * job){
   Job *j, *prev;
-  for (j = Jobs, prev = 0; j && j != job; prev = j, j = j->next) ;
+  for (j = Jobs, prev = NULL; j && j != job; prev=j, j=j->next);
   if (j) {
     if (prev)
       prev->next = j->next;
@@ -257,12 +256,11 @@ static void RemoveJob_lock(Job * job){
 }
 
 
-
 //caller must hold Jobs lock
 static void DoCompletionAst_lock(int jobid, int status, char *msg, int removeJob){
   Job *j;
-  for (j = Jobs; j && (j->jobid != jobid); j = j->next);
-  if (!j) for (j = Jobs; j && (j->jobid != MonJob); j = j->next);
+  for (j=Jobs ; j && (j->jobid != jobid); j=j->next);
+  if (!j) for (j=Jobs ; j && (j->jobid != MonJob); j=j->next);
   if (j) {
     int has_condition = j->has_condition;
     if (j->retstatus)
@@ -312,7 +310,6 @@ static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astpara
   j->ast = ast;
   j->astparam = astparam;
   j->before_ast = before_ast;
-  j->marked_for_delete = 0;
   j->conid = conid;
   LOCK_JOBS;
   j->jobid = ++JobId;
@@ -335,18 +332,16 @@ static void CleanupJob(int status, int jobid)
   Job *j;
   int conid;
   LOCK_JOBS;
-  for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
+  for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
   if (j) {
     conid = j->conid;
     DisconnectFromMds(conid);
-    while (j) {
-      for (j = Jobs; j; j = j->next)
-	if (j->conid == conid)
-	  break;
+    DoCompletionAst_lock(j->jobid, status, 0, 1);
+    for (;;) {
+      for (j=Jobs ; j && (j->conid != conid) ; j=j->next);
       if (j)
-	DoCompletionAst_lock(j->jobid, status, 0, 1);
-      else
-        break;
+        DoCompletionAst_lock(j->jobid, status, 0, 1);
+      else break;
     }
   }
   UNLOCK_JOBS;
@@ -516,7 +511,7 @@ EXPORT int ServerDisconnect(char *server_in)
   short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server /%s/ unknown\n", server_in);
+    printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
     if (addr != 0) {
@@ -560,7 +555,7 @@ EXPORT int ServerConnect(char *server_in)
   short port = 0;
   int num = sscanf(server, "%[^:]:%s", hostpart, portpart);
   if (num != 2) {
-    printf("Server /%s/ unknown\n", server_in);
+    printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
     if (addr != 0) {
@@ -644,13 +639,12 @@ static void DoMessage(Client * c, fd_set * fdactive)
   default:
     RemoveClient(c, fdactive);
   }
-  if (msglen != 0)
+  if (msglen)
     free(msg);
 }
 
 static void RemoveClient(Client * c, fd_set * fdactive)
 {
-  Job *j;
   int client_found = 0;
   int conid = -1;
   LOCK_CLIENTS;
@@ -674,22 +668,18 @@ static void RemoveClient(Client * c, fd_set * fdactive)
       if (fdactive)
 	FD_CLR(c->reply_sock, fdactive);
     }
-    if (c->conid >= 0) {
+    if (c->conid >= 0)
       DisconnectFromMds(c->conid);
-    }
     free(c);
   }
   LOCK_JOBS;
-  for (j = Jobs; j; j = j->next)
-    if (j->conid == conid)
-      j->marked_for_delete = 1;
-  for(;;) {
-    for (j = Jobs; j && !j->marked_for_delete; j = j->next) ;
+  Job *j;
+  for (;;) {
+    for (j = Jobs; j && (j->conid != conid) ; j = j->next);
     if (j) {
       DoCompletionAst_lock(j->jobid, ServerPATH_DOWN, NULL, 1);
       RemoveJob_lock(j);
-      break;
-    }
+    } else break;
   }
   UNLOCK_JOBS;
 }

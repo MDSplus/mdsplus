@@ -44,8 +44,6 @@
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-extern void lock_buffer_key();
-extern void unlock_buffer_key();
 typedef struct _bounds {
   int l;
   int u;
@@ -75,7 +73,7 @@ Explain in 300 words or less.
 STATIC_ROUTINE void add(char *text)
 {
   struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  struct descriptor_d *message = &((TdiGetThreadStatic())->TdiIntrinsic_message);
   new.length = (unsigned short)strlen(text);
   new.pointer = text;
   if (message->length + new.length < MAXMESS)
@@ -108,7 +106,7 @@ int TdiTrace(int opcode __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)),
 	     struct descriptor_xd *out_ptr)
 {
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  struct descriptor_d *message = &(TdiGetThreadStatic()->TdiIntrinsic_message);
   if (message->length > MAXMESS)
     return MDSplusERROR;
   add("%TDI Decompile text_length");
@@ -129,7 +127,7 @@ int TRACE(int opcode, int narg,
 {
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  struct descriptor_d *message = &((TdiGetThreadStatic())->TdiIntrinsic_message);
   unsigned short now = message->length;
 
   if (now > MAXMESS)
@@ -335,12 +333,10 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
     struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
     // b------x----c----e
     // '-l_ok-'-xc-'-ce-'
-    lock_buffer_key();
     char *b = TdiRefZone.a_begin;
     char *e = TdiRefZone.a_end;
     char *c = MINMAX(b, TdiRefZone.a_cur, e);
     char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
-    unlock_buffer_key();
     body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
     body.pointer = body.length>0 ? x : NULL;
     post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
@@ -385,9 +381,10 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
 	      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   int option = -1;
-  int mess_stat = (TdiThreadStatic())->TdiIntrinsic_mess_stat;
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  int mess_stat = TdiThreadStatic_p->TdiIntrinsic_mess_stat;
+  struct descriptor_d *message = &TdiThreadStatic_p->TdiIntrinsic_message;
   if (narg > 0 && list[0])
     status = TdiGetLong(list[0], &option);
   if (option & 1 && mess_stat != 1) {
@@ -400,7 +397,7 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
     if (option & 2)
       printf("%.*s", message->length, message->pointer);
     if (option & 4)
-      (TdiThreadStatic())->TdiIntrinsic_mess_stat = StrFree1Dx(message);
+      TdiThreadStatic_p->TdiIntrinsic_mess_stat = StrFree1Dx(message);
   }
   status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
   return status;

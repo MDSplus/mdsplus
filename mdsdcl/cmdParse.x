@@ -123,7 +123,7 @@ qualval {unquoted_value_3}|{quoted_value}
  restOfLine=0;
  BEGIN verb;
  yylval->pvalue=value;
- return(PVALUE);}
+ return(PVALUE_);}
 
 <*>, return(COMMA);
 

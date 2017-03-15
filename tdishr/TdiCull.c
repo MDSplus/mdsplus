@@ -230,6 +230,7 @@ STATIC_ROUTINE int work(int
 			struct descriptor *list[3], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor_xd in = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
   struct descriptor *keep[3];
   int cmode = -1, dim, s1 = 1;
@@ -242,9 +243,9 @@ STATIC_ROUTINE int work(int
   struct TdiCatStruct cats[4];
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
   STATIC_CONSTANT unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
-  keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
-  keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
-  keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
+  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
+  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
+  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
   status = TdiGetData(omits, list[0], &in);
   if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
     status = TdiUnits(in.pointer, &units MDS_END_ARG);
@@ -335,11 +336,11 @@ STATIC_ROUTINE int work(int
 	new[2] = (struct descriptor_range *)list[2];
 	while (new[2] && new[2]->class == CLASS_XD)
 	  new[2] = (struct descriptor_range *)new[2]->pointer;
-	TdiThreadStatic()->TdiRANGE_PTRS[0] = &dx0;
-	TdiThreadStatic()->TdiRANGE_PTRS[1] = &dx1;
-	TdiThreadStatic()->TdiRANGE_PTRS[2] = 0;
+	TdiThreadStatic_p->TdiRANGE_PTRS[0] = &dx0;
+	TdiThreadStatic_p->TdiRANGE_PTRS[1] = &dx1;
+	TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
 	if (in.pointer->dtype == DTYPE_DIMENSION) {
-	  TdiThreadStatic()->TdiRANGE_PTRS[2] = in.pointer;
+	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = in.pointer;
 		/************************************************************
                 Dimensions conversion with missing increment uses all values.
                 ************************************************************/
@@ -352,9 +353,9 @@ STATIC_ROUTINE int work(int
 	  }
 	}
 	status = TdiGetArgs(opcode, 3, new, sig, uni, dat, cats);
-	TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
-	TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
-	TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
+	TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
+	TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
+	TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
       }
       if STATUS_OK
 	status = Tdi2Range(3, uni, dat, cats, 0);

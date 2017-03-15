@@ -676,6 +676,7 @@ TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 TEST_EXTENSIONS = .py
 TESTS = \
+        dclUnitTest.py \
         dataUnitTest.py \
         segmentsUnitTest.py \
         treeUnitTest.py \
@@ -687,6 +688,7 @@ TESTS = \
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 VALGRIND_TESTS = \
+        dclUnitTest.py \
         dataUnitTest.py \
         segmentsUnitTest.py \
         treeUnitTest.py \

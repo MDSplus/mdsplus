@@ -26,11 +26,11 @@ typedef struct _thread_static {
   unsigned int TdiIndent;
 } ThreadStatic;
 
-extern ThreadStatic *TdiThreadStatic();
+extern ThreadStatic *TdiGetThreadStatic();
 extern void LockTdiMutex(pthread_mutex_t *, int *);
 extern void UnlockTdiMutex(pthread_mutex_t *);
 
-#define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiThreadStatic()
+#define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiGetThreadStatic()
 
 #endif
 #endif

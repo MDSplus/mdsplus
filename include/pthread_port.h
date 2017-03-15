@@ -3,6 +3,7 @@
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <status.h>
+#include <STATICdef.h>
 #ifdef _WIN32
 #ifndef NO_WINDOWS_H
 #include <windows.h>
@@ -110,11 +111,11 @@ pthread_mutex_destroy(&c->mutex); \
 size_t ssize;\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\
-pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);\
 pthread_attr_getstacksize(&attr, &ssize);\
 pthread_attr_setstacksize(&attr, ssize stacksize);\
 int c_status = pthread_create(&thread, &attr, (void *)target, args);\
-pthread_attr_destroy(&attr);
+pthread_attr_destroy(&attr);\
+pthread_detach(thread);
 
 #define CONDITION_START_THREAD(input, thread, stacksize, target, args){\
 Condition *c = (Condition*)&input; \
