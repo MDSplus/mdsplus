@@ -224,10 +224,10 @@ class dataTests(TestCase):
         self._doExceptionTest('abort()',Exc.TdiABORT)
         self._doExceptionTest('{,}',Exc.TdiSYNTAX)
         self._doExceptionTest('\033[[A',Exc.TdiBOMB)
-        self._doExceptionTest('abs()',Exc.TdiMISS_ARG)       
-        self._doExceptionTest('abs("")',Exc.TdiINVDTYDSC)       
-        self._doExceptionTest('abs(1,2)',Exc.TdiEXTRA_ARG)       
-        self._doExceptionTest('"',Exc.TdiUNBALANCE)       
+        self._doExceptionTest('abs()',Exc.TdiMISS_ARG)
+        self._doExceptionTest('abs("")',Exc.TdiINVDTYDSC)
+        self._doExceptionTest('abs(1,2)',Exc.TdiEXTRA_ARG)
+        self._doExceptionTest('"',Exc.TdiUNBALANCE)
         """Test $Missing/NoData/None"""
         self._doTdiTest('',None)
         """Test abs"""
@@ -324,17 +324,15 @@ class dataTests(TestCase):
         #self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
 
     def runTest(self):
-        self.operatorsAndFunction()
-        self.tdiFunctions()
-        self.decompile()
-        self.tdiPythonInterface()
+        for test in self.getTests():
+            self.__getattribute__(test)()
 
     @staticmethod
     def getTests():
         return ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
-    @staticmethod
-    def getTestCases():
-        return map(dataTests,dataTests.getTests())
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
     return TestSuite(dataTests.getTestCases())

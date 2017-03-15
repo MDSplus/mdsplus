@@ -1,6 +1,4 @@
 from unittest import TestCase,TestSuite
-import os
-
 from MDSplus import Connection
 
 class connectionTests(TestCase):
@@ -23,12 +21,22 @@ class connectionTests(TestCase):
         t1.join()
         t2.join()
 
+    def runTest(self):
+        for test in self.getTests():
+            self.__getattribute__(test)()
+    @staticmethod
+    def getTests():
+        return ['connectionWithThreads']
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
-    tests = []
-    if not os.name == 'nt':  # windows does not work with local:<path> notation
-        tests+=['connectionWithThreads',]
-    return TestSuite(map(connectionTests,tests))
+    return TestSuite(connectionTests.getTestCases())
+
+def run():
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())
 
 if __name__=='__main__':
     import sys
@@ -36,8 +44,7 @@ if __name__=='__main__':
         import objgraph
     else:      objgraph = None
     import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    from unittest import TextTestRunner
-    TextTestRunner().run(suite())
+    run()
     if objgraph:
          gc.collect()
          objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])

@@ -13,7 +13,6 @@ from MDSplus import Tree
 class threadJob(Thread):
     def __init__(self,testclass,test,idx):
         super(threadJob,self).__init__()
-        self.isDaemon = True
         self.test = testclass(test)
         self.test.index = idx
     """Thread to execute the treeTests"""
@@ -28,7 +27,7 @@ class threadJob(Thread):
             self.stream = stream.read()
             stream.close()
 
-class threadTest(TestCase):
+class threadsTest(TestCase):
     def doThreadsTestCase(self,testclass,test,numthreads):
         numsuccess= 0
         threads = [ threadJob(testclass,test,i) for i in range(numthreads) ]
@@ -74,14 +73,18 @@ class threadTest(TestCase):
                 treeUnitTest.treeTests.tearDownClass()
 
     def runTest(self):
-        self.dataThreadsTests()
-        #self.dclThreadsTests()  old python is not thread safe
-        #self.treeThreadsTests() old python is not thread safe
+        for test in self.getTests():
+            self.__getattribute__(test)()
 
+    @staticmethod
+    def getTests():
+        return ['dataThreadsTests']#,'dclThreadsTests','treeThreadsTests']
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
-    tests = ['dataThreadsTests']#,'dclThreadsTests','treeThreadsTests']
-    return TestSuite(map(threadTest, tests))
+    return TestSuite(threadsTest.getTestCases())
 
 def run():
     from unittest import TextTestRunner

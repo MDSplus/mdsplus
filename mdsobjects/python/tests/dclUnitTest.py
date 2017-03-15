@@ -3,7 +3,7 @@ import os
 from re import match
 from threading import Lock
 
-from MDSplus import Tree,TreeNode,Data,makeArray,Signal,Range,DateToQuad,Device,Conglom
+from MDSplus import Tree,Device
 from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
 from MDSplus import mdsExceptions as Exc
 
@@ -171,9 +171,9 @@ class dclTests(TestCase):
     @staticmethod
     def getTests():
         return ['dclInterface','dispatcher']
-    @staticmethod
-    def getTestCases():
-        return map(dclTests,dclTests.getTests())
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
     return TestSuite(dclTests.getTestCases())

@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, TestSuite
 
 from MDSplus import DevNOT_TRIGGERED, TclNORMAL
 
@@ -28,13 +28,18 @@ class exceptionTests(TestCase):
         self.assertEqual(err.fac, 'Tcl')
 
     def runTest(self):
-        self.defaultErrorValues()
-        self.customErrorString()
-        self.tclErrors()
+        for test in self.getTests():
+            self.__getattribute__(test)()
 
+    @staticmethod
+    def getTests():
+        return ['defaultErrorValues','customErrorString','tclErrors']
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
-    return exceptionTests()
+    return TestSuite(exceptionTests.getTestCases())
 
 def run():
     from unittest import TextTestRunner
