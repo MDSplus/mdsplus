@@ -150,31 +150,40 @@ AC_DEFUN([TS_SELECT],[
      [
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
+      #TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEDEBUG=-all ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='Z:\\python27;${WINEPATH}' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='Z:\\python27' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='Z:\\python27\\Lib;Z:\\python27\\Lib\\site-packages;Z:\$(abs_top_srcdir)/testing' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='Z:\$(abs_top_srcdir)/tdi' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib='python27' ")
-      AS_VAR_SET([PYTHON],'wine cmd /c Z:\$(abs_top_srcdir)/testing/python.bat')
-      AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+      AS_VAR_IF([WINEARCH],[win64],
+        [
+         AS_VAR_APPEND([WINEPATH],";${PYTHONHOME}")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='Z:/python27' ")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='%PYTHONHOME%/Lib;%PYTHONHOME%/Lib/site-packages;Z:\$(abs_top_srcdir)/testing' ")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib='python27' ")
+         AS_VAR_SET([PYTHON],'wine cmd /c Z:\$(abs_top_srcdir)/testing/python.bat')
+         AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+        ],[
+         TS_LOG_SKIP([PY_LOG_COMPILER])
+        ]
+      )
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
-
- # WINE Valgrind tuning ..
- # see: http://wiki.winehq.org/WineAndValgrind
- #
- # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
+      # WINE Valgrind tuning ..
+      # see: http://wiki.winehq.org/WineAndValgrind
+      #
+      # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
       AS_VAR_APPEND([VALGRIND_FLAGS],"--vex-iropt-register-updates=allregs-at-mem-access ")
- #
- # quiets warnings about accesses slightly below the stack pointer. This is due
- # to a known but benign piece of code in Wine's ntdll
- # (see Bug #26263 for details)
+      #
+      # quiets warnings about accesses slightly below the stack pointer. This is due
+      # to a known but benign piece of code in Wine's ntdll
+      # (see Bug #26263 for details)
       AS_VAR_APPEND([VALGRIND_memcheck_FLAGS],"--workaround-gcc296-bugs=yes  ")
-     ],
-     [TS_LOG_SKIP([LOG_COMPILER])
-      TS_LOG_SKIP([PY_LOG_COMPILER])])
+     ],[
+      TS_LOG_SKIP([LOG_COMPILER])
+      TS_LOG_SKIP([PY_LOG_COMPILER])
+     ]
+   )
  ],
  #
  # LINUX->LINUX
