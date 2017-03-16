@@ -28,6 +28,11 @@ class testing(object):
              or int(os.getenv('WINDOWS_DCL','0'))
              or os.getenv('DISTNAME',"").upper() != 'WINDOWS')
 
+    def check_alpine(self, module_name ):
+        return (not module_name.startswith('dcl')
+             or int(os.getenv('ALPINE_DCL','0'))
+             or not os.getenv('DISTNAME',"").upper().startswith('ALPINE'))
+
     def check_helgrind(self, module_name ):
         return (not module_name.startswith('dcl')
              or int(os.getenv('HELGRIND_DCL','0'))
@@ -167,6 +172,8 @@ def check_arch(file_name):
         ts.skip_test(module_name,'Set HELGRIND_DCL=1 env to enable test.')
     if not ts.check_windows(module_name):
         ts.skip_test(module_name,'Set WINDOWS_DCL=1 env to enable test.')
+    if not ts.check_alpine(module_name):
+        ts.skip_test(module_name,'Set ALPINE_DCL=1 env to enable test.')
 
 if __name__ == '__main__':
     if '--skip' in sys.argv:
@@ -179,6 +186,8 @@ if __name__ == '__main__':
     except SystemExit:
         raise
     except:
+        import traceback
+        traceback.print_exc()
 	ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
 
 
