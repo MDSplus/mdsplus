@@ -813,7 +813,7 @@ public class ChannelArchiver
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
                         TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
-			catSystem.out.println("Monitoring channel started...");
+			System.out.println("Monitoring channel started...");
                         if(scanMode.equals("MONITOR"))
                         {
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
