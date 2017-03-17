@@ -3,6 +3,9 @@
 #include "epicsTime.h"
 #include "aitTypes.h"
 
+#include <inttypes.h>
+
+
 #define aitInt8Type 1
 #define aitUint8Type 2
 #define aitInt16Type 3
@@ -222,7 +225,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
     valNode = NULL;
     this->name = new char[strlen(name) + 1];
     strcpy(this->name, name);
-    TreeNode *prevDef;
+    TreeNode *prevDef = 0;
 //Default vales */
     highAlarm = 1000, lowAlarm = -1000, highWarning = 100, lowWarning = -100, highCtrl = 10, lowCtrl = -10, highGraphic = 1, lowGraphic = -1;
 
@@ -236,6 +239,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    isText = false;
 	else
 	    isText = true;
+
 	char clazz, dtype, currDims;
 	void *ptr;
 	short length; 
@@ -248,7 +252,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 		deleteData(arr);
 	    }catch(MdsException *exc)
 	    {
-		cout << "Error reading value for " << name << ": " << exc->what() << "\n";
+		std::cout << "Error prevDef reading value for " << name << ": " << exc->what() << "\n";
 		delete exc;
 	    }
 	}
@@ -261,21 +265,38 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 		deleteData(data);
 	    }catch(MdsException *exc)
 	    {
-		cout << "Error reading value for " << name << ": " << exc->what() << "\n";
+		std::cout << "Error reading value for " << name << ": " << exc->what() << "\n";
 		delete exc;
 	    }
 	}
-	
+
+//PATCH per far funzionare l'mdscas
+	if(true)
+	{
+		tree->setDefault(prevDef);
+		delete prevDef;
+	        valid = true;
+		return;
+	}
+
+
+std::cout << "mdsPV  tree "<< tree <<"\n";	
 	TreeNode *currNode;
 	try {
+std::cout << "mdsPV  Data \n";	
 	    currNode = tree->getNode(":DIMS");
-	    dims = currNode->getIntArray(&nDims);
-	    delete currNode;
-	}catch(MdsException *exc)
+std::cout << "mdsPV  Data "<< currNode << "\n";	
+//	    dims = currNode->getIntArray(&nDims);
+//	    delete currNode;
+	    return;
+	}
+	catch(MdsException *exc)
 	{
 	    nDims = 0;
-	    delete exc;
+std::cout << "mdsPV  nDims exc"<< nDims <<"\n";
+	    //delete exc;
 	}
+std::cout << "mdsPV  nDims "<< nDims <<"\n";
 
 	try {
 	    currNode = tree->getNode(":LOPR");
@@ -287,7 +308,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasOpr = true;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get LOPR or HOPR for " << name << "\n";
+	    std::cout << "Cannot get LOPR or HOPR for " << name << "\n";
 	    hasOpr = false;
 	    delete exc;
 	}
@@ -297,7 +318,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    delete currNode;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get UNITS for " << name << "\n";
+	    std::cout << "Cannot get UNITS for " << name << "\n";
 	    units = NULL;
 	    delete exc;
 	}
@@ -311,7 +332,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasAlarm = true;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get HIGH_ALARM or LOW_ALARM for " << name << "\n";
+//	    std::cout << "Cannot get HIGH_ALARM or LOW_ALARM for " << name << "\n";
 	    hasAlarm = false;
 	    delete exc;
 	}
@@ -325,7 +346,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasWarning = true;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get HIGH_WARN or LOW_WARN for " << name << "\n";
+//	    std::cout << "Cannot get HIGH_WARN or LOW_WARN for " << name << "\n";
 	    hasWarning = false;
 	    delete exc;
 	}
@@ -339,7 +360,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasCtrl = true;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get HIGH_CTRL or LOW_CTRL for " << name << "\n";
+//	    std::cout << "Cannot get HIGH_CTRL or LOW_CTRL for " << name << "\n";
 	    hasCtrl = false;
 	    delete exc;
 	}
@@ -353,7 +374,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasGraphic = true;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get HIGH_GRAPH or LOW_GRAPH for " << name << "\n";
+//	    std::cout << "Cannot get HIGH_GRAPH or LOW_GRAPH for " << name << "\n";
 	    hasGraphic = false;
 	    delete exc;
 	}
@@ -363,7 +384,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    delete currNode;
 	} catch(MdsException *exc)
 	{
-//	    cout << "Cannot get PREC for " << name << "\n";
+//	    std::cout << "Cannot get PREC for " << name << "\n";
 	    precision = 0;
 	    delete exc;
 	}
@@ -384,7 +405,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
         valid = true;
    }catch(MdsException *exc)
     {
-	cout << "Error initilizing MDSplus nodes: " << exc->what() << "\n";
+	std::cout << "Error initilizing MDSplus nodes: " << exc->what() << "\n";
 	valid = false;
 	tree->setDefault(prevDef);
 	delete prevDef;
@@ -447,22 +468,22 @@ Data *mdsPV::dataFromGdd(const gdd &inGdd)
 	Data *retData;
 	switch(inGdd.primitiveType()) {
 	    case aitEnumInt8: 
-		retData = new Int8Array((char *)inGdd.dataPointer(), numDims, dims);
+		retData = new Int8Array((const char *)inGdd.dataPointer(), numDims, dims);
 		break;
 	    case aitEnumUint8: 
-		retData = new Uint8Array((char *)inGdd.dataPointer(), numDims, dims);
+		retData = new Uint8Array((const unsigned char *)inGdd.dataPointer(), numDims, dims);
 		break;
 	    case aitEnumInt16: 
-		retData = new Int16Array((short *)inGdd.dataPointer(), numDims, dims);
+		retData = new Int16Array((const short  int*)inGdd.dataPointer(), numDims, dims);
 		break;
 	    case aitEnumUint16: 
-		retData = new Uint16Array((short *)inGdd.dataPointer(), numDims, dims);
+		retData = new Uint16Array((const short unsigned int*)inGdd.dataPointer(), numDims, dims);
 		break;
 	    case aitEnumInt32: 
-		retData = new Int32Array((int *)inGdd.dataPointer(), numDims, dims);
+		retData = new Int32Array((const int *)inGdd.dataPointer(), numDims, dims);
 		break;
 	    case aitEnumUint32: 
-		retData = new Uint32Array((int *)inGdd.dataPointer(), numDims, dims);
+		retData = new Uint32Array((const unsigned int *)inGdd.dataPointer(), numDims, dims);
 		break;
 	    case aitEnumFloat32: 
 		retData = new Float32Array((float *)inGdd.dataPointer(), numDims, dims);
@@ -471,7 +492,7 @@ Data *mdsPV::dataFromGdd(const gdd &inGdd)
 		retData = new Float64Array((double *)inGdd.dataPointer(), numDims, dims);
 		break;
 	    default: 
-		cout << "Fixed String array not supported in put\n"; 
+		std::cout << "Fixed String array not supported in put\n"; 
 		retData = NULL;
 	}
 	delete [] dims;	
@@ -517,12 +538,12 @@ Data *mdsPV::dataFromGdd(const gdd &inGdd)
 		case aitEnumString: 
 		    inGdd.get(str);
 		    return new String(str.string());	
-		default: cout << "Unexpected type for scalar in put\n"; return NULL;
+		default: std::cout << "Unexpected type for scalar in put\n"; return NULL;
 	}
     }
     else
     {
-	cout << "Only Scalars and Arrays can be put\n";
+	std::cout << "Only Scalars and Arrays can be put\n";
 	return NULL;
     } 	
 
@@ -543,13 +564,13 @@ caStatus mdsPV::updateValue(const gdd & valueIn)
 	    epicsTimeStamp currTime;
 	    epicsTimeGetCurrent(&currTime);
 	    unsigned long timestamp = ((unsigned long)currTime.secPastEpoch)*1000000000 + currTime.nsec;
-	    valNode->putRow(dataIn, (_int64 *)&timestamp, 10); 
+	    valNode->putRow(dataIn, (int64_t *)&timestamp, 10); 
 	}
 	else
 	    valNode->putData(dataIn);
     }catch(MdsException *exc)
     {
-	cout << "Error writing data: " << exc->what() << "\n";
+	std::cout << "Error writing data: " << exc->what() << "\n";
 	deleteData(dataIn);
 	return S_casApp_undefined;
     } 
