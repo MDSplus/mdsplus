@@ -34,11 +34,11 @@ extern void TdiYyReset();
         Limitations:
         For recursion must pass LEX:
                 zone status bol cur end
-                yylval yyval
-                yytext[YYLMAX] yyleng yymorfg yytchar yyin? yyout?
+                tdiyylval tdiyyval
+                tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
         For recursion must pass YACC also:
-                yydebug? yyv[YYMAXDEPTH] yychar yynerrs yyerrflag
-        Thus no recursion because the yy's are built into LEX and YACC.
+                tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
+        Thus no recursion because the tdiyy's are built into LEX and YACC.
         IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
 STATIC_THREADSAFE int yacc_mutex_initialized = 0;
