@@ -1,39 +1,40 @@
+#define tdiyytext tdishr_tdiyytext
 #include <STATICdef.h>
 #include "stdio.h"
 #include <treeshr_messages.h>
 #define U(x) ((x)&0377)
-#define NLSTATE yyprevious=YYNEWLINE
-#define BEGIN yybgin = yysvec + 1 +
+#define NLSTATE tdiyyprevious=YYNEWLINE
+#define BEGIN tdiyybgin = tdiyysvec + 1 +
 #define INITIAL 0
-#define YYLERR yysvec
-#define YYSTATE (yyestate-yysvec-1)
+#define YYLERR tdiyysvec
+#define YYSTATE (tdiyyestate-tdiyysvec-1)
 #define YYOPTIM 1
 #define YYLMAX 200
-#define output(c) putc(c,yyout)
-#define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
-#define unput(c) {yytchar= (c);if(yytchar=='\n')yylineno--;*yysptr++=yytchar;}
-#define yymore() (yymorfg=1)
-#define ECHO fprintf(yyout, "%s",yytext)
-#define REJECT { nstr = yyreject(); goto yyfussy;}
-int yyleng;
-extern unsigned char yytext[];
-int yymorfg;
-extern unsigned char *yysptr, yysbuf[];
-int yytchar;
+#define output(c) putc(c,tdiyyout)
+#define input() (((tdiyytchar=tdiyysptr>tdiyysbuf?U(*--tdiyysptr):getc(tdiyyin))==10?(tdiyylineno++,tdiyytchar):tdiyytchar)==EOF?0:tdiyytchar)
+#define unput(c) {tdiyytchar= (c);if(tdiyytchar=='\n')tdiyylineno--;*tdiyysptr++=tdiyytchar;}
+#define tdiyymore() (tdiyymorfg=1)
+#define ECHO fprintf(tdiyyout, "%s",tdiyytext)
+#define REJECT { nstr = tdiyyreject(); goto tdiyyfussy;}
+int tdiyyleng;
+extern unsigned char tdiyytext[];
+int tdiyymorfg;
+extern unsigned char *tdiyysptr, tdiyysbuf[];
+int tdiyytchar;
 /*
-FILE *yyin = {stdin}, *yyout = {stdout};
+FILE *tdiyyin = {stdin}, *tdiyyout = {stdout};
 */
-FILE *yyin = 0, *yyout = 0;
-extern int yylineno;
-/* forward declaration for yywork necessary for c++*/
-struct yywork;
-struct yysvf {
-  struct yywork *yystoff;
-  struct yysvf *yyother;
-  int *yystops;
+FILE *tdiyyin = 0, *tdiyyout = 0;
+extern int tdiyylineno;
+/* forward declaration for tdiyywork necessary for c++*/
+struct tdiyywork;
+struct tdiyysvf {
+  struct tdiyywork *tdiyystoff;
+  struct tdiyysvf *tdiyyother;
+  int *tdiyystops;
 };
-struct yysvf *yyestate;
-extern struct yysvf yysvec[], *yybgin;
+struct tdiyysvf *tdiyyestate;
+extern struct tdiyysvf tdiyysvec[], *tdiyybgin;
 /*define YY_NOPROTO to disable function prototypes */
 #ifndef YY_NOPROTO
 #if defined (__STDC__) || defined  (__cplusplus)
@@ -49,9 +50,9 @@ extern struct yysvf yysvec[], *yybgin;
 #if defined  (__cplusplus)
 extern "C" {
 #endif /*__cplusplus_ */
-  int yylook(YYVOID);
-  int yylex(YYVOID);
-  int yywrap(YYVOID);
+  int tdiyylook(YYVOID);
+  int tdiyylex(YYVOID);
+  int tdiyywrap(YYVOID);
 #if defined  (__cplusplus)
 }
 #endif /*__cplusplus_ */
@@ -91,7 +92,7 @@ extern "C" {
 	   (4) with up-tree minus requires leading period. .-.over
 	   Filename double quote required for non-simple names.
 	   "node::node::device:[--.dir.sub.sub]file.extension;version".
-	   Input, nlpos, output, pos, unput, and yylex defined by include file.
+	   Input, nlpos, output, pos, unput, and tdiyylex defined by include file.
 	   Floating for exponent but no decimal would fall into integer.
 	 */
 #include <stdlib.h>
@@ -107,7 +108,7 @@ extern "C" {
 #include <treeshr.h>
 
 #ifdef WIN32
-//#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value. */
+//#pragma warning (disable : 4013 4102 4035)	/* LEX produces code with no forward declarations of tdiyylook and tdiyyback. Also has unreferenced label tdiyyfussy. And two int functions: tdiyyoutput and tdiyyunput do not return a value. */
 #endif
 
 #ifdef output
@@ -140,7 +141,7 @@ STATIC_ROUTINE int TdiLexBinEq(int token);
 extern void TdiYyReset()
 {
 /*
-  yy_reset();
+  tdiyy_reset();
 */
 }
 
@@ -932,14 +933,14 @@ int TdiLexQuote(int len __attribute__ ((unused)),
 }
 
 #define YYNEWLINE 10
-int yylex()
+int tdiyylex()
 {
   GET_TDITHREADSTATIC_P;
   int nstr;
-  while ((nstr = yylook()) >= 0)
+  while ((nstr = tdiyylook()) >= 0)
   switch (nstr) {
     case 0:
-      if (yywrap())
+      if (tdiyywrap())
 	return (0);
       break;
     case 1:
@@ -954,69 +955,69 @@ int yylex()
     case 3:
       {
 	pos();
-	return (TdiLexFloat(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexFloat(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 4:
       {
 	pos();
-	return (TdiLexFloat(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexFloat(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 5:
       {
 	pos();
-	return (TdiLexInteger(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexInteger(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 6:
       {
 	pos();
-	return (TdiLexIdent(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexIdent(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 7:
       {
 	pos();
-	return (TdiLexPath(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexPath(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 8:
       {
 	pos();
-	return (TdiLexQuote(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexQuote(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 9:
       {
 	pos();
-	return (TdiLexPoint(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexPoint(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case 10:
       {
 	pos();
-	if (TdiLexComment(yyleng, (unsigned char *)yytext, TdiYylvalPtr))
+	if (TdiLexComment(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr))
 	  return (LEX_ERROR);
       }
       break;
     case 11:
       {
 	pos();
-	return (TdiLexPunct(yyleng, (unsigned char *)yytext, TdiYylvalPtr));
+	return (TdiLexPunct(tdiyyleng, (unsigned char *)tdiyytext, TdiYylvalPtr));
       }
       break;
     case -1:
       break;
     default:
-      fprintf(yyout, "bad switch yylook %d", nstr);
+      fprintf(tdiyyout, "bad switch tdiyylook %d", nstr);
     }
   return (0);
 }
 
-/* end of yylex */
+/* end of tdiyylex */
 
-int yyvstop[] = {
+int tdiyyvstop[] = {
   0,
 
   11,
@@ -1116,9 +1117,9 @@ int yyvstop[] = {
 };
 
 #define YYTYPE unsigned int
-struct yywork {
+struct tdiyywork {
   YYTYPE verify, advance;
-} yycrank[] = {
+} tdiyycrank[] = {
   {0, 0}, {0, 0}, {1, 3}, {0, 0},
   {0, 0}, {0, 0}, {0, 0}, {0, 0},
   {0, 0}, {0, 0}, {1, 4}, {1, 5},
@@ -1344,55 +1345,55 @@ struct yywork {
   {0, 0}, {0, 0}, {0, 0}, {0, 0},
   {31, 32}, {31, 32}, {0, 0}, {31, 32},
   {0, 0}};
-struct yysvf yysvec[] = {
+struct tdiyysvf tdiyysvec[] = {
   {0, 0, 0},
-  {yycrank + -1, 0, 0},
-  {yycrank + -5, yysvec + 1, 0},
-  {yycrank + 0, 0, yyvstop + 1},
-  {yycrank + 0, 0, yyvstop + 3},
-  {yycrank + 0, 0, yyvstop + 6},
-  {yycrank + 0, 0, yyvstop + 8},
-  {yycrank + 34, 0, yyvstop + 11},
-  {yycrank + 1, 0, yyvstop + 15},
-  {yycrank + 121, 0, yyvstop + 17},
-  {yycrank + 1, 0, yyvstop + 19},
-  {yycrank + 198, 0, yyvstop + 21},
-  {yycrank + 256, 0, yyvstop + 24},
-  {yycrank + 314, 0, yyvstop + 26},
-  {yycrank + 0, yysvec + 7, yyvstop + 28},
-  {yycrank + 372, 0, 0},
-  {yycrank + 459, 0, 0},
-  {yycrank + 536, yysvec + 12, yyvstop + 31},
-  {yycrank + 9, 0, yyvstop + 33},
-  {yycrank + 547, 0, yyvstop + 35},
-  {yycrank + 0, 0, yyvstop + 37},
-  {yycrank + -625, 0, yyvstop + 39},
-  {yycrank + 0, yysvec + 11, yyvstop + 41},
-  {yycrank + 646, 0, yyvstop + 43},
-  {yycrank + 726, yysvec + 23, yyvstop + 45},
-  {yycrank + 738, yysvec + 13, yyvstop + 47},
-  {yycrank + 751, yysvec + 15, yyvstop + 49},
-  {yycrank + 7, yysvec + 16, yyvstop + 51},
-  {yycrank + 6, yysvec + 15, 0},
-  {yycrank + 767, 0, 0},
-  {yycrank + 0, 0, yyvstop + 53},
-  {yycrank + 777, 0, yyvstop + 55},
-  {yycrank + 819, 0, 0},
-  {yycrank + 448, 0, 0},
-  {yycrank + 557, yysvec + 23, yyvstop + 57},
-  {yycrank + 2, yysvec + 15, 0},
-  {yycrank + 10, 0, 0},
-  {yycrank + 0, 0, yyvstop + 60},
-  {yycrank + 0, yysvec + 33, yyvstop + 62},
-  {yycrank + 588, 0, 0},
-  {yycrank + 0, yysvec + 39, yyvstop + 64},
-  {yycrank + 0, yysvec + 12, 0},
+  {tdiyycrank + -1, 0, 0},
+  {tdiyycrank + -5, tdiyysvec + 1, 0},
+  {tdiyycrank + 0, 0, tdiyyvstop + 1},
+  {tdiyycrank + 0, 0, tdiyyvstop + 3},
+  {tdiyycrank + 0, 0, tdiyyvstop + 6},
+  {tdiyycrank + 0, 0, tdiyyvstop + 8},
+  {tdiyycrank + 34, 0, tdiyyvstop + 11},
+  {tdiyycrank + 1, 0, tdiyyvstop + 15},
+  {tdiyycrank + 121, 0, tdiyyvstop + 17},
+  {tdiyycrank + 1, 0, tdiyyvstop + 19},
+  {tdiyycrank + 198, 0, tdiyyvstop + 21},
+  {tdiyycrank + 256, 0, tdiyyvstop + 24},
+  {tdiyycrank + 314, 0, tdiyyvstop + 26},
+  {tdiyycrank + 0, tdiyysvec + 7, tdiyyvstop + 28},
+  {tdiyycrank + 372, 0, 0},
+  {tdiyycrank + 459, 0, 0},
+  {tdiyycrank + 536, tdiyysvec + 12, tdiyyvstop + 31},
+  {tdiyycrank + 9, 0, tdiyyvstop + 33},
+  {tdiyycrank + 547, 0, tdiyyvstop + 35},
+  {tdiyycrank + 0, 0, tdiyyvstop + 37},
+  {tdiyycrank + -625, 0, tdiyyvstop + 39},
+  {tdiyycrank + 0, tdiyysvec + 11, tdiyyvstop + 41},
+  {tdiyycrank + 646, 0, tdiyyvstop + 43},
+  {tdiyycrank + 726, tdiyysvec + 23, tdiyyvstop + 45},
+  {tdiyycrank + 738, tdiyysvec + 13, tdiyyvstop + 47},
+  {tdiyycrank + 751, tdiyysvec + 15, tdiyyvstop + 49},
+  {tdiyycrank + 7, tdiyysvec + 16, tdiyyvstop + 51},
+  {tdiyycrank + 6, tdiyysvec + 15, 0},
+  {tdiyycrank + 767, 0, 0},
+  {tdiyycrank + 0, 0, tdiyyvstop + 53},
+  {tdiyycrank + 777, 0, tdiyyvstop + 55},
+  {tdiyycrank + 819, 0, 0},
+  {tdiyycrank + 448, 0, 0},
+  {tdiyycrank + 557, tdiyysvec + 23, tdiyyvstop + 57},
+  {tdiyycrank + 2, tdiyysvec + 15, 0},
+  {tdiyycrank + 10, 0, 0},
+  {tdiyycrank + 0, 0, tdiyyvstop + 60},
+  {tdiyycrank + 0, tdiyysvec + 33, tdiyyvstop + 62},
+  {tdiyycrank + 588, 0, 0},
+  {tdiyycrank + 0, tdiyysvec + 39, tdiyyvstop + 64},
+  {tdiyycrank + 0, tdiyysvec + 12, 0},
   {0, 0, 0}
 };
 
-struct yywork *yytop = yycrank + 895;
-struct yysvf *yybgin = yysvec + 1;
-const unsigned int yymatch[] = {
+struct tdiyywork *tdiyytop = tdiyycrank + 895;
+struct tdiyysvf *tdiyybgin = tdiyysvec + 1;
+const unsigned int tdiyymatch[] = {
   00, 01, 01, 01, 01, 01, 01, 01,
   01, 011, 012, 01, 01, 011, 01, 01,
   01, 01, 01, 01, 01, 01, 01, 01,
@@ -1428,7 +1429,7 @@ const unsigned int yymatch[] = {
   0
 };
 
-const unsigned char yyextra[] = {
+const unsigned char tdiyyextra[] = {
   0, 0, 0, 1, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
   0
@@ -1463,18 +1464,18 @@ const unsigned char yyextra[] = {
  * @(#)$RCSfile$ $Revision$ (DEC) $Date$
  */
 /*
- ** C Language Skeleton for lex output - yytext array
+ ** C Language Skeleton for lex output - tdiyytext array
  */
-int yylineno = 1;
+int tdiyylineno = 1;
 #define YYU(x) x
-#define NLSTATE yyprevious=YYNEWLINE
-unsigned char yytext[YYLMAX];
-struct yysvf *yylstate[YYLMAX], **yylsp, **yyolsp;
-unsigned char yysbuf[YYLMAX];
-unsigned char *yysptr = yysbuf;
-int *yyfnd;
-extern struct yysvf *yyestate;
-int yyprevious = YYNEWLINE;
+#define NLSTATE tdiyyprevious=YYNEWLINE
+unsigned char tdiyytext[YYLMAX];
+struct tdiyysvf *tdiyylstate[YYLMAX], **tdiyylsp, **tdiyyolsp;
+unsigned char tdiyysbuf[YYLMAX];
+unsigned char *tdiyysptr = tdiyysbuf;
+int *tdiyyfnd;
+extern struct tdiyysvf *tdiyyestate;
+int tdiyyprevious = YYNEWLINE;
 /*
  * Define YY_NOPROTO to suppress the prototype declarations
  * GNUC and DECC define __STDC__ differently
@@ -1488,7 +1489,7 @@ int yyprevious = YYNEWLINE;
 #endif				/* __STDC__ */
 
 #ifndef YY_NOPROTO
-int yyback(int *, int);
+int tdiyyback(int *, int);
 #ifdef LEXDEBUG
 #if defined (__cplusplus)
 extern "C" {
@@ -1500,129 +1501,129 @@ extern "C" {
 #endif				/* __cplusplus */
 #endif				/* LEXDEBUG */
 #endif				/* YY_NOPROTO */
-int yylook()
+int tdiyylook()
 {
   GET_TDITHREADSTATIC_P;
-  register struct yysvf *yystate, **lsp;
-  register struct yywork *yyt;
-  struct yysvf *yyz;
-  int yych, yyfirst;
-  struct yywork *yyr;
+  register struct tdiyysvf *tdiyystate, **lsp;
+  register struct tdiyywork *tdiyyt;
+  struct tdiyysvf *tdiyyz;
+  int tdiyych, tdiyyfirst;
+  struct tdiyywork *tdiyyr;
 #ifdef LEXDEBUG
   int debug;
 #endif
-  unsigned char *yylastch;
+  unsigned char *tdiyylastch;
   /* start off machines */
 #ifdef LEXDEBUG
   debug = 0;
 #endif
-  yyfirst = 1;
-  if (!yymorfg)
-    yylastch = yytext;
+  tdiyyfirst = 1;
+  if (!tdiyymorfg)
+    tdiyylastch = tdiyytext;
   else {
-    yymorfg = 0;
-    yylastch = yytext + yyleng;
+    tdiyymorfg = 0;
+    tdiyylastch = tdiyytext + tdiyyleng;
   }
   for (;;) {
-    lsp = yylstate;
-    yyestate = yystate = yybgin;
-    if (yyprevious == YYNEWLINE)
-      yystate++;
+    lsp = tdiyylstate;
+    tdiyyestate = tdiyystate = tdiyybgin;
+    if (tdiyyprevious == YYNEWLINE)
+      tdiyystate++;
     for (;;) {
 #ifdef LEXDEBUG
       if (debug)
-	fprintf(yyout, "state %d\n", yystate - yysvec - 1);
+	fprintf(tdiyyout, "state %d\n", tdiyystate - tdiyysvec - 1);
 #endif
-      yyt = yystate->yystoff;
-      if (yyt == yycrank && !yyfirst) {	/* may not be any transitions */
-	yyz = yystate->yyother;
-	if (yyz == 0)
+      tdiyyt = tdiyystate->tdiyystoff;
+      if (tdiyyt == tdiyycrank && !tdiyyfirst) {	/* may not be any transitions */
+	tdiyyz = tdiyystate->tdiyyother;
+	if (tdiyyz == 0)
 	  break;
-	if (yyz->yystoff == yycrank)
+	if (tdiyyz->tdiyystoff == tdiyycrank)
 	  break;
       }
-      *yylastch++ = yych = input();
-      if (yylastch >= yytext + (YYLMAX - 1)) {
-	fprintf(yyout, "Maximum token length exceeded\n");
-	yytext[YYLMAX - 1] = 0;
+      *tdiyylastch++ = tdiyych = input();
+      if (tdiyylastch >= tdiyytext + (YYLMAX - 1)) {
+	fprintf(tdiyyout, "Maximum token length exceeded\n");
+	tdiyytext[YYLMAX - 1] = 0;
 	return 0;
       }
-      yyfirst = 0;
+      tdiyyfirst = 0;
  tryagain:
 #ifdef LEXDEBUG
       if (debug) {
-	fprintf(yyout, "char ");
-	allprint(yych);
+	fprintf(tdiyyout, "char ");
+	allprint(tdiyych);
 	putchar('\n');
       }
 #endif
-      yyr = yyt;
-      if (yyt > yycrank) {
-	yyt = yyr + yych;
-	if (yyt <= yytop && yyt->verify + yysvec == yystate) {
-	  if (yyt->advance + yysvec == YYLERR) {	/* error transitions */
-	    --yylastch;
-	    unput(*yylastch);
+      tdiyyr = tdiyyt;
+      if (tdiyyt > tdiyycrank) {
+	tdiyyt = tdiyyr + tdiyych;
+	if (tdiyyt <= tdiyytop && tdiyyt->verify + tdiyysvec == tdiyystate) {
+	  if (tdiyyt->advance + tdiyysvec == YYLERR) {	/* error transitions */
+	    --tdiyylastch;
+	    unput(*tdiyylastch);
 	    break;
 	  }
-	  *lsp++ = yystate = yyt->advance + yysvec;
+	  *lsp++ = tdiyystate = tdiyyt->advance + tdiyysvec;
 	  goto contin;
 	}
       }
 #ifdef YYOPTIM
-      else if (yyt < yycrank) {	/* r < yycrank */
-	yyt = yyr = yycrank + (yycrank - yyt);
+      else if (tdiyyt < tdiyycrank) {	/* r < tdiyycrank */
+	tdiyyt = tdiyyr = tdiyycrank + (tdiyycrank - tdiyyt);
 #ifdef LEXDEBUG
 	if (debug)
-	  fprintf(yyout, "compressed state\n");
+	  fprintf(tdiyyout, "compressed state\n");
 #endif
-	yyt = yyt + yych;
-	if (yyt <= yytop && yyt->verify + yysvec == yystate) {
-	  if (yyt->advance + yysvec == YYLERR) {	/* error transitions */
-	    --yylastch;
-	    unput(*yylastch);
+	tdiyyt = tdiyyt + tdiyych;
+	if (tdiyyt <= tdiyytop && tdiyyt->verify + tdiyysvec == tdiyystate) {
+	  if (tdiyyt->advance + tdiyysvec == YYLERR) {	/* error transitions */
+	    --tdiyylastch;
+	    unput(*tdiyylastch);
 	    break;
 	  }
-	  *lsp++ = yystate = yyt->advance + yysvec;
+	  *lsp++ = tdiyystate = tdiyyt->advance + tdiyysvec;
 	  goto contin;
 	}
-	yyt = yyr + YYU(yymatch[yych]);
+	tdiyyt = tdiyyr + YYU(tdiyymatch[tdiyych]);
 #ifdef LEXDEBUG
 	if (debug) {
-	  fprintf(yyout, "try fall back character ");
-	  allprint(YYU(yymatch[yych]));
+	  fprintf(tdiyyout, "try fall back character ");
+	  allprint(YYU(tdiyymatch[tdiyych]));
 	  putchar('\n');
 	}
 #endif
-	if (yyt <= yytop && yyt->verify + yysvec == yystate) {
-	  if (yyt->advance + yysvec == YYLERR) {	/* error transition */
-	    --yylastch;
-	    unput(*yylastch);
+	if (tdiyyt <= tdiyytop && tdiyyt->verify + tdiyysvec == tdiyystate) {
+	  if (tdiyyt->advance + tdiyysvec == YYLERR) {	/* error transition */
+	    --tdiyylastch;
+	    unput(*tdiyylastch);
 	    break;
 	  }
-	  *lsp++ = yystate = yyt->advance + yysvec;
+	  *lsp++ = tdiyystate = tdiyyt->advance + tdiyysvec;
 	  goto contin;
 	}
       }
-      if ((yystate = yystate->yyother)
-	  && (yyt = yystate->yystoff) != yycrank) {
+      if ((tdiyystate = tdiyystate->tdiyyother)
+	  && (tdiyyt = tdiyystate->tdiyystoff) != tdiyycrank) {
 #ifdef LEXDEBUG
 	if (debug)
-	  fprintf(yyout, "fall back to state %d\n", yystate - yysvec - 1);
+	  fprintf(tdiyyout, "fall back to state %d\n", tdiyystate - tdiyysvec - 1);
 #endif
 	goto tryagain;
       }
 #endif
       else {
-	--yylastch;
-	unput(*yylastch);
+	--tdiyylastch;
+	unput(*tdiyylastch);
 	break;
       }
  contin:
 #ifdef LEXDEBUG
       if (debug) {
-	fprintf(yyout, "state %d char ", yystate - yysvec - 1);
-	allprint(yych);
+	fprintf(tdiyyout, "state %d char ", tdiyystate - tdiyysvec - 1);
+	allprint(tdiyych);
 	putchar('\n');
       }
 #endif
@@ -1630,51 +1631,51 @@ int yylook()
     }
 #ifdef LEXDEBUG
     if (debug) {
-      fprintf(yyout, "stopped at %d with ", *(lsp - 1) - yysvec - 1);
-      allprint(yych);
+      fprintf(tdiyyout, "stopped at %d with ", *(lsp - 1) - tdiyysvec - 1);
+      allprint(tdiyych);
       putchar('\n');
     }
 #endif
-    while (lsp-- > yylstate) {
-      *yylastch-- = 0;
-      if (*lsp != 0 && (yyfnd = (*lsp)->yystops) && *yyfnd > 0) {
-	yyolsp = lsp;
-	if (yyextra[*yyfnd]) {	/* must backup */
-	  while (yyback((*lsp)->yystops, -*yyfnd) != 1 && lsp > yylstate) {
+    while (lsp-- > tdiyylstate) {
+      *tdiyylastch-- = 0;
+      if (*lsp != 0 && (tdiyyfnd = (*lsp)->tdiyystops) && *tdiyyfnd > 0) {
+	tdiyyolsp = lsp;
+	if (tdiyyextra[*tdiyyfnd]) {	/* must backup */
+	  while (tdiyyback((*lsp)->tdiyystops, -*tdiyyfnd) != 1 && lsp > tdiyylstate) {
 	    lsp--;
-	    --yylastch;
-	    unput(*yylastch);
+	    --tdiyylastch;
+	    unput(*tdiyylastch);
 	  }
 	}
-	yyprevious = YYU(*yylastch);
-	yylsp = lsp;
-	yyleng = yylastch - yytext + 1;
-	if (yyleng >= (YYLMAX - 1)) {
-	  fprintf(yyout, "Maximum token length exceeded\n");
-	  yytext[YYLMAX - 1] = 0;
+	tdiyyprevious = YYU(*tdiyylastch);
+	tdiyylsp = lsp;
+	tdiyyleng = tdiyylastch - tdiyytext + 1;
+	if (tdiyyleng >= (YYLMAX - 1)) {
+	  fprintf(tdiyyout, "Maximum token length exceeded\n");
+	  tdiyytext[YYLMAX - 1] = 0;
 	  return 0;
 	}
-	yytext[yyleng] = 0;
+	tdiyytext[tdiyyleng] = 0;
 #ifdef LEXDEBUG
 	if (debug) {
-	  fprintf(yyout, "\nmatch ");
-	  sprint(yytext);
-	  fprintf(yyout, " action %d\n", *yyfnd);
+	  fprintf(tdiyyout, "\nmatch ");
+	  sprint(tdiyytext);
+	  fprintf(tdiyyout, " action %d\n", *tdiyyfnd);
 	}
 #endif
-	return (*yyfnd++);
+	return (*tdiyyfnd++);
       }
-      --yylastch;
-      unput(*yylastch);
+      --tdiyylastch;
+      unput(*tdiyylastch);
     }
-    if (yytext[0] == 0 /* && feof(yyin) */ ) {
-      yysptr = yysbuf;
+    if (tdiyytext[0] == 0 /* && feof(tdiyyin) */ ) {
+      tdiyysptr = tdiyysbuf;
       return (0);
     }
-    yyprevious = yytext[0] = input();
-    //    if (yyprevious > 0)
-    //  output(yyprevious);
-    yylastch = yytext;
+    tdiyyprevious = tdiyytext[0] = input();
+    //    if (tdiyyprevious > 0)
+    //  output(tdiyyprevious);
+    tdiyylastch = tdiyytext;
 #ifdef LEXDEBUG
     if (debug)
       putchar('\n');
@@ -1682,7 +1683,7 @@ int yylook()
   }
 }
 
-int yyback(int *p, int m)
+int tdiyyback(int *p, int m)
 {
   if (p == 0)
     return (0);
@@ -1694,18 +1695,18 @@ int yyback(int *p, int m)
 }
 
 	/* the following are only used in the lex library */
-int yyinput()
+int tdiyyinput()
 {
   GET_TDITHREADSTATIC_P;
   return (input());
 }
 
-void yyoutput()
+void tdiyyoutput()
 {
   //  output(c);
 }
 
-void yyunput(int c __attribute__ ((unused)))
+void tdiyyunput(int c __attribute__ ((unused)))
 {
   GET_TDITHREADSTATIC_P;
   unput(c);

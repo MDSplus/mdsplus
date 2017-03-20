@@ -63,16 +63,16 @@ cmdParseLex.o: cmdParseLex.c
 #        bison cmdParse.y
 
 #cmdParseLex.c: cmdParse.x
-#	lex cmdParsex
+#	lex -P cmdParse_ cmdParse.x
 
 #ocldToXml: ocldToXml.c
 #	$(LINK.c) $(OUTPUT_OPTION) $<
 
 #ocldToXml.c: ocldToXml.x
-#       lex ocldToXml.x
+#       lex -P ocldToXml_ ocldToXml.x
 
 #mdsdcl_commands.xml: mdsdcl_tables.ocld
 #	./ocldToXml mdsdcl_tables.ocld mdsdcl_commands
 
 #mdsdclDeltatimeToSeconds.c: mdsdclDeltatimeToSeconds.x
-#	lex mdsdclDeltatimeToSeconds.x
+#	lex -P mdsdclDelta_ mdsdclDeltatimeToSeconds.x
