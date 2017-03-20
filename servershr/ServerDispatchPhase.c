@@ -113,6 +113,21 @@ STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALI
 #define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
 #define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
 
+//#define DEBUG
+#define PRINT_ACTIONS {\
+  int sti;\
+  for (sti=0 ; sti < table->num ; sti++){\
+    RDLOCK_ACTION(sti);\
+    fprintf(stderr,"Action(%d): %s, p=%d(%d), %d, %d\n",sti,\
+      table->actions[sti].path,\
+      table->actions[sti].phase,\
+      table->actions[sti].condition!=NULL,\
+      table->actions[sti].dispatched,\
+      table->actions[sti].done);\
+    UNLOCK_ACTION(sti);\
+  }\
+}
+//"
 STATIC_ROUTINE char *Server(char *out, char *srv){
   int i;
   for (i = 0; i < 32; i++)
@@ -241,7 +256,8 @@ STATIC_ROUTINE void Before(int idx){
  * UNLOCKs action[i] if FIND_NEXT_ACTION left if locked, i.e. CONDITION was met, i<END.
  */
 #define FIND_NEXT_ACTION(START,END,CONDITION)\
-for (i = START; i < END ; i++){\
+i = START;\
+for (; i < END ; i++){\
 RDLOCK_ACTION(i);\
 if ( CONDITION ) break;\
 UNLOCK_ACTION(i);\
@@ -251,6 +267,9 @@ UNLOCK_ACTION(i);\
 STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
   int i;
   ActionInfo *actions = table->actions;
+#ifdef DEBUG
+  PRINT_ACTIONS;
+#endif
   FIND_NEXT_ACTION(0, table->num, actions[i].phase==phase)
   if (i < table->num) {
     if (actions[i].condition) {
@@ -274,6 +293,9 @@ STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c){
     first_s = table->num;
     last_s = table->num;
   }
+#ifdef DEBUG
+  fprintf(stderr,"ActionRange: %d,%d,%d,%d\n",*first_c, *last_c, first_s, last_s);
+#endif
 }
 
 STATIC_ROUTINE void AbortRange(int s, int e)
@@ -291,8 +313,11 @@ STATIC_ROUTINE void AbortRange(int s, int e)
   }
 }
 
-STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g)
-{
+STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g){
+  if (first_g==last_s){
+    *last_g = last_s;
+    return;
+  }
   int i;
   int group;
   ActionInfo *actions = table->actions;
@@ -305,13 +330,15 @@ STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g)
   *last_g = i;
 }
 
-STATIC_ROUTINE int NoOutstandingActions(int s, int e)
-{
+STATIC_ROUTINE int NoOutstandingActions(const int s, const int e){
   int i;
   ActionInfo *actions = table->actions;
   FIND_NEXT_ACTION(s,e, actions[i].dispatched && !actions[i].done);
   FIND_NEXT_ACTION_END(e);
-  return i==e;
+#ifdef DEBUG
+  fprintf(stderr, "%d -> %d==%d\n",s,i,e);
+#endif
+  return i>=e;
 }
 
 STATIC_ROUTINE void RecordStatus(int s, int e)
@@ -345,25 +372,23 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 {
   int c_status = C_OK;
   pthread_mutex_lock(&JobWaitMutex);
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  int g,c = 1;
   while ((c_status == ETIMEDOUT || c_status == C_OK)
-	 && !(all ? NoOutstandingActions(first_g, last_g) && NoOutstandingActions(first_c, last_c)
-	      : (AbortInProgress ? 1 : NoOutstandingActions(first_g, last_g)))) {
-    //ProgLoc = 600;
-    {
-      struct timespec abstime;
-      struct timeval tmval;
-      gettimeofday(&tmval, 0);
-      abstime.tv_sec = tmval.tv_sec + 1;
-      abstime.tv_nsec = tmval.tv_usec * 1000;
-      //ProgLoc = 601;
-      c_status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &abstime);
-      //ProgLoc = 602;
-    }
+      && !AbortInProgress
+      && (g=!NoOutstandingActions(first_g, last_g)
+        || (all && (c=!NoOutstandingActions(first_c, last_c))))) {
+#ifdef DEBUG
+    fprintf(stderr,"%lu: %d, %d\n",(long unsigned  int)tp.tv_sec,g,c);
+    PRINT_ACTIONS;
+#endif
+    tp.tv_sec++;
+    c_status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &tp);
 #if defined(_DECTHREADS_) && (_DECTHREADS_ == 1)
     if (c_status == -1 && errno == 11)
       c_status = ETIMEDOUT;
 #endif
-    //ProgLoc = 603;
   }
   pthread_mutex_unlock(&JobWaitMutex);
 }
@@ -547,16 +572,13 @@ STATIC_ROUTINE void WakeCompletedActionQueue(){
   pthread_mutex_unlock(&wake_completed_mutex);
 }
 
-STATIC_ROUTINE void WaitForActionDoneQueue()
-{
+STATIC_ROUTINE void WaitForActionDoneQueue(){
   pthread_mutex_lock(&wake_completed_mutex);
   {
-    struct timespec abstime;
-    struct timeval tmval;
-    gettimeofday(&tmval, 0);
-    abstime.tv_sec = tmval.tv_sec + 1;
-    abstime.tv_nsec = tmval.tv_usec * 1000;
-    pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, &abstime);
+    struct timespec tp;
+    clock_gettime(CLOCK_REALTIME, &tp);
+    tp.tv_sec++;
+    pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, &tp);
   }
   pthread_mutex_unlock(&wake_completed_mutex);
 }
