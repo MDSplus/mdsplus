@@ -35,34 +35,30 @@ extern int MdsGetStdMsg();
 
 typedef void* PyObject;
 typedef ssize_t Py_ssize_t;
-static void (*Py_DecRef)() = NULL;
-static PyObject *(*PyTuple_New) () = NULL;
-static PyObject *(*PyString_FromString) () = NULL;
-static PyObject *(*PyUnicode_FromString) () = NULL;
-static void (*PyTuple_SetItem) () = NULL;
-static PyObject *(*PyTuple_GetItem) () = NULL;
-static PyObject *(*PyObject_CallObject) () = NULL;
-static PyObject *(*PyObject_GetAttrString) () = NULL;
-static void *(*PyLong_AsVoidPtr) () = NULL;
-static PyObject *(*PyErr_Occurred) () = NULL;
-static void (*PyErr_Print) () = NULL;
-static PyObject *(*PyImport_ImportModule) () = NULL;
-static PyObject *(*PyModule_GetDict) () = NULL;
-static PyObject *(*PyDict_GetItemString) () = NULL;
-static PyObject *(*Py_BuildValue) () = NULL;
-static PyObject *_Py_NoneStruct;
-static PyObject *(*PyList_Insert) () = NULL;
-static PyObject *(*PyObject_CallFunction) () = NULL;
-static PyObject *(*PySys_GetObject) () = NULL;
-static int64_t (*PyLong_AsLong) () = NULL;
-static char *(*PyString_AsString) () = NULL;
-static char *(*PyBytes_AsString)() = NULL;
-static PyObject *(*PyUnicode_AsEncodedString)() = NULL;
-static Py_ssize_t(*PyList_Size) () = NULL;
-static int (*PyCallable_Check) () = NULL;
-static PyObject *(*PyList_GetItem) () = NULL;
-static PyObject *(*PyObject_Str) () = NULL;
-static int (*PyObject_IsSubclass) () = NULL;
+static void (*Py_DecRef)() = NULL;//getFunction,argsToTuple,getAnswer
+static PyObject *(*PyTuple_New) () = NULL;//argsToTuple
+static PyObject *(*PyString_FromString) () = NULL;//->addToPath
+static PyObject *(*PyUnicode_FromString) () = NULL;//->addToPath
+static void (*PyTuple_SetItem) () = NULL;//argsToTuple
+static PyObject *(*PyObject_CallObject) () = NULL;//TdiExtPython
+static PyObject *(*PyObject_GetAttrString) () = NULL;//getFunction,getAnswer
+static void *(*PyLong_AsVoidPtr) () = NULL;//getAnswer
+static PyObject *(*PyErr_Occurred) () = NULL;//getFunction
+static void (*PyErr_Print) () = NULL;//getFunction
+static PyObject *(*PyImport_ImportModule) () = NULL;//getFunction
+static PyObject *_Py_NoneStruct;//TdiExtPython
+static PyObject *(*PyList_Insert) () = NULL;//addToPath
+static PyObject *(*PyObject_CallFunction) () = NULL;//argsToTuple,getAnswer
+static PyObject *(*PySys_GetObject) () = NULL;//addToPath
+static int64_t (*PyLong_AsLong) () = NULL;//TdiExtPython
+static char *(*PyString_AsString) () = NULL;//addToPath
+static char *(*PyBytes_AsString)() = NULL;//addToPath
+static PyObject *(*PyUnicode_AsEncodedString)() = NULL;//addToPath
+static Py_ssize_t(*PyList_Size) () = NULL;//addToPath
+static int (*PyCallable_Check) () = NULL;//getFunction
+static PyObject *(*PyList_GetItem) () = NULL;//addToPath
+static PyObject *(*PyObject_Str) () = NULL;//addToPath
+static int (*PyObject_IsSubclass) () = NULL;//TdiExtPython
 
 static int Initialize(){
   if (PyGILState_Ensure)
@@ -133,16 +129,12 @@ static int Initialize(){
       loadrtn(PyUnicode_FromString, 1);
     }
     loadrtn(PyTuple_SetItem, 1);
-    loadrtn(PyTuple_GetItem, 1);
     loadrtn(PyObject_CallObject, 1);
     loadrtn(PyObject_GetAttrString, 1);
     loadrtn(PyLong_AsVoidPtr, 1);
     loadrtn(PyErr_Occurred, 1);
     loadrtn(PyErr_Print, 1);
     loadrtn(PyImport_ImportModule, 1);
-    loadrtn(PyModule_GetDict, 1);
-    loadrtn(PyDict_GetItemString, 1);
-    loadrtn(Py_BuildValue, 1);
     loadrtn(_Py_NoneStruct, 1);
     loadrtn(PyList_Insert, 1);
     loadrtn(PyObject_CallFunction, 1);
