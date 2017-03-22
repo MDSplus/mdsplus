@@ -97,14 +97,15 @@ class Device(_treenode.TreeNode):
         if int(debug)<0:
             @staticmethod
             def _debugDevice(dev):
-                from MDSplus import Device
-                import types
+                if not (isinstance(dev,(type,)) and issubclass(dev,(Device,))):
+                    return dev
+                from types import FunctionType
                 def dummy(self,*args,**kvargs):
                     return 1
                 db = {}
                 for d in dev.mro()[-4::-1]: #mro[-3] is Device
                     for k,v in d.__dict__.items():
-                        if isinstance(v,(types.FunctionType,)):
+                        if isinstance(v,(FunctionType,)):
                             db[k] = dummy
                         else:
                             db[k] = v

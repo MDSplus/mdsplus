@@ -69,6 +69,7 @@ rundocker(){
         #
         docker run -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
            -u $(id -u):$(id -g) \
+           -h $DISTNAME \
            -e "ARCH=${arch}" \
            -e "ARCHES=${ARCH}" \
            -e "PLATFORM=${PLATFORM}" \
