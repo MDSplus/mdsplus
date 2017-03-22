@@ -27,6 +27,8 @@ typedef void *pthread_t;
 #include <pthread.h>
 #endif//_WIN32
 
+#define DEFAULT_STACKSIZE 8388608
+
 #if defined(PTHREAD_RECURSIVE_MUTEX_NP) && !defined(PTHREAD_RECURSIVE_MUTEX)
 #define PTHREAD_RECURSIVE_MUTEX PTHREAD_RECURSIVE_MUTEX_NP
 #endif
@@ -108,11 +110,9 @@ pthread_mutex_unlock(&c->mutex); \
 pthread_mutex_destroy(&c->mutex); \
 }
 #define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
-size_t ssize;\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\
-pthread_attr_getstacksize(&attr, &ssize);\
-pthread_attr_setstacksize(&attr, ssize stacksize);\
+pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE stacksize);\
 int c_status = pthread_create(&thread, &attr, (void *)target, args);\
 pthread_attr_destroy(&attr);\
 pthread_detach(thread);
