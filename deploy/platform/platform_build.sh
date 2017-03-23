@@ -72,22 +72,22 @@ rundocker(){
            -h $DISTNAME \
            -e "ARCH=${arch}" \
            -e "ARCHES=${ARCH}" \
-           -e "PLATFORM=${PLATFORM}" \
-           -e "BRANCH=$BRANCH" \
-           -e "DISTNAME=$DISTNAME" \
-           -e "OS=$OS" \
-           -e "RELEASE_VERSION=$RELEASE_VERSION"  \
-           -e "TEST=$TEST" \
-           -e "TESTFORMAT=$TEST_FORMAT" \
+           -e "BRANCH" \
+           -e "COLOR" \
+           -e "DISPLAY" \
+           -e "DISTNAME" \
+           -e "GIT_COMMIT" \
+           -e "OS" \
+           -e "PLATFORM" \
+           -e "PUBLISH" \
+           -e "RELEASE" \
+           -e "RELEASE_VERSION"  \
+           -e "SANITIZE" \
+           -e "TEST" \
+           -e "TESTFORMAT" \
+           -e "UPDATEPKG" \
+           -e "VALGRIND_TOOLS" \
            -e "mdsevent_port=$EVENT_PORT" \
-           -e "RELEASE=$RELEASE" \
-           -e "PUBLISH=$PUBLISH" \
-           -e "SANITIZE=$SANITIZE" \
-           -e "VALGRIND_TOOLS=$VALGRIND_TOOLS" \
-           -e "UPDATEPKG=$UPDATEPKG" \
-           -e "PLATFORM=$PLATFORM" \
-           -e "COLOR=${COLOR}" \
-           -e "GIT_COMMIT=${GIT_COMMIT}" \
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
            $(volume "${RELEASEDIR}" /release) \
@@ -97,9 +97,9 @@ rundocker(){
         status=$?
         if [ -r ${WORKSPACE}/${OS}_docker-cid ]
         then
-    	sleep 3
-    	docker rm $(cat ${WORKSPACE}/${OS}_docker-cid)
-    	rm -f ${WORKSPACE}/${OS}_docker-cid
+          sleep 3
+          docker rm $(cat ${WORKSPACE}/${OS}_docker-cid)
+          rm -f ${WORKSPACE}/${OS}_docker-cid
         fi
         if [ ! "$status" = "0" ]
         then
