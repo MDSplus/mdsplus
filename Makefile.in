@@ -60,8 +60,6 @@ mdsshr \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
 	@HDF5_APS@ \
-	@LV@ \
-	LabView \
 	@MACOSX@
 
 @MINGW_TRUE@ PARTS += icons

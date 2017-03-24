@@ -66,6 +66,8 @@ _mimport('MARTE_MHD_I')
 _mimport('MARTE_NE')
 _mimport('MARTE_WAVEGEN')
 _mimport('MARTE_XRAY')
+_mimport('MARTE_DUTY_CYCLE')
+
 
 _mimport('MILL3')
 _mimport('NI6259AI')
