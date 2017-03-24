@@ -21,6 +21,8 @@ for _i in $2; do
 done
 ])
 
+AC_DEFUN([TS_U2WPATH],\$(shell winepath -w $1 2>/dev/null))
+
 dnl compile a winepath command using specified directories
 dnl Usage: TS_WINEPATH [var],[library_dirs]
 dnl 
@@ -150,19 +152,19 @@ AC_DEFUN([TS_SELECT],[
      [
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
-      #TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
+      AS_VAR_SET([PYTHONHOME],"TS_U2WPATH([/python27])")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEDEBUG=-all ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='Z:\$(abs_top_srcdir)/tdi' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='TS_U2WPATH([\$(abs_top_srcdir)/tdi])' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR='TS_U2WPATH([\$(abs_top_srcdir)])' ")
       AS_VAR_IF([WINEARCH],[win64],
         [
-         AS_VAR_APPEND([WINEPATH],";${PYTHONHOME}")
-         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='Z:/python27' ")
-         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='%PYTHONHOME%/Lib;%PYTHONHOME%/Lib/site-packages;Z:\$(abs_top_srcdir)/testing' ")
+         AS_VAR_APPEND([WINEPATH],"${PYTHONHOME}")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='${PYTHONHOME}' ")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([\$(abs_top_srcdir)/testing])' ")
          AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib='python27' ")
-         AS_VAR_SET([PYTHON],'wine cmd /c Z:\$(abs_top_srcdir)/testing/python.bat')
-         AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+         AS_VAR_SET([PYTHON],"\$(abs_top_srcdir)/testing/winpython python")
+         AS_VAR_APPEND([PY_LOG_COMPILER],  ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])
         ],[
          TS_LOG_SKIP([PY_LOG_COMPILER])
         ]
