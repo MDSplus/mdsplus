@@ -83,8 +83,3 @@ tests-valgrind: $(tests_valgrind_DIRS)
 tests-valgrind-suppressions: $(tests_valgrind_suppressions_DIRS)
 
 tests-clean: $(clean_DIRS)
-
-
-
-
-

@@ -829,8 +829,10 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
   if (!initialized) {
     struct rlimit rlp;
     getrlimit(RLIMIT_NOFILE, &rlp);
-    rlp.rlim_cur = rlp.rlim_max;
-    setrlimit(RLIMIT_NOFILE, &rlp);
+    if (rlp.rlim_cur < rlp.rlim_max){
+      rlp.rlim_cur = rlp.rlim_max;
+      setrlimit(RLIMIT_NOFILE, &rlp);
+    }
     initialized = 1;
   }
 #endif

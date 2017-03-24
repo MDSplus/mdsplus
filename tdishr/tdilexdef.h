@@ -1,4 +1,4 @@
-#define yywrap()	1
+#define tdiyywrap()	1
 #ifdef getc
 #undef getc
 #endif

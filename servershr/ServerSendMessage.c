@@ -282,7 +282,7 @@ void ServerWait(int jobid)
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   UNLOCK_JOBS;
   if (j && j->has_condition) {
-    CONDITION_WAIT(j);
+    CONDITION_WAIT_TRUE(j);
     CONDITION_DESTROY(j);
     free(j);
   }

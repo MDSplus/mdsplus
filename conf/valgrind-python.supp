@@ -406,14 +406,12 @@
 {
    Stack of Pthreads created detached but run till main process terminates
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    fun:_dl_allocate_tls
 }
 {
    python internal allocations python should take care of
    Memcheck:Leak
-   match-leak-kinds: possible
    fun:calloc
    obj:*/libpython?.?.so*
 }

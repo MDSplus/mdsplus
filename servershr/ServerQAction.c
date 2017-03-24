@@ -104,7 +104,7 @@ EXPORT int ServerDebug(int setting)
   return old;
 }
 
-EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *op, int *flags, int *jobid,
+EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
   int status = ServerINVALID_ACTION_OPERATION;
@@ -133,7 +133,7 @@ EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *o
     {
 
       SrvActionJob job;
-      job.h.addr = MdsGetClientAddr();
+      job.h.addr = addr ? *addr : MdsGetClientAddr();
       job.h.port = *port;
       job.h.op = *op;
       job.h.length = sizeof(job);

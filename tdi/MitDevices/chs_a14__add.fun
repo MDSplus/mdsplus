@@ -13,7 +13,7 @@ public fun chs_a14__add(in _path, out _nidout)
   DevAddNode(_path//':STOP_TRIG','NUMERIC',0.,'/noshot_write',_nid);
   DevAddNode(_path//':PTS','NUMERIC',0,'/write_once',_nid);
   DevAddNode(_path//':MODE','NUMERIC',0,'/write_once',_nid);
-  DevAddNode(_path//':DIMENSION','DIMENSION',*,'/noshot_write',_nid);
+  DevAddNode(_path//':DIMENSION','AXIS',*,'/noshot_write',_nid);
   DevAddNode(_path//':CLK_POLARITY','NUMERIC',0,'/noshot_write',_nid);
   DevAddNode(_path//':STR_POLARITY','NUMERIC',0,'/noshot_write',_nid);
   DevAddNode(_path//':STP_POLARITY','NUMERIC',0,'/noshot_write',_nid);

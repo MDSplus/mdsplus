@@ -27,6 +27,8 @@ typedef void *pthread_t;
 #include <pthread.h>
 #endif//_WIN32
 
+#define DEFAULT_STACKSIZE 0x800000
+
 #if defined(PTHREAD_RECURSIVE_MUTEX_NP) && !defined(PTHREAD_RECURSIVE_MUTEX)
 #define PTHREAD_RECURSIVE_MUTEX PTHREAD_RECURSIVE_MUTEX_NP
 #endif
@@ -82,7 +84,7 @@ c->value = B_TRUE; \
 pthread_cond_signal(&c->cond); \
 pthread_mutex_unlock(&c->mutex); \
 }
-#define CONDITION_WAIT(input){\
+#define CONDITION_WAIT_TRUE(input){\
 Condition *c = (Condition*)input; \
 pthread_mutex_lock(&c->mutex); \
 while (!c->value) \
@@ -92,12 +94,10 @@ pthread_mutex_unlock(&c->mutex); \
 #define CONDITION_WAIT_1SEC(input){\
 Condition *c = (Condition*)input; \
 pthread_mutex_lock(&c->mutex); \
-if (!c->value){ \
-  struct timespec tp; \
-  clock_gettime(CLOCK_REALTIME, &tp); \
-  tp.tv_sec++; \
-  pthread_cond_timedwait(&c->cond,&c->mutex,&tp); \
-} \
+struct timespec tp; \
+clock_gettime(CLOCK_REALTIME, &tp); \
+tp.tv_sec++; \
+pthread_cond_timedwait(&c->cond,&c->mutex,&tp); \
 pthread_mutex_unlock(&c->mutex); \
 }
 #define CONDITION_DESTROY(input){\
@@ -108,11 +108,9 @@ pthread_mutex_unlock(&c->mutex); \
 pthread_mutex_destroy(&c->mutex); \
 }
 #define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
-size_t ssize;\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\
-pthread_attr_getstacksize(&attr, &ssize);\
-pthread_attr_setstacksize(&attr, ssize stacksize);\
+pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE stacksize);\
 int c_status = pthread_create(&thread, &attr, (void *)target, args);\
 pthread_attr_destroy(&attr);\
 pthread_detach(thread);
