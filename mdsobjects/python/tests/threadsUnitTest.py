@@ -1,6 +1,9 @@
 from unittest import TestCase,TestSuite,TextTestRunner
 from threading import Thread
-from cStringIO import StringIO
+if __import__('sys').version_info<(3,):
+    from io import BytesIO as StringIO
+else:
+    from io import StringIO
 
 def _mimport(name, level=1):
     try:
@@ -23,7 +26,7 @@ class threadJob(Thread):
         try:
             self.result = TextTestRunner(stream=stream,verbosity=2).run(self.test)
         finally:
-            stream.reset()
+            stream.seek(0)
             self.stream = stream.read()
             stream.close()
 
