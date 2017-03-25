@@ -213,7 +213,7 @@ main(){
         set +e
         buildrelease
     fi
-    if [ "$PUBLISH" = "yes" ]
+    if [ -z "$NOMAKE" ] && [ "$PUBLISH" = "yes" ]
     then
         set +e
         publish

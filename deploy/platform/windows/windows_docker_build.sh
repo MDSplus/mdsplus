@@ -23,18 +23,23 @@ buildrelease() {
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
     config ${test64}
-    $MAKE
-    $MAKE install
+    if [ -z "$NOMAKE" ]; then
+      $MAKE
+      $MAKE install
+    fi
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
     config ${test32}
-    $MAKE
-    $MAKE install
+    if [ -z "$NOMAKE" ]; then
+      $MAKE
+      $MAKE install
+    fi
     popd
     ###
     ### pack installer
     ###
+  if [ -z "$NOMAKE" ]; then
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
     minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
     release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
@@ -91,6 +96,7 @@ EOF
            fi
         done
     fi
+  fi # NOMAKE
 }
 publish() {
     major=$(echo ${RELEASE_VERSION} | cut -d. -f1)

@@ -2,7 +2,7 @@
 #
 # alphine_docker_build is used to build, test, package and add apk's to a
 # repository for alpine based systems.
-# 
+#
 
 testx86_64="64 x86_64-linux bin lib"
 testx86="32 i686-linux   bin lib --with-gsi=/usr:gcc32"
@@ -49,19 +49,22 @@ buildrelease() {
 #    rm -Rf /workspace/releasebld/${ARCH}/*
     pushd /workspace/releasebld/${ARCH}
     config ${ARCH} ${host} bin lib $(getjava ${ARCH})
-    $MAKE
-    $MAKE install
+    if [ -z "$NOMAKE" ]; then
+      $MAKE
+      $MAKE install
+    fi
     popd;
+  if [ -z "$NOMAKE" ]; then
     BUILDROOT=/workspace/releasebld/buildroot \
     BRANCH=${BRANCH} \
     RELEASE_VERSION=${RELEASE_VERSION} \
     ARCH=${ARCH} \
     DISTNAME=${DISTNAME} \
     HOME=/ /source/deploy/platform/alpine/alpine_build_apks.py
+  fi
 }
 
 publish() {
-    
     rsync -a /release/${BRANCH} /publish/
 }
 

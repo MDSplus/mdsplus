@@ -14873,19 +14873,19 @@ esac
 
 
 
-      #TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
+      PYTHONHOME="\$(shell winepath -w /python27 2>/dev/null)"
       as_fn_append TESTS_ENVIRONMENT "WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' "
       as_fn_append TESTS_ENVIRONMENT "WINEDEBUG=-all "
-      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='Z:\$(abs_top_srcdir)/tdi' "
-      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR=\$(abs_top_srcdir) "
+      as_fn_append TESTS_ENVIRONMENT "MDS_PATH='\$(shell winepath -w \$(abs_top_srcdir)/tdi 2>/dev/null)' "
+      as_fn_append TESTS_ENVIRONMENT "MDSPLUS_DIR='\$(shell winepath -w \$(abs_top_srcdir) 2>/dev/null)' "
       if test "x$WINEARCH" = xwin64; then :
 
-         as_fn_append WINEPATH ";${PYTHONHOME}"
-         as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='Z:/python27' "
-         as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='%PYTHONHOME%/Lib;%PYTHONHOME%/Lib/site-packages;Z:\$(abs_top_srcdir)/testing' "
+         as_fn_append WINEPATH "${PYTHONHOME}"
+         as_fn_append TESTS_ENVIRONMENT "PYTHONHOME='${PYTHONHOME}' "
+         as_fn_append TESTS_ENVIRONMENT "PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;\$(shell winepath -w \$(abs_top_srcdir)/testing 2>/dev/null)' "
          as_fn_append TESTS_ENVIRONMENT "PyLib='python27' "
-         PYTHON='wine cmd /c Z:\$(abs_top_srcdir)/testing/python.bat'
-         as_fn_append PY_LOG_COMPILER "${PYTHON} -B \$(top_srcdir)/testing/testing.py"
+         PYTHON="\$(abs_top_srcdir)/testing/winpython python"
+         as_fn_append PY_LOG_COMPILER "\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"
 
 else
 
