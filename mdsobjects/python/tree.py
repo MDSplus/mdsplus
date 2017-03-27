@@ -8,47 +8,20 @@ import threading as _threading
 import ctypes as _C
 import numpy as _N
 
+_ver=_mimport('version')
+_Exceptions=_mimport('mdsExceptions')
 _mdsshr=_mimport('_mdsshr')
 _treeshr=_mimport('_treeshr')
-_Exceptions=_mimport('mdsExceptions')
 _data=_mimport('mdsdata')
 _scalar=_mimport('mdsscalar')
 _treenode=_mimport('treenode')
-_ver=_mimport('version')
-
-_activeTree={}
 
 class _ThreadData(_threading.local):
     def __init__(self):
-        self._activeTree=0
         self.private=False
 _thread_data=_ThreadData()
 
 _hard_lock=_threading.Lock()
-
-
-def _getThreadName(thread=None):
-    if isinstance(thread,str):
-        threadName=thread
-    elif _thread_data.private:
-        if thread is None:
-            threadName = _threading.current_thread().getName()
-        else:
-            threadName = thread.getName()
-    else:
-        threadName = 'main'
-    return threadName
-
-def _setActiveTree(ctx,thread=None):
-    _activeTree[_getThreadName(thread)]=ctx
-
-def _getActiveTree(thread=None):
-    threadName=_getThreadName(thread)
-    if threadName in _activeTree:
-        ctx = _activeTree[threadName]
-    else:
-        ctx = 0
-    return ctx
 
 class _TreeCtx(object): # HINT: _TreeCtx begin
     """ The TreeCtx class is used to manage proper garbage collection
@@ -63,7 +36,7 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         self.open = True
     @staticmethod
     def canClose(ctx):
-        return _TreeCtx.ctxs[ctx] == 1
+        return ctx not in _TreeCtx.ctxs or _TreeCtx.ctxs[ctx] == 1
     def register(self,opened):
         self.lock.acquire()
         try:
@@ -82,25 +55,16 @@ class _TreeCtx(object): # HINT: _TreeCtx begin
         try:
             _TreeCtx.ctxs[self.ctx]-=1
             if _TreeCtx.ctxs[self.ctx]==0:
-                self.closeDbid()
+                self._closeDbid()
         finally:
             self.lock.release()
-    def closeDbid(self):
+    def _closeDbid(self):
         del(_TreeCtx.ctxs[self.ctx])
         _TreeCtx.order = [c for c in _TreeCtx.order if c!=self.ctx]
         # make sure current Dbid is not active - tdishr
         ctx = _treeshr.switchDbid()
         if ctx != 0 and ctx!=self.ctx:
              _treeshr.switchDbid(ctx)
-        # make sure current Dbid is not active - python
-        ctx = _getActiveTree()
-        if ctx is not None:
-            if ctx!=self.ctx:
-                _setActiveTree(ctx)
-            elif len(_TreeCtx.order)>0:
-                _setActiveTree(_TreeCtx.order[-1])
-            else:
-                _setActiveTree(0)
         # apparently this was opened by python - so close all trees
         while True:
            try:
@@ -131,7 +95,7 @@ class Tree(object):
     def __enter__(self):
     	return self
     def __del__(self):
-        if _TreeCtx.canClose(self.ctx.value):
+        if self.ctx and _TreeCtx.canClose(self.ctx.value):
             self.__exit__()
     def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -203,12 +167,11 @@ class Tree(object):
         @type mode: str
         """
         _hard_lock.acquire()
+        self.ctx = None
         try:
             if tree is None:
                 ctx = _treeshr.switchDbid()
                 if not ctx:
-                    ctx=_getActiveTree()
-                if ctx == 0:
                     raise _Exceptions.TreeNOT_OPEN()
                 else:
                     self.ctx=_C.c_void_p(ctx)
@@ -227,7 +190,6 @@ class Tree(object):
                 opened = True
             if not isinstance(self.ctx,_C.c_void_p) or self.ctx.value is None:
                 raise _Exceptions.MDSplusError
-            _setActiveTree(self.ctx.value)
             _treeshr.switchDbid(self.ctx.value)
             self.tctx = _TreeCtx(self.ctx.value,opened)
             self.tree = self.name
@@ -543,9 +505,6 @@ class Tree(object):
         try:
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
                 _treeshr.TreeRestoreContext(self.ctx)
-                _setActiveTree(self.ctx.value)
-            else:
-                _setActiveTree(0)
         finally:
             _hard_lock.release()
 
