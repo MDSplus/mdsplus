@@ -23,6 +23,7 @@ fun public MdsDevices() {
     'MARTE_CONFIG', 'RfxDevices',
     'MARTE_EDA3_OUT', 'RfxDevices',
     'MARTE_RTSM', 'RfxDevices',
+    'MARTE_DUTY_CYCLE', 'RfxDevices',
     'MILL3', 'RfxDevices',
     'ZELOS2150GV', 'RfxDevices',
     'NI6259AI', 'RfxDevices',

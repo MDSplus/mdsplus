@@ -49,6 +49,7 @@ _mimport('MARTE_CONFIG')
 _mimport('MARTE_COMMON')
 _mimport('MARTE_DEVICE')
 _mimport('MARTE_RTSM')
+_mimport('MARTE_DUTY_CYCLE')
 # MARTE_GENERIC
 _mimport('MARTE_GENERIC')
 _mimport('MARTE')
