@@ -1,0 +1,13 @@
+#!/bin/bash
+test=$(basename $4)
+test=${test:0:-11}
+if [ "$test"=="dcl" ]; then
+  wine mdsip -s -p ${mdsevent_port} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts) &>mdsip_0.log &
+  export ACTION_SERVER=localhost:${mdsevent_port}
+fi
+wine $1 $2 $(winepath -w $3) $(winepath -w $4)
+status=$?
+if [ "$test"=="dcl" ]; then
+  :&&kill -s 9 %
+fi
+exit $status

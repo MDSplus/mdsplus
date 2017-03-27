@@ -88,6 +88,7 @@ rundocker(){
            -e "UPDATEPKG" \
            -e "VALGRIND_TOOLS" \
            -e "mdsevent_port=$EVENT_PORT" \
+           -e "HOME=/workspace" \
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
            $(volume "${RELEASEDIR}" /release) \

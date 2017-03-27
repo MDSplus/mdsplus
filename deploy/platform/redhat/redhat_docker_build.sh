@@ -36,15 +36,20 @@ buildrelease(){
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
     config ${test64}
-    $MAKE
-    $MAKE install
+    if [ -z "$NOMAKE" ]; then
+      $MAKE
+      $MAKE install
+    fi
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
     config 32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc64
-    $MAKE
-    $MAKE install
+    if [ -z "$NOMAKE" ]; then
+      $MAKE
+      $MAKE install
+    fi
     popd
+  if [ -z "$NOMAKE" ]; then
     BUILDROOT=/workspace/releasebld/buildroot
     echo "Building rpms";
     ###
@@ -112,6 +117,7 @@ EOF
         fi
     done
     checkstatus abort "Failure: Problem with contents of one or more rpms. (see above)" $badrpm
+  fi #nomake
 }
 
 publish(){

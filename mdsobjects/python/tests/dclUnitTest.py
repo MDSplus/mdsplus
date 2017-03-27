@@ -154,10 +154,12 @@ class dclTests(TestCase):
             if Popen:
                 self.assertEqual(mdsip.poll(),None)
           finally:
-            if Popen and mdsip.poll() is None:
-                self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
-                mdsip.terminate()
-                mdsip.wait()
+              try:
+                  self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
+              finally:
+                  if Popen and mdsip.poll() is None:
+                      mdsip.terminate()
+                      mdsip.wait()
         finally:
             if log: log.close()
             self._doTCLTest('close/all')
