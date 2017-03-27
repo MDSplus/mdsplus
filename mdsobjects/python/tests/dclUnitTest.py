@@ -1,5 +1,5 @@
 from unittest import TestCase,TestSuite
-import os
+import os,sys
 from re import match
 from threading import Lock
 
@@ -8,6 +8,7 @@ from MDSplus import getenv,setenv,dcl,ccl,tcl,cts
 from MDSplus import mdsExceptions as Exc
 
 class dclTests(TestCase):
+    debug = False
     lock = Lock()
     shotinc = 2
     instances = 0
@@ -23,6 +24,7 @@ class dclTests(TestCase):
             else:
                 self.assertEqual(string is None,False)
                 self.assertEqual(match(pattern,str(string)) is None,False,'"%s"\nnot matched by\n"%s"'%(string,pattern))
+        if dclTests.debug: sys.stderr.write("TCL(%s)\n"%(expr,));
         outerr = tcl(expr,True,True,True)
         if not re:
             self.assertEqual(outerr,(out,err))
@@ -31,6 +33,7 @@ class dclTests(TestCase):
             checkre(err,outerr[1])
 
     def _doExceptionTest(self,expr,exc):
+        if dclTests.debug: sys.stderr.write("TCL(%s) # expected exception: %s\n"%(expr,exc.__name__));
         try:
             tcl(expr,True,True,True)
         except Exception as e:
@@ -167,9 +170,8 @@ class dclTests(TestCase):
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
 
     def runTest(self):
-        self.dclInterface()
-        self.dispatcher()
-
+        for test in self.getTests():
+            self.__getattribute__(test)()
     @staticmethod
     def getTests():
         return ['dclInterface','dispatcher']
