@@ -21,28 +21,26 @@ if os.name=='nt':
 else:
     setenv("PyLib","python%d.%d" % sys.version_info[0:2])
 
-connectionsSuite=_mimportSuite('connectionUnitTest')
-dataSuite=       _mimportSuite('dataUnitTest')
-dclSuite=        _mimportSuite('dclUnitTest')
-devicesSuite=    _mimportSuite('devicesUnitTest')
-exceptionSuite=  _mimportSuite('exceptionUnitTest')
-segmentsSuite=   _mimportSuite('segmentsUnitTest')
-treeSuite=       _mimportSuite('treeUnitTest')
-threadsSuite=    _mimportSuite('threadsUnitTest')
-
 def test_all(*arg):
     if getenv('waitdbg') is not None:
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
-    tests=list()
-    tests.append(dataSuite())
-    tests.append(dclSuite())
-    tests.append(devicesSuite())
-    tests.append(connectionsSuite())
-    tests.append(exceptionSuite())
-    tests.append(segmentsSuite())
-    tests.append(treeSuite())
-    tests.append(threadsSuite())
+    testSuites = [
+        'connectionUnitTest',
+        'dataUnitTest',
+        'dclUnitTest',
+        'devicesUnitTest',
+        'exceptionUnitTest',
+        'segmentsUnitTest',
+        'treeUnitTest',
+        'threadsUnitTest',
+    ]
+    tests=[]
+    for suite in testSuites:
+        try:
+            tests.append(_mimportSuite(suite)())
+        except Exception as e:
+            print("Could not import %s\n%s"%(suite,e.message))
     return TestSuite(tests)
 
 def run():
