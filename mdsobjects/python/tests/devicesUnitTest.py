@@ -61,7 +61,6 @@ class devicesTest(TestCase):
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
-
     @staticmethod
     def getTests():
         return ['MitDevices','RfxDevices','W7xDevices']

@@ -326,7 +326,6 @@ class dataTests(TestCase):
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
-
     @staticmethod
     def getTests():
         return ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
