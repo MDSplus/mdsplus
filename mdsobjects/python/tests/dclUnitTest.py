@@ -112,14 +112,14 @@ class dclTests(TestCase):
             from subprocess import Popen,STDOUT
             port = int(getenv('ACTION_PORT','8800'))
             server = 'LOCALHOST:%d'%(port,)
-            Tree('pytree',-1,'ReadOnly').createPulse(port)
         else:
-            Tree('pytree',-1,'ReadOnly').createPulse(self.shot+1)
             Popen = None
             for envpair in self.envx.items():
                 testDispatchCommand('env %s=%s'%envpair)
+        shot = self.shot+1
+        Tree('pytree',-1,'ReadOnly').createPulse(shot)
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
-        pytree = Tree('pytree',self.shot)
+        pytree = Tree('pytree',shot)
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
         """ using dispatcher """
@@ -163,7 +163,7 @@ class dclTests(TestCase):
         finally:
             if log: log.close()
             self._doTCLTest('close/all')
-        pytree = Tree('pytree',self.shot,'ReadOnly')
+        pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
 
     def runTest(self):
