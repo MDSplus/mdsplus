@@ -340,6 +340,7 @@ class CAENDT5724(Device):
 ################################# INIT ###############################
     def init(self):
       global caenLib
+
       if self.restoreInfo() == 0 : 
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open DT5724 Device' )
         return 0

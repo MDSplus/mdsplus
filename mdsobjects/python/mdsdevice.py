@@ -164,6 +164,7 @@ class Device(_treenode.TreeNode):
         else:
             if not cls.__initialized:
                 cls.part_names = tuple(elt['path'] for elt in cls.parts)
+                cls.part_dict = {} # we need to reinit the dict to get a private one
                 for i,partname in enumerate(cls.part_names):
                     try:
                        cls.part_dict[partname[1:].lower().replace(':','_').replace('.','_')]=i+1
