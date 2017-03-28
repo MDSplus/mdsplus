@@ -65,8 +65,8 @@ class MARTE_GENERIC(Device):
         return environ["MARTE_EVENT"]
 
     def init(self):
-      eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
-      eventStr = eventStr + " " + str(Tree.getActiveTree().shot)
+      eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getTree().name
+      eventStr = eventStr + " " + str(Tree.getTree().shot)
       try:
         eventStr = eventStr + " " + str(self.frequency.data())
       except:

@@ -49,6 +49,7 @@ _mimport('MARTE_CONFIG')
 _mimport('MARTE_COMMON')
 _mimport('MARTE_DEVICE')
 _mimport('MARTE_RTSM')
+_mimport('MARTE_DUTY_CYCLE')
 # MARTE_GENERIC
 _mimport('MARTE_GENERIC')
 _mimport('MARTE')
@@ -66,8 +67,6 @@ _mimport('MARTE_MHD_I')
 _mimport('MARTE_NE')
 _mimport('MARTE_WAVEGEN')
 _mimport('MARTE_XRAY')
-_mimport('MARTE_DUTY_CYCLE')
-
 
 _mimport('MILL3')
 _mimport('NI6259AI')
