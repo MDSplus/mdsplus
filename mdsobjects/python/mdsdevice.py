@@ -89,7 +89,7 @@ class Device(_treenode.TreeNode):
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    debug = _os.getenv('DEBUG_DEVICES')
+    debug = _mdsshr.getenv('DEBUG_DEVICES')
     gtkThread = None
 
     """ debug safe import """
@@ -358,7 +358,6 @@ class Device(_treenode.TreeNode):
         containing blank filled values containing an \0 character embedded.
         These Strings have to be manipulated to produce simple str() values.
         """
-        cls = None
         cls_list = []
         if model is None:
             model=module
@@ -377,7 +376,7 @@ class Device(_treenode.TreeNode):
             MODEL = model.upper()
             module = __import__(module)
         if module is None:
-            raise _exc.DevPYDEVICE_NOT_FOUND
+            raise _exceptions.DevPYDEVICE_NOT_FOUND
         if model in module.__dict__:
             return module.__dict__[model]
         cls_list = [k for k,v in module.__dict__.items()
@@ -388,7 +387,7 @@ class Device(_treenode.TreeNode):
             return module.__dict__[cls_list[0]]
         if len(cls_list)>1:
             print ("Error adding device %s: Name ambiguous (%s)"%(model,','.join(cls_list)))
-        raise _exc.DevPYDEVICE_NOT_FOUND
+        raise _exceptions.DevPYDEVICE_NOT_FOUND
     PyDevice=staticmethod(PyDevice)
 
     def findPyDevices():

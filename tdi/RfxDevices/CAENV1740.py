@@ -1,56 +1,51 @@
-from MDSplus import TreeNode, Signal, Data, Dimension, Window, Range,Device
+from MDSplus import Signal, Data, Dimension, Window, Range, Device
 from MDSplus import mdsExceptions, Int32, Int16Array, Float64Array, Float64
 from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 from time import sleep
 
-class CAENV1740(object):
+class CAENV1740(Device):
     """CAEN V1740 64 Channels 12 Bit 65MS/S Digitizer"""
     caenLib = None
-    partNames = ['COMMENT','BOARD_ID','VME_ADDRESS','TRIG_MODE','TRIG_SOFT','TRIG_EXT','TRIG_SOURCE','TRIG_INT_TIM','CLOCK_MODE','CLOCK_DIV','CLOCK_SOURCE',
-                 'NUM_SEGMENTS','USE_TIME','PTS','START_IDX','END_IDX','START_TIME','END_TIME','CONT_SAMPLES']
-    parts =     [{'path':'.'+partName, 'type':'any'} for partName in partNames]
-    def Add(self,tree,path):
-        print('Add is not implemented for this device')
-    def __init__(self,node):
-      super(CAENV1740,self).__init__(node)
-      self.node=node
-      self.N_HEAD = 0
-      self.N_COMMENT = 1
-      self.N_BOARD_ID = 2
-      self.N_VME_ADDRESS = 3
-      self.N_TRIG_MODE = 4
-      self.N_TRIG_SOFT = 5
-      self.N_TRIG_EXT = 6
-      self.N_TRIG_SOURCE = 7
-      self.N_TRIG_INT_TIM = 8
-      self.N_CLOCK_MODE = 9
-      self.N_CLOCK_DIV = 10
-      self.N_CLOCK_SOURCE = 11
-      self.N_NUM_SEGMENTS = 12
-      self.N_USE_TIME = 13
-      self.N_PTS = 14
-      self.N_START_IDX = 15
-      self.N_END_IDX = 16
-      self.N_START_TIME = 17
-      self.N_END_TIME = 18
-      self.N_CONT_SAMPLES = 19
-      self.K_NODES_PER_CHANNEL = 6
-      self.N_CHANNEL_0= 20
-      self.N_CHAN_STATE = 1
-      self.N_CHAN_TRIG_STATE = 2
-      self.N_CHAN_TRIG_THRESH_LEV = 3
-      self.N_CHAN_TRIG_THRESH = 4
-      self.N_CHAN_OFFSET = 5
-      self.N_CHAN_DATA = 6
-      self.cvV1718 = 0                     # CAEN V1718 USB-VME bridge
-      self.cvV2718 = 1                     # V2718 PCI-VME bridge with optical link
-      self.cvA2818 = 2                     # PCI board with optical link
-      self.cvA2719 = 3                     # Optical link piggy-back
-      self.cvA32_S_DATA = 0x0D             # A32 supervisory data access
-      self.cvD32 = 0x04                    # D32
-      self.cvD64 = 0x08
-      self.N_DATA_0= 68
-      return
+    cvV1718 = 0                     # CAEN V1718 USB-VME bridge
+    cvV2718 = 1                     # V2718 PCI-VME bridge with optical link
+    cvA2818 = 2                     # PCI board with optical link
+    cvA2719 = 3                     # Optical link piggy-back
+    cvA32_S_DATA = 0x0D             # A32 supervisory data access
+    cvD32 = 0x04                    # D32
+    cvD64 = 0x08
+    parts =[
+            {'path':':COMMENT',     'type':'text'},
+            {'path':':BOARD_ID',    'type':'numeric',  'value':0},
+            {'path':':VME_ADDRESS', 'type':'numeric'},
+            {'path':':TRIG_MODE',   'type':'text',     'value':'OVER'},
+            {'path':':TRIG_SOFT',   'type':'text',     'value':'ENABLED'},
+            {'path':':TRIG_EXT',    'type':'text',     'value':'ENABLED'},
+            {'path':':TRIG_SOURCE', 'type':'numeric',  'value':0},
+            {'path':':TRIG_INT_TIM','type':'text',     'value':'ENABLED'},
+            {'path':':CLOCK_MODE',  'type':'text',     'value':'62.5 MHz'},
+            {'path':':CLOCK_DIV',   'type':'numeric',  'value':0},
+            {'path':':CLOCK_SOURCE','type':'numeric'},
+            {'path':':NUM_SEGMENTS','type':'numeric',  'value':1024},
+            {'path':':USE_TIME',    'type':'text',     'value':'TRUE'},
+            {'path':':PTS', 'type': 'text'},
+            {'path':':START_IDX',   'type':'numeric'},
+            {'path':':END_IDX',     'type':'numeric'},
+            {'path':':START_TIME',  'type':'numeric',  'value':0},
+            {'path':':END_TIME',    'type':'numeric',  'value':1E-6},
+            {'path':':CONT_SAMPL',  'type':'text',     'value':'NO'},
+           ]
+    for g in range(8):
+        parts+=[{'path':'GROUP_%d'%(g+1),             'type':'structure'},
+                {'path':'GROUP_%d:STATE'%(g+1),       'type':'text',     'value':'ENABLED',  'options':('no_write_shot',)},
+                {'path':'GROUP_%d:TRIG_STATE'%(g+1),  'type':'text',     'value':'DISABLED', 'options':('no_write_shot',)},
+                {'path':'GROUP_%d:TR_TRESH_LEV'%(g+1),'type':'numeric',  'value':0,          'options':('no_write_shot',)},
+                {'path':'GROUP_%d:TRIG_TRESH'%(g+1),  'type':'numeric',  'value':0,          'options':('no_write_shot',)},
+                {'path':'GROUP_%d:OFFSET'%(g+1),      'type':'numeric',  'value':0,          'options':('no_write_shot',)},
+               ]
+    parts+= [{'path':':DATA%02d'%(i+1), 'type':'signal', 'options':('no_write_model','write_once')} for i in range(64)]
+    parts+=[{'path':':INIT_ACTION', 'type':'action','valueExpr':"Action(Dispatch('VME_SERVER','INIT' ,50,None),Method(None,'INIT' ,head))",'options':('no_write_shot',)},
+            {'path':':STORE_ACTION','type':'action','valueExpr':"Action(Dispatch('VME_SERVER','STORE',50,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
+           ]
 
     def init(self):
       if CAENV1740.caenLib is None:
@@ -62,10 +57,9 @@ class CAENV1740(object):
       raise mdsExceptions.TclFAILED_ESSENTIAL
 
       try:
-          baseNid = self.node.getNid()
-          boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
+          boardId = self.board_id.data()
           print('BOARD ID: ', boardId)
-          vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
+          vmeAddress = self.vme_address.data()
           print('VME ADDRESS: ', vmeAddress)
 #Module Reset
           data = c_int(0)
@@ -80,7 +74,7 @@ class CAENV1740(object):
 
 #number of segments
           segmentDict = {1:0, 2:1, 4:2, 8:3, 16:4, 32:5, 64:6, 128:7, 256:8, 512:9, 1024:10}
-          nSegments=TreeNode(baseNid+self.N_NUM_SEGMENTS).data()
+          nSegments=self.num_segments.data()
           segmentCode = segmentDict[nSegments]
           status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x800c), byref(c_int(segmentCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
           if status != 0:
@@ -89,7 +83,7 @@ class CAENV1740(object):
               raise mdsExceptions.TclFAILED_ESSENTIAL
 #Global Group Configuration
           trigModeDict = {'OVER THRESHOLD':0, 'UNDER THRESHOLD':1}
-          trigMode = TreeNode(baseNid + self.N_TRIG_MODE).data()
+          trigMode = self.trig_mode.data()
           trigModeCode = trigModeDict[trigMode]
           conf = trigModeCode << 6
           conf = conf | 0x00000010;
@@ -105,14 +99,14 @@ class CAENV1740(object):
           enabledDict = {'ENABLED':1, 'DISABLED':0}
           for group in range(0,8):
 #threshold level
-#          threshold = TreeNode(baseNid+self.N_CHANNEL_0 + group * K_NODES_PER_CHANNEL + self.N_CHAN_TRIG_THRESH_LEV).data()
+#             threshold = self.__dict__['group_%d_tr_tresh_lev'%(group+1)].data()
 #             status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x1080 + group * 0x100), byref(c_int(threshold)), c_int#(self.cvA32_S_DATA), c_int(self.cvD32))
-#              if status != 0:
-#              print 'writing threshold level'
-#              CAENV1740.caenLib.CAENVME_End(handle)
-#              raise mdsExceptions.TclFAILED_ESSENTIAL
+#             if status != 0:
+#                 print 'writing threshold level'
+#                 CAENV1740.caenLib.CAENVME_End(handle)
+#                 raise mdsExceptions.TclFAILED_ESSENTIAL
 #offset
-              offset = TreeNode(baseNid+self.N_CHANNEL_0 + group * self.K_NODES_PER_CHANNEL + self.N_CHAN_OFFSET).data()
+              offset = self.__dict__['group_%d_offset'%(group+1)].data()
               if(offset > 1):
                   offset = 1.
               if(offset < -1):
@@ -124,15 +118,15 @@ class CAENV1740(object):
                   CAENV1740.caenLib.CAENVME_End(handle)
                   raise mdsExceptions.TclFAILED_ESSENTIAL
 #states
-              state = TreeNode(baseNid+self.N_CHANNEL_0 + group * self.K_NODES_PER_CHANNEL + self.N_CHAN_STATE).data()
+              state = self.__dict__['group_%d_state'%(group+1)].data()
               chanEnableCode = chanEnableCode | (enabledDict[state] << group)
-              trigState = TreeNode(baseNid+self.N_CHANNEL_0 + group * self.K_NODES_PER_CHANNEL + self.N_CHAN_TRIG_STATE).data()
+              trigState = self.__dict__['group_%d_trig_state'%(group+1)].data()
               trigEnableCode = trigEnableCode | (enabledDict[trigState] << group)
 #endfor group in range(0,8)
 
-              trigExt = TreeNode(baseNid + self.N_TRIG_EXT).data()
+              trigExt = self.trig_ext.data()
               trigEnableCode = trigEnableCode | (enabledDict[trigExt] << 30)
-              trigSoft = TreeNode(baseNid + self.N_TRIG_SOFT).data()
+              trigSoft = self.trig_soft.data()
               trigEnableCode = trigEnableCode | (enabledDict[trigSoft] << 31)
               status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x810C), byref(c_int(trigEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
               if status != 0:
@@ -150,11 +144,11 @@ class CAENV1740(object):
               status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x811C), byref(c_int(data)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
 
               try:
-                  trigSource = TreeNode(baseNid + self.N_TRIG_SOURCE).data()
+                  trigSource = self.trig_source.data()
 
 #if trigger is expressed as an array, consider only the first element
                   print('Trigger source: ', trigSource)
-                  if len(TreeNode(baseNid + self.N_TRIG_SOURCE).getShape()) > 0:
+                  if len(self.trig_source.getShape()) > 0:
                       trigSource = trigSource[0]
               except:
                   print('Cannot resolve Trigger source')
@@ -162,10 +156,10 @@ class CAENV1740(object):
                   raise mdsExceptions.TclFAILED_ESSENTIAL
 
 #Clock source
-              clockMode = TreeNode(baseNid + self.N_CLOCK_MODE).data()
+              clockMode = self.clock_mode.data()
               if clockMode == 'EXTERNAL':
                   try:
-                      clockSource = TreeNode(baseNid + self.N_CLOCK_SOURCE).getData()
+                      clockSource = self.clock_source.getData()
                       if Device.debug: print('Clock source: ', clockSource)
                   except:
                       print('Cannot resolve Clock source')
@@ -173,11 +167,11 @@ class CAENV1740(object):
                       raise mdsExceptions.TclFAILED_ESSENTIAL
               else:
                   clockSource = Range(None, None, Float64(1/62.5E6))
-                  TreeNode(baseNid + self.N_CLOCK_SOURCE).putData(clockSource)
+                  self.clock_source.putData(clockSource)
 
 #Post Trigger Samples
               try:
-                  pts = TreeNode(baseNid + self.N_PTS).data()
+                  pts = self.pts.data()
               except:
                   print('Cannot resolve PTS samples')
                   CAENV1740.caenLib.CAENVME_End(handle)
@@ -190,11 +184,11 @@ class CAENV1740(object):
               status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8114), byref(c_int(pts)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
 
 #Time management
-              useTime=TreeNode(baseNid+self.N_USE_TIME).data()
+              useTime=self.use_time.data()
               if useTime == 'YES':
                   try:
-                      startTime = TreeNode(baseNid+self.N_START_TIME).data()
-                      endTime = TreeNode(baseNid+self.N_END_TIME).data()
+                      startTime = self.start_time.data()
+                      endTime = self.end_time.data()
                   except:
                       print('Cannot Read Start or End time')
                       CAENV1740.caenLib.CAENVME_End(handle)
@@ -203,13 +197,13 @@ class CAENV1740(object):
                   endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), endTime + trigSource)
               else:
                   endIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigSource + endTime), clockSource), trigSource)
-              TreeNode(baseNid + self.N_END_IDX).putData(Int32(endIdx))
+              self.end_idx.putData(Int32(endIdx))
 
               if startTime > 0:
                   startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), startTime + trigSource)
               else:
                   startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigSource + startTime), clockSource), trigSource)
-              TreeNode(baseNid + self.N_START_IDX).putData(Int32(startIdx))
+              self.start_idx.putData(Int32(startIdx))
 
 # Run device
               status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8100), byref(c_int(4)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -219,7 +213,7 @@ class CAENV1740(object):
           print('Generic Error')
           CAENV1740.caenLib.CAENVME_End(handle)
           raise mdsExceptions.TclFAILED_ESSENTIAL
-
+    INIT = init
 ################################TRIGGER###################################
 
     def trigger(self):
@@ -231,10 +225,9 @@ class CAENV1740(object):
           print('Error initializing CAENVME')
           raise mdsExceptions.TclFAILED_ESSENTIAL
       try:
-          baseNid = self.node.getNid()
-          boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
+          boardId = self.board_id.data()
           if Device.debug: print('BOARD ID: ', boardId)
-          vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
+          vmeAddress = self.n_vme_address.data()
           if Device.debug: print('VME ADDRESS: ', vmeAddress)
   #Module Reset
           status = CAENV1740.caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -260,33 +253,32 @@ class CAENV1740(object):
             print('Error initializing CAENVME')
             raise mdsExceptions.TclFAILED_ESSENTIAL
         try:  # except line 508
-            baseNid = self.node.getNid()
-            boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
+            boardId =self.board_id.data()
             if Device.debug: print('BOARD ID: ', boardId)
-            vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
+            vmeAddress = self.vme_address.data()
             if Device.debug: print('VME ADDRESS: ', vmeAddress)
             try:
-                clock = TreeNode(baseNid + self.N_CLOCK_SOURCE).evaluate()
+                clock = self.clock_source.evaluate()
                 dt = clock.getDelta().data()
             except:
                 print('Error evaluating clock source')
                 CAENV1740.caenLib.CAENVME_End(handle)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
-                trig = TreeNode(baseNid + self.N_TRIG_SOURCE).data()
+                trig = self.trig_source.data()
             except:
                 print('Error evaluating trigger source')
                 CAENV1740.caenLib.CAENVME_End(handle)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
-                startIdx = TreeNode(baseNid + self.N_START_IDX).data()
-                endIdx = TreeNode(baseNid + self.N_END_IDX).data()
+                startIdx = self.start_idx.data()
+                endIdx = self.end_idx.data()
             except:
                 print('Error evaluating start or end idx')
                 CAENV1740.caenLib.CAENVME_End(handle)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             try:
-                pts = TreeNode(baseNid + self.N_PTS).data()
+                pts = self.pts.data()
             except:
                 print('Error evaluating Post Trigger Samples')
                 CAENV1740.caenLib.CAENVME_End(handle)
@@ -319,7 +311,7 @@ class CAENV1740(object):
 
         #Compute Segment Size
             try:
-                nSegments = TreeNode(baseNid + self.N_NUM_SEGMENTS).data()
+                nSegments = self.num_segments.data()
                 segmentSamples = 196608/nSegments
                 print('Segment samples: ', segmentSamples)
             except:
@@ -474,19 +466,17 @@ class CAENV1740(object):
                 #endfor group in range(0:8)
             #endfor samples in range(0, actSegments)
 
-            if len(TreeNode(baseNid + self.N_TRIG_SOURCE).getShape()) > 0:
+            if len(self.trig_source.getShape()) > 0:
                 dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig[0]),Range(Float64Array(trig) + Float64(startIdx * dt),  Float64Array(trig) + Float64(endIdx * dt), Float64Array(deltas)))
             else:
                 dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig),Range(Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(startIdx * dt),  Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(endIdx * dt), Float64Array(deltas)))
 
             print('DIM: ', dim)
             dim.setUnits("s");
-            chan0Nid = baseNid + self.N_CHANNEL_0
-            data0Nid = baseNid + self.N_DATA_0
             for group in range(0,8):
                 if groupMask & (1 << group):
                     try:
-                        offset = TreeNode(chan0Nid + group * self.N_CHAN_DATA + self.N_CHAN_OFFSET).data()
+                        offset = self.__dict__['group_%d_offset'%(group+1)].data()
                     except:
                         print('Error evaluating group offset')
                         CAENV1740.caenLib.CAENVME_End(handle)
@@ -498,7 +488,7 @@ class CAENV1740(object):
                         data.setUnits("Volts")
                         signal = Signal(data, raw, dim)
                         try:
-                            TreeNode(data0Nid + group * 8 + chan).putData(signal)
+                            self.__dict__['data%02d'%((group+1)*(chan+1),)].putData(signal)
                         except:
                             print('Cannot write Signal in the tree')
                             CAENV1740.caenLib.CAENVME_End(handle)
@@ -513,5 +503,5 @@ class CAENV1740(object):
             print('Generic Error')
             CAENV1740.caenLib.CAENVME_End(handle)
             raise mdsExceptions.TclFAILED_ESSENTIAL
-
+    STORE = store
 

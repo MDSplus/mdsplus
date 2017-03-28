@@ -316,7 +316,7 @@ class TreeNode(_data.Data):
         try:
             self.restoreContext()
             cmd='set node %s%s%s'% (self.fullpath,switch,qualifier)
-            _mdsdcl.tcl(cmd,raise_exception=True)
+            _mdsdcl.tcl(cmd,raise_exception=True,ctx=self.tree.ctx)
         finally:
             _tree.Tree.unlock()
 

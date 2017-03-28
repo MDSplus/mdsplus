@@ -276,7 +276,6 @@ class treeTests(TestCase):
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
-
     @staticmethod
     def getTests():
         return ['buildTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','segments','getCompression']

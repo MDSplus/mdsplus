@@ -30,7 +30,6 @@ class exceptionTests(TestCase):
     def runTest(self):
         for test in self.getTests():
             self.__getattribute__(test)()
-
     @staticmethod
     def getTests():
         return ['defaultErrorValues','customErrorString','tclErrors']
