@@ -58,7 +58,6 @@
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__store.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__trigger.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1740.py
-./usr/local/mdsplus/tdi/RfxDevices/CAENV1740__add.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENVME_FIFOBLTReadCycle.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENVME_FIFOBLTWriteCycle.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENVME_Init.fun
