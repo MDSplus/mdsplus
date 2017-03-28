@@ -81,12 +81,15 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
   source_shot = dblist->shotid;
   if (numnids_in == 0) {
     void *ctx = 0;
+    for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
+    /*
     nids[0] = 0;
     for (num = 1;
 	 num < 256
 	 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx, (1 << TreeUSAGE_SUBTREE)) & 1);
 	 num++) ;
     TreeFindNodeEnd(&ctx);
+    */
   } else {
     num = 0;
     for (i = 0; i < numnids_in; i++) {
