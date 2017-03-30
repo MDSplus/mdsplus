@@ -433,7 +433,6 @@ static void QEvent(LinkedEvent * ev)
 
 static void MessageAst(void* dummy __attribute__ ((unused)), char *reply)
 {
-  if (!dummy) return;
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = NULL;
   if (!parseMsg(reply, event)) {
@@ -660,7 +659,6 @@ static void CheckIn(String monitor_in)
     monitor = monitor_in;
   for (;;) {
     status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    printf("%d",status);
     if STATUS_OK return;
     printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
     sleep(2);

@@ -70,8 +70,8 @@ typedef struct _LinkedEvent {
   struct _LinkedEvent *next;
 } LinkedEvent;
 
-
-static Condition_p event_condition   = CONDITION_INITIALIZER;
+static pthread_mutex_t event_mutex = PTHREAD_MUTEX_INITIALIZER;
+static LinkedEvent *EventQueueHead = NULL;
 static LinkedEvent *EventQueueTail = NULL;
 
 static void MessageAst();
@@ -86,35 +86,22 @@ static void DoOpenTree(LinkedEvent * event);
 #define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 
-typedef struct _doingListItem {
-  int nid;
-  int pos;
-  struct _doingListItem *next;
-} DoingListItem;
-
-static DoingListItem *DoingList = 0;
 static char *current_tree = NULL;
 static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
 static int current_on;
 static const char *asterisks = "********************************************";
-//#define MaxLogLines 4000
-#define EventEfn 1
-#define DOING 1
-#define DONE 2
-int unique_tag_seed = 0;
 static void DoTimer();
 
 int main(int argc, char **argv)
 {
   char* monitor = "ACTION_MONITOR";
   int i;
-  for (i=0 ; i<argc ; i++)
+  for (i=1 ; i<argc ; i++)
     if (strcmp(argv[i],"-monitor"))
       if (++i<argc)
         monitor=argv[i];
-  printf("action_monitor\n");
   CheckIn(monitor);
   DoTimer();
   return 0;
@@ -167,22 +154,20 @@ static int parseMsg(char *msg, LinkedEvent * event)
 
 static LinkedEvent *GetQEvent()
 {
-  int ptst = 0;
-  _CONDITION_LOCK(&event_condition);
-  do {_CONDITION_WAIT_1SEC(&event_condition,ptst=);}while (ptst==ETIMEDOUT);
-  printf("\nerrono=%d\n",ptst);
-  LinkedEvent *ans = (LinkedEvent*)event_condition.value;
+  pthread_mutex_lock(&event_mutex);
+  LinkedEvent *ans = EventQueueHead;
   if (ans)
-     event_condition.value = (void*)ans->next;
-  if (!event_condition.value)
+     EventQueueHead = ans->next;
+  if (!EventQueueHead)
     EventQueueTail = NULL;
-  _CONDITION_UNLOCK(&event_condition);
+  pthread_mutex_unlock(&event_mutex);
   return ans;
 }
 
 static void DoTimer()
 {
   LinkedEvent *ev;
+  while (sleep(100)==0)
   while ((ev = GetQEvent())) {
     EventUpdate(ev);
     if (ev->msg)
@@ -194,19 +179,17 @@ static void DoTimer()
 static void QEvent(LinkedEvent * ev)
 {
   ev->next = NULL;
-  _CONDITION_LOCK(&event_condition);
+  pthread_mutex_lock(&event_mutex);
   if (EventQueueTail)
     EventQueueTail->next = ev;
   else
-    event_condition.value = (void*)ev;
+    EventQueueHead = ev;
   EventQueueTail = ev;
-  _CONDITION_SIGNAL(&event_condition);
-  _CONDITION_UNLOCK(&event_condition);
+  pthread_mutex_unlock(&event_mutex);
 }
 
 static void MessageAst(void* dummy __attribute__ ((unused)), char *reply)
 {
-  if (!dummy) return;
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = NULL;
   if (!parseMsg(reply, event)) {
@@ -250,23 +233,15 @@ static void PutError(char *time, char* mode, char *status, char *server, char *p
 
 static void DoOpenTree(LinkedEvent * event)
 {
-  DoingListItem *doing;
-  DoingListItem *next;
   current_node_entry = 0;
   current_on = -1;
   current_phase = 9999;
-  for (doing = DoingList; doing; doing = next) {
-    next = doing->next;
-    free(doing);
-  }
-  DoingList = 0;
   if ((event->shot != current_shot) || strcmp(event->tree, current_tree)) {
     current_shot = event->shot;
     current_tree = realloc(current_tree, strlen(event->tree) + 1);
     strcpy(current_tree, event->tree);
     PutLog(event->time, "NEW SHOT", (char *)asterisks, (char *)asterisks, current_tree);
   }
-  unique_tag_seed = 0;
 }
 
 static void Phase(LinkedEvent * event)
