@@ -687,8 +687,9 @@ static void RemoveClient(Client * c, fd_set * fdactive)
 static unsigned int GetHostAddr(char *host)
 {
   unsigned int addr = 0;
-  struct hostent *hp = NULL;
-  hp = gethostbyname(host);
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&mutex);{
+  struct hostent *hp = gethostbyname(host);
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED)) {
     WSADATA wsaData;
@@ -704,6 +705,7 @@ static unsigned int GetHostAddr(char *host)
       hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
   }
   addr = (hp == NULL) ? 0 : *(unsigned int *)hp->h_addr_list[0];
+  }pthread_mutex_unlock(&mutex);
   return addr == 0xffffffff ? 0 : addr;
 }
 
