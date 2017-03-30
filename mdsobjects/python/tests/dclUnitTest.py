@@ -108,17 +108,35 @@ class dclTests(TestCase):
 
     def dispatcher(self):
         from time import sleep
-        def testDispatchCommand(command,stdout=None,stderr=None):
-            self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(server,command),1,1,1),(None,None))
-        server = getenv('ACTION_SERVER')
-        if server is None:
-            from subprocess import Popen,STDOUT
-            port = int(getenv('ACTION_PORT','8800'))
-            server = 'LOCALHOST:%d'%(port,)
-        else:
-            Popen = None
+        hosts = '%s/mdsip.hosts'%self.root
+        def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
+            self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
+        def setup_mdsip(server_env,port_env,default_port):
+            host = getenv(server_env)
+            if host is None:
+                port = int(getenv(port_env,0))
+                if port==0: port = default_port
+                host = 'LOCALHOST:%d'%(port,)
+            else:
+                port = 0
+            return host,port
+        def start_mdsip(server,port,logname,env=None):
+            if port>0:
+                from subprocess import Popen,STDOUT
+                log = open('%s_%d.log'%(logname,self.index),'w')
+                try:
+                    params = ['mdsip','-s','-p',str(port),'-h',hosts]
+                    print(params,log)
+                    mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
+                except:
+                    log.close()
+                    raise
+                return mdsip,log
             for envpair in self.envx.items():
-                testDispatchCommand('env %s=%s'%envpair)
+                testDispatchCommand(server,'env %s=%s'%envpair)
+            return None,None
+        monitor,monitor_port = setup_mdsip('ACTION_MONITOR','MONITOR_PORT',4400)
+        server ,server_port  = setup_mdsip('ACTION_SERVER', 'ACTION_PORT',8800)
         shot = self.shot+1
         Tree('pytree',-1,'ReadOnly').createPulse(shot)
         show_server = "Checking server: %s\n[^,]+, [^,]+, logging enabled, Inactive\n"%server
@@ -126,45 +144,46 @@ class dclTests(TestCase):
         pytree.TESTDEVICE.ACTIONSERVER.no_write_shot = False
         pytree.TESTDEVICE.ACTIONSERVER.record = server
         """ using dispatcher """
-        hosts = '%s/mdsip.hosts'%self.root
-        log = None
+        mon,mon_log,svr,svr_log = (None,None,None,None)
         try:
-          if Popen:
-              log = open('mdsip_%d.log'%self.index,'w')
-              mdsip = Popen(['mdsip','-s','-p',str(port),'-h',hosts],env=self.env,
-                             stdout=log,stderr=STDOUT)
-          try:
-            sleep(5)
-            if Popen:
-                self.assertEqual(mdsip.poll(),None)
-            """ tcl dispatch """
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            testDispatchCommand('set verify')
-            testDispatchCommand('type test')
-            self._doTCLTest('dispatch/build')
-            self._doTCLTest('dispatch/phase INIT')
-            sleep(1)
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            self._doTCLTest('dispatch/phase PULSE')
-            sleep(1)
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            self._doTCLTest('dispatch/phase STORE')
-            sleep(1)
-            self._doTCLTest('show server %s'%server,out=show_server,re=True)
-            """ tcl exceptions """
-            self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
-            """ tcl check if still alive """
-            if Popen:
-                self.assertEqual(mdsip.poll(),None)
-          finally:
-              try:
-                  self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
-              finally:
-                  if Popen and mdsip.poll() is None:
-                      mdsip.terminate()
-                      mdsip.wait()
+            mon,mon_log = start_mdsip(monitor,monitor_port,'monitor')
+            svr,svr_log = start_mdsip(server ,server_port ,'server',self.env)
+            try:
+                sleep(3)
+                if mon: self.assertEqual(mon.poll(),None)
+                if svr: self.assertEqual(svr.poll(),None)
+                """ tcl dispatch """
+                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                testDispatchCommand(server,'set verify')
+                testDispatchCommand(server,'type test')
+                self._doTCLTest('dispatch/build/monitor=%s'%monitor)
+                self._doTCLTest('dispatch/phase/monitor=%s INIT'%monitor)
+                sleep(1)
+                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._doTCLTest('dispatch/phase/monitor=%s PULSE'%monitor)
+                sleep(1)
+                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                self._doTCLTest('dispatch/phase/monitor=%s STORE'%monitor)
+                sleep(1)
+                self._doTCLTest('show server %s'%server,out=show_server,re=True)
+                """ tcl exceptions """
+                self._doExceptionTest('dispatch/command/server=%s '%server,Exc.MdsdclIVVERB)
+                """ tcl check if still alive """
+                if mon: self.assertEqual(mon.poll(),None)
+                if svr: self.assertEqual(svr.poll(),None)
+            finally:
+                try:
+                    self._doTCLTest('dispatch/command/wait/server=%s close/all'%server)
+                finally:
+                    if svr and svr.poll() is None:
+                        svr.terminate()
+                        svr.wait()
+                    if mon and mon.poll() is None:
+                        mon.terminate()
+                        mon.wait()
         finally:
-            if log: log.close()
+            if svr_log: svr_log.close()
+            if mon_log: mon_log.close()
             self._doTCLTest('close/all')
         pytree = Tree('pytree',shot,'ReadOnly')
         self.assertTrue(pytree.TESTDEVICE.INIT1_DONE.record <= pytree.TESTDEVICE.INIT2_DONE.record)
