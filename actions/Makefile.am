@@ -9,12 +9,15 @@ LDADD = -L@MAKESHLIBDIR@ -lXmdsShr -lTreeShr -lTdiShr -lMdsShr $(X_PRE_LIBS) $(X
 
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 
-bin_PROGRAMS = actions actmon
+bin_PROGRAMS = actions actmon actlog
 
 actions_SOURCES = actions.c
 
 actmon_SOURCES = actmon.c
 actmon_LDADD = $(LDADD) -lMdsIpShr -lMdsServerShr
+
+actlog_SOURCES = actlog.c
+actlog_LDADD = -L@MAKESHLIBDIR@ -lTreeShr -lTdiShr -lMdsShr -lMdsIpShr -lMdsServerShr
 
 # User interface descriptions, installed as generic data but with build rules
 uiddir = @uiddir@

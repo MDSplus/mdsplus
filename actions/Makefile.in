@@ -92,7 +92,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = actions$(EXEEXT) actmon$(EXEEXT)
+bin_PROGRAMS = actions$(EXEEXT) actmon$(EXEEXT) actlog$(EXEEXT)
 subdir = actions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
@@ -132,6 +132,9 @@ actions_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 actions_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+am_actlog_OBJECTS = actlog.$(OBJEXT)
+actlog_OBJECTS = $(am_actlog_OBJECTS)
+actlog_DEPENDENCIES =
 am_actmon_OBJECTS = actmon.$(OBJEXT)
 actmon_OBJECTS = $(am_actmon_OBJECTS)
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -165,8 +168,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(actions_SOURCES) $(actmon_SOURCES)
-DIST_SOURCES = $(actions_SOURCES) $(actmon_SOURCES)
+SOURCES = $(actions_SOURCES) $(actlog_SOURCES) $(actmon_SOURCES)
+DIST_SOURCES = $(actions_SOURCES) $(actlog_SOURCES) $(actmon_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -521,6 +524,8 @@ MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 actions_SOURCES = actions.c
 actmon_SOURCES = actmon.c
 actmon_LDADD = $(LDADD) -lMdsIpShr -lMdsServerShr
+actlog_SOURCES = actlog.c
+actlog_LDADD = -L@MAKESHLIBDIR@ -lTreeShr -lTdiShr -lMdsShr -lMdsIpShr -lMdsServerShr
 uid_DATA = actions.uid actmon.uid
 MOSTLYCLEANFILES = $(uid_DATA)
 all: all-am
@@ -603,6 +608,10 @@ actions$(EXEEXT): $(actions_OBJECTS) $(actions_DEPENDENCIES) $(EXTRA_actions_DEP
 	@rm -f actions$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(actions_OBJECTS) $(actions_LDADD) $(LIBS)
 
+actlog$(EXEEXT): $(actlog_OBJECTS) $(actlog_DEPENDENCIES) $(EXTRA_actlog_DEPENDENCIES) 
+	@rm -f actlog$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(actlog_OBJECTS) $(actlog_LDADD) $(LIBS)
+
 actmon$(EXEEXT): $(actmon_OBJECTS) $(actmon_DEPENDENCIES) $(EXTRA_actmon_DEPENDENCIES) 
 	@rm -f actmon$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(actmon_OBJECTS) $(actmon_LDADD) $(LIBS)
@@ -614,6 +623,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/actions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/actlog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/actmon.Po@am__quote@
 
 .c.o:

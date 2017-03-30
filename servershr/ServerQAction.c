@@ -625,7 +625,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) )
   SrvJob *job;
   pthread_cleanup_push(WorkerExit, NULL);
   ProgLoc = 1;
-  CONDITION_SIGNAL(&WorkerRunning);
+  CONDITION_SET(&WorkerRunning);
   while ((job = NextJob(1))) {
     char *save_text;
     ProgLoc = 2;
@@ -673,7 +673,7 @@ static void WorkerThread(void *arg __attribute__ ((unused)) )
 
 static int StartWorker(){
   INIT_STATUS;
-  CONDITION_START_THREAD(WorkerRunning, Worker, /4, WorkerThread,NULL);
+  CONDITION_START_THREAD(&WorkerRunning, Worker, /4, WorkerThread,NULL);
   if STATUS_NOT_OK exit(-1);
   return status;
 }

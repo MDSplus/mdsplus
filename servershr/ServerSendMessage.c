@@ -54,16 +54,7 @@ int ServerSendMessage();
  #include <arpa/inet.h>
 #endif
 #include <signal.h>
-#include <sys/time.h>
-#include <pthread.h>
 
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-  #define pthread_attr_default NULL
-  #define pthread_mutexattr_default NULL
-  #define pthread_condattr_default NULL
-#else
-  #undef select
-#endif
 
 extern short ArgLen();
 
@@ -77,9 +68,9 @@ extern int GetAnswerInfoTS();
  *} Condition;
  */
 typedef struct _Job {
-  pthread_cond_t condition;
+  pthread_cond_t cond;
   pthread_mutex_t mutex;
-  int done;
+  int value; //aka done
   int has_condition;
   int *retstatus;
   void (*ast) ();
@@ -271,7 +262,7 @@ static void DoCompletionAst_lock(int jobid, int status, char *msg, int removeJob
       RemoveJob_lock(j);
     /**** If job has a condition, RemoveJob will not remove it. ***/
     if (has_condition)
-      CONDITION_SIGNAL(j);
+      CONDITION_SET(j);
   }
 }
 
@@ -282,7 +273,7 @@ void ServerWait(int jobid)
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   UNLOCK_JOBS;
   if (j && j->has_condition) {
-    CONDITION_WAIT_TRUE(j);
+    CONDITION_WAIT_SET(j);
     CONDITION_DESTROY(j);
     free(j);
   }
@@ -319,7 +310,7 @@ static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astpara
     *msgid = j->jobid;
   } else {
     j->has_condition = B_FALSE;
-    j->done = B_TRUE;
+    j->value = B_TRUE;
   }
   j->next = Jobs;
   Jobs = j;
@@ -398,7 +389,7 @@ static int start_receiver(short *port_out)
     if (sock == INVALID_SOCKET)
       return C_ERROR;
   }
-  CONDITION_START_THREAD(ReceiverRunning, thread, *16, ReceiverThread, &sock);
+  CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, &sock);
   *port_out = port;
   return STATUS_NOT_OK;
 }
@@ -447,7 +438,7 @@ static void ReceiverThread(void *sockptr){
   pthread_cleanup_push(ReceiverExit, NULL);
   fd_set readfds, fdactive;
   last_client_addr = 0;
-  CONDITION_SIGNAL(&ReceiverRunning);
+  CONDITION_SET(&ReceiverRunning);
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   for (rep = 0; rep < 10; rep++) {
