@@ -346,7 +346,7 @@ STATIC_ROUTINE void RecordStatus(int s, int e)
   int i;
   ActionInfo *actions = table->actions;
   for (i = s; i < e; i++) {
-    RDLOCK_ACTION(i);
+    WRLOCK_ACTION(i);
     if (actions[i].done && !actions[i].recorded) {
       NCI_ITM setnci[] = { {sizeof(actions[0].status), NciSTATUS, 0, 0}
       , {0, NciEND_OF_LIST, 0, 0}
