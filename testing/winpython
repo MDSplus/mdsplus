@@ -2,8 +2,24 @@
 test=$(basename $4)
 test=${test:0:-11}
 if [ "$test"=="dcl" ]; then
-  wine mdsip -s -p ${mdsevent_port} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts) &>mdsip_0.log &
-  export ACTION_SERVER=localhost:${mdsevent_port}
+  if [ -z $ACTION_SERVER ]
+  then
+    if [ -z $ACTION_PORT ]
+    then
+      ACTION_PORT=8800
+    fi
+    wine mdsip -s -p ${ACTION_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts) &>server_0.log &
+    export ACTION_SERVER=localhost:${ACTION_PORT}
+  fi
+  if [ -z $ACTION_MONITOR ]
+  then
+    if [ -z $MONITOR_PORT ]
+    then
+      MONITOR_PORT=4400
+    fi
+    wine mdsip -s -p ${MONITOR_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts) &>monitor_0.log &
+    export ACTION_MONITOR=localhost:${MONITOR_PORT}
+  fi
 fi
 wine $1 $2 $(winepath -w $3) $(winepath -w $4)
 status=$?

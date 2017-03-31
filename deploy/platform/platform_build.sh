@@ -67,6 +67,10 @@ rundocker(){
         # only build the deb's after both 32-bit and 64-bit builds are
         # complete. Likewise only publish the release once.
         #
+        if [ -z $EVENT_PORT ]
+        then port_forwarding=
+        else port_forwarding="-p ${EVENT_PORT}:${EVENT_PORT}"
+        fi
         docker run -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
            -u $(id -u):$(id -g) \
            -h $DISTNAME \
@@ -91,6 +95,7 @@ rundocker(){
            -e "HOME=/workspace" \
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
+           $port_forwarding \
            $(volume "${RELEASEDIR}" /release) \
            $(volume "${PUBLISHDIR}" /publish) \
            $(volume "$KEYS" /sign_keys) \
