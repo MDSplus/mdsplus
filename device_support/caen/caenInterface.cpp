@@ -7,7 +7,7 @@
 #include <mdsobjects.h>
 using namespace MDSplus;
 
-int caenLibDebug = 1;
+int caenLibDebug = 0;
 
 //////////////////////////////////////////////////////////////
 // Filter Code Definitions
@@ -450,7 +450,7 @@ extern "C" int readAndSaveSegments(int32_t handle, int32_t vmeAddress, int numCh
 			printf("---Seg Idx %d - channels[%d][%d : %d], &buff[%d : %d]\n", segmentIdx, chan, segmentIdx * currChanSamples,  currChanSamples, 
 											  16 + chan * chanSizeInShorts + currStartIdx, currChanSamples);
 
-		    memcpy( &channels[chan][segmentIdx * currChanSamples], &buff[8 + chan * chanSizeInShorts + currStartIdx], currChanSamples  * sizeof(short) );
+		    memcpy( &channels[chan][segmentIdx * currChanSamples], &buff[16 + chan * chanSizeInShorts + currStartIdx], currChanSamples  * sizeof(short) );
 		}
              }
           }
