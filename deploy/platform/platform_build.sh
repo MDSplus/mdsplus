@@ -67,9 +67,10 @@ rundocker(){
         # only build the deb's after both 32-bit and 64-bit builds are
         # complete. Likewise only publish the release once.
         #
-        if [ -z $EVENT_PORT ]
+        if [ -z $FORWARD_PORT ]
         then port_forwarding=
-        else port_forwarding="-p ${EVENT_PORT}:${EVENT_PORT}"
+        else port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
+             echo $port_forwarding
         fi
         docker run -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
            -u $(id -u):$(id -g) \
