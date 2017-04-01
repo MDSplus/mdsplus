@@ -19,7 +19,9 @@
 
 #include <mdsshr.h>
 #include <libroutines.h>
+#define LOAD_INITIALIZESOCKETS
 #include "mdsshrthreadsafe.h"
+
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
 extern int UdpEventGetTtl(char *ttl);
@@ -35,7 +37,7 @@ typedef struct _EventList {
   int socket;
   struct _EventList *next;
 } EventList;
-  
+
 struct EventInfo {
   int socket;
   char *eventName;
@@ -46,14 +48,10 @@ struct EventInfo {
 static int EVENTID = 0;
 static EventList *EVENTLIST = 0;
 static int sendSocket = 0;
-static pthread_mutex_t eventIdMutex;
-static int eventIdMutex_initialized = 0;
-static pthread_mutex_t sendEventMutex;
-static int sendEventMutex_initialized = 0;
-static pthread_mutex_t getSocketMutex;
-static int getSocketMutex_initialized = 0;
-static pthread_mutex_t initializeMutex;
-static int initializeMutex_initialized = 0;
+static pthread_mutex_t eventIdMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t sendEventMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t getSocketMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t initializeMutex = PTHREAD_MUTEX_INITIALIZER;
 
 extern void InitializeEventSettings();
 
@@ -72,7 +70,7 @@ extern void InitializeEventSettings();
 static void *handleMessage(void *info_in)
 {
   struct EventInfo *info = (struct EventInfo *)info_in;
-  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
+  pthread_mutex_lock(&eventIdMutex);
   int socket = info->socket;
   size_t thisNameLen = strlen(info->eventName);
   char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
@@ -90,8 +88,8 @@ static void *handleMessage(void *info_in)
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
   free(info->eventName);
   free(info);
-  UnlockMdsShrMutex(&eventIdMutex);
-  
+  pthread_mutex_unlock(&eventIdMutex);
+
   while (1) {
 #ifdef _WIN32
     if ((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0,
@@ -137,38 +135,26 @@ static void *handleMessage(void *info_in)
 
 static void initialize()
 {
-  static int initialized = 0;
-  if (!initialized) {
-
-#ifdef _WIN32
-
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-
-    WSAStartup(wVersionRequested, &wsaData);
-#endif
-  }
-  LockMdsShrMutex(&initializeMutex, &initializeMutex_initialized);
+  INITIALIZESOCKETS;
+  pthread_mutex_lock(&initializeMutex);
   InitializeEventSettings();
-  UnlockMdsShrMutex(&initializeMutex);
-  initialized = 1;
+  pthread_mutex_unlock(&initializeMutex);
 }
 
 static int pushEvent(pthread_t thread, int socket) {
-  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
+  pthread_mutex_lock(&eventIdMutex);
   EventList *ev = malloc(sizeof(EventList));
   ev->eventid = ++EVENTID;
   ev->socket = socket;
   ev->thread = thread;
   ev->next = EVENTLIST;
   EVENTLIST=ev;
-  UnlockMdsShrMutex(&eventIdMutex);
+  pthread_mutex_unlock(&eventIdMutex);
   return ev->eventid;
 }
 
 static EventList *popEvent(int eventid) {
-  LockMdsShrMutex(&eventIdMutex, &eventIdMutex_initialized);
+  pthread_mutex_lock(&eventIdMutex);
   EventList *ev,*ev_prev;
   for (ev=EVENTLIST,ev_prev=0; ev && ev->eventid != eventid; ev_prev=ev,ev=ev->next);
   if (ev) {
@@ -178,13 +164,13 @@ static EventList *popEvent(int eventid) {
       EVENTLIST = ev->next;
     }
   }
-  UnlockMdsShrMutex(&eventIdMutex);
+  pthread_mutex_unlock(&eventIdMutex);
   return ev;
 }
 
 static int getSendSocket()
 {
-  LockMdsShrMutex(&getSocketMutex, &getSocketMutex_initialized);
+  pthread_mutex_lock(&getSocketMutex);
   if (!sendSocket) {
     if ((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
 #ifdef _WIN32
@@ -196,7 +182,7 @@ static int getSendSocket()
       sendSocket = -1;
     }
   }
-  UnlockMdsShrMutex(&getSocketMutex);
+  pthread_mutex_unlock(&getSocketMutex);
   return sendSocket;
 }
 
@@ -407,7 +393,6 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   int msgLen, nameLen = strlen(eventName), actBufLen;
   uint32_t namelen_net_order = htonl(nameLen);
   int status;
-  struct hostent *hp = (struct hostent *)NULL;
   unsigned short port;
   char ttl, loop;
   struct in_addr *interface_addr=0;
@@ -418,14 +403,11 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
 
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
-  hp = gethostbyname(multiIp);
-  if (hp == NULL) {
-    unsigned int addr = inet_addr(multiIp);
-    if (addr != 0xffffffff)
-      hp = gethostbyaddr((const char *)&addr, (int)sizeof(addr), AF_INET);
-  }
-  if (hp != NULL)
+  int addr;
+  GETHOSTBYNAMEORADDR(multiIp,addr);
+  if (hp)
     memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
+  FREE_HP;
   UdpEventGetPort(&port);
   sin.sin_port = htons(port);
   nameLen = strlen(eventName);
@@ -449,7 +431,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   if (buf && bufLen > 0)
     memcpy(currPtr, buf, bufLen);
 
-  LockMdsShrMutex(&sendEventMutex, &sendEventMutex_initialized);
+  pthread_mutex_lock(&sendEventMutex);
   if (UdpEventGetTtl(&ttl))
     setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
   if (UdpEventGetLoop(&loop))
@@ -501,7 +483,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
     status = 1;
   if (msg)
     free(msg);
-  UnlockMdsShrMutex(&sendEventMutex);
+  pthread_mutex_unlock(&sendEventMutex);
   return status;
 }
 

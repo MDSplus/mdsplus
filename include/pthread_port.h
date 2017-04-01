@@ -136,4 +136,64 @@ if (!(input)->value) {\
 }\
 _CONDITION_UNLOCK(input);\
 }
+//"
+#ifdef __MACH__
+#define _ALLOC_HP struct hostent *hp;
+#define _GETHOSTBYADDR(addr,type) gethostbyaddr(((void *)&addr),sizeof(addr),type)
+#define _GETHOSTBYNAME(name)      gethostbyname(name)
+#define _GETHOST(gethost) hp = gethost
+#define FREE_HP
+#else
+#define _ALLOC_HP \
+int memlen = 1024;\
+struct hostent hostbuf, *hp;\
+int herr;\
+char *hp_mem = (char*)malloc(memlen)
+
+#define _GETHOST(gethost_r) \
+while ( hp_mem && (gethost_r == ERANGE) ) {\
+  memlen *=2;\
+  free(hp_mem);\
+  hp_mem = (char*)malloc(memlen);\
+}
+#define _GETHOSTBYADDR(addr,type) gethostbyaddr_r(((void *)&addr),sizeof(addr),type,&hostbuf,hp_mem,memlen,&hp,&herr)
+#define _GETHOSTBYNAME(name)      gethostbyname_r(name,&hostbuf,hp_mem,memlen,&hp,&herr)
+#define FREE_HP if (hp_mem) free(hp_mem)
+#endif
+
+#define GETHOSTBYADDR(addr,type) \
+_ALLOC_HP;\
+_GETHOST(_GETHOSTBYADDR(addr,type))
+
+#define GETHOSTBYNAME(name) \
+_ALLOC_HP;\
+_GETHOST(_GETHOSTBYNAME(name))
+
+#define GETHOSTBYNAMEORADDR(name,addr) \
+GETHOSTBYNAME(name);\
+if (!hp){\
+   addr = inet_addr(name);\
+   if (addr != -1)  _GETHOST(_GETHOSTBYADDR(addr,AF_INET));\
+}
+
+#ifdef LOAD_INITIALIZESOCKETS
+#ifndef _WIN32
+#define INITIALIZESOCKETS
+#else
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static int sockets_initialized = B_FALSE;
+#define INITIALIZESOCKETS {\
+  pthread_mutex_lock(&mutex);\
+  if (!sockets_initialized) {\
+    WSADATA wsaData;\
+    WORD wVersionRequested;\
+    wVersionRequested = MAKEWORD(1, 1);\
+    WSAStartup(wVersionRequested, &wsaData);\
+    sockets_initialized = B_TRUE;\
+  }\
+  pthread_mutex_unlock(&mutex);\
+}
+#endif
+#endif
+
 #endif//nPTHREAD_PORT_H
