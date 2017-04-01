@@ -192,8 +192,7 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **t
   if (num_actions) {
     static int zero = 0;
     int table_size = sizeof(DispatchTable) + (num_actions - 1) * sizeof(ActionInfo);
-    *table_ptr = (DispatchTable *) malloc(table_size);
-    memset(*table_ptr, 0, table_size);
+    *table_ptr = (DispatchTable *) calloc(1,table_size);
     actions = (*table_ptr)->actions;
     (*table_ptr)->shot = shot;
     strcpy((*table_ptr)->tree, tree);

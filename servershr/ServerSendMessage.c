@@ -73,6 +73,7 @@ typedef struct _Job {
   int value; //aka done
   int has_condition;
   int *retstatus;
+  pthread_rwlock_t *lock;
   void (*ast) ();
   void *astparam;
   void (*before_ast) ();
@@ -108,7 +109,7 @@ int ServerBadSocket(SOCKET socket);
 
 static int start_receiver(short *port);
 int ServerConnect(char *server);
-static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
+static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
 static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
@@ -121,6 +122,8 @@ static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fd
 static void InitializeSockets()
 {
 #ifdef _WIN32
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&mutex);
   static int initialized = B_FALSE;
   if (!initialized) {
     WSADATA wsaData;
@@ -129,6 +132,7 @@ static void InitializeSockets()
     WSAStartup(wVersionRequested, &wsaData);
     initialized = B_TRUE;
   }
+  pthread_mutex_unlock(&mutex);
 #endif
 }
 
@@ -142,7 +146,7 @@ static SOCKET getSocket(int conid)
   return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : INVALID_SOCKET;
 }
 
-int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *conid_out,
+int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs_in, ...)
 {
   short port = 0;
@@ -181,7 +185,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       ast(astparam);
     return ServerSOCKET_ADDR_ERROR;
   }
-  jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
+  jobid = RegisterJob(msgid, retstatus, lock, ast, astparam, before_ast, conid);
   if (before_ast)
     flags |= SrvJobBEFORE_NOTIFY;
   sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
@@ -241,8 +245,8 @@ static void RemoveJob_lock(Job * job){
       prev->next = j->next;
     else
       Jobs = j->next;
-    if (!j->has_condition)
-      free(j);
+    if (!job->has_condition)
+      free(job);
   }
 }
 
@@ -254,8 +258,10 @@ static void DoCompletionAst_lock(int jobid, int status, char *msg, int removeJob
   if (!j) for (j=Jobs ; j && (j->jobid != MonJob); j=j->next);
   if (j) {
     int has_condition = j->has_condition;
+    if (j->lock) pthread_rwlock_wrlock(j->lock);
     if (j->retstatus)
       *j->retstatus = status;
+    if (j->lock) pthread_rwlock_unlock(j->lock);
     if (j->ast)
       (*j->ast) (j->astparam, msg);
     if (removeJob && j->jobid != MonJob)
@@ -293,11 +299,12 @@ static void DoBeforeAst(int jobid)
     UNLOCK_JOBS;
 }
 
-static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
+static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int conid)
 {
   Job *j = (Job *) malloc(sizeof(Job));
   j->retstatus = retstatus;
+  j->lock = lock;
   j->ast = ast;
   j->astparam = astparam;
   j->before_ast = before_ast;
@@ -679,17 +686,9 @@ static unsigned int GetHostAddr(char *host)
 {
   unsigned int addr = 0;
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  InitializeSockets();
   pthread_mutex_lock(&mutex);{
   struct hostent *hp = gethostbyname(host);
-#ifdef _WIN32
-  if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED)) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    hp = gethostbyname(host);
-  }
-#endif
   if (hp == NULL) {
     addr = inet_addr(host);
     if (addr != 0xffffffff)

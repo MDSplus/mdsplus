@@ -97,23 +97,23 @@ EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute_
  ***************************************************************/
 EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
+  INIT_STATUS;
   char *treenode = 0;
-  int sts;
   int iostatus;
   int nid;
   int waiting = cli_present(ctx, "WAIT") != MdsdclNEGATED;
   cli_get_value(ctx, "NODE", &treenode);
-  sts = TreeFindNode(treenode, &nid);
-  if (sts & 1) {
+  status = TreeFindNode(treenode, &nid);
+  if STATUS_OK {
     struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)0 };
     EMPTYXD(xd);
     struct descriptor_d ident = { 0, DTYPE_T, CLASS_D, 0 };
     niddsc.pointer = (char *)&nid;
-    sts = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
-    if (sts & 1)
-      sts = TdiData(&xd, &ident MDS_END_ARG);
+    status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
+    if STATUS_OK
+      status = TdiData(&xd, &ident MDS_END_ARG);
     MdsFree1Dx(&xd, 0);
-    if (sts & 1) {
+    if STATUS_OK {
       static char treename[13];
       static DESCRIPTOR(nullstr, "\0");
       static int shot;
@@ -124,26 +124,26 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
       TreeGetDbi(itmlst);
       StrAppend(&ident, (struct descriptor *)&nullstr);
       SYNCINIT;
-      sts =
-	  ServerDispatchAction(SYNCPASS, ident.pointer, treename, shot, nid, 0, 0,
-			       waiting ? &iostatus : 0, 0, 0);
-      if (sts & 1) {
+      status =
+	  ServerDispatchAction(SYNCPASS, ident.pointer, treename, shot, nid, NULL, NULL,
+			       waiting ? &iostatus : NULL, NULL, NULL, 0);
+      if STATUS_OK {
 	if (waiting) {
 	  SYNCWAIT;
-	  sts = iostatus;
+	  status = iostatus;
 	}
       }
       StrFree1Dx(&ident);
     }
   }
-  if (!(sts & 1)) {
-    char *msg = MdsGetMsg(sts);
+  if STATUS_NOT_OK {
+    char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + strlen(treenode) + 100);
     sprintf(*error, "Error dispatching node %s\n" "Error message was: %s\n", treenode, msg);
   }
   if (treenode)
     free(treenode);
-  return sts;
+  return status;
 }
 
 /**************************************************************
@@ -379,11 +379,11 @@ EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribut
     if (sync) {
       command->sts = MDSplusSUCCESS;
       SYNCINIT;
-      status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, CommandDone, command, &stat1, 0);
+      status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, CommandDone, command, &stat1, NULL, 0);
       if STATUS_OK SYNCWAIT;
     } else {
      command->sts = ServerPATH_DOWN;
-     status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, 0);
+     status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->sts, NULL, 0);
     }
     if STATUS_NOT_OK {
       char *msg = MdsGetMsg(status);

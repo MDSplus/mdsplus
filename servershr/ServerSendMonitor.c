@@ -40,7 +40,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
     return status;
   }//else
   struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
-  return ServerSendMessage(0, monitor, SrvMonitor, 0, 0, 0, 0, 0, 8,
+  return ServerSendMessage(0, monitor, SrvMonitor, NULL, NULL, NULL, NULL, NULL, NULL, 8,
 			  MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
 			  MakeDescrip(&p2, DTYPE_LONG, 0, 0, &shot),
 			  MakeDescrip(&p3, DTYPE_LONG, 0, 0, &phase),

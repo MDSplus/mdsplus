@@ -108,7 +108,6 @@ STATIC_THREADSAFE pthread_cond_t wake_completed_cond = PTHREAD_COND_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/*STATIC_THREADSAFE pthread_rwlock_t actions_rwlock = PTHREAD_RWLOCK_INITIALIZER;*/
 #define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
 #define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
 #define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
@@ -551,7 +550,7 @@ STATIC_ROUTINE void Dispatch(int i){
       DoActionDone(i);
     } else {
       status = ServerDispatchAction(0, Server(server, actions[i].server), table->tree, table->shot,
-				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status,
+				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status, &actions[i].lock,
 				    &actions[i].netid, Before);
       ProgLoc = 7003;
       if STATUS_OK
