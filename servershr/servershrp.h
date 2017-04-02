@@ -128,8 +128,13 @@ typedef struct {
   int status;
 } DispatchEvent;
 
- #ifndef _NO_SERVER_SEND_MESSAGE_PROTO
-extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *socket,
+/*STATIC_THREADSAFE pthread_rwlock_t actions_rwlock = PTHREAD_RWLOCK_INITIALIZER;*/
+#define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
+#define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
+#define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
+
+#ifndef _NO_SERVER_SEND_MESSAGE_PROTO
+extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *socket,
 			     void (*ast) (), void *astparam, void (*before_ast) (),
 			     int numargs_in, ...);
  #endif

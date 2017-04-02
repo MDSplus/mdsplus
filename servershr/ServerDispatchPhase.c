@@ -108,7 +108,6 @@ STATIC_THREADSAFE pthread_cond_t wake_completed_cond = PTHREAD_COND_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t send_monitor_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 STATIC_THREADSAFE pthread_mutex_t completed_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/*STATIC_THREADSAFE pthread_rwlock_t actions_rwlock = PTHREAD_RWLOCK_INITIALIZER;*/
 #define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
 #define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
 #define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
@@ -551,7 +550,7 @@ STATIC_ROUTINE void Dispatch(int i){
       DoActionDone(i);
     } else {
       status = ServerDispatchAction(0, Server(server, actions[i].server), table->tree, table->shot,
-				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status,
+				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status, &actions[i].lock,
 				    &actions[i].netid, Before);
       ProgLoc = 7003;
       if STATUS_OK
@@ -630,7 +629,7 @@ STATIC_ROUTINE void ActionDoneExit(){
 STATIC_ROUTINE void ActionDoneThread(){
   int i;
   pthread_cleanup_push(ActionDoneExit, 0);
-  CONDITION_SIGNAL(&ActionDoneRunning);
+  CONDITION_SET(&ActionDoneRunning);
   while (DequeueCompletedAction(&i))
     ActionDone(i);
   pthread_cleanup_pop(1);
@@ -641,7 +640,7 @@ STATIC_ROUTINE void DoActionDone(int i){
   INIT_STATUS;
   pthread_t thread;
   QueueCompletedAction(i); /***** must be done before starting thread ****/
-  CONDITION_START_THREAD(ActionDoneRunning, thread, , ActionDoneThread, NULL);
+  CONDITION_START_THREAD(&ActionDoneRunning, thread, , ActionDoneThread, NULL);
   if STATUS_NOT_OK perror("DoActionDone: pthread creation failed");
 }
 
@@ -710,7 +709,7 @@ STATIC_ROUTINE void SendMonitorThread(){
   int i;
   int mode;
   pthread_cleanup_push(SendMonitorExit, NULL);
-  CONDITION_SIGNAL(&SendMonitorRunning);
+  CONDITION_SET(&SendMonitorRunning);
   while (DequeueSendMonitor(&mode, &i))
     SendMonitor(mode, i);
   pthread_cleanup_pop(1);
@@ -721,6 +720,6 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx){
   INIT_STATUS;
   pthread_t thread;
   QueueSendMonitor(mode, idx);/***** must be done before starting thread ****/
-  CONDITION_START_THREAD(SendMonitorRunning, thread, , SendMonitorThread,NULL);
+  CONDITION_START_THREAD(&SendMonitorRunning, thread, , SendMonitorThread,NULL);
   if STATUS_NOT_OK perror("DoSendMonitor: pthread creation failed");
 }

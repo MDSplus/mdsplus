@@ -112,21 +112,19 @@ class dclTests(TestCase):
         def testDispatchCommand(mdsip,command,stdout=None,stderr=None):
             self.assertEqual(tcl('dispatch/command/nowait/server=%s %s'  %(mdsip,command),1,1,1),(None,None))
         def setup_mdsip(server_env,port_env,default_port):
-            host = getenv(server_env)
-            if host is None:
-                port = int(getenv(port_env,0))
-                if port==0: port = default_port
-                host = 'LOCALHOST:%d'%(port,)
-            else:
-                port = 0
-            return host,port
+            host = getenv(server_env,'')
+            if len(host)>0:
+                return host,0
+            port = int(getenv(port_env,0))
+            if port==0: port = default_port
+            return 'LOCALHOST:%d'%(port,),port
         def start_mdsip(server,port,logname,env=None):
             if port>0:
                 from subprocess import Popen,STDOUT
                 log = open('%s_%d.log'%(logname,self.index),'w')
                 try:
                     params = ['mdsip','-s','-p',str(port),'-h',hosts]
-                    print(params,log)
+                    print(' '.join(params+['&>',logname]))
                     mdsip = Popen(params,env=env,stdout=log,stderr=STDOUT)
                 except:
                     log.close()

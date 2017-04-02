@@ -63,49 +63,56 @@ typedef struct _Condition {
   int             value;
 } Condition;
 
+typedef struct _Condition_p {
+  pthread_cond_t  cond;
+  pthread_mutex_t mutex;
+  void*           value;
+} Condition_p;
+
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
 #define CONDITION_INIT(input){\
-Condition *c = (Condition*)input; \
-c->value = B_FALSE; \
-pthread_cond_init(&c->cond, pthread_condattr_default); \
-pthread_mutex_init(&c->mutex, pthread_mutexattr_default); \
+(input)->value = 0;\
+pthread_cond_init(&(input)->cond, pthread_condattr_default);\
+pthread_mutex_init(&(input)->mutex, pthread_mutexattr_default);\
 }
+#define _CONDITION_LOCK(input)   pthread_mutex_lock(&(input)->mutex)
+#define _CONDITION_UNLOCK(input) pthread_mutex_unlock(&(input)->mutex)
+#define _CONDITION_SIGNAL(input) pthread_cond_signal(&(input)->cond)
+#define _CONDITION_WAIT_SET(input) while (!(input)->value) {pthread_cond_wait(&(input)->cond,&(input)->mutex);}
+#define _CONDITION_WAIT_1SEC(input,status){\
+struct timespec tp;\
+clock_gettime(CLOCK_REALTIME, &tp);\
+tp.tv_sec++;\
+status pthread_cond_timedwait(&(input)->cond,&(input)->mutex,&tp);\
+}
+#define CONDITION_SET_TO(input,value_in){\
+_CONDITION_LOCK(input);\
+(input)->value = value_in;\
+_CONDITION_SIGNAL(input);\
+_CONDITION_UNLOCK(input);\
+}
+#define CONDITION_SET(input)   CONDITION_SET_TO(input,B_TRUE)
 #define CONDITION_RESET(input){\
-Condition *c = (Condition*)input; \
-pthread_mutex_lock(&c->mutex); \
-c->value = B_FALSE; \
-pthread_mutex_unlock(&c->mutex); \
+_CONDITION_LOCK(input);\
+(input)->value = 0;\
+_CONDITION_UNLOCK(input);\
 }
-#define CONDITION_SIGNAL(input){\
-Condition *c = (Condition*)input; \
-pthread_mutex_lock(&c->mutex); \
-c->value = B_TRUE; \
-pthread_cond_signal(&c->cond); \
-pthread_mutex_unlock(&c->mutex); \
-}
-#define CONDITION_WAIT_TRUE(input){\
-Condition *c = (Condition*)input; \
-pthread_mutex_lock(&c->mutex); \
-while (!c->value) \
-  pthread_cond_wait(&c->cond,&c->mutex); \
-pthread_mutex_unlock(&c->mutex); \
+#define CONDITION_WAIT_SET(input){\
+_CONDITION_LOCK(input);\
+_CONDITION_WAIT_SET(input);\
+_CONDITION_UNLOCK(input);\
 }
 #define CONDITION_WAIT_1SEC(input){\
-Condition *c = (Condition*)input; \
-pthread_mutex_lock(&c->mutex); \
-struct timespec tp; \
-clock_gettime(CLOCK_REALTIME, &tp); \
-tp.tv_sec++; \
-pthread_cond_timedwait(&c->cond,&c->mutex,&tp); \
-pthread_mutex_unlock(&c->mutex); \
+_CONDITION_LOCK(input);\
+_CONDITION_WAIT_1SEC(input,);\
+_CONDITION_UNLOCK(input);\
 }
 #define CONDITION_DESTROY(input){\
-Condition *c = (Condition*)input; \
-pthread_mutex_lock(&c->mutex); \
-pthread_cond_destroy(&c->cond); \
-pthread_mutex_unlock(&c->mutex); \
-pthread_mutex_destroy(&c->mutex); \
+_CONDITION_LOCK(input);\
+pthread_cond_destroy(&(input)->cond);\
+_CONDITION_UNLOCK(input);\
+pthread_mutex_destroy(&(input)->mutex);\
 }
 #define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
 pthread_attr_t attr;\
@@ -116,18 +123,17 @@ pthread_attr_destroy(&attr);\
 pthread_detach(thread);
 
 #define CONDITION_START_THREAD(input, thread, stacksize, target, args){\
-Condition *c = (Condition*)&input; \
-pthread_mutex_lock(&c->mutex); \
-if (!c->value) { \
-  CREATE_DETACHED_THREAD(thread, stacksize, target, args); \
-  if (c_status) { \
-    perror("Error creating pthread"); \
-    status = MDSplusERROR; \
-  } else { \
-    pthread_cond_wait(&c->cond,&c->mutex); \
-    status = MDSplusSUCCESS; \
-  } \
-} \
-pthread_mutex_unlock(&c->mutex); \
+_CONDITION_LOCK(input);\
+if (!(input)->value) {\
+  CREATE_DETACHED_THREAD(thread, stacksize, target, args);\
+  if (c_status) {\
+    perror("Error creating pthread");\
+    status = MDSplusERROR;\
+  } else {\
+    _CONDITION_WAIT_SET(input);\
+    status = MDSplusSUCCESS;\
+  }\
+}\
+_CONDITION_UNLOCK(input);\
 }
 #endif//nPTHREAD_PORT_H
