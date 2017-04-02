@@ -236,40 +236,42 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
   return status;
 }
 
-//caller must hold Jobs lock
-static void RemoveJob_lock(Job * job){
-  Job *j, *prev;
-  for (j = Jobs, prev = NULL; j && j != job; prev=j, j=j->next);
-  if (j) {
-    if (prev)
-      prev->next = j->next;
-    else
-      Jobs = j->next;
-    if (!job->has_condition)
-      free(job);
-  }
+static void RemoveJob(Job *j){
+  LOCK_JOBS;
+  Job *jj, *prev;
+  for (jj = Jobs, prev = NULL; jj && jj != j; prev=jj, jj=jj->next);
+  if (prev)
+    prev->next = j->next;
+  else
+    Jobs = j->next;
+  if (!j->has_condition)
+    free(j);
+  UNLOCK_JOBS;
 }
 
 
-//caller must hold Jobs lock
-static void DoCompletionAst_lock(int jobid, int status, char *msg, int removeJob){
+static void DoCompletionAst(Job *j, int status, char *msg, int removeJob){
+  int has_condition = j->has_condition;
+  if (j->lock) pthread_rwlock_wrlock(j->lock);
+  if (j->retstatus)
+    *j->retstatus = status;
+  if (j->lock) pthread_rwlock_unlock(j->lock);
+  if (j->ast)
+    (*j->ast) (j->astparam, msg);
+  if (removeJob && j->jobid != MonJob)
+    RemoveJob(j);
+  /**** If job has a condition, RemoveJob will not remove it. ***/
+  if (has_condition)
+    CONDITION_SET(j);
+}
+
+static void DoCompletionAstId(int jobid, int status, char *msg, int removeJob){
   Job *j;
+  LOCK_JOBS;
   for (j=Jobs ; j && (j->jobid != jobid); j=j->next);
   if (!j) for (j=Jobs ; j && (j->jobid != MonJob); j=j->next);
-  if (j) {
-    int has_condition = j->has_condition;
-    if (j->lock) pthread_rwlock_wrlock(j->lock);
-    if (j->retstatus)
-      *j->retstatus = status;
-    if (j->lock) pthread_rwlock_unlock(j->lock);
-    if (j->ast)
-      (*j->ast) (j->astparam, msg);
-    if (removeJob && j->jobid != MonJob)
-      RemoveJob_lock(j);
-    /**** If job has a condition, RemoveJob will not remove it. ***/
-    if (has_condition)
-      CONDITION_SET(j);
-  }
+  UNLOCK_JOBS;
+  if (j) DoCompletionAst(j, status, msg, removeJob);
 }
 
 void ServerWait(int jobid)
@@ -331,18 +333,20 @@ static void CleanupJob(int status, int jobid)
   int conid;
   LOCK_JOBS;
   for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
+  UNLOCK_JOBS;
   if (j) {
     conid = j->conid;
     DisconnectFromMds(conid);
-    DoCompletionAst_lock(j->jobid, status, 0, 1);
+    DoCompletionAst(j, status, 0, 1);
     for (;;) {
+      LOCK_JOBS;
       for (j=Jobs ; j && (j->conid != conid) ; j=j->next);
+      UNLOCK_JOBS;
       if (j)
-        DoCompletionAst_lock(j->jobid, status, 0, 1);
+        DoCompletionAst(j, status, 0, 1);
       else break;
     }
   }
-  UNLOCK_JOBS;
 }
 
 static SOCKET CreatePort(short starting_port, short *port_out)
@@ -625,9 +629,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   }
   switch (replyType) {
   case SrvJobFINISHED:
-    LOCK_JOBS;
-    DoCompletionAst_lock(jobid, status, msg, 1);
-    UNLOCK_JOBS;
+    DoCompletionAstId(jobid, status, msg, 1);
     break;
   case SrvJobSTARTING:
     DoBeforeAst(jobid);
@@ -670,16 +672,16 @@ static void RemoveClient(Client * c, fd_set * fdactive)
       DisconnectFromMds(c->conid);
     free(c);
   }
-  LOCK_JOBS;
   Job *j;
   for (;;) {
+    LOCK_JOBS;
     for (j = Jobs; j && (j->conid != conid) ; j = j->next);
+    UNLOCK_JOBS;
     if (j) {
-      DoCompletionAst_lock(j->jobid, ServerPATH_DOWN, NULL, 1);
-      RemoveJob_lock(j);
+      DoCompletionAst(j, ServerPATH_DOWN, NULL, 1);
+      RemoveJob(j);
     } else break;
   }
-  UNLOCK_JOBS;
 }
 
 static unsigned int GetHostAddr(char *host)

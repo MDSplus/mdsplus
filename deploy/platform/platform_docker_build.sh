@@ -105,7 +105,6 @@ checktests() {
 
 sanitize() {
     ### Build with sanitizers and run tests with each sanitizer
-    SANITIZE="$(spacedelim $SANITIZE)"
     if [ ! -z "$SANITIZE" ]
     then
         for test in ${SANITIZE}; do
@@ -137,7 +136,6 @@ normaltest() {
         echo $n
     }
     ### Build with debug to run regular and valgrind tests
-    VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
     config_test $@
    if [ -z "$NOMAKE" ]; then
@@ -157,19 +155,6 @@ normaltest() {
     fi
    fi
     popd
-}
-spacedelim() {
-    if [ ! -z "$1" ]
-    then
-        if [ "$1" = "skip" ]
-        then
-            ans=""
-        else
-            IFS=',' read -ra ARR <<< "$1"
-            ans="${ARR[*]}"
-        fi
-    fi
-    echo $ans
 }
 RED() {
     if [ "$1" = "yes" ]

@@ -35,14 +35,21 @@ NORMAL() {
 spacedelim() {
     if [ ! -z "$1" ]
     then
-	IFS=',' read -ra ARR <<< "$1"
-	ans="${ARR[*]}"
+        if [ "$1" = "skip" ]
+        then
+            ans=""
+        else
+            IFS=',' read -ra ARR <<< "$1"
+            ans="${ARR[*]}"
+        fi
     fi
     echo $ans
 }
 rundocker(){
     images=(${DOCKERIMAGE})
     arches=($(spacedelim ${ARCH}))
+    SANITIZE="$(spacedelim $SANITIZE)"
+    VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     idx=0
     if [ -z "$INTERACTIVE" ]
     then
