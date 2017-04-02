@@ -549,9 +549,11 @@ STATIC_ROUTINE void Dispatch(int i){
       actions[i].status = status = 1;
       DoActionDone(i);
     } else {
+      UNLOCK_ACTION(i);
       status = ServerDispatchAction(0, Server(server, actions[i].server), table->tree, table->shot,
 				    actions[i].nid, DoActionDone, i + (char *)0, &actions[i].status, &actions[i].lock,
 				    &actions[i].netid, Before);
+      WRLOCK_ACTION(i);
       ProgLoc = 7003;
       if STATUS_OK
         actions[i].dispatched = 1;
