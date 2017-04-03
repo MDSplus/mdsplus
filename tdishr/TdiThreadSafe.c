@@ -58,6 +58,7 @@ ThreadStatic *TdiGetThreadStatic(){
     p->compiler_recursing = 0;
     pthread_setspecific(buffer_key, (void *)p);
     p->TdiIndent = 1;
+    p->TdiDecompile_max = 0xffff;
   }
   UNLOCK_BUFFER;
   return p;
