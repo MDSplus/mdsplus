@@ -13,10 +13,8 @@
  #define INVALID_SOCKET -1
 #endif
 
-
-#ifndef _WIN32
-#endif
-
+#define LOAD_GETUSERNAME
+#include <pthread_port.h>
 #include "mdsip_connections.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,42 +58,8 @@ static int DoLogin(int id)
 {
   INIT_STATUS;
   Message *m;
-  char *user_p;
-#ifdef _WIN32
-  char user[128];
-  DWORD bsize = 128;
-#ifdef _NI_RT_
-  user_p = "Windows User";
-#else
-  user_p = GetUserName(user, &bsize) ? user : "Windows User";
-#endif
-#elif __MWERKS__
-  user_p = "Macintosh User";
-#else
-#define BUFSIZE 256
-  char buf[BUFSIZE];
-  struct passwd pwd = {0};
-  struct passwd *pwd_p = &pwd;
-  getpwuid_r(geteuid(),&pwd,buf,BUFSIZE,&pwd_p);
-  if (!pwd_p) {
-#ifdef __APPLE__
-    user_p = "Apple User";
-#else
-    /*
-     *  On some RHEL6/64 systems 32 bit
-     *  calls to getpwuid return 0
-     *  temporary fix to call getlogin()
-     *  in that case.
-     */
-    getlogin_r(buf,BUFSIZE);
-    if (strlen(buf)>0)
-      user_p = buf;
-    else
-      user_p = "Linux User";
-#endif
-  } else
-    user_p = pwd_p->pw_name;
-#endif
+  static char *user_p;
+  GETUSERNAME(user_p);
   unsigned int length = strlen(user_p);
   m = calloc(1, sizeof(MsgHdr) + length);
   m->h.client_type = SENDCAPABILITIES;
