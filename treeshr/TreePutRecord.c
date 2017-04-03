@@ -350,7 +350,13 @@ static int FixupPath()
   return 0;
 }
 
-int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
+int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile){
+  WRLOCKINFO(info);
+  int status = _TreeOpenDatafileW(info, stv_ptr, tmpfile);
+  UNLOCKINFO(info);
+  return status;
+}
+int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 {
   int status = TreeNORMAL;
   if (info->header->readonly)

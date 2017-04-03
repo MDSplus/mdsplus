@@ -355,7 +355,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	    if (local_info->channel)
 	      MDS_IO_CLOSE(local_info->channel);
 	    if (local_info->section_addr[0]) {
-#if !defined(_WIN32)
+#ifndef _WIN32
 	      if (local_info->mapped)
 		munmap(local_info->section_addr[0], local_info->alq * 512);
 #endif
@@ -386,6 +386,8 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	      free(local_info->filespec);
 	    if (local_info->treenam)
 	      free(local_info->treenam);
+            if (local_info->has_lock)
+              pthread_rwlock_destroy(&local_info->lock);
 	    previous_info = local_info;
 	    local_info = local_info->next_info;
 	    free(previous_info);
@@ -475,7 +477,9 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
    Next we map the file and if successful copy
    the tree name (blank filled) into the info block.
    ***********************************************/
-
+      info->has_lock = !TreeUsingPrivateCtx();
+      if (info->has_lock)
+        pthread_rwlock_init(&info->lock,NULL);
       info->flush = (dblist->shotid == -1);
       info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
       info->shot = dblist->shotid;
@@ -1113,6 +1117,7 @@ void _TreeRestoreContext(void **dbid, void *ctxin)
 int TreeReopenDatafile(struct tree_info *info)
 {
   int status = 1, reopen_get, reopen_put, stv;
+  WRLOCKINFO(info);
   if (info->data_file) {
     reopen_get = info->data_file->get > 0;
     reopen_put = info->data_file->put > 0;
@@ -1121,18 +1126,20 @@ int TreeReopenDatafile(struct tree_info *info)
     if (reopen_put)
       MDS_IO_CLOSE(info->data_file->put);
     free(info->data_file);
-    info->data_file = 0;
+    info->data_file = NULL;
     if (reopen_get)
-      status = TreeOpenDatafileR(info);
+      status = _TreeOpenDatafileR(info);
     if (STATUS_OK && reopen_put)
-      status = TreeOpenDatafileW(info, &stv, 0);
+      status = _TreeOpenDatafileW(info, &stv, 0);
   }
+  UNLOCKINFO(info);
   return status;
 }
 
 int TreeReopenNci(struct tree_info *info)
 {
   int status = 1, reopen_get, reopen_put;
+  WRLOCKINFO(info);
   if (info->nci_file) {
     reopen_get = info->nci_file->get > 0;
     reopen_put = info->nci_file->put > 0;
@@ -1143,10 +1150,11 @@ int TreeReopenNci(struct tree_info *info)
     free(info->nci_file);
     info->nci_file = 0;
     if (reopen_get)
-      status = TreeOpenNciR(info);
+      status = _TreeOpenNciR(info);
     if (STATUS_OK && reopen_put)
-      status = TreeOpenNciW(info, 0);
+      status = _TreeOpenNciW(info, 0);
   }
+  UNLOCKINFO(info);
   return status;
 }
 
@@ -1306,13 +1314,6 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
   if STATUS_OK
     _TreeWriteTree(dbid, 0, 0);
   return status;
-}
-
-void *TreeSwitchDbid(void *dbid)
-{
-  void *old_dbid = *TreeCtx();
-  *TreeCtx() = dbid;
-  return old_dbid;
 }
 
 void TreeFreeDbid(void *dbid)
