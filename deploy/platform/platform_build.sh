@@ -47,7 +47,8 @@ spacedelim() {
 }
 rundocker(){
     images=(${DOCKERIMAGE})
-    arches=($(spacedelim ${ARCH}))
+    ARCH="$(spacedelim ${ARCH})"
+    arches=(${ARCH})
     SANITIZE="$(spacedelim $SANITIZE)"
     VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     idx=0
