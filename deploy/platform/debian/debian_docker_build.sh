@@ -129,7 +129,6 @@ buildrelease() {
     else
         component=" ${BRANCH}"
     fi
-    arches=$(spacedelim ${ARCHES})
     cat - <<EOF > /release/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
