@@ -137,7 +137,7 @@ if (!(input)->value) {\
 _CONDITION_UNLOCK(input);\
 }
 //"
-#ifdef __MACH__
+#if defined(__MACH__) || defined(_WIN32)
 #define _ALLOC_HP struct hostent *hp;
 #define _GETHOSTBYADDR(addr,type) gethostbyaddr(((void *)&addr),sizeof(addr),type)
 #define _GETHOSTBYNAME(name)      gethostbyname(name)
