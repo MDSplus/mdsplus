@@ -116,9 +116,9 @@ sanitize() {
             elif [ "$status" = "0" ]; then
               if [ -z "$NOMAKE" ]; then
                 $MAKE
-                checkstatus make_${1}_san_${test} "Failure compiling $1-bit with sanitize-${test}." $?
+                checkstatus abort "Failure compiling $1-bit with sanitize-${test}." $?
                 $MAKE install
-                checkstatus install_${1}_san_${test} "Failure installing $1-bit with sanitize-${test}." $?
+                checkstatus abort "Failure installing $1-bit with sanitize-${test}." $?
                 :&& tio 1800 $MAKE -k tests 2>&1
                 checkstatus tests_${1}_san_${test} "Failure testing $1-bit with sanitize-${test}." $?
               fi
@@ -140,9 +140,9 @@ normaltest() {
     config_test $@
    if [ -z "$NOMAKE" ]; then
     $MAKE
-    checkstatus make_$1 "Failure compiling $1-bit." $?
+    checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
-    checkstatus install_$1 "Failure installing $1-bit." $?
+    checkstatus abort "Failure installing $1-bit." $?
     ### Run standard tests
     :&& tio 600 $MAKE -k tests 2>&1
     checkstatus tests_$1 "Failure testing $1-bit." $?

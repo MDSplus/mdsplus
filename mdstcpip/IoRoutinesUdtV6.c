@@ -24,9 +24,6 @@ typedef int socklen_t;
 #include <io.h>
 #include <process.h>
 #define getpid _getpid
-extern int pthread_mutex_init();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
 #else
 #include "udtc.h"
 //#include <sys/socket.h>
@@ -42,6 +39,8 @@ extern int pthread_mutex_unlock();
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
 #endif
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
 static ssize_t UDTV6_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t UDTV6_recv(int conid, void *buffer, size_t len);
 static int UDTV6_disconnect(int conid);
@@ -79,20 +78,6 @@ EXPORT IoRoutines *Io()
   return &UDTV6_routines;
 }
 
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static int initialized = 0;
-  if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = 1;
-  }
-#endif
-}
-
 static UDTSOCKET getSocket(int conid)
 {
   size_t len;
@@ -102,42 +87,25 @@ static UDTSOCKET getSocket(int conid)
   return (info_name && strcmp(info_name, "udtv6") == 0) ? (UDTSOCKET) readfd : (UDTSOCKET) - 1;
 }
 
-static int socket_mutex_initialized = 0;
-static pthread_mutex_t socket_mutex;
-
-static void lock_socket_list()
-{
-  if (!socket_mutex_initialized) {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, 0);
-  }
-  pthread_mutex_lock(&socket_mutex);
-}
-
-static void unlock_socket_list()
-{
-  if (!socket_mutex_initialized) {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, 0);
-  }
-  pthread_mutex_unlock(&socket_mutex);
-}
+static pthread_mutex_t socket_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define SOCKET_LIST_LOCK   pthread_mutex_lock(&socket_mutex)
+#define SOCKET_LIST_UNLOCK pthread_mutex_unlock(&socket_mutex)
 
 static void PushSocket(UDTSOCKET socket)
 {
   SocketList *oldhead;
-  lock_socket_list();
+  SOCKET_LIST_LOCK;
   oldhead = Sockets;
   Sockets = malloc(sizeof(SocketList));
   Sockets->socket = socket;
   Sockets->next = oldhead;
-  unlock_socket_list();
+  SOCKET_LIST_UNLOCK;
 }
 
 static void PopSocket(UDTSOCKET socket)
 {
   SocketList *p, *s;
-  lock_socket_list();
+  SOCKET_LIST_LOCK;
   for (s = Sockets, p = 0; s && s->socket != socket; p = s, s = s->next) ;
   if (s != NULL) {
     if (p)
@@ -146,18 +114,18 @@ static void PopSocket(UDTSOCKET socket)
       Sockets = s->next;
     free(s);
   }
-  unlock_socket_list();
+  SOCKET_LIST_UNLOCK;
 }
 
 static void ABORT(int sigval __attribute__ ((unused)))
 {
   SocketList *s;
-  lock_socket_list();
+  SOCKET_LIST_LOCK;
   for (s = Sockets; s; s = s->next) {
     //    shutdown(s->socket,2);
     udt_close(s->socket);
   }
-  unlock_socket_list();
+  SOCKET_LIST_UNLOCK;
 }
 
 static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
@@ -166,11 +134,9 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
   struct sockaddr_in6 sin;
   int n = sizeof(sin);
   if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-    struct hostent *hp = 0;
     char straddr[INET6_ADDRSTRLEN];
     const char *iphost = inet_ntop(AF_INET6, &sin.sin6_addr, straddr, sizeof(straddr));
-
-    hp = gethostbyaddr((char *)&sin.sin6_addr, sizeof(sin.sin6_addr), AF_INET6);
+    GETHOSTBYADDR(sin.sin6_addr,AF_INET6);
     if (hp && hp->h_name) {
       ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 10);
       sprintf(ans, "%s [%s]", hp->h_name, iphost);
@@ -190,6 +156,7 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
 	*hostnameptr = 0;
       }
     }
+    FREE_HP;
   }
   return ans;
 }
@@ -333,7 +300,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in6 *sin)
   struct addrinfo *res = 0;
   static const struct addrinfo hints = { 0, AF_INET6, SOCK_STREAM, 0, 0, 0, 0, 0 };
   int gai_stat;
-  InitializeSockets();
+  INITIALIZESOCKETS;
   for (i = 0; i < strlen(host) && host[i] != '#'; i++) ;
   if (i < strlen(host)) {
     host[i] = '\0';
@@ -377,7 +344,7 @@ static int UDTV6_connect(int conid, char *protocol __attribute__ ((unused)), cha
   int status = getHostAndPort(host, &sin);
   int sinlen = sizeof(sin);
   if (status == 1) {
-    InitializeSockets();
+    INITIALIZESOCKETS;
     s = udt_socket(AF_INET6, SOCK_STREAM, 0);
     if (!s) {
       perror("Error in connect");
@@ -479,7 +446,7 @@ static int UDTV6_listen(int argc, char **argv)
     SetPortname(options[0].value);
   else if (GetPortname() == 0)
     SetPortname("mdsip");
-  InitializeSockets();
+  INITIALIZESOCKETS;
   server_epoll = udt_epoll_create();
   if (GetMulti()) {
     struct addrinfo hints;

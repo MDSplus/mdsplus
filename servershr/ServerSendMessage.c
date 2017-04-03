@@ -41,6 +41,7 @@ int ServerSendMessage();
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
+#include <errno.h>
 #ifdef _WIN32
  typedef int socklen_t;
  #include <windows.h>
@@ -90,7 +91,7 @@ static Job *Jobs = 0;
 typedef struct _client {
   SOCKET reply_sock;
   int conid;
-  unsigned int addr;
+  int addr;
   short port;
   struct _client *next;
 } Client;
@@ -115,7 +116,7 @@ static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
-static unsigned int GetHostAddr(char *host);
+static int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
 
@@ -507,7 +508,7 @@ EXPORT int ServerDisconnect(char *server_in)
   int status = 0;
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
-  unsigned int addr;
+  int addr;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   short port = 0;
@@ -516,14 +517,14 @@ EXPORT int ServerDisconnect(char *server_in)
     printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
-    if (addr != 0) {
+    if (addr) {
       if (atoi(portpart) == 0) {
 	struct servent *sp = getservbyname(portpart, "tcp");
-	if (sp != NULL)
+	if (sp)
 	  port = sp->s_port;
 	else {
 	  char *portnam = getenv(portpart);
-	  portnam = (portnam == NULL) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
+	  portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
 	  port = htons((short)atoi(portnam));
 	}
       } else
@@ -551,7 +552,7 @@ EXPORT int ServerConnect(char *server_in)
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
   int found = 0;
-  unsigned int addr;
+  int addr;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   short port = 0;
@@ -560,14 +561,14 @@ EXPORT int ServerConnect(char *server_in)
     printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
-    if (addr != 0) {
+    if (addr) {
       if (atoi(portpart) == 0) {
 	struct servent *sp = getservbyname(portpart, "tcp");
-	if (sp != NULL)
+	if (sp)
 	  port = sp->s_port;
 	else {
 	  char *portnam = getenv(portpart);
-	  portnam = (portnam == NULL) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
+	  portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
 	  port = htons((short)atoi(portnam));
 	}
       } else
@@ -684,21 +685,14 @@ static void RemoveClient(Client * c, fd_set * fdactive)
   }
 }
 
-static unsigned int GetHostAddr(char *host)
+static int GetHostAddr(char *host)
 {
-  unsigned int addr = 0;
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   InitializeSockets();
-  pthread_mutex_lock(&mutex);{
-  struct hostent *hp = gethostbyname(host);
-  if (hp == NULL) {
-    addr = inet_addr(host);
-    if (addr != 0xffffffff)
-      hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
-  }
-  addr = (hp == NULL) ? 0 : *(unsigned int *)hp->h_addr_list[0];
-  }pthread_mutex_unlock(&mutex);
-  return addr == 0xffffffff ? 0 : addr;
+  int addr = 0;
+  GETHOSTBYNAMEORADDR(host,addr);
+  if (hp) addr = *(int *)hp->h_addr_list[0];
+  FREE_HP;
+  return addr == -1 ? 0 : addr;
 }
 
 static void AddClient(unsigned int addr, short port, int conid)
@@ -721,7 +715,7 @@ static void AddClient(unsigned int addr, short port, int conid)
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
-  unsigned int addr = *(unsigned int *)&sin->sin_addr;
+  int addr = *(int *)&sin->sin_addr;
   Client *c;
   LOCK_CLIENTS;
   for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;

@@ -22,9 +22,6 @@ typedef int socklen_t;
 #include <io.h>
 #include <process.h>
 #define getpid _getpid
-extern int pthread_mutex_init();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
 #else
 #include "udtc.h"
 //#include <sys/socket.h>
@@ -40,6 +37,8 @@ extern int pthread_mutex_unlock();
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
 #endif
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
 static ssize_t UDT_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t UDT_recv(int conid, void *buffer, size_t len);
 static int UDT_disconnect(int conid);
@@ -77,19 +76,9 @@ EXPORT IoRoutines *Io()
   return &UDT_routines;
 }
 
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static int initialized = 0;
-  if (!initialized) {
-      WSADATA wsaData;
-      WORD wVersionRequested;
-      wVersionRequested = MAKEWORD(1, 1);
-      WSAStartup(wVersionRequested, &wsaData);
-      initialized = 1;
-    }
-#endif
-}
+ #define IPHOST   char *iphost = inet_ntoa(sin.sin_addr);
+ #define SIN_ADDR sin.sin_addr
+ #define SIN_TYPE  AF_INET
 
 static UDTSOCKET getSocket(int conid)
 {
@@ -100,42 +89,25 @@ static UDTSOCKET getSocket(int conid)
   return (info_name && strcmp(info_name, "udt") == 0) ? (UDTSOCKET) readfd : (UDTSOCKET) - 1;
 }
 
-static int socket_mutex_initialized = 0;
-static pthread_mutex_t socket_mutex;
-
-static void lock_socket_list()
-{
-  if (!socket_mutex_initialized) {
-      socket_mutex_initialized = 1;
-      pthread_mutex_init(&socket_mutex, 0);
-    }
-  pthread_mutex_lock(&socket_mutex);
-}
-
-static void unlock_socket_list()
-{
-  if (!socket_mutex_initialized) {
-      socket_mutex_initialized = 1;
-      pthread_mutex_init(&socket_mutex, 0);
-    }
-  pthread_mutex_unlock(&socket_mutex);
-}
+static pthread_mutex_t socket_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define SOCKET_LIST_LOCK   pthread_mutex_lock(&socket_mutex);
+#define SOCKET_LIST_UNLOCK pthread_mutex_unlock(&socket_mutex);
 
 static void PushSocket(UDTSOCKET socket)
 {
   SocketList *oldhead;
-  lock_socket_list();
+  SOCKET_LIST_LOCK;
   oldhead = Sockets;
   Sockets = malloc(sizeof(SocketList));
   Sockets->socket = socket;
   Sockets->next = oldhead;
-  unlock_socket_list();
+  SOCKET_LIST_UNLOCK;
 }
 
 static void PopSocket(UDTSOCKET socket)
 {
   SocketList *p, *s;
-  lock_socket_list();
+  SOCKET_LIST_LOCK;
   for (s = Sockets, p = 0; s && s->socket != socket; p = s, s = s->next) ;
   if (s != NULL) {
       if (p)
@@ -144,18 +116,18 @@ static void PopSocket(UDTSOCKET socket)
         Sockets = s->next;
       free(s);
     }
-  unlock_socket_list();
+  SOCKET_LIST_UNLOCK;
 }
 
 static void ABORT(int sigval __attribute__ ((unused)))
 {
   SocketList *s;
-  lock_socket_list();
+  SOCKET_LIST_LOCK;
   for (s = Sockets; s; s = s->next) {
       //    shutdown(s->socket,2);
       udt_close(s->socket);
     }
-  unlock_socket_list();
+  SOCKET_LIST_UNLOCK;
 }
 
 static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
@@ -164,9 +136,8 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
   struct sockaddr_in sin;
   int n = sizeof(sin);
   if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-    struct hostent *hp = 0;
-    char *iphost = inet_ntoa(sin.sin_addr);
-    hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+    IPHOST;
+    GETHOSTBYADDR(SIN_ADDR,SIN_TYPE);
     if (hp && hp->h_name) {
       ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 10);
       sprintf(ans, "%s [%s]", hp->h_name, iphost);
@@ -335,29 +306,23 @@ static short GetPort(char *name)
 
 static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
 {
-  struct hostent *hp = NULL;
-  int addr;
   size_t i;
   static char *mdsip = "mdsip";
   char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
   char *service;
   unsigned short portnum;
-  InitializeSockets();
+  INITIALIZESOCKETS;
   for (i = 0; i < strlen(host) && host[i] != ':'; i++) ;
   if (i < strlen(host)) {
-      host[i] = '\0';
-      service = &host[i + 1];
-    } else {
-      service = mdsip;
-    }
-  hp = gethostbyname(host);
-  if (hp == NULL) {
-      addr = inet_addr(host);
-      if (addr != -1)
-        hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
-    }
-  if (hp == 0) {
+    host[i] = '\0';
+    service = &host[i + 1];
+  } else
+    service = mdsip;
+  int addr;
+  GETHOSTBYNAMEORADDR(host,addr);
+  if (!hp) {
       free(host);
+      FREE_HP;
       return 0;
     }
   if (atoi(service) == 0) {
@@ -374,6 +339,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
     portnum = htons(atoi(service));
   if (portnum == 0) {
       free(host);
+      FREE_HP;
       return 2;
     }
   sin->sin_port = portnum;
@@ -384,6 +350,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin)
   memcpy(&sin->sin_addr, hp->h_addr_list[0], hp->h_length);
 #endif
   free(host);
+  FREE_HP;
   return 1;
 }
 
@@ -409,7 +376,7 @@ static int UDT_connect(int conid, char *protocol __attribute__ ((unused)), char 
   int status = getHostAndPort(host, &sin);
   int sinlen = sizeof(sin);
   if (status == 1) {
-    InitializeSockets();
+    INITIALIZESOCKETS;
     s = udt_socket(AF_INET, SOCK_STREAM, 0);
     if (!s) {
       perror("Error in connect");
@@ -511,9 +478,8 @@ static int UDT_listen(int argc, char **argv)
     SetPortname(options[0].value);
   else if (GetPortname() == 0)
     SetPortname("mdsip");
-  InitializeSockets();
+  INITIALIZESOCKETS;
   server_epoll = udt_epoll_create();
-  
   if (GetMulti()) {
     unsigned short port = GetPort(GetPortname());
     char *matchString[] = { "multi" };
@@ -577,7 +543,7 @@ static int UDT_listen(int argc, char **argv)
  next:
 	  continue;
 	}
-	/*         
+	/*
 	   if ((c->sock == writefds[i]) && udt_getpeername(c->sock, (struct sockaddr *)&sin, &n)) {
 	   fprintf(stderr,"Removed disconnected client\n");
 	   fflush(stderr);

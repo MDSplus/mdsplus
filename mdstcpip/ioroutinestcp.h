@@ -15,7 +15,6 @@
 #ifdef HAVE_SYS_FILIO_H
  #include <sys/filio.h>
 #endif
-#include <pthread_port.h>
 #ifdef _WIN32
  #define ioctl ioctlsocket
  #define FIONREAD_TYPE u_long
@@ -42,6 +41,8 @@
 #ifndef MSG_NOSIGNAL
  #define MSG_NOSIGNAL 0
 #endif
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
 static ssize_t tcp_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t tcp_recv(int conid, void *buffer, size_t len);
 static int tcp_disconnect(int conid);
@@ -53,6 +54,8 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines tcp_routines = {
   tcp_connect, tcp_send, tcp_recv, tcp_flush, tcp_listen, tcp_authorize, tcp_reuseCheck, tcp_disconnect
 };
+
+static int getHostAndPort(char *hostin, STRUCT_SOCKADDR *sin);
 
 #ifndef TCPV6
 typedef struct _IoRoutineTcpInfo {
@@ -93,24 +96,21 @@ typedef struct _socket_list {
 /// List of connected Sockets
 static Socket *SocketList = NULL;
 
-EXPORT IoRoutines *Io()
-{
+EXPORT IoRoutines *Io(){
   return &tcp_routines;
 }
 
-static void InitializeSockets()
-{
-#ifdef _WIN32
-  static int initialized = 0;
-  if (!initialized) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    initialized = 1;
-  }
+#ifdef TCPV6
+ #define IPHOST \
+ char iphost[INET6_ADDRSTRLEN];\
+ inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN);
+ #define SIN_ADDR sin.sin6_addr
+ #define SIN_TYPE AF_INET6
+#else
+ #define IPHOST   char *iphost = inet_ntoa(sin.sin_addr);
+ #define SIN_ADDR sin.sin_addr
+ #define SIN_TYPE AF_INET
 #endif
-}
 
 static int getSocket(int conid)
 {
@@ -169,19 +169,12 @@ static int tcp_authorize(int conid, char *username)
   STRUCT_SOCKADDR sin;
   socklen_t n = sizeof(sin);
   int ans = 0;
-  struct hostent *hp = 0;
   if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
     int num = 1;
     char *matchString[2] = { 0, 0 };
     timestr[strlen(timestr) - 1] = 0;
-#ifdef TCPV6
-    char iphost[INET6_ADDRSTRLEN];
-    inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN);
-    hp = gethostbyaddr((char *)&sin.sin6_addr, sizeof(sin.sin6_addr), AF_INET6);
-#else
-    char *iphost = inet_ntoa(sin.sin_addr);
-    hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-#endif
+    IPHOST;
+    GETHOSTBYADDR(SIN_ADDR,SIN_TYPE);
     if (hp && hp->h_name)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr, (int)s, getpid(),
 	     username, hp->h_name, iphost);
@@ -202,6 +195,7 @@ static int tcp_authorize(int conid, char *username)
       free(matchString[0]);
     if (matchString[1])
       free(matchString[1]);
+    FREE_HP;
   } else {
     perror("Error determining connection info from socket\n");
   }
@@ -255,7 +249,6 @@ static int tcp_disconnect(int conid){
   char *timestr = ctime(&tim);
   STRUCT_SOCKADDR sin;
   socklen_t n = sizeof(sin);
-  struct hostent *hp = 0;
   if (s != INVALID_SOCKET) {
     Client *c, **p;
     for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
@@ -265,20 +258,15 @@ static int tcp_disconnect(int conid){
 	FD_CLR(s, &fdactive);
 	if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
 	  timestr[strlen(timestr) - 1] = 0;
-#ifdef TCPV6
-          char iphost[INET6_ADDRSTRLEN];
-	  inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN);
-	  hp = gethostbyaddr((char *)&sin.sin6_addr, sizeof(sin.sin6_addr), AF_INET6);
-#else
-	  char *iphost = inet_ntoa(sin.sin_addr);
-	  hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-#endif
+          IPHOST;
+          GETHOSTBYADDR(SIN_ADDR,SIN_TYPE);
 	  if (hp)
 	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, (int)s,
 		   getpid(), c->username, hp->h_name, iphost);
 	  else
 	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, (int)s, getpid(),
 		   c->username, iphost);
+          FREE_HP;
 	}
       }
       free(c->username);
@@ -374,100 +362,6 @@ static short GetPort(char *name){
   return port;
 }
 
-#ifdef TCPV6
-static int getHostAndPort(char *hostin, STRUCT_SOCKADDR *sin){
-  struct addrinfo hints, *info;
-  int n;
-  size_t i;
-  static char *mdsip = "mdsip";
-  char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
-  char *service = mdsip;
-  int num_colons;
-  int ans = 1;
-  InitializeSockets();
-  for (i = 0, num_colons = 0; i < strlen(host); i++) {
-    if (host[i] == ':')
-      num_colons++;
-  }
-  if (num_colons > 0) {
-    for (i = strlen(host); i > 0; i--) {
-      if (host[i - 1] == ':') {
-	service = &host[i];
-	host[i - 1] = '\0';
-	break;
-      }
-    }
-  }
-  memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_INET6;
-  hints.ai_socktype = SOCK_STREAM;
-  n = getaddrinfo(host, service, &hints, &info);
-  if (n < 0) {
-    fprintf(stderr, "getaddrinfo error:: [%s]\n", gai_strerror(n));
-    ans = 0;
-  } else {
-    memcpy(sin, info->ai_addr, info->ai_addrlen);
-    freeaddrinfo(info);
-  }
-
-  free(host);
-  return ans;
-}
-#else
-static int getHostAndPort(char *hostin, STRUCT_SOCKADDR *sin){
-  struct hostent *hp = NULL;
-  int addr;
-  size_t i;
-  static char *mdsip = "mdsip";
-  char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
-  char *service;
-  unsigned short portnum;
-  InitializeSockets();
-  for (i = 0; i < strlen(host) && host[i] != ':'; i++) ;
-  if (i < strlen(host)) {
-    host[i] = '\0';
-    service = &host[i + 1];
-  } else {
-    service = mdsip;
-  }
-  hp = gethostbyname(host);
-  if (hp == NULL) {
-    addr = inet_addr(host);
-    if (addr != -1)
-      hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
-  }
-  if (hp == 0) {
-    free(host);
-    return 0;
-  }
-  if (atoi(service) == 0) {
-    struct servent *sp;
-    sp = getservbyname(service, "tcp");
-    if (sp != NULL)
-      portnum = sp->s_port;
-    else {
-      char *port = getenv(service);
-      port = (port == NULL) ? "8000" : port;
-      portnum = htons(atoi(port));
-    }
-  } else
-    portnum = htons(atoi(service));
-  if (portnum == 0) {
-    free(host);
-    return 2;
-  }
-  sin->sin_port = portnum;
-  sin->sin_family = AF_INET;
-#if defined(ANET)
-  memcpy(&sin->sin_addr, hp->h_addr, sizeof(sin->sin_addr));
-#else
-  memcpy(&sin->sin_addr, hp->h_addr_list[0], hp->h_length);
-#endif
-  free(host);
-  return 1;
-}
-#endif
-
 ////////////////////////////////////////////////////////////////////////////////
 //  REUSE CHECK  ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -504,7 +398,7 @@ static int tcp_connect(int conid, char *protocol __attribute__ ((unused)), char 
   SOCKET s;
   int c_status = getHostAndPort(host, &sin);
   if (c_status == 1) {
-    InitializeSockets();
+    INITIALIZESOCKETS;
     s = NEW_SOCKET;
     if (s == INVALID_SOCKET) {
       perror("Error creating socket");
@@ -649,7 +543,7 @@ static int tcp_listen(int argc, char **argv)
     SetPortname(options[0].value);
   else if (GetPortname() == 0)
     SetPortname("mdsip");
-  InitializeSockets();
+  INITIALIZESOCKETS;
   if (GetMulti()) {
     //////////////////////////////////////////////////////////////////////////
     // MULTIPLE CONNECTION MODE              /////////////////////////////////
