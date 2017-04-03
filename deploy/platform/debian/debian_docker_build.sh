@@ -133,7 +133,7 @@ buildrelease() {
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
-Architectures: ${arches}
+Architectures: ${ARCHES}
 Components: alpha stable${component}
 Description: MDSplus packages
 EOF
