@@ -313,7 +313,7 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **output)
       strcat(out_str, bchars);
     }
   } else {
-    sprintf(bchars, "%d", in_dsc_ptr->arsize / in_dsc_ptr->length);
+    sprintf(bchars, "%d", in_dsc_ptr->arsize / ((in_dsc_ptr->length)?in_dsc_ptr->length:1));
     out_str = realloc(out_str, strlen(out_str) + strlen(bchars) + 10);
     strcat(out_str, bchars);
   }
