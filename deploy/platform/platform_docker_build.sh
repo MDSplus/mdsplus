@@ -187,12 +187,11 @@ main(){
         set +e
         runtests
     fi
-    if [ "${BRANCH}" = "stable" ]
-    then
-        BNAME=""
-    else
-        BNAME="-$(echo ${BRANCH} | sed -e 's/-/_/g')"
-    fi
+    case "$BRANCH" in
+     stable) export BNAME="";;
+      alpha) export BNAME="-alpha";;
+          *) export BNAME="-other";;
+    esac
     if [ "$RELEASE" = "yes" ]
     then
         set +e

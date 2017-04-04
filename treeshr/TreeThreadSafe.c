@@ -7,15 +7,6 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <string.h>
-/* Key for the thread-specific buffer */
-STATIC_THREADSAFE pthread_key_t buffer_key;
-
-/* Once-only initialisation of the key */
-STATIC_THREADSAFE int is_init = B_FALSE;
-STATIC_THREADSAFE pthread_rwlock_t buffer_lock = PTHREAD_RWLOCK_INITIALIZER;
-#define WRLOCK_BUFFER pthread_rwlock_wrlock(&buffer_lock);
-#define RDLOCK_BUFFER pthread_rwlock_rdlock(&buffer_lock);
-#define UNLOCK_BUFFER pthread_rwlock_unlock(&buffer_lock);
 
 /* Free the thread-specific buffer */
 STATIC_ROUTINE void buffer_destroy(void *buf){
@@ -24,11 +15,12 @@ STATIC_ROUTINE void buffer_destroy(void *buf){
 
 /* Return the thread-specific buffer */
 TreeThreadStatic *TreeGetThreadStatic(){
+  static pthread_key_t buffer_key;
+  static int is_init = B_FALSE;
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   TreeThreadStatic *p;
-  RDLOCK_BUFFER;
+  pthread_mutex_lock(&mutex);
   if (!is_init) {
-    UNLOCK_BUFFER;
-    WRLOCK_BUFFER;
     pthread_key_create(&buffer_key, buffer_destroy);
     is_init = B_TRUE;
   }
@@ -37,21 +29,35 @@ TreeThreadStatic *TreeGetThreadStatic(){
     p = (TreeThreadStatic *) memset(malloc(sizeof(TreeThreadStatic)), 0, sizeof(TreeThreadStatic));
     pthread_setspecific(buffer_key, (void *)p);
   }
-  UNLOCK_BUFFER;
+  pthread_mutex_unlock(&mutex);
   return p;
 }
 
-void *DBID = 0;
+void *DBID = NULL;
 
+static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 EXPORT void **TreeCtx(){
   TreeThreadStatic *p = TreeGetThreadStatic();
-  return (p->privateCtx == 1) ? &p->DBID : &DBID;
+  pthread_rwlock_rdlock(&treectx_lock);
+  void **old_dbid = p->privateCtx ? &p->DBID : &DBID;
+  pthread_rwlock_unlock(&treectx_lock);
+  return old_dbid;
+}
+
+EXPORT void *TreeSwitchDbid(void *dbid){
+  TreeThreadStatic *p = TreeGetThreadStatic();
+  pthread_rwlock_wrlock(&treectx_lock);
+  void *old_dbid = p->privateCtx ? p->DBID : DBID;
+  if (p->privateCtx) p->DBID = dbid;
+  else                  DBID = dbid;
+  pthread_rwlock_unlock(&treectx_lock);
+  return old_dbid;
 }
 
 EXPORT int TreeUsePrivateCtx(int onoff){
   TreeThreadStatic *p = TreeGetThreadStatic();
   int old = p->privateCtx;
-  p->privateCtx = onoff;
+  p->privateCtx = onoff!=0;
   return old;
 }
 

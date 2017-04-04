@@ -14,12 +14,11 @@ NAME
                  build jobs used to test pull requests and generate new MDSplus releases.
 
 SYNOPSIS
-    ./trigger.sh [--test[=skip]] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log] 
-                 [--release] [--releasedir=directory] 
+    ./trigger.sh [--test[=skip]] [--testrelease] [--valgrind=skip] [--sanitize=skip] [--test_format=tap|log]
+                 [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
                  [--pypi]
-                 
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -95,8 +94,8 @@ OPTIONS
 
     --publish
        This will tag the commit used for the release build with the
-       version and adds a --publish=version option to trigger.opts to 
-       instruct the build jobs to publish the released version. 
+       version and adds a --publish=version option to trigger.opts to
+       instruct the build jobs to publish the released version.
        Both the --releasedir and --publishdir options must be provided
        when triggering a publish operation.
 
@@ -286,12 +285,6 @@ then
     MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
     MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
     RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
-    if [ "$BRANCH" = "stable" ]
-    then
-	BNAME=""
-    else
-	BNAME="-${BRANCH}"
-    fi
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
@@ -367,7 +360,7 @@ INFO: Unknown release check return of $version_inc
 =========================================================
 
 EOF
-		NORMAL $COLOR		
+		NORMAL $COLOR
 	    	NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
@@ -435,7 +428,7 @@ then
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
   "name":"${RELEASE_TAG}",
-  "body":"Commits since last release:\n\n 
+  "body":"Commits since last release:\n\n
 $(git log --decorate=full ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");print $0"\\n"}')"
 }
 EOF
@@ -460,11 +453,11 @@ EOF
 	RED $COLOR
 	cat <<EOF >&2
 =========================================================
-                                                        
-Attempt to tag a new release without first triggering   
-a release build with the --release option.              
-FAILURE                                                  
-                                                         
+
+Attempt to tag a new release without first triggering
+a release build with the --release option.
+FAILURE
+
 =========================================================
 EOF
 	NORMAL $COLOR

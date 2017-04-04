@@ -322,7 +322,13 @@ int TreeGetNciLw(TREE_INFO * info, int node_num, NCI * nci)
 	Description:
 
 +-----------------------------------------------------------------------------*/
-int TreeOpenNciW(TREE_INFO * info, int tmpfile)
+int TreeOpenNciW(TREE_INFO * info, int tmpfile){
+  WRLOCKINFO(info);
+  int status = _TreeOpenNciW(info,tmpfile);
+  UNLOCKINFO(info);
+  return status;
+}
+int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
 {
   int status;
 
@@ -331,11 +337,11 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
     Allocate one
 *****************************************************/
 
-  if (info->nci_file == 0) {
+  if (!info->nci_file) {
     status =
 	((info->nci_file =
 	  (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL) ? TreeNORMAL : TreeFAILURE;
-    if (status & 1) {
+    if STATUS_OK {
       size_t len = strlen(info->filespec) - 4;
       char *filename = strncpy(malloc(len + 20), info->filespec, len);
       filename[len] = '\0';
@@ -377,7 +383,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
     if (info->edit) {
       info->edit->first_in_mem = (int)MDS_IO_LSEEK(info->nci_file->put, 0, SEEK_END) / 42;
     }
-  } 
+  }
   if (status & 1)
     TreeCallHook(OpenNCIFileWrite, info, 0);
   return status;

@@ -32,7 +32,7 @@ DESCRIPTION
      deployment scripts in the mdsplus-deploy git package.
 
     The build.sh script will only build MDSplus for one target operating
-    system per invocation of the script. One must specify whether you 
+    system per invocation of the script. One must specify whether you
     want to perform the standard tests on the MDSplus software, build
     the installers, or publish the installers to a public repository
     using the --test, --release=version and/or --publish=version command
@@ -60,7 +60,7 @@ DESCRIPTION
 
     If you have changed the packaging, for example adding a new library, header,
     tdi function or any other file that would be included in an installer the
-    above test will fail. You will need to issue the following commands to 
+    above test will fail. You will need to issue the following commands to
     update the package contents checking files to refleact the changes.
     issue the following commands:
 
@@ -428,10 +428,10 @@ then
 	GREEN $COLOR
 	cat <<EOF
 ==================================================================
-                                                                  
-A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.  
-The build will be skipped.                                        
-                                                                  
+
+A ${RELEASE_VERSION} ${BRANCH} release already exists for ${OS}.
+The build will be skipped.
+
 ==================================================================
 EOF
 	NORMAL $COLOR
@@ -527,7 +527,7 @@ spacedelim() {
     fi
     echo $ans
 }
-    
+
 DOCKERFILE="$(spacedelim $DOCKERFILE)"
 DOCKERIMAGE="$(spacedelim $DOCKERIMAGE)"
 #
@@ -623,9 +623,9 @@ then
     RED $COLOR
     cat <<EOF >&2
 ============================================
-                                            
-Failure: The build was unsuccessful!        
-                                            
+
+Failure: The build was unsuccessful!
+
 ============================================
 EOF
     NORMAL $COLOR
@@ -634,9 +634,9 @@ else
     GREEN $COLOR
     cat <<EOF
 ============================================
-                                            
-Success!                                    
-                                            
+
+Success!
+
 ============================================
 EOF
     NORMAL $COLOR
