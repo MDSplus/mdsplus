@@ -24,6 +24,7 @@ typedef struct _thread_static {
   struct descriptor_xd *TdiSELF_PTR;
   struct TdiZoneStruct TdiRefZone;
   unsigned int TdiIndent;
+  unsigned short TdiDecompile_max;
 } ThreadStatic;
 
 extern ThreadStatic *TdiGetThreadStatic();
