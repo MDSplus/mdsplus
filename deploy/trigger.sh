@@ -286,12 +286,11 @@ then
     MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
     MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
     RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
-    if [ "$BRANCH" = "stable" ]
-    then
-	BNAME=""
-    else
-	BNAME="-${BRANCH}"
-    fi
+    case "$BRANCH" in
+	stable) BNAME="";;
+	alpha) BNAME="-alpha";;
+	*) BNAME="-other";;
+    esac
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
