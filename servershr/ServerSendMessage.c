@@ -41,6 +41,7 @@ int ServerSendMessage();
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
+#include <errno.h>
 #ifdef _WIN32
  typedef int socklen_t;
  #include <windows.h>
@@ -54,16 +55,7 @@ int ServerSendMessage();
  #include <arpa/inet.h>
 #endif
 #include <signal.h>
-#include <sys/time.h>
-#include <pthread.h>
 
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-  #define pthread_attr_default NULL
-  #define pthread_mutexattr_default NULL
-  #define pthread_condattr_default NULL
-#else
-  #undef select
-#endif
 
 extern short ArgLen();
 
@@ -77,11 +69,12 @@ extern int GetAnswerInfoTS();
  *} Condition;
  */
 typedef struct _Job {
-  pthread_cond_t condition;
+  pthread_cond_t cond;
   pthread_mutex_t mutex;
-  int done;
+  int value; //aka done
   int has_condition;
   int *retstatus;
+  pthread_rwlock_t *lock;
   void (*ast) ();
   void *astparam;
   void (*before_ast) ();
@@ -98,7 +91,7 @@ static Job *Jobs = 0;
 typedef struct _client {
   SOCKET reply_sock;
   int conid;
-  unsigned int addr;
+  int addr;
   short port;
   struct _client *next;
 } Client;
@@ -117,19 +110,21 @@ int ServerBadSocket(SOCKET socket);
 
 static int start_receiver(short *port);
 int ServerConnect(char *server);
-static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
+static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int sock);
 static void CleanupJob(int status, int jobid);
 static void ReceiverThread(void *sockptr);
 static void DoMessage(Client * c, fd_set * fdactive);
 static void RemoveClient(Client * c, fd_set * fdactive);
-static unsigned int GetHostAddr(char *host);
+static int GetHostAddr(char *host);
 static void AddClient(unsigned int addr, short port, int send_sock);
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive);
 
 static void InitializeSockets()
 {
 #ifdef _WIN32
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&mutex);
   static int initialized = B_FALSE;
   if (!initialized) {
     WSADATA wsaData;
@@ -138,6 +133,7 @@ static void InitializeSockets()
     WSAStartup(wVersionRequested, &wsaData);
     initialized = B_TRUE;
   }
+  pthread_mutex_unlock(&mutex);
 #endif
 }
 
@@ -151,7 +147,7 @@ static SOCKET getSocket(int conid)
   return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : INVALID_SOCKET;
 }
 
-int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *conid_out,
+int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *conid_out,
 		      void (*ast) (), void *astparam, void (*before_ast) (), int numargs_in, ...)
 {
   short port = 0;
@@ -190,7 +186,7 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
       ast(astparam);
     return ServerSOCKET_ADDR_ERROR;
   }
-  jobid = RegisterJob(msgid, retstatus, ast, astparam, before_ast, conid);
+  jobid = RegisterJob(msgid, retstatus, lock, ast, astparam, before_ast, conid);
   if (before_ast)
     flags |= SrvJobBEFORE_NOTIFY;
   sprintf(cmd, "MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d", addr, port, op, flags, jobid);
@@ -241,38 +237,42 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *con
   return status;
 }
 
-//caller must hold Jobs lock
-static void RemoveJob_lock(Job * job){
-  Job *j, *prev;
-  for (j = Jobs, prev = NULL; j && j != job; prev=j, j=j->next);
-  if (j) {
-    if (prev)
-      prev->next = j->next;
-    else
-      Jobs = j->next;
-    if (!j->has_condition)
-      free(j);
-  }
+static void RemoveJob(Job *j){
+  LOCK_JOBS;
+  Job *jj, *prev;
+  for (jj = Jobs, prev = NULL; jj && jj != j; prev=jj, jj=jj->next);
+  if (prev)
+    prev->next = j->next;
+  else
+    Jobs = j->next;
+  if (!j->has_condition)
+    free(j);
+  UNLOCK_JOBS;
 }
 
 
-//caller must hold Jobs lock
-static void DoCompletionAst_lock(int jobid, int status, char *msg, int removeJob){
+static void DoCompletionAst(Job *j, int status, char *msg, int removeJob){
+  int has_condition = j->has_condition;
+  if (j->lock) pthread_rwlock_wrlock(j->lock);
+  if (j->retstatus)
+    *j->retstatus = status;
+  if (j->lock) pthread_rwlock_unlock(j->lock);
+  if (j->ast)
+    (*j->ast) (j->astparam, msg);
+  if (removeJob && j->jobid != MonJob)
+    RemoveJob(j);
+  /**** If job has a condition, RemoveJob will not remove it. ***/
+  if (has_condition)
+    CONDITION_SET(j);
+}
+
+static void DoCompletionAstId(int jobid, int status, char *msg, int removeJob){
   Job *j;
+  LOCK_JOBS;
   for (j=Jobs ; j && (j->jobid != jobid); j=j->next);
   if (!j) for (j=Jobs ; j && (j->jobid != MonJob); j=j->next);
-  if (j) {
-    int has_condition = j->has_condition;
-    if (j->retstatus)
-      *j->retstatus = status;
-    if (j->ast)
-      (*j->ast) (j->astparam, msg);
-    if (removeJob && j->jobid != MonJob)
-      RemoveJob_lock(j);
-    /**** If job has a condition, RemoveJob will not remove it. ***/
-    if (has_condition)
-      CONDITION_SIGNAL(j);
-  }
+  UNLOCK_JOBS;
+  if (j) DoCompletionAst(j, status, msg, removeJob);
 }
 
 void ServerWait(int jobid)
@@ -282,7 +282,7 @@ void ServerWait(int jobid)
   for (j = Jobs; j && (j->jobid != jobid); j = j->next) ;
   UNLOCK_JOBS;
   if (j && j->has_condition) {
-    CONDITION_WAIT_TRUE(j);
+    CONDITION_WAIT_SET(j);
     CONDITION_DESTROY(j);
     free(j);
   }
@@ -302,11 +302,12 @@ static void DoBeforeAst(int jobid)
     UNLOCK_JOBS;
 }
 
-static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astparam,
+static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void (*ast) (), void *astparam,
 		       void (*before_ast) (), int conid)
 {
   Job *j = (Job *) malloc(sizeof(Job));
   j->retstatus = retstatus;
+  j->lock = lock;
   j->ast = ast;
   j->astparam = astparam;
   j->before_ast = before_ast;
@@ -319,7 +320,7 @@ static int RegisterJob(int *msgid, int *retstatus, void (*ast) (), void *astpara
     *msgid = j->jobid;
   } else {
     j->has_condition = B_FALSE;
-    j->done = B_TRUE;
+    j->value = B_TRUE;
   }
   j->next = Jobs;
   Jobs = j;
@@ -333,18 +334,20 @@ static void CleanupJob(int status, int jobid)
   int conid;
   LOCK_JOBS;
   for (j=Jobs; j && (j->jobid != jobid) ; j=j->next);
+  UNLOCK_JOBS;
   if (j) {
     conid = j->conid;
     DisconnectFromMds(conid);
-    DoCompletionAst_lock(j->jobid, status, 0, 1);
+    DoCompletionAst(j, status, 0, 1);
     for (;;) {
+      LOCK_JOBS;
       for (j=Jobs ; j && (j->conid != conid) ; j=j->next);
+      UNLOCK_JOBS;
       if (j)
-        DoCompletionAst_lock(j->jobid, status, 0, 1);
+        DoCompletionAst(j, status, 0, 1);
       else break;
     }
   }
-  UNLOCK_JOBS;
 }
 
 static SOCKET CreatePort(short starting_port, short *port_out)
@@ -398,7 +401,7 @@ static int start_receiver(short *port_out)
     if (sock == INVALID_SOCKET)
       return C_ERROR;
   }
-  CONDITION_START_THREAD(ReceiverRunning, thread, *16, ReceiverThread, &sock);
+  CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, &sock);
   *port_out = port;
   return STATUS_NOT_OK;
 }
@@ -447,7 +450,7 @@ static void ReceiverThread(void *sockptr){
   pthread_cleanup_push(ReceiverExit, NULL);
   fd_set readfds, fdactive;
   last_client_addr = 0;
-  CONDITION_SIGNAL(&ReceiverRunning);
+  CONDITION_SET(&ReceiverRunning);
   FD_ZERO(&fdactive);
   FD_SET(sock, &fdactive);
   for (rep = 0; rep < 10; rep++) {
@@ -505,7 +508,7 @@ EXPORT int ServerDisconnect(char *server_in)
   int status = 0;
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
-  unsigned int addr;
+  int addr;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   short port = 0;
@@ -514,14 +517,14 @@ EXPORT int ServerDisconnect(char *server_in)
     printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
-    if (addr != 0) {
+    if (addr) {
       if (atoi(portpart) == 0) {
 	struct servent *sp = getservbyname(portpart, "tcp");
-	if (sp != NULL)
+	if (sp)
 	  port = sp->s_port;
 	else {
 	  char *portnam = getenv(portpart);
-	  portnam = (portnam == NULL) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
+	  portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
 	  port = htons((short)atoi(portnam));
 	}
       } else
@@ -549,7 +552,7 @@ EXPORT int ServerConnect(char *server_in)
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
   int found = 0;
-  unsigned int addr;
+  int addr;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };
   short port = 0;
@@ -558,14 +561,14 @@ EXPORT int ServerConnect(char *server_in)
     printf("Server '%s' unknown\n", server_in);
   } else {
     addr = GetHostAddr(hostpart);
-    if (addr != 0) {
+    if (addr) {
       if (atoi(portpart) == 0) {
 	struct servent *sp = getservbyname(portpart, "tcp");
-	if (sp != NULL)
+	if (sp)
 	  port = sp->s_port;
 	else {
 	  char *portnam = getenv(portpart);
-	  portnam = (portnam == NULL) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
+	  portnam = (!portnam) ? ((hostpart[0] == '_') ? "8200" : "8000") : portnam;
 	  port = htons((short)atoi(portnam));
 	}
       } else
@@ -627,9 +630,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   }
   switch (replyType) {
   case SrvJobFINISHED:
-    LOCK_JOBS;
-    DoCompletionAst_lock(jobid, status, msg, 1);
-    UNLOCK_JOBS;
+    DoCompletionAstId(jobid, status, msg, 1);
     break;
   case SrvJobSTARTING:
     DoBeforeAst(jobid);
@@ -672,39 +673,26 @@ static void RemoveClient(Client * c, fd_set * fdactive)
       DisconnectFromMds(c->conid);
     free(c);
   }
-  LOCK_JOBS;
   Job *j;
   for (;;) {
+    LOCK_JOBS;
     for (j = Jobs; j && (j->conid != conid) ; j = j->next);
+    UNLOCK_JOBS;
     if (j) {
-      DoCompletionAst_lock(j->jobid, ServerPATH_DOWN, NULL, 1);
-      RemoveJob_lock(j);
+      DoCompletionAst(j, ServerPATH_DOWN, NULL, 1);
+      RemoveJob(j);
     } else break;
   }
-  UNLOCK_JOBS;
 }
 
-static unsigned int GetHostAddr(char *host)
+static int GetHostAddr(char *host)
 {
-  unsigned int addr = 0;
-  struct hostent *hp = NULL;
-  hp = gethostbyname(host);
-#ifdef _WIN32
-  if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED)) {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-    hp = gethostbyname(host);
-  }
-#endif
-  if (hp == NULL) {
-    addr = inet_addr(host);
-    if (addr != 0xffffffff)
-      hp = gethostbyaddr((void *)&addr, (int)sizeof(addr), AF_INET);
-  }
-  addr = (hp == NULL) ? 0 : *(unsigned int *)hp->h_addr_list[0];
-  return addr == 0xffffffff ? 0 : addr;
+  InitializeSockets();
+  int addr = 0;
+  GETHOSTBYNAMEORADDR(host,addr);
+  if (hp) addr = *(int *)hp->h_addr_list[0];
+  FREE_HP;
+  return addr == -1 ? 0 : addr;
 }
 
 static void AddClient(unsigned int addr, short port, int conid)
@@ -727,7 +715,7 @@ static void AddClient(unsigned int addr, short port, int conid)
 
 static void AcceptClient(SOCKET reply_sock, struct sockaddr_in *sin, fd_set * fdactive)
 {
-  unsigned int addr = *(unsigned int *)&sin->sin_addr;
+  int addr = *(int *)&sin->sin_addr;
   Client *c;
   LOCK_CLIENTS;
   for (c = Clients; c && (c->addr != addr || c->reply_sock != INVALID_SOCKET); c = c->next) ;

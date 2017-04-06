@@ -35,14 +35,22 @@ NORMAL() {
 spacedelim() {
     if [ ! -z "$1" ]
     then
-	IFS=',' read -ra ARR <<< "$1"
-	ans="${ARR[*]}"
+        if [ "$1" = "skip" ]
+        then
+            ans=""
+        else
+            IFS=',' read -ra ARR <<< "$1"
+            ans="${ARR[*]}"
+        fi
     fi
     echo $ans
 }
 rundocker(){
     images=(${DOCKERIMAGE})
-    arches=($(spacedelim ${ARCH}))
+    ARCH="$(spacedelim ${ARCH})"
+    arches=(${ARCH})
+    SANITIZE="$(spacedelim $SANITIZE)"
+    VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     idx=0
     if [ -z "$INTERACTIVE" ]
     then
@@ -67,6 +75,11 @@ rundocker(){
         # only build the deb's after both 32-bit and 64-bit builds are
         # complete. Likewise only publish the release once.
         #
+        if [ -z $FORWARD_PORT ]
+        then port_forwarding=
+        else port_forwarding="-p ${FORWARD_PORT}:${FORWARD_PORT}"
+             echo $port_forwarding
+        fi
         docker run -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
            -u $(id -u):$(id -g) \
            -h $DISTNAME \
@@ -91,6 +104,7 @@ rundocker(){
            -e "HOME=/workspace" \
            -v $(realpath ${SRCDIR}):/source \
            -v ${WORKSPACE}:/workspace \
+           $port_forwarding \
            $(volume "${RELEASEDIR}" /release) \
            $(volume "${PUBLISHDIR}" /publish) \
            $(volume "$KEYS" /sign_keys) \

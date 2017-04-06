@@ -23,11 +23,6 @@ class testing(object):
     tap_file = os.getenv(TEST_TAPFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.tap')
     xml_file = os.getenv(TEST_XMLFILE, os.path.splitext(os.path.basename(sys.argv[1]))[0]+'.xml')
 
-    def check_helgrind(self, module_name ):
-        return (not module_name.startswith('dcl')
-             or int(os.getenv('HELGRIND_DCL','0'))
-             or os.getenv('LOG_COMPILER',"").find('--tool=helgrind')<0)
-
     def check_unittest_version(self, module_name ):
         if module_name.startswith('thread'):
             import unittest
@@ -158,8 +153,6 @@ def check_arch(file_name):
     if not ts.check_unittest_version(module_name):
         ts.skip_test(module_name,
                      'Unfit unittest version < 2.7')
-    if not ts.check_helgrind(module_name):
-        ts.skip_test(module_name,'Set HELGRIND_DCL=1 env to enable test.')
 
 if __name__ == '__main__':
     if '--skip' in sys.argv:
