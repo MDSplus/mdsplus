@@ -189,7 +189,7 @@ public class NI6259AISetup extends DeviceSetup {
         setDeviceTitle("National Instruments 6259 ADC");
         setDeviceType("NI6259AI");
         setHeight(600);
-        setWidth(860);
+        setWidth(900);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(6, 1));
@@ -238,7 +238,7 @@ public class NI6259AISetup extends DeviceSetup {
 
         jPanel1.add(jPanel4);
 
-        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL" });
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Clock Mode: ");
         deviceChoice2.setOffsetNid(4);
@@ -259,7 +259,7 @@ public class NI6259AISetup extends DeviceSetup {
 
         jPanel1.add(jPanel5);
 
-        deviceChoice100.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice100.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL_PFI1", "EXTERNAL_RTSI1", "EXT_PFI1_R_RTSI1"});
         deviceChoice100.setLabelString("Trig. Mode:");
         deviceChoice100.setOffsetNid(175);
         jPanel6.add(deviceChoice100);

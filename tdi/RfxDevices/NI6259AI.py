@@ -2,6 +2,7 @@ from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p
 import os
+import sys, traceback
 
 class NI6259AI(Device):
     """NI PXI-6259 M-series multi functional data acquisition card"""
@@ -63,14 +64,19 @@ class NI6259AI(Device):
     AI_START_SELECT_RTSI0 = c_int(11)
     AI_START_SELECT_RTSI1 = c_int(12)
 
-    AI_START_SELECT = c_int(9)
-    AI_START_POLARITY = c_int(10)
+    #AI_START_SELECT = c_int(9)
+    #AI_START_POLARITY = c_int(10)
+    AI_START_SELECT = c_int(10)
+    AI_START_POLARITY = c_int(11)
+
     AI_START_POLARITY_RISING_EDGE = c_int(0)
 
     AI_REFERENCE_SELECT_PULSE  = c_int(0)
     AI_REFERENCE_SELECT_PFI1 = c_int(2)
-    AI_REFERENCE_SELECT = c_int(11)
-    AI_REFERENCE_POLARITY = c_int(12)
+    #AI_REFERENCE_SELECT = c_int(11)
+    #AI_REFERENCE_POLARITY = c_int(12)
+    AI_REFERENCE_SELECT = c_int(12)
+    AI_REFERENCE_POLARITY = c_int(13)
     AI_REFERENCE_POLARITY_RISING_EDGE = c_int(0)
 
     PXI6259_AI_START_TRIGGER = c_int(3)
@@ -95,7 +101,7 @@ class NI6259AI(Device):
 
     def restoreInfo(self):
         if NI6259AI.niLib is None:
-            NI6259AI.niLib = CDLL("libni6259.so")
+            NI6259AI.niLib = CDLL("libpxi6259.so")
         if NI6259AI.niInterfaceLib is None:
             NI6259AI.niInterfaceLib = CDLL("libNiInterface.so")
 
@@ -187,7 +193,7 @@ class NI6259AI(Device):
             coeff = coeff_array();
 
 
-            #self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
+            #NI6259AI.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
 
             for chan in range(len(self.chanMap)):
                 try:
@@ -203,7 +209,7 @@ class NI6259AI(Device):
                     gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                     self.device.gainDict[gain]
 
-                    #status = self.niInterfaceLib.pxi6259_getCalibrationParams(currFd, gain_code, coeff)
+                    #status = NI6259AI.niInterfaceLib.pxi6259_getCalibrationParams(currFd, gain_code, coeff)
                     status = 0
                     if( status < 0 ):
                         Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536'%(str(self.chanMap[chan])) )
@@ -230,7 +236,7 @@ class NI6259AI(Device):
                 print("PXI 6259 CONTINUOUS ", numSamples)
 
             else:
-                self.niInterfaceLib.setStopAcqFlag(self.stopAcq);
+                NI6259AI.niInterfaceLib.setStopAcqFlag(self.stopAcq);
 
                 try:
                     numSamples = self.device.end_idx.data() - self.device.start_idx.data()
@@ -346,44 +352,43 @@ class NI6259AI(Device):
         try:
             trigMode = self.trig_mode.data()
             print(trigMode)
-            if(trigMode == 'EXTERNAL_PFI1' or  trigMode == 'EXTERNAL_RTSI1' ):
+            if(trigMode == 'EXTERNAL_PFI1' or  trigMode == 'EXTERNAL_RTSI1' or trigMode == 'EXT_PFI1_R_RTSI1'):
                 #print "AI_START_SELECT ", self.AI_START_SELECT
                 #print "aiConf ", aiConf
                 #print "AI_START_SELECT_PFI1 ", self.AI_START_SELECT_PFI1
-                #print "niLib ", niLib
+                #print "niLib ", NI6259AI.niLib
                 #print "AI_START_POLARITY ", self.AI_START_POLARITY
                 #print "AI_START_POLARITY_RISING_EDGE ", self.AI_START_POLARITY_RISING_EDGE
 
                 if(acqMode == 'TRANSIENT REC.'):
                     """
-                    status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PULSE)
+                    status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PULSE)
+                    print "status ", status
                     if( status == 0 ):
-                        status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_REFERENCE_SELECT, self.AI_REFERENCE_SELECT_PFI1)
+                        status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_REFERENCE_SELECT, self.AI_REFERENCE_SELECT_PFI1)
+                        print "status ", status
                     if( status == 0 ):
-                        status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_REFERENCE_POLARITY, self.AI_REFERENCE_POLARITY_RISING_EDGE)
+                        status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_REFERENCE_POLARITY, self.AI_REFERENCE_POLARITY_RISING_EDGE)
+                        print "status ", status
                     if( status != 0 ):
+                        print "status ", status
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
                     """
-                    # Sostituzione temporanea per gestire acquisizione a IPP trigger preso dal 6368
-                    # status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
-
-                    if( trigMode == 'EXTERNAL_PFI1' ):
-                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+                    if( trigMode == 'EXTERNAL_PFI1' or trigMode == 'EXT_PFI1_R_RTSI1' ):
+                        status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
                     else:
-                         print("1 OK AI_START_SELECT_RTSI1")
-                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_RTSI1)
-
+                        print("1 OK AI_START_SELECT_RTSI1")
+                        status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_RTSI1)
                     if( status == 0 ):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
+                        print "status ", status
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        raise mdsExceptions.TclFAILED_ESSENTIAL
+                        raise mdsExceptions.TclFAILED_ESSENTIAL                    
+                    
                 else:
-                    # Sostituzione etmporanea per gestire acquisizione a IPP trigger preso dal 6368
-                    # status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
-
-                    if( trigMode == 'EXTERNAL_PFI1' ):
+                    if( trigMode == 'EXT_PFI1_R_RTSI1' ):
                          status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
                     else:
                          print("2 OK AI_START_SELECT_RTSI1")
@@ -396,12 +401,11 @@ class NI6259AI(Device):
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-                if( trigMode == 'EXTERNAL_PFI1' ):
+                if( trigMode == 'EXT_PFI1_R_RTSI1' ):
                     status = NI6259AI.niLib.pxi6259_export_ai_signal( aiConf, self.PXI6259_AI_START_TRIGGER,  self.PXI6259_RTSI1 )
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot route PFI1 signal to RTSI1')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
-
             else:
                 #print "AI_START_SELECT ", self.AI_START_SELECT
                 #print "aiConf ", aiConf
@@ -422,6 +426,7 @@ class NI6259AI(Device):
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
         except:
+            traceback.print_exc(file=sys.stdout)
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid triger mode definition')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -598,7 +603,7 @@ class NI6259AI(Device):
         """
         self.saveInfo()
         print("===============================================")
-        return
+        return 1
 
 ##########StartStore
     def start_store(self):
@@ -635,7 +640,7 @@ class NI6259AI(Device):
             self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
-        return
+        return 1
 
     def stop_store(self):
       print("PXI 6259 stop_store")
@@ -643,7 +648,7 @@ class NI6259AI(Device):
       if self.worker.isAlive():
           print("PXI 6259 stop_worker")
           self.worker.stop()
-      return
+      return 1
 
     def readConfig(self):
       self.restoreInfo()
@@ -652,11 +657,11 @@ class NI6259AI(Device):
       except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot read board configuration')
           raise mdsExceptions.TclFAILED_ESSENTIAL
-      return
+      return 1
 
     def trigger(self):
-      global niLib
-      global niInterfaceLib
+      #global niLib
+      #global niInterfaceLib
       self.restoreInfo()
       try:
             status = NI6259AI.niLib.pxi6259_start_ai(c_int(self.fd))
@@ -666,4 +671,4 @@ class NI6259AI(Device):
       except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Exception Cannot Start Acquisition')
           raise mdsExceptions.TclFAILED_ESSENTIAL
-      return
+      return 1
