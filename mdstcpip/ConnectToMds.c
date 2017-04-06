@@ -51,7 +51,7 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 /// Execute login inside server using given connection
 ///
 /// \param id of connection (on client) to be used
-/// \return status o login into server 1 if success, -1 if not authorized or error
+/// \return status o login into server 1 if success, MDSplusERROR if not authorized or error
 /// occurred
 ///
 static int DoLogin(int id)
@@ -88,7 +88,8 @@ static int DoLogin(int id)
     if (m)
       free(m);
   } else {
-    perror("Error connecting to server");
+    fprintf(stderr,"Error connecting to server (DoLogin)\n");
+    fflush(stderr);
     return MDSplusERROR;
   }
   return status;
@@ -147,12 +148,9 @@ int ConnectToMds(char *hostin)
     io = GetConnectionIo(id);
     if (io && io->connect) {
       SetConnectionCompression(id, GetCompressionLevel());
-      if (io->connect(id, protocol, host) == -1) {
-	DisconnectConnection(id);
-	id = -1;
-      } else if (DoLogin(id) == -1) {
-	DisconnectConnection(id);
-	id = -1;
+      if (io->connect(id, protocol, host)<0 || IS_NOT_OK(DoLogin(id))) {
+        DisconnectConnection(id);
+        id = -1;
       }
     }
   }

@@ -1,14 +1,16 @@
 #!/bin/bash
 test=$(basename $4)
 test=${test:0:-11}
-if [ "$test"=="dcl" ]; then
+echo $test
+if [ "$test" == "dcl" ]; then
   if [ -z $ACTION_SERVER ]
   then
     if [ -z $ACTION_PORT ]
     then
       ACTION_PORT=8800
     fi
-    wine mdsip -s -p ${ACTION_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts) &>server_0.log &
+    cmd="wine mdsip -s -p ${ACTION_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts)"
+    echo "$cmd";$cmd  &>server_0.log &
     export ACTION_SERVER=localhost:${ACTION_PORT}
   fi
   if [ -z $ACTION_MONITOR ]
@@ -17,13 +19,14 @@ if [ "$test"=="dcl" ]; then
     then
       MONITOR_PORT=4400
     fi
-    wine mdsip -s -p ${MONITOR_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts) &>monitor_0.log &
+    cmd="wine mdsip -s -p ${MONITOR_PORT} -h $(winepath -w /source/mdsobjects/python/tests/mdsip.hosts)"
+    echo "$cmd";$cmd &>monitor_0.log &
     export ACTION_MONITOR=localhost:${MONITOR_PORT}
   fi
 fi
 wine $1 $2 $(winepath -w $3) $(winepath -w $4)
 status=$?
-if [ "$test"=="dcl" ]; then
-  :&&kill -s 9 %
+if [ "$test" == "dcl" ]; then
+  :&&killall -s 9 mdsip.exe
 fi
 exit $status
