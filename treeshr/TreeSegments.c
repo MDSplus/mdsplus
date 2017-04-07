@@ -300,9 +300,13 @@ return STATUS; \
 
 #define UPDATE_FINISH status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
 
-#define BEGIN_FINISH status = BeginFinish(&local_nci, info_ptr, &segment_index, &segment_header, nidx, &attributes, &attributes_offset, add_length, update_attributes);
-inline static int BeginFinish(NCI *nci_ptr,TREE_INFO *info_ptr, SEGMENT_INDEX *seg_idx_ptr, SEGMENT_HEADER *seg_head_ptr, int nidx,
-                              EXTENDED_ATTRIBUTES *attr_ptr, int64_t *attr_off_ptr, int add_length, int update_attr){
+#define PASS_GLOBAL &local_nci, info_ptr, &segment_index, &segment_header, nidx
+#define PASS_EXTENDED_NCI PASS_GLOBAL, &attributes, &attributes_offset, update_attributes
+#define TAKE_GLOBAL NCI *nci_ptr,TREE_INFO *info_ptr, SEGMENT_INDEX *seg_idx_ptr, SEGMENT_HEADER *seg_head_ptr, int nidx
+#define TAKE_EXTENDED_NCI TAKE_GLOBAL, EXTENDED_ATTRIBUTES *attr_ptr, int64_t *attr_off_ptr, int update_attr
+
+#define BEGIN_FINISH status = BeginFinish(PASS_EXTENDED_NCI, add_length);
+inline static int BeginFinish(TAKE_EXTENDED_NCI, int add_length){
   int status = PutSegmentIndex(info_ptr, seg_idx_ptr, &seg_head_ptr->index_offset);
   if STATUS_NOT_OK return status;
   status = PutSegmentHeader(info_ptr, seg_head_ptr, &attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY]);
