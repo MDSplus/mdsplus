@@ -255,7 +255,7 @@ if (!node_ptr) \
 
 #define SEGMENTREMOTE \
 if (dblist->remote) { \
-  fprintf(stderr,"Segmented records are not supported using thick client mode\n"); \
+  printf("Segmented records are not supported using thick client mode\n"); \
   return TreeFAILURE; \
 }
 //"
@@ -264,7 +264,7 @@ nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx); \
 if (!info_ptr) \
   return TreeNNF;
 
-#define OPEN_DATAFILE_WRITE(CHECKINPUT) \
+#define OPEN_DATAFILE_WRITE0() \
 OPEN_TREE_READ; \
 if (dblist->open_readonly) \
   return TreeREADONLY; \
@@ -285,8 +285,9 @@ if STATUS_NOT_OK return status; \
 if (STATUS_OK && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT))) \
   RETURN(UNLOCK_NCI,TreeNOWRITESHOT); \
 if (STATUS_OK && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL))) \
-  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL); \
-CHECKINPUT; \
+  RETURN(UNLOCK_NCI,TreeNOWRITEMODEL);
+
+#define OPEN_DATAFILE_WRITE1() \
 if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1){ \
   status = TreeOpenDatafileW(info_ptr, &stv, 0); \
   if STATUS_NOT_OK \
@@ -301,7 +302,7 @@ return STATUS; \
 
 #define UPDATE_FINISH status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
 
-#define begin_finish \
+#define BEGIN_FINISH \
 status = PutSegmentIndex(info_ptr, &segment_index, &segment_header.index_offset); \
 status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]); \
 if (update_attributes) { \
@@ -315,8 +316,6 @@ else \
   local_nci.length = (2 ^ 31); \
 local_nci.flags=local_nci.flags | NciM_SEGMENTED; \
 TreePutNci(info_ptr, nidx, &local_nci, 0);
-return status;
-}
 
 #define BEGIN_LOCAL_NCI \
 local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK; \
@@ -325,6 +324,7 @@ local_nci.class = CLASS_R; \
 local_nci.time_inserted = TreeTimeInserted(); \
 SAVED_UIC \
 local_nci.owner_identifier = saved_uic;
+
 /* See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
  * index. If not, make an empty index and flag that a new index needs to be written.
  */
@@ -391,96 +391,94 @@ IF_NO_SEGMENT_INDEX { \
   segment_index.first_idx = 0; \
 }
 
-inline static int checkSegmentInfo(UNLOCK) {
-SEGMENT_INFO *sinfo;
-if (idx < 0 || idx > segment_header.idx)
-  RETURN(UNLOCK,TreeFAILURE);
-int64_t index_offset;
-for (index_offset = segment_header.index_offset;
-     STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0;
-     index_offset = segment_index.previous_offset)
-  status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index);
-if (STATUS_NOT_OK || (idx < segment_index.first_idx))
-  RETURN(UNLOCK,TreeFAILURE);
+#define CHECK_SINFO(UNLOCK) \
+SEGMENT_INFO *sinfo; \
+if (idx < 0 || idx > segment_header.idx) \
+  RETURN(UNLOCK,TreeFAILURE); \
+int64_t index_offset; \
+for (index_offset = segment_header.index_offset; \
+     STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0; \
+     index_offset = segment_index.previous_offset) \
+  status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index); \
+if (STATUS_NOT_OK || (idx < segment_index.first_idx)) \
+  RETURN(UNLOCK,TreeFAILURE); \
 sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
 
-#define BEGIN_SINFO(CHECKCOMPRESS)
-SEGMENT_INFO *sinfo;
-int add_length = 0;
-if (idx == -1) {
-  segment_header.idx++;
-  idx = segment_header.idx;
-  add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0;
-} else if (idx < -1 || idx > segment_header.idx)
-  RETURN(UNLOCK_NCI,TreeBUFFEROVF)
-else {
-  /* TODO: Add support for updating an existing segment. add_length=new_length-old_length. */
-  /* Potentially use same storage area if old array is same size. */
-  printf("this is not yet supported\n");
-  RETURN(UNLOCK_NCI,TreeFAILURE);
-}
-segment_header.data_offset = -1;
-segment_header.dim_offset = -1;
-segment_header.dtype = initialValue->dtype;
-segment_header.dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0;
-segment_header.length = (initialValue->class == CLASS_A) ? initialValue->length : 0;
-int previous_length = -1;
-if (segment_header.idx > 0 && segment_header.length != 0) {
-  int d;
-  previous_length = segment_header.length;
-  for (d = 0; d < segment_header.dimct; d++)
-  previous_length *= segment_header.dims[d];
-} else previous_length = -1;
-if (initialValue->class == CLASS_A) {
-  if (initialValue->dimct == 1)
-    segment_header.dims[0] = initialValue->arsize / initialValue->length;
-  else
-    memcpy(segment_header.dims, a_coeff->m, initialValue->dimct * sizeof(int));
-}
-segment_header.next_row = rows_filled;
-/* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */
-if (((segment_header.idx % SEGMENTS_PER_INDEX) > 0) &&
-    (previous_length == add_length) && compress) {
-  int deleted;
-  EMPTYXD(xd_data);
-  EMPTYXD(xd_dim);
-  sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1];
-  TreeUnLockNci(info_ptr, 0, nidx);
-  status = _TreeGetSegment(dbid, nid, idx - 1, &xd_data, &xd_dim);
-  TreeLockNci(info_ptr, 0, nidx, &deleted);
-  if STATUS_OK
-    CHECKCOMPRESS;
-  MdsFree1Dx(&xd_data, 0);
-  MdsFree1Dx(&xd_dim, 0);
-}
-if (idx >= segment_index.first_idx + SEGMENTS_PER_INDEX) {
-  memset(&segment_index, -1, sizeof(segment_index));
-  segment_index.previous_offset = segment_header.index_offset;
-  segment_header.index_offset = -1;
-    segment_index.first_idx = idx;
-  }
-  sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+#define BEGIN_SINFO(CHECKCOMPRESS) \
+SEGMENT_INFO *sinfo; \
+int add_length = 0; \
+if (idx == -1) { \
+  segment_header.idx++; \
+  idx = segment_header.idx; \
+  add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0; \
+} else if (idx < -1 || idx > segment_header.idx) \
+  RETURN(UNLOCK_NCI,TreeBUFFEROVF) \
+else { \
+  /* TODO: Add support for updating an existing segment. add_length=new_length-old_length. */ \
+  /* Potentially use same storage area if old array is same size. */ \
+  printf("this is not yet supported\n"); \
+  RETURN(UNLOCK_NCI,TreeFAILURE); \
+} \
+segment_header.data_offset = -1; \
+segment_header.dim_offset = -1; \
+segment_header.dtype = initialValue->dtype; \
+segment_header.dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0; \
+segment_header.length = (initialValue->class == CLASS_A) ? initialValue->length : 0; \
+int previous_length = -1; \
+if (segment_header.idx > 0 && segment_header.length != 0) { \
+  int d; \
+  previous_length = segment_header.length; \
+  for (d = 0; d < segment_header.dimct; d++) \
+  previous_length *= segment_header.dims[d]; \
+} else previous_length = -1; \
+if (initialValue->class == CLASS_A) { \
+  if (initialValue->dimct == 1) \
+    segment_header.dims[0] = initialValue->arsize / initialValue->length; \
+  else \
+    memcpy(segment_header.dims, a_coeff->m, initialValue->dimct * sizeof(int)); \
+} \
+segment_header.next_row = rows_filled; \
+/* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */ \
+if (((segment_header.idx % SEGMENTS_PER_INDEX) > 0) && \
+    (previous_length == add_length) && compress) { \
+  int deleted; \
+  EMPTYXD(xd_data); \
+  EMPTYXD(xd_dim); \
+  sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1]; \
+  TreeUnLockNci(info_ptr, 0, nidx); \
+  status = _TreeGetSegment(dbid, nid, idx - 1, &xd_data, &xd_dim); \
+  TreeLockNci(info_ptr, 0, nidx, &deleted); \
+  if STATUS_OK \
+    CHECKCOMPRESS; \
+  MdsFree1Dx(&xd_data, 0); \
+  MdsFree1Dx(&xd_dim, 0); \
+} \
+if (idx >= segment_index.first_idx + SEGMENTS_PER_INDEX) { \
+  memset(&segment_index, -1, sizeof(segment_index)); \
+  segment_index.previous_offset = segment_header.index_offset; \
+  segment_header.index_offset = -1; \
+  segment_index.first_idx = idx; \
+} \
+sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+
+#define PUTDATA \
+sinfo->data_offset = segment_header.data_offset; \
+sinfo->rows = segment_header.dims[segment_header.dimct - 1];
+
+#define PUTDATA_INITVALUE \
+if (initialValue->dtype == DTYPE_OPAQUE) { \
+  int length; \
+  status = TreePutDsc(info_ptr, nid, (struct descriptor *)initialValue, &sinfo->data_offset, &length, compress); \
+  segment_header.data_offset = sinfo->data_offset; \
+  add_length = length; \
+  sinfo->rows = length | 0x80000000; \
+} else \
+  status = PutInitialValue(info_ptr, segment_header.dims, initialValue, &segment_header.data_offset); \
+if (initialValue->dtype != DTYPE_OPAQUE) { \
+  sinfo->data_offset = segment_header.data_offset; \
+  sinfo->rows = segment_header.dims[segment_header.dimct - 1]; \
 }
 
-void putData(SEGMENT_INFO *sinfo, SEGMENT_HEADER segment_header){
-  sinfo->data_offset = segment_header.data_offset;
-  sinfo->rows = segment_header.dims[segment_header.dimct - 1];
-}
-
-int putDataInitValue(SEGMENT_INFO *sinfo, ) {
-  if (initialValue->dtype == DTYPE_OPAQUE) {
-    int length;
-    status = TreePutDsc(info_ptr, nid, (struct descriptor *)initialValue, &sinfo->data_offset, &length, compress);
-    segment_header.data_offset = sinfo->data_offset;
-    add_length = length;
-    sinfo->rows = length | 0x80000000;
-  } else
-    status = PutInitialValue(info_ptr, segment_header.dims, initialValue, &segment_header.data_offset);
-  if (initialValue->dtype != DTYPE_OPAQUE) {
-    sinfo->data_offset = segment_header.data_offset;
-    sinfo->rows = segment_header.dims[segment_header.dimct - 1];
-  }
-}
 
 #define PUTLIMITBYDSC(limit,sinfo_limit,sinfo_limit_offset,sinfo_limit_length) \
 for (dsc = limit; dsc && dsc->pointer && dsc->dtype == DTYPE_DSC; \
@@ -576,8 +574,10 @@ if (initialValue == NULL || \
     (initialValue->class == CLASS_A && (initialValue->dimct > 0 || initialValue->dimct <= 8))) ) \
   return TreeINVDTPUSG;
 
-#define WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,PUTDIM,FINISH) \
-OPEN_DATAFILE_WRITE(CHECKINPUT); \
+#define WRITESEGMENT0() OPEN_DATAFILE_WRITE0();
+
+#define WRITESEGMENT1(SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,PUTDIM,FINISH)\
+OPEN_DATAFILE_WRITE1();\
 COMPRESS; \
 SETUP_LOCAL_NCI; \
 SETUP_EXTENDED_NCI; \
@@ -588,23 +588,6 @@ PUTDATA; \
 PUTDIM; \
 FINISH; \
 RETURN(UNLOCK_NCI,status);
-
-#define PUTSEG_CHECKDATA \
-DESCRIPTOR_A(data_a, 0, 0, 0, 0); \
-while (data && data->dtype == DTYPE_DSC) \
-  data = (struct descriptor_a *)data->pointer; \
-if (data->class == CLASS_S) { \
-  data_a.pointer = data->pointer; \
-  data_a.length = data->length; \
-  data_a.class = CLASS_A; \
-  data_a.dtype = data->dtype; \
-  data_a.arsize = data->length; \
-  data_a.dimct = 1; \
-  data = (struct descriptor_a *)&data_a; \
-} \
-A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data; \
-if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8) \
-  return TreeINVDTPUSG;
 
 #define PUTSEG_PUTDATA \
 ALLOCATE_BUFFER(bytes_to_insert,buffer) \
@@ -749,8 +732,9 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
                               struct descriptor *dimension,
                               struct descriptor_a *initialValue, int idx, int rows_filled){
 //WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,FINISH)
-  WRITESEGMENT(BEGIN_CHECKINPUT,
-               BEGIN_LOCAL_NCI,
+  WRITESEGMENT0();
+  BEGIN_CHECKINPUT;
+  WRITESEGMENT1(BEGIN_LOCAL_NCI,
                BEGIN_EXTENDED_NCI,
                BEGIN_SEGMENT_HEADER,
                BEGIN_SEGMENT_INDEX,
@@ -764,8 +748,9 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
                                          struct descriptor_a *initialValue, int idx,
                                          int rows_filled){
 //WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,PUTDIM,FINISH)
-  WRITESEGMENT(BEGIN_CHECKINPUT,
-               BEGIN_LOCAL_NCI,
+  WRITESEGMENT0();
+  BEGIN_CHECKINPUT;
+  WRITESEGMENT1(BEGIN_LOCAL_NCI,
                BEGIN_EXTENDED_NCI,
                BEGIN_SEGMENT_HEADER,
                BEGIN_SEGMENT_INDEX,
@@ -779,8 +764,8 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
                        struct descriptor *dimension, int idx)
 {
 //WRITESEGMENT(CHECKINPUT,SETUP_LOCAL_NCI,SETUP_EXTENDED_NCI,SETUP_SEGMENT_HEADER,SETUP_SEGMENT_INDEX,SETUP_SINFO,PUTDATA,FINISH)
-  WRITESEGMENT(,
-               ,
+  WRITESEGMENT0();
+  WRITESEGMENT1(,
                CHECK_EXTENDED_NCI(UNLOCK_NCI),
                CHECK_SEGMENT_HEADER(UNLOCK_NCI),
                CHECK_SEGMENT_INDEX(UNLOCK_NCI),
@@ -792,7 +777,23 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
 
 int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data)
 {
-  OPEN_DATAFILE_WRITE(PUTSEG_CHECKDATA);
+  OPEN_DATAFILE_WRITE0();
+  DESCRIPTOR_A(data_a, 0, 0, 0, 0);
+  while (data && data->dtype == DTYPE_DSC)
+    data = (struct descriptor_a *)data->pointer;
+  if (data->class == CLASS_S) {
+    data_a.pointer = data->pointer;
+    data_a.length = data->length;
+    data_a.class = CLASS_A;
+    data_a.dtype = data->dtype;
+    data_a.arsize = data->length;
+    data_a.dimct = 1;
+    data = (struct descriptor_a *)&data_a;
+  }
+  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data;
+  if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8)
+    return TreeINVDTPUSG;
+  OPEN_DATAFILE_WRITE1();
   CHECK_EXTENDED_NCI(UNLOCK_NCI);
   CHECK_SEGMENT_HEADER(UNLOCK_NCI);
   CHECK_DATA_DIMCT(UNLOCK_NCI);
@@ -997,7 +998,9 @@ static int getSegmentLimits(TREE_INFO * info_ptr, int nid,
 }
 
 int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *value){
-  OPEN_DATAFILE_WRITE(if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE)return TreeFAILURE;);
+  OPEN_DATAFILE_WRITE0();
+  if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE) return TreeFAILURE;
+  OPEN_DATAFILE_WRITE1();
   COMPRESS;
   int64_t attributes_offset = -1;
   int update_attributes = 0;
@@ -1639,25 +1642,24 @@ static int GetNamedAttributesIndex(TREE_INFO * info_ptr, int64_t offset, NAMED_A
   return status;
 }
 
-#define PUTTSEG_CHECKDATA \
-  DESCRIPTOR_A(data_a, 0, 0, 0, 0); \
-  while (data && data->dtype == DTYPE_DSC) \
-    data = (struct descriptor_a *)data->pointer; \
-  if (data && data->class == CLASS_S) { \
-    data_a.pointer = data->pointer; \
-    data_a.length = data->length; \
-    data_a.class = CLASS_A; \
-    data_a.dtype = data->dtype; \
-    data_a.arsize = data->length; \
-    data_a.dimct = 1; \
-    data = (struct descriptor_a *)&data_a; \
-  } \
-  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data; \
-  if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8) \
-    return TreeINVDTPUSG;
-
 int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct descriptor_a *data){
-  OPEN_DATAFILE_WRITE(PUTTSEG_CHECKDATA);
+  OPEN_DATAFILE_WRITE0();
+  DESCRIPTOR_A(data_a, 0, 0, 0, 0);
+  while (data && data->dtype == DTYPE_DSC)
+    data = (struct descriptor_a *)data->pointer;
+  if (data && data->class == CLASS_S) {
+    data_a.pointer = data->pointer;
+    data_a.length = data->length;
+    data_a.class = CLASS_A;
+    data_a.dtype = data->dtype;
+    data_a.arsize = data->length;
+    data_a.dimct = 1;
+    data = (struct descriptor_a *)&data_a;
+  }
+  A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) data;
+  if (data == NULL || data->class != CLASS_A || data->dimct < 1 || data->dimct > 8)
+    return TreeINVDTPUSG;
+  OPEN_DATAFILE_WRITE1();
   int startIdx;
   int rows_to_insert = -1;
   int bytes_per_row;
