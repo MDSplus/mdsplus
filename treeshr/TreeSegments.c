@@ -255,7 +255,7 @@ if (!node_ptr) \
 
 #define SEGMENTREMOTE \
 if (dblist->remote) { \
-  printf("Segmented records are not supported using thick client mode\n"); \
+  fprintf(stderr,"Segmented records are not supported using thick client mode\n"); \
   return TreeFAILURE; \
 }
 //"
@@ -301,7 +301,7 @@ return STATUS; \
 
 #define UPDATE_FINISH status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
 
-#define BEGIN_FINISH \
+#define begin_finish \
 status = PutSegmentIndex(info_ptr, &segment_index, &segment_header.index_offset); \
 status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]); \
 if (update_attributes) { \
@@ -315,6 +315,8 @@ else \
   local_nci.length = (2 ^ 31); \
 local_nci.flags=local_nci.flags | NciM_SEGMENTED; \
 TreePutNci(info_ptr, nidx, &local_nci, 0);
+return status;
+}
 
 #define BEGIN_LOCAL_NCI \
 local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK; \
@@ -323,7 +325,6 @@ local_nci.class = CLASS_R; \
 local_nci.time_inserted = TreeTimeInserted(); \
 SAVED_UIC \
 local_nci.owner_identifier = saved_uic;
-
 /* See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
  * index. If not, make an empty index and flag that a new index needs to be written.
  */
@@ -390,94 +391,96 @@ IF_NO_SEGMENT_INDEX { \
   segment_index.first_idx = 0; \
 }
 
-#define CHECK_SINFO(UNLOCK) \
-SEGMENT_INFO *sinfo; \
-if (idx < 0 || idx > segment_header.idx) \
-  RETURN(UNLOCK,TreeFAILURE); \
-int64_t index_offset; \
-for (index_offset = segment_header.index_offset; \
-     STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0; \
-     index_offset = segment_index.previous_offset) \
-  status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index); \
-if (STATUS_NOT_OK || (idx < segment_index.first_idx)) \
-  RETURN(UNLOCK,TreeFAILURE); \
+inline static int checkSegmentInfo(UNLOCK) {
+SEGMENT_INFO *sinfo;
+if (idx < 0 || idx > segment_header.idx)
+  RETURN(UNLOCK,TreeFAILURE);
+int64_t index_offset;
+for (index_offset = segment_header.index_offset;
+     STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0;
+     index_offset = segment_index.previous_offset)
+  status = GetSegmentIndex(info_ptr, segment_index.previous_offset, &segment_index);
+if (STATUS_NOT_OK || (idx < segment_index.first_idx))
+  RETURN(UNLOCK,TreeFAILURE);
 sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
 
-#define BEGIN_SINFO(CHECKCOMPRESS) \
-SEGMENT_INFO *sinfo; \
-int add_length = 0; \
-if (idx == -1) { \
-  segment_header.idx++; \
-  idx = segment_header.idx; \
-  add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0; \
-} else if (idx < -1 || idx > segment_header.idx) \
-  RETURN(UNLOCK_NCI,TreeBUFFEROVF) \
-else { \
-  /* TODO: Add support for updating an existing segment. add_length=new_length-old_length. */ \
-  /* Potentially use same storage area if old array is same size. */ \
-  printf("this is not yet supported\n"); \
-  RETURN(UNLOCK_NCI,TreeFAILURE); \
-} \
-segment_header.data_offset = -1; \
-segment_header.dim_offset = -1; \
-segment_header.dtype = initialValue->dtype; \
-segment_header.dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0; \
-segment_header.length = (initialValue->class == CLASS_A) ? initialValue->length : 0; \
-int previous_length = -1; \
-if (segment_header.idx > 0 && segment_header.length != 0) { \
-  int d; \
-  previous_length = segment_header.length; \
-  for (d = 0; d < segment_header.dimct; d++) \
-  previous_length *= segment_header.dims[d]; \
-} else previous_length = -1; \
-if (initialValue->class == CLASS_A) { \
-  if (initialValue->dimct == 1) \
-    segment_header.dims[0] = initialValue->arsize / initialValue->length; \
-  else \
-    memcpy(segment_header.dims, a_coeff->m, initialValue->dimct * sizeof(int)); \
-} \
-segment_header.next_row = rows_filled; \
-/* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */ \
-if (((segment_header.idx % SEGMENTS_PER_INDEX) > 0) && \
-    (previous_length == add_length) && compress) { \
-  int deleted; \
-  EMPTYXD(xd_data); \
-  EMPTYXD(xd_dim); \
-  sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1]; \
-  TreeUnLockNci(info_ptr, 0, nidx); \
-  status = _TreeGetSegment(dbid, nid, idx - 1, &xd_data, &xd_dim); \
-  TreeLockNci(info_ptr, 0, nidx, &deleted); \
-  if STATUS_OK \
-    CHECKCOMPRESS; \
-  MdsFree1Dx(&xd_data, 0); \
-  MdsFree1Dx(&xd_dim, 0); \
-} \
-if (idx >= segment_index.first_idx + SEGMENTS_PER_INDEX) { \
-  memset(&segment_index, -1, sizeof(segment_index)); \
-  segment_index.previous_offset = segment_header.index_offset; \
-  segment_header.index_offset = -1; \
-  segment_index.first_idx = idx; \
-} \
-sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
-
-#define PUTDATA \
-sinfo->data_offset = segment_header.data_offset; \
-sinfo->rows = segment_header.dims[segment_header.dimct - 1];
-
-#define PUTDATA_INITVALUE \
-if (initialValue->dtype == DTYPE_OPAQUE) { \
-  int length; \
-  status = TreePutDsc(info_ptr, nid, (struct descriptor *)initialValue, &sinfo->data_offset, &length, compress); \
-  segment_header.data_offset = sinfo->data_offset; \
-  add_length = length; \
-  sinfo->rows = length | 0x80000000; \
-} else \
-  status = PutInitialValue(info_ptr, segment_header.dims, initialValue, &segment_header.data_offset); \
-if (initialValue->dtype != DTYPE_OPAQUE) { \
-  sinfo->data_offset = segment_header.data_offset; \
-  sinfo->rows = segment_header.dims[segment_header.dimct - 1]; \
+#define BEGIN_SINFO(CHECKCOMPRESS)
+SEGMENT_INFO *sinfo;
+int add_length = 0;
+if (idx == -1) {
+  segment_header.idx++;
+  idx = segment_header.idx;
+  add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0;
+} else if (idx < -1 || idx > segment_header.idx)
+  RETURN(UNLOCK_NCI,TreeBUFFEROVF)
+else {
+  /* TODO: Add support for updating an existing segment. add_length=new_length-old_length. */
+  /* Potentially use same storage area if old array is same size. */
+  printf("this is not yet supported\n");
+  RETURN(UNLOCK_NCI,TreeFAILURE);
+}
+segment_header.data_offset = -1;
+segment_header.dim_offset = -1;
+segment_header.dtype = initialValue->dtype;
+segment_header.dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0;
+segment_header.length = (initialValue->class == CLASS_A) ? initialValue->length : 0;
+int previous_length = -1;
+if (segment_header.idx > 0 && segment_header.length != 0) {
+  int d;
+  previous_length = segment_header.length;
+  for (d = 0; d < segment_header.dimct; d++)
+  previous_length *= segment_header.dims[d];
+} else previous_length = -1;
+if (initialValue->class == CLASS_A) {
+  if (initialValue->dimct == 1)
+    segment_header.dims[0] = initialValue->arsize / initialValue->length;
+  else
+    memcpy(segment_header.dims, a_coeff->m, initialValue->dimct * sizeof(int));
+}
+segment_header.next_row = rows_filled;
+/* If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment. */
+if (((segment_header.idx % SEGMENTS_PER_INDEX) > 0) &&
+    (previous_length == add_length) && compress) {
+  int deleted;
+  EMPTYXD(xd_data);
+  EMPTYXD(xd_dim);
+  sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1];
+  TreeUnLockNci(info_ptr, 0, nidx);
+  status = _TreeGetSegment(dbid, nid, idx - 1, &xd_data, &xd_dim);
+  TreeLockNci(info_ptr, 0, nidx, &deleted);
+  if STATUS_OK
+    CHECKCOMPRESS;
+  MdsFree1Dx(&xd_data, 0);
+  MdsFree1Dx(&xd_dim, 0);
+}
+if (idx >= segment_index.first_idx + SEGMENTS_PER_INDEX) {
+  memset(&segment_index, -1, sizeof(segment_index));
+  segment_index.previous_offset = segment_header.index_offset;
+  segment_header.index_offset = -1;
+    segment_index.first_idx = idx;
+  }
+  sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
 }
 
+void putData(SEGMENT_INFO *sinfo, SEGMENT_HEADER segment_header){
+  sinfo->data_offset = segment_header.data_offset;
+  sinfo->rows = segment_header.dims[segment_header.dimct - 1];
+}
+
+int putDataInitValue(SEGMENT_INFO *sinfo, ) {
+  if (initialValue->dtype == DTYPE_OPAQUE) {
+    int length;
+    status = TreePutDsc(info_ptr, nid, (struct descriptor *)initialValue, &sinfo->data_offset, &length, compress);
+    segment_header.data_offset = sinfo->data_offset;
+    add_length = length;
+    sinfo->rows = length | 0x80000000;
+  } else
+    status = PutInitialValue(info_ptr, segment_header.dims, initialValue, &segment_header.data_offset);
+  if (initialValue->dtype != DTYPE_OPAQUE) {
+    sinfo->data_offset = segment_header.data_offset;
+    sinfo->rows = segment_header.dims[segment_header.dimct - 1];
+  }
+}
 
 #define PUTLIMITBYDSC(limit,sinfo_limit,sinfo_limit_offset,sinfo_limit_length) \
 for (dsc = limit; dsc && dsc->pointer && dsc->dtype == DTYPE_DSC; \
