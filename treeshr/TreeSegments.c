@@ -319,13 +319,16 @@ inline static int BeginFinish(NCI *nci_ptr,TREE_INFO *info_ptr, SEGMENT_INDEX *s
   TreePutNci(info_ptr, nidx, nci_ptr, 0);
   return status;
 }
-#define BEGIN_LOCAL_NCI \
-local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK; \
-local_nci.dtype = initialValue->dtype; \
-local_nci.class = CLASS_R; \
-local_nci.time_inserted = TreeTimeInserted(); \
-SAVED_UIC \
-local_nci.owner_identifier = saved_uic;
+
+#define BEGIN_LOCAL_NCI BeginLocalNci(&local_nci, initialValue)
+inline static void BeginLocalNci(NCI *nci_ptr, const struct descriptor_a *initialValue){
+  nci_ptr->flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
+  nci_ptr->dtype = initialValue->dtype;
+  nci_ptr->class = CLASS_R;
+  nci_ptr->time_inserted = TreeTimeInserted();
+  SAVED_UIC;
+  nci_ptr->owner_identifier = saved_uic;
+}
 
 /* See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
  * index. If not, make an empty index and flag that a new index needs to be written.
