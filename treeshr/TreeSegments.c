@@ -72,41 +72,41 @@ const int saved_uic = 0;
 #endif
 
 #ifdef WORDS_BIGENDIAN
-
-#define ALLOCATE_BUFFER(SIZE,BUFFER) \
-char *BUFFER = malloc(SIZE);
-#define _CHECK_ENDIAN_TRANFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT,COPY) {\
-if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH) { \
-  char *bptr; \
-  int i; \
-  switch (LENGTH) { \
-  case 2: \
-    for (i = 0, bptr = (char*)BUFFER_OUT; i < (int)SIZE / LENGTH; i++, bptr += sizeof(short)) \
-      LoadShort(((short *)BUFFER_IN)[i], bptr); \
-    break; \
-  case 4: \
-    for (i = 0, bptr = (char*)BUFFER_OUT; i < (int)SIZE / LENGTH; i++, bptr += sizeof(int)) \
-      LoadInt(((int *)BUFFER_IN)[i], bptr); \
-    break; \
-  case 8: \
-    for (i = 0, bptr = (char*)BUFFER_OUT; i < (int)SIZE / LENGTH; i++, bptr += sizeof(int64_t)) \
-      LoadQuad(((int64_t *) BUFFER_IN)[i], bptr); \
-    break; \
-  } \
-} else {COPY;}}
-#define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) _CHECK_ENDIAN_TRANFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT,memcpy(BUFFER_OUT,BUFFER_IN,SIZE))
-#define CHECK_ENDIAN(BUFFER,SIZE,LENGTH,DTYPE) _CHECK_ENDIAN_TRANFER(BUFFER,SIZE,LENGTH,DTYPE,BUFFER,)
-#define FREE_BUFFER(BUFFER) free(BUFFER);
-
+ #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER = malloc(SIZE);
+ inline static void endianTransfer(char* buffer_in,size_t size,int length,char* buffer_out) {
+    char *bptr;
+    int i;
+    switch (length) {
+    case 2:
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(short))
+        LoadShort(((short *)buffer_in)[i], bptr);
+      break;
+    case 4:
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(int))
+        LoadInt(((int *)buffer_in)[i], bptr);
+      break;
+    case 8:
+      for (i = 0, bptr = (char*)buffer_out; i < (int)size / length; i++, bptr += sizeof(int64_t))
+        LoadQuad(((int64_t *) buffer_in)[i], bptr);
+      break;
+    }
+ }
+ #define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE){
+  if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH)
+    endianTransfer((char*)BUFFER,SIZE,LENGTH,(char*)BUFFER);
+ }
+ #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT){
+  if (LENGTH > 1 && DTYPE+0 != DTYPE_T && DTYPE+0 != DTYPE_IDENT && DTYPE+0 != DTYPE_PATH)
+    endianTransfer((char*)BUFFER_IN,SIZE,LENGTH,BUFFER_OUT);
+  else memcpy(BUFFER_OUT,BUFFER_IN,SIZE);
+ }
+ #define FREE_BUFFER(BUFFER) free(BUFFER);
 #else
-
-#define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER;
-#define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE) {}
-#define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) BUFFER_OUT = (char*)BUFFER_IN;
-#define FREE_BUFFER(BUFFER) {}
-
+ #define ALLOCATE_BUFFER(SIZE,BUFFER) char *BUFFER;
+ #define CHECK_ENDIAN(POINTER,SIZE,LENGTH,DTYPE) {}
+ #define CHECK_ENDIAN_TRANSFER(BUFFER_IN,SIZE,LENGTH,DTYPE,BUFFER_OUT) BUFFER_OUT = (char*)BUFFER_IN;
+ #define FREE_BUFFER(BUFFER) {}
 #endif
-
 
 
 
@@ -599,7 +599,7 @@ RETURN(UNLOCK_NCI,status);
 
 #define PUTSEG_PUTDATA \
 ALLOCATE_BUFFER(bytes_to_insert,buffer) \
-CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,segment_header.length,data->dtype,buffer) \
+CHECK_ENDIAN_TRANSFER(data->pointer,bytes_to_insert,segment_header.length,data->dtype,buffer); \
 TreeLockDatafile(info_ptr, 0, offset); \
 MDS_IO_LSEEK(info_ptr->data_file->put, offset, SEEK_SET); \
 status = (MDS_IO_WRITE(info_ptr->data_file->put, buffer, bytes_to_insert) == (ssize_t)bytes_to_insert) ? TreeSUCCESS : TreeFAILURE; \
