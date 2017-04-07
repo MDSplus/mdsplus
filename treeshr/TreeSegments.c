@@ -17,13 +17,13 @@ extern void **TreeCtx();
 
 /*** Segmented Record Support  ************************
 
-Segmented records use a special extended attributes record stored at the file offset (nci rfa field)
+Segmented records use a special extended attr record stored at the file offset (nci rfa field)
 which describes the location of segment index and segment information metadata stored in the
 datafile. There is an EXTENDED_NCI bit in the nci flags2 field which indicates that the node contains
 extended nci information. The EXTENDED_NCI capability supports different types of "facilities" of which
 3 are currently supported: STANDARD_RECORD, SEGMENTED_RECORD, NAMED_ATTRIBUTES. The NAMED_ATTRIBUTE
 facility provides a means for adding extra node characteristics by defining name/value pairs. The use
-of the STANDARD_RECORD facility is currently only used if the node also has named attributes.
+of the STANDARD_RECORD facility is currently only used if the node also has named attr_ptr->
 
 When writing a segment in a node for the first time, an extended attribute record is stored for the node
 which contains a file offset where the segment header information is stored. The segment header contains
@@ -271,15 +271,15 @@ int shot_open = (dblist->shotid != -1); \
 NODE_PTR; \
 SEGMENTREMOTE; \
 int stv; \
-NCI local_nci; \
-EXTENDED_ATTRIBUTES attributes; \
+NCI local_nci,*nci_ptr;nci_ptr=&local_nci; \
+EXTENDED_ATTRIBUTES attr, *attr_ptr;attr_ptr=&attr; \
 INFO_PTR; \
 status = TreeCallHook(PutData, info_ptr, nid); \
 if (status && STATUS_NOT_OK) \
   return status; \
 int64_t saved_viewdate; \
 TreeGetViewDate(&saved_viewdate); \
-status = TreeGetNciLw(info_ptr, nidx, &local_nci); \
+status = TreeGetNciLw(info_ptr, nidx, nci_ptr); \
 if STATUS_NOT_OK return status; \
 if (STATUS_OK && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT))) \
   RETURN(UNLOCK_NCI,TreeNOWRITESHOT); \
@@ -300,10 +300,10 @@ return STATUS; \
 
 #define UPDATE_FINISH status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
 
-#define PASS_GLOBAL &local_nci, info_ptr, &segment_index, &segment_header, nidx
-#define PASS_EXTENDED_NCI PASS_GLOBAL, &attributes, &attributes_offset, update_attributes
+#define PASS_GLOBAL nci_ptr, info_ptr, &segment_index, &segment_header, nidx
+#define PASS_EXTENDED_NCI PASS_GLOBAL, attr_ptr, attr_offset_ptr, update_attr
 #define TAKE_GLOBAL NCI *nci_ptr,TREE_INFO *info_ptr, SEGMENT_INDEX *seg_idx_ptr, SEGMENT_HEADER *seg_head_ptr, int nidx
-#define TAKE_EXTENDED_NCI TAKE_GLOBAL, EXTENDED_ATTRIBUTES *attr_ptr, int64_t *attr_off_ptr, int update_attr
+#define TAKE_EXTENDED_NCI TAKE_GLOBAL, EXTENDED_ATTRIBUTES *attr_ptr, int64_t *attr_offset_ptr, int update_attr
 
 #define BEGIN_FINISH status = BeginFinish(PASS_EXTENDED_NCI, add_length);
 inline static int BeginFinish(TAKE_EXTENDED_NCI, int add_length){
@@ -311,8 +311,8 @@ inline static int BeginFinish(TAKE_EXTENDED_NCI, int add_length){
   if STATUS_NOT_OK return status;
   status = PutSegmentHeader(info_ptr, seg_head_ptr, &attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY]);
   if (update_attr) {
-    status = TreePutExtendedAttributes(info_ptr, attr_ptr, attr_off_ptr);
-    SeekToRfa(*attr_off_ptr, nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+    status = TreePutExtendedAttributes(info_ptr, attr_ptr, attr_offset_ptr);
+    SeekToRfa(*attr_offset_ptr, nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
     nci_ptr->flags2 |= NciM_EXTENDED_NCI;
   }
   if (((int64_t) nci_ptr->length + (int64_t) add_length) < (2 ^ 31))
@@ -324,7 +324,7 @@ inline static int BeginFinish(TAKE_EXTENDED_NCI, int add_length){
   return status;
 }
 
-#define BEGIN_LOCAL_NCI BeginLocalNci(&local_nci, initialValue)
+#define BEGIN_LOCAL_NCI BeginLocalNci(nci_ptr, initialValue)
 inline static void BeginLocalNci(NCI *nci_ptr, const struct descriptor_a *initialValue){
   nci_ptr->flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
   nci_ptr->dtype = initialValue->dtype;
@@ -334,27 +334,27 @@ inline static void BeginLocalNci(NCI *nci_ptr, const struct descriptor_a *initia
   nci_ptr->owner_identifier = saved_uic;
 }
 
-/* See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
+/* See if node is currently using the Extended Nci feature and if so get the current contents of the attr
  * index. If not, make an empty index and flag that a new index needs to be written.
  */
 #define IF_NO_EXTENDED_NCI \
 if (!(local_nci.flags2 & NciM_EXTENDED_NCI) \
- || IS_NOT_OK(TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes)))
+ || IS_NOT_OK(TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), attr_ptr)))
 
 #define CHECK_EXTENDED_NCI(UNLOCK) IF_NO_EXTENDED_NCI RETURN(UNLOCK,TreeFAILURE);
 
 #define BEGIN_EXTENDED_NCI \
-int update_attributes = 0; \
-int64_t attributes_offset = -1; \
+int update_attr = 0, *update_attr_ptr;update_attr_ptr=&update_attr; \
+int64_t attr_offset = -1, *attr_offset_ptr;attr_offset_ptr=&attr_offset; \
 IF_NO_EXTENDED_NCI { \
-  memset(&attributes, -1, sizeof(attributes)); \
-  update_attributes = 1; \
+  memset(attr_ptr, -1, sizeof(attr)); \
+  *update_attr_ptr = 1; \
 } else { \
-  attributes_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa); \
-  if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) { \
-    attributes.facility_offset[STANDARD_RECORD_FACILITY] = -1; \
-    attributes.facility_length[STANDARD_RECORD_FACILITY] = 0; \
-    update_attributes = 1; \
+  attr_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa); \
+  if (attr_ptr->facility_offset[STANDARD_RECORD_FACILITY] != -1) { \
+    attr_ptr->facility_offset[STANDARD_RECORD_FACILITY] = -1; \
+    attr_ptr->facility_length[STANDARD_RECORD_FACILITY] = 0; \
+    *update_attr_ptr = 1; \
   } \
 }
 
@@ -363,18 +363,18 @@ IF_NO_EXTENDED_NCI { \
  */
 #define IF_NO_SEGMENT_HEADER \
 SEGMENT_HEADER segment_header; \
-if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY] == -1 \
- || IS_NOT_OK(GetSegmentHeader(info_ptr, attributes.facility_offset[SEGMENTED_RECORD_FACILITY],&segment_header)))
+if (attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY] == -1 \
+ || IS_NOT_OK(GetSegmentHeader(info_ptr, attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY],&segment_header)))
 
 #define CHECK_SEGMENT_HEADER(UNLOCK) IF_NO_SEGMENT_HEADER RETURN(UNLOCK,TreeFAILURE)
 
 #define BEGIN_SEGMENT_HEADER \
 IF_NO_SEGMENT_HEADER { \
   memset(&segment_header, 0, sizeof(segment_header)); \
-  attributes.facility_offset[SEGMENTED_RECORD_FACILITY] = -1; \
+  attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY] = -1; \
   segment_header.index_offset = -1; \
   segment_header.idx = -1; \
-  update_attributes = 1; \
+  *update_attr_ptr = 1; \
 } else if (initialValue->dtype != segment_header.dtype || \
           (initialValue->class == CLASS_A && \
           (initialValue->dimct != segment_header.dimct || \
@@ -639,11 +639,11 @@ OPEN_TREE_READ; \
 NODE_PTR; \
 SEGMENTREMOTE; \
 INFO_PTR; \
-NCI local_nci; \
+NCI local_nci,*nci_ptr;nci_ptr=&local_nci; \
 int64_t saved_viewdate; \
-EXTENDED_ATTRIBUTES attributes; \
+EXTENDED_ATTRIBUTES attr, *attr_ptr;attr_ptr=&attr; \
 TreeGetViewDate(&saved_viewdate); \
-status = TreeGetNciW(info_ptr, nidx, &local_nci, 0); \
+status = TreeGetNciW(info_ptr, nidx, nci_ptr, 0); \
 if STATUS_NOT_OK \
   return status; \
 if (info_ptr->data_file == 0){ \
@@ -829,7 +829,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
   if (startIdx == segment_header.next_row)
     segment_header.next_row += bytes_to_insert / bytes_per_row;
   if STATUS_OK
-    status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    status = PutSegmentHeader(info_ptr, &segment_header, &attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY]);
   RETURN(UNLOCK_NCI,status);
 }
 
@@ -1014,8 +1014,8 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
   if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE) return TreeFAILURE;
   OPEN_DATAFILE_WRITE1();
   COMPRESS;
-  int64_t attributes_offset = -1;
-  int update_attributes = 0;
+  int64_t attr_offset = -1, *attr_offset_ptr;attr_offset_ptr=&attr_offset;
+  int update_attr = 0, *update_attr_ptr;update_attr_ptr=&update_attr;
   int found_index = -1;
   int64_t index_offset = -1;
   int value_length;
@@ -1024,11 +1024,11 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
   status = TreePutDsc(info_ptr, nid, value, &value_offset, &value_length, compress);
   if STATUS_NOT_OK
     return status;
-  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
+  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attr
        index. If not, make an empty index and flag that a new index needs to be written.***/
   IF_NO_EXTENDED_NCI {
-    memset(&attributes, -1, sizeof(attributes));
-    update_attributes = 1;
+    memset(attr_ptr, -1, sizeof(attr));
+    *update_attr_ptr = 1;
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && local_nci.length > 0) {
       if (local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
         EMPTYXD(dsc);
@@ -1056,8 +1056,8 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
             break;
           }
         }
-        TreePutDsc(info_ptr, nid, dptr, &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-                   &attributes.facility_length[STANDARD_RECORD_FACILITY], compress);
+        TreePutDsc(info_ptr, nid, dptr, &attr_ptr->facility_offset[STANDARD_RECORD_FACILITY],
+                   &attr_ptr->facility_length[STANDARD_RECORD_FACILITY], compress);
         local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
       } else {
         EMPTYXD(xd);
@@ -1080,33 +1080,33 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
           if STATUS_OK {
             status =
                 TreePutDsc(info_ptr, nid, (struct descriptor *)&xd,
-                           &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-                           &attributes.facility_length[STANDARD_RECORD_FACILITY], compress);
+                           &attr_ptr->facility_offset[STANDARD_RECORD_FACILITY],
+                           &attr_ptr->facility_length[STANDARD_RECORD_FACILITY], compress);
           }
           MdsFree1Dx(&xd, 0);
         }
         if (length <= 0 || STATUS_NOT_OK) {
-          attributes.facility_offset[STANDARD_RECORD_FACILITY] = 0;
-          attributes.facility_length[STANDARD_RECORD_FACILITY] = 0;
+          attr_ptr->facility_offset[STANDARD_RECORD_FACILITY] = 0;
+          attr_ptr->facility_length[STANDARD_RECORD_FACILITY] = 0;
           local_nci.length = 0;
           local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
         }
       }
     }
   } else
-    attributes_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
-  /* See if the node currently has an named attributes header record.
-   * If not, make an empty named attributes header and flag that a new one needs to be written.
+    *attr_offset_ptr = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
+  /* See if the node currently has an named attr header record.
+   * If not, make an empty named attr header and flag that a new one needs to be written.
    */
-  if (attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
-   || IS_NOT_OK(GetNamedAttributesIndex(info_ptr, attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY], &index))) {
+  if (attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
+   || IS_NOT_OK(GetNamedAttributesIndex(info_ptr, attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY], &index))) {
     memset(&index, 0, sizeof(index));
-    attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] = -1;
+    attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY] = -1;
     index_offset = -1;
     index.previous_offset = -1;
-    update_attributes = 1;
+    *update_attr_ptr = 1;
   } else
-    index_offset = attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+    index_offset = attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY];
   current_index = index;
   /*** See if the node currently has a value for this attribute. ***/
   while (index_offset != -1 && found_index == -1) {
@@ -1142,14 +1142,14 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
         strcpy(index.attribute[i].name, xnciname);
         index.attribute[i].offset = value_offset;
         index.attribute[i].length = value_length;
-        index_offset = attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+        index_offset = attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY];
         break;
       }
     }
     if (i == NAMED_ATTRIBUTES_PER_INDEX) {
       memset(&index, 0, sizeof(index));
-      index.previous_offset = attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY];
-      update_attributes = 1;
+      index.previous_offset = attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY];
+      *update_attr_ptr = 1;
       strcpy(index.attribute[0].name, xnciname);
       index.attribute[0].offset = value_offset;
       index.attribute[0].length = value_length;
@@ -1157,12 +1157,12 @@ int _TreeSetXNci(void *dbid, int nid, const char *xnciname, struct descriptor *v
     }
   }
   status = PutNamedAttributesIndex(info_ptr, &index, &index_offset);
-  if (STATUS_OK && update_attributes) {
-    attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] = index_offset;
-    status = TreePutExtendedAttributes(info_ptr, &attributes, &attributes_offset);
-    SeekToRfa(attributes_offset, local_nci.DATA_INFO.DATA_LOCATION.rfa);
+  if (STATUS_OK && update_attr) {
+    attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY] = index_offset;
+    status = TreePutExtendedAttributes(info_ptr, attr_ptr, attr_offset_ptr);
+    SeekToRfa(attr_offset, local_nci.DATA_INFO.DATA_LOCATION.rfa);
     local_nci.flags2 |= NciM_EXTENDED_NCI;
-    TreePutNci(info_ptr, nidx, &local_nci, 0);
+    TreePutNci(info_ptr, nidx, nci_ptr, 0);
   }
   RETURN(UNLOCK_NCI,status);
 }
@@ -1193,10 +1193,10 @@ int _TreeGetXNci(void *dbid, int nid, const char *xnciname, struct descriptor_xd
     }
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
         ((TreeGetExtendedAttributes
-          (info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1) == 0)) {
+          (info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attr) & 1) == 0)) {
       status = TreeFAILURE;
-    } else if (attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
-           ||  IS_NOT_OK(GetNamedAttributesIndex(info_ptr, attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
+    } else if (attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
+           ||  IS_NOT_OK(GetNamedAttributesIndex(info_ptr, attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
       status = TreeFAILURE;
     } else {
       int found_index = -1;
@@ -1720,7 +1720,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   TreeUnLockDatafile(info_ptr, 0, offset);
   segment_header.next_row = startIdx + bytes_to_insert / bytes_per_row;
   if STATUS_OK
-    status = PutSegmentHeader(info_ptr, &segment_header, &attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
+    status = PutSegmentHeader(info_ptr, &segment_header, &attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY]);
   RETURN(UNLOCK_NCI,status);
 }
 
@@ -1872,25 +1872,25 @@ static int CopySegmentedRecords(TREE_INFO * info_in, TREE_INFO * info_out, int n
 }
 
 int TreeCopyExtended(PINO_DATABASE * dbid_in, PINO_DATABASE * dbid_out, int nid, NCI * nci, int compress){
-  EXTENDED_ATTRIBUTES attributes;
+  EXTENDED_ATTRIBUTES attr, *attr_ptr;attr_ptr=&attr;
   TREE_INFO *info_in = dbid_in->tree_info, *info_out = dbid_out->tree_info;
   int64_t now = -1;
   int64_t offset = -1;
-  INIT_STATUS_AS TreeGetExtendedAttributes(info_in, RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa), &attributes);
+  INIT_STATUS_AS TreeGetExtendedAttributes(info_in, RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa), &attr);
   if STATUS_OK {
-    if (attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY] != -1)
+    if (attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY] != -1)
       CopyNamedAttributes(info_in, info_out, nid,
-                          &attributes.facility_offset[NAMED_ATTRIBUTES_FACILITY],
-                          &attributes.facility_length[NAMED_ATTRIBUTES_FACILITY], compress);
-    if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1)
+                          &attr_ptr->facility_offset[NAMED_ATTRIBUTES_FACILITY],
+                          &attr_ptr->facility_length[NAMED_ATTRIBUTES_FACILITY], compress);
+    if (attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY] != -1)
       CopySegmentedRecords(info_in, info_out, nid,
-                           &attributes.facility_offset[SEGMENTED_RECORD_FACILITY],
-                           &attributes.facility_length[SEGMENTED_RECORD_FACILITY], compress);
-    if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1)
+                           &attr_ptr->facility_offset[SEGMENTED_RECORD_FACILITY],
+                           &attr_ptr->facility_length[SEGMENTED_RECORD_FACILITY], compress);
+    if (attr_ptr->facility_offset[STANDARD_RECORD_FACILITY] != -1)
       CopyStandardRecord(info_in, info_out, nid,
-                         &attributes.facility_offset[STANDARD_RECORD_FACILITY],
-                         &attributes.facility_length[STANDARD_RECORD_FACILITY], compress);
-    status = TreePutExtendedAttributes(info_out, &attributes, &offset);
+                         &attr_ptr->facility_offset[STANDARD_RECORD_FACILITY],
+                         &attr_ptr->facility_length[STANDARD_RECORD_FACILITY], compress);
+    status = TreePutExtendedAttributes(info_out, attr_ptr, &offset);
     if STATUS_OK {
       SeekToRfa(offset, nci->DATA_INFO.DATA_LOCATION.rfa);
       status = TreePutNci(info_out, nid, nci, 0);
