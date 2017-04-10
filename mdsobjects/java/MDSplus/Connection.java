@@ -303,7 +303,7 @@ public class Connection
     public static void main(java.lang.String args[])
     {
         try {
-            Connection conn = new Connection("roserver.igi.cnr.it");
+            Connection conn = new Connection("schmivl.nbtf");
             DataStreamListener l1 = new DataStreamListener()
             {
                 public void dataReceived(Data samples, Data times)
@@ -311,7 +311,7 @@ public class Connection
                     System.out.println("Listener 1 received data:\nSamples: "+samples+"\nTimes: "+times);
                 }
             };
-            conn.registerStreamListener(l1, "2*test_0", "test", 1);
+            conn.registerStreamListener(l1, "group_1.pv_1:val", "trend", -1);
             conn.startStreaming();
  //           conn.resetConnection();
         }catch(Exception e){System.out.println(e); }

@@ -12,6 +12,8 @@ import java.util.*;
  */
 public class MdsStreamingDataProvider extends MdsDataProvider
 {
+    Vector<Data> samplesV = new Vector<Data>();
+    Vector<Data> timesV = new Vector<Data>();
     //Inner class MdsStreamingDataProvider handles data streaming in jScope
     Connection conn = null;
     class AsynchWaveData implements AsynchDataSource, DataStreamListener
@@ -30,6 +32,12 @@ public class MdsStreamingDataProvider extends MdsDataProvider
             }
         }
         public void dataReceived(Data samples, Data times)
+        {
+            samplesV.addElement(samples);
+            timesV.addElement(times);
+            handleDataReceived(samples, times);
+        }
+        public void handleDataReceived(Data samples, Data times)
         {
             try {
                 float y[] = samples.getFloatArray();
@@ -53,6 +61,8 @@ public class MdsStreamingDataProvider extends MdsDataProvider
         public void addDataListener(WaveDataListener listener)
         {
             listeners.addElement(listener);
+            for(int i = 0; i < samplesV.size(); i++)
+                handleDataReceived(samplesV.elementAt(i), timesV.elementAt(i));
         }
     } //End inner class AsynchWaveData
   
