@@ -391,7 +391,6 @@ public class MdsDataProvider
         boolean titleEvaluated = false;
         boolean xLabelEvaluated = false;
         boolean yLabelEvaluated = false;
-        boolean continuousUpdate = false;
         String wd_experiment;
         long wd_shot;
         AsynchDataSource asynchSource = null;
@@ -498,10 +497,6 @@ public class MdsDataProvider
         
         
         
-        public void setContinuousUpdate(boolean continuousUpdate)
-        {
-            this.continuousUpdate = continuousUpdate;
-        }
 
         public int getNumDimension() throws IOException
         {
@@ -859,13 +854,6 @@ public class MdsDataProvider
                     nSamples = 0;
                 }
  */               //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
-                if(segmentMode == SEGMENTED_YES && continuousUpdate)
-                {
-                    long refreshPeriod = jScopeFacade.getRefreshPeriod();
-                    if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
-                    updateWorker.updateInfo(/*xmin*/maxX, Double.MAX_VALUE, 2000,
-                        waveDataListenersV, this, isLong, refreshPeriod);
-                }
                 return res;
              }catch(Exception exc)
              {
@@ -1025,7 +1013,7 @@ public class MdsDataProvider
         synchronized void intUpdateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
         {
-            if(updateTime > 0)  //If a delayed request for update
+            if(updateTime > 0)  //If a delayed request for update NOTE NOT USED!!!!Use MdsStreamingDataProvider instead
             {
                 for(int i = 0; i < requestsV.size(); i++)
                 {
@@ -1109,7 +1097,7 @@ public class MdsDataProvider
                         i++;
                     }
                 }
-                if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification
+                if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification NOTE NOT USED
                 {
                     currTime = Calendar.getInstance().getTimeInMillis();
                     java.util.Timer timer = new java.util.Timer();

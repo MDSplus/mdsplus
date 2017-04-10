@@ -53,8 +53,6 @@ class AsdexDataProvider extends MdsDataProvider
             this.n_points = n_points;
             v_idx = var_idx;
         }
-        public void setContinuousUpdate(boolean continuopusUpdate){}
-
         public int getNumDimension() throws IOException
         {
 

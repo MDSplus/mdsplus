@@ -138,8 +138,6 @@ public class XYWaveData implements WaveData
             System.out.println("INTERNAL ERROR: WRONG DIMENSIONS FOR 2D SIGNAL");
         isLong = true;
     }
-    public void setContinuousUpdate(boolean continuopusUpdate){}
-
     /*
      * Read data within specified interval. either Xmin or xmax cna specify no limit (-Float.MAX_VALUE, Float.MAX_VALUE)
      */
