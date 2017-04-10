@@ -100,15 +100,25 @@ static int getHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
     host[i] = '\0';
     service = &host[i+1];
   }
+  if (atoi(service) == 0) {
+    if (!getservbyname(service, "udt")) {
+      service = getenv(service);
+      if (!service) service = "8000";
+    }
+  }
+  if (!htons(atoi(service))) {
+    free(host);
+    return status;
+  }
   struct addrinfo *info;
   static const struct addrinfo hints = { 0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0 };
   int n = getaddrinfo(host, service, &hints, &info);
-  if (n < 0)
+  if (n)
     fprintf(stderr,"Error connecting to host: %s, port %s error=%s\n", host, service, gai_strerror(n));
   else {
-    memcpy(sin, info->ai_addr, info->ai_addrlen);
+    memcpy(sin, info->ai_addr, sizeof(*sin) < info->ai_addrlen ? sizeof(*sin) : info->ai_addrlen);
     freeaddrinfo(info);
-   status = MDSplusSUCCESS;
+    status = MDSplusSUCCESS;
   }
   free(host);
   return status;
