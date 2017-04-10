@@ -93,10 +93,6 @@ static int getHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
       if (!service) service = "8000";
     }
   }
-  if (!htons(atoi(service))) {
-    free(host);
-    return status;
-  }
   struct addrinfo *info;
   static const struct addrinfo hints = { 0, AF_T, SOCK_STREAM, 0, 0, 0, 0, 0 };
   int n = getaddrinfo(host, service, &hints, &info);
