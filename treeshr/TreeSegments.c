@@ -296,9 +296,9 @@ inline static int OpenDatafileWrite1(int status,TREE_INFO *tinfo, int *stv_ptr){
 #define UNLOCK_NCI TreeUnLockNci(tinfo, 0, nidx);
 #define RETURN(UNLOCK,STATUS) {UNLOCK;return STATUS;}
 
-#define UPDATE_FINISH status = PutSegmentIndex(tinfo, &segment_index, &index_offset);
+#define UPDATE_FINISH status = PutSegmentIndex(tinfo, sindex, &index_offset);
 
-#define BEGIN_FINISH status = BeginFinish(local_nci, tinfo, &segment_index, shead, nidx,\
+#define BEGIN_FINISH status = BeginFinish(local_nci, tinfo, sindex, shead, nidx,\
                                           attr, attr_offset, attr_update, add_length);
 inline static int BeginFinish(NCI *local_nci,TREE_INFO *tinfo, SEGMENT_INDEX *sindex, SEGMENT_HEADER *shead, int nidx,
                               EXTENDED_ATTRIBUTES *attr, int64_t *attr_offset, int *attr_update, int add_length){
@@ -387,21 +387,21 @@ static inline int BeginSegmentHeader(TREE_INFO *tinfo,int nidx,SEGMENT_HEADER *s
 }
 
 
-/* See if the node currently has an segment_index record.
+/* See if the node currently has an *sindex record.
  * If not, make an empty segment index and flag that a new one needs to be written.
  */
  #define IF_NO_SEGMENT_INDEX \
-SEGMENT_INDEX segment_index; \
+SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex; \
 if ((shead->index_offset == -1) \
- || IS_NOT_OK(GetSegmentIndex(tinfo, shead->index_offset, &segment_index)))
+ || IS_NOT_OK(GetSegmentIndex(tinfo, shead->index_offset, sindex)))
 
 #define CHECK_SEGMENT_INDEX(UNLOCK) IF_NO_SEGMENT_INDEX RETURN(UNLOCK,TreeFAILURE)
 
 #define BEGIN_SEGMENT_INDEX \
 IF_NO_SEGMENT_INDEX { \
   shead->index_offset = -1; \
-  memset(&segment_index, -1, sizeof(segment_index)); \
-  segment_index.first_idx = 0; \
+  memset(sindex, -1, sizeof(*sindex)); \
+  sindex->first_idx = 0; \
 }
 
 #define CHECK_SINFO(UNLOCK) \
@@ -410,12 +410,12 @@ if (idx < 0 || idx > shead->idx) \
   RETURN(UNLOCK,TreeFAILURE); \
 int64_t index_offset; \
 for (index_offset = shead->index_offset; \
-     STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0; \
-     index_offset = segment_index.previous_offset) \
-  status = GetSegmentIndex(tinfo, segment_index.previous_offset, &segment_index); \
-if (STATUS_NOT_OK || (idx < segment_index.first_idx)) \
+     STATUS_OK && idx < sindex->first_idx && sindex->previous_offset > 0; \
+     index_offset = sindex->previous_offset) \
+  status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex); \
+if (STATUS_NOT_OK || (idx < sindex->first_idx)) \
   RETURN(UNLOCK,TreeFAILURE); \
-sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 
 #define BEGIN_SINFO(CHECKCOMPRESS) \
 SEGMENT_INFO *sinfo; \
@@ -457,7 +457,7 @@ if (((shead->idx % SEGMENTS_PER_INDEX) > 0) && \
   int deleted; \
   EMPTYXD(xd_data); \
   EMPTYXD(xd_dim); \
-  sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1]; \
+  sinfo = &sindex->segment[(idx % SEGMENTS_PER_INDEX) - 1]; \
   TreeUnLockNci(tinfo, 0, nidx); \
   status = _TreeGetSegment(dbid, nid, idx - 1, &xd_data, &xd_dim); \
   TreeLockNci(tinfo, 0, nidx, &deleted); \
@@ -466,13 +466,13 @@ if (((shead->idx % SEGMENTS_PER_INDEX) > 0) && \
   MdsFree1Dx(&xd_data, 0); \
   MdsFree1Dx(&xd_dim, 0); \
 } \
-if (idx >= segment_index.first_idx + SEGMENTS_PER_INDEX) { \
-  memset(&segment_index, -1, sizeof(segment_index)); \
-  segment_index.previous_offset = shead->index_offset; \
+if (idx >= sindex->first_idx + SEGMENTS_PER_INDEX) { \
+  memset(sindex, -1, sizeof(*sindex)); \
+  sindex->previous_offset = shead->index_offset; \
   shead->index_offset = -1; \
-  segment_index.first_idx = idx; \
+  sindex->first_idx = idx; \
 } \
-sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 //"
 #define PUTDATA \
 sinfo->data_offset = shead->data_offset; \
@@ -699,7 +699,7 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, int offset,char *buffer,in
 
 #define GETSEGMENTTIME_LOOP(startval,endval,GETLIMIT,start_xd,COPYSTART,end_xd,COPYEND) {\
   int index_idx = idx % SEGMENTS_PER_INDEX; \
-  sinfo = &segment_index.segment[index_idx]; \
+  sinfo = &sindex->segment[index_idx]; \
   if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) { \
     /* It's a timestamped segment */ \
     if (sinfo->rows < 0 || !(sinfo->start == 0 && sinfo->end == 0)) { \
@@ -729,7 +729,7 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, int offset,char *buffer,in
     GETLIMIT(endval  ,sinfo->end,  sinfo->end_offset,  sinfo->end_length,   end_xd  , COPYEND  ) \
   } \
   if (index_idx == 0 && idx > 0) \
-    status = GetSegmentIndex(tinfo, segment_index.previous_offset, &segment_index); \
+    status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex); \
 }
 
 #define GETLIMIT_ARRAY(limitval,sinfo_limit,sinfo_limit_offset,sinfo_limit_length,limit_xd,COPYLIMIT) \
@@ -1853,21 +1853,21 @@ static int CopySegment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGME
 
 static int CopySegmentIndex(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, SEGMENT_HEADER * header,
                             int64_t * index_offset, int64_t * data_offset, int64_t * dim_offset, int compress){
-  SEGMENT_INDEX segment_index;
+  SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex;
   int i;
-  int status = GetSegmentIndex(tinfo_in, *index_offset, &segment_index);
+  int status = GetSegmentIndex(tinfo_in, *index_offset, sindex);
   if STATUS_OK {
-    if (segment_index.previous_offset != -1) {
+    if (sindex->previous_offset != -1) {
       status =
-          CopySegmentIndex(tinfo_in, tinfo_out, nid, header, &segment_index.previous_offset, data_offset,
+          CopySegmentIndex(tinfo_in, tinfo_out, nid, header, &sindex->previous_offset, data_offset,
                            dim_offset, compress);
     }
     for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++) {
-      SEGMENT_INFO *sinfo = &segment_index.segment[i];
+      SEGMENT_INFO *sinfo = &sindex->segment[i];
       status = CopySegment(tinfo_in, tinfo_out, nid, header, sinfo, compress);
     }
     *index_offset = -1;
-    status = PutSegmentIndex(tinfo_out, &segment_index, index_offset);
+    status = PutSegmentIndex(tinfo_out, sindex, index_offset);
   }
   return status;
 }
@@ -2015,13 +2015,13 @@ int _TreePutRow(void *dbid, int nid, int bufsize, int64_t * timestamp, struct de
 #define GETFROMSEGMENT \
 OPEN_INDEX_READ; \
 if (idx == -1) idx = shead->idx; \
-while (STATUS_OK && idx < segment_index.first_idx && segment_index.previous_offset > 0) \
-  status = GetSegmentIndex(tinfo, segment_index.previous_offset, &segment_index); \
+while (STATUS_OK && idx < sindex->first_idx && sindex->previous_offset > 0) \
+  status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex); \
 if STATUS_NOT_OK \
   return status; \
-if (idx < segment_index.first_idx || idx > segment_index.first_idx + SEGMENTS_PER_INDEX) \
+if (idx < sindex->first_idx || idx > sindex->first_idx + SEGMENTS_PER_INDEX) \
   return TreeFAILURE; \
-SEGMENT_INFO *sinfo = &segment_index.segment[idx % SEGMENTS_PER_INDEX];
+SEGMENT_INFO *sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 
 int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *retStart,
                           struct descriptor_xd *retEnd){
@@ -2115,23 +2115,23 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
   /* Get all the segments in an apd which contain data between the start and end times specified
    */
   OPEN_HEADER_READ;
-  SEGMENT_INDEX segment_index;
+  SEGMENT_INDEX _sindex,*sindex;sindex=&_sindex;
   int numsegs = shead->idx + 1;
   int segfound = B_FALSE;
   int apd_idx = 0;
   struct descriptor **dptr = malloc(sizeof(struct descriptor *) * numsegs * 2);
   DESCRIPTOR_APD(apd, DTYPE_LIST, dptr, numsegs * 2);
   memset(dptr, 0, sizeof(struct descriptor *) * numsegs * 2);
-  status = GetSegmentIndex(tinfo, shead->index_offset, &segment_index);
+  status = GetSegmentIndex(tinfo, shead->index_offset, sindex);
   int idx;
   for (idx = numsegs; STATUS_OK && idx > 0; idx--) {
     int segidx = idx - 1;
-    while (STATUS_OK && segidx < segment_index.first_idx && segment_index.previous_offset > 0)
-      status = GetSegmentIndex(tinfo, segment_index.previous_offset, &segment_index);
+    while (STATUS_OK && segidx < sindex->first_idx && sindex->previous_offset > 0)
+      status = GetSegmentIndex(tinfo, sindex->previous_offset, sindex);
     if STATUS_NOT_OK
       break;
     else {
-      SEGMENT_INFO *sinfo = &segment_index.segment[segidx % SEGMENTS_PER_INDEX];
+      SEGMENT_INFO *sinfo = &sindex->segment[segidx % SEGMENTS_PER_INDEX];
       if (isSegmentInRange(tinfo, nid, start, end, sinfo)) {
         EMPTYXD(segment);
         EMPTYXD(dim);
