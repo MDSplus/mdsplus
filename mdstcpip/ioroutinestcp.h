@@ -181,9 +181,6 @@ static int io_connect(int conid, char *protocol __attribute__ ((unused)), char *
         fcntl(sock, F_SETFL, 0);
 #endif
     } else {
-#if !defined(_WIN32) && defined(SO_BINDTODEVICE)
-      err = setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, "eth0", strlen("eth0"));
-#endif
       err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
     }
     if (err == -1) {

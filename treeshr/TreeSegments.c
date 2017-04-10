@@ -291,7 +291,7 @@ if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1){ \
   status = TreeOpenDatafileW(info_ptr, &stv, 0); \
   if STATUS_NOT_OK \
     RETURN(UNLOCK_NCI,status) \
-} \
+}
 
 #define UNLOCK_NCI TreeUnLockNci(info_ptr, 0, nidx);
 #define RETURN(UNLOCK,STATUS) {\
@@ -299,8 +299,7 @@ UNLOCK; \
 return STATUS; \
 }
 
-#define UPDATE_FINISH \
-status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
+#define UPDATE_FINISH status = PutSegmentIndex(info_ptr, &segment_index, &index_offset);
 
 #define BEGIN_FINISH \
 status = PutSegmentIndex(info_ptr, &segment_index, &segment_header.index_offset); \
@@ -315,7 +314,7 @@ if (((int64_t) local_nci.length + (int64_t) add_length) < (2 ^ 31)) \
 else \
   local_nci.length = (2 ^ 31); \
 local_nci.flags=local_nci.flags | NciM_SEGMENTED; \
-TreePutNci(info_ptr, nidx, &local_nci, 0); \
+TreePutNci(info_ptr, nidx, &local_nci, 0);
 
 #define BEGIN_LOCAL_NCI \
 local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK; \
@@ -496,7 +495,7 @@ struct descriptor *dsc; \
 PUTLIMITBYDSC(start,sinfo->start,sinfo->start_offset,sinfo->start_length); \
 PUTLIMITBYDSC(end  ,sinfo->end  ,sinfo->end_offset  ,sinfo->end_length  ); \
 if (dimension) \
-  status = TreePutDsc(info_ptr, nid, dimension, &sinfo->dimension_offset, &sinfo->dimension_length, compress); \
+  status = TreePutDsc(info_ptr, nid, dimension, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
 
 #define PUTDIM_TS \
 status = PutDimensionValue(info_ptr, timestamps, rows_filled, initialValue->dimct, segment_header.dims, &segment_header.dim_offset); \
@@ -704,7 +703,7 @@ if (offset > -1) { \
       READPROPERTY(sinfo->dimension_offset, buffer, length); \
       if STATUS_OK { \
         startval = swapquad(buffer); \
-        for (bptr = buffer + length - sizeof(int64_t); (bptr <= buffer) || !(timestamp = swapquad(bptr)) ; bptr -= sizeof(int64_t)) ; \
+        for (bptr = buffer + length - sizeof(int64_t) ; (bptr > buffer) && (timestamp = swapquad(bptr))==0 ; bptr -= sizeof(int64_t)) ;\
         endval = bptr > buffer ? timestamp : 0; \
       } else { \
         startval = 0; \
