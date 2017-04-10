@@ -336,7 +336,7 @@ inline static void BeginLocalNci(NCI *local_nci, const struct descriptor_a *init
 if (!(local_nci->flags2 & NciM_EXTENDED_NCI) \
  || IS_NOT_OK(TreeGetExtendedAttributes(tinfo, RfaToSeek(local_nci->DATA_INFO.DATA_LOCATION.rfa), attr)))
 
-#define CHECK_EXTENDED_NCI(UNLOCK) IF_NO_EXTENDED_NCI RETURN(UNLOCK,TreeFAILURE);
+#define CHECK_EXTENDED_NCI(UNLOCK) IF_NO_EXTENDED_NCI RETURN(UNLOCK,TreeNOSEGMENTS);
 
 #define BEGIN_EXTENDED_NCI \
 int _attr_update = 0, *attr_update;attr_update=&_attr_update; \
@@ -360,25 +360,31 @@ static inline void beginExtendedNci(TREE_INFO *tinfo,NCI *local_nci,EXTENDED_ATT
  * If not, make an empty segment header and flag that a new one needs to be written.
  */
 #define IF_NO_SEGMENT_HEADER \
-SEGMENT_HEADER _shead,*shead;shead=&_shead; \
 if (attr->facility_offset[SEGMENTED_RECORD_FACILITY] == -1 \
  || IS_NOT_OK(GetSegmentHeader(tinfo, attr->facility_offset[SEGMENTED_RECORD_FACILITY],shead)))
 
-#define CHECK_SEGMENT_HEADER(UNLOCK) IF_NO_SEGMENT_HEADER RETURN(UNLOCK,TreeFAILURE)
+#define CHECK_SEGMENT_HEADER(UNLOCK) \
+SEGMENT_HEADER _shead,*shead;shead=&_shead;\
+IF_NO_SEGMENT_HEADER RETURN(UNLOCK,TreeNOSEGMENTS)
 
 #define BEGIN_SEGMENT_HEADER \
-IF_NO_SEGMENT_HEADER { \
-  memset(shead, 0, sizeof(*shead)); \
-  attr->facility_offset[SEGMENTED_RECORD_FACILITY] = -1; \
-  shead->index_offset = -1; \
-  shead->idx = -1; \
-  *attr_update = 1; \
-} else if (initialValue->dtype != shead->dtype || \
-          (initialValue->class == CLASS_A && \
-          (initialValue->dimct != shead->dimct || \
-          (initialValue->dimct > 1 \
-           && memcmp(shead->dims, ((A_COEFF_TYPE *)initialValue)->m, (initialValue->dimct - 1) * sizeof(int)))))) \
-  RETURN(UNLOCK_NCI,TreeFAILURE);
+SEGMENT_HEADER _shead,*shead;shead=&_shead;\
+RETURN_IF_NOT_OK(BeginSegmentHeader(tinfo,nidx,shead,attr,attr_update,initialValue));
+static inline int BeginSegmentHeader(TREE_INFO *tinfo,int nidx,SEGMENT_HEADER *shead,EXTENDED_ATTRIBUTES *attr,int *attr_update,struct descriptor_a *initialValue){
+  IF_NO_SEGMENT_HEADER {
+    memset(shead, 0, sizeof(*shead));
+    attr->facility_offset[SEGMENTED_RECORD_FACILITY] = -1;
+    shead->index_offset = -1;
+    shead->idx = -1;
+    *attr_update = 1;
+  } else if (initialValue->dtype != shead->dtype ||
+            (initialValue->class == CLASS_A &&
+            (initialValue->dimct != shead->dimct ||
+            (initialValue->dimct > 1
+             && memcmp(shead->dims, ((A_COEFF_TYPE *)initialValue)->m, (initialValue->dimct - 1) * sizeof(int))))))
+    RETURN(UNLOCK_NCI,TreeFAILURE);
+  return TreeSUCCESS;
+}
 
 
 /* See if the node currently has an segment_index record.
@@ -660,12 +666,12 @@ if (tinfo->data_file == 0){ \
 
 #define OPEN_HEADER_READ \
 OPEN_DATAFILE_READ \
-IF_NO_EXTENDED_NCI   return TreeFAILURE; \
-IF_NO_SEGMENT_HEADER return TreeFAILURE;
+CHECK_EXTENDED_NCI(); \
+CHECK_SEGMENT_HEADER();
 
 #define OPEN_INDEX_READ \
 OPEN_HEADER_READ; \
-IF_NO_SEGMENT_INDEX return TreeFAILURE;
+CHECK_SEGMENT_INDEX();
 
 #define GETSEGMENTTIMES \
 OPEN_INDEX_READ \
@@ -886,6 +892,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
   *num = 0;
   OPEN_DATAFILE_READ;
   IF_NO_EXTENDED_NCI   return status;
+  SEGMENT_HEADER _shead,*shead;shead=&_shead;\
   IF_NO_SEGMENT_HEADER return status;
   *num = shead->idx + 1;
   return status;
@@ -1688,8 +1695,8 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   int bytes_to_insert;
   int64_t offset;
   int i;
-  IF_NO_EXTENDED_NCI   RETURN(UNLOCK_NCI,TreeNOSEGMENTS);
-  IF_NO_SEGMENT_HEADER RETURN(UNLOCK_NCI,TreeNOSEGMENTS);
+  CHECK_EXTENDED_NCI(UNLOCK_NCI);
+  CHECK_SEGMENT_HEADER(UNLOCK_NCI);
   if (data->dtype != shead->dtype)
     RETURN(UNLOCK_NCI,TreeINVDTYPE);
   if ((a_coeff->dimct == 1)
