@@ -37,6 +37,7 @@ int TdiYacc_RESOLVE();
 int TdiYacc_ARG(struct marker *mark_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor *ptr;
   struct descriptor_xd junk = EMPTY_XD;
   unsigned int len = mark_ptr->rptr->length;
@@ -77,6 +78,7 @@ int TdiYacc_BUILD(int ndesc,
 		  struct marker *arg1,
 		  struct marker *arg2, struct marker *arg3, struct marker *arg4)
 {
+  GET_TDITHREADSTATIC_P;
   struct descriptor_function *tmp;
   int dsc_size = sizeof(struct descriptor_function) + sizeof(struct descriptor *) * (ndesc - 1);
   unsigned int vm_size = dsc_size + sizeof(unsigned short);
@@ -133,6 +135,7 @@ int TdiYacc_BUILD(int ndesc,
 */
 int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   struct descriptor_xd xd = EMPTY_XD, junk = EMPTY_XD, *ptr = *dsc_ptr_ptr;
   int status;
 
@@ -185,6 +188,7 @@ int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 
 int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   struct descriptor_function *out_ptr = *out_ptr_ptr;
   struct TdiFunctionStruct *this_ptr;
   int j, ndesc, opcode;

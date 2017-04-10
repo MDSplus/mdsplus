@@ -9,7 +9,7 @@
 
 
 void __assert_fail (const char *__assertion, const char *__file,
-                    unsigned int __line, const char *__function)
+                    ASSERT_LINE_TYPE __line, const char *__function)
 {    
     printf(" .-----------------------------------. \n"
            " |  Assertion failed during test     | \n"
@@ -52,7 +52,7 @@ void __test_assert_fail(const char *file __attribute__ ((unused)), int line __at
 
 void __mark_point(const char *__assertion __attribute__ ((unused)),
 		  const char *__file __attribute__ ((unused)),
-		  unsigned int __line __attribute__ ((unused)),
+		  ASSERT_LINE_TYPE __line __attribute__ ((unused)),
 		  const char *__function __attribute__ ((unused))) {}
 
 void __test_exit() { exit(0); }

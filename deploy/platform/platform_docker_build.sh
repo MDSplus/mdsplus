@@ -19,15 +19,11 @@ runtests() {
     # run tests with the platform specific params read from test32 and test64
     testarch ${test64};
     testarch ${test32};
-    if [ -z "$NOMAKE" ]; then
-        echo "TEST RESULTS:"
-        checktests;
-        GREEN $COLOR
-        echo "SUCCESS"
-        NORMAL $COLOR
-    fi
+    checktests;
 }
 testarch(){
+    archlist="${archlist} $1"
+    echo archlist=${archlist}
     sanitize   $@;
     normaltest $@;
 }
@@ -79,24 +75,36 @@ EOF
             fi
         fi
 }
-checktests() {
+
+checktestarch() {
     set +e
     ### Check status of all tests. If errors found print error messages and then exit with failure
-    checkstatus failed "Failure: 64-bit test suite failed." $tests_64
-    checkstatus failed "Failure: 64-bit valgrind test suite failed." $tests_64_val
+    checkstatus failed "Failure: ${1}-bit make failed."                $(getenv    "make_${1}")
+    checkstatus failed "Failure: ${1}-bit install failed."             $(getenv "install_${1}")
+    checkstatus failed "Failure: ${1}-bit test suite failed."          $(getenv   "tests_${1}")
+    checkstatus failed "Failure: ${1}-bit valgrind test suite failed." $(getenv   "tests_${1}_val")
     for test in address thread undefined; do
-        checkstatus failed "Failure: 64-bit santize with ${test} failed." $(getenv "tests_64_san_${test}")
+        checkstatus failed "Failure: ${1}-bit santize with ${test} make failed."    $(getenv "make_${1}_san_${test}")
+        checkstatus failed "Failure: ${1}-bit santize with ${test} install failed." $(getenv "install_${1}_san_${test}")
+        checkstatus failed "Failure: ${1}-bit santize with ${test} tests failed."   $(getenv "tests_${1}_san_${test}")
     done;
-    checkstatus failed "Failure: 32-bit test suite failed." $tests_32
-    checkstatus failed "Failure: 32-bit valgrind test suite failed." $tests_32_val
-    for test in address thread undefined; do
-        checkstatus failed "Failure: 32-bit santize with ${test} failed." $(getenv "tests_32_san_${test}")
-    done;
-    checkstatus abort "Failure: One or more tests have failed (see above)." $failed
 }
+
+checktests() {
+    if [ -z "$NOMAKE" ]; then
+        echo "TEST RESULTS:"
+        for arch in ${archlist};do
+            checktestarch $arch
+        done
+        checkstatus abort "Failure: One or more tests have failed (see above)." $failed
+        GREEN $COLOR
+        echo "SUCCESS"
+        NORMAL $COLOR
+    fi
+}
+
 sanitize() {
     ### Build with sanitizers and run tests with each sanitizer
-    SANITIZE="$(spacedelim $SANITIZE)"
     if [ ! -z "$SANITIZE" ]
     then
         for test in ${SANITIZE}; do
@@ -108,9 +116,11 @@ sanitize() {
             elif [ "$status" = "0" ]; then
               if [ -z "$NOMAKE" ]; then
                 $MAKE
+                checkstatus abort "Failure compiling $1-bit with sanitize-${test}." $?
                 $MAKE install
+                checkstatus abort "Failure installing $1-bit with sanitize-${test}." $?
                 :&& tio 1800 $MAKE -k tests 2>&1
-                checkstatus tests_${1}_san_${test} "Failure doing $1-bit sanitize test ${test}." $?
+                checkstatus tests_${1}_san_${test} "Failure testing $1-bit with sanitize-${test}." $?
               fi
             else
                 echo "configure returned status $?"
@@ -126,37 +136,25 @@ normaltest() {
         echo $n
     }
     ### Build with debug to run regular and valgrind tests
-    VALGRIND_TOOLS="$(spacedelim $VALGRIND_TOOLS)"
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
     config_test $@
    if [ -z "$NOMAKE" ]; then
     $MAKE
+    checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
+    checkstatus abort "Failure installing $1-bit." $?
     ### Run standard tests
     :&& tio 600 $MAKE -k tests 2>&1
-    checkstatus tests_$1 "Failure doing $1-bit normal tests." $?
+    checkstatus tests_$1 "Failure testing $1-bit." $?
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
         to=$( gettimeout $VALGRIND_TOOLS )
         :&& tio $to  $MAKE -k tests-valgrind 2>&1
-        checkstatus tests_${1}_val "Failure doing $1-bit valgrind tests." $?
+        checkstatus tests_${1}_val "Failure testing $1-bit with valgrind." $?
     fi
    fi
     popd
-}
-spacedelim() {
-    if [ ! -z "$1" ]
-    then
-        if [ "$1" = "skip" ]
-        then
-            ans=""
-        else
-            IFS=',' read -ra ARR <<< "$1"
-            ans="${ARR[*]}"
-        fi
-    fi
-    echo $ans
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -177,7 +175,7 @@ NORMAL() {
     fi
 }
 export PYTHONDONTWRITEBYTECODE=no
-export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}') 
+export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}')
 main(){
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
     if [ -r /source/deploy/os/${OS}.env ]
@@ -189,18 +187,17 @@ main(){
         set +e
         runtests
     fi
-    if [ "${BRANCH}" = "stable" ]
-    then
-        BNAME=""
-    else
-        BNAME="-$(echo ${BRANCH} | sed -e 's/-/_/g')"
-    fi
+    case "$BRANCH" in
+     stable) export BNAME="";;
+      alpha) export BNAME="-alpha";;
+          *) export BNAME="-other";;
+    esac
     if [ "$RELEASE" = "yes" ]
     then
         set +e
         buildrelease
     fi
-    if [ "$PUBLISH" = "yes" ]
+    if [ -z "$NOMAKE" ] && [ "$PUBLISH" = "yes" ]
     then
         set +e
         publish

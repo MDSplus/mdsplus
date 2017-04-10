@@ -95,7 +95,7 @@ printf("TAG1: %s\n", pvName);
 	delete [] tags;
     }catch(MdsException *exc)
     {
-	cout << "Error reading tags: "<< exc->what() << "\n";
+	std::cout << "Error reading tags: "<< exc->what() << "\n";
     }
 }
 
@@ -129,7 +129,7 @@ mdsServer::mdsServer (Tree *tree, bool appendIn)
 	    	    if(pPV->isValid())
 		    {
 	    		this->installAliasName(*pPV, pvName);
-			cout << pvName << "\n";
+			std::cout << pvName << "\n";
 		    }
 	    	    else
 			delete pPV;
@@ -137,9 +137,11 @@ mdsServer::mdsServer (Tree *tree, bool appendIn)
 		    deleteData(pvNameData);
 		    delete parentNode;
 		    delete valNode;
-		}catch(MdsException exc)
+		}catch(MdsException *exc)
 		{
-		    cout << "Inconsistent node set found: " << fullPath << "\n";
+	
+		    std::cout << "Inconsistent node set found: " << fullPath << " " << exc->what() << "\n";
+		    //std::cout << "Inconsistent node set found: " << fullPath << " " <<  "\n";
 		}
 		delete [] fullPath;
 	    }
@@ -148,7 +150,7 @@ mdsServer::mdsServer (Tree *tree, bool appendIn)
 	delete stringNodes;
      }catch(MdsException *exc)
     {
-	cout << "Error Scanning tree: "<< exc->what() << "\n";
+	std::cout << "Error Scanning tree: "<< exc->what() << "\n";
     }
  }
 

@@ -76,6 +76,7 @@ typedef struct {
 int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   STATIC_CONSTANT DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
   register char *pin, *pout;
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
@@ -84,7 +85,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   int stride[MAXDIM + 1], *px[MAXDIM], count[MAXDIM];
   struct descriptor_signal *psig;
   struct descriptor_dimension *pdim;
-  struct descriptor_xd *keeps = TdiThreadStatic()->TdiSELF_PTR;
+  struct descriptor_xd *keeps = TdiThreadStatic_p->TdiSELF_PTR;
   array_coeff *pdat, *pdi = 0;
   array_coeff arr = *(array_coeff *) & coeff0;
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
@@ -165,7 +166,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
       pdim = (struct descriptor_dimension *)psig;
       if (psig && dim < psig->ndesc - 2 &&
 	  (pdim = (struct descriptor_dimension *)psig->dimensions[dim]) != 0) {
-	TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)psig;
+	TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)psig;
 	status = TdiCull(psig, &ddim, dim + 1 < narg ? list[dim + 1] : 0, &xx[dim] MDS_END_ARG);
 	if STATUS_OK
 	  status = TdiXtoI(pdim, xx[dim].pointer, &ii[dim] MDS_END_ARG);
@@ -191,7 +192,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
 	  }
 	  MdsFree1Dx(&xd, NULL);
 	}
-	TdiThreadStatic()->TdiSELF_PTR = keeps;
+	TdiThreadStatic_p->TdiSELF_PTR = keeps;
 	if (STATUS_OK && bounded)
 	  pin += *(int *)&pdat->m[dim * 2 + dimct] * stride[dim];
 	highdim = dim + 1;
@@ -210,17 +211,17 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
 	  status = TdiUbound(pdat, &ddim, &dright MDS_END_ARG);
 	if (dim + 1 < narg && list[dim + 1]) {
 	  struct descriptor *keep[3];
-	  keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
-	  keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
-	  keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
-	  TdiThreadStatic()->TdiRANGE_PTRS[0] = (struct descriptor *)&dleft;
-	  TdiThreadStatic()->TdiRANGE_PTRS[1] = (struct descriptor *)&dright;
-	  TdiThreadStatic()->TdiRANGE_PTRS[2] = 0;
+	  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
+	  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
+	  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = (struct descriptor *)&dleft;
+	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = (struct descriptor *)&dright;
+	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
 	  if STATUS_OK
 	    status = TdiData(list[dim + 1], &ii[dim] MDS_END_ARG);
-	  TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
-	  TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
-	  TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
 	  if STATUS_OK
 	    status = TdiLong(&ii[dim], &ii[dim] MDS_END_ARG);
 	  if STATUS_OK
@@ -328,6 +329,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
 int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor_xd dwu = EMPTY_XD, sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
   struct descriptor_with_units *pwu;
@@ -341,9 +343,9 @@ int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *li
   array_coeff *pa;
   char *abase, *po = 0;
   int *pindex = 0;
-  keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
-  keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
-  keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
+  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
+  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
+  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
   range[0].pointer = (char *)&left;
   range[1].pointer = (char *)&right;
 	/*************************
@@ -372,14 +374,14 @@ int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *li
         Get subscript expression B and its signality.
         Must have default ranges defined before get.
         ********************************************/
-  TdiThreadStatic()->TdiRANGE_PTRS[0] = &range[0];
-  TdiThreadStatic()->TdiRANGE_PTRS[1] = &range[1];
-  TdiThreadStatic()->TdiRANGE_PTRS[2] = 0;
+  TdiThreadStatic_p->TdiRANGE_PTRS[0] = &range[0];
+  TdiThreadStatic_p->TdiRANGE_PTRS[1] = &range[1];
+  TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
   if STATUS_OK
     status = TdiGetArgs(opcode, 1, &list[1], sig, uni, dat, cats);
-  TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
-  TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
-  TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
+  TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
+  TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
+  TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
   uni[0].pointer = (struct descriptor *)pwu->units;

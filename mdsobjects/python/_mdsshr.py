@@ -40,22 +40,25 @@ class MdsTimeout(MdsshrException):
 class MdsNoMoreEvents(MdsshrException):
     pass
 
-def getenv(name):
+def getenv(name,*default):
     """get environment variable value
     @param name: name of environment variable
     @type name: str
     @return: value of environment variable or None if not defined
     @rtype: str or None
     """
-    tl=_mdsshr.TranslateLogical
-    tl.restype=_C.c_char_p
+    tl = _mdsshr.TranslateLogical
+    tl.restype=_C.c_void_p
+    ptr = tl(_ver.tobytes(name))
+    if ptr is None:
+        if len(default)>0:
+            return default[0]
+        return None
+    ptr = _C.c_void_p(ptr)
     try:
-        ans=tl(_ver.tobytes(str(name)))
-        if ans is not None:
-            ans = _ver.tostr(ans)
-    except:
-        ans=""
-    return ans
+        return _ver.tostr(_C.cast(ptr,_C.c_char_p).value)
+    finally:
+        _mdsshr.TranslateLogicalFree(ptr)
 
 def setenv(name,value):
     """set environment variable
@@ -106,7 +109,7 @@ def MdsSerializeDscOut(desc):
     xd=_desc.descriptor_xd()
     if not isinstance(desc,_desc.descriptor):
         desc=_desc.descriptor(desc)
-    status=_mdsshr.MdsSerializeDscOut(_C.pointer(desc),_C.pointer(xd))
+    status=_mdsshr.MdsSerializeDscOut(_C.byref(desc),_C.byref(xd))
     if (status & 1) == 1:
       return xd.value
     else:
@@ -116,7 +119,7 @@ def MdsSerializeDscIn(bytes):
     if len(bytes) == 0:  # short cut if setevent did not send array
         return _apd.List([])
     xd=_desc.descriptor_xd()
-    status=_mdsshr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.pointer(xd))
+    status=_mdsshr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.byref(xd))
     if (status & 1) == 1:
       return xd.value
     else:
@@ -124,7 +127,7 @@ def MdsSerializeDscIn(bytes):
 
 def MdsDecompress(value):
     xd=_desc.descriptor_xd()
-    status = _mdsshr.MdsDecompress(_C.pointer(value),_C.pointer(xd))
+    status = _mdsshr.MdsDecompress(_C.byref(value),_C.byref(xd))
     if (status & 1) == 1:
         return xd.value
     else:
@@ -135,24 +138,24 @@ def MdsCopyDxXd(desc):
     xd=_desc.descriptor_xd()
     if not isinstance(desc,_desc.descriptor):
         desc=_desc.descriptor(desc)
-    status=_mdsshr.MdsCopyDxXd(_C.pointer(desc),_C.pointer(xd))
+    status=_mdsshr.MdsCopyDxXd(_C.byref(desc),_C.byref(xd))
     if (status & 1) == 1:
         return xd
     else:
         raise _Exceptions.statusToException(status)
 
 #def MdsCompareXd(value1,value2):
-#    return MdsShr.MdsCompareXd(_C.pointer(descriptor(value1)),_C.pointer(descriptor(value2)))
+#    return MdsShr.MdsCompareXd(_C.byref(descriptor(value1)),_C.byref(descriptor(value2)))
 
 def MdsCompareXd(value1,value2):
     if not isinstance(value1,_desc.descriptor):
         value1=_desc.descriptor(value1)
     if not isinstance(value2,_desc.descriptor):
         value2=_desc.descriptor(value2)
-    return _mdsshr.MdsCompareXd(_C.pointer(value1),_C.pointer(value2))
+    return _mdsshr.MdsCompareXd(_C.byref(value1),_C.byref(value2))
 
 def MdsFree1Dx(value):
-    _mdsshr.MdsFree1Dx(_C.pointer(value),_C.c_void_p(0))
+    _mdsshr.MdsFree1Dx(_C.byref(value),_C.c_void_p(0))
 
 def DateToQuad(date):
     ans=_C.c_ulonglong(0)

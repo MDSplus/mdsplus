@@ -60,7 +60,8 @@ STATIC_ROUTINE void TASK_AST(int astpar, int r0, int r1, int *pc, int psl)
 
 STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr)
 {
-  int dtype, ndesc, j, status;
+  INIT_STATUS;
+  int dtype, ndesc, j;
   void **arglist[256];
   ndesc = ptask->ndesc;
   while (ndesc > 3 && ptask->arguments[ndesc - 4] == 0)
@@ -85,8 +86,8 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
 	arglist[j] = (void *)pmethod->arguments[j - 3];
       arglist[ndesc] = (void *)out_ptr;
       arglist[ndesc + 1] = MdsEND_ARG;
-      void* result = LibCallg(arglist, TreeDoMethod);
-      status = TdiPutLong((int*)&result, out_ptr);
+      status = (int)((char *)LibCallg(arglist, TreeDoMethod) - (char *)0);
+      status = TdiPutLong(&status, out_ptr);
       StrFree1Dx(&method_d);
       break;
     }

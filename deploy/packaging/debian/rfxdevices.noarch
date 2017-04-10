@@ -58,7 +58,6 @@
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__store.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__trigger.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1740.py
-./usr/local/mdsplus/tdi/RfxDevices/CAENV1740__add.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENVME_FIFOBLTReadCycle.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENVME_FIFOBLTWriteCycle.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENVME_Init.fun
@@ -321,6 +320,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/MARTE_CONFIG.py
 ./usr/local/mdsplus/tdi/RfxDevices/MARTE_DEQU.py
 ./usr/local/mdsplus/tdi/RfxDevices/MARTE_DEVICE.py
+./usr/local/mdsplus/tdi/RfxDevices/MARTE_DUTY_CYCLE.py
 ./usr/local/mdsplus/tdi/RfxDevices/MARTE_EDA1.py
 ./usr/local/mdsplus/tdi/RfxDevices/MARTE_EDA1_OUT.py
 ./usr/local/mdsplus/tdi/RfxDevices/MARTE_EDA3.py

@@ -26,6 +26,7 @@ typedef const LPBYTE LPCBYTE;
 #endif
 #include <config.h>
 #include <mdsdescrip.h>
+#include <status.h>
 static LOGINREC *loginrec = 0;
 static DBPROCESS *dbproc = 0;
 
@@ -247,7 +248,7 @@ int *prows;
     parsed[0] = '\0';
     status = USER_GETS(ptext, parsed, &nmarks, user_args);
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     return status;
   status = dbcmd(dbproc, nmarks ? parsed : ptext);
   if (status != SUCCEED)
@@ -257,11 +258,11 @@ int *prows;
     int rowcount = 0, rblob = strncmp("sElEcT", nmarks ? parsed : ptext, 6);
     while ((status = dbresults(dbproc)) == SUCCEED) {
       status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
-      if (status == SUCCEED)
+      if (STATUS_OK)
 	while ((status = dbnextrow(dbproc)) != NO_MORE_ROWS) {
 	  ++rowcount;
 	  status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
-	  if (!status)
+	  if (STATUS_NOT_OK)
 	    goto close;
 	}
     }

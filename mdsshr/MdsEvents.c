@@ -1,6 +1,7 @@
 #include <config.h>
 #include <STATICdef.h>
 #include <mdsshr.h>
+#include <status.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include <stdio.h>
@@ -166,7 +167,7 @@ static char *eventName(char const *eventnam_in) {
   }
   return eventnam;
 }
-  
+
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
@@ -457,15 +458,6 @@ STATIC_ROUTINE char *getEnvironmentVar(char const *name)
     return NULL;
   return trans;
 }
-
-#ifndef _WIN32
-STATIC_ROUTINE int searchOpenServer(char *server)
-/* Avoid doing MdsConnect on a server already connected before */
-/* for now, allow socket duplications */
-{
-  return 0;
-}
-#endif
 
 STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int *num_servers)
 {
@@ -920,7 +912,7 @@ STATIC_CONSTANT void KillHandler()
 {
   void *dummy;
   external_shutdown = 1;
-  write(fds[1], "x", 1) == 1 ? 0 : -1;
+  write(fds[1], "x", 1);
   pthread_join(external_thread, &dummy);
   close(fds[0]);
   close(fds[1]);
@@ -930,16 +922,12 @@ STATIC_CONSTANT void KillHandler()
 
 STATIC_ROUTINE void handleRemoteAst()
 {
+  INIT_STATUS;
   char buf[16];
-  int status = 1, i;
+  int i;
   Message *m;
   int tablesize = FD_SETSIZE, selectstat;
   fd_set readfds;
-
-  if (!(status & 1)) {
-    printf("%s\n", MdsGetMsg(status));
-    return;
-  }
   while (1) {
     FD_ZERO(&readfds);
     for (i = 0; i < num_receive_servers; i++)
@@ -952,13 +940,13 @@ STATIC_ROUTINE void handleRemoteAst()
       return;
     }
     if (external_shutdown) {
-      status = read(fds[0], buf, 1) == 1 ? 0 : -1;
+      read(fds[0], buf, 1);
       pthread_exit(0);
     }
     for (i = 0; i < num_receive_servers; i++) {
       if (receive_ids[i] > 0 && FD_ISSET(receive_sockets[i], &readfds)) {
 	m = GetMdsMsg_(receive_ids[i], &status);
-	if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo))) {
+	if (STATUS_OK && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo))) {
 	  MdsEventInfo *event = (MdsEventInfo *) m->bytes;
 	  ((void (*)())(*event->astadr)) (event->astprm, 12, event->data);
 	}
@@ -974,22 +962,22 @@ STATIC_ROUTINE void handleRemoteAst()
 }
 #endif
 
-STATIC_ROUTINE int searchOpenServer()
-/* Avoid doing MdsConnect on a server already connected before */
-/* for now, allow socket duplications */
-{
-  return 0;
-}
-
 /*
     for(i = 0; i < num_receive_servers; i++)
-	if(receive_servers[i] && !strcmp(server, receive_servers[i])) 
+	if(receive_servers[i] && !strcmp(server, receive_servers[i]))
 	    return receive_sockets[i];
     for(i = 0; i < num_send_servers; i++)
-	if(send_servers[i] && !strcmp(server, send_servers[i])) 
+	if(send_servers[i] && !strcmp(server, send_servers[i]))
    return 0;
 }
 */
+
+STATIC_ROUTINE int searchOpenServer(char *server __attribute__ ((unused)))
+/* Avoid doing MdsConnect on a server already connected before
+ * for now, allow socket duplications
+ */{
+  return 0;
+}
 
 STATIC_THREADSAFE pthread_mutex_t initMutex;
 STATIC_THREADSAFE int initMutex_initialized = 0;

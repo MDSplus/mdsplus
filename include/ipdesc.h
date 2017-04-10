@@ -7,6 +7,7 @@
 #endif
 #else
 typedef int SOCKET;
+#define INVALID_SOCKET -1
 #endif
 
 #define MAX_DIMS 7

@@ -14,7 +14,7 @@
 #define MDS_MAC
 #define MDS_PTHREAD
 
-#elif defined (__gnu_linux__)
+#elif defined (__linux__) && defined(__GNUC__)
 #define MDS_LINUX
 #define MDS_PTHREAD
 
@@ -46,6 +46,10 @@
 #else				// static library
 #define MDS_API
 #define MDS_API_LOCAL
+#endif
+
+#ifndef MDS_DEBUG_ACCESS
+#define MDS_DEBUG_ACCESS
 #endif
 
 #endif

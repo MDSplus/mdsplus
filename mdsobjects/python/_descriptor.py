@@ -15,7 +15,6 @@ _mdsclasses=_mimport('_mdsclasses')
 _data=_mimport('mdsdata')
 _ident=_mimport('ident')
 _apd=_mimport('apd')
-_compound=_mimport('compound')
 _mdsshr=_mimport('_mdsshr')
 _ver=_mimport('version')
 _array=_mimport('mdsarray')
@@ -378,17 +377,16 @@ class descriptor(_C.Structure):
                     val=_C.c_float(0)
                     _CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),_dtypes.DTYPE_F,_C.pointer(val),_dtypes.DTYPE_NATIVE_FLOAT)
                     raise Exception("_dtypes.DTYPE_FC is not yet supported")
-                    return _scalar.makeScalar(_N.float32(val.value))
                 if (self.dtype == _dtypes.DTYPE_DC):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
-                    return None
                 if (self.dtype == _dtypes.DTYPE_NID):
+                    
                     return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
-                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                        return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
                     else:
-                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                        return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):
@@ -467,7 +465,7 @@ class descriptor(_C.Structure):
                         descr.arsize=descr.arsize*dim
                         shape.append(dim)
             else:
-                shape=[int(descr.arsize/descr.length),]
+                shape=[descr.arsize/descr.length if descr.length != 0 else 0,]
             if self.dtype == _dtypes.DTYPE_T:
                 return _array.StringArray(_N.ndarray(shape=shape,dtype=_N.dtype(('S',descr.length)),buffer=_ver.buffer(_C.cast(self.pointer,_C.POINTER(_C.c_byte*descr.arsize)).contents)))
 #                return StringArray(_N.chararray(shape,itemsize=descr.length,buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_char*descr.arsize)).contents.value)))
@@ -554,14 +552,18 @@ class descriptor_xd(_C.Structure):
           return None
         else:
           return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
-
     value=property(_getValue)
 
+    def free(self):
+        if self.pointer:
+            _mdsshr.MdsFree1Dx(self)
+            self.pointer = None
+    def __enter__(self):
+        return self
+    def __exit__(self,*args):
+        self.free()
     def __del__(self):
-        try:
-          _mdsshr.MdsFree1Dx(self)
-        except:
-          pass
+        self.free()
 
 class descriptor_r(_C.Structure):
     if _os.name=='nt' and _struct.calcsize("P")==8:
@@ -760,3 +762,4 @@ class descriptor_a(_C.Structure):
 _tdishr=_mimport('_tdishr')
 _treenode=_mimport('treenode')
 _tree=_mimport('tree')
+_compound=_mimport('compound')

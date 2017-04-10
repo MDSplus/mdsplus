@@ -53,8 +53,6 @@ typedef struct _event_struct {
 #ifdef WIN32
 #include <windows.h>
 #else
- typedef int SOCKET;
- #define INVALID_SOCKET -1
 #include <X11/Intrinsic.h>
 static XtInputId XTINPUTID = 0;
 #endif

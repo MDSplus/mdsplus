@@ -1,22 +1,10 @@
+#ifndef TDIREFZONE_H
+#include "tdirefzone.h"
+#else
+#ifndef TDITHREADSAFE_H
+#define TDITHREADSAFE_H
 #include <mdsdescrip.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#else
-#define pthread_mutex_t HANDLE
-#define pthread_once_t int
-#define PTHREAD_ONCE_INIT 0
-#endif
-#ifdef _WIN32
-#ifndef NO_WINDOWS_H
-#include <windows.h>
-#endif
-#else
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#endif
-#endif
+#include <pthread_port.h>
 
 typedef struct _thread_static {
   int TdiGetData_recursion_count;
@@ -34,8 +22,16 @@ typedef struct _thread_static {
   int compiler_recursing;
   struct descriptor *TdiRANGE_PTRS[3];
   struct descriptor_xd *TdiSELF_PTR;
+  struct TdiZoneStruct TdiRefZone;
+  unsigned int TdiIndent;
+  unsigned short TdiDecompile_max;
 } ThreadStatic;
 
-extern ThreadStatic *TdiThreadStatic();
+extern ThreadStatic *TdiGetThreadStatic();
 extern void LockTdiMutex(pthread_mutex_t *, int *);
 extern void UnlockTdiMutex(pthread_mutex_t *);
+
+#define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiGetThreadStatic()
+
+#endif
+#endif

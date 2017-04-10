@@ -78,10 +78,7 @@ def buildDebs():
     info['major']=int(version[0])
     info['minor']=int(version[1])
     info['release']=int(version[2])
-    if info['BRANCH']=="stable":
-        info['BNAME']=""
-    else:
-        info['BNAME']="-%s" % info['BRANCH']
+    info['BNAME']=os.environ['BNAME']
     info['rflavor']=info['BNAME']
     tree=ET.parse('/source/deploy/packaging/linux.xml')
     root=tree.getroot()
@@ -120,7 +117,7 @@ set -e
 dn=$(dirname %(file)s)
 mkdir -p %(tmpdir)s/DEBIAN
 mkdir -p "%(tmpdir)s/${dn}"
-cp -av %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
+cp -a %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
 """ % info,shell=True).wait() != 0:
                     raise Exception("Error building deb")
                 sys.stdout.flush()

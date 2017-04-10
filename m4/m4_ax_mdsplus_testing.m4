@@ -21,6 +21,8 @@ for _i in $2; do
 done
 ])
 
+AC_DEFUN([TS_U2WPATH],\$(shell winepath -w $1 2>/dev/null))
+
 dnl compile a winepath command using specified directories
 dnl Usage: TS_WINEPATH [var],[library_dirs]
 dnl 
@@ -112,16 +114,10 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 
-AC_DEFUN([TS_SET_SKIP_CMD],[
-          AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
-         ])
-
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
- AS_VAR_APPEND([$1],["sh -c \"exit 77\"; :"])
+ AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
 ])
-
-
 
 dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS SELECT HOST  ////////////////////////////////////////////////////////
@@ -136,15 +132,12 @@ AC_DEFUN([TS_SELECT],[
  AS_VAR_SET([LOG_DRIVER],["\$(SHELL) \$(top_srcdir)/conf/test-driver"])
  AS_VAR_SET([abs_srcdir],$(cd ${srcdir}; pwd))
 
- TS_CHECK_NOSETESTS( [$PYTHON],,
-  [AC_MSG_WARN("python-nose not found")])
-
- TS_CHECK_PYTHON_TAP( [$PYTHON],,
-  [AC_MSG_WARN("Tap plugin for python-nose not found")])
-
- AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
+ dnl TS_CHECK_NOSETESTS( [$PYTHON],,
+ dnl  [AC_MSG_WARN("python-nose not found")])
+ dnl TS_CHECK_PYTHON_TAP( [$PYTHON],,
+ dnl  [AC_MSG_WARN("Tap plugin for python-nose not found")])
+ dnl LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH};
  AS_VAR_APPEND([PY_LOG_FLAGS], [""])
-
 
  AS_CASE(["${build_os}:${host}"],
  #
@@ -159,24 +152,40 @@ AC_DEFUN([TS_SELECT],[
      [
       TS_WINE_ENV([WINEPREFIX],[WINEARCH])
       TS_WINE_LIBRARIESPATH([WINEPATH])
-      TS_WINEPATH([_mds_path],["${abs_srcdir}/tdi"])
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='${_mds_path}' ")
+      AS_VAR_SET([PYTHONHOME],"TS_U2WPATH([/python27])")
       AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEARCH='${WINEARCH}' WINEPREFIX='${WINEPREFIX}' ")
-      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEDEBUG=-all ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH='TS_U2WPATH([\$(abs_top_srcdir)/tdi])' ")
+      AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR='TS_U2WPATH([\$(abs_top_srcdir)])' ")
+      AS_VAR_IF([WINEARCH],[win64],
+        [
+         AS_VAR_APPEND([WINEPATH],"${PYTHONHOME}")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONHOME='${PYTHONHOME}' ")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH='%PYTHONHOME%\\Lib;%PYTHONHOME%\\Lib\\site-packages;TS_U2WPATH([\$(abs_top_srcdir)/testing])' ")
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"PyLib='python27' ")
+         AS_VAR_SET([PYTHON],"\$(abs_top_srcdir)/testing/winpython python")
+         AS_VAR_APPEND([PY_LOG_COMPILER],  ["\${PYTHON} -B \$(abs_top_srcdir)/testing/testing.py"])
+        ],[
+         TS_LOG_SKIP([PY_LOG_COMPILER])
+        ]
+      )
+         AS_VAR_APPEND([TESTS_ENVIRONMENT],"WINEPATH='${WINEPATH}' ")
       AS_VAR_APPEND([LOG_COMPILER],"wine ")
-
- # WINE Valgrind tuning ..
- # see: http://wiki.winehq.org/WineAndValgrind
- #
- # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
+      # WINE Valgrind tuning ..
+      # see: http://wiki.winehq.org/WineAndValgrind
+      #
+      # ensures that bitmap-related code, such as GetBitmapBits(), works under Valgrind
       AS_VAR_APPEND([VALGRIND_FLAGS],"--vex-iropt-register-updates=allregs-at-mem-access ")
- #
- # quiets warnings about accesses slightly below the stack pointer. This is due
- # to a known but benign piece of code in Wine's ntdll
- # (see Bug #26263 for details)
+      #
+      # quiets warnings about accesses slightly below the stack pointer. This is due
+      # to a known but benign piece of code in Wine's ntdll
+      # (see Bug #26263 for details)
       AS_VAR_APPEND([VALGRIND_memcheck_FLAGS],"--workaround-gcc296-bugs=yes  ")
-     ],
-     [TS_LOG_SKIP([LOG_COMPILER])])
+     ],[
+      TS_LOG_SKIP([LOG_COMPILER])
+      TS_LOG_SKIP([PY_LOG_COMPILER])
+     ]
+   )
  ],
  #
  # LINUX->LINUX
@@ -185,10 +194,12 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->linux")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PATH=${MAKEBINDIR}:\${PATH} ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDSPLUS_DIR=\$(abs_top_srcdir) ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"MDS_PATH=\$(abs_top_srcdir)/tdi ")
    AS_VAR_APPEND([TESTS_ENVIRONMENT],"${LIBPATH}=${MAKESHLIBDIR}\$(if \${${LIBPATH}},:\${${LIBPATH}}) ")
-   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(prefix)/mdsobjects/python:\$(abs_top_srcdir)/mdsobjects/python:\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([TESTS_ENVIRONMENT],"PYTHONPATH=\$(abs_top_srcdir)/testing\$(if \${PYTHONPATH},:\${PYTHONPATH}) PYTHONDONTWRITEBYTECODE=yes")
+   AS_VAR_APPEND([PY_LOG_COMPILER],  ["${PYTHON} -B \$(top_srcdir)/testing/testing.py"])
  ],
  #
  # OTHER

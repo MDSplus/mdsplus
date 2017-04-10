@@ -60,6 +60,7 @@
 ./usr/local/mdsplus/include/msc_stdint.h
 ./usr/local/mdsplus/include/ncidef.h
 ./usr/local/mdsplus/include/opcbuiltins.h
+./usr/local/mdsplus/include/pthread_port.h
 ./usr/local/mdsplus/include/release.h
 ./usr/local/mdsplus/include/rtevents.h
 ./usr/local/mdsplus/include/servershr.h

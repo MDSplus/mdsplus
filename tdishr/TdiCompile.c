@@ -16,20 +16,9 @@ extern unsigned short OpcCompile;
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <STATICdef.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#else
-#undef select
-#endif
+
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
-
-
 
 extern int TdiEvaluate();
 extern int TdiYacc();
@@ -45,11 +34,11 @@ extern void TdiYyReset();
         Limitations:
         For recursion must pass LEX:
                 zone status bol cur end
-                yylval yyval
-                yytext[YYLMAX] yyleng yymorfg yytchar yyin? yyout?
+                tdiyylval tdiyyval
+                tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
         For recursion must pass YACC also:
-                yydebug? yyv[YYMAXDEPTH] yychar yynerrs yyerrflag
-        Thus no recursion because the yy's are built into LEX and YACC.
+                tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
+        Thus no recursion because the tdiyy's are built into LEX and YACC.
         IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
 STATIC_THREADSAFE int yacc_mutex_initialized = 0;
@@ -61,7 +50,8 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
   EMPTYXD(tmp);
   struct descriptor *text_ptr;
   LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
-  if (TdiThreadStatic()->compiler_recursing == 1) {
+  GET_TDITHREADSTATIC_P;
+  if (TdiThreadStatic_p->compiler_recursing == 1) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
     return TdiRECURSIVE;
   }
@@ -71,20 +61,19 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
     status = TdiINVDTYDSC;
   if STATUS_OK {
     if (text_ptr->length > 0) {
-      if (TdiThreadStatic()->compiler_recursing == 1) {
+      if (TdiThreadStatic_p->compiler_recursing == 1) {
 	fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported\n");
 	return TdiRECURSIVE;
       }
-      TdiThreadStatic()->compiler_recursing = 1;
+      TdiThreadStatic_p->compiler_recursing = 1;
       if (!TdiRefZone.l_zone)
 	status = LibCreateVmZone(&TdiRefZone.l_zone);
-
-	/****************************************
-                  In case we bomb out, probably not needed.
-        ****************************************/
+      /****************************************
+      In case we bomb out, probably not needed.
+      ****************************************/
       TdiRefZone.l_status = TdiBOMB;
       if (TdiRefZone.a_begin)
-	free(TdiRefZone.a_begin);
+          free(TdiRefZone.a_begin);
       TdiRefZone.a_begin = TdiRefZone.a_cur =
 	  memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
       TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
@@ -99,10 +88,9 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 	else
 	  status = TdiRefZone.l_status;
       }
-
-	/************************
-                  Move from temporary zone.
-        ************************/
+      /************************
+      Move from temporary zone.
+      ************************/
       if STATUS_OK {
 	if (TdiRefZone.a_result == 0)
 	  MdsFree1Dx(out_ptr, NULL);
@@ -110,27 +98,27 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 	  status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
       }
       LibResetVmZone(&TdiRefZone.l_zone);
-      TdiThreadStatic()->compiler_recursing = 0;
-    } else
-      MdsFree1Dx(out_ptr, NULL);
+      TdiThreadStatic_p->compiler_recursing = 0;
+    }
   }
   MdsFree1Dx(&tmp, NULL);
+  if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   UnlockMdsShrMutex(&yacc_mutex);
   return (status);
 }
 
 /*-------------------------------------------------------
-        Compile and evaluate an expression.
-                result = EXECUTE(string, [arg1,...])
+  Compile and evaluate an expression.
+      result = EXECUTE(string, [arg1,...])
 */
 int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-
   status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
   if STATUS_OK
     status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
+  if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   return status;
 }

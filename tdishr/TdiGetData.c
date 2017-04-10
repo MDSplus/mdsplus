@@ -171,8 +171,8 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
   struct descriptor_xd hold = EMPTY_XD;
   struct descriptor_r *pin = (struct descriptor_r *)their_ptr;
   INIT_STATUS;
-
-  int *recursion_count = &((TdiThreadStatic())->TdiGetData_recursion_count);
+  GET_TDITHREADSTATIC_P;
+  int *recursion_count = &(TdiThreadStatic_p->TdiGetData_recursion_count);
   *recursion_count = (*recursion_count + 1);
   if ((*recursion_count) > 1800)
     return TdiRECURSIVE;
@@ -254,23 +254,23 @@ int TdiGetData(unsigned char omits[], struct descriptor *their_ptr, struct descr
 		      pin->dscptrs, &hold);
 	  goto redo;
 	case DTYPE_PARAM:
-	  keep = (struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR;
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)pin;
+	  keep = (struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)pin;
 	  status =
 	      TdiGetData(omits,
 			 (struct descriptor *)((struct descriptor_param *)pin)->value, &hold);
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)keep;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)keep;
 	  break;
 	case DTYPE_SIGNAL:
 			/******************************************
                         We must set up for reference to our $VALUE.
                         ******************************************/
-	  keep = (struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR;
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)pin;
+	  keep = (struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)pin;
 	  status =
 	      TdiGetData(omits,
 			 (struct descriptor *)((struct descriptor_signal *)pin)->data, &hold);
-	  TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)keep;
+	  TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)keep;
 	  break;
 		/***************
                 Windowless axis.
@@ -468,7 +468,7 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
   };
 
   status = TdiGetData(omits, in_ptr, &tmp);
-  if STATUS_OK
+  if STATUS_OK {
     switch (tmp.pointer->dtype) {
     case DTYPE_T:
     case DTYPE_PATH:
@@ -485,6 +485,8 @@ extern EXPORT int TdiGetNid(struct descriptor *in_ptr, int *nid_ptr)
       status = TdiINVDTYDSC;
       break;
     }
+    MdsFree1Dx(&tmp, NULL);
+  }
   return status;
 }
 
@@ -502,8 +504,9 @@ int Tdi1This(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
 	     struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  if (TdiThreadStatic()->TdiSELF_PTR)
-    status = MdsCopyDxXd((struct descriptor *)(TdiThreadStatic()->TdiSELF_PTR), out_ptr);
+  GET_TDITHREADSTATIC_P;
+  if (TdiThreadStatic_p->TdiSELF_PTR)
+    status = MdsCopyDxXd((struct descriptor *)(TdiThreadStatic_p->TdiSELF_PTR), out_ptr);
   else
     status = TdiNO_SELF_PTR;
   return status;
@@ -519,16 +522,16 @@ int Tdi1Value(int opcode __attribute__ ((unused)) , int narg __attribute__ ((unu
 	      struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-
-  if (TdiThreadStatic()->TdiSELF_PTR)
-    switch (TdiThreadStatic()->TdiSELF_PTR->dtype) {
+  GET_TDITHREADSTATIC_P;
+  if (TdiThreadStatic_p->TdiSELF_PTR)
+    switch (TdiThreadStatic_p->TdiSELF_PTR->dtype) {
     case DTYPE_SIGNAL:
       status =
-	  MdsCopyDxXd(((struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR)->raw, out_ptr);
+	  MdsCopyDxXd(((struct descriptor_signal *)TdiThreadStatic_p->TdiSELF_PTR)->raw, out_ptr);
       break;
     case DTYPE_PARAM:
       status =
-	  MdsCopyDxXd(((struct descriptor_param *)TdiThreadStatic()->TdiSELF_PTR)->value, out_ptr);
+	  MdsCopyDxXd(((struct descriptor_param *)TdiThreadStatic_p->TdiSELF_PTR)->value, out_ptr);
       break;
     default:
       status = TdiINVDTYDSC;
@@ -670,6 +673,7 @@ int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ (
 		   struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor_r *rptr;
   struct descriptor_xd *keep;
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_PARAM, 0 };
@@ -683,10 +687,10 @@ int Tdi1Validation(int opcode __attribute__ ((unused)), int narg __attribute__ (
 		/******************************************
                 We must set up for reference to our $VALUE.
                 ******************************************/
-      keep = TdiThreadStatic()->TdiSELF_PTR;
-      TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)rptr;
+      keep = TdiThreadStatic_p->TdiSELF_PTR;
+      TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)rptr;
       status = TdiGetData(noomits, ((struct descriptor_param *)rptr)->validation, out_ptr);
-      TdiThreadStatic()->TdiSELF_PTR = keep;
+      TdiThreadStatic_p->TdiSELF_PTR = keep;
       break;
     default:
       status = TdiINVDTYDSC;

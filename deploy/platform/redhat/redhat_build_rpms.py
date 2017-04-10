@@ -198,7 +198,7 @@ Buildarch: noarch
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
             child.expect("Enter pass phrase: ")
             child.sendline("")

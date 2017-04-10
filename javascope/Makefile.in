@@ -238,6 +238,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -326,7 +327,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -385,7 +385,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
@@ -499,25 +498,6 @@ DOCS = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	TWU_image_message.html \
 	UpdateEvent.html UpdateEventListener.html \
 	WaveData.html WaveDisplay.html
-
-TOPDOCS = jScope.html \
-	CompositeWaveDisplay.html \
-	ConnectionEvent.html ConnectionListener.html \
-	DataProvider.html \
-	FrameData.html \
-	ReadMe.html \
-	TWU_image_message.html \
-	UpdateEvent.html UpdateEventListener.html \
-	WaveData.html WaveDisplay.html
-
-SUBDOCS = jScope.html jScope.jpg popup.jpg \
-	CompositeWaveDisplay.html \
-	ConnectionEvent.html ConnectionListener.html \
-	DataProvider.html \
-	FrameData.html \
-	data_setup.jpg frame_popup.jpg image_setup.jpg \
-	UpdateEvent.html UpdateEventListener.html \
-	WaveData.html
 
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
@@ -809,9 +789,10 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@MINGW_TRUE@clean-local:
 clean: clean-am
 
-clean-am: clean-generic clean-javaJAVA mostlyclean-am
+clean-am: clean-generic clean-javaJAVA clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -881,9 +862,9 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binSCRIPTS install-data install-data-am \
+	clean-local cscopelist-am ctags-am distclean distclean-generic \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binSCRIPTS install-data install-data-am \
 	install-dist_docsDATA install-dist_javaDATA \
 	install-dist_javaJAVA install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
@@ -900,17 +881,23 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 
 
 @MINGW_FALSE@$(bin_SCRIPTS): jScope.template
-@MINGW_FALSE@	$(INSTALL) -d scripts
-@MINGW_FALSE@	$(INSTALL) $< $@
+@MINGW_FALSE@	@ $(INSTALL) -d scripts; \
+@MINGW_FALSE@	  $(INSTALL) $< $@
+
+@MINGW_FALSE@clean-local:
+@MINGW_FALSE@	-rm -rf scripts
 $(java_DATA): classjava.stamp
 jScope.jar: colors1.tbl
-	$(MKDIR_P) @builddir@/jdocs
-	cp $(addprefix @srcdir@/,$(SUBDOCS)) @builddir@/jdocs
-	$(JAR) c0f $@ $(addprefix @srcdir@/,$(TOPDOCS)) $(JSCOPE_CLASS) @builddir@/jdocs $<
-	rm -Rf @builddir@/jdocs
+	@ echo "Creating JAR: $@ ..."; \
+	  $(MKDIR_P) $(builddir)/jdocs; \
+	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
+	  $(JAR) c0f $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
+		     -C $(srcdir) colors1.tbl; \
+	  rm -Rf $(builddir)/jdocs;
 
 WaveDisplay.jar:
-	$(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

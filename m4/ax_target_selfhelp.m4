@@ -22,17 +22,17 @@ ifndef SELFHELP_FUNC
 SELFHELP_FUNC = \\\\
     %help; \\\\
     while(<>) { \\\\
-	if(/^([[a-z0-9_-]]+):.*\\\\[#]\\\\[#](?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	if(/^([[a-zA-Z0-9_-]]+):.*\\\\[#]\\\\[#](?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
 	    push(@{\$\$help{\$\$[2]}}, @<:@\$\$[1], \$\$[3]@:>@); \\\\
 	} \\\\
     }; \\\\
     print "\\\\n"; \\\\
     print "| \${HELP_DESCRIPTION}\\\\n"; \\\\
     print "| \\\\n"; \\\\
-    print "| \${SH_GREEN}usage: make [target]\${SH_WHITE}\\\\n"; \\\\
+    print "| \${SH_GREEN}usage: make [target]\${SH_RESET}\\\\n"; \\\\
     print "| \\\\n"; \\\\
     for ( sort keys %help ) { \\\\
-	print "| \${SH_YELLOW}\$\$_\${SH_WHITE}:\\\\n"; \\\\
+	print "| \${SH_YELLOW}\$\$_:\${SH_RESET}\\\\n"; \\\\
 	printf("|   %-20s %-60s\\\\n", \$\$_->[[0]], \$\$_->[[1]]) for @{\$\$help{\$\$_}}; \\\\
 	print "| \\\\n"; \\\\
     } \\\\

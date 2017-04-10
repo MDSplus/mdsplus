@@ -369,7 +369,7 @@ Note the sign-extended unpacking.
       pe = exce;
       nbits = (char)ye;
       MdsUnpk(&nbits, &xe, (int *)ppack, pe, (int *)bit_ptr);
-      mark = -1 << (-yn - 1);
+      mark = 0xFFFFFFFF << (-yn - 1);
     }
     else {
       pe = diff;

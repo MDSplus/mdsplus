@@ -44,15 +44,12 @@
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-
-
 typedef struct _bounds {
   int l;
   int u;
 } BOUNDS;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern int TdiDECOMPILE_MAX;
 extern unsigned short OpcCompile;
 extern int TdiFaultHandlerNoFixup();
 extern int Tdi0Decompile();
@@ -76,7 +73,7 @@ Explain in 300 words or less.
 STATIC_ROUTINE void add(char *text)
 {
   struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  struct descriptor_d *message = &((TdiGetThreadStatic())->TdiIntrinsic_message);
   new.length = (unsigned short)strlen(text);
   new.pointer = text;
   if (message->length + new.length < MAXMESS)
@@ -109,9 +106,9 @@ int TdiTrace(int opcode __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)),
 	     struct descriptor_xd *out_ptr)
 {
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  struct descriptor_d *message = &(TdiGetThreadStatic()->TdiIntrinsic_message);
   if (message->length > MAXMESS)
-    return 0;
+    return MDSplusERROR;
   add("%TDI Decompile text_length");
   numb(out_ptr->length);
   add(" partial text: ");
@@ -121,24 +118,22 @@ int TdiTrace(int opcode __attribute__ ((unused)),
     *((char *)out_ptr->pointer + MAXLINE - 70) = '\0';
     add((char *)out_ptr->pointer);
   }
-  return 1;
+  return MDSplusSUCCESS;
 }
 
-int TRACE(int opcode,
-	  int narg,
+int TRACE(int opcode, int narg,
 	  struct descriptor *list[],
 	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  struct descriptor_d *message = &((TdiGetThreadStatic())->TdiIntrinsic_message);
   unsigned short now = message->length;
 
   if (now > MAXMESS)
-    return 0;
+    return C_ERROR;
   if (opcode >= 0 && opcode <= TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-
     if (narg < pfun->m1 || narg > pfun->m2) {
       add("%TDI Requires");
       numb(pfun->m1);
@@ -153,10 +148,8 @@ int TRACE(int opcode,
   } else
     add("%TDI Unknown opcode ");
   add("(");
-
-  TdiDECOMPILE_MAX = 5;
   for (j = 0; j < narg;) {
-    if (Tdi0Decompile(list[j], PREC_COMMA, &text) & 1) {
+    if IS_OK(Tdi0Decompile(list[j], PREC_COMMA, &text, 5)) {
       if (message->length - now + text.length < MAXLINE - 2)
 	StrAppend(message, (struct descriptor *)&text);
       else {
@@ -178,15 +171,14 @@ int TRACE(int opcode,
     }
   }
   add(")\n");
-  return 1;
+  return C_OK;
 }
 
 /**********************************
 Useful for access violation errors.
 **********************************/
-STATIC_ROUTINE int interlude(int (*f1) (),
-			     int opcode,
-			     int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+STATIC_ROUTINE int interlude(int (*f1) (), int opcode, int narg,
+                             struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
 #if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
@@ -206,20 +198,19 @@ STATIC_CONSTANT EMPTYXD(emptyxd);
 
 int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  INIT_STATUS;
+  INIT_STATUS, stat1 = MDSplusSUCCESS;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   struct descriptor_xd tmp;
-  int stat1 = 1;
   struct descriptor *dsc_ptr;
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  GET_TDITHREADSTATIC_P;
+  struct descriptor_d *message = &(TdiThreadStatic_p->TdiIntrinsic_message);
   tmp = emptyxd;
-  TdiThreadStatic()->TdiIntrinsic_recursion_count =
-      TdiThreadStatic()->TdiIntrinsic_recursion_count + 1;
+  TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
     status = TdiMISS_ARG;
   else if (narg > fun_ptr->m2)
     status = TdiEXTRA_ARG;
-  else if (TdiThreadStatic()->TdiIntrinsic_recursion_count > 1800)
+  else if (TdiThreadStatic_p->TdiIntrinsic_recursion_count > 1800)
     status = TdiRECURSIVE;
   else {
     struct descriptor *fixed_list[256];
@@ -238,25 +229,22 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
       if (fixed[i])
 	free(fixed_list[i]);
   }
-  if (STATUS_OK
-      || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
-
+  if (STATUS_OK || status == TdiBREAK || status == TdiCONTINUE || status == TdiGOTO || status == TdiRETURN) {
     if (!out_ptr)
       goto notmp;
     switch (out_ptr->class) {
     default:
       status = TdiINVCLADSC;
       break;
-
-		/*****************************************
-                To XD, rename it if from XD, else make it.
-                *****************************************/
     case CLASS_XD:
-		/*************************************************************************
-                WARNING could be tricky if an input is same as output and propagated thru.
-                If out overlaps tmp, then some input is the same as the output
-                and the input was freed, so don't free output.
-                *************************************************************************/
+      /*****************************************
+      To XD, rename it if from XD, else make it.
+      *****************************************/
+      /*************************************************************************
+      WARNING could be tricky if an input is same as output and propagated thru.
+      If out overlaps tmp, then some input is the same as the output
+      and the input was freed, so don't free output.
+      *************************************************************************/
       if ((char *)out_ptr->pointer + out_ptr->l_length <=
 	  (char *)tmp.pointer || (char *)out_ptr->pointer >= (char *)tmp.pointer + tmp.l_length)
 	MdsFree1Dx(out_ptr, NULL);
@@ -271,11 +259,10 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
 	MdsFree1Dx(&tmp, NULL);
       }
       break;
-
-		/************************************
-                To D, allocate and copy it (free XD).
-                ************************************/
     case CLASS_D:
+      /************************************
+      To D, allocate and copy it (free XD).
+      ************************************/
       if (tmp.class == CLASS_XD)
 	dsc_ptr = (struct descriptor *)tmp.pointer;
       else
@@ -301,12 +288,11 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
 	}
       MdsFree1Dx(&tmp, NULL);
       break;
-
-		/*******************************
-                To S, convert (free if from XD).
-                *******************************/
     case CLASS_S:
     case CLASS_A:
+      /*******************************
+      To S and A, convert (free if from XD).
+      *******************************/
       if (tmp.class == CLASS_XD)
 	dsc_ptr = tmp.pointer;
       else
@@ -338,49 +324,46 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
     status = stat1;
   }
   TRACE(opcode, narg, list, out_ptr);
-
-	/********************************
-        Compiler errors get special help.
-        ********************************/
+  /********************************
+  Compiler errors get special help.
+  ********************************/
   if (opcode == OpcCompile && message->length < MAXMESS) {
-    int len = TdiRefZone.a_end-TdiRefZone.a_begin;
-    char *cur = MINMAX(TdiRefZone.a_begin, TdiRefZone.a_cur, TdiRefZone.a_end);
-    int npre = MINMAX(0,MINMAX(0, TdiRefZone.l_ok, MAXLINE),len-2);
-    int nbody = MINMAX(0,cur - TdiRefZone.a_begin - npre,len-npre-1);
-    int npost = MINMAX(0,TdiRefZone.a_end - cur,len-npre-nbody-1);
-    nbody = MINMAX(0, nbody, MAXLINE);
-    npost = MINMAX(0, npost, MAXLINE);
-    if (npre + nbody + npost > MAXLINE)
-      npre = 0;
-    if (nbody + npost > MAXLINE) {
-      npre = MAXLINE - nbody - npost;
-      if ((int)npre < 0)
-	npre = 0;
-      if (nbody + npost > MAXLINE)
-	npost = MINMAX(0, npost, MAXFRAC);
-      if (nbody + npost > MAXLINE)
-	nbody = MAXLINE - npost;
-    }
-    {
-      struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
-      struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
-      struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
-      pre.length = (unsigned short)npre;
-      pre.pointer = npre>0 ? cur - nbody - npre : NULL;
-      body.length = (unsigned short)nbody;
-      body.pointer = nbody>0 ? cur - nbody : NULL;
-      post.length = (unsigned short)npost;
-      post.pointer = cur;
-      StrConcat((struct descriptor *)message,
-      		(struct descriptor *)message, &compile_err, &pre, &hilite,
-		&body, &hilite, &post, &newline MDS_END_ARG);
+    struct descriptor pre = { 0, DTYPE_T, CLASS_S, 0 };
+    struct descriptor body = { 0, DTYPE_T, CLASS_S, 0 };
+    struct descriptor post = { 0, DTYPE_T, CLASS_S, 0 };
+    // b------x----c----e
+    // '-l_ok-'-xc-'-ce-'
+    char *b = TdiRefZone.a_begin;
+    char *e = TdiRefZone.a_end;
+    char *c = MINMAX(b, TdiRefZone.a_cur, e);
+    char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
+    body.length = (unsigned short)MINMAX(0, c-x, MAXLINE);
+    body.pointer = body.length>0 ? x : NULL;
+    post.length = (unsigned short)MINMAX(0, e-c, MAXLINE);
+    if (body.length + post.length > MAXLINE)
+        post.length = MINMAX(0, post.length, MAXFRAC);
+    post.pointer = post.length>0 ? c : NULL;
+    pre.length = (unsigned short)MINMAX(0, x-b, MAXLINE);
+    if (pre.length + body.length + post.length > MAXLINE)
+        pre.length = 0;
+    pre.pointer = pre.length>0 ? x - pre.length : NULL;
+    StrConcat((struct descriptor *)message,
+              (struct descriptor *)message, &compile_err, &pre, &hilite,
+              &body, &hilite, &post, &newline MDS_END_ARG);
+    if (TdiRefZone.a_begin) {
+       free(TdiRefZone.a_begin);
+       TdiRefZone.a_begin = NULL;
     }
   }
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
- done:TdiThreadStatic()->TdiIntrinsic_recursion_count = 0;
-  TdiThreadStatic()->TdiIntrinsic_mess_stat = status;
+ done:TdiThreadStatic_p->TdiIntrinsic_recursion_count--;
+  TdiThreadStatic_p->TdiIntrinsic_mess_stat = status;
+  if (!TdiThreadStatic_p->TdiIntrinsic_recursion_count && TdiRefZone.a_begin) {
+      free(TdiRefZone.a_begin);
+      TdiRefZone.a_begin = NULL;
+  }
   return status;
 }
 
@@ -398,9 +381,10 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
 	      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   int option = -1;
-  int mess_stat = (TdiThreadStatic())->TdiIntrinsic_mess_stat;
-  struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
+  int mess_stat = TdiThreadStatic_p->TdiIntrinsic_mess_stat;
+  struct descriptor_d *message = &TdiThreadStatic_p->TdiIntrinsic_message;
   if (narg > 0 && list[0])
     status = TdiGetLong(list[0], &option);
   if (option & 1 && mess_stat != 1) {
@@ -413,7 +397,7 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
     if (option & 2)
       printf("%.*s", message->length, message->pointer);
     if (option & 4)
-      (TdiThreadStatic())->TdiIntrinsic_mess_stat = StrFree1Dx(message);
+      TdiThreadStatic_p->TdiIntrinsic_mess_stat = StrFree1Dx(message);
   }
   status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
   return status;
@@ -421,7 +405,6 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
 
 STATIC_ROUTINE struct descriptor *FixedArray(struct descriptor *in)
 {
-
   array_coeff *a = (array_coeff *) in;
   int dsize = sizeof(struct descriptor_a) + sizeof(int) + 3 * sizeof(int) * a->dimct;
   int i;

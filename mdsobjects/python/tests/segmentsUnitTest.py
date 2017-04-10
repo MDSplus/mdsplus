@@ -1,31 +1,39 @@
 from unittest import TestCase,TestSuite
-
 from MDSplus import Tree,Float32,Float32Array,Int16Array,setenv
-
+from threading import Lock
 
 class segmentsTests(TestCase):
+    _lock      = Lock()
+    _instances = 0
+    _tmpdir    = None
 
-    def setUp(self):
-        from tempfile import mkdtemp
-        self.tmpdir=mkdtemp()
-        setenv("seg_tree_path",self.tmpdir)
-
-    def tearDown(self):
-        import shutil, gc
-        del(self.ptree)
+    @classmethod
+    def setUpClass(cls):
+        with cls._lock:
+            if cls._instances == 0:
+                import tempfile
+                cls._tmpdir=tempfile.mkdtemp()
+            setenv("seg_tree_path",cls._tmpdir)
+            cls._instances+=1
+    @classmethod
+    def tearDownClass(cls):
+        import gc,shutil
         gc.collect()
-        shutil.rmtree(self.tmpdir)
+        with cls._lock:
+            cls._instances -= 1
+            if not cls._instances>0:
+                shutil.rmtree(cls._tmpdir)
 
     def arrayDimensionOrder(self):
         from numpy import int16,zeros
         from random import randint
-        self.ptree=Tree('seg_tree',-1,'NEW')
-        self.ptree.addNode('IMM')
-        self.ptree.write()
-        self.ptree=Tree('seg_tree',-1)
-        self.ptree.createPulse(1)
-        self.ptree=Tree('seg_tree',1)
-        node=self.ptree.getNode('IMM')
+        ptree=Tree('seg_tree',-1,'NEW')
+        ptree.addNode('IMM')
+        ptree.write()
+        ptree=Tree('seg_tree',-1)
+        ptree.createPulse(1)
+        ptree=Tree('seg_tree',1)
+        node=ptree.getNode('IMM')
         WIDTH = 640
         HEIGHT= 480;
         currFrame=zeros(WIDTH*HEIGHT, dtype = int16);
@@ -48,13 +56,29 @@ class segmentsTests(TestCase):
         self.assertEqual(shape[2],retShape[2])
 
     def runTest(self):
-        self.arrayDimensionOrder()
-
+        for test in self.getTests():
+            self.__getattribute__(test)()
+    @staticmethod
+    def getTests():
+        return ['arrayDimensionOrder']
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
-    tests = ['arrayDimensionOrder']
-    return TestSuite(map(segmentsTests,tests))
+    return TestSuite(segmentsTests.getTestCases())
 
-if __name__=='__main__':
+def run():
     from unittest import TextTestRunner
     TextTestRunner().run(suite())
+
+if __name__=='__main__':
+    import sys
+    if len(sys.argv)>1 and sys.argv[1].lower()=="objgraph":
+        import objgraph
+    else:      objgraph = None
+    import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+    run()
+    if objgraph:
+         gc.collect()
+         objgraph.show_backrefs([a for a in gc.garbage if hasattr(a,'__del__')],filename='%s.png'%__file__[:-3])

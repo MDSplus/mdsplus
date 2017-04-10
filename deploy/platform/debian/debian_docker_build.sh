@@ -2,7 +2,7 @@
 #
 # debian_docker_build is used to build, test, package and add deb's to a
 # repository for debian based systems.
-# 
+#
 # release:
 # /release/repo   -> repository
 # /release/$branch/DEBS/$arch/*.deb
@@ -67,8 +67,10 @@ buildrelease() {
 	mkdir -p /workspace/releasebld/64;
 	pushd /workspace/releasebld/64;
 	config ${test64}
-	$MAKE
-	$MAKE install
+	if [ -z "$NOMAKE" ]; then
+	  $MAKE
+	  $MAKE install
+	fi
 	popd;
     else
 	MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
@@ -76,10 +78,13 @@ buildrelease() {
 	mkdir -p /workspace/releasebld/32;
 	pushd /workspace/releasebld/32;
 	config 32 i686-linux bin lib --with-gsi=/usr:gcc64
-	$MAKE
-	$MAKE install
+	if [ -z "$NOMAKE" ]; then
+	  $MAKE
+	  $MAKE install
+	fi
 	popd
     fi
+  if [ -z "$NOMAKE" ]; then
     BUILDROOT=/workspace/releasebld/buildroot \
 	     BRANCH=${BRANCH} \
 	     RELEASE_VERSION=${RELEASE_VERSION} \
@@ -124,21 +129,27 @@ buildrelease() {
     else
         component=" ${BRANCH}"
     fi
-    arches=$(spacedelim ${ARCHES})
     cat - <<EOF > /release/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
-Architectures: ${arches}
+Architectures: ${ARCHES}
 Components: alpha stable${component}
 Description: MDSplus packages
 EOF
-    if [ -d /sign_keys/.gnupg ]
+    GPG_HOME=""
+    if [ -d /sign_keys/${OS}/.gnupg ]
     then
-        ls -l /sign_keys/.gnupg
-    	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
+	GPG_HOME="/sign_keys/${OS}"
+    elif [ -d /sign_keys/.gnupg ]
+    then
+	GPG_HOME="/sign_keys"
     fi
-    export HOME=/sign_keys
+    if [ ! -z "$GPG_HOME" ]
+    then
+    	echo "SignWith: MDSplus" >> /release/repo/conf/distributions
+	export HOME="$GPG_HOME"
+    fi
     pushd /release/repo
     reprepro clearvanished
     for deb in $(find /release/${BRANCH}/DEBS/${ARCH} -name "*${major}\.${minor}\.${release}_*")
@@ -150,6 +161,7 @@ EOF
         fi
     done
     popd
+  fi #nomake
 }
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
@@ -170,4 +182,3 @@ publish() {
 	popd
     fi
 }
-

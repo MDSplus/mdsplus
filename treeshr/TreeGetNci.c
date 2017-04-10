@@ -1,5 +1,5 @@
 #include "treeshrp.h"		/* must be first or off_t wrong */
-#if defined(_WIN32)
+#ifdef _WIN32
 #include <io.h>
 #endif
 #include <fcntl.h>
@@ -27,17 +27,16 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
     status = TreeCallHook(GetNci,info,nid_in);\
-    if (status && !(status & 1)) break;\
+    if (status && STATUS_NOT_OK) break;\
     status = TreeGetNciW(info, node_number, &nci,version);\
-    if (status & 1) nci_version = version;\
-    if (!(status & 1)) break;\
+    if STATUS_OK nci_version = version;\
+    if STATUS_NOT_OK break;\
  }
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
 #define set_retlen(length) if (itm->buffer_length < (int)length) { status = TreeBUFFEROVF; break; } else retlen=length
 
 static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
-int TreeOpenNciR(TREE_INFO * info);
 
 extern void **TreeCtx();
 
@@ -63,9 +62,9 @@ int TreeIsOn(int nid)
 
 int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 {
+  INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID nid = *(NID *) & nid_in;
-  int status = TreeNORMAL;
   int node_number;
   TREE_INFO *info;
   NCI_ITM *itm;
@@ -89,7 +88,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
     return GetNciRemote(dbid, nid_in, nci_itm);
   saved_node = nid_to_node(dblist, &nid);
   node_exists = saved_node && (saved_node->name[0] < 'a');
-  for (itm = nci_itm; itm->code != NciEND_OF_LIST && status & 1; itm++) {
+  for (itm = nci_itm; itm->code != NciEND_OF_LIST && STATUS_OK; itm++) {
     char *string = NULL;
     int retlen = 0;
     node = saved_node;
@@ -606,7 +605,7 @@ char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in)
     _TreeSetDefaultNid(dbid, old_def);
   } else
     status = _TreeGetNci(dbid, nid_in, itm_lst);
-  return (status & 1) ? (char *)itm_lst[0].pointer : NULL;
+  return STATUS_OK ? (char *)itm_lst[0].pointer : NULL;
 }
 
 int _TreeIsOn(void *dbid, int nid)
@@ -623,7 +622,7 @@ int _TreeIsOn(void *dbid, int nid)
   nci_list[0].pointer = (unsigned char *)&nci_flags;
   nci_list[0].return_length_address = &retlen;
   status = _TreeGetNci(dbid, nid, nci_list);
-  if (status & 1) {
+  if STATUS_OK {
     if (nci_flags & NciM_STATE)
       if (nci_flags & NciM_PARENT_STATE)
 	status = TreeBOTH_OFF;
@@ -640,49 +639,44 @@ int _TreeIsOn(void *dbid, int nid)
 int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 {
   int status = TreeNORMAL;
-
-	/******************************************
-	If the tree is not open for edit then
-    if the characteristics file is not open
-	open the characteristics file for readonly
-	access.
-    if OK so far then
-	fill in the rab and read the record
-	******************************************/
+/******************************************
+If the tree is not open for edit then
+if the characteristics file is not open
+open the characteristics file for readonly access.
+if OK so far then fill in the rab and read the record
+******************************************/
 
   if ((info->edit == 0) || (node_num < info->edit->first_in_mem)) {
-    if (info->nci_file == NULL)
-      status = TreeOpenNciR(info);
-    if (status & 1) {
+    status = TreeOpenNciR(info);
+    if STATUS_OK {
       char nci_bytes[42];
       unsigned int n_version = 0;
       int64_t viewDate;
       int deleted = 1;
-      while (status & 1 && deleted) {
+      while (STATUS_OK && deleted) {
 	status =
 	    MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes,
 			  sizeof(nci_bytes),
 			  &deleted) == sizeof(nci_bytes) ? TreeSUCCESS : TreeNCIREAD;
-	if (status & 1 && deleted)
+	if (STATUS_OK && deleted)
 	  status = TreeReopenNci(info);
       }
       if (status == TreeSUCCESS)
 	TreeSerializeNciIn(nci_bytes, nci);
       TreeGetViewDate(&viewDate);
       if (viewDate > 0) {
-	while (status & 1 && nci->time_inserted > viewDate) {
-	  if (nci->flags & NciM_VERSIONS) {
+	while (STATUS_OK && nci->time_inserted > viewDate){
+	  if (nci->flags & NciM_VERSIONS)
 	    status = TreeGetVersionNci(info, nci, nci);
-	  } else {
+	  else
 	    status = 0;
-	  }
 	}
-	if (!(status & 1)) {
+	if STATUS_NOT_OK {
 	  memset(nci, 0, sizeof(NCI));
 	  status = TreeSUCCESS;
 	}
       }
-      while (status & 1 && version > n_version) {
+      while (STATUS_OK && version > n_version) {
 	if (nci->flags & NciM_VERSIONS) {
 	  status = TreeGetVersionNci(info, nci, nci);
 	  n_version++;
@@ -702,36 +696,39 @@ int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
     else
       status = TreeNOVERSION;
   }
-
   return status;
 }
 
-int TreeOpenNciR(TREE_INFO * info)
+int TreeOpenNciR(TREE_INFO * info){
+  INIT_STATUS_AS TreeSUCCESS;
+  WRLOCKINFO(info);
+  if (!info->nci_file)
+    status = _TreeOpenNciR(info);
+  UNLOCKINFO(info);
+  return status;
+}
+int _TreeOpenNciR(TREE_INFO * info)
 {
-  int status = TreeFAILURE;
-	/****************************************************
-    Allocate an nci_file structure
-    (if there is any problem ...
-	Free the mem allocated and return
-	*****************************************************/
-
-  if (info->nci_file == NULL) {
-    info->nci_file = malloc(sizeof(NCI_FILE));
-    if (info->nci_file != NULL)
-      memset(info->nci_file, 0, sizeof(NCI_FILE));
-  }
-  if (info->nci_file != NULL) {
-
-    size_t len = strlen(info->filespec) - 4;
-    char *filename = strncpy(malloc(len + 16), info->filespec, len);
-    filename[len] = '\0';
-    strcat(filename, "characteristics");
-    info->nci_file->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
-    free(filename);
-    status = (info->nci_file->get == -1) ? TreeFOPENR : TreeNORMAL;
-    if (!(status & 1)) {
-      free(info->nci_file);
-      info->nci_file = NULL;
+/****************************************************
+   Allocate an nci_file structure
+   (if there is any problem ...
+   Free the mem allocated and return
+*****************************************************/
+  INIT_STATUS_AS TreeFAILURE;
+  if (!info->nci_file){
+    info->nci_file = calloc(1,sizeof(NCI_FILE));
+    if (info->nci_file) {
+      size_t len = strlen(info->filespec) - 4;
+      char *filename = strncpy(malloc(len + 16), info->filespec, len);
+      filename[len] = '\0';
+      strcat(filename, "characteristics");
+      info->nci_file->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
+      free(filename);
+      status = (info->nci_file->get == -1) ? TreeFOPENR : TreeNORMAL;
+      if STATUS_NOT_OK {
+        free(info->nci_file);
+        info->nci_file = NULL;
+      }
     }
   }
   return status;

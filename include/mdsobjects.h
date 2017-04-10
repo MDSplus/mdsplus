@@ -3835,6 +3835,7 @@ public:
  	void checkDataAvailability();
 
 private:
+    MDS_DEBUG_ACCESS
     void lockLocal();
     void unlockLocal();
     void lockGlobal();
@@ -3864,6 +3865,7 @@ public:
 
 //////////////Support functions////////
 EXPORT Data *deserialize(char const * serialized);
+EXPORT Data *deserialize(Data * serializedData);
 EXPORT Data *compile(const char *expr);
 EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
 EXPORT Data *compile(const char *expr, Tree *tree);

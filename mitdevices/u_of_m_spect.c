@@ -126,8 +126,8 @@ static int StoreSpectra(int head_nid, int np, int num_frames, int *buffer, int p
   int status;
   int spectra_nid = head_nid + U_OF_M_SPECT_N_SPECTRA;
   static ARRAY_BOUNDS(int, 2) array = {
-    sizeof(int), DTYPE_L, CLASS_A, 0, 0, 0, {
-      0, 0, 1, 1, 1}, 2, 0, 0, {0}, {{0}}};
+    sizeof(int), DTYPE_L, CLASS_A, 0, 0, 0,
+    {0, 0, 1, 1, 1}, 2, 0, 0, {0}, {{0,0}}};
   p1_dsc.pointer = (char *)&p1;
   num_frames_dsc.pointer = (char *)&num_frames;
   dt_dsc.pointer = (char *)&dt;

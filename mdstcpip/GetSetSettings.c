@@ -164,7 +164,7 @@ int GetCompressionLevel()
 //  CONNECTION TIMEOUT  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int connect_timeout = 0;
+static int connect_timeout = -1;
 int SetMdsConnectTimeout(int sec)
 {
   int old = connect_timeout;
@@ -179,6 +179,14 @@ int SetMdsConnectTimeout(int sec)
 
 int GetMdsConnectTimeout()
 {
+  if (connect_timeout == -1) {
+    char *timeout=getenv("MDSIP_CONNECT_TIMEOUT");
+    if (timeout){
+      connect_timeout = atoi(timeout); 
+    } else {
+      connect_timeout = 0;
+    }
+  }
   return connect_timeout;
 }
 

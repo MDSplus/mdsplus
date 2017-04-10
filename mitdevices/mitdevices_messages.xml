@@ -515,7 +515,7 @@
 	    text="Error reading channel"
 	    facnam="Dsp2904$_" facabb="Dsp2904"/>
      <status name="UNHANDLED_EXCEPTION" value="5287" severity="Error"
-	    text="Python device raised and exception, see log files for more details"
+	    text="Python device raised an exception, see log files for more details"
 	    facnam="Py$_" facabb="Py"/>
      <status name="NO_SAMPLES" value="5297" severity="Error"
 	    text="Module did not acquire any samples"

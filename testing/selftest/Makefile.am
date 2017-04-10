@@ -30,12 +30,26 @@ C_TESTS = \
           
           
 PY_TESTS = \
-           pyex1.py
+	   pyex1.py \
+	   py_fail.py
 
 PL_TESTS =
 
-
+## // LIST OF ALL TESTS ////////////////////////
 TESTS = $(C_TESTS) $(PY_TESTS) $(PL_TESTS)
+
+## // LIST OF TESTS EXPECTED TO FAIL ///////////
+XFAIL_TESTS = error_test \
+	      example4 \
+	      example_assert \
+	      fork_fail \
+	      timeout_fail \
+	      py_fail.py
+
+if ENABLE_VALGRIND
+XFAIL_TESTS += leak_test
+endif
+
 
 bin_PROGRAMS = example3
 example3_SOURCES = example3.cpp
@@ -50,6 +64,16 @@ example_assert_LDADD = ${TEST_LIBS} $(builddir)/libMdsTestDummy.so
 MOSTLYCLEANFILES = \
                    *.out \
                    libMdsTestDummy.so
+
+
+# DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
+# python will finally introduce the patch to detect if valgrind is running ..
+# take a look at the file for details. You can also disable this if you are
+# using a Python compiled with --without-pymalloc (only for valgrind as it is 5
+# times slower to run)
+#
+VALGRIND_SUPPRESSIONS_FILES_PY = \
+	 ${top_srcdir}/conf/valgrind-python-disableleak.supp
 
 
 ## ////////////////////////////////////////////////////////////////////////// ##

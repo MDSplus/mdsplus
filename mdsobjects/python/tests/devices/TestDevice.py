@@ -1,6 +1,6 @@
 import time
 
-from MDSplus import Device
+from MDSplus import Device,DevUNKOWN_STATE
 
 class TestDevice(Device):
     parts=[
@@ -13,6 +13,8 @@ class TestDevice(Device):
         {'path': ':ACTIONSERVER:STORE',         'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(node.DISPATCH,node.TASK)'},
         {'path': ':ACTIONSERVER:STORE:DISPATCH','type': 'DISPATCH','options':('no_write_shot','write_once'), 'valueExpr':'Dispatch(head.ACTIONSERVER,"STORE",10)'},
         {'path': ':ACTIONSERVER:STORE:TASK',    'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"store",head)'},
+        {'path': ':TASK_TEST',                  'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"test",head)'},
+        {'path': ':TASK_ERROR',                 'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"error",head)'},
         {'path': ':INIT1_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':INIT2_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
         {'path': ':PULSE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
@@ -26,4 +28,8 @@ class TestDevice(Device):
         self.pulse_done.record = time.time()
     def store(self):
         self.store_done.record = time.time()
+    def test(self):
+        return 'TEST'
+    def error(self):
+        raise DevUNKOWN_STATE
 

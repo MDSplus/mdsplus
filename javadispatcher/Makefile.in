@@ -235,6 +235,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -323,7 +324,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -382,7 +382,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 VALGRIND_FLAGS = @VALGRIND_FLAGS@
 VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
 VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
@@ -484,10 +483,10 @@ java_JAVA = Action.java ActionServer.java Balancer.java \
 	ServersInfoPanel.java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLEANFILES = $(CLASSES) jDispatcher.jar
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
+CLEANFILES = $(CLASSES) jDispatcher.jar $(bin_SCRIPTS)
 all: all-am
 
 .SUFFIXES:
@@ -788,7 +787,8 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 .PRECIOUS: Makefile
 
 jDispatcher.jar: classjava.stamp
-	$(JAR) c0f $@ $(CLASSES)
+	@ echo "Creating JAR: $@ ..."; \
+	  $(JAR) c0f $@ $(CLASSES)
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@

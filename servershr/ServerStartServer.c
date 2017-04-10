@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$START_SERVER   
+		Name:   SERVER$START_SERVER
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:   17-APR-1992
 
-    		Purpose: Stop a server process 
+    		Purpose: Start a server process
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$START_SERVER( struct dsc$descriptor *server )
 
@@ -32,7 +32,6 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
 #include <servershr.h>
 #include "servershrp.h"
 
-EXPORT int ServerStartServer(char *server)
-{
+EXPORT int ServerStartServer(char *server){
   return ServerConnect(server);
 }

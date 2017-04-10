@@ -390,4 +390,28 @@
    fun:SHA1_Update
 }
 
+{
+   manually added: python-c-interface (zack-vii)
+   Helgrind:Race
+   fun:PyGILState_Ensure
+   fun:TdiExtPython
+}
 
+{
+   manually added: pyhon-c-interface (zack-vii)
+   Helgrind:Race
+   fun:PyThreadState_Swap
+}
+
+{
+   Stack of Pthreads created detached but run till main process terminates
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_allocate_tls
+}
+{
+   python internal allocations python should take care of
+   Memcheck:Leak
+   fun:calloc
+   obj:*/libpython?.?.so*
+}

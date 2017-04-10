@@ -16,3 +16,7 @@ subtree_path /usr/local/mdsplus/trees/subtree >;
 # Put mdsplus in beginning of PATH
 #
 PATH /usr/local/mdsplus/bin <:
+#
+# MDSIP_CONNECT_TIMEOUT - default timeout for MDSIP connects
+#
+MDSIP_CONNECT_TIMEOUT 1

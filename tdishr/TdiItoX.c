@@ -97,6 +97,7 @@ STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(vector0, &OpcVector);
 int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   int j1, left, right, *pcnt = 0, *ptest;
   int k0, k1;
   int special = narg > 1 && list[1] == TdiItoXSpecial;
@@ -123,9 +124,9 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
   unsigned char omits[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
   dk0.pointer = (char *)&k0;
   dk1.pointer = (char *)&k1;
-  keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
-  keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
-  keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
+  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
+  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
+  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
 	/************************************************************
         Remove and save outer WITH_UNITS.
         8-Apr-1991 allow BUILD_WITH_UNITS(BUILD_DIM(,range),units).
@@ -477,9 +478,9 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	} else if (arg1) {
 	  struct descriptor_range *rptr = (struct descriptor_range *)list[1];
 	  MdsFree1Dx(out_ptr, NULL);
-	  TdiThreadStatic()->TdiRANGE_PTRS[0] = &dk0;
-	  TdiThreadStatic()->TdiRANGE_PTRS[1] = &dk1;
-	  TdiThreadStatic()->TdiRANGE_PTRS[2] = flag ? 0 : dimen.pointer;
+	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = &dk0;
+	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = &dk1;
+	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = flag ? 0 : dimen.pointer;
 						/******************************************************
 						 * For subscripts of signals, want range step to be all.
 						 ******************************************************/
@@ -494,9 +495,9 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	    status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
 	  } else
 	    status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
-	  TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
-	  TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
-	  TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
+	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
 	  arg1 = cats[0].in_dtype != DTYPE_MISSING;
 	} else
 	  status = TdiDtypeRange(&dk0, &dk1, out_ptr MDS_END_ARG);
@@ -609,13 +610,13 @@ int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_
 	  status = TdiGetLong(&xat0, &left);
 	if STATUS_OK {
 	  N_ELEMENTS(paxis, right);
-	}
-	left = -left;
-	right += left - 1;
-	if (k0 < left)
-	  k0 = left;
-	if (k1 > right)
-	  k1 = right;
+	  left = -left;
+	  right += left - 1;
+	  if (k0 < left)
+	    k0 = left;
+	  if (k1 > right)
+	    k1 = right;
+        }
       } else {
 	if STATUS_OK
 	  status = TdiLbound(axis.pointer, &dk0 MDS_END_ARG);

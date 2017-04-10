@@ -1,17 +1,10 @@
 #ifndef SERVERSHRP_H
  #define SERVERSHRP_H
  #include <config.h>
+ #include <pthread_port.h>
  #ifdef _WIN32
-  #include <windows.h>
   #include <time.h>
-  #ifdef HAVE_PTHREAD_H
-   #include <pthread.h>
-  #else
-   typedef void *pthread_t;
-   #define close closesocket
-  #endif
  #else
-  #include <pthread.h>
   #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
    extern void pthread_lock_global_np();
    extern void pthread_unlock_global_np();
@@ -115,6 +108,7 @@ typedef struct {
   unsigned recorded:1;
   char *path;
   char *event;
+  pthread_rwlock_t lock;
 } ActionInfo;
 
 typedef struct {
@@ -134,13 +128,17 @@ typedef struct {
   int status;
 } DispatchEvent;
 
- #ifndef _NO_SERVER_SEND_MESSAGE_PROTO
-extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *socket,
+/*STATIC_THREADSAFE pthread_rwlock_t actions_rwlock = PTHREAD_RWLOCK_INITIALIZER;*/
+#define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
+#define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
+#define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
+
+#ifndef _NO_SERVER_SEND_MESSAGE_PROTO
+extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *socket,
 			     void (*ast) (), void *astparam, void (*before_ast) (),
 			     int numargs_in, ...);
  #endif
 extern int ServerConnect(char *);
 extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid, int on,
 			     int mode, char *server, int actstatus);
-
 #endif

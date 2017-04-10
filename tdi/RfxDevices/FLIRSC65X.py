@@ -17,7 +17,7 @@ class FLIRSC65X(Device):
       {'path':'.OBJECT:OPTIC_TEMP', 'type':'numeric', 'value':20},
       {'path':'.OBJECT:OPTIC_TRANS', 'type':'numeric', 'value':1},
       {'path':'.OBJECT:ATM_TEMP', 'type':'numeric', 'value':20},
-      {'path':'.OBJECT:ATM_HUM', 'type':'numeric', 'value':50},
+      {'path':'.OBJECT:ATM_HUM', 'type':'numeric', 'value':0.50},
       {'path':'.OBJECT:ATM_TRANS', 'type':'numeric', 'value':99E-2},
 
       {'path':'.FRAME', 'type':'structure'},
@@ -28,8 +28,8 @@ class FLIRSC65X(Device):
       {'path':'.FRAME:TEMP_UNIT', 'type':'text', 'value':'LinearTemperature10mK'},
 
       {'path':'.CAM_SETUP', 'type':'structure'},
-      {'path':'.CAM_SETUP:FOCAL_LENGTH', 'type':'text', 'value':'50'},
-      {'path':'.CAM_SETUP:MEAS_RANGE', 'type':'text', 'value':'0...650'},
+      {'path':'.CAM_SETUP:FOCAL_LENGTH', 'type':'text', 'value':'25'},
+      {'path':'.CAM_SETUP:MEAS_RANGE', 'type':'text', 'value':'100...650'},
       {'path':'.CAM_SETUP:FOCUS_POS', 'type':'numeric', 'value':0},
       {'path':'.CAM_SETUP:CALIB_AUTO', 'type':'text', 'value':'NO'},
       {'path':'.CAM_SETUP:CALIB_TIME', 'type':'numeric', 'value':4},
@@ -52,16 +52,17 @@ class FLIRSC65X(Device):
 
 
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
-      {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
+      {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
+      {'path':':FRAME0_TIME', 'type':'numeric','value':0}]
 
     parts.append({'path':':INIT_ACT','type':'action',
       'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
       'options':('no_write_shot',)})
     parts.append({'path':':START_ACT','type':'action',
-      'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_store',head))",
+      'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'startAcquisition',head))",
       'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACT','type':'action',
-      'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+      'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stopAcquisition',head))",
       'options':('no_write_shot',)})
 
     handle = c_int(-1)
@@ -100,7 +101,7 @@ class FLIRSC65X(Device):
                 Data.execute('DevLogErr($1,$2)', self.device.nid, 'Cannot close camera : ' + self.device.error.raw )
 
             self.device.removeInfo()
-            raise mdsExceptions.TclFAILED_ESSENTIAL
+            #raise mdsExceptions.TclFAILED_ESSENTIAL
 
         def stop(self):
             print("STOP frames acquisition loop")
@@ -118,12 +119,13 @@ class FLIRSC65X(Device):
 #saveInfo and restoreInfo allow to manage multiple occurrences of camera devices
 #and to avoid opening and closing devices handles
     def saveInfo(self):
-        FLIRSC65X.handels[self.nid] = self.handel
+        FLIRSC65X.handles[self.nid] = self.handle
 
 ###restore worker###
     def restoreWorker(self):
         if self.nid in FLIRSC65X.workers.keys():
             self.worker = FLIRSC65X.workers[self.nid]
+            return 1
         else:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot restore worker!!')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -285,6 +287,18 @@ class FLIRSC65X(Device):
       self.frame_width.putData(width.value)
       self.frame_height.putData(height.value)
 
+###Focal Length
+      try:
+         focalLength = self.cam_setup_focal_length.data()
+      except:
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Focal Length value')
+        raise mdsExceptions.TclFAILED_ESSENTIAL
+
+      if focalLength == '25':
+        focalLengthInt=0
+      elif focalLength == '41':
+        focalLengthInt=3         #offset to select the correct calibration curve using the Measurement Range
+
 ###Measurement Range
       try:
          measureRange = self.cam_setup_meas_range.data()
@@ -293,13 +307,13 @@ class FLIRSC65X(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       if measureRange == '-40...150':
-        measRangeInt=c_int(0)
-      elif measureRange == '0...650':
-        measRangeInt=c_int(1)
+        measRangeInt=0
+      elif measureRange == '100...650':
+        measRangeInt=1
       elif measureRange == '300...2000':
-        measRangeInt=c_int(2)
+        measRangeInt=2
 
-      status = FLIRSC65X.flirLib.setMeasurementRange(self.handle, measRangeInt)
+      status = FLIRSC65X.flirLib.setMeasurementRange(self.handle, c_int(measRangeInt+focalLengthInt))
       if status < 0:
         try:
           FLIRSC65X.flirLib.getLastError(self.handle, self.error)
@@ -452,25 +466,30 @@ class FLIRSC65X(Device):
              Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid streaming server parameter value')
              raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      else:
-          autoAdjustLimit = c_int(0)
-          streamingPort = c_int(8888)
-          lowLim = c_int(0)
-          highLim = c_int(36)
-          streamingServer = "localhost"
+#fede 20161012
+#      else:
+#          autoAdjustLimit = c_int(0)
+#          streamingPort = c_int(8888)
+#          lowLim = c_int(0)
+#          highLim = c_int(36)
+#          streamingServer = "localhost"
 
-      print("lowLim ", lowLim)
-      print("highLim ", highLim)
-      print("frameTempUnitCode ", frameTempUnitCode)
-      print("streamingPort ", streamingPort)
-      print("streamingServer ", streamingServer)
+          print("lowLim ", lowLim)
+          print("highLim ", highLim)
+          print("frameTempUnitCode ", frameTempUnitCode)
+          print("streamingPort ", streamingPort)
+          print("streamingServer ", streamingServer)
+          deviceName = str(self).rsplit(":",1)
+          deviceName = deviceName[1]
+          print("Device Name ", deviceName)     
+      
+#fede: recover device name and pass it to set streaming to overlay text on frame!!!
 
-
-      status = FLIRSC65X.flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim);
-      if status < 0:
-        FLIRSC65X.flirLib.getLastError(self.handle, self.error)
-        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute streaming setup mode : ' + self.error.raw)
-        raise mdsExceptions.TclFAILED_ESSENTIAL
+          status = FLIRSC65X.flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, c_char_p(deviceName));
+          if status < 0:
+            FLIRSC65X.flirLib.getLastError(self.handle, self.error)
+            Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute streaming setup mode : ' + self.error.raw)
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
 ###Acquisition
@@ -500,8 +519,9 @@ class FLIRSC65X(Device):
       framesNid = self.frames.nid
       timebaseNid = self.timing_time_base.nid
       framesMetadNid = self.frames_metad.nid
+      frame0TimeNid = self.frame0_time.nid
 
-      status = FLIRSC65X.flirLib.setTreeInfo( self.handle,  treePtr,  framesNid,  timebaseNid,  framesMetadNid)
+      status = FLIRSC65X.flirLib.setTreeInfo( self.handle,  treePtr,  framesNid,  timebaseNid,  framesMetadNid, frame0TimeNid)
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot execute set tree info : '+self.error.raw)
@@ -553,14 +573,15 @@ class FLIRSC65X(Device):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      focPos=0
-      status = FLIRSC65X.flirLib.getFocusAbsPosition(self.handle, byref(c_int(focPos)))
+      focPos=c_int(0)
+      status = FLIRSC65X.flirLib.getFocusAbsPosition(self.handle, byref(focPos))
+      print('Focus Position Read: ', focPos)
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Focus Position : '+ self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      self.focus_pos.putData(focPos)   #write data in mdsplus
+      self.cam_setup_focus_pos.putData(focPos.value)   #write data in mdsplus
 
       self.saveInfo()
       return
@@ -571,7 +592,7 @@ class FLIRSC65X(Device):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      status = FLIRSC65X.flirLib.setFocusAbsPosition(self.handle, c_int(self.focus_pos.data()))
+      status = FLIRSC65X.flirLib.setFocusAbsPosition(self.handle, c_int(self.cam_setup_focus_pos.data()))
       if status < 0:
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Write Focus Position : ' + self.error.raw)
@@ -581,15 +602,16 @@ class FLIRSC65X(Device):
       return
 
 
-##########start store############################################################################
-    def start_store(self):
+##########start acquisition############################################################################
+    def startAcquisition(self):
       if self.restoreInfo() == 0:
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
+      print("start store")
       self.worker = self.AsynchStore()
       self.worker.daemon = True
       self.worker.stopReq = False
-
+      print("start store2")
       width = c_int(0)
       height = c_int(0)
       payloadSize = c_int(0)
@@ -598,18 +620,30 @@ class FLIRSC65X(Device):
         FLIRSC65X.flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Start Camera Acquisition : '+self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
+      print("start store3")
       self.worker.configure(self)
       self.saveWorker()
       self.worker.start()
       return
 
 
-##########stop store############################################################################
-    def stop_store(self):
-
-      print('STOP STORE')
-
-      if  self.restoreWorker() :
+##########stop acquisition############################################################################
+    def stopAcquisition(self):
+      if self.restoreWorker() :
       	self.worker.stop()
       return
+##########software trigger (start saving in mdsplus)############################################
+    def swTrigger(self):
+      if self.restoreInfo() == 0:
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
+      print('SOFTWARE TRIGGER')
+
+      status = FLIRSC65X.flirLib.softwareTrigger(self.handle)
+      if status < 0:
+        FLIRSC65X.flirLib.getLastError(self.handle, self.error)
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Execute Software Trigger : ' + self.error.raw)
+        raise mdsExceptions.TclFAILED_ESSENTIAL
+
+      self.saveInfo()
+      return

@@ -13,7 +13,7 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-
+#include <pthread_port.h>
 #define MDS_IO_LOCK_RD  0x01
 #define MDS_IO_LOCK_WRT 0x02
 #define MDS_IO_LOCK_NONE 0x00
@@ -470,7 +470,7 @@ be one tree info block per tree activated.
 typedef struct tree_info {
   int blockid;			/* Identifier indicating a valid tree info block    */
   char *treenam;		/* Tree name                                        */
-  int shot;			/* Shot number */
+  int shot;			/* Shot number                                      */
   int vm_pages;			/* Number of pages and address of virtual memory    */
   void *vm_addr;		/*  allocated for mapping the tree file             */
   char *section_addr[2];	/* Beginning and ending addresses of mapped section */
@@ -481,20 +481,26 @@ typedef struct tree_info {
   int *external;		/* Pointer to external reference node indexes       */
   int channel;			/* I/O channel to tree file                         */
   int alq;			/* Blocks allocated to tree file                    */
-  char *filespec;		/* Pointer to full file spec of tree file                 */
-  char dvi[16];			/* Tree file disk info */
-  unsigned short tree_info_w_fid[3];	/* Tree file file id                                */
+  char *filespec;		/* Pointer to full file spec of tree file           */
+  char dvi[16];			/* Tree file disk info                              */
+  unsigned short tree_info_w_fid[3];	/* Tree file file id                        */
   unsigned flush:1;		/* Flush I/O's buffers                              */
-  unsigned rundown:1;		/* Doing rundown */
-  unsigned mapped:1;		/* Tree is mapped into memory */
-  unsigned:12;			/* Spare bits */
-  int rundown_id;		/* Rundown event id */
+  unsigned rundown:1;		/* Doing rundown                                    */
+  unsigned mapped:1;		/* Tree is mapped into memory                       */
+  unsigned has_lock:1;          /* is privte context                                */
+  int rundown_id;		/* Rundown event id                                 */
   NODE *root;			/* Pointer to top node                              */
   TREE_EDIT *edit;		/* Pointer to edit block (if editting the tree      */
   NCI_FILE *nci_file;		/* Pointer to nci file block (if open)              */
   DATA_FILE *data_file;		/* Pointer to a datafile access block               */
   struct tree_info *next_info;	/* Pointer to next tree info block                  */
+  pthread_rwlock_t lock;
 } TREE_INFO;
+
+#define RDLOCKINFO(info) if (info->has_lock) pthread_rwlock_rdlock(&info->lock)
+#define WRLOCKINFO(info) if (info->has_lock) pthread_rwlock_wrlock(&info->lock)
+#define UNLOCKINFO(info) if (info->has_lock) pthread_rwlock_unlock(&info->lock)
+
 
 /********************************************
    PINO_DATABASE
@@ -721,6 +727,7 @@ int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const c
 		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern void _TreeDeleteNodesWrite(void *dbid);
+extern void _TreeDeleteNodesDiscard(void *dbid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
@@ -733,6 +740,10 @@ extern int TreeGetVersionNci(TREE_INFO * info, NCI * nci, NCI * v_nci);
 extern DATA_FILE *TreeGetVmDatafile();
 extern int TreeReopenDatafile(struct tree_info *info);
 extern int TreeReopenNci(struct tree_info *info);
+extern int _TreeOpenDatafileR(TREE_INFO * info);
+extern int _TreeOpenNciR(TREE_INFO * info);
+extern int _TreeOpenNciW(TREE_INFO * info, int tmpfile);
+extern int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile);
 extern int TreeOpenDatafileR(TREE_INFO * info);
 extern int TreeOpenNciR(TREE_INFO * info);
 extern int TreeOpenNciW(TREE_INFO * info, int tmpfile);

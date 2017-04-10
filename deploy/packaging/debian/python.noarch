@@ -155,7 +155,9 @@
 ./usr/local/mdsplus/mdsobjects/python/tests/__init__.py
 ./usr/local/mdsplus/mdsobjects/python/tests/connectionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/dataUnitTest.py
+./usr/local/mdsplus/mdsobjects/python/tests/dclUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/devices/TestDevice.py
+./usr/local/mdsplus/mdsobjects/python/tests/devicesUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/exceptionUnitTest.py
 ./usr/local/mdsplus/mdsobjects/python/tests/mdsip.hosts
 ./usr/local/mdsplus/mdsobjects/python/tests/segmentsUnitTest.py

@@ -93,8 +93,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${SANITIZE_SUPPRESSIONS}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
-@ENABLE_SANITIZE_TRUE@	LD_PRELOAD=${ENABLE_SANITIZE_LIBPATH} \
+@ENABLE_SANITIZE_TRUE@am__append_1 = ${ENABLE_SANITIZE_OPTIONS}=${${ENABLE_SANITIZE_OPTIONS}_SUPP}:${SAN_OPTIONS}:${${ENABLE_SANITIZE_OPTIONS}}:start_deactivated=1:exitcode=1 \
+@ENABLE_SANITIZE_TRUE@	LSAN_OPTIONS=${LSAN_OPTIONS_SUPP}:${LSAN_OPTIONS} \
+@ENABLE_SANITIZE_TRUE@	TEST_LD_PRELOAD=${TEST_LD_PRELOAD} \
 @ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
 @ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
@@ -414,6 +415,7 @@ EGREP = @EGREP@
 ENABLE_SANITIZE = @ENABLE_SANITIZE@
 ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
+ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
 EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
@@ -502,7 +504,6 @@ MOTIF_LDSHARE = @MOTIF_LDSHARE@
 MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
-NOSETESTS = @NOSETESTS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -561,7 +562,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VALGRIND = @VALGRIND@
-VALGRIND_ENABLED = @VALGRIND_ENABLED@
 
 # Skipping child programs that are launched inside python classes
 #
@@ -677,16 +677,22 @@ TEST_SUITE_TAP = test-suite.tap
 TEST_EXTENSIONS = .py
 TESTS = \
         dataUnitTest.py \
+        dclUnitTest.py \
+        segmentsUnitTest.py \
         treeUnitTest.py \
-        threadsUnitTest.py \
-        segmentsUnitTest.py
+        threadsUnitTest.py
 
+
+#  threadsUnitTest.py
+#  simulateSegfault.py
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
 VALGRIND_TESTS = \
-                 dataUnitTest.py \
-                 treeUnitTest.py \
-                 segmentsUnitTest.py
+        dataUnitTest.py \
+        dclUnitTest.py \
+        segmentsUnitTest.py \
+        treeUnitTest.py \
+        threadsUnitTest.py
 
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
@@ -701,7 +707,7 @@ VALGRIND_SUPPRESSIONS_FILES_PY = \
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = 
+MOSTLYCLEANFILES = mdsip.log
 check_SCRIPTS = $(TESTS)
 all: all-am
 
@@ -1057,8 +1063,8 @@ uninstall-am:
 
 
 include @top_builddir@/Makefile.inc
-TEST_FORMAT    ?= log,tap
-AM_MAKEFLAGS   ?= V=0
+TEST_FORMAT     ?= log,tap
+AM_MAKEFLAGS    ?= V=0
 
 .PHONY: tap xml log
 tap: $(TEST_SUITE_TAP)
@@ -1100,7 +1106,25 @@ tests: rebuild-tests
 # ///  SANITIZE RULES  /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-@ENABLE_SANITIZE_TRUE@  SANITIZE_SUPPRESSIONS ?= suppressions=$(top_srcdir)/testing/sanitizer.supp
+@ENABLE_SANITIZE_TRUE@  # // sanitizer options specific (overload this in your Makefile.am) //
+@ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS      ?=
+
+@ENABLE_SANITIZE_TRUE@  # // suppressions files (overload this in your Makefile.am) //
+@ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-lsan.supp
+@ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-asan.supp
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS_SUPP  ?= suppressions=$(top_srcdir)/conf/gcc-tsan.supp
+@ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS_SUPP ?= suppressions=$(top_srcdir)/conf/gcc-ubsan.supp
+
+@ENABLE_SANITIZE_TRUE@  # Preloaded libraries to be exported within the test-driver script. This was
+@ENABLE_SANITIZE_TRUE@  # done to avoid having libraries for 32bit preloaded when we trigger the
+@ENABLE_SANITIZE_TRUE@  # shell executable to run script. NOTE: This could harm a possible preload
+@ENABLE_SANITIZE_TRUE@  # order that we would add in the future ... maybe an AM_LD_PRELOAD should be
+@ENABLE_SANITIZE_TRUE@  # foreseen.
+@ENABLE_SANITIZE_TRUE@  #
+@ENABLE_SANITIZE_TRUE@  TEST_LD_PRELOAD    ?= ${ENABLE_SANITIZE_LIBPATH}
 
 @ENABLE_SANITIZE_TRUE@  # // NOTE:
 @ENABLE_SANITIZE_TRUE@  # somtimes thread sanitizer does not work with python... probably because of
@@ -1208,7 +1232,6 @@ test-env:
 @HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
-       #simulateSegfault.py 
 
 clean-local: clean-local-tests
 

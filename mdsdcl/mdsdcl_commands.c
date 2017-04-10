@@ -1,22 +1,24 @@
 #include <config.h>
-#include        <stdio.h>
-#include        <stdlib.h>
-#include        <string.h>
-#include        <mdsdcl_messages.h>
-#include        <mdsdcl_messages.h>
-#include        <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <mdsdcl_messages.h>
+#include <mdsdcl_messages.h>
+#include <sys/time.h>
 #ifdef HAVE_SYS_RESOURCE_H
-#include        <sys/resource.h>
+#include <sys/resource.h>
 #else
 #include <time.h>
 #endif
-#include        <mdsdescrip.h>
-#include        <unistd.h>
-#include        <mdsshr.h>
+#include <mdsdescrip.h>
+#include <unistd.h>
+#include <mdsshr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <pthread_port.h>
 #include <dcl.h>
 #include "dcl_p.h"
+#include "mdsdclthreadsafe.h"
 
 typedef struct dclMacroList {
   char *name;			/*!<  macro name */
@@ -50,33 +52,6 @@ static int STOP_ON_FAIL = 1;
 *  05-Nov-1997  TRG  Create.
 *
 ************************************************************************/
-
-static char *PROMPT = 0;
-static char *DEF_FILE = 0;
-
-void mdsdclSetPrompt(const char *prompt)
-{
-  if (PROMPT)
-    free(PROMPT);
-  PROMPT = strdup(prompt);
-}
-
-EXPORT char *mdsdclGetPrompt()
-{
-  if (PROMPT == NULL)
-    PROMPT = strdup("Command> ");
-  return strdup(PROMPT);
-}
-
-void mdsdclSetDefFile(const char *deffile)
-{
-  if (DEF_FILE)
-    free(DEF_FILE);
-  if (deffile[0] == '*')
-    DEF_FILE = strdup(deffile + 1);
-  else
-    DEF_FILE = strdup(deffile);
-}
 
 	/****************************************************************
 	 * mdsdcl_exit:
@@ -147,7 +122,7 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
   sf = TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt;
   hf = TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt;
   sprintf(*error, "elapsed=%ld.%02ld user=%ld.%02ld sys=%ld.%02ld sf=%ld hf=%ld\n",
-	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
+	  esec, emsec, usec, (long int)umsec, ssec, (long int)smsec, sf, hf);
 #else
   usec_d = (double)(clock() - cpu_start) / (double)CLOCKS_PER_SEC;
   sprintf(*error, "elapsed=%ld.%02ld cpu=%g\n", esec, emsec, usec_d);
@@ -360,9 +335,8 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute
 	free(def_file);
 	def_file = tmp;
       }
-      if (DEF_FILE)
-	free(DEF_FILE);
-      DEF_FILE = def_file;
+      mdsdclSetDefFile(def_file);
+      free(def_file);
     }
     cli_get_value(ctx, "HISTORY", &history);
     if (history) {
@@ -584,10 +558,11 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
   if (indirect) {
     FILE *f = NULL;
     char line[4096];
-    if (DEF_FILE &&
-	(strlen(DEF_FILE) > 0) && !((strlen(name) > strlen(DEF_FILE)) &&
-				    (strcmp(name + strlen(name) - strlen(DEF_FILE), DEF_FILE) ==
-				     0))) {
+    GET_THREADSTATIC_P;
+    if (DEF_FILE
+     &&	(strlen(DEF_FILE) > 0)
+     &&!( (strlen(name) > strlen(DEF_FILE))
+       && (strcmp(name + strlen(name) - strlen(DEF_FILE), DEF_FILE) == 0))) {
       defname = strdup(name);
       defname = strcat(realloc(defname, strlen(defname) + strlen(DEF_FILE) + 1), DEF_FILE);
       f = fopen(defname, "r");

@@ -126,3 +126,9 @@ TdiShr.exports: TdiShr.def
 TdiSql.o : TdiSql.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< $(SYBASE_INC)
 
+TdiYacc.o : TdiYacc.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $< -Wno-array-bounds
+
+
+
+

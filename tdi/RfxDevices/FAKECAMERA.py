@@ -30,15 +30,13 @@ class FAKECAMERA(Device):
           'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
           'options':('no_write_shot',)})
 
+    handle = 0
     handles = {}
     workers = {}
     fakecamera = None
     cammdsutils = None
     camstreamutils = None
 
-    def __init__(self,node):
-      super(FAKECAMERA,self).__init__(node)
-      self.handle = 0
 
 ####Asynchronous readout internal class
     class AsynchStore(Thread):

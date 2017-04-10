@@ -10,12 +10,9 @@
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
-
-
-unsigned int TdiDECOMPILE_MAX = 0xffff;
+#define TdiDECOMPILE_MAX TdiThreadStatic_p->TdiDecompile_max
 
 extern unsigned short OpcDecompile;
-extern unsigned int TdiIndent;
 
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -28,6 +25,7 @@ extern unsigned int TdiIndent;
 #include <treeshr.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
+#include "tdithreadsafe.h"
 #ifdef max
 #undef max
 #endif
@@ -45,9 +43,9 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  GET_TDITHREADSTATIC_P;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
-
-  TdiIndent = 1;
+  TdiThreadStatic_p->TdiIndent = 1;
   if (narg > 1 && list[1])
     status = TdiGetLong(list[1], &TdiDECOMPILE_MAX);
   else
@@ -354,6 +352,7 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr)
 {
+  GET_TDITHREADSTATIC_P;
   char c0[85], *cptr, *bptr;
   struct descriptor cdsc = { 11, DTYPE_T, CLASS_S, 0 };
   struct descriptor t2 = { 0, DTYPE_T, CLASS_S, 0 };
@@ -641,7 +640,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
         if (in_ptr->length==4)
           out.length = sprintf(outstr, "Pointer(%#"PRIx32")", *(uint32_t *)in_ptr->pointer);
         else
-          out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer); 
+          out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer);
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
