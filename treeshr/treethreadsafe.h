@@ -18,5 +18,3 @@ typedef struct _thread_static {
 extern TreeThreadStatic *TreeGetThreadStatic();
 extern void **TreeCtx();
 extern EXPORT int TreeUsePrivateCtx(int onoff);
-extern void LockTreeMutex(pthread_mutex_t *, int *);
-extern void UnlockTreeMutex(pthread_mutex_t *);
