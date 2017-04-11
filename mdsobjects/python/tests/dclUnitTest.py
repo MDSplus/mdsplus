@@ -119,7 +119,7 @@ class dclTests(TestCase):
             if port==0:
                 if fix0: port = default_port
                 else: return None,0
-            return 'LOCALHOST:%d'%(port,),port
+            return 'localhost:%d'%(port,),port
         def start_mdsip(server,port,logname,env=None):
             if port>0:
                 from subprocess import Popen,STDOUT
