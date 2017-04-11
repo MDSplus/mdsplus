@@ -245,6 +245,22 @@ int TreePutTimestampedSegment(int nid, int64_t * timestamp, struct descriptor_a 
   return _TreePutTimestampedSegment(*TreeCtx(), nid, timestamp, data);
 }
 
+
+static inline int getFilledRowsTS(SEGMENT_HEADER*shead,SEGMENT_INFO*sinfo,int idx,int64_t *buffer){
+  if (shead->idx==idx)
+    return shead->next_row<0 ? sinfo->rows : shead->next_row;
+  else {
+    /* Removes trailing null timestamps from dimension and data
+     * if at least more than one zero timestamps
+     * or last timestamp does not continue monotonic increase of time vector
+     */
+    int filled_rows = sinfo->rows;
+    if (filled_rows>1 && swapquad(&buffer[filled_rows-2])>=0)// if second last is not <0
+      for ( ; filled_rows>0 && 0==buffer[filled_rows-1] ; filled_rows--);
+    return filled_rows;
+  }
+}
+
 #define NODE_PTR \
 node_ptr = nid_to_node(dblist, nid_ptr); \
 if (!node_ptr) \
@@ -707,16 +723,15 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, int offset,char *buffer,in
       startval = sinfo->start; \
       endval = sinfo->end; \
     } else { \
-      /* Current segment so use timestmps in segment */ \
+      /* Current segment so use timestamps in segment */ \
       int length = sizeof(int64_t) * sinfo->rows; \
-      char *buffer = malloc(length), *bptr; \
-      int64_t timestamp; \
+      char *buffer = malloc(length); \
       status = ReadProperty(tinfo,sinfo->dimension_offset, buffer, length); \
-      if STATUS_OK { \
-        startval = swapquad(buffer); \
-        for (bptr = buffer + length - sizeof(int64_t) ; (bptr > buffer) && (timestamp = swapquad(bptr))==0 ; bptr -= sizeof(int64_t)) ;\
-        endval = bptr > buffer ? timestamp : 0; \
-      } else { \
+      if STATUS_OK {\
+        startval = swapquad(buffer);\
+        int rows_filled = getFilledRowsTS(shead,sinfo,idx,(int64_t*)buffer);\
+        endval = swapquad(buffer+(rows_filled-1)*sizeof(int64_t));\
+      } else {\
         startval = 0; \
         endval = 0; \
       } \
@@ -899,7 +914,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
 }
 
 static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
-                       SEGMENT_INFO * sinfo, struct descriptor_xd *segment,
+                       SEGMENT_INFO * sinfo, int idx, struct descriptor_xd *segment,
                        struct descriptor_xd *dim){
   INIT_TREESUCCESS;
   if (sinfo->data_offset != -1) {
@@ -934,22 +949,17 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
       if (!compressed_segment)
         CHECK_ENDIAN(ans.pointer,ans.arsize,ans.length,ans.dtype);
       if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
-        int64_t *tp;
         dim2.arsize = sinfo->rows * sizeof(int64_t);
         dim_ptr = dim2.pointer = malloc(dim2.arsize);
         status = ReadProperty(tinfo,sinfo->dimension_offset, dim2.pointer, (ssize_t)dim2.arsize);
         CHECK_ENDIAN(dim2.pointer,dim2.arsize,8,);
         if (!compressed_segment) {
-          /**** Remove trailing null timestamps from dimension and data ****/
-          for (tp = (int64_t *) (dim2.pointer + dim2.arsize - dim2.length);
-               (tp >= (int64_t *) dim2.pointer) && (*tp == 0); tp--) {
-            ans.m[shead->dimct - 1]--;
-            dim2.arsize -= sizeof(int64_t);
-          }
+          int filled_rows = getFilledRowsTS(shead,sinfo,idx,(int64_t*)dim2.pointer);
+          dim2.arsize = filled_rows * sizeof(int64_t);
+          ans.m[shead->dimct - 1] = filled_rows;
           ans.arsize = ans.length;
           for (i = 0; i < ans.dimct; i++)
             ans.arsize *= ans.m[i];
-          /**** end remove null timestamps ***/
         }
         if (dim2.arsize==0){
           ans.pointer  = NULL;
@@ -975,7 +985,7 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
 }
 
 static int getSegmentLimits(TREE_INFO * tinfo, int nid,
-                            SEGMENT_INFO * sinfo,
+                            SEGMENT_HEADER * shead, SEGMENT_INFO * sinfo, int idx,
                             struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_TREESUCCESS;
   struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, 0 };
@@ -990,15 +1000,14 @@ static int getSegmentLimits(TREE_INFO * tinfo, int nid,
       int length = sizeof(int64_t) * sinfo->rows;
       char *buffer = malloc(length);
       int64_t timestamp;
-      char *bptr;
       status = ReadProperty(tinfo,sinfo->dimension_offset, buffer, length);
       if STATUS_OK {
         q_d.pointer = (char *)&timestamp;
         timestamp = swapquad(buffer);
         MdsCopyDxXd(&q_d, retStart);
-        for (bptr = buffer + length - sizeof(int64_t);
-             bptr > buffer && ((timestamp = swapquad(bptr)) == 0); bptr -= sizeof(int64_t)) ;
-        if (bptr > buffer) {
+        int rows_filled = getFilledRowsTS(shead,sinfo,idx,(int64_t*)buffer);
+        if (rows_filled > 0) {
+          timestamp = swapquad(buffer + (rows_filled-1) * sizeof(int64_t));
           MdsCopyDxXd(&q_d, retEnd);
         } else {
           MdsFree1Dx(retEnd, 0);
@@ -1809,17 +1818,17 @@ static int DataCopy(TREE_INFO * tinfo, TREE_INFO * tinfo_out, int64_t offset_in,
   return status;
 }
 
-static int CopySegment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGMENT_HEADER *header, SEGMENT_INFO *sinfo, int compress) {
+static int CopySegment(TREE_INFO *tinfo_in, TREE_INFO *tinfo_out, int nid, SEGMENT_HEADER *header, SEGMENT_INFO *sinfo, int idx, int compress) {
   INIT_TREESUCCESS;
   if (compress) {
     int length;
     EMPTYXD(data_xd);
     EMPTYXD(dim_xd);
-    status = ReadSegment(tinfo_in, nid, header, sinfo, &data_xd, &dim_xd);
+    status = ReadSegment(tinfo_in, nid, header, sinfo, idx, &data_xd, &dim_xd);
     if STATUS_OK {
       status = TreePutDsc(tinfo_out, nid, data_xd.pointer, &sinfo->data_offset, &length, compress);
       if STATUS_OK {
-        sinfo->rows = length + 0x80000000;
+        sinfo->rows = length | 0x80000000;
         status = TreePutDsc(tinfo_out, nid, dim_xd.pointer, &sinfo->dimension_offset, &sinfo->dimension_length, compress);
         MdsFree1Dx(&dim_xd,0);
       }
@@ -1869,7 +1878,7 @@ static int CopySegmentIndex(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid
     }
     for (i = 0; (i < SEGMENTS_PER_INDEX) && STATUS_OK; i++) {
       SEGMENT_INFO *sinfo = &sindex->segment[i];
-      status = CopySegment(tinfo_in, tinfo_out, nid, header, sinfo, compress);
+      status = CopySegment(tinfo_in, tinfo_out, nid, header, sinfo, i,compress);
     }
     *index_offset = -1;
     status = PutSegmentIndex(tinfo_out, sindex, index_offset);
@@ -2031,13 +2040,13 @@ SEGMENT_INFO *sinfo = &sindex->segment[idx % SEGMENTS_PER_INDEX];
 int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *retStart,
                           struct descriptor_xd *retEnd){
   GETFROMSEGMENT;
-  return getSegmentLimits(tinfo, nid, sinfo, retStart, retEnd);
+  return getSegmentLimits(tinfo, nid, shead, sinfo, idx, retStart, retEnd);
 }
 
 int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
                     struct descriptor_xd *dim){
   GETFROMSEGMENT;
-  return ReadSegment(tinfo, nid, shead, sinfo, segment, dim);
+  return ReadSegment(tinfo, nid, shead, sinfo, idx, segment, dim);
 }
 
 int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row){
@@ -2059,7 +2068,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 static int isSegmentInRange(TREE_INFO * tinfo, int nid,
                           struct descriptor *start,
                           struct descriptor *end,
-                          SEGMENT_INFO * sinfo){
+                          SEGMENT_HEADER * shead,  SEGMENT_INFO * sinfo, int idx){
   int ans = B_FALSE;
   if ((start && start->pointer) || (end && end->pointer)) {
     INIT_TREESUCCESS;
@@ -2072,7 +2081,7 @@ static int isSegmentInRange(TREE_INFO * tinfo, int nid,
       EMPTYXD(segstart);
       EMPTYXD(segend);
       DESCRIPTOR_LONG(ans_d, &ans);
-      status = getSegmentLimits(tinfo, nid, sinfo, &segstart, &segend);
+      status = getSegmentLimits(tinfo, nid, shead, sinfo, idx, &segstart, &segend);
       if STATUS_OK {
         if ((start && start->pointer) && (end && end->pointer)) {
           STATIC_CONSTANT DESCRIPTOR(expression, "($ <= $) && ($ >= $)");
@@ -2137,11 +2146,11 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
       break;
     else {
       SEGMENT_INFO *sinfo = &sindex->segment[segidx % SEGMENTS_PER_INDEX];
-      if (isSegmentInRange(tinfo, nid, start, end, sinfo)) {
+      if (isSegmentInRange(tinfo, nid, start, end, shead, sinfo, idx)) {
         EMPTYXD(segment);
         EMPTYXD(dim);
         segfound = B_TRUE;
-        status = ReadSegment(tinfo, nid, shead, sinfo, &segment, &dim);
+        status = ReadSegment(tinfo, nid, shead, sinfo, idx, &segment, &dim);
         if STATUS_OK {
           apd.pointer[apd_idx] = malloc(sizeof(struct descriptor_xd));
           memcpy(apd.pointer[apd_idx++], &segment, sizeof(struct descriptor_xd));
