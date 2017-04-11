@@ -916,6 +916,7 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
     int i;
     for (i = 0; i < ans.dimct; i++)
       ans.arsize *= ans.m[i];
+    void *ans_ptr, *dim_ptr;
     if (sinfo->rows < 0) {
       EMPTYXD(compressed_segment_xd);
       int data_length = sinfo->rows & 0x7fffffff;
@@ -926,7 +927,7 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
         MdsFree1Dx(&compressed_segment_xd, 0);
       }
     } else {
-      ans.pointer = malloc(ans.arsize);
+      ans_ptr = ans.pointer = malloc(ans.arsize);
       status = ReadProperty(tinfo,sinfo->data_offset, ans.pointer, (ssize_t)ans.arsize);
     }
     if STATUS_OK {
@@ -935,7 +936,7 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
       if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
         int64_t *tp;
         dim2.arsize = sinfo->rows * sizeof(int64_t);
-        dim2.pointer = malloc(dim2.arsize);
+        dim_ptr = dim2.pointer = malloc(dim2.arsize);
         status = ReadProperty(tinfo,sinfo->dimension_offset, dim2.pointer, (ssize_t)dim2.arsize);
         CHECK_ENDIAN(dim2.pointer,dim2.arsize,8,);
         if (!compressed_segment) {
@@ -950,8 +951,12 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
             ans.arsize *= ans.m[i];
           /**** end remove null timestamps ***/
         }
+        if (dim2.arsize==0){
+          ans.pointer  = NULL;
+          dim2.pointer = NULL;
+        }
         MdsCopyDxXd((struct descriptor *)&dim2, dim);
-        free(dim2.pointer);
+        free(dim_ptr);
       } else {
         TreeGetDsc(tinfo, nid, sinfo->dimension_offset, sinfo->dimension_length, dim);
       }
@@ -962,7 +967,7 @@ static int ReadSegment(TREE_INFO * tinfo, int nid, SEGMENT_HEADER * shead,
       status = TreeFAILURE;
     }
     if (!compressed_segment)
-      free(ans.pointer);
+      free(ans_ptr);
   } else {
     status = TreeFAILURE;
   }
