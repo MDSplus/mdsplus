@@ -380,7 +380,6 @@ class descriptor(_C.Structure):
                 if (self.dtype == _dtypes.DTYPE_DC):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
                 if (self.dtype == _dtypes.DTYPE_NID):
-                    
                     return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
@@ -461,9 +460,8 @@ class descriptor(_C.Structure):
                 shape=list()
                 for i in range(descr.dimct):
                     dim=descr.coeff_and_bounds[descr.dimct-i-1]
-                    if dim > 0:
-                        descr.arsize=descr.arsize*dim
-                        shape.append(dim)
+                    descr.arsize=descr.arsize*dim
+                    shape.append(dim)
             else:
                 shape=[descr.arsize/descr.length if descr.length != 0 else 0,]
             if self.dtype == _dtypes.DTYPE_T:
