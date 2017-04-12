@@ -73,16 +73,16 @@ AC_DEFUN([AX_ENABLE_SANITIZE],[
      AS_CASE([${enable_sanitize}],
      # address sanitizer
      [address],
-     [AX_SANITIZER_CHECK([asan],["-fsanitize=address -fno-omit-frame-pointer"],,
+     [AX_SANITIZER_CHECK([asan],["-fsanitize=address -fno-omit-frame-pointer -O3"],,
      [AS_VAR_SET([enable_sanitize],[no])])],
      # thread sanitizer
      [thread],
-     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -O2"],,
-     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -fPIE -O2"],,
+     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -O3"],,
+     [AX_SANITIZER_CHECK([tsan],["-fsanitize=thread -fno-omit-frame-pointer -fPIE -O3"],,
      [AS_VAR_SET([enable_sanitize],[no])])])],
      # undefined sanitizer
      [undefined],
-     [AX_SANITIZER_CHECK([ubsan],["-fsanitize=undefined -fno-omit-frame-pointer"],,
+     [AX_SANITIZER_CHECK([ubsan],["-fsanitize=undefined -fno-omit-frame-pointer -O3"],,
      [AS_VAR_SET([enable_sanitize],[no])])],
      # default
      [no],,
