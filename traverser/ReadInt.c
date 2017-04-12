@@ -1,9 +1,9 @@
 #include <mdsdescrip.h>
-#include <mdsdescrip.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+#include <status.h>
 #define MAX_ARGUMENTS 2
 extern int TdiCompile();
 extern int TdiEvaluate();
@@ -15,9 +15,9 @@ extern int TdiExecute();
 
 int ReadInt(char *expr, ...)
 {
+  INIT_STATUS;
   static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int ans;
-  int status;
   struct descriptor *dsc_ptrs[MAX_ARGUMENTS];
   int numargs;
   static struct descriptor_xd ans_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
@@ -46,9 +46,9 @@ int ReadInt(char *expr, ...)
     status = TdiExecute(&expr_dsc, dsc_ptrs[0], dsc_ptrs[1], &ans_xd MDS_END_ARG);
     break;
   }
-  if (status & 1) {
+  if STATUS_OK {
     /*    status = TdiEvaluate(&ans_xd, &ans_xd); */
-    if (status & 1) {
+    if STATUS_OK {
       struct descriptor *d_ptr;
       for (d_ptr = (struct descriptor *)&ans_xd;
 	   d_ptr->dtype == DTYPE_DSC; d_ptr = (struct descriptor *)d_ptr->pointer) ;
