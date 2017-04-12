@@ -1,6 +1,6 @@
 # @configure_input@
 
-DEFAULT_CFLAGS=-g -O2
+DEFAULT_CFLAGS=-g -O3
 
 ifeq "$(NOWARN)" ""
 WARNFLAGS = @WARNFLAGS@
