@@ -17,7 +17,7 @@ JAVA_APS = javamds \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
-	   mdsobjects/java 
+	   mdsobjects/java
 
 MOTIF_APS = xmdsshr \
 	    actions \
@@ -112,7 +112,7 @@ distclean: ##@build make source directory look like original sources
 	fi; \
 	cd $$cpwd
 
-# Testing 
+# Testing
 
 .PHONY: tests
 tests: ##@tests recursively perform tests in submodules
@@ -177,19 +177,19 @@ install: $(install_DIRS)
 
 .PHONY: tests-envdump
 tests-envdump:
-	pushd mdsobjects/python/tests;\
+	cd mdsobjects/python/tests&&(\
 	make test-envdump;\
-	popd
+	cd ../../..;)
 
 test-env:
-	pushd mdsobjects/python/tests;\
+	cd mdsobjects/python/tests&&(\
 	make test-env;\
-	popd
+	cd ../../..;)
 
 @HAVE_WINE_TRUE@wineconsole:
-@HAVE_WINE_TRUE@	pushd mdsobjects/python/tests;\
+@HAVE_WINE_TRUE@	cd mdsobjects/python/tests&&(\
 @HAVE_WINE_TRUE@	make wineconsole;\
-@HAVE_WINE_TRUE@	popd
+@HAVE_WINE_TRUE@	cd ../../..;)
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
