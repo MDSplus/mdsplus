@@ -131,6 +131,8 @@ sanitize() {
     fi
 }
 normaltest() {
+  if [ "$TEST" = "yes" ] || [ ! -z "$VALGRIND_TOOLS" ]
+  then
     gettimeout() {
         declare -i n=1800*$#
         echo $n
@@ -143,9 +145,12 @@ normaltest() {
     checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
     checkstatus abort "Failure installing $1-bit." $?
-    ### Run standard tests
-    :&& tio 600 $MAKE -k tests 2>&1
-    checkstatus tests_$1 "Failure testing $1-bit." $?
+    if [ "$TEST" = "yes" ]
+    then
+        ### Run standard tests
+        :&& tio 600 $MAKE -k tests 2>&1
+        checkstatus tests_$1 "Failure testing $1-bit." $?
+    fi
     if [ ! -z "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
@@ -155,6 +160,7 @@ normaltest() {
     fi
    fi
     popd
+  fi
 }
 RED() {
     if [ "$1" = "yes" ]
@@ -182,7 +188,7 @@ main(){
     then
         source /source/deploy/os/${OS}.env
     fi
-    if [ "$TEST" = "yes" ]
+    if [ "$TEST" = "yes" ] || [ ! -z "$SANITIZE" ] || [ ! -z "$VALGRIND_TOOLS" ]
     then
         set +e
         runtests
