@@ -98,8 +98,6 @@ target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@	TEST_LD_PRELOAD=${TEST_LD_PRELOAD} \
 @ENABLE_SANITIZE_TRUE@	TEST_TIMEUNIT=5
 @ENABLE_SANITIZE_TRUE@am__append_2 = $(shell ${_check_sanitize_ldd} || \
-@ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
-@ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
 check_PROGRAMS =
 subdir = mdsobjects/python/tests
