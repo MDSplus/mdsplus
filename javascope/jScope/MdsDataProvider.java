@@ -857,7 +857,7 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+                 //System.out.println("MdsMisc->GetXYSignal Failed: "+exc);  It means that MdsMisc->GetXYSignal() is likely not available on the server
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");

@@ -188,18 +188,18 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   *out_dim = 0;
   switch (type) {
   case FLOAT:
-    sprintf(expanded_in, "_xxx = (%s;);fs_float(_xxx)", in);
+    sprintf(expanded_in, "_xxx = (%s);fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
-    sprintf(expanded_in, "_xxx = (%s;);ft_float(_xxx)", in);
+    sprintf(expanded_in, "_xxx = (%s);ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
-    sprintf(expanded_in, "long(%s;)", in);
+    sprintf(expanded_in, "long(%s)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
