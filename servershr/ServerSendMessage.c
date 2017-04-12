@@ -399,12 +399,27 @@ static int start_receiver(short *port_out)
   static short port = 0;
   static SOCKET sock;
   static pthread_t thread;
+// CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, s);
+  _CONDITION_LOCK(&ReceiverRunning);
   if (port == 0) {
     sock = CreatePort((short)8800, &port);
-    if (sock == INVALID_SOCKET)
+    if (sock == INVALID_SOCKET) {
+      _CONDITION_UNLOCK(&ReceiverRunning);
       return C_ERROR;
+    }
   }
-  CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, &sock);
+  if (!ReceiverRunning.value) {
+    CREATE_DETACHED_THREAD(thread, *16, ReceiverThread, &sock);
+    if (c_status) {
+      perror("Error creating pthread");
+      status = MDSplusERROR;
+    } else {
+      _CONDITION_WAIT_SET(&ReceiverRunning);
+      status = MDSplusSUCCESS;
+    }
+  }
+  _CONDITION_UNLOCK(&ReceiverRunning);
+//\CONDITION_START_THREAD(&ReceiverRunning, thread, *16, ReceiverThread, &sock);
   *port_out = port;
   return STATUS_NOT_OK;
 }
@@ -445,7 +460,6 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set * active)
 
 static void ReceiverThread(void *sockptr){
   struct sockaddr_in sin;
-  int sock = *(int *)sockptr;
   int tablesize = FD_SETSIZE;
   int num = 0;
   int last_client_addr;
@@ -454,7 +468,14 @@ static void ReceiverThread(void *sockptr){
   fd_set readfds, fdactive;
   last_client_addr = 0;
   CONDITION_SET(&ReceiverRunning);
-  FD_ZERO(&fdactive);
+// CONDITION_SET(&ReceiverRunning);
+  _CONDITION_LOCK(&ReceiverRunning);
+  SOCKET sock = *(SOCKET*)sockptr;
+  ReceiverRunning.value = B_TRUE;
+  _CONDITION_SIGNAL(&ReceiverRunning);
+  _CONDITION_UNLOCK(&ReceiverRunning);  FD_ZERO(&fdactive);
+  CONDITION_SET(&ReceiverRunning);
+// \CONDITION_SET(&ReceiverRunning);
   FD_SET(sock, &fdactive);
   for (rep = 0; rep < 10; rep++) {
     readfds = fdactive;
