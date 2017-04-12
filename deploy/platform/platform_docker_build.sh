@@ -110,7 +110,7 @@ sanitize() {
         for test in ${SANITIZE}; do
             echo Doing sanitize ${test}
             MDSPLUS_DIR=/workspace/tests/${1}-san-${test}/buildroot;
-            config_test $@ --enable-sanitize=${test}
+            config_test $@ --enable-sanitize=${test} --disable-java
             if [ "$status" = "111" ]; then
                 echo "Sanitizer ${test} not supported. Skipping."
             elif [ "$status" = "0" ]; then
