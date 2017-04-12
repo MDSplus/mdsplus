@@ -14166,7 +14166,7 @@ fi
      if test "x$have_asan" = xyes; then :
   CPPFLAGS_save=$CPPFLAGS
                 LIBS_save=$LIBS
-                CPPFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+                CPPFLAGS="-fsanitize=address -fno-omit-frame-pointer -O3"
                 LIBS=-lasan
                 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -14259,7 +14259,7 @@ fi
      if test "x$have_tsan" = xyes; then :
   CPPFLAGS_save=$CPPFLAGS
                 LIBS_save=$LIBS
-                CPPFLAGS="-fsanitize=thread -fno-omit-frame-pointer"
+                CPPFLAGS="-fsanitize=thread -fno-omit-frame-pointer -O3"
                 LIBS=-ltsan
                 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -14345,7 +14345,7 @@ fi
      if test "x$have_tsan" = xyes; then :
   CPPFLAGS_save=$CPPFLAGS
                 LIBS_save=$LIBS
-                CPPFLAGS="-fsanitize=thread -fno-omit-frame-pointer -fPIE"
+                CPPFLAGS="-fsanitize=thread -fno-omit-frame-pointer -fPIE -O3"
                 LIBS=-ltsan
                 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -14442,7 +14442,7 @@ fi
      if test "x$have_ubsan" = xyes; then :
   CPPFLAGS_save=$CPPFLAGS
                 LIBS_save=$LIBS
-                CPPFLAGS="-fsanitize=undefined -fno-omit-frame-pointer"
+                CPPFLAGS="-fsanitize=undefined -fno-omit-frame-pointer -O3"
                 LIBS=-lubsan
                 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
