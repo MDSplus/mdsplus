@@ -13,10 +13,8 @@
  #define INVALID_SOCKET -1
 #endif
 
-
-#ifndef _WIN32
-#endif
-
+#define LOAD_GETUSERNAME
+#include <pthread_port.h>
 #include "mdsip_connections.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,49 +51,15 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 /// Execute login inside server using given connection
 ///
 /// \param id of connection (on client) to be used
-/// \return status o login into server 1 if success, -1 if not authorized or error
+/// \return status o login into server 1 if success, MDSplusERROR if not authorized or error
 /// occurred
 ///
 static int DoLogin(int id)
 {
   INIT_STATUS;
   Message *m;
-  char *user_p;
-#ifdef _WIN32
-  char user[128];
-  DWORD bsize = 128;
-#ifdef _NI_RT_
-  user_p = "Windows User";
-#else
-  user_p = GetUserName(user, &bsize) ? user : "Windows User";
-#endif
-#elif __MWERKS__
-  user_p = "Macintosh User";
-#else
-#define BUFSIZE 256
-  char buf[BUFSIZE];
-  struct passwd pwd = {0};
-  struct passwd *pwd_p = &pwd;
-  getpwuid_r(geteuid(),&pwd,buf,BUFSIZE,&pwd_p);
-  if (!pwd_p) {
-#ifdef __APPLE__
-    user_p = "Apple User";
-#else
-    /*
-     *  On some RHEL6/64 systems 32 bit
-     *  calls to getpwuid return 0
-     *  temporary fix to call getlogin()
-     *  in that case.
-     */
-    getlogin_r(buf,BUFSIZE);
-    if (strlen(buf)>0)
-      user_p = buf;
-    else
-      user_p = "Linux User";
-#endif
-  } else
-    user_p = pwd_p->pw_name;
-#endif
+  static char *user_p;
+  GETUSERNAME(user_p);
   unsigned int length = strlen(user_p);
   m = calloc(1, sizeof(MsgHdr) + length);
   m->h.client_type = SENDCAPABILITIES;
@@ -124,7 +88,8 @@ static int DoLogin(int id)
     if (m)
       free(m);
   } else {
-    perror("Error connecting to server");
+    fprintf(stderr,"Error connecting to server (DoLogin)\n");
+    fflush(stderr);
     return MDSplusERROR;
   }
   return status;
@@ -183,12 +148,9 @@ int ConnectToMds(char *hostin)
     io = GetConnectionIo(id);
     if (io && io->connect) {
       SetConnectionCompression(id, GetCompressionLevel());
-      if (io->connect(id, protocol, host) == -1) {
-	DisconnectConnection(id);
-	id = -1;
-      } else if (DoLogin(id) == -1) {
-	DisconnectConnection(id);
-	id = -1;
+      if (io->connect(id, protocol, host)<0 || IS_NOT_OK(DoLogin(id))) {
+        DisconnectConnection(id);
+        id = -1;
       }
     }
   }

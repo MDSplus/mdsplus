@@ -15,7 +15,7 @@ extern int main(int argc, const char **argv)
 
     if(argc > 4 || argc < 3)
     {
-	cout << "Usage: casmds <experiment> <shot> [append]\n";
+	std::cout << "Usage: casmds <experiment> <shot> [append]\n";
 	return -1;
     }
     try {
@@ -28,7 +28,7 @@ extern int main(int argc, const char **argv)
 	    append = false; 
     }catch(MdsException *exc)
     {
-	cout << "Cannot open experiment " << argv[1] << ": " << exc-> what() << "\n";
+	std::cout << "Cannot open experiment " << argv[1] << ": " << exc-> what() << "\n";
 	return -1;
     }
     try {

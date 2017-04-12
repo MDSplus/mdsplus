@@ -50,7 +50,7 @@ extern int yydebug;
     QUALIFIER = 260,
     EQUALS = 261,
     VALUE = 262,
-    PVALUE = 263,
+    PVALUE_ = 263,
     COMMA = 264,
     END = 265,
     COMMENT = 266

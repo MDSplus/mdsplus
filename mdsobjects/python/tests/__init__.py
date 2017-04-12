@@ -11,7 +11,7 @@ def _mimportSuite(name, level=1):
     except:
         return __import__(name, globals()).suite
 
-from unittest import TestCase,TestSuite,TextTestRunner
+from unittest import TestSuite,TextTestRunner
 import os,sys
 import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 
@@ -21,57 +21,26 @@ if os.name=='nt':
 else:
     setenv("PyLib","python%d.%d" % sys.version_info[0:2])
 
-treeSuite=       _mimportSuite('treeUnitTest')
-threadsSuite=    _mimportSuite('threadsUnitTest')
-dataSuite=       _mimportSuite('dataUnitTest')
-exceptionSuite=  _mimportSuite('exceptionUnitTest')
-connectionsSuite=_mimportSuite('connectionUnitTest')
-segmentsSuite=   _mimportSuite('segmentsUnitTest')
-
-class cleanup(TestCase):
-    dir=None
-
-    def cleanup(self):
-        if cleanup.dir is not None:
-            dir=cleanup.dir
-            for i in os.walk(dir,False):
-                for f in i[2]:
-                    try:
-                      os.remove(i[0]+os.sep+f)
-                    except Exception:
-                      import sys
-                      e=sys.exc_info()[1]
-                      print( e)
-                for d in i[1]:
-                    try:
-                      os.rmdir(i[0]+os.sep+d)
-                    except Exception:
-                      import sys
-                      e=sys.exc_info()[1]
-                      print( e)
-            try:
-              os.rmdir(dir)
-            except Exception:
-              import sys
-              e=sys.exc_info()[1]
-              print( e)
-        return
-    def runTest(self):
-        self.cleanup()
-
 def test_all(*arg):
     if getenv('waitdbg') is not None:
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
-    tests=list()
-    tests.append(treeSuite())
-    if os.getenv('TEST_THREADS') is not None:
-        tests.append(threadsSuite())
-    tests.append(dataSuite())
-    tests.append(exceptionSuite())
-    tests.append(connectionsSuite())
-    tests.append(segmentsSuite())
-
+    testSuites = [
+        'connectionUnitTest',
+        'dataUnitTest',
+        'dclUnitTest',
+        'devicesUnitTest',
+        'exceptionUnitTest',
+        'segmentsUnitTest',
+        'treeUnitTest',
+        'threadsUnitTest',
+    ]
+    tests=[]
+    for suite in testSuites:
+        try:
+            tests.append(_mimportSuite(suite)())
+        except Exception as e:
+            print("Could not import %s\n%s"%(suite,e.message))
     return TestSuite(tests)
 
 def run():

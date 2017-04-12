@@ -92,16 +92,16 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 {
   INIT_STATUS;
   va_list incrmtr;
-  static short conglomerate_elt;
-  static unsigned char data_type;
-  static int head_nid;
+  short conglomerate_elt;
+  unsigned char data_type;
+  int head_nid;
   NCI_ITM itmlst[] = { {1, NciDTYPE, &data_type, 0},
   {2, NciCONGLOMERATE_ELT, (unsigned char *)&conglomerate_elt, 0},
   {4, NciCONGLOMERATE_NIDS, (unsigned char *)&head_nid, 0},
   {0, NciEND_OF_LIST, 0, 0}
   };
   void (*addr) ();
-  static int (*TdiExecute) () = 0;
+  static int (*TdiExecute) () = NULL;
   STATIC_CONSTANT DESCRIPTOR(close, "$)");
   STATIC_CONSTANT DESCRIPTOR(arg, "$,");
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
@@ -114,13 +114,15 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   void *arglist[256];
   count(nargs);
   arglist[0] = arglist_nargs(nargs);
-  if (nid_dsc->dtype != DTYPE_NID || (!nid_dsc->pointer))
+  if (!nid_dsc->pointer
+   || (nid_dsc->dtype!=DTYPE_NID
+    && nid_dsc->dtype!=DTYPE_L
+    && nid_dsc->dtype!=DTYPE_LU))
     return TreeNOMETHOD;
   head_nid = 0;
   status = _TreeGetNci(dbid, *(int *)nid_dsc->pointer, itmlst);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     return status;
-
   if (conglomerate_elt || (data_type == DTYPE_CONGLOM)) {
     int i;
     arglist[1] = nid_dsc;
@@ -135,22 +137,24 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     conglom_ptr = (struct descriptor_conglom *)xd.pointer;
     if (conglom_ptr->dtype != DTYPE_CONGLOM)
       return TreeNOT_CONGLOM;
-    if (conglom_ptr->image && conglom_ptr->image->length == strlen("__python__")
-	&& strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
+    if (conglom_ptr->image
+     && conglom_ptr->image->length == strlen("__python__")
+     && strncmp(conglom_ptr->image->pointer, "__python__", strlen("__python__")) == 0) {
       void *dbid = *TreeCtx();
       /**** Try python class ***/
       struct descriptor_d exp = { 0, DTYPE_T, CLASS_D, 0 };
       STATIC_CONSTANT DESCRIPTOR(open, "PyDoMethod(");
       StrCopyDx((struct descriptor *)&exp, (struct descriptor *)&open);
-      if (nargs == 4 && method_ptr->length == strlen("DW_SETUP")
-	  && strncmp(method_ptr->pointer, "DW_SETUP", strlen("DW_SETUP")) == 0) {
+      if (nargs == 4
+       && method_ptr->length == strlen("DW_SETUP")
+       && strncmp(method_ptr->pointer, "DW_SETUP", strlen("DW_SETUP")) == 0) {
 	arglist[3] = arglist[4];
 	nargs--;
       }
       for (i = 1; i < nargs - 1; i++)
 	StrAppend(&exp, (struct descriptor *)&arg);
       StrAppend(&exp, (struct descriptor *)&close);
-      if (TdiExecute == 0)
+      if (!TdiExecute)
 	status = LibFindImageSymbol(&tdishr, &tdiexecute, &TdiExecute);
       if STATUS_OK {
 	for (i = nargs; i > 0; i--)
@@ -165,8 +169,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       *TreeCtx() = dbid;
       return status;
     }
-    StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder,
-	      method_ptr MDS_END_ARG);
+    StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
     for (i = 0; i < method.length; i++)
       method.pointer[i] = tolower(method.pointer[i]);
     if (conglom_ptr->image && conglom_ptr->image->dtype == DTYPE_T)

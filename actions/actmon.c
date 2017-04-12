@@ -58,39 +58,9 @@ $ MCR ACTMON -monitor monitor-name
 extern int ServerMonitorCheckin();
 extern int str_element();
 
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_condattr_default NULL
-#define pthread_mutexattr_default NULL
-#endif
-#define def_lock(name) \
-\
-static int name##_mutex_initialized = 0;\
-static pthread_mutex_t name##_mutex;\
-\
-static void lock_##name()\
-{\
-\
-  if(! name##_mutex_initialized)\
-  {\
-    name##_mutex_initialized = 1;\
-    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
-  }\
-  pthread_mutex_lock(&name##_mutex);\
-}\
-\
-static void unlock_##name()\
-{\
-\
-  if(! name##_mutex_initialized)\
-  {\
-    name##_mutex_initialized = 1;\
-    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
-  }\
-\
-  pthread_mutex_unlock(&name##_mutex);\
-}
-
-def_lock(event_queue)
+static pthread_mutex_t eventqueue_mutex = PTHREAD_MUTEX_INITIALIZER;
+#define   LOCK_EVENTQUEUE pthread_mutex_lock  (&eventqueue_mutex)
+#define UNLOCK_EVENTQUEUE pthread_mutex_unlock(&eventqueue_mutex)
 
 extern int TdiExecute();
 
@@ -216,8 +186,7 @@ int main(int argc, String * argv)
   return 0;
 }
 
-static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
-{
+static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused))){
   exit(0);
 }
 
@@ -229,8 +198,7 @@ typedef struct serverList {
 
 static ServerList *Servers = NULL;
 
-static Widget FindTop(Widget w)
-{
+static Widget FindTop(Widget w){
   for (; w && XtParent(w); w = XtParent(w)) ;
   return w;
 }
@@ -250,8 +218,7 @@ static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribut
   }
 }
 
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused)))
-{
+static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused))){
   static int operation;
   static Widget dialog = NULL;
   XmString text_cs;
@@ -290,8 +257,7 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribu
   }
 }
 
-static int executable(const char *script)
-{
+static int executable(const char *script){
   int status;
   static const char *cmd_front = "/bin/sh -c '/usr/bin/which ";
   static const char *cmd_back = " > /dev/null 2>/dev/null'";
@@ -306,8 +272,7 @@ static int executable(const char *script)
   return !status;
 }
 
-static void SetKillSensitive(Widget top)
-{
+static void SetKillSensitive(Widget top){
   int i;
   static const char *widgets[] = { "*abort_server_b", "*kill_server_b", "*kill_dispatcher_b" };
   static const char *scripts[] =
@@ -431,13 +396,13 @@ static int parseMsg(char *msg, LinkedEvent * event)
 static LinkedEvent *GetQEvent()
 {
   LinkedEvent *ans = 0;
-  lock_event_queue();
+  LOCK_EVENTQUEUE;
   ans = EventQueueHead;
   if (EventQueueHead)
     EventQueueHead = EventQueueHead->next;
   if (!EventQueueHead)
     EventQueueTail = 0;
-  unlock_event_queue();
+  UNLOCK_EVENTQUEUE;
   return ans;
 }
 
@@ -456,19 +421,18 @@ static void DoTimer()
 static void QEvent(LinkedEvent * ev)
 {
   ev->next = 0;
-  lock_event_queue();
+  LOCK_EVENTQUEUE;
   if (EventQueueTail)
     EventQueueTail->next = ev;
   else {
     EventQueueHead = ev;
   }
   EventQueueTail = ev;
-  unlock_event_queue();
+  UNLOCK_EVENTQUEUE;
 }
 
 static void MessageAst(void* dummy __attribute__ ((unused)), char *reply)
 {
-  if (!dummy) return;
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = NULL;
   if (!parseMsg(reply, event)) {
@@ -695,7 +659,6 @@ static void CheckIn(String monitor_in)
     monitor = monitor_in;
   for (;;) {
     status = ServerMonitorCheckin(monitor, MessageAst, 0);
-    printf("%d",status);
     if STATUS_OK return;
     printf("Error connecting to monitor: %s, will try again shortly\n", monitor);
     sleep(2);

@@ -60,8 +60,7 @@ static jintArray getDimensions(JNIEnv * env, void *dsc)
 {
   ARRAY_COEFF(char *, 256) * arrD = dsc;
   jintArray jdims;
-  int dim = arrD->arsize / arrD->length;
-
+  int dim = (arrD->length > 0) ? arrD->arsize / arrD->length : 0;
   jdims = (*env)->NewIntArray(env, arrD->dimct);
   if (arrD->dimct == 1)
     (*env)->SetIntArrayRegion(env, jdims, 0, 1, (const jint *)&dim);
@@ -283,7 +282,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       array_d = (struct descriptor_a *)desc;
 
     args[1].l = getDimensions(env, array_d);
-    length = array_d->arsize / array_d->length;
+    length = (array_d->length != 0) ? array_d->arsize / array_d->length : 0;
     switch (array_d->dtype) {
     case DTYPE_MISSING:
       return NULL;

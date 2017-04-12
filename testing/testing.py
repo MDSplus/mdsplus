@@ -131,7 +131,7 @@ ts = testing()
 def check_arch(file_name):
     if sys.platform.startswith('win'):
         lib   = '%s.dll'
-        pylib = 'python%d.%d'
+        pylib = 'python%d%d'
     elif sys.platform.startswith('darwin'):
         lib   = 'lib%s.dylib'
         pylib = 'python%d.%d'
@@ -154,7 +154,6 @@ def check_arch(file_name):
         ts.skip_test(module_name,
                      'Unfit unittest version < 2.7')
 
-
 if __name__ == '__main__':
     if '--skip' in sys.argv:
         ts.skip_test(sys.argv[1],'Skipped tests')
@@ -166,6 +165,8 @@ if __name__ == '__main__':
     except SystemExit:
         raise
     except:
+        import traceback
+        traceback.print_exc()
 	ts.skip_test(sys.argv[1],"unrecoverable error from nose "+str(sys.exc_info()[0]))
 
 

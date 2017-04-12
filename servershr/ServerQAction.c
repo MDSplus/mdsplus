@@ -47,11 +47,11 @@ extern int ServerBadSocket(int sock);
 static int SendReply(SrvJob * job, int replyType, int status, int length, char *msg);
 static int ShowCurrentJob(struct descriptor_xd *ans);
 static void ReleaseCurrentJob();
-static int StartThread();
+static int StartWorker();
+static void KillWorker();
 static void WaitForJob();
 static void LockQueue();
 static void UnlockQueue();
-static void KillThread();
 static int DoSrvCommand(SrvJob * job_in);
 static int DoSrvAction(SrvJob * job_in);
 static int DoSrvClose(SrvJob * job_in);
@@ -76,18 +76,14 @@ static SrvJob *FirstQueueEntry = NULL;
 static SrvJob *CurrentJob = NULL;
 static MonitorList *Monitors = NULL;
 static ClientList *Clients = NULL;
-static int WorkerThreadRunning = 0;
-static pthread_t WorkerThread;
-static pthread_cond_t JobWaitCondition = PTHREAD_COND_INITIALIZER;
-static pthread_mutex_t JobWaitMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t Worker;
+static Condition WorkerRunning = CONDITION_INITIALIZER;
 static char *current_job_text = NULL;
 static int Debug = 0;
 static int QueueLocked = 0;
 static int WorkerDied = 0;
 static int LeftWorkerLoop = 0;
 static int CondWStat = 0;
-
-//static pthread_mutex_t ProgLocLock = PTHREAD_MUTEX_INITIALIZER;
 int ProgLoc = 0;
 
 EXPORT struct descriptor *ServerInfo()
@@ -108,7 +104,7 @@ EXPORT int ServerDebug(int setting)
   return old;
 }
 
-EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *op, int *flags, int *jobid,
+EXPORT int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
 		  void *p1, void *p2, void *p3, void *p4, void *p5, void *p6, void *p7, void *p8)
 {
   int status = ServerINVALID_ACTION_OPERATION;
@@ -121,7 +117,7 @@ EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *o
   case SrvAbort:
     {
       ServerSetDetailProc(0);
-      KillThread();
+      KillWorker();
       AbortJob(GetCurrentJob());
       ReleaseCurrentJob();
       SetCurrentJob(0);
@@ -130,14 +126,14 @@ EXPORT int ServerQAction(int *addr __attribute__ ((unused)), short *port, int *o
 	while ((job = NextJob(0)) != 0)
 	  AbortJob(job);
       }
-      status = StartThread();
+      status = StartWorker();
       break;
     }
   case SrvAction:
     {
 
       SrvActionJob job;
-      job.h.addr = MdsGetClientAddr();
+      job.h.addr = addr ? *addr : MdsGetClientAddr();
       job.h.port = *port;
       job.h.op = *op;
       job.h.length = sizeof(job);
@@ -257,7 +253,7 @@ static int QJob(SrvJob * job)
   if (FirstQueueEntry == 0)
     FirstQueueEntry = qjob;
   UnlockQueue();
-  return StartThread();
+  return StartWorker();
 }
 
 static int RemoveLast()
@@ -330,64 +326,6 @@ static void FreeJob(SrvJob * job)
     free(((SrvMonitorJob *) job)->server);
   }
   free(job);
-}
-
-static void ThreadCleanup(void *arg __attribute__ ((unused)))
-{
-  WorkerThreadRunning = 0;
-  WorkerDied++;
-  printf("Worker thread exitted\n");
-}
-
-static void *Worker(void *arg __attribute__ ((unused)) )
-{
-  SrvJob *job;
-  pthread_cleanup_push(ThreadCleanup, 0);
-  WorkerThreadRunning = 1;
-  ProgLoc = 1;
-  while ((job = NextJob(1))) {
-    char *save_text;
-    ProgLoc = 2;
-    ServerSetDetailProc(0);
-    ProgLoc = 3;
-    SetCurrentJob(job);
-    ProgLoc = 4;
-    if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0) {
-      ProgLoc = 5;
-      SendReply(job, SrvJobSTARTING, 1, 0, 0);
-    }
-    ProgLoc = 6;
-    switch (job->h.op) {
-    case SrvAction:
-      DoSrvAction(job);
-      break;
-    case SrvClose:
-      DoSrvClose(job);
-      break;
-    case SrvCreatePulse:
-      DoSrvCreatePulse(job);
-      break;
-    case SrvCommand:
-      DoSrvCommand(job);
-      break;
-    case SrvMonitor:
-      DoSrvMonitor(job);
-      break;
-    }
-    ProgLoc = 7;
-    SetCurrentJob(0);
-    ProgLoc = 8;
-    FreeJob(job);
-    ProgLoc = 9;
-    save_text = current_job_text;
-    current_job_text = 0;
-    if (save_text)
-      free(save_text);
-    ProgLoc = 10;
-  }
-  LeftWorkerLoop++;
-  pthread_cleanup_pop(1);
-  return NULL;
 }
 
 static SrvJob *GetCurrentJob()
@@ -520,7 +458,7 @@ static int DoSrvCommand(SrvJob * job_in)
   if STATUS_OK {
     ProgLoc = 67;
     status = mdsdcl_do_command(job->command);
-    ProgLoc = 68;
+    //ProgLoc = 68;
   }
   ProgLoc = 69;
   if (job_in->h.addr)
@@ -656,14 +594,6 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
   return MDSplusSUCCESS;
 }
 
-static void KillThread()
-{
-  if (WorkerThreadRunning != 0) {
-    pthread_cancel(WorkerThread);
-    WorkerThreadRunning = 0;
-  }
-}
-
 static void LockQueue()
 {
   MdsGlobalLock();
@@ -679,41 +609,82 @@ static void UnlockQueue()
 static void WaitForJob()
 {
   ProgLoc = 11;
-  pthread_mutex_lock(&JobWaitMutex);
-  ProgLoc = 12;
-  {
-    struct timespec abstime;
-    struct timeval tmval;
-    gettimeofday(&tmval, 0);
-    ProgLoc = 13;
-    abstime.tv_sec = tmval.tv_sec + 1;
-    abstime.tv_nsec = tmval.tv_usec * 1000;
-    CondWStat = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &abstime);
-  }
-  ProgLoc = 14;
-  pthread_mutex_unlock(&JobWaitMutex);
+  CONDITION_WAIT_1SEC(&WorkerRunning);
   ProgLoc = 15;
 }
 
-static int StartThread()
+static void WorkerExit(void *arg __attribute__ ((unused)))
 {
-  int c_status;
-  pthread_attr_t att;
-  if (WorkerThreadRunning == 0) {
-    pthread_attr_init(&att);
-    pthread_attr_setstacksize(&att, 0xffffff);
-    WorkerThreadRunning = 1;
-    pthread_attr_setdetachstate(&att, PTHREAD_CREATE_DETACHED);
-    c_status = pthread_create(&WorkerThread, &att, Worker, 0);
-    if (c_status) {
-      perror("Error creating pthread");
-      exit(c_status);
+  CONDITION_RESET(&WorkerRunning);
+  WorkerDied++;
+  printf("Worker thread exitted\n");
+}
+
+static void WorkerThread(void *arg __attribute__ ((unused)) )
+{
+  SrvJob *job;
+  pthread_cleanup_push(WorkerExit, NULL);
+  ProgLoc = 1;
+  CONDITION_SET(&WorkerRunning);
+  while ((job = NextJob(1))) {
+    char *save_text;
+    ProgLoc = 2;
+    ServerSetDetailProc(0);
+    ProgLoc = 3;
+    SetCurrentJob(job);
+    ProgLoc = 4;
+    if ((job->h.flags & SrvJobBEFORE_NOTIFY) != 0) {
+      ProgLoc = 5;
+      SendReply(job, SrvJobSTARTING, 1, 0, 0);
     }
+    ProgLoc = 6;
+    switch (job->h.op) {
+    case SrvAction:
+      DoSrvAction(job);
+      break;
+    case SrvClose:
+      DoSrvClose(job);
+      break;
+    case SrvCreatePulse:
+      DoSrvCreatePulse(job);
+      break;
+    case SrvCommand:
+      DoSrvCommand(job);
+      break;
+    case SrvMonitor:
+      DoSrvMonitor(job);
+      break;
+    }
+    ProgLoc = 7;
+    SetCurrentJob(0);
+    ProgLoc = 8;
+    FreeJob(job);
+    ProgLoc = 9;
+    save_text = current_job_text;
+    current_job_text = 0;
+    if (save_text)
+      free(save_text);
+    ProgLoc = 10;
   }
-  pthread_mutex_lock(&JobWaitMutex);
-  pthread_cond_signal(&JobWaitCondition);
-  pthread_mutex_unlock(&JobWaitMutex);
-  return MDSplusSUCCESS;
+  LeftWorkerLoop++;
+  pthread_cleanup_pop(1);
+  pthread_exit(NULL);
+}
+
+static int StartWorker(){
+  INIT_STATUS;
+  CONDITION_START_THREAD(&WorkerRunning, Worker, /4, WorkerThread,NULL);
+  if STATUS_NOT_OK exit(-1);
+  return status;
+}
+
+static void KillWorker(){
+  pthread_mutex_lock(&WorkerRunning.mutex);
+  if (WorkerRunning.value) {
+    pthread_cancel(Worker);
+    WorkerRunning.value = B_FALSE;
+  }
+  pthread_mutex_unlock(&WorkerRunning.mutex);
 }
 
 static SOCKET AttachPort(int addr, short port)

@@ -31,4 +31,3 @@ status=$?
 # terminate watchdog
 kill -s SIGTERM $watchdog
 exit $status
-                                                  

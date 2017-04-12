@@ -1,3 +1,5 @@
+#ifndef TDIREFZONE_H
+#define TDIREFZONE_H
 /*	tdirefzone.h
 	References to zone used by Tdi1BUILD_FUNCTION, TdiYacc, and TdiLex_... .
 
@@ -16,9 +18,10 @@ struct TdiZoneStruct {
   struct descriptor **a_list;	/*first argument        */
   int l_rel_path;		/*keep relative paths   */
 };
-extern struct TdiZoneStruct TdiRefZone;
 
 #include <libroutines.h>
+#include "tdithreadsafe.h"
+#define TdiRefZone (TdiThreadStatic_p->TdiRefZone)
 
 struct marker {
   struct descriptor_r *rptr;
@@ -37,21 +40,21 @@ struct marker {
 	/*--------------------------------------------------
 	Definitions needed by Lex and Yacc.
 	--------------------------------------------------*/
-#define yylex()		TdiLex()
-#define yyerror(s)	TdiRefZone.l_ok = yyval.mark.w_ok; return MDSplusERROR
+#define tdiyylex()		TdiLex()
+#define tdiyyerror(s)	TdiRefZone.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR
 
-#define MAKE_S(dtype_in,bytes,out)\
-	{int dsc_size = sizeof(struct descriptor_s);\
-	unsigned int vm_size = dsc_size + (bytes);\
+#define MAKE_S(dtype_in,bytes,out)					\
+	{int dsc_size = sizeof(struct descriptor_s);			\
+	unsigned int vm_size = dsc_size + (bytes);			\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
-	((struct descriptor *)(out))->length = bytes;		\
-	((struct descriptor *)(out))->dtype = dtype_in;		\
+	((struct descriptor *)(out))->length = bytes;			\
+	((struct descriptor *)(out))->dtype = dtype_in;			\
 	((struct descriptor *)(out))->class = CLASS_S;			\
 	((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
 
-#define MAKE_XD(dtype_in,bytes,out)\
-	{int dsc_size = sizeof(struct descriptor_xd);\
-	unsigned int vm_size = dsc_size + (bytes);\
+#define MAKE_XD(dtype_in,bytes,out)					\
+	{int dsc_size = sizeof(struct descriptor_xd);			\
+	unsigned int vm_size = dsc_size + (bytes);			\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
 	((struct descriptor_xd *)(out))->l_length = bytes;		\
 	((struct descriptor_xd *)(out))->length = 0;			\
@@ -59,12 +62,12 @@ struct marker {
 	((struct descriptor_xd *)(out))->class = CLASS_XD;		\
 	((struct descriptor_xd *)(out))->pointer = (struct descriptor *)((char *)(out) + dsc_size);}
 
-#define MAKE_R(ndesc,dtype_in,bytes,out)\
-	{int dsc_size = sizeof($RECORD(ndesc));\
-	unsigned int vm_size = dsc_size + (bytes);\
+#define MAKE_R(ndesc,dtype_in,bytes,out)				\
+	{int dsc_size = sizeof($RECORD(ndesc));				\
+	unsigned int vm_size = dsc_size + (bytes);			\
 	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
-	((struct descriptor *)(out))->length = bytes;		\
-	((struct descriptor *)(out))->dtype = dtype_in;		\
+	((struct descriptor *)(out))->length = bytes;			\
+	((struct descriptor *)(out))->dtype = dtype_in;			\
 	((struct descriptor *)(out))->class = CLASS_R;			\
 	((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
 
@@ -72,3 +75,4 @@ struct marker {
 	Give an extra semicolon. Must be able to unput.
 	Caution: side effect--unput changes c pointer.
 	**********************************************/
+#endif

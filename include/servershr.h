@@ -9,6 +9,7 @@
 typedef void *pthread_cond_t;
 typedef void *pthread_t;
 typedef void *pthread_mutex_t;
+typedef void *pthread_rwlock_t;
 #endif
 #else
 #define _GNU_SOURCE		/* glibc2 needs this */
@@ -26,13 +27,13 @@ EXPORT extern int ServerAbortServer(char *server, int flush);
 EXPORT extern int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table);
 EXPORT extern int ServerCloseTrees(char *server);
 EXPORT extern int ServerCreatePulse(int *id, char *server, char *tree, int shot,
-			     void (*ast) (), void *astprm, int *retstatus, void (*before_ast) ());
+			     void (*ast) (), void *astprm, int *retstatus, pthread_rwlock_t *lock, void (*before_ast) ());
 EXPORT extern int ServerDispatchAction(int *id, char *server, char *tree, int shot, int nid,
-				void (*ast) (), void *astprm, int *retstatus, int *socket,
+				void (*ast) (), void *astprm, int *retstatus, pthread_rwlock_t *lock, int *socket,
 				void (*before_ast) ());
 EXPORT extern int ServerDispatchClose(void *vtable);
 EXPORT extern int ServerDispatchCommand(int *id, char *server, char *cli, char *command,
-				 void (*ast) (), void *astprm, int *retstatus,
+				 void (*ast) (), void *astprm, int *retstatus, pthread_rwlock_t *lock,
 				 void (*before_ast) ());
 EXPORT extern int ServerSetLinkDownHandler(void (*handler) ());
 EXPORT extern void ServerSetDetailProc(char *(*detail_proc) (int));

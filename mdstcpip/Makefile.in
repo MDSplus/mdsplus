@@ -71,7 +71,7 @@ SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
 
 TCP_SOURCES = IoRoutinesTcp.c
 TCP_OBJECTS = $(TCP_SOURCES:.c=.o)
-TCPV6_SOURCES = IoRoutinesTcpv6.c
+TCPV6_SOURCES = IoRoutinesTcpV6.c
 TCPV6_OBJECTS = $(TCPV6_SOURCES:.c=.o)
 UDT4 = udt4/src
 UDT4_SOURCES = udt4/src/api.cpp udt4/src/buffer.cpp udt4/src/cache.cpp udt4/src/ccc.cpp udt4/src/channel.cpp \

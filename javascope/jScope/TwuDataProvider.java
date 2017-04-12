@@ -56,7 +56,6 @@ class TwuDataProvider
     public boolean SupportsFastNetwork(){return true;}
     public void    SetArgument(String arg){}
     public boolean SupportsTunneling() {return false;}
-    public void setContinuousUpdate(){}
 
     //  --------------------------------------------------------------------------------------------
     //     interface methods for getting *Data objects

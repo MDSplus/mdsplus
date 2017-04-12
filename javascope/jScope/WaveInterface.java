@@ -1388,7 +1388,6 @@ public class WaveInterface
         }
         
         
-        //wd.setContinuousUpdate(isContinuousUpdate);
         boolean hasErrors = up_err != null || low_err != null;
         if( xDimension == 1)
         {

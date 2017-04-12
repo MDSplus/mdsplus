@@ -402,3 +402,16 @@
    Helgrind:Race
    fun:PyThreadState_Swap
 }
+
+{
+   Stack of Pthreads created detached but run till main process terminates
+   Memcheck:Leak
+   fun:calloc
+   fun:_dl_allocate_tls
+}
+{
+   python internal allocations python should take care of
+   Memcheck:Leak
+   fun:calloc
+   obj:*/libpython?.?.so*
+}

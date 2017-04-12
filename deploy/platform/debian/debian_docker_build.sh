@@ -2,7 +2,7 @@
 #
 # debian_docker_build is used to build, test, package and add deb's to a
 # repository for debian based systems.
-# 
+#
 # release:
 # /release/repo   -> repository
 # /release/$branch/DEBS/$arch/*.deb
@@ -67,8 +67,10 @@ buildrelease() {
 	mkdir -p /workspace/releasebld/64;
 	pushd /workspace/releasebld/64;
 	config ${test64}
-	$MAKE
-	$MAKE install
+	if [ -z "$NOMAKE" ]; then
+	  $MAKE
+	  $MAKE install
+	fi
 	popd;
     else
 	MDSPLUS_DIR=/workspace/releasebld/buildroot/usr/local/mdsplus
@@ -76,10 +78,13 @@ buildrelease() {
 	mkdir -p /workspace/releasebld/32;
 	pushd /workspace/releasebld/32;
 	config 32 i686-linux bin lib --with-gsi=/usr:gcc64
-	$MAKE
-	$MAKE install
+	if [ -z "$NOMAKE" ]; then
+	  $MAKE
+	  $MAKE install
+	fi
 	popd
     fi
+  if [ -z "$NOMAKE" ]; then
     BUILDROOT=/workspace/releasebld/buildroot \
 	     BRANCH=${BRANCH} \
 	     RELEASE_VERSION=${RELEASE_VERSION} \
@@ -124,12 +129,11 @@ buildrelease() {
     else
         component=" ${BRANCH}"
     fi
-    arches=$(spacedelim ${ARCHES})
     cat - <<EOF > /release/repo/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
-Architectures: ${arches}
+Architectures: ${ARCHES}
 Components: alpha stable${component}
 Description: MDSplus packages
 EOF
@@ -157,6 +161,7 @@ EOF
         fi
     done
     popd
+  fi #nomake
 }
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
@@ -177,4 +182,3 @@ publish() {
 	popd
     fi
 }
-

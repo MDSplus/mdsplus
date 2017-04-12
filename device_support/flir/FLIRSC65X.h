@@ -13,6 +13,8 @@ extern "C"
 { 
 #endif 
 
+extern int flirRadiometricConv(void *frame, int width, int height, void *metaData);
+
 // Wrapper for Python that must see the cpp class as standard C functions
 
 int flirOpen(const char *cameraName, int *camHandle);

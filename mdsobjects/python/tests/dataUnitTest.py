@@ -224,10 +224,10 @@ class dataTests(TestCase):
         self._doExceptionTest('abort()',Exc.TdiABORT)
         self._doExceptionTest('{,}',Exc.TdiSYNTAX)
         self._doExceptionTest('\033[[A',Exc.TdiBOMB)
-        self._doExceptionTest('abs()',Exc.TdiMISS_ARG)       
-        self._doExceptionTest('abs("")',Exc.TdiINVDTYDSC)       
-        self._doExceptionTest('abs(1,2)',Exc.TdiEXTRA_ARG)       
-        self._doExceptionTest('"',Exc.TdiUNBALANCE)       
+        self._doExceptionTest('abs()',Exc.TdiMISS_ARG)
+        self._doExceptionTest('abs("")',Exc.TdiINVDTYDSC)
+        self._doExceptionTest('abs(1,2)',Exc.TdiEXTRA_ARG)
+        self._doExceptionTest('"',Exc.TdiUNBALANCE)
         """Test $Missing/NoData/None"""
         self._doTdiTest('',None)
         """Test abs"""
@@ -320,19 +320,22 @@ class dataTests(TestCase):
         self.assertEqual(str(m.Int16(123)),'123W')
         self.assertEqual(str(m.Int32(123)),'123')
         self.assertEqual(str(m.Int64(123)),'123Q')
+        self.assertEqual(str(m.Signal(m.ZERO(100000,0).evaluate(),None,0)),"Build_Signal(Set_Range(100000,0 /*** etc. ***/), *, 0)")
         #self.assertEqual(str(m.Float32(1.2E-3)),'.0012')
         #self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
 
     def runTest(self):
-        self.operatorsAndFunction()
-        self.tdiFunctions()
-        self.decompile()
-        self.tdiPythonInterface()
-
+        for test in self.getTests():
+            self.__getattribute__(test)()
+    @staticmethod
+    def getTests():
+        return ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
+    @classmethod
+    def getTestCases(cls):
+        return map(cls,cls.getTests())
 
 def suite():
-    tests = ['operatorsAndFunction','tdiFunctions','decompile','tdiPythonInterface']
-    return TestSuite(map(dataTests,tests))
+    return TestSuite(dataTests.getTestCases())
 
 def run():
     from unittest import TextTestRunner

@@ -64,12 +64,12 @@
 /* Copy the first part of user declarations.  */
 #line 1 "cmdParse.y" /* yacc.c:339  */
 
+  #include "mdsdclthreadsafe.h"
   #include <stdio.h>
   #include <stdlib.h>
   int yydebug=0;
   #define YYLTYPE void *
   #define yylex dcl_lex
-  #include "dcl_p.h"
   #include <dcl.h>
   #include <mdsdcl_messages.h>
   #include "dcllex.h"
@@ -115,7 +115,7 @@ extern int yydebug;
     QUALIFIER = 260,
     EQUALS = 261,
     VALUE = 262,
-    PVALUE = 263,
+    PVALUE_ = 263,
     COMMA = 264,
     END = 265,
     COMMENT = 266
@@ -1375,7 +1375,7 @@ yyreduce:
     while((dq=strstr(dq,"\"\""))) {
       dq[1]='\0';
       dq=dq+1;
-      strcat(nval,dq+1);      
+      strcat(nval,dq+1);
     }
     value=nval;
   }
@@ -1665,4 +1665,4 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   }
   return status;
 }
-  
+

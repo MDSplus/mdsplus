@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
 
-		Name:   SERVER$FREE_DISPATCH_TABLE   
+		Name:   SERVER$FREE_DISPATCH_TABLE
 
 		Type:   C function
 
@@ -8,11 +8,11 @@
 
 		Date:    9-NOV-1993
 
-    		Purpose: Free a dispatch table 
+    		Purpose: Free a dispatch table
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 
@@ -35,8 +35,7 @@ int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 #include "servershrp.h"
 #include <treeshr.h>
 
-EXPORT int ServerFreeDispatchTable(void *vtable)
-{
+EXPORT int ServerFreeDispatchTable(void *vtable){
   if (vtable) {
     DispatchTable *table = vtable;
     ActionInfo *actions = table->actions;
@@ -56,5 +55,5 @@ EXPORT int ServerFreeDispatchTable(void *vtable)
     }
     free(vtable);
   }
-  return 1;
+  return MDSplusSUCCESS;
 }

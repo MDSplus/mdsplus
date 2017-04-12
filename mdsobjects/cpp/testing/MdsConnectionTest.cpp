@@ -82,6 +82,7 @@ void test_tree_open(const char *prot)
 
 int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
+    TEST_TIMEOUT(15);
     BEGIN_TESTING(Connection);
 
     setenv("test_tree_path",".",1);
