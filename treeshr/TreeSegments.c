@@ -730,7 +730,7 @@ inline static int ReadProperty_safe(TREE_INFO *tinfo, int offset,char *buffer,in
       if STATUS_OK {\
         startval = swapquad(buffer);\
         int rows_filled = getFilledRowsTS(shead,sinfo,idx,(int64_t*)buffer);\
-        endval = swapquad(buffer+(rows_filled-1)*sizeof(int64_t));\
+        endval = rows_filled ? swapquad(buffer+(rows_filled-1)*sizeof(int64_t)) : 0;\
       } else {\
         startval = 0; \
         endval = 0; \
