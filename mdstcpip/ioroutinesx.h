@@ -80,17 +80,25 @@ static int getHostAndPort(char *hostin, struct SOCKADDR_IN *sin){
   INIT_STATUS_ERROR;
   INITIALIZESOCKETS;
   char *host = strcpy((char *)malloc(strlen(hostin) + 1), hostin);
-  char *service = "mdsip";
+  char *service = NULL;
   size_t i;
   for (i = 0 ; i < strlen(host) && host[i] != PORTDELIM ; i++);
   if (i < strlen(host)) {
     host[i] = '\0';
     service = &host[i+1];
+  } else {
+    service = "mdsip";
   }
   if (atoi(service) == 0) {
     if (!getservbyname(service, "tcp")) {
-      service = getenv(service);
-      if (!service) service = "8000";
+      char *env_service = getenv(service);
+      if ( (env_service == NULL) ) {
+	if (strcmp(service,"mdsip")==0) {
+	  service = "8000";
+	}
+      } else {
+	service = env_service;
+      }
     }
   }
   struct addrinfo *info;
