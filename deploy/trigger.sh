@@ -332,6 +332,7 @@ EOF
 		NORMAL $COLOR
 		NEW_RELEASE=yes
 		let MINOR=$MINOR+1
+		let RELEASEV=0
 		;;
 	    PATCH)
 		GREEN $COLOR
@@ -368,7 +369,7 @@ EOF
     fi
     RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
-    git log --decorate=full > ${SRCDIR}/ChangeLog
+    git log --decorate=full --no-merges > ${SRCDIR}/ChangeLog
     opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"
     cat <<EOF > ${SRCDIR}/trigger.version
 NEW_RELEASE=${NEW_RELEASE}
@@ -429,7 +430,7 @@ then
   "target_commitish":"${BRANCH}",
   "name":"${RELEASE_TAG}",
   "body":"Commits since last release:\n\n
-$(git log --decorate=full ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");print $0"\\n"}')"
+$(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");print $0"\\n"}')"
 }
 EOF
 	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
