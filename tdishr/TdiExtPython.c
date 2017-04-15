@@ -91,10 +91,14 @@ static int Initialize(){
 #endif
     if (!Py_Initialize) {
 #ifdef _WIN32
-      lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
-      strcat(lib, ".dll");
+      if (strlen(envsym)>6 && (envsym[1] == ':' || strncmp(envsym+strlen(envsym)-4, ".dll", 4) == 0)) {
+        lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
+      } else {
+        lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
+        strcat(lib, ".dll");
+      }
 #else
-      if (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0) {
+      if (strlen(envsym)>6 && (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0)) {
         lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
       } else {
         lib = strcpy((char *)malloc(strlen(envsym) + 7), "lib");

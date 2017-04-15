@@ -181,7 +181,7 @@ NORMAL() {
     fi
 }
 export PYTHONDONTWRITEBYTECODE=no
-export PyLib=$(python -V | awk '{print $2}' | awk -F. '{print "python"$1"."$2}')
+export PyLib=$(ldd $(which python) | grep libpython | awk '{print $3}')
 main(){
     MAKE=${MAKE:="env LANG=en_US.UTF-8 make"}
     if [ -r /source/deploy/os/${OS}.env ]

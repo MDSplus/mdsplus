@@ -126,33 +126,24 @@ class testing(object):
             raise IndexError
 	return res
 
-
 ts = testing()
 def check_arch(file_name):
-    if sys.platform.startswith('win'):
-        lib   = '%s.dll'
-        pylib = 'python%d%d'
-    elif sys.platform.startswith('darwin'):
-        lib   = 'lib%s.dylib'
-        pylib = 'python%d.%d'
-    else:
-        lib   = 'lib%s.so'
-        pylib = 'python%d.%d'
     module_name = os.path.basename(file_name)
-    try:
-        ts.check_loadlib(lib%'MdsShr')
-    except OSError:
-        ts.skip_test(module_name,
-                     'Unable to load MDSplus core libs')
-    try:
-        pylib = lib%(pylib%sys.version_info[0:2])
-        ts.check_loadlib(pylib)
-    except OSError:
-        ts.skip_test(module_name,
-                     'Unable to load python lib "%s"'%(pylib,))
     if not ts.check_unittest_version(module_name):
-        ts.skip_test(module_name,
-                     'Unfit unittest version < 2.7')
+        ts.skip_test(module_name,'Unfit unittest version < 2.7')
+    try:
+        from MDSplus import getenv
+    except Exception as e:
+        ts.skip_test(module_name,'Unable to import MDSplus: "%s"'%(e,))
+    if module_name.startswith('dcl'):
+      try:
+        pylib = getenv('PyLib')
+        print('PyLib="%s"'%pylib)
+        if not pylib:
+            ts.skip_test(module_name,'Invalid/unset PyLib env.')
+        ts.check_loadlib(pylib)
+      except OSError:
+        ts.skip_test(module_name,'Unable to load python lib "%s"'%(pylib,))
 
 if __name__ == '__main__':
     if '--skip' in sys.argv:
