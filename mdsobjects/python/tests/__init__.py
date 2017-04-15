@@ -12,7 +12,7 @@ def _mimportSuite(name, level=1):
         return __import__(name, globals()).suite
 
 from unittest import TestSuite,TextTestRunner
-import os,sys
+import sys
 import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 
 from MDSplus import getenv
