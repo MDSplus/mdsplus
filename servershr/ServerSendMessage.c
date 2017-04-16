@@ -244,12 +244,12 @@ static void RemoveJob(Job *j){
   LOCK_JOBS;
   Job *jj, *prev;
   for (jj = Jobs, prev = NULL; jj && jj != j; prev=jj, jj=jj->next);
-  if (prev)
-    prev->next = j->next;
-  else
-    Jobs = j->next;
-  if (!j->has_condition)
-    free(j);
+  if (jj) {
+    if (prev) prev->next = j->next;
+    else      Jobs = j->next;
+    if (!jj->has_condition)
+      free(jj);
+  }
   UNLOCK_JOBS;
 }
 
