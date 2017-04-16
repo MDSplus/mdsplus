@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl @(#)$RCSfile$ $Revision$
 AC_PREREQ([2.69])
-AC_INIT([MDSplus], [7.1a], [mdsplus@lists.psfc.mit.edu])
+AC_INIT([MDSplus], [7a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 
@@ -16,7 +16,7 @@ AM_MAINTAINER_MODE
 
 dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
 dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
-dnl 
+dnl
 dnl * git-directory:  ax_is_release will be 'no' if a '.git' directory exists
 dnl * minor-version:  ax_is_release will be 'no' if the minor version number
 dnl                   in $PACKAGE_VERSION is odd; this assumes
@@ -26,25 +26,25 @@ dnl                   in $PACKAGE_VERSION is odd; this assumes
 dnl                   $PACKAGE_VERSION follows the 'major.minor.micro' scheme
 dnl * always:         ax_is_release will always be 'yes'
 dnl * never:          ax_is_release will always be 'no'
-dnl 
+dnl
 AX_IS_RELEASE([always])
 
 
 dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
 dnl see: www.gnu.org/software/autoconf-archive/ax_check_enable_debug.html
 dnl
-dnl Check for the presence of an --enable-debug option to configure, with the 
-dnl specified default value used when the option is not present. Return the 
+dnl Check for the presence of an --enable-debug option to configure, with the
+dnl specified default value used when the option is not present. Return the
 dnl value in the variable $ax_enable_debug.
-dnl Specifying "yes" adds "-g -O0" to the compilation flags for all languages. 
-dnl Specifying "info" adds "-g" to the compilation flags. Specifying "profile" 
-dnl adds "-g -pg" to the compilation flags, and "-pg" to the linker flags. 
+dnl Specifying "yes" adds "-g -O0" to the compilation flags for all languages.
+dnl Specifying "info" adds "-g" to the compilation flags. Specifying "profile"
+dnl adds "-g -pg" to the compilation flags, and "-pg" to the linker flags.
 dnl Otherwise, nothing is added.
 dnl
-dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no], 
-dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...], 
+dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no],
+dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...],
 dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
-AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
 
 
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ AC_SYS_LARGEFILE
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
- 
+
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
               [AS_HELP_STRING([--disable-shared],
@@ -174,7 +174,7 @@ dnl AS_CASE([$host_vendor],
 dnl        [apple], dnl the java section breaks with macos x due to different structure
 dnl                 dnl this disables it for now..  is there a AC_PROG_JAVA?
 dnl                 [AS_VAR_SET([enable_java], [no])]
-dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
+dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O3 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
 dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
 dnl                                                       [F77=fort77])])
 dnl AC_MSG_RESULT([$enable_java])
@@ -242,7 +242,7 @@ AS_CASE([$with_gsi],
         [MDSTCPIP="mdstcpip roam"
          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-         AS_VAR_IF([GLOBUS_FLAVOR], [], 
+         AS_VAR_IF([GLOBUS_FLAVOR], [],
                    [AC_MSG_WARN([YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option])
                     AC_MSG_WARN([Format:   --with-gsi=globus-install-directory:flavor])
                     AC_MSG_WARN([Example:  --with-gsi=/usr/local/gt3:gcc32dbg])
@@ -559,7 +559,7 @@ AC_TRY_COMPILE(,int gub(){return((int)0x1ll);}
 AC_LANG_RESTORE
 
 AC_MSG_CHECKING(if JNI libraries are different)
-if test "$LINKJNI" 
+if test "$LINKJNI"
 then
 	AC_MSG_RESULT(yes)
 else
@@ -569,7 +569,7 @@ else
 fi
 
 AC_MSG_CHECKING(if IDL plugins are different)
-if test "$LINKMODULE" 
+if test "$LINKMODULE"
 then
 	AC_MSG_RESULT(yes)
 else
@@ -604,14 +604,14 @@ MDS_SEARCH_LIBS([raw1394_get_libversion],[raw1394],
 
 AC_SEARCH_LIBS([gethostbyname], [nsl socket],
                [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
-               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because 
-                dnl it requires #include <winsocks2.h> to work. 
-                AC_MSG_CHECKING([for gethostbyname in ws2_32]) 
+               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because
+                dnl it requires #include <winsocks2.h> to work.
+                AC_MSG_CHECKING([for gethostbyname in ws2_32])
                 LIBSOCKET="-lws2_32"
                 mds_old_LIBS="$LIBS"
-                LIBS="$LIBSOCKET $LIBS" 
-                AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <winsock2.h>]], 
-                                                [[gethostbyname ("");]])], 
+                LIBS="$LIBSOCKET $LIBS"
+                AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <winsock2.h>]],
+                                                [[gethostbyname ("");]])],
                                [AC_MSG_RESULT([yes])],
                                [AC_MSG_RESULT([no]); AS_UNSET([LIBSOCKET])])
                 LIBS=$mds_old_LIBS])
@@ -668,7 +668,7 @@ if test x"$have_readline" = x"yes"; then
   CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
   LDFLAGS="${READLINE_LDFLAGS} ${LDFLAGS}"
   AC_CHECK_HEADERS(readline/readline.h readline/history.h
-     ,,AC_MSG_ERROR("libreadline headers was not found"))     
+     ,,AC_MSG_ERROR("libreadline headers was not found"))
   dnl this appears to be used so I add it here also.
   AC_CHECK_FUNCS(rl_set_signals)
   dnl  CPPFLAGS=$CPPFLAGS_save
@@ -682,7 +682,7 @@ dnl   AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
 dnl LIBS="$LIBS_save"
 dnl if test "$ac_cv_search_readline" = "no"
 dnl then
-dnl   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
+dnl   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped")
 dnl   TDIC=""
 dnl   LIBREADLINE=""
 dnl else
@@ -758,7 +758,7 @@ then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
       HDF5_LIBS="$HDF5_LIBS -L$HDF5_DIR/lib"
-else	
+else
 
 dnl Check for default hdf5 header and library
 HDF5_APS=""
@@ -802,8 +802,8 @@ if test "$mdsplus_ok" = yes; then
     fi
 fi
 
-#AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
-#    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
+#AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone,
+#    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;],
 #        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
 #    if test "$mdsplus_cv_have_timezone" = yes; then
 #        AC_DEFINE(HAVE_TIMEZONE,[],["define HAVE_TIMEZONE"])
@@ -977,7 +977,7 @@ AC_SUBST(PYTHON_ARCHITECTURE)
 AC_CHECK_FUNCS(mkstemp)
 AC_CHECK_FUNCS(fork)
 ### maybe needs to be changed. Not sure how to deal with the multiple routines and ac_cv_search_xxxx
-AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete], 
+AC_CHECK_LIB([rt],  [clock_gettime, timer_create, timer_settime, timer_delete],
              [LIBRT="-lrt"],[LIBRT=""])
 
 
@@ -1026,17 +1026,17 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                      AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
                     [echo "sanitizer not available."; exit 111;])
 
- 
+
  # selects particular envs for build:host
  TS_SELECT
- 
- ## test chain substitution ## 
+
+ ## test chain substitution ##
  AC_SUBST(TESTS_ENVIRONMENT)
  AC_SUBST(LOG_COMPILER)
  AC_SUBST(LOG_DRIVER)
  AC_SUBST(PY_LOG_COMPILER)
  AC_SUBST(PY_LOG_FLAGS)
- 
+
  AC_SUBST(VALGRIND_FLAGS)
  AC_SUBST(VALGRIND_memcheck_FLAGS)
 
@@ -1063,15 +1063,15 @@ AC_CHECK_PROGS([DOXYGEN], [doxygen])
 if test -z "$DOXYGEN";
   then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
   AM_CONDITIONAL([HAVE_CUTE_DOXYGEN], [false])
-else  
-  AM_CONDITIONAL([HAVE_CUTE_DOXYGEN], 
+else
+  AM_CONDITIONAL([HAVE_CUTE_DOXYGEN],
     [_ver_higher $DOXYGEN_VERSION_REQUIRED `$DOXYGEN --version`])
-  AM_COND_IF([HAVE_CUTE_DOXYGEN], 
-    [ echo "Doxygen version is cute!" ], 
+  AM_COND_IF([HAVE_CUTE_DOXYGEN],
+    [ echo "Doxygen version is cute!" ],
     [ AC_MSG_WARN(["Doxygen version outdated, very limited documentation support"]) ])
 fi
 
-## DEFAULT ACTIVE FEATURES 
+## DEFAULT ACTIVE FEATURES
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)
@@ -1081,7 +1081,7 @@ DX_XML_FEATURE(OFF)
 DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
 
-## refers to ax_prog_doxygen.m4 macro expansion 
+## refers to ax_prog_doxygen.m4 macro expansion
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 
 #
@@ -1132,7 +1132,7 @@ AC_MSG_RESULT([$enable_werror])
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-dnl Here we define all custom autoheader adds to config.h.in 
+dnl Here we define all custom autoheader adds to config.h.in
 
 dnl add here what goes on tom of config.h
 AH_TOP()
@@ -1266,28 +1266,28 @@ AC_OUTPUT(Makefile.inc
           envsyms
           actions/Makefile
           camshr/Makefile
-          ccl/Makefile 
-          d3dshr/Makefile 
-          dwscope/Makefile 
+          ccl/Makefile
+          d3dshr/Makefile
+          dwscope/Makefile
           hdf5/Makefile
           idlmdsevent/Makefile
           idlmdswidgets/Makefile
           javaclient/Makefile
           javadispatcher/Makefile
-          javamds/Makefile 
+          javamds/Makefile
           javascope/Makefile
           javatraverser/Makefile
           javadevices/Makefile
           LabView/Makefile
           manpages/Makefile
           macosx/Makefile
-          math/Makefile 
+          math/Makefile
           mdsdcl/Makefile
 	  mdsdcl/mdsdcl_show_version.c
           mdslib/Makefile
           mdslib/docs/Makefile
-          mdslib/testing/Makefile 
-          mdslibidl/Makefile 
+          mdslib/testing/Makefile
+          mdslibidl/Makefile
           mdsobjects/cpp/Makefile
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
@@ -1303,35 +1303,35 @@ AC_OUTPUT(Makefile.inc
           mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
-          mdstcpip/Makefile 
+          mdstcpip/Makefile
           mdstcpip/zlib/Makefile
           mdstcpip/docs/Makefile
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
-          mitdevices/Makefile 
-          remcam/Makefile 
+          mitdevices/Makefile
+          remcam/Makefile
           roam/Makefile
           rpm/Makefile
           rpm/envsyms
           rpm/post_install_script
           scripts/Makefile
-          servershr/Makefile 
+          servershr/Makefile
           setevent/Makefile
           tcl/Makefile
 	  tdi/MitDevices/_version.py
 	  tdi/RfxDevices/_version.py
 	  tdi/W7xDevices/_version.py
-          tdishr/Makefile 
-          tdishr/testing/Makefile 
+          tdishr/Makefile
+          tdishr/testing/Makefile
           tdic/Makefile
-          tditest/Makefile 
+          tditest/Makefile
           testing/Makefile
           testing/backends/check/Makefile
           testing/selftest/Makefile
-          traverser/Makefile 
-          treeshr/Makefile 
-          treeshr/testing/Makefile 
-          wfevent/Makefile 
+          traverser/Makefile
+          treeshr/Makefile
+          treeshr/testing/Makefile
+          wfevent/Makefile
           xmdsshr/Makefile
           xtreeshr/Makefile
           icons/Makefile
@@ -1396,4 +1396,3 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-
