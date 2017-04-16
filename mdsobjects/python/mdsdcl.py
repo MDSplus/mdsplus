@@ -4,7 +4,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import ctypes as _C, threading as _thread
+import ctypes as _C
 
 _ver=_mimport('version')
 _desc=_mimport('_descriptor')
@@ -15,39 +15,6 @@ _Exceptions=_mimport('mdsExceptions')
 _mdsdcl=_ver.load_library('Mdsdcl')
 _mdsdcl_do_command_dsc=_mdsdcl.mdsdcl_do_command_dsc
 _mdsdcl_do_command_dsc.argtypes=[_C.c_char_p, _C.POINTER(_desc.descriptor_xd), _C.POINTER(_desc.descriptor_xd)]
-_mdsdcl.local = _thread.local()
-def _gettctx():
-    return getattr(_mdsdcl.local,'tctx',None)
-
-def _setUpCtx(ctx):
-    """The dcl interface has its own TreeCtx in case no tree is open
-    This method will set up the context of the current tree if any of
-    default to its own context. One may also provide a context ctx,
-    as done by _tree.Tree.tcl()
-    """
-    if ctx is None:
-      try: ctx=_tree.Tree().ctx
-      except _Exceptions.TreeNOT_OPEN:
-        tctx = getattr(_mdsdcl.local,'tctx',None)
-        if tctx is None:
-            return _treeshr.switchDbid()
-        else:
-            return _treeshr.switchDbid(tctx.ctx)
-    else:
-        return _treeshr.switchDbid(ctx.value)
-
-def _restoreCtx(ctx,ctx0):
-    ctx_new = _treeshr.switchDbid(ctx0)
-    if ctx is None:
-        if ctx_new:
-            tctx = _gettctx()
-            if tctx is None or ctx_new != tctx.ctx:
-                _mdsdcl.local.tctx = _tree._TreeCtx(ctx_new)
-        else:
-            _mdsdcl.local.tctx = None
-    else:
-        ctx.value = ctx_new
-
 
 def dcl(command,return_out=False,return_error=False,raise_exception=False,ctx=None,setcommand='mdsdcl'):
     """Execute a dcl command
@@ -72,13 +39,13 @@ def dcl(command,return_out=False,return_error=False,raise_exception=False,ctx=No
     else:
       out_p=_C.cast(_C.c_void_p(0),_C.POINTER(_desc.descriptor_xd))
     _Exceptions.checkStatus(_mdsdcl_do_command_dsc(_ver.tobytes('set command %s'%(setcommand,)), error_p, out_p))
-    ctx0 = _setUpCtx(ctx)
+    opened = _tree._TreeCtx.setUpCtx(ctx)
     try:
         status = _mdsdcl_do_command_dsc(_ver.tobytes(command), error_p, out_p)
     finally:
-        _restoreCtx(ctx,ctx0)
-    if (status & 1) == 0 and raise_exception:
-      raise _Exceptions.statusToException(status)
+        _tree._TreeCtx.restoreCtx(ctx,opened)
+    if raise_exception:
+        _Exceptions.checkStatus(status)
     if return_out and return_error:
       return (xd_output.value,xd_error.value)
     elif return_out:
