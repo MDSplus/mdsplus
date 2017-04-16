@@ -93,11 +93,7 @@ _CONDITION_SIGNAL(input);\
 _CONDITION_UNLOCK(input);\
 }
 #define CONDITION_SET(input)   CONDITION_SET_TO(input,B_TRUE)
-#define CONDITION_RESET(input){\
-_CONDITION_LOCK(input);\
-(input)->value = 0;\
-_CONDITION_UNLOCK(input);\
-}
+#define CONDITION_RESET(input) CONDITION_SET_TO(input,0)
 #define CONDITION_WAIT_SET(input){\
 _CONDITION_LOCK(input);\
 _CONDITION_WAIT_SET(input);\
