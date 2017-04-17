@@ -993,49 +993,51 @@ EXPORT int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
   return status;
 }
 
-double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
+double WideIntToDouble(unsigned int *bin_in, int size_in_bytes, int is_signed)
 {
   int i;
   double factor;
   double ans = 0.0;
   unsigned int bin[16];
   int negative;
+  int size_in_ints = size_in_bytes/sizeof(int);
 
 #ifdef WORDS_BIGENDIAN
-  for (i = 0; i < size; i++)
-    bin[i] = bin_in[size - i - 1];
+  for (i = 0; i < size_in_ints; i++)
+    bin[i] = bin_in[size_in_ints - i - 1];
 #else
-  memcpy(bin, bin_in, size * sizeof(int));
+  memcpy(bin, bin_in, size_in_ints * sizeof(int));
 #endif
 
-  negative = is_signed && (bin[size - 1] & 0x80000000);
-  for (i = 0, factor = 1.; i < size; i++, factor = (i < 4) ? factor * TWO_32 : 0)
+  negative = is_signed && (bin[size_in_ints - 1] & 0x80000000);
+  for (i = 0, factor = 1.; i < size_in_ints; i++, factor = (i < 4) ? factor * TWO_32 : 0)
     ans += ((negative ? ~bin[i] : bin[i]) * factor);
   if (negative)
     ans = -1 - ans;
   return ans;
 }
 
-void DoubleToWideInt(double *in, int size, unsigned int *out)
+void DoubleToWideInt(double *in, int size_in_bytes, unsigned int *out)
 {
   int negative = *in < 0;
   int i;
   double factor;
   double tmp;
-  for (i = size - 1, tmp = negative ? -1 - *in : *in, factor =
-       pow(2.0, 32. * (size - 1)); i >= 0; tmp -= out[i--] * factor, factor /= TWO_32)
+  int size_in_ints = size_in_bytes/sizeof(int);
+  for (i = size_in_ints - 1, tmp = negative ? -1 - *in : *in, factor =
+       pow(2.0, 32. * (size_in_ints - 1)); i >= 0; tmp -= out[i--] * factor, factor /= TWO_32)
     out[i] = (int)((tmp / factor) + .49999999999);
   if (negative)
-    for (i = 0; i < size; i++)
+    for (i = 0; i < size_in_ints; i++)
       out[i] = ~out[i];
 
 #ifdef WORDS_BIGENDIAN
   {
     unsigned int tmp[16];
-    for (i = 0; i < size; i++)
+    for (i = 0; i < size_in_ints; i++)
       tmp[i] = out[i];
-    for (i = 0; i < size; i++)
-      out[i] = tmp[size - i - 1];
+    for (i = 0; i < size_in_ints; i++)
+      out[i] = tmp[size_in_ints - i - 1];
   }
 #endif
 
