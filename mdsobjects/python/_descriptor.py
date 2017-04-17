@@ -194,7 +194,7 @@ class descriptor(_C.Structure):
                 if value.args[i] is None:
                     c_d.dscptrs[i]=_C.cast(_C.c_void_p(0),type(c_d.dscptrs[i]))
                 else:
-                    c_d.dscptrs[i]=_C.pointer(descriptor(value.args[i]))
+                    c_d.dscptrs[i]=_C.cast(_C.pointer(descriptor(value.args[i])),type(c_d.dscptrs[i]))
             self.length=1000
             self.dtype=_dtypes.DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(c_d),type(self.pointer))
