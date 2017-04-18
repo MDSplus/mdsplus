@@ -715,7 +715,7 @@ struct descriptor_opaque {
 #define DESCRIPTOR(name,string)	struct descriptor_s name = { sizeof(string)-1, DTYPE_T, CLASS_S, string }
 #define DESCRIPTOR_FROM_CSTRING(d,cstring) \
   struct descriptor d = {0,DTYPE_T,CLASS_S,0}; \
-  d.length=strlen(cstring); \
+  d.length = (unsigned short)strlen(cstring); \
   d.pointer=cstring;
 
 /*
