@@ -114,8 +114,71 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
+#if !defined(__VMS) && !defined(_WIN32)
+static pthread_t Worker;
+static Condition WorkerRunning = CONDITION_INITIALIZER;
+typedef struct _wargs{
+  int *status_p;
+  struct descriptor_routine *ptask;
+} wargs;
 
-STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr, const float timeout);
+static void WorkerExit(void *status_p){
+  _CONDITION_LOCK(&WorkerRunning);
+  _CONDITION_SIGNAL(&WorkerRunning);
+  if (WorkerRunning.value) {
+    _CONDITION_WAIT_1SEC(&WorkerRunning,);
+    WorkerRunning.value = B_FALSE;
+  }
+  free((int*)status_p);
+  _CONDITION_UNLOCK(&WorkerRunning);
+}
+
+static void WorkerThread(void *args){
+  int *status_p;status_p = ((wargs*)args)->status_p;
+  struct descriptor_routine *ptask;ptask = (struct descriptor_routine *)((wargs*)args)->ptask;
+  pthread_cleanup_push(WorkerExit, (void*)((wargs*)args)->status_p);
+  CONDITION_SET(&WorkerRunning);
+  EMPTYXD(out_xd);
+  FREEXD_ON_EXIT(&out_xd);
+  int status = Doit(ptask,&out_xd);
+  *status_p = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
+  FREEXD_NOW(&out_xd);
+  pthread_cleanup_pop(1);
+  pthread_exit(0);
+}
+
+STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr, const float timeout){
+  INIT_STATUS;
+  _CONDITION_LOCK(&WorkerRunning);
+  wargs args = { calloc(1,sizeof(int)), ptask };
+  if (!WorkerRunning.value) {
+    CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
+    if (c_status) {
+      perror("Error creating pthread");
+      status = MDSplusERROR;
+    } else {
+      _CONDITION_WAIT_SET(&WorkerRunning);
+      status = MDSplusSUCCESS;
+    }
+  }
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
+  tp.tv_nsec = ns % 1000000000;
+  tp.tv_sec += (time_t)(ns/1000000000);
+  int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
+  if (err) {
+    pthread_cancel(Worker);
+    status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
+  } else
+    status = *args.status_p;
+  WorkerRunning.value = B_FALSE;
+  _CONDITION_SIGNAL(&WorkerRunning);
+  _CONDITION_UNLOCK(&WorkerRunning);
+  return TdiPutLong(&status, out_ptr);
+}
+#endif
+
 int Tdi1DoTask(int opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -192,76 +255,14 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
     sys$canwak(0, 0);			/*** just in case LIB$WAIT called ***/
   }
 #else
+ #ifndef _WIN32
   if (timeout > 0.) {
     StartWorker(ptask, out_ptr, timeout);
   } else
+ #endif
     status = Doit(ptask, out_ptr);
 #endif
  cleanup: ;
   FREEXD_NOW(&task_xd);
   return status;
-}
-
-
-static pthread_t Worker;
-static Condition WorkerRunning = CONDITION_INITIALIZER;
-typedef struct _wargs{
-  int *status_p;
-  struct descriptor_routine *ptask;
-} wargs;
-
-static void WorkerExit(void *status_p){
-  _CONDITION_LOCK(&WorkerRunning);
-  _CONDITION_SIGNAL(&WorkerRunning);
-  if (WorkerRunning.value) {
-    _CONDITION_WAIT_1SEC(&WorkerRunning,);
-    WorkerRunning.value = B_FALSE;
-  }
-  free((int*)status_p);
-  _CONDITION_UNLOCK(&WorkerRunning);
-}
-
-static void WorkerThread(void *args){
-  int *status_p;status_p = ((wargs*)args)->status_p;
-  struct descriptor_routine *ptask;ptask = (struct descriptor_routine *)((wargs*)args)->ptask;
-  pthread_cleanup_push(WorkerExit, (void*)((wargs*)args)->status_p);
-  CONDITION_SET(&WorkerRunning);
-  EMPTYXD(out_xd);
-  FREEXD_ON_EXIT(&out_xd);
-  int status = Doit(ptask,&out_xd);
-  *status_p = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
-  FREEXD_NOW(&out_xd);
-  pthread_cleanup_pop(1);
-  pthread_exit(0);
-}
-
-STATIC_ROUTINE int StartWorker(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr, const float timeout){
-  INIT_STATUS;
-  _CONDITION_LOCK(&WorkerRunning);
-  wargs args = { calloc(1,sizeof(int)), ptask };
-  if (!WorkerRunning.value) {
-    CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
-    if (c_status) {
-      perror("Error creating pthread");
-      status = MDSplusERROR;
-    } else {
-      _CONDITION_WAIT_SET(&WorkerRunning);
-      status = MDSplusSUCCESS;
-    }
-  }
-  struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
-  uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
-  tp.tv_nsec = ns % 1000000000;
-  tp.tv_sec += (time_t)(ns/1000000000);
-  int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
-  if (err) {
-    pthread_cancel(Worker);
-    status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
-  } else
-    status = *args.status_p;
-  WorkerRunning.value = B_FALSE;
-  _CONDITION_SIGNAL(&WorkerRunning);
-  _CONDITION_UNLOCK(&WorkerRunning);
-  return TdiPutLong(&status, out_ptr);
 }
