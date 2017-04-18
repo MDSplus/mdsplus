@@ -379,8 +379,8 @@ int TdiExtPython(struct descriptor *modname_d,
       } else status = TdiUNKNOWN_VAR;
       (*PyGILState_Release)(GIL);
     }
-    FREE_NOW();
-    FREE_NOW();
+    FREE_NOW(dirspec);
+    FREE_NOW(filename);
   } else status = TdiUNKNOWN_VAR;
 #ifndef _WIN32
   sigaction(SIGCHLD, &oldact, NULL);

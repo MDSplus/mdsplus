@@ -205,7 +205,7 @@ int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descrip
   struct descriptor_xd tmp = emptyxd;
   FREEXD_ON_EXIT(&tmp);
   FREEXD_ON_EXIT(&out_ptr);
-  FREE_BEGIN_ON_EXIT();
+  FREEBEGIN_ON_EXIT();
   struct descriptor *dsc_ptr;
   struct descriptor_d *message = &(TdiThreadStatic_p->TdiIntrinsic_message);
   TdiThreadStatic_p->TdiIntrinsic_recursion_count++;

@@ -100,10 +100,10 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
       TdiThreadStatic_p->compiler_recursing = 0;
     }
   }
-  FREE_NOW();
+  FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   UnlockMdsShrMutex(&yacc_mutex);
-  return (status);
+  return status;
 }
 
 /*-------------------------------------------------------
@@ -113,12 +113,14 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
+  FREEXD_ON_EXIT(out_ptr);
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
   if STATUS_OK
     status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
-  FREE_NOW();
+  FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
+  FREE_CANCEL(out_ptr);
   return status;
 }

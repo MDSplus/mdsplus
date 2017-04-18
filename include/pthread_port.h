@@ -5,26 +5,26 @@
 #include <status.h>
 #include <STATICdef.h>
 #ifdef _WIN32
-#ifndef NO_WINDOWS_H
-#include <windows.h>
-#endif
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#else//HAVE_PTHREAD_H
-#define pthread_mutex_t HANDLE
-#define pthread_cond_t HANDLE
-#define pthread_once_t int
-typedef void *pthread_t;
-#define PTHREAD_ONCE_INIT 0
-#ifndef PTHREAD_MUTEX_RECURSIVE
-#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#endif
-//#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-//#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {0x4000}
-//#endif
-#endif//HAVE_PTHREAD_H
+ #ifndef NO_WINDOWS_H
+  #include <windows.h>
+ #endif
+ #ifdef HAVE_PTHREAD_H
+  #include <pthread.h>
+ #else//HAVE_PTHREAD_H
+  #define pthread_mutex_t HANDLE
+  #define pthread_cond_t HANDLE
+  #define pthread_once_t int
+  typedef void *pthread_t;
+  #define PTHREAD_ONCE_INIT 0
+  #ifndef PTHREAD_MUTEX_RECURSIVE
+   #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+  #endif
+  //#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+  //#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {0x4000}
+  //#endif
+ #endif//HAVE_PTHREAD_H
 #else//_WIN32
-#include <pthread.h>
+ #include <pthread.h>
 #endif//_WIN32
 
 #define DEFAULT_STACKSIZE 0x800000
@@ -70,31 +70,55 @@ typedef struct _Condition_p {
 } Condition_p;
 
 #ifdef DEF_FREEBEGIN
- static void freebegin(void* ptr){
+ static void __attribute__((unused)) freebegin(void* ptr){
    if (((struct TdiZoneStruct*)ptr)->a_begin) {
      free(((struct TdiZoneStruct*)ptr)->a_begin);
      ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
    }
  }
- #define FREE_BEGIN_ON_EXIT() pthread_cleanup_push(freebegin, &TdiRefZone)
+ #ifdef _WIN32
+  #define FREEBEGIN_ON_EXIT(ptr) {
+  #define FREEBEGIN_NOW(ptr)     };freebegin(&TdiRefZone)
+ #else
+  #define FREEBEGIN_ON_EXIT() pthread_cleanup_push(freebegin,&TdiRefZone)
+  #define FREEBEGIN_NOW()     pthread_cleanup_pop(1)
+ #endif
 #endif
 #ifdef DEF_FREED
  #include <strroutines.h>
- static void freed(void *ptr){
+ static void __attribute__((unused)) freed(void *ptr){
    StrFree1Dx((struct descriptor_d*)ptr);
  }
- #define FREED_ON_EXIT(ptr)   pthread_cleanup_push(freed, ptr)
+ #ifdef _WIN32
+  #define FREED_ON_EXIT(ptr) {
+  #define FREED_NOW(ptr)     };freed(ptr)
+ #else
+  #define FREED_ON_EXIT(ptr) pthread_cleanup_push(freed, ptr)
+  #define FREED_NOW(ptr)     pthread_cleanup_pop(1)
+ #endif
 #endif
 #ifdef DEF_FREEXD
  #include <mdsshr.h>
- static void freexd(void *ptr){
+ static void __attribute__((unused)) freexd(void *ptr){
    MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
  }
- #define FREEXD_ON_EXIT(ptr)   pthread_cleanup_push(freexd, ptr)
+ #ifdef _WIN32
+  #define FREEXD_ON_EXIT(ptr) {
+  #define FREEXD_NOW(ptr)     };freexd(ptr)
+ #else
+  #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(freexd, ptr)
+  #define FREEXD_NOW(ptr)     pthread_cleanup_pop(1)
+ #endif
 #endif
-#define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free, ptr)
-#define FREE_NOW(comment)   pthread_cleanup_pop(1)
-#define FREE_CANCEL(comment)pthread_cleanup_pop(0)
+#ifdef _WIN32
+ #define FREE_ON_EXIT(ptr)   {
+ #define FREE_NOW(ptr)       };free(ptr)
+ #define FREE_CANCEL(ptr)    }
+#else
+ #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free, ptr)
+ #define FREE_NOW(ptr)       pthread_cleanup_pop(1)
+ #define FREE_CANCEL(ptr)    pthread_cleanup_pop(0)
+#endif
 
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 

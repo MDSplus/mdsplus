@@ -91,7 +91,7 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
       if STATUS_OK
 	status = TdiGetNid(pmethod->object, &nid);
       status = (int)((char *)LibCallg(arglist, TreeDoMethod) - (char *)0);
-      FREE_NOW(method_d);
+      FREED_NOW(&method_d);
       status = TdiPutLong(&status, out_ptr);
       break;
     }
@@ -197,9 +197,8 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
   } else
     status = Doit(ptask, out_ptr);
 #endif
-
- cleanup:
-  FREE_NOW(task_xd);
+ cleanup: ;
+  FREEXD_NOW(&task_xd);
   return status;
 }
 
@@ -231,7 +230,7 @@ static void WorkerThread(void *args){
   FREEXD_ON_EXIT(&out_xd);
   int status = Doit(ptask,&out_xd);
   *status_p = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
-  FREE_NOW(out_xd);
+  FREEXD_NOW(&out_xd);
   pthread_cleanup_pop(1);
   pthread_exit(0);
 }

@@ -80,8 +80,10 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
   INIT_STATUS;
   struct descriptor_d image = EMPTY_D, entry = EMPTY_D;
   struct descriptor_xd tmp[253];
+  struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
   FREED_ON_EXIT(&image);
   FREED_ON_EXIT(&entry);
+  FREED_ON_EXIT(&file);
   FREEXD_ON_EXIT(&tmp[0]);
   struct descriptor_function *pfun, *pfun2;
   FILE *unit;
@@ -174,7 +176,6 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
     /***************
     Gather, compile.
     ***************/
-    struct descriptor_d file = { 0, DTYPE_T, CLASS_D, 0 };
     status =
       StrConcat((struct descriptor *)&file,
 		  list[0] ? (struct descriptor *)&image : (struct descriptor
@@ -239,8 +240,9 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
  done:
   if (geterror)
     printf("%s\n", LibFindImageSymbolErrString());
-  FREE_CANCEL(tmp[0]);
-  FREE_NOW(entry);
-  FREE_NOW(image);
+  FREE_CANCEL(&tmp[0]);
+  FREE_CANCEL(&file);
+  FREED_NOW(&entry);
+  FREED_NOW(&image);
   return status;
 }
