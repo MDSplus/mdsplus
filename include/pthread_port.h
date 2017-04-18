@@ -69,6 +69,33 @@ typedef struct _Condition_p {
   void*           value;
 } Condition_p;
 
+#ifdef DEF_FREEBEGIN
+ static void freebegin(void* ptr){
+   if (((struct TdiZoneStruct*)ptr)->a_begin) {
+     free(((struct TdiZoneStruct*)ptr)->a_begin);
+     ((struct TdiZoneStruct*)ptr)->a_begin=NULL;
+   }
+ }
+ #define FREE_BEGIN_ON_EXIT() pthread_cleanup_push(freebegin, &TdiRefZone)
+#endif
+#ifdef DEF_FREED
+ #include <strroutines.h>
+ static void freed(void *ptr){
+   StrFree1Dx((struct descriptor_d*)ptr);
+ }
+ #define FREED_ON_EXIT(ptr)   pthread_cleanup_push(freed, ptr)
+#endif
+#ifdef DEF_FREEXD
+ #include <mdsshr.h>
+ static void freexd(void *ptr){
+   MdsFree1Dx((struct descriptor_xd*)ptr, NULL);
+ }
+ #define FREEXD_ON_EXIT(ptr)   pthread_cleanup_push(freexd, ptr)
+#endif
+#define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free, ptr)
+#define FREE_NOW(comment)   pthread_cleanup_pop(1)
+#define FREE_CANCEL(comment)pthread_cleanup_pop(0)
+
 #define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
 
 #define CONDITION_INIT(input){\

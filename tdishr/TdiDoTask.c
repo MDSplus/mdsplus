@@ -12,6 +12,8 @@
 
         Ken Klare, LANL P-4     (c)1992
 */
+#define DEF_FREED
+#define DEF_FREEXD
 #include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -72,25 +74,25 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   switch (ptask->dtype) {
   case DTYPE_METHOD:{
       struct descriptor_method *pmethod = (struct descriptor_method *)ptask;
-      int nid;
-      DESCRIPTOR_NID(nid_dsc, 0);
-      struct descriptor_d method_d = { 0, DTYPE_T, CLASS_D, 0 };
-      nid_dsc.pointer = (char *)&nid;
-      status = TdiData(pmethod->method, &method_d MDS_END_ARG);
-      if STATUS_OK
-	status = TdiGetNid(pmethod->object, &nid);
       *(int*)&arglist[0] = ndesc + 1;
-      arglist[1] = (void*)&nid_dsc;
-      arglist[2] = (void*)&method_d;
-
       /*** skip timeout,method,object ***/
       for (j = 3; j < ndesc; ++j)
 	arglist[j] = (void *)pmethod->arguments[j - 3];
       arglist[ndesc] = (void *)out_ptr;
       arglist[ndesc + 1] = MdsEND_ARG;
+      int nid;
+      DESCRIPTOR_NID(nid_dsc, 0);
+      nid_dsc.pointer = (char *)&nid;
+      arglist[1] = (void*)&nid_dsc;
+      struct descriptor_d method_d = { 0, DTYPE_T, CLASS_D, 0 };
+      FREED_ON_EXIT(&method_d);
+      arglist[2] = (void*)&method_d;
+      status = TdiData(pmethod->method, &method_d MDS_END_ARG);
+      if STATUS_OK
+	status = TdiGetNid(pmethod->object, &nid);
       status = (int)((char *)LibCallg(arglist, TreeDoMethod) - (char *)0);
+      FREE_NOW(method_d);
       status = TdiPutLong(&status, out_ptr);
-      StrFree1Dx(&method_d);
       break;
     }
     /*case DTYPE_PROCEDURE :    break; */
@@ -118,7 +120,8 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd task_xd = EMPTY_XD;
+  EMPTYXD(task_xd);
+  FREEXD_ON_EXIT(&task_xd);
   struct descriptor_routine *ptask;
   status = TdiTaskOf(list[0], &task_xd MDS_END_ARG);
   if STATUS_NOT_OK
@@ -196,7 +199,7 @@ int Tdi1DoTask(int opcode __attribute__ ((unused)),
 #endif
 
  cleanup:
-  MdsFree1Dx(&task_xd, NULL);
+  FREE_NOW(task_xd);
   return status;
 }
 
@@ -224,14 +227,11 @@ static void WorkerThread(void *args){
   struct descriptor_routine *ptask;ptask = (struct descriptor_routine *)((wargs*)args)->ptask;
   pthread_cleanup_push(WorkerExit, (void*)((wargs*)args)->status_p);
   CONDITION_SET(&WorkerRunning);
-  struct descriptor_xd out_xd = EMPTY_XD;
+  EMPTYXD(out_xd);
+  FREEXD_ON_EXIT(&out_xd);
   int status = Doit(ptask,&out_xd);
-  if STATUS_OK
-    *status_p = *(int*)out_xd.pointer->pointer;
-  if STATUS_OK
-    status = MdsFree1Dx(&out_xd, NULL);
-  if STATUS_NOT_OK
-    *status_p = status;
+  *status_p = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
+  FREE_NOW(out_xd);
   pthread_cleanup_pop(1);
   pthread_exit(0);
 }

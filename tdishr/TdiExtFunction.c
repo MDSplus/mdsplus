@@ -24,6 +24,9 @@
         Ken Klare, LANL P-4     (c)1989,1990,1991
         NEED we chase logical names if not in first image?
 */
+#define DEF_FREED
+#define DEF_FREEXD
+#include <pthread_port.h>
 #include <stdio.h>
 #include "tdirefstandard.h"
 #include <libroutines.h>
@@ -75,14 +78,17 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 		    struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  FILE *unit;
-  int j, ntmp = 0, (*routine) ();
-  struct descriptor_function *pfun, *pfun2;
   struct descriptor_d image = EMPTY_D, entry = EMPTY_D;
   struct descriptor_xd tmp[253];
-  struct descriptor *new[256];
-  unsigned short code;
+  FREED_ON_EXIT(&image);
+  FREED_ON_EXIT(&entry);
+  FREEXD_ON_EXIT(&tmp[0]);
+  struct descriptor_function *pfun, *pfun2;
+  FILE *unit;
   int geterror = 0;
+  struct descriptor *new[256];
+  int j, ntmp = 0, (*routine) ();
+  unsigned short code;
 
   if (list[0])
     status = TdiData(list[0], &image MDS_END_ARG);
@@ -219,7 +225,7 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
 	      status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
 	    if STATUS_OK
 	      status = TdiDoFun(tmp[0].pointer, narg - 2, &list[2], out_ptr);
-	    MdsFree1Dx(&tmp[0], NULL);
+            MdsFree1Dx(&tmp[0],NULL);
 	    goto done;
 	  }
 	}
@@ -231,9 +237,10 @@ int Tdi1ExtFunction(int opcode __attribute__ ((unused)),
     }
   }
  done:
-  StrFree1Dx(&entry);
-  StrFree1Dx(&image);
   if (geterror)
     printf("%s\n", LibFindImageSymbolErrString());
+  FREE_CANCEL(tmp[0]);
+  FREE_NOW(entry);
+  FREE_NOW(image);
   return status;
 }

@@ -5,6 +5,7 @@
 */
 
 extern unsigned short OpcCompile;
+#define DEF_FREEXD
 
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +25,6 @@ extern int TdiEvaluate();
 extern int TdiYacc();
 extern int TdiIntrinsic();
 extern void TdiYyReset();
-
 /*-------------------------------------------------------
         Interface to compiler/parser.
                 expression = COMPILE(string, [arg1,...])
@@ -47,7 +47,6 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 		struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  EMPTYXD(tmp);
   struct descriptor *text_ptr;
   LockMdsShrMutex(&yacc_mutex, &yacc_mutex_initialized);
   GET_TDITHREADSTATIC_P;
@@ -55,6 +54,8 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
     fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
     return TdiRECURSIVE;
   }
+  EMPTYXD(tmp);
+  FREEXD_ON_EXIT(&tmp);
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
   text_ptr = tmp.pointer;
   if (STATUS_OK && text_ptr->dtype != DTYPE_T)
@@ -72,10 +73,8 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
       In case we bomb out, probably not needed.
       ****************************************/
       TdiRefZone.l_status = TdiBOMB;
-      if (TdiRefZone.a_begin)
-          free(TdiRefZone.a_begin);
-      TdiRefZone.a_begin = TdiRefZone.a_cur =
-	  memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
+      if (TdiRefZone.a_begin) free(TdiRefZone.a_begin);
+      TdiRefZone.a_begin = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
       TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
       TdiRefZone.l_ok = 0;
       TdiRefZone.l_narg = narg - 1;
@@ -101,7 +100,7 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
       TdiThreadStatic_p->compiler_recursing = 0;
     }
   }
-  MdsFree1Dx(&tmp, NULL);
+  FREE_NOW();
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   UnlockMdsShrMutex(&yacc_mutex);
   return (status);
@@ -114,11 +113,12 @@ int Tdi1Compile(int opcode __attribute__ ((unused)), int narg, struct descriptor
 int Tdi1Execute(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd tmp = EMPTY_XD;
+  EMPTYXD(tmp);
+  FREEXD_ON_EXIT(&tmp);
   status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
   if STATUS_OK
     status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
-  MdsFree1Dx(&tmp, NULL);
+  FREE_NOW();
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   return status;
 }
