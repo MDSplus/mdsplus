@@ -696,7 +696,7 @@ int idx; \
 SEGMENT_INFO *sinfo; \
 *nsegs = numsegs;
 
-inline static int ReadProperty(TREE_INFO *tinfo, int offset,char *buffer,int length){
+inline static int ReadProperty(TREE_INFO *tinfo, int64_t offset,char *buffer,int length){
   INIT_TREESUCCESS;
   int deleted = B_TRUE; \
   while STATUS_OK { \
@@ -708,7 +708,7 @@ inline static int ReadProperty(TREE_INFO *tinfo, int offset,char *buffer,int len
   return status;
 }
 
-inline static int ReadProperty_safe(TREE_INFO *tinfo, int offset,char *buffer,int length) {
+inline static int ReadProperty_safe(TREE_INFO *tinfo, int64_t offset,char *buffer,int length) {
   if (offset > -1) return ReadProperty(tinfo,offset,buffer,length);
   return TreeFAILURE;
 }
