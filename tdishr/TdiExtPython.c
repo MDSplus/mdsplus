@@ -320,12 +320,11 @@ static void getAnswer(PyObject * value, struct descriptor_xd *outptr)
 }
 
 int TdiExtPython(struct descriptor *modname_d,
-                 int nargs, struct descriptor **args, struct descriptor_xd *out_ptr)
-{
+                 int nargs, struct descriptor **args, struct descriptor_xd *out_ptr){
   /* Try to locate a python module in the MDS_PATH search list and if found execute a function with the same name
      as the module in that module passing the arguments and get the answer back from python. */
   INIT_STATUS;
-  char *filename;
+  char *filename = NULL, *dirspec = NULL;
 #ifndef _WIN32
   struct sigaction offact;
   struct sigaction oldact;
@@ -333,8 +332,10 @@ int TdiExtPython(struct descriptor *modname_d,
   offact.sa_handler=SIG_DFL;
   sigaction(SIGCHLD, &offact, &oldact);
 #endif
-  char *dirspec = findModule(modname_d, &filename);
+  dirspec = findModule(modname_d, &filename);
   if (dirspec) {
+    FREE_ON_EXIT(filename);
+    FREE_ON_EXIT(dirspec);
     pthread_mutex_lock(&libpython_mutex);
     status = Initialize();
     pthread_mutex_unlock(&libpython_mutex);
@@ -344,7 +345,6 @@ int TdiExtPython(struct descriptor *modname_d,
       PyObject *pyFunction;
       PyObject *pyArgs;
       addToPath(dirspec);
-      free(dirspec);
       pyFunction = getFunction(filename, filename);
       if (pyFunction) {
         pyArgs = argsToTuple(nargs, args);
@@ -377,10 +377,10 @@ int TdiExtPython(struct descriptor *modname_d,
         (*Py_DecRef)(pyArgs);
         (*Py_DecRef)(pyFunction);
       } else status = TdiUNKNOWN_VAR;
-      free(filename);
       (*PyGILState_Release)(GIL);
-    } else
-      free(dirspec);
+    }
+    FREE_NOW(dirspec);
+    FREE_NOW(filename);
   } else status = TdiUNKNOWN_VAR;
 #ifndef _WIN32
   sigaction(SIGCHLD, &oldact, NULL);
