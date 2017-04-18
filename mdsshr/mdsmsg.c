@@ -4,18 +4,18 @@
 #include <mdsshr.h>
 #include "mdsshrp.h"
 #include "mdsshrthreadsafe.h"
-#include        <stdio.h>
-#include        <stdarg.h>
-#include        <stdlib.h>
-#include        <sys/time.h>
-#include        <unistd.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <libroutines.h>
 #include <strroutines.h>
 
-		/*========================================================
-		 * "Define"s and structure definitions ...
-		 *=======================================================*/
-#define ALREADY_DISPLAYED  0x80000000
+/*========================================================
+ * "Define"s and structure definitions ...
+ *=======================================================*/
+#define ALREADY_DISPLAYED (int)0x80000000
 
 /**********************************************************************
 * MDSMSG.C --
@@ -29,9 +29,9 @@
 ************************************************************************/
 
 
-	/*****************************************************************
-	 * MdsGetMsg:
-	 *****************************************************************/
+/*****************************************************************
+ * MdsGetMsg:
+ *****************************************************************/
 EXPORT char *MdsGetMsg(		/* Return: addr of "status" string      */
 		 int sts	/* <r> sts value                        */
     )
@@ -46,22 +46,22 @@ EXPORT char *MdsGetMsg(		/* Return: addr of "status" string      */
   int (*getmsg) (int, const char **, const char **, const char **);
 
   status = MdsGetStdMsg(sts, &facnam, &msgnam, &msgtext);
-  if (status & 1) {
+  if STATUS_OK {
     sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
 	    severity[sts & 0x7], msgnam, msgtext);
     return (MdsShrGetThreadStatic())->MdsGetMsg_text;
   }
-  while (!(status & 1) && (LibFindFile((struct descriptor *)&msg_files, (struct descriptor *)&filnam, &ctx) & 1)) {
+  while (STATUS_NOT_OK && (LibFindFile((struct descriptor *)&msg_files, (struct descriptor *)&filnam, &ctx) & 1)) {
     status = LibFindImageSymbol(&filnam, &getmsg_nam, &getmsg);
-    if (status & 1) {
+    if STATUS_OK {
       status = (*getmsg) (sts, &facnam, &msgnam, &msgtext);
-      if (status & 1)
+      if STATUS_OK
 	sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
 		severity[sts & 0x7], msgnam, msgtext);
     }
   }
   LibFindFileEnd(&ctx);
-  if (!(status & 1))
+  if STATUS_NOT_OK
     sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%NONAME-%s-NOMSG, Message number 0x%08X",
 	    severity[sts & 0x7], sts);
   return (MdsShrGetThreadStatic())->MdsGetMsg_text;
@@ -71,7 +71,7 @@ EXPORT void MdsGetMsgDsc(int status, struct descriptor *out)
 {
   MdsGetMsg(status);
   (MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.length =
-      strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.pointer);
+      (unsigned short)strlen((MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp.pointer);
   StrCopyDx(out, &(MdsShrGetThreadStatic())->MdsGetMsgDsc_tmp);
   return;
 }
