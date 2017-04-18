@@ -19,6 +19,10 @@
 #include "dcl_p.h"
 #include "mdsdclthreadsafe.h"
 
+#ifdef _WIN32
+#define setenv(name,value,overwrite) _putenv_s(name,value)
+#endif
+
 typedef struct dclMacroList {
   char *name;			/*!<  macro name */
   int lines;			/*!<  number of lines in macro */

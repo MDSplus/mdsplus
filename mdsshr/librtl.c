@@ -17,6 +17,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
+#define setenv(name,value,overwrite) _putenv_s(name,value)
 #else
 #include <sys/wait.h>
 #endif
@@ -1739,13 +1740,8 @@ EXPORT int MdsPutEnv(char const *cmd)
       char *saveptr = NULL;
       char *name = strtok_r(tmp,"=",&saveptr);
       char *value = strtok_r(NULL,"=",&saveptr);
-      if (name != NULL && value != NULL) {
-#ifdef _WIN32
-        status = _putenv_s(name, value);
-#else
+      if (name != NULL && value != NULL)
         status = setenv(name,value,1) == 0;
-#endif
-      }
       free(tmp);
     }
   }
