@@ -417,11 +417,11 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
   int locked = 0;
   unsigned char rfa[6];
   if (blen > 0) {
-    bitassign(1, nci_ptr->flags2, NciM_DATA_CONTIGUOUS);
+    bitassign_c(1, nci_ptr->flags2, NciM_DATA_CONTIGUOUS);
     if (nonvms_compatible == -1)
       nonvms_compatible = getenv("NONVMS_COMPATIBLE") != NULL;
     if (nonvms_compatible) {
-      bitassign(1, nci_ptr->flags2, NciM_NON_VMS);
+      bitassign_c(1, nci_ptr->flags2, NciM_NON_VMS);
       status = TreeLockDatafile(info, 0, 0);
       locked = 1;
       eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
@@ -431,7 +431,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
       buffer = (char *)malloc(blen);
       bptr = buffer;
       LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
-      bitassign(0, nci_ptr->flags2, NciM_NON_VMS);
+      bitassign_c(0, nci_ptr->flags2, NciM_NON_VMS);
       memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
       while (bytes_to_put && (status & 1)) {
 	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
@@ -466,12 +466,12 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	  (MDS_IO_WRITE(info->data_file->put, (void *)buffer, bptr - buffer) == (bptr - buffer))
 	  ? TreeNORMAL : TreeFAILURE;
       if (status & 1) {
-	bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	SeekToRfa(eof, rfa);
 	memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa, rfa,
 	       sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
       } else {
-	bitassign(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
 	nci_ptr->length = 0;
       }
@@ -579,9 +579,9 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	    bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
       if (!bytes_to_put) {
 	if (status & 1) {
-	  bitassign(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	  bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	} else {
-	  bitassign(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+	  bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	  nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
 	  nci_ptr->length = 0;
 	}

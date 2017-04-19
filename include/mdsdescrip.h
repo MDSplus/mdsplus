@@ -109,10 +109,10 @@ struct descriptor_a {
 		unsigned short	length;	\
 		unsigned char	dtype;	\
 		unsigned char	class;	\
-		ptr_type	*pointer;	\
+		ptr_type	*pointer;\
 		char		scale;	\
 		unsigned char	digits;	\
-		aflags    aflags;   \
+		aflags          aflags; \
 		unsigned char	dimct;	\
 		unsigned int	arsize;
 
@@ -133,17 +133,17 @@ struct descriptor_a {
 						}
 
 #define DESCRIPTOR_A(name, len, type, ptr, arsize) \
-	ARRAY(char) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,0,0}, 1, arsize}
+	ARRAY(char) name = {(unsigned short)len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,0,0}, 1, arsize}
 
 #define DESCRIPTOR_A_COEFF(name, len, type, ptr, dimct, arsize) \
-  ARRAY_COEFF(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, dimct, arsize, 0, {0}}
+  ARRAY_COEFF(char, dimct) name = {(unsigned short)len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, dimct, arsize, 0, {0}}
 
 #define DESCRIPTOR_A_COEFF_2(name, len, type, ptr, arsize, rows, columns) \
-	ARRAY_COEFF(char, 2) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, 2, arsize, (char *)ptr,\
+	ARRAY_COEFF(char, 2) name = {(unsigned short)len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, 2, arsize, (char *)ptr,\
             {rows, columns}}
 
 #define DESCRIPTOR_A_BOUNDS(name, len, type, ptr, dimct, arsize) \
-  ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0,0}}}
+  ARRAY_BOUNDS(char, dimct) name = {(unsigned short)len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize, 0, {0},{{0,0}}}
 
 /************************************************
   CLASS_XD extended dynamic descriptor definition.
@@ -248,15 +248,15 @@ struct descriptor_r {
 #define CLASS_APD 196
 
 #define DESCRIPTOR_APD(name, type, ptr, ndesc) \
-	ARRAY(struct descriptor *) name = {sizeof(struct descriptor *), type, CLASS_APD, \
+	ARRAY(struct descriptor *) name = {(unsigned short)sizeof(struct descriptor *), type, CLASS_APD, \
 		(struct descriptor **)ptr, 0, 0, {0,1,1,0,0}, 1, ndesc*sizeof(struct descriptor *)}
 
 #define DESCRIPTOR_APD_COEFF(name, type, ptr, dimct, ndesc) \
-	ARRAY_COEFF(struct descriptor *, dimct) name = {sizeof(struct descriptor *), type, CLASS_APD, \
+	ARRAY_COEFF(struct descriptor *, dimct) name = {(unsigned short)sizeof(struct descriptor *), type, CLASS_APD, \
 		(struct descriptor **)ptr, 0, 0, {0,1,1,1,0}, dimct, ndesc*sizeof(struct descriptor *)}
 
 #define DESCRIPTOR_APD_BOUNDS(name, type, ptr, dimct, ndesc) \
-	ARRAY_BOUNDS(struct descriptor *, dimct) name = {sizeof(struct descriptor *), type, CLASS_APD, \
+	ARRAY_BOUNDS(struct descriptor *, dimct) name = {(unsigned short)sizeof(struct descriptor *), type, CLASS_APD, \
 		(struct descriptor **)ptr, 0, 0, {0,1,1,1,1}, dimct, ndesc*sizeof(struct descriptor *)}
 
 /*****************************************************
@@ -271,7 +271,7 @@ struct descriptor_r {
 
 #define DTYPE_IDENT	191
 
-#define DTYPE_NID		192
+#define DTYPE_NID	192
 
 #define DTYPE_PATH	193
 
@@ -370,19 +370,19 @@ struct descriptor_function {
 				}
 
 #define DESCRIPTOR_FUNCTION(name, op_code_ptr, nargs) \
-	FUNCTION(nargs) name = {.length=sizeof(unsigned short), .dtype=DTYPE_FUNCTION, .class=CLASS_R, \
+	FUNCTION(nargs) name = {.length=(unsigned short)sizeof(unsigned short), .dtype=DTYPE_FUNCTION, .class=CLASS_R, \
 				.pointer=(unsigned char *)op_code_ptr, .ndesc=nargs}
 
 #define DESCRIPTOR_FUNCTION_0(name, op_code_ptr) \
-	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
+	struct descriptor_function name = {(unsigned short)sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
 					   (unsigned char *)op_code_ptr, 0, __fill_value__ {0}}
 
 #define DESCRIPTOR_FUNCTION_1(name, op_code_ptr, arg) \
-	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
+	struct descriptor_function name = {(unsigned short)sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
 						(unsigned char *)op_code_ptr, 1, __fill_value__	{(struct descriptor *)arg}}
 
 #define DESCRIPTOR_FUNCTION_2(name, op_code_ptr, arg_1, arg_2) \
-	FUNCTION(2) name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)op_code_ptr, 2, __fill_value__\
+	FUNCTION(2) name = {(unsigned short)sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)op_code_ptr, 2, __fill_value__\
 	{(struct descriptor *)arg_1, (struct descriptor *)arg_2}}
 
 #define DTYPE_CONGLOM	200
@@ -443,7 +443,7 @@ struct descriptor_dispatch {
 #define TreeSCHED_COND	3
 
 #define DESCRIPTOR_DISPATCH(name, type, ident, phase, when, completion) \
-	struct descriptor_dispatch name = {sizeof(unsigned char), DTYPE_DISPATCH, CLASS_R, (unsigned char *)type, 4, __fill_value__\
+	struct descriptor_dispatch name = {(unsigned short)sizeof(unsigned char), DTYPE_DISPATCH, CLASS_R, (unsigned char *)type, 4, __fill_value__\
 	(struct descriptor *)ident, (struct descriptor *)phase, (struct descriptor *)when, \
 	(struct descriptor *)completion}
 
@@ -535,7 +535,7 @@ struct descriptor_dependency {
 };
 
 #define DESCRIPTOR_DEPENDENCY(name, op_code_ptr, arg_1, arg_2) \
-	struct descriptor_dependency name = {sizeof(unsigned char), DTYPE_DEPENDENCY, CLASS_R, (unsigned char *)op_code_ptr, 2, __fill_value__\
+	struct descriptor_dependency name = {(unsigned short)sizeof(unsigned char), DTYPE_DEPENDENCY, CLASS_R, (unsigned char *)op_code_ptr, 2, __fill_value__\
 	(struct descriptor *)arg_1, (struct descriptor *)arg_2}
 
 #define DTYPE_CONDITION	209
@@ -545,7 +545,7 @@ struct descriptor_condition {
 };
 
 #define DESCRIPTOR_CONDITION(name, modifier, condition) \
-	struct descriptor_condition name = {sizeof(unsigned char), DTYPE_CONDITION, CLASS_R, (unsigned char *)modifier, 1, __fill_value__\
+	struct descriptor_condition name = {(unsigned short)sizeof(unsigned char), DTYPE_CONDITION, CLASS_R, (unsigned char *)modifier, 1, __fill_value__\
 	(struct descriptor *)condition}
 
 #ifdef DTYPE_EVENT
@@ -591,7 +591,7 @@ struct descriptor_call {
 				}
 
 #define DESCRIPTOR_CALL(name, dtype_ptr, nargs, image, routine) \
-	CALL(nargs) name = {sizeof(unsigned short), DTYPE_CALL, CLASS_R, (unsigned char *)dtype_ptr, nargs+2, __fill_value__\
+	CALL(nargs) name = {(unsigned short)sizeof(unsigned short), DTYPE_CALL, CLASS_R, (unsigned char *)dtype_ptr, nargs+2, __fill_value__\
 			    (struct descriptor *)image, (struct descriptor *)routine, {0}}
 
 #define DTYPE_WITH_ERROR	213
@@ -616,11 +616,11 @@ struct descriptor_opaque {
         struct descriptor_opaque name = {0,DTYPE_OPAQUE,CLASS_R,0,2, __fill_value__\
         (struct descriptor *)data, (struct descriptor *)opaque_type}
 
-#define	 DESCRIPTOR_FLOAT(name, _float) struct descriptor name = {sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char *)_float}
+#define	 DESCRIPTOR_FLOAT(name, _float) struct descriptor name = {(unsigned short)sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char *)_float}
 
-#define	 DESCRIPTOR_LONG(name, _long) struct descriptor name = {sizeof(int), DTYPE_L, CLASS_S, (char *)_long}
+#define	 DESCRIPTOR_LONG(name, _long) struct descriptor name = {(unsigned short)sizeof(int), DTYPE_L, CLASS_S, (char *)_long}
 
-#define	 DESCRIPTOR_NID(name, _nid) struct descriptor name = {sizeof(int), DTYPE_NID, CLASS_S, (char *)_nid}
+#define	 DESCRIPTOR_NID(name, _nid) struct descriptor name = {(unsigned short)sizeof(int), DTYPE_NID, CLASS_S, (char *)_nid}
 /*
  *	Atomic data types:
  */
