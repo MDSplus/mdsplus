@@ -113,7 +113,7 @@ STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot)
   int itype;
   char *types[] = { ".tree", ".characteristics", ".datafile" };
   for (i = 0; i < len && i < 12; i++)
-    tree_lower[i] = tolower(tree[i]);
+    tree_lower[i] = (char)tolower(tree[i]);
   tree_lower[i] = 0;
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
