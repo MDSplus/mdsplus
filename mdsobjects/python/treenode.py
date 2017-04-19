@@ -204,8 +204,6 @@ class TreeNode(_data.Data):
                 return self.tree.getNode(self.tree_path)
             except:
                 return None
-        if name == 'record':
-            return self.getData()
         if name == 'tags':
             return self.getTags()
         if name == 'usage':
