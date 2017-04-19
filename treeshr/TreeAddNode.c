@@ -98,7 +98,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
     return TreeNOEDIT;
   upcase_name = (char *)malloc(len + 1);
   for (i = 0; i < len; i++)
-    upcase_name[i] = toupper(name[i]);
+    upcase_name[i] = (char)toupper(name[i]);
   upcase_name[len] = '\0';
 
 /******************************************************
@@ -135,7 +135,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	status = TreeNewNode(dblist, &new_ptr, &parent);
 	if STATUS_OK {
 	  size_t i;
-	  unsigned short idx = *conglom_index;
+	  short idx = *conglom_index;
 	  strncpy(new_ptr->name, node_name, sizeof(new_ptr->name));
 	  for (i = strlen(node_name); i < sizeof(new_ptr->name); i++)
 	    new_ptr->name[i] = ' ';
@@ -147,7 +147,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	    new_ptr->usage = usage == TreeUSAGE_SUBTREE ? TreeUSAGE_SUBTREE : TreeUSAGE_STRUCTURE;
 	  } else {
 	    status = TreeInsertMember(parent, new_ptr, dblist->tree_info->header->sort_members);
-	    new_ptr->usage = ((usage <= TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY;
+	    new_ptr->usage = (unsigned char)(((usage <= TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY);
 	  }
 	  *nid_out = node_to_nid(dblist, new_ptr, 0);
 	}
@@ -162,7 +162,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  status = TreeGetNciLw(dblist->tree_info, nid.node, &scratch_nci);
 	  if STATUS_OK {
 	    if (_TreeIsOn(dblist, *(int *)&parent_nid) & 1)
-	      new_nci.flags &= ~NciM_PARENT_STATE;
+	      new_nci.flags &= (unsigned)~NciM_PARENT_STATE;
 	    else
 	      new_nci.flags |= NciM_PARENT_STATE;
 	    new_nci.flags |= NciM_COMPRESS_ON_PUT;
@@ -309,13 +309,13 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   int i;
   NCI *nciptr;
   STATIC_CONSTANT NCI empty_nci;
-  int vm_bytes;
+  int vm_bytes;//TODO: 2GB limit
   int nodes;
   int ncis;
   STATIC_THREADSAFE NODE *empty_node_array = 0;
   STATIC_THREADSAFE NCI *empty_nci_array = 0;
-  STATIC_CONSTANT int empty_node_size = sizeof(NODE) * EXTEND_NODES;
-  STATIC_CONSTANT int empty_nci_size = sizeof(NCI) * EXTEND_NODES;
+  STATIC_CONSTANT size_t empty_node_size = sizeof(NODE) * EXTEND_NODES;
+  STATIC_CONSTANT size_t empty_nci_size = sizeof(NCI) * EXTEND_NODES;
 
   if (!empty_node_array) {
     /*
@@ -353,12 +353,12 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   ncis = nodes - edit_ptr->first_in_mem;
   ncis = ncis > 0 ? ncis : 0;
   ncis = ncis + EXTEND_NODES * 10;
-  vm_bytes = nodes * sizeof(NODE) + ncis * sizeof(NCI);
+  vm_bytes = nodes * (int)sizeof(NODE) + ncis * (int)sizeof(NCI);
   if (vm_bytes > edit_ptr->node_vm_size) {
-    ptr = (NODE *) malloc(vm_bytes);
+    ptr = (NODE *) malloc((size_t)vm_bytes);
     if (ptr != NULL) {
-      int old_node_bytes = header_ptr->nodes * sizeof(NODE);
-      int old_nci_bytes = (header_ptr->nodes - edit_ptr->first_in_mem) * sizeof(NCI);
+      int old_node_bytes = header_ptr->nodes * (int)sizeof(NODE);
+      int old_nci_bytes = (header_ptr->nodes - edit_ptr->first_in_mem) * (int)sizeof(NCI);
       old_nci_bytes = old_nci_bytes > 0 ? old_nci_bytes : 0;
     /****************************************
        Get the nids of some important nodes
@@ -368,7 +368,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
        caller wanted and get memory to hold
        their node numbers ...
     ****************************************/
-      saved_node_numbers = (int *)malloc((num_fixup + 2) * sizeof(int));
+      saved_node_numbers = (int *)malloc((size_t)(num_fixup + 2) * sizeof(int));
       for (i = 0; i < num_fixup; i++)
 	saved_node_numbers[i] = (int)(*fixup_nodes[i] - info_ptr->node);
       saved_node_numbers[i++] = (int)(info_ptr->root - info_ptr->node);
@@ -378,9 +378,9 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
       copy the nodes and ncis
     ****************************************/
       if (old_node_bytes)
-	memcpy(ptr, info_ptr->node, old_node_bytes);
+	memcpy(ptr, info_ptr->node, (size_t)old_node_bytes);
       if (old_nci_bytes)
-	memcpy(nciptr, edit_ptr->nci, old_nci_bytes);
+	memcpy(nciptr, edit_ptr->nci, (size_t)old_nci_bytes);
       if (edit_ptr->node_vm_size)
 	free(info_ptr->node);
       edit_ptr->node_vm_size = vm_bytes;
@@ -420,7 +420,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   to the first free node in the freelist.
 *******************************************/
   if (header_ptr->free == -1) {
-    header_ptr->free = header_ptr->nodes * sizeof(NODE);
+    header_ptr->free = header_ptr->nodes * (int)sizeof(NODE);
     node_ptr = (NODE *) ((char *)info_ptr->node + header_ptr->free);
     node_ptr->child = 0;
   } else {
@@ -482,6 +482,7 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
 
 int _TreeStartConglomerate(void *dbid, int size)
 {
+  if (size>0x7fff) return TreeBUFFEROVF;
   INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int i;
@@ -549,7 +550,7 @@ int _TreeStartConglomerate(void *dbid, int size)
       starting_node_ptr->child = 0;
     }
     info_ptr->edit->conglomerate_index = 0;
-    info_ptr->edit->conglomerate_size = size;
+    info_ptr->edit->conglomerate_size = (short)size;
     info_ptr->edit->conglomerate_setup = dblist->setup_info;
     dblist->setup_info = 0;
   }
@@ -559,8 +560,7 @@ int _TreeStartConglomerate(void *dbid, int size)
 int _TreeEndConglomerate(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  unsigned short conglom_size;
-  unsigned short conglom_index;
+  short conglom_size,conglom_index;
 /*****************************************************
   Make sure that the tree is open and OK and editable
 *****************************************************/
@@ -630,7 +630,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             int shot;
             size_t len = strlen(exp_ptr);
             for (i = 0; i < 12 && i < len; i++)
-                uptree[i] = toupper(exp_ptr[i]);
+                uptree[i] = (char)toupper(exp_ptr[i]);
             uptree[i] = '\0';
             shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
             status = TreeNOT_OPEN;
@@ -661,11 +661,11 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
 	    _TreeDeleteNodesWrite(*dbid);
             trim_excess_nodes(info_ptr);
-            header_pages = (sizeof(TREE_HEADER) + 511) / 512;
-            node_pages = (info_ptr->header->nodes * sizeof(NODE) + 511) / 512;
-            tags_pages = (info_ptr->header->tags * 4 + 511) / 512;
-            tag_info_pages = (info_ptr->header->tags * sizeof(TAG_INFO) + 511) / 512;
-            external_pages = (info_ptr->header->externals * 4 + 511) / 512;
+            header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;
+            node_pages = ((size_t)info_ptr->header->nodes * sizeof(NODE) + 511u) / 512u;
+            tags_pages = ((size_t)info_ptr->header->tags * 4u + 511u) / 512u;
+            tag_info_pages = ((size_t)info_ptr->header->tags * sizeof(TAG_INFO) + 511u) / 512u;
+            external_pages = ((size_t)info_ptr->header->externals * 4u + 511u) / 512u;
             strcat(nfilenam, "#");
             ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
             if (ntreefd != -1) {
@@ -735,12 +735,12 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr)
   NODE *nodes_ptr = info_ptr->node;
   NODE *last_node_ptr = nodes_ptr + *nodecount_ptr - 1;
   int nodes;
-  int node_pages;
-  int length = sizeof(node_ptr->name);
+  size_t node_pages;
+  size_t length = sizeof(node_ptr->name);
   for (node_ptr = last_node_ptr;
        strncmp((const char *)node_ptr->name, (const char *)empty_node.name, length) == 0;
        node_ptr--) ;
-  node_pages = (int)(((node_ptr - nodes_ptr + 1) * sizeof(NODE) + 511) / 512);
+  node_pages = (((size_t)(node_ptr - nodes_ptr + 1) * sizeof(NODE) + 511) / 512);
   nodes = max(info_ptr->edit->first_in_mem, (int)((node_pages * 512) / sizeof(NODE)));
   if (nodes < *nodecount_ptr) {
     for (node_ptr = &nodes_ptr[nodes]; (*free_ptr != -1) && (node_ptr <= last_node_ptr); node_ptr++) {
@@ -773,17 +773,17 @@ STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
     int i;
     NCI nci;
     char nci_bytes[42];
-    int nbytes = sizeof(nci_bytes);
+    int nbytes = (int)sizeof(nci_bytes);
     int offset;
-    for (i = 0, offset = info->edit->first_in_mem * nbytes; i < numnodes && (status & 1);
+    for (i = 0, offset = info->edit->first_in_mem * nbytes; i < numnodes && STATUS_OK;
 	 i++, offset += nbytes) {
       MDS_IO_LSEEK(info->nci_file->put, offset, SEEK_SET);
       memcpy(&nci, &info->edit->nci[i], sizeof(nci));
       TreeSerializeNciOut(&nci, nci_bytes);
       status =
-	  (MDS_IO_WRITE(info->nci_file->put, nci_bytes, nbytes) ==
+	  (MDS_IO_WRITE(info->nci_file->put, nci_bytes, (size_t)nbytes) ==
 	   nbytes) ? TreeNORMAL : TreeNCIWRITE;
-      if (status & 1)
+      if STATUS_OK
 	info->edit->first_in_mem++;
     }
   }
@@ -847,12 +847,12 @@ int _TreeSetSubtree(void *dbid, int nid)
   pages_needed = (numext * 4 + 511) / 512;
   pages_allocated = max((numext * 4 + 507) / 512, dblist->tree_info->edit->external_pages);
   if (pages_needed > pages_allocated) {
-    new_external_ptr = malloc(pages_needed * 512);
+    new_external_ptr = malloc((size_t)pages_needed * 512u);
     status = new_external_ptr == 0 ? TreeMEMERR : TreeNORMAL;
     if STATUS_NOT_OK {
       return status;
     }
-    memcpy(new_external_ptr, dblist->tree_info->external, (numext - 1) * 4);
+    memcpy(new_external_ptr, dblist->tree_info->external, (size_t)((numext - 1) * 4));
     if (dblist->tree_info->edit->external_pages > 0)
       free(dblist->tree_info->external);
     dblist->tree_info->edit->external_pages = pages_needed;
@@ -933,7 +933,7 @@ int _TreeQuitTree(void **dbid, char const *exp_ptr, int shotid)
       int shot;
       size_t len = strlen(exp_ptr);
       for (i = 0; i < 12 && i < len; i++)
-	uptree[i] = toupper(exp_ptr[i]);
+	uptree[i] = (char)toupper(exp_ptr[i]);
       uptree[i] = '\0';
       shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
       status = TreeNOT_OPEN;
