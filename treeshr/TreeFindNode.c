@@ -99,7 +99,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   ctx->type = EOL;
   ctx->string = strdup(path);
   for (i = 0; i < len && path[i] != ' '; i++)
-    ctx->string[i] = toupper(path[i]);
+    ctx->string[i] = (char)toupper(path[i]);
   ctx->string[i] = 0;
   status = Parse(ctx, 0);
   if (status & 1) {
@@ -142,7 +142,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
       ctx->type = EOL;
       ctx->string = strcpy(malloc(len + 1), path);
       for (i = 0; i < len && path[i] != ' '; i++)
-	ctx->string[i] = toupper(path[i]);
+	ctx->string[i] = (char)toupper(path[i]);
       ctx->string[i] = 0;
       status = Parse(ctx, 1);
     } else
@@ -440,8 +440,8 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
     return TreeEMPTY;
 
 /**************************************************
- For each character in 
-path name check for the
+ For each character in
+ path name check for the
  various types of path name tokens.
 ***************************************************/
 
@@ -792,13 +792,13 @@ STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT * ctx, char **tree, int *treelen,
 
   default:
     {
-      ctx->len = tokencnt;
+      ctx->len = tokencnt>0x7fff ? 0x7fff : (short)tokencnt;
       ctx->string = tokenptr;
       ctx->type = param;
       ctx->node = 0;
       ctx->stop = 0;
       if (param == TAG_TYPE) {	/* if it is a tag search */
-	ctx->tag_tree_name_len = *treelen;	/*   fill in the saved tree name stuff */
+	ctx->tag_tree_name_len = (short)*treelen;	/*   fill in the saved tree name stuff */
 	ctx->tag_tree_name = *tree;
       }
     }
@@ -944,7 +944,7 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
   ctx->type = EOL;
   ctx->string = strcpy(malloc(len + 1), pathptr);
   for (i = 0; i < len && pathptr[i] != ' '; i++)
-    ctx->string[i] = toupper(pathptr[i]);
+    ctx->string[i] = (char)toupper(pathptr[i]);
   ctx->string[i] = 0;
   if (Parse(ctx, 0) & 1) {
     if (ctx[1].type == TAG_TYPE) {
@@ -1017,7 +1017,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
   struct tag_search tsearch;
   memset(tsearch.tag, 32, sizeof(TAG_NAME));
   for (i = 0; i < len; i++)
-    tsearch.tag[i] = toupper(tagnam[i]);
+    tsearch.tag[i] = (char)toupper(tagnam[i]);
   *nodeptr = NULL;
 /********************************************
  To locate a tag we must first find which tree
@@ -1073,7 +1073,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
       break;
     default:
       if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags,
-			 tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0) {
+			 (size_t)tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0) {
 	*nodeptr =
 	    tsearch.info->node +
 	    swapint((char *)&(tsearch.info->tag_info + swapint((char *)idx))->node_idx);
@@ -1140,7 +1140,7 @@ EXPORT int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_p
   ctx->type = EOL;
   ctx->string = strcpy(malloc(len + 1), path_ptr);
   for (i = 0; i < len && path_ptr[i] != ' '; i++)
-    ctx->string[i] = toupper(path_ptr[i]);
+    ctx->string[i] = (char)toupper(path_ptr[i]);
   ctx->string[i] = 0;
   status = Parse(ctx, 0);
   if (status & 1) {
