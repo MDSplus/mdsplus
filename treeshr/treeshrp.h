@@ -228,7 +228,7 @@ PACK_START
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
-    typedef struct node {
+typedef struct node {
   NODE_NAME name;
   int parent;
   int member;
@@ -237,7 +237,7 @@ PACK_START
   unsigned char usage;
   unsigned short conglomerate_elt PACK_ATTR;
   char fill;
-  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
+  int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 } NODE;
 
 #ifdef EMPTY_NODE
