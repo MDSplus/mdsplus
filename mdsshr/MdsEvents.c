@@ -157,7 +157,7 @@ static char *eventName(char const *eventnam_in) {
     eventnam = strdup(eventnam_in);
     for (i = 0, j = 0; i < strlen(eventnam); i++) {
       if (eventnam[i] != 32)
-	eventnam[j++] = toupper(eventnam[i]);
+	eventnam[j++] = (char)toupper(eventnam[i]);
     }
     eventnam[j] = 0;
     if (strlen(eventnam)==0) {
@@ -867,7 +867,8 @@ STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int
     *num_servers = 0;
     return;
   }
-  i = *num_servers = 0;
+  i = 0;
+  *num_servers = 0;
   while (i < strlen(envname)) {
     for (j = 0; i < strlen(envname) && envname[i] != ';'; i++, j++)
       curr_name[j] = envname[i];
@@ -1099,7 +1100,7 @@ STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
   pthread_mutex_lock(&t->mutex);
   if (t->active) {
     if (t->buflen && t->data)
-      memcpy(t->data, data, (t->buflen > len) ? len : t->buflen);
+      memcpy(t->data, data, (size_t)((t->buflen > len) ? len : t->buflen));
     if (t->datlen)
       *t->datlen = len;
   }
@@ -1202,7 +1203,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data)
   struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
   thisEvent->data_len = data_len;
   thisEvent->next = 0;
-  thisEvent->data = (data_len > 0) ? memcpy(malloc(data_len), data, data_len) : (void *)0;
+  thisEvent->data = (data_len > 0) ? memcpy(malloc((size_t)data_len), data, (size_t)data_len) : NULL;
   LockMdsShrMutex(&eqMutex, &eqMutex_initialized);
   for (q = qh->event; q && q->next; q = q->next) ;
   if (q)
@@ -1393,7 +1394,7 @@ int RemoteMDSEvent(char const *evname_in, int data_len, char *data)
   evname = strdup(evname_in);
   for (u = 0, j = 0; u < strlen(evname); u++) {
     if (evname[u] != 32)
-      evname[j++] = toupper(evname[u]);
+      evname[j++] = (char)toupper(evname[u]);
   }
   evname[j] = 0;
   status = sendRemoteEvent(evname, data_len, data);
@@ -1412,7 +1413,7 @@ EXPORT int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, cha
   int status;
   for (i = 0, j = 0; i < strlen(eventNameIn); i++) {
     if (eventNameIn[i] != 32)
-      eventName[j++] = toupper(eventNameIn[i]);
+      eventName[j++] = (char)toupper(eventNameIn[i]);
   }
   eventName[j] = 0;
   if (getenv("mds_event_server"))
@@ -1430,7 +1431,7 @@ EXPORT int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
   int status;
   for (i = 0, j = 0; i < strlen(eventNameIn); i++) {
     if (eventNameIn[i] != 32)
-      eventName[j++] = toupper(eventNameIn[i]);
+      eventName[j++] = (char)toupper(eventNameIn[i]);
   }
   eventName[j] = 0;
   if (getenv("mds_event_target"))
