@@ -1128,6 +1128,19 @@ AS_CASE([$enable_werror],
 AC_SUBST([WARNFLAGS])
 AC_MSG_RESULT([$enable_werror])
 
+AC_MSG_CHECKING([whether to warn about implicit conversions])
+AC_ARG_ENABLE([wconversion],
+              [AS_HELP_STRING([--enable-wconversion],
+                              [Warn about implicit conversions])],
+              [],
+              [AS_VAR_SET([enable_wconversion], [no])])
+AS_CASE([$enable_wconversion],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Wconversion"])],
+        [])
+AC_SUBST([WARNFLAGS])
+AC_MSG_RESULT([$enable_wconversion])
+
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
