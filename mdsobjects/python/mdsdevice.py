@@ -256,6 +256,9 @@ class Device(_treenode.TreeNode):
             if 'options' in elt:
                 for option in elt['options']:
                     node.__setattr__(option,True)
+            if 'tags' in elt:
+                for tag in elt['tags']:
+                    node.addTag(tag)
         _treeshr.TreeEndConglomerate(tree)
         return head
     Add=classmethod(Add)
