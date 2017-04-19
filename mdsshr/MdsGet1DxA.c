@@ -68,10 +68,10 @@ EXPORT int MdsGet1DxA(struct descriptor_a const *in_ptr, unsigned short const *l
     new_arsize = 0;
   else
     new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
-  dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.coeff ? sizeof(char *) +
+  dsc_size = (unsigned int)(sizeof(struct descriptor_a) + (in_dsc->aflags.coeff ? sizeof(char *) +
 					    sizeof(int) * in_dsc->dimct : 0) +
-      (in_dsc->aflags.bounds ? sizeof(int) * (in_dsc->dimct * 2)
-       : 0);
+      (in_dsc->aflags.bounds ? sizeof(int) * (size_t)(in_dsc->dimct * 2)
+       : 0));
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;

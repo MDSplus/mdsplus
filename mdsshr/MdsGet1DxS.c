@@ -40,6 +40,7 @@
 +-----------------------------------------------------------------------------*/
 
 #include <stdlib.h>
+#include <status.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <STATICdef.h>
@@ -51,14 +52,14 @@ EXPORT int MdsGet1DxS(unsigned short const *length_ptr, unsigned char const *dty
 {
 
   int status;
-  int dsc_size = sizeof(struct descriptor);
-  int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
+  unsigned int dsc_size = (unsigned int)sizeof(struct descriptor);
+  unsigned int align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   unsigned int length;
   STATIC_CONSTANT unsigned char dsc_dtype = DTYPE_DSC;
   dsc_size = align(dsc_size, align_size);
   length = dsc_size + *length_ptr;
   status = MdsGet1Dx(&length, &dsc_dtype, out_dsc_ptr, NULL);
-  if (status & 1) {
+  if STATUS_OK {
     out_dsc_ptr->pointer->length = *length_ptr;
     out_dsc_ptr->pointer->dtype = *dtype_ptr;
     out_dsc_ptr->pointer->class = CLASS_S;

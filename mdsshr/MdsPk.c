@@ -64,21 +64,20 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
   int *pitems = &items[0];
   int size = nbits >= 0 ? nbits : -nbits;
   int off = *bit_ptr & 31;
-  int mask;
+  unsigned int mask;
   int test;
 #ifdef WORDS_BIGENDIAN
-  int i;
-  int j;
+  int i, j;
   signed char *pin;
   signed char *pout;
-  int hold = 0;
+  unsigned int hold = 0;
   if (off) {
     for (i = 0; i < 4; i++)
       ((char *)&hold)[i] = ((char *)ppack)[3 - i];
     hold = hold & masks[off];
   }
 #else
-  int hold = off ? *ppack & masks[off] : 0;
+  unsigned int hold = off ? *(unsigned int *)ppack & masks[off] : 0;
 #endif
   if (size == 0 || nitems <= 0)
     return;
@@ -91,12 +90,12 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
 	for (j = 0; j < 4; j++)
 	  pout[j] = pin[3 - j];
 #else
-      memcpy(((char *)ppack) + (off >> 3), pitems, sizeof(int) * nitems);
+      memcpy(((char *)ppack) + (off >> 3), pitems, sizeof(int) * (size_t)nitems);
 #endif
       return;
     } else
       for (; --nitems >= 0;) {
-	hold |= *pitems << off;
+	hold |= *(unsigned int *)pitems << off;
 #ifdef __APPLE__
 	*ppack++ = SwapBytes((char *)&hold);
 #else
@@ -105,7 +104,7 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
 	  ((char *)ppack)[i] = ((char *)&hold)[3 - i];
 	ppack++;
 #else
-	*ppack++ = hold;
+	*ppack++ = (int)hold;
 #endif
 #endif
 	hold = *(unsigned int *)pitems++ >> (32 - off);
@@ -114,7 +113,7 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
     mask = masks[size];
     test = 32 - size;
     for (; --nitems >= 0; ++pitems) {
-      hold |= (mask & *pitems) << off;
+      hold |= (mask & *(unsigned int *)pitems) << off;
       if (off >= test) {
 #ifdef __APPLE__
 	*ppack++ = SwapBytes((char *)&hold);
@@ -124,10 +123,10 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
 	  ((char *)ppack)[i] = ((char *)&hold)[3 - i];
 	ppack++;
 #else
-	*ppack++ = hold;
+	*ppack++ = (int)hold;
 #endif
 #endif
-	hold = (mask & *pitems) >> (32 - off);
+	hold = (mask & *(unsigned int *)pitems) >> (32 - off);
 	off -= test;
       } else
 	off += size;
@@ -138,7 +137,7 @@ void MdsPk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
     for (i = 0; i < 4; i++)
       ((char *)ppack)[i] = ((char *)&hold)[3 - i];
 #else
-    *ppack = hold;
+    *ppack = (int)hold;
 #endif
   return;
 }
@@ -152,9 +151,8 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], i
   int *pitems = &items[0];
   int size = nbits >= 0 ? nbits : -nbits;
   int off = *bit_ptr & 31;
-  int mask = masks[size];
+  unsigned int hold, full, max, mask = masks[size];
   int test = 32 - size;
-  int hold, full, max;
   *bit_ptr += size * nitems;
 /*32-bit data*/
 
@@ -169,7 +167,7 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], i
 	hold = ((unsigned int)getppack) >> off;
 	ppack++;
 	hold |= ((unsigned int)getppack) << (32 - off);
-	*pitems++ = hold;
+	*pitems++ = (int)hold;
       }
   }
 /*sign extended*/
@@ -182,16 +180,16 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], i
 	ppack++;
 	hold |= (((unsigned int)getppack) << (32 - off)) & mask;
 	if (hold > max)
-	  *pitems++ = hold - full;
+	  *pitems++ = (int)(hold - full);
 	else
-	  *pitems++ = hold;
+	  *pitems++ = (int)hold;
 	off -= test;
       } else {
 	hold = (((unsigned int)getppack) >> off) & mask;
 	if (hold > max)
-	  *pitems++ = hold - full;
+	  *pitems++ = (int)(hold - full);
 	else
-	  *pitems++ = hold;
+	  *pitems++ = (int)hold;
 	off += size;
       }
     }
@@ -203,11 +201,11 @@ void MdsUnpk(signed char *nbits_ptr, int *nitems_ptr, int pack[], int items[], i
 	hold = ((unsigned int)getppack) >> off;
 	ppack++;
 	hold |= (((unsigned int)getppack) << (32 - off)) & mask;
-	*pitems++ = hold;
+	*pitems++ = (int)hold;
 	off -= test;
       } else {
 	hold = (((unsigned int)getppack) >> off) & mask;
-	*pitems++ = hold;
+	*pitems++ = (int)hold;
 	off += size;
       }
     }
