@@ -885,6 +885,8 @@ extern "C" {
 					    const char *expressionIn, ErrorCluster * error);
   EXPORT void mdsplus_connection_putData(const void *lvConnectionPtr, const void *lvDataPtrIn,
 					    const char *pathIn, ErrorCluster * error);
+  EXPORT void mdsplus_connection_putSignal(const void *lvConnectionPtr, const void *lvDataPtrIn,
+					    const void *lvTimePtrIn,const char *pathIn, 					    ErrorCluster * error);
   EXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const char *tree,
 					     int shot, ErrorCluster * error);
   EXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr, ErrorCluster * error);
