@@ -47,24 +47,16 @@ void TreeSerializeNciOut(NCI * in, char *out)
 void TreeSerializeNciIn(char *in, NCI * out)
 {
   char *ptr = in;
-  out->flags = swapint(ptr);
-  ptr += 4;
-  out->flags2 = *ptr;
+  out->flags = (unsigned)swapint(ptr);ptr += 4;
+  out->flags2 = (unsigned char)*ptr;ptr += 1;
   ptr += 1;
+  out->time_inserted = swapquad(ptr);ptr += 8;
+  out->owner_identifier = swapint(ptr);ptr += 4;
+  out->class = (unsigned char)*ptr;ptr += 1;
+  out->dtype = (unsigned char)*ptr;ptr += 1;
+  out->length = swapint(ptr);ptr += 4;
   ptr += 1;
-  out->time_inserted = swapquad(ptr);
-  ptr += 8;
-  out->owner_identifier = swapint(ptr);
-  ptr += 4;
-  out->class = *ptr;
-  ptr += 1;
-  out->dtype = *ptr;
-  ptr += 1;
-  out->length = swapint(ptr);
-  ptr += 4;
-  ptr += 1;
-  out->status = swapint(ptr);
-  ptr += 4;
+  out->status = swapint(ptr);ptr += 4;
   if (out->flags2 & NciM_DATA_IN_ATT_BLOCK) {
     out->DATA_INFO.DATA_IN_RECORD.element_length = *ptr;
     ptr += 1;
