@@ -6,8 +6,6 @@ from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 from time import sleep
 
 class CAENDT5724(Device):
-    print 'CAENDT5724'
-    Int32(1).setTdiVar('_PyReleaseThreadLock')
     """CAEN DT5724 4 Channels 14 Bit 100MS/S Digitizer"""
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
       {'path':':COMMENT', 'type':'text'},
@@ -342,6 +340,7 @@ class CAENDT5724(Device):
 ################################# INIT ###############################
     def init(self):
       global caenLib
+
       if self.restoreInfo() == 0 : 
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open DT5724 Device' )
         return 0

@@ -410,9 +410,13 @@ public class DeviceWave extends DeviceComponent
         //Prepare waveX and waveY
         Data xData, yData;
         try {
-            yData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0);
+            //yData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0);
+            //xData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(DIM_OF(" + subtree.dataToString(data) + "))"), 0);
+            currNid = new NidData(nidData.getInt());
+            currData = subtree.getData(currNid, 0);
+	    yData = ((SignalData)currData).getDatum();
+	    xData = ((SignalData)currData).getDimension(0);
             currY = yData.getFloatArray();
-            xData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(DIM_OF(" + subtree.dataToString(data) + "))"), 0);
             currX = xData.getFloatArray();
         }catch(Exception exc)
         {
@@ -421,7 +425,7 @@ public class DeviceWave extends DeviceComponent
         }
 
         //Check that the stored signal lies into valid X range
-        if(currX[0] <= minX - (float)MIN_STEP || currX[currX.length - 1] >= maxX + (float)MIN_STEP)
+        if(currX[0] <= minX - (float)MIN_STEP || currX[currX.length - 1] >= (double)maxX + (double)MIN_STEP)
         {
             currX = new float[]{minX, maxX};
             currY = new float[]{0, 0};
@@ -468,6 +472,8 @@ public class DeviceWave extends DeviceComponent
             waveXOld[i] = waveX[i];
             waveYOld[i] = waveY[i];
         }
+
+
         //updateLimits();
         displayData(data, is_on);
         initializing = false;
@@ -490,6 +496,7 @@ public class DeviceWave extends DeviceComponent
      protected Data getData()
     {
         Data []dims = new Data[1];
+System.out.println("waveY length " + waveY.length);
         dims[0] = new FloatArray(waveX);
         Data values = new FloatArray(waveY);
         return new SignalData(values, values, dims);

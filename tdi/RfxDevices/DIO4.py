@@ -608,7 +608,7 @@ class DIO4(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot start DIO4 Device')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return
+        return 1
 
 
 
@@ -652,7 +652,7 @@ class DIO4(Device):
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW reset')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        return 1
 
 
 
@@ -758,7 +758,7 @@ class DIO4(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write trigger parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return
+        return 1
 
 
     def TRIGGER(self):
@@ -890,7 +890,7 @@ class DIO4(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event Code specification for software channel')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        return 1
 
 
 ###################################################
@@ -921,7 +921,7 @@ class DIO4(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open device')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        return 1
 
     def removeInfo(self):
         del(DIO4.handles[self.nid])

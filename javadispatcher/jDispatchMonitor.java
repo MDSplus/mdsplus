@@ -30,7 +30,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         {
             int status = 1;
 
-            //System.out.println("-------------- Action : "+me);
+          //System.out.println("-------------- Action : "+me);
                         
             switch(me.mode)
             {
@@ -91,13 +91,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                     synchronized(executing_list)
                     {
                         
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
-                            public void run()
-                            {
-                                serversInfoPanel.updateServersInfoAction(me);                    
-                            }
-                        });
+			    SwingUtilities.invokeLater(new Runnable()
+			    {
+			        public void run()
+			        {
+				    serversInfoPanel.updateServersInfoAction(me);                    
+			        }
+			    });
                                            
                             int idx = getIndex(me, executing_list.size());
                             if(idx == ACTION_NOT_FOUND)
@@ -114,7 +114,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                 executing_list.addElement(me);
                             else
                                 executing_list.set(idx,me);
-
+			     		 	
                             if((status & 1) == 0)
                             {
                                 failed_list.addElement(me);
@@ -1347,7 +1347,6 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
         dm = new jDispatchMonitor(monitor_server, experiment);
 
-
 /*
         if(args != null &&  args.length > 0 && args[0].length() != 0)
             dm = new jDispatchMonitor(args[0]);
@@ -1489,13 +1488,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             Vector phDur = shotsInfo.get(new Long(shot));
            
             for(int i = 0; i < phDur.size(); i++)
-			{
-				if( (i % (labelText.size() - 1)) == 0) 
-				{
-					 out.println("\t"+shot);	
-				}
-                out.print("\t"+phDur.elementAt(i));
-			}
+	    {
+		if( (i % (labelText.size() - 1)) == 0) 
+		{
+			 out.println("\t"+shot);	
+		}
+		out.print("\t"+phDur.elementAt(i));
+	    }
         }
         
         public void print()
@@ -1510,14 +1509,14 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 String shotStr = "\t"+shots.nextElement();
                 Vector phDur = (Vector)e.nextElement();
                 for(int i = 0; i < phDur.size(); i++)
-				{
-					if( (i % (labelText.size() - 1)) == 0)
-					{						
-						System.out.println(shotStr);
-					}	
-                    System.out.print("\t"+phDur.elementAt(i));
-				}
-            }
+		{
+			if( (i % (labelText.size() - 1)) == 0)
+			{						
+				System.out.println(shotStr);
+			}	
+			System.out.print("\t"+phDur.elementAt(i));
+		}
+	    }
         }         
     }
 }
