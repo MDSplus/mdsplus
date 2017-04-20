@@ -10,7 +10,6 @@ _version=_mimport('version')
 _descriptor=_mimport('descriptor')
 _exceptions=_mimport('mdsExceptions')
 
-
 MDSplusException = _exceptions.MDSplusException
 MdsException = MDSplusException
 #### Load Shared Libraries Referenced #######
@@ -19,83 +18,6 @@ _MdsShr=_version.load_library('MdsShr')
 _TdiShr=_version.load_library('TdiShr')
 #
 #############################################
-
-def getUnits(item):
-    """Return units of item. Evaluate the units expression if necessary.
-    @rtype: string"""
-    try:
-        return item.units
-    except:
-        return ""
-
-def getError(item):
-    """Return the data of the error of an object
-    @rtype: Data"""
-    try:
-        return item.error
-    except:
-        return None
-
-def getValuePart(item):
-    """Return the value portion of an object
-    @rtype: Data"""
-    try:
-        return _compound.VALUE_OF(item).evaluate()
-    except:
-        return None
-
-def getDimension(item,idx=0):
-    """Return dimension of an object
-    @rtype: Data"""
-    try:
-        return _compound.DIM_OF(item,idx).evaluate()
-    except:
-        return None
-
-def data(item):
-    """Return the data for an object converted into a primitive data type
-    @rtype: Data"""
-    return _compound.DATA(item).evaluate().value
-
-def decompile(item):
-    """Returns the item converted to a string
-    @rtype: string"""
-    return str(makeData(item).decompile())
-
-def evaluate(item,):
-    """Return evaluation of mdsplus object"""
-    try:
-        return makeData(item).evaluate()
-    except:
-        return item
-
-def rawPart(item):
-    """Return raw portion of data item"""
-    try:
-        return item.raw
-    except:
-        return None
-
-def makeData(value):
-    """Convert a python object to a MDSobject Data object"""
-    if value is None:
-        return EmptyData()
-    if isinstance(value,(Data,_tree.TreeNode)):
-        return value
-    if isinstance(value,(_N.generic,int,float,complex,_version.basestring,_version.long,_C._SimpleCData)):
-        return _scalar.makeScalar(value)
-    if isinstance(value,(tuple,list)):
-        return _apd.List(value)
-    if isinstance(value,(_N.ndarray,_C.Array)):
-        return _array.makeArray(value)
-    if isinstance(value,dict):
-        return _apd.Dictionary(value)
-    if isinstance(value,slice):
-        return _compound.BUILD_RANGE(value.start,value.stop,value.step).evaluate()
-
-    else:
-        raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
-
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
@@ -106,12 +28,30 @@ class Data(object):
     _help=None
     _validation=None
 
-    def __init__(self,*value):
-        """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
-        @raise TypeError: Raised if attempting to create an instance of Data
+    def __new__(cls,*value):
+        """Convert a python object to a MDSobject Data object
+        @param value: Any value
+        @type data: Any
         @rtype: Data
         """
-        raise TypeError('Cannot create \'Data\' instances')
+        if cls is not Data or len(value)==0:
+            return object.__new__(cls)
+        value = value[0]
+        if value is None:
+            return EmptyData
+        if isinstance(value,(cls,_tree.TreeNode)):
+            return value
+        if isinstance(value,(_N.ScalarType,_C._SimpleCData)):
+            cls = _scalar.Scalar
+        elif isinstance(value,(_N.ndarray,_C.Array,tuple,list)):
+            cls = _array.Array
+        elif isinstance(value,dict):
+            cls = _apd.Dictionary
+        elif isinstance(value,slice):
+            return _compound.BUILD_RANGE.__new__(_compound.BUILD_RANGE,value).evaluate()
+        else:
+            raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
+        return cls.__new__(cls,value)
 
     def __function(self,name,default):
         found = False
@@ -123,6 +63,10 @@ class Data(object):
             return default
         return ans
 
+    @property
+    def deref(self):
+        return self
+
     def value_of(self):
         """Return value part of object
         @rtype: Data"""
@@ -132,6 +76,7 @@ class Data(object):
         """Return raw part of object
         @rtype: Data"""
         return _compound.RAW_OF(self).evaluate()
+
     def units_of(self):
         """Return units of object
         @rtype: Data"""
@@ -143,7 +88,6 @@ class Data(object):
         @type idx: int
         @rtype: Data"""
         return _compound.DIM_OF(self,idx).evaluate()
-
     dim_of=getDimensionAt
 
     @property
@@ -157,6 +101,9 @@ class Data(object):
                 delattr(self,'_units')
         else:
             self._units=units
+    def setUnits(self,units):
+        self.units=units
+        return self
 
     @property
     def error(self):
@@ -169,6 +116,9 @@ class Data(object):
                 delattr(self,'_error')
         else:
             self._error=error
+    def setError(self,error):
+        self.error=error
+        return self
 
     @property
     def help(self):
@@ -181,6 +131,9 @@ class Data(object):
                 delattr(self,'_help')
         else:
             self._help=help
+    def setHelp(self,help):
+        self.help=help
+        return self
 
     @property
     def validation(self):
@@ -193,6 +146,9 @@ class Data(object):
                 delattr(self,'_validation')
         else:
             self._validation=validation
+    def setValidation(self,validation):
+        self.validation=validation
+        return self
 
     def __abs__(self):
         """
@@ -358,7 +314,7 @@ class Data(object):
         if isinstance(y,Data):
             return Data.execute('$+$',y,self)
         else:
-            return makeData(y)+self
+            return Data(y)+self
 
     def __rdiv__(self,y):
         """Reverse divide: x.__rdiv__(y) <==> y/x
@@ -421,7 +377,7 @@ class Data(object):
         """Xor: x.__xor__(y) <==> x^y
         @rtype: Data"""
         return Data.execute('$^$',self,y)
-    
+
     def compare(self,value):
         """Compare this data with argument
         @param value: data to compare to
@@ -429,7 +385,7 @@ class Data(object):
         @return: Return True if the value and this Data object contain the same data
         @rtype: Bool
         """
-        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_C.pointer(makeData(value).descriptor))
+        status = _MdsShr.MdsCompareXd(_C.pointer(self.descriptor),_descriptor.objectToPointer(Data(value)))
         if status == 1:
             return True
         else:
@@ -441,6 +397,8 @@ class Data(object):
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
+        if len(args)==2 and isinstance(args[1],(tuple,)):
+            args = tuple([args[0]]+list(args[1]))  # compatibility
         return _compound.COMPILE(*args).evaluate()
 
     @staticmethod
@@ -449,6 +407,15 @@ class Data(object):
         @rtype: Data"""
         return Data.compile(*args).evaluate()
 
+    def assignTo(self,varname):
+        """Set tdi variable with this data
+        @param varname: The name of the public tdi variable to create
+        @type varname: string
+        @rtype: Data
+        @return: Returns new value of the tdi variable
+        """
+        return self.execute("%s=$"%(varname,),self)
+
     def setTdiVar(self,tdivarname):
         """Set tdi public variable with this data
         @param tdivarname: The name of the public tdi variable to create
@@ -456,7 +423,7 @@ class Data(object):
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
-        return self.execute("`public "+str(tdivarname)+"=$",self)
+        return self.execute("public %s=$"%(tdivarname,),self)
 
     @staticmethod
     def getTdiVar(tdivarname):
@@ -475,22 +442,21 @@ class Data(object):
         """
         return str(_compound.DECOMPILE(self).evaluate())
 
-    __str__=decompile
-    """String: x.__str__() <==> str(x)
-    @type: String"""
+    def __repr__(self):
+        """Representation
+        @type: String"""
+        return self.decompile()
 
-    __repr__=decompile
-    """Representation"""
-
+    __str__=__repr__
 
     def data(self,*altvalue):
         """Return primitimive value of the data.
-        @rtype: Scalar,Array
+        @rtype: numpy or native type
         """
         try:
             return _compound.DATA(self).evaluate().value
         except _exceptions.TreeNODATA:
-            if len(altvalue)==1:
+            if len(altvalue):
                 return altvalue[0]
             raise
 
@@ -506,7 +472,7 @@ class Data(object):
         @rtype: Data
         """
         xd = _descriptor.Descriptor_xd()
-        status = _TdiShr.TdiEvaluate(_C.pointer(self.descriptor),
+        status = _TdiShr.TdiEvaluate(_descriptor.objectToPointer(self),
                                   _C.pointer(xd),
                                   _C.c_void_p(-1))
         if (status & 1 != 0):
@@ -519,6 +485,17 @@ class Data(object):
         """Is item a Scalar
         @rtype: Bool"""
         return isinstance(x,_scalar.Scalar)
+
+    def getData(self,*altvalue):
+        """Return primitimive value of the data.
+        @rtype: Scalar,Array
+        """
+        try:
+            return _compound.DATA(self).evaluate()
+        except _exceptions.TreeNODATA:
+            if len(altvalue):
+                return altvalue[0]
+            raise
 
     def getByte(self):
         """Convert this data into a byte.
@@ -563,7 +540,7 @@ class Data(object):
         return ans
 
     def getFloat(self):
-        """Convert this data into a float32. 
+        """Convert this data into a float32.
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
@@ -601,7 +578,7 @@ class Data(object):
         return _compound.SHAPE(self).evaluate()
 
     def getByteArray(self):
-        """Convert this data into a byte array. 
+        """Convert this data into a byte array.
         @rtype: Int8Array
         """
         return _compound.BYTE(self).evaluate()
@@ -705,32 +682,45 @@ class Data(object):
         else:
             raise _exceptions.statusToException(status)
 
-    @staticmethod
-    def makeData(value):
-        """Return MDSplus data class from value.
-        @param value: Any value
-        @type data: Any
-        @rtype: Data
-        """
-        return makeData(value)
+makeData=Data
 
 class EmptyData(Data):
-    """No Value"""
-    def __init__(self):
+    """No Value aka *"""
+    def __init__(self,*value):
         pass
-    
-    def __str__(self):
-        return "<no-data>"
-    
+
+    def decompile(self):
+        return "*"
+
     @property
     def value(self):
         return None
 
+    def data(self):
+        return None
+
     @property
     def descriptor(self):
-        d = _descriptor.Descriptor_xd()
-        d.dtype = _descriptor.Descriptor_xd.dtype_dsc
-        return d
+        return None
+
+    @classmethod
+    def fromDescriptor(cls,d):
+        return EmptyData
+EmptyData = EmptyData()
+
+class Missing(EmptyData):
+    """No Value aka $Missing"""
+    descriptor=_descriptor.Descriptor()
+    _descriptor.dtype=0
+    def decompile(self):
+        return "$Missing"
+    @classmethod
+    def fromDescriptor(cls,d):
+        return Missing
+
+
+_descriptor.dtypeToClass[0]=Missing
+_descriptor.dtypeToArrayClass[0]=Missing
 
 _compound=_mimport('compound')
 _scalar=_mimport('mdsscalar')

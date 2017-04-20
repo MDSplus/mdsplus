@@ -4,7 +4,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import sys as _sys
 import ctypes as _C
 import numpy as _N
 from threading import RLock as _RLock
@@ -141,9 +140,9 @@ class Connection(object):
 
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
-        val=_data.makeData(value)
+        val=_data.Data(value)
         if not isinstance(val,_scalar.Scalar) and not isinstance(val,_array.Array):
-            val=_data.makeData(val.data())
+            val=_data.Data(val.data())
         valInfo=self.__inspect__(val)
         status=_SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
         if not ((status & 1)==1):
@@ -306,10 +305,8 @@ class GetMany(_apd.List):
                 name=val['name']
                 try:
                     self.result[name]=_apd.Dictionary({'value':_data.Data.execute('data('+val['exp']+')',tuple(val['args']))})
-                except Exception:
-                    import sys
-                    e=sys.exc_info()[1]
-                    self.result[name]=_apd.Dictionary({'error':str(e)})
+                except Exception as exc:
+                    self.result[name]=_apd.Dictionary({'error':str(exc)})
             return self.result
         else:
             ans=self.connection.get("GetManyExecute($)",self.serialize())
@@ -424,8 +421,8 @@ class PutMany(_apd.List):
                         self.result[node]='Success'
                     else:
                         self.result[node]=_statToEx(status).message
-                except:
-                    self.result[node]=str(_sys.exc_info()[1])
+                except Exception as exc:
+                    self.result[node]=str(exc)
             return self.result
         else:
             ans=self.connection.get("PutManyExecute($)",self.serialize())

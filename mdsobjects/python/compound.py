@@ -6,41 +6,39 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
+_ver=_mimport('version')
 _descriptor=_mimport('descriptor')
 _data=_mimport('mdsdata')
+_tree=_mimport('tree')
 _exceptions=_mimport('mdsExceptions')
 
 class Compound(_data.Data):
-    def __init__(self,*args, **params):
+    def __init__(self,*args, **kwargs):
         """MDSplus compound data.
         """
-        if self.__class__.__name__=='Compound':
+        if len(args)==1 and args[0] is self: return
+        if self.__class__ is Compound:
             raise TypeError("Cannot create instances of class Compound")
         self._fields={}
         for idx in range(len(self.fields)):
             self._fields[self.fields[idx]]=idx
-        if 'args' in params:
-            args=params['args']
-        if 'params' in params:
-            params=params['params']
-        try:
-            self._argOffset=self.argOffset
-        except:
-            self._argOffset=len(self.fields)
-        if isinstance(args,tuple):
-            if len(args) > 0:
-                if isinstance(args[0],tuple):
-                    args=args[0]
-        largs=[]
-        for arg in args:
-            largs.append(_data.makeData(arg))
-        self.args=tuple(largs)
-        for keyword in params:
-            if keyword in self.fields:
-                super(type(self),self).__setitem__(self._fields[keyword],params[keyword])
+        self._argOffset=len(self.fields)
+        self.setDescs(args)
+        for k,v in kwargs:
+            if k in self.fields:
+                self.setDescAt(self._fields[k],v)
+
+    @property
+    def deref(self):
+        for i in range(self.getNumDescs()):
+            ans = self.getDescAt(i)
+            if isinstance(ans,(_data.Data,_tree.TreeNode)):
+                self.setDescAt(i,ans.deref)
+        return self
+
 
     def __hasBadTreeReferences__(self,tree):
-        for arg in self.args:
+        for arg in self._args:
             if isinstance(arg,_data.Data) and arg.__hasBadTreeReferences__(tree):
                 return True
         return False
@@ -48,175 +46,142 @@ class Compound(_data.Data):
     def __fixTreeReferences__(self,tree):
         from copy import deepcopy
         ans = deepcopy(self)
-        newargs=list(ans.args)
-        for idx in range(len(newargs)):
-            if isinstance(newargs[idx],_data.Data) and newargs[idx].__hasBadTreeReferences__(tree):
-                newargs[idx]=newargs[idx].__fixTreeReferences__(tree)
-        ans.args=tuple(newargs)
+        for arg in ans._args:
+            if isinstance(arg,_data.Data) and arg.__hasBadTreeReferences__(tree):
+                arg.__fixTreeReferences__(tree)
         return ans
 
-    def __getattr__(self,name,*args):
+    def __getattr__(self,name):
         if name == '_fields':
             return {}
         if name in self._fields:
-            try:
-                return self.args[self._fields[name]]
-            except:
-                return None
+            return self.getDescAt(self._fields[name])
         elif name.startswith('get') and name[3:].lower() in self._fields:
             def getter():
-                return self.args[self._fields[name[3:].lower()]]
+                return self._args[self._fields[name[3:].lower()]]
             return getter
         elif name.startswith('set') and name[3:].lower() in self._fields:
             def setter(value):
                 self.__setattr__(name[3:].lower(),value)
             return setter
-        raise AttributeError('No such attribute '+str(name))
+        raise AttributeError("No such attribute '%s' in %s"%(name,self.__class__.__name__))
 
-    def __getitem__(self,num):
-        try:
-            return self.args[num]
-        except:
-            return None
+    def __getitem__(self,idx):
+        return self.getDescAt(idx)
 
     def __setattr__(self,name,value):
         if name in self._fields:
-            tmp=list(self.args)
-            while len(tmp) <= self._fields[name]:
-                tmp.append(None)
-            tmp[self._fields[name]]=_data.makeData(value)
-            self.args=tuple(tmp)
-            return
-        super(Compound,self).__setattr__(name,value)
-
-
-    def __setitem__(self,num,value):
-        if isinstance(num,slice):
-            indices=num.indices(num.start+len(value))
-            idx=0
-            for i in range(indices[0],indices[1],indices[2]):
-                self.__setitem__(i,value[idx])
-                idx=idx+1
+            self.setDescAt(self._fields[name],value)
         else:
-            try:
-                tmp=list(self.args)
-            except:
-                tmp=list()
-            while len(tmp) <= num:
-                tmp.append(None)
-            tmp[num]=value
-            self.args=tuple(tmp)
-        return
+            super(Compound,self).__setattr__(name,value)
+
+    def __setitem__(self,idx,value):
+        return self.setDescAt(idx,value)
 
     def getArgumentAt(self,idx):
         """Return argument at index idx (indexes start at 0)
         @rtype: Data,None
         """
-        return Compound.__getitem__(self,idx+self._argOffset)
+        return self.getDescAt(self._argOffset+idx)
 
     def getArguments(self):
         """Return arguments
         @rtype: Data,None
         """
-        return Compound.__getitem__(self,slice(self._argOffset,None))
+        return self.getDescAt(slice(self._argOffset,None))
 
     def getDescAt(self,idx):
         """Return descriptor with index idx (first descriptor is 0)
         @rtype: Data
         """
-        return Compound.__getitem__(self,idx)
+        if isinstance(idx, (slice,)):
+            return tuple(self._args[idx])
+        if idx<len(self._args):
+            return self._args[idx]
+        return None
 
     def getDescs(self):
         """Return descriptors or None if no descriptors
         @rtype: tuple,None
         """
-        return self.args
+        return tuple(self._args)
 
     def getNumDescs(self):
        """Return number of descriptors
        @rtype: int
        """
-       try:
-           return len(self.args)
-       except:
-           return 0
+       return len(self._args)
 
     def setArgumentAt(self,idx,value):
         """Set argument at index idx (indexes start at 0)"""
-        return super(type(self),self).__setitem__(idx+self._argOffset,value)
+        return self.setDescAt(self._argOffset+idx, value)
 
     def setArguments(self,args):
         """Set arguments
         @type args: tuple
         """
-        return super(type(self),self).__setitem__(slice(self._argOffset,None),args)
+        self._args = self._args[:self._argOffset+len(args)]
+        return self.setDescAt(slice(self._argOffset,None),args)
 
-    def setDescAt(self,n,value):
+    def setDescAt(self,idx,value):
         """Set descriptor at index idx (indexes start at 0)"""
-        return super(type(self),self).__setitem__(n,value)
+        if isinstance(idx,slice):
+            indices=idx.indices(idx.start+len(value))
+            idx = 0
+            for i in range(indices[0],indices[1],indices[2]):
+                self.setDescAt(i,value[idx])
+                idx += 1
+        else:
+            if value is None:
+                if len(self._args) > idx:
+                    self._args[idx] = None
+            else:
+                if len(self._args) <= idx:
+                    self._args+=[None]*(idx-len(self._args)+1)
+                self._args[idx]=_data.Data(value)
+        return self
 
     def setDescs(self,args):
         """Set descriptors
         @type args: tuple
         """
-        self.args=args
+        self._args = [_data.Data(arg) for arg in args]
+        while self.getNumDescs()<self._argOffset:
+            self._args.append(None)
 
     @staticmethod
     def descriptorWithProps(value,d):
-        dpt=_C.POINTER(_descriptor.Descriptor)
-        try:
-            units_d=_data.makeData(value._units).descriptor
-        except AttributeError:
-            units_d=None
-        if units_d is not None:
+        if value._units is not None:
             dunits=_descriptor.Descriptor_r()
             dunits.length=0
             dunits.dtype=WithUnits.dtype_id
             dunits.pointer=_C.c_void_p(0)
             dunits.ndesc=2
-            dunits.dscptrs[0]=_C.cast(_C.pointer(d),dpt)
-            dunits.dscptrs[1]=_C.cast(_C.pointer(units_d),dpt)
+            dunits.dscptrs[0]=_descriptor.descToPointer(d)
+            dunits.dscptrs[1]=_descriptor.objectToPointer(_data.Data(value._units))
             dunits.original=d
         else:
             dunits=d
-        try:
-            error_d=_data.makeData(value._error).descriptor
-        except AttributeError:
-            error_d=None
-        if error_d is not None:
+        if value._error is not None:
             derror=_descriptor.Descriptor_r()
             derror.length=0
             derror.dtype=WithError.dtype_id
             derror.pointer=_C.c_void_p(0)
             derror.ndesc=2
-            derror.dscptrs[0]=_C.cast(_C.pointer(dunits),dpt)
-            derror.dscptrs[1]=_C.cast(_C.pointer(error_d),dpt)
+            derror.dscptrs[0]=_descriptor.descToPointer(dunits)
+            derror.dscptrs[1]=_descriptor.objectToPointer(_data.Data(value._error))
             derror.original=dunits
         else:
             derror=dunits
-        try:
-            help_d=_data.makeData(value._help).descriptor
-        except AttributeError:
-            help_d=None
-        try:
-            validation_d=_data.makeData(value._validation).descriptor
-        except AttributeError:
-            validation_d=None
-        if help_d is not None or validation_d is not None:
+        if value._help is not None or value._validation is not None:
             dparam=_descriptor.Descriptor_r()
             dparam.length=0
             dparam.dtype=Parameter.dtype_id
             dparam.pointer=_C.c_void_p(0)
             dparam.ndesc=3
-            dparam.dscptrs[0]=_C.cast(_C.pointer(derror),dpt)
-            if help_d is not None:
-                dparam.dscptrs[1]=_C.cast(_C.pointer(help_d),dpt)
-            else:
-                dparam.dscptrs[1]=_C.cast(_C.c_void_p(0),dpt)
-            if validation_d is not None:
-                dparam.dscptrs[2]=_C.cast(_C.pointer(validation_d),dpt)
-            else:
-                dparam.dscptrs[2]=_C.cast(_C.c_void_p(0),dpt)
+            dparam.dscptrs[0]=_descriptor.descToPointer(derror)
+            dparam.dscptrs[1]=_descriptor.objectToPointer(_data.Data(value._help))
+            dparam.dscptrs[2]=_descriptor.objectToPointer(_data.Data(value._validation))
             dparam.original=derror
         else:
             dparam=derror
@@ -236,32 +201,29 @@ class Compound(_data.Data):
             d.length=2
             d.pointer=_C.cast(_C.pointer(_C.c_uint16(opcode)),_C.c_void_p)
         d.dtype=self.dtype_id
-        d.ndesc=len(self.args)
-        for idx in range(len(self.args)):
-            if self.args[idx] is None:
-                d.dscptrs[idx]=_C.cast(_C.c_void_p(0),type(d.dscptrs[idx]))
-            else:
-                d.dscptrs[idx]=_C.cast(_C.pointer(self.args[idx].descriptor),_C.POINTER(_descriptor.Descriptor))
+        d.ndesc = self.getNumDescs()
+        for idx in _ver.xrange(d.ndesc):
+            d.dscptrs[idx]= _descriptor.objectToPointer(self.getDescAt(idx))
         d.original=self
-        if self._units or self._error is not None or self._help is not None or self._validation is not None:
-            return self.descriptorWithProps(self,d)
+        if self._units is None and self._error is None and self._help is None and self._validation is None:
+            return d  # if not props
         else:
-            return d
+            return self.descriptorWithProps(self,d)
 
     @classmethod
     def fromDescriptor(cls,d):
-        args=[]
-        for i in range(d.ndesc):
-            if _C.cast(d.dscptrs[i],_C.c_void_p).value is None:
-                args.append(None)
+        args = [_descriptor.pointerToObject(d.dscptrs[i]) for i in _ver.xrange(d.ndesc)]
+        ans=cls(*args)
+        if d.length>0:
+            if d.length == 1:
+                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint8))
+            elif d.length == 2:
+                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint16))
             else:
-                args.append(d.dscptrs[i].contents.value)
-        args=tuple(args)
-        ans=cls(args=args)
-        if d.length == 2:
-            ans.opcode=_C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
+                opcptr=_C.cast(d.pointer,_C.POINTER(_C.c_uint32))
+            ans.opcode = opcptr.contents.value
         return ans
-            
+
 class Action(Compound):
     """
     An Action is used for describing an operation to be performed by an
@@ -286,17 +248,21 @@ class Conglom(Compound):
     """
     fields=('image','model','name','qualifiers')
     dtype_id=200
-    def getClass(self, ):
+    def getClass(self, *args):
         if not self.image=='__python__':
             raise Exception('Conglom does not represent a python class.')
         model = str(self.model)
         safe_env = {}
         qualifiers = self.qualifiers.value.tolist()
         if isinstance(qualifiers,list): qualifiers = ';'.join(qualifiers)  # make it a list of statements
-        exec(compile(qualifiers,'<string>','exec')) in safe_env
-        if not model in safe_env:
-            raise _exceptions.DevPYDEVICE_NOT_FOUND
-        return safe_env[model]
+        exec(compile(qualifiers,'<string>','exec'),safe_env)
+        if model in safe_env:
+            cls = safe_env[model]
+        else:
+            cls = _tree.Device.importPyDeviceModule(model).__dict__[model]
+        if issubclass(cls,(_tree.Device,)):
+            return cls if len(args)==0 else cls(*args)
+        raise _exceptions.DevPYDEVICE_NOT_FOUND
 
 class Dependency(Compound):
     """A Dependency object is used to describe action dependencies. This is a legacy class and may not be recognized by
@@ -321,46 +287,38 @@ class Dispatch(Compound):
     dtype_id=203
 
     def __init__(self,*args,**kwargs):
-        if 'dispatch_type' in kwargs:
-            self.opcode=kwargs['dispatch_type']
+        if len(args)==1 and args[0] is self: return
+        if 'type' in kwargs:
+            self.opcode=kwargs['type']
         else:
             self.opcode=2
-        super(_Dispatch,self).__init__(args=args)
-        if self.completion is None:
-           self.completion = None
+        super(Dispatch,self).__init__(*args,**kwargs)
 
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
     """
-    _fields={}
-    opcodeToClass={}
+    fields=tuple()
     dtype_id=199
+    opcodeToClass={}
 
     @classmethod
     def fromDescriptor(cls,d):
-        opc=_C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
-        args=[]
-        for i in range(d.ndesc):
-            if _C.cast(d.dscptrs[i],_C.c_void_p).value is None:
-                args.append(None)
-            else:
-                args.append(d.dscptrs[i].contents.value)
-        args=tuple(args)
-        return cls.opcodeToClass[opc](args)
+        opc  = _C.cast(d.pointer,_C.POINTER(_C.c_uint16)).contents.value
+        args = [_descriptor.pointerToObject(d.dscptrs[i]) for i in _ver.xrange(d.ndesc)]
+        return cls.opcodeToClass[opc](*args)
 
     def __init__(self,*args):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
-        fargs=[]
-        if len(args) == 1 and isinstance(args[0],tuple):
-            args_in=args[0]
-        else:
-            args_in=args
-        for arg in args_in:
-            fargs.append(_data.makeData(arg))
-        self.args=tuple(fargs)
+        if len(args)==1 and args[0] is self: return
+        if len(args)>self.max_args or (self.max_args>0 and len(args)<self.min_args):
+            if self.max_args==0 or self.max_args==self.min_args:
+                raise TypeError("Requires %d input arguments for %s but %d given"%(self.max_args,self.__class__.__name__,len(args)))
+            else:
+                raise TypeError("Requires %d to %d input arguments for %s but %d given"%(self.min_args,self.max_args,self.__class__.__name__,len(args)))
+        super(Function,self).__init__(*args)
 
 class Method(Compound):
     """A Method object is used to describe an operation to be performed on an MDSplus conglomerate/device
@@ -389,8 +347,8 @@ class Range(Compound):
 
     def decompile(self):
         parts=list()
-        for arg in self.args:
-            parts.append(_data.makeData(arg).decompile())
+        for arg in self._args:
+            parts.append(_data.Data(arg).decompile())
         return ' : '.join(parts)
 
 class Routine(Compound):
@@ -414,10 +372,7 @@ class Signal(Compound):
         """Return the signals dimension
         @rtype: Data
         """
-        if idx < len(self.dims):
-            return self.dims[idx]
-        else:
-            return _data.makeData(None)
+        return self.getDimensionAt(idx)
 
     def __getitem__(self,idx):
         """Subscripting <==> signal[subscript]. Uses the dimension information for subscripting
@@ -435,16 +390,13 @@ class Signal(Compound):
         @type idx: int
         @rtype: Data
         """
-        try:
-            return self.dims[idx]
-        except:
-            return None
+        return self.getArgumentAt(idx)
 
     def getDimensions(self):
         """Return all the dimensions of the signal
         @rtype: tuple
         """
-        return self.dims
+        return self.getArguments()
 
     def setDimensionAt(self,idx,value):
         """Set the dimension
@@ -478,7 +430,7 @@ class Opaque(Compound):
     def getImage(self):
       import Image
       from StringIO import StringIO
-      return Image.open(StringIO(_data.makeData(self.getData()).data().data))
+      return Image.open(StringIO(_data.Data(self.getData()).data().data))
 
     @staticmethod
     def fromFile(filename,typestring):
@@ -492,7 +444,7 @@ class Opaque(Compound):
       import numpy as _N
       f = open(filename,'rb')
       try:
-        opq=Opaque(_data.makeData(_N.fromstring(f.read(),dtype="uint8")),typestring)
+        opq=Opaque(_data.Data(_N.fromstring(f.read(),dtype="uint8")),typestring)
       finally:
         f.close()
       return opq
@@ -515,7 +467,6 @@ class Parameter(Compound):
     fields=('data','help','validation')
     dtype_id=194
 
-
 _descriptor.dtypeToClass[Action.dtype_id]=Action
 _descriptor.dtypeToClass[Call.dtype_id]=Call
 _descriptor.dtypeToClass[Conglom.dtype_id]=Conglom
@@ -536,7 +487,6 @@ _descriptor.dtypeToClass[WithUnits.dtype_id]=WithUnits
 _descriptor.dtypeToClass[Parameter.dtype_id]=Parameter
 
 class dPLACEHOLDER(Function):
-    min_args=0
     max_args=0
     opcode=0
 
@@ -930,6 +880,12 @@ class BUILD_RANGE(Function):
     min_args=2
     max_args=3
     opcode=83
+    def __init__(self,*args):
+        if len(args)==1 and args[0] is self: return
+        if len(args)==1 and isinstance(args,(slice,)):
+            super(BUILD_RANGE,self).__init__(args[0].start,args[0].stop,args[0].step)
+        else:
+            super(BUILD_RANGE,self).__init__(*args)
 
 class BUILD_ROUTINE(Function):
     min_args=3
