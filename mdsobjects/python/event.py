@@ -58,7 +58,7 @@ e.cancel()
 <<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $ python test.py
-Event eventname occurred at 28-JUL-2016 16:03:51.00 with data: Build_Signal(42, *, 100) 
+Event eventname occurred at 28-JUL-2016 16:03:51.00 with data: Build_Signal(42, *, 100)
 
 Note the run procedure occurs in a different thread so one should be careful
 to prevent race conditions or interference between threads. If you were implementing
@@ -215,10 +215,10 @@ the e.join() would return exiting the problem.
             else:
                 return _array.Uint8Array([])
         elif status==0:
-            if timeout > 0:
+            if self.timeout > 0:
                 raise MdsTimeout("Timeout")
             else:
-                raise MdsNoMoreEvents("No more events")
+                raise _exceptions.MdsNoMoreEvents("No more events")
         elif status==2:
             raise MdsInvalidEvent("Invalid eventid")
         else:
@@ -231,8 +231,8 @@ the e.join() would return exiting the problem.
                 self.exception=None
             except MdsInvalidEvent:
                 return
-            except:
-                self.exception=_sys.exc_info()[1]
+            except Exception as exc:
+                self.exception=exc
             self.time=_time.time()
             self.qtime=_mdsshr.DateToQuad("now")
             self.subclass_run()
@@ -243,7 +243,7 @@ the e.join() would return exiting the problem.
         """
         status=_MdsShr.MDSEventCan(_C.c_int32(self.eventid))
         if ((status & 1)==0):
-            raise _Exceptions.statusToException(status)
+            raise _exceptions.statusToException(status)
 
     def __init__(self,event,timeout=0):
         """Saves event name and starts wfevent thread

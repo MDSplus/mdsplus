@@ -10,70 +10,23 @@ import ctypes as _C
 _scalar=_mimport('mdsscalar')
 _data=_mimport('mdsdata')
 _ver=_mimport('version')
-descriptor=_mimport('descriptor')
+_descriptor=_mimport('descriptor')
 _compound=_mimport('compound')
-
-def makeArray(value):
-    if isinstance(value,Array):
-        return value
-    if isinstance(value,_scalar.Scalar):
-        return makeArray((value._value,))
-    if isinstance(value,_C.Array):
-        try:
-            return makeArray(_N.ctypeslib.as_array(value))
-        except Exception:
-            pass
-    if isinstance(value,tuple) | isinstance(value,list):
-        try:
-            ans=_N.array(value)
-            if str(ans.dtype)[1:2] in 'SU':
-                ans = ans.astype(_ver.npstr)
-            return makeArray(ans)
-        except (ValueError,TypeError):
-            newlist=list()
-            for i in value:
-                newlist.append(_data.makeData(i).data())
-            return makeArray(_N.array(newlist))
-    if isinstance(value,_N.ndarray):
-        if str(value.dtype)[0:2] in ['|S', '<U']:
-            return StringArray(value)
-        if str(value.dtype) == 'bool':
-            return makeArray(value.__array__(_N.uint8))
-        if str(value.dtype) == 'object':
-            raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
-        return globals()[str(value.dtype).capitalize()+'Array'](value)
-    if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
-        return makeArray(_N.array(value).reshape(1))
-    raise TypeError('Cannot make Array out of '+str(type(value)))
-
-def arrayDecompile(a,cl):
-    if len(a.shape)==1:
-        ans='['
-        for idx in range(len(a)):
-            sval=cl(a[idx])
-            if idx < len(a)-1:
-                ending=','
-            else:
-                ending=']'
-            ans=ans+sval.decompile()+ending
-        return ans
-    else:
-        ans='['
-        for idx in range(a.shape[0]):
-            if idx < a.shape[0]-1:
-                ending=', '
-            else:
-                ending=']'
-            ans=ans+arrayDecompile(a[idx],cl)+ending
-        return ans
 
 class Array(_data.Data):
     ctype=None
-    
+
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
         if self.__class__.__name__ == 'StringArray':
+            if isinstance(value,(tuple,list)):
+                l = 0
+                for s in value:
+                    l = max(l,len(s))
+                value = list(value)
+                for i in _ver.xrange(len(value)):
+                    value[i]=value[i].ljust(l)
             self._value=_N.array(value).__array__(_N.str_)
             return
         if isinstance(value,_C.Array):
@@ -85,7 +38,6 @@ class Array(_data.Data):
         if len(value.shape) == 0:  # happens if value has been a scalar, e.g. int
             value = value.reshape(1)
         self._value = value.__array__(_N.__dict__[self.__class__.__name__[0:-5].lower()])
-        return
 
     def __getattr__(self,name):
         return self._value.__getattribute__(name)
@@ -130,7 +82,7 @@ class Array(_data.Data):
         @rtype: Data
         """
         return len(self.data())
-    
+
     def getElementAt(self,itm):
         return _data.makeData(self._value[itm])
 
@@ -167,9 +119,19 @@ class Array(_data.Data):
     def clip(self,y,z):
         return self._triop('clip',y,z)
 
-
     def decompile(self):
-        if str(self._value.dtype)[0:2] in ['|S', '<U']:
+        def arrayDecompile(a,cl):
+            ans='['
+            if len(a.shape)==1:
+                for idx in range(len(a)):
+                    if idx > 0: ans+=', '
+                    ans+=cl(a[idx]).decompile()
+            else:
+                for idx in range(a.shape[0]):
+                    if idx > 0: ans+=', '
+                    ans+=arrayDecompile(a[idx],cl)
+            return ans+']'
+        if str(self._value.dtype)[1] in 'SU':
             cl=_scalar.String
         else:
             cl=_scalar.__dict__[str(self._value.dtype).capitalize()]
@@ -187,22 +149,22 @@ class Array(_data.Data):
         value = value.T
         if not value.flags.f_contiguous:
             value=value.copy('F')
-        d=descriptor.Descriptor_a()
+        d=_descriptor.Descriptor_a()
         d.scale=0
         d.digits=0
-        d.aflags=0
         d.dtype=self.dtype_id
         d.length=value.itemsize
         d.pointer=_C.c_void_p(value.ctypes.data)
-        d.dimct=_N.shape(_N.shape(value))[0]
+        d.dimct=value.ndim
+        d.aflags=48
         d.arsize=value.nbytes
         d.a0=d.pointer
         if d.dimct > 1:
-            d.coeff=1
+            d.coeff=True
             for i in range(d.dimct):
                 d.coeff_and_bounds[i]=_N.shape(value)[i]
         d.original=self
-        if self._units or self._error is not None or self._help is not None or self._validation is not None:
+        if self._units is not None or self._error is not None or self._help is not None or self._validation is not None:
             return _compound.Compound.descriptorWithProps(self,d)
         else:
             return d
@@ -241,11 +203,11 @@ class Array(_data.Data):
                         _C.POINTER(_C.c_int32 * int(d.arsize/d.length))).contents))
             return _tree.TreeNodeArray(list(nids))
         if d.dtype == 10: ### VMS FLOAT
-            return _array.makeArray(_data.Data.execute("float($)",(d,)))
+            return Array.make(_data.Data.execute("float($)",(d,)))
         if d.dtype == 11 or d.dtype == 27: ### VMS DOUBLES
-            return _array.makeArray(_data.Data.execute("FT_FLOAT($)",(d,)))
+            return Array.make(_data.Data.execute("FT_FLOAT($)",(d,)))
         if d.dtype == Complex64Array.dtype_id:
-            return _array.makeArray(
+            return Array.make(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex64,
@@ -255,7 +217,7 @@ class Array(_data.Data):
                             _C.POINTER(
                                 _C.c_float * int(d.arsize*2/d.length))).contents)))
         if d.dtype == Complex128Array.dtype_id:
-            return _array.makeArray(
+            return Array.make(
                 _N.ndarray(
                     shape=shape,
                     dtype=_N.complex128,
@@ -263,8 +225,8 @@ class Array(_data.Data):
                         _C.cast(
                             d.pointer,
                             _C.POINTER(_C.c_double * int(d.arsize*2/d.length))).contents)))
-        if d.dtype in descriptor.dtypeToArrayClass:
-            cls = descriptor.dtypeToArrayClass[d.dtype]
+        if d.dtype in _descriptor.dtypeToArrayClass:
+            cls = _descriptor.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
                 a=_N.ndarray(
                     shape=shape,
@@ -274,14 +236,55 @@ class Array(_data.Data):
                             d.pointer,
                             _C.POINTER(
                                 cls.ctype * int(d.arsize/d.length))).contents))
-                return makeArray(a)
+                return Array.make(a)
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
+
+    @staticmethod
+    def make(value):
+        """Convert a python object to a MDSobject Data array
+        @param value: Any value
+        @type data: any
+        @rtype: Array
+        """
+        if isinstance(value,Array):
+            return value
+        if isinstance(value,_scalar.Scalar):
+            return Array.make((value._value,))
+        if isinstance(value,_C.Array):
+            try:
+                return Array.make(_N.ctypeslib.as_array(value))
+            except Exception:
+                pass
+        if isinstance(value,(tuple,list)):
+            try:
+                ans=_N.array(value)
+                if str(ans.dtype)[1] in 'SU':
+                    ans = ans.astype(_ver.npstr)
+                return Array.make()
+            except (ValueError,TypeError):
+                newlist=list()
+                for i in value:
+                    newlist.append(_data.Data.make(i).data())
+                return Array.make(_N.array(newlist))
+        if isinstance(value,_N.ndarray):
+            if str(value.dtype)[1] in 'SU':
+                return StringArray(value)
+            if str(value.dtype) == 'bool':
+                return Array.make(value.__array__(_N.uint8))
+            if str(value.dtype) == 'object':
+                raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
+            return globals()[str(value.dtype).capitalize()+'Array'](value)
+        if isinstance(value,(_N.generic, int, _ver.long, float, str, bool)):
+            return Array.make(_N.array(value).reshape(1))
+        raise TypeError('Cannot make Array out of '+str(type(value)))
+
+makeArray = Array.make
 
 class Int8Array(Array):
     """8-bit signed number"""
     dtype_id=6
     ctype=_C.c_int8
-    
+
     def deserialize(self):
         """Return data item if this array was returned from serialize.
         @rtype: Data
@@ -317,7 +320,7 @@ class Uint16Array(Array):
     """16-bit unsigned number"""
     dtype_id=3
     ctype=_C.c_uint16
-    
+
 class Uint32Array(Array):
     """32-bit unsigned number"""
     dtype_id=4
@@ -357,10 +360,6 @@ class StringArray(Array):
         """Add: x.__add__(y) <==> x+y
         @rtype: Data"""
         return self.execute('$//$',self,y)
-    def __str__(self):
-        """String: x.__str__() <==> str(x)
-        @rtype: String"""
-        return self.decompile()
 
 class Int128Array(Array):
     """128-bit signed number"""
@@ -374,19 +373,19 @@ class Uint128Array(Array):
     def __init__(self):
         raise TypeError("Uint128Array is not yet supported")
 
-descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
-descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
-descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
-descriptor.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
-descriptor.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
-descriptor.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
-descriptor.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
-descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
-descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
-descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
-descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
-descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
-descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
-descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
-descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
+_descriptor.dtypeToArrayClass[Uint8Array.dtype_id]=Uint8Array
+_descriptor.dtypeToArrayClass[Uint16Array.dtype_id]=Uint16Array
+_descriptor.dtypeToArrayClass[Uint32Array.dtype_id]=Uint32Array
+_descriptor.dtypeToArrayClass[Uint64Array.dtype_id]=Uint64Array
+_descriptor.dtypeToArrayClass[Uint128Array.dtype_id]=Uint128Array
+_descriptor.dtypeToArrayClass[Int8Array.dtype_id]=Int8Array
+_descriptor.dtypeToArrayClass[Int16Array.dtype_id]=Int16Array
+_descriptor.dtypeToArrayClass[Int32Array.dtype_id]=Int32Array
+_descriptor.dtypeToArrayClass[Int64Array.dtype_id]=Int64Array
+_descriptor.dtypeToArrayClass[Int128Array.dtype_id]=Int128Array
+_descriptor.dtypeToArrayClass[Float32Array.dtype_id]=Float32Array
+_descriptor.dtypeToArrayClass[Float64Array.dtype_id]=Float64Array
+_descriptor.dtypeToArrayClass[Complex64Array.dtype_id]=Complex64Array
+_descriptor.dtypeToArrayClass[Complex128Array.dtype_id]=Complex128Array
+_descriptor.dtypeToArrayClass[StringArray.dtype_id]=StringArray
 

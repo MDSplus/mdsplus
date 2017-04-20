@@ -14,7 +14,7 @@ class MDSplusException(Exception):
     if isinstance(status,int):
       self.status=status
     if not hasattr(self,'status'):
-      self.status=-1
+      self.status=-2
       self.msgnam='UNKNOWN'
       self.message='Unknown exception'
       self.fac='MDSplus'
@@ -66,10 +66,10 @@ _statusDict=dict()
 
 _all=globals()
 exception=None
-
 for exception in _all:
   if hasattr(_all[exception],"status"):
     _statusDict[_all[exception].status & -8]=_all[exception]
+del(exception)
 
 def statusToException(status):
   status = int(status)

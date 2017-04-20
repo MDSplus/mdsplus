@@ -244,10 +244,10 @@ class DevPYDEVICE_NOT_FOUND(DevException):
 
 
 
-class DevPYDEVICE_NOT_FOUND(DevException):
+class DevPYDEVICE_NOT_FOUND2(DevException):
   status=662470922
   message="Device support not found."
-  msgnam="PYDEVICE_NOT_FOUND"
+  msgnam="PYDEVICE_NOT_FOUND2"
 
 
 

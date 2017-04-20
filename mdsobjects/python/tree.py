@@ -4,7 +4,6 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 
-import sys as _sys
 import ctypes as _C
 import numpy as _N
 import threading as _threading
@@ -13,7 +12,7 @@ from os import getenv as _getenv
 #### Load other python modules referenced ###
 #
 _data=_mimport('mdsdata')
-_Exceptions=_mimport('mdsExceptions')
+_exceptions=_mimport('mdsExceptions')
 _array=_mimport('mdsarray')
 _mdsdcl=_mimport('mdsdcl')
 _ver=_mimport('version')
@@ -40,7 +39,7 @@ _MdsShr=_ver.load_library('MdsShr')
 class _ThreadData(_threading.local):
 
     """Contains thread specific information"""
-    
+
     def __init__(self):
         self._activeTree=0
         self.private=False
@@ -55,19 +54,18 @@ _usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,      # Usage name to co
              'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,
               'SUBTREE':11,'COMPOUND_DATA':12}
 
-_statToEx=_Exceptions.statusToException # Convert TreeShr status return to exception
 #
 ###################################################
 
 
-class TreeNodeException(_Exceptions.MDSplusException): pass
+class TreeNodeException(_exceptions.MDSplusException): pass
 
 
 def _getThreadName(thread=None):
 
     """ Get a string to use to identify a thread. Used to index
     into thread specific data such as active tree contexts. """
-    
+
     if isinstance(thread,str):
         threadName=thread
     elif _thread_data.private:
@@ -86,14 +84,14 @@ def _setActiveTree(ctx,thread=None):
     instance creation or execution of tdi expressions.
     The active tree is loaded into the global TreeShr
     DBID context before executing tdi expressions. """
-    
+
     _activeTree[_getThreadName(thread)]=ctx
 
 def _getActiveTree(thread=None):
 
     """ Return the current active tree context for
     a particular thread. """
-    
+
     threadName=_getThreadName(thread)
     if threadName in _activeTree:
         ctx = _activeTree[threadName]
@@ -105,13 +103,13 @@ class _TreeCtx(object):
 
     """ The TreeCtx class is used to manage proper garbage collection
     of open trees. It retains reference counts of tree contexts and
-    closes and frees tree contexts when no longer being used. """ 
+    closes and frees tree contexts when no longer being used. """
     ctxs=[]
-    
+
     def __init__(self,ctx):
         self.ctx=ctx
         _TreeCtx.ctxs.append(ctx)
-        
+
     def __del__(self):
         _TreeCtx.ctxs.remove(self.ctx)
         if self.ctx not in _TreeCtx.ctxs:
@@ -130,7 +128,7 @@ class _TreeCtx(object):
 class _DBI_ITM_INT(_C.Structure):
 
     """ Ctype structure class for making calls into _TreeGetDbi() for integer values """
-    
+
     _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.POINTER(_C.c_int32)),
               ("retlen",_C.c_void_p),
               ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
@@ -166,17 +164,17 @@ class _DBI_ITM_CHAR(_C.Structure):
         self.retlen2=_C.c_void_p(0)
 
 class Tree(object):
-    
+
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=_threading.RLock()
     _id=0
 
-	# support for the with-structure
+    # support for the with-structure
     def __enter__(self):
         """ referenced if using "with Tree() ... " block"""
         return self
-    
+
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. If tree is open for edit close it. """
         if self.open_for_edit:
@@ -187,12 +185,15 @@ class Tree(object):
     def name(self):
         "Tree name"
         return self.getDbi("name")
+    treename=name
+    expt=name
+    #tree=name
 
     @property
     def shotid(self):
         "Shot number of tree"
         return self.getDbi("shotid")
-    shot=shotid
+    #shot=shotid
 
     @property
     def modified(self):
@@ -242,21 +243,16 @@ class Tree(object):
     def versions_in_pulse(self):
         "Support versioning of data in pulse. (settable)"
         return self.getDbi("versions_in_pulse")
-    @versions_in_model.setter
+    @versions_in_pulse.setter
     def versions_in_pulse(self,value):
         self.setDbi("versions_in_pulse",value)
-
-    @property
-    def tree(self):
-        "name of tree"
-        return self.getDbi("name")
 
     def getDbi(self,itemname):
 
         """
-Get tree information such as:
+        Get tree information such as:
 
-        tree/treename/name - name of the tree
+        treename/name/expt - name of the tree
         shotid/shot        - shot number
         default/pwd        - default node
         modified           - true if modified during edit
@@ -266,14 +262,14 @@ Get tree information such as:
         versions_in_pulse  - true if data versions is enabled in the pulse
 
         itemname can be a single string or a list/tuple of strings
-"""
+        """
         if isinstance(itemname,(list,tuple)):
             ans={}
             for item in itemname:
                 ans[item]=self.getDbi(item)
             return ans
         else:
-            itemlist={'TREE':(1,str,12),'TREENAME':(1,str,12),'NAME':(1,str,12),
+            itemlist={'NAME':(1,str,12),'EXPT':(1,str,12),
                       'SHOTID':(2,int),'SHOT':(2,int),
                       'MODIFIED':(3,bool),
                       'OPEN_FOR_EDIT':(4,bool),
@@ -297,7 +293,7 @@ Get tree information such as:
                 status=_TreeShr._TreeGetDbi(self.ctx,
                                             _C.pointer(itmlst))
                 if not (status & 1):
-                    raise _statToEx(status)
+                    raise _exceptions.statusToException(status)
             finally:
                 Tree.unlock()
             if item[1] is str:
@@ -305,6 +301,10 @@ Get tree information such as:
             else:
                 return item[1](ans.value)
 
+    @property
+    def top(self):  # compatibility
+        "Tree root"
+        return TreeNode(0,self)
     def __getattr__(self,name):
 
         """Support for referencing an immediate child or
@@ -317,12 +317,12 @@ Get tree information such as:
         If the tree has a top leve child or member with
         the name "NODENAME" t.NODENAME will return a
         TreeNode instance."""
-        
+
         if name.upper() == name:
             try:
                 return self.getNode(name)
             except:
-                raise AttributeError('No such attribute: '+name)
+                pass
         raise AttributeError('No such attribute: '+name)
 
     @classmethod
@@ -356,9 +356,9 @@ Get tree information such as:
                     ctx=_getActiveTree()
                 else:
                     _TreeShr.TreeSwitchDbid(ctx)
-                    
+
                 if ctx is None:
-                    raise _Exceptions.TreeNOT_OPEN()
+                    raise _exceptions.TreeNOT_OPEN()
                 else:
                     self.ctx=ctx
             else:
@@ -386,12 +386,14 @@ Get tree information such as:
                 else:
                     raise AttributeError('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
                 if not status & 1:
-                    raise _statToEx(status)
+                    raise _exceptions.statusToException(status)
             if isinstance(self.ctx,_C.c_void_p) and self.ctx.value is not None:
                 _setActiveTree(self.ctx.value)
                 _TreeShr.TreeSwitchDbid(self.ctx)
                 if tree is not None:
                     self.tctx=_TreeCtx(self.ctx.value)
+            self.tree = self.name
+            self.shot = self.shotid
         finally:
             _hard_lock.release()
 
@@ -429,7 +431,7 @@ Get tree information such as:
                                               _ver.tobytes(model),
                                               _C.pointer(nid))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
         return TreeNode(nid.value, self)
@@ -460,7 +462,7 @@ Get tree information such as:
                                                    _C.pointer(nid),
                                                    _C.c_int32(usagenum))
                 if not status & 1:
-                    raise _statToEx(status)
+                    raise _exceptions.statusToException(status)
             except KeyError:
                 raise KeyError('Invalid usage must be one of: %s' % list(_usage_table.keys()))
         finally:
@@ -480,7 +482,7 @@ Get tree information such as:
                                                  _C.c_int32(0),
                                                  _C.c_void_p(0))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -505,10 +507,10 @@ Get tree information such as:
                                                             node._nid,
                                                             reset)
                 if not status & 1:
-                    raise _statToEx(status)
+                    raise _exceptions.statusToException(status)
             status = _TreeShr._TreeDeleteNodeExecute(self.ctx)
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -524,14 +526,13 @@ Get tree information such as:
                                                _C.c_int32(int(shot)),
                                                _C.c_int32(1))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
     def dir(self):
         """list descendants of top"""
-        TreeNode(0,self).dir()
-
+        self.top.dir()
 
     def edit(self):
         """Open tree for editing.
@@ -542,7 +543,7 @@ Get tree information such as:
                                             _C.c_char_p(_ver.tobytes(self.tree)),
                                             _C.c_int32(int(self.shot)))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -588,13 +589,13 @@ Get tree information such as:
         """
         Tree.lock()
         try:
-            shot=_TreeShr._TreeGetCurrentShotId(_ver.tobytes(treename))
+            shot=_TreeShr.TreeGetCurrentShotId(_ver.tobytes(treename))
         finally:
             Tree.unlock()
         if shot==0:
-            raise _Exceptions.TreeNOCURRENT()
+            raise _exceptions.TreeNOCURRENT()
         return shot
- 
+
     def getDefault(self):
         """Return current default TreeNode
         @return: Current default node
@@ -607,7 +608,7 @@ Get tree information such as:
             if status & 1:
                 ans = TreeNode(nid.value,self)
             else:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
         return ans
@@ -631,7 +632,7 @@ Get tree information such as:
                 if status & 1:
                     ans = TreeNode(int(n.value),self)
                 else:
-                    raise _statToEx(status)
+                    raise _exceptions.statusToException(status)
             finally:
                 Tree.unlock()
         return ans
@@ -688,10 +689,10 @@ Get tree information such as:
         @return: Reference date for retrieving data is versions enabled
         @rtype: str
         """
-        df=_C.c_ulonglong(0)
+        dt=_C.c_ulonglong(0)
         status = _TreeShr._TreeGetViewDate(dt)
         if not status & 1:
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
         return _scalar.Uint64(dt.value).date
 
     def isModified(self):
@@ -733,7 +734,7 @@ Get tree information such as:
                                                 _C.c_char_p(_ver.tobytes(self.tree)),
                                                 _C.c_int32(int(self.shot)))
                 if not status & 1:
-                    raise _statToEx(status)
+                    raise _exceptions.statusToException(status)
             finally:
                 Tree.unlock()
 
@@ -748,7 +749,7 @@ Get tree information such as:
             status = _TreeShr._TreeRemoveTag(self.ctx,
                                              _C.c_char_p(_ver.tobytes(tag)))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -780,7 +781,7 @@ Get tree information such as:
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
 
     def setDefault(self,node):
         """Set current default TreeNode.
@@ -797,7 +798,7 @@ Get tree information such as:
                     status = _TreeShr._TreeSetDefaultNid(self.ctx,
                                                       node._nid)
                     if not status & 1:
-                        raise _statToEx(status)
+                        raise _exceptions.statusToException(status)
                 finally:
                     Tree.unlock()
             else:
@@ -818,13 +819,13 @@ Get tree information such as:
         @rtype: None
         """
         begin = _mdsshr.DateToQuad(begin)
-        end = _mdsshr.DateToQuad(begin)
+        end = _mdsshr.DateToQuad(end)
         delta = _data.makeData(delta)
         status = _TreeShr.TreeSetTimeContext(_C.pointer(begin.descriptor),
-                                             _C.pointer(begin.descriptor),
+                                             _C.pointer(end.descriptor),
                                              _C.pointer(delta.descriptor))
         if not status & 1:
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
 
     @staticmethod
     def setVersionDate(date):
@@ -836,7 +837,7 @@ Get tree information such as:
         """
         status = _TreeShr.TreeSetViewDate(_C.pointer(_C.c_int64(_mdsshr.DateToQuad(date).data())))
         if not status & 1:
-            raise _statToExs(status)
+            raise _exceptions._exceptions.statusToExceptions(status)
 
     def setVersionsInModel(self,flag):
         """Enable/Disable versions in model
@@ -885,7 +886,7 @@ Get tree information such as:
                                              _C.c_char_p(_ver.tobytes(self.tree)),
                                              _C.c_int32(int(self.shot)))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -895,11 +896,11 @@ Get tree information such as:
         """
         Tree.lock()
         try:
-             status = _TreeShr._TreeCleanDatafile(self.ctx,
-                                                  _C.c_char_p(_vers.tobytes(self.tree)),
+             status = _TreeShr._TreeCleanDatafile(0,
+                                                  _C.c_char_p(_ver.tobytes(self.tree)),
                                                   _C.c_int32(int(self.shot)))
              if not status & 1:
-                 raise _statToEx(status)
+                 raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -909,11 +910,11 @@ Get tree information such as:
         """
         Tree.lock()
         try:
-            status = _TreeShr._TreeCompressDatafile(self.ctx,
-                                                    _C.c_char_p(_vers.tobytes(self.tree)),
+            status = _TreeShr._TreeCompressDatafile(0,
+                                                    _C.c_char_p(_ver.tobytes(self.tree)),
                                                     _C.c_int32(int(self.shot)))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -974,7 +975,7 @@ class TreeNode(object):
             return self.getNci(name,False)
         setattr(get,'__doc__',doc)
         return property(get)
-    
+
     brother=nciProp("brother","brother node of this node")
 
     child=nciProp("child","child node of this node")
@@ -1112,8 +1113,7 @@ class TreeNode(object):
     no_write_shot=nciProp("no_write_shot",
                           "is storing data in this node disabled if not model tree (settable)")
     @no_write_shot.setter
-
-    def no_write_shot(self,value): set.setNoWriteShot(value)
+    def no_write_shot(self,value): self.setNoWriteShot(value)
     number_of_children=nciProp("number_of_children","number of children")
 
     @property
@@ -1130,7 +1130,7 @@ class TreeNode(object):
         "Is this node turned on (settable)"
         return self.isOn()
     @on.setter
-    def set_on(self,value): self.setOn(value)
+    def on(self,value): self.setOn(value)
 
     original_part_name=nciProp("original_part_name","original part name of this node")
 
@@ -1153,7 +1153,11 @@ class TreeNode(object):
         "Data contents of node (settable)"
         return self.getRecord()
     @record.setter
-    def record(self,value): self.putData(value)
+    def record(self,value):
+        self.putData(value)
+
+    def data(self):
+        return self.record.data()
 
     rfa=nciProp("rfa","data offset in datafile")
 
@@ -1211,7 +1215,7 @@ class TreeNode(object):
     compress_segments=nciProp("compress_segments","should segments be compressed (settable)")
     @compress_segments.setter
     def compress_segments(self,value): self.setCompressSegments(value)
-    
+
     ########################################
     ### End of Node Properties
     ########################################
@@ -1246,6 +1250,8 @@ class TreeNode(object):
                 return self.getNode(name)
             except:
                 pass
+        else:
+            return self.record.__getattr__(name)
         raise AttributeError('Attribute %s is not defined' % (name,))
 
     def __repr__(self):
@@ -1263,9 +1269,8 @@ class TreeNode(object):
     def __str__(self):
       """Convert TreeNode to string."""
       if self._nid is None:
-        ans="NODEREF(*)"
-      else:
-        return str(self.path)
+          return "NODEREF(*)"
+      return str(self.path)
 
     def addDevice(self,name,model):
         """Add device descendant.
@@ -1308,15 +1313,14 @@ class TreeNode(object):
         Use replace=True if any existing tags should be removed.
         Tag names must be either a str or a list or tuple
         containing str instances."""
-        ok=True
+        def checkstr(s):
+            if not isinstance(s,str):
+                raise TypeError("Tag names must be a string or list of strings")
         if isinstance(names,(list,tuple)):
             for name in names:
-                if not isinstance(name,str):
-                    ok=False
-        elif not isinstance(names,str):
-            ok=False
-        if not ok:
-            raise TypeError("Tag names must be a string or list of strings")
+                checkstr(name)
+        else:
+            checkstr(names)
         if replace:
             for name in self.tags:
                 self.removeTag(name)
@@ -1338,7 +1342,7 @@ class TreeNode(object):
                                          self._nid,
                                          _C.c_char_p(str.encode(tag)))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -1366,7 +1370,7 @@ class TreeNode(object):
         finally:
           Tree.unlock()
         if (status & 1) == 0:
-          raise TreeException("Error beginning segment: %s" % _data.getStatusMsg(status))
+          raise _exceptions.TreeException("Error beginning segment: %s" % _data.getStatusMsg(status))
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
@@ -1380,12 +1384,12 @@ class TreeNode(object):
           Tree.lock()
           status=_TreeShr._TreeBeginTimestampedSegment(self.tree.ctx,
                                                        self._nid,
-                                                       _C.pointer(_data.makeData(value).descriptor),
+                                                       _C.pointer(_data.makeData(array).descriptor),
                                                        _C.c_int32(idx))
         finally:
           Tree.unlock()
         if (status & 1)==0:
-          raise TreeException("Error beginning timestamped segment: %s" % _data.getStatusMsg(status))
+          raise _exceptions.TreeException("Error beginning timestamped segment: %s" % _data.getStatusMsg(status))
 
     def compare(self,value):
         """Returns True if this node contains the same data as specified in the value argument
@@ -1400,7 +1404,7 @@ class TreeNode(object):
         else:
           try:
             ans=value.compare(self.record)
-          except _Exceptions.treeshrExceptions.TreeNODATA:
+          except _exceptions.treeshrExceptions.TreeNODATA:
             ans=value is None
         return ans
 
@@ -1446,9 +1450,9 @@ class TreeNode(object):
             raise TreeNodeException("Node does not contain an action description")
         else:
             if wait:
-                status=_data.Data.execute("tcl('dispatch/wait "+str(self.fullpath).replace('\\','\\\\')+"')")
+                status=_mdsdcl.tcl("dispatch/wait "+str(self.fullpath))
             else:
-                status=_data.Data.execute("tcl('dispatch/nowait "+str(self.fullpath).replace('\\','\\\\')+"')")
+                status=_mdsdcl.tcl("dispatch/wait "+str(self.fullpath))
             if not (status & 1):
                 raise TreeNodeException(status)
 
@@ -1466,7 +1470,7 @@ class TreeNode(object):
             arglist=[self.tree.ctx,
                      _C.pointer(_scalar.Int32(self.nid).descriptor),
                      _C.pointer(_scalar.String(method).descriptor)]
-            ans_d=descriptor_xd()
+            ans_d=descriptor.descriptor_xd()
             for arg in args:
                 arglist.append(_C.pointer(_data.makeData(arg).descriptor))
             arglist.append(_C.pointer(ans_d))
@@ -1475,7 +1479,7 @@ class TreeNode(object):
             if (status & 1):
                 return ans_d.value
             else:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
         return
@@ -1545,10 +1549,12 @@ class TreeNode(object):
                                            self._nid,_C.pointer(xd))
             if (status & 1):
                 return xd.value
-            elif len(altvalue)==1 and status == _Exceptions.treeshrExceptions.TreeNODATA.status:
+            elif len(altvalue)==1 and status == _exceptions.treeshrExceptions.TreeNODATA.status:
                 return altvalue[0]
             else:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
+        except _exceptions.MDSplusException:
+            raise  # no need for traceback as this is expected to happen
         except Exception:
             import traceback
             traceback.print_exc()
@@ -1654,9 +1660,9 @@ class TreeNode(object):
                        ("code%d"%idx,_C.c_ushort),
                        ("pointer%d"%idx,_C.c_void_p),
                        ("retlen%d"%idx,_C.POINTER(_C.c_int32))]
-                
+
         def __init__(self,items):
-            retlens=(_C.c_uint16*50)()
+            self.retlens=(_C.c_uint16*50)()  # TODO: purpose? "self." was missing unused?
             self.ans=list()
             self.retlen=list()
             self.rettype=list()
@@ -1696,7 +1702,6 @@ class TreeNode(object):
             items=list(items)
         elif not isinstance(items,list):
             raise TypeError("items must be a list,tuple or str")
-        real_items=list()
         flag_items=list()
         flags=None
         ans=dict()
@@ -1837,7 +1842,7 @@ class TreeNode(object):
         if (status & 1):
             return num.value
         else:
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
 
     def getOriginalPartName(self):
         """Return the original part name of node in conglomerate
@@ -1886,7 +1891,7 @@ class TreeNode(object):
             if (status & 1):
                 return _compound.Signal(value.value,None,dim.value)
             else:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         else:
             return None
 
@@ -1925,7 +1930,7 @@ class TreeNode(object):
             else:
                 return None
         else:
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
 
     def getSegmentEnd(self,idx):
         """return end of segment
@@ -1982,23 +1987,22 @@ class TreeNode(object):
         try:
             ctx=_C.c_void_p(0)
             tags=list()
-            done=False
             fnt=_TreeShr._TreeFindNodeTags
             fnt.restype=_C.c_void_p
-            while not done:
+            while True:
                 tag_ptr=_TreeShr._TreeFindNodeTags(self.tree.ctx,
                                                    self._nid,
                                                    _C.pointer(ctx))
-                try:
-                    tags.append(_ver.tostr(_C.cast(tag_ptr,_C.c_char_p).value.rstrip()))
-                    _TreeFree(tag_ptr)
-                except:
-                    done=True
-            tags = _array.makeArray(tags).astype(_ver.npstr)
-            return tags
+                value = _C.cast(tag_ptr,_C.c_char_p).value
+                if value is None:
+                    break;
+                tags.append(_ver.tostr(value.rstrip()))
+                _TreeShr.TreeFree(_C.c_void_p(tag_ptr))
         finally:
             Tree.unlock()
-        return ans
+        tags = _array.makeArray(tags).astype(_ver.npstr)
+        return tags
+
 
     def getTree(self):
         """Return Tree associated with this node
@@ -2163,13 +2167,13 @@ class TreeNode(object):
         """
         Tree.lock()
         try:
-            if isinstance(initialValue,_compound.Compound):
+            if isinstance(valueArray,_compound.Compound):
                 status=_TreeShr._TreeMakeSegment(self.tree.ctx,
                                                  self._nid,
                                                  _C.pointer(_data.makeData(start).descriptor),
                                                  _C.pointer(_data.makeData(end).descriptor),
                                                  _C.pointer(_data.makeData(dimension).descriptor),
-                                                 _C.pointer(_data.makeData(initialValue).descriptor),
+                                                 _C.pointer(_data.makeData(valueArray).descriptor),
                                                  _C.c_int32(idx),_C.c_int32(1))
             else:
                 status=_TreeShr._TreeMakeSegment(self.tree.ctx,
@@ -2177,13 +2181,13 @@ class TreeNode(object):
                                                  _C.pointer(_data.makeData(start).descriptor),
                                                  _C.pointer(_data.makeData(end).descriptor),
                                                  _C.pointer(_data.makeData(dimension).descriptor),
-                                                 _C.pointer(_data.makeData(initialValue).descriptor),
+                                                 _C.pointer(_data.makeData(valueArray).descriptor),
                                                  _C.c_int32(idx),
-                                                 _C.c_int32(initialValue.shape[0]))
+                                                 _C.c_int32(valueArray.shape[0]))
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
 
     def move(self,parent,newname=None):
         """Move node to another location in the tree and optionally rename the node
@@ -2194,18 +2198,17 @@ class TreeNode(object):
         @rtype: None
         """
         if newname is None:
-            newname=str(self.node_name)
-        if self.usage=='SUBTREE' or self.usage=='STRUCTURE':
-            delim="."
-        else:
-            delim=":"
+            newname = _ver.tostr(self.node_name)
+        newpath = _ver.tostr(parent.path)
+        newpath+= "." if self.isChild() else ":"
+        newpath+= newname
         Tree.lock()
         try:
             status = _TreeShr._TreeRenameNode(self.tree.ctx,
                                               self._nid,
-                                              _ver.tobytes(name))
+                                              _ver.tobytes(newpath))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -2217,13 +2220,17 @@ class TreeNode(object):
         """
         Tree.lock()
         try:
-            if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
-                value=value.__fixTreeReferences__(self.tree)
+            if value is None:
+                ptr = _C.c_void_p(0)
+            else:
+                if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(self.tree):
+                    value=value.__fixTreeReferences__(self.tree)
+                ptr = _C.pointer(_data.makeData(value).descriptor)
             status=_TreeShr._TreePutRecord(self.tree.ctx,
                                            self._nid,
-                                           _C.pointer(_data.makeData(value).descriptor),0)
+                                           ptr,0)
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -2245,7 +2252,7 @@ class TreeNode(object):
                                         _C.c_void_p(_scalar.Uint64(timestamp).descriptor.pointer),
                                         _C.pointer(_array.makeArray(array).descriptor))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -2262,9 +2269,9 @@ class TreeNode(object):
             status=_TreeShr._TreePutSegment(self.tree.ctx,
                                             self._nid,
                                             _C.c_int32(idx),
-                                            _C.pointer(_data.makeData(value).descriptor))
+                                            _C.pointer(_data.makeData(data).descriptor))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -2277,15 +2284,15 @@ class TreeNode(object):
         @rtype: None
         """
         timestampArray=_array.Uint64Array(timestampArray)
-        value=_array.makeArray(value)
+        array=_array.makeArray(array)
         Tree.lock()
         try:
-            status=_TreeShr._TreePutTimestampedSegment(n.tree.ctx,
+            status=_TreeShr._TreePutTimestampedSegment(self.tree.ctx,
                                                self._nid,
                                                _C.c_void_p(_data.makeData(timestampArray).descriptor.pointer),
-                                               _C.pointer(_data.makeData(value).descriptor))
+                                               _C.pointer(_data.makeData(array).descriptor))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -2305,12 +2312,12 @@ class TreeNode(object):
         try:
             status=_TreeShr._TreeMakeTimestampedSegment(self.tree.ctx,
                                                         self._nid,
-                                                        _data.makeData(timestamps).descriptor.pointer,
-                                                        _C.pointer(_data.makeData(value).descriptor),
+                                                        _data.makeData(timestampArray).descriptor.pointer,
+                                                        _C.pointer(_data.makeData(array).descriptor),
                                                         _C.c_int32(idx),
                                                         _C.c_int32(rows_filled))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
@@ -2325,7 +2332,7 @@ class TreeNode(object):
             n=self.tree.getNode('\\'+tag)
             if n.nid != self.nid:
                 raise TreeNodeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),tag,str(n)))
-        except _Exceptions.TreeNNF:
+        except _exceptions.TreeNNF:
             raise TreeNodeException("Tag %s is not defined" % (tag,))
         self.tree.removeTag(tag)
         return self
@@ -2339,19 +2346,19 @@ class TreeNode(object):
         if newname.find(':') >=0 or newname.find('.') >= 0:
             raise TreeNodeException("Invalid node name, do not include path delimiters in nodename")
         try:
-            node.tree.lock()
+            self.tree.lock()
             olddefault=self.tree.default
             self.tree.setDefault(self.parent)
             if self.isChild():
                 newname="."+_ver.tostr(newname)
-            status = _TreeShr._TreeRenameNode(node.tree.ctx,
-                                              node._nid,
-                                              _C.c_char_p(_ver.tobytes(name)))
+            status = _TreeShr._TreeRenameNode(self.tree.ctx,
+                                              self._nid,
+                                              _C.c_char_p(_ver.tobytes(newname)))
             if not (status & 1):
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             self.tree.setDefault(olddefault)
-            node.tree.unlock()
+            self.tree.unlock()
         return self
 
     def restoreContext(self):
@@ -2385,7 +2392,7 @@ class TreeNode(object):
         finally:
           Tree.unlock()
         if not (status & 1):
-            raise _statToEx(status)
+            raise _exceptions.statusToException(status)
 
     def setCompressOnPut(self,flag):
         """Set compress on put state of this node
@@ -2413,7 +2420,7 @@ class TreeNode(object):
 
     def setIncludeInPulse(self,flag):
         """Set include in pulse state of this node
-        @param flag: State to set the include in pulse characteristic. 
+        @param flag: State to set the include in pulse characteristic.
         If true and this node is the top node of a subtree the subtree will be included in the pulse.
         @type flag: bool
         @rtype: original type
@@ -2422,7 +2429,7 @@ class TreeNode(object):
 
     def setNoWriteModel(self,flag):
         """Set no write model state for this node
-        @param flag: State to set the no write in model characteristic. 
+        @param flag: State to set the no write in model characteristic.
         If true then no data can be stored in this node in the model.
         @type flag: bool
         @rtype: original type
@@ -2431,7 +2438,7 @@ class TreeNode(object):
 
     def setNoWriteShot(self,flag):
         """Set no write shot state for this node
-        @param flag: State to set the no write in shot characteristic. 
+        @param flag: State to set the no write in shot characteristic.
         If true then no data can be stored in this node in a shot file.
         @type flag: bool
         @rtype: original type
@@ -2440,7 +2447,7 @@ class TreeNode(object):
 
     def setOn(self,flag):
         """Turn node on or off
-        @param flag: State to set the on characteristic. 
+        @param flag: State to set the on characteristic.
         If true then the node is turned on. If false the node is turned off.
         @type flag: bool
         @rtype: None
@@ -2454,14 +2461,17 @@ class TreeNode(object):
                 status=_TreeShr._TreeTurnOff(self.tree.ctx,
                                              self._nid)
             if not (status & 1):
-                raise _statToEx(status)
+                if (status==_exceptions.TreeLOCK_FAILURE.status):
+                    print(_exceptions.TreeLOCK_FAILURE.message)
+                else:
+                    raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
 
 
     def setSubtree(self,flag):
         """Enable/Disable node as a subtree
-        @param flag: True to make node a subtree reference. 
+        @param flag: True to make node a subtree reference.
         Node must be a child node with no descendants.
         @type flag: bool
         @rtype: original type
@@ -2475,7 +2485,7 @@ class TreeNode(object):
                 status = _TreeShr._TreeSetNoSubtree(self.tree.ctx,
                                                     self._nid)
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
         return self
@@ -2496,7 +2506,7 @@ class TreeNode(object):
                                             self._nid,
                                             _C.c_int32(usagenum))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock()
         return self
@@ -2536,10 +2546,10 @@ class TreeNode(object):
                                                  self._nid,
                                                  _C.pointer(_data.makeData(start).descriptor),
                                                  _C.pointer(_data.makeData(end).descriptor),
-                                                 _C.pointer(_data.makeData(dimension).descriptor),
+                                                 _C.pointer(_data.makeData(dim).descriptor),
                                                  _C.c_int32(idx))
             if not status & 1:
-                raise _statToEx(status)
+                raise _exceptions.statusToException(status)
         finally:
             Tree.unlock
 
@@ -2547,7 +2557,7 @@ class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
 
     dtype_id = 193
-    
+
     def __init__(self,path,tree=None):
         self.tree_path=str(path);
         if tree is None:
@@ -2584,22 +2594,24 @@ class TreePath(TreeNode):
     @classmethod
     def fromDescriptor(cls,d):
         return cls(_ver.tostr(_C.cast(d.pointer,_C.POINTER(_C.c_char*d.length)).contents.value))
-        
 
-class TreeNodeArray(_data.Data):
+
+class TreeNodeArray(_array.Int32Array):
     def __init__(self,nids,tree=None):
-        self.nids=nids
+        if isinstance(nids,_C.Array):
+            try:
+                nids=_N.ctypeslib.as_array(nids)
+            except Exception:
+                pass
+        nids = _N.array(nids)
+        if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
+            nids = nids.reshape(1)
+        self._value = nids.__array__(_N.int32)
         if tree is None:
             self.tree=Tree()
         else:
             self.tree=tree
 
-    def __eq__(self,y):
-        return(_N.array(self.nids,dtype=_N.uint32)==_N.array(y.nids,dtype=_N.uint32))
-
-    def __len__(self):
-        return len(self.nids)
-    
     def __getitem__(self,n):
         """Return TreeNode from mdsarray. array[n]
         @param n: Index into array beginning with index 0
@@ -2607,7 +2619,7 @@ class TreeNodeArray(_data.Data):
         @return: node
         @rtype: TreeNode
         """
-        return TreeNode(self.nids[n],self.tree)
+        return TreeNode(self._value[n],self.tree)
 
     def restoreContext(self):
         self.tree.restoreContext()
@@ -2903,7 +2915,7 @@ class Device(TreeNode):
         parent = tree
         if isinstance(tree, TreeNode): tree = tree.tree
         cls.__class_init__()
-        _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
+        _TreeShr._TreeStartConglomerate(tree.ctx,len(cls.parts)+1)
         if isinstance(name,_ident.Ident):
             name=name.data()
         head=parent.addNode(name,'DEVICE')
@@ -2912,8 +2924,6 @@ class Device(TreeNode):
             import_string="from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__)
         except:
             import_string=None
-
-
         head.record=_compound.Conglom('__python__',cls.__name__,None,import_string)
         head.write_once=True
         import MDSplus
@@ -2935,7 +2945,7 @@ class Device(TreeNode):
             if 'options' in elt:
                 for option in elt['options']:
                     node.__setattr__(option,True)
-        _treeshr.TreeEndConglomerate(tree)
+        _TreeShr._TreeEndConglomerate(tree.ctx)
         return head
 
 
@@ -2968,11 +2978,9 @@ class Device(TreeNode):
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
             MDSplusWidget.doToAll(window,"reset")
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            print( e)
-            raise Exception("No setup available, %s" % (str(e),))
+        except Exception as exc:
+            print(exc)
+            raise Exception("No setup available, %s" % (str(exc),))
 
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()
@@ -2999,13 +3007,13 @@ class Device(TreeNode):
         'model'.py in the MDS_PYDEVICE_PATH environment variable search list."""
 
         import __builtin__
-        import sys
+        import sys,os
         check_name=name.lower()+".py"
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
+        if "MDS_PYDEVICE_PATH" in os.environ:
+            path=os.environ["MDS_PYDEVICE_PATH"]
             parts=path.split(';')
             for part in parts:
-                w=_os.walk(part)
+                w=os.walk(part)
                 for dp,dn,fn in w:
                     for fname in fn:
                         if fname.lower() == check_name:
@@ -3021,29 +3029,33 @@ class Device(TreeNode):
         """Find all device support modules in the MDS_PYDEVICE_PATH environment variable search list."""
         ans=list()
         import __builtin__
-        import sys
-        if "MDS_PYDEVICE_PATH" in _os.environ:
-            path=_os.environ["MDS_PYDEVICE_PATH"]
+        import sys,os
+        if "MDS_PYDEVICE_PATH" in os.environ:
+            path=os.environ["MDS_PYDEVICE_PATH"]
             parts=path.split(';')
             for part in parts:
-                w=_os.walk(part)
-                for dp,dn,fn in w:
+                for dp,dn,fn in os.walk(part):
+                    sys.path.insert(0,dp)
                     for fname in fn:
                         if fname.endswith('.py'):
-                            sys.path.insert(0,dp)
                             try:
                                 devnam=fname[:-3].upper()
-                                device=__builtin__.__import__(fname[:-3]).__dict__[devnam]
+                                __builtin__.__import__(fname[:-3]).__dict__[devnam]
                                 ans.append(devnam+'\0')
+                                """
+                          TODO: If the trailing \0 is important, it is unsave
+                                python's numpy trims the \0 is if len(item) = itemsize-1
+                                perhaps it is better to omit the \0 and trim the strings
+                                in client program
+                                """
                                 ans.append('\0')
                             except:
                                 pass
-                            finally:
-                                sys.path.remove(dp)
+                    sys.path.remove(dp)
         if len(ans) == 0:
             return None
         else:
-            return _mdsdata.Data.execute(str(ans))
+            return _mdsdata.Data.compile(str(ans))
 
 
 
@@ -3068,43 +3080,44 @@ TreeNode.NciM_PATH_REFERENCE   =0x00002000
 TreeNode.NciM_NID_REFERENCE    =0x00004000
 TreeNode.NciM_INCLUDE_IN_PULSE =0x00008000
 TreeNode.NciM_COMPRESS_SEGMENTS=0x00010000
-    
+
+TreeNode.NciK_IS_CHILD         =1
+TreeNode.NciK_IS_MEMBER        =2
+
 TreeNode.NciEND_OF_LIST        =(0,_C.c_void_p,4,None)
 TreeNode.NciSET_FLAGS          =(1,_C.c_int32,4,_scalar.Uint32)
 TreeNode.NciCLEAR_FLAGS        =(2,_C.c_int32,4,_scalar.Uint32)
 TreeNode.NciTIME_INSERTED      =(4,_C.c_uint64,8,_scalar.Uint64)
-TreeNode.NciOWNER_ID	          =(5,_C.c_int32,4,_scalar.Uint8)
-TreeNode.NciCLASS	          =(6,_C.c_uint8,1,_scalar.Uint8)
-TreeNode.NciDTYPE	          =(7,_C.c_uint8,1,_scalar.Uint8)
-TreeNode.NciLENGTH	          =(8,_C.c_int32,4,_scalar.Int32)
-TreeNode.NciSTATUS	          =(9,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciCONGLOMERATE_ELT	  =(10,_C.c_uint16,2,_scalar.Uint16)
-TreeNode.NciGET_FLAGS	  =(12,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciNODE_NAME	  =(13,_C.c_char_p,13,_scalar.String)
-TreeNode.NciPATH		  =(14,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciDEPTH		  =(15,_C.c_int32,4,_scalar.Int32)
-TreeNode.NciPARENT		  =(16,_C.c_uint32,4,TreeNode)
-TreeNode.NciBROTHER		  =(17,_C.c_uint32,4,TreeNode)
-TreeNode.NciMEMBER		  =(18,_C.c_uint32,4,TreeNode)
-TreeNode.NciCHILD		  =(19,_C.c_uint32,4,TreeNode)
+TreeNode.NciOWNER_ID           =(5,_C.c_int32,4,_scalar.Uint8)
+TreeNode.NciCLASS              =(6,_C.c_uint8,1,_scalar.Uint8)
+TreeNode.NciDTYPE              =(7,_C.c_uint8,1,_scalar.Uint8)
+TreeNode.NciLENGTH             =(8,_C.c_int32,4,_scalar.Int32)
+TreeNode.NciSTATUS             =(9,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciCONGLOMERATE_ELT   =(10,_C.c_uint16,2,_scalar.Uint16)
+TreeNode.NciGET_FLAGS          =(12,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciNODE_NAME          =(13,_C.c_char_p,13,_scalar.String)
+TreeNode.NciPATH               =(14,_C.c_char_p,1024,_scalar.String)
+TreeNode.NciDEPTH              =(15,_C.c_int32,4,_scalar.Int32)
+TreeNode.NciPARENT             =(16,_C.c_uint32,4,TreeNode)
+TreeNode.NciBROTHER            =(17,_C.c_uint32,4,TreeNode)
+TreeNode.NciMEMBER             =(18,_C.c_uint32,4,TreeNode)
+TreeNode.NciCHILD              =(19,_C.c_uint32,4,TreeNode)
 TreeNode.NciPARENT_RELATIONSHIP=(20,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciK_IS_CHILD         =1
-TreeNode.NciK_IS_MEMBER        =2
 TreeNode.NciCONGLOMERATE_NIDS  =(21,_C.c_uint32*1024,1024*4,TreeNodeArray)
 TreeNode.NciORIGINAL_PART_NAME =(22,_C.c_char_p,1024,_scalar.String)
 TreeNode.NciNUMBER_OF_MEMBERS  =(23,_C.c_uint32,4,_scalar.Uint32)
 TreeNode.NciNUMBER_OF_CHILDREN =(24,_C.c_uint32,4,_scalar.Uint32)
 TreeNode.NciMEMBER_NIDS        =(25,_C.c_uint32*4096,4096*4,TreeNodeArray)
 TreeNode.NciCHILDREN_NIDS      =(26,_C.c_uint32*4096,4096*4,TreeNodeArray)
-TreeNode.NciFULLPATH		  =(27,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciMINPATH		  =(28,_C.c_char_p,1024,_scalar.String)
-TreeNode.NciUSAGE		  =(29,_C.c_uint8,1,_scalar.Uint8)
-TreeNode.NciPARENT_TREE	  =(30,_C.c_char_p,13,_scalar.String)
-TreeNode.NciRLENGTH	 	  =(31,_C.c_int32,4,_scalar.Int32)
-TreeNode.NciNUMBER_OF_ELTS	  =(32,_C.c_uint32,4,_scalar.Uint32)
-TreeNode.NciDATA_IN_NCI	  =(33,_C.c_bool,4,bool)
+TreeNode.NciFULLPATH           =(27,_C.c_char_p,1024,_scalar.String)
+TreeNode.NciMINPATH            =(28,_C.c_char_p,1024,_scalar.String)
+TreeNode.NciUSAGE              =(29,_C.c_uint8,1,_scalar.Uint8)
+TreeNode.NciPARENT_TREE        =(30,_C.c_char_p,13,_scalar.String)
+TreeNode.NciRLENGTH            =(31,_C.c_int32,4,_scalar.Int32)
+TreeNode.NciNUMBER_OF_ELTS     =(32,_C.c_uint32,4,_scalar.Uint32)
+TreeNode.NciDATA_IN_NCI        =(33,_C.c_bool,4,bool)
 TreeNode.NciERROR_ON_PUT       =(34,_C.c_uint32,4,bool)
-TreeNode.NciRFA		  =(35,_C.c_uint64,8,_scalar.Uint64)
+TreeNode.NciRFA                =(35,_C.c_uint64,8,_scalar.Uint64)
 TreeNode.NciIO_STATUS          =(36,_C.c_uint32,4,_scalar.Uint32)
 TreeNode.NciIO_STV             =(37,_C.c_uint32,4,_scalar.Uint32)
 TreeNode.NciDTYPE_STR          =(38,_C.c_char_p,64,_scalar.String)
