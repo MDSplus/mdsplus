@@ -65,23 +65,3 @@ EXPORT int TreeUsingPrivateCtx(){
   TreeThreadStatic *p = TreeGetThreadStatic();
   return p->privateCtx;
 }
-
-void LockTreeMutex(pthread_mutex_t * mutex, int *initialized){
-  if (!*initialized) {
-#ifdef HAVE_PTHREADS_H
-    pthread_mutexattr_t m_attr;
-    pthread_mutexattr_init(&m_attr);
-#ifndef xxxx__sun
-    pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-#endif
-    pthread_mutex_init(mutex, &m_attr);
-    pthread_mutexattr_destroy(&m_attr);
-#endif
-    *initialized = 1;
-  }
-  pthread_mutex_lock(mutex);
-}
-
-void UnlockTreeMutex(pthread_mutex_t * mutex){
-  pthread_mutex_unlock(mutex);
-}

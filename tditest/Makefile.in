@@ -16,5 +16,5 @@ clean :
 	@ $(RM) @MAKEBINDIR@tditest$(EXE)
 
 @MAKEBINDIR@tditest$(EXE) : $(SOURCES)
-	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) $(LIBSOCKET)
+	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) $(LIBSOCKET) @LIBREADLINE@
 

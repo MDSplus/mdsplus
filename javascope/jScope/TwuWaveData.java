@@ -64,7 +64,6 @@ class TwuWaveData
           abscissa_X = new TwuSingleSignal (dp, mainSignal);
 
     }
-    public void setContinuousUpdate(boolean continuopusUpdate){}
 
     public void
     setZoom (float xmin, float xmax, int n_points)

@@ -230,8 +230,11 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
       return status;
   }
   status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
-  if STATUS_NOT_OK
+  if STATUS_NOT_OK {
     perror("Error: no response from server");
+      CleanupJob(status, jobid);
+      return status;
+  }
   if (mem)
     free(mem);
   return status;

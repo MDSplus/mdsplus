@@ -551,7 +551,8 @@ public class Signal implements WaveDataListener
         this.data = data;
         this.x_data = x_data;
         
-        
+        data.addWaveDataListener(this);
+    
         try {
             checkData(saved_xmin, saved_xmax);
             
@@ -566,7 +567,7 @@ public class Signal implements WaveDataListener
             System.out.println("Signal exception: " + exc);
 	    exc.printStackTrace();
         }
-        data.addWaveDataListener(this);
+        //data.addWaveDataListener(this);
    }
     public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal, WaveData lowErrData, WaveData upErrData)
    {

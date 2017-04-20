@@ -2,8 +2,6 @@
 extern "C" {
 #endif
 
-extern int flirRadiometricConv(void *frame, int width, int height, void *metaData);
-
 int camOpenTcpConnection(int StreamingPort, int *kSockHandle, int width, int height);  
 int camOpenTcpConnectionNew(const char *streamingServer, int StreamingPort, int *kSockHandle, int width, int height);  
 int camCloseTcpConnection(int *kSockHandle);

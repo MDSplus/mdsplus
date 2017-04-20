@@ -5,7 +5,7 @@ CC=g++
 CFLAGSmdsutils=  -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I. -I$(MDSPLUS_DIR)/include
 CFLAGSstreamutils= -c -o3 -fPIC  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -I.
 ##############
-LDFLAGSstreamutils = -shared -lrt -pthread -L../flir -lflirutils
+LDFLAGSstreamutils = -shared -lrt -pthread 
 LDFLAGSmdsutils = -shared -lrt -pthread -L$(MDSPLUS_DIR)/lib -lMdsObjectsCppShr -lMdsIpShr
 
 SOURCESstreamutils=camstreamutils.cpp 

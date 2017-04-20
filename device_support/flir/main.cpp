@@ -1,6 +1,7 @@
 #include <mdsobjects.h>
 using namespace MDSplus;
 #include <sys/time.h>
+#include <unistd.h>
 
 #include "FLIRSC65X.h"
 #include <cammdsutils.h>

@@ -356,12 +356,16 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
   return status;
 }
 
+static pthread_rwlock_t viewdate_lock = PTHREAD_RWLOCK_INITIALIZER;
 int TreeSetViewDate(int64_t * date)
 {
   if (TreeGetThreadStatic()->privateCtx)
     TreeGetThreadStatic()->ViewDate = *date;
-  else
+  else{
+    pthread_rwlock_wrlock(&viewdate_lock);
     ViewDate = *date;
+    pthread_rwlock_unlock(&viewdate_lock);
+  }
   return TreeSUCCESS;
 }
 
@@ -369,8 +373,11 @@ int TreeGetViewDate(int64_t * date)
 {
   if (TreeGetThreadStatic()->privateCtx)
     *date = TreeGetThreadStatic()->ViewDate;
-  else
+  else{
+    pthread_rwlock_rdlock(&viewdate_lock);
     *date = ViewDate;
+    pthread_rwlock_unlock(&viewdate_lock);
+  }
   return TreeSUCCESS;
 }
 

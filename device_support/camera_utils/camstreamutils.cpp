@@ -74,10 +74,6 @@ class StreamingFrame {
 
 	unsigned char *frame8bit = (unsigned char *) calloc(1, width * height * sizeof(char));
 
-    	//if ( irFrameFormat == radiometric )
-    	if ( irFrameFormat == 0 )
-        	flirRadiometricConv(frame, width, height, frameMetadata) ;
-
     	camFrameTo8bit((unsigned short *) frame, width, height, frame8bit, adjLimit, lowLim, highLim, minLim, maxLim);
 
         struct tm *tm;    //date & time used in FFMPEG_OVERLAY_***DEVICE-NAME*** file
@@ -89,7 +85,7 @@ class StreamingFrame {
         strftime(str_datetime, sizeof(str_datetime), "%d-%m-%Y  %H:%M:%S", tm);
 
         char textString[100];
-        sprintf(textString, "%s - %s - Min.:%d Max.:%d",this->deviceName, str_datetime, *lowLim, *highLim);  //text overlay example: IRCAM01 - 2017-02-06 10:08:00 - Min.:10 Max.:50
+        sprintf(textString, "%s\n%s\nMin.:%d Max.:%d",this->deviceName, str_datetime, *lowLim, *highLim);  //text overlay example: IRCAM01 - 2017-02-06 10:08:00 - Min.:10 Max.:50
 
         char filename[40];
         sprintf(filename, "FFMPEG_OVERLAY_%s.txt", this->deviceName);
