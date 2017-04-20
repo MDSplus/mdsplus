@@ -1,6 +1,6 @@
 # @configure_input@
 
-DEFAULT_CFLAGS=-g -O2
+DEFAULT_CFLAGS=-g -O3
 
 ifeq "$(NOWARN)" ""
 WARNFLAGS = @WARNFLAGS@
@@ -90,7 +90,7 @@ $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddi
 
 .DEFAULT_GOAL := all
 
-# docker build targets 
+# docker build targets
 @AX_DOCKER_BUILD_TARGETS@
 
 .PHONY: reconfigure
@@ -102,4 +102,4 @@ reconfigure: ##@miscellaneous rerun configure script again using last arguments 
 	echo ; \
 	cd '$(top_builddir)' && \
 	$(top_srcdir)/configure $(shell $(abs_top_builddir)/config.status --config);
-	
+

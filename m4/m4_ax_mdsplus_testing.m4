@@ -1,13 +1,13 @@
 
-AC_DEFUN([TS_VAR_YN], [         
+AC_DEFUN([TS_VAR_YN], [
          AS_CASE([${$1}],
                  [yes|Yes|YES|Y|y],$2,
                  [no|No|NO|N|n],$3,
-                 [*],$4 ) 
+                 [*],$4 )
           ])
 
 AC_DEFUN([TS_DEBUG_VAR],[AS_ECHO("DEBUG: $1 = ${$1}")])
- 
+
 
 dnl ////////////////////////////////////////////////////////////////////////////
 dnl /// TS WINE    /////////////////////////////////////////////////////////////
@@ -25,21 +25,21 @@ AC_DEFUN([TS_U2WPATH],\$(shell winepath -w $1 2>/dev/null))
 
 dnl compile a winepath command using specified directories
 dnl Usage: TS_WINEPATH [var],[library_dirs]
-dnl 
-AC_DEFUN([TS_WINE_LIBRARIESPATH],[         
+dnl
+AC_DEFUN([TS_WINE_LIBRARIESPATH],[
          m4_pushdef([libdir], [m4_default([$2], [${MAKESHLIBDIR}])])
          AC_PROG_SED
          AC_PROG_GREP
          AS_VAR_SET([_libs], [$(${CC} --print-search-dir | \
            ${GREP} "libraries:" | \
            ${SED} 's/^libraries: =//' | \
-           ${SED} 's/:/ /g')])          
+           ${SED} 's/:/ /g')])
          AS_VAR_APPEND([_libs],[" "])
-         
+
          AS_VAR_SET([_prog], [$(${CC} --print-search-dir | \
            ${GREP} "programs:" | \
            ${SED} 's/^programs: =//' | \
-           ${SED} 's/:/ /g')])         
+           ${SED} 's/:/ /g')])
          AS_VAR_APPEND([_libs],["${_prog} "])
 
          dnl this is a workaround for build_mingw (centos7) docker image
@@ -47,8 +47,8 @@ AC_DEFUN([TS_WINE_LIBRARIESPATH],[
          AS_VAR_APPEND([_libs],["${_sysroot}/mingw/bin "])
          AS_VAR_APPEND([_libs],["${_sysroot}/mingw/lib "])
          AS_VAR_APPEND([_libs],m4_join([" "],libdir))
-          
-         AS_VAR_SET($1) 
+
+         AS_VAR_SET($1)
          dnl // if not defined HAVE_WINEPATH search for winepath in current path //
          AS_VAR_SET_IF([HAVE_WINEPATH],,[AC_CHECK_PROG(HAVE_WINEPATH,winepath,yes,no)])
          TS_VAR_YN(HAVE_WINEPATH,[
@@ -56,7 +56,7 @@ AC_DEFUN([TS_WINE_LIBRARIESPATH],[
           AS_VAR_APPEND($1, "\$(shell winepath -w $_i 2>/dev/null);");
          done
          ]) dnl YN
-         
+
          m4_popdef([libdir])
 ])
 

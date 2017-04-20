@@ -281,12 +281,12 @@ STATIC_ROUTINE int TdiFindIdent(int search,
   if (status == LibKEYNOTFOU)
     status = TdiUNKNOWN_VAR;
   if (STATUS_OK || status == TdiUNKNOWN_VAR) {
-    if (key_ptr)
-      *key_ptr = key_dsc;
-    if (node_ptr_ptr)
-      *node_ptr_ptr = node_ptr;
-    if (block_ptr_ptr)
-      *block_ptr_ptr = block_ptr;
+    if (key_ptr)       *key_ptr       = key_dsc;
+    if (node_ptr_ptr)  *node_ptr_ptr  = node_ptr;
+    if (block_ptr_ptr) *block_ptr_ptr = block_ptr;
+  } else {
+    if (node_ptr_ptr)  *node_ptr_ptr  = NULL;
+    if (block_ptr_ptr) *block_ptr_ptr = NULL;
   }
   return status;
 }
