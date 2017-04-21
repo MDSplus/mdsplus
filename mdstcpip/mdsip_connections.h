@@ -5,12 +5,12 @@
 #include <config.h>
 #include <mdsdescrip.h>
 #ifdef _WIN32
-#ifndef __SIZE_TYPE__
-typedef int ssize_t;
-#endif
-#include <winsock2.h>
+ #ifndef __SIZE_TYPE__
+ typedef int ssize_t;
+ #endif
+ #include <winsock2.h>
 #else
-#include <sys/types.h>
+ #include <sys/types.h>
 #endif
 #include <ipdesc.h>
 #include <mds_stdarg.h>
@@ -21,9 +21,6 @@ typedef int ssize_t;
 #ifndef NULL
 #define NULL (void *)0
 #endif
-
-//#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
-//#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
 
 enum _mdsip_client_types {
   VMS_CLIENT = 1,
@@ -345,7 +342,7 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// 
+///
 /// Thread Safe version of GetAnswerInfo(), waits for the server reply as \ref
 /// Message holding a descriptor. Then it fills the descriptor info such as
 /// dtype, length, ndims and numbytes passed as a reference to the arguments.

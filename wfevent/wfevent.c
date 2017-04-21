@@ -39,7 +39,6 @@ int main(int argc, char **argv)
 {
   int len;
   char data[MAXDATA];
-  int opt;
   int showdata = 0;
   int timeout = 0;
   char *event;
@@ -81,6 +80,7 @@ int main(int argc, char **argv)
     }
   }
 #else
+  int opt;
   struct option longopts[] = { {"data", 0, 0, 'd'},
   {"timeout", 1, 0, 't'},
   {"help", 0, 0, 'h'},

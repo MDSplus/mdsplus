@@ -48,8 +48,8 @@ void Event::disconnectFromEvents()
 
 Event::Event(const char *name) :
     eventName(name),
-    eventTime(convertAsciiToTime("now")),
-    eventId(-1)
+    eventId(-1),
+    eventTime(convertAsciiToTime("now"))
 {}
 
 Event::~Event()

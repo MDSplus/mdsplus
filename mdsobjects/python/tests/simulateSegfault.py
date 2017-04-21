@@ -1,25 +1,24 @@
-#
 # This test is meant to intentionally rise a segmentation fault within the
 # mdsplus libraries to see if the python test library can manage it.
 #
-
 from unittest import TestCase,TestSuite
-from mdsdata import *
+
+from MDSplus import Data
+
 
 class simulateSegfault(TestCase):
 
-    def setUp(self):
-        pass
-
-    def generateSeg(self):
+    def generateSegFault(self):
         Data.execute('MdsShr->LibFindImageSymbol(val(0))')
 
     def runTest(self):
-        self.generateSeg()
-    
+        self.generateSegFault()
+
 
 def suite():
-    tests = ['generateTest']
+    tests = ['generateSegFault']
     return TestSuite(map(simulateSegfault,tests))
 
-
+if __name__=='__main__':
+    from unittest import TextTestRunner
+    TextTestRunner().run(suite())

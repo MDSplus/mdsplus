@@ -153,7 +153,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
     , {
     GEN_DEV$_X_IO_ERR, "GEN_DEV", "X_IO_ERR", " Hardware Error: X response failed"}
   };
-  int i;
+  size_t i;
   int status = 0;
   for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++) {
     if (msgs[i].sts == sts) {
@@ -277,18 +277,18 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define DevMODRANLON     7
 
 #define declare_variables(in_struct_type)\
-	int error_code = 1;\
+	int error_code __attribute__ ((unused)) = 1;\
 	int head_nid = GenDeviceHeadNid(nid_d_ptr), status;\
-	short code;\
-	struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};\
-	struct descriptor_a *array_d_ptr;\
-	in_struct_type in_struct;\
-        static int curr_nid;\
-	static int curr_int;\
-	static float curr_float;\
-	static DESCRIPTOR_NID(curr_nid_d,&curr_nid);\
-        static DESCRIPTOR_FLOAT(curr_float_d,&curr_float);\
-        static DESCRIPTOR_LONG(curr_int_d,&curr_int);
+	short code __attribute__ ((unused));\
+	struct descriptor_xd xd __attribute__ ((unused)) = {0, DTYPE_DSC, CLASS_XD, 0, 0}; \
+	struct descriptor_a *array_d_ptr __attribute__ ((unused));\
+	in_struct_type in_struct __attribute__ ((unused));\
+        static int curr_nid __attribute__ ((unused));\
+	static int curr_int __attribute__ ((unused));\
+	static float curr_float __attribute__ ((unused));\
+	static struct descriptor curr_nid_d __attribute__ ((unused)) = {sizeof(int), DTYPE_NID, CLASS_S, (char *) &curr_nid}; \
+	static struct descriptor curr_float_d __attribute__ ((unused)) = {sizeof(float), DTYPE_FS, CLASS_S, (char *) &curr_float}; \
+	static struct descriptor curr_int_d __attribute__ ((unused)) = {sizeof(int), DTYPE_L, CLASS_S, (char *) &curr_int};
 
 #define initialize_variables(in_struct_type)\
 	memset((char *)&in_struct, '\0', sizeof(in_struct_type));\

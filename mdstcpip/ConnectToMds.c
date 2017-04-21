@@ -43,7 +43,7 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 
 ///
 /// Execute login inside server using given connection
-/// 
+///
 /// \param id of connection (on client) to be used
 /// \return status o login into server 1 if success, -1 if not authorized or error
 /// occurred
@@ -52,48 +52,51 @@ static int DoLogin(int id)
 {
   int status;
   Message *m;
+  char *user_p;
 #ifdef _WIN32
-  static char user[128];
-  int bsize = 128;
+  char user[128];
+  DWORD bsize = 128;
 #ifdef _NI_RT_
-  char *user_p = "Windows User";
+  user_p = "Windows User";
 #else
-  char *user_p = GetUserName(user, &bsize) ? user : "Windows User";
+  user_p = GetUserName(user, &bsize) ? user : "Windows User";
 #endif
 #elif __MWERKS__
-  static char user[128];
-  int bsize = 128;
-  char *user_p = "Macintosh User";
-#elif __APPLE__
-  char *user_p;
-  struct passwd *pwd;
-  pwd = getpwuid(geteuid());
-  user_p = pwd->pw_name;
+  user_p = "Macintosh User";
 #else
-  char *user_p;
-  struct passwd *passStruct = getpwuid(geteuid());
-  if (!passStruct) {
-    /* 
+#define BUFSIZE 256
+  char buf[BUFSIZE];
+  struct passwd pwd = {0};
+  struct passwd *pwd_p = &pwd;
+  getpwuid_r(geteuid(),&pwd,buf,BUFSIZE,&pwd_p);
+  if (!pwd_p) {
+#ifdef __APPLE__
+    user_p = "Apple User";
+#else
+    /*
      *  On some RHEL6/64 systems 32 bit
      *  calls to getpwuid return 0
      *  temporary fix to call getlogin()
      *  in that case.
      */
-    user_p = getlogin();
-    if (!user_p)
-      user_p = "Linux";
-  } else
-    user_p = passStruct->pw_name;
+    getlogin_r(buf,BUFSIZE);
+    if (strlen(buf)>0)
+      user_p = buf;
+    else
+      user_p = "Linux User";
 #endif
-  m = malloc(sizeof(MsgHdr) + strlen(user_p));
-  memset(m, 0, sizeof(MsgHdr) + strlen(user_p));
+  } else
+    user_p = pwd_p->pw_name;
+#endif
+  unsigned int length = strlen(user_p);
+  m = calloc(1, sizeof(MsgHdr) + length);
   m->h.client_type = SENDCAPABILITIES;
-  m->h.length = (short)strlen(user_p);
-  m->h.msglen = sizeof(MsgHdr) + m->h.length;
+  m->h.length = (short)length;
+  m->h.msglen = sizeof(MsgHdr) + length;
   m->h.dtype = DTYPE_CSTRING;
   m->h.status = GetConnectionCompression(id);
   m->h.ndims = 0;
-  memcpy(m->bytes, user_p, m->h.length);
+  memcpy(m->bytes, user_p, length);
   status = SendMdsMsg(id, m, 0);
   free(m);
   if (status & 1) {
@@ -126,7 +129,7 @@ static int DoLogin(int id)
 
 ///
 /// Trigger reuse check funcion for IoRoutines on host.
-/// 
+///
 int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
   int status;

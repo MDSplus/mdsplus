@@ -232,6 +232,7 @@ OPTIONS WITH OS SPECIFIC DEFAULT
 EOF
 }
 parsecmd() {
+    unset INTERACTIVE
     for i in $1
     do
 	case $i in
@@ -295,7 +296,7 @@ parsecmd() {
 		BRANCH="${i#*=}"
 		;;
 	    --workspace=*)
-		WORKSPACE="${i#*=}"
+		NEW_WORKSPACE="${i#*=}"
 		;;
 	    --releasedir=*)
 		RELEASEDIR="${i#*=}"
@@ -327,8 +328,11 @@ parsecmd() {
 	    --color)
 		COLOR=yes
 		;;
+	    -i)
+		INTERACTIVE="1"
+		;;
 	    --winhost=*)
-		WINDOWSHOST="${i#*=}"
+		WINHOST="${i#*=}"
 		;;
 	    --winbld=*)
 		WINBLD="${i#*=}"
@@ -358,7 +362,7 @@ opts="$@"
 parsecmd "$opts"
 
 SRCDIR=$(realpath $(dirname ${0})/..)
-    
+
 #
 # Get the default options for the OS specified.
 #
@@ -424,6 +428,14 @@ EOF
 fi
 
 #
+# Make sure submodules have been updated
+#
+if [ ! -r ${SRCDIR}/3rd-party-apis/.git ]
+then
+    ${SRCDIR}/conf/update_submodules
+fi
+
+#
 # Make sure one of --test --release=version
 # --publish=version options were provided.
 #
@@ -447,19 +459,22 @@ then
     >&2 echo "Attempting to publish without a --distname=name option."
     exit 1
 fi
-if [ ! -r "${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh" ]
+if [ ! -d "${SRCDIR}/deploy/platform/${PLATFORM}" ]
 then
     >&2 echo "Plaform ${PLATFORM} is not supported."
     exit 1
 fi
-if [ -z "$WORKSPACE" ]
+if [ -z "$NEW_WORKSPACE" ]
 then
-    WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+    if [ -z "$WORKSPACE" ]
+    then
+       WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+    fi
 else
-    WORKSPACE=$(realpath ${WORKSPACE})/${OS}/${BRANCH}
+    WORKSPACE=$(realpath ${NEW_WORKSPACE})
 fi
 
-if [ "TEST" = "yes" -a "TEST_RELEASE" = "yes" ]
+if [ "$TEST" = "yes" -a "$TEST_RELEASE" = "yes" ]
 then
     RELEASE=yes
 fi
@@ -589,7 +604,8 @@ OS=${OS} \
   WINBLD="${WINBLD}" \
   WINREMBLD="${WINREMBLD}" \
   GIT_COMMIT="${GIT_COMMIT}" \
-  ${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh
+  INTERACTIVE="$INTERACTIVE" \
+  ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
     RED $COLOR

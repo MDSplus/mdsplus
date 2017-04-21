@@ -3298,10 +3298,13 @@ function mdsScope(xmlDoc)
     }
 }
 
-function startMdsScope(configName)
+function startMdsScope(configName, shotName)
 {
     var req = new XMLHttpRequest();
-    req.open('GET','?configxml=' + configName, true);
+    if(shotName == '')
+    	req.open('GET','?configxml=' + configName, true);
+    else
+    	req.open('GET','?configxml=' + configName+'&shot='+shotName, true);
     req.onreadystatechange = function() {
         if (this.readyState == 4) {
             if (this.getResponseHeader('ERROR'))

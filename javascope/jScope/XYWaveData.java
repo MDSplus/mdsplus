@@ -143,7 +143,11 @@ public class XYWaveData implements WaveData
     /*
      * Read data within specified interval. either Xmin or xmax cna specify no limit (-Float.MAX_VALUE, Float.MAX_VALUE)
      */
-    public XYData getData(double xmin, double xmax, int numPoints)
+     public XYData getData(long xmin, long xmax, int numPoints)
+     {
+         return getData((double)xmin, (double)xmax, numPoints);
+     }
+     public XYData getData(double xmin, double xmax, int numPoints)
     {
         int minIdx, maxIdx;
         
@@ -407,7 +411,7 @@ public class XYWaveData implements WaveData
            for(int i = 0; i < x.length; i++)
            {
                 try {
-                    Thread.currentThread().sleep(100);
+                    Thread.sleep(100);
                 }catch(InterruptedException exc){}
                 
                 newX[0] = x[x.length - 1] + i + 1;

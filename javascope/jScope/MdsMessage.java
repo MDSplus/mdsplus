@@ -2,6 +2,7 @@ package jScope;
 
 /* $Id$ */
 import java.io.*;
+import java.nio.*;
 import java.net.*;
 import java.awt.*;
 import java.util.*;
@@ -11,7 +12,7 @@ import java.util.zip.*;
 public class MdsMessage extends Object
 {
     public    static final int    HEADER_SIZE          = 48;
-    public    static final int    SUPPORTS_COMPRESSION = (int)0x8000;
+    public    static final int    SUPPORTS_COMPRESSION = 0x8000;
     public    static final byte   SENDCAPABILITIES     = (byte)0xF;
     public    static final byte   COMPRESSED           = (byte)0x20;
     public    static final byte   BIG_ENDIAN_MASK      = (byte)0x80;
@@ -223,8 +224,6 @@ public class MdsMessage extends Object
     public synchronized void Receive(InputStream dis)throws IOException
     {
         byte header_b[] = new byte[16 + Descriptor.MAX_DIM*4];
-        byte b4[] = new byte[4];
-        byte b2[] = new byte[2];
         int c_type = 0;
         int idx = 0;
 
@@ -343,191 +342,63 @@ public class MdsMessage extends Object
         return dis.readFloat();
     }
 
-    public long[] ToLongArray() throws IOException
-    {
-        long ch1, ch2, ch3, ch4, ch5, ch6, ch7, ch8;
-        long out[] = new long[body.length / 8];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
-            {
-                ch1 = (body[j+7] & 0xff) << 56;
-                ch2 = (body[j+6] & 0xff) << 48;
-                ch3 = (body[j+5] & 0xff) << 40;
-                ch4 = (body[j+4] & 0xff) << 32;
-                ch5 = (body[j+3] & 0xff) << 24;
-                ch6 = (body[j+2] & 0xff) << 16;
-                ch7 = (body[j+1] & 0xff) << 8;
-                ch8 = (body[j+0] & 0xff) << 0;
-                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) + (ch5) + (ch6) + (ch7) + (ch8));
-            }
-	    else
-            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
-            {
-                ch1 = (body[j+0] & 0xffL) << 56;
-                ch2 = (body[j+1] & 0xffL) << 48;
-                ch3 = (body[j+2] & 0xffL) << 40;
-                ch4 = (body[j+3] & 0xffL) << 32;
-                ch5 = (body[j+4] & 0xffL) << 24;
-                ch6 = (body[j+5] & 0xffL) << 16;
-                ch7 = (body[j+6] & 0xffL) << 8;
-                ch8 = (body[j+7] & 0xffL) << 0;
-                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) + (ch5) + (ch6) + (ch7) + (ch8));
-            }
-        return out;
+    private ByteBuffer getWrappedBody() {
+        return ByteBuffer.wrap(body).order(swap ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+//       return ByteBuffer.wrap(body).order(swap ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
     }
 
-    public long[] ToUIntArray() throws IOException
+    public long[] ToLongArray() throws IOException
     {
-        long ch1, ch2, ch3, ch4;
-        long out[] = new long[body.length / 4];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
-            {
-                ch1 = (body[j+3] & 0xff) << 24;
-                ch2 = (body[j+2] & 0xff) << 16;
-                ch3 = (body[j+1] & 0xff) << 8;
-                ch4 = (body[j+0] & 0xff) << 0;
-                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) );
-            }
-	    else
-            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
-            {
-                ch1 = (body[j+0] & 0xff) << 24;
-                ch2 = (body[j+1] & 0xff) << 16;
-                ch3 = (body[j+2] & 0xff) << 8;
-                ch4 = (body[j+3] & 0xff) << 0;
-                out[i] = ((ch1) + (ch2) + (ch3) + (ch4) );
-            }
+        long out[] = new long[body.length / 8];
+        getWrappedBody().asLongBuffer().get(out);
         return out;
     }
 
     public int[] ToIntArray() throws IOException
     {
-        int ch1, ch2, ch3, ch4;
         int out[] = new int[body.length / 4];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
-            {
-                ch1 = (body[j+3] & 0xff) << 24;
-                ch2 = (body[j+2] & 0xff) << 16;
-                ch3 = (body[j+1] & 0xff) << 8;
-                ch4 = (body[j+0] & 0xff) << 0;
-                out[i] = ((ch1) + (ch2) + (ch3) + (ch4));
-            }
-	    else
-            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
-            {
-                ch1 = (body[j+0] & 0xff) << 24;
-                ch2 = (body[j+1] & 0xff) << 16;
-                ch3 = (body[j+2] & 0xff) << 8;
-                ch4 = (body[j+3] & 0xff) << 0;
-                out[i] = ((ch1) + (ch2) + (ch3) + (ch4));
-            }
+        getWrappedBody().asIntBuffer().get(out);
         return out;
+    }
+
+    public long[] ToUIntArray() throws IOException
+    {
+        int[] signed = ToIntArray();
+        long[] unsigned = new long[signed.length];
+        for (int i = 0; i < signed.length; i++)
+            unsigned[i] = ((long)signed[i]) & 0xffffffffL;
+        return unsigned;
     }
 
     public short[] ToShortArray() throws IOException
     {
-        short ch1, ch2;
         short out[] = new short[body.length / 2];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
-            {
-                ch1 = (short)((body[j+1] & 0xff) << 8);
-                ch2 = (short)((body[j+0] & 0xff) << 0);
-                out[i] = (short)((ch1) + (ch2));
-            }
-	    else
-            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
-            {
-                ch1 = (short)((body[j+0] & 0xff) << 8);
-                ch2 = (short)((body[j+1] & 0xff) << 0);
-                out[i] = (short)((ch1) + (ch2));
-            }
+        getWrappedBody().asShortBuffer().get(out);
         return out;
     }
 
-        public int[] ToUShortArray() throws IOException
+    public int[] ToUShortArray() throws IOException
     {
-        int ch1, ch2;
-        int out[] = new int[body.length / 2];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
-            {
-                ch1 = (int)((body[j+1] & 0xff) << 8);
-                ch2 = (int)((body[j+0] & 0xff) << 0);
-                out[i] = (int)((ch1) + (ch2));
-            }
-	    else
-            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
-            {
-                ch1 = (int)((body[j+0] & 0xff) << 8);
-                ch2 = (int)((body[j+1] & 0xff) << 0);
-                out[i] = (int)((ch1) + (ch2));
-            }
-        return out;
+        short[] shorts = ToShortArray();
+        int[] unsigned = new int[shorts.length];
+        for (int i = 0; i < shorts.length; i++)
+            unsigned[i] = shorts[i] & 0xffff;
+        return unsigned;
     }
 
     public float[] ToFloatArray() throws IOException
     {
-        int ch1, ch2, ch3, ch4;
         float out[] = new float[body.length / 4];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
-            {
-                ch1 = (body[j+3] & 0xff) << 24;
-                ch2 = (body[j+2] & 0xff) << 16;
-                ch3 = (body[j+1] & 0xff) << 8;
-                ch4 = (body[j+0] & 0xff) << 0;
-                out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
-            }
-	    else
-            for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
-            {
-                ch1 = (body[j+0] & 0xff) << 24;
-                ch2 = (body[j+1] & 0xff) << 16;
-                ch3 = (body[j+2] & 0xff) << 8;
-                ch4 = (body[j+3] & 0xff) << 0;
-                out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
-            }
+        getWrappedBody().asFloatBuffer().get(out);
         return out;
     }
 
     public double[] ToDoubleArray() throws IOException
     {
-        long ch;
         double out[] = new double[body.length / 8];
-        if(swap)
-            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
-            {
-                ch =  (body[j+7] & 0xff) << 56;
-                ch += (body[j+6] & 0xff) << 48;
-                ch += (body[j+5] & 0xff) << 40;
-                ch += (body[j+4] & 0xff) << 32;
-                ch += (body[j+3] & 0xff) << 24;
-                ch += (body[j+2] & 0xff) << 16;
-                ch += (body[j+1] & 0xff) << 8;
-                ch += (body[j+0] & 0xff) << 0;
-                out[i] = Double.longBitsToDouble(ch);
-            }
-	    else
-	    {
-            for(int i = 0, j = 0; i < body.length / 8; i++, j+=8)
-            {
-                ch  = (body[j+0] & 0xffL) << 56;
-                ch += (body[j+1] & 0xffL) << 48;
-                ch += (body[j+2] & 0xffL) << 40;
-                ch += (body[j+3] & 0xffL) << 32;
-                ch += (body[j+4] & 0xffL) << 24;
-                ch += (body[j+5] & 0xffL) << 16;
-                ch += (body[j+6] & 0xffL) << 8;
-                ch += (body[j+7] & 0xffL) << 0;
-                out[i] = Double.longBitsToDouble(ch);
-            }
-        }
+        getWrappedBody().asDoubleBuffer().get(out);
         return out;
     }
-
 
     public String ToString()
     {

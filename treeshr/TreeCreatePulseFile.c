@@ -283,9 +283,9 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 	while (bytes_to_go > 0) {
 	  size_t io_size = MIN(bytes_to_go, chunk_size);
 	  ssize_t bytes_read = MDS_IO_READ(src_fd, buff, io_size);
-	  if (bytes_read == io_size) {
+	  if (bytes_read == (ssize_t)io_size) {
 	    ssize_t bytes_written = MDS_IO_WRITE(dst_fd, buff, io_size);
-	    if (bytes_written != io_size)
+	    if (bytes_written != (ssize_t)io_size)
 	      break;
 	  }
 	  bytes_to_go -= io_size;

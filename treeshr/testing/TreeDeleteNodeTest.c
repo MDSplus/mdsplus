@@ -43,7 +43,7 @@ int dbiTest(void *ctx, short int code) {
 /// see: stackoverflow.com/questions/3597985/check-for-threads-still-running-after-program-exits
 ///
 /// 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(Tree Delete Node);
     

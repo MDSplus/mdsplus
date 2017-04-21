@@ -88,7 +88,7 @@ STATIC_CONSTANT struct descriptor one = { sizeof(one_val), DTYPE_BU, CLASS_S, (c
 
 int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   struct descriptor *pmask = &one;
   struct descriptor_signal *psig;
   signal_maxdim tmpsig;
@@ -110,13 +110,13 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/******************************************
         Adjust categories need to match data types.
         ******************************************/
-  if (status & 1)
+  if STATUS_OK
     status = (*pfun->f2) (narg, uni, dat, cats, 0);
 
 	/******************************
         Do the needed type conversions.
         ******************************/
-  if (status & 1)
+  if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 
 	/********************
@@ -127,9 +127,9 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     if (narg > 1 && cats[1].in_dtype != DTYPE_MISSING)
       pmask = dat[1].pointer;
   } else if (narg > 1 && cats[1].in_dtype != DTYPE_MISSING) {
-    if (status & 1)
+    if STATUS_OK
       status = TdiGetLong(dat[1].pointer, &dim);
-    if (status & 1 && dim < 0)
+    if (STATUS_OK && dim < 0)
       status = TdiBAD_INDEX;
   } else if (pfun->f2 == Tdi2Sign)
     status = TdiBAD_INDEX;
@@ -138,7 +138,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     if (narg > 2 && cats[2].in_dtype != DTYPE_MISSING)
       pmask = dat[2].pointer;
   } else if (opcode == OpcReplicate || opcode == OpcSpread) {
-    if (status & 1)
+    if STATUS_OK
       status = TdiGetLong(dat[2].pointer, &ncopies);
     if (ncopies < 0)
       ncopies = 0;
@@ -148,7 +148,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
         Get rank,counts, and steps.
         **************************/
   pa = (array_bounds *) dat[0].pointer;
-  if (status & 1)
+  if STATUS_OK
     switch (pa->class) {
     case CLASS_A:
       rank = pa->aflags.coeff ? pa->dimct : 1;
@@ -193,10 +193,10 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       break;
     }
 
-  if (status & 1) {
+  if STATUS_OK {
     N_ELEMENTS(pmask, mul);
   }
-  if (status & 1) {
+  if STATUS_OK {
     if (pmask->class == CLASS_A && mul < count_bef * count_dim * count_aft)
       status = TdiMISMATCH;
     step_dim = count_bef;
@@ -215,7 +215,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/******************
         Find correct shape.
         ******************/
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     goto err;
   head = (unsigned short)(sizeof(struct descriptor_a) +
 			  (pa->aflags.coeff ? sizeof(char *) + rank * sizeof(int) : 0) +
@@ -233,7 +233,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     ndim = -1;
   if (opcode == OpcFirstLoc || opcode == OpcLastLoc) {
     status = MdsGet1DxA((struct descriptor_a *)pa, &digits, &out_dtype, out_ptr);
-    if (status & 1)
+    if STATUS_OK
       status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
   }
 	/***************************
@@ -272,7 +272,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       status = MdsCopyDxXd((struct descriptor *)&tmpsig, &tmpxd);
       status = MdsCopyDxXd((struct descriptor *)&tmpxd, &sig[0]);
       MdsFree1Dx(&tmpxd, NULL);
-      if (!(status & 1))
+      if (STATUS_NOT_OK)
 	goto err;
     }
     pmask = (struct descriptor *)&ncopies;
@@ -301,7 +301,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       arr.m[dim] = ncopies;
     }
     arr.arsize *= ncopies;
-    if (status & 1)
+    if STATUS_OK
       status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/***************
@@ -353,7 +353,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     psig = 0;
     status = MdsGet1DxS(&digits, &out_dtype, out_ptr);
   }
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     goto err;
 
 	/****************************************
@@ -380,7 +380,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
         ***********/
   status =
       (*pfun->f3) (pa, pmask, pd, count_dim, count_bef, count_aft, step_dim, step_bef, step_aft);
-  if (!(status & 1))
+  if (STATUS_NOT_OK)
     goto err;
 
 	/*******************************
@@ -423,7 +423,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
                 logical = ALL(mask, [dim])
 */
 int Tdi3All(struct descriptor *in_ptr,
-	    struct descriptor *pmask,
+	    struct descriptor *pmask __attribute__ ((unused)),
 	    struct descriptor *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -447,7 +447,7 @@ int Tdi3All(struct descriptor *in_ptr,
                 logical = ANY(mask, [dim])
 */
 int Tdi3Any(struct descriptor *in_ptr,
-	    struct descriptor *pmask,
+	    struct descriptor *pmask __attribute__ ((unused)),
 	    struct descriptor *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -472,7 +472,7 @@ int Tdi3Any(struct descriptor *in_ptr,
                 vector-long = COUNT(mask, dim)
 */
 int Tdi3Count(struct descriptor *in_ptr,
-	      struct descriptor *pmask,
+	      struct descriptor *pmask __attribute__ ((unused)),
 	      struct descriptor *out_ptr,
 	      int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -498,7 +498,7 @@ int Tdi3Count(struct descriptor *in_ptr,
                 array-logical = FIRSTLOC(mask, [dim])
 */
 int Tdi3FirstLoc(struct descriptor *in_ptr,
-		 struct descriptor *pmask,
+		 struct descriptor *pmask __attribute__ ((unused)),
 		 struct descriptor *out_ptr,
 		 int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -523,7 +523,7 @@ int Tdi3FirstLoc(struct descriptor *in_ptr,
                 array-logical = LASTLOC(mask, [dim])
 */
 int Tdi3LastLoc(struct descriptor *in_ptr,
-		struct descriptor *pmask,
+		struct descriptor *pmask __attribute__ ((unused)),
 		struct descriptor *out_ptr,
 		int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -551,7 +551,12 @@ int Tdi3LastLoc(struct descriptor *in_ptr,
 int Tdi3Replicate(struct descriptor *in_ptr,
 		  struct descriptor *pmask,
 		  struct descriptor *out_ptr,
-		  int count0, int count1, int count2, int step0, int step1, int step2)
+		  int count0 __attribute__ ((unused)),
+		  int count1 __attribute__ ((unused)),
+		  int count2,
+		  int step0 __attribute__ ((unused)),
+		  int step1 __attribute__ ((unused)),
+		  int step2)
 {
   char *pin = in_ptr->pointer, *pout = out_ptr->pointer;
   int j0, j1, ncopies = *(int *)pmask;
@@ -570,7 +575,10 @@ int Tdi3Replicate(struct descriptor *in_ptr,
 int Tdi3Spread(struct descriptor *in_ptr,
 	       struct descriptor *pmask,
 	       struct descriptor *out_ptr,
-	       int count0, int count1, int count2, int step0, int step1, int step2)
+	       int count0, int count1 __attribute__ ((unused)),
+	       int count2, int step0,
+	       int step1 __attribute__ ((unused)),
+	       int step2 __attribute__ ((unused)))
 {
   char *pin = in_ptr->pointer, *pout = out_ptr->pointer;
   int j0, j1, ncopies = *(int *)pmask;

@@ -1,5 +1,5 @@
 # Global variables
-AM_CFLAGS = $(TARGET_ARCH)
+AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS)
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm

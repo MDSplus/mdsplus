@@ -33,7 +33,7 @@ STATIC_ROUTINE int goto1(int, struct descriptor *[], struct descriptor_xd *);
         ABORT processing.
                 ABORT()
 */
-int Tdi1Abort(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Abort()
 {
   return TdiABORT;
 }
@@ -42,7 +42,7 @@ int Tdi1Abort(int opcode, int narg, struct descriptor *list[], struct descriptor
         BREAK from DO...WHILE FOR or WHILE loops or SWITCH.
                 BREAK;
 */
-int Tdi1Break(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Break()
 {
   return TdiBREAK;
 }
@@ -50,23 +50,21 @@ int Tdi1Break(int opcode, int narg, struct descriptor *list[], struct descriptor
 /*-----------------------------------------------------------------
         CASE within SWITCH.
 */
-int Tdi1Case(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Case(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-  status = TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
-  return status;
+  return TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
 }
 
 /*-----------------------------------------------------------------
         Evaluates all arguments but returns last only.
                 result = evaluation,...evaluation
 */
-int Tdi1Comma(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Comma(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int j;
 
-  for (j = 0; j < narg && status & 1; j++)
+  for (j = 0; j < narg && STATUS_OK ; j++)
     if (list[j] != 0)
       status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
   return status;
@@ -76,7 +74,7 @@ int Tdi1Comma(int opcode, int narg, struct descriptor *list[], struct descriptor
         CONTINUE from DO...WHILE FOR or WHILE loops.
                 CONTINUE;
 */
-int Tdi1Continue(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Continue()
 {
   return TdiCONTINUE;
 }
@@ -84,29 +82,27 @@ int Tdi1Continue(int opcode, int narg, struct descriptor *list[], struct descrip
 /*-----------------------------------------------------------------
         CASE DEFAULT within SWITCH.
 */
-int Tdi1Default(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Default(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-  status = TdiIntrinsic(OpcStatement, narg, &list[0], out_ptr);
-  return status;
+  return TdiIntrinsic(OpcStatement, narg, &list[0], out_ptr);
 }
 
 /*-----------------------------------------------------------------
         Loops until expression is false, doing a statement.
                 DO {statement} WHILE (expression);
 */
-int Tdi1Do(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Do(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int test;
 
   do {
     status = TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
-    if (status & 1 || status == TdiCONTINUE)
+    if (STATUS_OK || status == TdiCONTINUE)
       status = TdiGetLong(list[0], &test);
-  } while (status & 1 && test & 1);
+  } while (STATUS_OK && IS_OK(test));
   if (status == TdiBREAK)
-    status = 1;
+    status = MDSplusSUCCESS;
   return status;
 }
 
@@ -114,25 +110,25 @@ int Tdi1Do(int opcode, int narg, struct descriptor *list[], struct descriptor_xd
         Loops FOR expression true and doing a statement.
                 FOR ([init]; [test]; [update]) statement
 */
-int Tdi1For(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1For(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int test;
 
   if (list[0])
     status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-  while (status & 1) {
+  while STATUS_OK {
     if (list[1]) {
       status = TdiGetLong(list[1], &test);
-      if (!(status & 1 && test & 1))
+      if (STATUS_NOT_OK || IS_NOT_OK(test))
 	break;
     }
     status = TdiIntrinsic(OpcStatement, narg - 3, &list[3], out_ptr);
-    if (status & 1 || status == TdiCONTINUE)
+    if (STATUS_OK || status == TdiCONTINUE)
       status = TdiEvaluate(list[2], out_ptr MDS_END_ARG);
   }
   if (status == TdiBREAK)
-    status = 1;
+    status = MDSplusSUCCESS;
   return status;
 }
 
@@ -140,12 +136,11 @@ int Tdi1For(int opcode, int narg, struct descriptor *list[], struct descriptor_x
         GOTO a label in active area of code.
                 GOTO label;
 */
-int Tdi1Goto(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Goto(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-
+  INIT_STATUS;
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
-  if (status & 1) {
+  if STATUS_OK {
     if (out_ptr->pointer->class != CLASS_S)
       status = TdiINVCLADSC;
     else if (out_ptr->pointer->dtype != DTYPE_T)
@@ -160,24 +155,24 @@ int Tdi1Goto(int opcode, int narg, struct descriptor *list[], struct descriptor_
         Tests IF expression and does a statement if true or possibly another if false.
                 IF (expression) statement ELSE statement
 */
-int Tdi1If(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1If(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int test = 0;
 
   status = TdiGetLong(list[0], &test);
-  if (test & 1) {
-    if (status & 1)
+  if IS_OK(test) {
+    if STATUS_OK
       status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
     while (status == TdiGOTO)
       status = goto1(1, &list[1], out_ptr);
   } else if (narg > 2) {
-    if (status & 1)
+    if STATUS_OK
       status = TdiEvaluate(list[2], out_ptr MDS_END_ARG);
     while (status == TdiGOTO)
       status = goto1(1, &list[2], out_ptr);
   }
-  if (status == 0)
+  if (status == SsINTERNAL)
     status = TdiGOTO;
   return status;
 }
@@ -187,16 +182,16 @@ int Tdi1If(int opcode, int narg, struct descriptor *list[], struct descriptor_xd
         If last fails, return EMPTY descriptor and success.
                 first_good = IF_ERROR(a,...)
 */
-int Tdi1IfError(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IfError(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int keep, j;
 
   keep = TdiON_ERROR;
   TdiON_ERROR = 0;
   for (j = 0; j < narg; ++j) {
     status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
-    if (status & 1)
+    if STATUS_OK
       break;
   }
   TdiON_ERROR = keep;
@@ -209,20 +204,17 @@ int Tdi1IfError(int opcode, int narg, struct descriptor *list[], struct descript
         Hold LABEL for GOTO.
                 label : stmt
 */
-int Tdi1Label(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Label(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-
-  status = TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
-  return status;
+  return TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
 }
 
 /*-----------------------------------------------------------------
         Remark embedded in expression, a no-operation.
 */
-int Tdi1Rem(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Rem()
 {
-  return 1;
+  return MDSplusSUCCESS;
 }
 
 /*-----------------------------------------------------------------
@@ -233,15 +225,14 @@ int Tdi1Rem(int opcode, int narg, struct descriptor *list[], struct descriptor_x
                 ...
         }
 */
-int Tdi1Return(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Return(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
-
+  INIT_STATUS;
   if (narg > 0 && list[0])
     status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
   else
     status = MdsFree1Dx(out_ptr, NULL);
-  if (status & 1)
+  if STATUS_OK
     status = TdiRETURN;
   return status;
 }
@@ -275,7 +266,8 @@ int Tdi1Return(int opcode, int narg, struct descriptor *list[], struct descripto
 */
 STATIC_ROUTINE int goto1(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int j = 0, off, opcode, status = 0;
+  int status = SsINTERNAL;
+  int j = 0, off, opcode;
   struct descriptor *pstr = (struct descriptor *)out_ptr;
 
 	/***************************
@@ -304,7 +296,7 @@ STATIC_ROUTINE int goto1(int narg, struct descriptor *list[], struct descriptor_
 	  status = goto1(pfun->ndesc - off, &pfun->arguments[off], out_ptr);
       }
     }
-  if (status & 1 && j < narg)
+  if (STATUS_OK && j < narg)
     status = TdiIntrinsic(OpcStatement, narg - j, &list[j], out_ptr);
   return status;
 }
@@ -314,16 +306,16 @@ STATIC_ROUTINE int goto1(int narg, struct descriptor *list[], struct descriptor_
         Note statements end with a semicolon or right brace.
                 {statement ... statement}
 */
-int Tdi1Statement(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Statement(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int j;
 
-  for (j = 0; status & 1 && j < narg; ++j)
+  for (j = 0; STATUS_OK && j < narg; ++j)
     status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
   while (status == TdiGOTO)
     status = goto1(narg, list, out_ptr);
-  if (status == 0)
+  if (status == SsINTERNAL)
     status = TdiGOTO;
   return status;
 }
@@ -346,11 +338,12 @@ STATIC_ROUTINE int switch1(struct descriptor *ptest,
 			   int narg,
 			   struct descriptor_function *list[], struct descriptor_xd *out_ptr)
 {
-  int j, ndesc, off, test, status = 1;
+  INIT_STATUS;
+  int j, ndesc, off, test;
   struct descriptor_range *pr;
   struct descriptor_xd tmp = EMPTY_XD;
 
-  for (j = 0; status & 1 && j < narg; ++j)
+  for (j = 0; STATUS_OK && j < narg; ++j)
     if (list[j] && list[j]->dtype == DTYPE_FUNCTION) {
       unsigned short opcode = *(unsigned short *)list[j]->pointer;
 
@@ -364,27 +357,27 @@ STATIC_ROUTINE int switch1(struct descriptor *ptest,
 	  break;
 	}
 	status = TdiEvaluate(list[j]->arguments[0], out_ptr MDS_END_ARG);
-	if (status & 1) {
+	if STATUS_OK {
 	  pr = (struct descriptor_range *)out_ptr->pointer;
 	  if (pr && pr->dtype == DTYPE_RANGE) {
 	    if (pr->begin) {
 	      status = TdiGe(ptest, pr->begin, &tmp MDS_END_ARG);
-	      if (status & 1)
+	      if STATUS_OK
 		status = TdiGetLong(&tmp, &test);
 	    } else
 	      test = 1;
-	    if (status & 1 && test & 1 && pr->ending) {
+	    if (STATUS_OK && IS_OK(test) && pr->ending) {
 	      status = TdiLe(ptest, pr->ending, &tmp MDS_END_ARG);
-	      if (status & 1)
+	      if STATUS_OK
 		status = TdiGetLong(&tmp, &test);
 	    }
 	  } else {
 	    status = TdiEq(ptest, pr, &tmp MDS_END_ARG);
-	    if (status & 1)
+	    if STATUS_OK
 	      status = TdiGetLong(&tmp, &test);
 	  }
 	}
-	if (status & 1 && test & 1) {
+	if (STATUS_OK && IS_OK(test)) {
 	  *jdefault = 0;
 	  break;
 	}
@@ -394,53 +387,53 @@ STATIC_ROUTINE int switch1(struct descriptor *ptest,
 	*pdefault = &list[j];
 	off = 0;
       }
-      if (off >= 0 && status & 1) {
+      if (off >= 0 && STATUS_OK) {
 	status =
 	    switch1(ptest, jdefault, pdefault, list[j]->ndesc - off,
 		    (struct descriptor_function **)&list[j]->arguments[off], out_ptr);
-	if (status & 1) {
+	if STATUS_OK {
 	  ++j;
 	  break;
 	}
 	if (status == TdiCASE)
-	  status = 1;
+	  status = MDSplusSUCCESS;
       }
     }
   MdsFree1Dx(&tmp, NULL);
-  if (status & 1 && j >= narg)
+  if (STATUS_OK && j >= narg)
     status = TdiCASE;
   else {
     *jdefault = 0;		/*suppress the default because it is a match */
-    for (; status & 1 && j < narg; ++j)
+    for (; STATUS_OK && j < narg; ++j)
       status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
   }
   return status;
 }
 
-int Tdi1Switch(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Switch(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int jdefault = 0;
   struct descriptor_function **pdefault = NULL;
   struct descriptor_xd tmp = EMPTY_XD;
 
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
-  if (status & 1)
+  if STATUS_OK
     status = switch1(tmp.pointer, &jdefault, &pdefault, narg - 1,
 		     (struct descriptor_function **)&list[1], out_ptr);
   MdsFree1Dx(&tmp, NULL);
   if (status == TdiCASE) {
-    status = 1;
-    for (; jdefault > 0 && status & 1; --jdefault, ++pdefault) {
+    status = MDSplusSUCCESS;
+    for (; jdefault > 0 && STATUS_OK; --jdefault, ++pdefault) {
       status = TdiEvaluate(*(struct descriptor **)pdefault, out_ptr MDS_END_ARG);
     }
   }
   if (status == TdiBREAK)
-    status = 1;
+    status = MDSplusSUCCESS;
   else {
     while (status == TdiGOTO)
       status = goto1(narg - 1, &list[1], out_ptr);
-    if (status == 0)
+    if (status == SsINTERNAL)
       status = TdiGOTO;
   }
   return status;
@@ -450,18 +443,17 @@ int Tdi1Switch(int opcode, int narg, struct descriptor *list[], struct descripto
         Loops while expression is true and does a statement.
                 WHILE (expression) statement
 */
-int Tdi1While(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1While(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-  int status = 1;
+  INIT_STATUS;
   int test;
-
-  while (status & 1 || status == TdiCONTINUE) {
+  while (STATUS_OK || status == TdiCONTINUE) {
     status = TdiGetLong(list[0], &test);
-    if (!(status & 1 && test & 1))
+    if (STATUS_NOT_OK || IS_NOT_OK(test))
       break;
     status = TdiIntrinsic(OpcStatement, narg - 1, &list[1], out_ptr);
   }
   if (status == TdiBREAK)
-    status = 1;
+    status = MDSplusSUCCESS;
   return status;
 }

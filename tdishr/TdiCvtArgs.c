@@ -23,7 +23,8 @@ extern void UseNativeFloat();
 
 int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1])
 {
-  int j, cmode = -1, status = 1;
+  INIT_STATUS;
+  int j, cmode = -1;
   unsigned char jd;
   struct TdiCatStruct *cptr;
 
@@ -34,7 +35,7 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
         Get length from table.
         Keep old text length.
         *************************/
-  for (j = 0, cptr = cats; status & 1 && j <= narg; ++j, ++cptr) {
+  for (j = 0, cptr = cats; STATUS_OK && j <= narg; ++j, ++cptr) {
     if (cptr->out_cat != cptr->in_cat) {
       if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat) {
 	if (TdiREF_CAT[cptr->out_dtype].cat != cptr->out_cat) {
@@ -99,7 +100,7 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
 	/********************
         Do input conversions.
         ********************/
-  for (j = 0, cptr = cats; status & 1 && j < narg; ++j, ++cptr) {
+  for (j = 0, cptr = cats; STATUS_OK && j < narg; ++j, ++cptr) {
     struct descriptor_a *aptr = (struct descriptor_a *)dat[j].pointer;
 
     if (cptr->in_dtype == cptr->out_dtype && cptr->digits == aptr->length) {;
@@ -137,7 +138,7 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
       else {
 	struct descriptor_xd xd = EMPTY_XD;
 	status = TdiGetShape(1, &dat[j], cptr->digits, cptr->out_dtype, &cmode, &xd);
-	if (status & 1)
+	if STATUS_OK
 	  status = TdiConvert(aptr, xd.pointer MDS_END_ARG);
 	MdsFree1Dx(&dat[j], NULL);
 	dat[j] = xd;

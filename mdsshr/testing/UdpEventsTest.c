@@ -25,8 +25,8 @@ static pthread_mutex_t second_lock;
 
 static int astCount = 0;
 
-void eventAst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&astCount_lock);
@@ -39,8 +39,8 @@ void eventAst(void *arg, int len, char *buf) {
 
 static int first = 0,second = 0;
 
-void eventAstFirst(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+void eventAstFirst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&first_lock);
@@ -48,8 +48,8 @@ void eventAstFirst(void *arg, int len, char *buf) {
     pthread_mutex_unlock(&first_lock);
 }
 
-void eventAstSecond(void *arg, int len, char *buf) {
-    printf("received event in thread %d, name=%s\n",
+void eventAstSecond(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
+    printf("received event in thread %ld, name=%s\n",
            syscall(__NR_gettid),
            (char *)arg);
     pthread_mutex_lock(&second_lock);
@@ -60,12 +60,15 @@ void eventAstSecond(void *arg, int len, char *buf) {
 
 
 static void wait() {
-    static const struct timespec tspec = {0,10000000};
+    static const struct timespec tspec = {0,100000000};
     nanosleep(&tspec,0);
 }
 
 int main(int argc, char **args)
 {
+    int status=0;
+    int i,iterations,ev_id;
+    char *eventname = alloca(100);
     pthread_mutex_init(&astCount_lock, NULL);
     pthread_mutex_init(&first_lock, NULL);
     pthread_mutex_init(&second_lock, NULL);
@@ -74,9 +77,6 @@ int main(int argc, char **args)
 #ifdef _WIN32
     SKIP_TEST("Skipping UDP event tests on Windows because of problems with wine and udp.")
 #endif
-    int status;
-    int i,iterations,ev_id;
-    char *eventname = alloca(100);
     if (argc < 2) {
         iterations=3;
     } else {
@@ -123,4 +123,5 @@ int main(int argc, char **args)
     status = MDSEventCan(id2);
     
     END_TESTING;
+    return (status & 1)==0;
 }

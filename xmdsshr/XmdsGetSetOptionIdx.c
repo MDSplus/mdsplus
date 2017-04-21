@@ -36,8 +36,6 @@ int XmdsGetOptionIdx(Widget w);
 
 #include <Xm/Xm.h>
 #include <config.h>
-void XmdsSetOptionIdx(Widget w, int idx);
-int XmdsGetOptionIdx(Widget w);
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */
@@ -63,13 +61,13 @@ int XmdsGetOptionIdx(Widget w);
 
  Executable:                                                                  */
 
-EXPORT void XmdsSetOptionIdx(Widget w, int idx)
+EXPORT void XmdsSetOptionIdx(Widget w, Cardinal idx)
 {
   static Widget pulldown;
   XtVaGetValues(w, XmNsubMenuId, &pulldown, NULL);
   if (pulldown) {
-    static Widget *options;
-    static Cardinal num_options;
+    Widget *options;
+    Cardinal num_options;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
     if (idx < num_options)
       XtVaSetValues(w, XmNmenuHistory, options[idx], NULL);
@@ -85,7 +83,7 @@ EXPORT int XmdsGetOptionIdx(Widget w)
   if (pulldown && option) {
     static Widget *options;
     static Cardinal num_options;
-    int i;
+    Cardinal i;
     XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
     for (i = 0; i < num_options; i++)
       if (options[i] == option) {

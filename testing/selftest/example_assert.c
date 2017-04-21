@@ -4,7 +4,7 @@
 // #include "mdstestdummy.h"
 // extern void generate_false_assert();
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(ok);    
     int a=1;

@@ -135,13 +135,13 @@ public:
 ///
 /// This is a simple print of the test line to automatically compute type
 /// limits if the print argument is passed to the test execution.
-/// 
+///
 #define MDS_TEST_PRINT_TESTLINE(type) \
     testing::TestLimits::print_type_conversion_test<type>(#type);
 
 
 
-int main(int argc, char *argv[])
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(Data);
 
@@ -171,11 +171,11 @@ int main(int argc, char *argv[])
     testing::TestLimits::test_conversion_limits<Int8>("-128B","0B","127B");
     testing::TestLimits::test_conversion_limits<Int16>("-32768W","0W","32767W");
     testing::TestLimits::test_conversion_limits<Int32>("-2147483648","0","2147483647");
-    testing::TestLimits::test_conversion_limits<Int64>("0X8000000000000000Q","0X0Q","0X7fffffffffffffffQ");
+    testing::TestLimits::test_conversion_limits<Int64>("-9223372036854775808Q","0Q","9223372036854775807Q");
     testing::TestLimits::test_conversion_limits<Uint8>("0BU","0BU","255BU");
     testing::TestLimits::test_conversion_limits<Uint16>("0WU","0WU","65535WU");
     testing::TestLimits::test_conversion_limits<Uint32>("0LU","0LU","4294967295LU");
-    testing::TestLimits::test_conversion_limits<Uint64>("0X0QU","0X0QU","0XffffffffffffffffQU");
+    testing::TestLimits::test_conversion_limits<Uint64>("0QU","0QU","18446744073709551615QU");
     testing::TestLimits::test_conversion_limits<Float32>("-340.282E36","119.209E-9","340.282E36");
     testing::TestLimits::test_conversion_limits<Float64>("-179.7693134862316D306","222.0446049250313D-18","179.7693134862316D306");
 

@@ -14,6 +14,7 @@
         Ken Klare LANL P-4      (c)1989,1990,1991
 */
 #include <STATICdef.h>
+#include <status.h>
 #include "tdirefstandard.h"
 #include <mdsshr.h>
 #include <stdlib.h>
@@ -26,8 +27,9 @@ int TdiMasterData(int nsig,
 		  struct descriptor_xd sig[1],
 		  struct descriptor_xd uni[1], int *cmode_ptr, struct descriptor_xd *out_ptr)
 {
+  INIT_STATUS;
   struct descriptor *pdu = uni[0].pointer;
-  int cmode = -1, j, status = 1;
+  int cmode = -1, j;
 
 	/******************
         Kill units if none.

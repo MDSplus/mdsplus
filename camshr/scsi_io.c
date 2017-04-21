@@ -203,12 +203,13 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
   int bytes_transfered = -1;
   int status = -1;
   int timeout = buflen * .02;
-  struct sg_io_hdr sghdr = { 'S' };
+  struct sg_io_hdr sghdr;
   if (sb_out_len != 0)
     *sb_out_len = 0;
   fd = OpenScsi(scsiDevice, &buf);
   if (fd >= 0) {
-    int use_mmap = buflen <= MAXBUF[scsiDevice];
+    sghdr.interface_id = 'S';
+    int use_mmap = buflen <= (unsigned int)MAXBUF[scsiDevice];
     //    if (buflen > MAXBUF[scsiDevice])
     //{
     //  fprintf( stderr, "%s(): buffer size (%d) too large, must be less than %d\n",ROUTINE_NAME,buflen,MAXBUF[scsiDevice]);
@@ -240,11 +241,11 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
     sghdr.pack_id = 0;
     if (ioctl(fd, SG_IO, &sghdr) >= 0) {
       status = sghdr.masked_status;
-      if (512 - (buflen % 512) == sghdr.resid)
+      if (512 - (buflen % 512) == (unsigned int)sghdr.resid)
 	bytes_transfered = buflen;
       else
 	bytes_transfered = buflen - sghdr.resid;
-      if (bytes_transfered > buflen)
+      if (bytes_transfered > (signed int)buflen)
 	bytes_transfered = buflen;
       if ((direction == 1) && (bytes_transfered > 0) && use_mmap)
 	memcpy(buffer, buf, bytes_transfered);

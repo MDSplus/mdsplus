@@ -163,13 +163,15 @@ class TreeNode(_data.Data):
          @type name: str
          @return: Value of attribute
          @rtype: various
-         """
-
-        if name.upper() == name:
-            try:
-                return self.getNode(name)
-            except:
-                pass
+        """
+        if name.startswith('_'):
+            namesplit = name.split('__',1)
+            if len(namesplit)==2 and namesplit[1]==namesplit[1].upper():
+                return self.getNode('\\%s::%s'%tuple(namesplit[1].split('__',1)+['TOP'])[:2])
+            if name.upper() == name:
+                return self.getNode('\\%s'%name[1:])
+        elif name.upper() == name:
+            return self.getNode(name)
         name = name.lower()
         if name in self.__dict__.keys():
             return self.__dict__[name]
@@ -406,6 +408,11 @@ class TreeNode(_data.Data):
         """
         self.putData(None)
         return
+
+    def dir(self):
+        """list descendants"""
+        for desc in self.getDescendants():
+            print('%-12s    %s'%(desc.getNodeName(),desc.getUsage()))
 
     def dispatch(self,wait=True):
         """Dispatch an action node
@@ -1171,7 +1178,7 @@ class TreeNode(_data.Data):
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
     def __init__(self,path,tree=None):
-        self.tree_path=_data.makeData(str(path));
+        self.tree_path=_data.makeData(_ver.tostr(path));
         if tree is None:
             self.tree=_tree.Tree()
         else:
@@ -1184,7 +1191,7 @@ class TreePath(TreeNode):
 
     def __str__(self):
         """Convert path to string."""
-        return self.tree_path.value
+        return str(self.tree_path)
 
 class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):

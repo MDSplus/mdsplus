@@ -16,7 +16,7 @@ extern int mit__gate___get_setup(Dptr, InGet_setupStruct *);
 extern int mit_decoder__get_event(int *, EventMask *);
 extern int GenDeviceFree();
 
-EXPORT int mit__gate__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup, EventMask * event_mask,
+EXPORT int mit__gate__get_setup(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *method __attribute__ ((unused)), DecoderSetup * setup, EventMask * event_mask,
 			 Dptr * output)
 {
   int status;

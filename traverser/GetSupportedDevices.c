@@ -1,29 +1,32 @@
+#define _GNU_SOURCE
+#include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-extern int TdiExecute();
-extern int ReadInt();
-int GetSupportedDevices(char ***devnames, char ***imagenames, int *number)
+#include <mdsshr.h>
+#include <tdishr.h>
+
+int GetSupportedDevices(char ***devnames, int *number)
 {
-  static EMPTYXD(dev_list);
+  EMPTYXD(dev_list);
   static DESCRIPTOR(expr, "_devs = MdsDevices()");
   int status;
-  status = TdiExecute(&expr, &dev_list MDS_END_ARG);
+  *number=0;
+  *devnames=0;
+  status = TdiExecute((struct descriptor *)&expr, &dev_list MDS_END_ARG);
   if (status & 1) {
     int i;
     struct descriptor_a *a_ptr = (struct descriptor_a *)dev_list.pointer;
-    int num = ReadInt("size(_devs)/2" MDS_END_ARG);
-    char **dnames;
-    char **inames;
-    dnames = (char **)malloc(num * sizeof(char **));
-    inames = (char **)malloc(num * sizeof(char **));
-    for (i = 0; i < num; i++) {
-      dnames[i] = (char *)a_ptr->pointer + (i * 2 * a_ptr->length);
-      inames[i] = (char *)a_ptr->pointer + (i * 2 + 1) * a_ptr->length;
+    *number = a_ptr->arsize/a_ptr->length/2;
+    *devnames = (char **)malloc(*number * sizeof(char **));
+    for (i = 0; i < *number; i++) {
+      char *devname;
+      (*devnames)[i] = devname = strndup((const char *)a_ptr->pointer + (i * 2 * a_ptr->length),(size_t)a_ptr->length);
+      while(strlen(devname) > 0 && isspace(devname[strlen(devname)-1]))
+	devname[strlen(devname)-1]='\0';
     }
-    *devnames = dnames;
-    *imagenames = inames;
-    *number = num;
   }
+  MdsFree1Dx(&dev_list,0);
   return status;
 }

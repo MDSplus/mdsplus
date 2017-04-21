@@ -45,7 +45,7 @@ struct scsi_info {
 int map_scsi_device(char *highway_name)
 {
   char line[80], *pline, tmp[7];
-  char dsf[4], hwytype;
+  char dsf[4], hwytype='.';
   int adapter, i, numOfEntries, scsi_id, sg_number;
   int status = SUCCESS;		// optimistic
   int found = FALSE;

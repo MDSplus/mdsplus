@@ -24,6 +24,7 @@ SOURCES = \
       ServerCreatePulse.c\
       ServerFindServers.c\
       ServerSendMessage.c\
+      ServerSendMonitor.c\
       ServerQAction.c
 
 OBJECTS = $(SOURCES:.c=.o)
@@ -48,7 +49,7 @@ install: $(libdir)
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@: $(OBJECTS) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@ $(THREAD) $(MAKE_IMPLIB)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) $(LIBSOCKET) $(THREAD) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@MdsServerShr.a: $(OBJECTS)
 	$(AR) -cr $@ $^

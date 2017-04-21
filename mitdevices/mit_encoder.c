@@ -14,7 +14,7 @@ static int one = 1;
 #define return_on_error(func,statret) status = func; if (!(status & 1)) return statret
 #define pio(f,a,d) return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0), status);
 
-int mit_encoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+int mit_encoder___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   static short code[] = { 0, 0, 0, 0, 0, 0, 0 };
@@ -42,7 +42,7 @@ int mit_encoder___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-int mit_encoder___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
+int mit_encoder___trigger(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0);
@@ -52,8 +52,9 @@ int mit_encoder___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup
 #undef pio
 #define pio(f,a,d) return_on_error(DevCamChk(CamPiow(setup.name, a, f, d, 16, 0), &one, 0), status);
 
-EXPORT int mit_encoder__set_event(struct descriptor *niddsc_ptr, struct descriptor *method_dsc,
-			   struct descriptor *event_dsc)
+EXPORT int mit_encoder__set_event(struct descriptor *niddsc_ptr __attribute__ ((unused)),
+				  struct descriptor *method_dsc __attribute__ ((unused)),
+				  struct descriptor *event_dsc)
 {
   InSet_eventStruct setup;
   int status = mit_encoder___set_event(niddsc_ptr, &setup);

@@ -40,7 +40,7 @@ typedef struct {
   unsigned:15;
 } StatusRegister;
 
-EXPORT int a14___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int a14___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   int pts;
@@ -74,7 +74,7 @@ EXPORT int a14___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-EXPORT int a14___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int a14___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
 {
   int status;
   int zero = 0;
@@ -82,7 +82,7 @@ EXPORT int a14___stop(struct descriptor *niddsc, InStopStruct * setup)
       return status;
 }
 
-EXPORT int a14___start(struct descriptor *niddsc, InStartStruct * setup)
+EXPORT int a14___start(struct descriptor *niddsc __attribute__ ((unused)), InStartStruct * setup)
 {
   int status;
   int zero = 0;
@@ -143,7 +143,7 @@ static int getMemoryPointer(InStoreStruct * setup)
   return memptr;
 }
 
-EXPORT int a14___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int a14___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status = 1;
   static long zero = 0;

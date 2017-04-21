@@ -151,7 +151,7 @@ static int one = 1;
 #define HV1440_K_MAX_PODS       16
 #define HV1440_K_CHANS_PER_POD  16
 
-EXPORT int hv1440___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int hv1440___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int pods[HV1440_K_MAX_PODS];
   int status = 1;
@@ -221,7 +221,7 @@ static int GetPodSettings(int nid, int *settings)
   return status & 1;
 }
 
-EXPORT int hv1440___on(struct descriptor *niddsc, InOnStruct * setup)
+EXPORT int hv1440___on(struct descriptor *niddsc __attribute__ ((unused)), InOnStruct * setup)
 {
   int status = 1;
   send_hv(0, 0, 4, 6);
@@ -229,7 +229,7 @@ EXPORT int hv1440___on(struct descriptor *niddsc, InOnStruct * setup)
   return 1;
 }
 
-EXPORT int hv1440___off(struct descriptor *niddsc, InOffStruct * setup)
+EXPORT int hv1440___off(struct descriptor *niddsc __attribute__ ((unused)), InOffStruct * setup)
 {
   int status = 1;
   send_hv(0, 0, 0, 6);
@@ -237,7 +237,7 @@ EXPORT int hv1440___off(struct descriptor *niddsc, InOffStruct * setup)
   return 1;
 }
 
-EXPORT int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int hv1440___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int count;
   int need_pod = 0;
@@ -246,7 +246,7 @@ EXPORT int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
   int ind;
   int i;
   int j;
-  float volt;
+  //float volt;
   int vmax;
   int vfmax = 0;
   int nfmax = 0;

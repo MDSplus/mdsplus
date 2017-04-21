@@ -236,6 +236,8 @@ int _TreeFlushReset(void *dbid, int nid)
 int TreeGetNciLw(TREE_INFO * info, int node_num, NCI * nci)
 {
   int status;
+  if (info->header->readonly)
+    return TreeREADONLY_TREE;
 
   /* status = TreeLockNci(info,0,node_num);
      if (!(status & 1)) return status; */
@@ -412,7 +414,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
 
 +-----------------------------------------------------------------------------*/
 
-int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush)
+int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush __attribute__ ((unused)))
 {
   int status;
   status = TreeNORMAL;
@@ -707,18 +709,20 @@ STATIC_THREADSAFE int NCIMutex_initialized;
 
 int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 {
-  int status;
-  status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
-			   nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
+  int status=1;
+  if (! info->header->readonly)
+    status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
+			 nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
   LockMdsShrMutex(&NCIMutex, &NCIMutex_initialized);
   return status;
 }
 
 int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum)
 {
-  int status;
-  status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
-			   MDS_IO_LOCK_NONE, 0);
+  int status=1;
+  if (! info->header->readonly)
+    status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
+			 MDS_IO_LOCK_NONE, 0);
   UnlockMdsShrMutex(&NCIMutex);
   return status;
 }

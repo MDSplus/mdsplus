@@ -47,6 +47,10 @@ dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
 AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O2])
 
 
+dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
+AX_TARGET_SELFHELP
+
+
 # Checks for programs.
 AC_PROG_AWK
 AC_PROG_CXX
@@ -78,8 +82,6 @@ AS_CASE(["$host"],
 #AC_CONFIG_HEADER(include/config.h)
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
-AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
-AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 
 JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
@@ -198,13 +200,16 @@ AC_ARG_WITH([jdk],
 
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
-                            [specify version of compiled classes (i.e. 6)])],
-            [JAVACFLAGS="$JAVACFLAGS -source $withval -target $withval"])
+                            [specify version of compiled mdsobjects classes (i.e. 6)])],
+            [AS_VAR_SET([JAVAVERSION], ["-source $withval -target $withval"])],
+            [AS_VAR_SET([JAVAVERSION], [])])
 
 AC_ARG_WITH([java_bootclasspath],
 	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
                             [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [JAVACFLAGS="$JAVACFLAGS -bootclasspath $withval"])
+            [AS_VAR_APPEND([JAVAVERSION], [" -bootclasspath $withval"])],
+            [AS_VAR_APPEND([JAVAVERSION], [])])
+AC_SUBST([JAVAVERSION])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
@@ -367,7 +372,6 @@ case "$host" in
 *mingw*)
        IDLMDSEVENT=""
        LIBPRE=""
-       SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
@@ -405,33 +409,36 @@ case "$host" in
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$FC";
        LD="gcc"
-       if ( uname -m | grep 64 > /dev/null ) 
+       if ( echo $host| grep 64 > /dev/null )
        then
-         if ( echo $host| grep 64 > /dev/null )
+         if [[ -d /usr/lib64 ]]
          then
-           if [[ -d /usr/lib64 ]]
-           then
-             D64="64"
-           else
-             D64=""
-           fi
-           SYB64=$D64
-           TARGET_ARCH="-m64"
-           UILCMD=uil
-           uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_builddir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_builddir)/bin${D64}/"
+           D64="64"
          else
-           TARGET_ARCH="-m32"
-           UILCMD=uil32
-           uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_builddir)/lib32/"
-           MAKESHLIBDIR="\$(top_builddir)/lib32/"
-           MAKEUIDDIR="\$(top_builddir)/uid32/"
-           MAKEBINDIR="\$(top_builddir)/bin32/"
+           D64=""
          fi
+         SYB64=$D64
+         TARGET_ARCH="-m64"
+         UILCMD=uil
+         uiddir="${uiddir}${D64}"
+         MAKELIBDIR="\$(top_builddir)/lib${D64}/"
+         MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
+         MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	 MAKEBINDIR="\$(top_builddir)/bin${D64}/"
+       else
+         if [[ -d /usr/lib64 ]]
+         then
+           D32="32"
+         else
+           D32=""
+         fi
+         TARGET_ARCH="-m32"
+         UILCMD=uil32
+         uiddir="${uiddir}${D32}"
+         MAKELIBDIR="\$(top_builddir)/lib${D32}/"
+         MAKESHLIBDIR="\$(top_builddir)/lib${D32}/"
+         MAKEUIDDIR="\$(top_builddir)/uid${D32}/"
+         MAKEBINDIR="\$(top_builddir)/bin${D32}/"
        fi
        FCFLAGS="$FCFLAGS -fno-range-check"
        FOR_LDFLAGS="-lg2c"
@@ -553,7 +560,6 @@ else
 fi
 
 AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(long long)
 
 # Stuff that only non-automake dirs need
 AC_SUBST([MAKEETCDIR], ["\$(top_builddir)/etc/"])
@@ -589,11 +595,23 @@ fi
 
 dnl Checks for libraries.
 
+AC_SEARCH_LIBS([gethostbyname], [nsl socket],
+               [AS_VAR_IF([ac_cv_search_gethostbyname], ["none required"], [], [LIBSOCKET=$ac_cv_search_gethostbyname])],
+               [dnl Can't search ws2_32 for gethostbyname using AC_SEARCH_LIBS, because 
+                dnl it requires #include <winsocks2.h> to work. 
+                AC_MSG_CHECKING([for gethostbyname in ws2_32]) 
+                LIBSOCKET="-lws2_32"
+                mds_old_LIBS="$LIBS"
+                LIBS="$LIBSOCKET $LIBS" 
+                AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <winsock2.h>]], 
+                                                [[gethostbyname ("");]])], 
+                               [AC_MSG_RESULT([yes])],
+                               [AC_MSG_RESULT([no]); AS_UNSET([LIBSOCKET])])
+                LIBS=$mds_old_LIBS])
+AC_SUBST([LIBSOCKET])
 AC_CHECK_LIB([m], [pow], [LIBM="-lm"], [LIBM=""])
 AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
-AC_CHECK_LIB(c,gethostbyname,LIBNSL="",AC_CHECK_LIB(socket,gethostbyname,LIBNSL="-lsocket",AC_CHECK_LIB(nsl,gethostbyname,LIBNSL="-lnsl",LIBNSL="")))
-AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET=""))
 AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID,[],"Define if you have getgrgid to get group name."))
 AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID,[],"Define if you have getpwuid."))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
@@ -942,9 +960,8 @@ AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 dnl Find a Python2 interpreter.  Python versions prior to 2.0 are not
 dnl supported. (2.0 was released on October 16, 2000).
 m4_define([_AM_PYTHON_INTERPRETER_LIST],
-          [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
-AM_PATH_PYTHON([2])
-
+	  [python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python2])
+AM_PATH_PYTHON([2],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
@@ -1086,9 +1103,20 @@ fi
 RELEASE_DATE="$(date)"
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
+# Determine common warning options to apply to C, C++, and Fortran languages
+AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
 
-
-
+AC_MSG_CHECKING([whether to treat warnings as errors])
+AC_ARG_ENABLE([werror],
+              [AS_HELP_STRING([--enable-werror],
+                              [Treat all warnings as errors])],
+              [],
+              [AS_VAR_SET([enable_werror], [no])])
+AS_CASE([$enable_werror],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
+        [])
+AC_SUBST([WARNFLAGS])
+AC_MSG_RESULT([$enable_werror])
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  CONFIG_H  ///////////////////////////////////////////////////////////// #
@@ -1162,12 +1190,10 @@ AC_SUBST(LD_LDSHARE)
 AC_SUBST(LD_LDARC)
 AC_SUBST(LIBDL)
 AC_SUBST(LIBM)
-AC_SUBST(LIBNSL)
 AC_SUBST(LIBPATH)
 AC_SUBST(LIBPRE)
 AC_SUBST(LIBREADLINE)
 AC_SUBST(LIBRESOLV)
-AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
 AC_SUBST(LIBRT)
@@ -1191,7 +1217,6 @@ AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(NEED_SEMUN)
-AC_SUBST(NSLLIB)
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
@@ -1205,7 +1230,6 @@ AC_SUBST(ENABLE_SANITIZE)
 AC_SUBST(SHARETYPE)
 AC_SUBST(SHARETYPEJNI)
 AC_SUBST(SHARETYPEMOD)
-AC_SUBST(SOCKETLIB)
 AC_SUBST(SRBLIB)
 AC_SUBST(SRBINCLUDE)
 AC_SUBST(SYBASE_INC)
@@ -1280,8 +1304,6 @@ AC_OUTPUT(Makefile.inc
           rpm/Makefile
           rpm/envsyms
           rpm/post_install_script
-          rpm/mdsipd.xinetd
-          rpm/mdsipsd.xinetd
           scripts/Makefile
           servershr/Makefile 
           setevent/Makefile

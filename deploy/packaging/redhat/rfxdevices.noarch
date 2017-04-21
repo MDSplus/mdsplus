@@ -52,6 +52,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/CADH__store.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CADH__trigger.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENDT5720.py
+./usr/local/mdsplus/tdi/RfxDevices/CAENDT5724.py
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__add.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__calibrate.fun
 ./usr/local/mdsplus/tdi/RfxDevices/CAENV1731__init.fun
@@ -691,11 +692,11 @@
 ./usr/local/mdsplus/tdi/RfxDevices/ZELOS2150GV.py
 ./usr/local/mdsplus/tdi/RfxDevices/__init__.py
 ./usr/local/mdsplus/tdi/RfxDevices/_version.py
-./usr/local/mdsplus/tdi/RfxDevices/_version.py.in
 ./usr/local/mdsplus/tdi/RfxDevices/bRadCheck.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bRadField2D.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bRadMax.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bfm_ftheta.fun
+./usr/local/mdsplus/tdi/RfxDevices/calcrms.fun
 ./usr/local/mdsplus/tdi/RfxDevices/calibTCN_0_600.fun
 ./usr/local/mdsplus/tdi/RfxDevices/check_init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/computeTF_i2t.fun
@@ -717,6 +718,7 @@
 ./usr/local/mdsplus/tdi/RfxDevices/iseps_init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/iseps_nsb.fun
 ./usr/local/mdsplus/tdi/RfxDevices/iseps_pon.fun
+./usr/local/mdsplus/tdi/RfxDevices/iseps_post_pulse_check.fun
 ./usr/local/mdsplus/tdi/RfxDevices/l6810__abort.fun
 ./usr/local/mdsplus/tdi/RfxDevices/l6810__reset.fun
 ./usr/local/mdsplus/tdi/RfxDevices/oldmdsconnect.fun

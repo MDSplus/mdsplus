@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "hv4032a1_gen.h"
-EXPORT int hv4032a1__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int hv4032a1__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "HV4032A1");
@@ -48,7 +48,7 @@ EXPORT int hv4032a1__add(struct descriptor *name_d_ptr, struct descriptor *dummy
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int hv4032a1__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int hv4032a1__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 			struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -78,7 +78,7 @@ EXPORT int hv4032a1__part_name(struct descriptor *nid_d_ptr, struct descriptor *
 extern int hv4032a1___get_settings();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) error_code = code1;
-EXPORT int hv4032a1___get_settings(struct descriptor *nid_d_ptr, InGet_settingsStruct * in_ptr)
+EXPORT int hv4032a1___get_settings(struct descriptor *nid_d_ptr __attribute__ ((unused)), InGet_settingsStruct * in_ptr)
 {
   declare_variables(InGet_settingsStruct)
   struct descriptor_xd work_xd[1];

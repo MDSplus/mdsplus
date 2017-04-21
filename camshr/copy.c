@@ -79,6 +79,8 @@ int copy(int dbType, char *inFile, char *outFile, int count)
   case CRATE_DB:
     entrySize = CRATE_ENTRY;
     break;
+  default:
+    return 0;
   }
 
   // local block

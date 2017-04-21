@@ -97,6 +97,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
@@ -119,8 +120,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(dist_rpm_SCRIPTS) \
 	$(dist_etc_DATA) $(am__dist_rpm_DATA_DIST) $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = envsyms post_install_script mdsipd.xinetd \
-	mdsipsd.xinetd
+CONFIG_CLEAN_FILES = envsyms post_install_script
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -178,7 +178,6 @@ am__dist_rpm_DATA_DIST = mdsipd.xinetd mdsipsd.xinetd \
 DATA = $(dist_etc_DATA) $(dist_rpm_DATA) $(etc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/envsyms.in \
-	$(srcdir)/mdsipd.xinetd.in $(srcdir)/mdsipsd.xinetd.in \
 	$(srcdir)/post_install_script.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -278,6 +277,7 @@ JAR = @JAR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
+JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
@@ -290,7 +290,6 @@ LD_LDARC = @LD_LDARC@
 LD_LDSHARE = @LD_LDSHARE@
 LIBDL = @LIBDL@
 LIBM = @LIBM@
-LIBNSL = @LIBNSL@
 LIBOBJS = @LIBOBJS@
 LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
@@ -329,7 +328,6 @@ MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
 NOSETESTS = @NOSETESTS@
-NSLLIB = @NSLLIB@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -374,7 +372,6 @@ SHARETYPE = @SHARETYPE@
 SHARETYPEJNI = @SHARETYPEJNI@
 SHARETYPEMOD = @SHARETYPEMOD@
 SHELL = @SHELL@
-SOCKETLIB = @SOCKETLIB@
 SRBINCLUDE = @SRBINCLUDE@
 SRBLIB = @SRBLIB@
 STRIP = @STRIP@
@@ -400,6 +397,7 @@ VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
 VS_DIR = @VS_DIR@
+WARNFLAGS = @WARNFLAGS@
 WINDRES = @WINDRES@
 XMKMF = @XMKMF@
 XML2_CONFIG = @XML2_CONFIG@
@@ -515,10 +513,6 @@ $(am__aclocal_m4_deps):
 envsyms: $(top_builddir)/config.status $(srcdir)/envsyms.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 post_install_script: $(top_builddir)/config.status $(srcdir)/post_install_script.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-mdsipd.xinetd: $(top_builddir)/config.status $(srcdir)/mdsipd.xinetd.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-mdsipsd.xinetd: $(top_builddir)/config.status $(srcdir)/mdsipsd.xinetd.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-dist_rpmSCRIPTS: $(dist_rpm_SCRIPTS)
 	@$(NORMAL_INSTALL)

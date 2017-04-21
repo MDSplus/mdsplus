@@ -26,14 +26,11 @@ class TwuSimpleFrameData
     String in_x, in_y;
     float time_max, time_min;
     int mode = -1;
-    int pixel_size;
     int first_frame_idx = -1;
     byte buf[];
-    String error;
     private int st_idx = -1, end_idx = -1;
     private int n_frames = 0;
     private float times[] = null;
-    private Dimension dim = null;
     private int header_size = 0;
     private TwuDataProvider provider = null;
 
@@ -59,13 +56,11 @@ class TwuSimpleFrameData
         else
           all_times = provider.GetFloatArray(in_x);
 
+        if(all_times == null)
+            throw(new IOException("Frame time evaluation error"));
+
         for(i = 0; i < all_times.length; i++)
           all_times[i] = (float)(-0.1 + 0.06 * i);
-
-        if(all_times == null)
-        {
-            throw(new IOException("Frame time evaluation error"));
-        }
 
         for(i = 0; i < all_times.length; i++)
         {
@@ -113,7 +108,7 @@ class TwuSimpleFrameData
 
     public Dimension GetFrameDimension()
     {
-        return dim;
+        return null;
     }
 
     public float[] GetFrameTimes()

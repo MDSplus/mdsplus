@@ -10,10 +10,10 @@
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define HV4032A1_K_CHANS         4
 
-extern int hv4032a1___get_settings(struct descriptor *niddsc, InGet_settingsStruct * setup);
+extern int hv4032a1___get_settings(struct descriptor *niddsc __attribute__ ((unused)), InGet_settingsStruct * setup);
 extern int GenDeviceFree();
 
-EXPORT int hv4032a1__get_settings(struct descriptor *niddsc_ptr, struct descriptor *meth, int max_chans,
+EXPORT int hv4032a1__get_settings(struct descriptor *niddsc_ptr __attribute__ ((unused)), struct descriptor *meth __attribute__ ((unused)), int max_chans,
 			   int *settings)
 {
   int status = 1;

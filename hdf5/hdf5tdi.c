@@ -12,12 +12,8 @@
 #include <usagedef.h>
 
 
-static const char *progname = "h5toMds";
 
-static int d_status = EXIT_SUCCESS;
 
-static const char *tree = 0;
-static const char *shot = 0;
 
 typedef struct _h5item {
   int item_type;
@@ -124,8 +120,7 @@ static void PutData(hid_t obj, char dtype, int htype, int size, int n_dims, hsiz
 
 static int find_attr(hid_t attr_id, const char *name, void *op_data)
 {
-  hid_t obj, type;
-  int status;
+  hid_t obj;
   h5item *parent = (h5item *) op_data;
   h5item *item = (h5item *) malloc(sizeof(h5item));
   h5item *itm;
@@ -145,14 +140,7 @@ static int find_attr(hid_t attr_id, const char *name, void *op_data)
     }
   }
   if ((obj = H5Aopen_name(attr_id, name)) >= 0) {
-    int size;
-    char dtype;
-    int htype = 42;
-    int is_signed;
-    hsize_t ds_dims[64];
     hid_t space = H5Aget_space(obj);
-    int n_ds_dims = H5Sget_simple_extent_dims(space, ds_dims, 0);
-    size_t precision;
     H5Sclose(space);
     item->obj = obj;
   }
@@ -164,7 +152,6 @@ static int find_objs(hid_t group, const char *name, void *op_data)
   hid_t obj;
   H5G_stat_t statbuf;
   unsigned int idx = 0;
-  int status;
   h5item *parent = (h5item *) op_data;
   h5item *item = (h5item *) malloc(sizeof(h5item));
   h5item *itm;
@@ -201,10 +188,12 @@ static int find_objs(hid_t group, const char *name, void *op_data)
       H5Aiterate(obj, &idx, find_attr, (void *)item);
     }
     break;
+  default:
+    break;
   }
   return 0;
 }
-
+/*
 static void ListItem(h5item * item)
 {
   char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
@@ -226,8 +215,8 @@ static void ListItem(h5item * item)
   if (item->brother)
     ListItem(item->brother);
 }
-
-static int list_one(h5item * item, struct descriptor *xd)
+*/
+static void list_one(h5item * item, struct descriptor *xd)
 {
   char *name = strcpy(malloc(strlen(item->name) + 1), item->name);
   char *tmp;
@@ -255,7 +244,7 @@ static int list_one(h5item * item, struct descriptor *xd)
     list_one(item->brother, xd);
 }
 
-EXPORT int hdf5list(struct descriptor *xd)
+EXPORT void hdf5list(struct descriptor *xd)
 {
   MdsFree1Dx((struct descriptor_xd *)xd, 0);
   if (current)
@@ -311,9 +300,7 @@ static int FindItem(char *namein, hid_t * obj, int *item_type)
 EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 {
   hid_t obj, type;
-  H5G_stat_t statbuf;
   int item_type;
-  int idx = 0;
   int status = FindItem(name, &obj, &item_type);
   if (status & 1) {
     if (item_type == H5G_DATASET) {
@@ -400,7 +387,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);
@@ -423,6 +410,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
       case H5T_VLEN:
 	printf("dataset is vlen ---- UNSUPPORTED\n");
 	break;
+      default:
+        break;
       }
       H5Tclose(type);
     } else {
@@ -509,7 +498,7 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
 #if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
 	  }
 #endif
-	  if (H5Tget_size(st_id) > slen) {
+	  if ((int)H5Tget_size(st_id) > slen) {
 	    slen = H5Tget_size(st_id);
 	  }
 	  H5Tset_size(st_id, slen);
@@ -531,6 +520,8 @@ EXPORT int hdf5read(char *name, struct descriptor_xd *xd)
       case H5T_VLEN:
 	printf("dataset is vlen ---- UNSUPPORTED\n");
 	break;
+      default:
+        break;
       }
       H5Tclose(type);
     }
@@ -557,7 +548,7 @@ static void FreeObj(h5item * item)
   free(item);
 }
 
-EXPORT int hdf5close()
+EXPORT void hdf5close()
 {
   if (current)
     FreeObj(current);
@@ -566,12 +557,7 @@ EXPORT int hdf5close()
 
 EXPORT int hdf5open(char *fname)
 {
-  hid_t fid, gid;
-  void *edata;
-  hid_t(*func) (void *);
-  int i;
-  int status;
-  h5item *itm;
+  hid_t fid;
 
   /* Disable error reporting */
   /*

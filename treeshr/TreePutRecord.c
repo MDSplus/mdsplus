@@ -354,6 +354,8 @@ static int FixupPath()
 int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 {
   int status = TreeNORMAL;
+  if (info->header->readonly)
+    return TreeREADONLY_TREE;
   DATA_FILE *df_ptr = info->data_file;
   *stv_ptr = 0;
   if (df_ptr == 0) {
@@ -602,20 +604,25 @@ int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t offset)
 {
   int deleted = 1;
   int status = 1;
-  while (deleted && status & 1) {
-    status = MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,
-			 offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3),
-			 readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, &deleted);
-    if (deleted && status & 1)
-      status = TreeReopenDatafile(info);
+  if (! info->header->readonly) {
+    while (deleted && status & 1) {
+      status = MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,
+			   offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3),
+			   readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, &deleted);
+      if (deleted && status & 1)
+	status = TreeReopenDatafile(info);
+    }
   }
   return status;
 }
 
 int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t offset)
 {
-  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,
-		     offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), MDS_IO_LOCK_NONE, 0);
+  int status=1;
+  if (! info->header->readonly )
+    status = MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put,
+			 offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), MDS_IO_LOCK_NONE, 0);
+  return status;
 }
 
 #ifdef OLD_LOCK_CODE

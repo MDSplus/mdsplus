@@ -20,7 +20,7 @@ void PrintOpcodes () {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc UNUSED_ARGUMENT, char **argv) {
     BEGIN_TESTING(Function);
             
     if( argc > 1 && std::string(argv[1]) == std::string("print")) {

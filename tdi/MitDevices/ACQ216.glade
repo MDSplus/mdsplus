@@ -980,7 +980,6 @@ fpga pxi</property>
                 <property name="incNidOffset">3</property>
                 <property name="dataNidOffset">0</property>
                 <property name="endIdxNidOffset">2</property>
-		<property name="vinNidOffset">4</property>
               </widget>
               <packing>
                 <property name="position">1</property>

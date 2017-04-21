@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <malloc.h>
 
-EXPORT int mdsdcl_show_version(void *ctx, char **error, char **output)
+EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   static const char *MAJOR="@RELEASE_MAJOR@";
   static const char *MINOR="@RELEASE_MINOR@";

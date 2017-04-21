@@ -180,7 +180,7 @@ static int parent_nid(int nid)
   return ReadInt(getparent, &nid_dsc MDS_END_ARG);
 }
 
-static Boolean convert_proc(Widget w, Atom * selection, Atom * target, Atom * type_return,
+static Boolean convert_proc(Widget w, Atom * selection __attribute__ ((unused)), Atom * target, Atom * type_return,
 			    XtPointer * value_return, unsigned long *length_return,
 			    int *format_return)
 {
@@ -231,7 +231,7 @@ static Boolean convert_proc(Widget w, Atom * selection, Atom * target, Atom * ty
   return status;
 }
 
-static void loose_selection_proc(Widget w, Atom * selection)
+static void loose_selection_proc(Widget w, Atom * selection __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++)
@@ -366,7 +366,7 @@ static ListTreeItem *insert_item(Widget tree, ListTreeItem * parent, int nid)
   return itm;
 }
 
-void HighlightCallback(Widget w, XtPointer client, XtPointer call)
+void HighlightCallback(Widget w, XtPointer client __attribute__ ((unused)), XtPointer call)
 {
   ListTreeMultiReturnStruct *ret;
   ListTreeItem *item;
@@ -387,8 +387,8 @@ void HighlightCallback(Widget w, XtPointer client, XtPointer call)
 
 void MenuCallback(w, client, call)
 Widget w;
-XtPointer client;
-XtPointer call;
+XtPointer client __attribute__ ((unused));
+XtPointer call __attribute__ ((unused));
 {
   ListTreeItemReturnStruct *ret = (ListTreeItemReturnStruct *) call;
   Widget popup = XtNameToWidget(BxFindTopShell(w), "*.rightButtonMenu");
@@ -397,7 +397,7 @@ XtPointer call;
   XtManageChild(popup);
 }
 
-void ActivateCallback(Widget w, XtPointer client, XtPointer call)
+void ActivateCallback(Widget w, XtPointer client __attribute__ ((unused)), XtPointer call)
 {
   ListTreeActivateStruct *ret;
   //ListTreeMultiReturnStruct ret2;
@@ -492,7 +492,7 @@ static void Init(Widget tree)
   num_selected = 0;
 }
 
-static void CommandLineOpen(Display * display, Widget tree)
+static void CommandLineOpen(Display * display __attribute__ ((unused)), Widget tree)
 {
   char chars[132];
   //int status;
@@ -562,7 +562,7 @@ static ListTreeItem *FindParentItemByNid(Widget tree, int nid)
   return Open(tree, (parent_nid > 0) ? parent_nid : 0);
 }
 
-static ListTreeItem *FindChildItemByNid(Widget tree, ListTreeItem * parent, int nid)
+static ListTreeItem *FindChildItemByNid(Widget tree __attribute__ ((unused)), ListTreeItem * parent, int nid)
 {
   ListTreeItem *itm;
   Boolean found = 0;
@@ -707,7 +707,7 @@ static void InitializeCommandInterface(Widget w)
 
 static Widget TREE;
 
-void AddListTree(Widget w, XtPointer client_data, XtPointer call_data)
+void AddListTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   Widget tree;
   //ListTreeItem *item;
@@ -771,7 +771,7 @@ BxExitCB ARGLIST((w, client, call)) UARG(Widget, w) ARG(XtPointer, client) GRAU(
 
 /* ARGSUSED */
 void
-BxManageCB ARGLIST((w, client, call)) ARG(Widget, w) ARG(XtPointer, client) GRAU(XtPointer, call)
+BxManageCB ARGLIST((w, client, call)) ARG(Widget, w) ARG(XtPointer, client) GRAU(XtPointer, call __attribute__ ((unused)))
 {
   WidgetList widgets;
   int i;
@@ -833,7 +833,7 @@ static void display_data(Widget w, int nid, int count)
   makeNoEdit(w);
 }
 
-void DisplayData(Widget w, XtPointer client_data, XtPointer call_data)
+void DisplayData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++) {
@@ -842,7 +842,7 @@ void DisplayData(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void TurnOnOff(Widget w, XtPointer client_data, XtPointer call_data)
+void TurnOnOff(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   int on = *(int *)client_data;
@@ -893,7 +893,7 @@ static void modify_data(Widget w, int nid, int count)
   }
 }
 
-void ModifyData(Widget w, XtPointer client_data, XtPointer call_data)
+void ModifyData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++) {
@@ -905,7 +905,7 @@ void ModifyData(Widget w, XtPointer client_data, XtPointer call_data)
 static int NUM_TO_DELETE = 0;
 static int *NIDS_TO_DELETE = 0;
 
-void DeleteNodeNow(Widget w, XtPointer client_data, XtPointer call_data)
+void DeleteNodeNow(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   int status;
@@ -973,7 +973,7 @@ void DeleteNodeConditional()
   XtManageChild(delete_ok_box);
 }
 
-void DeleteNode(Widget w, XtPointer client_data, XtPointer call_data)
+void DeleteNode(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   NUM_TO_DELETE = 0;
@@ -987,7 +987,7 @@ void DeleteNode(Widget w, XtPointer client_data, XtPointer call_data)
     XmdsComplain(w, "Please choose one or more nodes\nbefore choosing delete node.");
 }
 
-void RenameNodeNow(Widget w, XtPointer client_data, XtPointer call_data)
+void RenameNodeNow(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
 {
   int nid = (int)((char *)client_data - (char *)0);
   Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
@@ -1011,7 +1011,7 @@ void RenameNodeNow(Widget w, XtPointer client_data, XtPointer call_data)
     XmdsComplain(w, "Error renaming node");
 }
 
-void RenameNode(Widget w, XtPointer client_data, XtPointer call_data)
+void RenameNode(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   if (num_selected > 0) {
@@ -1106,7 +1106,7 @@ static int setup_device(Widget parent, int nid)
   return status;
 }
 
-void SetupDevice(Widget w, XtPointer client_data, XtPointer call_data)
+void SetupDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++) {
@@ -1115,11 +1115,11 @@ void SetupDevice(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void MenuUnmap(Widget w, XtPointer client_data, XtPointer call_data)
+void MenuUnmap(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
 }
 
-void MSetupDevice(Widget w, XtPointer client_data, XtPointer call_data)
+void MSetupDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (menu_item != NULL) {
     int nid = get_nid(menu_item);
@@ -1128,7 +1128,7 @@ void MSetupDevice(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void MTurnOnOff(Widget w, XtPointer client_data, XtPointer call_data)
+void MTurnOnOff(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
 {
   int on = *(int *)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
@@ -1145,7 +1145,7 @@ void MTurnOnOff(Widget w, XtPointer client_data, XtPointer call_data)
   ListTreeRefreshOn(tree);
 }
 
-void MDisplayData(Widget w, XtPointer client_data, XtPointer call_data)
+void MDisplayData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (menu_item != NULL) {
     int nid = get_nid(menu_item);
@@ -1154,7 +1154,7 @@ void MDisplayData(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void MModifyData(Widget w, XtPointer client_data, XtPointer call_data)
+void MModifyData(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (menu_item != NULL) {
     int nid = get_nid(menu_item);
@@ -1201,7 +1201,7 @@ static void display_nci(Widget bu, int nid, int count)
   XmStringFree(label);
 }
 
-void DisplayNci(Widget w, XtPointer client_data, XtPointer call_data)
+void DisplayNci(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++) {
@@ -1210,7 +1210,7 @@ void DisplayNci(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void MDisplayNci(Widget w, XtPointer client_data, XtPointer call_data)
+void MDisplayNci(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (menu_item != NULL) {
     int nid = get_nid(menu_item);
@@ -1219,7 +1219,7 @@ void MDisplayNci(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void CloseTree(Widget w, XtPointer client_data, XtPointer call_data)
+void CloseTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
   ListTreeItem *top = ListTreeFirstItem(tree);
@@ -1237,7 +1237,7 @@ void CloseTree(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void WriteTree(Widget w, XtPointer client_data, XtPointer call_data)
+void WriteTree(Widget w, XtPointer client_data, XtPointer call_data __attribute__ ((unused)))
 {
   int status;
   int write = *(int *)client_data;
@@ -1275,7 +1275,7 @@ static void AskCreate(Widget w, char *tree, int shot)
   XtManageChild(ask_dlog);
 }
 
-void CreateTree(Widget w, XtPointer client_data, XtPointer call_data)
+void CreateTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int status = 1;
   struct tree_id *treeid;
@@ -1317,7 +1317,7 @@ void open_tree(Widget w, char *tree, int shot)
   }
 }
 
-void OpenTree(Widget w, XtPointer client_data, XtPointer call_data)
+void OpenTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   Widget parentw = XtParent(w);
   Widget treew = XtNameToWidget(parentw, "tree_name");
@@ -1338,12 +1338,12 @@ void OpenTree(Widget w, XtPointer client_data, XtPointer call_data)
 		 "Specify both a tree and a shot\nbefore choosing \"Ok\"\nUse \"Cancel\" to abort operation");
 }
 
-void MDoAction(Widget w, XtPointer client_data, XtPointer call_data)
+void MDoAction(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
 }
 
-void SetDefault(Widget w, XtPointer client_data, XtPointer call_data)
+void SetDefault(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   int i;
   for (i = 0; i < num_selected; i++) {
@@ -1351,7 +1351,7 @@ void SetDefault(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void MSetDefault(Widget w, XtPointer client_data, XtPointer call_data)
+void MSetDefault(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (menu_item != NULL) {
     set_default(w, menu_item);
@@ -1359,7 +1359,7 @@ void MSetDefault(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void DoAction(Widget w, XtPointer client_data, XtPointer call_data)
+void DoAction(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
 }
@@ -1367,7 +1367,7 @@ void DoAction(Widget w, XtPointer client_data, XtPointer call_data)
 static unsigned int usage = 0;
 static char *device_type = 0;
 
-void AddNodeStart(Widget w, XtPointer client_data, XtPointer call_data)
+void AddNodeStart(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (num_selected != 1)
     XmdsComplain(w, "select exactly one node as parent before choosing add node");
@@ -1378,7 +1378,7 @@ void AddNodeStart(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void AddNodeDismiss(Widget w, XtPointer client_data, XtPointer call_data)
+void AddNodeDismiss(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   XtUnmanageChild(w);
 }
@@ -1431,7 +1431,7 @@ Boolean add_node(Widget w, ListTreeItem * parent, char *name, int usage, ListTre
   return status & 1;
 }
 
-void add_tags(ListTreeItem * itm, char *tags)
+void add_tags(ListTreeItem * itm __attribute__ ((unused)), char *tags __attribute__ ((unused)))
 {
 }
 
@@ -1469,20 +1469,20 @@ Boolean AddNodeApply(Widget w)
   return status;
 }
 
-void AddNode(Widget w, XtPointer client_data, XtPointer call_data)
+void AddNode(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   if (AddNodeApply(w))
     XtUnmanageChild(w);
 }
 
-void SetUsage(Widget w, XtPointer client_data, XtPointer call_data)
+void SetUsage(Widget w __attribute__ ((unused)), XtPointer client_data, XtPointer call_data)
 {
   XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *) call_data;
   if (cb->set)
     usage = *(int *)client_data;
 }
 
-void SetDeviceType(Widget w, XtPointer client_data, XtPointer call_data)
+void SetDeviceType(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   char *sptr, *dptr;
   //XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *) call_data;
@@ -1492,7 +1492,7 @@ void SetDeviceType(Widget w, XtPointer client_data, XtPointer call_data)
   /*   strcpy(device_type, w->core.name); */
 }
 
-void CommandEntered(Widget w, XtPointer client_data, XtPointer call_data)
+void CommandEntered(Widget w __attribute__ ((unused)), XtPointer client_data __attribute__ ((unused)), XtPointer call_data)
 {
   XmCommandCallbackStruct *cb = (XmCommandCallbackStruct *) call_data;
   char *cmd;
@@ -1513,11 +1513,10 @@ void CommandEntered(Widget w, XtPointer client_data, XtPointer call_data)
   }
 }
 
-void CreateAddDevice(Widget w, XtPointer client_data, XtPointer call_data)
+void CreateAddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   static Boolean devices_loaded = False;
   char **devnames;
-  char **imagenames;
   int num;
   Widget top;
   usage = TreeUSAGE_DEVICE;
@@ -1535,24 +1534,27 @@ void CreateAddDevice(Widget w, XtPointer client_data, XtPointer call_data)
       static XtCallbackRec device_changed_list[] = { {(XtCallbackProc) SetDeviceType, 0}, {0, 0} };
       args[0].value = (long)device_changed_list;
       rb = XtNameToWidget(top, "*.ad_radioBox1");
-      GetSupportedDevices(&devnames, &imagenames, &num);
+      GetSupportedDevices(&devnames, &num);
       for (i = 0; i < num; i++) {
 
 	Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
+	free(devnames[i]);
 	XtManageChild(w);
       }
+      if (devnames)
+	free(devnames);
       devices_loaded = True;
     }
     XtManageChild(top);
   }
 }
 
-void AddDevice(Widget w, XtPointer client_data, XtPointer call_data)
+void AddDevice(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   XtUnmanageChild(w);
 }
 
-void AddDeviceDismiss(Widget w, XtPointer client_data, XtPointer call_data)
+void AddDeviceDismiss(Widget w, XtPointer client_data __attribute__ ((unused)), XtPointer call_data __attribute__ ((unused)))
 {
   XtUnmanageChild(w);
 }
@@ -1655,7 +1657,7 @@ void tag_button_proc(Widget w, int *tag)
   }
 }
 
-void tag_selection_proc(Widget w, int *tag, XmListCallbackStruct * reason)
+void tag_selection_proc(Widget w, int *tag __attribute__ ((unused)), XmListCallbackStruct * reason)
 {
   Widget tag_widget = XtParent(w);
   char *tag_txt;
@@ -1664,7 +1666,7 @@ void tag_selection_proc(Widget w, int *tag, XmListCallbackStruct * reason)
   XtFree(tag_txt);
 }
 
-void ModifyTags(Widget w, XtPointer client_data, XmListCallbackStruct * reason)
+void ModifyTags(Widget w, XtPointer client_data __attribute__ ((unused)), XmListCallbackStruct * reason __attribute__ ((unused)))
 {
   Widget tagsw = XtNameToWidget(BxFindTopShell(w), "*.tags_box");
   if (!XtIsManaged(tagsw)) {

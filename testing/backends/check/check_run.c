@@ -43,7 +43,7 @@
 #else
 #include <sys/wait.h> // waitpid
 #endif
-
+extern char *strsignal(int);
 enum rinfo
 {
     CK_R_SIG,

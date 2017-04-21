@@ -248,12 +248,14 @@ import javax.swing.event.*;
 
    class SList extends JPanel implements ItemListener
    {
-    private JList            sig_list;
-//    private DefaultListModel<String> list_model = new DefaultListModel<String>();
-    private DefaultListModel list_model = new DefaultListModel();
-    private JComboBox        mode1D, mode2D, color, marker;
+    private JList<String>            sig_list;
+    private DefaultListModel<String> list_model = new DefaultListModel<>();
+    private JComboBox<String>        mode1D;
+    private JComboBox<String>        mode2D;
+    private JComboBox<String>        color;
+    private JComboBox<String>        marker;
     private JTextField	     marker_step_t;
-    private Vector<Data>     signals = new Vector<Data>();
+    private Vector<Data>     signals = new Vector<>();
     private long		     shots[]=null;
     private int              list_num_shot = 0;
     private int              sel_signal = -1;
@@ -261,14 +263,13 @@ import javax.swing.event.*;
     public SList()
     {
 	    BorderLayout bl= new BorderLayout(25,1);
-	    setLayout(bl );
+	    setLayout(bl);
 
 	    lab = new JLabel("Signals list");
 	    add("North", lab);
 
-
 	    list_model.addElement("Select this item to add new expression");
-	    sig_list = new JList(list_model);
+	    sig_list = new JList<>(list_model);
         JScrollPane scroll_sig_list = new JScrollPane(sig_list);
         sig_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sig_list.addListSelectionListener(
@@ -281,7 +282,6 @@ import javax.swing.event.*;
                     SList.this.signalSelect(((JList)e.getSource()).getSelectedIndex()-1);
                 }
 	        });
-
 
 	    sig_list.addKeyListener(
 	        new KeyAdapter()
@@ -308,7 +308,7 @@ import javax.swing.event.*;
 
         p.setLayout(gridbag);
 
-        mode1D = new JComboBox();
+        mode1D = new JComboBox<>();
 	    mode1D.addItem("Line");
 	    mode1D.addItem("No Line");
 	    mode1D.addItem("Step Plot");
@@ -316,7 +316,7 @@ import javax.swing.event.*;
 	    gridbag.setConstraints(mode1D, c);
 	    p.add(mode1D);
 
-        mode2D = new JComboBox();
+        mode2D = new JComboBox<>();
 	    mode2D.addItem("y & time");
 	    mode2D.addItem("x & y");
 	    mode2D.addItem("y & x");
@@ -325,13 +325,13 @@ import javax.swing.event.*;
 	    gridbag.setConstraints(mode2D, c);
 	    p.add(mode2D);
 
-	    color = new JComboBox();
+	    color = new JComboBox<>();
 	    SetColorList();
 	    color.addItemListener(this);
 	    gridbag.setConstraints(color, c);
 	    p.add(color);
 
-	    marker = new JComboBox();
+	    marker = new JComboBox<>();
 	    for(int i = 0; i < Signal.markerList.length; i++)
 	        marker.addItem(Signal.markerList[i]);
 
@@ -354,7 +354,7 @@ import javax.swing.event.*;
                     if(getSignalSelect() != -1)
                     {
                             try {
-                                ((Data)signals.elementAt(getSignalSelect())).marker_step = new Integer(marker_step_t.getText()).intValue();
+                                signals.elementAt(getSignalSelect()).marker_step = Integer.parseInt(marker_step_t.getText());
                             } catch (NumberFormatException ex) {
                                 marker_step_t.setText("1");
                             }
@@ -362,7 +362,6 @@ import javax.swing.event.*;
                 }
             }
             );
-
 
 	    gridbag.setConstraints(marker_step_t, c);
 	    p.add(marker_step_t);
@@ -373,7 +372,6 @@ import javax.swing.event.*;
 	    add("South", lab);
 
 	    setOptionState(false);
-
    }
 
       public void setSignalSelect(int sig)
@@ -399,7 +397,7 @@ import javax.swing.event.*;
 	    sig_list.ensureIndexIsVisible(id);
         if(sig >= 0)
             if(getSignalSelect() < signals.size())
-                putSignalSetup((Data)signals.elementAt(getSignalSelect()));
+                putSignalSetup(signals.elementAt(getSignalSelect()));
         else
         	resetSignalSetup();
 	    setOptionState(getSignalSelect() >= 0);
@@ -435,13 +433,13 @@ import javax.swing.event.*;
 	    }
       }
 
-     public int findSignalSetup(Data ws)
-     {
-	    for(int i=0; i < signals.size(); i++)
-	        if(((Data)signals.elementAt(i)).equals(ws))
-		        return i;
-	    return -1;
-     }
+    public int findSignalSetup(Data ws)
+    {
+        for(int i=0; i < signals.size(); i++)
+            if(signals.elementAt(i).equals(ws))
+                return i;
+        return -1;
+    }
 
      public void updateSignalSetup(int idx, Data ws)
      {
@@ -594,7 +592,7 @@ import javax.swing.event.*;
 	ws.marker        = marker.getSelectedIndex();
 
 	try{
-	    ws.marker_step   = new Integer(marker_step_t.getText()).intValue();
+	    ws.marker_step = Integer.parseInt(marker_step_t.getText());
 	} catch(NumberFormatException e) {
 	    ws.marker_step   = 1;
 	}
@@ -680,10 +678,6 @@ import javax.swing.event.*;
 	    idx = findSignalSetup(ws);
 	    if( idx == -1)
 	    {
-
-	        String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ;
-	        String y_e =  new String(y_expr.getText());
-
 	        if(shots != null && shots.length != 0)
 	        {
 		        for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
@@ -2071,14 +2065,12 @@ import javax.swing.event.*;
 	    if(ob == x_max || ob == y_max || ob == x_min
 	       || ob == y_min || ob == shot || ob == time_max || ob == time_min)
 	    {
-	        Character ch = new Character((char)key);
-            if(!ch.isDigit((char)key) &&
-		    key != KeyEvent.VK_DELETE &&
-	        key != '.' && key != '+' && key != '-')
-		    return;
+	        Character ch = new Character(key);
+                if(!ch.isDigit(key) && key != KeyEvent.VK_DELETE && key != '.' && key != '+' && key != '-')
+                    return;
+            }
         }
-      }
-   }
+    }
 
    private void  defaultButtonOperation(Object obj, boolean state, String val)
    {

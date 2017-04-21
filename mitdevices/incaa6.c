@@ -36,12 +36,12 @@ static int one = 1;
 
 static int arm_init(InInitStruct * setup, int start);
 
-EXPORT int incaa6___init(struct descriptor *niddsc_ptr, InInitStruct * setup)
+EXPORT int incaa6___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   return arm_init(setup, 1);
 }
 
-EXPORT int incaa6___arm(struct descriptor *niddsc_ptr, InArmStruct * setup)
+EXPORT int incaa6___arm(struct descriptor *niddsc_ptr __attribute__ ((unused)), InArmStruct * setup)
 {
   return arm_init((InInitStruct *) setup, 0);
 }
@@ -52,9 +52,9 @@ static int arm_init(InInitStruct * setup, int start)
   float freq;
   int status;
   int i;
-  int chans;
-  int ival;
-  int ptsc;
+  //int chans;
+  //int ival;
+  //int ptsc;
   /*********************************************
     Read in the name and mode records.
     If any problem is encountered
@@ -87,16 +87,19 @@ static int arm_init(InInitStruct * setup, int start)
   return status;
 }
 
-EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr, InTriggerStruct * setup)
+EXPORT int incaa6___trigger(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16);		/* Trigger */
   return status;
 }
 
-static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
+//static int ReadChannel(InStoreStruct * setup, int *chan_ptr, int *samples_ptr, short *data_ptr);
+// flag values to put in comment field to specify alternate gains 
+#define FIVE_V_KEY "* 5 *"
+#define TEN_V_KEY "* 10 *"
 
-EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int incaa6___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
@@ -110,10 +113,10 @@ EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   static DESCRIPTOR_RANGE(int_clock_d, 0, 0, &frequency_d);
   static int clock_in_nid;
   static DESCRIPTOR_NID(ext_clock_d, &clock_in_nid);
-  static float coefficient = 20.0 / 4096;
-  static DESCRIPTOR_FLOAT(coef_d, &coefficient);
-  static int key;
-  static DESCRIPTOR_LONG(key_d, &key);
+  static float coefficients[] = {20.0 / 4096, 10.0/4096, 5.0/4096};
+  static DESCRIPTOR_FLOAT(coef_d, &coefficients[0]);
+  //static int key;
+  //static DESCRIPTOR_LONG(key_d, &key);
   static DESCRIPTOR_FUNCTION_1(value, (unsigned char *)&OpcValue, 0);
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &value);
   static DESCRIPTOR(volts_str, "volts");
@@ -125,6 +128,7 @@ EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   static DESCRIPTOR(time_str, "seconds");
   static DESCRIPTOR_WITH_UNITS(time, &dimension, &time_str);
   static DESCRIPTOR_SIGNAL_1(signal, &volts, &counts, &time);
+  static struct descriptor_d comment_d = { 0, DTYPE_T, CLASS_D, 0 };
   short *data_ptr;
   int status;
   int start;
@@ -134,13 +138,13 @@ EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   int samples_to_read;
   int mar = 3 * 1024 * 1024 / 6;
   int samps_per_chan;
-  int i;
-  int polarity;
+  //int i;
+  //int polarity;
   CSRegister csreg = { 4, 4, 0, 0, 1, 1, 0, 0, 1 };
   int min_idx;
   int max_idx;
   int start_addr = 0;
-  int tries;
+  //int tries;
   int memsize;
   int fast;
   int actual_ptsc;
@@ -149,6 +153,18 @@ EXPORT int incaa6___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup
   clock_in_nid = setup->head_nid + INCAA6_N_CLOCK_IN;
   clock_out_nid = setup->head_nid + INCAA6_N_CLOCK_OUT;
   value.ndesc = 0;
+  // set the channel gain to alternate values if the comment field starts
+  // with the flag value
+  status = DevText(&comment_nid, &comment_d);
+  if (status&1) {
+    if( strncmp(comment_d.pointer, TEN_V_KEY, strlen(TEN_V_KEY)) == 0) {
+      coef_d.pointer = (void *)&coefficients[1];
+    } 
+    else if( strncmp(comment_d.pointer, FIVE_V_KEY, strlen(FIVE_V_KEY)) == 0) {
+      coef_d.pointer = (void *)&coefficients[2];
+    }
+    StrFree1Dx(&comment_d);
+  }
   fast = TreeIsOn(comment_nid) & 1;
   pio(0, 2, (int *)&csreg, 24);
   pio(25, 1, 0, 16);		/* stop the module */

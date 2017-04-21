@@ -1,49 +1,50 @@
 #ifndef SERVERSHRP_H
-#define SERVERSHRP_H
-#include <config.h>
-#ifdef _WIN32
-#include <windows.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#else
-typedef void *pthread_t;
-#define close closesocket
-#endif
-#else
-#include <pthread.h>
-#ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
-extern void pthread_lock_global_np();
-extern void pthread_unlock_global_np();
-#endif
-#endif
+ #define SERVERSHRP_H
+ #include <config.h>
+ #ifdef _WIN32
+  #include <windows.h>
+  #include <time.h>
+  #ifdef HAVE_PTHREAD_H
+   #include <pthread.h>
+  #else
+   typedef void *pthread_t;
+   #define close closesocket
+  #endif
+ #else
+  #include <pthread.h>
+  #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
+   extern void pthread_lock_global_np();
+   extern void pthread_unlock_global_np();
+  #endif
+ #endif
 
-#define SrvNoop        0	   /**** Used to start server ****/
-#define SrvAbort       1	   /**** Abort current action or mdsdcl command ***/
-#define SrvAction      2	   /**** Execute an action nid in a tree ***/
-#define SrvClose       3	   /**** Close open trees ***/
-#define SrvCreatePulse 4	   /**** Create pulse files for single tree (no subtrees) ***/
-#define SrvSetLogging  5	   /**** Turn logging on/off ***/
-#define SrvCommand     6	   /**** Execute MDSDCL command ***/
-#define SrvMonitor     7	   /**** Broadcast messages to action monitors ***/
-#define SrvShow        8	   /**** Request current status of server ***/
-#define SrvStop        9	   /**** Stop server ***/
-#define SrvRemoveLast  10	   /**** Remove last entry in the queue if jobs pending ***/
+ #define SrvNoop        0	   /**** Used to start server ****/
+ #define SrvAbort       1	   /**** Abort current action or mdsdcl command ***/
+ #define SrvAction      2	   /**** Execute an action nid in a tree ***/
+ #define SrvClose       3	   /**** Close open trees ***/
+ #define SrvCreatePulse 4	   /**** Create pulse files for single tree (no subtrees) ***/
+ #define SrvSetLogging  5	   /**** Turn logging on/off ***/
+ #define SrvCommand     6	   /**** Execute MDSDCL command ***/
+ #define SrvMonitor     7	   /**** Broadcast messages to action monitors ***/
+ #define SrvShow        8	   /**** Request current status of server ***/
+ #define SrvStop        9	   /**** Stop server ***/
+ #define SrvRemoveLast  10	   /**** Remove last entry in the queue if jobs pending ***/
 
-#define MonitorBuildBegin 1
-#define MonitorBuild      2
-#define MonitorBuildEnd   3
-#define MonitorCheckin    4
-#define MonitorDispatched 5
-#define MonitorDoing      6
-#define MonitorDone       7
+ #define MonitorBuildBegin 1
+ #define MonitorBuild      2
+ #define MonitorBuildEnd   3
+ #define MonitorCheckin    4
+ #define MonitorDispatched  5
+ #define MonitorDoing      6
+ #define MonitorDone       7
 
-#define SrvJobABORTED     1
-#define SrvJobSTARTING    2
-#define SrvJobFINISHED    3
-#define SrvJobCHECKEDIN   4
+ #define SrvJobABORTED     1
+ #define SrvJobSTARTING    2
+ #define SrvJobFINISHED    3
+ #define SrvJobCHECKEDIN   4
 
-#define SrvJobBEFORE_NOTIFY 1
-#define SrvJobAFTER_NOTIFY  2
+ #define SrvJobBEFORE_NOTIFY 1
+ #define SrvJobAFTER_NOTIFY  2
 
 typedef struct {
   struct _SrvJob *next;
@@ -133,10 +134,13 @@ typedef struct {
   int status;
 } DispatchEvent;
 
-#ifndef _NO_SERVER_SEND_MESSAGE_PROTO
+ #ifndef _NO_SERVER_SEND_MESSAGE_PROTO
 extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, int *socket,
 			     void (*ast) (), void *astparam, void (*before_ast) (),
 			     int numargs_in, ...);
-#endif
+ #endif
 extern int ServerConnect(char *);
+extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid, int on,
+			     int mode, char *server, int actstatus);
+
 #endif

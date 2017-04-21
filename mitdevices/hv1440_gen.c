@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "hv1440_gen.h"
-EXPORT int hv1440__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int hv1440__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "HV1440");
@@ -102,7 +102,7 @@ EXPORT int hv1440__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int hv1440__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int hv1440__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 		      struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -175,7 +175,7 @@ extern int hv1440___init();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int hv1440__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv1440__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
   struct descriptor_xd work_xd[1];
@@ -195,7 +195,7 @@ EXPORT int hv1440__init(struct descriptor *nid_d_ptr, struct descriptor *method_
 extern int hv1440___store();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int hv1440__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv1440__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
   struct descriptor_xd work_xd[1];
@@ -215,7 +215,7 @@ EXPORT int hv1440__store(struct descriptor *nid_d_ptr, struct descriptor *method
 extern int hv1440___on();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int hv1440__on(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv1440__on(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InOnStruct)
   struct descriptor_xd work_xd[1];
@@ -233,7 +233,7 @@ EXPORT int hv1440__on(struct descriptor *nid_d_ptr, struct descriptor *method_d_
 extern int hv1440___off();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int hv1440__off(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int hv1440__off(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InOffStruct)
   struct descriptor_xd work_xd[1];

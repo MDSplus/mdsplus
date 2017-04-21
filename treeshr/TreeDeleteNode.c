@@ -170,11 +170,8 @@ extern void _TreeDeleteNodeExecute(void *dbid)
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   static NID nid;
   NODE *node;
-  NODE *prevnode = 0;
   NODE *parent;
   static NCI empty_nci;
-  NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
-      (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
 
   TREE_EDIT *edit = dblist->tree_info->edit;
   static int zero = 0;
@@ -228,18 +225,41 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       }
     }
     if ((int)nid.node < edit->first_in_mem) {
-      NCI old_nci;
-      int nidx = nid.node;
-      TreeGetNciLw(dblist->tree_info, nidx, &old_nci);
-      TreePutNci(dblist->tree_info, nidx, &empty_nci, 1);
-      TreeUnLockNci(dblist->tree_info, 0, nidx);
-   } else
+      DELETED_NID *dnid = malloc(sizeof(DELETED_NID));
+      dnid->next=edit->deleted_nid_list;
+      dnid->nid=nid;
+      edit->deleted_nid_list=dnid;
+    }
+    else
       memcpy(edit->nci + nid.node - edit->first_in_mem, &empty_nci, sizeof(struct nci));
     memcpy(node->name, "deleted node", sizeof(node->name));
     LoadShort(zero, &node->conglomerate_elt);
     node->member = 0;
     node->brother = 0;
     node->usage = 0;
+  }
+  dblist->modified = 1;
+  _TreeDeleteNodeInitialize(dbid, 0, 0, 1);
+}
+
+void _TreeDeleteNodesWrite(void *dbid) {
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  static NID nid;
+  NODE *node;
+  NODE *prevnode = 0;
+  static NCI empty_nci;
+  NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
+      (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
+
+  TREE_EDIT *edit = dblist->tree_info->edit;
+  DELETED_NID *dnid,*next;
+  NCI old_nci;
+  int nidx;
+  for (dnid=edit->deleted_nid_list,edit->deleted_nid_list=0; dnid; dnid=next) {
+    next=dnid->next;
+    nid=dnid->nid;
+    free(dnid);
+    node = nid_to_node(dblist, &nid);
     if (prevnode) {
       int tmp;
       prevnode->parent = node_offset(node, prevnode);
@@ -251,6 +271,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       dblist->tree_info->header->free = swapint((char *)&tmp);
       node->child = 0;
     }
+    prevnode = node;
     if (firstempty) {
       int tmp;
       node->parent = node_offset(firstempty, node);
@@ -258,10 +279,11 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       firstempty->child = swapint((char *)&tmp);
     } else
       node->parent = 0;
-    prevnode = node;
+    nidx = nid.node;
+    TreeGetNciLw(dblist->tree_info, nidx, &old_nci);
+    TreePutNci(dblist->tree_info, nidx, &empty_nci, 1);
+    TreeUnLockNci(dblist->tree_info, 0, nidx);
   }
-  dblist->modified = 1;
-  _TreeDeleteNodeInitialize(dbid, 0, 0, 1);
 }
 
 /*------------------------------------------------------------------------------

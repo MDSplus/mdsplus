@@ -22,8 +22,8 @@
 #include "mdsshrthreadsafe.h"
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
-extern int UdpEventGetTtl(unsigned char *ttl);
-extern int UdpEventGetLoop(unsigned char *loop);
+extern int UdpEventGetTtl(char *ttl);
+extern int UdpEventGetLoop(char *loop);
 extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
 #define MAX_MSG_LEN 4096
@@ -78,11 +78,12 @@ static void *handleMessage(void *info_in)
   char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
   void *arg = info->arg;
   void (*astadr) (void *, int, char *) = info->astadr;
-  int recBytes;
+  ssize_t recBytes;
   char recBuf[MAX_MSG_LEN];
   struct sockaddr clientAddr;
   int addrSize = sizeof(clientAddr);
-  int nameLen, bufLen;
+  size_t nameLen;
+  int bufLen;
   char *eventName;
   char *currPtr;
   pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
@@ -125,7 +126,7 @@ static void *handleMessage(void *info_in)
     memcpy(&bufLen, currPtr, sizeof(bufLen));
     bufLen = ntohl(bufLen);
     currPtr += sizeof(int);
-    if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
+    if ((size_t)recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
       continue;
     if (strncmp(thisEventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
       continue;
@@ -378,14 +379,16 @@ int MDSUdpEventCan(int eventid)
 {
   EventList *ev = popEvent(eventid);
   if (ev) {
-    #ifdef _WIN32
+#ifdef _WIN32
+    // For some reason shutdown does not abort the recvfrom and hangs the process joining
+    // the handleMessage thread. closesocket seems to work though.
     closesocket(ev->socket);
-    #else
+#else
     shutdown(ev->socket, SHUT_RDWR);
     close(ev->socket);
-    #endif
+#endif
 //    pthread_cancel(ev->thread);
-    pthread_join(ev->thread,0);    
+    pthread_join(ev->thread,0);
     free(ev);
     return 1;
   } else {
@@ -406,7 +409,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   int status;
   struct hostent *hp = (struct hostent *)NULL;
   unsigned short port;
-  unsigned char ttl,loop;
+  char ttl, loop;
   struct in_addr *interface_addr=0;
 
   initialize();
@@ -452,7 +455,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   if (UdpEventGetLoop(&loop))
     setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
   if (UdpEventGetInterface(&interface_addr)) {
-    status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF, interface_addr, sizeof(*interface_addr));
+    status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF, (char *)interface_addr, sizeof(*interface_addr));
     free(interface_addr);
   }
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) == -1) {

@@ -6,8 +6,8 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 # NOTE: please note that also ${top_srcdir} is added to be able to access the
 # mdstcpip includes .. needed by mdsipmain.c
 #
-AM_CFLAGS = $(TARGET_ARCH) $(TEST_CFLAGS) -I${top_srcdir}
-AM_CXXFLAGS = $(TARGET_ARCH) -Wno-deprecated @CXXFLAGS@ -I${top_srcdir}
+AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS) $(TEST_CFLAGS) -I${top_srcdir}
+AM_CXXFLAGS = $(TARGET_ARCH) $(WARNFLAGS) -Wno-deprecated @CXXFLAGS@ -I${top_srcdir}
 AM_LDFLAGS = -L@MAKESHLIBDIR@ $(RPATHLINK),@MAKESHLIBDIR@
 
 AM_LIBS = $(LIBS) -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr

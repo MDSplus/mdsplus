@@ -87,7 +87,7 @@ EXPORT int LibWait(const float *secs)
 ///
 EXPORT void *LibCallg(void **arglist, void *(*routine) ())
 {
-  switch (*(long *)arglist & 0xff) {
+  switch (*(int*)&arglist[0] & 0xff) {
   case 0:
     return (*routine) ();
   case 1:
@@ -235,7 +235,7 @@ EXPORT void *LibCallg(void **arglist, void *(*routine) ())
 
 #ifdef _WIN32
 
-STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
+STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 {
   HKEY regkey;
   unsigned char *path = NULL;
@@ -253,9 +253,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
 }
 
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
-{
-
+EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -371,20 +369,15 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 EXPORT char *TranslateLogical(char const *pathname)
 {
-  char *path = NULL;
   char *tpath = getenv(pathname);
-  if (tpath)
-    path = strdup(tpath);
+  if (tpath) return strdup(tpath);
 #ifdef _WIN32
-  if (!path) {
-    path = GetRegistry(HKEY_CURRENT_USER, pathname);
-    if (!path)
-      path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
-    if (path)
-      path = strdup(path);
-  }
+  tpath = GetRegistry(HKEY_CURRENT_USER, pathname);
+  if (tpath) return strdup(tpath);
+  tpath = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+  if (tpath) return strdup(tpath);
 #endif
-  return path;
+  return NULL;
 }
 
 #ifndef va_count
@@ -514,7 +507,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
       (strchr(filename, '\\') == 0)) {
     char *library_path=getenv("MDSPLUS_LIBRARY_PATH");
     if (library_path) {
-      int offset = 0;
+      size_t offset = 0;
       char *libpath=strdup(library_path);
       while (offset < strlen(library_path)) {
 	char *dptr = strchr(libpath+offset, delim);
@@ -554,7 +547,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
     status = 1;
   dlopen_unlock();
   return status;
-}  
+}
 
 EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
@@ -916,7 +909,7 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
     }
 
     {
-      struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+      struct tm tm = { 0 };
 #ifdef _WIN32
       unsigned int day, year, hour, minute, second;
       char month[4];
@@ -965,7 +958,7 @@ EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
     tv.tv_usec = 0;
   else
     gettimeofday(&tv,0);
-  
+
 #ifdef USE_TM_GMTOFF
   tz_offset = tmval->tm_gmtoff;
 #else
@@ -1056,11 +1049,12 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
 EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
 {
   if (tail->length != 0 && tail->pointer != NULL) {
-    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-    unsigned short len = (unsigned short)(out->length + tail->length);
-    if (((unsigned int)out->length + (unsigned int)tail->length) > 0xffff)
+    int len = (int)out->length + (int)tail->length;
+    if (len > 0xffff)
       return StrSTRTOOLON;
-    StrGet1Dx(&len, &new);
+    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
+    unsigned short us_len = (unsigned short)len;
+    StrGet1Dx(&us_len, &new);
     if (out->pointer) {
       memcpy(new.pointer, out->pointer, out->length);
     }
@@ -1736,13 +1730,24 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
 
 EXPORT int MdsPutEnv(char const *cmd)
 {
-  int status;
-  if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))
-    status = 0;
-  else {
-    char *tmp = strcpy(malloc(strlen(cmd) + 1), cmd);
-    putenv(tmp);
-    status = 1;
+  int status = 0;
+  if (cmd != NULL) {
+    if (strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") || strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER"))
+      status = 0;
+    else {
+      char *tmp = strdup(cmd);
+      char *saveptr = NULL;
+      char *name = strtok_r(tmp,"=",&saveptr);
+      char *value = strtok_r(NULL,"=",&saveptr);
+      if (name != NULL && value != NULL) {
+#ifdef _WIN32
+        status = _putenv_s(name, value);
+#else
+        status = setenv(name,value,1) == 0;
+#endif
+      }
+      free(tmp);
+    }
   }
   return status;
 }

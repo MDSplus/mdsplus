@@ -69,11 +69,11 @@ EXPORT int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *settin
 
  Local variables:							      */
 
-  register int status, size;
+  register int status;
   struct descriptor_xd record_d = { 0, 0, CLASS_XD, 0, 0 };
   struct descriptor_xd temp_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   unsigned char type;
-  DESCRIPTOR_RANGE(range_d, 0, 0, 0);	/* for debug */
+  // DESCRIPTOR_RANGE(range_d, 0, 0, 0);	/* for debug */
   DESCRIPTOR_FLOAT(float_d, 0);
 
 /*------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ builddir=@builddir@
 VPATH = @srcdir@
 @MINGW_TRUE@ DEF=${srcdir}/mdsmisc.def
 
-CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
+CFLAGS+=@GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ 
 
 SOURCES = boxsmooth.c \

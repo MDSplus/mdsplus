@@ -51,7 +51,7 @@ struct setup {
   short int mem_size;
 };
 
-EXPORT int l6810c___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
+EXPORT int l6810c___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in_struct)
 {
   int status;
   int dummy;
@@ -116,7 +116,7 @@ EXPORT int l6810c___init(struct descriptor *nid_d_ptr, InInitStruct * in_struct)
   return 1;
 }
 
-EXPORT int l6810c___trigger(struct descriptor *nid_d_ptr, InTriggerStruct * in_struct)
+EXPORT int l6810c___trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), InTriggerStruct * in_struct)
 {
   int status;
   pio(25, 0, 0, 1);		/* Trigger the module */
@@ -140,7 +140,7 @@ static int ReadChannel(char *name,
 		       int chan,
 		       int segs, int seg_size, int drop, int *samples_ptr, short *data_ptr);
 
-EXPORT int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_struct)
+EXPORT int l6810c___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * in_struct)
 {
 #undef return_on_error
 #define return_on_error(f) if (!((status = f) & 1)) return status;
@@ -155,11 +155,11 @@ EXPORT int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_stru
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR(counts_str, "counts");
   static DESCRIPTOR_WITH_UNITS(counts, &raw, &counts_str);
-  static DESCRIPTOR_LONG(one_d, &one);
-  static DESCRIPTOR_LONG(start_d, &raw.bounds[0].l);
-  static DESCRIPTOR_FUNCTION_2(start_expr_d, (unsigned char *)&OpcAdd, &start_d, &one_d);
+  //static DESCRIPTOR_LONG(one_d, &one);
+  //static DESCRIPTOR_LONG(start_d, &raw.bounds[0].l);
+  //static DESCRIPTOR_FUNCTION_2(start_expr_d, (unsigned char *)&OpcAdd, &start_d, &one_d);
   static DESCRIPTOR_LONG(end_d, &end);
-  static DESCRIPTOR_FUNCTION_2(end_expr_d, (unsigned char *)&OpcAdd, &end_d, &one_d);
+  //static DESCRIPTOR_FUNCTION_2(end_expr_d, (unsigned char *)&OpcAdd, &end_d, &one_d);
   static DESCRIPTOR_NID(trigger_d, &c_nids[L6810C_N_STOP_TRIG]);
   static float frequency = 4E-6;
   static DESCRIPTOR_FLOAT(frequency_d, &frequency);
@@ -175,7 +175,7 @@ EXPORT int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_stru
   static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
   static DESCRIPTOR(volts_str, "volts");
   static DESCRIPTOR_WITH_UNITS(volts, &mult_exp, &volts_str);
-  static DESCRIPTOR_WINDOW(window, &start_expr_d, &end_expr_d, &trigger_d);
+  //static DESCRIPTOR_WINDOW(window, &start_expr_d, &end_expr_d, &trigger_d);
   static EMPTYXD(dimension_xd);
   static DESCRIPTOR(time_str, "seconds");
   static DESCRIPTOR_WITH_UNITS(time, &dimension_xd, &time_str);
@@ -186,12 +186,12 @@ EXPORT int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_stru
   int samples_to_read;
   int i;
   static int drop;
-  static DESCRIPTOR_LONG(drop_d, &drop);
+  //static DESCRIPTOR_LONG(drop_d, &drop);
   static int begin;
   static DESCRIPTOR_LONG(begin_d, &begin);
   int min_idx;
   int max_idx;
-  int delay_samples;
+  //int delay_samples;
   int samples_per_segment;
   int samples_per_channel;
   int segs;
@@ -218,7 +218,7 @@ EXPORT int l6810c___store(struct descriptor *niddsc_ptr, InStoreStruct * in_stru
   drop = (setup.active_chan == 4) ? 2 : ((setup.active_chan == 2) ? 5 : 10);
   samples_per_segment = (1 << setup.samps_per_seg) * 1024 - drop;
   samples_per_channel = samples_per_segment * segs;
-  delay_samples = samples_per_segment / 8 * setup.trigger_delay;
+  //  delay_samples = samples_per_segment / 8 * setup.trigger_delay;
   min_idx = 0;
   max_idx = samples_per_channel - 2;
 /*

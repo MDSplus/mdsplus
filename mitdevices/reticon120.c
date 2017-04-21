@@ -25,7 +25,7 @@ static int four = 4;
 #define ReturnOnError(f,retstatus) if (!((status = f) & 1)) return retstatus
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
-EXPORT int reticon120___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int reticon120___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   static float periods[] = { .5, 1, 2, 4, 8, 26, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
   static int intervals[] = { 1, 2, 4, 8, 16, 32, 64 };
@@ -33,29 +33,26 @@ EXPORT int reticon120___init(struct descriptor_s *niddsc_ptr, InInitStruct * set
   int s;
   int status;
   float period;
-  int num_states;
+  //int num_states;
   static char zero = 0;
   static struct descriptor zero_d = { 1, DTYPE_BU, CLASS_S, &zero };
-  static EMPTYXD(xd);
+  //static EMPTYXD(xd);
   static unsigned short pixels[256];
   static DESCRIPTOR_A(pixels_d, sizeof(unsigned short), DTYPE_WU, (char *)pixels, 512);
   int frames;
   int frame_select;
-#pragma member_alignment save
-#pragma nomember_alignment
   struct {
     short period;
     union {
       struct {
-	unsigned frames:11;
-	unsigned stop:1;
-	unsigned fill:4;
+	unsigned __attribute__ ((packed)) frames:11;
+	unsigned __attribute__ ((packed)) stop:1;
+	unsigned __attribute__ ((packed)) fill:4;
       } s;
       short frames_short;
     } u;
     short frame_select;
   } state[4];
-#pragma member_alignment restore
   ReturnOnError(TdiEq(setup->pixel_select, &zero_d, &pixels_d MDS_END_ARG),
 		RETICON$_BAD_PIXEL_SELECT);
   for (s = 0; s < setup->num_states; s++) {
@@ -92,7 +89,7 @@ EXPORT int reticon120___init(struct descriptor_s *niddsc_ptr, InInitStruct * set
   return status;
 }
 
-EXPORT int reticon120__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int reticon120__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   static String uids[] = { "RETICON120.uid" };
   static int nid;
@@ -167,7 +164,7 @@ static int Apply(Widget w)
   num_states = XmdsGetOptionIdx(XtNameToWidget(XtParent(w), "*number_of_states")) + 1;
   for (state = 0; state < num_states; state++) {
     struct descriptor_xd *xd;
-    unsigned int num_frames;
+    int num_frames;
     char pname[] = "*p0";
     char fname[] = "*f0";
     int idx = XmdsGetOptionIdx(XtNameToWidget(XtParent(w), pname));
@@ -220,17 +217,15 @@ static void PopupPixels(Widget w)
   XtManageChild(XtParent(XtNameToWidget(XtParent(w), "*pixel_menu")));
 }
 
-EXPORT int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int reticon120___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
-  float period;
-  static int pixels = 0;
-  static DESCRIPTOR_LONG(pixel_d, &pixels);
-  unsigned int frames;
-  unsigned int frame_select;
+  //float period;
+  //static int pixels = 0;
+  //static DESCRIPTOR_LONG(pixel_d, &pixels);
+  //unsigned int frames;
+  //unsigned int frame_select;
 
-#pragma member_alignment save
-#pragma nomember_alignment
   typedef struct {
  unsigned __attribute__ ((packed)) value:12;
  unsigned __attribute__ ((packed)) state_switch:1;
@@ -238,7 +233,6 @@ EXPORT int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * s
  unsigned __attribute__ ((packed)) pixel_group:1;
  unsigned __attribute__ ((packed)) frame_start:1;
   } buf;
-#pragma member_alignment restore
 
   buf *buffer;
 
@@ -275,9 +269,9 @@ EXPORT int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * s
     for (; words_to_read && (status & 1); words_to_read -= iosb.bytcnt / 2) {
       int count = min(words_to_read, 32767);
       if (fast && words_to_read < 32767)
-	status = CamFStopw(setup->memory_name, 0, 0, count, bptr, 16, (short *)&iosb);
+	status = CamFStopw(setup->memory_name, 0, 0, count, bptr, 16, (unsigned short *)&iosb);
       else
-	status = CamStopw(setup->memory_name, 0, 0, count, bptr, 16, (short *)&iosb);
+	status = CamStopw(setup->memory_name, 0, 0, count, bptr, 16, (unsigned short *)&iosb);
       bptr += iosb.bytcnt / 2;
       status = status & 1 ? iosb.status : status;
     }
@@ -320,10 +314,10 @@ EXPORT int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * s
       static DESCRIPTOR_A(frame_idx_array, sizeof(short), DTYPE_W, frame_index, 0);
       static DESCRIPTOR(seconds, "sec");
       static DESCRIPTOR_WITH_UNITS(time, &time_array, &seconds);
-      static int range_val[] = { 0, 255 };
-      static DESCRIPTOR_LONG(zero, &range_val[0]);
-      static DESCRIPTOR_LONG(two_fifty_five, &range_val[1]);
-      static DESCRIPTOR_RANGE(range, &zero, &two_fifty_five, 0);
+      //static int range_val[] = { 0, 255 };
+      //static DESCRIPTOR_LONG(zero, &range_val[0]);
+      //static DESCRIPTOR_LONG(two_fifty_five, &range_val[1]);
+      //static DESCRIPTOR_RANGE(range, &zero, &two_fifty_five, 0);
       static int pixel_axis_nid;
       static DESCRIPTOR_NID(pixel, &pixel_axis_nid);
       static DESCRIPTOR_A_COEFF(data_array, sizeof(short), DTYPE_W, 0, 2, 0);
@@ -353,7 +347,7 @@ EXPORT int reticon120___store(struct descriptor_s *niddsc_ptr, InStoreStruct * s
   return status;
 }
 
-EXPORT int reticon120___trigger(struct descriptor_s *niddsc_ptr, InTriggerStruct * setup)
+EXPORT int reticon120___trigger(struct descriptor *niddsc_ptr __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   Piow(setup->name, 25, 0, 0, 16);	/* trigger the module */

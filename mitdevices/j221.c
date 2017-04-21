@@ -19,7 +19,7 @@ static short zero = 0;
 
 static int merge_data(int nid, int **data, int **times, int *ndata);
 
-EXPORT int j221___init(struct descriptor *nid, InInitStruct * setup)
+EXPORT int j221___init(struct descriptor *nid __attribute__ ((unused)), InInitStruct * setup)
 {
   int status = 1;
   int merge_status;
@@ -239,7 +239,7 @@ EXPORT int j221___add(int *head_nid)
   return status;
 }
 
-EXPORT int j221___trigger(struct descriptor *nid, InTriggerStruct * setup)
+EXPORT int j221___trigger(struct descriptor *nid __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 0, 0);		/* Start it running */

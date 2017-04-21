@@ -30,13 +30,11 @@ static int zero = 0;
 #define stop(name,f,a,c,d)  return_on_error(DevCamChk(CamStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 #define fstop(name,f,a,c,d)  return_on_error(DevCamChk(CamFStopw(name, a, f, c, d, 16, 0), &one, 0),status)
 
-EXPORT int l3512___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int l3512___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   float duration;
   DwellCode dwell_code;
-#pragma member_alignment save
-#pragma nomember_alignment
   struct {
  unsigned __attribute__ ((packed)) offset:8;
  unsigned __attribute__ ((packed)) gain:3;
@@ -54,7 +52,6 @@ EXPORT int l3512___init(struct descriptor *niddsc, InInitStruct * setup)
  unsigned __attribute__ ((packed)) fill:13;
   } setup_3587 = {
   1, 0, 0, 0};
-#pragma member_alignment restore
   int i;
   int tries;
   static int kind;
@@ -110,13 +107,13 @@ static DwellCode ConvertDwell(float *dwell)
   return answer;
 }
 
-EXPORT int l3512___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int l3512___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
 
   unsigned short data[32768];
   int status;
   static float duration;
-  int i;
+  //int i;
   static int kind;
   static DESCRIPTOR_LONG(kind_dsc, &kind);
   int values;

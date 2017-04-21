@@ -77,7 +77,7 @@ EXPORT int preamp___add(int *head_nid)
 static void ask_incaa_proc(Widget w);
 static Boolean ask_incaa_button(Widget w);
 static void ask_incaa_create(Widget w);
-EXPORT int preamp__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+EXPORT int preamp__dw_setup(struct descriptor *niddsc __attribute__ ((unused)), struct descriptor *methoddsc __attribute__ ((unused)), Widget parent)
 {
   Widget dbox;
   static String uids[] = { "PREAMP.uid" };
@@ -149,10 +149,10 @@ static Boolean ask_incaa_button(Widget w)
 
 static int one = 1;
 
-EXPORT int preamp___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int preamp___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   int chan;
-  int status;
+  int status=1;
   static float gains[] = { 1., 2., 4., 8., 16. };
   for (chan = 0; chan < 16; chan++) {
     int input_nid = INPUT_NID(setup->head_nid, INPUT_01, chan);

@@ -29,7 +29,7 @@ CFLAGS += $(THREAD) $(COMPRESSION_SWITCH) -I@srcdir@/udt4/src -I@srcdir@/udt4/ud
 LDFLAGS += $(THREAD)
 
 CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing $(CFLAGS) @CXXFLAGS@
-LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @SOCKETLIB@
+LIBS=@LIBS@ @LIBRESOLV@ $(LIBSOCKET)
 
 MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@ $(IMPLIB_MdsIpShr)
 MdsIpSrvShr = @MAKESHLIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@ $(IMPLIB_MdsIpSrvShr)
@@ -170,9 +170,12 @@ install: $(bindir) $(libdir) $(sysconfdir)
 	$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
-	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
-	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
-	$(INSTALL) -m 755 $(MdsIpLOCAL) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpLOCAL) @libdir@
+@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpSSH))
+@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpHTTP))
+@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpLOCAL))
         ifdef MdsIpGSI
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
         endif
@@ -197,7 +200,7 @@ MDSIP_EXTRALIB = -lMdsIpSrvShr
 
 MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr
 
-@MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS) $(COMPRESS_OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
@@ -230,7 +233,7 @@ $(MdsIpTCPV6): $(TCPV6_OBJECTS) $(MdsIpShr)
 $(UDT4_DIRS):
 	$(MKDIR_P) @builddir@/udt4/src
 	$(MKDIR_P) @builddir@/udt4/udtc
-	
+
 $(MdsIpUDT): $(UDT4_DIRS) $(UDT_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDT_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 

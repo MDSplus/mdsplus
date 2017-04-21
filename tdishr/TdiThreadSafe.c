@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <config.h>
 #include <libroutines.h>
 #include <STATICdef.h>

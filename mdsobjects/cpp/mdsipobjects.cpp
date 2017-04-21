@@ -212,12 +212,11 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	int *dims;
 	int status, numBytes;
 	void *ptr, *mem = 0;
-	char *buf;
 	int retDims[MAX_DIMS];
 	Data *resData;
 
 	//Check whether arguments are compatible (Scalars or Arrays)
-	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
+	for(std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		delete [] dims;
 		if(!ptr)
@@ -232,7 +231,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 		throw MdsException(status);
 	}
 
-	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
+	for(std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		delete [] dims;
@@ -338,7 +337,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	void *ptr, *mem = 0;
 
 	//Check whether arguments are compatible (Scalars or Arrays)
-	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
+	for(std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::put(). Can only be Scalar or Array");
@@ -363,7 +362,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 		throw MdsException(status);
 	}
 
-	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
+	for(std::size_t argIdx = 0; argIdx < (std::size_t)nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1)) {
@@ -405,12 +404,12 @@ void Connection::registerStreamListener(DataStreamListener *listener, char *expr
 void Connection::unregisterStreamListener(DataStreamListener *listener)
 {
 	int idx;
-	for(idx = 0; idx < listenerV.size(); idx++)
+	for(idx = 0; idx < (int)listenerV.size(); idx++)
 	{
 		if(listenerV[idx] == listener)
 			break;
 	}
-	if(idx >= listenerV.size())
+	if(idx >= (int)listenerV.size())
 	   	return;
 	int id = listenerIdV[idx];
 	char regExpr[64];
@@ -439,12 +438,12 @@ void Connection::checkDataAvailability()
 				int id = descs[2*i]->getInt();
 				Signal *sig = (Signal *)descs[2*i+1];
 				int idx;
-				for(idx = 0; idx < listenerIdV.size(); idx++)
+				for(idx = 0; idx < (int)listenerIdV.size(); idx++)
 				{
 					if(listenerIdV[idx] == id)
 					break;
 				}
-				if(idx < listenerV.size())
+				if(idx < (int)listenerV.size())
 				{
 					Data *sigData = sig->getData();
 					Data *sigDim = sig->getDimension();
@@ -514,7 +513,7 @@ void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
 		list->append(args[i]);
 	dict->setItem(argStr, list);
 
-	if(idx >= len())
+	if(idx >= (int)len())
 		List::append(dict);
 	else
 		List::insert(idx, dict);
@@ -524,7 +523,7 @@ void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void GetMany::insert(char * beforeName, char *name, char *expr, Data **args, int nArgs)
+void GetMany::insert(char * beforeName UNUSED_ARGUMENT, char *name, char *expr, Data **args, int nArgs)
 {
 	int nItems = len();
 	int idx;
@@ -609,7 +608,7 @@ void PutMany::insert(int idx, char *nodeName, char *expr, Data **args, int nArgs
 		list->append(args[i]);
 	dict->setItem(argStr.get(), list.get());
 
-	if(idx >= len())
+	if(idx >= (int)len())
 		List::append(dict.get());
 	else
 		List::insert(idx, dict.get());
@@ -619,7 +618,7 @@ void PutMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args, int nArgs) {
+void PutMany::insert(char * beforeName UNUSED_ARGUMENT, char *nodeName, char *expr, Data **args, int nArgs) {
 	int nItems = len();
 	int idx;
 	String nameKey("node");

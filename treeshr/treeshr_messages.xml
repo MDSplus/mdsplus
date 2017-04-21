@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <messages>
   <facility name="Tree" value="4049">
-    <status name="ALREADY_OFF" value="4101" severity="Informational" text="Node is already OFF"/>
-    <status name="ALREADY_ON"  value="4102" severity="Informational" text="Node is already ON"/>
-    <status name="ALREADY_OPEN" value="4103" severity="Informational" text="Tree is already OPEN"/>
+    <status name="ALREADY_OFF" value="4101" severity="Info" text="Node is already OFF"/>
+    <status name="ALREADY_ON"  value="4102" severity="Info" text="Node is already ON"/>
+    <status name="ALREADY_OPEN" value="4103" severity="Info" text="Tree is already OPEN"/>
     <status name="ALREADY_THERE" value="4113" severity="Warning" text="Node is already in the tree"/>
     <status name="BADRECORD" value="4119" severity="Error" text="Data corrupted: cannot read record"/>
     <status name="BOTH_OFF" value="4115" severity="Warning" text="Both this node and its parent are off"/>
     <status name="BUFFEROVF" value="4130" severity="Error" text="Output buffer overflow"/>
     <status name="CONGLOMFULL" value="4132" severity="Error" text="Current conglomerate is full"/>
     <status name="CONGLOM_NOT_FULL" value="4133" severity="Error" text="Current conglomerate is not yet full"/>
-    <status name="CONTINUING" value="4396" severity="Informational" text="Operation continuing: note following error"/>
+    <status name="CONTINUING" value="4396" severity="Info" text="Operation continuing: note following error"/>
     <status name="DUPTAG" value="4121" severity="Error" text="Tag name already in use"/>
     <status name="EDITTING" value="4146" severity="Error" text="Tree file open for edit: operation not permitted"/>
     <status name="ILLEGAL_ITEM" value="4129" severity="Error" text="Invalid item code or part number specified"/>
@@ -21,7 +21,7 @@
     <status name="INVRECTYP" value="4136" severity="Error" text="Record type invalid for requested operation"/>
     <status name="INVTREE" value="4120" severity="Error" text="Invalid tree identification structure"/>
     <status name="MAXOPENEDIT" value="4123" severity="Error" text="Too many files open for edit"/>
-    <status name="NEW" value="4099" severity="Informational" text="New tree created"/>
+    <status name="NEW" value="4099" severity="Info" text="New tree created"/>
     <status name="NMN" value="4108" severity="Warning" text="No More Nodes"/>
     <status name="NMT" value="4109" severity="Warning" text="No More Tags"/>
     <status name="NNF" value="4110" severity="Warning" text="Node Not Found"/>
@@ -32,7 +32,7 @@
     <status name="NOMETHOD" value="4118" severity="Warning" text="Method not available for this object"/>
     <status name="NOOVERWRITE" value="4144" severity="Error" text="Write-once node: overwrite not permitted"/>
     <status name="NORMAL" value="4097" severity="Success" text="Normal successful completion"/>
-    <status name="NOTALLSUBS" value="4100" severity="Informational" text="Main tree opened but not all subtrees found/or connected"/>
+    <status name="NOTALLSUBS" value="4100" severity="Info" text="Main tree opened but not all subtrees found/or connected"/>
     <status name="NOTCHILDLESS" value="4127" severity="Error" text="Node must be childless to become subtree reference"/>
     <status name="NOT_IN_LIST" value="4152" severity="Error" text="Tree being opened was not in the list"/>
     <status name="NOTMEMBERLESS" value="4142" severity="Error" text="Subtree reference can not have members"/>
@@ -42,11 +42,11 @@
     <status name="NOT_OPEN" value="4117" severity="Warning" text="Tree not currently open"/>
     <status name="NOWRITEMODEL" value="4147" severity="Error" text="Data for this node can not be written into the MODEL file"/>
     <status name="NOWRITESHOT" value="4148" severity="Error" text="Data for this node can not be written into the SHOT file"/>
-    <status name="NO_CONTEXT" value="4104" severity="Informational" text="There is no active search to end"/>
+    <status name="NO_CONTEXT" value="4104" severity="Info" text="There is no active search to end"/>
     <status name="OFF" value="4116" severity="Warning" text="Node is OFF"/>
-    <status name="ON" value="4105" severity="Informational" text="Node is ON"/>
-    <status name="OPEN" value="4106" severity="Informational" text="Tree is OPEN (no edit)"/>
-    <status name="OPEN_EDIT" value="4107" severity="Informational" text="Tree is OPEN for edit"/>
+    <status name="ON" value="4105" severity="Info" text="Node is ON"/>
+    <status name="OPEN" value="4106" severity="Info" text="Tree is OPEN (no edit)"/>
+    <status name="OPEN_EDIT" value="4107" severity="Info" text="Tree is OPEN for edit"/>
     <status name="PARENT_OFF" value="4114" severity="Warning" text="Parent of this node is OFF"/>
     <status name="READERR" value="4151" severity="Error" text="Error reading record for node"/>
     <status name="READONLY" value="4150" severity="Error" text="Tree was opened with readonly access"/>
@@ -87,6 +87,7 @@
     <status name="CLOSEERR" value="4622" severity="Error" text="Error closing temporary tree file."/>
     <status name="MOVEERROR" value="4623" severity="Error" text="Error replacing original treefile with new one."/>
     <status name="OPENEDITERR" value="4624" severity="Error" text="Error reopening new treefile for write access."/>
+    <status name="READONLY_TREE" value="4625" severity="Error" text="Tree is marked as readonly. No write operations permitted."/>
     
   </facility>
 </messages>

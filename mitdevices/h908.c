@@ -24,7 +24,7 @@ static int one = 1;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int h908___init(struct descriptor *niddsc, InInitStruct * setup)
+EXPORT int h908___init(struct descriptor *niddsc __attribute__ ((unused)), InInitStruct * setup)
 {
   struct _msetup {
     unsigned pretrig:1;
@@ -53,24 +53,24 @@ EXPORT int h908___init(struct descriptor *niddsc, InInitStruct * setup)
   return status;
 }
 
-EXPORT int h908___stop(struct descriptor *niddsc, InStopStruct * setup)
+EXPORT int h908___stop(struct descriptor *niddsc __attribute__ ((unused)), InStopStruct * setup)
 {
   int status;
   pio(25, 0, 0, 16)
       return status;
 }
 
-EXPORT int h908___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
+EXPORT int h908___trigger(struct descriptor *niddsc __attribute__ ((unused)), InTriggerStruct * setup)
 {
   int status;
   pio(25, 2, 0, 16)
       return status;
 }
 
-EXPORT int h908___store(struct descriptor *niddsc, InStoreStruct * setup)
+EXPORT int h908___store(struct descriptor *niddsc __attribute__ ((unused)), InStoreStruct * setup)
 {
   int status;
-  int mstatus;
+  //int mstatus;
   struct _status {
     unsigned mode:3;
     unsigned state:2;
@@ -92,7 +92,7 @@ EXPORT int h908___store(struct descriptor *niddsc, InStoreStruct * setup)
   static EMPTYXD(signal);
   static int trigger_nid;
   static DESCRIPTOR_NID(trigger, &trigger_nid);
-  static DESCRIPTOR_LONG(pts_d, &pts);
+  //static DESCRIPTOR_LONG(pts_d, &pts);
   static DESCRIPTOR_A_BOUNDS(raw, sizeof(short), DTYPE_W, 0, 1, 0);
   static DESCRIPTOR_LONG(start_d, &raw.bounds[0].l);
   static DESCRIPTOR_LONG(end_d, &raw.bounds[0].u);

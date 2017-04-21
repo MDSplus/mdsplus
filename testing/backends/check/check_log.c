@@ -192,12 +192,10 @@ void stdout_lfun(SRunner * sr, FILE * file, enum print_output printmode,
     case CLSTART_SR:
         if(printmode > CK_SILENT)
         {
-            static const char *str = 
-                    " ,---------------------------------------. \n"
+	  fprintf(file, " ,---------------------------------------. \n"
                     " |     MDSplus unit testing...           | \n"
                     " '---------------------------------------' \n"
-                    "\n";
-            fprintf(file, str);
+		  "\n");
         }
         break;
     case CLSTART_S:
@@ -291,7 +289,7 @@ void xml_lfun(SRunner * sr CK_ATTRIBUTE_UNUSED, FILE * file,
     if(t[0] == 0)
     {
         struct timeval inittv;
-        struct tm now;
+        //struct tm now;
 
         gettimeofday(&inittv, NULL);
         clock_gettime(check_get_clockid(), &ts_start);

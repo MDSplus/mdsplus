@@ -240,7 +240,8 @@ PACK_START
 } NODE;
 
 #ifdef EMPTY_NODE
-static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} };
+static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} ,
+			   0, 0, 0, 0, 0, 0, 0, 0};
 #endif
 
 static inline int node_offset(NODE * a, NODE * b)
@@ -288,13 +289,15 @@ typedef struct tree_header {
   unsigned sort_members:1;
   unsigned versions_in_model:1;
   unsigned versions_in_pulse:1;
-  unsigned:4;
+  unsigned readonly:1;
+  unsigned:3;
 #else
   unsigned char sort_children:1;	/* Sort children flag */
   unsigned char sort_members:1;	/* Sort members  flag */
   unsigned char versions_in_model:1;
   unsigned char versions_in_pulse:1;
-  unsigned char:4;
+  unsigned char readonly:1;
+  unsigned char:3;
 #endif
   char fill1[6];
   int free;			/* First node in free node list (connected by PARENT/CHILD indexes */
@@ -383,6 +386,11 @@ editting. It keeps track of dynamic memory
 allocations for tree expansions
 *********************************************/
 
+typedef struct deleted_nid {
+  NID nid;
+  struct deleted_nid *next;
+} DELETED_NID;
+
 typedef struct tree_edit {
   int header_pages;
   int node_vm_size;
@@ -396,9 +404,10 @@ typedef struct tree_edit {
   short conglomerate_size;
   short conglomerate_index;
   unsigned conglomerate_setup:1;
+  DELETED_NID *deleted_nid_list;
 } TREE_EDIT;
 #ifdef EMPTY_EDIT
-static const TREE_EDIT empty_edit;
+static const TREE_EDIT empty_edit = {0};
 #endif
 
 /********************************************
@@ -711,6 +720,7 @@ extern int TreeFindTag(const char *tagnam, const char *treename, int *tagidx);
 int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
 		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
+extern void _TreeDeleteNodesWrite(void *dbid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);

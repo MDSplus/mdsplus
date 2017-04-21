@@ -27,12 +27,15 @@ STATIC_THREADSAFE int receive_sockets[256];	/* Socket to receive external events
 STATIC_THREADSAFE int send_sockets[256];	/* Socket to send external events  */
 STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
 STATIC_THREADSAFE char *send_servers[256];	/* Send server names */
-STATIC_THREADSAFE int external_thread_created = 0;	/* Thread for remot event handling flag */
 STATIC_THREADSAFE int external_shutdown = 0;	/* flag to request remote events thread termination */
-STATIC_THREADSAFE int fds[2];	/* file descriptors used by the pipe */
 STATIC_THREADSAFE int external_count = 0;	/* remote event pendings count */
 STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
 STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
+
+#ifndef _WIN32
+STATIC_THREADSAFE int external_thread_created = 0;	/* Thread for remot event handling flag */
+STATIC_THREADSAFE int fds[2];	/* file descriptors used by the pipe */
+#endif
 
 STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
 STATIC_ROUTINE void initializeRemote(int receive_events);
@@ -147,7 +150,7 @@ static int RegisterRead_(int sock)
 #endif
 
 static char *eventName(char const *eventnam_in) {
-  int i,j;
+  size_t i,j;
   char *eventnam=0;
   if (eventnam_in) {
     eventnam = strdup(eventnam_in);
@@ -298,7 +301,7 @@ EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datl
   event.buffer = data;
   event.retlen = datlen;
   MDSEventAst(evname, MDSWfevent_ast, (void *)&event, &eventid);
-  status = WaitForSingleObject(event.event, (timeout > 0) ? timeout * 1000 : INFINITE);
+  status = WaitForSingleObject(event.event, (timeout > 0) ? (unsigned int)timeout * 1000 : INFINITE);
   MDSEventCan(eventid);
   CloseHandle(event.event);
   return (status == WAIT_TIMEOUT) ? 0 : 1;
@@ -410,7 +413,7 @@ EXPORT int MDSGetEventQueue(int eventid, int timeout, int *data_len, char **data
     } else {
       UnlockMdsShrMutex(&eqMutex);
       if (waited == 0 && timeout >= 0) {
-	status = WaitForSingleObject(qh->wakeup, (timeout > 0) ? timeout * 1000 : INFINITE);
+	status = WaitForSingleObject(qh->wakeup, (timeout > 0) ? (unsigned int)timeout * 1000 : INFINITE);
 	if (status == WAIT_TIMEOUT) {
 	  *data_len = 0;
 	  *data = 0;
@@ -485,8 +488,7 @@ STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int
   }
 }
 
-STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
-{
+STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p __attribute__ ((unused))){
   int status = 1, i;
   Message *m;
   int selectstat;
@@ -717,9 +719,11 @@ STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data)
 	  tmp_status = MdsValue_(send_ids[i], expression, &desc, &ansarg, NULL);
 	else
 	  tmp_status = MdsValue_(send_ids[i], expression, &ansarg, NULL, NULL);
+	if (tmp_status & 1)
+	  tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
+      } else {
+        tmp_status=-6;
       }
-      if (tmp_status & 1)
-	tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
       if (!(tmp_status & 1)) {
 	status = tmp_status;
 	if (reconnects < 3) {
@@ -970,7 +974,7 @@ STATIC_ROUTINE void handleRemoteAst()
 }
 #endif
 
-STATIC_ROUTINE int searchOpenServer(char *server)
+STATIC_ROUTINE int searchOpenServer()
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
@@ -1124,7 +1128,8 @@ EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datl
 {
   int eventid = -1;
   int status;
-  struct wfevent_thread_cond t = { 1 };
+  struct wfevent_thread_cond t = { 0 };
+  t.active = 1;
   pthread_mutex_init(&t.mutex, NULL);
   pthread_cond_init(&t.cond, NULL);
   t.buflen = buflen;
@@ -1364,6 +1369,7 @@ STATIC_ROUTINE int sendRemoteEvent(char const *evname, int data_len, char *data)
   sprintf(expression, "setevent(\"%s\"%s)", evname, data_len > 0 ? ",$" : "");
   if (status & 1) {
     int reconnects = 0;
+    tmp_status = 0;
     for (i = 0; i < num_send_servers; i++) {
       if (send_ids[i] > 0) {
 	if (data_len > 0)

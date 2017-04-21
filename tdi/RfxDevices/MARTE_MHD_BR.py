@@ -5,7 +5,7 @@ except:
 
 class MARTE_MHD_BR(MARTE_GENERIC):
     parNames = ['InputMapping', 'InputAutozero', 'maxBrHor', 'maxBrVer', 'thresholdPeriod', 'brCorrections']
-    parValues = ['0','0','0','0','0','TdiCompile("zero(192, 0.)")']
+    parValues = ['0','0','0','0','0','ZERO(192, 0.)']
     parts = list(MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})

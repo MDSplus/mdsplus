@@ -5,7 +5,7 @@ builddir=@builddir@
 VPATH = @srcdir@
 SHELL=/bin/bash
 X_CFLAGS=@X_CFLAGS@
-CFLAGS=@CFLAGS@ $(X_CFLAGS) $(TARGET_ARCH)
+CFLAGS+=$(X_CFLAGS) $(TARGET_ARCH)
 LD_FLAGS=$(LDFLAGS) $(TARGET_ARCH)
 LIBS=@LIBS@ @LIBM@
 X_LIBS=@X_LIBS@
@@ -72,6 +72,7 @@ UIDS = \
 @MAKEUIDDIR@L6810.uid \
 @MAKEUIDDIR@L6810A.uid \
 @MAKEUIDDIR@L6810B.uid \
+@MAKEUIDDIR@L6810C.uid \
 @MAKEUIDDIR@L8100.uid \
 @MAKEUIDDIR@L8201.uid \
 @MAKEUIDDIR@L8206.uid \
@@ -325,12 +326,12 @@ dc1394_support2.o : dc1394_support2.c
 
 
 @MAKESHLIBDIR@acq_root_filesystem.tgz : $(DTACQ_FILESYSTEM)
-	( tar -C ${srcdir}/acq_root_filesystem --exclude=ffs -cvzf $@  . ; \
-	  tar -C ${srcdir}/acq_root_filesystem -cvzf $@_ffs ffs/user )
+	( tar -C ${srcdir}/acq_root_filesystem --exclude=ffs -czf $@  . ; \
+	  tar -C ${srcdir}/acq_root_filesystem -czf $@_ffs ffs/user )
 
 @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs : $(DTACQ_FILESYSTEM)
 #	echo $(DC) > ${srcdir}/acq_root_filesystem/ffs/user/MitFilesDate
-	( tar -C ${srcdir}/acq_root_filesystem -cvzf $@ ffs/user )
+	( tar -C ${srcdir}/acq_root_filesystem -czf $@ ffs/user )
 
 @MAKEBINDIR@dtaq_update_board.sh : dtaq_update_board.sh
 	cp $< $@

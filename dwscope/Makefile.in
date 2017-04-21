@@ -99,6 +99,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
@@ -329,6 +330,7 @@ JAR = @JAR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
+JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
@@ -341,7 +343,6 @@ LD_LDARC = @LD_LDARC@
 LD_LDSHARE = @LD_LDSHARE@
 LIBDL = @LIBDL@
 LIBM = @LIBM@
-LIBNSL = @LIBNSL@
 LIBOBJS = @LIBOBJS@
 LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
@@ -380,7 +381,6 @@ MOTIF_LD_LDARC = @MOTIF_LD_LDARC@
 MOTIF_LD_LDSHARE = @MOTIF_LD_LDSHARE@
 NEED_SEMUN = @NEED_SEMUN@
 NOSETESTS = @NOSETESTS@
-NSLLIB = @NSLLIB@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -425,7 +425,6 @@ SHARETYPE = @SHARETYPE@
 SHARETYPEJNI = @SHARETYPEJNI@
 SHARETYPEMOD = @SHARETYPEMOD@
 SHELL = @SHELL@
-SOCKETLIB = @SOCKETLIB@
 SRBINCLUDE = @SRBINCLUDE@
 SRBLIB = @SRBLIB@
 STRIP = @STRIP@
@@ -451,6 +450,7 @@ VERSION = @VERSION@
 VS = @VS@
 VS_ARCH = @VS_ARCH@
 VS_DIR = @VS_DIR@
+WARNFLAGS = @WARNFLAGS@
 WINDRES = @WINDRES@
 XMKMF = @XMKMF@
 XML2_CONFIG = @XML2_CONFIG@
@@ -529,7 +529,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 
 # Global variables
-AM_CFLAGS = $(TARGET_ARCH)
+AM_CFLAGS = $(TARGET_ARCH) $(WARNFLAGS)
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm

@@ -882,7 +882,7 @@ object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu widget {
 
 object label : XmLabel widget {
     arguments {
-        XmNlabelString = compound_string("Segements:");
+        XmNlabelString = compound_string("Segments:");
         XmNx = 565;
         XmNy = 76;
     };

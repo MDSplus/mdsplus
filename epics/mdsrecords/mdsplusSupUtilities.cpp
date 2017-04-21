@@ -3,6 +3,7 @@
 #include <epicsExport.h>
 #include <mdsobjects.h>
 #include <string.h>
+#include <semaphore.h>
 
 
 #include <dbFldTypes.h>
@@ -122,9 +123,9 @@ public:
 
     void run() //Called by superclass upon receipt of an event
     {
-	int size;
+	size_t size;
 //printf("Got Event %s\n", getName());
-	char *buf = getRaw(&size);
+	char *buf = (char *)getRaw(&size);
 	postBuffer(buf, size);
     }
 };
@@ -277,7 +278,7 @@ int openMds(char *expName, int shot, int isLocal, char *ipAddr, char *path, unsi
     int connId;
     int id;
     Tree *tree;
-//    printf("OpenMds: %s %d %s %s %s\n", expName, shot, (isLocal)?"Local":"Remote", ipAddr, path);
+    printf("OpenMds: %s %d %s %s %s\n", expName, shot, (isLocal)?"Local":"Remote", ipAddr, path);
 
     if(isLocal)
     {
@@ -379,22 +380,22 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 	{
 	    switch(dtype) {
 		case DBF_CHAR: 
-		    data = (Data *)new Int8Array((char *)vals, dim1);
+		    data = (Data *)new Int8Array((const char *)vals, dim1);
 		    break;
 		case DBF_UCHAR: 
-		    data = (Data *)new Uint8Array((char *)vals, dim1);
+		    data = (Data *)new Uint8Array((const unsigned char *)vals, dim1);
 		    break;
 		case DBF_SHORT: 
-		    data = (Data *)new Int16Array((short *)vals, dim1);
+		    data = (Data *)new Int16Array(( const short *)vals, dim1);
 		    break;
 		case DBF_USHORT: 
-		    data = (Data *)new Uint16Array((short *)vals, dim1);
+		    data = (Data *)new Uint16Array(( unsigned short *)vals, dim1);
 		    break;
 		case DBF_LONG: 
 		    data = (Data *)new Int32Array((int *)vals, dim1);
 		    break;
 		case DBF_ULONG: 
-		    data = (Data *)new Uint32Array((int *)vals, dim1);
+		    data = (Data *)new Uint32Array((unsigned int *)vals, dim1);
 		    break;
 		case DBF_FLOAT: 
 		    data = (Data *)new Float32Array((float *)vals, dim1);
@@ -417,19 +418,19 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		    data = (Data *)new Int8Array((char *)vals, 2, dims);
 		    break;
 		case DBF_UCHAR: 
-		    data = (Data *)new Uint8Array((char *)vals, 2, dims);
+		    data = (Data *)new Uint8Array((unsigned char *)vals, 2, dims);
 		    break;
 		case DBF_SHORT: 
 		    data = (Data *)new Int16Array((short *)vals, 2, dims);
 		    break;
 		case DBF_USHORT: 
-		    data = (Data *)new Uint16Array((short *)vals, 2, dims);
+		    data = (Data *)new Uint16Array((unsigned short *)vals, 2, dims);
 		    break;
 		case DBF_LONG: 
 		    data = (Data *)new Int32Array((int *)vals, 2, dims);
 		    break;
 		case DBF_ULONG: 
-		    data = (Data *)new Uint32Array((int *)vals, 2, dims);
+		    data = (Data *)new Uint32Array(( unsigned int *)vals, 2, dims);
 		    break;
 		case DBF_FLOAT: 
 		    data = (Data *)new Float32Array((float *)vals, 2, dims);
@@ -445,7 +446,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 	if(isLocal)
 	{
 	    try {
-		node->putRow(data, (_int64 *)&epicsTime);
+		node->putRow(data, (int64_t *)&epicsTime);
 		deleteData(data);
 	    }
     	    catch(MdsException *exc)
@@ -457,7 +458,7 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 	else
 	{
 	    char expr[256];
-	    Int64 *timeData = new Int64((_int64)epicsTime);
+	    Int64 *timeData = new Int64((int64_t)epicsTime);
 	    sprintf(expr, "PutRow(\'%s\', 1000, $, $)", path);
 	    Data * args[2];
 	    args[0] = timeData;
@@ -500,19 +501,19 @@ int writeMds(int nodeId, double *vals, int dtype, int preTriggerSamples, int nVa
 		data = new Int8Array((char *)vals, nDims, dims);
 		break;
 	    case DBF_UCHAR: 
-		data = new Uint8Array((char *)vals, nDims, dims);
+		data = new Uint8Array((unsigned char *)vals, nDims, dims);
 		break;
 	    case DBF_SHORT: 
 		data = new Int16Array((short *)vals, nDims, dims);
 		break;
 	    case DBF_USHORT: 
-		data = new Uint16Array((short *)vals, nDims, dims);
+		data = new Uint16Array((unsigned short *)vals, nDims, dims);
 		break;
 	    case DBF_LONG: 
 		data = new Int32Array((int *)vals, nDims, dims);
 		break;
 	    case DBF_ULONG: 
-		data = new Uint32Array((int *)vals, nDims, dims);
+		data = new Uint32Array((unsigned int *)vals, nDims, dims);
 		break;
 	    case DBF_FLOAT: 
 		data = new Float32Array((float *)vals, nDims, dims);
@@ -581,7 +582,8 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
     char *currPath;
     void *currBuf;
 
-//printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d dim2: %d\n", expr, treeIdx, nBuffers, maxRetElements, bufDims[0], bufDims[1]);
+//printf("EvaluateExpr: expr: %s %d %d, %d\n", expr, *(int *)buffers[0], bufDims[0], bufTypes[0]);
+printf("EvaluateExpr: expr: %s, treeIdx: %d, nBuffers: %d, maxRet: %d dim1: %d dim2: %d\n", expr, treeIdx, nBuffers, maxRetElements, bufDims[0], bufDims[1]);
 
     try {
     	for (i = 0; i < nBuffers; i++)
@@ -593,19 +595,19 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 		    	args[i] = new Int8Array((char *)buffers[i], bufDims[i]);
 		    	break;
 	    	    case DBF_UCHAR: 
-		    	args[i] = new Uint8Array((char *)buffers[i], bufDims[i]);
+		    	args[i] = new Uint8Array((unsigned char *)buffers[i], bufDims[i]);
 		    	break;
 	    	    case DBF_SHORT: 
 		    	args[i] = new Int16Array((short *)buffers[i], bufDims[i]);
 		    	break;
 	    	    case DBF_USHORT: 
-		    	args[i] = new Uint16Array((short *)buffers[i], bufDims[i]);
+		    	args[i] = new Uint16Array((unsigned short *)buffers[i], bufDims[i]);
 		    	break;
 	    	    case DBF_LONG: 
 		    	args[i] = new Int32Array((int *)buffers[i], bufDims[i]);
 		    	break;
 	    	    case DBF_ULONG: 
-		    	args[i] = new Uint32Array((int *)buffers[i], bufDims[i]);
+		    	args[i] = new Uint32Array((unsigned int *)buffers[i], bufDims[i]);
 		    	break;
 	    	    case DBF_FLOAT: 
 		    	args[i] = new Float32Array((float *)buffers[i], bufDims[i]);
@@ -619,28 +621,28 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 	    {
 	    	switch(bufTypes[i]) {
 	    	    case DBF_CHAR: 
-		    	args[i] = new Int8(((char *)buffers)[0]);
+		    	args[i] = new Int8(*((char *)buffers[0]));
 		    	break;
 	    	    case DBF_UCHAR: 
-		    	args[i] = new Uint8(((char *)buffers)[0]);
+		    	args[i] = new Uint8(*((char *)buffers[0]));
 		    	break;
 	    	    case DBF_SHORT: 
-		    	args[i] = new Int16(((short *)buffers)[0]);
+		    	args[i] = new Int16(*((short *)buffers[0]));
 		    	break;
 	    	    case DBF_USHORT: 
-		    	args[i] = new Uint16(((short *)buffers)[0]);
+		    	args[i] = new Uint16(*((short *)buffers[0]));
 		    	break;
 	    	    case DBF_LONG: 
-		    	args[i] = new Int32(((int *)buffers)[0]);
+		    	args[i] = new Int32(*((int *)buffers[0]));
 		    	break;
 	    	    case DBF_ULONG: 
-		    	args[i] = new Uint32(((int *)buffers)[0]);
+		    	args[i] = new Uint32(*((int *)buffers[0]));
 		    	break;
 	    	    case DBF_FLOAT: 
-		    	args[i] = new Float32(((float *)buffers)[0]);
+		    	args[i] = new Float32(*((float *)buffers[0]));
 		    	break;
 	    	    case DBF_DOUBLE: 
-		    	args[i] = new Float64(((double *)buffers)[0]);
+		    	args[i] = new Float64( *((double *)buffers[0]));
 		    	break;
 		}
 	    }
@@ -694,11 +696,16 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 		strcpy(errMsg, "Remote connection not established");
 		return 0;
 	    }
+
 	    if(nBuffers > 0)
+	    {
 		evaluated = conn->get(expr, args, nBuffers);
+		//printf("Valuto : %s %s %d Risultato %s\n", expr, args[0]->decompile(), nBuffers, evaluated->decompile()); 
+	    }
 	    else
 		evaluated = conn->get(expr);
 	}
+	
 	if(evaluated->getSize() == 1) //If scalar
 	{
 	    retElements = 1;
@@ -770,6 +777,7 @@ int evaluateExpr(char *expr, int treeIdx, int nBuffers, void **buffers, int *buf
 	deleteData(evaluated);
 	for(i = 0; i < nBuffers; i++)
 	    deleteData(args[i]);
+
     }
     catch(MdsException *exc)
     {

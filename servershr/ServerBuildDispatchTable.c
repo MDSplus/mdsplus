@@ -127,7 +127,7 @@ static int fixup_path(struct descriptor *path_in, int idx, struct descriptor_d *
   return status;
 }
 
-static int make_idents(struct descriptor *path_in, int idx, struct descriptor *path_out)
+static int make_idents(struct descriptor *path_in, int idx __attribute__ ((unused)), struct descriptor *path_out __attribute__ ((unused)))
 {
   if (path_in && path_in->pointer && path_in->pointer[0] == '_')
     path_in->dtype = DTYPE_IDENT;
@@ -266,21 +266,17 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **t
 	  tree[i] = cptr[i];
       tree[i] = 0;
       for (i = 0; i < num_actions; /* i++ */ i += num_actions - 1) {
-	struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
 	int mode;
 	int on = actions[i].on;
 	char *server = "";
 	mode = i ? (i == (num_actions - 1) ? MonitorBuildEnd : MonitorBuild) : MonitorBuildBegin;
-	if (!(ServerSendMessage(0, monitor_name, SrvMonitor, 0, 0, 0, 0, 0, 8,
-				MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree),
-				MakeDescrip(&p2, DTYPE_LONG, 0, 0, &(*table_ptr)->shot),
-				MakeDescrip(&p3, DTYPE_LONG, 0, 0, &actions[i].phase),
-				MakeDescrip(&p4, DTYPE_LONG, 0, 0, &actions[i].nid),
-				MakeDescrip(&p5, DTYPE_LONG, 0, 0, &on),
-				MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
-				MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, server),
-				MakeDescrip(&p8, DTYPE_LONG, 0, 0, &actions[i].status))
-	      & 1))
+	if (!(ServerSendMonitor(monitor_name, tree, (*table_ptr)->shot,
+				actions[i].phase,
+				actions[i].nid,
+				on,
+				mode,
+				server,
+				actions[i].status)&1))
 	  break;
       }
     }

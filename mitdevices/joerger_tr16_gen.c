@@ -1,7 +1,7 @@
 #include <mitdevices_msg.h>
 #include <mds_gendevice.h>
 #include "joerger_tr16_gen.h"
-EXPORT int joerger_tr16__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, int *nid_ptr)
+EXPORT int joerger_tr16__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr __attribute__ ((unused)), int *nid_ptr)
 {
   static DESCRIPTOR(library_d, "MIT$DEVICES");
   static DESCRIPTOR(model_d, "JOERGER_TR16");
@@ -290,7 +290,7 @@ EXPORT int joerger_tr16__add(struct descriptor *name_d_ptr, struct descriptor *d
   return (TreeSetDefaultNid(old_nid));
 }
 
-EXPORT int joerger_tr16__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr,
+EXPORT int joerger_tr16__part_name(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)),
 			    struct descriptor_d *out_d)
 {
   int element = 0, status;
@@ -465,128 +465,128 @@ extern int joerger_tr16___init();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 #define error(nid,code,code1) {free_xd_array return GenDeviceSignal(nid,code,code1);}
 
-EXPORT int joerger_tr16__init(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr16__init(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InInitStruct)
       static struct {
     short code;
     int value;
   } mem_size_t[] = {
-  0, 128, 1, 256, 2, 512, 3, 1024, 0, 0};
+    {0, 128}, {1, 256}, {2, 512}, {3, 1024}, {0, 0}};
   static struct {
     short code;
     int value;
   } active_mem_t[] = {
-  0, 8, 1, 16, 2, 32, 3, 64, 4, 128, 5, 256, 6, 512, 7, 1024, 0, 0};
+    {0, 8}, {1, 16}, {2, 32}, {3, 64}, {4, 128}, {5, 256}, {6, 512}, {7, 1024}, {0, 0}};
   static struct {
     short code;
     int value;
   } active_chans_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 4, 16, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {4, 16}, {0, 0}};
   static struct {
     short code;
     int value;
   } post_trig_t[] = {
-  0, 32,
-	1, 64,
-	2, 128,
-	3, 256,
-	4, 512,
-	5, 1024,
-	6, 2048,
-	7, 4096,
-	8, 8192,
-	9, 16384, 10, 32768, 11, 65536, 12, 131072, 13, 262144, 14, 524288, 15, 1048576, 0, 0};
+    {0, 32},
+    {1, 64},
+    {2, 128},
+    {3, 256},
+    {4, 512},
+    {5, 1024},
+    {6, 2048},
+    {7, 4096},
+    {8, 8192},
+    {9, 16384}, {10, 32768}, {11, 65536}, {12, 131072}, {13, 262144}, {14, 524288}, {15, 1048576}, {0, 0}};
   static struct {
     short code;
     float value;
   } freq_t[] = {
-  7, 0.0, 6, 2.5, 5, 5., 4, 10., 3, 20., 2, 40., 1, 80., 0, 160., 0, 0};
+    {7, 0.0}, {6, 2.5}, {5, 5.}, {4, 10.}, {3, 20.}, {2, 40.}, {1, 80.}, {0, 160.}, {0, 0}};
   static struct {
     short code;
     int value;
   } master_t[] = {
-  0, 0, 1, 1, 0, 0};
+    {0, 0}, {1, 1}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_01_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_02_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_03_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_04_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_05_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_06_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_07_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_08_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_09_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_10_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_11_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_12_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_13_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_14_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_15_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   static struct {
     short code;
     int value;
   } input_16_gain_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 0, 0};
+  {0, 1}, {1, 2}, {2, 4}, {3, 8}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);
@@ -648,7 +648,7 @@ EXPORT int joerger_tr16__init(struct descriptor *nid_d_ptr, struct descriptor *m
 extern int joerger_tr16___trigger();
 #define free_xd_array { int i; for(i=0; i<1;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int joerger_tr16__trigger(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr16__trigger(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InTriggerStruct)
   struct descriptor_xd work_xd[1];
@@ -666,29 +666,29 @@ EXPORT int joerger_tr16__trigger(struct descriptor *nid_d_ptr, struct descriptor
 extern int joerger_tr16___store();
 #define free_xd_array { int i; for(i=0; i<2;i++) if(work_xd[i].l_length) MdsFree1Dx(&work_xd[i],0);}
 
-EXPORT int joerger_tr16__store(struct descriptor *nid_d_ptr, struct descriptor *method_d_ptr)
+EXPORT int joerger_tr16__store(struct descriptor *nid_d_ptr __attribute__ ((unused)), struct descriptor *method_d_ptr __attribute__ ((unused)))
 {
   declare_variables(InStoreStruct)
       static struct {
     short code;
     int value;
   } mem_size_t[] = {
-  0, 128, 1, 256, 2, 512, 3, 1024, 0, 0};
+    {0, 128}, {1, 256}, {2, 512}, {3, 1024}, {0, 0}};
   static struct {
     short code;
     int value;
   } active_mem_t[] = {
-  0, 8, 1, 16, 2, 32, 3, 64, 4, 128, 5, 256, 6, 512, 7, 1024, 0, 0};
+    {0, 8}, {1, 16}, {2, 32}, {3, 64}, {4, 128}, {5, 256}, {6, 512}, {7, 1024}, {0, 0}};
   static struct {
     short code;
     int value;
   } active_chans_t[] = {
-  0, 1, 1, 2, 2, 4, 3, 8, 4, 16, 0, 0};
+    {0, 1}, {1, 2}, {2, 4}, {3, 8}, {4, 16}, {0, 0}};
   static struct {
     short code;
     float value;
   } freq_t[] = {
-  0, 0.0, 1, 2.5, 2, 5., 3, 10., 4, 20., 5, 40., 6, 80., 7, 160., 0, 0};
+    {0, 0.0}, {1, 2.5}, {2, 5.}, {3, 10.}, {4, 20.}, {5, 40.}, {6, 80.}, {7, 160.}, {0, 0}};
   struct descriptor_xd work_xd[2];
   int xd_count = 0;
   memset((char *)work_xd, '\0', sizeof(struct descriptor_xd) * 2);

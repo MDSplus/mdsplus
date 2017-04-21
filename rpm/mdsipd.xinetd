@@ -1,0 +1,22 @@
+# default: off
+#       standard mdsip.hosts and logs into /var/log/mdsplus.
+service mdsip
+{
+        disable         = yes
+        socket_type     = stream
+        wait            = no
+        cps             = 10000 1
+        instances       = UNLIMITED
+        per_source      = UNLIMITED
+        user            = root
+
+### NOTE: If you installed MDSplus to a different location than
+###       /usr/local/mdsplus make sure you change the following
+###       line to use the directory where you installed MDSplus.
+
+        server          = /usr/local/mdsplus/bin/mdsipd
+        server_args     = mdsip /var/log/mdsplus/mdsipd
+        log_on_failure  += HOST
+        log_on_success  += HOST
+        flags           = KEEPALIVE NODELAY NOLIBWRAP
+}

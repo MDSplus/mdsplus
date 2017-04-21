@@ -27,6 +27,14 @@ dele *.exe;
 #if  !defined(int32) && !defined(_AIX)
 #define int32 int
 #endif
+#ifdef _WIN32
+ #include <winsock2.h>
+ #include <windows.h>
+#else
+ #include <netdb.h>
+ #include <sys/socket.h>
+ #define INVALID_SOCKET -1
+#endif
 #include <config.h>
 #include <string.h>
 #include <stdio.h>
@@ -48,10 +56,7 @@ extern int MdsClose(int sock);
 extern int TdiCvt();
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
-extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
-#ifndef _WIN32
-#define INVALID_SOCKET -1
-#endif
+extern SOCKET ReuseCheck(char *hostin, char *unique, size_t buflen);
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
@@ -93,10 +98,6 @@ int bTest(struct descriptor *desc);
 struct descriptor_xd *bTest1(struct descriptor *in_bufD);
 #endif
 
-#ifndef _WIN32
-#include <netdb.h>
-#include <sys/socket.h>
-#endif
 /* Return the name of the current connection */
 EXPORT struct descriptor_xd *rMdsCurrent()
 {
@@ -121,7 +122,7 @@ EXPORT int rMdsList()
   for (cptr = Connections; (cptr != NULL);) {
     i++;
     if (cptr->sock != INVALID_SOCKET) {
-      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, cptr->sock);
+      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, (int)cptr->sock);
       if (cptr->sock == sock)
 	printf("  <-- active");
     } else
@@ -161,15 +162,13 @@ EXPORT struct descriptor_xd *rMdsVersion()
 /* Routine returns socket if valid */
 static SOCKET AddConnection(char *server)
 {
-  int status;
   Connection *cptr;
   SOCKET nsock;
-  char *unique = malloc(128);
+  char unique[128]="\0";
 /* Extract the ip and port numbers */
-  if ((status = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
-    free(unique);
+  if ((nsock = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
     printf("hostname [%s] invalid, No Connection\n", server);
-    return (INVALID_SOCKET);
+    return INVALID_SOCKET;
   }
 /* scan through current list looking for an ip/port pair */
   for (cptr = Connections; (cptr != NULL);) {
@@ -208,7 +207,7 @@ static SOCKET AddConnection(char *server)
     Connections = cptr;
   }
 /* Copy in the connection details */
-  cptr->unique = unique;
+  cptr->unique = strdup(unique);
   cptr->sock = nsock;
   strcpy(cptr->serv, server);	/* Copy in the name */
   return (nsock);
@@ -531,7 +530,7 @@ static int MdsToIp(struct descriptor **tdiarg, short *len)
 
 static int IpToMds(int dtypein)
 {
-  int dtype;
+  int dtype = DTYPE_Z;
   switch (dtypein) {
   case DTYPE_UCHAR:
     dtype = DTYPE_BU;

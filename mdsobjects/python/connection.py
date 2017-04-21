@@ -45,7 +45,7 @@ class Connection(object):
     def __enter__(self):
         """ Used for with statement. """
         return self
-    
+
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. """
         _DisconnectFromMds(self.socket)
@@ -183,15 +183,24 @@ class Connection(object):
         """Return instance of a connection.GetMany class. See the connection.GetMany documentation for further information."""
         return GetMany(value, self)
 
-    def openTree(self,tree,shot):
+    def openTree(self,tree,shot,mode='NORMAL'):
         """Open an MDSplus tree on a remote server
         @param tree: Name of tree
         @type tree: str
         @param shot: shot number
         @type shot: int
+        @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @rtype: None
         """
-        status=self.get("TreeOpen($,$)",tree,shot)
+        mode = mode.upper
+        if mode=='EDIT':
+            status=self.get("TreeOpenEdit($,$)",tree,shot)
+        if mode=='NEW':
+            status=self.get("TreeOpenNew($,$)",tree,shot)
+        elif mode=='READONLY':
+            status=self.get("TreeOpen($,$,1)",tree,shot)
+        else:  # stay compatible with old TreeOpen
+            status=self.get("TreeOpen($,$)",tree,shot)
         if not ((status & 1)==1):
             raise _Exceptions.statusToException(status)
 

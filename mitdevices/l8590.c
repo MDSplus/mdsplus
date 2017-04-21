@@ -20,7 +20,7 @@ static int zero = 0;
 #define min(a,b) ((a) <= (b)) ? (a) : (b)
 #define max(a,b) ((a) >= (b)) ? (a) : (b)
 
-EXPORT int l8590___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int l8590___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
   int status;
   pio(setup->name, 9, 0, 0);
@@ -33,15 +33,15 @@ EXPORT int l8590___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-static int ReadSetup(struct descriptor *key_ptr,
-		     int *mem_ptr,
-		     char *head_ptr,
-		     int *samples_ptr,
-		     int *min_idx_ptr, int *max_idx_ptr, float *freq_ptr, int *noc_ptr);
-static int ReadChannel(struct descriptor_s *key_d_ptr,
-		       int *max_samps_ptr, int *chan_ptr, int *samples_ptr, short *data_ptr);
+//static int ReadSetup(struct descriptor *key_ptr,
+//		     int *mem_ptr,
+//		     char *head_ptr,
+//		     int *samples_ptr,
+//		     int *min_idx_ptr, int *max_idx_ptr, float *freq_ptr, int *noc_ptr);
+//static int ReadChannel(struct descriptor_s *key_d_ptr,
+//		       int *max_samps_ptr, int *chan_ptr, int *samples_ptr, short *data_ptr);
 
-EXPORT int l8590___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int l8590___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
   int samples = 0;
   int status;
@@ -51,7 +51,7 @@ EXPORT int l8590___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
   static int latch_nid;
   static DESCRIPTOR_NID(latch, &latch_nid);
   static FUNCTION(1) value = {
-  2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, 0};
+    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
   static DESCRIPTOR_SIGNAL_1(signal, &value, &counts, &latch);
   latch_nid = setup->head_nid + L8590_N_LATCH;
   pio(setup->name, 2, 0, &samples);

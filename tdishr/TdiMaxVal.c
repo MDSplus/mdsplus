@@ -183,7 +183,6 @@ int TdiGtQ();
   char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   char testval;\
-  int  status;\
   struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
   struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
   struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
@@ -195,7 +194,7 @@ int TdiGtQ();
       for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
         if (*pm0 & 1) {\
            s_d.pointer=pi0;\
-           status = testit(&s_d,&result,&o_d);\
+           testit(&s_d,&result,&o_d);\
            if (testval) {\
              result.pointer=pi0;\
              count=j0;\
@@ -279,7 +278,7 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 	       struct descriptor *out, int count0, int count1, int count2,
 	       int step0, int step1, int step2)
 {
-  int count;
+  int count=-1;
   SetupArgs switch (in->dtype) {
   case DTYPE_T:
     OperateT(Tdi3Lt)
@@ -325,7 +324,6 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 { type *outp = (type *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
-  count = -1;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
       double result = start;\
@@ -334,7 +332,7 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
         {\
           double val;\
           if (CvtConvertFloat(pi0,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && (val operator result))\
-            {result = val; count = j0;}\
+            {result = val;}						\
         }\
       }\
       CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp++,dtype,0);\
@@ -348,7 +346,6 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
   char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
   char testval;\
-  int  status;\
   struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
   struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
   struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
@@ -357,13 +354,12 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   step0=in->length;\
   for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
     for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
-      for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+      for (j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
         if (*pm0 & 1) {\
            s_d.pointer=pi0;\
-           status = testit(&s_d,&result,&o_d);\
+           testit(&s_d,&result,&o_d);\
            if (testval) {\
              result.pointer=pi0;\
-             count=j0;\
            }\
         }\
       }\
@@ -378,7 +374,6 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
 	       struct descriptor *out, int count0, int count1, int count2,
 	       int step0, int step1, int step2)
 {
-  int count;
   SetupArgs switch (in->dtype) {
   case DTYPE_T:
     OperateTval(Tdi3Gt)
@@ -421,7 +416,6 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 	       struct descriptor *out, int count0, int count1, int count2,
 	       int step0, int step1, int step2)
 {
-  int count;
   SetupArgs switch (in->dtype) {
   case DTYPE_T:
     OperateTval(Tdi3Lt)

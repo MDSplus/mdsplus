@@ -470,229 +470,6 @@ static uint64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int
 
 //Handle resampling in when dimension is specified as a range
 typedef ARRAY_COEFF(char, 256) Array_coeff_type;
-/*
-static int rangeResample(struct descriptor *startD, struct descriptor *endD,
-			 struct descriptor *deltaD, struct descriptor *dataD_in,
-			 struct descriptor_range *rangeD, char dataType, char mode,
-			 struct descriptor_xd *outSignalXd)
-{
-  int dataSize, numOutSamples, status, i, memSize, currOffset, numInSamples, totInSamples;
-  uint64_t start64, end64, delta64, rangeStart64, rangeEnd64, rangeDelta64, currTime64, inTime64;
-  Array_coeff_type *dataD = (Array_coeff_type *) dataD_in;
-  char *signalExpr = "MAKE_SIGNAL($1,,MAKE_RANGE(MAX($2, $3), MIN($4, $5), $6))";
-  struct descriptor signalExprD = { strlen(signalExpr), DTYPE_T, CLASS_S, signalExpr };
-
-  char *prevDataPtr, *nextDataPtr;
-  double currSample, prevSample, nextSample;
-  uint64_t prevTime64, nextTime64;
-  int numDataItems;
-  //int previousClosest = 1;
-
-  char *currDataPtr, *outDataPtr, *currOutDataPtr;
-  DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0);
-
-  if (startD) {
-    status = XTreeConvertToLongTime(startD, &start64);
-    if (!(status & 1))
-      return status;
-  }
-  if (endD) {
-    status = XTreeConvertToLongTime(endD, &end64);
-    if (!(status & 1))
-      return status;
-  }
-  if (deltaD) {
-    status = XTreeConvertToLongDelta(deltaD, &delta64);
-    if (!(status & 1))
-      return status;
-  }
-  //Range descriptor must be fully specified
-  if (!rangeD->begin || !rangeD->ending || !rangeD->deltaval)
-    return 0;
-
-  status = XTreeConvertToLongTime(rangeD->begin, &rangeStart64);
-  if (!(status & 1))
-    return status;
-  status = XTreeConvertToLongTime(rangeD->ending, &rangeEnd64);
-  if (!(status & 1))
-    return status;
-  status = XTreeConvertToLongDelta(rangeD->deltaval, &rangeDelta64);
-  if (!(status & 1))
-    return status;
-
-  dataSize = dataD->length;
-  for (i = 0; i < dataD->dimct - 1; i++)
-    dataSize *= dataD->m[i];
-  numDataItems = dataSize / dataD->length;
-
-  totInSamples = dataD->arsize / dataD->length;
-  if (!startD || start64 < rangeStart64)
-    start64 = rangeStart64;
-  if (!endD || end64 > rangeEnd64)
-    end64 = rangeEnd64;
-  if (!deltaD)
-    delta64 = rangeDelta64;
-
-  currDataPtr = dataD->pointer;
-  currDataPtr += (dataSize * (start64 - rangeStart64) / rangeDelta64);
-  currTime64 = inTime64 = start64;
-  memSize = dataSize * ((end64 - start64) / delta64 + 1);
-  currOutDataPtr = outDataPtr = malloc(memSize);
-  numOutSamples = numInSamples = 0;
-  currOffset = 0;
-  while (numInSamples < totInSamples && currTime64 < end64) {
-    prevTime64 = inTime64 - rangeDelta64;
-    nextTime64 = inTime64;
-    switch (mode) {
-    case PREVIOUS_SAMPLE:
-      memcpy(currOutDataPtr, currDataPtr, dataSize);
-      break;
-    case CLOSEST_SAMPLE:
-      if (currDataPtr == dataD->pointer) {
-	memcpy(currOutDataPtr, currDataPtr, dataSize);
-	break;
-      }
-      if ((numInSamples < totInSamples) && ((currTime64 - prevTime64) > (nextTime64 - currTime64)))
-	memcpy(currOutDataPtr, currDataPtr + dataSize, dataSize);
-      else
-	memcpy(currOutDataPtr, currDataPtr, dataSize);
-      break;
-
-    case INTERPOLATION:
-      if (currDataPtr == dataD->pointer) {
-	memcpy(currOutDataPtr, currDataPtr, dataSize);
-	break;
-      }
-      prevDataPtr = currDataPtr - dataSize;
-      nextDataPtr = currDataPtr;
-      switch (dataType) {
-      case DTYPE_BU:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((unsigned char *)prevDataPtr)[i];
-	  nextSample = ((unsigned char *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((unsigned char *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_B:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((char *)prevDataPtr)[i];
-	  nextSample = ((char *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((char *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_WU:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((unsigned short *)prevDataPtr)[i];
-	  nextSample = ((unsigned short *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((unsigned short *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_W:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((short *)prevDataPtr)[i];
-	  nextSample = ((short *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((short *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_LU:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((unsigned int *)prevDataPtr)[i];
-	  nextSample = ((unsigned int *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((unsigned int *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_L:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((int *)prevDataPtr)[i];
-	  nextSample = ((int *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((int *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_QU:
-      case DTYPE_Q:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((uint64_t *) prevDataPtr)[i];
-	  nextSample = ((uint64_t *) nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((uint64_t *) currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_FLOAT:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((float *)prevDataPtr)[i];
-	  nextSample = ((float *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((float *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      case DTYPE_DOUBLE:
-	for (i = 0; i < numDataItems; i++) {
-	  prevSample = ((double *)prevDataPtr)[i];
-	  nextSample = ((double *)nextDataPtr)[i];
-	  currSample =
-	      prevSample + (nextSample - prevSample) * (currTime64 - prevTime64) / (nextTime64 -
-										    prevTime64);
-	  ((double *)currOutDataPtr)[i] = currSample;
-	}
-	break;
-      default:			//Not able to do interpolation
-	memcpy(currOutDataPtr, currDataPtr, dataSize);
-      }
-    }
-    currOutDataPtr += dataSize;
-    currOffset += dataSize;
-    currTime64 += delta64;
-    while (numInSamples < totInSamples && inTime64 < currTime64) {
-      inTime64 += rangeDelta64;
-      currDataPtr += dataSize;
-      numInSamples++;
-    }
-    numOutSamples++;
-  }
-  outDataArray.length = dataD->length;
-  outDataArray.dtype = dataD->dtype;
-  outDataArray.pointer = outDataPtr;
-  outDataArray.arsize = dataSize * numOutSamples;
-  outDataArray.dimct = dataD->dimct;
-  for (i = 0; i < dataD->dimct - 1; i++) {
-    outDataArray.m[i] = dataD->m[i];
-  }
-  outDataArray.m[dataD->dimct - 1] = numOutSamples;
-
-//Build out signal descriptor, keeping the same data type as passed
-  status = TdiCompile(&signalExprD, &outDataArray, (startD) ? startD : rangeD->begin, rangeD->begin,
-		      (endD) ? endD : rangeD->ending, rangeD->ending,
-		      (deltaD) ? deltaD : rangeD->deltaval, outSignalXd MDS_END_ARG);
-
-  if ((status & 1))
-    status = TdiEvaluate(outSignalXd, outSignalXd MDS_END_ARG);
-  free(outDataPtr);
-  return status;
-}
-
-*/
 
 EXPORT struct descriptor_xd *XTreeResampleClosest(struct descriptor_signal *inSignalD,
 						  struct descriptor *startD,
@@ -728,20 +505,45 @@ EXPORT int XTreeMinMaxResample(struct descriptor_signal *inSignalD, struct descr
   return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, MINMAX, outSignalXd);
 }
 
+static int getShape(struct descriptor *dataD, int *dims, int *numDims)
+{
+    int i;
+    ARRAY_COEFF(char *, 64) *arrPtr;
+    if(dataD->class != CLASS_A)
+    {
+//	printf("Internal error resample!!!!\n");
+	return 0;
+    }
+    arrPtr = (void *)dataD;
+    if(arrPtr->dimct == 1)
+    {
+        *numDims = 1;
+	dims[0] = arrPtr->arsize/arrPtr->length;
+    }
+    else
+    {
+        *numDims = arrPtr->dimct;
+	for(i = 0; i < arrPtr->dimct; i++)
+	    dims[i] = arrPtr->m[i];
+    }
+    return 1;
+}
+    
+
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
 				    struct descriptor *endD, struct descriptor *inDeltaD, char mode,
 				    struct descriptor_xd *outSignalXd)
 {
   //char resampleExpr[64];
   //struct descriptor resampleExprD = { 0, DTYPE_T, CLASS_S, resampleExpr };
-  struct descriptor_a *arrayD;
-  char *shapeExpr = "SHAPE(DATA($1))";
-  struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
+  //struct descriptor_a *arrayD;
+  //char *shapeExpr = "SHAPE(DATA($1))";
+  //struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
 
   uint64_t start64, end64, delta64, *timebase64, *outDim;
 //      float *timebaseFloat;
   double *timebaseDouble;
-  int *dims;
+  int dims[64];
   int numDims;
   int numTimebaseSamples;
   int outSamples, itemSize;
@@ -750,7 +552,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   int numYSamples;
   char *outData;
   struct descriptor_a *dataD;
-  EMPTYXD(shapeXd);
+  //EMPTYXD(shapeXd);
   EMPTYXD(dataXd);
 
   DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0);
@@ -759,18 +561,6 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   struct descriptor *deltaD;
 
   deltaD = inDeltaD;
-//Removed Range management due to the inaccurate reconstruction of TDISHR
-
-/*	if(inSignalD->dimensions[0]->class == CLASS_R && inSignalD->dimensions[0]->dtype == DTYPE_RANGE && 
-		((struct descriptor_range *)inSignalD->dimensions[0])->begin && 
-		((struct descriptor_range *)inSignalD->dimensions[0])->ending && 
-		((struct descriptor_range *)inSignalD->dimensions[0])->deltaval)
-	{
-		dataD = (struct descriptor_a *)inSignalD->data;
-		return rangeResample(startD, endD, deltaD, inSignalD->data, (struct descriptor_range *)inSignalD->dimensions[0], 
-			dataD->dtype, mode, outSignalXd); 
-	}
-*/
   if (startD) {
     status = XTreeConvertToLongTime(startD, &start64);
     if (!(status & 1))
@@ -818,6 +608,15 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
       return status;
   }
   numYSamples = dataD->arsize/dataD->length;
+  
+  
+  status = getShape((struct descriptor *)dataD, dims, &numDims);
+  if (!(status & 1)) {
+    MdsFree1Dx(&dataXd, 0);
+    return status;
+  }
+
+  /*
   status = TdiCompile(&shapeExprD, dataD, &shapeXd MDS_END_ARG);
   if (!(status & 1)) {
     MdsFree1Dx(&dataXd, 0);
@@ -831,6 +630,9 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   arrayD = (struct descriptor_a *)shapeXd.pointer;
   numDims = arrayD->arsize / arrayD->length;
   dims = (int *)arrayD->pointer;
+ 
+*/
+  
   itemSize = dataD->length;
   for (i = 0; i < numDims - 1; i++)
     itemSize *= dims[i];
@@ -849,7 +651,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   outDim = malloc(2 * outSamples * 8);
 
   //Check data array too short
-  if (dataD->arsize / dataD->length < numTimebaseSamples)
+  if ((int)(dataD->arsize / dataD->length) < numTimebaseSamples)
     numTimebaseSamples = dataD->arsize / dataD->length;
 
   resample(start64, end64, (deltaD) ? delta64 : 0, timebase64, numTimebaseSamples, numDims, dims,
@@ -865,19 +667,6 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
     outDataArray.m[i] = dims[i];
   }
   outDataArray.m[numDims - 1] = outSamples;
-/* OLD, Possible loss of precision!!!!
-	//If originally float, convert  dimension to float
-	if(isFloat)
-	{
-		timebaseFloat = (float *)malloc(outSamples * sizeof(float));
-		for(i = 0; i < outSamples; i++)
-			MdsTimeToFloat(outDim[i], &timebaseFloat[i]);
-		outDimArray.length = sizeof(float);
-		outDimArray.arsize = sizeof(float) * outSamples;
-		outDimArray.dtype = DTYPE_FLOAT;
-		outDimArray.pointer = (char *)timebaseFloat;
-	}
-*/
   //If originally float, convert  dimension to float
   if (isFloat) {
     timebaseDouble = (double *)malloc(outSamples * sizeof(double));
@@ -902,7 +691,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   if (isFloat)
     free((char *)timebaseDouble);
   free((char *)outData);
-  MdsFree1Dx(&shapeXd, 0);
+  //MdsFree1Dx(&shapeXd, 0);
   MdsFree1Dx(&dataXd, 0);
 
   return 1;

@@ -14,7 +14,7 @@ C*16-NOV-90 14:24:57 MDS$SOURCE:[KKLARE]ZMUL.FOR;5
       SUBROUTINE Ssub(m,n,a,lda,b,ldb,c,ldc)
 ! matrix subtract C=A-B, C(M,N)=A(M,N)-B(M,N)
       Integer m,n,lda,ldb,ldc,i,j
-      REAL a(lda,1),b(ldb,1),c(ldc,1),SDOT
+      REAL a(lda,1),b(ldb,1),c(ldc,1)
       If(m.le.0) Return
       Do 20 j=1,n
          Do 10 i=1,m
@@ -26,7 +26,7 @@ C*16-NOV-90 14:24:57 MDS$SOURCE:[KKLARE]ZMUL.FOR;5
       SUBROUTINE Smul(l,m,n,a,lda,b,ldb,c,ldc)
 ! matrix multiply C=A*B, C(L,N)=A(L,M)*B(M,N), C must not overlap A or B
 ccif test
-c	test2
+c      test2
 ccendc test3
       external SDOT
       Integer l,m,n,lda,ldb,ldc,i,j

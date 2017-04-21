@@ -5,17 +5,28 @@ MDSplus tests
 Tests of MDSplus
 
 """
-from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-from tests.treeUnitTest import treeTests
-from tests.threadsUnitTest import suite as threadsSuite
-from tests.dataUnitTest import suite as dataSuite
-from tests.exceptionUnitTest import exceptionTests
-from tests.connectionUnitTest import suite as connectionsSuite
-from _mdsshr import setenv,getenv
+def _mimportSuite(name, level=1):
+    try:
+        return __import__(name, globals(), level=level).suite
+    except:
+        return __import__(name, globals()).suite
 
-import os
-import time
-import warnings
+from unittest import TestCase,TestSuite,TextTestRunner
+import os,sys
+import gc;gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+
+from MDSplus import setenv,getenv
+if os.name=='nt':
+    setenv("PyLib","python%d%d"  % sys.version_info[0:2])
+else:
+    setenv("PyLib","python%d.%d" % sys.version_info[0:2])
+
+treeSuite=       _mimportSuite('treeUnitTest')
+threadsSuite=    _mimportSuite('threadsUnitTest')
+dataSuite=       _mimportSuite('dataUnitTest')
+exceptionSuite=  _mimportSuite('exceptionUnitTest')
+connectionsSuite=_mimportSuite('connectionUnitTest')
+segmentsSuite=   _mimportSuite('segmentsUnitTest')
 
 class cleanup(TestCase):
     dir=None
@@ -49,31 +60,19 @@ class cleanup(TestCase):
         self.cleanup()
 
 def test_all(*arg):
-    import tempfile
-    import os
-    import sys
     if getenv('waitdbg') is not None:
       print("Hit return after gdb is connected\n")
       sys.stdin.readline()
-    dir=tempfile.mkdtemp()
-    print ("Creating trees in %s" % (dir,))
-    cleanup.dir=dir
-    if os.getenv("TEST_DISTRIBUTED_TREES") == None:
-        hostpart=""
-    else:
-        hostpart="localhost::"
-    setenv('pytree_path',hostpart+dir)
-    setenv('pytreesub_path',hostpart+dir)
-    if getenv("testing_path") is None:
-      setenv('testing_path',"%s/trees"%(os.path.dirname(os.path.realpath(__file__)),))
-
     tests=list()
-    tests.append(treeTests())
+    tests.append(treeSuite())
     if os.getenv('TEST_THREADS') is not None:
         tests.append(threadsSuite())
     tests.append(dataSuite())
-    tests.append(exceptionTests())
+    tests.append(exceptionSuite())
     tests.append(connectionsSuite())
-    tests.append(TestSuite([cleanup('cleanup')]))
+    tests.append(segmentsSuite())
+
     return TestSuite(tests)
 
+if __name__=='__main__':
+    TextTestRunner().run(test_all())

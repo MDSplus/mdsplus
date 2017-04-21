@@ -680,6 +680,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
             int ntreefd;
             TREE_INFO *info_ptr = (*dblist)->tree_info;
             char *nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
+	    _TreeDeleteNodesWrite(*dbid);
             trim_excess_nodes(info_ptr);
             header_pages = (sizeof(TREE_HEADER) + 511) / 512;
             node_pages = (info_ptr->header->nodes * sizeof(NODE) + 511) / 512;
@@ -694,19 +695,19 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
                 TREE_HEADER *header = HeaderOut(info_ptr->header);
                 num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
                 FreeHeaderOut(header);
-                if (num != (header_pages * 512))
+                if (num != (ssize_t)(header_pages * 512))
                     goto error_exit;
                 num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
-                if (num != (node_pages * 512))
+                if (num != (ssize_t)(node_pages * 512))
                     goto error_exit;
                 num = MDS_IO_WRITE(ntreefd, info_ptr->tags, 512 * tags_pages);
-                if (num != (tags_pages * 512))
+                if (num != (ssize_t)(tags_pages * 512))
                     goto error_exit;
                 num = MDS_IO_WRITE(ntreefd, info_ptr->tag_info, 512 * tag_info_pages);
-                if (num != (tag_info_pages * 512))
+                if (num != (ssize_t)(tag_info_pages * 512))
                     goto error_exit;
                 num = MDS_IO_WRITE(ntreefd, info_ptr->external, 512 * external_pages);
-                if (num != (external_pages * 512))
+                if (num != (ssize_t)(external_pages * 512))
                     goto error_exit;
                 status = TreeWriteNci(info_ptr);
                 if ((status & 1) == 0)

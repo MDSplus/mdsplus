@@ -11,7 +11,7 @@ class Frames extends Canvas
 {
     static final int ROI = 20;
 
-    Vector frame_time = new Vector();
+    Vector<Float> frame_time = new Vector<>();
     Rectangle zoom_rect = null;
     Rectangle view_rect = null;
     private int curr_frame_idx = -1;
@@ -52,7 +52,7 @@ class Frames extends Canvas
     class FrameCache
     {
         FrameData fd;
-        Hashtable recentFrames;
+        Hashtable<Integer, FrameDescriptor> recentFrames;
         int bitShift;
         boolean bitClip;
         ColorMap colorMap;
@@ -62,14 +62,13 @@ class Frames extends Canvas
         Dimension frameDim;
         int numFrames;
         MediaTracker tracker;
-        Vector recentIdxV= new Vector();
+        Vector<Integer> recentIdxV= new Vector<Integer>();
         int updateCount = 0;
         static final int MAX_CACHE_MEM = 50000000;
 
         public FrameCache()
         {
-            this.fd = fd;
-            recentFrames = new Hashtable();
+            recentFrames = new Hashtable<>();
             bitShift = 0;
             bitClip = false;
             colorMap = new ColorMap();
@@ -81,7 +80,7 @@ class Frames extends Canvas
             bitShift = 0;
             bitClip = false;
             colorMap = new ColorMap();
-            recentFrames = new Hashtable();
+            recentFrames = new Hashtable<>();
             Enumeration fds = fc.recentFrames.keys();
             while(fds.hasMoreElements())
             {
@@ -431,7 +430,6 @@ class Frames extends Canvas
         if(frame_time.size() != 0)
             frame_time.removeAllElements();
 
-        int num_frame = frames.getNumFrame();
         float buf_values[] = null;
         if(frames.zoom_rect != null)
             zoom_rect = new Rectangle(frames.zoom_rect);
@@ -804,7 +802,6 @@ class Frames extends Canvas
         ByteArrayInputStream b = new ByteArrayInputStream(buf);
         DataInputStream d = new DataInputStream(b);
 
-        int pixel_size = d.readInt();
         int width = d.readInt();
         int height = d.readInt();
         int img_size = height*width;
@@ -868,10 +865,9 @@ class Frames extends Canvas
 
         if(img_w == -1 && img_h == -1)
        {
-            img_width = img_w = img.getWidth(this);
-            img_height = img_h = img.getHeight(this);
+            img_width = img.getWidth(this);
+            img_height = img.getHeight(this);
             return values;
-
        }
         float values_array[] = new float[img_w * img_h];
        int k = 0;

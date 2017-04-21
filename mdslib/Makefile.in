@@ -7,7 +7,7 @@ VPATH = @srcdir@
 @MINGW_TRUE@ IMPLIB_MdsLib_client=@MAKELIBDIR@MdsLib_client.dll.a
 @MINGW_TRUE@ DEF=${srcdir}/MdsLib.def
 
-LIBS= @LIBS@ @GLOBUS_LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBM@
+LIBS = @LIBS@ @GLOBUS_LIBS@ $(LIBSOCKET) @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
 SOURCES = MdsLib.c

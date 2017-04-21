@@ -12,9 +12,8 @@
 #define CSTRING_TEST0 "this is a test"
 #define CSTRING_TEST1 "THIS IS A TEST"
 
-int main(int argc, char *argv[])
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    BEGIN_TESTING(dtpye);
     
     long status;
     int dsc;
@@ -60,8 +59,9 @@ int main(int argc, char *argv[])
     
     int null = 0;
     int len = 0;
-    char *msg = "   ";
+    //    char *msg = "   ";
     
+    BEGIN_TESTING(dtype);
     /**** Run tests ****/
     
     dsc = descr(&dtype_uchar, &vUChar, &null);
@@ -145,4 +145,5 @@ int main(int argc, char *argv[])
     TEST1(strcmp(vCstring, CSTRING_TEST1) == 0);
         
     END_TESTING;
+    return 0;
 }

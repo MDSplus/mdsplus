@@ -14,7 +14,7 @@ static bool daemonStarted = false;
 static pthread_t thread;
 #define MAX_DIM 64
 extern  "C" void *monitorStreamInfo(void *);
-static MDSplus::TreeNode *getSegmentedNode(MDSplus::Data *data);
+//static MDSplus::TreeNode *getSegmentedNode(MDSplus::Data *data);
 static MDSplus::Data *getNewSamplesSerialized();
 //Condition variable for synchronization
 static pthread_cond_t availCond;
@@ -264,7 +264,7 @@ EXPORT int registerListener(char *expr, char *experiment, int shot)
 /// StreamInfoV array in order to preserve index consistence
 EXPORT void unregisterListener(int listenerId)
 {
-	if(listenerId < 0 || listenerId >= streamInfoV.size())
+  if(listenerId < 0 || (std::size_t)listenerId >= streamInfoV.size())
 		return;
 	pthread_mutex_lock(&mutex);
 	StreamInfo *si = streamInfoV[listenerId];
@@ -281,7 +281,7 @@ MDSplus::Data *getNewSamplesSerialized()
 	//First loop: check whether any data is available
 	pthread_mutex_lock(&mutex);
 	bool dataAvailable = false;
-	for(int idx = 0; idx < streamInfoV.size(); idx++)
+	for(std::size_t idx = 0; idx < streamInfoV.size(); idx++)
 	{
 		StreamInfo *currSi = streamInfoV[idx];
 		if(currSi && currSi->isDataAvailable())
@@ -296,7 +296,7 @@ MDSplus::Data *getNewSamplesSerialized()
 
 	//Second loop: read available data. For sure at leas one item will contain new data
 	MDSplus::Apd *retApd = new MDSplus::Apd();
-	for(int idx = 0; idx < streamInfoV.size(); idx++)
+	for(std::size_t idx = 0; idx < streamInfoV.size(); idx++)
 	{
 		StreamInfo *currSi = streamInfoV[idx];
 		if(!currSi || !currSi->isDataAvailable()) 
@@ -331,7 +331,7 @@ EXPORT void *getNewSamplesSerializedXd()
 
 
 ///Periodically check the list of registered data items for new data availability
-void *monitorStreamInfo(void *par)
+void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 {
 	struct timespec waitTime;
 	waitTime.tv_sec = 0;
@@ -340,7 +340,7 @@ void *monitorStreamInfo(void *par)
 	while(true)
 	{
 		pthread_mutex_lock(&mutex);
-		for(int i = 0; i < streamInfoV.size(); i++)
+		for(std::size_t i = 0; i < streamInfoV.size(); i++)
 		{
 			if(streamInfoV[i]) 
 				streamInfoV[i]->checkDataAvailable();
@@ -348,6 +348,7 @@ void *monitorStreamInfo(void *par)
 		pthread_mutex_unlock(&mutex);
 		nanosleep(&waitTime, NULL);
 	}
+        return NULL;
 }
 	
 

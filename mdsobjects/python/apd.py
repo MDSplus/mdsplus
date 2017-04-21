@@ -6,9 +6,11 @@ def _mimport(name, level=1):
 
 import copy as _copy
 import numpy as _N
+import types as _T
 
 _data=_mimport('mdsdata')
 _scalar=_mimport('mdsscalar')
+_ver=_mimport('version')
 
 class Apd(_data.Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
@@ -36,12 +38,11 @@ class Apd(_data.Data):
     def __init__(self,descs,dtype=0):
         """Initializes a Apd instance
         """
-        if isinstance(descs,tuple):
+        if isinstance(descs,(tuple,list,Apd)):
             self.descs=descs
             self.dtype=dtype
         else:
             raise TypeError("must provide tuple of items when creating ApdData")
-        return
 
     def __len__(self):
         """Return the number of descriptors in the apd"""
@@ -113,6 +114,18 @@ class Dictionary(dict,Apd):
 
     mdsdtype=216
 
+    @staticmethod
+    def toKey(key):
+        if isinstance(key,_scalar.Scalar):
+            key=key.value
+        if isinstance(key,_N.string_):
+            key=str(key)
+        elif isinstance(key,_N.int32):
+            key=int(key)
+        elif isinstance(key,(_N.float32,_N.float64)):
+            key=float(key)
+        return key
+
     def __hasBadTreeReferences__(self,tree):
         for v in self.itervalues():
             if isinstance(v,_data.Data) and v.__hasBadTreeReferences__(tree):
@@ -131,21 +144,19 @@ class Dictionary(dict,Apd):
             if isinstance(value,dict):
                 for key,val in value.items():
                     self.setdefault(key,val)
-            elif isinstance(value,Apd):
+                return
+            elif isinstance(value,(Apd,list,tuple)):
                 for idx in range(0,len(value),2):
                     key=value[idx]
-                    if isinstance(key,_scalar.Scalar):
-                        key=key.value
-                    if isinstance(key,_N.string_):
-                        key=str(key)
-                    elif isinstance(key,_N.int32):
-                        key=int(key)
-                    elif isinstance(key,_N.float32) or isinstance(key,_N.float64):
-                        key=float(key)
                     val=value[idx+1]
-                    if isinstance(val,Apd):
-                        val=Dictionary(val)
                     self.setdefault(key,val)
+            elif isinstance(value,_T.GeneratorType):
+                if _ver.ispy3:
+                    for key in value:
+                        self.setdefault(key,value.__next__())
+                else:
+                    for key in value:
+                        self.setdefault(key,value.next())
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
 
@@ -162,6 +173,12 @@ class Dictionary(dict,Apd):
             self.__dict__[name]=value
         else:
             self.setdefault(name,value)
+
+    def setdefault(self,key,val):
+        key = Dictionary.toKey(key)
+        if isinstance(val,Apd):
+            val=Dictionary(val)
+        super(Dictionary,self).setdefault(key,val)
 
     def data(self):
         """Return native representation of data item"""
@@ -200,9 +217,12 @@ class List(list,Apd):
 
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,Apd) or isinstance(value,list) or isinstance(value,tuple):
-                for idx in range(len(value)):
-                    super(List,self).append(value[idx])
+            if isinstance(value,(list,tuple,_T.GeneratorType)):
+                for val in value:
+                    super(List,self).append(val)
+            elif isinstance(value,(Apd,)):
+                for val in value.descs:
+                    super(List,self).append(val)
             else:
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 

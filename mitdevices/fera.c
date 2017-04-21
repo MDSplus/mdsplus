@@ -114,7 +114,7 @@ static int NElements(int nid);
 static char *ArrayRef(int nid, int num);
 static int Put(unsigned short int *buffer, int pts_per_chan, int chans, int clock_nid, int nid);
 
-EXPORT int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
+EXPORT int fera___init(struct descriptor *niddsc_ptr __attribute__ ((unused)), InInitStruct * setup)
 {
 
   int status = 1;
@@ -170,7 +170,7 @@ EXPORT int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
   return status;
 }
 
-EXPORT int fera___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
+EXPORT int fera___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup)
 {
 
   int mem_status = 1;
@@ -292,14 +292,14 @@ static int NElements(int nid)
 
 static char *ArrayRef(int nid, int num)
 {
-  struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
+  //  struct descriptor_s num_dsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)0 };
   static DESCRIPTOR(set_var, "_TextArray = $1");
   static struct descriptor_xd dummy_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   struct descriptor_s nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
   static struct descriptor_d empty_string = { 0, DTYPE_T, CLASS_D, 0 };
   int status = 1;
-  num_dsc.pointer = (char *)&num;
-  nid_dsc.pointer = (char *)&nid;
+  //num_dsc.pointer = (char *)&num;
+  //nid_dsc.pointer = (char *)&nid;
   if (last_nid != nid) {
     last_nid = 0;
     status = TdiExecute((struct descriptor *)&set_var, &nid_dsc, &dummy_xd MDS_END_ARG);

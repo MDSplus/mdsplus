@@ -247,24 +247,24 @@ STATIC_ROUTINE void sqrt_complex(double *in, double *out)
 
 STATIC_ROUTINE void log_complex(double *in, double *out)
 {
-  double theta;
+  double theta = 0;
   if (in[0] > 0.0)
     theta = 0.0;
   else if (in[0] < 0.0 && in[1] >= 0.0)
-    theta = 3.1415927;
+    theta = M_PI;
   else if (in[0] < 0.0)
-    theta = -3.1415927;
+    theta = -M_PI;
   else if (in[0] == 0 && in[1] == 0) {
     out[0] = 0.0;
     out[1] = 0.0;
     return;
   } else if (in[0] == 0.0 && in[1] > 0.0) {
     out[0] = log(in[1]);
-    out[1] = 1.570963;
+    out[1] = M_PI_2;
     return;
   } else if (in[0] == 0.0) {
     out[0] = log(fabs(in[1]));
-    out[1] = -1.570963;
+    out[1] = -M_PI_2;
     return;
   }
   out[1] = atan(in[1] / in[0]) + theta;

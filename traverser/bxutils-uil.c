@@ -176,7 +176,7 @@ static size_t doMbstowcs(wchar_t *, char *, size_t);
 static size_t doWcstombs(char *, wchar_t *, size_t);
 static void copyWcsToMbs(char *, wchar_t *, int, Boolean);
 static int dombtowc(wchar_t *, char *, size_t);
-static Boolean extractSegment(wchar_t **, wchar_t **, int *, wchar_t **, int *, int *, Boolean *);
+static Boolean extractSegment(wchar_t **, wchar_t **, size_t *, wchar_t **, size_t *, int *, Boolean *);
 static XmString StringToXmString(char *);
 static char *getNextCStrDelim(char *);
 static int getCStrCount(char *);
@@ -512,8 +512,8 @@ static Boolean extractSegment
 ARGLIST((str, tagStart, tagLen, txtStart, txtLen, pDir, pSep))
 ARG(wchar_t **, str)
 ARG(wchar_t **, tagStart)
-ARG(int *, tagLen)
-ARG(wchar_t **, txtStart) ARG(int *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep)
+ARG(size_t *, tagLen)
+ARG(wchar_t **, txtStart) ARG(size_t *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep)
 {
   wchar_t *start;
   wchar_t *text;
@@ -683,15 +683,15 @@ ARG(wchar_t **, txtStart) ARG(int *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSe
 static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
 {
   static char *tagBuf = NULL;
-  static int tagBufLen = 0;
+  static size_t tagBufLen = 0;
   static char *textBuf = NULL;
-  static int textBufLen = 0;
+  static size_t textBufLen = 0;
 
   wchar_t *ctx;
   wchar_t *tag;
-  int tagLen;
+  size_t tagLen;
   wchar_t *text;
-  int textLen;
+  size_t textLen;
   Boolean sep;
   int dir;
 
@@ -948,8 +948,8 @@ static wchar_t *CStrCommonWideCharsGet()
 static Boolean CvtStringToXmString
 ARGLIST((d, args, num_args, fromVal, toVal, data))
 ARG(Display *, d)
-UARG(XrmValue *, args)
-ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data)
+UARG(XrmValue *, args __attribute__ ((unused)))
+ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data __attribute__ ((unused)))
 {
   static XmString resStr;
   char *str;
@@ -999,8 +999,9 @@ ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(X
 
 static void XmStringCvtDestroy
 ARGLIST((app, to, data, args, num_args))
-UARG(XtAppContext, app)
-ARG(XrmValue *, to) UARG(XtPointer, data) UARG(XrmValue *, args) GRAU(Cardinal *, num_args)
+  UARG(XtAppContext, app __attribute__ ((unused)))
+  ARG(XrmValue *, to) UARG(XtPointer, data __attribute__ ((unused)))
+  UARG(XrmValue *, args __attribute__ ((unused))) GRAU(Cardinal *, num_args __attribute__ ((unused)))
 {
   XmStringFree(*(XmString *) (to->addr));
 }
@@ -1028,7 +1029,8 @@ static Boolean CvtStringToXmStringTable
 ARGLIST((d, args, num_args, fromVal, toVal, data))
 ARG(Display *, d)
 ARG(XrmValue *, args)
-ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data)
+ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal)
+GRAU(XtPointer, data __attribute__ ((unused)))
 {
   static XmString *CStrTable;
   XmString *tblPtr;
@@ -1140,8 +1142,9 @@ ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(X
 
 static void XmStringTableCvtDestroy
 ARGLIST((app, to, data, args, num_args))
-UARG(XtAppContext, app)
-ARG(XrmValue *, to) UARG(XtPointer, data) UARG(XrmValue *, args) GRAU(Cardinal *, num_args)
+  UARG(XtAppContext, app __attribute__ ((unused)))
+  ARG(XrmValue *, to) UARG(XtPointer, data __attribute__ ((unused)))
+  UARG(XrmValue *, args __attribute__ ((unused))) GRAU(Cardinal *, num_args __attribute__ ((unused)))
 {
   XmString *tblPtr = *(XmString **) (to->addr);
 
@@ -1197,7 +1200,7 @@ void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext)
 XtPointer CONVERT
 ARGLIST((w, from_string, to_type, to_size, success))
 ARG(Widget, w)
-ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size) GRA(Boolean *, success)
+ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((unused))) GRA(Boolean *, success)
 {
   XrmValue fromVal, toVal;	/* resource holders             */
   Boolean convResult;		/* return value                 */
@@ -1327,11 +1330,11 @@ ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size) GRA(Boolean *, s
 
 void MENU_POST
 ARGLIST((p, mw, ev, dispatch))
-UARG(Widget, p) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch)
+  UARG(Widget, p __attribute__ ((unused))) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch __attribute__ ((unused)))
 {
   Arg args[2];
   int argcnt;
-  int button;
+  Cardinal button;
   Widget m = (Widget) mw;
   XButtonEvent *e = (XButtonEvent *) ev;
 
@@ -1369,7 +1372,7 @@ UARG(Widget, p) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch)
 
 void SET_BACKGROUND_COLOR
 ARGLIST((w, args, argcnt, bg_color))
-ARG(Widget, w) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
+  ARG(Widget, w __attribute__ ((unused))) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
 {
 
 #if ((XmVERSION == 1) && (XmREVISION > 0))
@@ -1626,7 +1629,7 @@ XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
 /* ARGSUSED */
 void BxStoreWidgetId(
 #if NeedFunctionPrototypes
-		      Widget w, XtPointer client, XtPointer call)
+		     Widget w, XtPointer client, XtPointer call __attribute__ ((unused)))
 #else
 		      w, client, call)
 Widget w;

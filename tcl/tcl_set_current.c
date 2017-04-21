@@ -24,7 +24,7 @@ extern int TdiExecute();
 	/*****************************************************************
 	 * TclSetCurrent:
 	 *****************************************************************/
-EXPORT int TclSetCurrent(void *ctx, char **error, char **output)
+EXPORT int TclSetCurrent(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int sts;
   char *experiment = 0;

@@ -20,12 +20,12 @@ def fixFilename(info,filename):
     noarch packages we need to use /lib??, /bin?? to get the no arch dependent scripts and files"""
     try:
         if info['arch']=='noarch':
-            filename=filename.replace("/lib/","/lib??/") 
+            filename=filename.replace("/lib/","/lib??/")
             filename=filename.replace("/bin/","/bin??/")
             if filename[len(filename)-4:] in ('/lib','/bin'):
                 filename=filename+"??"
         else:
-            filename=filename.replace("/lib/","/lib%(bits)d/") 
+            filename=filename.replace("/lib/","/lib%(bits)d/")
             filename=filename.replace("/bin/","/bin%(bits)d/")
             filename=filename.replace("/uid/","/uid%(bits)d/")
             if filename[len(filename)-4:] in ('/lib','/bin','/uid'):
@@ -63,7 +63,7 @@ def buildRpms():
         if len(s[idx].strip()) == 0:
             s[idx]=""
     rpmspec='\n'.join(s)
-            
+
     bin_packages=list()
     noarch_packages=list()
     for package in root.getiterator('package'):
@@ -72,7 +72,7 @@ def buildRpms():
             noarch_packages.append(package)
         else:
             bin_packages.append(package)
-                
+
     for arch in ({"target":"x86_64-linux","bits":64,"arch_t":".x86_64"},{"target":"i686-linux","bits":32,"arch_t":".i686"}):
         info['target']=arch['target']
         info['bits']=arch['bits']
@@ -123,13 +123,14 @@ def buildRpms():
             os.close(out)
             info['specfilename']=specfilename
             print("Building rpm for mdsplus%(bname)s%(packagename)s%(arch_t)s" % info)
-                
+
             sys.stdout.flush()
             subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
-            p = subprocess.Popen("""
-mkdir -p /release/RPMS /release/BUILD /release/BUILDROOT /release/RPMS /release/SOURCES /release/SRPMS
-rpmbuild -bb --define '_topdir /release' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1
-""" % info,stdout=subprocess.PIPE,shell=True)
+            for s in ('BUILD','RPMS','SOURCES','SPECS','SRPMS'):
+                try:
+                    os.mkdir('/release/%(branch)s/'%info +s)
+                except OSError: pass  # if exists
+            p = subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s --target=%(target)s %(specfilename)s 2>&1" % info,stdout=subprocess.PIPE,shell=True)
             messages=p.stdout.readlines()
             status=p.wait()
             os.remove(specfilename)
@@ -185,9 +186,7 @@ Buildarch: noarch
         print("Building rpm for mdsplus%(bname)s%(packagename)s.noarch" % info)
         sys.stdout.flush()
         subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
-        p=subprocess.Popen("""
-        rpmbuild -bb --define '_topdir /release' --buildroot=%(buildroot)s %(specfilename)s 2>&1
-""" % info,stdout=subprocess.PIPE,shell=True)
+        p=subprocess.Popen("rpmbuild -bb --define '_topdir /release/%(branch)s' --buildroot=%(buildroot)s %(specfilename)s 2>&1" % info,stdout=subprocess.PIPE,shell=True)
         messages=p.stdout.readlines()
         status = p.wait()
         os.remove(specfilename)
@@ -199,7 +198,7 @@ Buildarch: noarch
     try:
         os.stat('/sign_keys/.gnupg')
         try:
-            cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /release/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
+            cmd="/bin/sh -c 'HOME=/sign_keys rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /release/%(branch)s/RPMS/*/*%(major)d.%(minor)d-%(release)d*.rpm'" % info
             child = pexpect.spawn(cmd,timeout=60,logfile=sys.stdout)
             child.expect("Enter pass phrase: ")
             child.sendline("")
